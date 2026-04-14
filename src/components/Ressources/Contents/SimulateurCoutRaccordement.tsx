@@ -1,10 +1,6 @@
-import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Badge from '@codegouvfr/react-dsfr/Badge';
-import Input from '@codegouvfr/react-dsfr/Input';
-import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { addresseToPublicodesRules } from '@/components/ComparateurPublicodes/mappings';
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
@@ -12,43 +8,16 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
-import type { BANAddressFeature } from '@/modules/ban/types';
-import { AddressField } from '@/modules/form/AddressField';
-import type { LocationInfoResponse } from '@/pages/api/location-infos';
+import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
+import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
+import { useSimulatorSituation, useSyncBuildingSituation } from '@/modules/simulator/client/useSimulatorSituation';
+import { CEE_VALUE_RULE, TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE, type TypeBatiment } from '@/modules/simulator/constants';
 import { isDefined } from '@/utils/core';
-import { postFetchJSON } from '@/utils/network';
-import { ObjectEntries } from '@/utils/typescript';
-
-type TypeBatiment = 'residentiel' | 'tertiaire';
-type Structure = 'Résidentiel' | 'Tertiaire';
-
-type FormState = {
-  typeBatiment: TypeBatiment;
-  nbLogements?: number;
-  surface?: number;
-};
 
 interface SimulateurCoutRaccordementProps {
   typeBatiment?: TypeBatiment;
   embedded?: boolean;
 }
-
-type SimulatorSituation = Partial<Record<RuleName, number | string | null>>;
-
-const CEE_VALUE_RULE = 'Paramètres économiques . Aides . Valeur CEE' as RuleName;
-const TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant' as RuleName;
-
-const buildAddressSituation = (infos: LocationInfoResponse): SimulatorSituation =>
-  ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key, infoGetter]) => {
-    acc[key] = infoGetter(infos) ?? null;
-    return acc;
-  }, {});
-
-const buildClearedAddressSituation = (): SimulatorSituation =>
-  ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key]) => {
-    acc[key] = null;
-    return acc;
-  }, {});
 
 /**
  * Simulateur du coût de raccordement selon le nombre de logements si bâtiment résidentiel ou
@@ -56,98 +25,38 @@ const buildClearedAddressSituation = (): SimulatorSituation =>
  */
 const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
   const engine = useSimulatorEngine();
-
-  const [formState, setFormState] = useState<FormState>({
-    typeBatiment: props.typeBatiment ?? 'residentiel',
-  });
   const [hasUsedFeature, setHasUsedFeature] = useState(false);
 
-  const [address, setAddress] = useState('');
-  const [selectedAddress, setSelectedAddress] = useState<BANAddressFeature | null>(null);
-  const [eligibilityError, setEligibilityError] = useState(false);
-
-  const structure: Structure = formState.typeBatiment === 'residentiel' ? 'Résidentiel' : 'Tertiaire';
-  const isAddressSelected = selectedAddress !== null;
-
-  function updateState<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
-    if (!hasUsedFeature) {
-      trackEvent('Outils|Simulation coût raccordement');
-    }
-    setHasUsedFeature(true);
-    setFormState((state) => ({
-      ...state,
-      [key]: value,
-    }));
-  }
-
-  const updateSituation = (partialSituation: SimulatorSituation) => {
-    engine.setSituation({
-      ...engine.getSituation(),
-      ...partialSituation,
-    });
-  };
-
-  const clearAddressSituation = () => {
-    updateSituation(buildClearedAddressSituation());
-  };
-
-  const resetAddressSelection = () => {
-    setAddress('');
-    setSelectedAddress(null);
-    setEligibilityError(false);
-    clearAddressSituation();
-  };
-
-  useEffect(() => {
-    if (!engine.loaded) {
-      return;
-    }
-
-    updateSituation({
-      'méthode tertiaire': null,
-      "nombre de logements dans l'immeuble concerné":
-        formState.typeBatiment === 'residentiel' && isDefined(formState.nbLogements) && formState.nbLogements > 0
-          ? formState.nbLogements
-          : null,
-      'Production eau chaude sanitaire': 'oui',
-      'surface logement type tertiaire':
-        formState.typeBatiment === 'tertiaire' && isDefined(formState.surface) && formState.surface > 0 ? formState.surface : null,
-      'type de bâtiment': `'${structure.toLowerCase()}'`,
-    });
-  }, [engine.loaded, formState.nbLogements, formState.surface, formState.typeBatiment, structure]);
-
-  const handleAddressSelected = async (geoAddress?: BANAddressFeature) => {
-    if (!geoAddress) {
-      return;
-    }
-
-    setAddress(geoAddress.properties.label);
-    setSelectedAddress(geoAddress);
-
-    try {
-      setEligibilityError(false);
-
-      const [lon, lat] = geoAddress.geometry.coordinates;
-      const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
-        city: geoAddress.properties.city,
-        cityCode: geoAddress.properties.citycode,
-        lat,
-        lon,
-      });
-
-      if (!infos.infosVille) {
-        setEligibilityError(true);
-        clearAddressSituation();
-        return;
-      }
-
-      updateSituation(buildAddressSituation(infos));
-    } catch (error) {
-      setEligibilityError(true);
-      clearAddressSituation();
+  const { updateSituation } = useSimulatorSituation(engine);
+  const {
+    address,
+    eligibilityError,
+    formState,
+    handleAddressSelected,
+    handleHousingCountOrAreaChange,
+    handleTypeBatimentChange,
+    housingCountOrAreaValue,
+    isAddressSelected,
+    resetAddressSelection,
+    updateFormState,
+  } = useSimulatorFormState({
+    initialTypeBatiment: props.typeBatiment,
+    onAddressError: (error) => {
       console.error('Simulator eligibility error', error);
-    }
-  };
+    },
+    onAddressSituationChange: updateSituation,
+    onFieldInteraction: () => {
+      if (!hasUsedFeature) {
+        trackEvent('Outils|Simulation coût raccordement');
+      }
+      setHasUsedFeature(true);
+    },
+  });
+  useSyncBuildingSituation({
+    engine,
+    formState,
+    housingCountOrArea: housingCountOrAreaValue ?? 0,
+  });
 
   const currentCeeValue = engine.loaded ? engine.getFieldAsNumber(CEE_VALUE_RULE) : 0;
   const currentCeeValueDisplay = (currentCeeValue * 1000).toLocaleString('fr-FR', {
@@ -159,24 +68,23 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
     if (!isAddressSelected) {
       return null;
     }
-    const value = formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface;
-    if (!value || !engine.loaded) {
+    if (!(housingCountOrAreaValue && housingCountOrAreaValue > 0) || !engine.loaded) {
       return null;
     }
     return engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE);
-  }, [engine, formState, isAddressSelected]);
+  }, [engine, engine.loaded, housingCountOrAreaValue, isAddressSelected]);
 
   const montantAide = montantAidePublicodes;
 
   const montantCouts = useMemo(() => {
     return formState.typeBatiment === 'residentiel'
-      ? isDefined(formState.nbLogements) && formState.nbLogements > 0
-        ? getCoutRaccordementResidentiel(formState.nbLogements)
+      ? isDefined(housingCountOrAreaValue) && housingCountOrAreaValue > 0
+        ? getCoutRaccordementResidentiel(housingCountOrAreaValue)
         : null
-      : isDefined(formState.surface) && formState.surface > 0
-        ? getCoutRaccordementTertiaire(formState.surface)
+      : isDefined(housingCountOrAreaValue) && housingCountOrAreaValue > 0
+        ? getCoutRaccordementTertiaire(housingCountOrAreaValue)
         : null;
-  }, [formState]);
+  }, [formState.typeBatiment, housingCountOrAreaValue]);
 
   const montantCoutsApresAide = useMemo(() => {
     if (Array.isArray(montantCouts) && isDefined(montantAide)) {
@@ -207,68 +115,23 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
 
           <Box mb="3w">pour une longueur de branchement de 50 m</Box>
 
-          <AddressField
-            label="Adresse"
-            state={eligibilityError ? 'error' : undefined}
-            stateRelatedMessage={eligibilityError ? "Une erreur est survenue pendant le test d'éligibilité." : undefined}
-            nativeInputProps={{
-              placeholder: 'Tapez ici votre adresse',
-              required: true,
-            }}
-            value={address}
-            onSelect={handleAddressSelected}
-            onClear={resetAddressSelection}
-            excludeCities
+          <SimulatorFormFields
+            address={address}
+            eligibilityError={eligibilityError}
+            isAddressSelected={isAddressSelected}
+            mainValue={housingCountOrAreaValue}
+            minValue={0}
+            onAddressClear={resetAddressSelection}
+            onAddressSelect={handleAddressSelected}
+            onMainValueChange={handleHousingCountOrAreaChange}
+            onProducesHotWaterChange={(producesHotWater) => updateFormState('producesHotWater', producesHotWater)}
+            onTertiarySectorChange={(tertiarySector) => updateFormState('tertiarySector', tertiarySector)}
+            onTypeBatimentChange={handleTypeBatimentChange}
+            producesHotWater={formState.producesHotWater}
+            showLabels
+            tertiarySector={formState.tertiarySector}
+            typeBatiment={formState.typeBatiment}
           />
-
-          <Select
-            label="Type de bâtiment"
-            options={[
-              {
-                label: 'Résidentiel',
-                value: 'residentiel',
-              },
-              {
-                label: 'Tertiaire',
-                value: 'tertiaire',
-              },
-            ]}
-            nativeSelectProps={{
-              disabled: !isAddressSelected,
-              onChange: (e) => {
-                const nextType = e.target.value as TypeBatiment;
-                updateState('typeBatiment', nextType);
-                updateState(nextType === 'residentiel' ? 'nbLogements' : 'surface', undefined);
-              },
-              value: formState.typeBatiment,
-            }}
-          />
-
-          {formState.typeBatiment === 'residentiel' ? (
-            <Input
-              key="nbLogements"
-              label="Nombre de logements"
-              nativeInputProps={{
-                disabled: !isAddressSelected,
-                min: 0,
-                onChange: (e) => updateState('nbLogements', parseInt(e.target.value, 10)),
-                type: 'number',
-                value: formState.nbLogements ?? '',
-              }}
-            />
-          ) : (
-            <Input
-              key="surface"
-              label="Surface (m²)"
-              nativeInputProps={{
-                disabled: !isAddressSelected,
-                min: 0,
-                onChange: (e) => updateState('surface', parseInt(e.target.value, 10)),
-                type: 'number',
-                value: formState.surface ?? '',
-              }}
-            />
-          )}
 
           <Text size="sm">
             *montants donnés à titre indicatif.

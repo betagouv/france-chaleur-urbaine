@@ -1,33 +1,28 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Input from '@codegouvfr/react-dsfr/Input';
-import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import Tooltip from '@/components/ui/Tooltip';
-import type { BANAddressFeature } from '@/modules/ban/types';
-import { AddressField } from '@/modules/form/AddressField';
+import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
+import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
+import {
+  useSimulatorSituation,
+  useSyncBuildingSituation,
+  useSyncCeeValueSituation,
+} from '@/modules/simulator/client/useSimulatorSituation';
 import {
   BOOSTED_HEAT_NETWORK_AID_RULE,
-  buildAddressSituation,
-  buildBuildingSituation,
-  buildClearedAddressSituation,
   CEE_VALUE_RULE,
   type ConcernedHelp,
-  type HotWaterProduction,
   RESIDENTIAL_HEAT_NETWORK_AID_RULE,
-  type SimulatorSituation,
   STANDARD_HEAT_NETWORK_AID_RULE,
   type Structure,
   TERTIARY_HEAT_NETWORK_AID_RULE,
-  type TertiarySector,
   TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE,
   TOTAL_HEAT_NETWORK_AID_RULE,
-  tertiarySectorOptions,
 } from '@/modules/simulator/constants';
-import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import cx from '@/utils/cx';
-import { postFetchJSON } from '@/utils/network';
 
 type SimulatorProps = {
   children?: ReactNode;
@@ -35,7 +30,10 @@ type SimulatorProps = {
 };
 type SimulatorResultProps = {
   ceeValue: string;
-  concernedHelp: ConcernedHelp | null;
+  concernedHelp: {
+    label: string;
+    noteUrl?: string;
+  } | null;
   currentCeeValuePlaceholder: string;
   helpAmount: number;
   helpCumac: number;
@@ -136,75 +134,45 @@ function SimulatorResult({
 
 function Simulator({ children, withTitle }: SimulatorProps) {
   const engine = useSimulatorEngine();
-  const [structure, setStructure] = useState<Structure>('Résidentiel');
-  const [value, setValue] = useState('');
-  const [address, setAddress] = useState('');
   const [networkName, setNetworkName] = useState<string | null>(null);
   const [isEfficientNetwork, setIsEfficientNetwork] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState<BANAddressFeature | null>(null);
-  const [tertiarySector, setTertiarySector] = useState<TertiarySector>('Bureaux');
-  const [producesHotWater, setProducesHotWater] = useState<HotWaterProduction>('oui');
-  const [eligibilityError, setEligibilityError] = useState(false);
   const [ceeValue, setCeeValue] = useState('');
-
-  useEffect(() => {
-    setValue('');
-  }, [structure]);
-
-  const isAddressSelected = selectedAddress !== null;
-  const housingCountOrArea = Number.parseInt(value, 10);
+  const { updateSituation } = useSimulatorSituation(engine);
+  const resetNetworkContext = () => {
+    setNetworkName(null);
+    setIsEfficientNetwork(false);
+  };
+  const {
+    address: formAddress,
+    eligibilityError,
+    formState,
+    handleAddressSelected,
+    handleHousingCountOrAreaChange,
+    handleTypeBatimentChange,
+    housingCountOrAreaValue,
+    isAddressSelected,
+    resetAddressSelection,
+    updateFormState,
+  } = useSimulatorFormState({
+    onAddressError: (error) => {
+      resetNetworkContext();
+      console.error('Simulator eligibility error', error);
+    },
+    onAddressInfosLoaded: (infos) => {
+      setNetworkName(infos.nearestReseauDeChaleur?.nom_reseau ?? null);
+      setIsEfficientNetwork((infos.nearestReseauDeChaleur?.['Taux EnR&R'] ?? 0) > 50);
+    },
+    onAddressInfosMissing: resetNetworkContext,
+    onAddressSituationChange: updateSituation,
+    onReset: resetNetworkContext,
+  });
+  const structure: Structure = formState.typeBatiment === 'residentiel' ? 'Résidentiel' : 'Tertiaire';
+  const housingCountOrArea = housingCountOrAreaValue ?? 0;
   const hasAmountInputs = isAddressSelected && housingCountOrArea > 0;
   const mainFieldClassName = 'w-full! min-w-80';
 
-  const updateSituation = (partialSituation: SimulatorSituation) => {
-    engine.setSituation({
-      ...engine.getSituation(),
-      ...partialSituation,
-    });
-  };
-
-  const clearAddressSituation = () => {
-    updateSituation(buildClearedAddressSituation());
-  };
-
-  const resetAddressSelection = () => {
-    setAddress('');
-    setValue('');
-    setNetworkName(null);
-    setIsEfficientNetwork(false);
-    setSelectedAddress(null);
-    setEligibilityError(false);
-    clearAddressSituation();
-  };
-
-  useEffect(() => {
-    if (!engine.loaded) {
-      return;
-    }
-
-    updateSituation(
-      buildBuildingSituation({
-        housingCount: housingCountOrArea,
-        producesHotWater,
-        surface: housingCountOrArea,
-        tertiarySector,
-        typeBatiment: structure === 'Résidentiel' ? 'residentiel' : 'tertiaire',
-      })
-    );
-  }, [engine.loaded, housingCountOrArea, producesHotWater, structure, tertiarySector]);
-
-  useEffect(() => {
-    if (!engine.loaded) {
-      return;
-    }
-
-    const normalizedCeeValue = ceeValue.replace(',', '.').trim();
-    const parsedCeeValue = normalizedCeeValue === '' ? null : Number(normalizedCeeValue) / 1000;
-
-    updateSituation({
-      [CEE_VALUE_RULE]: parsedCeeValue !== null && Number.isFinite(parsedCeeValue) ? parsedCeeValue : null,
-    });
-  }, [ceeValue, engine.loaded]);
+  useSyncBuildingSituation({ engine, formState, housingCountOrArea });
+  useSyncCeeValueSituation(engine, ceeValue);
 
   const helpCumac = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_RULE) : 0;
   const helpAmount = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE) : 0;
@@ -237,43 +205,6 @@ function Simulator({ children, withTitle }: SimulatorProps) {
           }
         : null;
 
-  const handleAddressSelected = async (geoAddress?: BANAddressFeature) => {
-    if (!geoAddress) {
-      return;
-    }
-
-    setAddress(geoAddress.properties.label);
-    setSelectedAddress(geoAddress);
-
-    try {
-      setEligibilityError(false);
-      const [lon, lat] = geoAddress.geometry.coordinates;
-      const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
-        city: geoAddress.properties.city,
-        cityCode: geoAddress.properties.citycode,
-        lat,
-        lon,
-      });
-
-      if (!infos.infosVille) {
-        setNetworkName(null);
-        setIsEfficientNetwork(false);
-        setEligibilityError(true);
-        return;
-      }
-
-      setNetworkName(infos.nearestReseauDeChaleur?.nom_reseau ?? null);
-      setIsEfficientNetwork((infos.nearestReseauDeChaleur?.['Taux EnR&R'] ?? 0) > 50);
-
-      updateSituation(buildAddressSituation(infos));
-    } catch (error) {
-      setNetworkName(null);
-      setIsEfficientNetwork(false);
-      setEligibilityError(true);
-      console.error('Simulator eligibility error', error);
-    }
-  };
-
   return (
     <div className={cx('bg-[#4550e5] text-black', withTitle && 'p-4 my-3')}>
       {withTitle && (
@@ -284,76 +215,21 @@ function Simulator({ children, withTitle }: SimulatorProps) {
       )}
       <div className={cx('flex flex-wrap items-start justify-center gap-8', withTitle && 'm-8 ')}>
         <div className="flex-1">
-          <AddressField
-            label=""
-            state={eligibilityError ? 'error' : undefined}
-            stateRelatedMessage={eligibilityError ? "Une erreur est survenue pendant le test d'éligibilité." : undefined}
-            nativeInputProps={{
-              placeholder: 'Tapez ici votre adresse',
-              required: true,
-            }}
-            value={address}
-            onSelect={handleAddressSelected}
-            onClear={resetAddressSelection}
-            excludeCities
-          />
-          <Select
-            label=""
-            options={[
-              { label: 'Résidentiel', value: 'Résidentiel' },
-              { label: 'Tertiaire', value: 'Tertiaire' },
-            ]}
-            nativeSelectProps={{
-              className: mainFieldClassName,
-              disabled: !isAddressSelected,
-              onChange: (e) => setStructure(e.target.value as Structure),
-              required: true,
-              value: structure,
-            }}
-          />
-          {structure === 'Tertiaire' && (
-            <>
-              <Select
-                label=""
-                options={tertiarySectorOptions.map((option) => ({
-                  label: option.label,
-                  value: option.value,
-                }))}
-                nativeSelectProps={{
-                  className: mainFieldClassName,
-                  disabled: !isAddressSelected,
-                  onChange: (e) => setTertiarySector(e.target.value as TertiarySector),
-                  required: true,
-                  value: tertiarySector,
-                }}
-              />
-              <Select
-                label=""
-                options={[
-                  { label: 'Chauffage seul', value: 'non' },
-                  { label: 'Chauffage et eau chaude sanitaire', value: 'oui' },
-                ]}
-                nativeSelectProps={{
-                  className: mainFieldClassName,
-                  disabled: !isAddressSelected,
-                  onChange: (e) => setProducesHotWater(e.target.value as HotWaterProduction),
-                  required: true,
-                  value: producesHotWater,
-                }}
-              />
-            </>
-          )}
-          <Input
-            label=""
-            nativeInputProps={{
-              disabled: !isAddressSelected,
-              min: 1,
-              onChange: (e) => setValue(e.target.value),
-              pattern: '[0-9]*',
-              placeholder: structure === 'Résidentiel' ? 'Nombre de logements' : 'Surface (m²)',
-              type: 'number',
-              value,
-            }}
+          <SimulatorFormFields
+            address={formAddress}
+            eligibilityError={eligibilityError}
+            fieldClassName={mainFieldClassName}
+            isAddressSelected={isAddressSelected}
+            mainValue={housingCountOrAreaValue}
+            onAddressClear={resetAddressSelection}
+            onAddressSelect={handleAddressSelected}
+            onMainValueChange={handleHousingCountOrAreaChange}
+            onProducesHotWaterChange={(producesHotWater) => updateFormState('producesHotWater', producesHotWater)}
+            onTertiarySectorChange={(tertiarySector) => updateFormState('tertiarySector', tertiarySector)}
+            onTypeBatimentChange={handleTypeBatimentChange}
+            producesHotWater={formState.producesHotWater}
+            tertiarySector={formState.tertiarySector}
+            typeBatiment={formState.typeBatiment}
           />
         </div>
         <SimulatorResult
