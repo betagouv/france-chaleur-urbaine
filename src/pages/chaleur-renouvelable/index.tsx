@@ -113,39 +113,6 @@ La chaleur est majoritairement produite à partir d’<strong>énergies renouvel
   },
 ] satisfies Array<{ answer: string; question: string }>;
 
-type ResourceCardProps = {
-  title: string;
-  description: string;
-  image?: string;
-  slug: string;
-};
-
-type TemoignageCardProps = {
-  title: string;
-  nbLogement: number;
-  year: number;
-  image: string;
-  link: string;
-};
-
-type StepCardProps = {
-  stepNumber: number;
-  title: string;
-  text: ReactNode;
-  textBelowNumber?: boolean;
-};
-
-type CardFrameProps = {
-  children: ReactNode;
-  className?: string;
-};
-
-type CardImageProps = {
-  src: string;
-  alt: string;
-  className?: string;
-};
-
 function getTextFromNode(node: ReactNode): string {
   if (typeof node === 'string' || typeof node === 'number') {
     return String(node);
@@ -162,6 +129,13 @@ function getTextFromNode(node: ReactNode): string {
   return '';
 }
 
+type ResourceCardProps = {
+  title: string;
+  description: string;
+  image?: string;
+  slug: string;
+};
+
 const heatingSystemResources: ResourceCardProps[] = [
   { slug: 'avantages', ...understandings.avantages },
   { slug: 'facture', ...understandings.facture },
@@ -177,11 +151,11 @@ const heatingSystemResources: ResourceCardProps[] = [
   title,
 }));
 
-function CardFrame({ children, className = '' }: CardFrameProps) {
+function CardFrame({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <div className={`w-full overflow-hidden rounded-lg border-2 border-[#DDDDDD] bg-[#FEFCFA] p-6 ${className}`}>{children}</div>;
 }
 
-function CardImage({ src, alt, className = '' }: CardImageProps) {
+function CardImage({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
   return (
     <div className={`relative fr-mb-3w h-[180px] w-full rounded-t-lg shrink-0 overflow-hidden ${className}`}>
       <Image src={src} alt={alt} fill className="object-cover" />
@@ -239,7 +213,17 @@ function OtherHeatingSystemsCarousel() {
   );
 }
 
-function StepCard({ stepNumber, title, text, textBelowNumber = false }: StepCardProps) {
+function StepCard({
+  stepNumber,
+  title,
+  text,
+  textBelowNumber = false,
+}: {
+  stepNumber: number;
+  title: string;
+  text: ReactNode;
+  textBelowNumber?: boolean;
+}) {
   const circleBackgroundClassName = stepNumber === 1 ? 'bg-[#000091]' : 'bg-[#6EA8FE]';
 
   return (
@@ -313,7 +297,19 @@ function StepTimeline() {
   );
 }
 
-function TemoignageCard({ title, year, image, link, nbLogement }: TemoignageCardProps) {
+function TemoignageCard({
+  title,
+  year,
+  image,
+  link,
+  nbLogement,
+}: {
+  title: string;
+  nbLogement: number;
+  year: number;
+  image: string;
+  link: string;
+}) {
   return (
     <CardFrame className="flex h-full flex-col">
       <CardImage src={`/img/${image}`} alt="" />
