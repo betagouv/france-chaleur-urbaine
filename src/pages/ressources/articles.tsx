@@ -34,11 +34,13 @@ const ArticlesPage = () => {
   return (
     <SimplePage
       title="Nos articles sur la chaleur urbaine"
-      description="Retrouvez les réponses à toutes vos questions sur les réseaux de chaleur et de froid."
+      description="Retrouvez les réponses à toutes vos questions sur les réseaux de chaleur, de froid et autres solutions de chauffage écologiques."
     >
       <Hero variant="ressource" image="/img/ressources_header.webp" imagePosition="right" imageType="inline">
         <HeroTitle>Nos articles sur le chauffage urbain</HeroTitle>
-        <HeroSubtitle>Retrouvez les réponses à toutes vos questions sur les réseaux de chaleur et de froid.</HeroSubtitle>
+        <HeroSubtitle>
+          Retrouvez les réponses à toutes vos questions sur les réseaux de chaleur, de froid et autres solutions de chauffage écologiques.
+        </HeroSubtitle>
       </Hero>
 
       <Section>
