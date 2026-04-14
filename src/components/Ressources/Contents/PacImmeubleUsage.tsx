@@ -55,7 +55,7 @@ function PacImmeubleUsage() {
         </strong>
       </p>
       <p>Les PAC se divisent en plusieurs types, selon la source d'énergie utilisée et les besoins spécifiques couverts.</p>
-      <Image src="/img/type_pac.png" alt="différences entre les types de PAC" width="500" height="300" className="m-auto fr-pb-5w" />
+      <Image src="/img/type_pac.webp" alt="différences entre les types de PAC" width="500" height="300" className="m-auto fr-pb-5w" />
       <h3>1. Pompe à chaleur Eau/Eau géothermique</h3>
       <p>
         Les pompes à chaleur eau/eau sont moins courantes, mais elles offrent une excellente efficacité, surtout dans les grands bâtiments.
@@ -150,7 +150,7 @@ function PacImmeubleUsage() {
           important de bien choisir leur emplacement pour minimiser les nuisances sonores.
         </li>
       </ul>
-      <Image src="/img/photo_pac_air_eau.jpeg" alt="image d'une PAC air-eau" width="500" height="300" className="m-auto fr-mb-5w" />
+      <Image src="/img/photo_pac_air_eau.webp" alt="image d'une PAC air-eau" width="500" height="300" className="m-auto fr-mb-5w" />
       <h3>3. Pompe à chaleur Air/Air</h3>
       <p>
         La pompe à chaleur air/air, aussi appelée "climatisation réversible", utilise l'air extérieur pour chauffer ou refroidir l'air
@@ -198,7 +198,7 @@ function PacImmeubleUsage() {
           contribuer à créer des îlots de chaleur, surtout en zone urbaine.
         </li>
       </ul>
-      <Image src="/img/photo_pac_air_air.jpeg" alt="image d'une PAC air-air" width="500" height="300" className="m-auto fr-pb-5w" />
+      <Image src="/img/photo_pac_air_air.webp" alt="image d'une PAC air-air" width="500" height="300" className="m-auto fr-pb-5w" />
       <h3>4. Pompe à chaleur Air Extrait/Eau</h3>
       <p>
         La pompe à chaleur air extrait/eau est une solution innovante qui récupère l'énergie thermique présente dans l'air vicié provenant
@@ -207,7 +207,7 @@ function PacImmeubleUsage() {
       </p>
       <p>Elle n’est possible qu’en cas de logement bien isolé, elle est envisageable en rénovation globale.</p>
       <Image
-        src="/img/schema_pac_air_extrait.png"
+        src="/img/schema_pac_air_extrait.webp"
         alt="schéma d'une PAC air extrait"
         width="500"
         height="300"
@@ -250,13 +250,13 @@ function PacImmeubleUsage() {
           récupérable dépend du volume d'air extrait.
         </li>
       </ul>
-      <Image src="/img/photo_pac_air_extrait.jpeg" alt="photo d'une PAC air extrait" width="500" height="300" className="m-auto fr-pb-5w" />
+      <Image src="/img/photo_pac_air_extrait.webp" alt="photo d'une PAC air extrait" width="500" height="300" className="m-auto fr-pb-5w" />
       <h3>5. Chauffe-eau Thermodynamique Air Extrait/Eau</h3>
       <p>
         Le chauffe-eau thermodynamique air extrait/eau est une variante de la pompe à chaleur air extrait, spécifiquement conçue pour la
         production d'eau chaude sanitaire. Il offre une solution efficace et économique pour répondre aux besoins d'ECS dans les logements.
       </p>
-      <Image src="/img/schema_cet.png" alt="schéma d'un chauffe-eau thermodynamique" width="500" height="300" className="m-auto" />
+      <Image src="/img/schema_cet.webp" alt="schéma d'un chauffe-eau thermodynamique" width="500" height="300" className="m-auto" />
       <em className="block text-center fr-pb-5w">solution individuelle de production d’eau chaude sanitaire</em>
       <h4>Principe de fonctionnement</h4>
       <p>
@@ -294,7 +294,7 @@ function PacImmeubleUsage() {
           être nettoyé ou remplacé pour éviter une baisse des performances.
         </li>
       </ul>
-      <Image src="/img/photo_cet.jpeg" alt="photo d'un chauffe-eau thermodynamique" width="500" height="300" className="m-auto fr-pb-5w" />
+      <Image src="/img/photo_cet.webp" alt="photo d'un chauffe-eau thermodynamique" width="500" height="300" className="m-auto fr-pb-5w" />
       <h3>6. Pompe à chaleur avec capteur solaire</h3>
       <p>
         La pompe à chaleur avec capteur solaire combine une pompe à chaleur classique (généralement air/eau) et des capteurs solaires
@@ -349,7 +349,7 @@ function PacImmeubleUsage() {
           poser problème dans les copropriétés avec une surface de toit limitée ou encombrée par d'autres équipements.
         </li>
       </ul>
-      <Image src="/img/photo_pac_solaire.png" alt="photo de panneau solaire" width="500" height="300" className="m-auto fr-pb-5w" />
+      <Image src="/img/photo_pac_solaire.webp" alt="photo de panneau solaire" width="500" height="300" className="m-auto fr-pb-5w" />
       <h2>Conclusion</h2>
       <p>
         Les pompes à chaleur offrent toutes des solutions intéressantes pour la rénovation énergétique des copropriétés. Chaque système

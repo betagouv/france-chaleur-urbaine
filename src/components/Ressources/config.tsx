@@ -91,7 +91,7 @@ export const issues: Record<string, Document> = {
         </b>
       </>
     ),
-    image: 'illustration_rcu.jpg',
+    image: 'illustration_rcu.webp',
     seoDescription:
       'Un réseau de chaleur est un système de chauffage à l’échelle d’une ville ou d’un quartier, qui permet de mobiliser des énergies renouvelables locales.',
     title: 'Qu’est-ce qu’un réseau de chaleur ?',
@@ -137,7 +137,7 @@ export const understandings: Record<string, Document> = {
         au fioul et <b>51 %</b> par rapport à un chauffage au gaz. Et ce n'est pas le seul avantage !
       </>
     ),
-    image: 'illustration_interieur_cosy.jpg',
+    image: 'illustration_interieur_cosy.webp',
     seoDescription:
       'Stabilisez le montant de votre facture de chauffage, réduisez vos émissions de gaz à effet de serre de 51 % (gaz) à 64 % (fioul).',
     seoTitle: 'Comparatif chauffage urbain vs. chaudière gaz ou fioul',
@@ -172,7 +172,7 @@ export const understandings: Record<string, Document> = {
         En raccordant mon immeuble à un réseau de chaleur, je bénéficie d’une <b>facture plus stable qu’avec un autre mode de chauffage.</b>
       </>
     ),
-    image: 'illustration_facture.jpg',
+    image: 'illustration_facture.webp',
     seoDescription: 'Profitez d’une facture de chauffage plus stable en raccordant votre immeuble à un réseau de chaleur.',
     title: 'Comprendre la facture de chauffage de ma copropriété',
   },
@@ -268,7 +268,7 @@ export const otherHeatingSystem: Record<string, Document> = {
         besoins de votre bâtiment.
       </>
     ),
-    image: 'comment-choisir-sa-pac.jpg',
+    image: 'comment-choisir-sa-pac.webp',
     seoDescription:
       'Guide ADEME pour choisir une pompe à chaleur en copropriété : étapes, critères de choix et points de vigilance pour une installation adaptée.',
     title: 'Comment choisir la bonne pompe à chaleur (PAC) pour son logement ?',
@@ -294,7 +294,7 @@ export const otherHeatingSystem: Record<string, Document> = {
         l'efficacité énergétique des bâtiments collectifs et réduire les émissions de gaz à effet de serre et les factures.
       </>
     ),
-    image: 'quelle-pac-pour-quel-immeuble.jpg',
+    image: 'quelle-pac-pour-quel-immeuble.webp',
     seoDescription:
       'Article ADEME sur les PAC en immeuble : faisabilité, types de PAC, usages possibles et contraintes selon la configuration du bâtiment.',
     title: 'Quelle PAC en immeuble et pour quel usage ?',

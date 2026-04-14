@@ -46,28 +46,28 @@ const BENEFITS = [
 
 const TEMOIGNAGES = [
   {
-    image: 'coachcopro-biomasse.png',
+    image: 'coachcopro-biomasse.webp',
     link: 'https://www.coachcopro.com/projets-realises/87-boulevard-suchet-75016-paris',
     nbLogement: 34,
     title: 'Une expérience de chaufferie biomasse réussie',
     year: 1930,
   },
   {
-    image: 'coachcopro-pac.png',
+    image: 'coachcopro-pac.webp',
     link: 'https://www.coachcopro.com/projets-realises/50-avenue-jean-jaures-75019-paris',
     nbLogement: 41,
     title: 'Installation d’une PAC pour l’eau chaude sanitaire',
     year: 1979,
   },
   {
-    image: 'coachcopro-rcu.png',
+    image: 'coachcopro-rcu.webp',
     link: 'https://www.coachcopro.com/projets-realises/25-rue-de-l-ukraine-31100-toulouse',
     nbLogement: 136,
     title: 'Raccordement au réseau de chaleur urbain à Toulouse',
     year: 1975,
   },
   {
-    image: 'temoignage_geothermie.jpg',
+    image: 'temoignage_geothermie.webp',
     link: 'https://www.calameo.com/read/007297783665ca6300ea6?authid=UPbbt4BqJjfT',
     nbLogement: 39,
     title: "Installation d'une PAC eau / eau sur sonde géothermique",
