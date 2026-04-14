@@ -16,7 +16,7 @@ function ChoosePac() {
         Le choix du type de chauffage, d’eau chaude sanitaire et la faisabilité du projet dépendent de plusieurs facteurs, notamment le type
         de chauffage existant dans l'immeuble : individuel ou collectif.
       </p>
-      <Image src="/img/choix_chauffage.png" alt="tableau comparatif des modes de chauffage" width="1000" height="300" className="w-full" />
+      <Image src="/img/choix_chauffage.webp" alt="tableau comparatif des modes de chauffage" width="1000" height="300" className="w-full" />
       <p>
         👥 Si vous êtes en système collectif : félicitations beaucoup de solutions s’offrent à vous ! En plus vous pourrez choisir parmi les
         plus vertueuses : le réseau de chaleur urbain, les PAC géothermiques, les PAC air/eau collectives, le solaire thermique pour l’eau

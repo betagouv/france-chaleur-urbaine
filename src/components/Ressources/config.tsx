@@ -254,7 +254,7 @@ export const otherHeatingSystem: Record<string, Document> = {
         du confort thermique. Voici les principaux atouts de cette solution pour la rénovation énergétique d'une copropriété.
       </>
     ),
-    image: 'illustration_immeuble.png',
+    image: 'illustration_immeuble.webp',
     seoDescription: `Installer une pompe à chaleur (PAC) dans une copropriété offre de nombreux avantages qui vont bien au-delà de la simple amélioration
         du confort thermique. Voici les principaux atouts de cette solution pour la rénovation énergétique d'une copropriété.`,
     title: '9 avantages à l’installation d’une PAC',
@@ -281,7 +281,7 @@ export const otherHeatingSystem: Record<string, Document> = {
         d'anticiper les travaux à venir, et de respecter les obligations légales.
       </>
     ),
-    image: 'illustration_plan.png',
+    image: 'illustration_plan.webp',
     seoDescription:
       'Voici un tour d’horizon des bilans énergétiques les plus courants, leurs obligations, intérêts, conséquences et les coûts associés, avec les informations actualisées.',
     title: 'Quelles obligations pour ma copropriété ?',

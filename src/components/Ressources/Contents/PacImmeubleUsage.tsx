@@ -17,7 +17,7 @@ function PacImmeubleUsage() {
         Le choix du type de PAC et la faisabilité du projet dépendent de plusieurs facteurs, notamment le type de chauffage existant dans
         l'immeuble : individuel ou collectif.
       </p>
-      <Image src="/img/choix_chauffage.png" alt="tableau comparatif des modes de chauffage" width="1000" height="300" className="w-full" />
+      <Image src="/img/choix_chauffage.webp" alt="tableau comparatif des modes de chauffage" width="1000" height="300" className="w-full" />
       <p>
         Si vous êtes en système collectif : félicitations beaucoup de solutions s’offrent à vous ! En plus vous pourrez choisir parmi les
         plus vertueuses : le réseau de chaleur urbain, les PAC géothermiques, les PAC air/eau collectives, le solaire thermique pour l’eau
@@ -115,7 +115,7 @@ function PacImmeubleUsage() {
         planchers chauffants ou les ventilo-convecteurs du bâtiment. Elle peut également produire de l'eau chaude sanitaire, ce qui en fait
         une solution complète pour les besoins en chauffage et en ECS.
       </p>
-      <Image src="/img/pac_air_eau.png" alt="schéma de fonctionnement d'une PAC air/eau" width="500" height="300" className="m-auto" />
+      <Image src="/img/pac_air_eau.webp" alt="schéma de fonctionnement d'une PAC air/eau" width="500" height="300" className="m-auto" />
       <em className="block text-center fr-mb-5w">
         une PAC air/eau avec l’unité extérieure soit en toiture, soit dehors au sol, soit en sous-sol.
       </em>
