@@ -390,7 +390,7 @@ function ChaleurRenouvelablePage() {
         <h3 className="fr-h6 fr-mb-3v font-medium uppercase">Les différents systèmes de chauffage écologiques (ENR)</h3>
         <p className="fr-h2 font-bold">Quelles solutions concrètes pour votre copropriété ?</p>
         <Image
-          src="/different-mode-chauffage.webp"
+          src="/img/different-mode-chauffage.webp"
           alt="illustration des différentes modes de chauffage"
           className="w-full"
           width={1600}

@@ -93,7 +93,7 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
 
     // Gérer undefined/null/"" explicitement
     if (!value) {
-      return filterValue.undefined === true || filterValue.null === true || filterValue[''] === true;
+      return filterValue.undefined === true || filterValue['null'] === true || filterValue[''] === true;
     }
 
     return Object.entries(filterValue)
