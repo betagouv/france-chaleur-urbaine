@@ -30,17 +30,6 @@ function Carousel<T>({ items, getItemKey, renderItem, previousLabel, nextLabel }
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(items.length > 1);
 
-  const updateScrollButtons = () => {
-    const container = scrollContainerRef.current;
-    if (!container) {
-      return;
-    }
-
-    const maxScrollLeft = container.scrollWidth - container.clientWidth;
-    setCanScrollLeft(container.scrollLeft > SCROLL_TOLERANCE);
-    setCanScrollRight(container.scrollLeft < maxScrollLeft - SCROLL_TOLERANCE);
-  };
-
   const scrollByStep = (direction: 'left' | 'right') => {
     const container = scrollContainerRef.current;
     if (!container) {
@@ -63,6 +52,12 @@ function Carousel<T>({ items, getItemKey, renderItem, previousLabel, nextLabel }
     if (!container) {
       return;
     }
+
+    const updateScrollButtons = () => {
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+      setCanScrollLeft(container.scrollLeft > SCROLL_TOLERANCE);
+      setCanScrollRight(container.scrollLeft < maxScrollLeft - SCROLL_TOLERANCE);
+    };
 
     updateScrollButtons();
     container.addEventListener('scroll', updateScrollButtons, { passive: true });
