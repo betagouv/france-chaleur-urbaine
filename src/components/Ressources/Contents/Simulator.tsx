@@ -105,8 +105,8 @@ function SimulatorResult({
           </span>
         )}
       </div>
-      <div className="[&_p]:my-1 [&_p]:text-sm">
-        <p>
+      <div className="[&_div]:text-sm [&>div]:my-2 text-white">
+        <div>
           Montant du certificat :{' '}
           <strong>
             {helpCumac.toLocaleString('fr-FR', {
@@ -115,45 +115,42 @@ function SimulatorResult({
             })}{' '}
             kWh cumac
           </strong>
-        </p>
-        {networkInformation &&
-          (concernedHelp ? (
-            <>
-              <p>
-                Le calcul se base sur la fiche{' '}
-                <a href={concernedHelp.noteUrl} target="_blank" rel="noreferrer">
-                  <strong>{concernedHelp.label}</strong>
-                </a>
-                .{' '}
-                <sup>
-                  <Tooltip title={networkInformation} />
-                </sup>
-              </p>
-              <div className="my-1 text-sm">
-                * Montant donné à titre indicatif avec un CEE estimé à{' '}
-                <Input
-                  addon={<span className="flex min-h-8 items-center whitespace-nowrap text-black">€/MWh cumac</span>}
-                  hideLabel
-                  label="Le prix actuel d'un CEE"
-                  classes={{
-                    nativeInputOrTextArea: '!w-[3rem] mx-1 rounded px-1 py-0.5',
-                    root: '!inline-block !w-auto align-middle',
-                    wrap: 'fr-mt-0',
-                  }}
-                  nativeInputProps={{
-                    'aria-label': "Le prix actuel d'un CEE en euros par MWh cumac",
-                    inputMode: 'decimal',
-                    onChange: (e) => onCeeValueChange(e.target.value),
-                    placeholder: currentCeeValuePlaceholder,
-                    type: 'text',
-                    value: ceeValue,
-                  }}
-                />
-              </div>
-            </>
-          ) : (
-            <p>{networkInformation}</p>
-          ))}
+        </div>
+        {networkInformation && concernedHelp && (
+          <>
+            <div>
+              Le calcul se base sur la fiche{' '}
+              <a href={concernedHelp.noteUrl} target="_blank" rel="noreferrer">
+                <strong>{concernedHelp.label}</strong>
+              </a>
+              .{' '}
+              <sup>
+                <Tooltip title={networkInformation} />
+              </sup>
+            </div>
+            <div>
+              * Montant donné à titre indicatif avec un CEE estimé à{' '}
+              <Input
+                addon={<span className="flex min-h-8 items-center whitespace-nowrap">€/MWh cumac</span>}
+                hideLabel
+                label="Le prix actuel d'un CEE"
+                classes={{
+                  nativeInputOrTextArea: '!w-[3rem] mx-1 rounded px-1 py-0.5',
+                  root: '!inline-block !w-auto align-middle',
+                  wrap: 'fr-my-0',
+                }}
+                nativeInputProps={{
+                  'aria-label': "Le prix actuel d'un CEE en euros par MWh cumac",
+                  inputMode: 'decimal',
+                  onChange: (e) => onCeeValueChange(e.target.value),
+                  placeholder: currentCeeValuePlaceholder,
+                  type: 'text',
+                  value: ceeValue,
+                }}
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
