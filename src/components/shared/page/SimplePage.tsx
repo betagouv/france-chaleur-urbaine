@@ -125,7 +125,7 @@ export const publicNavigationMenu: MainNavigationProps.Item[] = [
         linkProps: {
           href: '/ressources/articles',
         },
-        text: 'Articles sur le chauffage urbain',
+        text: 'Articles',
       },
       {
         linkProps: {

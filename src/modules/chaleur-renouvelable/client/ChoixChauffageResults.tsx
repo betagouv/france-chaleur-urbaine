@@ -21,7 +21,7 @@ import {
   type Situation,
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import type { DPE, EspaceExterieur, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import type { DPE } from '@/modules/chaleur-renouvelable/constants';
 import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
 
 import { ParamsForm } from './ParamsForm';
@@ -76,7 +76,7 @@ export default function ChoixChauffageResults() {
       adresse: urlParams.adresse ?? null,
       dpe: urlParams.dpe,
       eligibiliteReseauChaleur,
-      espaceExterieur: (urlParams.espaceExterieur ?? 'none') as EspaceExterieur,
+      espaceExterieur: urlParams.espaceExterieur ?? 'none',
       geothermiePossible: batEnr.geothermiePossible,
       habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen || '2'),
       nbLogements: urlParams.nbLogements ?? 25,
@@ -113,7 +113,7 @@ export default function ChoixChauffageResults() {
     });
   }, [situation, codeDepartement, temperatureRef]);
 
-  const effectiveTypeLogement = (urlParams.typeLogement ?? 'immeuble_chauffage_collectif') as TypeLogement;
+  const effectiveTypeLogement = urlParams.typeLogement ?? 'immeuble_chauffage_collectif';
 
   const modesDeChauffage = useMemo(() => {
     return modeDeChauffageParTypeLogement[effectiveTypeLogement].filter((m) => m.estPossible(situation));
@@ -134,7 +134,6 @@ export default function ChoixChauffageResults() {
   }, [modesDeChauffage, engine]);
   const coutParAnGaz = engine.getFieldAsNumber(`Bilan x Gaz coll sans cond . total avec aides` as RuleName);
   const [recommended, ...others] = modesWithCout;
-  const shouldOpenHeatNetworkModal = recommended?.label === 'Réseau de chaleur';
 
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
     setOpenAccordionId(expanded ? id : null);
@@ -150,7 +149,7 @@ export default function ChoixChauffageResults() {
       {
         address: urlParams.adresse,
         coords: { lat, lon },
-        eligibility: eligibiliteReseauChaleur as never,
+        eligibility: eligibiliteReseauChaleur,
         geoAddress,
         heatingType: 'collectif',
       },
@@ -167,14 +166,14 @@ export default function ChoixChauffageResults() {
     },
     [onSelectGeoAddress, resetEligibility]
   );
+  const helpButtonClick = recommended?.helpAction === 'open-heat-network-contact' ? openHeatNetworkContactModal : undefined;
 
   // pendant l’hydration, on évite de rendre conditionnellement (isMobile null)
   if (isMobile === null) return null;
 
-  const showTopFieldsInsideParams = isMobile;
   return (
     <>
-      {!showTopFieldsInsideParams && (
+      {!isMobile && (
         <div className="fr-mb-2w">
           <SettingsTopFields
             withLabel={false}
@@ -187,13 +186,13 @@ export default function ChoixChauffageResults() {
             onAddressError={() => {}}
             typeLogement={urlParams.typeLogement ?? null}
             setTypeLogement={urlParams.setTypeLogement}
-            espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
+            espaceExterieur={urlParams.espaceExterieur ?? null}
             setEspaceExterieur={urlParams.setEspaceExterieur}
           />
         </div>
       )}
       <ParamsForm
-        showTopFields={showTopFieldsInsideParams}
+        showTopFields={isMobile}
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
         adresse={urlParams.adresse ?? null}
@@ -204,9 +203,9 @@ export default function ChoixChauffageResults() {
         onAddressError={() => {}}
         typeLogement={urlParams.typeLogement ?? null}
         setTypeLogement={urlParams.setTypeLogement}
-        espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
+        espaceExterieur={urlParams.espaceExterieur ?? null}
         setEspaceExterieur={urlParams.setEspaceExterieur}
-        dpe={(urlParams.dpe ?? 'E') as DPE}
+        dpe={urlParams.dpe}
         setDpe={urlParams.setDpe}
         nbLogements={urlParams.nbLogements}
         setNbLogements={urlParams.setNbLogements}
@@ -222,8 +221,8 @@ export default function ChoixChauffageResults() {
             items={[recommended]}
             variant="recommended"
             coutParAnGaz={coutParAnGaz}
-            dpeFrom={urlParams.dpe as DPE}
-            onHelpButtonClick={shouldOpenHeatNetworkModal ? openHeatNetworkContactModal : undefined}
+            dpeFrom={urlParams.dpe}
+            onHelpButtonClick={helpButtonClick}
             openAccordionId={openAccordionId}
             onOpenChange={handleAccordionOpenChange}
           />
@@ -232,7 +231,7 @@ export default function ChoixChauffageResults() {
             items={others}
             coutParAnGaz={coutParAnGaz}
             variant="other"
-            dpeFrom={urlParams.dpe as DPE}
+            dpeFrom={urlParams.dpe}
             openAccordionId={openAccordionId}
             onOpenChange={handleAccordionOpenChange}
           />

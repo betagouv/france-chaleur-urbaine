@@ -4,7 +4,7 @@ import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
-import type { HeatNetwork } from '@/types/HeatNetworksResponse';
+import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
 type BatEnrInfo = {
   geothermiePossible: boolean;
@@ -16,7 +16,7 @@ type EligibilityState = {
   batEnr: BatEnrInfo;
   codeDepartement: string;
   temperatureRef: number | null;
-  eligibiliteReseauChaleur: HeatNetwork | null;
+  eligibiliteReseauChaleur: HeatNetworksResponse | null;
 };
 
 type RnbExtId = {

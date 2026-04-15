@@ -1,0 +1,14 @@
+<svg width="1200" height="130" viewBox="0 0 1200 130" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+  <defs>
+    <marker id="timeline-arrow" markerWidth="6.5" markerHeight="6.5" refX="5" refY="3.25" orient="auto" markerUnits="strokeWidth">
+      <path d="M0.9 1.1L5 3.25L0.9 5.4" fill="none" stroke="#0063CB" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" />
+    </marker>
+  </defs>
+  <path
+    d="M82 54C132 54 178 112 228 112S330 54 384 54S486 112 540 112S642 54 696 54S798 112 852 112S952 54 985 40L997 36"
+    fill="none"
+    stroke="#0063CB"
+    stroke-width="4"
+    marker-end="url(#timeline-arrow)"
+  />
+</svg>

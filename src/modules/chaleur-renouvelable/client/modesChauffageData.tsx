@@ -15,6 +15,7 @@ export type ModeDeChauffage = {
   coutInstallation?: string | ((situation: Situation) => string);
   gainClasse: number;
   gainVsGaz?: number;
+  helpAction?: 'open-heat-network-contact';
   estPossible: (situation: Situation) => boolean;
 };
 
@@ -80,6 +81,7 @@ export const modeDeChauffageParTypeLogement: Record<TypeLogement, ModeDeChauffag
         "Le réseau de chaleur (ou chauffage urbain) distribue de la chaleur produite de façon centralisée à un ensemble de bâtiments, via des canalisations souterraines. Ces réseaux sont alimentés en majorité par des énergies renouvelables et de récupération locales. C'est la solution à privilégier pour un chauffage collectif lorsqu'elle est disponible.",
       estPossible: (situation) => situation.eligibiliteReseauChaleur?.isEligible ?? false,
       gainClasse: 1,
+      helpAction: 'open-heat-network-contact',
       inconvenients: ['Long contrat (15-20 ans)'],
       label: 'Réseau de chaleur',
       pertinence: 4,

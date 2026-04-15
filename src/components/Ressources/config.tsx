@@ -1,5 +1,10 @@
 import type { ReactNode } from 'react';
 
+import AvantagePac from '@/components/Ressources/Contents/AvantagePac';
+import ChoosePac from '@/components/Ressources/Contents/ChoosePac';
+import ObligationCopro from '@/components/Ressources/Contents/ObligationCopro';
+import PacImmeubleUsage from '@/components/Ressources/Contents/PacImmeubleUsage';
+
 import Actors from './Contents/Actors';
 import Advantages from './Contents/Advantages';
 import Bill from './Contents/Bill';
@@ -26,6 +31,7 @@ export type Document = {
   seoDescription: string;
   seoTitle?: string;
   content?: ReactNode;
+  image?: string;
 };
 
 // Don't forget to update next-sitemap.config on updating key here
@@ -85,6 +91,7 @@ export const issues: Record<string, Document> = {
         </b>
       </>
     ),
+    image: 'illustration_rcu.webp',
     seoDescription:
       'Un réseau de chaleur est un système de chauffage à l’échelle d’une ville ou d’un quartier, qui permet de mobiliser des énergies renouvelables locales.',
     title: 'Qu’est-ce qu’un réseau de chaleur ?',
@@ -130,6 +137,7 @@ export const understandings: Record<string, Document> = {
         au fioul et <b>51 %</b> par rapport à un chauffage au gaz. Et ce n'est pas le seul avantage !
       </>
     ),
+    image: 'illustration_interieur_cosy.webp',
     seoDescription:
       'Stabilisez le montant de votre facture de chauffage, réduisez vos émissions de gaz à effet de serre de 51 % (gaz) à 64 % (fioul).',
     seoTitle: 'Comparatif chauffage urbain vs. chaudière gaz ou fioul',
@@ -164,6 +172,7 @@ export const understandings: Record<string, Document> = {
         En raccordant mon immeuble à un réseau de chaleur, je bénéficie d’une <b>facture plus stable qu’avec un autre mode de chauffage.</b>
       </>
     ),
+    image: 'illustration_facture.webp',
     seoDescription: 'Profitez d’une facture de chauffage plus stable en raccordant votre immeuble à un réseau de chaleur.',
     title: 'Comprendre la facture de chauffage de ma copropriété',
   },
@@ -236,16 +245,74 @@ export const coldNetworks: Record<string, Document> = {
   },
 };
 
+export const otherHeatingSystem: Record<string, Document> = {
+  'avantages-pac': {
+    content: <AvantagePac />,
+    description: (
+      <>
+        Installer une pompe à chaleur (PAC) dans une copropriété offre de nombreux avantages qui vont bien au-delà de la simple amélioration
+        du confort thermique. Voici les principaux atouts de cette solution pour la rénovation énergétique d'une copropriété.
+      </>
+    ),
+    image: 'illustration_immeuble.webp',
+    seoDescription: `Installer une pompe à chaleur (PAC) dans une copropriété offre de nombreux avantages qui vont bien au-delà de la simple amélioration
+        du confort thermique. Voici les principaux atouts de cette solution pour la rénovation énergétique d'une copropriété.`,
+    title: '9 avantages à l’installation d’une PAC',
+  },
+  'choix-pac': {
+    content: <ChoosePac />,
+    description: (
+      <>
+        Vous êtes copropriétaire et vous vous interrogez sur le choix de la bonne pompe à chaleur (PAC) pour votre copropriété ? Voici un
+        guide qui explique les étapes à suivre, les critères de choix et les points de vigilance pour garantir une installation adaptée aux
+        besoins de votre bâtiment.
+      </>
+    ),
+    image: 'comment-choisir-sa-pac.webp',
+    seoDescription:
+      'Guide ADEME pour choisir une pompe à chaleur en copropriété : étapes, critères de choix et points de vigilance pour une installation adaptée.',
+    title: 'Comment choisir la bonne pompe à chaleur pour son logement ?',
+  },
+  'obligations-copropriété': {
+    content: <ObligationCopro />,
+    description: (
+      <>
+        Pour vous, copropriétaires, il est essentiel d’effectuer divers bilans énergétiques afin de connaître l’état des bâtiments,
+        d'anticiper les travaux à venir, et de respecter les obligations légales.
+      </>
+    ),
+    image: 'illustration_plan.webp',
+    seoDescription:
+      'Voici un tour d’horizon des bilans énergétiques les plus courants, leurs obligations, intérêts, conséquences et les coûts associés, avec les informations actualisées.',
+    title: 'Quelles obligations pour ma copropriété ?',
+  },
+  pacImmeubleUsage: {
+    content: <PacImmeubleUsage />,
+    description: (
+      <>
+        L'installation de pompes à chaleur (PAC) en immeuble est non seulement possible, mais de plus en plus courante pour améliorer
+        l'efficacité énergétique des bâtiments collectifs et réduire les émissions de gaz à effet de serre et les factures.
+      </>
+    ),
+    image: 'quelle-pac-pour-quel-immeuble.webp',
+    seoDescription:
+      'Article ADEME sur les PAC en immeuble : faisabilité, types de PAC, usages possibles et contraintes selon la configuration du bâtiment.',
+    title: 'Quelle PAC en immeuble et pour quel usage ?',
+  },
+};
+
 export const ressourceKeys = [
   ...Object.keys(coldNetworks),
   ...Object.keys(growths),
   ...Object.keys(issues),
   ...Object.keys(understandings),
+  ...Object.keys(otherHeatingSystem),
 ];
 
 export const getRessource = (ressourceKey: keyof typeof ressourceKeys) => {
   return (
     issues[ressourceKey as keyof typeof issues] ||
+    otherHeatingSystem[ressourceKey as keyof typeof otherHeatingSystem] ||
     understandings[ressourceKey as keyof typeof understandings] ||
     growths[ressourceKey as keyof typeof growths] ||
     coldNetworks[ressourceKey as keyof typeof coldNetworks]
