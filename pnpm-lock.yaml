@@ -303,6 +303,9 @@ importers:
       remark-directive:
         specifier: ^4.0.0
         version: 4.0.0
+      remark-directive-rehype:
+        specifier: ^1.0.0
+        version: 1.0.0
       remark-parse:
         specifier: ^11.0.0
         version: 11.0.0
@@ -493,9 +496,6 @@ importers:
       react-email:
         specifier: 5.2.10
         version: 5.2.10
-      remark-directive-rehype:
-        specifier: ^1.0.0
-        version: 1.0.0
       schema-dts:
         specifier: ^2.0.0
         version: 2.0.0(typescript@5.9.3)
