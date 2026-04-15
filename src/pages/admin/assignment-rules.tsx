@@ -7,6 +7,7 @@ import Button from '@/components/ui/Button';
 import CallOut from '@/components/ui/CallOut';
 import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
+import Notice from '@/components/ui/Notice';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import useCrud from '@/hooks/useCrud';
 import type { AssignmentRule } from '@/modules/demands/server/assignment-rules-service';
@@ -68,37 +69,6 @@ export default function ManageAssignmentRules() {
       header: 'Créé le',
       width: '100px',
     },
-    {
-      align: 'right',
-      cell: ({ row }) => (
-        <div className="flex gap-2">
-          <Button
-            size="small"
-            priority="tertiary"
-            iconId="fr-icon-edit-line"
-            title="Modifier la règle"
-            onClick={() => {
-              setEditingRule(row.original);
-              setIsRuleDialogOpen(true);
-            }}
-          />
-          <Button
-            size="small"
-            priority="tertiary"
-            variant="destructive"
-            iconId="fr-icon-delete-bin-line"
-            title="Supprimer la règle"
-            onClick={() => {
-              setDeletingRule(row.original);
-              setIsDeleteDialogOpen(true);
-            }}
-          />
-        </div>
-      ),
-      header: 'Actions',
-      id: 'actions',
-      width: '120px',
-    },
   ];
 
   const handleDelete = toastErrors(async () => {
@@ -113,17 +83,13 @@ export default function ManageAssignmentRules() {
       <Box py="4w" className="fr-container">
         <div className="flex justify-between items-center mb-4">
           <Heading as="h1" color="blue-france">
-            Gestion des règles dynamiques
+            Gestion des règles dynamiques (obsolète)
           </Heading>
-          <Button
-            onClick={() => {
-              setEditingRule(null);
-              setIsRuleDialogOpen(true);
-            }}
-          >
-            Ajouter une règle
-          </Button>
         </div>
+
+        <Notice variant="warning" className="mb-4">
+          Cette page est obsolète. Les règles d'affectation sont remplacées par le système de permissions.
+        </Notice>
 
         <CallOut title="Règles dynamiques" size="sm">
           <p>

@@ -1,3 +1,5 @@
+import type { NetworkType } from '@/modules/reseaux/constants';
+
 export const eventTypes = [
   'user_login',
   'user_activated',
@@ -11,7 +13,11 @@ export const eventTypes = [
   'demand_deleted',
   'demand_email_sent',
   'demand_linked_to_user',
+  'demand_network_changed',
+  'demand_network_change_requested',
   'demand_relance_sent',
+  'demand_validated',
+  'demand_unvalidated',
   'pro_eligibility_test_created',
   'pro_eligibility_test_renamed',
   'pro_eligibility_test_updated',
@@ -22,6 +28,7 @@ export const eventTypes = [
   'tag_reminder_created',
   'tag_reminder_deleted',
   'tag_comment_updated',
+  'network_reminder_created',
 ] as const;
 
 export type EventType = (typeof eventTypes)[number];
@@ -33,8 +40,13 @@ export const eventTypeLabels: Record<EventType, string> = {
   demand_deleted: 'Suppression demande',
   demand_email_sent: 'Email envoyé (demande)',
   demand_linked_to_user: 'Liaison demandes → compte',
+  demand_network_change_requested: 'Demande de changement de réseau',
+  demand_network_changed: 'Changement de réseau (demande)',
   demand_relance_sent: 'Relance automatique',
+  demand_unvalidated: 'Dé-validation demande',
   demand_updated: 'Mise à jour demande',
+  demand_validated: 'Validation demande',
+  network_reminder_created: 'Création relance réseau',
   pro_eligibility_test_created: 'Création test éligibilité',
   pro_eligibility_test_deleted: 'Suppression test éligibilité',
   pro_eligibility_test_renamed: 'Renommage test éligibilité',
@@ -59,8 +71,12 @@ export type EventDataMap = {
   demand_deleted: Record<string, unknown> | null;
   demand_email_sent: { key: string; object: string; to: string };
   demand_linked_to_user: { count: number; email: string };
+  demand_network_changed: { network_id: number | null; network_type: NetworkType | null; sncu_id: string | null };
+  demand_network_change_requested: { current_network_id: number | null; reason: string; requested_sncu_id: string };
   demand_relance_sent: { isSecondRelance: boolean };
   demand_updated: Record<string, unknown> | null;
+  demand_validated: { validated: true };
+  demand_unvalidated: { validated: false };
   pro_eligibility_test_created: Record<string, unknown> | null;
   pro_eligibility_test_deleted: Record<string, unknown> | null;
   pro_eligibility_test_renamed: Record<string, unknown> | null;
@@ -70,6 +86,7 @@ export type EventDataMap = {
   tag_comment_updated: { comment: string; tag_name: string };
   tag_reminder_created: { tag_name: string };
   tag_reminder_deleted: { tag_name: string };
+  network_reminder_created: { network_id: number; network_type: NetworkType; note: string | null };
   user_activated: null;
   user_created: null;
   user_deleted: null;

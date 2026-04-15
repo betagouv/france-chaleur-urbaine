@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { networkTypes } from '@/modules/reseaux/constants';
 import { route, routeRole, router } from '@/modules/trpc/server';
 
 import {
@@ -18,12 +19,24 @@ import * as demandsService from './demands-service';
 
 export const demandsRouter = router({
   admin: {
+    changeNetwork: routeRole(['admin'])
+      .input(
+        z.object({
+          demandId: z.string(),
+          networkIdFcu: z.number().nullable(),
+          networkType: z.enum(networkTypes).nullable(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        await demandsService.changeDemandNetwork(input.demandId, input.networkIdFcu, input.networkType, ctx.user.id);
+      }),
     delete: routeRole(['admin'])
       .input(zDeleteDemandInput)
       .mutation(async ({ input, ctx }) => {
         const { demandId } = input;
         await demandsService.remove(demandId, ctx.user.id);
       }),
+    getReseauxStats: routeRole(['admin']).query(async () => demandsService.getReseauxStats()),
     getTagsStats: routeRole(['admin']).query(async () => demandsService.getTagsStats()),
     list: routeRole(['admin']).query(async () => {
       const result = await demandsService.listAdmin();
@@ -34,23 +47,35 @@ export const demandsRouter = router({
       .mutation(async ({ input }) => {
         return await demandsService.recalculateEligibility(input.demandId);
       }),
+    unvalidate: routeRole(['admin'])
+      .input(z.object({ demandId: z.string() }))
+      .mutation(async ({ input, ctx }) => {
+        await demandsService.unvalidateDemand(input.demandId, ctx.user.id);
+      }),
     update: routeRole(['admin'])
       .input(zAdminUpdateDemandInput)
       .mutation(async ({ input, ctx }) => {
         const { demandId, values } = input;
         return await demandsService.update(demandId, values, ctx.user.id);
       }),
+    validate: routeRole(['admin'])
+      .input(z.object({ demandId: z.string() }))
+      .mutation(async ({ input, ctx }) => {
+        await demandsService.validateDemand(input.demandId, ctx.user.id);
+      }),
   },
   gestionnaire: {
-    list: routeRole(['gestionnaire', 'demo']).query(async ({ ctx }) => {
-      return await demandsService.list(ctx.user);
+    list: routeRole(['gestionnaire', 'collectivite', 'alec']).query(async ({ ctx }) => {
+      const permissions = await ctx.getPermissions();
+      return await demandsService.list(ctx.user, { anonymize: ctx.anonymize, permissions });
     }),
-    listEmails: routeRole(['gestionnaire', 'admin'])
+    listEmails: routeRole(['gestionnaire', 'collectivite', 'alec', 'admin'])
       .input(zListEmailsInput)
       .query(async ({ input, ctx }) => {
-        return await demandsService.listEmails({ demandId: input.demand_id, user: ctx.user });
+        const permissions = await ctx.getPermissions();
+        return await demandsService.listEmails({ demandId: input.demand_id, permissions, user: ctx.user });
       }),
-    sendEmail: routeRole(['gestionnaire', 'admin'])
+    sendEmail: routeRole(['gestionnaire', 'collectivite', 'alec', 'admin'])
       .input(zSendEmailInput)
       .mutation(async ({ input, ctx }) => {
         await demandsService.sendEmail({
@@ -60,11 +85,18 @@ export const demandsRouter = router({
           user: ctx.user,
         });
       }),
-    update: routeRole(['gestionnaire', 'demo'])
+    update: routeRole(['gestionnaire', 'collectivite', 'alec'])
       .input(zGestionnaireUpdateDemandInput)
       .mutation(async ({ input, ctx }) => {
         const { demandId, values } = input;
         return await demandsService.update(demandId, values, ctx.user.id);
+      }),
+  },
+  territory: {
+    requestNetworkChange: routeRole(['collectivite', 'alec'])
+      .input(z.object({ demandId: z.string(), reason: z.string().min(1), requestedSncuId: z.string().min(1) }))
+      .mutation(async ({ input, ctx }) => {
+        await demandsService.requestNetworkChange(input.demandId, input.requestedSncuId, input.reason, ctx.user.id);
       }),
   },
   user: {
@@ -89,7 +121,8 @@ export const demandsRouter = router({
     listEmails: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin'])
       .input(zListEmailsInput)
       .query(async ({ input, ctx }) => {
-        return await demandsService.listEmails({ demandId: input.demand_id, user: ctx.user });
+        const permissions = await ctx.getPermissions();
+        return await demandsService.listEmails({ demandId: input.demand_id, permissions, user: ctx.user });
       }),
     update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;

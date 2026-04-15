@@ -1,13 +1,14 @@
-import type { ExpressionBuilder, RawBuilder } from 'kysely';
+import type { ExpressionBuilder, Insertable, RawBuilder } from 'kysely';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { parseBbox } from '@/modules/geo/client/helpers';
 import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
 import type { BoundingBox } from '@/modules/geo/types';
 import { createWarnEligibilityChangesJob } from '@/modules/pro-eligibility-tests/server/service';
-import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
+import type { ApplyGeometriesUpdatesInput, NetworkType } from '@/modules/reseaux/constants';
 import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
 import { createBuildTilesJob, createSyncGeometriesToAirtableJob, createSyncMetadataFromAirtableJob } from '@/modules/tiles/server/service';
-import { type DB, kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
+import { type DB, kdb, type NetworkReminders, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
 import type { Network, NetworkToCompare } from '@/types/Summary/Network';
@@ -771,3 +772,68 @@ export async function getNetworkGeometry(tableName: NetworkTable, id_fcu: number
     .executeTakeFirstOrThrow();
   return result.geometry;
 }
+
+// --- Network reminders & notes ---
+
+export async function createNetworkReminder(
+  params: Pick<Insertable<NetworkReminders>, 'author_id' | 'created_at' | 'network_id' | 'network_type' | 'note'>
+) {
+  const { created_at, ...rest } = params;
+  const values = created_at ? { ...rest, created_at } : rest;
+  const reminder = await kdb.insertInto('network_reminders').values(values).returning(['id', 'created_at']).executeTakeFirstOrThrow();
+
+  await createUserEvent({
+    author_id: params.author_id!,
+    context_id: String(params.network_id),
+    context_type: 'network',
+    data: {
+      network_id: params.network_id,
+      network_type: params.network_type,
+      note: params.note ?? null,
+    },
+    type: 'network_reminder_created',
+  });
+
+  return reminder;
+}
+
+export async function updateNetworkNotes(networkId: number, networkType: NetworkType, notes: string | null) {
+  const table = networkType === 'existant' ? 'reseaux_de_chaleur' : 'zones_et_reseaux_en_construction';
+  await kdb.updateTable(table).set({ notes }).where('id_fcu', '=', networkId).execute();
+}
+
+export type NetworkSearchResult = {
+  id_fcu: number;
+  nom_reseau: string | null;
+  identifiant_reseau: string | null;
+  network_type: NetworkType;
+};
+
+/**
+ * Search networks (existing + construction) by name or SNCU identifier.
+ */
+export const searchNetworks = async (search: string): Promise<NetworkSearchResult[]> => {
+  const pattern = `%${search}%`;
+
+  const [existants, enConstruction] = await Promise.all([
+    kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select(['id_fcu', 'nom_reseau', sql<string | null>`"Identifiant reseau"`.as('identifiant_reseau')])
+      .where((eb) => eb.or([eb('nom_reseau', 'ilike', pattern), eb(sql`"Identifiant reseau"`, 'ilike', pattern)]))
+      .orderBy('nom_reseau')
+      .limit(20)
+      .execute(),
+    kdb
+      .selectFrom('zones_et_reseaux_en_construction')
+      .select(['id_fcu', 'nom_reseau', sql<null>`NULL`.as('identifiant_reseau')])
+      .where('nom_reseau', 'ilike', pattern)
+      .orderBy('nom_reseau')
+      .limit(10)
+      .execute(),
+  ]);
+
+  return [
+    ...existants.map((r) => ({ ...r, network_type: 'existant' as const })),
+    ...enConstruction.map((r) => ({ ...r, network_type: 'en_construction' as const })),
+  ];
+};

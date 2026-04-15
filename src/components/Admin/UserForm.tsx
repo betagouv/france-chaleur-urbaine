@@ -1,21 +1,32 @@
+import { useState } from 'react';
+
 import FCUTagAutocompleteInput from '@/components/form/dsfr/FCUTagAutocompleteInput';
 import useForm from '@/components/form/react-form/useForm';
 import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
 import Tooltip from '@/components/ui/Tooltip';
-import { createUserAdminSchema, structureTypesFormLabels, updateUserAdminSchema } from '@/modules/users/constants';
+import PermissionsEditor from '@/modules/permissions/client/PermissionsEditor';
+import PermissionsInput from '@/modules/permissions/client/PermissionsInput';
+import type { Permission } from '@/modules/permissions/types';
+import { permissionTypes } from '@/modules/permissions/types';
+import { createUserAdminSchema, roles as roleLabels, structureTypesFormLabels, updateUserAdminSchema } from '@/modules/users/constants';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
-import { userRoles } from '@/types/enum/UserRole';
+import { type UserRole, userRoles, userRolesWithPermissions } from '@/types/enum/UserRole';
 import cx from '@/utils/cx';
 import { ObjectEntries } from '@/utils/typescript';
 
-export type OnCreate = (data: UsersResponse['createInput']) => Promise<void> | void;
+export type OnCreate = (data: UsersResponse['createInput'], permissions?: Permission[]) => Promise<void> | void;
 export type OnUpdate = (data: UsersResponse['updateInput']) => Promise<void> | void;
 
 const roleOptions = userRoles.map((role) => ({
-  label: role.charAt(0).toUpperCase() + role.slice(1),
+  label: roleLabels[role],
   value: role,
 }));
+
+const getAvailableTypes = (role: UserRole) => {
+  if ((userRolesWithPermissions as readonly string[]).includes(role)) return permissionTypes;
+  return [] as const;
+};
 
 type UserFormProps = {
   loading?: boolean;
@@ -25,6 +36,8 @@ type UserFormProps = {
 
 const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
   const isNew = !user?.id;
+  const [newPermissions, setNewPermissions] = useState<Permission[]>([]);
+
   const { Form, Field, Submit, FieldWrapper, useValue } = useForm({
     defaultValues: {
       active: user?.active ?? true,
@@ -42,69 +55,24 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
       structure_other: user?.structure_other ?? '',
       structure_type: user?.structure_type ?? '',
     },
-    onSubmit: async ({ value }) => onSubmit(value as any),
+    onSubmit: async ({ value }) => {
+      if (isNew) {
+        await (onSubmit as OnCreate)(value as any, newPermissions.length > 0 ? newPermissions : undefined);
+      } else {
+        await (onSubmit as OnUpdate)(value as any);
+      }
+    },
     schema: isNew ? createUserAdminSchema : updateUserAdminSchema,
   });
 
-  const role = useValue('role');
+  const role = useValue<UserRole>('role');
   const structureType = useValue('structure_type');
+  const showPermissions = (userRolesWithPermissions as readonly string[]).includes(role);
 
   return (
     <Form>
       <div className={cx('space-y-6', loading && 'opacity-50 animate-pulse')}>
-        <FieldWrapper>
-          <Field.Select
-            name="role"
-            label="Rôle"
-            options={roleOptions}
-            nativeSelectProps={{
-              placeholder: 'Sélectionner un rôle',
-            }}
-          />
-        </FieldWrapper>
-        <FieldWrapper>
-          <Field.Checkbox
-            name="active"
-            label={
-              <>
-                Compte activé
-                {!isNew && (
-                  <Tag className="ml-2" variant={user?.status === 'valid' ? 'success' : 'warning'} outline size="sm">
-                    {user?.status === 'valid' ? 'Validé' : 'En attente de confirmation email'}
-                  </Tag>
-                )}
-              </>
-            }
-          />
-          {!isNew && <Field.Checkbox name="optin_at" label={<>A accepté les conditions d'utilisation</>} />}
-        </FieldWrapper>
-        <FieldWrapper>
-          Notifications email :
-          <Field.Checkbox
-            name="receive_new_demands"
-            label={
-              <>
-                Nouvelles demandes
-                <Tooltip
-                  title="Notifications quotidiennes pour les nouvelles demandes déposées sur France Chaleur Urbaine"
-                  iconProps={{ className: 'ml-1 mb-2' }}
-                />
-              </>
-            }
-          />
-          <Field.Checkbox
-            name="receive_old_demands"
-            label={
-              <>
-                Demandes en attente de prise en charge
-                <Tooltip
-                  title="Notifications hebdomadaires si des demandes sont en attente de prise en charge depuis plus de 7 jours"
-                  iconProps={{ className: 'ml-1 mb-2' }}
-                />
-              </>
-            }
-          />
-        </FieldWrapper>
+        {/* Identité */}
         <FieldWrapper>
           <Field.EmailInput
             name="email"
@@ -115,18 +83,31 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
             }}
           />
         </FieldWrapper>
-        {role === 'gestionnaire' && (
-          <FieldWrapper>
-            <Field.Custom
-              name="gestionnaires"
-              label="Tags gestionnaires"
-              Component={(props: any) => (
-                <FCUTagAutocompleteInput undismissibles={user?.gestionnaires_from_api ?? []} multiple {...props} />
-              )}
-            />
-          </FieldWrapper>
-        )}
-        {role === 'professionnel' && (
+
+        <FieldWrapper>
+          <Field.Input
+            name="first_name"
+            label="Prénom"
+            nativeInputProps={{
+              placeholder: 'Prénom',
+            }}
+          />
+        </FieldWrapper>
+        <FieldWrapper>
+          <Field.Input
+            name="last_name"
+            label="Nom"
+            nativeInputProps={{
+              placeholder: 'Nom',
+            }}
+          />
+        </FieldWrapper>
+        <FieldWrapper>
+          <Field.PhoneInput name="phone" label="Téléphone" />
+        </FieldWrapper>
+
+        {/* Structure */}
+        {(role === 'professionnel' || role === 'gestionnaire' || role === 'collectivite' || role === 'alec') && (
           <FieldWrapper>
             <Field.Input
               name="structure_name"
@@ -154,27 +135,93 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
           </FieldWrapper>
         )}
 
+        {/* Compte */}
         <FieldWrapper>
-          <Field.Input
-            name="first_name"
-            label="Prénom"
-            nativeInputProps={{
-              placeholder: 'Prénom',
-            }}
+          <Field.Checkbox
+            name="active"
+            label={
+              <>
+                Compte activé
+                {!isNew && (
+                  <Tag className="ml-2" variant={user?.status === 'valid' ? 'success' : 'warning'} outline size="sm">
+                    {user?.status === 'valid' ? 'Validé' : 'En attente de confirmation email'}
+                  </Tag>
+                )}
+              </>
+            }
           />
+          {!isNew && <Field.Checkbox name="optin_at" label={<>A accepté les conditions d'utilisation</>} />}
         </FieldWrapper>
-        <FieldWrapper>
-          <Field.Input
-            name="last_name"
-            label="Nom"
-            nativeInputProps={{
-              placeholder: 'Nom',
-            }}
-          />
-        </FieldWrapper>
-        <FieldWrapper>
-          <Field.PhoneInput name="phone" label="Téléphone" />
-        </FieldWrapper>
+
+        {/* Rôle, permissions et notifications */}
+        <div className="border border-blue-300 rounded-lg p-4 space-y-4 bg-blue-50/30">
+          <h4 className="text-base font-bold m-0">Rôle et accès</h4>
+
+          <FieldWrapper>
+            <Field.Select
+              name="role"
+              label="Rôle"
+              options={roleOptions}
+              nativeSelectProps={{
+                placeholder: 'Sélectionner un rôle',
+              }}
+            />
+          </FieldWrapper>
+
+          {showPermissions && (
+            <FieldWrapper>
+              {isNew ? (
+                <div className="space-y-3">
+                  <label className="fr-label">Permissions</label>
+                  <PermissionsInput value={newPermissions} onChange={setNewPermissions} availableTypes={getAvailableTypes(role)} />
+                </div>
+              ) : (
+                <PermissionsEditor userId={user!.id} />
+              )}
+            </FieldWrapper>
+          )}
+
+          <FieldWrapper>
+            Notifications email :
+            <Field.Checkbox
+              name="receive_new_demands"
+              label={
+                <>
+                  Nouvelles demandes
+                  <Tooltip
+                    title="Notifications quotidiennes pour les nouvelles demandes déposées sur France Chaleur Urbaine"
+                    iconProps={{ className: 'ml-1 mb-2' }}
+                  />
+                </>
+              }
+            />
+            <Field.Checkbox
+              name="receive_old_demands"
+              label={
+                <>
+                  Demandes en attente de prise en charge
+                  <Tooltip
+                    title="Notifications hebdomadaires si des demandes sont en attente de prise en charge depuis plus de 7 jours"
+                    iconProps={{ className: 'ml-1 mb-2' }}
+                  />
+                </>
+              }
+            />
+          </FieldWrapper>
+
+          {/* Tags gestionnaire (ancien système) */}
+          {role === 'gestionnaire' && !isNew && (
+            <FieldWrapper>
+              <Field.Custom
+                name="gestionnaires"
+                label="Tags gestionnaires (obsolète)"
+                Component={(props: any) => (
+                  <FCUTagAutocompleteInput undismissibles={user?.gestionnaires_from_api ?? []} multiple disabled {...props} />
+                )}
+              />
+            </FieldWrapper>
+          )}
+        </div>
 
         <div className="flex justify-end">
           <Submit loading={loading}>{isNew ? 'Créer' : 'Mettre à jour'} l'utilisateur</Submit>

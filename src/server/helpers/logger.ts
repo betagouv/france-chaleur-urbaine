@@ -49,16 +49,15 @@ const prettyLogsInDev = format((info) => {
   return info;
 });
 
+const logFormat =
+  process.env.LOGS_PLAIN === 'true'
+    ? format.printf(({ message }) => message as string)
+    : process.env.LOGS_PRETTY === 'true'
+      ? format.combine(format.timestamp(), format.colorize(), prettyLogsInDev(), format.cli())
+      : format.combine(format.timestamp(), format((info) => ({ ...info, pid: process.pid }))(), format.json());
+
 export const logger = createWinstonLogger({
-  format:
-    process.env.LOGS_PRETTY === 'true'
-      ? format.combine(
-          format.timestamp(),
-          format.colorize(), // Add color to log level and timestamp
-          prettyLogsInDev(),
-          format.cli() // Apply CLI colorization to other parts of the log
-        )
-      : format.combine(format.timestamp(), format((info) => ({ ...info, pid: process.pid }))(), format.json()),
+  format: logFormat,
   level: serverConfig.LOG_LEVEL,
   transports: [new transports.Console({})],
 });

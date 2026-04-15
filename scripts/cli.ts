@@ -15,6 +15,7 @@ import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
+import { registerPermissionsCommands } from '@/modules/permissions/commands';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { registerEcoreseauCommand } from '@/modules/reseaux/commands/ecoreseau';
@@ -76,6 +77,7 @@ registerProEligibilityTestsCommands(program);
 registerEcoreseauCommand(program);
 registerNetworkCommands(program);
 registerOpendataCommands(program);
+registerPermissionsCommands(program);
 registerTilesCommands(program);
 registerTestCommands(program);
 
@@ -122,15 +124,12 @@ program
   .description('Import the french EPCI (used for tags)')
   .action(async () => {
     const allEPCI = await fetchJSON<EPCI[]>('https://unpkg.com/@etalab/decoupage-administratif@5.2.0/data/epci.json');
-    const epci = allEPCI
-      // seules les communautés d'agglomération, les communautés urbaines et les métropoles sont intéressantes pour le moment
-      .filter((epci) => ['CA', 'CU', 'METRO', 'MET69'].includes(epci.type))
-      .map((metropole) => ({
-        code: metropole.code,
-        membres: JSON.stringify(metropole.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
-        nom: metropole.nom,
-        type: metropole.type,
-      }));
+    const epci = allEPCI.map((metropole) => ({
+      code: metropole.code,
+      membres: JSON.stringify(metropole.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
+      nom: metropole.nom,
+      type: metropole.type,
+    }));
 
     await kdb.transaction().execute(async (tx) => {
       await tx.deleteFrom('epci').execute();

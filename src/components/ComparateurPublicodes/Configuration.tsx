@@ -107,12 +107,13 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
             !!(
               obj1.situation &&
               obj2.situation &&
-              JSON.stringify(sortKeys(obj1.situation)) === JSON.stringify(sortKeys(obj2.situation)) &&
+              JSON.stringify(sortKeys(obj1.situation as Record<string, any>)) ===
+                JSON.stringify(sortKeys(obj2.situation as Record<string, any>)) &&
               obj1.address === obj2.address
             )
           }
           onSelect={({ situation: newSituation, address: newAddress, id }) => {
-            const situationToLoad = { ...pick(situation, addresseToPublicodesRulesKeys), ...newSituation };
+            const situationToLoad = { ...pick(situation, addresseToPublicodesRulesKeys), ...(newSituation as Record<string, any>) };
             Object.entries(chainedConfigurations).forEach(([configKey, chainedKeys]) => {
               if (configKey in situationToLoad) {
                 chainedKeys.forEach((chainedKey) => {

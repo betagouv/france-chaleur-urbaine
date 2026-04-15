@@ -5,6 +5,7 @@ declare module 'next-auth' {
   interface Session {
     user: User;
     impersonating?: true;
+    impersonatedPermissions?: Array<{ type: string; resourceId: string | null }>;
   }
 
   interface User {
@@ -12,7 +13,6 @@ declare module 'next-auth' {
     role: UserRole;
     email: string;
     active: boolean;
-    gestionnaires: string[] | null;
     signature: string | null;
   }
 }
@@ -28,7 +28,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     impersonatedProfile?: {
       role: UserRole;
-      gestionnaires: string[];
+      permissions?: Array<{ type: string; resourceId: string | null }>;
     };
   }
 }

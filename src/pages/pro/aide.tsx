@@ -244,4 +244,4 @@ const AidePage = () => {
 
 export default AidePage;
 
-export const getServerSideProps = withAuthentication(['gestionnaire', 'demo']);
+export const getServerSideProps = withAuthentication(['gestionnaire', 'collectivite', 'alec']);

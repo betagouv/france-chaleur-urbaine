@@ -5,6 +5,7 @@ import AuthInscriptionEmail from './react-email/templates/auth/inscription';
 import AuthResetPasswordEmail from './react-email/templates/auth/reset-password';
 import DemandAdminAssignmentChangeEmail from './react-email/templates/demands/admin-assignment-change';
 import DemandAdminGestionnaireContactEmail from './react-email/templates/demands/admin-gestionnaire-contact';
+import DemandAdminNetworkChangeRequestEmail from './react-email/templates/demands/admin-network-change-request';
 import DemandAdminNewEmail from './react-email/templates/demands/admin-new';
 import DemandsCustomEmail from './react-email/templates/demands/custom-email';
 import DemandsGestionnaireNewEmail from './react-email/templates/demands/gestionnaire-new';
@@ -37,6 +38,11 @@ export const emails = {
     Component: DemandAdminGestionnaireContactEmail,
     preview: 'Nouveau message HP à traiter',
     subject: '[France Chaleur Urbaine] Nouveau message HP à traiter',
+  },
+  'demands.admin-network-change-request': {
+    Component: DemandAdminNetworkChangeRequestEmail,
+    preview: 'Demande de changement de réseau par une collectivité',
+    subject: '[France Chaleur Urbaine] Demande de changement de réseau',
   },
   'demands.admin-new': {
     Component: DemandAdminNewEmail,

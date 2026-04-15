@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker';
 import * as Sentry from '@sentry/nextjs';
 import { TRPCError } from '@trpc/server';
 import type { Insertable, Selectable } from 'kysely';
@@ -21,8 +20,11 @@ import {
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
+import { buildDemandAccessFilter, canUserAccessDemand, getUserPermissions } from '@/modules/permissions/server/service';
+import type { Permission } from '@/modules/permissions/types';
 import { createEligibilityTestAddress, updateEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
+import type { NetworkType } from '@/modules/reseaux/constants';
 import { AirtableDB } from '@/server/db/airtable';
 import {
   type DemandEmails,
@@ -39,10 +41,7 @@ import { parentLogger } from '@/server/helpers/logger';
 import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import { Airtable } from '@/types/enum/Airtable';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import type { UserRole } from '@/types/enum/UserRole';
 import type { FrontendType } from '@/utils/typescript';
-
-import * as assignmentRulesService from './assignment-rules-service';
 
 const logger = parentLogger.child({
   module: 'demands',
@@ -69,6 +68,32 @@ export const createFCUTeamContact = async (values: CreateFCUTeamContactInput) =>
       Téléphone: values.phone,
     })
   );
+};
+
+/**
+ * Fills territory columns on a demand from its coordinates using PostGIS.
+ */
+const fillDemandTerritoryFromCoords = async (demandId: string, lon: number, lat: number) => {
+  // Commune, département, région, EPCI in one query via ign_communes
+  await sql`
+    UPDATE demands d SET
+      commune_code = c.insee_com,
+      departement_code = c.insee_dep,
+      region_code = c.insee_reg,
+      epci_code = c.siren_epci
+    FROM ign_communes c
+    WHERE d.id = ${demandId}
+      AND ST_Contains(c.geom, ST_Transform(ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326), 2154))
+  `.execute(kdb);
+
+  // EPT via membres JSONB (Île-de-France only)
+  await sql`
+    UPDATE demands d SET ept_code = e.code
+    FROM ept e
+    WHERE d.id = ${demandId}
+      AND d.commune_code IS NOT NULL
+      AND EXISTS (SELECT 1 FROM jsonb_array_elements(e.membres) m WHERE m->>'code' = d.commune_code)
+  `.execute(kdb);
 };
 
 const augmentAdminDemand = <T extends Selectable<Demands>>({
@@ -104,6 +129,61 @@ const getEntityFromType = (type: EligibilityType) => {
     default:
       return null;
   }
+};
+
+const getNetworkTypeFromEligibilityType = (type: EligibilityType): NetworkType | null => {
+  switch (type) {
+    case 'dans_pdp_reseau_existant':
+    case 'reseau_existant_proche':
+    case 'reseau_existant_tres_proche':
+    case 'reseau_existant_loin':
+    case 'dans_ville_reseau_existant_sans_trace':
+      return 'existant';
+    case 'dans_pdp_reseau_futur':
+    case 'dans_zone_reseau_futur':
+    case 'reseau_futur_tres_proche':
+    case 'reseau_futur_loin':
+    case 'reseau_futur_proche':
+      return 'en_construction';
+    default:
+      return null;
+  }
+};
+
+/**
+ * Auto-assigns network_id and network_type on a demand based on its eligibility test address.
+ * Also populates legacy fields for backward compatibility.
+ */
+const autoAssignNetworkFromEligibility = async (demandId: string) => {
+  const testAddress = await kdb
+    .selectFrom('pro_eligibility_tests_addresses')
+    .select('eligibility_history')
+    .where('demand_id', '=', demandId)
+    .executeTakeFirst();
+
+  if (!testAddress) return;
+
+  const history = testAddress.eligibility_history as ProEligibilityTestHistoryEntry[] | null;
+  const lastEligibility = history?.[history.length - 1]?.eligibility;
+
+  if (!lastEligibility?.id_fcu || lastEligibility.type === 'trop_eloigne') return;
+
+  const networkType = getNetworkTypeFromEligibilityType(lastEligibility.type);
+  if (!networkType) return;
+
+  await kdb
+    .updateTable(tableName)
+    .set({
+      legacy_values: sql`legacy_values || ${JSON.stringify({
+        'Distance au réseau': lastEligibility.distance,
+        'Identifiant réseau': lastEligibility.id_sncu,
+        'Nom réseau': lastEligibility.nom,
+      })}::jsonb`,
+      network_id: lastEligibility.id_fcu,
+      network_type: networkType,
+    })
+    .where('id', '=', demandId)
+    .execute();
 };
 
 const augmentGestionnaireDemand = <T extends Selectable<Demands>>({
@@ -195,11 +275,37 @@ export const update = async (recordId: string, { comment_fcu, comment_gestionnai
     values['Gestionnaire Affecté à'] = null;
   }
 
+  // Sync real columns from legacy field changes
+  const columnUpdates: Record<string, unknown> = {};
+
+  if ('Gestionnaires validés' in values) {
+    columnUpdates.validated = values['Gestionnaires validés'] === true;
+  }
+
+  if ('Identifiant réseau' in values) {
+    const sncuId = values['Identifiant réseau'];
+    if (sncuId) {
+      const network = await kdb
+        .selectFrom('reseaux_de_chaleur')
+        .select('id_fcu')
+        .where('"Identifiant reseau"' as any, '=', sncuId)
+        .executeTakeFirst();
+      if (network) {
+        columnUpdates.network_id = network.id_fcu;
+        columnUpdates.network_type = 'existant';
+      }
+    } else {
+      columnUpdates.network_id = null;
+      columnUpdates.network_type = null;
+    }
+  }
+
   const [updatedDemand] = await kdb
     .updateTable(tableName)
     .set({
       ...(comment_fcu && { comment_fcu }),
       ...(comment_gestionnaire && { comment_gestionnaire }),
+      ...columnUpdates,
       legacy_values: sql`legacy_values || ${JSON.stringify(values)}::jsonb`, // The || operator merges the two JSONB objects, with the new values overwriting any matching keys.
       updated_at: new Date(),
     })
@@ -285,6 +391,11 @@ export const create = async (
     .returningAll()
     .execute();
 
+  // Fill territory columns from coordinates
+  if (lat && lon) {
+    await fillDemandTerritoryFromCoords(createdDemand.id, lon, lat);
+  }
+
   if (pro_eligibility_tests_addresse_id) {
     const updatedTestAddress = await kdb
       .updateTable('pro_eligibility_tests_addresses')
@@ -310,6 +421,9 @@ export const create = async (
   const testAddress = testAddressFromDB as Selectable<ProEligibilityTestsAddresses> & {
     eligibility_history: ProEligibilityTestHistoryEntry[];
   };
+
+  // Auto-assign network from eligibility
+  await autoAssignNetworkFromEligibility(createdDemand.id);
 
   await Promise.all([
     createEvent({
@@ -462,31 +576,52 @@ export const remove = async (demandId: string, userId?: string) => {
   }
 };
 
-type DemandForPermissionCheck = {
-  user_id: string | null;
-  legacy_values: AirtableLegacyRecord;
-};
-
-type PermissionDefinition = boolean | ((params: { user: User; demand: DemandForPermissionCheck }) => boolean);
-
-const demandEmailAccessPermissions: Record<UserRole, PermissionDefinition> = {
-  admin: true,
-  demo: true,
-  gestionnaire: ({ user, demand }) =>
-    !!(
-      demand.legacy_values['Gestionnaires validés'] && demand.legacy_values.Gestionnaires?.some((tag) => user.gestionnaires?.includes(tag))
-    ),
-  particulier: ({ user, demand }) => demand.user_id === user.id,
-  professionnel: ({ user, demand }) => demand.user_id === user.id,
-};
-
 /**
  * Ensure the user has permissions to access the demand emails
  */
-const ensureEmailsPermissions = async ({ user, demandId }: { demandId: string; user: User }) => {
-  const demand = await kdb.selectFrom('demands').select(['user_id', 'legacy_values']).where('id', '=', demandId).executeTakeFirstOrThrow();
-  const permissionsCheck = demandEmailAccessPermissions[user.role];
-  if (!(typeof permissionsCheck === 'boolean' ? permissionsCheck : permissionsCheck({ demand, user }))) {
+const ensureEmailsPermissions = async ({
+  user,
+  demandId,
+  permissions: providedPermissions,
+}: {
+  demandId: string;
+  permissions?: Permission[];
+  user: User;
+}) => {
+  if (user.role === 'admin') {
+    return;
+  }
+
+  const demand = await kdb
+    .selectFrom('demands')
+    .select([
+      'user_id',
+      'network_id',
+      'network_type',
+      'validated',
+      'commune_code',
+      'epci_code',
+      'ept_code',
+      'departement_code',
+      'region_code',
+    ])
+    .where('id', '=', demandId)
+    .executeTakeFirstOrThrow();
+
+  // Particulier/professionnel can only access their own demands
+  if (user.role === 'particulier' || user.role === 'professionnel') {
+    if (demand.user_id !== user.id) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'Unauthorized',
+      });
+    }
+    return;
+  }
+
+  // Gestionnaire/collectivite/alec — check via permissions
+  const permissions = providedPermissions ?? (await getUserPermissions(user.id));
+  if (!canUserAccessDemand(user, permissions, demand)) {
     throw new TRPCError({
       code: 'FORBIDDEN',
       message: 'Unauthorized',
@@ -494,8 +629,8 @@ const ensureEmailsPermissions = async ({ user, demandId }: { demandId: string; u
   }
 };
 
-export const listEmails = async ({ demandId, user }: { demandId: string; user: User }) => {
-  await ensureEmailsPermissions({ demandId, user });
+export const listEmails = async ({ demandId, user, permissions }: { demandId: string; user: User; permissions?: Permission[] }) => {
+  await ensureEmailsPermissions({ demandId, permissions, user });
   return await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).execute();
 };
 
@@ -683,9 +818,33 @@ export const get = async (demandId: string) => {
 };
 
 export const listAdmin = async () => {
-  let startTime = Date.now();
+  const startTime = Date.now();
 
-  const records = await buildDemandQuery().orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute();
+  const records = await buildDemandQuery()
+    .select([
+      sql<string | null>`
+        CASE
+          WHEN demands.network_type = 'existant' THEN (SELECT nom_reseau FROM reseaux_de_chaleur WHERE id_fcu = demands.network_id)
+          WHEN demands.network_type = 'en_construction' THEN (SELECT nom_reseau FROM zones_et_reseaux_en_construction WHERE id_fcu = demands.network_id)
+          ELSE NULL
+        END
+      `.as('network_name'),
+      sql<string | null>`
+        CASE WHEN demands.network_type = 'existant'
+          THEN (SELECT "Identifiant reseau" FROM reseaux_de_chaleur WHERE id_fcu = demands.network_id)
+          ELSE NULL
+        END
+      `.as('network_sncu_id'),
+      sql<string[]>`
+        CASE
+          WHEN demands.network_type = 'existant' THEN (SELECT tags FROM reseaux_de_chaleur WHERE id_fcu = demands.network_id)
+          WHEN demands.network_type = 'en_construction' THEN (SELECT tags FROM zones_et_reseaux_en_construction WHERE id_fcu = demands.network_id)
+          ELSE NULL
+        END
+      `.as('network_tags'),
+    ])
+    .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
+    .execute();
 
   const { count } = await kdb.selectFrom('demands').select(kdb.fn.count<number>('id').as('count')).executeTakeFirstOrThrow();
 
@@ -694,115 +853,65 @@ export const listAdmin = async () => {
     recordsCount: records.length,
   });
 
-  // Récupére et parse les règles et leurs résultats
-  const { items: assignmentRules } = await assignmentRulesService.listActive();
-  const parsedRules = await assignmentRulesService.parseAssignmentRules(assignmentRules);
+  const demands = records
+    .map((record) => {
+      const { testAddress, ...demand } = record;
+      const legacyValues = record.legacy_values;
 
-  const [reseauxDeChaleur, reseauxEnConstruction] = await Promise.all([
-    kdb.selectFrom('reseaux_de_chaleur').select(['tags', 'id_fcu', 'communes']).execute(),
-    kdb.selectFrom('zones_et_reseaux_en_construction').select(['tags', 'id_fcu', 'communes']).execute(),
-  ]);
-
-  startTime = Date.now();
-  const demands = (
-    await Promise.all(
-      records.map(async (record) => {
-        const { testAddress, ...demand } = record;
-        const legacyValues = record.legacy_values;
-
-        if (!legacyValues.Latitude || !legacyValues.Longitude || !legacyValues.Ville) {
-          logger.warn('missing demand fields', {
-            demandId: demand.id,
-            missingFields: ['Latitude', 'Longitude', 'Ville'],
-          });
-          return null;
-        }
-
-        const augmentedDemand = augmentAdminDemand({
-          demand,
-          testAddress,
+      if (!legacyValues.Latitude || !legacyValues.Longitude || !legacyValues.Ville) {
+        logger.warn('missing demand fields', {
+          demandId: demand.id,
+          missingFields: ['Latitude', 'Longitude', 'Ville'],
         });
+        return null;
+      }
 
-        if (augmentedDemand['Gestionnaires validés']) {
-          return {
-            ...augmentedDemand,
-            recommendedAssignment: '',
-            recommendedTags: [],
-            testAddress: {
-              ...augmentedDemand.testAddress,
-              eligibility: {
-                ...augmentedDemand.testAddress.eligibility,
-                communes: [],
-              },
-            },
-          };
-        }
-
-        const detailedEligibility = await getDetailedEligibilityStatus(augmentedDemand.Latitude!, augmentedDemand.Longitude!);
-        const rulesResult = assignmentRulesService.applyParsedRulesToEligibilityData(parsedRules, detailedEligibility);
-
-        return {
-          ...augmentedDemand,
-          recommendedAssignment: rulesResult.assignment ?? 'Non affecté',
-          recommendedTags: [...new Set([...detailedEligibility.tags, ...rulesResult.tags])],
-          testAddress: {
-            ...augmentedDemand.testAddress,
-            eligibility: {
-              ...augmentedDemand.testAddress.eligibility,
-              communes: detailedEligibility.communes,
-            },
-          },
-        };
-      })
-    )
-  ).filter((v) => v !== null);
-
-  logger.info('getDetailedEligilityStatus', {
-    duration: Date.now() - startTime,
-    recordsCount: records.length,
-  });
+      return augmentAdminDemand({ demand, testAddress });
+    })
+    .filter((v) => v !== null);
 
   return { count, items: demands };
 };
 
-export const list = async (user: User) => {
-  if (!user?.gestionnaires) {
+type ListOptions = {
+  anonymize?: boolean;
+  permissions?: Permission[];
+};
+
+export const list = async (user: User, options?: ListOptions) => {
+  if (!user) {
     return [];
   }
 
   const startTime = Date.now();
+  const permissions = options?.permissions ?? (await getUserPermissions(user.id));
 
-  // Build query based on user role and gestionnaires
-  const records = await buildDemandQuery()
-    .$if(user.role === 'demo', (qb) =>
-      qb
-        .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-        .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.val(['Paris']))
-    )
-    .$if(user.role === 'gestionnaire', (qb) =>
-      qb
-        .where(sql`legacy_values->>'Gestionnaires validés'`, '=', 'true')
-        .where(sql`legacy_values->'Gestionnaires'`, '?|', sql.val(user.gestionnaires))
-    )
-    .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
-    .execute();
+  if (permissions.length === 0 && user.role !== 'admin') {
+    return [];
+  }
+
+  const accessFilter = buildDemandAccessFilter(user, permissions);
+
+  const records = await accessFilter(buildDemandQuery()).orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute();
 
   logger.info('kdb.getDemands', {
     duration: Date.now() - startTime,
+    permissionsCount: permissions.length,
     recordsCount: records.length,
-    tagsCounts: user.gestionnaires.length,
   });
   const demands = records.map(({ testAddress, ...demand }) => augmentGestionnaireDemand({ demand, testAddress }));
 
-  return user.role === 'demo'
-    ? demands.map((demand) => ({
-        ...demand,
-        Mail: faker.internet.email(),
-        Nom: faker.person.lastName(),
-        Prénom: faker.person.firstName(),
-        Téléphone: `0${faker.string.numeric(9)}`,
-      }))
-    : demands;
+  if (options?.anonymize) {
+    return demands.map((demand) => ({
+      ...demand,
+      Mail: anonymizeEmail(demand.Mail),
+      Nom: anonymizeName(demand.Nom),
+      Prénom: anonymizeName(demand.Prénom),
+      Téléphone: demand.Téléphone ? anonymizePhone() : undefined,
+    }));
+  }
+
+  return demands;
 };
 
 export const listByUser = async (userId: string) => {
@@ -1080,6 +1189,154 @@ export const getTagsStats = async () => {
 export type TagsStats = Awaited<ReturnType<typeof getTagsStats>>[number];
 
 /**
+ * Retourne les statistiques de demandes par réseau : utilisateurs avec permissions, stats de demandes, relances, notes.
+ */
+export const getReseauxStats = async () => {
+  const reseauxStats = await kdb
+    .selectFrom(
+      kdb
+        .selectFrom('reseaux_de_chaleur')
+        .select(['id_fcu', 'nom_reseau', 'Identifiant reseau', 'tags', 'notes', sql<NetworkType>`'existant'`.as('network_type')])
+        .unionAll(
+          kdb
+            .selectFrom('zones_et_reseaux_en_construction')
+            .select([
+              'id_fcu',
+              'nom_reseau',
+              sql<string | null>`NULL`.as('Identifiant reseau'),
+              'tags',
+              'notes',
+              sql<NetworkType>`'en_construction'`.as('network_type'),
+            ])
+        )
+        .as('r')
+    )
+    .leftJoinLateral(
+      (eb) =>
+        eb
+          .selectFrom('demands')
+          .select(
+            sql
+              .raw<{
+                allTime: Stats;
+                lastThreeMonths: Stats;
+                lastSixMonths: Stats;
+              }>(`
+                jsonb_build_object(
+                  'total', jsonb_build_object(
+                    'total', COUNT(*),
+                    'pending', COUNT(*) FILTER (
+                      WHERE COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}'
+                        AND COALESCE((legacy_values->>'Prise de contact')::boolean, false) = false
+                    )
+                  ),
+                  'lastThreeMonths', jsonb_build_object(
+                    'total', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '3 months'),
+                    'pending', COUNT(*) FILTER (
+                      WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '3 months'
+                        AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}'
+                        AND COALESCE((legacy_values->>'Prise de contact')::boolean, false) = false
+                    )
+                  ),
+                  'lastSixMonths', jsonb_build_object(
+                    'total', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '6 months'),
+                    'pending', COUNT(*) FILTER (
+                      WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '6 months'
+                        AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}'
+                        AND COALESCE((legacy_values->>'Prise de contact')::boolean, false) = false
+                    )
+                  )
+                )
+              `)
+              .as('stats')
+          )
+          .whereRef('demands.network_id', '=', sql.ref('r.id_fcu'))
+          .where('demands.network_type', '=', sql.ref<NetworkType>('r.network_type'))
+          .where('demands.deleted_at', 'is', null)
+          .as('demands_stats'),
+      (join) => join.onTrue()
+    )
+    .select([
+      'r.id_fcu',
+      'r.nom_reseau',
+      'r.Identifiant reseau',
+      'r.network_type',
+      'r.tags',
+      'r.notes',
+
+      // Users with permissions on this network
+      sql<FrontendType<Selectable<Pick<Users, 'id' | 'email' | 'last_connection'>>>[]>`
+        COALESCE(
+          (
+            SELECT json_agg(
+              json_build_object(
+                'id', u.id,
+                'email', u.email,
+                'last_connection', u.last_connection
+              )
+              ORDER BY u.last_connection DESC NULLS LAST
+            )
+            FROM users u
+            JOIN user_permissions up ON up.user_id = u.id
+            WHERE up.resource_id = ${sql.ref('r.id_fcu')}::text
+              AND up.type = CASE WHEN ${sql.ref('r.network_type')} = 'existant' THEN 'reseau_existant' ELSE 'reseau_en_construction' END
+              AND u.active IS TRUE
+          ),
+          '[]'::json
+        )
+      `.as('users'),
+
+      // Reminders (all, ordered most recent first)
+      sql<{ id: string; author_email: string | null; note: string | null; created_at: string }[]>`
+        COALESCE(
+          (
+            SELECT json_agg(
+              json_build_object(
+                'id', nr.id,
+                'author_email', u.email,
+                'note', nr.note,
+                'created_at', nr.created_at
+              )
+              ORDER BY nr.created_at DESC
+            )
+            FROM network_reminders nr
+            LEFT JOIN users u ON u.id = nr.author_id
+            WHERE nr.network_id = ${sql.ref('r.id_fcu')}
+              AND nr.network_type = ${sql.ref('r.network_type')}
+          ),
+          '[]'::json
+        )
+      `.as('reminders'),
+
+      // Stats
+      sql<Stats>`
+        COALESCE(
+          ${sql.ref('demands_stats.stats')}->'total',
+          '{"total": 0, "pending": 0}'::jsonb
+        )
+      `.as('allTime'),
+      sql<Stats>`
+        COALESCE(
+          ${sql.ref('demands_stats.stats')}->'lastThreeMonths',
+          '{"total": 0, "pending": 0}'::jsonb
+        )
+      `.as('lastThreeMonths'),
+      sql<Stats>`
+        COALESCE(
+          ${sql.ref('demands_stats.stats')}->'lastSixMonths',
+          '{"total": 0, "pending": 0}'::jsonb
+        )
+      `.as('lastSixMonths'),
+    ])
+    .orderBy('r.nom_reseau', 'asc')
+    .execute();
+
+  return reseauxStats;
+};
+
+export type ReseauxStats = Awaited<ReturnType<typeof getReseauxStats>>[number];
+
+/**
  * Recalcule l'éligibilité d'une demande en re-géocodant l'adresse via la BAN.
  * Délègue à updateEligibilityTestAddress qui met à jour l'adresse et les legacy_values de la demande.
  */
@@ -1091,4 +1348,184 @@ export const recalculateEligibility = async (demandId: string) => {
     .executeTakeFirstOrThrow();
 
   return updateEligibilityTestAddress(testAddress.id, testAddress.source_address);
+};
+
+/**
+ * Admin: validates a demand (sets validated = true, computes relance, syncs to legacy_values).
+ */
+export const validateDemand = async (demandId: string, adminUserId: string) => {
+  const demand = await kdb
+    .selectFrom(tableName)
+    .selectAll()
+    .where('id', '=', demandId)
+    .where('deleted_at', 'is', null)
+    .executeTakeFirstOrThrow();
+
+  const distance = demand.legacy_values['Distance au réseau'] ?? 999999;
+  const isCollectif = demand.legacy_values['Type de chauffage'] === 'Collectif';
+  const relanceAActiver = distance < 200 && isCollectif;
+
+  await kdb
+    .updateTable(tableName)
+    .set({
+      legacy_values: sql`legacy_values || ${JSON.stringify({
+        'Gestionnaires validés': true,
+        'Relance à activer': relanceAActiver,
+      })}::jsonb`,
+      updated_at: new Date(),
+      validated: true,
+    })
+    .where('id', '=', demandId)
+    .where('deleted_at', 'is', null)
+    .execute();
+
+  await createUserEvent({
+    author_id: adminUserId,
+    context_id: demandId,
+    context_type: 'demand',
+    data: { relance_a_activer: relanceAActiver, validated: true },
+    type: 'demand_validated',
+  });
+};
+
+/**
+ * Admin: unvalidates a demand (sets validated = false, syncs to legacy_values).
+ */
+export const unvalidateDemand = async (demandId: string, adminUserId: string) => {
+  await kdb
+    .updateTable(tableName)
+    .set({
+      legacy_values: sql`legacy_values || '{"Gestionnaires validés": false}'::jsonb`,
+      updated_at: new Date(),
+      validated: false,
+    })
+    .where('id', '=', demandId)
+    .where('deleted_at', 'is', null)
+    .execute();
+
+  await createUserEvent({
+    author_id: adminUserId,
+    context_id: demandId,
+    context_type: 'demand',
+    data: { validated: false },
+    type: 'demand_unvalidated',
+  });
+};
+
+/**
+ * Admin: changes the network assigned to a demand.
+ * Pass null for both to unassign the network.
+ * Resets validated to false (admin must re-validate after network change).
+ */
+export const changeDemandNetwork = async (
+  demandId: string,
+  networkIdFcu: number | null,
+  networkType: NetworkType | null,
+  adminUserId: string
+): Promise<void> => {
+  let sncuId: string | null = null;
+  let networkName: string | null = null;
+
+  if (networkIdFcu && networkType === 'existant') {
+    const network = await kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select([sql<string>`"Identifiant reseau"`.as('sncu_id'), 'nom_reseau'])
+      .where('id_fcu', '=', networkIdFcu)
+      .executeTakeFirst();
+    sncuId = network?.sncu_id ?? null;
+    networkName = network?.nom_reseau ?? null;
+  } else if (networkIdFcu && networkType === 'en_construction') {
+    const network = await kdb
+      .selectFrom('zones_et_reseaux_en_construction')
+      .select('nom_reseau')
+      .where('id_fcu', '=', networkIdFcu)
+      .executeTakeFirst();
+    networkName = network?.nom_reseau ?? null;
+  }
+
+  await kdb
+    .updateTable(tableName)
+    .set({
+      legacy_values: sql`legacy_values || ${JSON.stringify({
+        'Gestionnaires validés': false,
+        'Identifiant réseau': sncuId,
+        'Nom réseau': networkName,
+      })}::jsonb`,
+      network_id: networkIdFcu,
+      network_type: networkType,
+      updated_at: new Date(),
+      validated: false,
+    })
+    .where('id', '=', demandId)
+    .where('deleted_at', 'is', null)
+    .execute();
+
+  await createUserEvent({
+    author_id: adminUserId,
+    context_id: demandId,
+    context_type: 'demand',
+    data: { network_id: networkIdFcu, network_name: networkName, network_type: networkType },
+    type: 'demand_network_changed',
+  });
+};
+
+/**
+ * Collectivité/ALEC: requests a network change on a demand.
+ * Creates an event for admin review. The demand stays visible to the current gestionnaire.
+ */
+export const requestNetworkChange = async (demandId: string, requestedSncuId: string, reason: string, userId: string) => {
+  // Verify the demand exists
+  const demand = await kdb
+    .selectFrom(tableName)
+    .select(['id', 'network_id'])
+    .where('id', '=', demandId)
+    .where('deleted_at', 'is', null)
+    .executeTakeFirst();
+
+  if (!demand) {
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' });
+  }
+
+  await createUserEvent({
+    author_id: userId,
+    context_id: demandId,
+    context_type: 'demand',
+    data: { current_network_id: demand.network_id, reason, requested_sncu_id: requestedSncuId },
+    type: 'demand_network_change_requested',
+  });
+
+  // Send notification email to admin
+  const requester = await kdb.selectFrom('users').select('email').where('id', '=', userId).executeTakeFirst();
+  await sendEmailTemplate(
+    'demands.admin-network-change-request',
+    { email: clientConfig.destinationEmails.pro },
+    { demandId, reason, requestedSncuId, requesterEmail: requester?.email ?? userId }
+  ).catch((error: unknown) => {
+    logger.error('Failed to send network change request email:', error);
+  });
+};
+
+// ─── Anonymization helpers ──────────────────────────────────────────────────
+
+const anonymizeEmail = (email: string | undefined): string => {
+  if (!email) return 'anonyme@example.com';
+  const hash = simpleHash(email);
+  return `utilisateur${hash}@exemple.fr`;
+};
+
+const anonymizeName = (name: string | undefined): string => {
+  if (!name) return '***';
+  return `${name.charAt(0)}***`;
+};
+
+const anonymizePhone = (): string => {
+  return '06 ** ** ** **';
+};
+
+const simpleHash = (str: string): number => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 31 + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash) % 10000;
 };

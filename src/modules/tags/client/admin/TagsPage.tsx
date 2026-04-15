@@ -10,6 +10,7 @@ import Button from '@/components/ui/Button';
 import CallOut from '@/components/ui/CallOut';
 import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
+import Notice from '@/components/ui/Notice';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import useCrud from '@/hooks/useCrud';
 import { toastErrors } from '@/modules/notification';
@@ -91,38 +92,6 @@ export default function ManageTags() {
       cellType: 'Date',
       header: 'Créé le',
     },
-    {
-      cell: ({ row }) => (
-        <div className="flex gap-2">
-          <Button
-            size="small"
-            priority="tertiary"
-            iconId="fr-icon-edit-line"
-            title="Modifier le tag"
-            onClick={() => {
-              setEditingTag(row.original);
-              setEditTagName(row.original.name);
-              setEditTagType(row.original.type);
-              setIsEditDialogOpen(true);
-            }}
-          />
-          <Button
-            size="small"
-            priority="tertiary"
-            variant="destructive"
-            iconId="fr-icon-delete-bin-line"
-            title="Supprimer le tag"
-            onClick={() => {
-              setDeletingTag(row.original);
-              setIsDeleteDialogOpen(true);
-            }}
-          />
-        </div>
-      ),
-      header: 'Actions',
-      id: 'actions',
-      width: '120px',
-    },
   ];
 
   const handleCreate = toastErrors(
@@ -165,10 +134,13 @@ export default function ManageTags() {
       <Box py="4w" className="fr-container">
         <div className="flex justify-between items-center mb-4">
           <Heading as="h1" color="blue-france">
-            Gestion des tags gestionnaires
+            Gestion des tags gestionnaires (obsolète)
           </Heading>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>Ajouter un tag</Button>
         </div>
+
+        <Notice variant="warning" className="mb-4">
+          Cette page est obsolète. Les tags gestionnaires sont remplacés par le système de permissions.
+        </Notice>
 
         <CallOut title="Tags gestionnaires" size="sm">
           <p>Les tags sont utilisés pour mettre en relation les demandes déposées avec les gestionnaires.</p>

@@ -70,4 +70,4 @@ Think critically first, code second. One good question beats three iterations.
 
 Each module in `src/modules/` may have its own `AGENTS.md`. Read it when editing files in or importing from that module.
 
-25 modules: `analytics`, `app`, `auth`, `ban`, `bdnb`, `chaleur-renouvelable`, `config`, `data`, `demands`, `diagnostic`, `email`, `events`, `form`, `geo`, `jobs`, `notification`, `opendata`, `optimization`, `pro-eligibility-tests`, `reseaux`, `security`, `tags`, `tiles`, `trpc`, `users`.
+26 modules: `analytics`, `app`, `auth`, `ban`, `bdnb`, `chaleur-renouvelable`, `config`, `data`, `demands`, `diagnostic`, `email`, `events`, `form`, `geo`, `jobs`, `notification`, `opendata`, `optimization`, `permissions`, `pro-eligibility-tests`, `reseaux`, `security`, `tags`, `tiles`, `trpc`, `users`.

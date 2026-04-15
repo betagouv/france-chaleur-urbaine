@@ -9,7 +9,7 @@ import { routeRole, router } from '@/modules/trpc/server';
 
 import * as proEligibilityTestsService from './service';
 
-const authRoute = routeRole(['admin', 'gestionnaire', 'particulier', 'professionnel', 'demo']);
+const authRoute = routeRole(['admin', 'gestionnaire', 'particulier', 'professionnel']);
 const adminRoute = routeRole(['admin']);
 
 export const proEligibilityTestsRouter = router({

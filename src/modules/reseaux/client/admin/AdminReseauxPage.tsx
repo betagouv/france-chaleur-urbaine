@@ -521,11 +521,12 @@ const GestionDesReseaux = () => {
                 void handleUpdateReseauDeChaleur(info.row.original.id_fcu, { tags })
               }
               multiple
+              disabled
             />
           </div>
         ),
         enableSorting: false,
-        header: 'Tags',
+        header: 'Tags (obsolète)',
         width: '400px',
       },
     ],
@@ -766,11 +767,12 @@ const GestionDesReseaux = () => {
                 void handleUpdateReseauEnConstruction(info.row.original.id_fcu, { tags })
               }
               multiple
+              disabled
             />
           </div>
         ),
         enableSorting: false,
-        header: 'Tags',
+        header: 'Tags (obsolète)',
         width: '400px',
       },
     ],

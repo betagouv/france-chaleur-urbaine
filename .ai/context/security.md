@@ -19,11 +19,37 @@
 enum USER_ROLE {
   ADMIN = 'admin',               // Full platform access, can impersonate
   GESTIONNAIRE = 'gestionnaire', // Network operator (manages demands for assigned networks)
+  COLLECTIVITE = 'collectivite', // Local authority (manages demands for their territory)
+  ALEC = 'alec',                 // Local energy agency (manages demands for their territory)
   PROFESSIONNEL = 'professionnel', // Professional (bulk testing, demand submission)
   PARTICULIER = 'particulier',    // Individual citizen
   DEMO = 'demo',                 // Pseudo-anonymized UI view (used by admin to preview as anonymous user)
 }
 ```
+
+### Permissions system
+
+Permissions are stored in `user_permissions` table (not in session/JWT). Each permission links a user to a resource.
+
+| Permission type | Roles | resource_id | Demand column matched |
+|----------------|-------|-------------|----------------------|
+| `reseau_existant` | gestionnaire | FCU network ID (id_fcu) | `demands.network_id` |
+| `reseau_en_construction` | gestionnaire | Zone ID | `demands.network_id` |
+| `commune` | collectivite, alec | INSEE code | `demands.commune_code` |
+| `epci` | collectivite, alec | EPCI code | `demands.epci_code` |
+| `ept` | collectivite, alec | EPT code | `demands.ept_code` |
+| `departement` | collectivite, alec | Department code | `demands.departement_code` |
+| `region` | collectivite, alec | Region code | `demands.region_code` |
+| `national` | collectivite, alec | NULL | No filter (all validated) |
+
+**Key module**: `src/modules/permissions/` — types, server service, tRPC routes, client editor.
+
+**Access check flow**:
+1. `getUserPermissions(userId)` loads permissions from DB (or `ctx.getPermissions()` for impersonation-aware access).
+2. `buildDemandAccessFilter(user, permissions)` returns a Kysely query builder callback for DB-level filtering.
+3. `canUserAccessDemand(user, permissions, demand)` checks a single demand in memory.
+
+**Important**: `resource_id` in `user_permissions` is TEXT, but `network_id` in demands is SMALLINT. The service handles conversion at the boundary.
 
 ### tRPC authorization (modern)
 
@@ -53,11 +79,21 @@ import { handleRouteErrors } from '@/server/helpers/server';
 // Wraps route with auth + error handling
 ```
 
+### Impersonation
+
+Admin can impersonate any role with custom permissions via `/api/admin/impersonate`. Impersonated permissions are stored in the JWT and passed through `ctx.getPermissions()` instead of loading from DB. This allows testing permission-scoped views without modifying real user data.
+
+### JWT
+
+The JWT only contains the user ID (`sub`). All other user data (role, email, etc.) is loaded fresh from the DB on every session access via `getUserSession()`. This ensures session data is always up-to-date.
+
 ### Key rules
 
 - Always check permissions in the **service layer** (not just routes).
 - Admin role has full override on all operations.
-- Gestionnaires are scoped to their assigned networks.
+- Gestionnaires are scoped to their assigned networks via `user_permissions`.
+- Collectivités/ALEC are scoped to their territory via `user_permissions`.
+- Use `ctx.getPermissions()` (not `getUserPermissions(userId)` directly) to support impersonation.
 - Never trust client-side role checks — always enforce server-side.
 - Check resource ownership (not just "is logged in").
 

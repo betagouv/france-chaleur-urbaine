@@ -1,14 +1,17 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 
+import { roles } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
-import { upperCaseFirstChar } from '@/utils/strings';
 
 const roleConfig = {
   admin: {
     className: 'bg-destructive! text-white!',
   },
-  demo: {
-    className: 'bg-yellow-300! text-black!',
+  alec: {
+    className: 'bg-teal-600! text-white!',
+  },
+  collectivite: {
+    className: 'bg-orange-600! text-white!',
   },
   gestionnaire: {
     className: 'bg-purple-700! text-white!',
@@ -34,7 +37,7 @@ const UserRoleBadge = ({ role }: UserRoleBadgeProps) => {
   const config = roleConfig[role];
   return (
     <Badge small className={config.className}>
-      {upperCaseFirstChar(role)}
+      {roles[role]}
     </Badge>
   );
 };

@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { getUserPermissions } from '@/modules/permissions/server/service';
+import type { Permission } from '@/modules/permissions/types';
 import { getServerSession } from '@/server/authentication';
 import { parentLogger } from '@/server/helpers/logger';
 import type { UserRole } from '@/types/enum/UserRole';
@@ -23,7 +25,25 @@ const buildContext = async (req: NextApiRequest, res?: NextApiResponse) => {
     user: process.env.LOG_REQUEST_USER ? req.user?.id : undefined,
   });
 
+  // When impersonating, use the permissions from the JWT instead of the DB
+  const impersonatedPermissions = req.session?.impersonatedPermissions as Permission[] | undefined;
+
+  const getPermissions = async (): Promise<Permission[]> => {
+    if (impersonatedPermissions) {
+      return impersonatedPermissions;
+    }
+    if (req.user?.id) {
+      return getUserPermissions(req.user.id);
+    }
+    return [];
+  };
+
+  // Anonymization toggle via cookie (admin only)
+  const anonymize = hasRole('admin') && req.cookies?.['fcu-anonymize'] === '1';
+
   return {
+    anonymize,
+    getPermissions,
     hasRole,
     headers: req.headers,
     logger,

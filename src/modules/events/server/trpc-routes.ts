@@ -33,7 +33,7 @@ const zSearchAuthorsInput = z.object({
 export const eventsRouter = router({
   admin: {
     getAuthorsByIds: routeRole(['admin'])
-      .input(z.object({ ids: z.array(z.uuid()) }))
+      .input(z.object({ ids: z.array(z.uuidv4()) }))
       .query(({ input }) => eventsService.getAuthorsByIds(input.ids)),
     getStats: routeRole(['admin'])
       .input(zGetStatsInput)

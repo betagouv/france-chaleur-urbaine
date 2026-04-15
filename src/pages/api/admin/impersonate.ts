@@ -23,20 +23,21 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   requireAuthentication(req.user, ['admin']);
 
   const impersonatedProfile = await validateObjectSchema(req.body, {
-    gestionnaires: z.array(z.string()).optional(),
-    role: z.enum(['gestionnaire', 'professionnel', 'particulier', 'demo'] as NonEmptyArray<UserRole>),
+    permissions: z.array(z.object({ resourceId: z.string().nullable(), type: z.string() })).optional(),
+    role: z.enum(['gestionnaire', 'collectivite', 'alec', 'professionnel', 'particulier'] as NonEmptyArray<UserRole>),
   });
 
   logger.info('impersonating', {
-    ...impersonatedProfile,
+    permissionsCount: impersonatedProfile.permissions?.length ?? 0,
+    role: impersonatedProfile.role,
   });
 
   const jwt = await getSessionJWT(req);
   await generateSessionJWT(res, {
     ...jwt,
     impersonatedProfile: {
-      gestionnaires: impersonatedProfile.gestionnaires ?? [],
       role: impersonatedProfile.role,
+      ...(impersonatedProfile.permissions?.length ? { permissions: impersonatedProfile.permissions } : {}),
     },
   });
   return;

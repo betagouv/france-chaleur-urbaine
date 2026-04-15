@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  networkTypes,
   zApplyGeometriesUpdatesInput,
   zCreateNetworkInput,
   zDeleteGeomUpdateInput,
@@ -54,6 +55,38 @@ const perimetreDeDeveloppementPrioritaireRouter = router({
   }),
 });
 
+const networkRemindersRouter = router({
+  create: adminRoute
+    .input(
+      z.object({
+        createdAt: z.string().optional(),
+        networkId: z.number(),
+        networkType: z.enum(networkTypes),
+        note: z.string().nullable().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return reseauxService.createNetworkReminder({
+        author_id: ctx.user.id,
+        created_at: input.createdAt ? new Date(input.createdAt) : undefined,
+        network_id: input.networkId,
+        network_type: input.networkType,
+        note: input.note ?? null,
+      });
+    }),
+  updateNotes: adminRoute
+    .input(
+      z.object({
+        networkId: z.number(),
+        networkType: z.enum(networkTypes),
+        notes: z.string().nullable(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await reseauxService.updateNetworkNotes(input.networkId, input.networkType, input.notes);
+    }),
+});
+
 export const reseauxRouter = router({
   applyGeometriesUpdates: adminRoute
     .input(zApplyGeometriesUpdatesInput)
@@ -84,11 +117,15 @@ export const reseauxRouter = router({
   listNetworks: route.query(async () => {
     return await reseauxService.listNetworks();
   }),
+  networkReminders: networkRemindersRouter,
   perimetreDeDeveloppementPrioritaire: perimetreDeDeveloppementPrioritaireRouter,
   // Sous-routeurs par type
   reseauDeChaleur: reseauDeChaleurRouter,
   reseauDeFroid: reseauDeFroidRouter,
   reseauEnConstruction: reseauEnConstructionRouter,
+  searchNetworks: adminRoute.input(z.object({ search: z.string().min(2) })).query(async ({ input }) => {
+    return await reseauxService.searchNetworks(input.search);
+  }),
 
   // Opérations communes à tous les types
   updateGeomUpdate: adminRoute.input(zUpdateGeomUpdateInput).mutation(async ({ input }) => {

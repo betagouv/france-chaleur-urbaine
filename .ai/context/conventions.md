@@ -83,6 +83,14 @@
   type Result = { success: boolean; data?: User; error?: string }
   ```
 
+## Environment variables
+
+- **Never use `process.env` directly** — always use the validated config objects.
+- Server-side: `import { serverConfig } from '@/server/config'` → `serverConfig.MY_VAR`
+- Client-side: `import { clientConfig } from '@/client-config'` → `clientConfig.myVar`
+- When adding a new variable: add it to `serverConfigSchema` in `src/server/config.ts` (or the client config), AND to `.env.example`.
+- Both configs use Zod validation — bypassing them loses type safety and runtime validation.
+
 ## Error handling patterns
 
 - Services throw `TRPCError` with appropriate codes: `BAD_REQUEST`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `INTERNAL_SERVER_ERROR`.
@@ -97,6 +105,12 @@
 - `// HACK:` for workarounds (explain why + when to remove).
 - No commented-out code — delete it.
 - No JSDoc except on complex public utility functions.
+
+## AI communication style
+
+- Never present multiple contradictory options that go back and forth. Think through all tradeoffs internally first, then deliver ONE clear, definitive recommendation.
+- If there are genuine tradeoffs the user needs to weigh, present them as a clean comparison — not a narrative that contradicts itself paragraph by paragraph.
+- No "actually wait", no "let me reconsider", no live stream of internal deliberation.
 
 ## Pre-commit checklist
 

@@ -417,4 +417,4 @@ function DemandesNew(): React.ReactElement {
 
 export default DemandesNew;
 
-export const getServerSideProps = withAuthentication(['particulier', 'professionnel', 'gestionnaire', 'admin']);
+export const getServerSideProps = withAuthentication(['particulier', 'professionnel', 'gestionnaire', 'collectivite', 'alec', 'admin']);

@@ -10,10 +10,9 @@ import cx from '@/utils/cx';
 type EligibilityHelpDialogProps = {
   children?: ReactNode;
   detailedEligibilityStatus?: ProEligibilityTestHistoryEntry['eligibility'] & { communes?: string[] };
-  tags?: string[];
 };
 
-const EligibilityHelpDialog = ({ children, detailedEligibilityStatus, tags }: EligibilityHelpDialogProps) => {
+const EligibilityHelpDialog = ({ children, detailedEligibilityStatus }: EligibilityHelpDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -61,9 +60,6 @@ const EligibilityHelpDialog = ({ children, detailedEligibilityStatus, tags }: El
                           <div>
                             <span className="font-medium">Distance au réseau le plus proche :</span>{' '}
                             {detailedEligibilityStatus.distance != null ? `${detailedEligibilityStatus.distance} m` : '—'}
-                          </div>
-                          <div>
-                            <span className="font-medium">Tags gestionnaires potentiels :</span> {tags?.length ? tags?.join(', ') : '—'}
                           </div>
                           <details className="mt-2">
                             <summary className="cursor-pointer font-medium">Voir les données brutes</summary>

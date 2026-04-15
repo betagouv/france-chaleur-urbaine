@@ -54,7 +54,7 @@ export const testsAdressesGeoJSONQuery = defineTilesGenerationStrategy(async (co
 
   logger.info('Starting chunked extraction');
 
-  const result = await extractNDJSONFromDatabaseTable('tests_adresses_tiles_features' as any, {
+  const result = await extractNDJSONFromDatabaseTable('tests_adresses_tiles_features', {
     chunkSize: 10000,
     fields: ['id', 'ban_address', 'geom', 'eligibility', 'eligible', 'tests'],
     idField: 'id',

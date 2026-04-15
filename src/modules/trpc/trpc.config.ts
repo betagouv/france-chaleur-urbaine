@@ -9,6 +9,7 @@ import { demandsRouter } from '@/modules/demands/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
 import { eventsRouter } from '@/modules/events/server/trpc-routes';
 import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
+import { permissionsRouter } from '@/modules/permissions/server/trpc-routes';
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
 import { reseauxRouter } from '@/modules/reseaux/server/trpc-routes';
 import { tagsRouter } from '@/modules/tags/server/trpc-routes';
@@ -54,6 +55,7 @@ export const appRouter = router({
     };
   }),
   jobs: jobsRouter,
+  permissions: permissionsRouter,
   proEligibilityTests: proEligibilityTestsRouter,
   reseaux: reseauxRouter,
   tags: tagsRouter,

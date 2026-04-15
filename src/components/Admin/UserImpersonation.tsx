@@ -1,68 +1,49 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 
-import ComboBox, { type ComboBoxOption } from '@/components/ui/ComboBox';
+import PermissionsInput from '@/modules/permissions/client/PermissionsInput';
+import type { Permission } from '@/modules/permissions/types';
+import { permissionTypes } from '@/modules/permissions/types';
 import type { UserRole } from '@/types/enum/UserRole';
-import { fetchJSON, postFetchJSON } from '@/utils/network';
-import { normalize } from '@/utils/strings';
-
-interface TagOption {
-  label: string;
-  value: string;
-  searchValue: string;
-}
+import { userRolesWithPermissions } from '@/types/enum/UserRole';
+import { postFetchJSON } from '@/utils/network';
 
 const roles = [
   { label: 'Gestionnaire', value: 'gestionnaire' },
+  { label: 'Collectivité', value: 'collectivite' },
+  { label: 'ALEC', value: 'alec' },
   { label: 'Professionnel', value: 'professionnel' },
   { label: 'Particulier', value: 'particulier' },
-  { label: 'Démo', value: 'demo' },
 ] satisfies { label: string; value: UserRole }[];
 
 type ImpersonateUserRole = (typeof roles)[number]['value'];
 
+const roleNeedsPermissions = (role: ImpersonateUserRole): boolean => {
+  return (userRolesWithPermissions as readonly string[]).includes(role);
+};
+
 const UserImpersonation = () => {
   const [selectedRole, setSelectedRole] = useState<ImpersonateUserRole>('gestionnaire');
-  const [selectedTagsGestionnaires, setSelectedTagsGestionnaires] = useState<string[]>([]);
-  const [allTagsGestionnaires, setAllTagsGestionnaires] = useState<TagOption[]>([]);
-
-  useEffect(() => {
-    void (async () => {
-      const tags = await fetchJSON<string[]>('/api/admin/tags-gestionnaires');
-      setAllTagsGestionnaires(
-        tags.sort(Intl.Collator().compare).map((tag) => ({
-          label: tag,
-          searchValue: normalize(tag),
-          value: tag,
-        }))
-      );
-    })();
-  }, []);
-
-  const comboTagsOptions: ComboBoxOption[] = useMemo(() => {
-    return allTagsGestionnaires.map((opt) => ({ key: opt.value, label: opt.label }));
-  }, [allTagsGestionnaires]);
-
-  const handleRoleChange = (newRole: ImpersonateUserRole) => {
-    setSelectedRole(newRole);
-    if (newRole !== 'gestionnaire') {
-      setSelectedTagsGestionnaires([]);
-    }
-  };
+  const [permissions, setPermissions] = useState<Permission[]>([]);
 
   async function startImpersonation() {
     try {
       await postFetchJSON('/api/admin/impersonate', {
         role: selectedRole,
-        ...(selectedRole === 'gestionnaire' && { gestionnaires: selectedTagsGestionnaires }),
+        ...(roleNeedsPermissions(selectedRole) && permissions.length > 0 ? { permissions } : {}),
       });
-      // trigger a full reload
+      // trigger a full reload to update the session
       location.href = '/pro/tableau-de-bord';
     } catch (err) {
       console.error('err', err);
     }
   }
+
+  const handleRoleChange = (role: ImpersonateUserRole) => {
+    setSelectedRole(role);
+    setPermissions([]);
+  };
 
   return (
     <>
@@ -72,22 +53,16 @@ const UserImpersonation = () => {
         label="Rôle"
         className="fr-col-xl-4 fr-col-md-6 fr-mb-2w"
         nativeSelectProps={{
-          onChange: (e) => handleRoleChange(e.target.value),
+          onChange: (e) => handleRoleChange(e.target.value as ImpersonateUserRole),
           value: selectedRole,
         }}
         options={roles}
       />
 
-      {selectedRole === 'gestionnaire' && (
-        <div className="fr-col-xl-4 fr-col-md-6 fr-mb-2w">
-          <ComboBox
-            label="Tags gestionnaires"
-            options={comboTagsOptions}
-            multiple
-            value={selectedTagsGestionnaires}
-            onChange={setSelectedTagsGestionnaires}
-            placeholder="Sélectionner…"
-          />
+      {roleNeedsPermissions(selectedRole) && (
+        <div className="fr-col-xl-6 fr-col-md-8 fr-mb-2w">
+          <label className="fr-label">Permissions simulées</label>
+          <PermissionsInput value={permissions} onChange={setPermissions} availableTypes={permissionTypes} />
         </div>
       )}
 

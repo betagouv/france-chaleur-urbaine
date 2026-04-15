@@ -55,9 +55,27 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       a eu <strong>{event.data?.count}</strong> demande(s) liée(s) à son compte
     </span>
   ),
+  demand_network_change_requested: (event, updateFilters) => (
+    <>
+      <span>a demandé un changement de réseau pour une </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  demand_network_changed: (event, updateFilters) => (
+    <>
+      <span>a changé le réseau d'une </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
   demand_relance_sent: (event, updateFilters) => (
     <>
       <span>Une {event.data?.isSecondRelance ? 'seconde ' : 'première '}relance a été envoyée pour la </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  demand_unvalidated: (event, updateFilters) => (
+    <>
+      <span>a dé-validé une </span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),
@@ -65,6 +83,20 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
     <>
       <span>a mis à jour une </span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  demand_validated: (event, updateFilters) => (
+    <>
+      <span>a validé une </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  network_reminder_created: (event, updateFilters) => (
+    <>
+      <span>a enregistré une relance pour le réseau</span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'network' })}>
+        {event.data?.network_id}
+      </FilterButton>
     </>
   ),
   pro_eligibility_test_created: (event, updateFilters) => (

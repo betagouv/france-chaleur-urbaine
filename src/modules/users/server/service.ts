@@ -25,6 +25,7 @@ export const list = async () => {
       'structure_name',
       'structure_type',
       'structure_other',
+      'siret',
       'optin_at',
       'created_at',
       'last_connection',
@@ -84,4 +85,37 @@ export const updateProfile = async (userId: string, data: UpdateProfileSchema) =
   const result = await kdb.updateTable('users').set(data).where('id', '=', userId).executeTakeFirst();
 
   return result.numUpdatedRows > 0;
+};
+
+/**
+ * Looks up a SIRET via the public recherche-entreprises API.
+ * Returns company info for visual validation in the admin UI.
+ */
+export const lookupSiret = async (siret: string) => {
+  const response = await fetch(`https://recherche-entreprises.api.gouv.fr/search?q=${encodeURIComponent(siret)}&mtm_campaign=fcu`);
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const data = (await response.json()) as {
+    results: Array<{
+      nom_complet: string;
+      nom_raison_sociale: string;
+      siege: { siret: string; adresse: string; code_postal: string; libelle_commune: string };
+      nature_juridique: string;
+      tranche_effectif_salarie: string;
+    }>;
+  };
+
+  const match = data.results.find((r) => r.siege.siret === siret);
+  if (!match) {
+    return null;
+  }
+
+  return {
+    address: `${match.siege.adresse}, ${match.siege.code_postal} ${match.siege.libelle_commune}`,
+    name: match.nom_complet,
+    siret: match.siege.siret,
+  };
 };

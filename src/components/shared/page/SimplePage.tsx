@@ -378,25 +378,31 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         linkProps: {
           href: '/admin/demandes/stats',
         },
-        text: 'Statistiques des demandes',
+        text: 'Statistiques des demandes (obsolète)',
       },
       {
         linkProps: {
           href: '/admin/tags',
         },
-        text: 'Gestion des tags gestionnaires',
+        text: 'Gestion des tags gestionnaires (obsolète)',
       },
       {
         linkProps: {
           href: '/admin/assignment-rules',
         },
-        text: "Gestion des règles d'affectation",
+        text: "Gestion des règles d'affectation (obsolète)",
       },
       {
         linkProps: {
           href: '/admin/reseaux',
         },
         text: 'Gestion des réseaux',
+      },
+      {
+        linkProps: {
+          href: '/admin/reseaux/stats',
+        },
+        text: 'Statistiques par réseau',
       },
       {
         linkProps: {
@@ -483,7 +489,7 @@ const PageHeader = (props: PageHeaderProps) => {
       return [
         ...authenticatedNavigationMenu,
         ...(hasRole('admin') ? adminNavigationMenu : []),
-        ...(hasRole('gestionnaire') || hasRole('demo') ? gestionnaireNavigationMenu : []),
+        ...(hasRole('gestionnaire') || hasRole('collectivite') || hasRole('alec') ? gestionnaireNavigationMenu : []),
         ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
       ];
     }

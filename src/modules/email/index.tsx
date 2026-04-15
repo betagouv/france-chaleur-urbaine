@@ -18,6 +18,9 @@ export const mailTransport = nodemailer.createTransport({
   dnsTimeout: 30000,
   greetingTimeout: 30000,
   host: serverConfig.MAIL_HOST,
+  maxConnections: 5,
+  maxMessages: 100,
+  pool: true,
   port: serverConfig.MAIL_PORT,
   secure: false, // upgrade later with STARTTLS
   socketTimeout: 30000,

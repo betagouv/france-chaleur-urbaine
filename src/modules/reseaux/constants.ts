@@ -6,6 +6,9 @@ import { Airtable } from '@/types/enum/Airtable';
 import { defineSubsetConfig, ObjectKeys } from '@/utils/typescript';
 import { zGeometry } from '@/utils/validation';
 
+export const networkTypes = ['existant', 'en_construction'] as const;
+export type NetworkType = (typeof networkTypes)[number];
+
 export const zUpdateReseauInput = z.object({
   id: z.number(),
   tags: z.array(z.string()),

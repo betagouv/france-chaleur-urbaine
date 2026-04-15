@@ -1,5 +1,6 @@
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
+import { useSession } from 'next-auth/react';
 import { useCallback, useMemo, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
@@ -23,6 +24,7 @@ import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
 import Contacted from '@/modules/demands/client/Contacted';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
+import NetworkChangeRequestDialog from '@/modules/demands/client/NetworkChangeRequestDialog';
 import Status from '@/modules/demands/client/Status';
 import type { Demand } from '@/modules/demands/types';
 import { toastErrors } from '@/modules/notification';
@@ -184,6 +186,8 @@ const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 let isUpdatingDemandField = false;
 
 function DemandesNew(): React.ReactElement {
+  const { data: session } = useSession();
+  const isTerritoryRole = session?.user?.role === 'collectivite' || session?.user?.role === 'alec';
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [modalDemand, setModalDemand] = useState<DemandsListItem | null>(null);
   const tableRowSelection = useMemo(() => {
@@ -243,9 +247,7 @@ function DemandesNew(): React.ReactElement {
         cell: ({ row }) => (
           <div className="flex flex-col gap-2">
             {row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
-              <Tooltip
-                title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
-              >
+              <Tooltip title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée.`}>
                 <Icon name="fr-icon-flag-fill" size="sm" color="red" />
               </Tooltip>
             )}
@@ -439,39 +441,17 @@ function DemandesNew(): React.ReactElement {
         header: 'Commentaires',
         width: '280px',
       },
-      {
-        accessorKey: 'Affecté à',
-        cell: ({ row }) => (
-          <AdditionalInformation
-            demand={row.original as unknown as Demand}
-            field="Affecté à"
-            updateDemand={updateDemand}
-            type="text"
-            width={125}
-          />
-        ),
-        enableSorting: false,
-        filterType: 'Facets',
-        header: () => (
-          <div className="flex items-center">
-            Affecté à
-            <Tooltip
-              iconProps={{
-                className: 'ml-1',
-              }}
-              title={
-                <>
-                  "Non affecté" : demande éloignée du réseau non transmise aux opérateurs
-                  <br />
-                  <br />
-                  Vous pouvez ajouter ou modifier une affectation : le changement sera effectif après validation manuelle par l'équipe FCU.
-                </>
-              }
-            />
-          </div>
-        ),
-        width: '150px',
-      },
+      ...(isTerritoryRole
+        ? [
+            {
+              cell: ({ row }: { row: { original: DemandsListItem } }) => <NetworkChangeRequestDialog demandId={row.original.id} />,
+              enableSorting: false,
+              header: '',
+              id: 'actions',
+              width: '160px',
+            } satisfies ColumnDef<DemandsListItem>,
+          ]
+        : []),
       // obligatoire afin d'être utilisables dans les presets
       {
         accessorKey: 'haut_potentiel',
@@ -484,7 +464,7 @@ function DemandesNew(): React.ReactElement {
         visible: false,
       },
     ],
-    [updateDemand]
+    [updateDemand, isTerritoryRole]
   );
 
   const onTableRowClick = useCallback(
@@ -622,4 +602,4 @@ function DemandesNew(): React.ReactElement {
 
 export default DemandesNew;
 
-export const getServerSideProps = withAuthentication(['gestionnaire', 'demo', 'admin']);
+export const getServerSideProps = withAuthentication(['gestionnaire', 'collectivite', 'alec', 'admin']);

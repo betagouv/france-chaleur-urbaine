@@ -1,0 +1,114 @@
+import { describe, expect, it } from 'vitest';
+
+import type { TestCaseBoolean } from '@/tests/trpc-helpers';
+import type { UserRole } from '@/types/enum/UserRole';
+
+import type { Permission } from '../types';
+import { canUserAccessDemand, type DemandForAccess } from './demand-access';
+
+type UserWithRole = { id: string; role: UserRole };
+
+type TestInput = {
+  user: UserWithRole;
+  permissions: Permission[];
+  demand: DemandForAccess;
+};
+
+const admin: UserWithRole = { id: '1', role: 'admin' };
+const gestionnaire: UserWithRole = { id: '1', role: 'gestionnaire' };
+const collectivite: UserWithRole = { id: '1', role: 'collectivite' };
+const alec: UserWithRole = { id: '1', role: 'alec' };
+const particulier: UserWithRole = { id: '1', role: 'particulier' };
+
+const baseDemand: DemandForAccess = {
+  commune_code: '75056',
+  departement_code: '75',
+  epci_code: null,
+  ept_code: 'T1',
+  network_id: 1,
+  network_type: 'existant',
+  region_code: '11',
+  validated: true,
+};
+
+const unvalidated: DemandForAccess = { ...baseDemand, validated: false };
+const constructionDemand: DemandForAccess = { ...baseDemand, network_type: 'en_construction' };
+
+const networkExistant: Permission = { resourceId: '1', type: 'reseau_existant' };
+const networkConstruction: Permission = { resourceId: '1', type: 'reseau_en_construction' };
+const networkWrongId: Permission = { resourceId: '999', type: 'reseau_existant' };
+const commune75056: Permission = { resourceId: '75056', type: 'commune' };
+const dept75: Permission = { resourceId: '75', type: 'departement' };
+const dept13: Permission = { resourceId: '13', type: 'departement' };
+const region11: Permission = { resourceId: '11', type: 'region' };
+const eptT1: Permission = { resourceId: 'T1', type: 'ept' };
+const national: Permission = { resourceId: null, type: 'national' };
+
+const testLabel = ({ user, permissions, demand }: TestInput): string => {
+  const parts: string[] = [user.role];
+  if (permissions.length > 0) {
+    parts.push(`[${permissions.map((p) => `${p.type}:${p.resourceId ?? 'null'}`).join(', ')}]`);
+  } else {
+    parts.push('[no perms]');
+  }
+  if (!demand.validated) parts.push('(unvalidated)');
+  if (demand.network_type === 'en_construction') parts.push('(construction)');
+  return parts.join(' ');
+};
+
+describe('canUserAccessDemand', () => {
+  const cases: TestCaseBoolean<TestInput>[] = [
+    // Admin — always true
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [], user: admin } },
+    { expectedOutput: true, input: { demand: unvalidated, permissions: [], user: admin } },
+
+    // Particulier — always false
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [], user: particulier } },
+
+    // Gestionnaire with network permissions
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [networkExistant], user: gestionnaire } },
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [networkWrongId], user: gestionnaire } },
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [networkConstruction], user: gestionnaire } },
+    { expectedOutput: true, input: { demand: constructionDemand, permissions: [networkConstruction], user: gestionnaire } },
+    { expectedOutput: false, input: { demand: unvalidated, permissions: [networkExistant], user: gestionnaire } },
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [], user: gestionnaire } },
+
+    // Gestionnaire with territory permissions (decoupled — any role can have any permission type)
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [commune75056], user: gestionnaire } },
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [national], user: gestionnaire } },
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [dept13], user: gestionnaire } },
+
+    // Collectivité with territory permissions
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [commune75056], user: collectivite } },
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [dept75], user: collectivite } },
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [region11], user: collectivite } },
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [eptT1], user: collectivite } },
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [national], user: collectivite } },
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [dept13], user: collectivite } },
+    { expectedOutput: false, input: { demand: unvalidated, permissions: [commune75056], user: collectivite } },
+
+    // Collectivité with network permissions (decoupled)
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [networkExistant], user: collectivite } },
+
+    // ALEC — same logic
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [dept75], user: alec } },
+    { expectedOutput: true, input: { demand: constructionDemand, permissions: [networkConstruction], user: alec } },
+
+    // Multiple permissions — one match is enough
+    {
+      expectedOutput: true,
+      input: { demand: baseDemand, permissions: [{ resourceId: '13055', type: 'commune' }, dept75], user: collectivite },
+    },
+
+    // Mixed network + territory permissions
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [networkExistant, dept75], user: gestionnaire } },
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [networkWrongId, dept75], user: gestionnaire } },
+  ];
+
+  cases.forEach(({ input, expectedOutput }) => {
+    const action = expectedOutput ? 'grants' : 'denies';
+    it(`${action} access: ${testLabel(input)}`, () => {
+      expect(canUserAccessDemand(input.user, input.permissions, input.demand)).toStrictEqual(expectedOutput);
+    });
+  });
+});

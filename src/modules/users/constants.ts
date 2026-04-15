@@ -23,7 +23,8 @@ export const structureTypesFormLabels = {
 
 export const roles: Record<UserRole, string> = {
   admin: 'Admin',
-  demo: 'Demo',
+  alec: 'ALEC',
+  collectivite: 'Collectivité',
   gestionnaire: 'Gestionnaire',
   particulier: 'Particulier',
   professionnel: 'Professionnel',
@@ -89,6 +90,7 @@ export const createUserAdminSchema = z.object({
   receive_new_demands: z.boolean(),
   receive_old_demands: z.boolean(),
   role: z.enum(userRoles),
+  siret: z.string().optional().nullable(),
   structure_name: z.string().optional().nullable(),
   structure_other: z.string().optional().nullable(),
   structure_type: z.string().optional().nullable(),
@@ -106,6 +108,7 @@ export const updateUserAdminSchema = z
     receive_new_demands: z.boolean().optional(),
     receive_old_demands: z.boolean().optional(),
     role: z.enum(userRoles).optional(),
+    siret: z.string().optional().nullable(),
     status: z.enum(['pending_email_confirmation', 'valid']),
     structure_name: z.string().optional(),
     structure_other: z.string().optional(),

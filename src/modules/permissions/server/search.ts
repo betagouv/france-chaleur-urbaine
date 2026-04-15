@@ -1,0 +1,334 @@
+import { sql } from 'kysely';
+
+import { kdb } from '@/server/db/kysely';
+
+import type { Permission, PermissionWithLabel, TerritoryPermissionType } from '../types';
+import { isNetworkPermissionType, toPermission } from './helpers';
+import { getUserPermissions } from './service';
+
+// ─── Search ──────────────────────────────────────────────────────────────────
+
+type NetworkSearchResult = {
+  idFcu: number;
+  sncuId: string | null;
+  name: string;
+  type: 'reseau_existant' | 'reseau_en_construction';
+  gestionnaire: string | null;
+};
+
+/**
+ * Search networks by id_fcu, SNCU id, or name. Searches both existing and construction networks.
+ */
+export const searchNetworks = async (query: string): Promise<NetworkSearchResult[]> => {
+  const search = `%${query}%`;
+
+  const [existing, construction] = await Promise.all([
+    kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select(['id_fcu', 'Identifiant reseau', 'nom_reseau', 'Gestionnaire'])
+      .where((eb) =>
+        eb.or([
+          eb('nom_reseau', 'ilike', search),
+          eb('Identifiant reseau', 'ilike', search),
+          eb(sql<string>`"id_fcu"::TEXT`, 'like', search),
+        ])
+      )
+      .limit(10)
+      .execute(),
+    kdb
+      .selectFrom('zones_et_reseaux_en_construction')
+      .select(['id_fcu', 'nom_reseau', 'gestionnaire'])
+      .where((eb) => eb.or([eb('nom_reseau', 'ilike', search), eb(sql<string>`"id_fcu"::TEXT`, 'like', search)]))
+      .where('is_zone', '=', false)
+      .limit(10)
+      .execute(),
+  ]);
+
+  const results: NetworkSearchResult[] = [
+    ...existing.map((r) => ({
+      gestionnaire: r.Gestionnaire,
+      idFcu: r.id_fcu,
+      name: r.nom_reseau || 'Nom inconnu',
+      sncuId: r['Identifiant reseau'],
+      type: 'reseau_existant' as const,
+    })),
+    ...construction.map((r) => ({
+      gestionnaire: r.gestionnaire,
+      idFcu: r.id_fcu,
+      name: r.nom_reseau || 'Nom inconnu',
+      sncuId: null,
+      type: 'reseau_en_construction' as const,
+    })),
+  ];
+
+  return results.slice(0, 15);
+};
+
+type TerritorySearchResult = {
+  code: string;
+  label: string;
+  type: Exclude<TerritoryPermissionType, 'national'>;
+};
+
+/**
+ * Search territories by label or code. Returns matching communes, EPCI, EPT, départements, régions.
+ */
+export const searchTerritories = async (query: string, types?: string[]): Promise<TerritorySearchResult[]> => {
+  const search = `%${query}%`;
+  const results: TerritorySearchResult[] = [];
+  const searchTypes = types ?? ['commune', 'epci', 'ept', 'departement', 'region'];
+
+  const searches = [];
+
+  if (searchTypes.includes('commune')) {
+    searches.push(
+      kdb
+        .selectFrom('ign_communes')
+        .select([sql<string>`insee_com`.as('code'), sql<string>`nom`.as('label')])
+        .where((eb) => eb.or([eb('nom', 'ilike', search), eb('insee_com', 'like', search)]))
+        .limit(10)
+        .execute()
+        .then((rows) => rows.forEach((r) => results.push({ code: r.code, label: r.label, type: 'commune' })))
+    );
+  }
+
+  if (searchTypes.includes('epci')) {
+    searches.push(
+      kdb
+        .selectFrom('epci')
+        .select(['code', 'nom as label'])
+        .where((eb) => eb.or([eb('nom', 'ilike', search), eb('code', 'like', search)]))
+        .limit(10)
+        .execute()
+        .then((rows) => rows.forEach((r) => results.push({ code: r.code, label: r.label, type: 'epci' })))
+    );
+  }
+
+  if (searchTypes.includes('ept')) {
+    searches.push(
+      kdb
+        .selectFrom('ept')
+        .select(['code', 'nom as label'])
+        .where((eb) => eb.or([eb('nom', 'ilike', search), eb('code', 'like', search)]))
+        .limit(10)
+        .execute()
+        .then((rows) => rows.forEach((r) => results.push({ code: r.code, label: r.label, type: 'ept' })))
+    );
+  }
+
+  if (searchTypes.includes('departement')) {
+    searches.push(
+      kdb
+        .selectFrom('ign_departements')
+        .select([sql<string>`insee_dep`.as('code'), sql<string>`nom`.as('label')])
+        .where((eb) => eb.or([eb('nom', 'ilike', search), eb('insee_dep', 'like', search)]))
+        .limit(10)
+        .execute()
+        .then((rows) => results.push(...rows.map((r) => ({ code: r.code, label: r.label, type: 'departement' as const }))))
+    );
+  }
+
+  if (searchTypes.includes('region')) {
+    searches.push(
+      kdb
+        .selectFrom('ign_regions')
+        .select([sql<string>`insee_reg`.as('code'), sql<string>`nom`.as('label')])
+        .where((eb) => eb.or([eb('nom', 'ilike', search), eb('insee_reg', 'like', search)]))
+        .limit(10)
+        .execute()
+        .then((rows) => results.push(...rows.map((r) => ({ code: r.code, label: r.label, type: 'region' as const }))))
+    );
+  }
+
+  await Promise.all(searches);
+
+  return results.slice(0, 20);
+};
+
+// ─── Label resolution ────────────────────────────────────────────────────────
+
+type ResolvedPermissionLabel = {
+  type: string;
+  resourceId: string | null;
+  label: string;
+};
+
+/**
+ * Resolves human-readable labels for a list of permissions.
+ */
+export const resolvePermissionLabels = async (permissions: Permission[]): Promise<ResolvedPermissionLabel[]> => {
+  if (permissions.length === 0) return [];
+
+  const result: ResolvedPermissionLabel[] = [];
+
+  const networkIds = permissions.filter((p) => isNetworkPermissionType(p.type)).map((p) => p.resourceId!);
+  const communeCodes = permissions.filter((p) => p.type === 'commune').map((p) => p.resourceId!);
+  const epciCodes = permissions.filter((p) => p.type === 'epci').map((p) => p.resourceId!);
+  const eptCodes = permissions.filter((p) => p.type === 'ept').map((p) => p.resourceId!);
+  const deptCodes = permissions.filter((p) => p.type === 'departement').map((p) => p.resourceId!);
+  const regionCodes = permissions.filter((p) => p.type === 'region').map((p) => p.resourceId!);
+
+  const lookups = [];
+
+  if (networkIds.length > 0) {
+    const numericIds = networkIds.map(Number);
+    lookups.push(
+      Promise.all([
+        kdb
+          .selectFrom('reseaux_de_chaleur')
+          .select(['id_fcu', 'nom_reseau', 'Identifiant reseau'])
+          .where('id_fcu', 'in', numericIds)
+          .execute(),
+        kdb
+          .selectFrom('zones_et_reseaux_en_construction')
+          .select(['id_fcu', 'nom_reseau'])
+          .where('id_fcu', 'in', numericIds)
+          .where('is_zone', '=', false)
+          .execute(),
+      ]).then(([existing, construction]) => {
+        const existingMap = new Map(existing.map((r) => [r.id_fcu, r]));
+        const constructionMap = new Map(construction.map((r) => [r.id_fcu, r]));
+
+        for (const p of permissions.filter((p) => isNetworkPermissionType(p.type))) {
+          const id = Number(p.resourceId);
+          const ex = existingMap.get(id);
+          const co = constructionMap.get(id);
+          const name = ex?.nom_reseau || co?.nom_reseau || 'Réseau inconnu';
+          const sncu = ex?.['Identifiant reseau'] ? ` (${ex['Identifiant reseau']})` : '';
+          result.push({ label: `${name}${sncu}`, resourceId: p.resourceId, type: p.type });
+        }
+      })
+    );
+  }
+
+  if (communeCodes.length > 0) {
+    lookups.push(
+      kdb
+        .selectFrom('ign_communes')
+        .select([sql<string>`insee_com`.as('code'), sql<string>`nom`.as('label')])
+        .where('insee_com', 'in', communeCodes)
+        .execute()
+        .then((rows) => {
+          const map = new Map(rows.map((r) => [r.code, r.label]));
+          for (const code of communeCodes) {
+            result.push({ label: map.get(code) ?? code, resourceId: code, type: 'commune' });
+          }
+        })
+    );
+  }
+
+  if (epciCodes.length > 0) {
+    lookups.push(
+      kdb
+        .selectFrom('epci')
+        .select(['code', 'nom as label'])
+        .where('code', 'in', epciCodes)
+        .execute()
+        .then((rows) => {
+          const map = new Map(rows.map((r) => [r.code, r.label]));
+          for (const code of epciCodes) {
+            result.push({ label: map.get(code) ?? code, resourceId: code, type: 'epci' });
+          }
+        })
+    );
+  }
+
+  if (eptCodes.length > 0) {
+    lookups.push(
+      kdb
+        .selectFrom('ept')
+        .select(['code', 'nom as label'])
+        .where('code', 'in', eptCodes)
+        .execute()
+        .then((rows) => {
+          const map = new Map(rows.map((r) => [r.code, r.label]));
+          for (const code of eptCodes) {
+            result.push({ label: map.get(code) ?? code, resourceId: code, type: 'ept' });
+          }
+        })
+    );
+  }
+
+  if (deptCodes.length > 0) {
+    lookups.push(
+      kdb
+        .selectFrom('ign_departements')
+        .select([sql<string>`insee_dep`.as('code'), sql<string>`nom`.as('label')])
+        .where('insee_dep', 'in', deptCodes)
+        .execute()
+        .then((rows) => {
+          const map = new Map(rows.map((r) => [r.code, r.label]));
+          for (const code of deptCodes) {
+            result.push({ label: map.get(code) ?? code, resourceId: code, type: 'departement' });
+          }
+        })
+    );
+  }
+
+  if (regionCodes.length > 0) {
+    lookups.push(
+      kdb
+        .selectFrom('ign_regions')
+        .select([sql<string>`insee_reg`.as('code'), sql<string>`nom`.as('label')])
+        .where('insee_reg', 'in', regionCodes)
+        .execute()
+        .then((rows) => {
+          const map = new Map(rows.map((r) => [r.code, r.label]));
+          for (const code of regionCodes) {
+            result.push({ label: map.get(code) ?? code, resourceId: code, type: 'region' });
+          }
+        })
+    );
+  }
+
+  if (permissions.some((p) => p.type === 'national')) {
+    result.push({ label: 'National', resourceId: null, type: 'national' });
+  }
+
+  await Promise.all(lookups);
+
+  return result;
+};
+
+/**
+ * Get permissions for a user with resolved labels.
+ */
+export const getUserPermissionsWithLabels = async (userId: string): Promise<PermissionWithLabel[]> => {
+  const permissions = await getUserPermissions(userId);
+  if (permissions.length === 0) return [];
+  const labels = await resolvePermissionLabels(permissions);
+  const labelMap = new Map(labels.map((l) => [`${l.type}:${l.resourceId}`, l.label]));
+  return permissions.map(
+    (p): PermissionWithLabel => ({
+      ...p,
+      label: labelMap.get(`${p.type}:${p.resourceId}`) ?? (p.type === 'national' ? 'National' : (p.resourceId ?? '')),
+    })
+  );
+};
+
+/**
+ * Get all user permissions with resolved labels, grouped by user ID.
+ * Deduplicates permissions for efficient batch label resolution.
+ */
+export const getAllPermissionsWithLabels = async (): Promise<Record<string, PermissionWithLabel[]>> => {
+  const rows = await kdb.selectFrom('user_permissions').select(['user_id', 'type', 'resource_id']).execute();
+  if (rows.length === 0) return {};
+
+  const uniquePerms = new Map<string, Permission>();
+  for (const row of rows) {
+    const p = toPermission(row);
+    uniquePerms.set(`${p.type}:${p.resourceId}`, p);
+  }
+
+  const labels = await resolvePermissionLabels([...uniquePerms.values()]);
+  const labelMap = new Map(labels.map((l) => [`${l.type}:${l.resourceId}`, l.label]));
+
+  const result: Record<string, PermissionWithLabel[]> = {};
+  for (const row of rows) {
+    const p = toPermission(row);
+    const label = labelMap.get(`${p.type}:${p.resourceId}`) ?? (p.type === 'national' ? 'National' : (p.resourceId ?? ''));
+    (result[row.user_id] ??= []).push({ ...p, label } as PermissionWithLabel);
+  }
+
+  return result;
+};

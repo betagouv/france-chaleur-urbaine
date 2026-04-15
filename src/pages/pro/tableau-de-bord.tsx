@@ -17,7 +17,7 @@ export default function DashboardPage() {
           Tableau de bord
         </Heading>
         {hasRole('admin') && <DashboardAdmin />}
-        {(hasRole('gestionnaire') || hasRole('demo')) && <DashboardGestionnaire />}
+        {(hasRole('gestionnaire') || hasRole('collectivite') || hasRole('alec')) && <DashboardGestionnaire />}
         {(hasRole('particulier') || hasRole('professionnel')) && <DashboardProfessionnel />}
       </Box>
     </SimplePage>
@@ -26,7 +26,7 @@ export default function DashboardPage() {
 
 export const getServerSideProps = withAuthentication(undefined, ({ session }) => {
   // redirection des gestionnaire en attendant qu'ils aient un tableau de bord
-  if (session.user.role === 'gestionnaire') {
+  if (session.user.role === 'gestionnaire' || session.user.role === 'collectivite' || session.user.role === 'alec') {
     return {
       redirect: {
         destination: '/pro/demandes',

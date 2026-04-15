@@ -115,7 +115,6 @@ export const login = async (email: string, password: string) => {
   return {
     active: !!user.active,
     email: user.email,
-    gestionnaires: user.gestionnaires,
     id: user.id,
     role: user.role,
     signature: user.signature,
