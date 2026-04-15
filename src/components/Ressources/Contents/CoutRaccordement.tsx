@@ -11,7 +11,7 @@ import { deepMergeObjects } from '@/utils/core';
 import { List } from './Contents.styles';
 
 // `useSimulatorEngine` is not SSR-safe.
-const SimulateurCoutRaccordement = dynamic(() => import('./SimulateurCoutRaccordement'), {
+const SimulateurCoutRaccordement = dynamic(() => import('@/modules/simulator/client/SimulateurCoutRaccordement'), {
   ssr: false,
 });
 

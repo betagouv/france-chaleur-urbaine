@@ -21,7 +21,7 @@ import ClassedNetworks from './ClassedNetworks';
 import Dispositifs, { type DispositifsData } from './Dispositifs';
 import Networks from './Networks';
 
-const Simulator = dynamic(() => import('@/components/Ressources/Contents/Simulator'), {
+const Simulator = dynamic(() => import('@/modules/simulator/client/Simulator'), {
   ssr: false,
 });
 

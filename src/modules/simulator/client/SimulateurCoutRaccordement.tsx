@@ -11,39 +11,19 @@ import { trackEvent } from '@/modules/analytics/client';
 import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
 import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
 import { useSimulatorSituation, useSyncBuildingSituation } from '@/modules/simulator/client/useSimulatorSituation';
-import { CEE_VALUE_RULE, TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE, type TypeBatiment } from '@/modules/simulator/constants';
+import { CEE_VALUE_RULE, TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE } from '@/modules/simulator/constants';
 import { isDefined } from '@/utils/core';
-
-interface SimulateurCoutRaccordementProps {
-  typeBatiment?: TypeBatiment;
-  embedded?: boolean;
-}
 
 /**
  * Simulateur du coût de raccordement selon le nombre de logements si bâtiment résidentiel ou
  * la surface si bâtiment tertiaire.
  */
-const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
+const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
   const engine = useSimulatorEngine();
   const [hasUsedFeature, setHasUsedFeature] = useState(false);
 
   const { updateSituation } = useSimulatorSituation(engine);
-  const {
-    address,
-    eligibilityError,
-    formState,
-    handleAddressSelected,
-    handleHousingCountOrAreaChange,
-    handleTypeBatimentChange,
-    housingCountOrAreaValue,
-    isAddressSelected,
-    resetAddressSelection,
-    updateFormState,
-  } = useSimulatorFormState({
-    initialTypeBatiment: props.typeBatiment,
-    onAddressError: (error) => {
-      console.error('Simulator eligibility error', error);
-    },
+  const { address, formState, handleAddressChange, handleTypeBatimentChange, isAddressSelected, updateFormState } = useSimulatorFormState({
     onAddressSituationChange: updateSituation,
     onFieldInteraction: () => {
       if (!hasUsedFeature) {
@@ -52,11 +32,8 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
       setHasUsedFeature(true);
     },
   });
-  useSyncBuildingSituation({
-    engine,
-    formState,
-    housingCountOrArea: housingCountOrAreaValue ?? 0,
-  });
+
+  useSyncBuildingSituation({ engine, formState });
 
   const currentCeeValue = engine.loaded ? engine.getFieldAsNumber(CEE_VALUE_RULE) : 0;
   const currentCeeValueDisplay = (currentCeeValue * 1000).toLocaleString('fr-FR', {
@@ -64,27 +41,19 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
     minimumFractionDigits: 2,
   });
 
-  const montantAidePublicodes = useMemo(() => {
-    if (!isAddressSelected) {
+  const montantAide = useMemo(() => {
+    if (!engine.loaded || !isAddressSelected || !(formState.nbLogements || formState.surface)) {
       return null;
     }
-    if (!(housingCountOrAreaValue && housingCountOrAreaValue > 0) || !engine.loaded) {
-      return null;
-    }
-    return engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE);
-  }, [engine, engine.loaded, housingCountOrAreaValue, isAddressSelected]);
 
-  const montantAide = montantAidePublicodes;
+    return engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE);
+  }, [engine, engine.loaded, formState, isAddressSelected]);
 
   const montantCouts = useMemo(() => {
     return formState.typeBatiment === 'residentiel'
-      ? isDefined(housingCountOrAreaValue) && housingCountOrAreaValue > 0
-        ? getCoutRaccordementResidentiel(housingCountOrAreaValue)
-        : null
-      : isDefined(housingCountOrAreaValue) && housingCountOrAreaValue > 0
-        ? getCoutRaccordementTertiaire(housingCountOrAreaValue)
-        : null;
-  }, [formState.typeBatiment, housingCountOrAreaValue]);
+      ? getCoutRaccordementResidentiel(formState.nbLogements ?? 0)
+      : getCoutRaccordementTertiaire(formState.surface ?? 0);
+  }, [formState.typeBatiment, formState.nbLogements, formState.surface]);
 
   const montantCoutsApresAide = useMemo(() => {
     if (Array.isArray(montantCouts) && isDefined(montantAide)) {
@@ -117,20 +86,12 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
 
           <SimulatorFormFields
             address={address}
-            eligibilityError={eligibilityError}
+            formState={formState}
             isAddressSelected={isAddressSelected}
-            mainValue={housingCountOrAreaValue}
-            minValue={0}
-            onAddressClear={resetAddressSelection}
-            onAddressSelect={handleAddressSelected}
-            onMainValueChange={handleHousingCountOrAreaChange}
-            onProducesHotWaterChange={(producesHotWater) => updateFormState('producesHotWater', producesHotWater)}
-            onTertiarySectorChange={(tertiarySector) => updateFormState('tertiarySector', tertiarySector)}
+            onAddressChange={handleAddressChange}
+            onFormStateChange={updateFormState}
             onTypeBatimentChange={handleTypeBatimentChange}
-            producesHotWater={formState.producesHotWater}
             showLabels
-            tertiarySector={formState.tertiarySector}
-            typeBatiment={formState.typeBatiment}
           />
 
           <Text size="sm">

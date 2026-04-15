@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 
 import { BlueText, List, Source, Subtitle } from './Contents.styles';
 
-const Simulator = dynamic(() => import('./Simulator'), {
+const Simulator = dynamic(() => import('@/modules/simulator/client/Simulator'), {
   ssr: false,
 });
 

@@ -144,20 +144,12 @@ function Simulator({ children, withTitle }: SimulatorProps) {
   };
   const {
     address: formAddress,
-    eligibilityError,
     formState,
-    handleAddressSelected,
-    handleHousingCountOrAreaChange,
+    handleAddressChange,
     handleTypeBatimentChange,
-    housingCountOrAreaValue,
     isAddressSelected,
-    resetAddressSelection,
     updateFormState,
   } = useSimulatorFormState({
-    onAddressError: (error) => {
-      resetNetworkContext();
-      console.error('Simulator eligibility error', error);
-    },
     onAddressInfosLoaded: (infos) => {
       setNetworkName(infos.nearestReseauDeChaleur?.nom_reseau ?? null);
       setIsEfficientNetwork((infos.nearestReseauDeChaleur?.['Taux EnR&R'] ?? 0) > 50);
@@ -167,11 +159,12 @@ function Simulator({ children, withTitle }: SimulatorProps) {
     onReset: resetNetworkContext,
   });
   const structure: Structure = formState.typeBatiment === 'residentiel' ? 'Résidentiel' : 'Tertiaire';
+  const housingCountOrAreaValue = formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface;
   const housingCountOrArea = housingCountOrAreaValue ?? 0;
   const hasAmountInputs = isAddressSelected && housingCountOrArea > 0;
   const mainFieldClassName = 'w-full! min-w-80';
 
-  useSyncBuildingSituation({ engine, formState, housingCountOrArea });
+  useSyncBuildingSituation({ engine, formState });
   useSyncCeeValueSituation(engine, ceeValue);
 
   const helpCumac = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_RULE) : 0;
@@ -217,19 +210,12 @@ function Simulator({ children, withTitle }: SimulatorProps) {
         <div className="flex-1">
           <SimulatorFormFields
             address={formAddress}
-            eligibilityError={eligibilityError}
             fieldClassName={mainFieldClassName}
+            formState={formState}
             isAddressSelected={isAddressSelected}
-            mainValue={housingCountOrAreaValue}
-            onAddressClear={resetAddressSelection}
-            onAddressSelect={handleAddressSelected}
-            onMainValueChange={handleHousingCountOrAreaChange}
-            onProducesHotWaterChange={(producesHotWater) => updateFormState('producesHotWater', producesHotWater)}
-            onTertiarySectorChange={(tertiarySector) => updateFormState('tertiarySector', tertiarySector)}
+            onAddressChange={handleAddressChange}
+            onFormStateChange={updateFormState}
             onTypeBatimentChange={handleTypeBatimentChange}
-            producesHotWater={formState.producesHotWater}
-            tertiarySector={formState.tertiarySector}
-            typeBatiment={formState.typeBatiment}
           />
         </div>
         <SimulatorResult

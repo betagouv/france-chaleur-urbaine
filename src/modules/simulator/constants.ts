@@ -29,15 +29,9 @@ export type ConcernedHelp = {
 };
 
 export type SimulatorSituation = Partial<Record<RuleName, number | string | null>>;
-export const buildAddressSituation = (infos: LocationInfoResponse): SimulatorSituation =>
+export const buildAddressSituation = (infos?: LocationInfoResponse | null): SimulatorSituation =>
   ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key, infoGetter]) => {
-    acc[key] = infoGetter(infos) ?? null;
-    return acc;
-  }, {});
-
-export const buildClearedAddressSituation = (): SimulatorSituation =>
-  ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key]) => {
-    acc[key] = null;
+    acc[key] = infos ? (infoGetter(infos) ?? null) : null;
     return acc;
   }, {});
 
@@ -59,14 +53,5 @@ export function buildBuildingSituation({
     'Production eau chaude sanitaire': typeBatiment === 'tertiaire' ? producesHotWater : 'oui',
     'surface logement type tertiaire': typeBatiment === 'tertiaire' && isStrictlyPositiveNumber(surface) ? surface : null,
     'type de bâtiment': typeBatiment === 'residentiel' ? "'résidentiel'" : "'tertiaire'",
-  };
-}
-
-export function buildCeeValueSituation(ceeValue: string): SimulatorSituation {
-  const normalizedCeeValue = ceeValue.replace(',', '.').trim();
-  const parsedCeeValue = normalizedCeeValue === '' ? null : Number(normalizedCeeValue) / 1000;
-
-  return {
-    [CEE_VALUE_RULE]: parsedCeeValue !== null && Number.isFinite(parsedCeeValue) ? parsedCeeValue : null,
   };
 }

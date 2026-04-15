@@ -19,7 +19,7 @@ import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 
 // `useSimulatorEngine` is not SSR-safe.
-const SimulateurCoutRaccordement = dynamic(() => import('@/components/Ressources/Contents/SimulateurCoutRaccordement'), {
+const SimulateurCoutRaccordement = dynamic(() => import('@/modules/simulator/client/SimulateurCoutRaccordement'), {
   ssr: false,
 });
 
@@ -163,7 +163,7 @@ const Professionnels = () => {
               proposées.
             </strong>
           </Text>
-          <SimulateurCoutRaccordement embedded typeBatiment="tertiaire" />
+          <SimulateurCoutRaccordement embedded />
 
           <Heading as="h4" color="blue-france" mt="10w">
             Le coût de la chaleur

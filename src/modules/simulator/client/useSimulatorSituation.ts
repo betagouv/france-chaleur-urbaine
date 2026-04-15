@@ -1,22 +1,8 @@
 import { useEffect } from 'react';
 
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
-import {
-  buildBuildingSituation,
-  buildCeeValueSituation,
-  type SimulatorFormState,
-  type SimulatorSituation,
-} from '@/modules/simulator/constants';
+import { buildBuildingSituation, CEE_VALUE_RULE, type SimulatorFormState, type SimulatorSituation } from '@/modules/simulator/constants';
 
-type UseSyncBuildingSituationParams = {
-  engine: SimulatorEngine;
-  formState: SimulatorFormState;
-  housingCountOrArea: number;
-};
-
-/**
- * Provides a shared updater for the simulator engine situation and keeps common rules in sync.
- */
 export function useSimulatorSituation(engine: SimulatorEngine) {
   const updateSituation = (partialSituation: SimulatorSituation) => {
     engine.setSituation({
@@ -28,8 +14,9 @@ export function useSimulatorSituation(engine: SimulatorEngine) {
   return { updateSituation };
 }
 
-export function useSyncBuildingSituation({ engine, formState, housingCountOrArea }: UseSyncBuildingSituationParams) {
+export function useSyncBuildingSituation({ engine, formState }: { engine: SimulatorEngine; formState: SimulatorFormState }) {
   const { updateSituation } = useSimulatorSituation(engine);
+  const { nbLogements, producesHotWater, surface, tertiarySector, typeBatiment } = formState;
 
   useEffect(() => {
     if (!engine.loaded) {
@@ -38,24 +25,27 @@ export function useSyncBuildingSituation({ engine, formState, housingCountOrArea
 
     updateSituation(
       buildBuildingSituation({
-        nbLogements: housingCountOrArea,
-        producesHotWater: formState.producesHotWater,
-        surface: housingCountOrArea,
-        tertiarySector: formState.tertiarySector,
-        typeBatiment: formState.typeBatiment,
+        nbLogements,
+        producesHotWater,
+        surface,
+        tertiarySector,
+        typeBatiment,
       })
     );
-  }, [engine.loaded, formState.producesHotWater, formState.tertiarySector, formState.typeBatiment, housingCountOrArea]);
+  }, [engine.loaded, nbLogements, producesHotWater, surface, tertiarySector, typeBatiment]);
 }
 
 export function useSyncCeeValueSituation(engine: SimulatorEngine, ceeValue: string) {
   const { updateSituation } = useSimulatorSituation(engine);
-
   useEffect(() => {
     if (!engine.loaded) {
       return;
     }
 
-    updateSituation(buildCeeValueSituation(ceeValue));
+    const normalizedCeeValue = ceeValue.replace(',', '.').trim();
+    const parsedCeeValue = normalizedCeeValue === '' ? null : Number(normalizedCeeValue) / 1000;
+    updateSituation({
+      [CEE_VALUE_RULE]: parsedCeeValue,
+    });
   }, [ceeValue, engine.loaded]);
 }
