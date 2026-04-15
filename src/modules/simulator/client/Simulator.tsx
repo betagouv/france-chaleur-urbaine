@@ -6,17 +6,12 @@ import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorE
 import Tooltip from '@/components/ui/Tooltip';
 import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
 import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
-import {
-  useSimulatorSituation,
-  useSyncBuildingSituation,
-  useSyncCeeValueSituation,
-} from '@/modules/simulator/client/useSimulatorSituation';
+import { useSimulatorSituation, useSyncSimulatorSituation } from '@/modules/simulator/client/useSimulatorSituation';
 import {
   BOOSTED_HEAT_NETWORK_AID_RULE,
   CEE_VALUE_RULE,
   type ConcernedHelp,
   RESIDENTIAL_HEAT_NETWORK_AID_RULE,
-  STANDARD_HEAT_NETWORK_AID_RULE,
   type Structure,
   TERTIARY_HEAT_NETWORK_AID_RULE,
   TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE,
@@ -34,22 +29,27 @@ type SimulatorResultProps = {
     label: string;
     noteUrl?: string;
   } | null;
-  currentCeeValuePlaceholder: string;
   helpAmount: number;
   helpCumac: number;
-  housingCountOrArea: number;
+  nbLogement: number;
   networkInformation: string | null;
   onCeeValueChange: (value: string) => void;
   structure: Structure;
 };
 
+function formatCeeValue(value: number) {
+  return (value * 1000).toLocaleString('fr-FR', {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  });
+}
+
 function SimulatorResult({
   ceeValue,
   concernedHelp,
-  currentCeeValuePlaceholder,
   helpAmount,
   helpCumac,
-  housingCountOrArea,
+  nbLogement,
   networkInformation,
   onCeeValueChange,
   structure,
@@ -73,7 +73,7 @@ function SimulatorResult({
         {structure === 'Résidentiel' && (
           <span>
             soit{' '}
-            {(housingCountOrArea ? helpAmount / housingCountOrArea : 0).toLocaleString('fr-FR', {
+            {(nbLogement > 0 ? helpAmount / nbLogement : 0).toLocaleString('fr-FR', {
               maximumFractionDigits: 0,
               style: 'decimal',
             })}{' '}
@@ -119,7 +119,6 @@ function SimulatorResult({
                   'aria-label': "Le prix actuel d'un CEE en euros par MWh cumac",
                   inputMode: 'decimal',
                   onChange: (e) => onCeeValueChange(e.target.value),
-                  placeholder: currentCeeValuePlaceholder,
                   type: 'text',
                   value: ceeValue,
                 }}
@@ -136,45 +135,31 @@ function Simulator({ children, withTitle }: SimulatorProps) {
   const engine = useSimulatorEngine();
   const [networkName, setNetworkName] = useState<string | null>(null);
   const [isEfficientNetwork, setIsEfficientNetwork] = useState(false);
-  const [ceeValue, setCeeValue] = useState('');
+  const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber(CEE_VALUE_RULE)));
   const { updateSituation } = useSimulatorSituation(engine);
   const resetNetworkContext = () => {
     setNetworkName(null);
     setIsEfficientNetwork(false);
   };
-  const {
-    address: formAddress,
-    formState,
-    handleAddressChange,
-    handleTypeBatimentChange,
-    isAddressSelected,
-    updateFormState,
-  } = useSimulatorFormState({
+  const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, updateFormState } = useSimulatorFormState({
     onAddressInfosLoaded: (infos) => {
       setNetworkName(infos.nearestReseauDeChaleur?.nom_reseau ?? null);
       setIsEfficientNetwork((infos.nearestReseauDeChaleur?.['Taux EnR&R'] ?? 0) > 50);
     },
-    onAddressInfosMissing: resetNetworkContext,
     onAddressSituationChange: updateSituation,
+    onAddressUnavailable: resetNetworkContext,
     onReset: resetNetworkContext,
   });
-  const structure: Structure = formState.typeBatiment === 'residentiel' ? 'Résidentiel' : 'Tertiaire';
-  const housingCountOrAreaValue = formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface;
-  const housingCountOrArea = housingCountOrAreaValue ?? 0;
-  const hasAmountInputs = isAddressSelected && housingCountOrArea > 0;
-  const mainFieldClassName = 'w-full! min-w-80';
 
-  useSyncBuildingSituation({ engine, formState });
-  useSyncCeeValueSituation(engine, ceeValue);
+  const structure: Structure = formState.typeBatiment === 'residentiel' ? 'Résidentiel' : 'Tertiaire';
+  const hasAmountInputs =
+    ((formState.selectedAddress !== null && (formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface)) || 0) >
+    0;
+
+  useSyncSimulatorSituation({ ceeValue, engine, formState });
 
   const helpCumac = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_RULE) : 0;
   const helpAmount = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE) : 0;
-  const standardHelp = hasAmountInputs ? engine.getFieldAsNumber(STANDARD_HEAT_NETWORK_AID_RULE) : 0;
-  const currentCeeValue = engine.loaded ? engine.getFieldAsNumber(CEE_VALUE_RULE) : 0;
-  const currentCeeValuePlaceholder = (currentCeeValue * 1000).toLocaleString('fr-FR', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 2,
-  });
   const networkInformation = networkName
     ? `Le réseau de chaleur "${networkName}" est situé à proximité de votre adresse.${
         isEfficientNetwork ? " Il est considéré comme efficace car il utilise au moins 50 % d'énergie renouvelable." : ''
@@ -191,7 +176,7 @@ function Simulator({ children, withTitle }: SimulatorProps) {
           label: 'Coup de pouce "Chauffage des bâtiments résidentiels collectifs et tertiaires"',
           noteUrl: getRuleNoteUrl(BOOSTED_HEAT_NETWORK_AID_RULE),
         }
-      : helpCumac > 0 && standardHelp === helpCumac
+      : helpCumac > 0
         ? {
             label: structure === 'Résidentiel' ? 'BAR-TH-137' : 'BAT-TH-127',
             noteUrl: getRuleNoteUrl(structure === 'Résidentiel' ? RESIDENTIAL_HEAT_NETWORK_AID_RULE : TERTIARY_HEAT_NETWORK_AID_RULE),
@@ -209,10 +194,9 @@ function Simulator({ children, withTitle }: SimulatorProps) {
       <div className={cx('flex flex-wrap items-start justify-center gap-8', withTitle && 'm-8 ')}>
         <div className="flex-1">
           <SimulatorFormFields
-            address={formAddress}
-            fieldClassName={mainFieldClassName}
+            addressErrorMessage={addressErrorMessage}
+            fieldClassName="w-full! min-w-80"
             formState={formState}
-            isAddressSelected={isAddressSelected}
             onAddressChange={handleAddressChange}
             onFormStateChange={updateFormState}
             onTypeBatimentChange={handleTypeBatimentChange}
@@ -221,10 +205,9 @@ function Simulator({ children, withTitle }: SimulatorProps) {
         <SimulatorResult
           ceeValue={ceeValue}
           concernedHelp={concernedHelp}
-          currentCeeValuePlaceholder={currentCeeValuePlaceholder}
           helpAmount={helpAmount}
           helpCumac={helpCumac}
-          housingCountOrArea={housingCountOrArea}
+          nbLogement={formState.nbLogements || 0}
           networkInformation={networkInformation}
           onCeeValueChange={setCeeValue}
           structure={structure}

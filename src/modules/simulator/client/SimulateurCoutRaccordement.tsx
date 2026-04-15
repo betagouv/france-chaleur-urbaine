@@ -10,7 +10,7 @@ import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
 import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
-import { useSimulatorSituation, useSyncBuildingSituation } from '@/modules/simulator/client/useSimulatorSituation';
+import { useSimulatorSituation, useSyncSimulatorSituation } from '@/modules/simulator/client/useSimulatorSituation';
 import { CEE_VALUE_RULE, TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE } from '@/modules/simulator/constants';
 import { isDefined } from '@/utils/core';
 
@@ -23,7 +23,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
   const [hasUsedFeature, setHasUsedFeature] = useState(false);
 
   const { updateSituation } = useSimulatorSituation(engine);
-  const { address, formState, handleAddressChange, handleTypeBatimentChange, isAddressSelected, updateFormState } = useSimulatorFormState({
+  const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, updateFormState } = useSimulatorFormState({
     onAddressSituationChange: updateSituation,
     onFieldInteraction: () => {
       if (!hasUsedFeature) {
@@ -33,21 +33,20 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
     },
   });
 
-  useSyncBuildingSituation({ engine, formState });
+  useSyncSimulatorSituation({ engine, formState });
 
-  const currentCeeValue = engine.loaded ? engine.getFieldAsNumber(CEE_VALUE_RULE) : 0;
-  const currentCeeValueDisplay = (currentCeeValue * 1000).toLocaleString('fr-FR', {
+  const currentCeeValueDisplay = (engine.getFieldAsNumber(CEE_VALUE_RULE) * 1000).toLocaleString('fr-FR', {
     maximumFractionDigits: 2,
     minimumFractionDigits: 2,
   });
 
   const montantAide = useMemo(() => {
-    if (!engine.loaded || !isAddressSelected || !(formState.nbLogements || formState.surface)) {
+    if (!engine.loaded || !formState.selectedAddress || !(formState.nbLogements || formState.surface)) {
       return null;
     }
 
     return engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE);
-  }, [engine, engine.loaded, formState, isAddressSelected]);
+  }, [engine, engine.loaded, formState.selectedAddress, formState.nbLogements, formState.surface]);
 
   const montantCouts = useMemo(() => {
     return formState.typeBatiment === 'residentiel'
@@ -85,9 +84,8 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
           <Box mb="3w">pour une longueur de branchement de 50 m</Box>
 
           <SimulatorFormFields
-            address={address}
+            addressErrorMessage={addressErrorMessage}
             formState={formState}
-            isAddressSelected={isAddressSelected}
             onAddressChange={handleAddressChange}
             onFormStateChange={updateFormState}
             onTypeBatimentChange={handleTypeBatimentChange}

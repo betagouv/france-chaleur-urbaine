@@ -1,6 +1,7 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
 import { addresseToPublicodesRules } from '@/components/ComparateurPublicodes/mappings';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { ObjectEntries } from '@/utils/typescript';
 
@@ -17,6 +18,8 @@ export type Structure = 'Résidentiel' | 'Tertiaire';
 export type TertiarySector = 'Bureaux' | 'Enseignement' | 'Commerces' | 'Café, restaurant' | 'Hôtel' | 'Santé' | 'Autres';
 export type HotWaterProduction = 'oui' | 'non';
 export type SimulatorFormState = {
+  address: string;
+  selectedAddress: BANAddressFeature | null;
   nbLogements?: number;
   producesHotWater: HotWaterProduction;
   surface?: number;
@@ -39,13 +42,14 @@ function isStrictlyPositiveNumber(value: number | undefined): value is number {
   return typeof value === 'number' && value > 0;
 }
 
-export function buildBuildingSituation({
+type PublicodeSituationInput = Pick<SimulatorFormState, 'nbLogements' | 'producesHotWater' | 'surface' | 'tertiarySector' | 'typeBatiment'>;
+export function buildPublicodeSituation({
   nbLogements,
   producesHotWater,
   surface,
   tertiarySector,
   typeBatiment,
-}: SimulatorFormState): SimulatorSituation {
+}: PublicodeSituationInput): SimulatorSituation {
   return {
     'méthode tertiaire': typeBatiment === 'tertiaire' ? `'${tertiarySector}'` : null,
     "nombre de logements dans l'immeuble concerné":

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
-import { buildBuildingSituation, CEE_VALUE_RULE, type SimulatorFormState, type SimulatorSituation } from '@/modules/simulator/constants';
+import { buildPublicodeSituation, CEE_VALUE_RULE, type SimulatorFormState, type SimulatorSituation } from '@/modules/simulator/constants';
 
 export function useSimulatorSituation(engine: SimulatorEngine) {
   const updateSituation = (partialSituation: SimulatorSituation) => {
@@ -14,9 +14,29 @@ export function useSimulatorSituation(engine: SimulatorEngine) {
   return { updateSituation };
 }
 
-export function useSyncBuildingSituation({ engine, formState }: { engine: SimulatorEngine; formState: SimulatorFormState }) {
+export function useSyncSimulatorSituation({
+  engine,
+  formState,
+  ceeValue = '',
+}: {
+  engine: SimulatorEngine;
+  formState: SimulatorFormState;
+  ceeValue?: string;
+}) {
   const { updateSituation } = useSimulatorSituation(engine);
   const { nbLogements, producesHotWater, surface, tertiarySector, typeBatiment } = formState;
+
+  const normalizedCeeValue = ceeValue.replace(',', '.').trim();
+
+  useEffect(() => {
+    if (!engine.loaded) {
+      return;
+    }
+
+    updateSituation({
+      [CEE_VALUE_RULE]: normalizedCeeValue === '' ? null : Number(normalizedCeeValue) / 1000,
+    });
+  }, [engine.loaded, normalizedCeeValue]);
 
   useEffect(() => {
     if (!engine.loaded) {
@@ -24,7 +44,7 @@ export function useSyncBuildingSituation({ engine, formState }: { engine: Simula
     }
 
     updateSituation(
-      buildBuildingSituation({
+      buildPublicodeSituation({
         nbLogements,
         producesHotWater,
         surface,
@@ -33,19 +53,4 @@ export function useSyncBuildingSituation({ engine, formState }: { engine: Simula
       })
     );
   }, [engine.loaded, nbLogements, producesHotWater, surface, tertiarySector, typeBatiment]);
-}
-
-export function useSyncCeeValueSituation(engine: SimulatorEngine, ceeValue: string) {
-  const { updateSituation } = useSimulatorSituation(engine);
-  useEffect(() => {
-    if (!engine.loaded) {
-      return;
-    }
-
-    const normalizedCeeValue = ceeValue.replace(',', '.').trim();
-    const parsedCeeValue = normalizedCeeValue === '' ? null : Number(normalizedCeeValue) / 1000;
-    updateSituation({
-      [CEE_VALUE_RULE]: parsedCeeValue,
-    });
-  }, [ceeValue, engine.loaded]);
 }

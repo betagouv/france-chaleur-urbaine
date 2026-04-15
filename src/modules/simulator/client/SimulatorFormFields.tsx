@@ -5,17 +5,6 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import { AddressField } from '@/modules/form/AddressField';
 import type { SimulatorFormState, TypeBatiment } from '@/modules/simulator/constants';
 
-type SimulatorFormFieldsProps = {
-  address: string;
-  fieldClassName?: string;
-  formState: SimulatorFormState;
-  isAddressSelected: boolean;
-  onAddressChange: (geoAddress?: BANAddressFeature) => void | Promise<void>;
-  onFormStateChange: <Key extends keyof SimulatorFormState>(key: Key, value: SimulatorFormState[Key]) => void;
-  onTypeBatimentChange: (value: TypeBatiment) => void;
-  showLabels?: boolean;
-};
-
 const HOT_WATER_OPTIONS = [
   { label: 'Chauffage seul', value: 'non' },
   { label: 'Chauffage et eau chaude sanitaire', value: 'oui' },
@@ -40,14 +29,19 @@ function parseNumericFieldValue(value: number) {
   return Number.isNaN(value) ? undefined : value;
 }
 
-/**
- * Renders the shared address and building fields used by both heat-network simulators.
- */
+type SimulatorFormFieldsProps = {
+  addressErrorMessage?: string | null;
+  fieldClassName?: string;
+  formState: SimulatorFormState;
+  onAddressChange: (geoAddress?: BANAddressFeature) => void | Promise<void>;
+  onFormStateChange: <Key extends keyof SimulatorFormState>(key: Key, value: SimulatorFormState[Key]) => void;
+  onTypeBatimentChange: (value: TypeBatiment) => void;
+  showLabels?: boolean;
+};
 export function SimulatorFormFields({
-  address,
+  addressErrorMessage,
   fieldClassName,
   formState,
-  isAddressSelected,
   onAddressChange,
   onFormStateChange,
   onTypeBatimentChange,
@@ -57,16 +51,18 @@ export function SimulatorFormFields({
   const buildingTypeLabel = showLabels ? 'Type de bâtiment' : '';
   const tertiarySectorLabel = showLabels ? 'Secteur tertiaire' : '';
   const hotWaterLabel = showLabels ? "Production d'eau chaude sanitaire" : '';
-
+  const isAddressSelected = formState.selectedAddress !== null;
   return (
     <>
       <AddressField
         label={addressLabel}
+        state={addressErrorMessage ? 'error' : undefined}
+        stateRelatedMessage={addressErrorMessage ?? undefined}
         nativeInputProps={{
           placeholder: 'Tapez ici votre adresse',
           required: true,
         }}
-        value={address}
+        value={formState.address}
         onSelect={onAddressChange}
         onClear={onAddressChange}
         excludeCities

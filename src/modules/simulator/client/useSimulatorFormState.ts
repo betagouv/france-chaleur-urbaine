@@ -7,8 +7,8 @@ import { postFetchJSON } from '@/utils/network';
 
 type UseSimulatorFormStateOptions = {
   onAddressInfosLoaded?: (infos: LocationInfoResponse) => void;
-  onAddressInfosMissing?: () => void;
   onAddressSituationChange: (situation: SimulatorSituation) => void;
+  onAddressUnavailable?: () => void;
   onFieldInteraction?: () => void;
   onReset?: () => void;
 };
@@ -18,33 +18,32 @@ type UseSimulatorFormStateOptions = {
  */
 export function useSimulatorFormState({
   onAddressInfosLoaded,
-  onAddressInfosMissing,
   onAddressSituationChange,
+  onAddressUnavailable,
   onFieldInteraction,
   onReset,
 }: UseSimulatorFormStateOptions) {
   const [formState, setFormState] = useState<SimulatorFormState>({
+    address: '',
     producesHotWater: 'oui',
+    selectedAddress: null,
     tertiarySector: 'Bureaux',
     typeBatiment: 'residentiel',
   });
-  const [address, setAddress] = useState('');
-  const [selectedAddress, setSelectedAddress] = useState<BANAddressFeature | null>(null);
-
-  const isAddressSelected = selectedAddress !== null;
+  const [addressErrorMessage, setAddressErrorMessage] = useState<string | null>(null);
 
   function updateFormState<Key extends keyof SimulatorFormState>(key: Key, value: SimulatorFormState[Key]) {
     onFieldInteraction?.();
-    setFormState((state) => ({
-      ...state,
+    setFormState((currentState) => ({
+      ...currentState,
       [key]: value,
     }));
   }
 
   function handleTypeBatimentChange(typeBatiment: TypeBatiment) {
     onFieldInteraction?.();
-    setFormState((state) => ({
-      ...state,
+    setFormState((currentState) => ({
+      ...currentState,
       nbLogements: undefined,
       surface: undefined,
       typeBatiment,
@@ -53,15 +52,23 @@ export function useSimulatorFormState({
 
   async function handleAddressChange(geoAddress?: BANAddressFeature) {
     if (!geoAddress) {
-      setAddress('');
-      setSelectedAddress(null);
+      setAddressErrorMessage(null);
+      setFormState((currentState) => ({
+        ...currentState,
+        address: '',
+        selectedAddress: null,
+      }));
       onAddressSituationChange(buildAddressSituation());
       onReset?.();
       return;
     }
 
-    setAddress(geoAddress.properties.label);
-    setSelectedAddress(geoAddress);
+    setAddressErrorMessage(null);
+    setFormState((currentState) => ({
+      ...currentState,
+      address: geoAddress.properties.label,
+      selectedAddress: geoAddress,
+    }));
 
     try {
       const [lon, lat] = geoAddress.geometry.coordinates;
@@ -73,24 +80,34 @@ export function useSimulatorFormState({
       });
 
       if (!infos.infosVille) {
+        setAddressErrorMessage("Votre batiment est trop loin d'un réseau de chaleur pour envisager un raccordement");
+        setFormState((currentState) => ({
+          ...currentState,
+          selectedAddress: null,
+        }));
         onAddressSituationChange(buildAddressSituation());
-        onAddressInfosMissing?.();
+        onAddressUnavailable?.();
         return;
       }
 
       onAddressSituationChange(buildAddressSituation(infos));
       onAddressInfosLoaded?.(infos);
     } catch (error) {
+      setAddressErrorMessage(null);
+      setFormState((currentState) => ({
+        ...currentState,
+        selectedAddress: null,
+      }));
       onAddressSituationChange(buildAddressSituation());
+      onAddressUnavailable?.();
     }
   }
 
   return {
-    address,
+    addressErrorMessage,
     formState,
     handleAddressChange,
     handleTypeBatimentChange,
-    isAddressSelected,
     updateFormState,
   };
 }
