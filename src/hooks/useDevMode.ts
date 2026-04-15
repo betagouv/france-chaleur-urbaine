@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import useLocalStorage from './useLocalStorage';
 
@@ -17,11 +17,13 @@ function useDevMode() {
     }
   }, [global.window, devModeEnabled]);
 
+  const toggleDevMode = useCallback(() => {
+    setDevMode(!devModeEnabled);
+  }, [devModeEnabled, setDevMode]);
+
   return {
     devModeEnabled,
-    toggleDevMode: () => {
-      setDevMode(!devModeEnabled);
-    },
+    toggleDevMode,
   };
 }
 

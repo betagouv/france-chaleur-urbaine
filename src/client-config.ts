@@ -17,6 +17,8 @@ export const clientConfig = {
     }),
     {} as Record<string, string>
   ),
+  feedbackUrl:
+    'https://voxusagers.numerique.gouv.fr/Demarches/3067?&view-mode=formulaire-avis&nd_mode=en-ligne-enti%C3%A8rement&nd_source=button&key=d72603000c07b99a66da0a230c832f7e',
   linkedInUrl: 'https://fr.linkedin.com/company/france-chaleur-urbaine',
   networkInfoFieldMaxCharacters: 700,
   networkSearchMinimumCharactersThreshold: 3,

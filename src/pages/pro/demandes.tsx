@@ -15,7 +15,7 @@ import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/Resizable';
+import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import AdditionalInformation from '@/modules/demands/client/AdditionalInformation';
@@ -566,8 +566,8 @@ function DemandesNew(): React.ReactElement {
             Exporter
           </ButtonExport>
         </div>
-        <ResizablePanelGroup direction="horizontal" className="gap-4">
-          <ResizablePanel defaultSize={66}>
+        <ResizablePanelGroup orientation="horizontal" className="gap-4">
+          <ResizablePanel defaultSize="66%">
             <TableSimple
               columns={tableColumns}
               data={demands}
@@ -585,8 +585,8 @@ function DemandesNew(): React.ReactElement {
               height="calc(100dvh - 140px)"
             />
           </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={34}>
+          <ResizableSeparator />
+          <ResizablePanel defaultSize="34%">
             <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
               {isDefined(mapCenterLocation) ? (
                 <Map

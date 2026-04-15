@@ -1,9 +1,7 @@
-import type { PrivacyPolicy } from '@incubateur-ademe/legal-pages-react';
-import PrivacyPolicyClient from '@incubateur-ademe/legal-pages-react/PrivacyPolicyClient';
+import PrivacyPolicyComponent from '@incubateur-ademe/legal-pages-react/PrivacyPolicy';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 
-const PrivacyPolicyComponent = PrivacyPolicyClient as unknown as typeof PrivacyPolicy;
 function PolitiqueDeConfidentialitePage() {
   return (
     <SimplePage

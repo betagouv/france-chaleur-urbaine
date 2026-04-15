@@ -743,7 +743,7 @@ export const listAdmin = async () => {
 };
 
 export const list = async (user: User) => {
-  if (!user || !user.gestionnaires) {
+  if (!user?.gestionnaires) {
     return [];
   }
 

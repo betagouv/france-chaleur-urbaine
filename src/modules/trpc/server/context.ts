@@ -5,6 +5,7 @@ import type { RateLimiterOptions } from '@/modules/security/server/rate-limit';
 import type { createContext } from '@/modules/trpc/trpc.config';
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
+
 export type { createContext };
 
 export type AuthConfig = {

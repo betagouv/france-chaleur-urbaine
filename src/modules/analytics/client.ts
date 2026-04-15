@@ -1,4 +1,4 @@
-import { init as initMatomo } from '@socialgouv/matomo-next';
+import { trackPagesRouter } from '@socialgouv/matomo-next';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { Router } from 'next/router';
 import posthog from 'posthog-js';
@@ -10,6 +10,7 @@ import { AnalyticsFormId, type TrackingConfiguration, trackingEvents } from '@/m
 import type { PostHogEvent, PostHogEventMap } from '@/modules/analytics/posthog.config';
 
 export { AnalyticsFormId, type TrackingConfiguration };
+
 type ExtractSuffix<T extends string, S extends string> = T extends `${infer Prefix}${S}` ? Prefix : never;
 
 // globally accessible atom (state)
@@ -46,7 +47,7 @@ export const useAnalytics = () => {
     if (!hookInitialized && clientConfig.tracking.matomoServerURL && clientConfig.tracking.matomoSiteId) {
       hookInitialized = true;
 
-      initMatomo({
+      trackPagesRouter({
         disableCookies: true,
         excludeUrlsPatterns: [/\/carte\?.+/], // do not track query params for this URL
         onScriptLoadingError() {

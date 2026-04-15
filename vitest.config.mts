@@ -1,13 +1,15 @@
 import { resolve } from 'node:path';
 
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   assetsInclude: ['**/*.md', '**/*.svgr', '**/*.mdx'],
-  plugins: [tsconfigPaths(), react()],
+  plugins: [react()],
+  resolve: {
+    tsconfigPaths: true,
+  },
   test: {
     alias: {
       '@': resolve(__dirname, 'src'),

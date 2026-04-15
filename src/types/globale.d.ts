@@ -1,4 +1,5 @@
 declare module '*.md';
+declare module '*.mdx';
 
 // Utility type to remove the `$` prefix from keys
 type RemoveDollar<T> = {

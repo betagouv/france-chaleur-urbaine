@@ -3,6 +3,7 @@ import type { GetStaticPaths } from 'next';
 import { clientConfig } from '@/client-config';
 import { FCUMapContextProvider } from '@/components/Map/MapProvider';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
+import Link from '@/components/ui/Link';
 import Newsletter from '@/components/ui/Newsletter';
 import {
   DetailsCommune,
@@ -16,13 +17,13 @@ import { getCommunePotentiel } from '@/server/services/communeAPotentiel';
 import cx from '@/utils/cx';
 
 const Logo = ({ className }: { className: string }) => (
-  <a
+  <Link
     href={clientConfig.websiteUrl}
-    target="_blank"
+    isExternal
     className={cx('items-center bg-none! gap-2 justify-end font text-sm text-faded italic fr-px-2w reset-external', className)}
   >
     <img src="/logo-fcu-with-typo-tight.webp" alt="logo france chaleur urbaine" className="h-[40px]" />
-  </a>
+  </Link>
 );
 
 const Page: React.FC<PotentielCreationReseauPageProps> = ({ commune }) => {

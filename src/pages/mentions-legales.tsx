@@ -1,7 +1,4 @@
-import type { LegalNotice } from '@incubateur-ademe/legal-pages-react';
-import LegalNoticeClient from '@incubateur-ademe/legal-pages-react/LegalNoticeClient';
-
-const LegalNoticeComponent = LegalNoticeClient as unknown as typeof LegalNotice;
+import LegalNoticeComponent from '@incubateur-ademe/legal-pages-react/LegalNotice';
 
 import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
