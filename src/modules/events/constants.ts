@@ -33,6 +33,9 @@ export const eventTypes = [
   'user_permissions_updated',
   'user_permissions_synced_from_api',
   'pdp_updated',
+  'network_created',
+  'network_deleted',
+  'network_geometry_updated',
 ] as const;
 
 export type EventType = (typeof eventTypes)[number];
@@ -51,6 +54,9 @@ export const eventTypeLabels: Record<EventType, string> = {
   demand_relance_sent: 'Relance automatique',
   demand_updated: 'Mise à jour demande',
   demand_validated: 'Validation demande',
+  network_created: 'Création réseau/PDP',
+  network_deleted: 'Suppression réseau/PDP',
+  network_geometry_updated: 'Mise à jour géométrie réseau',
   network_reminder_created: 'Création relance réseau',
   pdp_updated: 'Mise à jour périmètre de développement',
   pro_eligibility_test_created: 'Création test éligibilité',
@@ -104,6 +110,9 @@ export type EventDataMap = {
   pro_eligibility_test_updated: Record<string, unknown> | null;
   sync_geometries_to_airtable: { name: string };
   sync_metadata_from_airtable: { name: string };
+  network_created: { id: string; identifiant_reseau: string | null; nom_reseau: string | null; type: string };
+  network_deleted: { id: number; identifiant_reseau: string | null; nom_reseau: string | null; type: string };
+  network_geometry_updated: { id: number; identifiant_reseau: string | null; nom_reseau: string | null; type: string };
   pdp_updated: {
     'Identifiant reseau'?: string;
     reseau_de_chaleur_ids?: number[];

@@ -97,6 +97,25 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),
+  network_created: (event) => (
+    <span>
+      a créé un réseau <strong>{event.data.type}</strong> (ID: {event.data.id})
+    </span>
+  ),
+  network_deleted: (event) => (
+    <span>
+      a supprimé un réseau <strong>{event.data.type}</strong>
+      {event.data.nom_reseau ? ` "${event.data.nom_reseau}"` : null} (ID: {event.data.id}
+      {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null})
+    </span>
+  ),
+  network_geometry_updated: (event) => (
+    <span>
+      a mis à jour la géométrie d'un réseau <strong>{event.data.type}</strong>
+      {event.data.nom_reseau ? ` "${event.data.nom_reseau}"` : null} (ID: {event.data.id}
+      {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null})
+    </span>
+  ),
   network_reminder_created: (event, updateFilters) => (
     <>
       <span>a enregistré une relance pour le réseau</span>

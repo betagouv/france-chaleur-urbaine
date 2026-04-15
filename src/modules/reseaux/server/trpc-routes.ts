@@ -100,14 +100,36 @@ export const reseauxRouter = router({
   cityNetwork: route.input(z.object({ city: z.string() })).query(async ({ input }) => {
     return (await getCityEligilityStatus(input.city)) as HeatNetworksResponse; // legacy type for compatibility
   }),
-  createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input }) => {
-    return await reseauxService.createNetwork(input.id, input.geometry, input.type);
+  createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input, ctx }) => {
+    const result = await reseauxService.createNetwork(input.id, input.geometry, input.type);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: input.id,
+      context_type: 'network',
+      data: { id: input.id, identifiant_reseau: null, nom_reseau: null, type: input.type },
+      type: 'network_created',
+    });
+    return result;
   }),
   deleteGeomUpdate: adminRoute.input(zDeleteGeomUpdateInput).mutation(async ({ input }) => {
     return await reseauxService.deleteGeomUpdate(input.id, input.type);
   }),
-  deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input }) => {
-    return await reseauxService.deleteNetwork(input.id, input.type);
+  deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input, ctx }) => {
+    const reseau = await reseauxService.getNetworkLabel(input.id, input.type);
+    const result = await reseauxService.deleteNetwork(input.id, input.type);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(input.id),
+      context_type: 'network',
+      data: {
+        id: input.id,
+        identifiant_reseau: reseau.identifiant_reseau,
+        nom_reseau: reseau.nom_reseau,
+        type: input.type,
+      },
+      type: 'network_deleted',
+    });
+    return result;
   }),
   eligibilityStatus: route.input(z.object({ lat: z.number(), lon: z.number() })).query(async ({ input }) => {
     return (await getEligilityStatus(input.lat, input.lon)) as HeatNetworksResponse; // legacy type for compatibility
@@ -134,7 +156,21 @@ export const reseauxRouter = router({
   }),
 
   // Opérations communes à tous les types
-  updateGeomUpdate: adminRoute.input(zUpdateGeomUpdateInput).mutation(async ({ input }) => {
-    return await reseauxService.updateGeomUpdate(input.id, input.geometry, input.type);
+  updateGeomUpdate: adminRoute.input(zUpdateGeomUpdateInput).mutation(async ({ input, ctx }) => {
+    const reseau = await reseauxService.getNetworkLabel(input.id, input.type);
+    const result = await reseauxService.updateGeomUpdate(input.id, input.geometry, input.type);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(input.id),
+      context_type: 'network',
+      data: {
+        id: input.id,
+        identifiant_reseau: reseau.identifiant_reseau,
+        nom_reseau: reseau.nom_reseau,
+        type: input.type,
+      },
+      type: 'network_geometry_updated',
+    });
+    return result;
   }),
 });

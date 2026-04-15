@@ -403,6 +403,34 @@ export const deleteGeomUpdate = async (
     .execute();
 };
 
+export const getNetworkLabel = async (
+  id_fcu: number,
+  tableName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire' | 'reseaux_de_froid'
+): Promise<{ nom_reseau: string | null; identifiant_reseau: string | null }> => {
+  switch (tableName) {
+    case 'reseaux_de_chaleur':
+    case 'reseaux_de_froid': {
+      return await kdb
+        .selectFrom(tableName)
+        .select((eb) => ['nom_reseau', eb.ref('Identifiant reseau').as('identifiant_reseau')])
+        .where('id_fcu', '=', id_fcu)
+        .executeTakeFirstOrThrow();
+    }
+    case 'zones_et_reseaux_en_construction': {
+      const row = await kdb.selectFrom(tableName).select('nom_reseau').where('id_fcu', '=', id_fcu).executeTakeFirstOrThrow();
+      return { identifiant_reseau: null, nom_reseau: row.nom_reseau };
+    }
+    case 'zone_de_developpement_prioritaire': {
+      const row = await kdb
+        .selectFrom(tableName)
+        .select((eb) => eb.ref('Identifiant reseau').as('identifiant_reseau'))
+        .where('id_fcu', '=', id_fcu)
+        .executeTakeFirstOrThrow();
+      return { identifiant_reseau: row.identifiant_reseau, nom_reseau: null };
+    }
+  }
+};
+
 export const deleteNetwork = async (
   id_fcu: number,
   dbName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire' | 'reseaux_de_froid'
