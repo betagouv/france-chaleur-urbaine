@@ -148,24 +148,32 @@ Location: `src/server/db/migrations/`
 Format: `YYYYMMDDHHMMSS_description.ts`
 
 ```ts
-import { type Kysely, sql } from 'kysely';
+import type { Kysely } from 'kysely';
+import { sql } from 'kysely';
 
 export async function up(db: Kysely<any>): Promise<void> {
-  await sql`ALTER TABLE demands ADD COLUMN priority TEXT DEFAULT 'normal'`.execute(db);
+  await sql`
+    ALTER TABLE demands ADD COLUMN priority TEXT DEFAULT 'normal';
+    CREATE INDEX idx_demands_priority ON demands (priority);
+  `.execute(db);
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await sql`ALTER TABLE demands DROP COLUMN priority`.execute(db);
+  await sql`
+    DROP INDEX IF EXISTS idx_demands_priority;
+    ALTER TABLE demands DROP COLUMN priority;
+  `.execute(db);
 }
 ```
 
-**Rules:**
+**Rules for schema migrations only:**
 1. Never edit migrations after they've been applied to any environment.
 2. Run `pnpm db:sync` after migration to update Kysely types.
 3. For type updates after migration: prefer `pnpm db:sync --single` (manual merge) over full regeneration.
 4. Commit migration file + updated `database.ts` types together.
-5. Use `sql` template literals for raw SQL in migrations.
+5. Use a single `sql` template literal block per direction (`up`/`down`) with all statements separated by `;`. Avoid multiple `sql`/`.execute()` calls — one block is easier to read and runs in a single round-trip.
 6. Always provide both `up` and `down` functions.
+7. Never use the Kysely schema builder (`db.schema`) in schema migrations — always raw SQL via `sql` template literals.
 
 ## Common index patterns (in migrations)
 
