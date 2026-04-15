@@ -35,7 +35,7 @@ export async function sendEmailTemplate<Type extends EmailType>(
     cc,
     from: from || serverConfig.MAIL_FROM,
     html,
-    replyTo: replyTo || serverConfig.MAIL_REPLYTO,
+    replyTo,
     subject: subject ?? defaultSubject,
     text,
     to: recipient.email,

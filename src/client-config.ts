@@ -13,7 +13,7 @@ export const clientConfig = {
   }).reduce(
     (acc, [key, value]) => ({
       ...acc,
-      [key]: `${value},france-chaleur-urbaine@developpement-durable.gouv.fr,france.chaleur.urbaine@ademe.fr`,
+      [key]: `${value},france.chaleur.urbaine@ademe.fr`,
     }),
     {} as Record<string, string>
   ),
