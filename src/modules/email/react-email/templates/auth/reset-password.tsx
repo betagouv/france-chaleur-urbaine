@@ -15,7 +15,7 @@ export const ResetPasswordEmail = ({ token }: { token: string }) => {
         </Button>
       </Section>
       <Text>
-        Si vous n'utilisez pas ce lien d'ici 3 heures, il expirera.
+        Si vous n'utilisez pas ce lien d'ici 3 heures, il expirera.{' '}
         <Link href="/reset-password">Cliquez ici pour obtenir un nouveau lien de réinitialisation de mot de passe.</Link>
       </Text>
       <Text>
