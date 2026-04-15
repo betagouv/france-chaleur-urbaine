@@ -198,6 +198,9 @@ importers:
       geojson-vt:
         specifier: ^4.0.2
         version: 4.0.2
+      get-stream:
+        specifier: ^9.0.1
+        version: 9.0.1
       helmet:
         specifier: ^8.1.0
         version: 8.1.0
@@ -276,9 +279,15 @@ importers:
       react-hot-toast:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react-loader-spinner:
+        specifier: 6.1.6
+        version: 6.1.6(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react-map-gl:
         specifier: ^8.1.0
         version: 8.1.0(mapbox-gl@3.21.0)(maplibre-gl@5.22.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react-resizable-panels:
+        specifier: ^4.9.0
+        version: 4.9.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       recharts:
         specifier: ^3.8.1
         version: 3.8.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react-is@18.3.1)(react@19.2.5)(redux@5.0.1)
@@ -454,9 +463,6 @@ importers:
       camelcase:
         specifier: ^9.0.0
         version: 9.0.0
-      get-stream:
-        specifier: ^9.0.1
-        version: 9.0.1
       happy-dom:
         specifier: ^20.8.9
         version: 20.8.9
@@ -487,12 +493,6 @@ importers:
       react-email:
         specifier: 5.2.10
         version: 5.2.10
-      react-loader-spinner:
-        specifier: 6.1.6
-        version: 6.1.6(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      react-resizable-panels:
-        specifier: ^4.9.0
-        version: 4.9.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       remark-directive-rehype:
         specifier: ^1.0.0
         version: 1.0.0
