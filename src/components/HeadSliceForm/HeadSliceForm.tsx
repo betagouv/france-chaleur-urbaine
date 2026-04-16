@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -12,6 +11,7 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
+import useInitialSearchParam from '@/hooks/useInitialSearchParam';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { AvailableHeating } from '@/modules/app/types';
@@ -73,7 +73,9 @@ const HeadSliceForm = ({
   } = useContactFormFCU();
 
   const trpcUtils = trpc.useUtils();
-  const router = useRouter();
+
+  const urlHeating = useInitialSearchParam('heating');
+  const urlAddress = useInitialSearchParam('address');
 
   const [geoAddress, setGeoAddress] = useState<BANAddressFeature>();
   const { userInfo, setUserInfo } = useUserInfo();
@@ -129,19 +131,18 @@ const HeadSliceForm = ({
     setLoadingStatus('idle');
   }, [userInfo.address, userInfo.heatingType, geoAddress, trpcUtils, handleOnFetchAddress, handleOnSuccessAddress]);
 
+  // Sync URL params to localStorage (one-shot — URL params are stable)
   useEffect(() => {
-    const { heating, address } = router.query;
-    if (heating && address) {
+    if (urlHeating || urlAddress) {
+      setUserInfo({
+        ...(urlHeating ? { heatingType: urlHeating as AvailableHeating } : {}),
+        ...(urlAddress ? { address: urlAddress } : {}),
+      });
+    }
+    if (urlHeating && urlAddress) {
       setAutoValidate(true);
     }
-
-    if (heating) {
-      setUserInfo({ heatingType: heating as AvailableHeating });
-    }
-    if (address) {
-      setUserInfo({ address: address as string });
-    }
-  }, [router.query, setUserInfo]);
+  }, [urlHeating, urlAddress, setUserInfo]);
 
   // Restaure la geoAddress depuis la BAN si l'adresse est connue mais l'objet feature absent (rechargement).
   useEffect(() => {
@@ -176,12 +177,12 @@ const HeadSliceForm = ({
                 name="heatingType"
                 selectOptions={energyInputsDefaultLabels}
                 onChange={(val) => setUserInfo({ heatingType: val })}
-                value={userInfo.heatingType || ''}
+                value={userInfo.heatingType ?? ''}
               />
             </CheckEligibilityFormLabel>
             <AddressField
               className="mb-2!"
-              defaultValue={userInfo.address}
+              defaultValue={urlAddress ?? userInfo.address}
               nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
               onClear={() => {
                 setUserInfo({ address: '' });
