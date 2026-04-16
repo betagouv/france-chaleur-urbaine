@@ -1,7 +1,7 @@
 import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import dynamic from 'next/dynamic';
+import type { ReactNode } from 'react';
 
-import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Link from '@/components/ui/Link';
 
 const Simulator = dynamic(() => import('@/modules/simulator/client/Simulator'), {
@@ -125,5 +125,14 @@ export const ConditionsAttributionCee = () => {
     </ul>
   );
 };
+
+function ArrowItem({ children }: { children: ReactNode }) {
+  return (
+    <li className="fr-mb-3w flex gap-2">
+      <span aria-hidden="true" className="fr-icon-arrow-right-circle-fill shrink-0 text-(--text-label-blue-france)" />
+      <div>{children}</div>
+    </li>
+  );
+}
 
 export default Helps;

@@ -71,7 +71,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
         </div>
       </div>
       {cityData.networksData?.isClassed && (
-        <div className="bg[#f9f8f6] p-8">
+        <div className="bg-[#f9f8f6] p-8">
           <div className="fr-container flex flex-col md:flex-row gap-4">
             <ClassedNetworks
               city={citySlug}
@@ -107,7 +107,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
                 d’obtenir des aides financières conséquentes pour se raccorder.
               </ArrowItem>
               <ArrowItem color="white">
-                <strong style={{ backgroundColor: '#F8D86E', color: '#000091' }}>
+                <strong className="bg-[#F8D86E] text-(--text-title-blue-france)">
                   Le coût du raccordement peut ainsi être réduit à quelques centaines d’euros par logement
                 </strong>{' '}
                 (en fonction de la situation du bâtiment et de ses besoins en chaleur).
@@ -142,7 +142,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
           </div>
         )}
       </div>
-      <div className="bg[#f9f8f6] p-8">
+      <div className="bg-[#f9f8f6] p-8">
         <h2 className="text-center text-(--background-active-blue-france)">Les différentes étapes en copropriété :</h2>
         <div className="flex flex-col fr-container">
           {userExperience.map((props) => (
