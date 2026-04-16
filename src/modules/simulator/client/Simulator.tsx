@@ -19,10 +19,100 @@ import {
 } from '@/modules/simulator/constants';
 import cx from '@/utils/cx';
 
-type SimulatorProps = {
-  children?: ReactNode;
-  withTitle?: boolean;
-};
+function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: boolean }) {
+  const engine = useSimulatorEngine();
+  const [networkName, setNetworkName] = useState<string | null>(null);
+  const [isEfficientNetwork, setIsEfficientNetwork] = useState(false);
+  const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber(CEE_VALUE_RULE)));
+  const { updateSituation } = useSimulatorSituation(engine);
+  const resetNetworkContext = () => {
+    setNetworkName(null);
+    setIsEfficientNetwork(false);
+  };
+  const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, updateFormState } = useSimulatorFormState({
+    onAddressInfosLoaded: (infos) => {
+      setNetworkName(infos.nearestReseauDeChaleur?.nom_reseau ?? null);
+      setIsEfficientNetwork((infos.nearestReseauDeChaleur?.['Taux EnR&R'] ?? 0) > 50);
+    },
+    onAddressSituationChange: updateSituation,
+    onReset: resetNetworkContext,
+  });
+
+  const structure: Structure = formState.typeBatiment === 'residentiel' ? 'Résidentiel' : 'Tertiaire';
+  const hasAmountInputs =
+    ((formState.selectedAddress !== null && (formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface)) || 0) >
+    0;
+
+  useSyncSimulatorSituation({ ceeValue, engine, formState });
+
+  const helpCumac = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_RULE) : 0;
+  const helpAmount = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE) : 0;
+  const networkInformation = networkName
+    ? `Le réseau de chaleur "${networkName}" est situé à proximité de votre adresse.${
+        isEfficientNetwork ? " Il est considéré comme efficace car il utilise au moins 50 % d'énergie renouvelable." : ''
+      }`
+    : null;
+  const getRuleNoteUrl = (ruleName: RuleName) => {
+    const note = engine.getRule(ruleName)?.rawNode.note;
+    return typeof note === 'string' ? note : undefined;
+  };
+
+  const concernedHelp: ConcernedHelp | null =
+    (helpCumac > 0 && isEfficientNetwork) || addressErrorMessage
+      ? {
+          label: 'Coup de pouce "Chauffage des bâtiments résidentiels collectifs et tertiaires"',
+          noteUrl: getRuleNoteUrl(BOOSTED_HEAT_NETWORK_AID_RULE),
+        }
+      : helpCumac > 0
+        ? {
+            label: structure === 'Résidentiel' ? 'BAR-TH-137' : 'BAT-TH-127',
+            noteUrl: getRuleNoteUrl(structure === 'Résidentiel' ? RESIDENTIAL_HEAT_NETWORK_AID_RULE : TERTIARY_HEAT_NETWORK_AID_RULE),
+          }
+        : null;
+
+  return (
+    <div className={cx('bg-[#4550e5] text-black', withTitle && 'p-4 my-3')}>
+      {withTitle && (
+        <div className="mx-auto mb-4 max-w-237.5 text-[20px] font-bold leading-6.25 text-white">
+          Estimer le montant du Coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires » pour le raccordement de mon
+          bâtiment
+        </div>
+      )}
+      <div className={cx('flex flex-wrap items-start justify-center gap-8', withTitle && 'm-8 ')}>
+        <div className="flex-1">
+          <SimulatorFormFields
+            addressErrorMessage={addressErrorMessage}
+            fieldClassName="w-full! min-w-80"
+            formState={formState}
+            onAddressChange={handleAddressChange}
+            onFormStateChange={updateFormState}
+            onTypeBatimentChange={handleTypeBatimentChange}
+          />
+        </div>
+        <SimulatorResult
+          ceeValue={ceeValue}
+          concernedHelp={concernedHelp}
+          helpAmount={helpAmount}
+          helpCumac={helpCumac}
+          nbLogement={formState.nbLogements || 0}
+          networkInformation={networkInformation}
+          onCeeValueChange={setCeeValue}
+          structure={structure}
+          addressErrorMessage={addressErrorMessage}
+        />
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function formatCeeValue(value: number) {
+  return (value * 1000).toLocaleString('fr-FR', {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  });
+}
+
 type SimulatorResultProps = {
   ceeValue: string;
   concernedHelp: {
@@ -35,15 +125,8 @@ type SimulatorResultProps = {
   networkInformation: string | null;
   onCeeValueChange: (value: string) => void;
   structure: Structure;
+  addressErrorMessage?: string;
 };
-
-function formatCeeValue(value: number) {
-  return (value * 1000).toLocaleString('fr-FR', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 2,
-  });
-}
-
 function SimulatorResult({
   ceeValue,
   concernedHelp,
@@ -53,15 +136,11 @@ function SimulatorResult({
   networkInformation,
   onCeeValueChange,
   structure,
+  addressErrorMessage,
 }: SimulatorResultProps) {
   return (
     <div className="flex-1">
-      <div
-        className={cx(
-          'simulator-result mx-auto flex h-[125px] w-full flex-col justify-around rounded-xl bg-[#27a658] p-4 text-[20px] text-white',
-          'min-[450px]:min-w-[300px]'
-        )}
-      >
+      <div className="mx-auto flex h-30 w-full flex-col justify-around rounded-xl bg-[#27a658] p-4 text-white">
         <div className="text-[44px] font-bold">
           {helpAmount.toLocaleString('fr-FR', {
             currency: 'EUR',
@@ -92,7 +171,7 @@ function SimulatorResult({
             kWh cumac
           </strong>
         </div>
-        {networkInformation && concernedHelp && (
+        {(networkInformation || addressErrorMessage) && concernedHelp && (
           <>
             <div>
               Le calcul se base sur la fiche{' '}
@@ -100,9 +179,11 @@ function SimulatorResult({
                 <strong>{concernedHelp.label}</strong>
               </a>
               .{' '}
-              <sup>
-                <Tooltip title={networkInformation} />
-              </sup>
+              {!addressErrorMessage && (
+                <sup>
+                  <Tooltip title={networkInformation} />
+                </sup>
+              )}
             </div>
             <div>
               * Montant donné à titre indicatif avec un CEE estimé à{' '}
@@ -127,93 +208,6 @@ function SimulatorResult({
           </>
         )}
       </div>
-    </div>
-  );
-}
-
-function Simulator({ children, withTitle }: SimulatorProps) {
-  const engine = useSimulatorEngine();
-  const [networkName, setNetworkName] = useState<string | null>(null);
-  const [isEfficientNetwork, setIsEfficientNetwork] = useState(false);
-  const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber(CEE_VALUE_RULE)));
-  const { updateSituation } = useSimulatorSituation(engine);
-  const resetNetworkContext = () => {
-    setNetworkName(null);
-    setIsEfficientNetwork(false);
-  };
-  const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, updateFormState } = useSimulatorFormState({
-    onAddressInfosLoaded: (infos) => {
-      setNetworkName(infos.nearestReseauDeChaleur?.nom_reseau ?? null);
-      setIsEfficientNetwork((infos.nearestReseauDeChaleur?.['Taux EnR&R'] ?? 0) > 50);
-    },
-    onAddressSituationChange: updateSituation,
-    onAddressUnavailable: resetNetworkContext,
-    onReset: resetNetworkContext,
-  });
-
-  const structure: Structure = formState.typeBatiment === 'residentiel' ? 'Résidentiel' : 'Tertiaire';
-  const hasAmountInputs =
-    ((formState.selectedAddress !== null && (formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface)) || 0) >
-    0;
-
-  useSyncSimulatorSituation({ ceeValue, engine, formState });
-
-  const helpCumac = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_RULE) : 0;
-  const helpAmount = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE) : 0;
-  const networkInformation = networkName
-    ? `Le réseau de chaleur "${networkName}" est situé à proximité de votre adresse.${
-        isEfficientNetwork ? " Il est considéré comme efficace car il utilise au moins 50 % d'énergie renouvelable." : ''
-      }`
-    : null;
-  const getRuleNoteUrl = (ruleName: RuleName) => {
-    const note = engine.getRule(ruleName)?.rawNode.note;
-    return typeof note === 'string' ? note : undefined;
-  };
-
-  const concernedHelp: ConcernedHelp | null =
-    helpCumac > 0 && isEfficientNetwork
-      ? {
-          label: 'Coup de pouce "Chauffage des bâtiments résidentiels collectifs et tertiaires"',
-          noteUrl: getRuleNoteUrl(BOOSTED_HEAT_NETWORK_AID_RULE),
-        }
-      : helpCumac > 0
-        ? {
-            label: structure === 'Résidentiel' ? 'BAR-TH-137' : 'BAT-TH-127',
-            noteUrl: getRuleNoteUrl(structure === 'Résidentiel' ? RESIDENTIAL_HEAT_NETWORK_AID_RULE : TERTIARY_HEAT_NETWORK_AID_RULE),
-          }
-        : null;
-
-  return (
-    <div className={cx('bg-[#4550e5] text-black', withTitle && 'p-4 my-3')}>
-      {withTitle && (
-        <div className="mx-auto mb-4 max-w-[950px] text-[20px] font-bold leading-[25px] text-white">
-          Estimer le montant du Coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires » pour le raccordement de mon
-          bâtiment
-        </div>
-      )}
-      <div className={cx('flex flex-wrap items-start justify-center gap-8', withTitle && 'm-8 ')}>
-        <div className="flex-1">
-          <SimulatorFormFields
-            addressErrorMessage={addressErrorMessage}
-            fieldClassName="w-full! min-w-80"
-            formState={formState}
-            onAddressChange={handleAddressChange}
-            onFormStateChange={updateFormState}
-            onTypeBatimentChange={handleTypeBatimentChange}
-          />
-        </div>
-        <SimulatorResult
-          ceeValue={ceeValue}
-          concernedHelp={concernedHelp}
-          helpAmount={helpAmount}
-          helpCumac={helpCumac}
-          nbLogement={formState.nbLogements || 0}
-          networkInformation={networkInformation}
-          onCeeValueChange={setCeeValue}
-          structure={structure}
-        />
-      </div>
-      {children}
     </div>
   );
 }

@@ -15,8 +15,8 @@ import { CEE_VALUE_RULE, TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE } from '@/modules/si
 import { isDefined } from '@/utils/core';
 
 /**
- * Simulateur du coût de raccordement selon le nombre de logements si bâtiment résidentiel ou
- * la surface si bâtiment tertiaire.
+ * Simulateur du coût de raccordement selon le nombre de logements si batiment résidentiel ou
+ * la surface si batiment tertiaire.
  */
 const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
   const engine = useSimulatorEngine();
@@ -76,13 +76,10 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
             <Icon name="fr-icon-money-euro-circle-line" size="sm" mr="1v" />
             Simulateur
           </Badge>
-
           <Heading as="h6" mt="1w" mb="1w">
             Estimer le coût d’un raccordement*
           </Heading>
-
           <Box mb="3w">pour une longueur de branchement de 50 m</Box>
-
           <SimulatorFormFields
             addressErrorMessage={addressErrorMessage}
             formState={formState}
@@ -91,7 +88,6 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
             onTypeBatimentChange={handleTypeBatimentChange}
             showLabels
           />
-
           <Text size="sm">
             *montants donnés à titre indicatif.
             {props.embedded && (
@@ -102,12 +98,10 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
             )}
           </Text>
         </Box>
-
         <Box flex backgroundColor="grey-975-75" p="3w">
           <Text fontWeight="bold" textTransform="uppercase">
             Coût du raccordement
           </Text>
-
           {montantCouts === outOfRangeValue ? (
             <Box mt="2w">
               <Badge severity="warning">
@@ -120,25 +114,18 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
               <Heading as="h6" mt="2w">
                 Entre {prettyPrintCout(montantCouts?.[0])} et {prettyPrintCout(montantCouts?.[1])}
               </Heading>
-
               <Box border="1px solid #e7e7e7" my="3w" />
-
               <Text fontWeight="bold" textTransform="uppercase">
                 Montant du coup de pouce
               </Text>
-
               <Heading as="h6" mt="2w">
                 {prettyPrintCout(montantAide)}
               </Heading>
-
               <Text size="sm" mt="1w">
                 Montant indicatif calculé avec une valeur CEE actuelle de <strong>{currentCeeValueDisplay} €/MWh cumac</strong>.
               </Text>
-
               <Box border="1px solid #e7e7e7" my="3w" />
-
               <Badge severity="info">Après déduction du coup de pouce</Badge>
-
               <Heading as="h6" mb="0" mt="1w">
                 {montantCoutsApresAide?.[0] === 0 && montantCoutsApresAide?.[1] === 0 ? (
                   <>Raccordement gratuit&nbsp;!</>

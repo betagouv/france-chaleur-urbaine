@@ -3,23 +3,19 @@ import { useState } from 'react';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { buildAddressSituation, type SimulatorFormState, type SimulatorSituation, type TypeBatiment } from '@/modules/simulator/constants';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
+import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { postFetchJSON } from '@/utils/network';
 
 type UseSimulatorFormStateOptions = {
   onAddressInfosLoaded?: (infos: LocationInfoResponse) => void;
   onAddressSituationChange: (situation: SimulatorSituation) => void;
-  onAddressUnavailable?: () => void;
   onFieldInteraction?: () => void;
   onReset?: () => void;
 };
 
-/**
- * Manages the shared UI state and address workflow for heat-network simulator forms.
- */
 export function useSimulatorFormState({
   onAddressInfosLoaded,
   onAddressSituationChange,
-  onAddressUnavailable,
   onFieldInteraction,
   onReset,
 }: UseSimulatorFormStateOptions) {
@@ -79,14 +75,13 @@ export function useSimulatorFormState({
         lon,
       });
 
-      if (!infos.infosVille) {
+      const isEligible =
+        infos.nearestReseauDeChaleur &&
+        infos.nearestReseauDeChaleur.distance <
+          getNetworkEligibilityDistances(infos.nearestReseauDeChaleur['Identifiant reseau']).eligibleDistance;
+
+      if (!infos.infosVille || !isEligible) {
         setAddressErrorMessage("Votre batiment est trop loin d'un réseau de chaleur pour envisager un raccordement");
-        setFormState((currentState) => ({
-          ...currentState,
-          selectedAddress: null,
-        }));
-        onAddressSituationChange(buildAddressSituation());
-        onAddressUnavailable?.();
         return;
       }
 
@@ -99,7 +94,6 @@ export function useSimulatorFormState({
         selectedAddress: null,
       }));
       onAddressSituationChange(buildAddressSituation());
-      onAddressUnavailable?.();
     }
   }
 
