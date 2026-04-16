@@ -1,7 +1,7 @@
 import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import dynamic from 'next/dynamic';
-import type { ReactNode } from 'react';
 
+import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Link from '@/components/ui/Link';
 
 const Simulator = dynamic(() => import('@/modules/simulator/client/Simulator'), {
@@ -79,11 +79,9 @@ const Helps = () => {
       </ol>
       <h2>Sous quelle forme vais-je recevoir la prime ?</h2>
       <p>La prime peut :</p>
-      <ul>
-        <ArrowItem>Être versée par virement ou par chèque.</ArrowItem>
-        <ArrowItem>Être déduite de la facture.</ArrowItem>
-        <ArrowItem>Prendre d’autres formes convenues avec le signataire de la charte lors de la contractualisation de son offre.</ArrowItem>
-      </ul>
+      <ArrowItem>Être versée par virement ou par chèque.</ArrowItem>
+      <ArrowItem>Être déduite de la facture.</ArrowItem>
+      <ArrowItem>Prendre d’autres formes convenues avec le signataire de la charte lors de la contractualisation de son offre.</ArrowItem>
       <p>
         Pour en savoir plus :{' '}
         <Link href="https://www.ecologie.gouv.fr/coup-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires" isExternal>
@@ -96,7 +94,7 @@ const Helps = () => {
 
 export const ConditionsAttributionCee = () => {
   return (
-    <ul>
+    <>
       <ArrowItem>
         Remplacement d’équipements de chauffage ou de production d’eau chaude sanitaire au charbon, au fioul ou au gaz au profit d’un
         raccordement à un réseau de chaleur alimenté majoritairement par des énergies renouvelables ou de récupération (ou, à défaut, en cas
@@ -122,17 +120,8 @@ export const ConditionsAttributionCee = () => {
         Le raccordement d’un bâtiment déraccordé existant est éligible si et seulement si le déraccordement a eu lieu au moins 5 ans
         auparavant et que celui-ci n’a pas fait l’objet d’une demande de certificats d’économie d’énergie.
       </ArrowItem>
-    </ul>
+    </>
   );
 };
-
-function ArrowItem({ children }: { children: ReactNode }) {
-  return (
-    <li className="fr-mb-3w flex gap-2">
-      <span aria-hidden="true" className="fr-icon-arrow-right-circle-fill shrink-0 text-(--text-label-blue-france)" />
-      <div>{children}</div>
-    </li>
-  );
-}
 
 export default Helps;

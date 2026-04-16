@@ -202,8 +202,11 @@ export const ArrowItem = ({
   color?: 'default' | 'white';
   className?: string;
 }) => (
-  <div className={cx('flex gap-2 fr-mb-3w', color === 'white' && 'text-white', className ?? '')}>
-    <ArrowPuce $color={color} />
+  <div className={cx('flex gap-2 fr-mb-3w', color === 'white' && 'text-white', className)}>
+    <span
+      aria-hidden="true"
+      className={cx('fr-icon-arrow-right-circle-fill shrink-0', color === 'white' ? 'text-white' : 'text-(--text-label-blue-france)')}
+    />
     <div>{children}</div>
   </div>
 );
