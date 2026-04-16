@@ -45,7 +45,7 @@ const Us = () => {
       <Section variant="light">
         <SectionTitle>L'équipe</SectionTitle>
         <SectionContent>
-          <List>
+          <ul className="list-none p-0 [&>li]:mb-2">
             <li>
               <b>L'ADEME</b> : Agence de la transition écologique, porte le service France Chaleur Urbaine. Céline LARUELLE, en tant
               qu’intrapreneuse et Adrien ZEMOUR, en tant qu’entrepreneur d’intérêt général pilotent le projet.
@@ -68,7 +68,7 @@ const Us = () => {
                 beta.gouv.fr
               </Link>
             </li>
-          </List>
+          </ul>
         </SectionContent>
       </Section>
       <Section>
@@ -78,8 +78,8 @@ const Us = () => {
             En tant que service public numérique, nous sommes transparents sur les ressources allouées et la manière dont elles sont
             employées. Les dépenses réalisées dans le cadre de France Chaleur Urbaine sont présentées ci-dessous par source de financement.{' '}
             <strong>Elles servent à plus de 95 % à financer l’équipe de freelances impliquée sur le projet</strong>. La répartition par
-            poste est également précisée ci-dessous. En complément de ces dépenses, un ETP est mis à disposition par la Direction
-            interministérielle du numérique (EIG).
+            poste est également précisée ci-dessous. En complément de ces dépenses, un ETP (EIG) est mis à disposition par la Direction
+            interministérielle du numérique (DINUM).
           </p>
           <div className="flex flex-wrap justify-center gap-8 mb-8">
             <Image
