@@ -19,7 +19,7 @@ const BENEFITS = [
   {
     description: "MaPrimeRénov', CEE, aides locales : des financements publics couvrant une grande partie des travaux.",
     icon: 'icon-immeuble.png',
-    title: 'Bénéficiez d’aides pour financer vitre projet',
+    title: 'Bénéficiez d’aides pour financer votre projet',
   },
   {
     description: 'Une meilleure classe DPE protège votre bien immobilier des décotes et le maintient compétitif sur le marché.',
