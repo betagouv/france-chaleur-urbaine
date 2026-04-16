@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 import useLocalStorage from '@/hooks/useLocalStorage';
 import type { ContactFormInfos } from '@/modules/demands/constants';
@@ -15,9 +15,13 @@ export default function useUserInfo() {
     defaultValue: {},
   });
 
+  const userInfoRef = useRef(userInfo);
+  userInfoRef.current = userInfo;
+
   const setUserInfo = useCallback(
     (newUserInfo: UserInfo) => {
-      const updated = { ...userInfo, ...newUserInfo };
+      const updated = { ...userInfoRef.current, ...newUserInfo };
+      userInfoRef.current = updated;
       set(updated);
     },
     [set]
