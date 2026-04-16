@@ -12,6 +12,7 @@ export type ContactState = {
 
 export type FormUi = {
   Field: {
+    Checkbox: ComponentType<any>;
     EmailInput: ComponentType<any>;
     Input: ComponentType<any>;
     NumberInput: ComponentType<any>;
@@ -36,6 +37,7 @@ type DemandContactFieldsProps<TFormUi extends FormUi = FormUi> = {
   showHeatingEnergy?: boolean;
   showHouseWarning?: boolean;
   structureClassName?: string;
+  display?: 'collectContact';
 };
 
 export const DemandContactFields = <TFormUi extends FormUi>({
@@ -48,6 +50,7 @@ export const DemandContactFields = <TFormUi extends FormUi>({
   showHeatingEnergy = false,
   showHouseWarning = false,
   structureClassName,
+  display,
 }: DemandContactFieldsProps<TFormUi>) => {
   const { companyType, demandCompanyType, structure } = contactState;
   const { Field, Fieldset, FieldsetLegend, FieldWrapper, form } = formUi;
@@ -157,6 +160,22 @@ export const DemandContactFields = <TFormUi extends FormUi>({
               value,
             }))}
           />
+        </>
+      )}
+      {display === 'collectContact' && (
+        <>
+          <FieldWrapper>
+            <Field.Checkbox
+              name="acceptFCUTeam"
+              label="J'accepte d'être recontacté(e) par l'équipe France Chaleur Renouvelable pour un entretien d'environ 30 minutes, dans le cadre de la conception du service."
+            />
+          </FieldWrapper>
+          <FieldWrapper>
+            <Field.Checkbox
+              name="acceptGestionnaire"
+              label="Je souhaite laisser mes coordonnées pour être tenu informé par le gestionnaire du réseau le plus proche ou par ma collectivité des projets d’extension de réseau ou de création de réseau dans mon quartier."
+            />
+          </FieldWrapper>
         </>
       )}
     </>

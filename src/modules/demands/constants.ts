@@ -115,6 +115,7 @@ export const zAdminUpdateDemandInput = z.object({
 });
 
 export const zCreateDemandInput = z.object({
+  acceptFCUTeam: z.boolean().optional(),
   address: z.string(),
   city: z.string(),
   company: z.string().optional().default(''),
@@ -283,6 +284,8 @@ export const zBatchDemandContactSchema = z.object(demandContactShape).superRefin
 export const zContactFormCreateDemandInput = z
   .object({
     ...demandContactShape,
+    acceptFCUTeam: z.boolean().optional(),
+    acceptGestionnaire: z.boolean().optional(),
     heatingEnergy: z
       .string()
       .refine(
@@ -296,7 +299,28 @@ export const zContactFormCreateDemandInput = z
   })
   .superRefine(validateDemandContactInfo);
 
+export const zAirtableFCUTeamContact = z.object({
+  Adresse: z.string().min(1),
+  'Code Postal': z.string().min(1),
+  Date: z.iso.datetime(),
+  Email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
+  'Mode de chauffage': z.enum(modesDeChauffage.map(({ value }) => value) as [ModeDeChauffage, ...ModeDeChauffage[]]),
+  Nom: z.string().min(1),
+  'Nom de la structure': z.string(),
+  'Nombre de logement': z.number().optional(),
+  Prenom: z.string().min(1),
+  Structure: z.string().min(1),
+  Surface: z.number().optional(),
+  'Type de structure': z.string(),
+  Téléphone: z
+    .string()
+    .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
+    .optional()
+    .default(''),
+});
+
 export type ContactFormInfos = z.infer<typeof zContactFormCreateDemandInput>;
+export type AirtableFCUTeamContact = z.infer<typeof zAirtableFCUTeamContact>;
 export type BatchDemandContactInfo = z.infer<typeof zBatchDemandContactSchema>;
 
 export type CreateDemandInput = z.infer<typeof zCreateDemandInput>;

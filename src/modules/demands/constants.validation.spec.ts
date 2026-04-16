@@ -67,6 +67,22 @@ describe('zContactFormCreateDemandInput', () => {
     });
   });
 
+  describe('consentements optionnels', () => {
+    it("n'impose pas acceptFCUTeam", () => {
+      const result = zContactFormCreateDemandInput.safeParse(validBaseInput);
+      expect(result.success).toBe(true);
+    });
+
+    it('accepte acceptFCUTeam quand la case est cochée', () => {
+      const result = zContactFormCreateDemandInput.safeParse({
+        ...validBaseInput,
+        acceptFCUTeam: true,
+      });
+
+      expect(result.success).toBe(true);
+    });
+  });
+
   describe('validation du téléphone', () => {
     const testCases: TestCaseBoolean<string>[] = [
       { expectedOutput: true, input: '0612345678' },

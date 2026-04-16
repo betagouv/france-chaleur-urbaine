@@ -26,7 +26,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
   const [contactFormLoading, setContactFormLoading] = useState(false);
   const [contactFormError, setContactFormError] = useState(false);
 
-  const { title, body, computedEligibility, text } = useMemo(() => {
+  const { title, body, computedEligibility, display, text } = useMemo(() => {
     if (!addressData.eligibility) {
       return {};
     }
@@ -35,6 +35,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
       title,
       body,
       eligibility: computedEligibility,
+      display,
       text,
     } = getEligibilityResult(addressData.address || '', addressData.heatingType, addressData.eligibility);
 
@@ -55,6 +56,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
     return {
       body: computedBody,
       computedEligibility,
+      display,
       text,
       title: computedTitle,
     };
@@ -161,6 +163,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
               </>
             )}
             <ContactForm
+              display={display}
               city={addressData.geoAddress?.properties.city}
               onSubmit={handleSubmitForm}
               isLoading={contactFormLoading}
