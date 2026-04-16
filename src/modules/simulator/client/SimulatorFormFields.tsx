@@ -11,7 +11,7 @@ const HOT_WATER_OPTIONS = [
 ];
 
 const BUILDING_TYPE_OPTIONS = [
-  { label: 'Résidentiel', value: 'residentiel' },
+  { label: 'Résidentiel', value: 'résidentiel' },
   { label: 'Tertiaire', value: 'tertiaire' },
 ];
 
@@ -114,7 +114,7 @@ export function SimulatorFormFields({
         </>
       )}
 
-      {formState.typeBatiment === 'residentiel' ? (
+      {formState.typeBatiment === 'résidentiel' ? (
         <Input
           label={showLabels ? 'Nombre de logements' : ''}
           nativeInputProps={{

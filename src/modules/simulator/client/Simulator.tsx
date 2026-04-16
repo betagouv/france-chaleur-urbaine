@@ -12,10 +12,10 @@ import {
   CEE_VALUE_RULE,
   type ConcernedHelp,
   RESIDENTIAL_HEAT_NETWORK_AID_RULE,
-  type Structure,
   TERTIARY_HEAT_NETWORK_AID_RULE,
   TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE,
   TOTAL_HEAT_NETWORK_AID_RULE,
+  type TypeBatiment,
 } from '@/modules/simulator/constants';
 import cx from '@/utils/cx';
 
@@ -38,9 +38,8 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
     onReset: resetNetworkContext,
   });
 
-  const structure: Structure = formState.typeBatiment === 'residentiel' ? 'Résidentiel' : 'Tertiaire';
   const hasAmountInputs =
-    ((formState.selectedAddress !== null && (formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface)) || 0) >
+    ((formState.selectedAddress !== null && (formState.typeBatiment === 'résidentiel' ? formState.nbLogements : formState.surface)) || 0) >
     0;
 
   useSyncSimulatorSituation({ ceeValue, engine, formState });
@@ -65,8 +64,10 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
         }
       : helpCumac > 0
         ? {
-            label: structure === 'Résidentiel' ? 'BAR-TH-137' : 'BAT-TH-127',
-            noteUrl: getRuleNoteUrl(structure === 'Résidentiel' ? RESIDENTIAL_HEAT_NETWORK_AID_RULE : TERTIARY_HEAT_NETWORK_AID_RULE),
+            label: formState.typeBatiment === 'résidentiel' ? 'BAR-TH-137' : 'BAT-TH-127',
+            noteUrl: getRuleNoteUrl(
+              formState.typeBatiment === 'résidentiel' ? RESIDENTIAL_HEAT_NETWORK_AID_RULE : TERTIARY_HEAT_NETWORK_AID_RULE
+            ),
           }
         : null;
 
@@ -97,7 +98,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
           nbLogement={formState.nbLogements || 0}
           networkInformation={networkInformation}
           onCeeValueChange={setCeeValue}
-          structure={structure}
+          typeBatiment={formState.typeBatiment}
           addressErrorMessage={addressErrorMessage}
         />
       </div>
@@ -124,7 +125,7 @@ type SimulatorResultProps = {
   nbLogement: number;
   networkInformation: string | null;
   onCeeValueChange: (value: string) => void;
-  structure: Structure;
+  typeBatiment: TypeBatiment;
   addressErrorMessage?: string | null;
 };
 function SimulatorResult({
@@ -135,7 +136,7 @@ function SimulatorResult({
   nbLogement,
   networkInformation,
   onCeeValueChange,
-  structure,
+  typeBatiment,
   addressErrorMessage,
 }: SimulatorResultProps) {
   return (
@@ -149,7 +150,7 @@ function SimulatorResult({
           })}
           *
         </div>
-        {structure === 'Résidentiel' && (
+        {typeBatiment === 'résidentiel' && (
           <span>
             soit{' '}
             {(nbLogement > 0 ? helpAmount / nbLogement : 0).toLocaleString('fr-FR', {

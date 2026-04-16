@@ -13,8 +13,7 @@ export const RESIDENTIAL_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides
 export const TERTIARY_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . BAT-TH-127' as RuleName;
 export const CEE_VALUE_RULE = 'Paramètres économiques . Aides . Valeur CEE' as RuleName;
 
-export type TypeBatiment = 'residentiel' | 'tertiaire';
-export type Structure = 'Résidentiel' | 'Tertiaire';
+export type TypeBatiment = 'résidentiel' | 'tertiaire';
 export type TertiarySector = 'Bureaux' | 'Enseignement' | 'Commerces' | 'Café, restaurant' | 'Hôtel' | 'Santé' | 'Autres';
 export type HotWaterProduction = 'oui' | 'non';
 export type SimulatorFormState = {
@@ -38,10 +37,6 @@ export const buildAddressSituation = (infos?: LocationInfoResponse | null): Simu
     return acc;
   }, {});
 
-function isStrictlyPositiveNumber(value: number | undefined): value is number {
-  return typeof value === 'number' && value > 0;
-}
-
 type PublicodeSituationInput = Pick<SimulatorFormState, 'nbLogements' | 'producesHotWater' | 'surface' | 'tertiarySector' | 'typeBatiment'>;
 export function buildPublicodeSituation({
   nbLogements,
@@ -53,9 +48,9 @@ export function buildPublicodeSituation({
   return {
     'méthode tertiaire': typeBatiment === 'tertiaire' ? `'${tertiarySector}'` : null,
     "nombre de logements dans l'immeuble concerné":
-      typeBatiment === 'residentiel' && isStrictlyPositiveNumber(nbLogements) ? nbLogements : null,
+      typeBatiment === 'résidentiel' && nbLogements != null && nbLogements > 0 ? nbLogements : null,
     'Production eau chaude sanitaire': typeBatiment === 'tertiaire' ? producesHotWater : 'oui',
-    'surface logement type tertiaire': typeBatiment === 'tertiaire' && isStrictlyPositiveNumber(surface) ? surface : null,
-    'type de bâtiment': typeBatiment === 'residentiel' ? "'résidentiel'" : "'tertiaire'",
+    'surface logement type tertiaire': typeBatiment === 'tertiaire' && surface != null && surface > 0 ? surface : null,
+    'type de bâtiment': `'${typeBatiment}'`,
   };
 }

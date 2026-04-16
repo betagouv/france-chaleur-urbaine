@@ -49,7 +49,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
   }, [engine, engine.loaded, formState.selectedAddress, formState.nbLogements, formState.surface]);
 
   const montantCouts = useMemo(() => {
-    return formState.typeBatiment === 'residentiel'
+    return formState.typeBatiment === 'résidentiel'
       ? getCoutRaccordementResidentiel(formState.nbLogements ?? 0)
       : getCoutRaccordementTertiaire(formState.surface ?? 0);
   }, [formState.typeBatiment, formState.nbLogements, formState.surface]);
@@ -106,7 +106,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
             <Box mt="2w">
               <Badge severity="warning">
                 Le simulateur n'est pour le moment pas disponible pour des bâtiments de plus de{' '}
-                {formState.typeBatiment === 'residentiel' ? '330 logements' : '20 000 m²'}
+                {formState.typeBatiment === 'résidentiel' ? '330 logements' : '20 000 m²'}
               </Badge>
             </Box>
           ) : (
@@ -136,7 +136,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
                 )}
               </Heading>
 
-              {formState.typeBatiment === 'residentiel' && Array.isArray(montantCoutsParLogementApresAide) && (
+              {formState.typeBatiment === 'résidentiel' && Array.isArray(montantCoutsParLogementApresAide) && (
                 <Text mt="1w">
                   Soit {prettyPrintCout(montantCoutsParLogementApresAide[0])} à {prettyPrintCout(montantCoutsParLogementApresAide[1])} par
                   logement

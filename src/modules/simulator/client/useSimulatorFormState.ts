@@ -24,7 +24,7 @@ export function useSimulatorFormState({
     producesHotWater: 'oui',
     selectedAddress: null,
     tertiarySector: 'Bureaux',
-    typeBatiment: 'residentiel',
+    typeBatiment: 'résidentiel',
   });
   const [addressErrorMessage, setAddressErrorMessage] = useState<string | null>(null);
 

@@ -45,6 +45,7 @@ const Helps = () => {
       </p>
       <p>Les montants exacts dépendent cependant des offres commerciales de chaque signataire de la charte.</p>
       <Highlight>
+        {/* id is put here because of the sticky header...*/}
         <strong id="simulateur">
           Le bénéficiaire doit donc se rapprocher de chaque signataire de la charte proposant l’offre pour connaître le montant des primes.
           Les montants pouvant varier significativement d'un signataire à l'autre, il est important de comparer les offres proposées.
