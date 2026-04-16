@@ -4,6 +4,8 @@
 
 ## AI Agent workflow
 
+**Git commits**: never include session URLs, "Co-authored-by", or any AI attribution in commit messages.
+
 For every user message:
 - start every response with "Agent FCU au rapport !"
 - read AGENTS.md (this file) to decide which context files in `.ai/context/` are worth loading for this specific request — some requests need none, others need several

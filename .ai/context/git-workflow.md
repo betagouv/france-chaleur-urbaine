@@ -24,6 +24,8 @@ Branch naming: descriptive names are fine (e.g., `improve_autocomplete_adresse`,
 
 No strict format (no Conventional Commits). Keep messages clear and focus on the **why**, not the what. The diff already shows what changed — the commit message should explain the reasoning.
 
+Never include session URLs, "Co-authored-by" trailers, or any AI attribution in commit messages.
+
 ## Pre-commit checklist
 
 Always run before committing:
