@@ -125,7 +125,7 @@ type SimulatorResultProps = {
   networkInformation: string | null;
   onCeeValueChange: (value: string) => void;
   structure: Structure;
-  addressErrorMessage?: string;
+  addressErrorMessage?: string | null;
 };
 function SimulatorResult({
   ceeValue,
