@@ -1868,7 +1868,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     libc: [musl]
-    libc: [musl]
 
   '@next/swc-linux-x64-gnu@16.1.7':
     resolution: {integrity: sha512-KWVf2gxYvHtvuT+c4MBOGxuse5TD7DsMFYSxVxRBnOzok/xryNeQSjXgxSv9QpIVlaGzEn/pIuI6Koosx8CGWA==}
@@ -1882,7 +1881,6 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
     libc: [musl]
 
   '@next/swc-win32-arm64-msvc@16.1.7':
