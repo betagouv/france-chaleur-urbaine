@@ -1,13 +1,13 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Input from '@codegouvfr/react-dsfr/Input';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import Tooltip from '@/components/ui/Tooltip';
 import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
 import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
-import { useSimulatorSituation, useSyncSimulatorSituation } from '@/modules/simulator/client/useSimulatorSituation';
 import type { TypeBatiment } from '@/modules/simulator/constants';
+import { buildPublicodeSituation } from '@/modules/simulator/constants';
 import cx from '@/utils/cx';
 
 type ConcernedHelp = {
@@ -20,7 +20,6 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
   const [networkName, setNetworkName] = useState<string | null>(null);
   const [isEfficientNetwork, setIsEfficientNetwork] = useState(false);
   const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE')));
-  const { updateSituation } = useSimulatorSituation(engine);
   const resetNetworkContext = () => {
     setNetworkName(null);
     setIsEfficientNetwork(false);
@@ -30,15 +29,26 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
       setNetworkName(infos.nearestReseauDeChaleur?.nom_reseau ?? null);
       setIsEfficientNetwork((infos.nearestReseauDeChaleur?.['Taux EnR&R'] ?? 0) > 50);
     },
-    onAddressSituationChange: updateSituation,
+    onAddressSituationChange: engine.updateSituation,
     onReset: resetNetworkContext,
   });
+
+  const publicodeSituation = useMemo(
+    () => ({
+      ...buildPublicodeSituation(formState),
+      'Paramètres économiques . Aides . Valeur CEE':
+        ceeValue.replace(',', '.').trim() === '' ? null : Number(ceeValue.replace(',', '.').trim()) / 1000,
+    }),
+    [ceeValue, formState]
+  );
+
+  useEffect(() => {
+    engine.updateSituation(publicodeSituation);
+  }, [engine.internalEngine, publicodeSituation]);
 
   const hasAmountInputs =
     ((formState.selectedAddress !== null && (formState.typeBatiment === 'résidentiel' ? formState.nbLogements : formState.surface)) || 0) >
     0;
-
-  useSyncSimulatorSituation({ ceeValue, engine, formState });
 
   const helpCumac = hasAmountInputs ? engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total') : 0;
   const helpAmount = hasAmountInputs ? engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant') : 0;

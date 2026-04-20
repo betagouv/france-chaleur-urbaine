@@ -1,5 +1,5 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
@@ -10,7 +10,7 @@ import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
 import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
 import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
-import { useSimulatorSituation, useSyncSimulatorSituation } from '@/modules/simulator/client/useSimulatorSituation';
+import { buildPublicodeSituation } from '@/modules/simulator/constants';
 import { isDefined } from '@/utils/core';
 
 /**
@@ -21,9 +21,8 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
   const engine = useSimulatorEngine();
   const [hasUsedFeature, setHasUsedFeature] = useState(false);
 
-  const { updateSituation } = useSimulatorSituation(engine);
   const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, updateFormState } = useSimulatorFormState({
-    onAddressSituationChange: updateSituation,
+    onAddressSituationChange: engine.updateSituation,
     onFieldInteraction: () => {
       if (!hasUsedFeature) {
         trackEvent('Outils|Simulation coût raccordement');
@@ -32,7 +31,11 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
     },
   });
 
-  useSyncSimulatorSituation({ engine, formState });
+  const publicodeSituation = useMemo(() => buildPublicodeSituation(formState), [formState]);
+
+  useEffect(() => {
+    engine.updateSituation(publicodeSituation);
+  }, [engine.internalEngine, publicodeSituation]);
 
   const currentCeeValueDisplay = (engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE') * 1000).toLocaleString('fr-FR', {
     maximumFractionDigits: 2,

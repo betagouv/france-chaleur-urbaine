@@ -61,6 +61,14 @@ const usePublicodesEngine = (rules: Rules, options?: Options) => {
     rerender({});
   };
 
+  const updateSituation = (partialSituation: Partial<Record<RuleName, any>>) => {
+    engine.setSituation({
+      ...engine.getSituation(),
+      ...partialSituation,
+    });
+    rerender({});
+  };
+
   const setStringField = (key: RuleName, value: any) => {
     setField(key, value === '' ? null : `'${value}'`);
   };
@@ -140,6 +148,7 @@ const usePublicodesEngine = (rules: Rules, options?: Options) => {
     setField,
     setSituation,
     setStringField,
+    updateSituation,
   };
 };
 
