@@ -7,15 +7,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
 import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
 import { useSimulatorSituation, useSyncSimulatorSituation } from '@/modules/simulator/client/useSimulatorSituation';
-import {
-  BOOSTED_HEAT_NETWORK_AID_RULE,
-  CEE_VALUE_RULE,
-  RESIDENTIAL_HEAT_NETWORK_AID_RULE,
-  TERTIARY_HEAT_NETWORK_AID_RULE,
-  TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE,
-  TOTAL_HEAT_NETWORK_AID_RULE,
-  type TypeBatiment,
-} from '@/modules/simulator/constants';
+import type { TypeBatiment } from '@/modules/simulator/constants';
 import cx from '@/utils/cx';
 
 type ConcernedHelp = {
@@ -27,7 +19,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
   const engine = useSimulatorEngine();
   const [networkName, setNetworkName] = useState<string | null>(null);
   const [isEfficientNetwork, setIsEfficientNetwork] = useState(false);
-  const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber(CEE_VALUE_RULE)));
+  const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE')));
   const { updateSituation } = useSimulatorSituation(engine);
   const resetNetworkContext = () => {
     setNetworkName(null);
@@ -48,8 +40,8 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
 
   useSyncSimulatorSituation({ ceeValue, engine, formState });
 
-  const helpCumac = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_RULE) : 0;
-  const helpAmount = hasAmountInputs ? engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE) : 0;
+  const helpCumac = hasAmountInputs ? engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total') : 0;
+  const helpAmount = hasAmountInputs ? engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant') : 0;
   const networkInformation = networkName
     ? `Le réseau de chaleur "${networkName}" est situé à proximité de votre adresse.${
         isEfficientNetwork ? " Il est considéré comme efficace car il utilise au moins 50 % d'énergie renouvelable." : ''
@@ -63,13 +55,15 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
     (helpCumac > 0 && isEfficientNetwork) || addressErrorMessage
       ? {
           label: 'Coup de pouce "Chauffage des bâtiments résidentiels collectifs et tertiaires"',
-          noteUrl: getRuleNoteUrl(BOOSTED_HEAT_NETWORK_AID_RULE),
+          noteUrl: getRuleNoteUrl('Calcul Eco . Montant des aides . Réseaux de chaleur . Coup de pouce'),
         }
       : helpCumac > 0
         ? {
             label: formState.typeBatiment === 'résidentiel' ? 'BAR-TH-137' : 'BAT-TH-127',
             noteUrl: getRuleNoteUrl(
-              formState.typeBatiment === 'résidentiel' ? RESIDENTIAL_HEAT_NETWORK_AID_RULE : TERTIARY_HEAT_NETWORK_AID_RULE
+              formState.typeBatiment === 'résidentiel'
+                ? 'Calcul Eco . Montant des aides . Réseaux de chaleur . BAR-TH-137'
+                : 'Calcul Eco . Montant des aides . Réseaux de chaleur . BAT-TH-127'
             ),
           }
         : null;

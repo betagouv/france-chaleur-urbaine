@@ -11,7 +11,6 @@ import { trackEvent } from '@/modules/analytics/client';
 import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
 import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
 import { useSimulatorSituation, useSyncSimulatorSituation } from '@/modules/simulator/client/useSimulatorSituation';
-import { CEE_VALUE_RULE, TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE } from '@/modules/simulator/constants';
 import { isDefined } from '@/utils/core';
 
 /**
@@ -35,7 +34,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
 
   useSyncSimulatorSituation({ engine, formState });
 
-  const currentCeeValueDisplay = (engine.getFieldAsNumber(CEE_VALUE_RULE) * 1000).toLocaleString('fr-FR', {
+  const currentCeeValueDisplay = (engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE') * 1000).toLocaleString('fr-FR', {
     maximumFractionDigits: 2,
     minimumFractionDigits: 2,
   });
@@ -45,7 +44,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
       return null;
     }
 
-    return engine.getFieldAsNumber(TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE);
+    return engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant');
   }, [engine, engine.loaded, formState.selectedAddress, formState.nbLogements, formState.surface]);
 
   const montantCouts = useMemo(() => {

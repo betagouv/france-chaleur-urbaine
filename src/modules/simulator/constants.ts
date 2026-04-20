@@ -5,14 +5,6 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { ObjectEntries } from '@/utils/typescript';
 
-export const TOTAL_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . Total' as RuleName;
-export const TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant' as RuleName;
-export const BOOSTED_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . Coup de pouce' as RuleName;
-export const STANDARD_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . CEE' as RuleName;
-export const RESIDENTIAL_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . BAR-TH-137' as RuleName;
-export const TERTIARY_HEAT_NETWORK_AID_RULE = 'Calcul Eco . Montant des aides . Réseaux de chaleur . BAT-TH-127' as RuleName;
-export const CEE_VALUE_RULE = 'Paramètres économiques . Aides . Valeur CEE' as RuleName;
-
 export type TypeBatiment = 'résidentiel' | 'tertiaire';
 export type TertiarySector = 'Bureaux' | 'Enseignement' | 'Commerces' | 'Café, restaurant' | 'Hôtel' | 'Santé' | 'Autres';
 export type HotWaterProduction = 'oui' | 'non';

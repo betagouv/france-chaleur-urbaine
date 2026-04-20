@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
-import { buildPublicodeSituation, CEE_VALUE_RULE, type SimulatorFormState, type SimulatorSituation } from '@/modules/simulator/constants';
+import { buildPublicodeSituation, type SimulatorFormState, type SimulatorSituation } from '@/modules/simulator/constants';
 
 export function useSimulatorSituation(engine: SimulatorEngine) {
   const updateSituation = (partialSituation: SimulatorSituation) => {
@@ -34,7 +34,7 @@ export function useSyncSimulatorSituation({
     }
 
     updateSituation({
-      [CEE_VALUE_RULE]: normalizedCeeValue === '' ? null : Number(normalizedCeeValue) / 1000,
+      'Paramètres économiques . Aides . Valeur CEE': normalizedCeeValue === '' ? null : Number(normalizedCeeValue) / 1000,
     });
   }, [engine.loaded, normalizedCeeValue]);
 
