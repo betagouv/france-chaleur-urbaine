@@ -616,7 +616,8 @@ const HeatNetwork = ({
       de la prime.
       <br />
       <br />
-      Les <strong>conditions d’attribution</strong> sont les suivantes : <ConditionsAttributionCee />
+      Les <strong>conditions d’attribution</strong> sont les suivantes :
+      <ConditionsAttributionCee />
       <br />
       <ul>
         <li>

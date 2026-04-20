@@ -47,15 +47,10 @@ export function SimulatorFormFields({
   onTypeBatimentChange,
   showLabels = false,
 }: SimulatorFormFieldsProps) {
-  const addressLabel = showLabels ? 'Adresse' : '';
-  const buildingTypeLabel = showLabels ? 'Type de bâtiment' : '';
-  const tertiarySectorLabel = showLabels ? 'Secteur tertiaire' : '';
-  const hotWaterLabel = showLabels ? "Production d'eau chaude sanitaire" : '';
-  const isAddressSelected = formState.selectedAddress !== null;
   return (
     <>
       <AddressField
-        label={addressLabel}
+        label={showLabels ? 'Adresse' : ''}
         state={addressErrorMessage ? 'error' : undefined}
         stateRelatedMessage={addressErrorMessage ?? undefined}
         nativeInputProps={{
@@ -69,14 +64,13 @@ export function SimulatorFormFields({
       />
 
       <Select
-        label={buildingTypeLabel}
+        label={showLabels ? 'Type de bâtiment' : ''}
         options={BUILDING_TYPE_OPTIONS.map((option) => ({
           label: option.label,
           value: option.value,
         }))}
         nativeSelectProps={{
           className: fieldClassName,
-          disabled: !isAddressSelected,
           onChange: (event) => onTypeBatimentChange(event.target.value as TypeBatiment),
           value: formState.typeBatiment,
         }}
@@ -85,28 +79,26 @@ export function SimulatorFormFields({
       {formState.typeBatiment === 'tertiaire' && (
         <>
           <Select
-            label={tertiarySectorLabel}
+            label={showLabels ? 'Secteur tertiaire' : ''}
             options={TERTIARY_SECTOR_OPTIONS.map((option) => ({
               label: option.label,
               value: option.value,
             }))}
             nativeSelectProps={{
               className: fieldClassName,
-              disabled: !isAddressSelected,
               onChange: (event) => onFormStateChange('tertiarySector', event.target.value as SimulatorFormState['tertiarySector']),
               value: formState.tertiarySector,
             }}
           />
 
           <Select
-            label={hotWaterLabel}
+            label={showLabels ? "Production d'eau chaude sanitaire" : ''}
             options={HOT_WATER_OPTIONS.map((option) => ({
               label: option.label,
               value: option.value,
             }))}
             nativeSelectProps={{
               className: fieldClassName,
-              disabled: !isAddressSelected,
               onChange: (event) => onFormStateChange('producesHotWater', event.target.value as SimulatorFormState['producesHotWater']),
               value: formState.producesHotWater,
             }}
@@ -119,7 +111,6 @@ export function SimulatorFormFields({
           label={showLabels ? 'Nombre de logements' : ''}
           nativeInputProps={{
             className: fieldClassName,
-            disabled: !isAddressSelected,
             inputMode: 'numeric',
             min: 1,
             onChange: (event) => onFormStateChange('nbLogements', parseNumericFieldValue(event.currentTarget.valueAsNumber)),
@@ -134,7 +125,6 @@ export function SimulatorFormFields({
           label={showLabels ? 'Surface (m²)' : ''}
           nativeInputProps={{
             className: fieldClassName,
-            disabled: !isAddressSelected,
             inputMode: 'numeric',
             min: 1,
             onChange: (event) => onFormStateChange('surface', parseNumericFieldValue(event.currentTarget.valueAsNumber)),
