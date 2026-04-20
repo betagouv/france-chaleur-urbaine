@@ -37,7 +37,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
       </Hero>
       <StickyForm title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`} />
       <div className="fr-container p-4">
-        <h2 className="text-(--text-title-blue-france) fr-my-3w">
+        <h2 className="text-blue fr-my-3w">
           {hasUniqueNetwork ? `Votre réseau de chaleur ` : `Vos réseaux de chaleur `}
           <span className="text-[#6060ff]">
             {cityData.preposition} {cityData.nameNetwork}
@@ -62,11 +62,11 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
       </div>
       <div className="fr-container p-8 flex flex-col md:flex-row gap-8">
         <div className="flex-1 px-4">
-          <h3 className="h4 text-(--text-title-blue-france)">Découvrez des témoignages sur le terrain</h3>
+          <h3 className="h4 text-blue">Découvrez des témoignages sur le terrain</h3>
           <InterviewsVideos />
         </div>
         <div className="flex-1 px-4">
-          <h3 className="h4 text-(--text-title-blue-france)">Le guide complet sur le raccordement</h3>
+          <h3 className="h4 text-blue">Le guide complet sur le raccordement</h3>
           <CoproGuide guideClassName="fr-mb-0" />
         </div>
       </div>
@@ -107,7 +107,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
                 d’obtenir des aides financières conséquentes pour se raccorder.
               </ArrowItem>
               <ArrowItem color="white">
-                <strong className="bg-[#F8D86E] text-(--text-title-blue-france)">
+                <strong className="bg-[#F8D86E] text-blue">
                   Le coût du raccordement peut ainsi être réduit à quelques centaines d’euros par logement
                 </strong>{' '}
                 (en fonction de la situation du bâtiment et de ses besoins en chaleur).
@@ -143,17 +143,11 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
         )}
       </div>
       <div className="bg-[#f9f8f6] p-8">
-        <h2 className="text-center text-(--background-active-blue-france)">Les différentes étapes en copropriété :</h2>
+        <h2 className="text-center text-blue">Les différentes étapes en copropriété :</h2>
         <div className="flex flex-col fr-container">
           {userExperience.map((props) => (
             <div key={`box-user-experience-${props.imgSrc}`} className="flex flex-row items-center space-between relative">
-              <WrappedText
-                markdown={false}
-                textClassName="user-experience-description"
-                key={`user-experience-${props.imgSrc}`}
-                center
-                {...props}
-              />
+              <WrappedText markdown={false} textClassName="user-experience-description" center {...props} />
             </div>
           ))}
         </div>
