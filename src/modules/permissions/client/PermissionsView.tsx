@@ -1,129 +1,16 @@
-import dynamic from 'next/dynamic';
-import { useMemo, useState } from 'react';
-import { Layer, Source } from 'react-map-gl/maplibre';
-
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Loader from '@/components/ui/Loader';
-import type { BoundingBox } from '@/modules/geo/types';
 import trpc from '@/modules/trpc/client';
 
 import type { PermissionWithLabel } from '../types';
+import PermissionsMap from './PermissionsMap';
 
-const FCUMap = dynamic(() => import('@/components/Map/Map'), { ssr: false });
-
-const highlightColor = '#e11d48';
-
-const mapConfiguration = createMapConfiguration({
-  reseauxDeChaleur: { show: true },
-  reseauxEnConstruction: true,
-  zonesDeDeveloppementPrioritaire: true,
-});
-
+/**
+ * User-facing view of their permissions on the "Mon compte" page.
+ * Lists access scopes as readable sentences and offers a map preview.
+ */
 const PermissionsView = () => {
-  const [mapExpanded, setMapExpanded] = useState(false);
   const { data: permissions, isLoading: isLoadingPermissions } = trpc.permissions.mineWithLabels.useQuery();
-  const { data: mapData, isLoading: isLoadingMap } = trpc.permissions.myMapData.useQuery(undefined, { enabled: mapExpanded });
-
-  const bounds = useMemo<BoundingBox | undefined>(() => {
-    if (!mapData?.bounds) return undefined;
-    return mapData.bounds as BoundingBox;
-  }, [mapData?.bounds]);
-
-  const mapChildren = useMemo(() => {
-    if (!mapData) return null;
-
-    const { highlightReseauxExistants, highlightReseauxEnConstruction, highlightPdpIdsFcu, territories } = mapData;
-
-    return (
-      <>
-        {/* Highlight existing networks */}
-        {highlightReseauxExistants.length > 0 && (
-          <Layer
-            id="permissions-highlight-reseaux-existants"
-            source="reseaux-de-chaleur"
-            source-layer="layer"
-            type="line"
-            paint={{
-              'line-color': highlightColor,
-              'line-opacity': 0.9,
-              'line-width': 4,
-            }}
-            filter={['in', ['get', 'id_fcu'], ['literal', highlightReseauxExistants]]}
-          />
-        )}
-
-        {/* Highlight construction networks */}
-        {highlightReseauxEnConstruction.length > 0 && (
-          <Layer
-            id="permissions-highlight-reseaux-construction"
-            source="reseaux-en-construction"
-            source-layer="layer"
-            type="line"
-            paint={{
-              'line-color': highlightColor,
-              'line-opacity': 0.9,
-              'line-width': 4,
-            }}
-            filter={['all', ['==', ['get', 'is_zone'], false], ['in', ['get', 'id_fcu'], ['literal', highlightReseauxEnConstruction]]]}
-          />
-        )}
-
-        {/* Highlight construction network zones */}
-        {highlightReseauxEnConstruction.length > 0 && (
-          <Layer
-            id="permissions-highlight-reseaux-construction-zones"
-            source="reseaux-en-construction"
-            source-layer="layer"
-            type="fill"
-            paint={{
-              'fill-color': highlightColor,
-              'fill-opacity': 0.2,
-            }}
-            filter={['all', ['==', ['get', 'is_zone'], true], ['in', ['get', 'id_fcu'], ['literal', highlightReseauxEnConstruction]]]}
-          />
-        )}
-
-        {/* Highlight PDP zones */}
-        {highlightPdpIdsFcu.length > 0 && (
-          <Layer
-            id="permissions-highlight-pdp"
-            source="perimetres-de-developpement-prioritaire"
-            source-layer="layer"
-            type="fill"
-            paint={{
-              'fill-color': highlightColor,
-              'fill-opacity': 0.15,
-            }}
-            filter={['in', ['get', 'id_fcu'], ['literal', highlightPdpIdsFcu]]}
-          />
-        )}
-
-        {/* Territory geometries */}
-        {territories.features.length > 0 && (
-          <Source id="user-territories" type="geojson" data={territories}>
-            <Layer
-              id="user-territories-fill"
-              type="fill"
-              paint={{
-                'fill-color': highlightColor,
-                'fill-opacity': 0.12,
-              }}
-            />
-            <Layer
-              id="user-territories-outline"
-              type="line"
-              paint={{
-                'line-color': highlightColor,
-                'line-opacity': 0.8,
-                'line-width': 2,
-              }}
-            />
-          </Source>
-        )}
-      </>
-    );
-  }, [mapData]);
 
   if (isLoadingPermissions) {
     return <Loader />;
@@ -137,22 +24,8 @@ const PermissionsView = () => {
     <div className="space-y-4">
       <PermissionsList permissions={permissions} />
 
-      <Accordion label="Voir sur la carte" simple expanded={mapExpanded} onExpandedChange={setMapExpanded}>
-        {isLoadingMap ? (
-          <Loader />
-        ) : (
-          <div className="h-[500px]">
-            <FCUMap
-              initialMapConfiguration={mapConfiguration}
-              withLegend={false}
-              withSoughtAddresses={false}
-              geolocDisabled
-              bounds={bounds}
-              noPopup
-              mapChildren={mapChildren}
-            />
-          </div>
-        )}
+      <Accordion label="Voir sur la carte" simple lazy>
+        <PermissionsMap />
       </Accordion>
     </div>
   );
