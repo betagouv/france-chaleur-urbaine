@@ -10,7 +10,6 @@ import { useSimulatorSituation, useSyncSimulatorSituation } from '@/modules/simu
 import {
   BOOSTED_HEAT_NETWORK_AID_RULE,
   CEE_VALUE_RULE,
-  type ConcernedHelp,
   RESIDENTIAL_HEAT_NETWORK_AID_RULE,
   TERTIARY_HEAT_NETWORK_AID_RULE,
   TOTAL_HEAT_NETWORK_AID_AMOUNT_RULE,
@@ -18,6 +17,11 @@ import {
   type TypeBatiment,
 } from '@/modules/simulator/constants';
 import cx from '@/utils/cx';
+
+type ConcernedHelp = {
+  label: string;
+  noteUrl?: string;
+};
 
 function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: boolean }) {
   const engine = useSimulatorEngine();
@@ -55,7 +59,6 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
     const note = engine.getRule(ruleName)?.rawNode.note;
     return typeof note === 'string' ? note : undefined;
   };
-
   const concernedHelp: ConcernedHelp | null =
     (helpCumac > 0 && isEfficientNetwork) || addressErrorMessage
       ? {
@@ -116,10 +119,7 @@ function formatCeeValue(value: number) {
 
 type SimulatorResultProps = {
   ceeValue: string;
-  concernedHelp: {
-    label: string;
-    noteUrl?: string;
-  } | null;
+  concernedHelp: ConcernedHelp | null;
   helpAmount: number;
   helpCumac: number;
   nbLogement: number;

@@ -25,10 +25,6 @@ export type SimulatorFormState = {
   tertiarySector: TertiarySector;
   typeBatiment: TypeBatiment;
 };
-export type ConcernedHelp = {
-  label: string;
-  noteUrl?: string;
-};
 
 export type SimulatorSituation = Partial<Record<RuleName, number | string | null>>;
 export const buildAddressSituation = (infos?: LocationInfoResponse | null): SimulatorSituation =>
