@@ -168,12 +168,11 @@ export async function down(db: Kysely<any>): Promise<void> {
 
 **Rules for schema migrations only:**
 1. Never edit migrations after they've been applied to any environment.
-2. Run `pnpm db:sync` after migration to update Kysely types.
-3. For type updates after migration: prefer `pnpm db:sync --single` (manual merge) over full regeneration.
-4. Commit migration file + updated `database.ts` types together.
-5. Use a single `sql` template literal block per direction (`up`/`down`) with all statements separated by `;`. Avoid multiple `sql`/`.execute()` calls — one block is easier to read and runs in a single round-trip.
-6. Always provide both `up` and `down` functions.
-7. Never use the Kysely schema builder (`db.schema`) in schema migrations — always raw SQL via `sql` template literals.
+2. **Never run `pnpm db:sync` alone** — it overwrites `database.ts` entirely and wipes manual type refinements (`JSONColumnType<AirtableLegacyRecord>`, custom enums like `'A' | 'B' | ...`, narrowed `{ construction_id: string; rnb_id: string }[]`, etc.). Always use `pnpm cli db:sync --single <table>` to print the regenerated interface for one table to stdout, then manually merge only the diff into `database.ts` — preserving every existing custom override.
+3. Commit migration file + updated `database.ts` types together.
+4. Use a single `sql` template literal block per direction (`up`/`down`) with all statements separated by `;`. Avoid multiple `sql`/`.execute()` calls — one block is easier to read and runs in a single round-trip.
+5. Always provide both `up` and `down` functions.
+6. Never use the Kysely schema builder (`db.schema`) in schema migrations — always raw SQL via `sql` template literals.
 
 ## Common index patterns (in migrations)
 
