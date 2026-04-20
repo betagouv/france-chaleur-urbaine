@@ -105,9 +105,6 @@ export function ComboAutoComplete<Option>({
     } else {
       onChange([...value, { key, label: getOptionLabel(option) }]);
     }
-    setQuery('');
-    cancel();
-    setSuggestions([]);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
