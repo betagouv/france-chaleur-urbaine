@@ -94,15 +94,40 @@ const StyledPopoverContent = styled(PopoverPrimitive.Content)<{
 
 StyledPopoverContent.displayName = 'StyledPopoverContent';
 
+const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
+
+/**
+ * Popover content rendered in a portal.
+ */
 const PopoverContent = forwardRef<
-  React.ElementRef<typeof PopoverPrimitive.Content>,
+  React.ComponentRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> & { full?: boolean }
->(({ full = true, ...props }, ref) => {
+>(({ full = true, onClick, onDoubleClick, ...props }, ref) => {
   const { width } = useContext(PopoverMeasurementsContext);
+
+  const handleClick = onClick
+    ? (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        onClick(e);
+      }
+    : stopPropagation;
+
+  const handleDoubleClick = onDoubleClick
+    ? (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        onDoubleClick(e);
+      }
+    : stopPropagation;
 
   return (
     <PopoverPrimitive.Portal>
-      <StyledPopoverContent ref={ref} $width={full ? width : undefined} {...props} />
+      <StyledPopoverContent
+        ref={ref}
+        $width={full ? width : undefined}
+        onClick={handleClick}
+        onDoubleClick={handleDoubleClick}
+        {...props}
+      />
     </PopoverPrimitive.Portal>
   );
 });
