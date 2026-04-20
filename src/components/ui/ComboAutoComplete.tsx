@@ -264,10 +264,27 @@ export function ComboAutoComplete<Option>({
                 }
               }}
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none flex items-center gap-1">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
               {isRunning && <Oval height={16} width={16} color="var(--text-default-grey)" secondaryColor="var(--text-default-grey)" />}
               {fetchError && !isRunning && <Icon name="ri-alert-line" size="sm" color="var(--text-default-error)" title={fetchError} />}
-              {!isRunning && !fetchError && <Icon name="fr-icon-search-line" size="sm" />}
+              {query.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery('');
+                    cancel();
+                    setSuggestions([]);
+                    setFetchError(null);
+                    inputRef.current?.focus();
+                  }}
+                  className="flex items-center p-0 border-0 bg-transparent cursor-pointer"
+                  aria-label="Effacer la recherche"
+                >
+                  <Icon name="fr-icon-close-line" size="sm" />
+                </button>
+              ) : (
+                !isRunning && !fetchError && <Icon name="fr-icon-search-line" size="sm" className="pointer-events-none" />
+              )}
             </span>
           </div>
           <ul id={listboxId} role="listbox" className="max-h-60 overflow-auto pl-0 my-0">
