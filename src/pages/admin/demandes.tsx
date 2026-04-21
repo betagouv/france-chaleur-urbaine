@@ -252,19 +252,26 @@ function DemandesAdmin(): React.ReactElement {
   const changeNetwork = useCallback(
     toastErrors(async (demandId: string, networkIdFcu: number | null, networkType: NetworkType | null, networkName: string | null) => {
       isUpdatingDemandField = true;
+      const result = await changeNetworkMutation({ demandId, networkIdFcu, networkType });
       utils.demands.admin.list.setData(undefined, (demandsData) => {
         if (!demandsData) return demandsData;
         return {
           count: demandsData.count,
           items: demandsData.items.map((demand) => {
             if (demand.id === demandId) {
-              return { ...demand, network_id: networkIdFcu, network_name: networkName, network_type: networkType, validated: false };
+              return {
+                ...demand,
+                'Distance au réseau': result.distance,
+                network_id: networkIdFcu,
+                network_name: networkName,
+                network_type: networkType,
+                validated: false,
+              };
             }
             return demand;
           }),
         };
       });
-      await changeNetworkMutation({ demandId, networkIdFcu, networkType });
     }),
     [utils, changeNetworkMutation]
   );
@@ -766,7 +773,7 @@ function NetworkDisplay({
   }
 
   const isExistant = demand.network_type === 'existant';
-  const distance = demand.testAddress?.eligibility?.distance;
+  const distance = demand['Distance au réseau'] ?? null;
 
   const networkMenuItems: HamburgerMenuItem[] = [
     ...(demand.network_sncu_id
@@ -847,7 +854,11 @@ function NetworkDisplay({
         )}
       </div>
 
-      {distance != null && distance > 0 && <span className="text-xs text-gray-500">{distance}m</span>}
+      {distance === 0 ? (
+        <span className="text-xs text-gray-500">Dans la zone</span>
+      ) : (
+        distance != null && distance > 0 && <span className="text-xs text-gray-500">distance au réseau : {distance} m</span>
+      )}
       <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
         <PopoverTrigger asChild>
           <span className="sr-only" />
@@ -861,6 +872,12 @@ function NetworkDisplay({
 /**
  * Inner content of the network search popover — reused with different triggers.
  */
+type SelectedNetwork = {
+  id_fcu: number;
+  network_type: NetworkType;
+  nom_reseau: string | null;
+};
+
 function NetworkSearchPopoverContent({
   demand,
   onNetworkChange,
@@ -872,6 +889,7 @@ function NetworkSearchPopoverContent({
 }) {
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [selected, setSelected] = useState<SelectedNetwork | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -880,18 +898,25 @@ function NetworkSearchPopoverContent({
   }, [searchInput]);
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (!selected && inputRef.current) {
       setTimeout(() => inputRef.current?.focus(), 0);
     }
-  }, []);
+  }, [selected]);
 
   const { data: searchResults, isFetching } = trpc.reseaux.searchNetworks.useQuery(
     { search: debouncedSearch },
     { enabled: debouncedSearch.length >= 2 }
   );
 
-  const handleSelect = (result: { id_fcu: number; nom_reseau: string | null; network_type: NetworkType }) => {
-    onNetworkChange(demand.id, result.id_fcu, result.network_type, result.nom_reseau);
+  const { data: distance, isFetching: isFetchingDistance } = trpc.demands.admin.computeNetworkDistance.useQuery(
+    selected ? { demandId: demand.id, networkIdFcu: selected.id_fcu, networkType: selected.network_type } : (undefined as any),
+    { enabled: selected !== null }
+  );
+
+  const handleConfirm = () => {
+    if (!selected) return;
+    onNetworkChange(demand.id, selected.id_fcu, selected.network_type, selected.nom_reseau);
+    setSelected(null);
     setIsOpen(false);
   };
 
@@ -899,6 +924,47 @@ function NetworkSearchPopoverContent({
     onNetworkChange(demand.id, null, null, null);
     setIsOpen(false);
   };
+
+  if (selected) {
+    const isExistant = selected.network_type === 'existant';
+    return (
+      <PopoverContent className="w-80 p-0" align="start">
+        <div className="p-3 border-b">
+          <div className="text-sm font-medium">{selected.nom_reseau || 'Sans nom'}</div>
+          <div className="mt-1">
+            <DSFRBadge
+              small
+              className="text-white! shrink-0"
+              style={{ backgroundColor: isExistant ? reseauDeChaleurNonClasseColor : reseauxEnConstructionColor }}
+            >
+              {isExistant ? 'Existant' : 'En construction'}
+            </DSFRBadge>
+          </div>
+        </div>
+        <div className="p-3 text-sm">
+          {isFetchingDistance ? (
+            <span className="text-gray-500">Calcul de la distance...</span>
+          ) : distance === null ? (
+            <span className="text-gray-600">La distance est inconnue car le tracé du réseau n'est pas connu.</span>
+          ) : distance === 0 ? (
+            <strong>Dans la zone</strong>
+          ) : (
+            <span>
+              Distance au réseau : <strong>{distance} m</strong>
+            </span>
+          )}
+        </div>
+        <div className="flex items-center justify-between gap-2 border-t p-2">
+          <Button priority="tertiary" size="small" onClick={() => setSelected(null)}>
+            Retour
+          </Button>
+          <Button priority="primary" size="small" onClick={handleConfirm} disabled={isFetchingDistance}>
+            Confirmer
+          </Button>
+        </div>
+      </PopoverContent>
+    );
+  }
 
   return (
     <PopoverContent className="w-80 p-0" align="start">
@@ -925,7 +991,7 @@ function NetworkSearchPopoverContent({
             key={`${result.network_type}:${result.id_fcu}`}
             type="button"
             className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 cursor-pointer border-b last:border-b-0"
-            onClick={() => handleSelect(result)}
+            onClick={() => setSelected({ id_fcu: result.id_fcu, network_type: result.network_type, nom_reseau: result.nom_reseau })}
           >
             <div className="font-medium">{result.nom_reseau || 'Sans nom'}</div>
             <div className="text-xs text-gray-500">

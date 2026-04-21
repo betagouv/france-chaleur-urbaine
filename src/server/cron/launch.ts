@@ -1,16 +1,16 @@
 import * as Sentry from '@sentry/nextjs';
 
-import { dailyRelanceMail as demandsDailyRelanceMail } from '@/modules/demands/server/demands-service';
+import { sendDailyNewDemandsEmails, sendWeeklyStaleDemandsEmails } from '@/modules/demands/server/manager-notifications';
+import { sendDailyRelanceEmails } from '@/modules/demands/server/relances';
 import { syncComptesProFromUsers } from '@/server/services/airtable';
-import { dailyNewManagerMail, weeklyOldManagerMail } from '@/server/services/manager';
 
 import '@root/sentry.server.config';
 
 export const jobs: Record<string, any> = {
-  dailyNewManagerMail,
-  demandsDailyRelanceMail,
+  sendDailyNewDemandsEmails,
+  sendDailyRelanceEmails,
+  sendWeeklyStaleDemandsEmails,
   syncComptesProFromUsers,
-  weeklyOldManagerMail,
 };
 
 export const launchJob = async (job: string, ...params: any) => {

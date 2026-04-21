@@ -1,10 +1,6 @@
-import { sql } from 'kysely';
-
-import * as demandsService from '@/modules/demands/server/demands-service';
 import { sendEmailTemplate } from '@/modules/email';
 import { canUserAccessDemand, getAllUsersWithPermissions } from '@/modules/permissions/server/service';
-import { kdb } from '@/server/db/kysely';
-import type { Demand } from '@/types/Summary/Demand';
+import { kdb, sql } from '@/server/db/kysely';
 import { processInParallel } from '@/utils/async';
 
 /**
@@ -12,40 +8,7 @@ import { processInParallel } from '@/utils/async';
  */
 const EMAIL_CONCURRENCY = 5;
 
-/**
- * External API: returns demands matching tags from api_accounts.gestionnaires.
- * Used only by /api/v1/demands/[key] for API consumers.
- */
-export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<Demand[]> => {
-  const records = (
-    await kdb
-      .selectFrom('demands')
-      .selectAll()
-      .where('validated', '=', true)
-      .where('deleted_at', 'is', null)
-      .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
-      .execute()
-  ).map(({ id, legacy_values }) => ({
-    fields: legacy_values,
-    id,
-  }));
-
-  return records
-    .map((record) => ({ id: record.id, ...(record.fields as Record<string, unknown>) }) as Demand)
-    .filter((record) => record.Gestionnaires?.some((gestionnaire) => gestionnaires.includes(gestionnaire)));
-};
-
-export const getAllDemands = async () => {
-  const records = (await kdb.selectFrom('demands').selectAll().orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute()).map(
-    ({ id, legacy_values }) => ({
-      fields: legacy_values,
-      id,
-    })
-  );
-  return records.map((record) => ({ id: record.id, ...record.fields }));
-};
-
-export const getAllNewDemands = async () => {
+const getAllNewValidatedDemands = async () => {
   return kdb
     .selectFrom('demands')
     .select([
@@ -68,7 +31,7 @@ export const getAllNewDemands = async () => {
     .execute();
 };
 
-export const getAllStaledDemandsSince = async (dateDiff: number) => {
+const getAllStaledDemandsSince = async (dateDiff: number) => {
   return kdb
     .selectFrom('demands')
     .select([
@@ -100,7 +63,7 @@ export const getAllStaledDemandsSince = async (dateDiff: number) => {
  * Envoie un email de relance aux gestionnaires qui ont des demandes en attente de prise en charge
  * depuis plus de 7 jours.
  */
-export const weeklyOldManagerMail = async () => {
+export const sendWeeklyStaleDemandsEmails = async () => {
   const [demands, allUsers] = await Promise.all([getAllStaledDemandsSince(-7), getAllUsersWithPermissions()]);
 
   const emailsToSend: Array<{ email: string; id: string }> = [];
@@ -126,8 +89,8 @@ export const weeklyOldManagerMail = async () => {
 /**
  * Envoie un email pour notifier les gestionnaires de nouvelles demandes.
  */
-export const dailyNewManagerMail = async () => {
-  const [demands, allUsers] = await Promise.all([getAllNewDemands(), getAllUsersWithPermissions()]);
+export const sendDailyNewDemandsEmails = async () => {
+  const [demands, allUsers] = await Promise.all([getAllNewValidatedDemands(), getAllUsersWithPermissions()]);
 
   const emailsToSend: Array<{ email: string; id: string }> = [];
   const seen = new Set<string>();
@@ -141,11 +104,15 @@ export const dailyNewManagerMail = async () => {
       seen.add(user.email);
     }
 
-    // Mark demand as notified
     if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION !== 'true') {
-      await demandsService.update(demand.id, {
-        'Notification envoyé': new Date().toDateString(),
-      });
+      await kdb
+        .updateTable('demands')
+        .set({
+          legacy_values: sql`legacy_values || ${JSON.stringify({ 'Notification envoyé': new Date().toDateString() })}::jsonb`,
+          updated_at: new Date(),
+        })
+        .where('id', '=', demand.id)
+        .execute();
     }
   }
 

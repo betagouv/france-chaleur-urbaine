@@ -7,21 +7,21 @@ export function registerCrons() {
   console.info('-- CRON JOB --- Started cron jobs waiting to get ticked...');
   CronJob.from({
     cronTime: '00 10 * * 1-5', // du lundi au vendredi à 10:00
-    onTick: () => launchJob('dailyNewManagerMail'),
+    onTick: () => launchJob('sendDailyNewDemandsEmails'),
     start: true,
     timeZone: 'Europe/Paris',
   });
 
   CronJob.from({
     cronTime: '55 9 * * 2', // le mardi à 09:55
-    onTick: () => launchJob('weeklyOldManagerMail'),
+    onTick: () => launchJob('sendWeeklyStaleDemandsEmails'),
     start: true,
     timeZone: 'Europe/Paris',
   });
 
   CronJob.from({
     cronTime: '05 10 * * 1', // le lundi à 10:05
-    onTick: () => launchJob('demandsDailyRelanceMail'),
+    onTick: () => launchJob('sendDailyRelanceEmails'),
     start: true,
     timeZone: 'Europe/Paris',
   });

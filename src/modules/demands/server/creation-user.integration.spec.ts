@@ -5,7 +5,6 @@ import { kdb } from '@/server/db/kysely';
 import { cleanDatabase, seedProEligibilityTestsAddress, seedTableUser } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
 
-// Mock external dependencies
 vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
 }));
@@ -58,8 +57,7 @@ vi.mock('@/modules/ban/server/service', () => ({
 
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 
-// Import after mocks
-import * as demandsService from './demands-service';
+import { createDemand } from './creation-user';
 
 const testUserId = uuid(100);
 
@@ -86,7 +84,7 @@ const createValidDemandInput = (overrides: Partial<CreateDemandInput> = {}): Cre
   ...overrides,
 });
 
-describe('demands-service integration', () => {
+describe('creation-user', () => {
   beforeEach(async () => {
     await cleanDatabase();
     await seedTableUser([{ id: testUserId }]);
@@ -96,11 +94,11 @@ describe('demands-service integration', () => {
     vi.clearAllMocks();
   });
 
-  describe('create()', () => {
+  describe('createDemand()', () => {
     it('crée une demande avec adresse de test, eligibility_history et événement', async () => {
       const input = createValidDemandInput();
 
-      const result = await demandsService.create(input, { userId: testUserId });
+      const result = await createDemand(input, { userId: testUserId });
 
       // Verify demand
       expect(result).toBeDefined();
@@ -150,7 +148,7 @@ describe('demands-service integration', () => {
         structure: 'Tertiaire',
       });
 
-      const result = await demandsService.create(input, { userId: testUserId });
+      const result = await createDemand(input, { userId: testUserId });
 
       const demandInDb = await kdb.selectFrom('demands').selectAll().where('id', '=', result.id).executeTakeFirst();
 
@@ -168,7 +166,7 @@ describe('demands-service integration', () => {
     it('crée une demande sans userId (utilisateur anonyme)', async () => {
       const input = createValidDemandInput();
 
-      const result = await demandsService.create(input);
+      const result = await createDemand(input);
 
       expect(result).toBeDefined();
 
@@ -186,7 +184,7 @@ describe('demands-service integration', () => {
       });
 
       // Create demand with existing test address
-      const result = await demandsService.create(input, {
+      const result = await createDemand(input, {
         pro_eligibility_tests_addresse_id: existingTestAddress.id,
         userId: testUserId,
       });
@@ -212,7 +210,7 @@ describe('demands-service integration', () => {
         nbLogements: 150, // >= 100 satisfies the condition
       });
 
-      const result = await demandsService.create(input, { userId: testUserId });
+      const result = await createDemand(input, { userId: testUserId });
 
       // The result is augmented with haut_potentiel
       expect(result.haut_potentiel).toBe(true);
@@ -224,7 +222,7 @@ describe('demands-service integration', () => {
         structure: 'Tertiaire',
       });
 
-      const result = await demandsService.create(input, { userId: testUserId });
+      const result = await createDemand(input, { userId: testUserId });
 
       expect(result.haut_potentiel).toBe(true);
     });
@@ -234,62 +232,12 @@ describe('demands-service integration', () => {
         nbLogements: 150,
       });
 
-      const result = await demandsService.create(input, { userId: testUserId });
+      const result = await createDemand(input, { userId: testUserId });
 
       const demandInDb = await kdb.selectFrom('demands').selectAll().where('id', '=', result.id).executeTakeFirst();
 
       const legacyValues = demandInDb?.legacy_values as Record<string, unknown>;
       expect(legacyValues.Logement).toBe(150);
-    });
-  });
-
-  describe('get()', () => {
-    it('récupère une demande avec son adresse de test', async () => {
-      const input = createValidDemandInput();
-      const created = await demandsService.create(input, { userId: testUserId });
-
-      const result = await demandsService.get(created.id);
-
-      expect(result).toBeDefined();
-      expect(result?.id).toBe(created.id);
-      expect(result?.testAddress).toBeDefined();
-    });
-
-    it('retourne undefined pour une demande inexistante', async () => {
-      const result = await demandsService.get(uuid(99999));
-
-      expect(result).toBeUndefined();
-    });
-  });
-
-  describe('remove()', () => {
-    it('supprime une demande de la base de données', async () => {
-      const input = createValidDemandInput();
-      const created = await demandsService.create(input, { userId: testUserId });
-
-      await demandsService.remove(created.id, testUserId);
-
-      const demandInDb = await kdb.selectFrom('demands').selectAll().where('id', '=', created.id).executeTakeFirst();
-
-      // Hard delete - record should not exist
-      expect(demandInDb).toBeUndefined();
-    });
-
-    it('crée un événement demand_deleted', async () => {
-      const input = createValidDemandInput();
-      const created = await demandsService.create(input, { userId: testUserId });
-
-      await demandsService.remove(created.id, testUserId);
-
-      const event = await kdb
-        .selectFrom('events')
-        .selectAll()
-        .where('context_id', '=', created.id)
-        .where('context_type', '=', 'demand')
-        .where('type', '=', 'demand_deleted')
-        .executeTakeFirst();
-
-      expect(event).toBeDefined();
     });
   });
 });

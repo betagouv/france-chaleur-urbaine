@@ -1,10 +1,10 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { getAllDemandsForStats } from '@/modules/demands/server/public-api';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { kdb, sql } from '@/server/db/kysely';
 import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
-import { getAllDemands } from '@/server/services/manager';
 import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PERIOD } from '@/types/enum/MatomoStats';
 import { dayjs } from '@/utils/date';
 
@@ -51,7 +51,7 @@ export default handleRouteErrors(async function demands(req: NextApiRequest) {
   });
 
   if (group === 'all') {
-    return (await getAllDemands()).reverse().reduce(reducer(), {});
+    return (await getAllDemandsForStats()).reverse().reduce(reducer(), {});
   } else {
     const results = await kdb
       .selectFrom('matomo_stats as s')

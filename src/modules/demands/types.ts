@@ -33,4 +33,4 @@ export type Demand = AirtableLegacyRecord & {
   updated_at: string;
 };
 
-export type { ReseauxStats, TagsStats } from './server/demands-service';
+export type { ReseauxStats, TagsStats } from './server/stats';

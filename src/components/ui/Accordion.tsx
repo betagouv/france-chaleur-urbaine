@@ -118,9 +118,21 @@ export type AccordionProps = DsfrAccordionProps & {
   onClose?: (evt: React.MouseEvent<HTMLElement>) => void;
 };
 
-const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, simple, bordered, onClose, disabled, lazy, ...props }) => {
+const Accordion: React.FC<AccordionProps> = ({
+  children,
+  small,
+  label,
+  help,
+  simple,
+  bordered,
+  onClose,
+  disabled,
+  lazy,
+  defaultExpanded,
+  ...props
+}) => {
   const isControlled = props.expanded !== undefined;
-  const [internalExpanded, setInternalExpanded] = useState(props.defaultExpanded ?? false);
+  const [internalExpanded, setInternalExpanded] = useState(defaultExpanded ?? false);
   const expanded = isControlled ? props.expanded : internalExpanded;
 
   const hasBeenExpanded = useRef(!!expanded);
@@ -170,7 +182,7 @@ const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, sim
       expanded={expanded}
       onExpandedChange={handleExpandedChange}
     >
-      {lazy && !hasBeenExpanded.current ? null : children}
+      {lazy && !hasBeenExpanded.current ? '' : children}
     </StyledAccordion>
   );
 };

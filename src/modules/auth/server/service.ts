@@ -1,7 +1,7 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-import { linkDemandsByEmail } from '@/modules/demands/server/demands-service';
+import { linkDemandsByEmail } from '@/modules/demands/server/account-linking';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { AirtableDB } from '@/server/db/airtable';
