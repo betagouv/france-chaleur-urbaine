@@ -63,7 +63,7 @@ const getAllStaledDemandsSince = async (dateDiff: number) => {
  * Envoie un email de relance aux gestionnaires qui ont des demandes en attente de prise en charge
  * depuis plus de 7 jours.
  */
-export const sendWeeklyStaleDemandsEmails = async () => {
+export const notifyGestionnairesOfUnhandledDemands = async () => {
   const [demands, allUsers] = await Promise.all([getAllStaledDemandsSince(-7), getAllUsersWithPermissions()]);
 
   const emailsToSend: Array<{ email: string; id: string }> = [];
@@ -89,7 +89,7 @@ export const sendWeeklyStaleDemandsEmails = async () => {
 /**
  * Envoie un email pour notifier les gestionnaires de nouvelles demandes.
  */
-export const sendDailyNewDemandsEmails = async () => {
+export const notifyGestionnairesOfNewDemands = async () => {
   const [demands, allUsers] = await Promise.all([getAllNewValidatedDemands(), getAllUsersWithPermissions()]);
 
   const emailsToSend: Array<{ email: string; id: string }> = [];

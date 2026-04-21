@@ -25,10 +25,10 @@ import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates'
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
 import { getApiHandler } from '@/server/api/users';
-import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
+import { aggregateMonthlyStats } from '@/server/cron/aggregateMonthlyStats';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { syncComptesProFromUsers } from '@/server/services/airtable';
+import { syncUsersToAirtableComptesPro } from '@/server/services/airtable';
 import { registerTestCommands } from '@/tests/commands';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
@@ -326,7 +326,7 @@ program
       process.exit(1);
     }
 
-    await saveStatsInDB(startDate, endDate);
+    await aggregateMonthlyStats(startDate, endDate);
   });
 
 program
@@ -403,7 +403,7 @@ program
       logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:sync-last-connection-to-airtable');
       process.exit(1);
     }
-    await syncComptesProFromUsers();
+    await syncUsersToAirtableComptesPro();
   });
 
 program

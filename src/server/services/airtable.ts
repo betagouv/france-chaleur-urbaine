@@ -13,7 +13,11 @@ const logger = parentLogger.child({
 
 const logDry: typeof logger.info = (message) => logger.info(`${DRY_RUN ? '[DRY_RUN]' : '[LIVE]'} ${message}`);
 
-export const syncComptesProFromUsers = async (interval?: string) => {
+/**
+ * Pousse les users (role pro + particulier) de la DB vers la table Airtable COMPTES_PRO.
+ * Si `interval` est fourni, ne synchronise que les users créés dans cet intervalle (ex: "1 hour").
+ */
+export const syncUsersToAirtableComptesPro = async (interval?: string) => {
   logDry(`Sync pros and particuliers from "users" table`);
 
   let query = kdb

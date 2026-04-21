@@ -49,7 +49,7 @@ export const getAllUsersWithPermissions = async (): Promise<UserWithPermissions[
     permissions: row.permissions.map(toPermission),
     receive_new_demands: row.receive_new_demands ?? true,
     receive_old_demands: row.receive_old_demands ?? true,
-    role: row.role as UserRole,
+    role: row.role,
   }));
 };
 

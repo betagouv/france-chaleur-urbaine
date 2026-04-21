@@ -48,10 +48,10 @@ const getAllDemandsToRelance = async () => {
 };
 
 /**
- * Cron job: envoie des relances aux utilisateurs s'ils n'ont pas été recontactés
+ * Cron job: envoie des relances aux demandeurs s'ils n'ont pas été recontactés
  * par le gestionnaire après 1 mois (1ère relance) puis 15 jours plus tard (2ème).
  */
-export const sendDailyRelanceEmails = async () => {
+export const sendRelanceToDemandeurs = async () => {
   const demands = await getAllDemandsToRelance();
 
   for (const demand of demands) {

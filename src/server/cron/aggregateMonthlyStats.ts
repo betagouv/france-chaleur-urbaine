@@ -1,13 +1,9 @@
-import * as Sentry from '@sentry/nextjs';
-
 import base from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
 import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
 import type { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
 import { Airtable } from '@/types/enum/Airtable';
 import { STAT_COMMUNES_SANS_RESEAU, STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
-import '@root/sentry.server.config';
-
 import { USER_ROLE } from '@/types/enum/UserRole';
 
 const DATA_ACTION_STATS: string[] = [
@@ -257,7 +253,7 @@ const countRecordsFromMatomo =
 const countEventCategoriesFromMatomo = countRecordsFromMatomo(STAT_METHOD.ACTIONS_CATEGORY);
 
 const saveDemandsStats = async (startDate: string, endDate: string) => {
-  console.info(`saveStatsInDB START : saveDemandsStats`);
+  console.info(`aggregateMonthlyStats START : saveDemandsStats`);
 
   const records = (
     await kdb
@@ -307,12 +303,12 @@ const saveDemandsStats = async (startDate: string, endDate: string) => {
       value: monthValue.nbTotal,
     }),
   ]);
-  console.info(`saveStatsInDB END : saveDemandsStats`);
+  console.info(`aggregateMonthlyStats END : saveDemandsStats`);
 };
 
 //From Matomo - actions sur le site
 const saveActionsStats = async (startDate: string, endDate: string) => {
-  console.info(`saveStatsInDB START : saveActionsStats`);
+  console.info(`aggregateMonthlyStats START : saveActionsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
     {
       date: `${startDate},${endDate}`,
@@ -337,12 +333,12 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
       })
     );
   }
-  console.info(`saveStatsInDB END : saveActionsStats`);
+  console.info(`aggregateMonthlyStats END : saveActionsStats`);
 };
 
 //From Matomo - visites sur le site
 const saveVisitsStats = async (startDate: string, endDate: string) => {
-  console.info(`saveStatsInDB START : saveVisitsStats`);
+  console.info(`aggregateMonthlyStats START : saveVisitsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoUniqueVisitorsMetrics>({
     date: `${startDate},${endDate}`,
     method: 'VisitsSummary.getUniqueVisitors',
@@ -356,12 +352,12 @@ const saveVisitsStats = async (startDate: string, endDate: string) => {
       value: results[0].value,
     });
   }
-  console.info(`saveStatsInDB END : saveVisitsStats`);
+  console.info(`aggregateMonthlyStats END : saveVisitsStats`);
 };
 
 //From Matomo - visites sur la page de la carte (/carte)
 const saveVisitsMapStats = async (startDate: string, endDate: string) => {
-  console.info(`saveStatsInDB START : saveVisitsMapStats`);
+  console.info(`aggregateMonthlyStats START : saveVisitsMapStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoPageMetrics>(
     {
       date: `${startDate},${endDate}`,
@@ -383,12 +379,12 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
       });
     }
   }
-  console.info(`saveStatsInDB END : saveVisitsMapStats`);
+  console.info(`aggregateMonthlyStats END : saveVisitsMapStats`);
 };
 
 //From Database - demandes en masse : éligibles / non éligibles / totales
 const saveBulkContactStats = async (startDate: string, endDate: string) => {
-  console.info(`saveStatsInDB START : saveBulkContactStats`);
+  console.info(`aggregateMonthlyStats START : saveBulkContactStats`);
   const start = new Date(startDate);
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
@@ -435,11 +431,11 @@ const saveBulkContactStats = async (startDate: string, endDate: string) => {
       value: monthValue.nbTotal,
     }),
   ]);
-  console.info(`saveStatsInDB END : saveBulkContactStats`);
+  console.info(`aggregateMonthlyStats END : saveBulkContactStats`);
 };
 
 const saveComptesProCreatedStats = async (startDate: string, endDate: string) => {
-  console.info(`saveStatsInDB START : saveComptesProCreatedStats`);
+  console.info(`aggregateMonthlyStats START : saveComptesProCreatedStats`);
   const start = new Date(startDate);
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
@@ -484,11 +480,11 @@ const saveComptesProCreatedStats = async (startDate: string, endDate: string) =>
 
   await Promise.all(statsPromises);
 
-  console.info(`saveStatsInDB END : saveComptesProCreatedStats`);
+  console.info(`aggregateMonthlyStats END : saveComptesProCreatedStats`);
 };
 
 const saveCommunesSansReseauStats = async (startDate: string, endDate: string) => {
-  console.info(`saveStatsInDB START : saveCommunesSansReseauStats`);
+  console.info(`aggregateMonthlyStats START : saveCommunesSansReseauStats`);
   const start = new Date(startDate);
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
@@ -530,41 +526,38 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
     )
   );
 
-  console.info(`saveStatsInDB END : saveCommunesSansReseauStats`);
+  console.info(`aggregateMonthlyStats END : saveCommunesSansReseauStats`);
 };
 
-export const saveStatsInDB = async (start?: string, end?: string) => {
-  console.info(`CRON JOB START: saveStatsInDB`, start, end);
-  try {
-    const startDate = start ? new Date(start) : new Date();
-    if (!start) {
-      startDate.setMonth(startDate.getMonth() - 1);
-      startDate.setDate(1);
-    }
-    const stringStartDate = startDate.toISOString().slice(0, 10);
-    const endDate = end ? new Date(end) : new Date();
-    if (!end) {
-      endDate.setDate(0);
-    }
-    const stringEndDate = endDate.toISOString().slice(0, 10);
-    console.info(`From ${stringStartDate} to ${stringEndDate}`);
-
-    const endAirtableDate = endDate;
-    endAirtableDate.setDate(endAirtableDate.getDate() + 1);
-    const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
-
-    await Promise.all([
-      saveDemandsStats(stringStartDate, stringEndAirtableDate),
-      saveActionsStats(stringStartDate, stringEndDate),
-      saveVisitsStats(stringStartDate, stringEndDate),
-      saveVisitsMapStats(stringStartDate, stringEndDate),
-      saveBulkContactStats(stringStartDate, stringEndDate),
-      saveComptesProCreatedStats(stringStartDate, stringEndDate),
-      saveCommunesSansReseauStats(stringStartDate, stringEndAirtableDate),
-    ]);
-  } catch (e) {
-    Sentry.captureException(e);
-    console.error(`CRON JOB ERROR: saveStatsInDB`, e);
+/**
+ * Agrège les stats du mois précédent (Matomo + Airtable + DB) dans la table `matomo_stats`.
+ * Par défaut, calcule sur le mois calendaire écoulé ; `start`/`end` permettent un rejeu manuel sur une autre période.
+ */
+export const aggregateMonthlyStats = async (start?: string, end?: string) => {
+  const startDate = start ? new Date(start) : new Date();
+  if (!start) {
+    startDate.setMonth(startDate.getMonth() - 1);
+    startDate.setDate(1);
   }
-  console.info('CRON JOB STOP: saveStatsInDB');
+  const stringStartDate = startDate.toISOString().slice(0, 10);
+  const endDate = end ? new Date(end) : new Date();
+  if (!end) {
+    endDate.setDate(0);
+  }
+  const stringEndDate = endDate.toISOString().slice(0, 10);
+  console.info(`From ${stringStartDate} to ${stringEndDate}`);
+
+  const endAirtableDate = endDate;
+  endAirtableDate.setDate(endAirtableDate.getDate() + 1);
+  const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
+
+  await Promise.all([
+    saveDemandsStats(stringStartDate, stringEndAirtableDate),
+    saveActionsStats(stringStartDate, stringEndDate),
+    saveVisitsStats(stringStartDate, stringEndDate),
+    saveVisitsMapStats(stringStartDate, stringEndDate),
+    saveBulkContactStats(stringStartDate, stringEndDate),
+    saveComptesProCreatedStats(stringStartDate, stringEndDate),
+    saveCommunesSansReseauStats(stringStartDate, stringEndAirtableDate),
+  ]);
 };
