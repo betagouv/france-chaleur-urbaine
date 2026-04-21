@@ -133,11 +133,46 @@ const usePublicodesEngine = (rules: Rules, options?: Options) => {
     return engine.getSituation() as Record<RuleName, number | string>;
   };
 
+  const getOptions = (name: RuleName): string[] => {
+    const rule = getParsedRule(name) || undefined;
+    if (rule === undefined) {
+      // si vide, c'est que c'est un booléen.
+      // a changé depuis que les possibilités ne sont que des strings
+      return ['oui', 'non'];
+    }
+    if (rule.rawNode['une possibilité']) {
+      return (rule.rawNode as any)['une possibilité'].map((value: string) => value.replace(/^'+|'+$/g, '')) || [];
+    }
+
+    if (rule.rawNode['par défaut']) {
+      return getOptions((rule.rawNode as any)['par défaut']);
+    }
+
+    return [];
+  };
+
+  /**
+   * Convertit les booléen de nodeValue en oui ou non pour correspondre au formulaire.
+   */
+  const fixupBooleanEngineValue = (value: any): any => {
+    return typeof value === 'boolean' ? (value ? 'oui' : 'non') : value;
+  };
+
+  /**
+   * Enlève les apostrophes des string constantes de la situation pour correspondre au formulaire.
+   */
+  const fixupSituationStringValue = (value: any): any => {
+    return typeof value === 'string' && value.at(0) === "'" && value.at(-1) === "'" ? value.substring(1, value.length - 1) : value;
+  };
+
   return {
+    fixupBooleanEngineValue,
+    fixupSituationStringValue,
     getField,
     getFieldAsNumber,
     getFieldDefaultValue,
     getNode,
+    getOptions,
     getRule: getParsedRule,
     getSituation,
     getUnit,
