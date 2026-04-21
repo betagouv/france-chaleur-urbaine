@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { eventGranularities, eventTypes } from '@/modules/events/constants';
-import { routeRole, router } from '@/modules/trpc/server';
+import { adminRoute, router } from '@/modules/trpc/server';
 
 import * as eventsService from './service';
 
@@ -32,36 +32,30 @@ const zSearchAuthorsInput = z.object({
 
 export const eventsRouter = router({
   admin: {
-    getAuthorsByIds: routeRole(['admin'])
+    getAuthorsByIds: adminRoute
       .input(z.object({ ids: z.array(z.uuidv4()) }))
       .query(({ input }) => eventsService.getAuthorsByIds(input.ids)),
-    getStats: routeRole(['admin'])
-      .input(zGetStatsInput)
-      .query(({ input }) =>
-        eventsService.getEventStats({
-          authorIds: input.authorIds,
-          context: input.contextType && input.contextId ? { id: input.contextId, type: input.contextType } : undefined,
-          dateFrom: input.dateFrom,
-          dateTo: input.dateTo,
-          granularity: input.granularity,
-          types: input.types,
-        })
-      ),
-    list: routeRole(['admin'])
-      .input(zListEventsInput)
-      .query(({ input }) =>
-        eventsService.listEvents({
-          authorIds: input.authorIds,
-          context: input.contextType && input.contextId ? { id: input.contextId, type: input.contextType } : undefined,
-          dateFrom: input.dateFrom,
-          dateTo: input.dateTo,
-          limit: input.limit,
-          offset: input.cursor,
-          types: input.types,
-        })
-      ),
-    searchAuthors: routeRole(['admin'])
-      .input(zSearchAuthorsInput)
-      .query(({ input }) => eventsService.searchAuthors(input.search)),
+    getStats: adminRoute.input(zGetStatsInput).query(({ input }) =>
+      eventsService.getEventStats({
+        authorIds: input.authorIds,
+        context: input.contextType && input.contextId ? { id: input.contextId, type: input.contextType } : undefined,
+        dateFrom: input.dateFrom,
+        dateTo: input.dateTo,
+        granularity: input.granularity,
+        types: input.types,
+      })
+    ),
+    list: adminRoute.input(zListEventsInput).query(({ input }) =>
+      eventsService.listEvents({
+        authorIds: input.authorIds,
+        context: input.contextType && input.contextId ? { id: input.contextId, type: input.contextType } : undefined,
+        dateFrom: input.dateFrom,
+        dateTo: input.dateTo,
+        limit: input.limit,
+        offset: input.cursor,
+        types: input.types,
+      })
+    ),
+    searchAuthors: adminRoute.input(zSearchAuthorsInput).query(({ input }) => eventsService.searchAuthors(input.search)),
   },
 });

@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
-import { routeRole, router } from '@/modules/trpc/server';
-import { userRolesWithPermissions } from '@/types/enum/UserRole';
+import { adminRoute, demandAccessRoute, router } from '@/modules/trpc/server';
 
 import { zPermissionInput } from '../types';
 import { getDemandForAccessCheck, getNetworkUsersForTerritory, getUsersWithAccessToDemand } from './demand-access';
@@ -17,13 +16,11 @@ import { getUserPermissions, getUserTerritoryPermissions, setUserPermissions } f
 
 export const permissionsRouter = router({
   admin: {
-    allWithLabels: routeRole(['admin']).query(() => getAllPermissionsWithLabels()),
+    allWithLabels: adminRoute.query(() => getAllPermissionsWithLabels()),
 
-    getForUser: routeRole(['admin'])
-      .input(z.object({ userId: z.uuidv4() }))
-      .query(({ input }) => getUserPermissionsWithLabels(input.userId)),
+    getForUser: adminRoute.input(z.object({ userId: z.uuidv4() })).query(({ input }) => getUserPermissionsWithLabels(input.userId)),
 
-    setForUser: routeRole(['admin'])
+    setForUser: adminRoute
       .input(
         z.object({
           permissions: zPermissionInput,
@@ -33,24 +30,20 @@ export const permissionsRouter = router({
       .mutation(({ input }) => setUserPermissions(input.userId, input.permissions)),
   },
 
-  mine: routeRole([...userRolesWithPermissions]).query(({ ctx }) => getUserPermissions(ctx.user.id)),
+  mine: demandAccessRoute.query(({ ctx }) => getUserPermissions(ctx.user.id)),
 
-  mineWithLabels: routeRole([...userRolesWithPermissions]).query(({ ctx }) => getUserPermissionsWithLabels(ctx.user.id)),
+  mineWithLabels: demandAccessRoute.query(({ ctx }) => getUserPermissionsWithLabels(ctx.user.id)),
 
-  myMapData: routeRole([...userRolesWithPermissions]).query(async ({ ctx }) => {
+  myMapData: demandAccessRoute.query(async ({ ctx }) => {
     const permissions = await getUserPermissions(ctx.user.id);
     return getPermissionsMapData(permissions);
   }),
 
-  resolveLabels: routeRole(['admin', ...userRolesWithPermissions])
-    .input(zPermissionInput)
-    .query(({ input }) => resolvePermissionLabels(input)),
+  resolveLabels: demandAccessRoute.input(zPermissionInput).query(({ input }) => resolvePermissionLabels(input)),
 
-  searchNetworks: routeRole(['admin'])
-    .input(z.object({ query: z.string().min(2).max(100) }))
-    .query(({ input }) => searchNetworks(input.query)),
+  searchNetworks: adminRoute.input(z.object({ query: z.string().min(2).max(100) })).query(({ input }) => searchNetworks(input.query)),
 
-  searchTerritories: routeRole(['admin'])
+  searchTerritories: adminRoute
     .input(
       z.object({
         query: z.string().min(2).max(100),
@@ -59,16 +52,14 @@ export const permissionsRouter = router({
     )
     .query(({ input }) => searchTerritories(input.query, input.types)),
 
-  territoryGestionnaires: routeRole([...userRolesWithPermissions]).query(async ({ ctx }) => {
+  territoryGestionnaires: demandAccessRoute.query(async ({ ctx }) => {
     const permissions = await getUserTerritoryPermissions(ctx.user.id);
     return getNetworkUsersForTerritory(permissions);
   }),
 
-  usersWithAccessToDemand: routeRole(['admin', ...userRolesWithPermissions])
-    .input(z.object({ demandId: z.uuidv4() }))
-    .query(async ({ input }) => {
-      const demand = await getDemandForAccessCheck(input.demandId);
-      if (!demand) return [];
-      return getUsersWithAccessToDemand(demand);
-    }),
+  usersWithAccessToDemand: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).query(async ({ input }) => {
+    const demand = await getDemandForAccessCheck(input.demandId);
+    if (!demand) return [];
+    return getUsersWithAccessToDemand(demand);
+  }),
 });

@@ -13,13 +13,11 @@ import {
   zUpdateReseauEnConstructionInput,
   zUpdateReseauInput,
 } from '@/modules/reseaux/constants';
-import { route, routeRole, router } from '@/modules/trpc/server';
+import { adminRoute, route, router } from '@/modules/trpc/server';
 import { getCityEligilityStatus, getEligilityStatus, getNetworkEligilityStatus } from '@/server/services/addresseInformation';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
 import * as reseauxService from './service';
-
-const adminRoute = routeRole(['admin']);
 
 const reseauDeChaleurRouter = router({
   list: adminRoute.query(async () => {

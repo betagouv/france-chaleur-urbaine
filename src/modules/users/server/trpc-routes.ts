@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import { routeAuthenticated, routeRole, router } from '@/modules/trpc/server/connection';
+import { adminRoute, routeAuthenticated, router } from '@/modules/trpc/server/connection';
 import { zUpdateProfileSchema } from '@/modules/users/constants';
 import * as usersService from '@/modules/users/server/service';
 
@@ -16,7 +16,7 @@ export const usersRouter = router({
     return user;
   }),
 
-  lookupSiret: routeRole(['admin'])
+  lookupSiret: adminRoute
     .input(z.object({ siret: z.string().length(14) }))
     .query(async ({ input }) => usersService.lookupSiret(input.siret)),
 

@@ -5,12 +5,9 @@ import {
   zRenameEligibilityTestInput,
   zUpdateEligibilityTestInput,
 } from '@/modules/pro-eligibility-tests/constants';
-import { routeRole, router } from '@/modules/trpc/server';
+import { adminRoute, authRoute, router } from '@/modules/trpc/server';
 
 import * as proEligibilityTestsService from './service';
-
-const authRoute = routeRole(['admin', 'gestionnaire', 'particulier', 'professionnel']);
-const adminRoute = routeRole(['admin']);
 
 export const proEligibilityTestsRouter = router({
   create: authRoute.input(zCreateEligibilityTestInput).mutation(async ({ input, ctx }) => {

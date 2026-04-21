@@ -1,3 +1,5 @@
+import { userRoles, userRolesWithPermissions } from '@/types/enum/UserRole';
+
 import { type AuthConfig, type Context, t } from './context';
 import { createAuthMiddleware } from './middlewares/auth';
 import { createLoggingMiddleware } from './middlewares/logging';
@@ -25,3 +27,14 @@ export const router = t.router;
 export const route = createProcedureWithAuth(t.procedure.use(loggingMiddleware).use(rateLimitMiddleware).use(authMiddleware));
 export const routeRole = (roles: Context['user']['role'][]) => route.meta({ auth: { roles } });
 export const routeAuthenticated = route.meta({ auth: { authenticated: true } });
+
+/**
+ * Procédures pré-configurées par groupe de rôles — à utiliser systématiquement plutôt que `routeRole([...])` inline.
+ *
+ * - `adminRoute` : admin uniquement.
+ * - `demandAccessRoute` : admin + rôles avec permissions territoriales (gestionnaire, collectivite, alec).
+ * - `authRoute` : tout utilisateur authentifié (tous les rôles).
+ */
+export const adminRoute = routeRole(['admin']);
+export const demandAccessRoute = routeRole(['admin', ...userRolesWithPermissions]);
+export const authRoute = routeRole([...userRoles]);
