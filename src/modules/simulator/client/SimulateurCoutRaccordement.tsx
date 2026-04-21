@@ -128,7 +128,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
                 Montant indicatif calculé avec une valeur CEE actuelle de <strong>{currentCeeValueDisplay} €/MWh cumac</strong>.
               </Text>
               <Box border="1px solid #e7e7e7" my="3w" />
-              <Badge severity="info">Après déduction du coup de pouce</Badge>
+              <Badge severity="info">Après déduction des aides</Badge>
               <Heading as="h6" mb="0" mt="1w">
                 {montantCoutsApresAide?.[0] === 0 && montantCoutsApresAide?.[1] === 0 ? (
                   <>Raccordement gratuit&nbsp;!</>
