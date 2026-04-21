@@ -6,15 +6,13 @@ import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { ObjectEntries } from '@/utils/typescript';
 
 export type TypeBatiment = 'résidentiel' | 'tertiaire';
-export type TertiarySector = 'Bureaux' | 'Enseignement' | 'Commerces' | 'Hôtellerie/Restauration' | 'Santé' | 'Autres';
-export type HotWaterProduction = 'oui' | 'non';
 export type SimulatorFormState = {
   address: string;
   selectedAddress: BANAddressFeature | null;
   nbLogements?: number;
-  producesHotWater: HotWaterProduction;
+  producesHotWater: 'oui' | 'non';
   surface?: number;
-  tertiarySector: TertiarySector;
+  tertiarySector: 'Bureaux' | 'Enseignement' | 'Commerces' | 'Hôtellerie/Restauration' | 'Santé' | 'Autres';
   typeBatiment: TypeBatiment;
 };
 
