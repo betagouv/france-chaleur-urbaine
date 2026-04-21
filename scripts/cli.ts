@@ -28,7 +28,6 @@ import { getApiHandler } from '@/server/api/users';
 import { aggregateMonthlyStats } from '@/server/cron/aggregateMonthlyStats';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { syncUsersToAirtableComptesPro } from '@/server/services/airtable';
 import { registerTestCommands } from '@/tests/commands';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
@@ -391,19 +390,6 @@ program
       })
       .execute();
     logger.info(`Utilisateur ${email} créé avec succès.`);
-  });
-
-program
-  .command('users:sync-comptes-pro-to-airtable')
-  .description('Sync users last connection from PostGres to Airtable.')
-  .action(async () => {
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:sync-last-connection-to-airtable');
-      process.exit(1);
-    }
-    await syncUsersToAirtableComptesPro();
   });
 
 program

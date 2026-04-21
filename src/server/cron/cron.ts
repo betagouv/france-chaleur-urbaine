@@ -4,7 +4,6 @@ import { CronJob } from 'cron';
 import { notifyGestionnairesOfNewDemands, notifyGestionnairesOfUnhandledDemands } from '@/modules/demands/server/manager-notifications';
 import { sendRelanceToDemandeurs } from '@/modules/demands/server/relances';
 import { parentLogger } from '@/server/helpers/logger';
-import { syncUsersToAirtableComptesPro } from '@/server/services/airtable';
 
 import '@root/sentry.server.config';
 
@@ -36,12 +35,6 @@ const crons: CronDefinition[] = [
     handler: sendRelanceToDemandeurs,
     name: 'sendRelanceToDemandeurs',
     schedule: '05 10 * * 1', // lundi 10:05 Paris
-  },
-  {
-    // Pousse vers la table Airtable COMPTES_PRO les users créés dans la dernière heure.
-    handler: () => syncUsersToAirtableComptesPro('1 hour'),
-    name: 'syncUsersToAirtableComptesPro',
-    schedule: '00 * * * *', // toutes les heures
   },
   {
     // Agrège les stats du mois précédent (Matomo + Airtable + DB) dans la table matomo_stats.
