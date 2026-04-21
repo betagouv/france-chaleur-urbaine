@@ -89,6 +89,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
             onFormStateChange={updateFormState}
             onTypeBatimentChange={handleTypeBatimentChange}
             showLabels
+            engine={engine}
           />
           <Text size="sm">
             *montants donnés à titre indicatif.
@@ -118,7 +119,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
               </Heading>
               <Box border="1px solid #e7e7e7" my="3w" />
               <Text fontWeight="bold" textTransform="uppercase">
-                Montant du coup de pouce
+                Montant des aides
               </Text>
               <Heading as="h6" mt="2w">
                 {prettyPrintCout(montantAide)}

@@ -6,7 +6,7 @@ import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { ObjectEntries } from '@/utils/typescript';
 
 export type TypeBatiment = 'résidentiel' | 'tertiaire';
-export type TertiarySector = 'Bureaux' | 'Enseignement' | 'Commerces' | 'Café, restaurant' | 'Hôtel' | 'Santé' | 'Autres';
+export type TertiarySector = 'Bureaux' | 'Enseignement' | 'Commerces' | 'Hôtellerie/Restauration' | 'Santé' | 'Autres';
 export type HotWaterProduction = 'oui' | 'non';
 export type SimulatorFormState = {
   address: string;
@@ -34,7 +34,7 @@ export function buildPublicodeSituation({
   typeBatiment,
 }: PublicodeSituationInput): SimulatorSituation {
   return {
-    'méthode tertiaire': typeBatiment === 'tertiaire' ? `'${tertiarySector}'` : null,
+    'méthode tertiaire 2026': typeBatiment === 'tertiaire' ? `'${tertiarySector}'` : null,
     "nombre de logements dans l'immeuble concerné":
       typeBatiment === 'résidentiel' && nbLogements != null && nbLogements > 0 ? nbLogements : null,
     'Production eau chaude sanitaire': typeBatiment === 'tertiaire' ? producesHotWater : 'oui',

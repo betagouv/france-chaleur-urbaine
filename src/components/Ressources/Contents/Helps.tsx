@@ -25,10 +25,10 @@ const Helps = () => {
         </strong>
       </Highlight>
       <p>
-        *Le dispositif; des; Certificats; d; ’économies d’énergie repose sur une obligation de réalisation d’économies d’énergie imposée par
-        les pouvoirs publics aux fournisseurs d’énergie (les "obligés"). Pour obtenir des CEE, les obligés peuvent notamment financer un
-        certain nombre d’opérations menées par les ménages, les collectivités territoriales ou les professionnels (telles que le
-        raccordement aux réseaux de chaleur).
+        *Le dispositif des Certificats d’économies d’énergie repose sur une obligation de réalisation d’économies d’énergie imposée par les
+        pouvoirs publics aux fournisseurs d’énergie (les "obligés"). Pour obtenir des CEE, les obligés peuvent notamment financer un certain
+        nombre d’opérations menées par les ménages, les collectivités territoriales ou les professionnels (telles que le raccordement aux
+        réseaux de chaleur).
       </p>
       <h2>Qui peut en bénéficier ?</h2>
       <p>

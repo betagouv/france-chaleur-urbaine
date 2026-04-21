@@ -54,7 +54,9 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
   const helpAmount = hasAmountInputs ? engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant') : 0;
   const networkInformation = networkName
     ? `Le réseau de chaleur "${networkName}" est situé à proximité de votre adresse.${
-        isEfficientNetwork ? " Il est considéré comme efficace car il utilise au moins 50 % d'énergie renouvelable." : ''
+        isEfficientNetwork
+          ? " Il est considéré comme efficace car il utilise au moins 50% d'énergie renouvelable."
+          : " Comme il utilise moins de 50% d'énergie renouvelable, il n'est pas éligible au Coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires » mais reste éligible à cette fiche CEE."
       }`
     : null;
   const getRuleNoteUrl = (ruleName: RuleName) => {
@@ -95,6 +97,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
             onAddressChange={handleAddressChange}
             onFormStateChange={updateFormState}
             onTypeBatimentChange={handleTypeBatimentChange}
+            engine={engine}
           />
         </div>
         <SimulatorResult

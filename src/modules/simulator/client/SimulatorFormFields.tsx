@@ -1,6 +1,7 @@
 import Input from '@codegouvfr/react-dsfr/Input';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 
+import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { AddressField } from '@/modules/form/AddressField';
 import type { SimulatorFormState, TypeBatiment } from '@/modules/simulator/constants';
@@ -37,6 +38,7 @@ type SimulatorFormFieldsProps = {
   onFormStateChange: <Key extends keyof SimulatorFormState>(key: Key, value: SimulatorFormState[Key]) => void;
   onTypeBatimentChange: (value: TypeBatiment) => void;
   showLabels?: boolean;
+  engine: SimulatorEngine;
 };
 export function SimulatorFormFields({
   addressErrorMessage,
@@ -45,6 +47,7 @@ export function SimulatorFormFields({
   onAddressChange,
   onFormStateChange,
   onTypeBatimentChange,
+  engine,
   showLabels = false,
 }: SimulatorFormFieldsProps) {
   return (
@@ -80,9 +83,9 @@ export function SimulatorFormFields({
         <>
           <Select
             label={showLabels ? 'Secteur tertiaire' : ''}
-            options={TERTIARY_SECTOR_OPTIONS.map((option) => ({
-              label: option.label,
-              value: option.value,
+            options={engine.getOptions('méthode tertiaire 2026').map((option) => ({
+              label: option,
+              value: option,
             }))}
             nativeSelectProps={{
               className: fieldClassName,
