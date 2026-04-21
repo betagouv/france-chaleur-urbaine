@@ -4,11 +4,9 @@ import jwt from 'jsonwebtoken';
 import { linkDemandsByEmail } from '@/modules/demands/server/account-linking';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
-import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError } from '@/server/helpers/server';
-import { Airtable } from '@/types/enum/Airtable';
 import type { UserRole } from '@/types/enum/UserRole';
 import { generateRandomToken } from '@/utils/random';
 
@@ -153,14 +151,6 @@ export const requestPassword = async (email: string) => {
 
   if (!user) {
     logger.warn('reset-password: missing user', { email: lowerCaseEmail });
-    await AirtableDB(Airtable.CONNEXION).create([
-      {
-        fields: {
-          Date: new Date().toISOString(),
-          Email: lowerCaseEmail,
-        },
-      },
-    ]);
     return;
   }
 
