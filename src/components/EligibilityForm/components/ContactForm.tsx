@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import useForm from '@/components/form/react-form/useForm';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
-import { type ContactFormInfos, zContactFormCreateDemandInput } from '@/modules/demands/constants';
+import { type ContactFormInfos, zCollectContactFormCreateDemandInput, zContactFormCreateDemandInput } from '@/modules/demands/constants';
 import { pick } from '@/utils/objects';
 
 import DemandContactFields from './DemandContactFields';
@@ -33,25 +33,24 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
     }
   };
 
-  const initialValues = {
-    acceptFCUTeam: false,
-    acceptGestionnaire: false,
-    company: userInfo.company ?? '',
-    companyType: userInfo.companyType ?? '',
-    demandArea: undefined as unknown as number,
-    demandCompanyName: userInfo.demandCompanyName ?? '',
-    demandCompanyType: userInfo.demandCompanyType ?? '',
-    email: userInfo.email ?? '',
-    firstName: userInfo.firstName ?? '',
-    heatingEnergy: userInfo.heatingEnergy ?? '',
-    lastName: userInfo.lastName ?? '',
-    nbLogements: undefined as unknown as number,
-    phone: userInfo.phone ?? '',
-    structure: userInfo.structure ?? getDefaultStructure(),
-    termOfUse: false,
-  };
   const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
-    defaultValues: initialValues,
+    defaultValues: {
+      acceptFCUTeam: false,
+      acceptGestionnaire: false,
+      company: userInfo.company ?? '',
+      companyType: userInfo.companyType ?? '',
+      demandArea: undefined as unknown as number,
+      demandCompanyName: userInfo.demandCompanyName ?? '',
+      demandCompanyType: userInfo.demandCompanyType ?? '',
+      email: userInfo.email ?? '',
+      firstName: userInfo.firstName ?? '',
+      heatingEnergy: userInfo.heatingEnergy ?? '',
+      lastName: userInfo.lastName ?? '',
+      nbLogements: undefined as unknown as number,
+      phone: userInfo.phone ?? '',
+      structure: userInfo.structure ?? getDefaultStructure(),
+      termOfUse: false,
+    },
     onSubmit: async ({ value }) => {
       setUserInfo(
         pick(value, [
@@ -69,7 +68,7 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
       );
       onSubmit(value);
     },
-    schema: zContactFormCreateDemandInput,
+    schema: display === 'collectContact' ? zCollectContactFormCreateDemandInput : zContactFormCreateDemandInput,
   });
   const structure = useValue<string>('structure');
   const companyType = useValue<string>('companyType');

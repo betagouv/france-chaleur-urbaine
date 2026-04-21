@@ -299,6 +299,11 @@ export const zContactFormCreateDemandInput = z
   })
   .superRefine(validateDemandContactInfo);
 
+export const zCollectContactFormCreateDemandInput = zContactFormCreateDemandInput.refine((value) => value.acceptGestionnaire, {
+  message: 'Ce champ est requis',
+  path: ['acceptGestionnaire'],
+});
+
 export const zAirtableFCUTeamContact = z.object({
   Adresse: z.string().min(1),
   'Code Postal': z.string().min(1),

@@ -173,7 +173,10 @@ export const DemandContactFields = <TFormUi extends FormUi>({
           <FieldWrapper>
             <Field.Checkbox
               name="acceptGestionnaire"
-              label="Je souhaite laisser mes coordonnées pour être tenu informé par le gestionnaire du réseau le plus proche ou par ma collectivité des projets d’extension de réseau ou de création de réseau dans mon quartier."
+              label="Je souhaite être tenu informé par le gestionnaire du réseau le plus proche ou par ma collectivité des projets d’extension de réseau ou de création de réseau dans mon quartier."
+              nativeInputProps={{
+                required: true,
+              }}
             />
           </FieldWrapper>
         </>
