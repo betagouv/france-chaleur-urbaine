@@ -2,7 +2,7 @@ import { type Expression, type SqlBool, sql } from 'kysely';
 
 import { kdb } from '@/server/db/kysely';
 
-import type { NetworkPermission, Permission } from '../types';
+import { type NetworkPermission, type Permission, type PermissionType, permissionBoundsKey } from '../types';
 import { isNetworkPermissionType } from './helpers';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -21,6 +21,7 @@ export type PermissionsMapData = {
   highlightPdpIdsFcu: number[];
   territories: GeoJSON.FeatureCollection<GeoJSON.Geometry, TerritoryFeatureProperties>;
   bounds: BoundingBox | null;
+  perPermissionBounds: Record<string, BoundingBox>;
 };
 
 // ─── Main orchestrator ──────────────────────────────────────────────────────
@@ -55,13 +56,18 @@ export const getPermissionsMapData = async (permissions: Permission[]): Promise<
           .then((rows) => rows.map((r) => r.id_fcu))
       : Promise.resolve([] as number[]);
 
-  const [territories, bounds, pdpIds] = await Promise.all([getTerritoryGeometries(permissions), getBounds(permissions), pdpPromise]);
+  const [territories, boundsData, pdpIds] = await Promise.all([
+    getTerritoryGeometries(permissions),
+    getBoundsData(permissions),
+    pdpPromise,
+  ]);
 
   return {
-    bounds,
+    bounds: boundsData.bounds,
     highlightPdpIdsFcu: pdpIds,
     highlightReseauxEnConstruction: constructionIds,
     highlightReseauxExistants: existingIds,
+    perPermissionBounds: boundsData.perPermissionBounds,
     territories,
   };
 };
@@ -163,102 +169,128 @@ const getTerritoryGeometries = async (
   return { features, type: 'FeatureCollection' };
 };
 
-// ─── Bounds (single UNION ALL query) ────────────────────────────────────────
+// ─── Per-permission geometry parts (single source of truth) ─────────────────
 
 /**
- * Computes a bounding box encompassing all permissions (territories + networks)
- * in a single SQL query using UNION ALL + ST_Extent.
+ * Builds one SELECT per permission type, each returning `(type, code, geom)`.
+ * Reused both for global bounds aggregation and per-permission bounds.
  */
-const getBounds = async (permissions: Permission[]): Promise<BoundingBox | null> => {
+const buildPermissionGeomParts = (permissions: Permission[]): ReturnType<typeof sql>[] => {
   const territoryPerms = permissions.filter((p) => !isNetworkPermissionType(p.type) && p.type !== 'national');
   const networkPerms = permissions.filter((p): p is NetworkPermission => isNetworkPermissionType(p.type));
-
-  if (territoryPerms.length === 0 && networkPerms.length === 0) {
-    return null;
-  }
 
   const communeCodes = territoryPerms.filter((p) => p.type === 'commune').map((p) => p.resourceId!);
   const deptCodes = territoryPerms.filter((p) => p.type === 'departement').map((p) => p.resourceId!);
   const regionCodes = territoryPerms.filter((p) => p.type === 'region').map((p) => p.resourceId!);
   const epciCodes = territoryPerms.filter((p) => p.type === 'epci').map((p) => p.resourceId!);
   const eptCodes = territoryPerms.filter((p) => p.type === 'ept').map((p) => p.resourceId!);
-  const existingIds = networkPerms.filter((p) => p.type === 'reseau_existant').map((p) => Number(p.resourceId));
-  const constructionIds = networkPerms.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resourceId));
+  const reseauxExistantsIds = networkPerms.filter((p) => p.type === 'reseau_existant').map((p) => Number(p.resourceId));
+  const reseauxEnConstructionIds = networkPerms.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resourceId));
 
   const parts: ReturnType<typeof sql>[] = [];
 
   if (communeCodes.length > 0) {
     parts.push(sql`
-      SELECT ST_Transform(geom, 4326) AS geom FROM ign_communes
+      SELECT 'commune' AS type, insee_com AS code, ST_Transform(geom, 4326) AS geom
+      FROM ign_communes
       WHERE insee_com IN (${sql.join(communeCodes.map(sql.lit))}) AND geom IS NOT NULL
     `);
   }
-
   if (deptCodes.length > 0) {
     parts.push(sql`
-      SELECT ST_Transform(geom, 4326) AS geom FROM ign_departements
+      SELECT 'departement' AS type, insee_dep AS code, ST_Transform(geom, 4326) AS geom
+      FROM ign_departements
       WHERE insee_dep IN (${sql.join(deptCodes.map(sql.lit))}) AND geom IS NOT NULL
     `);
   }
-
   if (regionCodes.length > 0) {
     parts.push(sql`
-      SELECT ST_Transform(geom, 4326) AS geom FROM ign_regions
+      SELECT 'region' AS type, insee_reg AS code, ST_Transform(geom, 4326) AS geom
+      FROM ign_regions
       WHERE insee_reg IN (${sql.join(regionCodes.map(sql.lit))}) AND geom IS NOT NULL
     `);
   }
-
   if (epciCodes.length > 0) {
     parts.push(sql`
-      SELECT ST_Transform(c.geom, 4326) AS geom
+      SELECT 'epci' AS type, e.code AS code, ST_Transform(c.geom, 4326) AS geom
       FROM epci e
       CROSS JOIN LATERAL jsonb_array_elements(e.membres) AS m
       JOIN ign_communes c ON c.insee_com = m->>'code'
       WHERE e.code IN (${sql.join(epciCodes.map(sql.lit))})
     `);
   }
-
   if (eptCodes.length > 0) {
     parts.push(sql`
-      SELECT ST_Transform(c.geom, 4326) AS geom
+      SELECT 'ept' AS type, e.code AS code, ST_Transform(c.geom, 4326) AS geom
       FROM ept e
       CROSS JOIN LATERAL jsonb_array_elements(e.membres) AS m
       JOIN ign_communes c ON c.insee_com = m->>'code'
       WHERE e.code IN (${sql.join(eptCodes.map(sql.lit))})
     `);
   }
-
-  if (existingIds.length > 0) {
+  if (reseauxExistantsIds.length > 0) {
     parts.push(sql`
-      SELECT ST_Transform(geom, 4326) AS geom FROM reseaux_de_chaleur
-      WHERE id_fcu IN (${sql.join(existingIds.map(sql.lit))}) AND geom IS NOT NULL
+      SELECT 'reseau_existant' AS type, id_fcu::text AS code, ST_Transform(geom, 4326) AS geom
+      FROM reseaux_de_chaleur
+      WHERE id_fcu IN (${sql.join(reseauxExistantsIds.map(sql.lit))}) AND geom IS NOT NULL
+    `);
+  }
+  if (reseauxEnConstructionIds.length > 0) {
+    parts.push(sql`
+      SELECT 'reseau_en_construction' AS type, id_fcu::text AS code, ST_Transform(geom, 4326) AS geom
+      FROM zones_et_reseaux_en_construction
+      WHERE id_fcu IN (${sql.join(reseauxEnConstructionIds.map(sql.lit))}) AND geom IS NOT NULL
     `);
   }
 
-  if (constructionIds.length > 0) {
-    parts.push(sql`
-      SELECT ST_Transform(geom, 4326) AS geom FROM zones_et_reseaux_en_construction
-      WHERE id_fcu IN (${sql.join(constructionIds.map(sql.lit))}) AND geom IS NOT NULL
-    `);
-  }
+  return parts;
+};
 
+// ─── Global + per-permission bounds (single SQL query, two results) ─────────
+
+/**
+ * Computes in one query:
+ *  - the per-permission bounds (keyed by `${type}:${resourceId}`)
+ *  - the global bounds encompassing all permissions
+ *
+ * Uses a CTE over the shared `buildPermissionGeomParts`.
+ */
+const getBoundsData = async (
+  permissions: Permission[]
+): Promise<{ bounds: BoundingBox | null; perPermissionBounds: Record<string, BoundingBox> }> => {
+  const parts = buildPermissionGeomParts(permissions);
   if (parts.length === 0) {
-    return null;
+    return { bounds: null, perPermissionBounds: {} };
   }
 
-  const result = await sql<{ west: number; south: number; east: number; north: number }>`
-    SELECT
+  const result = await sql<{
+    type: PermissionType | null;
+    code: string | null;
+    west: number;
+    south: number;
+    east: number;
+    north: number;
+  }>`
+    WITH geoms AS (${sql.join(parts, sql` UNION ALL `)})
+    SELECT type, code,
       ST_XMin(ST_Extent(geom)) AS west,
       ST_YMin(ST_Extent(geom)) AS south,
       ST_XMax(ST_Extent(geom)) AS east,
       ST_YMax(ST_Extent(geom)) AS north
-    FROM (${sql.join(parts, sql` UNION ALL `)}) AS all_geoms
+    FROM geoms
+    GROUP BY GROUPING SETS ((type, code), ())
   `.execute(kdb);
 
-  const row = result.rows[0];
-  if (!row || row.west === null) {
-    return null;
+  let bounds: BoundingBox | null = null;
+  const perPermissionBounds: Record<string, BoundingBox> = {};
+  for (const row of result.rows) {
+    if (row.west === null) continue;
+    const bbox: BoundingBox = [row.west, row.south, row.east, row.north];
+    if (row.type === null) {
+      bounds = bbox;
+    } else if (row.code !== null) {
+      perPermissionBounds[permissionBoundsKey(row.type, row.code)] = bbox;
+    }
   }
-
-  return [row.west, row.south, row.east, row.north];
+  return { bounds, perPermissionBounds };
 };

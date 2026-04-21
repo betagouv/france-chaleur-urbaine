@@ -1,10 +1,10 @@
 import dynamic from 'next/dynamic';
-import { useMemo } from 'react';
+import { type RefObject, useMemo } from 'react';
+import type { MapRef } from 'react-map-gl/maplibre';
 import { Layer, Source } from 'react-map-gl/maplibre';
 
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Loader from '@/components/ui/Loader';
-import type { BoundingBox } from '@/modules/geo/types';
 import trpc from '@/modules/trpc/client';
 
 const FCUMap = dynamic(() => import('@/components/Map/Map'), { ssr: false });
@@ -17,16 +17,17 @@ const mapConfiguration = createMapConfiguration({
   zonesDeDeveloppementPrioritaire: true,
 });
 
+type Props = {
+  /** Ref owned by the parent (see useMapController). Receives the initial fit via the `bounds` prop. */
+  mapRef: RefObject<MapRef | null>;
+};
+
 /**
  * Displays the user's permissions on an interactive map,
  * highlighting their networks and territories.
  */
-const PermissionsMap = () => {
+const PermissionsMap = ({ mapRef }: Props) => {
   const { data: mapData, isLoading } = trpc.permissions.myMapData.useQuery(undefined);
-
-  const bounds = useMemo<BoundingBox | undefined>(() => {
-    return mapData?.bounds ? mapData.bounds : undefined;
-  }, [mapData?.bounds]);
 
   const mapChildren = useMemo(() => {
     if (!mapData) return null;
@@ -129,8 +130,9 @@ const PermissionsMap = () => {
         withLegend={false}
         withSoughtAddresses={false}
         geolocDisabled
-        bounds={bounds}
         noPopup
+        mapRef={mapRef}
+        bounds={mapData.bounds ?? undefined}
         mapChildren={mapChildren}
       />
     </div>

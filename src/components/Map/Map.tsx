@@ -127,7 +127,7 @@ type MapProps = {
   withFCUAttribution?: boolean;
   withComptePro?: boolean;
   persistViewStateInURL?: boolean;
-  mapRef?: RefObject<MapRef>;
+  mapRef?: RefObject<MapRef | null>;
   adressesEligibles?: AdresseEligible[];
   adressesEligiblesAutoFit?: boolean;
   onFeatureClick?: (feature: MapGeoJSONFeature) => void;

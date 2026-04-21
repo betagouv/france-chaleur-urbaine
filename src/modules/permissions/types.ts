@@ -56,3 +56,6 @@ export const MAX_PERMISSIONS_PER_USER = 200;
 
 // Permission with resolved human-readable label
 export type PermissionWithLabel = Permission & { label: string };
+
+// Stable key for a permission (used as map bounds dictionary key, React list key, etc.)
+export const permissionBoundsKey = (type: PermissionType, resourceId: string | null): string => `${type}:${resourceId ?? ''}`;

@@ -857,7 +857,7 @@ function NetworkDisplay({
       {distance === 0 ? (
         <span className="text-xs text-gray-500">Dans la zone</span>
       ) : (
-        distance != null && distance > 0 && <span className="text-xs text-gray-500">distance au réseau : {distance} m</span>
+        distance != null && distance > 0 && <span className="text-xs text-gray-500">Distance au réseau : {distance} m</span>
       )}
       <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
         <PopoverTrigger asChild>
