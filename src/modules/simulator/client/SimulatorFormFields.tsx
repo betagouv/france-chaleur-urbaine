@@ -2,6 +2,7 @@ import Input from '@codegouvfr/react-dsfr/Input';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
+import Button from '@/components/ui/Button';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { AddressField } from '@/modules/form/AddressField';
 import type { SimulatorFormState, TypeBatiment } from '@/modules/simulator/constants';
@@ -36,6 +37,7 @@ type SimulatorFormFieldsProps = {
   formState: SimulatorFormState;
   onAddressChange: (geoAddress?: BANAddressFeature) => void | Promise<void>;
   onFormStateChange: <Key extends keyof SimulatorFormState>(key: Key, value: SimulatorFormState[Key]) => void;
+  onReset: () => void;
   onTypeBatimentChange: (value: TypeBatiment) => void;
   showLabels?: boolean;
   engine: SimulatorEngine;
@@ -46,6 +48,7 @@ export function SimulatorFormFields({
   formState,
   onAddressChange,
   onFormStateChange,
+  onReset,
   onTypeBatimentChange,
   engine,
   showLabels = false,
@@ -125,19 +128,24 @@ export function SimulatorFormFields({
         />
       ) : (
         <Input
-          label={showLabels ? 'Surface (m²)' : ''}
+          label={showLabels ? 'Surface chauffée (m²)' : ''}
           nativeInputProps={{
             className: fieldClassName,
             inputMode: 'numeric',
             min: 1,
             onChange: (event) => onFormStateChange('surface', parseNumericFieldValue(event.currentTarget.valueAsNumber)),
             pattern: '[0-9]*',
-            placeholder: showLabels ? undefined : 'Surface (m²)',
+            placeholder: showLabels ? undefined : 'Surface chauffée (m²)',
             type: 'number',
             value: formState.surface ?? '',
           }}
         />
       )}
+      <div className="flex justify-end">
+        <Button type="button" size="small" iconId="fr-icon-arrow-go-back-line" onClick={onReset}>
+          Réinitialiser
+        </Button>
+      </div>
     </>
   );
 }

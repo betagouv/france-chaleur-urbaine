@@ -13,19 +13,21 @@ type UseSimulatorFormStateOptions = {
   onReset?: () => void;
 };
 
+const defaultFormState: SimulatorFormState = {
+  address: '',
+  producesHotWater: 'oui',
+  selectedAddress: null,
+  tertiarySector: 'Bureaux',
+  typeBatiment: 'résidentiel',
+};
+
 export function useSimulatorFormState({
   onAddressInfosLoaded,
   onAddressSituationChange,
   onFieldInteraction,
   onReset,
 }: UseSimulatorFormStateOptions) {
-  const [formState, setFormState] = useState<SimulatorFormState>({
-    address: '',
-    producesHotWater: 'oui',
-    selectedAddress: null,
-    tertiarySector: 'Bureaux',
-    typeBatiment: 'résidentiel',
-  });
+  const [formState, setFormState] = useState<SimulatorFormState>(defaultFormState);
   const [addressErrorMessage, setAddressErrorMessage] = useState<string | null>(null);
 
   function updateFormState<Key extends keyof SimulatorFormState>(key: Key, value: SimulatorFormState[Key]) {
@@ -97,11 +99,20 @@ export function useSimulatorFormState({
     }
   }
 
+  function resetFormState() {
+    onFieldInteraction?.();
+    setAddressErrorMessage(null);
+    setFormState(defaultFormState);
+    onAddressSituationChange(buildAddressSituation());
+    onReset?.();
+  }
+
   return {
     addressErrorMessage,
     formState,
     handleAddressChange,
     handleTypeBatimentChange,
+    resetFormState,
     updateFormState,
   };
 }

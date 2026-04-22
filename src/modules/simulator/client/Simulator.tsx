@@ -20,18 +20,20 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
   const [networkName, setNetworkName] = useState<string | null>(null);
   const [isEfficientNetwork, setIsEfficientNetwork] = useState(false);
   const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE')));
-  const resetNetworkContext = () => {
+  const resetSimulatorContext = () => {
     setNetworkName(null);
     setIsEfficientNetwork(false);
+    setCeeValue(formatCeeValue(engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE')));
   };
-  const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, updateFormState } = useSimulatorFormState({
-    onAddressInfosLoaded: (infos) => {
-      setNetworkName(infos.nearestReseauDeChaleur?.nom_reseau ?? null);
-      setIsEfficientNetwork((infos.nearestReseauDeChaleur?.['Taux EnR&R'] ?? 0) > 50);
-    },
-    onAddressSituationChange: engine.updateSituation,
-    onReset: resetNetworkContext,
-  });
+  const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, resetFormState, updateFormState } =
+    useSimulatorFormState({
+      onAddressInfosLoaded: (infos) => {
+        setNetworkName(infos.nearestReseauDeChaleur?.nom_reseau ?? null);
+        setIsEfficientNetwork((infos.nearestReseauDeChaleur?.['Taux EnR&R'] ?? 0) > 50);
+      },
+      onAddressSituationChange: engine.updateSituation,
+      onReset: resetSimulatorContext,
+    });
 
   const publicodeSituation = useMemo(
     () => ({
@@ -96,6 +98,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
             formState={formState}
             onAddressChange={handleAddressChange}
             onFormStateChange={updateFormState}
+            onReset={resetFormState}
             onTypeBatimentChange={handleTypeBatimentChange}
             engine={engine}
           />
@@ -180,41 +183,39 @@ function SimulatorResult({
           </strong>
         </div>
         {(networkInformation || addressErrorMessage) && concernedHelp && (
-          <>
-            <div>
-              Le calcul se base sur la fiche{' '}
-              <a href={concernedHelp.noteUrl} target="_blank" rel="noreferrer">
-                <strong>{concernedHelp.label}</strong>
-              </a>
-              .{' '}
-              {!addressErrorMessage && (
-                <sup>
-                  <Tooltip title={networkInformation} />
-                </sup>
-              )}
-            </div>
-            <div>
-              * Montant donné à titre indicatif avec un CEE estimé à{' '}
-              <Input
-                addon={<span className="flex min-h-8 items-center whitespace-nowrap">€/MWh cumac</span>}
-                hideLabel
-                label="Le prix actuel d'un CEE"
-                classes={{
-                  nativeInputOrTextArea: '!w-[3rem] mx-1 rounded px-1 py-0.5',
-                  root: '!inline-block !w-auto align-middle',
-                  wrap: 'fr-my-0',
-                }}
-                nativeInputProps={{
-                  'aria-label': "Le prix actuel d'un CEE en euros par MWh cumac",
-                  inputMode: 'decimal',
-                  onChange: (e) => onCeeValueChange(e.target.value),
-                  type: 'text',
-                  value: ceeValue,
-                }}
-              />
-            </div>
-          </>
+          <div>
+            Le calcul se base sur la fiche{' '}
+            <a href={concernedHelp.noteUrl} target="_blank" rel="noreferrer">
+              <strong>{concernedHelp.label}</strong>
+            </a>
+            .{' '}
+            {!addressErrorMessage && (
+              <sup>
+                <Tooltip title={networkInformation} />
+              </sup>
+            )}
+          </div>
         )}
+        <div>
+          * Montant donné à titre indicatif avec un CEE estimé à{' '}
+          <Input
+            addon={<span className="flex min-h-8 items-center whitespace-nowrap">€/MWh cumac</span>}
+            hideLabel
+            label="Le prix actuel d'un CEE"
+            classes={{
+              nativeInputOrTextArea: '!w-[3rem] mx-1 rounded px-1 py-0.5',
+              root: '!inline-block !w-auto align-middle',
+              wrap: 'fr-my-0',
+            }}
+            nativeInputProps={{
+              'aria-label': "Le prix actuel d'un CEE en euros par MWh cumac",
+              inputMode: 'decimal',
+              onChange: (e) => onCeeValueChange(e.target.value),
+              type: 'text',
+              value: ceeValue,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

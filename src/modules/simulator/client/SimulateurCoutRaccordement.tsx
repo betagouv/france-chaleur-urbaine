@@ -21,15 +21,16 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
   const engine = useSimulatorEngine();
   const [hasUsedFeature, setHasUsedFeature] = useState(false);
 
-  const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, updateFormState } = useSimulatorFormState({
-    onAddressSituationChange: engine.updateSituation,
-    onFieldInteraction: () => {
-      if (!hasUsedFeature) {
-        trackEvent('Outils|Simulation coût raccordement');
-      }
-      setHasUsedFeature(true);
-    },
-  });
+  const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, resetFormState, updateFormState } =
+    useSimulatorFormState({
+      onAddressSituationChange: engine.updateSituation,
+      onFieldInteraction: () => {
+        if (!hasUsedFeature) {
+          trackEvent('Outils|Simulation coût raccordement');
+        }
+        setHasUsedFeature(true);
+      },
+    });
 
   const publicodeSituation = useMemo(() => buildPublicodeSituation(formState), [formState]);
 
@@ -87,6 +88,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
             formState={formState}
             onAddressChange={handleAddressChange}
             onFormStateChange={updateFormState}
+            onReset={resetFormState}
             onTypeBatimentChange={handleTypeBatimentChange}
             showLabels
             engine={engine}
