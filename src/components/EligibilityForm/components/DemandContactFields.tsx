@@ -163,23 +163,12 @@ export const DemandContactFields = <TFormUi extends FormUi>({
         </>
       )}
       {display === 'collectContact' && (
-        <>
-          <FieldWrapper>
-            <Field.Checkbox
-              name="acceptFCUTeam"
-              label="J'accepte d'être recontacté(e) par l'équipe France Chaleur Renouvelable pour un entretien d'environ 30 minutes, dans le cadre de la conception du service."
-            />
-          </FieldWrapper>
-          <FieldWrapper>
-            <Field.Checkbox
-              name="acceptGestionnaire"
-              label="Je souhaite être tenu informé par le gestionnaire du réseau le plus proche ou par ma collectivité des projets d’extension de réseau ou de création de réseau dans mon quartier."
-              nativeInputProps={{
-                required: true,
-              }}
-            />
-          </FieldWrapper>
-        </>
+        <FieldWrapper>
+          <Field.Checkbox
+            name="acceptGestionnaire"
+            label="Je souhaite être informé par le gestionnaire du réseau le plus proche ou par ma collectivité des projets d’extension ou création de réseau à proximité."
+          />
+        </FieldWrapper>
       )}
     </>
   );

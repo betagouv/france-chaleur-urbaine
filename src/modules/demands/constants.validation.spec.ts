@@ -2,13 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { TestCase, TestCaseBoolean } from '@/tests/trpc-helpers';
 
-import {
-  zBatchDemandAddressSchema,
-  zBatchDemandStep1Schema,
-  zCollectContactFormCreateDemandInput,
-  zContactFormCreateDemandInput,
-  zCreateBatchDemandInput,
-} from './constants';
+import { zBatchDemandAddressSchema, zBatchDemandStep1Schema, zContactFormCreateDemandInput, zCreateBatchDemandInput } from './constants';
 
 describe('zContactFormCreateDemandInput', () => {
   const validBaseInput = {
@@ -70,22 +64,6 @@ describe('zContactFormCreateDemandInput', () => {
     it.each(testCases)('$label', ({ input, expectedOutput }) => {
       const result = zContactFormCreateDemandInput.safeParse(input);
       expect(result.success).toBe(expectedOutput);
-    });
-  });
-
-  describe('consentements optionnels', () => {
-    it("n'impose pas acceptFCUTeam", () => {
-      const result = zContactFormCreateDemandInput.safeParse(validBaseInput);
-      expect(result.success).toBe(true);
-    });
-
-    it('accepte acceptFCUTeam quand la case est cochée', () => {
-      const result = zContactFormCreateDemandInput.safeParse({
-        ...validBaseInput,
-        acceptFCUTeam: true,
-      });
-
-      expect(result.success).toBe(true);
     });
   });
 
@@ -201,33 +179,6 @@ describe('zContactFormCreateDemandInput', () => {
         expect(result.error.issues.some((i) => i.path.includes(expectedOutput.missingField!))).toBe(true);
       }
     });
-  });
-});
-
-describe('zCollectContactFormCreateDemandInput', () => {
-  const validBaseInput = {
-    email: 'test@example.com',
-    firstName: 'Jean',
-    heatingEnergy: 'gaz',
-    lastName: 'Dupont',
-    structure: 'Copropriété',
-    termOfUse: true,
-  };
-
-  it('requiert acceptGestionnaire', () => {
-    const result = zCollectContactFormCreateDemandInput.safeParse(validBaseInput);
-
-    expect(result.success).toBe(false);
-    expect(result.error?.issues.some((issue) => issue.path.includes('acceptGestionnaire'))).toBe(true);
-  });
-
-  it('valide quand acceptGestionnaire est coché', () => {
-    const result = zCollectContactFormCreateDemandInput.safeParse({
-      ...validBaseInput,
-      acceptGestionnaire: true,
-    });
-
-    expect(result.success).toBe(true);
   });
 });
 

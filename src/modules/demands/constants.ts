@@ -115,7 +115,6 @@ export const zAdminUpdateDemandInput = z.object({
 });
 
 export const zCreateDemandInput = z.object({
-  acceptFCUTeam: z.boolean().optional(),
   address: z.string(),
   city: z.string(),
   company: z.string().optional().default(''),
@@ -284,7 +283,6 @@ export const zBatchDemandContactSchema = z.object(demandContactShape).superRefin
 export const zContactFormCreateDemandInput = z
   .object({
     ...demandContactShape,
-    acceptFCUTeam: z.boolean().optional(),
     acceptGestionnaire: z.boolean().optional(),
     heatingEnergy: z
       .string()
@@ -298,11 +296,6 @@ export const zContactFormCreateDemandInput = z
     }),
   })
   .superRefine(validateDemandContactInfo);
-
-export const zCollectContactFormCreateDemandInput = zContactFormCreateDemandInput.refine((value) => value.acceptGestionnaire, {
-  message: 'Ce champ est requis',
-  path: ['acceptGestionnaire'],
-});
 
 export const zAirtableFCUTeamContact = z.object({
   Adresse: z.string().min(1),
@@ -324,9 +317,24 @@ export const zAirtableFCUTeamContact = z.object({
     .default(''),
 });
 
+export const zCreateFCUTeamContactInput = z
+  .object({
+    ...demandContactShape,
+    address: z.string().min(1),
+    heatingEnergy: z
+      .string()
+      .refine(
+        (val) => fieldLabelInformation.heatingEnergy.inputs.some((input) => input.value === val),
+        'Veuillez sélectionner une énergie de chauffage'
+      ),
+    postcode: z.string().min(1),
+  })
+  .superRefine(validateDemandContactInfo);
+
 export type ContactFormInfos = z.infer<typeof zContactFormCreateDemandInput>;
 export type AirtableFCUTeamContact = z.infer<typeof zAirtableFCUTeamContact>;
 export type BatchDemandContactInfo = z.infer<typeof zBatchDemandContactSchema>;
+export type CreateFCUTeamContactInput = z.infer<typeof zCreateFCUTeamContactInput>;
 
 export type CreateDemandInput = z.infer<typeof zCreateDemandInput>;
 

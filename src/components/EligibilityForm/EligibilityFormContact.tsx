@@ -8,6 +8,7 @@ import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import type { ContactFormInfos } from '@/modules/demands/constants';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
+import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
 
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
@@ -23,6 +24,7 @@ type EligibilityFormContactType = {
 };
 
 const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: EligibilityFormContactType) => {
+  const trpcUtils = trpc.useUtils();
   const [contactFormLoading, setContactFormLoading] = useState(false);
   const [contactFormError, setContactFormError] = useState(false);
 
@@ -79,18 +81,34 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
           sendedValues.region = (context[2] || '').trim();
         }
 
-        if (onSubmit) {
-          setContactFormLoading(true);
+        const shouldCreateDemand = display !== 'collectContact' || values.acceptGestionnaire;
 
+        if (display === 'collectContact' || (onSubmit && shouldCreateDemand)) {
+          setContactFormLoading(true);
+        }
+
+        if (display === 'collectContact') {
+          await trpcUtils.client.demands.user.createFCUTeamContact.mutate({
+            ...values,
+            address: sendedValues.address,
+            postcode: sendedValues.postcode,
+          });
+        }
+
+        if (onSubmit && shouldCreateDemand) {
           await onSubmit(sendedValues).finally(() => {
             setContactFormLoading(false);
           });
+          return;
         }
+
+        setContactFormLoading(false);
       } catch (_err: any) {
+        setContactFormLoading(false);
         setContactFormError(true);
       }
     },
-    [addressData, computedEligibility, onSubmit]
+    [addressData, computedEligibility, display, onSubmit, trpcUtils]
   );
 
   return (

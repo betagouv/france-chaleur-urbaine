@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import useForm from '@/components/form/react-form/useForm';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
-import { type ContactFormInfos, zCollectContactFormCreateDemandInput, zContactFormCreateDemandInput } from '@/modules/demands/constants';
+import { type ContactFormInfos, zContactFormCreateDemandInput } from '@/modules/demands/constants';
 import { pick } from '@/utils/objects';
 
 import DemandContactFields from './DemandContactFields';
@@ -35,7 +35,6 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
 
   const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
     defaultValues: {
-      acceptFCUTeam: false,
       acceptGestionnaire: false,
       company: userInfo.company ?? '',
       companyType: userInfo.companyType ?? '',
@@ -68,7 +67,7 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
       );
       onSubmit(value);
     },
-    schema: display === 'collectContact' ? zCollectContactFormCreateDemandInput : zContactFormCreateDemandInput,
+    schema: zContactFormCreateDemandInput,
   });
   const structure = useValue<string>('structure');
   const companyType = useValue<string>('companyType');

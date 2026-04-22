@@ -10,6 +10,7 @@ import {
   type BatchDemandContactInfo,
   type CreateBatchDemandInput,
   type CreateDemandInput,
+  type CreateFCUTeamContactInput,
   demandStatusDefault,
   formatDataToLegacyAirtable,
   normalizeHeatingEnergy,
@@ -50,6 +51,26 @@ const logger = parentLogger.child({
 export const tableName = 'demands';
 export const emailsTableName = 'demand_emails';
 const baseModel = createBaseModel(tableName);
+
+export const createFCUTeamContact = async (values: CreateFCUTeamContactInput) => {
+  await AirtableDB(Airtable.CONTACT_ENTRETIEN_UTILISATEUR).create(
+    zAirtableFCUTeamContact.parse({
+      Adresse: values.address,
+      'Code Postal': values.postcode,
+      Date: new Date().toISOString(),
+      Email: values.email,
+      'Mode de chauffage': values.heatingEnergy,
+      Nom: values.lastName,
+      'Nom de la structure': values.company,
+      'Nombre de logement': values.nbLogements,
+      Prenom: values.firstName,
+      Structure: values.structure,
+      Surface: values.demandArea,
+      'Type de structure': values.companyType,
+      Téléphone: values.phone,
+    })
+  );
+};
 
 const augmentAdminDemand = <T extends Selectable<Demands>>({
   demand,
@@ -314,26 +335,6 @@ export const create = async (
     // Automation import from https://airtable.com/app9opX8gRAtBqkan/wflvqEW0CLeXZ2pO0
     sendEmailTemplate('demands.admin-new', { email: clientConfig.destinationEmails.contact }, { demand: legacyValues as any }),
   ]);
-
-  if (values.acceptFCUTeam) {
-    AirtableDB(Airtable.CONTACT_ENTRETIEN_UTILISATEUR).create(
-      zAirtableFCUTeamContact.parse({
-        Adresse: values.address,
-        'Code Postal': values.postcode,
-        Date: new Date().toISOString(),
-        Email: values.email,
-        'Mode de chauffage': values.heatingEnergy,
-        Nom: values.lastName,
-        'Nom de la structure': values.company,
-        'Nombre de logement': values.nbLogements,
-        Prenom: values.firstName,
-        Structure: values.structure,
-        Surface: values.demandArea,
-        'Type de structure': values.companyType,
-        Téléphone: values.phone,
-      })
-    );
-  }
 
   const demand = await get(createdDemand.id);
 
