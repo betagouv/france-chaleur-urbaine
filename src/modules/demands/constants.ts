@@ -299,7 +299,6 @@ export const zContactFormCreateDemandInput = z
 
 export const zAirtableFCUTeamContact = z.object({
   Adresse: z.string().min(1),
-  'Code Postal': z.string().min(1),
   Date: z.iso.datetime(),
   Email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   'Mode de chauffage': z.enum(modesDeChauffage.map(({ value }) => value) as [ModeDeChauffage, ...ModeDeChauffage[]]),
@@ -327,7 +326,6 @@ export const zCreateFCUTeamContactInput = z
         (val) => fieldLabelInformation.heatingEnergy.inputs.some((input) => input.value === val),
         'Veuillez sélectionner une énergie de chauffage'
       ),
-    postcode: z.string().min(1),
   })
   .superRefine(validateDemandContactInfo);
 

@@ -56,7 +56,6 @@ export const createFCUTeamContact = async (values: CreateFCUTeamContactInput) =>
   await AirtableDB(Airtable.CONTACT_ENTRETIEN_UTILISATEUR).create(
     zAirtableFCUTeamContact.parse({
       Adresse: values.address,
-      'Code Postal': values.postcode,
       Date: new Date().toISOString(),
       Email: values.email,
       'Mode de chauffage': values.heatingEnergy,
