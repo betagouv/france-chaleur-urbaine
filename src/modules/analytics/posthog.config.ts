@@ -46,7 +46,7 @@ export type PostHogEventMap = {
     company_type?: string;
     nb_logements?: number;
     demand_area_m2?: number;
-    has_phone: boolean;
+    has_phone?: boolean;
   };
 
   // Test d'adresse en masse
