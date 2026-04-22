@@ -27,6 +27,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
   const trpcUtils = trpc.useUtils();
   const [contactFormLoading, setContactFormLoading] = useState(false);
   const [contactFormError, setContactFormError] = useState(false);
+  const [contactFormSuccess, setContactFormSuccess] = useState(false);
 
   const { title, body, computedEligibility, display, text } = useMemo(() => {
     if (!addressData.eligibility) {
@@ -68,6 +69,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
     async (values: ContactFormInfos) => {
       try {
         setContactFormError(false);
+        setContactFormSuccess(false);
         const sendedValues: any = {
           ...addressData,
           ...values,
@@ -91,8 +93,8 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
           await trpcUtils.client.demands.user.createFCUTeamContact.mutate({
             ...values,
             address: sendedValues.address,
-            postcode: sendedValues.postcode,
           });
+          setContactFormSuccess(true);
         }
 
         if (onSubmit && shouldCreateDemand) {
@@ -191,6 +193,14 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
               <Box textColor="#c00" mt="1w">
                 Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
               </Box>
+            )}
+            {display === 'collectContact' && contactFormSuccess && (
+              <Alert
+                className="fr-mt-2w"
+                severity="success"
+                small
+                description="Merci, votre demande a bien été envoyée. Notre équipe pourra revenir vers vous prochainement."
+              />
             )}
           </ContactFormContentWrapper>
         </>
