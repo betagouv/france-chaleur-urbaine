@@ -145,7 +145,7 @@ export const trackEvent = (eventKey: TrackingEvent, ...eventPayload: any[]) => {
  */
 export function trackPostHogEvent<E extends PostHogEvent>(
   event: E,
-  ...args: [PostHogEventMap[E]] extends [never] ? [] : [PostHogEventMap[E]]
+  ...args: [PostHogEventMap[E]] extends [never] ? [] : [PostHogEventMap[E]?]
 ): void {
   const properties = args[0] ?? {};
   if (isDevModeEnabled()) {

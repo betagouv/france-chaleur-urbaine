@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 
 import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
+import type { PostHogEvent } from '@/modules/analytics/posthog.config';
 import cx from '@/utils/cx';
 import { stopPropagation as stopPropagationHandler } from '@/utils/events';
 
@@ -13,6 +14,8 @@ type StyledButtonProps = {
   variant?: keyof typeof variantClassNames;
   eventKey?: TrackingEvent;
   eventPayload?: string;
+  posthogEventKey?: PostHogEvent;
+  posthogEventPayload?: Record<string, unknown>;
 };
 
 const StyledButton = styled(DsfrButton)<DsfrButtonProps & StyledButtonProps>`
@@ -95,6 +98,8 @@ const Button: React.FC<ButtonProps> = ({
   onClick: onExternalClick,
   eventKey,
   eventPayload,
+  posthogEventKey,
+  posthogEventPayload,
   stopPropagation,
   loading,
   variant = 'default',

@@ -2,7 +2,8 @@ import DSFRCard, { type CardProps as DSFRCardProps } from '@codegouvfr/react-dsf
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ReactNode } from 'react';
 
-import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
+import { type TrackingEvent, trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
+import type { PostHogEvent, PostHogEventMap } from '@/modules/analytics/posthog.config';
 import cx from '@/utils/cx';
 
 const cardVariants = cva('', {
@@ -34,6 +35,8 @@ export type CardProps = Omit<DSFRCardProps, 'size'> &
     className?: string;
     eventKey?: TrackingEvent;
     eventPayload?: string;
+    posthogEventKey?: PostHogEvent;
+    posthogEventPayload?: PostHogEventMap[PostHogEvent] | undefined;
     onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   };
 
@@ -44,7 +47,18 @@ export type CardProps = Omit<DSFRCardProps, 'size'> &
  * - Support for ReactNode content in title and description
  * - Additional className support for custom styling
  */
-const Card: React.FC<CardProps> = ({ description, variant, size, className, eventKey, eventPayload, onClick, ...props }) => {
+const Card: React.FC<CardProps> = ({
+  description,
+  variant,
+  size,
+  className,
+  eventKey,
+  eventPayload,
+  posthogEventKey,
+  posthogEventPayload,
+  onClick,
+  ...props
+}) => {
   return (
     <DSFRCard
       size={size === 'sm' ? 'small' : size === 'md' ? 'medium' : 'large'}
@@ -56,6 +70,9 @@ const Card: React.FC<CardProps> = ({ description, variant, size, className, even
             eventKey,
             eventPayload?.split(',').map((v) => v.trim())
           );
+        }
+        if (posthogEventKey) {
+          trackPostHogEvent(posthogEventKey, posthogEventPayload);
         }
         onClick?.(e);
       }}

@@ -1,25 +1,28 @@
+import Card from '@/components/ui/Card';
+
 import { type Document, understandings } from './config';
-import { CardContainer, UnderstandingCard, UnderstandingCards } from './Understanding.styles';
 
 const Understanding = ({ cards }: { cards?: Record<string, Document> }) => {
   return (
-    <UnderstandingCards>
+    <div className="flex gap-4">
       {Object.entries(cards || understandings).map(([key, understanding]) => (
-        <CardContainer key={key}>
-          <UnderstandingCard
-            title={cards && understanding.altTitle ? understanding.altTitle : understanding.title}
-            desc={understanding.description}
-            linkProps={{
-              href: `/ressources/${key}#contenu`,
-            }}
-            border
-            enlargeLink
-            size="small"
-            titleAs="h3"
-          />
-        </CardContainer>
+        <Card
+          className="flex-1"
+          key={`understanding-${key}`}
+          title={cards && understanding.altTitle ? understanding.altTitle : understanding.title}
+          desc={understanding.description}
+          posthogEventKey="home:article_clicked"
+          posthogEventPayload={{ element_name: key }}
+          linkProps={{
+            href: `/ressources/${key}#contenu`,
+          }}
+          border
+          enlargeLink
+          size="sm"
+          titleAs="h3"
+        />
       ))}
-    </UnderstandingCards>
+    </div>
   );
 };
 

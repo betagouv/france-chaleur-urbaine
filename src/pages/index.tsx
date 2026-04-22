@@ -1,5 +1,5 @@
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
-import { AnimatePresence } from 'motion/react';
+import React from 'react';
 
 import LastArticles from '@/components/Articles/LastArticles';
 import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
@@ -19,7 +19,6 @@ import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
 import type { TrackingEvent } from '@/modules/analytics/client';
-import cx from '@/utils/cx';
 
 const coproprietaireCards = {
   atouts: issues.atouts,
@@ -110,6 +109,7 @@ const mainTools = [
     href: '/comparateur-couts-performances',
     imageAlt: 'Illustration comparateur de coûts et émissions',
     imageUrl: '/img/illustrations/benefices-comparateur.svg',
+    posthogEventKey: 'home:comparator_tile_clicked',
     title: "Comparez les coûts et d'émissions de CO₂",
   },
   {
@@ -118,6 +118,7 @@ const mainTools = [
     href: '/chaleur-renouvelable',
     imageAlt: 'Illustration chauffage écologique',
     imageUrl: '/img/illustrations/benefices-chauffage.svg',
+    posthogEventKey: 'home:fcr_tile_clicked',
     title: 'Quel chauffage convient le mieux à votre copropriété ?',
   },
 ] as const;
@@ -137,7 +138,7 @@ function Home() {
 
       <Section>
         <SectionTwoColumns>
-          <div className="flex flex-col justify-between h-full flex-[2]!">
+          <div className="flex flex-col justify-between h-full flex-2!">
             <ArrowItem>
               <strong>Bénéficiez de tarifs plus stables</strong> grâce à des énergies locales
             </ArrowItem>
@@ -155,24 +156,24 @@ function Home() {
                 variant="primary"
                 href="/documentation/guide-france-chaleur-urbaine.pdf"
                 eventKey="Téléchargement|Guide FCU|professionnels"
-                postHogEventKey="link:click"
-                postHogEventProps={{ link_name: 'guide_raccordement', source: 'homepage' }}
+                postHogEventKey="home:guide_download_clicked"
                 isExternal
               >
                 Télécharger le guide de raccordement
               </Link>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 flex-[3]! mx-auto max-w-xl">
+          <div className="flex flex-col sm:flex-row gap-4 flex-3! mx-auto max-w-xl">
             {mainTools.map((mainTool) => (
               <Card
                 eventKey={mainTool.eventKey}
+                posthogEventKey={mainTool.posthogEventKey}
                 size="sm"
                 imageAspect="square"
                 className="flex-1"
                 imageUrl={mainTool.imageUrl}
                 imageAlt={mainTool.imageAlt}
-                key={mainTool.href}
+                key={`maintool-${mainTool.href}`}
                 title={mainTool.title}
                 titleAs="h2"
                 desc={mainTool.description}
@@ -186,30 +187,27 @@ function Home() {
         </SectionTwoColumns>
       </Section>
       <Section variant="light" size="sm">
-        <SectionContent className={cx('flex flex-wrap items-stretch justify-center gap-2 transition-all duration-300')}>
-          <AnimatePresence mode="popLayout">
-            {tools.map((tile, index) => (
-              <>
-                <Link
-                  key={`${tile.title}-${index}`}
-                  className="shrink-0 text-center hover:bg-gray-50! cursor-pointer rounded-md p-0.5 py-5 flex flex-col gap-2 tracking-tight flex-1 min-w-[150px] max-w-[150px] bg-none"
-                  href={tile.href}
-                  eventKey={tile.eventKey}
-                  postHogEventKey="link:click"
-                  postHogEventProps={{ link_name: tile.postHogToolName, source: 'homepage' }}
-                >
-                  <Image src={tile.image} alt="" width={64} height={64} className="mx-auto" />
-                  <h2 className="text-base font-semibold text-gray-900 mb-0">{tile.title}</h2>
-                  <p className="text-sm text-gray-600 mb-0">{tile.excerpt}</p>
-                </Link>
-                {index < tools.length - 1 && (
-                  <div className="flex items-center justify-center">
-                    <div className="w-px h-1/2 bg-[#E3E4FD]" />
-                  </div>
-                )}
-              </>
-            ))}
-          </AnimatePresence>
+        <SectionContent className="flex flex-wrap items-stretch justify-center gap-2 transition-all duration-300">
+          {tools.map((tile, index) => (
+            <React.Fragment key={`tools-${tile.title}-${index}`}>
+              <Link
+                className="shrink-0 text-center hover:bg-gray-50! cursor-pointer rounded-md p-0.5 py-5 flex flex-col gap-2 tracking-tight flex-1 min-w-37.5 max-w-37.5 bg-none"
+                href={tile.href}
+                eventKey={tile.eventKey}
+                postHogEventKey="home:tool_tile_clicked"
+                postHogEventProps={{ element_name: tile.postHogToolName }}
+              >
+                <Image src={tile.image} alt="" width={64} height={64} className="mx-auto" />
+                <h2 className="text-base font-semibold text-gray-900 mb-0">{tile.title}</h2>
+                <p className="text-sm text-gray-600 mb-0">{tile.excerpt}</p>
+              </Link>
+              {index < tools.length - 1 && (
+                <div className="flex items-center justify-center">
+                  <div className="w-px h-1/2 bg-[#E3E4FD]" />
+                </div>
+              )}
+            </React.Fragment>
+          ))}
         </SectionContent>
       </Section>
 
@@ -220,12 +218,25 @@ function Home() {
             <div>
               <SectionHeading as="h3">Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français</SectionHeading>
               <Text size="lg">
-                <Link href="/chauffage-urbain#contenu">Le chauffage urbain</Link> consiste à{' '}
-                <strong>distribuer de la chaleur produite de façon centralisée à un ensemble de bâtiments</strong>, via des canalisations
-                souterraines. On parle aussi de réseaux de chaleur.{' '}
+                <Link
+                  href="/chauffage-urbain#contenu"
+                  postHogEventKey="home:pedagogic_section_clicked"
+                  postHogEventProps={{ element_name: 'chauffage-urbain' }}
+                >
+                  Le chauffage urbain
+                </Link>{' '}
+                consiste à <strong>distribuer de la chaleur produite de façon centralisée à un ensemble de bâtiments</strong>, via des
+                canalisations souterraines. On parle aussi de réseaux de chaleur.{' '}
                 <strong>
                   Ces réseaux sont alimentés à plus de 66% par des{' '}
-                  <Link href="/ressources/energies-vertes#contenu">énergies renouvelables et de récupération locales</Link>.
+                  <Link
+                    href="/ressources/energies-vertes#contenu"
+                    postHogEventKey="home:pedagogic_section_clicked"
+                    postHogEventProps={{ element_name: 'energies-vertes' }}
+                  >
+                    énergies renouvelables et de récupération locales
+                  </Link>
+                  .
                 </strong>
               </Text>
               <Text size="lg" mt="3w">
@@ -234,8 +245,14 @@ function Home() {
               </Text>
               <Text size="lg" mt="3w">
                 Dans la plupart des cas, le réseau de chaleur appartient à une collectivité territoriale et est{' '}
-                <Link href="/ressources/acteurs#contenu">géré en concession</Link> par un exploitant, qui s’occupe notamment des
-                raccordements.
+                <Link
+                  href="/ressources/acteurs#contenu"
+                  postHogEventKey="home:pedagogic_section_clicked"
+                  postHogEventProps={{ element_name: 'acteurs' }}
+                >
+                  géré en concession
+                </Link>{' '}
+                par un exploitant, qui s’occupe notamment des raccordements.
               </Text>
             </div>
             <div>
@@ -393,9 +410,7 @@ Ce système contribue à la transition énergétique des villes en mutualisant l
       <Section variant="light">
         <SectionTitle>Nos articles sur le chauffage urbain</SectionTitle>
         <SectionContent>
-          <div className="fr-grid-row">
-            <Understanding cards={coproprietaireCards} />
-          </div>
+          <Understanding cards={coproprietaireCards} />
         </SectionContent>
       </Section>
 

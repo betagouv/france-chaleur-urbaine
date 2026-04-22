@@ -95,8 +95,22 @@ export type PostHogEventMap = {
     source: string;
     content_category?: string;
   };
-};
 
+  // Home
+  'home:tool_tile_clicked': ElementType;
+  'home:comparator_tile_clicked': never;
+  'home:bulk_test_cta_clicked': never;
+  'home:guide_download_clicked': never;
+  'home:fcr_tile_clicked': never;
+  'home:article_clicked': ElementType;
+  'home:news_clicked': ElementType;
+  'home:pedagogic_section_clicked': ElementType;
+  'home:partner_logo_clicked': { partner_name: string; target_url: string };
+  'home:testimonial_carousel_clicked': { action: string; testimonial_index: number };
+};
+type ElementType = {
+  element_name: string;
+};
 export type PostHogEvent = keyof PostHogEventMap;
 
 /**
