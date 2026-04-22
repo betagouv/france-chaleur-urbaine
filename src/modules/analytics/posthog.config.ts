@@ -49,6 +49,30 @@ export type PostHogEventMap = {
     has_phone: boolean;
   };
 
+  // Test d'adresse en masse
+  'bulk_test:results_exported': {
+    bulk_test_id: string;
+    rows_exported: number;
+    filter_applied: boolean;
+  };
+  'bulk_test:processing_started': {
+    bulk_test_id: string;
+    rows_count?: number;
+  };
+  'bulk_test:map_viewed': {
+    bulk_test_id: string;
+    rows_displayed_on_map?: number;
+  };
+  'bulk_test:file_uploaded': {
+    rows_count: number;
+    file_size_kb: number;
+  };
+  'bulk_test:contact_request_submitted': {
+    bulk_test_id: string;
+    selected_rows_count: number;
+    has_phone: boolean;
+    professional_type?: string | null;
+  };
   // Potentiel création réseau
   'potentiel-creation-reseau:commune_form_submit': {
     commune: string;
