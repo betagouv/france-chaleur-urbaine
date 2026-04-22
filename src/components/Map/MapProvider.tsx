@@ -1,5 +1,5 @@
 import type MapboxDraw from '@mapbox/mapbox-gl-draw';
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import type { MapRef } from 'react-map-gl/maplibre';
 
 import {
@@ -53,7 +53,10 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
   );
   const reseauxDeChaleurFilters = useReseauxDeChaleurFilters();
 
-  const mapConfiguration = deepMergeObjects(originalMapConfiguration, reseauxDeChaleurFilters.filters);
+  const mapConfiguration = useMemo(
+    () => deepMergeObjects(originalMapConfiguration, reseauxDeChaleurFilters.filters),
+    [originalMapConfiguration, reseauxDeChaleurFilters.filters]
+  );
 
   if (isDevModeEnabled()) {
     (window as any).mapConfiguration = mapConfiguration;
