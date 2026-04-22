@@ -1,5 +1,23 @@
 # Développement
 
+## Procédure de mise à jour des statistiques mensuelles
+
+Chaque mois, il est nécessaire de mettre à jour manuellement les données utilisées pour la page [/stats](https://france-chaleur-urbaine.beta.gouv.fr/stats).
+Pour ce faire, il faut récupérer les tables à jour en local puis lancer un script
+
+- Récupérer les données à jour des réseaux et demandes. (A noter, que no-contraints évite de récupérer tout ce qui est lié aux demandes, mais pourra provoquer des incohérences dans la BDD future)
+```sh
+pnpm db:pull:prod --data-only --no-constraints reseaux_de_chaleur reseaux_de_froid zone_de_developpement_prioritaire zones_et_reseaux_en_construction demands
+```
+- Vérifier dans `.env.local` que la clé d'API Pipedrive est bien configurée.
+- Lancer le script pour mettre à jour le fichier `src/data/statistics.ts`.
+```sh
+pnpm cli stats:refresh
+```
+- Vérifier que les chiffres semblent cohérents et en légère augmentation.
+- Commiter et pousser le fichier sur dev et main.
+
+
 ## API
 
 Un schéma OpenAPI a été initialisé manuellement en yaml à partir du [Swagger Editor](https://editor-next.swagger.io/), et est référencé depuis la [plateforme data.gouv.fr](https://www.data.gouv.fr/fr/dataservices/api-france-chaleur-urbaine/).
