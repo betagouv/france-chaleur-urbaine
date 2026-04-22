@@ -13,12 +13,30 @@ import type { TypeCommune } from '@/server/services/communeAPotentiel';
  */
 export type PostHogEventMap = {
   // Éligibilité (funnel principal)
-  'eligibility:address_form_submit': {
+  'address_test:started': {
+    chauffage_type?: 'collectif' | 'individuel';
+    source: EligibilityContext;
+  };
+  'address_test:submitted': {
     address: string;
     source: EligibilityContext;
     is_eligible: boolean;
+    chauffage_type?: 'collectif' | 'individuel';
+    distance_reseau_m?: number;
   };
-  'eligibility:contact_form_submit': {
+  'address_test:result_displayed': {
+    source: EligibilityContext;
+    result_type: 'en construction' | 'pdp' | 'eligible' | 'non eligible';
+    chauffage_type?: 'collectif' | 'individuel';
+    distance_reseau_m?: number;
+  };
+  'address_test:discover_more_clicked': {
+    source: EligibilityContext;
+    result_type: 'en construction' | 'pdp' | 'eligible' | 'non eligible';
+    chauffage_type?: 'collectif' | 'individuel';
+    distance_reseau_m?: number;
+  };
+  'address_test:contact_form_submitted': {
     address: string;
     source: EligibilityContext;
     is_eligible: boolean;
@@ -28,6 +46,7 @@ export type PostHogEventMap = {
     company_type?: string;
     nb_logements?: number;
     demand_area_m2?: number;
+    has_phone: boolean;
   };
 
   // Potentiel création réseau
@@ -113,6 +132,10 @@ type ElementType = {
 };
 export type PostHogEvent = keyof PostHogEventMap;
 
+export type PostHogTrackingProps<Event extends PostHogEvent = PostHogEvent> = {
+  postHogEventKey?: Event;
+} & ([PostHogEventMap[Event]] extends [never] ? { postHogEventProps?: never } : { postHogEventProps?: PostHogEventMap[Event] });
+
 /**
  * Tuple typé [eventName, properties] pour passer un event PostHog dans les structures de données.
  * `E extends unknown` force la distribution sur l'union.
@@ -123,4 +146,11 @@ export type PostHogEventEntry<E extends PostHogEvent = PostHogEvent> = E extends
     : [E, PostHogEventMap[E]]
   : never;
 
-export type EligibilityContext = 'carte' | 'comparateur' | 'fiche-reseau' | 'homepage' | 'choix-chauffage' | 'chaleur-renouvelable';
+export type EligibilityContext =
+  | 'carte'
+  | 'comparateur'
+  | 'fiche-reseau'
+  | 'homepage'
+  | 'choix-chauffage'
+  | 'chaleur-renouvelable'
+  | 'eligibility';

@@ -64,13 +64,27 @@ const useContactFormFCU = () => {
             `Eligibilité|Formulaire de test${prefix} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
             address || 'Adresse indefini'
           );
-          trackPostHogEvent('eligibility:address_form_submit', {
+          trackPostHogEvent('address_test:submitted', {
             address: address || '',
+            chauffage_type: heatingType,
+            distance_reseau_m: eligibility?.distance ?? undefined,
             is_eligible: !!eligibility?.isEligible,
             source: context || 'homepage',
           });
         }
       }
+      trackPostHogEvent('address_test:result_displayed', {
+        chauffage_type: heatingType,
+        distance_reseau_m: eligibility?.distance ?? undefined,
+        result_type: eligibility?.futurNetwork
+          ? 'en construction'
+          : eligibility?.inPDP
+            ? 'pdp'
+            : eligibility?.isEligible
+              ? 'eligible'
+              : 'non eligible',
+        source: context || 'homepage',
+      });
       setAddressData(data);
       if (address && heatingType) {
         setContactReady(true);
@@ -144,7 +158,7 @@ const useContactFormFCU = () => {
       if (prefix !== ' - Chaleur renouvelable') {
         trackEvent(`Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${prefix} - Envoi`, address);
       }
-      trackPostHogEvent('eligibility:contact_form_submit', {
+      trackPostHogEvent('address_test:contact_form_submitted', {
         address,
         company_type: data?.companyType || undefined,
         demand_area_m2: data?.demandArea,

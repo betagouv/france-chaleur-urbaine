@@ -122,8 +122,10 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           `Eligibilité|Formulaire de test - Comparateur - Adresse ${isEligible ? 'É' : 'Iné'}ligible`,
           selectedAddress.properties.label
         );
-        trackPostHogEvent('eligibility:address_form_submit', {
+        trackPostHogEvent('address_test:submitted', {
           address: selectedAddress.properties.label,
+          chauffage_type: userInfo.heatingType,
+          distance_reseau_m: infos.nearestReseauDeChaleur.distance,
           is_eligible: isEligible,
           source: 'comparateur',
         });

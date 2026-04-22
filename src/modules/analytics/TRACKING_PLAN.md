@@ -21,12 +21,12 @@ Le parcours business critique : test d'adresse → résultat → prise de contac
 
 | Événement | Propriétés | Description |
 |---|---|---|
-| `eligibility:address_form_submit` | `address`, `source`, `is_eligible` | Soumission du formulaire de test d'adresse |
-| `eligibility:contact_form_submit` | `address`, `source`, `is_eligible`, `heating_energy`, `heating_type?`, `structure_type`, `company_type?`, `nb_logements?`, `demand_area_m2?` | Soumission du formulaire de contact (conversion principale) |
+| `address_test:submitted` | `address`, `source`, `is_eligible` | Soumission du formulaire de test d'adresse |
+| `address_test:contact_form_submitted` | `address`, `source`, `is_eligible`, `heating_energy`, `heating_type?`, `structure_type`, `company_type?`, `nb_logements?`, `demand_area_m2?` | Soumission du formulaire de contact (conversion principale) |
 
 **Sources** : `carte`, `comparateur`, `fiche-reseau`, `homepage`, `choix-chauffage`
 
-**Funnel PostHog** : `eligibility:address_form_submit` → `eligibility:contact_form_submit` (breakdown par `source` et `is_eligible`)
+**Funnel PostHog** : `address_test:submitted` → `address_test:contact_form_submitted` (breakdown par `source` et `is_eligible`)
 
 ### 2. Potentiel création de réseau
 
@@ -99,8 +99,8 @@ Tracking unifié de la consultation de contenu.
 
 | # | Événement | Catégorie |
 |---|---|---|
-| 1 | `eligibility:address_form_submit` | Conversion |
-| 2 | `eligibility:contact_form_submit` | Conversion |
+| 1 | `address_test:submitted` | Conversion |
+| 2 | `address_test:contact_form_submitted` | Conversion |
 | 3 | `potentiel-creation-reseau:commune_form_submit` | Conversion |
 | 4 | `potentiel-creation-reseau:contact_form_submit` | Conversion |
 | 5 | `map:layer_toggle` | Carte |
@@ -123,8 +123,8 @@ Tracking unifié de la consultation de contenu.
 ### Funnel éligibilité (KPI principal)
 ```
 $pageview (page avec formulaire)
-  → eligibility:address_form_submit
-    → eligibility:contact_form_submit
+  → address_test:submitted
+    → address_test:contact_form_submitted
 ```
 Breakdown par : `source`, `is_eligible`, `structure_type`
 

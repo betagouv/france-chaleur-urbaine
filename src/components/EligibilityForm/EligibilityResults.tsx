@@ -87,8 +87,19 @@ export const getEligibilityResult = (
             variant="secondary"
             className="fr-mt-3v"
             eventKey="Eligibilité|Formulaire de test - Adresse Inéligible - CTA comparateur"
-            postHogEventKey="link:click"
-            postHogEventProps={{ link_name: 'cta_autres_solutions', source: 'eligibility' }}
+            postHogEventKey="address_test:discover_more_clicked"
+            postHogEventProps={{
+              chauffage_type: heatingType,
+              distance_reseau_m: eligibility?.distance ?? undefined,
+              result_type: eligibility?.futurNetwork
+                ? 'en construction'
+                : eligibility?.inPDP
+                  ? 'pdp'
+                  : eligibility?.isEligible
+                    ? 'eligible'
+                    : 'non eligible',
+              source: 'eligibility',
+            }}
           >
             Découvrir les autres solutions
             <span className="fr-icon-arrow-right-line fr-icon--right fr-ml-1v" />
