@@ -11,8 +11,8 @@ const Understanding = ({ cards }: { cards?: Record<string, Document> }) => {
           key={`understanding-${key}`}
           title={cards && understanding.altTitle ? understanding.altTitle : understanding.title}
           desc={understanding.description}
-          posthogEventKey="home:article_clicked"
-          posthogEventPayload={{ element_name: key }}
+          postHogEventKey="home:article_clicked"
+          postHogEventProps={{ element_name: key }}
           linkProps={{
             href: `/ressources/${key}#contenu`,
           }}

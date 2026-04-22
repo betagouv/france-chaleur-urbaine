@@ -9,8 +9,8 @@ const Article = ({ article, isHorizontal, titleAs = 'h3' }: { article: ArticleTy
       linkProps={{
         href: `/actus/${article.slug}`,
       }}
-      posthogEventKey="home:news_clicked"
-      posthogEventPayload={{ element_name: article.slug }}
+      postHogEventKey="home:news_clicked"
+      postHogEventProps={{ element_name: article.slug }}
       imageUrl={article.image}
       imageAlt=""
       enlargeLink

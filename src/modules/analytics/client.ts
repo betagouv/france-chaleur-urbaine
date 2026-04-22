@@ -143,16 +143,17 @@ export const trackEvent = (eventKey: TrackingEvent, ...eventPayload: any[]) => {
  * @param event - Nom de l'événement (format category:object_action)
  * @param properties - Propriétés de l'événement
  */
-export function trackPostHogEvent<E extends PostHogEvent>(
-  event: E,
-  ...args: [PostHogEventMap[E]] extends [never] ? [] : [PostHogEventMap[E]?]
-): void {
-  const properties = args[0] ?? {};
-  if (isDevModeEnabled()) {
-    console.log('[PostHog] track', event, properties);
+export function trackPostHogEvent<Event extends PostHogEvent>(event?: Event, properties?: PostHogEventMap[Event]): void {
+  if (!event) {
+    return;
   }
 
-  posthog.capture(event, properties);
+  const eventProperties = properties ?? {};
+  if (isDevModeEnabled()) {
+    console.log('[PostHog] track', event, eventProperties);
+  }
+
+  posthog.capture(event, eventProperties);
 }
 
 // augment window type with tracking helpers

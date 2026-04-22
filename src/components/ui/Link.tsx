@@ -2,7 +2,7 @@ import NextLink from 'next/link';
 import type { PropsWithChildren } from 'react';
 
 import { type TrackingEvent, trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
-import type { PostHogEvent, PostHogEventMap } from '@/modules/analytics/posthog.config';
+import type { PostHogEvent, PostHogTrackingProps } from '@/modules/analytics/posthog.config';
 
 import { type SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
@@ -15,16 +15,8 @@ const linkVariantToClass = {
   text: '',
 } as const;
 
-type PostHogTrackingProps =
-  | { postHogEventKey?: never; postHogEventProps?: never }
-  | {
-      [Key in PostHogEvent]: [PostHogEventMap[Key]] extends [never]
-        ? { postHogEventKey: Key; postHogEventProps?: never }
-        : { postHogEventKey: Key; postHogEventProps: PostHogEventMap[Key] };
-    }[PostHogEvent];
-
-type LinkProps = SpacingProperties &
-  PostHogTrackingProps & {
+type LinkProps<Event extends PostHogEvent = PostHogEvent> = SpacingProperties &
+  PostHogTrackingProps<Event> & {
     href: string;
     eventKey?: TrackingEvent;
     eventPayload?: string;
@@ -45,7 +37,7 @@ type LinkProps = SpacingProperties &
  * Usage:
  *  <Link href="https://url.com" eventKey="Téléchargement|Tracés|carte">Télécharger un tracé</Link>
  */
-function Link({
+function Link<Event extends PostHogEvent = PostHogEvent>({
   children,
   href,
   eventKey,
@@ -60,7 +52,7 @@ function Link({
   prefetch = false,
   onClick,
   ...props
-}: PropsWithChildren<LinkProps>) {
+}: PropsWithChildren<LinkProps<Event>>) {
   // when the href contains an anchor, use a classic link which works best with scrolling
   const Tag = href.includes('#') ? 'a' : NextLink;
   return (
@@ -77,9 +69,7 @@ function Link({
             eventPayload?.split(',').map((v) => v.trim())
           );
         }
-        if (postHogEventKey) {
-          trackPostHogEvent(postHogEventKey as any, postHogEventProps as any);
-        }
+        trackPostHogEvent(postHogEventKey, postHogEventProps);
         onClick?.(e);
       }}
       className={`${className} ${linkVariantToClass[variant]} ${spacingsToClasses(props)}`}

@@ -109,7 +109,7 @@ const mainTools = [
     href: '/comparateur-couts-performances',
     imageAlt: 'Illustration comparateur de coûts et émissions',
     imageUrl: '/img/illustrations/benefices-comparateur.svg',
-    posthogEventKey: 'home:comparator_tile_clicked',
+    postHogEventKey: 'home:comparator_tile_clicked',
     title: "Comparez les coûts et d'émissions de CO₂",
   },
   {
@@ -118,7 +118,7 @@ const mainTools = [
     href: '/chaleur-renouvelable',
     imageAlt: 'Illustration chauffage écologique',
     imageUrl: '/img/illustrations/benefices-chauffage.svg',
-    posthogEventKey: 'home:fcr_tile_clicked',
+    postHogEventKey: 'home:fcr_tile_clicked',
     title: 'Quel chauffage convient le mieux à votre copropriété ?',
   },
 ] as const;
@@ -167,7 +167,7 @@ function Home() {
             {mainTools.map((mainTool) => (
               <Card
                 eventKey={mainTool.eventKey}
-                posthogEventKey={mainTool.posthogEventKey}
+                postHogEventKey={mainTool.postHogEventKey}
                 size="sm"
                 imageAspect="square"
                 className="flex-1"

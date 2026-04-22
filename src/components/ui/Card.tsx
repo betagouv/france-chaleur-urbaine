@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import type { ReactNode } from 'react';
 
 import { type TrackingEvent, trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
-import type { PostHogEvent, PostHogEventMap } from '@/modules/analytics/posthog.config';
+import type { PostHogEvent, PostHogTrackingProps } from '@/modules/analytics/posthog.config';
 import cx from '@/utils/cx';
 
 const cardVariants = cva('', {
@@ -29,14 +29,13 @@ const cardVariants = cva('', {
   },
 });
 
-export type CardProps = Omit<DSFRCardProps, 'size'> &
-  VariantProps<typeof cardVariants> & {
+export type CardProps<Event extends PostHogEvent = PostHogEvent> = Omit<DSFRCardProps, 'size'> &
+  VariantProps<typeof cardVariants> &
+  PostHogTrackingProps<Event> & {
     description?: string | ReactNode;
     className?: string;
     eventKey?: TrackingEvent;
     eventPayload?: string;
-    posthogEventKey?: PostHogEvent;
-    posthogEventPayload?: PostHogEventMap[PostHogEvent] | undefined;
     onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   };
 
@@ -47,18 +46,18 @@ export type CardProps = Omit<DSFRCardProps, 'size'> &
  * - Support for ReactNode content in title and description
  * - Additional className support for custom styling
  */
-const Card: React.FC<CardProps> = ({
+function Card<Event extends PostHogEvent = PostHogEvent>({
   description,
   variant,
   size,
   className,
   eventKey,
   eventPayload,
-  posthogEventKey,
-  posthogEventPayload,
+  postHogEventKey,
+  postHogEventProps,
   onClick,
   ...props
-}) => {
+}: CardProps<Event>) {
   return (
     <DSFRCard
       size={size === 'sm' ? 'small' : size === 'md' ? 'medium' : 'large'}
@@ -71,14 +70,12 @@ const Card: React.FC<CardProps> = ({
             eventPayload?.split(',').map((v) => v.trim())
           );
         }
-        if (posthogEventKey) {
-          trackPostHogEvent(posthogEventKey, posthogEventPayload);
-        }
+        trackPostHogEvent(postHogEventKey, postHogEventProps);
         onClick?.(e);
       }}
       {...(props as any)}
     />
   );
-};
+}
 
 export default Card;
