@@ -137,12 +137,12 @@ describe('demandsRouter', () => {
 
   describe('demands.gestionnaire', () => {
     describe('list', () => {
-      // Permissions: ['gestionnaire'] - admin n'a pas accès
+      // demandAccessRoute : admin + rôles avec permissions territoriales
       const permissionTests: PermissionTestCase[] = [
         { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
         { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
         { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
-        { allowed: false, label: 'refuse admin', user: testUsers.admin },
+        { allowed: true, label: 'autorise admin', user: testUsers.admin },
         { allowed: true, label: 'autorise gestionnaire', user: testUsers.gestionnaire },
       ];
 
@@ -150,7 +150,7 @@ describe('demandsRouter', () => {
         const callRoute = () => createTestCaller(user).demands.gestionnaire.list();
 
         if (allowed) {
-          await expect(callRoute()).resolves.toStrictEqual([]);
+          await expect(callRoute()).resolves.toBeInstanceOf(Array);
         } else {
           await expect(callRoute).rejects.toMatchObject(forbiddenError);
         }

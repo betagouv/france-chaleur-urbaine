@@ -3,9 +3,8 @@ import { render } from '@react-email/components';
 import AuthActivationEmail from './react-email/templates/auth/activation';
 import AuthInscriptionEmail from './react-email/templates/auth/inscription';
 import AuthResetPasswordEmail from './react-email/templates/auth/reset-password';
-import DemandAdminAssignmentChangeEmail from './react-email/templates/demands/admin-assignment-change';
+import DemandAdminAssignmentChangeRequestEmail from './react-email/templates/demands/admin-assignment-change-request';
 import DemandAdminGestionnaireContactEmail from './react-email/templates/demands/admin-gestionnaire-contact';
-import DemandAdminNetworkChangeRequestEmail from './react-email/templates/demands/admin-network-change-request';
 import DemandAdminNewEmail from './react-email/templates/demands/admin-new';
 import DemandsCustomEmail from './react-email/templates/demands/custom-email';
 import DemandsGestionnaireNewEmail from './react-email/templates/demands/gestionnaire-new';
@@ -29,20 +28,15 @@ export const emails = {
     preview: 'Sécurisez votre compte en réinitialisant votre mot de passe',
     subject: '[France Chaleur Urbaine] Réinitialisation de votre mot de passe',
   },
-  'demands.admin-assignment-change': {
-    Component: DemandAdminAssignmentChangeEmail,
-    preview: 'Une demande a été réaffectée',
-    subject: "[France Chaleur Urbaine] Changement d'affectation",
+  'demands.admin-assignment-change-request': {
+    Component: DemandAdminAssignmentChangeRequestEmail,
+    preview: 'Demande de réaffectation',
+    subject: '[France Chaleur Urbaine] Demande de réaffectation',
   },
   'demands.admin-gestionnaire-contact': {
     Component: DemandAdminGestionnaireContactEmail,
     preview: 'Nouveau message HP à traiter',
     subject: '[France Chaleur Urbaine] Nouveau message HP à traiter',
-  },
-  'demands.admin-network-change-request': {
-    Component: DemandAdminNetworkChangeRequestEmail,
-    preview: 'Demande de changement de réseau par une collectivité',
-    subject: '[France Chaleur Urbaine] Demande de changement de réseau',
   },
   'demands.admin-new': {
     Component: DemandAdminNewEmail,

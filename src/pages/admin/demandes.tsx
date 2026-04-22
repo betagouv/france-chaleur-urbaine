@@ -1,4 +1,3 @@
-import DSFRBadge from '@codegouvfr/react-dsfr/Badge';
 import DSFRTag from '@codegouvfr/react-dsfr/Tag';
 import { usePrevious } from '@react-hookz/web';
 import type { ColumnFiltersState } from '@tanstack/react-table';
@@ -16,8 +15,6 @@ import DemandEmailForm from '@/components/Manager/DemandEmailForm';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
-import { reseauDeChaleurNonClasseColor } from '@/components/Map/layers/reseauxDeChaleur';
-import { reseauxEnConstructionColor } from '@/components/Map/layers/reseauxEnConstruction';
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
@@ -27,11 +24,11 @@ import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/Hamburger
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
+import AffectedNetworkCell from '@/modules/demands/client/AffectedNetworkCell';
 import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
 import Contacted from '@/modules/demands/client/Contacted';
@@ -120,6 +117,19 @@ const quickFilterPresets = {
     ),
   },
 
+  reaffectationsEnAttente: {
+    filters: [{ id: 'pending_assignment_change_present' as any, value: { Non: false, Oui: true } }],
+    getStat: (demands) => demands.filter((demand) => demand.pending_assignment_change !== null).length,
+    label: (
+      <>
+        réaffectations&nbsp;
+        <br />
+        en attente&nbsp;
+        <Tooltip title="Demandes de réaffectation formulées par une collectivité/ALEC/gestionnaire et non encore traitées." />
+      </>
+    ),
+    valueSuffix: <Icon name="fr-icon-arrow-left-right-line" size="sm" color="var(--text-default-warning)" />,
+  },
   all: {
     filters: [],
     getStat: (demands) => demands.length,
@@ -246,34 +256,15 @@ function DemandesAdmin(): React.ReactElement {
   );
 
   const { mutateAsync: validateDemandMutation } = trpc.demands.admin.validate.useMutation();
-  const { mutateAsync: unvalidateDemandMutation } = trpc.demands.admin.unvalidate.useMutation();
-  const { mutateAsync: changeNetworkMutation } = trpc.demands.admin.changeNetwork.useMutation();
+  const { mutateAsync: changeAssignmentMutation } = trpc.demands.admin.changeAssignment.useMutation();
 
   const changeNetwork = useCallback(
-    toastErrors(async (demandId: string, networkIdFcu: number | null, networkType: NetworkType | null, networkName: string | null) => {
+    toastErrors(async (demandId: string, networkIdFcu: number | null, networkType: NetworkType | null) => {
       isUpdatingDemandField = true;
-      const result = await changeNetworkMutation({ demandId, networkIdFcu, networkType });
-      utils.demands.admin.list.setData(undefined, (demandsData) => {
-        if (!demandsData) return demandsData;
-        return {
-          count: demandsData.count,
-          items: demandsData.items.map((demand) => {
-            if (demand.id === demandId) {
-              return {
-                ...demand,
-                'Distance au réseau': result.distance,
-                network_id: networkIdFcu,
-                network_name: networkName,
-                network_type: networkType,
-                validated: false,
-              };
-            }
-            return demand;
-          }),
-        };
-      });
+      await changeAssignmentMutation({ demandId, networkIdFcu, networkType });
+      await utils.demands.admin.list.invalidate();
     }),
-    [utils, changeNetworkMutation]
+    [utils, changeAssignmentMutation]
   );
 
   const validateDemand = useCallback(
@@ -294,26 +285,6 @@ function DemandesAdmin(): React.ReactElement {
       await validateDemandMutation({ demandId });
     }),
     [utils, validateDemandMutation]
-  );
-
-  const unvalidateDemand = useCallback(
-    toastErrors(async (demandId: string) => {
-      isUpdatingDemandField = true;
-      utils.demands.admin.list.setData(undefined, (demandsData) => {
-        if (!demandsData) return demandsData;
-        return {
-          count: demandsData.count,
-          items: demandsData.items.map((demand) => {
-            if (demand.id === demandId) {
-              return { ...demand, validated: false };
-            }
-            return demand;
-          }),
-        };
-      });
-      await unvalidateDemandMutation({ demandId });
-    }),
-    [utils, unvalidateDemandMutation]
   );
 
   const tableColumns: ColumnDef<DemandsListAdminItem>[] = useMemo(
@@ -428,14 +399,11 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorFn: (row) => row.network_name ?? '',
-        cell: ({ row }) => {
-          const demand = row.original;
-          return (
-            <div className="flex flex-col gap-1 w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-              <NetworkDisplay demand={demand} onNetworkChange={changeNetwork} onValidate={validateDemand} onUnvalidate={unvalidateDemand} />
-            </div>
-          );
-        },
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-1 w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
+            <AffectedNetworkCell demand={row.original} isAdmin onChangeNetwork={changeNetwork} />
+          </div>
+        ),
         enableSorting: false,
         filterType: 'Facets',
         header: 'Réseau affecté',
@@ -444,9 +412,15 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorKey: 'validated',
+        align: 'center',
+        cell: ({ row }) => (
+          <div onClick={stopPropagation} onDoubleClick={stopPropagation}>
+            <ValidateDemandButton demandId={row.original.id} validated={row.original.validated} onValidate={validateDemand} />
+          </div>
+        ),
         filterType: 'Facets',
-        header: 'Validé',
-        visible: false,
+        header: 'Validée',
+        width: '110px',
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
@@ -567,6 +541,13 @@ function DemandesAdmin(): React.ReactElement {
         visible: false,
       },
       {
+        accessorFn: (row) => (row.pending_assignment_change ? 'Oui' : 'Non'),
+        filterType: 'Facets',
+        header: 'Réaffectation en attente',
+        id: 'pending_assignment_change_present',
+        visible: false,
+      },
+      {
         align: 'right' as const,
         cell: ({ row }) => <DemandActions demand={row.original} onDelete={deleteDemand} />,
         enableSorting: false,
@@ -575,7 +556,7 @@ function DemandesAdmin(): React.ReactElement {
         width: '50px',
       },
     ],
-    [updateDemand, changeNetwork, validateDemand, unvalidateDemand, deleteDemand]
+    [updateDemand, changeNetwork, validateDemand, deleteDemand]
   );
 
   const onFeatureClick = useCallback(
@@ -728,54 +709,50 @@ function DemandesAdmin(): React.ReactElement {
 
 export default DemandesAdmin;
 
-type NetworkChangeHandler = (
-  demandId: string,
-  networkIdFcu: number | null,
-  networkType: NetworkType | null,
-  networkName: string | null
-) => void;
-
 /**
- * Full network display cell matching ReseauxStatsPage presentation:
- * badges, network name dropdown, distance, tags, validate button, and change action in menu.
+ * Bouton de validation d'une demande.
+ * Valider rend la demande visible aux gestionnaires, collectivités et ALEC.
  */
-function NetworkDisplay({
-  demand,
-  onNetworkChange,
+function ValidateDemandButton({
+  demandId,
+  validated,
   onValidate,
-  onUnvalidate,
 }: {
-  demand: DemandsListAdminItem;
-  onNetworkChange: NetworkChangeHandler;
+  demandId: string;
+  validated: boolean;
   onValidate: (demandId: string) => Promise<void>;
-  onUnvalidate: (demandId: string) => Promise<void>;
 }) {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-  if (!demand.network_name) {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="text-gray-400 italic text-sm whitespace-nowrap">Non affecté</span>
-        <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              priority="tertiary no outline"
-              size="small"
-              iconId="fr-icon-arrow-go-back-line"
-              title="Affecter un réseau"
-              className="shrink-0"
-            />
-          </PopoverTrigger>
-          <NetworkSearchPopoverContent demand={demand} onNetworkChange={onNetworkChange} setIsOpen={setIsSearchOpen} />
-        </Popover>
-      </div>
-    );
+  if (validated) {
+    return null;
   }
+  return (
+    <AsyncButton
+      priority="primary"
+      size="small"
+      iconId="fr-icon-check-line"
+      title="Valider la demande"
+      onClick={() => onValidate(demandId)}
+    >
+      Valider
+    </AsyncButton>
+  );
+}
 
-  const isExistant = demand.network_type === 'existant';
-  const distance = demand['Distance au réseau'] ?? null;
+function DemandActions({ demand, onDelete }: { demand: DemandsListAdminItem; onDelete: (demandId: string) => Promise<void> }) {
+  const utils = trpc.useUtils();
+  const { mutateAsync: recalculateEligibility } = trpc.demands.admin.recalculateEligibility.useMutation();
+  const [pendingItemId, setPendingItemId] = useState<string | null>(null);
 
-  const networkMenuItems: HamburgerMenuItem[] = [
+  const runAction = async (itemId: string, fn: () => Promise<void>) => {
+    setPendingItemId(itemId);
+    try {
+      await fn();
+    } finally {
+      setPendingItemId(null);
+    }
+  };
+
+  const menuItems: HamburgerMenuItem[] = [
     ...(demand.network_sncu_id
       ? [
           {
@@ -783,244 +760,21 @@ function NetworkDisplay({
             icon: 'fr-icon-road-map-line' as const,
             id: 'fiche-reseau',
             label: 'Fiche réseau',
-            target: '_blank',
+            target: '_blank' as const,
           },
         ]
       : []),
-    {
-      href: `/admin/reseaux/stats?reseaux_filters=${encodeURIComponent(JSON.stringify([{ id: 'reseau', value: demand.network_name }]))}`,
-      icon: 'fr-icon-bar-chart-box-line' as const,
-      id: 'stats-reseau',
-      label: 'Statistiques du réseau',
-      target: '_blank' as const,
-    },
-    {
-      icon: 'fr-icon-arrow-go-back-line' as const,
-      id: 'change-network',
-      label: "Changer l'affectation",
-      onClick: () => setIsSearchOpen(true),
-      variant: 'warning' as const,
-    },
-  ];
-
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-1">
-        <Tooltip title={isExistant ? 'Réseau de chaleur existant' : 'Réseau de chaleur en construction'}>
-          <DSFRBadge
-            small
-            className="text-white! cursor-help shrink-0"
-            style={{ backgroundColor: isExistant ? reseauDeChaleurNonClasseColor : reseauxEnConstructionColor }}
-          >
-            {isExistant ? 'Existant' : 'En construction'}
-          </DSFRBadge>
-        </Tooltip>
-        {demand.network_sncu_id && (
-          <Tooltip title="Identifiant SNCU du réseau">
-            <DSFRBadge small className="cursor-help shrink-0">
-              {demand.network_sncu_id}
-            </DSFRBadge>
-          </Tooltip>
-        )}
-      </div>
-
-      <div className="flex items-center gap-1">
-        <HamburgerMenu
-          items={networkMenuItems}
-          trigger={
-            <button type="button" className="text-sm font-semibold leading-snug text-left hover:underline cursor-pointer">
-              {demand.network_name}
-            </button>
-          }
-        />
-        {demand.validated ? (
-          <AsyncButton
-            priority="tertiary no outline"
-            size="small"
-            iconId="fr-icon-success-line"
-            className=""
-            title="Affectation validée — cliquer pour dévalider"
-            onClick={() => onUnvalidate(demand.id)}
-          />
-        ) : (
-          <AsyncButton
-            priority="tertiary no outline"
-            size="small"
-            iconId="fr-icon-checkbox-circle-line"
-            className=""
-            title="Valider l'affectation"
-            onClick={() => onValidate(demand.id)}
-          />
-        )}
-      </div>
-
-      {distance === 0 ? (
-        <span className="text-xs text-gray-500">Dans la zone</span>
-      ) : (
-        distance != null && distance > 0 && <span className="text-xs text-gray-500">Distance au réseau : {distance} m</span>
-      )}
-      <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-        <PopoverTrigger asChild>
-          <span className="sr-only" />
-        </PopoverTrigger>
-        <NetworkSearchPopoverContent demand={demand} onNetworkChange={onNetworkChange} setIsOpen={setIsSearchOpen} />
-      </Popover>
-    </div>
-  );
-}
-
-/**
- * Inner content of the network search popover — reused with different triggers.
- */
-type SelectedNetwork = {
-  id_fcu: number;
-  network_type: NetworkType;
-  nom_reseau: string | null;
-};
-
-function NetworkSearchPopoverContent({
-  demand,
-  onNetworkChange,
-  setIsOpen,
-}: {
-  demand: DemandsListAdminItem;
-  onNetworkChange: NetworkChangeHandler;
-  setIsOpen: (open: boolean) => void;
-}) {
-  const [searchInput, setSearchInput] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [selected, setSelected] = useState<SelectedNetwork | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => setDebouncedSearch(searchInput), 300);
-    return () => clearTimeout(timeout);
-  }, [searchInput]);
-
-  useEffect(() => {
-    if (!selected && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 0);
-    }
-  }, [selected]);
-
-  const { data: searchResults, isFetching } = trpc.reseaux.searchNetworks.useQuery(
-    { search: debouncedSearch },
-    { enabled: debouncedSearch.length >= 2 }
-  );
-
-  const { data: distance, isFetching: isFetchingDistance } = trpc.demands.admin.computeNetworkDistance.useQuery(
-    selected ? { demandId: demand.id, networkIdFcu: selected.id_fcu, networkType: selected.network_type } : (undefined as any),
-    { enabled: selected !== null }
-  );
-
-  const handleConfirm = () => {
-    if (!selected) return;
-    onNetworkChange(demand.id, selected.id_fcu, selected.network_type, selected.nom_reseau);
-    setSelected(null);
-    setIsOpen(false);
-  };
-
-  const handleUnassign = () => {
-    onNetworkChange(demand.id, null, null, null);
-    setIsOpen(false);
-  };
-
-  if (selected) {
-    const isExistant = selected.network_type === 'existant';
-    return (
-      <PopoverContent className="w-80 p-0" align="start">
-        <div className="p-3 border-b">
-          <div className="text-sm font-medium">{selected.nom_reseau || 'Sans nom'}</div>
-          <div className="mt-1">
-            <DSFRBadge
-              small
-              className="text-white! shrink-0"
-              style={{ backgroundColor: isExistant ? reseauDeChaleurNonClasseColor : reseauxEnConstructionColor }}
-            >
-              {isExistant ? 'Existant' : 'En construction'}
-            </DSFRBadge>
-          </div>
-        </div>
-        <div className="p-3 text-sm">
-          {isFetchingDistance ? (
-            <span className="text-gray-500">Calcul de la distance...</span>
-          ) : distance === null ? (
-            <span className="text-gray-600">La distance est inconnue car le tracé du réseau n'est pas connu.</span>
-          ) : distance === 0 ? (
-            <strong>Dans la zone</strong>
-          ) : (
-            <span>
-              Distance au réseau : <strong>{distance} m</strong>
-            </span>
-          )}
-        </div>
-        <div className="flex items-center justify-between gap-2 border-t p-2">
-          <Button priority="tertiary" size="small" onClick={() => setSelected(null)}>
-            Retour
-          </Button>
-          <Button priority="primary" size="small" onClick={handleConfirm} disabled={isFetchingDistance}>
-            Confirmer
-          </Button>
-        </div>
-      </PopoverContent>
-    );
-  }
-
-  return (
-    <PopoverContent className="w-80 p-0" align="start">
-      <div className="p-2 border-b">
-        <input
-          ref={inputRef}
-          type="text"
-          className="w-full px-2 py-1 text-sm border rounded"
-          placeholder="Rechercher un réseau..."
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-        />
-      </div>
-      <div className="max-h-60 overflow-y-auto">
-        {isFetching && <div className="p-3 text-center text-sm text-gray-500">Recherche...</div>}
-        {!isFetching && debouncedSearch.length >= 2 && searchResults?.length === 0 && (
-          <div className="p-3 text-center text-sm text-gray-500">Aucun réseau trouvé</div>
-        )}
-        {!isFetching && debouncedSearch.length < 2 && debouncedSearch.length > 0 && (
-          <div className="p-3 text-center text-sm text-gray-500">Tapez au moins 2 caractères</div>
-        )}
-        {searchResults?.map((result) => (
-          <button
-            key={`${result.network_type}:${result.id_fcu}`}
-            type="button"
-            className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 cursor-pointer border-b last:border-b-0"
-            onClick={() => setSelected({ id_fcu: result.id_fcu, network_type: result.network_type, nom_reseau: result.nom_reseau })}
-          >
-            <div className="font-medium">{result.nom_reseau || 'Sans nom'}</div>
-            <div className="text-xs text-gray-500">
-              {result.identifiant_reseau && <span>{result.identifiant_reseau} · </span>}
-              {result.network_type === 'en_construction' ? 'En construction' : 'Existant'}
-            </div>
-          </button>
-        ))}
-      </div>
-      {demand.network_id && (
-        <div className="border-t p-2">
-          <button
-            type="button"
-            className="w-full text-left px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded cursor-pointer"
-            onClick={handleUnassign}
-          >
-            Retirer l'affectation
-          </button>
-        </div>
-      )}
-    </PopoverContent>
-  );
-}
-
-function DemandActions({ demand, onDelete }: { demand: DemandsListAdminItem; onDelete: (demandId: string) => Promise<void> }) {
-  const utils = trpc.useUtils();
-  const { mutateAsync: recalculateEligibility } = trpc.demands.admin.recalculateEligibility.useMutation();
-
-  const menuItems: HamburgerMenuItem[] = [
+    ...(demand.network_name
+      ? [
+          {
+            href: `/admin/reseaux/stats?reseaux_filters=${encodeURIComponent(JSON.stringify([{ id: 'reseau', value: demand.network_name }]))}`,
+            icon: 'fr-icon-bar-chart-box-line' as const,
+            id: 'stats-reseau',
+            label: 'Statistiques du réseau',
+            target: '_blank' as const,
+          },
+        ]
+      : []),
     {
       href: `/admin/events?contextType=demand&contextId=${demand.id}`,
       icon: 'fr-icon-time-line',
@@ -1032,22 +786,28 @@ function DemandActions({ demand, onDelete }: { demand: DemandsListAdminItem; onD
       icon: 'fr-icon-refresh-line',
       id: 'recalculate-eligibility',
       label: "Recalculer l'éligibilité",
-      onClick: toastErrors(async () => {
-        const result = await recalculateEligibility({ demandId: demand.id });
-        await utils.demands.admin.list.invalidate();
+      loading: pendingItemId === 'recalculate-eligibility',
+      onClick: () =>
+        void runAction(
+          'recalculate-eligibility',
+          toastErrors(async () => {
+            const result = await recalculateEligibility({ demandId: demand.id });
+            await utils.demands.admin.list.invalidate();
 
-        notify('success', `${result.banAddress} — ${result.type}`);
-      }),
+            notify('success', `${result.banAddress} — ${result.type}`);
+          })
+        ),
     },
     {
       icon: 'fr-icon-delete-line',
       id: 'delete-demand',
       label: 'Supprimer la demande',
-      onClick: async () => {
+      loading: pendingItemId === 'delete-demand',
+      onClick: () => {
         if (!confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) {
           return;
         }
-        await onDelete(demand.id);
+        void runAction('delete-demand', () => onDelete(demand.id));
       },
       variant: 'destructive',
     },

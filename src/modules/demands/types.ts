@@ -1,6 +1,21 @@
+import type { NetworkType } from '@/modules/reseaux/constants';
 import type { Demand as LegacyDemand } from '@/types/Summary/Demand';
 
 import type { DemandStatus } from './constants';
+
+/**
+ * Snapshot d'une demande de réaffectation en attente de traitement admin.
+ * Stockée dans la colonne `demands.pending_assignment_change` (JSONB nullable).
+ * `network_type`/`network_id` à `null` = demande de désaffectation.
+ */
+export type PendingAssignmentChange = {
+  network_type: NetworkType | null;
+  network_id: number | null;
+  comment: string | null;
+  author_id: string;
+  requested_at: string;
+  distance: number | null;
+};
 // Ce type permet de corriger le type Legacy existant avec ce que nous récupérons véritablement de Airtable
 export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status'>> & {
   'ID BNB'?: string;

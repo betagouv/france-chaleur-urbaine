@@ -14,12 +14,12 @@ import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
+import AffectedNetwork from '@/modules/demands/client/AffectedNetwork';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import Gestionnaire from '@/modules/demands/client/Gestionnaire';
 import Status from '@/modules/demands/client/Status';
@@ -57,7 +57,7 @@ const quickFilterPresets = {
 
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
-function DemandesNew(): React.ReactElement {
+function MesDemandesPage(): React.ReactElement {
   const router = useRouter();
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const tableRowSelection = useMemo(() => {
@@ -242,36 +242,20 @@ function DemandesNew(): React.ReactElement {
         width: '100px',
       },
       {
-        accessorKey: 'testAddress.eligibility.id_sncu',
-        cell: (info) => {
-          const demand = info.row.original;
-          const testAddress = demand.testAddress;
-          return (
-            <div className="flex items-start gap-2 flex-col justify-start">
-              <div className="font-bold">{testAddress.eligibility?.id_sncu || ''}</div>
-              {testAddress.eligibility?.nom || (testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0) ? (
-                <div className="text-xs text-gray-500">
-                  {testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0 && (
-                    <>
-                      <strong>{testAddress.eligibility?.distance}m</strong> de{' '}
-                    </>
-                  )}
-                  {testAddress.eligibility?.id_sncu ? (
-                    <Link stopPropagation href={`/reseaux/${testAddress.eligibility?.id_sncu}`}>
-                      {testAddress.eligibility?.nom || 'Réseau sans nom'}
-                    </Link>
-                  ) : (
-                    testAddress.eligibility?.nom || 'Réseau sans nom'
-                  )}
-                </div>
-              ) : null}
-            </div>
-          );
-        },
+        accessorFn: (row) => row.network_name ?? '',
+        cell: ({ row }) => (
+          <AffectedNetwork
+            networkName={row.original.network_name}
+            networkType={row.original.network_type}
+            networkSncuId={row.original.network_sncu_id}
+            distance={row.original['Distance au réseau']}
+          />
+        ),
         enableSorting: false,
         filterType: 'Facets',
-        header: 'Réseau le plus proche',
-        width: '200px',
+        header: 'Réseau affecté',
+        id: 'network_name',
+        width: '220px',
       },
       {
         accessorKey: 'Date de la demande',
@@ -415,6 +399,6 @@ function DemandesNew(): React.ReactElement {
   );
 }
 
-export default DemandesNew;
+export default MesDemandesPage;
 
 export const getServerSideProps = withAuthentication(['particulier', 'professionnel', 'gestionnaire', 'collectivite', 'alec', 'admin']);

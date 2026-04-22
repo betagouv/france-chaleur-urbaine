@@ -15,41 +15,57 @@ import {
   zSendEmailInput,
   zUserUpdateDemandInput,
 } from '../constants';
-import { changeDemandNetwork, listAdmin, removeDemand, unvalidateDemand, updateDemandByAdmin, validateDemand } from './admin-operations';
+import {
+  changeDemandAssignment,
+  listAdmin,
+  rejectDemandAssignmentChangeRequest,
+  removeDemand,
+  updateDemandByAdmin,
+  validateDemand,
+} from './admin-operations';
 import { createBatchDemands } from './creation-batch';
 import { createDemand } from './creation-user';
 import { computeNetworkDistance, createFCUTeamContact, recalculateEligibility } from './eligibility';
 import { listDemandEmails, sendDemandEmail } from './email-communication';
-import { listDemands, requestDemandNetworkChange, updateDemandByGestionnaire } from './gestionnaire-operations';
+import {
+  cancelDemandAssignmentChangeRequest,
+  listDemands,
+  requestDemandAssignmentChange,
+  updateDemandByGestionnaire,
+} from './gestionnaire-operations';
 import { updateCommentFromRelanceId, updateDemandByUser } from './relances';
 import { getReseauxStats, getTagsStats } from './stats';
 import { listByUser } from './user-tracking';
 
-const zRequestNetworkChangeInput = z.object({ demandId: z.string(), reason: z.string().min(1), requestedSncuId: z.string().min(1) });
+const zRequestAssignmentChangeInput = z
+  .object({
+    comment: z.string().trim().min(1).nullable(),
+    demandId: z.uuidv4(),
+    networkIdFcu: z.number().int().nullable(),
+    networkType: z.enum(networkTypes).nullable(),
+  })
+  .refine((v) => (v.networkIdFcu === null) === (v.networkType === null), {
+    message: 'networkIdFcu et networkType doivent être tous les deux renseignés ou tous les deux null (désaffectation)',
+    path: ['networkIdFcu'],
+  });
 
 export const demandsRouter = router({
   admin: {
-    changeNetwork: adminRoute
+    changeAssignment: adminRoute
       .input(
-        z.object({
-          demandId: z.string(),
-          networkIdFcu: z.number().nullable(),
-          networkType: z.enum(networkTypes).nullable(),
-        })
+        z
+          .object({
+            demandId: z.string(),
+            networkIdFcu: z.number().nullable(),
+            networkType: z.enum(networkTypes).nullable(),
+          })
+          .refine((v) => (v.networkIdFcu === null) === (v.networkType === null), {
+            message: 'networkIdFcu et networkType doivent être tous les deux renseignés ou tous les deux null (désaffectation)',
+            path: ['networkIdFcu'],
+          })
       )
       .mutation(async ({ input, ctx }) => {
-        return await changeDemandNetwork(input.demandId, input.networkIdFcu, input.networkType, ctx.user.id);
-      }),
-    computeNetworkDistance: adminRoute
-      .input(
-        z.object({
-          demandId: z.uuidv4(),
-          networkIdFcu: z.number().int(),
-          networkType: z.enum(networkTypes),
-        })
-      )
-      .query(async ({ input }) => {
-        return await computeNetworkDistance(input.demandId, input.networkIdFcu, input.networkType);
+        return await changeDemandAssignment(input.demandId, input.networkIdFcu, input.networkType, ctx.user.id);
       }),
     delete: adminRoute.input(zDeleteDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId } = input;
@@ -64,8 +80,8 @@ export const demandsRouter = router({
     recalculateEligibility: adminRoute.input(z.object({ demandId: z.string() })).mutation(async ({ input }) => {
       return await recalculateEligibility(input.demandId);
     }),
-    unvalidate: adminRoute.input(z.object({ demandId: z.string() })).mutation(async ({ input, ctx }) => {
-      await unvalidateDemand(input.demandId, ctx.user.id);
+    rejectAssignmentChangeRequest: adminRoute.input(z.object({ demandId: z.uuidv4() })).mutation(async ({ input, ctx }) => {
+      await rejectDemandAssignmentChangeRequest(input.demandId, ctx.user.id);
     }),
     update: adminRoute.input(zAdminUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;
@@ -76,12 +92,26 @@ export const demandsRouter = router({
     }),
   },
   gestionnaire: {
+    cancelAssignmentChangeRequest: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).mutation(async ({ input, ctx }) => {
+      await cancelDemandAssignmentChangeRequest(input.demandId, ctx.user.id);
+    }),
+    computeNetworkDistance: demandAccessRoute
+      .input(
+        z.object({
+          demandId: z.uuidv4(),
+          networkIdFcu: z.number().int(),
+          networkType: z.enum(networkTypes),
+        })
+      )
+      .query(async ({ input }) => {
+        return await computeNetworkDistance(input.demandId, input.networkIdFcu, input.networkType);
+      }),
     list: demandAccessRoute.query(async ({ ctx }) => listDemands(ctx)),
     listEmails: demandAccessRoute.input(zListEmailsInput).query(async ({ input, ctx }) => {
       return await listDemandEmails(ctx, { demandId: input.demand_id });
     }),
-    requestNetworkChange: demandAccessRoute.input(zRequestNetworkChangeInput).mutation(async ({ input, ctx }) => {
-      await requestDemandNetworkChange(input.demandId, input.requestedSncuId, input.reason, ctx.user.id);
+    requestAssignmentChange: demandAccessRoute.input(zRequestAssignmentChangeInput).mutation(async ({ input, ctx }) => {
+      await requestDemandAssignmentChange(input.demandId, input.networkIdFcu, input.networkType, input.comment, ctx.user.id);
     }),
     sendEmail: demandAccessRoute.input(zSendEmailInput).mutation(async ({ input, ctx }) => {
       await sendDemandEmail(ctx, {

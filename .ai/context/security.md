@@ -23,8 +23,10 @@ enum USER_ROLE {
   ALEC = 'alec',                 // Local energy agency (manages demands for their territory)
   PROFESSIONNEL = 'professionnel', // Professional (bulk testing, demand submission)
   PARTICULIER = 'particulier',    // Individual citizen
-  DEMO = 'demo',                 // Pseudo-anonymized UI view (used by admin to preview as anonymous user)
 }
+
+// Admin can impersonate any role and toggle PII anonymization via the `fcu-anonymize` cookie
+// (set from /admin/impostures). See `src/modules/config/server/context-builder.ts`.
 ```
 
 ### Permissions system

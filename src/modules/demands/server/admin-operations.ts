@@ -7,7 +7,7 @@ import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
 import { computeNetworkDistance } from './eligibility';
-import { buildDemandQuery, enrichDemandForAdmin, getDemandById } from './helpers';
+import { buildDemandQuery, enrichDemandForAdmin, getDemandById, resolveNetworkInfo } from './helpers';
 
 const logger = parentLogger.child({ module: 'demands/admin-operations' });
 
@@ -44,31 +44,7 @@ export const removeDemand = async (demandId: string, userId?: string) => {
 export const listAdmin = async () => {
   const startTime = Date.now();
 
-  const records = await buildDemandQuery()
-    .select([
-      sql<string | null>`
-        CASE
-          WHEN demands.network_type = 'existant' THEN (SELECT nom_reseau FROM reseaux_de_chaleur WHERE id_fcu = demands.network_id)
-          WHEN demands.network_type = 'en_construction' THEN (SELECT nom_reseau FROM zones_et_reseaux_en_construction WHERE id_fcu = demands.network_id)
-          ELSE NULL
-        END
-      `.as('network_name'),
-      sql<string | null>`
-        CASE WHEN demands.network_type = 'existant'
-          THEN (SELECT "Identifiant reseau" FROM reseaux_de_chaleur WHERE id_fcu = demands.network_id)
-          ELSE NULL
-        END
-      `.as('network_sncu_id'),
-      sql<string[]>`
-        CASE
-          WHEN demands.network_type = 'existant' THEN (SELECT tags FROM reseaux_de_chaleur WHERE id_fcu = demands.network_id)
-          WHEN demands.network_type = 'en_construction' THEN (SELECT tags FROM zones_et_reseaux_en_construction WHERE id_fcu = demands.network_id)
-          ELSE NULL
-        END
-      `.as('network_tags'),
-    ])
-    .orderBy(sql`legacy_values->>'Date de la demande'`, 'desc')
-    .execute();
+  const records = await buildDemandQuery().execute();
 
   const { count } = await kdb.selectFrom('demands').select(kdb.fn.count<number>('id').as('count')).executeTakeFirstOrThrow();
 
@@ -131,82 +107,61 @@ export const validateDemand = async (demandId: string, adminUserId: string) => {
     author_id: adminUserId,
     context_id: demandId,
     context_type: 'demand',
-    data: { relance_a_activer: relanceAActiver, validated: true },
+    data: { relance_a_activer: relanceAActiver },
     type: 'demand_validated',
   });
 };
 
 /**
- * Admin: unvalidates a demand (sets validated = false, syncs to legacy_values).
- */
-export const unvalidateDemand = async (demandId: string, adminUserId: string) => {
-  await kdb
-    .updateTable('demands')
-    .set({
-      legacy_values: sql`legacy_values || '{"Gestionnaires validés": false}'::jsonb`,
-      updated_at: new Date(),
-      validated: false,
-    })
-    .where('id', '=', demandId)
-    .where('deleted_at', 'is', null)
-    .execute();
-
-  await createUserEvent({
-    author_id: adminUserId,
-    context_id: demandId,
-    context_type: 'demand',
-    data: { validated: false },
-    type: 'demand_unvalidated',
-  });
-};
-
-/**
  * Admin: changes the network assigned to a demand.
- * Pass null for both to unassign the network.
- * Resets validated to false (admin must re-validate after network change).
+ * Pass null for both to unassign the network (désaffectation).
+ * Clears any pending assignment change request on success.
  */
-export const changeDemandNetwork = async (
+export const changeDemandAssignment = async (
   demandId: string,
   networkIdFcu: number | null,
   networkType: NetworkType | null,
   adminUserId: string
 ): Promise<{ distance: number | null }> => {
-  let sncuId: string | null = null;
-  let networkName: string | null = null;
-  let distance: number | null = null;
+  const currentDemand = await kdb
+    .selectFrom('demands')
+    .select(['network_id', 'network_type'])
+    .where('id', '=', demandId)
+    .where('deleted_at', 'is', null)
+    .executeTakeFirstOrThrow();
 
-  if (networkIdFcu && networkType === 'existant') {
-    const network = await kdb
-      .selectFrom('reseaux_de_chaleur')
-      .select([sql<string>`"Identifiant reseau"`.as('sncu_id'), 'nom_reseau'])
-      .where('id_fcu', '=', networkIdFcu)
-      .executeTakeFirst();
-    sncuId = network?.sncu_id ?? null;
-    networkName = network?.nom_reseau ?? null;
-    distance = await computeNetworkDistance(demandId, networkIdFcu, networkType);
-  } else if (networkIdFcu && networkType === 'en_construction') {
-    const network = await kdb
-      .selectFrom('zones_et_reseaux_en_construction')
-      .select('nom_reseau')
-      .where('id_fcu', '=', networkIdFcu)
-      .executeTakeFirst();
-    networkName = network?.nom_reseau ?? null;
-    distance = await computeNetworkDistance(demandId, networkIdFcu, networkType);
+  const newInfo =
+    networkIdFcu !== null && networkType !== null
+      ? await resolveNetworkInfo(networkType, networkIdFcu)
+      : { network_name: null, network_sncu_id: null };
+  const newDistance =
+    networkIdFcu !== null && networkType !== null ? await computeNetworkDistance(demandId, networkIdFcu, networkType) : null;
+
+  const oldInfo =
+    currentDemand.network_id !== null && currentDemand.network_type !== null
+      ? await resolveNetworkInfo(currentDemand.network_type, currentDemand.network_id)
+      : { network_name: null, network_sncu_id: null };
+  let oldDistance: number | null = null;
+  if (currentDemand.network_id !== null && currentDemand.network_type !== null) {
+    try {
+      oldDistance = await computeNetworkDistance(demandId, currentDemand.network_id, currentDemand.network_type);
+    } catch {
+      oldDistance = null;
+    }
   }
 
   await kdb
     .updateTable('demands')
     .set({
       legacy_values: sql`legacy_values || ${JSON.stringify({
-        'Distance au réseau': distance,
-        'Gestionnaires validés': false,
-        'Identifiant réseau': sncuId,
-        'Nom réseau': networkName,
+        'Distance au réseau': newDistance,
+        'Identifiant réseau': newInfo.network_sncu_id,
+        'Nom réseau': newInfo.network_name,
       })}::jsonb`,
       network_id: networkIdFcu,
       network_type: networkType,
+      pending_assignment_change: null,
       updated_at: new Date(),
-      validated: false,
     })
     .where('id', '=', demandId)
     .where('deleted_at', 'is', null)
@@ -216,11 +171,72 @@ export const changeDemandNetwork = async (
     author_id: adminUserId,
     context_id: demandId,
     context_type: 'demand',
-    data: { network_id: networkIdFcu, network_name: networkName, network_type: networkType },
-    type: 'demand_network_changed',
+    data: {
+      new: {
+        distance: newDistance,
+        network_id: networkIdFcu,
+        network_name: newInfo.network_name,
+        network_sncu_id: newInfo.network_sncu_id,
+        network_type: networkType,
+      },
+      old: {
+        distance: oldDistance,
+        network_id: currentDemand.network_id,
+        network_name: oldInfo.network_name,
+        network_sncu_id: oldInfo.network_sncu_id,
+        network_type: currentDemand.network_type,
+      },
+    },
+    type: 'demand_assignment_changed',
   });
 
-  return { distance };
+  return { distance: newDistance };
+};
+
+/**
+ * Admin: rejects a pending assignment change request on a demand.
+ * Clears the pending JSONB without touching the current assignment.
+ */
+export const rejectDemandAssignmentChangeRequest = async (demandId: string, adminUserId: string) => {
+  const demand = await kdb
+    .selectFrom('demands')
+    .select(['id', 'pending_assignment_change'])
+    .where('id', '=', demandId)
+    .where('deleted_at', 'is', null)
+    .executeTakeFirst();
+
+  if (!demand) {
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' });
+  }
+
+  const pending = demand.pending_assignment_change;
+  if (!pending) {
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Aucune demande de réaffectation en attente' });
+  }
+
+  await kdb.updateTable('demands').set({ pending_assignment_change: null, updated_at: new Date() }).where('id', '=', demandId).execute();
+
+  const info =
+    pending.network_type !== null && pending.network_id !== null
+      ? await resolveNetworkInfo(pending.network_type, pending.network_id)
+      : { network_name: null, network_sncu_id: null };
+
+  await createUserEvent({
+    author_id: adminUserId,
+    context_id: demandId,
+    context_type: 'demand',
+    data: {
+      comment: pending.comment,
+      pending: {
+        distance: pending.distance,
+        network_id: pending.network_id,
+        network_name: info.network_name,
+        network_sncu_id: info.network_sncu_id,
+        network_type: pending.network_type,
+      },
+    },
+    type: 'demand_assignment_change_request_rejected',
+  });
 };
 
 /**

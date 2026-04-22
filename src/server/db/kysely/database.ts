@@ -5,7 +5,7 @@
 
 import type { ColumnType, JSONColumnType } from 'kysely';
 
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -237,6 +237,7 @@ export interface Demands {
   legacy_values: JSONColumnType<AirtableLegacyRecord>;
   network_id: number | null;
   network_type: NetworkType | null;
+  pending_assignment_change: JSONColumnType<PendingAssignmentChange> | null;
   region_code: string | null;
   updated_at: Generated<Timestamp>;
   user_id: string | null;

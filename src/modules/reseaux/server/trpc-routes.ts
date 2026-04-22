@@ -13,7 +13,7 @@ import {
   zUpdateReseauEnConstructionInput,
   zUpdateReseauInput,
 } from '@/modules/reseaux/constants';
-import { adminRoute, route, router } from '@/modules/trpc/server';
+import { adminRoute, demandAccessRoute, route, router } from '@/modules/trpc/server';
 import { getCityEligilityStatus, getEligilityStatus, getNetworkEligilityStatus } from '@/server/services/addresseInformation';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
@@ -121,7 +121,7 @@ export const reseauxRouter = router({
   reseauDeChaleur: reseauDeChaleurRouter,
   reseauDeFroid: reseauDeFroidRouter,
   reseauEnConstruction: reseauEnConstructionRouter,
-  searchNetworks: adminRoute.input(z.object({ search: z.string().min(2) })).query(async ({ input }) => {
+  searchNetworks: demandAccessRoute.input(z.object({ search: z.string().min(2) })).query(async ({ input }) => {
     return await reseauxService.searchNetworks(input.search);
   }),
 

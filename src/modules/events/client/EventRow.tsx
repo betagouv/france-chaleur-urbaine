@@ -31,6 +31,30 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),
+  demand_assignment_change_request_cancelled: (event, updateFilters) => (
+    <>
+      <span>a annulé sa demande de réaffectation sur une </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  demand_assignment_change_request_rejected: (event, updateFilters) => (
+    <>
+      <span>a rejeté une demande de réaffectation sur une </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  demand_assignment_change_requested: (event, updateFilters) => (
+    <>
+      <span>a demandé une réaffectation pour une </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  demand_assignment_changed: (event, updateFilters) => (
+    <>
+      <span>a réaffecté une </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
   demand_created: (event, updateFilters) => (
     <>
       <span>Une </span>
@@ -55,27 +79,9 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       a eu <strong>{event.data?.count}</strong> demande(s) liée(s) à son compte
     </span>
   ),
-  demand_network_change_requested: (event, updateFilters) => (
-    <>
-      <span>a demandé un changement de réseau pour une </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
-    </>
-  ),
-  demand_network_changed: (event, updateFilters) => (
-    <>
-      <span>a changé le réseau d'une </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
-    </>
-  ),
   demand_relance_sent: (event, updateFilters) => (
     <>
       <span>Une {event.data?.isSecondRelance ? 'seconde ' : 'première '}relance a été envoyée pour la </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
-    </>
-  ),
-  demand_unvalidated: (event, updateFilters) => (
-    <>
-      <span>a dé-validé une </span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),

@@ -4,7 +4,6 @@ import { kdb } from '@/server/db/kysely';
 import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
 
 import { MAX_PERMISSIONS_PER_USER, type Permission } from '../types';
-import { toPermission } from './helpers';
 
 // Re-export for external callers (context-builder, demands-service, manager, trpc-helpers)
 export { buildDemandAccessFilter, canUserAccessDemand, getDemandForAccessCheck, getUsersWithAccessToDemand } from './demand-access';
@@ -33,7 +32,7 @@ export const getAllUsersWithPermissions = async (): Promise<UserWithPermissions[
     .select(['u.id', 'u.email', 'u.role', 'u.receive_new_demands', 'u.receive_old_demands'])
     .select(
       sql<
-        { type: string; resource_id: string | null }[]
+        Permission[]
       >`coalesce(json_agg(json_build_object('type', ${sql.ref('up.type')}, 'resource_id', ${sql.ref('up.resource_id')})) filter (where ${sql.ref('up.user_id')} is not null), '[]'::json)`.as(
         'permissions'
       )
@@ -46,7 +45,7 @@ export const getAllUsersWithPermissions = async (): Promise<UserWithPermissions[
   return rows.map((row) => ({
     email: row.email,
     id: row.id,
-    permissions: row.permissions.map(toPermission),
+    permissions: row.permissions,
     receive_new_demands: row.receive_new_demands ?? true,
     receive_old_demands: row.receive_old_demands ?? true,
     role: row.role,
@@ -55,8 +54,7 @@ export const getAllUsersWithPermissions = async (): Promise<UserWithPermissions[
 
 export const getUserPermissions = async (userId: string): Promise<Permission[]> => {
   const rows = await kdb.selectFrom('user_permissions').select(['type', 'resource_id']).where('user_id', '=', userId).execute();
-
-  return rows.map(toPermission);
+  return rows as Permission[];
 };
 
 // ─── Write ───────────────────────────────────────────────────────────────────

@@ -5,8 +5,7 @@
 ## AI Agent workflow
 
 For every user message:
-- start every response with "Agent FCU au rapport !"
-- read AGENTS.md (this file) to decide which context files in `.ai/context/` are worth loading for this specific request — some requests need none, others need several
+- read AGENTS.md (this file) to decide which context files in `.ai/context/` are worth loading for this specific message — some messages need none, others need several. Re-evaluate on every message as the conversation evolves.
 - if the request is ambiguous, ask clarifying questions before proceeding (prefer asking over guessing, unless the user asks for speed — in that case, pick the simplest/fastest interpretation)
 - **for tasks involving code modifications** (writing, editing, deleting, moving files):
   - **minor changes** (typo, rename, single-line fix): implement directly, no plan needed

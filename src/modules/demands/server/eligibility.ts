@@ -83,20 +83,27 @@ export const getEntityFromEligibilityType = (type: EligibilityType) => {
  * Returns `null` for existing networks without trace, `0` when the point is inside a zone.
  */
 export const computeNetworkDistance = async (demandId: string, networkIdFcu: number, networkType: NetworkType): Promise<number | null> => {
-  const reseau =
-    networkType === 'existant'
-      ? await kdb
-          .selectFrom('reseaux_de_chaleur as r')
-          .innerJoin('pro_eligibility_tests_addresses as pe', (join) => join.on('pe.demand_id', '=', demandId))
-          .select(sql<number | null>`CASE WHEN r.has_trace THEN round(ST_Distance(r.geom, pe.geom))::int ELSE NULL END`.as('distance'))
-          .where('r.id_fcu', '=', networkIdFcu)
-          .executeTakeFirst()
-      : await kdb
-          .selectFrom('zones_et_reseaux_en_construction as z')
-          .innerJoin('pro_eligibility_tests_addresses as pe', (join) => join.on('pe.demand_id', '=', demandId))
-          .select(sql<number | null>`round(ST_Distance(z.geom, pe.geom))::int`.as('distance'))
-          .where('z.id_fcu', '=', networkIdFcu)
-          .executeTakeFirst();
+  const reseau = await (networkType === 'existant'
+    ? kdb
+        .selectFrom('reseaux_de_chaleur as n')
+        .innerJoin('pro_eligibility_tests_addresses as pe', (join) => join.onTrue())
+        .where('n.id_fcu', '=', networkIdFcu)
+        .where('pe.demand_id', '=', demandId)
+        .select((eb) =>
+          sql<
+            number | null
+          >`CASE WHEN ${eb.ref('n.has_trace')} THEN round(ST_Distance(${eb.ref('n.geom')}, ${eb.ref('pe.geom')}))::int ELSE NULL END`.as(
+            'distance'
+          )
+        )
+        .executeTakeFirst()
+    : kdb
+        .selectFrom('zones_et_reseaux_en_construction as n')
+        .innerJoin('pro_eligibility_tests_addresses as pe', (join) => join.onTrue())
+        .where('n.id_fcu', '=', networkIdFcu)
+        .where('pe.demand_id', '=', demandId)
+        .select((eb) => sql<number>`round(ST_Distance(${eb.ref('n.geom')}, ${eb.ref('pe.geom')}))::int`.as('distance'))
+        .executeTakeFirst());
 
   if (!reseau) {
     throw new TRPCError({ code: 'NOT_FOUND', message: 'Réseau ou demande introuvable' });

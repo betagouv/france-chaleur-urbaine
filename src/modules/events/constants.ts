@@ -13,11 +13,12 @@ export const eventTypes = [
   'demand_deleted',
   'demand_email_sent',
   'demand_linked_to_user',
-  'demand_network_changed',
-  'demand_network_change_requested',
+  'demand_assignment_changed',
+  'demand_assignment_change_requested',
+  'demand_assignment_change_request_cancelled',
+  'demand_assignment_change_request_rejected',
   'demand_relance_sent',
   'demand_validated',
-  'demand_unvalidated',
   'pro_eligibility_test_created',
   'pro_eligibility_test_renamed',
   'pro_eligibility_test_updated',
@@ -36,14 +37,15 @@ export type EventType = (typeof eventTypes)[number];
 export const eventTypeLabels: Record<EventType, string> = {
   build_tiles: 'Reconstruction tuiles',
   demand_assigned: 'Assignation demande',
+  demand_assignment_change_request_cancelled: 'Annulation de demande de réaffectation',
+  demand_assignment_change_request_rejected: 'Rejet de demande de réaffectation',
+  demand_assignment_change_requested: 'Demande de réaffectation',
+  demand_assignment_changed: 'Réaffectation (demande)',
   demand_created: 'Création demande',
   demand_deleted: 'Suppression demande',
   demand_email_sent: 'Email envoyé (demande)',
   demand_linked_to_user: 'Liaison demandes → compte',
-  demand_network_change_requested: 'Demande de changement de réseau',
-  demand_network_changed: 'Changement de réseau (demande)',
   demand_relance_sent: 'Relance automatique',
-  demand_unvalidated: 'Dé-validation demande',
   demand_updated: 'Mise à jour demande',
   demand_validated: 'Validation demande',
   network_reminder_created: 'Création relance réseau',
@@ -64,6 +66,18 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_updated: 'Mise à jour utilisateur',
 };
 
+/**
+ * Snapshot d'un réseau utilisé dans les payloads d'events liés au changement de réseau d'une demande.
+ * Tous les champs sont nullable pour couvrir le cas "pas de réseau affecté".
+ */
+export type EventNetworkSnapshot = {
+  network_type: NetworkType | null;
+  network_id: number | null;
+  network_name: string | null;
+  network_sncu_id: string | null;
+  distance: number | null;
+};
+
 export type EventDataMap = {
   build_tiles: { name: string };
   demand_assigned: Record<string, unknown> | null;
@@ -71,12 +85,13 @@ export type EventDataMap = {
   demand_deleted: Record<string, unknown> | null;
   demand_email_sent: { key: string; object: string; to: string };
   demand_linked_to_user: { count: number; email: string };
-  demand_network_changed: { network_id: number | null; network_type: NetworkType | null; sncu_id: string | null };
-  demand_network_change_requested: { current_network_id: number | null; reason: string; requested_sncu_id: string };
+  demand_assignment_changed: { old: EventNetworkSnapshot; new: EventNetworkSnapshot };
+  demand_assignment_change_requested: { old: EventNetworkSnapshot; new: EventNetworkSnapshot; comment: string | null };
+  demand_assignment_change_request_cancelled: { pending: EventNetworkSnapshot; comment: string | null };
+  demand_assignment_change_request_rejected: { pending: EventNetworkSnapshot; comment: string | null };
   demand_relance_sent: { isSecondRelance: boolean };
   demand_updated: Record<string, unknown> | null;
-  demand_validated: { validated: true };
-  demand_unvalidated: { validated: false };
+  demand_validated: { relance_a_activer: boolean };
   pro_eligibility_test_created: Record<string, unknown> | null;
   pro_eligibility_test_deleted: Record<string, unknown> | null;
   pro_eligibility_test_renamed: Record<string, unknown> | null;

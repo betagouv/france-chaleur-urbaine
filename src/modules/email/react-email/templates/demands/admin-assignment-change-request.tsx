@@ -2,17 +2,17 @@ import { Layout, Link, Table, TableColumn, TableRow, Text, Title } from '../../c
 
 type Props = {
   demandId: string;
-  reason: string;
+  comment: string | null;
   requestedSncuId: string;
   requesterEmail: string;
 };
 
-const DemandAdminNetworkChangeRequestEmail = ({ demandId, requestedSncuId, reason, requesterEmail }: Props) => {
+const DemandAdminAssignmentChangeRequestEmail = ({ demandId, requestedSncuId, comment, requesterEmail }: Props) => {
   return (
     <Layout>
-      <Title>Demande de changement de réseau</Title>
+      <Title>Demande de réaffectation</Title>
 
-      <Text>Un utilisateur collectivité/ALEC a demandé un changement de réseau pour une demande de raccordement.</Text>
+      <Text>Un gestionnaire a demandé une réaffectation pour une demande de raccordement.</Text>
 
       <Table>
         <TableRow>
@@ -25,7 +25,7 @@ const DemandAdminNetworkChangeRequestEmail = ({ demandId, requestedSncuId, reaso
         </TableRow>
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Motif</TableColumn>
-          <TableColumn>{reason}</TableColumn>
+          <TableColumn>{comment}</TableColumn>
         </TableRow>
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Demandé par</TableColumn>
@@ -42,11 +42,11 @@ const DemandAdminNetworkChangeRequestEmail = ({ demandId, requestedSncuId, reaso
   );
 };
 
-DemandAdminNetworkChangeRequestEmail.PreviewProps = {
+DemandAdminAssignmentChangeRequestEmail.PreviewProps = {
+  comment: 'Le réseau actuellement attribué ne dessert pas cette zone.',
   demandId: 'abc123',
-  reason: 'Le réseau actuellement attribué ne dessert pas cette zone.',
   requestedSncuId: '7501C',
   requesterEmail: 'collectivite@test.local',
-};
+} satisfies Props;
 
-export default DemandAdminNetworkChangeRequestEmail;
+export default DemandAdminAssignmentChangeRequestEmail;

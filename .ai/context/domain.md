@@ -10,7 +10,7 @@ The platform serves three main audiences:
 3. **Network operators (gestionnaires)** — manage connection demands for their assigned networks.
 4. **Local authorities (collectivités)** — monitor demands on their territory, coordinate with gestionnaires.
 5. **Local energy agencies (ALEC)** — same as collectivités, scoped to their territory.
-6. **Administrators** — manage users, networks, jobs, permissions.
+6. **Administrators** — manage users, networks, jobs, permissions. Can impersonate any role and toggle PII anonymization for live demos.
 
 ## Glossary
 
@@ -55,7 +55,8 @@ The platform serves three main audiences:
 | ALEC | Same as Collectivité, scoped to their territory | Same as Collectivité |
 | Professionnel | Submit demands, run bulk eligibility tests, view own demands | Access admin features, manage other users |
 | Particulier | Submit single demand, test eligibility | Bulk testing, dashboard features |
-| Demo | Pseudo-anonymized UI view (admin previews the app as anonymous user) | Real data access, admin features |
+
+PII anonymization for demos: admin toggles a cookie (`fcu-anonymize`) at `/admin/impostures`, which anonymizes `Mail`/`Nom`/`Prénom`/`Téléphone` in `demands.gestionnaire.list`. Works under admin impersonation too.
 
 Permissions are managed in `user_permissions` table (not string tags). See `security.md` for details.
 

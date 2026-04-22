@@ -20,11 +20,11 @@ import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/compo
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import AdditionalInformation from '@/modules/demands/client/AdditionalInformation';
+import AffectedNetworkCell from '@/modules/demands/client/AffectedNetworkCell';
 import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
 import Contacted from '@/modules/demands/client/Contacted';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
-import NetworkChangeRequestDialog from '@/modules/demands/client/NetworkChangeRequestDialog';
 import Status from '@/modules/demands/client/Status';
 import type { Demand } from '@/modules/demands/types';
 import { toastErrors } from '@/modules/notification';
@@ -187,7 +187,7 @@ let isUpdatingDemandField = false;
 
 function DemandesNew(): React.ReactElement {
   const { data: session } = useSession();
-  const isTerritoryRole = session?.user?.role === 'collectivite' || session?.user?.role === 'alec';
+  const currentUserId = session?.user?.id ?? '';
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [modalDemand, setModalDemand] = useState<DemandsListItem | null>(null);
   const tableRowSelection = useMemo(() => {
@@ -339,14 +339,10 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'Distance au réseau',
-        cell: ({ row }) => (
-          <AdditionalInformation
-            demand={row.original as unknown as Demand}
-            field="Distance au réseau"
-            updateDemand={updateDemand}
-            type="number"
-          />
-        ),
+        cell: ({ row }) => {
+          const distance = row.original['Distance au réseau'];
+          return distance != null ? <span>{distance}</span> : null;
+        },
         enableGlobalFilter: false,
         filterProps: {
           domain: [0, 1000],
@@ -367,30 +363,13 @@ function DemandesNew(): React.ReactElement {
         width: '120px',
       },
       {
-        accessorKey: 'testAddress.eligibility.id_sncu',
-        cell: (info) => {
-          const demand = info.row.original;
-          const testAddress = demand.testAddress;
-          return (
-            <div className="flex items-start gap-2 flex-col justify-start">
-              <div className="font-bold">{testAddress.eligibility?.id_sncu || ''}</div>
-              {testAddress.eligibility?.nom || (testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0) ? (
-                <div className="text-xs text-gray-500">
-                  {testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0 && (
-                    <>
-                      <strong>{testAddress.eligibility?.distance}m</strong> de{' '}
-                    </>
-                  )}
-                  {testAddress.eligibility?.nom}
-                </div>
-              ) : null}
-            </div>
-          );
-        },
+        accessorFn: (row) => row.network_name ?? '',
+        cell: ({ row }) => <AffectedNetworkCell demand={row.original} currentUserId={currentUserId} />,
         enableSorting: false,
         filterType: 'Facets',
-        header: 'Réseau le plus proche',
-        width: '200px',
+        header: 'Réseau affecté',
+        id: 'network_name',
+        width: '260px',
       },
       {
         accessorKey: 'Logement',
@@ -441,17 +420,6 @@ function DemandesNew(): React.ReactElement {
         header: 'Commentaires',
         width: '280px',
       },
-      ...(isTerritoryRole
-        ? [
-            {
-              cell: ({ row }: { row: { original: DemandsListItem } }) => <NetworkChangeRequestDialog demandId={row.original.id} />,
-              enableSorting: false,
-              header: '',
-              id: 'actions',
-              width: '160px',
-            } satisfies ColumnDef<DemandsListItem>,
-          ]
-        : []),
       // obligatoire afin d'être utilisables dans les presets
       {
         accessorKey: 'haut_potentiel',
@@ -464,7 +432,7 @@ function DemandesNew(): React.ReactElement {
         visible: false,
       },
     ],
-    [updateDemand, isTerritoryRole]
+    [updateDemand, currentUserId]
   );
 
   const onTableRowClick = useCallback(

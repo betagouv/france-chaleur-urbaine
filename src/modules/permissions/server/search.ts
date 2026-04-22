@@ -3,7 +3,7 @@ import { sql } from 'kysely';
 import { kdb } from '@/server/db/kysely';
 
 import type { Permission, PermissionWithLabel, TerritoryPermissionType } from '../types';
-import { isNetworkPermissionType, toPermission } from './helpers';
+import { isNetworkPermissionType } from './helpers';
 import { getUserPermissions } from './service';
 
 // ─── Search ──────────────────────────────────────────────────────────────────
@@ -147,11 +147,7 @@ export const searchTerritories = async (query: string, types?: string[]): Promis
 
 // ─── Label resolution ────────────────────────────────────────────────────────
 
-type ResolvedPermissionLabel = {
-  type: string;
-  resource_id: string | null;
-  label: string;
-};
+type ResolvedPermissionLabel = Permission & { label: string };
 
 /**
  * Resolves human-readable labels for a list of permissions.
@@ -195,7 +191,7 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
           const co = constructionMap.get(id);
           const name = ex?.nom_reseau || co?.nom_reseau || 'Réseau inconnu';
           const sncu = ex?.['Identifiant reseau'] ? ` (${ex['Identifiant reseau']})` : '';
-          result.push({ label: `${name}${sncu}`, resource_id: p.resource_id, type: p.type });
+          result.push({ label: `${name}${sncu}`, resource_id: p.resource_id, type: p.type as any });
         }
       })
     );
@@ -317,23 +313,25 @@ export const getUserPermissionsWithLabels = async (userId: string): Promise<Perm
  * Deduplicates permissions for efficient batch label resolution.
  */
 export const getAllPermissionsWithLabels = async (): Promise<Record<string, PermissionWithLabel[]>> => {
-  const rows = await kdb.selectFrom('user_permissions').select(['user_id', 'type', 'resource_id']).execute();
-  if (rows.length === 0) return {};
+  const permissions = (await kdb.selectFrom('user_permissions').select(['user_id', 'type', 'resource_id']).execute()) as (Permission & {
+    user_id: string;
+  })[];
+  if (permissions.length === 0) return {};
 
   const uniquePerms = new Map<string, Permission>();
-  for (const row of rows) {
-    const p = toPermission(row);
-    uniquePerms.set(`${p.type}:${p.resource_id}`, p);
+  for (const permission of permissions) {
+    uniquePerms.set(`${permission.type}:${permission.resource_id}`, permission);
   }
 
   const labels = await resolvePermissionLabels([...uniquePerms.values()]);
   const labelMap = new Map(labels.map((l) => [`${l.type}:${l.resource_id}`, l.label]));
 
   const result: Record<string, PermissionWithLabel[]> = {};
-  for (const row of rows) {
-    const p = toPermission(row);
-    const label = labelMap.get(`${p.type}:${p.resource_id}`) ?? (p.type === 'national' ? 'National' : (p.resource_id ?? ''));
-    (result[row.user_id] ??= []).push({ ...p, label } as PermissionWithLabel);
+  for (const permission of permissions) {
+    const label =
+      labelMap.get(`${permission.type}:${permission.resource_id}`) ??
+      (permission.type === 'national' ? 'National' : (permission.resource_id ?? ''));
+    (result[permission.user_id] ??= []).push({ ...permission, label } as PermissionWithLabel);
   }
 
   return result;
