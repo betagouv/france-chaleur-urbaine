@@ -16,12 +16,7 @@ export const networkTypeToPermissionType: Record<NetworkType, NetworkPermissionT
   existant: 'reseau_existant',
 };
 
-export const toPermission = (row: { type: string; resource_id: string | null }): Permission => {
-  if (row.type === 'national') {
-    return { resourceId: null, type: 'national' };
-  }
-  return { resourceId: row.resource_id!, type: row.type } as Permission;
-};
+export const toPermission = (row: { type: string; resource_id: string | null }): Permission => row as Permission;
 
 export const isNetworkPermissionType = (type: string): type is NetworkPermissionType => {
   return (networkPermissionTypes as readonly string[]).includes(type);

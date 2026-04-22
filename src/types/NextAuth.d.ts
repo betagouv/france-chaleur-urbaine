@@ -1,11 +1,12 @@
 import 'next-auth';
-import { type UserRole } from './enum/UserRole';
+
+import type { UserRole } from './enum/UserRole';
 
 declare module 'next-auth' {
   interface Session {
     user: User;
     impersonating?: true;
-    impersonatedPermissions?: Array<{ type: string; resourceId: string | null }>;
+    impersonatedPermissions?: { type: string; resource_id: string | null }[];
   }
 
   interface User {
@@ -28,7 +29,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     impersonatedProfile?: {
       role: UserRole;
-      permissions?: Array<{ type: string; resourceId: string | null }>;
+      permissions?: { type: string; resource_id: string | null }[];
     };
   }
 }

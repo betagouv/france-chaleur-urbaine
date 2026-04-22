@@ -25,6 +25,8 @@ import { updateCommentFromRelanceId, updateDemandByUser } from './relances';
 import { getReseauxStats, getTagsStats } from './stats';
 import { listByUser } from './user-tracking';
 
+const zRequestNetworkChangeInput = z.object({ demandId: z.string(), reason: z.string().min(1), requestedSncuId: z.string().min(1) });
+
 export const demandsRouter = router({
   admin: {
     changeNetwork: adminRoute
@@ -74,33 +76,24 @@ export const demandsRouter = router({
     }),
   },
   gestionnaire: {
-    list: demandAccessRoute.query(async ({ ctx }) => {
-      const permissions = await ctx.getPermissions();
-      return await listDemands(ctx.user, { anonymize: ctx.anonymize, permissions });
-    }),
+    list: demandAccessRoute.query(async ({ ctx }) => listDemands(ctx)),
     listEmails: demandAccessRoute.input(zListEmailsInput).query(async ({ input, ctx }) => {
-      const permissions = await ctx.getPermissions();
-      return await listDemandEmails({ demandId: input.demand_id, permissions, user: ctx.user });
+      return await listDemandEmails(ctx, { demandId: input.demand_id });
+    }),
+    requestNetworkChange: demandAccessRoute.input(zRequestNetworkChangeInput).mutation(async ({ input, ctx }) => {
+      await requestDemandNetworkChange(input.demandId, input.requestedSncuId, input.reason, ctx.user.id);
     }),
     sendEmail: demandAccessRoute.input(zSendEmailInput).mutation(async ({ input, ctx }) => {
-      await sendDemandEmail({
+      await sendDemandEmail(ctx, {
         demandId: input.demand_id,
         emailContent: input.emailContent,
         key: input.key,
-        user: ctx.user,
       });
     }),
     update: demandAccessRoute.input(zGestionnaireUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;
       return await updateDemandByGestionnaire(demandId, values, ctx.user.id);
     }),
-  },
-  territory: {
-    requestNetworkChange: demandAccessRoute
-      .input(z.object({ demandId: z.string(), reason: z.string().min(1), requestedSncuId: z.string().min(1) }))
-      .mutation(async ({ input, ctx }) => {
-        await requestDemandNetworkChange(input.demandId, input.requestedSncuId, input.reason, ctx.user.id);
-      }),
   },
   user: {
     addRelanceComment: route.input(zAddRelanceCommentInput).mutation(async ({ input, ctx }) => {
@@ -119,10 +112,6 @@ export const demandsRouter = router({
     }),
     list: authRoute.query(async ({ ctx }) => {
       return await listByUser(ctx.user.id);
-    }),
-    listEmails: authRoute.input(zListEmailsInput).query(async ({ input, ctx }) => {
-      const permissions = await ctx.getPermissions();
-      return await listDemandEmails({ demandId: input.demand_id, permissions, user: ctx.user });
     }),
     update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;

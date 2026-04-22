@@ -104,7 +104,7 @@ function PermissionTooltipContent({ permissions }: { permissions: PermissionWith
           {type !== 'national' && (
             <ul className="list-none pl-0 m-0">
               {perms.map((p) => (
-                <li key={p.resourceId}>{p.label}</li>
+                <li key={p.resource_id}>{p.label}</li>
               ))}
             </ul>
           )}

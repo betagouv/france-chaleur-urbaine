@@ -2,17 +2,19 @@ import { z } from 'zod';
 
 import { adminRoute, demandAccessRoute, router } from '@/modules/trpc/server';
 
-import { zPermissionInput } from '../types';
+import { type TerritoryPermission, zPermissionInput } from '../types';
 import { getDemandForAccessCheck, getNetworkUsersForTerritory, getUsersWithAccessToDemand } from './demand-access';
+import { isNetworkPermissionType } from './helpers';
 import { getPermissionsMapData } from './map-data';
 import {
   getAllPermissionsWithLabels,
   getUserPermissionsWithLabels,
   resolvePermissionLabels,
+  resolvePermissionsWithLabels,
   searchNetworks,
   searchTerritories,
 } from './search';
-import { getUserPermissions, getUserTerritoryPermissions, setUserPermissions } from './service';
+import { setUserPermissions } from './service';
 
 export const permissionsRouter = router({
   admin: {
@@ -30,14 +32,11 @@ export const permissionsRouter = router({
       .mutation(({ input }) => setUserPermissions(input.userId, input.permissions)),
   },
 
-  mine: demandAccessRoute.query(({ ctx }) => getUserPermissions(ctx.user.id)),
+  mine: demandAccessRoute.query(({ ctx }) => ctx.getPermissions()),
 
-  mineWithLabels: demandAccessRoute.query(({ ctx }) => getUserPermissionsWithLabels(ctx.user.id)),
+  mineWithLabels: demandAccessRoute.query(async ({ ctx }) => resolvePermissionsWithLabels(await ctx.getPermissions())),
 
-  myMapData: demandAccessRoute.query(async ({ ctx }) => {
-    const permissions = await getUserPermissions(ctx.user.id);
-    return getPermissionsMapData(permissions);
-  }),
+  myMapData: demandAccessRoute.query(async ({ ctx }) => getPermissionsMapData(await ctx.getPermissions())),
 
   resolveLabels: demandAccessRoute.input(zPermissionInput).query(({ input }) => resolvePermissionLabels(input)),
 
@@ -53,8 +52,9 @@ export const permissionsRouter = router({
     .query(({ input }) => searchTerritories(input.query, input.types)),
 
   territoryGestionnaires: demandAccessRoute.query(async ({ ctx }) => {
-    const permissions = await getUserTerritoryPermissions(ctx.user.id);
-    return getNetworkUsersForTerritory(permissions);
+    const permissions = await ctx.getPermissions();
+    const territoryPerms = permissions.filter((p): p is TerritoryPermission => !isNetworkPermissionType(p.type));
+    return getNetworkUsersForTerritory(territoryPerms);
   }),
 
   usersWithAccessToDemand: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).query(async ({ input }) => {

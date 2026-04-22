@@ -7,6 +7,7 @@ import type { ColumnType, JSONColumnType } from 'kysely';
 
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
+import type { Permission } from '@/modules/permissions/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
@@ -743,13 +744,13 @@ export interface TestsAdressesTilesFeatures {
   tests: Json | null;
 }
 
-export interface UserPermissions {
+export type UserPermissions = {
   created_at: Generated<Timestamp>;
   id: Generated<string>;
-  resource_id: string | null;
-  type: string;
+  // resource_id: string | null;
+  // type: string;
   user_id: string;
-}
+} & Permission;
 
 export interface Users {
   accepted_cgu_at: Date | null;

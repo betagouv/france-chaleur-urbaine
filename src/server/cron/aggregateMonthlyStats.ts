@@ -4,7 +4,6 @@ import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
 import type { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
 import { Airtable } from '@/types/enum/Airtable';
 import { STAT_COMMUNES_SANS_RESEAU, STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
-import { USER_ROLE } from '@/types/enum/UserRole';
 
 const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE,
@@ -442,10 +441,10 @@ const saveComptesProCreatedStats = async (startDate: string, endDate: string) =>
   end.setUTCHours(23, 59, 59);
   const comptesProCreated = await kdb
     .selectFrom('users')
-    .select([
+    .select((eb) => [
       sql<string>`TO_CHAR(date_trunc('day', created_at), 'yyyy-mm-dd')`.as('date'),
-      sql<number>`COUNT(CASE WHEN role = ${USER_ROLE.PROFESSIONNEL} THEN 1 END)`.as('professionnels'),
-      sql<number>`COUNT(CASE WHEN role = ${USER_ROLE.PARTICULIER} THEN 1 END)`.as('particuliers'),
+      eb.fn.count<number>(eb.case().when('role', '=', 'professionnel').then(1).end()).as('professionnels'),
+      eb.fn.count<number>(eb.case().when('role', '=', 'particulier').then(1).end()).as('particuliers'),
     ])
     .where('created_at', '>=', start)
     .where('created_at', '<=', end)

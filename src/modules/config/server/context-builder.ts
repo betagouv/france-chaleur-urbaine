@@ -29,17 +29,13 @@ const buildContext = async (req: NextApiRequest, res?: NextApiResponse) => {
   const impersonatedPermissions = req.session?.impersonatedPermissions as Permission[] | undefined;
 
   const getPermissions = async (): Promise<Permission[]> => {
-    if (impersonatedPermissions) {
-      return impersonatedPermissions;
-    }
-    if (req.user?.id) {
-      return getUserPermissions(req.user.id);
-    }
-    return [];
+    return impersonatedPermissions ?? getUserPermissions(req.user.id);
   };
 
-  // Anonymization toggle via cookie (admin only)
-  const anonymize = hasRole('admin') && req.cookies?.['fcu-anonymize'] === '1';
+  // Anonymization toggle via cookie. Only an admin can set it (page /admin/impostures is admin-only),
+  // so trusting the cookie is safe as long as the underlying session is an admin — either directly
+  // or via impersonation (the JWT is only mutated by the admin-only impersonate route).
+  const anonymize = req.cookies?.['fcu-anonymize'] === '1' && (hasRole('admin') || req.session?.impersonating === true);
 
   return {
     anonymize,

@@ -23,7 +23,7 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   requireAuthentication(req.user, ['admin']);
 
   const impersonatedProfile = await validateObjectSchema(req.body, {
-    permissions: z.array(z.object({ resourceId: z.string().nullable(), type: z.string() })).optional(),
+    permissions: z.array(z.object({ resource_id: z.string().nullable(), type: z.string() })).optional(),
     role: z.enum(['gestionnaire', 'collectivite', 'alec', 'professionnel', 'particulier'] as NonEmptyArray<UserRole>),
   });
 

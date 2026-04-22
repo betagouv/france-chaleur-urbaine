@@ -34,20 +34,20 @@ const baseDemand: DemandForAccess = {
 const unvalidated: DemandForAccess = { ...baseDemand, validated: false };
 const constructionDemand: DemandForAccess = { ...baseDemand, network_type: 'en_construction' };
 
-const networkExistant: Permission = { resourceId: '1', type: 'reseau_existant' };
-const networkConstruction: Permission = { resourceId: '1', type: 'reseau_en_construction' };
-const networkWrongId: Permission = { resourceId: '999', type: 'reseau_existant' };
-const commune75056: Permission = { resourceId: '75056', type: 'commune' };
-const dept75: Permission = { resourceId: '75', type: 'departement' };
-const dept13: Permission = { resourceId: '13', type: 'departement' };
-const region11: Permission = { resourceId: '11', type: 'region' };
-const eptT1: Permission = { resourceId: 'T1', type: 'ept' };
-const national: Permission = { resourceId: null, type: 'national' };
+const networkExistant: Permission = { resource_id: '1', type: 'reseau_existant' };
+const networkConstruction: Permission = { resource_id: '1', type: 'reseau_en_construction' };
+const networkWrongId: Permission = { resource_id: '999', type: 'reseau_existant' };
+const commune75056: Permission = { resource_id: '75056', type: 'commune' };
+const dept75: Permission = { resource_id: '75', type: 'departement' };
+const dept13: Permission = { resource_id: '13', type: 'departement' };
+const region11: Permission = { resource_id: '11', type: 'region' };
+const eptT1: Permission = { resource_id: 'T1', type: 'ept' };
+const national: Permission = { resource_id: null, type: 'national' };
 
 const testLabel = ({ user, permissions, demand }: TestInput): string => {
   const parts: string[] = [user.role];
   if (permissions.length > 0) {
-    parts.push(`[${permissions.map((p) => `${p.type}:${p.resourceId ?? 'null'}`).join(', ')}]`);
+    parts.push(`[${permissions.map((p) => `${p.type}:${p.resource_id ?? 'null'}`).join(', ')}]`);
   } else {
     parts.push('[no perms]');
   }
@@ -97,7 +97,7 @@ describe('canUserAccessDemand', () => {
     // Multiple permissions — one match is enough
     {
       expectedOutput: true,
-      input: { demand: baseDemand, permissions: [{ resourceId: '13055', type: 'commune' }, dept75], user: collectivite },
+      input: { demand: baseDemand, permissions: [{ resource_id: '13055', type: 'commune' }, dept75], user: collectivite },
     },
 
     // Mixed network + territory permissions

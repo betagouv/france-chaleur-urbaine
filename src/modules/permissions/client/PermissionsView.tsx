@@ -31,7 +31,7 @@ const PermissionsView = () => {
 
   const handleSelect = (p: PermissionWithLabel) => {
     if (p.type === 'national') return;
-    const key = permissionBoundsKey(p.type, p.resourceId);
+    const key = permissionBoundsKey(p.type, p.resource_id);
     setSelectedKey(key);
     setExpanded(true);
     const bbox = mapData?.perPermissionBounds[key];
@@ -82,7 +82,7 @@ const PermissionsList = ({ permissions, selectedKey, onSelect }: PermissionsList
       <p className="text-sm font-medium mb-1">J'ai accès aux demandes :</p>
       <ul className="list-disc list-inside text-sm space-y-1">
         {permissions.map((p) => {
-          const key = permissionBoundsKey(p.type, p.resourceId);
+          const key = permissionBoundsKey(p.type, p.resource_id);
           const isSelected = selectedKey === key;
           const isClickable = p.type !== 'national';
           return (

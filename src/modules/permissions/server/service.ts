@@ -3,7 +3,7 @@ import { sql } from 'kysely';
 import { kdb } from '@/server/db/kysely';
 import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
 
-import { MAX_PERMISSIONS_PER_USER, type Permission, type TerritoryPermission, territoryPermissionTypes } from '../types';
+import { MAX_PERMISSIONS_PER_USER, type Permission } from '../types';
 import { toPermission } from './helpers';
 
 // Re-export for external callers (context-builder, demands-service, manager, trpc-helpers)
@@ -59,17 +59,6 @@ export const getUserPermissions = async (userId: string): Promise<Permission[]> 
   return rows.map(toPermission);
 };
 
-export const getUserTerritoryPermissions = async (userId: string): Promise<TerritoryPermission[]> => {
-  const rows = await kdb
-    .selectFrom('user_permissions')
-    .select(['type', 'resource_id'])
-    .where('user_id', '=', userId)
-    .where('type', 'in', [...territoryPermissionTypes])
-    .execute();
-
-  return rows.map(toPermission) as TerritoryPermission[];
-};
-
 // ─── Write ───────────────────────────────────────────────────────────────────
 
 /**
@@ -88,7 +77,7 @@ export const setUserPermissions = async (userId: string, permissions: Permission
         .insertInto('user_permissions')
         .values(
           permissions.map((p) => ({
-            resource_id: p.resourceId,
+            resource_id: p.resource_id,
             type: p.type,
             user_id: userId,
           }))

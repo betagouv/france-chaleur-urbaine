@@ -21,10 +21,10 @@ const PermissionsInput = ({ value, onChange, availableTypes }: PermissionsInputP
     enabled: value.length > 0,
   });
 
-  const labelMap = new Map(resolvedLabels.data?.map((r) => [`${r.type}:${r.resourceId}`, r.label]) ?? []);
+  const labelMap = new Map(resolvedLabels.data?.map((r) => [`${r.type}:${r.resource_id}`, r.label]) ?? []);
 
   const handleAdd = (permission: Permission) => {
-    const exists = value.some((p) => p.type === permission.type && p.resourceId === permission.resourceId);
+    const exists = value.some((p) => p.type === permission.type && p.resource_id === permission.resource_id);
     if (!exists) {
       onChange([...value, permission]);
     }
@@ -35,10 +35,10 @@ const PermissionsInput = ({ value, onChange, availableTypes }: PermissionsInputP
   };
 
   const getLabel = (p: Permission) => {
-    const resolved = labelMap.get(`${p.type}:${p.resourceId}`);
+    const resolved = labelMap.get(`${p.type}:${p.resource_id}`);
     if (resolved) return resolved;
     if (p.type === 'national') return 'National';
-    return p.resourceId ?? '';
+    return p.resource_id ?? '';
   };
 
   return (
@@ -47,7 +47,7 @@ const PermissionsInput = ({ value, onChange, availableTypes }: PermissionsInputP
         <div className="flex flex-wrap gap-2">
           {value.map((p, i) => (
             <Tag
-              key={`${p.type}-${p.resourceId}`}
+              key={`${p.type}-${p.resource_id}`}
               dismissible
               small
               nativeButtonProps={{

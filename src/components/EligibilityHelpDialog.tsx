@@ -26,7 +26,7 @@ const EligibilityHelpDialog = ({ children, detailedEligibilityStatus }: Eligibil
         {children || (
           <Button priority="secondary" size="small">
             <Icon name="fr-icon-question-line" className="mr-2" />
-            Aide éligibilité
+            Règles d'éligibilité
           </Button>
         )}
       </div>

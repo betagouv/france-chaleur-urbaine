@@ -9,6 +9,8 @@ import { parentLogger } from '@/server/helpers/logger';
 import { userRolesWithPermissions } from '@/types/enum/UserRole';
 import { processInParallel } from '@/utils/async';
 
+import { type Permission, type PermissionType, permissionTypes } from './types';
+
 const logger = parentLogger.child({ module: 'permissions' });
 
 export function registerPermissionsCommands(parentProgram: Command) {
@@ -929,14 +931,21 @@ function parseCsvLine(line: string): string[] {
   return fields;
 }
 
-function parsePermsFromCsv(value: string): { type: string; resource_id: string }[] {
+// The CSV format `type:id (label)` always carries a resource_id — national (null resource_id) can't occur.
+type ParsedPermission = Exclude<Permission, { resource_id: null }>;
+
+function parsePermsFromCsv(value: string): ParsedPermission[] {
   if (!value.trim()) return [];
   return value.split(MULTI_VALUE_SEPARATOR.trim()).map((s) => {
     const match = s.trim().match(/^(\w+):(\S+)\s*\(/);
     if (!match) {
       throw new Error(`Format de permission invalide: "${s.trim()}" — attendu: type:id (label)`);
     }
-    return { resource_id: match[2], type: match[1] };
+    const type = match[1];
+    if (!(permissionTypes as readonly string[]).includes(type) || type === 'national') {
+      throw new Error(`Type de permission invalide: "${type}" — attendu: ${permissionTypes.filter((t) => t !== 'national').join(', ')}`);
+    }
+    return { resource_id: match[2], type: type as PermissionType } as ParsedPermission;
   });
 }
 
@@ -999,8 +1008,8 @@ async function applyMigrationPlan(filePath: string) {
     }
 
     // Parse permissions
-    let territoryPerms: { type: string; resource_id: string }[];
-    let networkPerms: { type: string; resource_id: string }[];
+    let territoryPerms: ParsedPermission[];
+    let networkPerms: ParsedPermission[];
     try {
       territoryPerms = parsePermsFromCsv(fields[permsTerritoireIdx] ?? '');
       networkPerms = parsePermsFromCsv(fields[permsReseauIdx] ?? '');

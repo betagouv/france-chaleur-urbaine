@@ -1,6 +1,6 @@
-import { type Expression, type SelectQueryBuilder, type SqlBool, sql } from 'kysely';
+import { type Expression, type Selectable, type SelectQueryBuilder, type SqlBool, sql } from 'kysely';
 
-import type { DB } from '@/server/db/kysely';
+import type { DB, Demands } from '@/server/db/kysely';
 import { kdb } from '@/server/db/kysely';
 import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
 
@@ -9,6 +9,7 @@ import {
   networkPermissionTypes,
   type Permission,
   type TerritoryPermission,
+  type TerritoryPermissionType,
   territoryPermissionToColumn,
 } from '../types';
 import { isNetworkPermissionType, isRoleWithPermissions, networkTypeToPermissionType, permissionTypeToNetworkType } from './helpers';
@@ -20,16 +21,10 @@ type UserWithRole = {
   role: UserRole;
 };
 
-export type DemandForAccess = {
-  network_id: number | null;
-  network_type: string | null;
-  validated: boolean;
-  commune_code: string | null;
-  epci_code: string | null;
-  ept_code: string | null;
-  departement_code: string | null;
-  region_code: string | null;
-};
+export type DemandForAccess = Pick<
+  Selectable<Demands>,
+  'network_id' | 'network_type' | 'validated' | 'commune_code' | 'epci_code' | 'ept_code' | 'departement_code' | 'region_code'
+>;
 
 // ─── Access filters (Kysely query builders) ──────────────────────────────────
 
@@ -65,7 +60,7 @@ export const buildDemandAccessFilter = (
       for (const p of networkPerms) {
         conditions.push(
           eb.and([
-            eb('demands.network_id', '=', Number(p.resourceId)),
+            eb('demands.network_id', '=', Number(p.resource_id)),
             eb('demands.network_type', '=', permissionTypeToNetworkType[p.type]),
           ])
         );
@@ -77,7 +72,7 @@ export const buildDemandAccessFilter = (
         for (const p of territoryPerms) {
           if (p.type in territoryPermissionToColumn) {
             const column = territoryPermissionToColumn[p.type as keyof typeof territoryPermissionToColumn];
-            conditions.push(eb(`demands.${column}` as any, '=', p.resourceId));
+            conditions.push(eb(`demands.${column}` as any, '=', p.resource_id));
           }
         }
       }
@@ -105,14 +100,14 @@ export const canUserAccessDemand = (user: UserWithRole, permissions: Permission[
 
   return permissions.some((p) => {
     if (isNetworkPermissionType(p.type)) {
-      return Number(p.resourceId) === demand.network_id && permissionTypeToNetworkType[p.type] === demand.network_type;
+      return Number(p.resource_id) === demand.network_id && permissionTypeToNetworkType[p.type] === demand.network_type;
     }
     if (p.type === 'national') {
       return true;
     }
     if (p.type in territoryPermissionToColumn) {
       const column = territoryPermissionToColumn[p.type as keyof typeof territoryPermissionToColumn];
-      return demand[column] === p.resourceId;
+      return demand[column] === p.resource_id;
     }
     return false;
   });
@@ -136,16 +131,17 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
       const conditions: Expression<SqlBool>[] = [];
 
       if (demand.network_id && demand.network_type) {
-        const permType = networkTypeToPermissionType[demand.network_type as keyof typeof networkTypeToPermissionType];
-        if (permType) {
-          conditions.push(eb.and([eb('up.type', '=', permType), eb('up.resource_id', '=', String(demand.network_id))]));
-        }
+        const permType = networkTypeToPermissionType[demand.network_type];
+        conditions.push(eb.and([eb('up.type', '=', permType), eb('up.resource_id', '=', String(demand.network_id))]));
       }
 
       conditions.push(eb('up.type', '=', 'national'));
 
-      for (const [permType, column] of Object.entries(territoryPermissionToColumn)) {
-        const value = demand[column as keyof DemandForAccess] as string | null;
+      for (const [permType, column] of Object.entries(territoryPermissionToColumn) as [
+        Exclude<TerritoryPermissionType, 'national'>,
+        (typeof territoryPermissionToColumn)[keyof typeof territoryPermissionToColumn],
+      ][]) {
+        const value = demand[column];
         if (value) {
           conditions.push(eb.and([eb('up.type', '=', permType), eb('up.resource_id', '=', value)]));
         }
@@ -162,12 +158,13 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
  * Loads a demand with the fields needed for access checks.
  */
 export const getDemandForAccessCheck = async (demandId: string): Promise<DemandForAccess | null> => {
-  return kdb
+  const result = await kdb
     .selectFrom('demands')
     .select(['network_id', 'network_type', 'validated', 'commune_code', 'epci_code', 'ept_code', 'departement_code', 'region_code'])
     .where('id', '=', demandId)
     .where('deleted_at', 'is', null)
-    .executeTakeFirst() as Promise<DemandForAccess | null>;
+    .executeTakeFirst();
+  return result ?? null;
 };
 
 /**
@@ -194,7 +191,7 @@ export const getNetworkUsersForTerritory = async (permissions: TerritoryPermissi
       for (const permission of permissions) {
         if (permission.type !== 'national' && permission.type in territoryPermissionToColumn) {
           const column = territoryPermissionToColumn[permission.type as keyof typeof territoryPermissionToColumn];
-          conditions.push(eb(`demands.${column}` as any, '=', permission.resourceId));
+          conditions.push(eb(`demands.${column}` as any, '=', permission.resource_id));
         }
       }
       return conditions.length > 0 ? eb.or(conditions) : sql.lit(false);

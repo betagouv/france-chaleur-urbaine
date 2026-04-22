@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import Tooltip from '@/components/ui/Tooltip';
 import type { RouterOutput } from '@/modules/trpc/client';
 
-type EmailItem = RouterOutput['demands']['user']['listEmails'][number];
+type EmailItem = RouterOutput['demands']['gestionnaire']['listEmails'][number];
 
 type EmailHistoryItemProps = {
   item: EmailItem;
@@ -47,7 +47,7 @@ const EmailHistoryItem = ({ item, onEmailClick }: EmailHistoryItemProps) => {
 };
 
 type EmailHistoryProps = {
-  emails: RouterOutput['demands']['user']['listEmails'] | null;
+  emails: RouterOutput['demands']['gestionnaire']['listEmails'] | null;
   isLoading: boolean;
   onEmailClick?: (emailKey: string) => void;
   showTitle?: boolean;

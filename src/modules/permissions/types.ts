@@ -9,26 +9,6 @@ export type NetworkPermissionType = (typeof networkPermissionTypes)[number];
 export type TerritoryPermissionType = (typeof territoryPermissionTypes)[number];
 export type PermissionType = (typeof permissionTypes)[number];
 
-// Discriminated union for permissions
-export type NetworkPermission = {
-  type: NetworkPermissionType;
-  resourceId: string;
-};
-
-export type TerritoryPermissionWithResource = {
-  type: Exclude<TerritoryPermissionType, 'national'>;
-  resourceId: string;
-};
-
-export type NationalPermission = {
-  type: 'national';
-  resourceId: null;
-};
-
-export type TerritoryPermission = TerritoryPermissionWithResource | NationalPermission;
-
-export type Permission = NetworkPermission | TerritoryPermission;
-
 // Mapping from territory permission type to demands column name
 export const territoryPermissionToColumn = {
   commune: 'commune_code',
@@ -38,24 +18,34 @@ export const territoryPermissionToColumn = {
   region: 'region_code',
 } as const satisfies Record<Exclude<TerritoryPermissionType, 'national'>, string>;
 
-// Zod schema
+// Zod schemas (source of truth for Permission types)
+const territoryWithResourceTypes = ['commune', 'epci', 'ept', 'departement', 'region'] as const;
+
+export const zNetworkPermission = z.object({
+  resource_id: z.string(),
+  type: z.enum(networkPermissionTypes),
+});
+
+export const zTerritoryPermission = z.discriminatedUnion('type', [
+  z.object({ resource_id: z.string(), type: z.enum(territoryWithResourceTypes) }),
+  z.object({ resource_id: z.null(), type: z.literal('national') }),
+]);
+
 export const zPermission = z.discriminatedUnion('type', [
-  z.object({ resourceId: z.string(), type: z.literal('reseau_existant') }),
-  z.object({ resourceId: z.string(), type: z.literal('reseau_en_construction') }),
-  z.object({ resourceId: z.string(), type: z.literal('commune') }),
-  z.object({ resourceId: z.string(), type: z.literal('epci') }),
-  z.object({ resourceId: z.string(), type: z.literal('ept') }),
-  z.object({ resourceId: z.string(), type: z.literal('departement') }),
-  z.object({ resourceId: z.string(), type: z.literal('region') }),
-  z.object({ resourceId: z.null(), type: z.literal('national') }),
+  z.object({ resource_id: z.string(), type: z.enum([...networkPermissionTypes, ...territoryWithResourceTypes]) }),
+  z.object({ resource_id: z.null(), type: z.literal('national') }),
 ]);
 
 export const zPermissionInput = z.array(zPermission).max(200, 'Maximum 200 permissions par utilisateur');
 
 export const MAX_PERMISSIONS_PER_USER = 200;
 
+export type NetworkPermission = z.infer<typeof zNetworkPermission>;
+export type TerritoryPermission = z.infer<typeof zTerritoryPermission>;
+export type Permission = z.infer<typeof zPermission>;
+
 // Permission with resolved human-readable label
 export type PermissionWithLabel = Permission & { label: string };
 
 // Stable key for a permission (used as map bounds dictionary key, React list key, etc.)
-export const permissionBoundsKey = (type: PermissionType, resourceId: string | null): string => `${type}:${resourceId ?? ''}`;
+export const permissionBoundsKey = (type: PermissionType, resource_id: string | null): string => `${type}:${resource_id ?? ''}`;

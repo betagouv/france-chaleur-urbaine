@@ -1,12 +1,11 @@
 import { TRPCError } from '@trpc/server';
-import type { User } from 'next-auth';
 
 import { clientConfig } from '@/client-config';
+import type { Context } from '@/modules/config/server/context-builder';
 import type { UpdateGestionnaireDemandInput } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
-import { buildDemandAccessFilter, getUserPermissions } from '@/modules/permissions/server/service';
-import type { Permission } from '@/modules/permissions/types';
+import { buildDemandAccessFilter } from '@/modules/permissions/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
@@ -14,28 +13,19 @@ import { anonymizeEmail, anonymizeName, anonymizePhone, buildDemandQuery, enrich
 
 const logger = parentLogger.child({ module: 'demands/gestionnaire-operations' });
 
-type ListOptions = {
-  anonymize?: boolean;
-  permissions?: Permission[];
-};
-
 /**
  * Liste les demandes accessibles par un gestionnaire/collectivité/ALEC selon ses permissions.
- * Anonymise les PII (email, nom, téléphone) si `options.anonymize` est vrai.
+ * Anonymise les PII (email, nom, téléphone) si `ctx.anonymize` est vrai.
  */
-export const listDemands = async (user: User, options?: ListOptions) => {
-  if (!user) {
-    return [];
-  }
-
+export const listDemands = async (ctx: Context) => {
   const startTime = Date.now();
-  const permissions = options?.permissions ?? (await getUserPermissions(user.id));
+  const permissions = await ctx.getPermissions();
 
-  if (permissions.length === 0 && user.role !== 'admin') {
+  if (permissions.length === 0 && ctx.user.role !== 'admin') {
     return [];
   }
 
-  const accessFilter = buildDemandAccessFilter(user, permissions);
+  const accessFilter = buildDemandAccessFilter(ctx.user, permissions);
 
   const records = await accessFilter(buildDemandQuery()).orderBy(sql`legacy_values->>'Date de la demande'`, 'desc').execute();
 
@@ -46,7 +36,7 @@ export const listDemands = async (user: User, options?: ListOptions) => {
   });
   const demands = records.map(({ testAddress, ...demand }) => enrichDemandForGestionnaire({ demand, testAddress }));
 
-  if (options?.anonymize) {
+  if (ctx.anonymize) {
     return demands.map((demand) => ({
       ...demand,
       Mail: anonymizeEmail(demand.Mail),

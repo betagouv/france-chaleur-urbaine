@@ -14,7 +14,7 @@ const NetworkChangeRequestDialog = ({ demandId }: NetworkChangeRequestDialogProp
   const [sncuId, setSncuId] = useState('');
   const [reason, setReason] = useState('');
 
-  const mutation = trpc.demands.territory.requestNetworkChange.useMutation({
+  const mutation = trpc.demands.gestionnaire.requestNetworkChange.useMutation({
     onSuccess: () => {
       setOpen(false);
       setSncuId('');

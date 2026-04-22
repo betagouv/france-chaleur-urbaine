@@ -149,7 +149,7 @@ export const searchTerritories = async (query: string, types?: string[]): Promis
 
 type ResolvedPermissionLabel = {
   type: string;
-  resourceId: string | null;
+  resource_id: string | null;
   label: string;
 };
 
@@ -161,12 +161,12 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
 
   const result: ResolvedPermissionLabel[] = [];
 
-  const networkIds = permissions.filter((p) => isNetworkPermissionType(p.type)).map((p) => p.resourceId!);
-  const communeCodes = permissions.filter((p) => p.type === 'commune').map((p) => p.resourceId!);
-  const epciCodes = permissions.filter((p) => p.type === 'epci').map((p) => p.resourceId!);
-  const eptCodes = permissions.filter((p) => p.type === 'ept').map((p) => p.resourceId!);
-  const deptCodes = permissions.filter((p) => p.type === 'departement').map((p) => p.resourceId!);
-  const regionCodes = permissions.filter((p) => p.type === 'region').map((p) => p.resourceId!);
+  const networkIds = permissions.filter((p) => isNetworkPermissionType(p.type)).map((p) => p.resource_id!);
+  const communeCodes = permissions.filter((p) => p.type === 'commune').map((p) => p.resource_id!);
+  const epciCodes = permissions.filter((p) => p.type === 'epci').map((p) => p.resource_id!);
+  const eptCodes = permissions.filter((p) => p.type === 'ept').map((p) => p.resource_id!);
+  const deptCodes = permissions.filter((p) => p.type === 'departement').map((p) => p.resource_id!);
+  const regionCodes = permissions.filter((p) => p.type === 'region').map((p) => p.resource_id!);
 
   const lookups = [];
 
@@ -190,12 +190,12 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
         const constructionMap = new Map(construction.map((r) => [r.id_fcu, r]));
 
         for (const p of permissions.filter((p) => isNetworkPermissionType(p.type))) {
-          const id = Number(p.resourceId);
+          const id = Number(p.resource_id);
           const ex = existingMap.get(id);
           const co = constructionMap.get(id);
           const name = ex?.nom_reseau || co?.nom_reseau || 'Réseau inconnu';
           const sncu = ex?.['Identifiant reseau'] ? ` (${ex['Identifiant reseau']})` : '';
-          result.push({ label: `${name}${sncu}`, resourceId: p.resourceId, type: p.type });
+          result.push({ label: `${name}${sncu}`, resource_id: p.resource_id, type: p.type });
         }
       })
     );
@@ -211,7 +211,7 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
         .then((rows) => {
           const map = new Map(rows.map((r) => [r.code, r.label]));
           for (const code of communeCodes) {
-            result.push({ label: map.get(code) ?? code, resourceId: code, type: 'commune' });
+            result.push({ label: map.get(code) ?? code, resource_id: code, type: 'commune' });
           }
         })
     );
@@ -227,7 +227,7 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
         .then((rows) => {
           const map = new Map(rows.map((r) => [r.code, r.label]));
           for (const code of epciCodes) {
-            result.push({ label: map.get(code) ?? code, resourceId: code, type: 'epci' });
+            result.push({ label: map.get(code) ?? code, resource_id: code, type: 'epci' });
           }
         })
     );
@@ -243,7 +243,7 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
         .then((rows) => {
           const map = new Map(rows.map((r) => [r.code, r.label]));
           for (const code of eptCodes) {
-            result.push({ label: map.get(code) ?? code, resourceId: code, type: 'ept' });
+            result.push({ label: map.get(code) ?? code, resource_id: code, type: 'ept' });
           }
         })
     );
@@ -259,7 +259,7 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
         .then((rows) => {
           const map = new Map(rows.map((r) => [r.code, r.label]));
           for (const code of deptCodes) {
-            result.push({ label: map.get(code) ?? code, resourceId: code, type: 'departement' });
+            result.push({ label: map.get(code) ?? code, resource_id: code, type: 'departement' });
           }
         })
     );
@@ -275,14 +275,14 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
         .then((rows) => {
           const map = new Map(rows.map((r) => [r.code, r.label]));
           for (const code of regionCodes) {
-            result.push({ label: map.get(code) ?? code, resourceId: code, type: 'region' });
+            result.push({ label: map.get(code) ?? code, resource_id: code, type: 'region' });
           }
         })
     );
   }
 
   if (permissions.some((p) => p.type === 'national')) {
-    result.push({ label: 'National', resourceId: null, type: 'national' });
+    result.push({ label: 'National', resource_id: null, type: 'national' });
   }
 
   await Promise.all(lookups);
@@ -291,20 +291,26 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
 };
 
 /**
- * Get permissions for a user with resolved labels.
+ * Resolves labels for an already-loaded list of permissions.
  */
-export const getUserPermissionsWithLabels = async (userId: string): Promise<PermissionWithLabel[]> => {
-  const permissions = await getUserPermissions(userId);
+export const resolvePermissionsWithLabels = async (permissions: Permission[]): Promise<PermissionWithLabel[]> => {
   if (permissions.length === 0) return [];
   const labels = await resolvePermissionLabels(permissions);
-  const labelMap = new Map(labels.map((l) => [`${l.type}:${l.resourceId}`, l.label]));
+  const labelMap = new Map(labels.map((l) => [`${l.type}:${l.resource_id}`, l.label]));
   return permissions.map(
     (p): PermissionWithLabel => ({
       ...p,
-      label: labelMap.get(`${p.type}:${p.resourceId}`) ?? (p.type === 'national' ? 'National' : (p.resourceId ?? '')),
+      label: labelMap.get(`${p.type}:${p.resource_id}`) ?? (p.type === 'national' ? 'National' : (p.resource_id ?? '')),
     })
   );
 };
+
+/**
+ * Get permissions for a user with resolved labels (loads from DB).
+ * Use `resolvePermissionsWithLabels` instead when permissions are already loaded.
+ */
+export const getUserPermissionsWithLabels = async (userId: string): Promise<PermissionWithLabel[]> =>
+  resolvePermissionsWithLabels(await getUserPermissions(userId));
 
 /**
  * Get all user permissions with resolved labels, grouped by user ID.
@@ -317,16 +323,16 @@ export const getAllPermissionsWithLabels = async (): Promise<Record<string, Perm
   const uniquePerms = new Map<string, Permission>();
   for (const row of rows) {
     const p = toPermission(row);
-    uniquePerms.set(`${p.type}:${p.resourceId}`, p);
+    uniquePerms.set(`${p.type}:${p.resource_id}`, p);
   }
 
   const labels = await resolvePermissionLabels([...uniquePerms.values()]);
-  const labelMap = new Map(labels.map((l) => [`${l.type}:${l.resourceId}`, l.label]));
+  const labelMap = new Map(labels.map((l) => [`${l.type}:${l.resource_id}`, l.label]));
 
   const result: Record<string, PermissionWithLabel[]> = {};
   for (const row of rows) {
     const p = toPermission(row);
-    const label = labelMap.get(`${p.type}:${p.resourceId}`) ?? (p.type === 'national' ? 'National' : (p.resourceId ?? ''));
+    const label = labelMap.get(`${p.type}:${p.resource_id}`) ?? (p.type === 'national' ? 'National' : (p.resource_id ?? ''));
     (result[row.user_id] ??= []).push({ ...p, label } as PermissionWithLabel);
   }
 

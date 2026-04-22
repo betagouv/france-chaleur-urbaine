@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import cliConfig from '@/cli-config';
+import type { NetworkPermission } from '@/modules/permissions/types';
 import { create } from '@/modules/users/server/service';
 import { type ApiAccounts, kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
@@ -137,7 +138,7 @@ async function syncPermissionsForUser(
   sncuIds: Set<string>,
   sncuToFcu: Map<string, { id_fcu: number; type: 'reseau_existant' | 'reseau_en_construction' }>
 ) {
-  const permissions: { resource_id: string; type: string; user_id: string }[] = [];
+  const permissions: (NetworkPermission & { user_id: string })[] = [];
 
   for (const sncuId of sncuIds) {
     const resolved = sncuToFcu.get(sncuId);

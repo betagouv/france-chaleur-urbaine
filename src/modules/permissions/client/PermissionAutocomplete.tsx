@@ -61,7 +61,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
       if (!availableTypes.includes(n.type)) continue;
       results.push({
         label: n.name,
-        permission: { resourceId: String(n.idFcu), type: n.type },
+        permission: { resource_id: String(n.idFcu), type: n.type },
         sublabel: `${permissionTypeLabels[n.type]} · ${n.sncuId ?? `FCU ${n.idFcu}`}${n.gestionnaire ? ` · ${n.gestionnaire}` : ''}`,
       });
     }
@@ -71,7 +71,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     for (const t of territoryResults.data) {
       results.push({
         label: t.label,
-        permission: { resourceId: t.code, type: t.type } as Permission,
+        permission: { resource_id: t.code, type: t.type } as Permission,
         sublabel: `${permissionTypeLabels[t.type]} · ${t.code}`,
       });
     }
@@ -81,7 +81,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
   if (isTerritoryMode && availableTypes.includes('national' as PermissionType) && !debouncedQuery) {
     results.unshift({
       label: 'National (tout le territoire)',
-      permission: { resourceId: null, type: 'national' },
+      permission: { resource_id: null, type: 'national' },
       sublabel: 'Accès à toutes les demandes',
     });
   }
@@ -152,7 +152,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
           )}
           {results.map((item, index) => (
             <li
-              key={`${item.permission.type}-${item.permission.resourceId}`}
+              key={`${item.permission.type}-${item.permission.resource_id}`}
               className={cx('px-3 py-2 cursor-pointer hover:bg-blue-100', index === highlightedIndex && 'bg-blue-50')}
               onMouseDown={() => handleSelect(item)}
               onMouseEnter={() => setHighlightedIndex(index)}

@@ -32,8 +32,8 @@ export type PermissionsMapData = {
 export const getPermissionsMapData = async (permissions: Permission[]): Promise<PermissionsMapData> => {
   const networkPerms = permissions.filter((p): p is NetworkPermission => isNetworkPermissionType(p.type));
 
-  const existingIds = networkPerms.filter((p) => p.type === 'reseau_existant').map((p) => Number(p.resourceId));
-  const constructionIds = networkPerms.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resourceId));
+  const existingIds = networkPerms.filter((p) => p.type === 'reseau_existant').map((p) => Number(p.resource_id));
+  const constructionIds = networkPerms.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resource_id));
 
   const pdpPromise =
     existingIds.length > 0 || constructionIds.length > 0
@@ -88,11 +88,11 @@ const getTerritoryGeometries = async (
     return { features: [], type: 'FeatureCollection' };
   }
 
-  const communeCodes = territoryPerms.filter((p) => p.type === 'commune').map((p) => p.resourceId!);
-  const deptCodes = territoryPerms.filter((p) => p.type === 'departement').map((p) => p.resourceId!);
-  const regionCodes = territoryPerms.filter((p) => p.type === 'region').map((p) => p.resourceId!);
-  const epciCodes = territoryPerms.filter((p) => p.type === 'epci').map((p) => p.resourceId!);
-  const eptCodes = territoryPerms.filter((p) => p.type === 'ept').map((p) => p.resourceId!);
+  const communeCodes = territoryPerms.filter((p) => p.type === 'commune').map((p) => p.resource_id!);
+  const deptCodes = territoryPerms.filter((p) => p.type === 'departement').map((p) => p.resource_id!);
+  const regionCodes = territoryPerms.filter((p) => p.type === 'region').map((p) => p.resource_id!);
+  const epciCodes = territoryPerms.filter((p) => p.type === 'epci').map((p) => p.resource_id!);
+  const eptCodes = territoryPerms.filter((p) => p.type === 'ept').map((p) => p.resource_id!);
 
   // Build UNION ALL parts — only include types that have permissions
   const parts: ReturnType<typeof sql>[] = [];
@@ -179,13 +179,13 @@ const buildPermissionGeomParts = (permissions: Permission[]): ReturnType<typeof 
   const territoryPerms = permissions.filter((p) => !isNetworkPermissionType(p.type) && p.type !== 'national');
   const networkPerms = permissions.filter((p): p is NetworkPermission => isNetworkPermissionType(p.type));
 
-  const communeCodes = territoryPerms.filter((p) => p.type === 'commune').map((p) => p.resourceId!);
-  const deptCodes = territoryPerms.filter((p) => p.type === 'departement').map((p) => p.resourceId!);
-  const regionCodes = territoryPerms.filter((p) => p.type === 'region').map((p) => p.resourceId!);
-  const epciCodes = territoryPerms.filter((p) => p.type === 'epci').map((p) => p.resourceId!);
-  const eptCodes = territoryPerms.filter((p) => p.type === 'ept').map((p) => p.resourceId!);
-  const reseauxExistantsIds = networkPerms.filter((p) => p.type === 'reseau_existant').map((p) => Number(p.resourceId));
-  const reseauxEnConstructionIds = networkPerms.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resourceId));
+  const communeCodes = territoryPerms.filter((p) => p.type === 'commune').map((p) => p.resource_id!);
+  const deptCodes = territoryPerms.filter((p) => p.type === 'departement').map((p) => p.resource_id!);
+  const regionCodes = territoryPerms.filter((p) => p.type === 'region').map((p) => p.resource_id!);
+  const epciCodes = territoryPerms.filter((p) => p.type === 'epci').map((p) => p.resource_id!);
+  const eptCodes = territoryPerms.filter((p) => p.type === 'ept').map((p) => p.resource_id!);
+  const reseauxExistantsIds = networkPerms.filter((p) => p.type === 'reseau_existant').map((p) => Number(p.resource_id));
+  const reseauxEnConstructionIds = networkPerms.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resource_id));
 
   const parts: ReturnType<typeof sql>[] = [];
 
@@ -250,7 +250,7 @@ const buildPermissionGeomParts = (permissions: Permission[]): ReturnType<typeof 
 
 /**
  * Computes in one query:
- *  - the per-permission bounds (keyed by `${type}:${resourceId}`)
+ *  - the per-permission bounds (keyed by `${type}:${resource_id}`)
  *  - the global bounds encompassing all permissions
  *
  * Uses a CTE over the shared `buildPermissionGeomParts`.

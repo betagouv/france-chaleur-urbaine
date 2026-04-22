@@ -25,7 +25,7 @@ const PermissionsEditor = ({ userId }: PermissionsEditorProps) => {
 
   const handleAdd = (permission: Permission) => {
     const current = permissions ?? [];
-    const exists = current.some((p) => p.type === permission.type && p.resourceId === permission.resourceId);
+    const exists = current.some((p) => p.type === permission.type && p.resource_id === permission.resource_id);
     if (!exists) {
       setPermissions.mutate({ permissions: [...current, permission], userId });
     }
@@ -44,7 +44,7 @@ const PermissionsEditor = ({ userId }: PermissionsEditorProps) => {
         <div className="flex flex-wrap gap-2">
           {permissions.map((p, i) => (
             <Tag
-              key={`${p.type}-${p.resourceId}`}
+              key={`${p.type}-${p.resource_id}`}
               dismissible
               small
               nativeButtonProps={{
