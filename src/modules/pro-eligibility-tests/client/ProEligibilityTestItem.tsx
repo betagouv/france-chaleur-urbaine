@@ -1,7 +1,6 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Tabs } from '@codegouvfr/react-dsfr/Tabs';
 import type { ColumnFiltersState, RowSelectionState, SortingState } from '@tanstack/react-table';
-import dayjs from 'dayjs';
 import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -398,7 +397,7 @@ const quickFilterPresets = {
   },
 } satisfies Record<string, QuickFilterPreset<RouterOutput['proEligibilityTests']['get']['addresses'][number]>>;
 
-const queryParamName = 'test-adresses';
+export const queryParamName = 'test-adresses';
 
 type ProEligibilityTestItemProps = {
   test: RouterOutput['proEligibilityTests']['list']['items'][number] | RouterOutput['proEligibilityTests']['listAdmin']['items'][number];
@@ -528,20 +527,19 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
 
   useEffect(() => {
     if (viewDetail && (test.has_unseen_results || test.has_unseen_changes) && !readOnly && !isMarkAsSeenLoading) {
+      trackPostHogEvent('bulk_test:result_displayed', {
+        bulk_test_id: test.id,
+        rows_eligible: filteredAddresses.map((a) => a.eligibility.eligible).length,
+        rows_error: filteredAddresses.map((a) => !a.ban_valid || !a.geom).length,
+        rows_near_network: filteredAddresses.map((a) => (a.eligibility.distance || 1000) < 100).length,
+        rows_non_eligible: filteredAddresses.map((a) => !a.eligibility.eligible).length,
+        rows_total: filteredAddresses.length,
+      });
       void (async () => {
         await markAsSeen({ id: test.id });
       })();
     }
   }, [viewDetail, test.has_unseen_results, test.has_unseen_changes, markAsSeen, refetch, readOnly, isMarkAsSeenLoading]);
-
-  useEffect(() => {
-    if (!value) return;
-    trackPostHogEvent('bulk_test:session_resumed', {
-      bulk_test_id: value,
-      days_since_creation: dayjs().diff(dayjs(test.created_at), 'day'),
-      is_original_creator: test.user_id === profile?.id,
-    });
-  }, [value]);
 
   const filteredAddressesMapData = useMemo(() => {
     return filteredAddresses
@@ -655,7 +653,6 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
     },
   ];
 
-  const { data: profile } = trpc.users.getProfile.useQuery();
   return (
     <UrlStateAccordion
       queryParamName={queryParamName}

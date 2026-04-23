@@ -86,6 +86,14 @@ export type PostHogEventMap = {
     bulk_test_id: string;
     filter_type: string;
   };
+  'bulk_test:result_displayed': {
+    bulk_test_id: string;
+    rows_eligible: number;
+    rows_error: number;
+    rows_near_network: number;
+    rows_non_eligible: number;
+    rows_total: number;
+  };
 
   // Potentiel création réseau
   'potentiel-creation-reseau:commune_form_submit': {

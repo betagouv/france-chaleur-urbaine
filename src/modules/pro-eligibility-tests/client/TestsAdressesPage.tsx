@@ -1,5 +1,7 @@
+import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
+import { useQueryState } from 'nuqs';
 import { useCallback, useEffect, useState } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -9,17 +11,20 @@ import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import Loader from '@/components/ui/Loader';
 import Section, { SectionContent, SectionSubtitle, SectionTitle } from '@/components/ui/Section';
-import ProEligibilityTestItem from '@/modules/pro-eligibility-tests/client/ProEligibilityTestItem';
+import { trackPostHogEvent } from '@/modules/analytics/client';
+import ProEligibilityTestItem, { queryParamName } from '@/modules/pro-eligibility-tests/client/ProEligibilityTestItem';
 import UpsertEligibilityTestForm from '@/modules/pro-eligibility-tests/client/UpsertEligibilityTestForm';
 import trpc from '@/modules/trpc/client';
 
 export default function TestsAdressesPage(): JSX.Element {
+  const [value] = useQueryState(queryParamName);
   const [hasPendingJobs, setHasPendingJobs] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data, isLoading } = trpc.proEligibilityTests.list.useQuery(undefined, {
     refetchInterval: hasPendingJobs ? 5000 : false,
   });
+  const { data: profile } = trpc.users.getProfile.useQuery();
 
   const utils = trpc.useUtils();
 
@@ -38,6 +43,28 @@ export default function TestsAdressesPage(): JSX.Element {
   useEffect(() => {
     setHasPendingJobs(eligibilityTests?.some((test) => test.has_pending_jobs) ?? false);
   }, [eligibilityTests]);
+
+  useEffect(() => {
+    if (!value) {
+      return;
+    }
+
+    const resumedTest = eligibilityTests.find((test) => test.id === value);
+    if (!resumedTest) {
+      return;
+    }
+
+    const daysSinceCreation = dayjs().diff(dayjs(resumedTest.created_at), 'day');
+    if (daysSinceCreation <= 0) {
+      return;
+    }
+
+    trackPostHogEvent('bulk_test:session_resumed', {
+      bulk_test_id: value,
+      days_since_creation: daysSinceCreation,
+      is_original_creator: resumedTest.user_id === profile?.id,
+    });
+  }, [eligibilityTests, profile?.id, value]);
 
   const handleDeleteTest = useCallback(
     (testId: string) => {
