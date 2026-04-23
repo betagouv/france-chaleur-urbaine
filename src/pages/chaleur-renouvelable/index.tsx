@@ -355,8 +355,8 @@ function ChaleurRenouvelablePage() {
     >
       <div className="fr-p-1w md:fr-p-5w w-full bg-[#C3E4E2] bg-[url('/img/banner_simulateur.webp')] bg-no-repeat bg-cover bg-left-center">
         <div className="fr-container">
-          <h1 className="fr-mt-2w md:fr-mt-5w">
-            Rejoignez les <span className="text-[#009081] underline">13 millions</span> de français
+          <h1 className="fr-mt-2w md:fr-mt-5w text-white">
+            Rejoignez les 13 millions de français
             <br /> qui se chauffent autrement
           </h1>
           <div className="rounded border-2 border-blue-600 bg-white p-6 shadow-sm">
