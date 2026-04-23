@@ -56,7 +56,7 @@ The platform serves three main audiences:
 | Professionnel | Submit demands, run bulk eligibility tests, view own demands | Access admin features, manage other users |
 | Particulier | Submit single demand, test eligibility | Bulk testing, dashboard features |
 
-PII anonymization for demos: admin toggles a cookie (`fcu-anonymize`) at `/admin/impostures`, which anonymizes `Mail`/`Nom`/`Prénom`/`Téléphone` in `demands.gestionnaire.list`. Works under admin impersonation too.
+PII anonymization for demos: admin enables an `anonymize` checkbox when starting an imposture at `/admin/impostures`. The flag is carried by the impersonation JWT and masks `Mail`/`Nom`/`Prénom`/`Téléphone` in `demands.gestionnaire.list`.
 
 Permissions are managed in `user_permissions` table (not string tags). See `security.md` for details.
 

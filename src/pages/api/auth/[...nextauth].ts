@@ -20,7 +20,11 @@ export const nextAuthOptions: AuthOptions = {
       const user = token?.sub ? await getUserSession(token.sub) : null;
 
       if (token) {
-        const { permissions: impersonatedPermissions, ...impersonatedProfileRest } = token.impersonatedProfile ?? {};
+        const {
+          permissions: impersonatedPermissions,
+          anonymize: impersonatedAnonymize,
+          ...impersonatedProfileRest
+        } = token.impersonatedProfile ?? {};
         return {
           ...session,
           user: {
@@ -30,6 +34,7 @@ export const nextAuthOptions: AuthOptions = {
           },
           ...(token.impersonatedProfile ? { impersonating: true } : {}),
           ...(impersonatedPermissions ? { impersonatedPermissions } : {}),
+          ...(impersonatedAnonymize ? { anonymize: true } : {}),
         } as Session;
       }
       return session;

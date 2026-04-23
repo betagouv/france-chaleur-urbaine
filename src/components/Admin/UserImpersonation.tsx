@@ -1,4 +1,5 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { useState } from 'react';
 
@@ -26,12 +27,14 @@ const roleNeedsPermissions = (role: ImpersonateUserRole): boolean => {
 const UserImpersonation = () => {
   const [selectedRole, setSelectedRole] = useState<ImpersonateUserRole>('gestionnaire');
   const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [anonymize, setAnonymize] = useState(false);
 
   async function startImpersonation() {
     try {
       await postFetchJSON('/api/admin/impersonate', {
         role: selectedRole,
         ...(roleNeedsPermissions(selectedRole) && permissions.length > 0 ? { permissions } : {}),
+        ...(anonymize ? { anonymize: true } : {}),
       });
       // trigger a full reload to update the session
       location.href = '/pro/tableau-de-bord';
@@ -65,6 +68,19 @@ const UserImpersonation = () => {
           <PermissionsInput value={permissions} onChange={setPermissions} availableTypes={permissionTypes} />
         </div>
       )}
+
+      <Checkbox
+        options={[
+          {
+            hintText: 'Utile pour les démonstrations.',
+            label: 'Anonymiser les données personnelles (nom, email, téléphone)',
+            nativeInputProps: {
+              checked: anonymize,
+              onChange: (e) => setAnonymize(e.target.checked),
+            },
+          },
+        ]}
+      />
 
       <Button className="fr-mt-2w" onClick={() => startImpersonation()}>
         Lancer l'imposture

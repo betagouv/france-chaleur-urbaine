@@ -23,11 +23,13 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   requireAuthentication(req.user, ['admin']);
 
   const impersonatedProfile = await validateObjectSchema(req.body, {
+    anonymize: z.boolean().optional(),
     permissions: z.array(z.object({ resource_id: z.string().nullable(), type: z.string() })).optional(),
     role: z.enum(['gestionnaire', 'collectivite', 'alec', 'professionnel', 'particulier'] as NonEmptyArray<UserRole>),
   });
 
   logger.info('impersonating', {
+    anonymize: impersonatedProfile.anonymize ?? false,
     permissionsCount: impersonatedProfile.permissions?.length ?? 0,
     role: impersonatedProfile.role,
   });
@@ -38,6 +40,7 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
     impersonatedProfile: {
       role: impersonatedProfile.role,
       ...(impersonatedProfile.permissions?.length ? { permissions: impersonatedProfile.permissions } : {}),
+      ...(impersonatedProfile.anonymize ? { anonymize: true } : {}),
     },
   });
   return;

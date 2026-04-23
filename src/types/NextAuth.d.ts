@@ -7,6 +7,7 @@ declare module 'next-auth' {
     user: User;
     impersonating?: true;
     impersonatedPermissions?: { type: string; resource_id: string | null }[];
+    anonymize?: true;
   }
 
   interface User {
@@ -30,6 +31,7 @@ declare module 'next-auth/jwt' {
     impersonatedProfile?: {
       role: UserRole;
       permissions?: { type: string; resource_id: string | null }[];
+      anonymize?: boolean;
     };
   }
 }

@@ -25,8 +25,8 @@ enum USER_ROLE {
   PARTICULIER = 'particulier',    // Individual citizen
 }
 
-// Admin can impersonate any role and toggle PII anonymization via the `fcu-anonymize` cookie
-// (set from /admin/impostures). See `src/modules/config/server/context-builder.ts`.
+// Admin can impersonate any role from /admin/impostures, optionally toggling PII anonymization
+// (stored in the impersonation JWT). See `src/modules/config/server/context-builder.ts`.
 ```
 
 ### Permissions system
