@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { useMapController } from '@/components/Map/useMapController';
 import Accordion from '@/components/ui/Accordion';
+import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import trpc from '@/modules/trpc/client';
 import cx from '@/utils/cx';
@@ -41,6 +42,10 @@ const PermissionsView = () => {
   return (
     <div className="space-y-4">
       <PermissionsList permissions={permissions} selectedKey={selectedKey} onSelect={handleSelect} />
+
+      <p className="text-sm text-faded">
+        Ces permissions sont incorrectes ? <Link href="/contact">Contactez-nous</Link> pour demander une correction.
+      </p>
 
       <Accordion label="Voir sur la carte" simple expanded={expanded} onExpandedChange={setExpanded}>
         <PermissionsMap mapRef={mapRef} />
