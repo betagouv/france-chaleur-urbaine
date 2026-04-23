@@ -25,9 +25,7 @@ type EligibilityFormContactType = {
 
 const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: EligibilityFormContactType) => {
   const trpcUtils = trpc.useUtils();
-  const [contactFormLoading, setContactFormLoading] = useState(false);
-  const [contactFormError, setContactFormError] = useState(false);
-  const [contactFormSuccess, setContactFormSuccess] = useState(false);
+  const [contactFormState, setContactFormState] = useState('');
 
   const { title, body, computedEligibility, display, text } = useMemo(() => {
     if (!addressData.eligibility) {
@@ -68,8 +66,8 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
   const handleSubmitForm = useCallback(
     async (values: ContactFormInfos) => {
       try {
-        setContactFormError(false);
-        setContactFormSuccess(false);
+        setContactFormState('loading');
+
         const sendedValues: any = {
           ...addressData,
           ...values,
@@ -85,29 +83,24 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
 
         const shouldCreateDemand = display !== 'collectContact' || values.acceptGestionnaire;
 
-        if (display === 'collectContact' || (onSubmit && shouldCreateDemand)) {
-          setContactFormLoading(true);
-        }
-
         if (display === 'collectContact') {
           await trpcUtils.client.demands.user.createFCUTeamContact.mutate({
             ...values,
             address: sendedValues.address,
           });
-          setContactFormSuccess(true);
+          setContactFormState(!shouldCreateDemand ? 'success' : '');
         }
 
         if (onSubmit && shouldCreateDemand) {
           await onSubmit(sendedValues).finally(() => {
-            setContactFormLoading(false);
+            setContactFormState('');
           });
           return;
         }
 
-        setContactFormLoading(false);
-      } catch (_err: any) {
-        setContactFormLoading(false);
-        setContactFormError(true);
+        setContactFormState('');
+      } catch (_err) {
+        setContactFormState('error');
       }
     },
     [addressData, computedEligibility, display, onSubmit, trpcUtils]
@@ -186,20 +179,20 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
               display={display}
               city={addressData.geoAddress?.properties.city}
               onSubmit={handleSubmitForm}
-              isLoading={contactFormLoading}
+              isLoading={contactFormState === 'loading'}
               cardMode={cardMode}
             />
-            {contactFormError && (
+            {contactFormState === 'error' && (
               <Box textColor="#c00" mt="1w">
                 Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
               </Box>
             )}
-            {display === 'collectContact' && contactFormSuccess && (
+            {contactFormState === 'success' && (
               <Alert
                 className="fr-mt-2w"
                 severity="success"
                 small
-                description="Merci, votre demande a bien été envoyée. Notre équipe pourra revenir vers vous prochainement."
+                description="Merci, votre demande a bien été envoyée. Notre équipe reviendra vers vous prochainement."
               />
             )}
           </ContactFormContentWrapper>
