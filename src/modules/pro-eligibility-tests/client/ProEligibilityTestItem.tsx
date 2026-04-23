@@ -681,7 +681,13 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
                 data={addresses}
                 loading={isDataLoading}
                 columnFilters={columnFilters}
-                onFiltersChange={setColumnFilters}
+                onFiltersChange={(e) => {
+                  trackPostHogEvent('bulk_test:results_filtered', {
+                    bulk_test_id: test.id,
+                    filter_type: e[0].id,
+                  });
+                  setColumnFilters(e);
+                }}
                 hideDividerOnMobile={false}
               />
             </div>
@@ -744,11 +750,9 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
                       setIsBatchModalOpen(true);
                     }}
                     disabled={Object.keys(rowSelection).length === 0}
-                    postHogEventKey="bulk_test:contact_request_submitted"
+                    postHogEventKey="bulk_test:contact_request_clicked"
                     postHogEventProps={{
                       bulk_test_id: test.id,
-                      has_phone: profile?.phone !== '',
-                      professional_type: profile?.structure_type,
                       selected_rows_count: Object.keys(rowSelection).length,
                     }}
                   >
@@ -767,6 +771,7 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
           {!readOnly && (
             <ModalSimple title="Demande de mise en relation" size="large" open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
               <BatchDemandMultiStepForm
+                testId={test.id}
                 addresses={selectedAddresses}
                 onSuccess={() => {
                   setIsBatchModalOpen(false);

@@ -67,6 +67,10 @@ export type PostHogEventMap = {
     rows_count: number;
     file_size_kb: number;
   };
+  'bulk_test:contact_request_clicked': {
+    bulk_test_id: string;
+    selected_rows_count: number;
+  };
   'bulk_test:contact_request_submitted': {
     bulk_test_id: string;
     selected_rows_count: number;
@@ -78,6 +82,11 @@ export type PostHogEventMap = {
     days_since_creation: number;
     is_original_creator: boolean;
   };
+  'bulk_test:results_filtered': {
+    bulk_test_id: string;
+    filter_type: string;
+  };
+
   // Potentiel création réseau
   'potentiel-creation-reseau:commune_form_submit': {
     commune: string;

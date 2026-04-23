@@ -36,11 +36,12 @@ type AddressData = {
 };
 
 interface BatchDemandFormProps {
+  testId: string;
   addresses: AddressData[];
   onSuccess: () => void;
 }
 
-export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFormProps) => {
+export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: BatchDemandFormProps) => {
   const { hasRole } = useAuthentication();
   const isAdmin = hasRole('admin');
   const addressesWithExistingDemand = useMemo(() => addresses.filter((addr) => addr.demand_id), [addresses]);
@@ -77,7 +78,7 @@ export const BatchDemandMultiStepForm = ({ addresses, onSuccess }: BatchDemandFo
       };
     }) => {
       trackPostHogEvent('bulk_test:contact_request_submitted', {
-        bulk_test_id: '',
+        bulk_test_id: testId,
         has_phone: value.contact?.phone !== '',
         professional_type: value.contact?.structure,
         selected_rows_count: value.addresses.length,
