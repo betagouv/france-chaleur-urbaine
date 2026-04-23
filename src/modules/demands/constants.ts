@@ -330,7 +330,6 @@ export const zCreateFCUTeamContactInput = z
   .superRefine(validateDemandContactInfo);
 
 export type ContactFormInfos = z.infer<typeof zContactFormCreateDemandInput>;
-export type AirtableFCUTeamContact = z.infer<typeof zAirtableFCUTeamContact>;
 export type BatchDemandContactInfo = z.infer<typeof zBatchDemandContactSchema>;
 export type CreateFCUTeamContactInput = z.infer<typeof zCreateFCUTeamContactInput>;
 
