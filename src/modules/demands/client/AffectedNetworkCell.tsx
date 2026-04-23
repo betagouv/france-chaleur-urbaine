@@ -126,7 +126,7 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
         </div>
         <Tooltip title={props.isAdmin ? "Changer l'affectation du réseau" : 'Demander une réaffectation'}>
           <Button
-            priority="tertiary no outline"
+            priority="tertiary"
             size="small"
             iconId="fr-icon-arrow-left-right-line"
             title={props.isAdmin ? "Changer l'affectation" : 'Demander une réaffectation'}
