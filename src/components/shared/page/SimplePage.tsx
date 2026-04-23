@@ -13,6 +13,7 @@ import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
+import Notice from '@/components/ui/Notice';
 import useRouterReady from '@/hooks/useRouterReady';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
@@ -53,6 +54,7 @@ const SimplePage = ({
         ]}
       />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
+      <Notice>La plateforme France Chaleur Urbaine sera indisponible le 15 mai 2026 de 10h à 12h pour une opération de migration.</Notice>
 
       <main
         id="main-content"
