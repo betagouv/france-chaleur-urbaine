@@ -43,8 +43,6 @@ export const createDemand = async (
         'Affecté à': null,
         Conso: conso ? conso.conso_nb : undefined,
         'Date de la demande': new Date().toISOString(),
-        Gestionnaires: null,
-        'Gestionnaires validés': false,
         'ID BNB': nbLogement?.batiment_groupe_id ? `${nbLogement.batiment_groupe_id}` : undefined,
         'ID réseau le plus proche': null,
         Logement: nbLogement?.nb_logements ? nbLogement.nb_logements : undefined,

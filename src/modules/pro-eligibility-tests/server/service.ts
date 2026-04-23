@@ -1,4 +1,5 @@
 import { getBANAddressFromAddress, getBANAddressFromCoordinates } from '@/modules/ban/server/service';
+import { mergeLegacyValues } from '@/modules/demands/server/legacy-values';
 import { createUserEvent } from '@/modules/events/server/service';
 import type { BoundingBox } from '@/modules/geo/types';
 import {
@@ -564,14 +565,14 @@ export const updateEligibilityTestAddress = async (addressId: string, address: s
     await kdb
       .updateTable('demands')
       .set({
-        legacy_values: sql`legacy_values || ${JSON.stringify({
+        legacy_values: mergeLegacyValues({
           Adresse: address,
           'Distance au réseau': lastEligibility?.distance ?? null,
           'Identifiant réseau': lastEligibility?.id_sncu ?? null,
           Latitude: latitude,
           Longitude: longitude,
           'Nom réseau': lastEligibility?.nom ?? null,
-        })}::jsonb`,
+        }),
       })
       .where('id', '=', updatedAddress.demand_id)
       .execute();

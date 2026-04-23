@@ -50,7 +50,6 @@ export type Demand = DemandSummary &
     'Emails envoyés'?: string;
     Longitude: number;
     Latitude: number;
-    'Gestionnaires validés': boolean;
     Commentaires_internes_FCU: string;
 
     // computed

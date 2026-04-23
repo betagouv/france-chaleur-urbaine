@@ -3,6 +3,8 @@ import { canUserAccessDemand, getAllUsersWithPermissions } from '@/modules/permi
 import { kdb, sql } from '@/server/db/kysely';
 import { processInParallel } from '@/utils/async';
 
+import { mergeLegacyValues } from './legacy-values';
+
 /**
  * Number of concurrent email sends — matches the nodemailer pool size.
  */
@@ -108,7 +110,7 @@ export const notifyGestionnairesOfNewDemands = async () => {
       await kdb
         .updateTable('demands')
         .set({
-          legacy_values: sql`legacy_values || ${JSON.stringify({ 'Notification envoyé': new Date().toDateString() })}::jsonb`,
+          legacy_values: mergeLegacyValues({ 'Notification envoyé': new Date().toDateString() }),
           updated_at: new Date(),
         })
         .where('id', '=', demand.id)

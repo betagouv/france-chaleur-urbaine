@@ -2,9 +2,8 @@ import { z } from 'zod';
 
 import { adminRoute, demandAccessRoute, router } from '@/modules/trpc/server';
 
-import { type TerritoryPermission, zPermissionInput } from '../types';
-import { getDemandForAccessCheck, getNetworkUsersForTerritory, getUsersWithAccessToDemand } from './demand-access';
-import { isNetworkPermissionType } from './helpers';
+import { zPermissionInput } from '../types';
+import { getDemandForAccessCheck, getUsersWithAccessToDemand } from './demand-access';
 import { getPermissionsMapData } from './map-data';
 import {
   getAllPermissionsWithLabels,
@@ -50,12 +49,6 @@ export const permissionsRouter = router({
       })
     )
     .query(({ input }) => searchTerritories(input.query, input.types)),
-
-  territoryGestionnaires: demandAccessRoute.query(async ({ ctx }) => {
-    const permissions = await ctx.getPermissions();
-    const territoryPerms = permissions.filter((p): p is TerritoryPermission => !isNetworkPermissionType(p.type));
-    return getNetworkUsersForTerritory(territoryPerms);
-  }),
 
   usersWithAccessToDemand: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).query(async ({ input }) => {
     const demand = await getDemandForAccessCheck(input.demandId);

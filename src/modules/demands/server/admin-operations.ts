@@ -3,11 +3,12 @@ import { TRPCError } from '@trpc/server';
 import type { UpdateAdminDemandInput } from '@/modules/demands/constants';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
 import type { NetworkType } from '@/modules/reseaux/constants';
-import { kdb, sql } from '@/server/db/kysely';
+import { kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
 import { computeNetworkDistance } from './eligibility';
 import { buildDemandQuery, enrichDemandForAdmin, getDemandById, resolveNetworkInfo } from './helpers';
+import { mergeLegacyValues } from './legacy-values';
 
 const logger = parentLogger.child({ module: 'demands/admin-operations' });
 
@@ -92,10 +93,9 @@ export const validateDemand = async (demandId: string, adminUserId: string) => {
   await kdb
     .updateTable('demands')
     .set({
-      legacy_values: sql`legacy_values || ${JSON.stringify({
-        'Gestionnaires validés': true,
+      legacy_values: mergeLegacyValues({
         'Relance à activer': relanceAActiver,
-      })}::jsonb`,
+      }),
       updated_at: new Date(),
       validated: true,
     })
@@ -153,11 +153,11 @@ export const changeDemandAssignment = async (
   await kdb
     .updateTable('demands')
     .set({
-      legacy_values: sql`legacy_values || ${JSON.stringify({
+      legacy_values: mergeLegacyValues({
         'Distance au réseau': newDistance,
         'Identifiant réseau': newInfo.network_sncu_id,
         'Nom réseau': newInfo.network_name,
-      })}::jsonb`,
+      }),
       network_id: networkIdFcu,
       network_type: networkType,
       pending_assignment_change: null,
@@ -252,44 +252,11 @@ export const updateDemandByAdmin = async (demandId: string, values: UpdateAdminD
     throw new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' });
   }
 
-  // If 'Affecté à' is changing, clear the downstream 'Gestionnaire Affecté à'.
-  const legacyPatch: Record<string, unknown> = { ...legacyUpdates };
-  if (
-    legacyUpdates['Affecté à'] &&
-    currentDemand.legacy_values['Gestionnaire Affecté à'] &&
-    legacyUpdates['Affecté à'] !== currentDemand.legacy_values['Affecté à']
-  ) {
-    legacyPatch['Gestionnaire Affecté à'] = null;
-  }
-
-  const columnUpdates: Record<string, unknown> = {};
-  if ('Gestionnaires validés' in legacyUpdates) {
-    columnUpdates.validated = legacyUpdates['Gestionnaires validés'] === true;
-  }
-  if ('Identifiant réseau' in legacyUpdates) {
-    const sncuId = legacyUpdates['Identifiant réseau'];
-    if (sncuId) {
-      const network = await kdb
-        .selectFrom('reseaux_de_chaleur')
-        .select('id_fcu')
-        .where('"Identifiant reseau"' as any, '=', sncuId)
-        .executeTakeFirst();
-      if (network) {
-        columnUpdates.network_id = network.id_fcu;
-        columnUpdates.network_type = 'existant';
-      }
-    } else {
-      columnUpdates.network_id = null;
-      columnUpdates.network_type = null;
-    }
-  }
-
   const [updatedDemand] = await kdb
     .updateTable('demands')
     .set({
       ...(comment_fcu && { comment_fcu }),
-      ...columnUpdates,
-      legacy_values: sql`legacy_values || ${JSON.stringify(legacyPatch)}::jsonb`,
+      legacy_values: mergeLegacyValues(legacyUpdates),
       updated_at: new Date(),
     })
     .where('id', '=', demandId)
@@ -302,13 +269,12 @@ export const updateDemandByAdmin = async (demandId: string, values: UpdateAdminD
     .where('demand_id', '=', updatedDemand.id)
     .executeTakeFirst();
 
-  const eventType = columnUpdates.validated === true ? 'demand_assigned' : 'demand_updated';
   await createUserEvent({
     author_id: adminUserId,
     context_id: demandId,
     context_type: 'demand',
     data: values,
-    type: eventType,
+    type: 'demand_updated',
   });
 
   const demand = await getDemandById(updatedDemand.id);

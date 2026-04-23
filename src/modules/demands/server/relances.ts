@@ -8,6 +8,7 @@ import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
 import { enrichDemandForAdmin, getDemandById } from './helpers';
+import { mergeLegacyValues } from './legacy-values';
 
 const logger = parentLogger.child({ module: 'demands/relances' });
 
@@ -62,10 +63,10 @@ export const sendRelanceToDemandeurs = async () => {
     await kdb
       .updateTable('demands')
       .set({
-        legacy_values: sql`legacy_values || ${JSON.stringify({
+        legacy_values: mergeLegacyValues({
           'Relance ID': relanceId,
           [relanceField]: new Date().toDateString(),
-        })}::jsonb`,
+        }),
         updated_at: new Date(),
       })
       .where('id', '=', demand.id)
@@ -116,7 +117,7 @@ export const updateCommentFromRelanceId = async (relanceId: string, comment: str
   await kdb
     .updateTable('demands')
     .set({
-      legacy_values: sql`legacy_values || ${JSON.stringify({ 'Commentaire relance': comment })}::jsonb`,
+      legacy_values: mergeLegacyValues({ 'Commentaire relance': comment }),
       updated_at: new Date(),
     })
     .where('id', '=', demand.id)
@@ -151,7 +152,7 @@ export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfa
   const [updatedDemand] = await kdb
     .updateTable('demands')
     .set({
-      legacy_values: sql`legacy_values || ${JSON.stringify({ 'Recontacté par le gestionnaire': satisfactionValue })}::jsonb`,
+      legacy_values: mergeLegacyValues({ 'Recontacté par le gestionnaire': satisfactionValue }),
       updated_at: new Date(),
     })
     .where('id', '=', relanceDemand.id)
@@ -194,7 +195,7 @@ export const updateDemandByUser = async (demandId: string, values: UpdateUserDem
   const [updatedDemand] = await kdb
     .updateTable('demands')
     .set({
-      legacy_values: sql`legacy_values || ${JSON.stringify(values)}::jsonb`,
+      legacy_values: mergeLegacyValues(values),
       updated_at: new Date(),
     })
     .where('id', '=', demandId)

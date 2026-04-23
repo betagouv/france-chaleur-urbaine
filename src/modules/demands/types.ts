@@ -17,14 +17,18 @@ export type PendingAssignmentChange = {
   distance: number | null;
 };
 // Ce type permet de corriger le type Legacy existant avec ce que nous récupérons véritablement de Airtable
-export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status'>> & {
+export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status' | 'Gestionnaires' | 'Affecté à'>> & {
   'ID BNB'?: string;
   'Notification envoyé'?: string;
   'Recontacté par le gestionnaire'?: string;
   'Relance ID'?: string;
-  Sondage?: string[];
-  'Commentaire relance'?: string;
+  'Relance envoyée'?: string;
+  'Seconde relance envoyée'?: string;
+  Sondage?: string[] | null;
+  'Commentaire relance'?: string | null;
   'Distance au réseau'?: number | null;
+  'Identifiant réseau'?: string | null;
+  'Nom réseau'?: string | null;
   'Code Postal'?: string;
   'Date de la demande': string;
   'ID Conso'?: number;
@@ -35,6 +39,9 @@ export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status'>> 
   'Relance à activer'?: boolean;
   Gestionnaires: string[] | null;
   'Gestionnaire Distance au réseau'?: number | null;
+  'Gestionnaire Conso'?: number | null;
+  'Gestionnaire Logement'?: number | null;
+  'Surface en m2'?: number | null;
   'Affecté à': string | string[] | null;
   Logement: number;
 };

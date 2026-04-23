@@ -3,6 +3,7 @@ import { kdb, sql } from '@/server/db/kysely';
 /**
  * External API: returns demands matching tags from api_accounts.gestionnaires.
  * Used only by /api/v1/demands/[key] for API consumers.
+ * @deprecated N'est plus fonctionnel depuis la migration vers le nouveau système de permissions
  */
 export const getDemandsForGestionnairesApi = async (gestionnaires: string[]) => {
   const records = await kdb

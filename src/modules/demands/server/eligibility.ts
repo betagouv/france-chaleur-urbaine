@@ -9,6 +9,8 @@ import { kdb, sql } from '@/server/db/kysely';
 import type { EligibilityType } from '@/server/services/addresseInformation';
 import { Airtable } from '@/types/enum/Airtable';
 
+import { mergeLegacyValues } from './legacy-values';
+
 /**
  * Fills territory columns on a demand from its coordinates using PostGIS.
  */
@@ -135,11 +137,11 @@ export const autoAssignNetworkFromEligibility = async (demandId: string) => {
   await kdb
     .updateTable('demands')
     .set({
-      legacy_values: sql`legacy_values || ${JSON.stringify({
+      legacy_values: mergeLegacyValues({
         'Distance au réseau': lastEligibility.distance,
         'Identifiant réseau': lastEligibility.id_sncu,
         'Nom réseau': lastEligibility.nom,
-      })}::jsonb`,
+      }),
       network_id: lastEligibility.id_fcu,
       network_type: networkType,
     })

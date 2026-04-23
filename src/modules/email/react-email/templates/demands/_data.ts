@@ -11,7 +11,6 @@ export const demand: AirtableLegacyRecord = {
   'Emails envoyés': 'Autre',
   'en PDP': 'Oui',
   Gestionnaires: ['Stains', 'ENTR_Stains', 'ENTR', 'ENTR_IDF', 'SMIREC', 'ENTR_9301C'],
-  'Gestionnaires validés': true,
   'ID BNB': '12761220',
   'ID Conso': 217610,
   'Identifiant réseau': '9301C',

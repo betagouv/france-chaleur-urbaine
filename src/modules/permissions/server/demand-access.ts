@@ -4,14 +4,7 @@ import type { DB, Demands } from '@/server/db/kysely';
 import { kdb } from '@/server/db/kysely';
 import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
 
-import {
-  type NetworkPermission,
-  networkPermissionTypes,
-  type Permission,
-  type TerritoryPermission,
-  type TerritoryPermissionType,
-  territoryPermissionToColumn,
-} from '../types';
+import { type NetworkPermission, type Permission, type TerritoryPermissionType, territoryPermissionToColumn } from '../types';
 import { isNetworkPermissionType, isRoleWithPermissions, networkTypeToPermissionType, permissionTypeToNetworkType } from './helpers';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -165,47 +158,4 @@ export const getDemandForAccessCheck = async (demandId: string): Promise<DemandF
     .where('deleted_at', 'is', null)
     .executeTakeFirst();
   return result ?? null;
-};
-
-/**
- * Returns users who manage networks within the given territory permissions.
- * Any role with network permissions is included (not just gestionnaires).
- */
-export const getNetworkUsersForTerritory = async (permissions: TerritoryPermission[]) => {
-  if (permissions.length === 0) {
-    return [];
-  }
-
-  const hasNational = permissions.some((p) => p.type === 'national');
-
-  let networkQuery = kdb
-    .selectFrom('demands')
-    .select('network_id')
-    .distinct()
-    .where('network_id', 'is not', null)
-    .where('deleted_at', 'is', null);
-
-  if (!hasNational) {
-    networkQuery = networkQuery.where((eb) => {
-      const conditions: Expression<SqlBool>[] = [];
-      for (const permission of permissions) {
-        if (permission.type !== 'national' && permission.type in territoryPermissionToColumn) {
-          const column = territoryPermissionToColumn[permission.type as keyof typeof territoryPermissionToColumn];
-          conditions.push(eb(`demands.${column}` as any, '=', permission.resource_id));
-        }
-      }
-      return conditions.length > 0 ? eb.or(conditions) : sql.lit(false);
-    });
-  }
-
-  return kdb
-    .selectFrom('users as u')
-    .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
-    .select(['u.id', 'u.email', 'u.first_name', 'u.last_name', 'u.structure_name'])
-    .where('u.role', 'in', [...userRolesWithPermissions])
-    .where('u.active', '=', true)
-    .where('up.type', 'in', [...networkPermissionTypes])
-    .where('up.resource_id', 'in', networkQuery.select(sql<string>`network_id::TEXT`.as('network_id')))
-    .groupBy(['u.id', 'u.email', 'u.first_name', 'u.last_name', 'u.structure_name'])
-    .execute();
 };

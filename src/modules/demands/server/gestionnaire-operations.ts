@@ -20,6 +20,7 @@ import {
   getDemandById,
   resolveNetworkInfo,
 } from './helpers';
+import { mergeLegacyValues } from './legacy-values';
 
 const logger = parentLogger.child({ module: 'demands/gestionnaire-operations' });
 
@@ -78,7 +79,7 @@ export const updateDemandByGestionnaire = async (demandId: string, values: Updat
     .updateTable('demands')
     .set({
       ...(comment_gestionnaire && { comment_gestionnaire }),
-      legacy_values: sql`legacy_values || ${JSON.stringify(legacyUpdates)}::jsonb`,
+      legacy_values: mergeLegacyValues(legacyUpdates),
       updated_at: new Date(),
     })
     .where('id', '=', demandId)
