@@ -97,8 +97,6 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
           });
           return;
         }
-
-        setContactFormState('');
       } catch (_err) {
         setContactFormState('error');
       }
