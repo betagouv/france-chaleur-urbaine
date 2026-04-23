@@ -73,6 +73,11 @@ export type PostHogEventMap = {
     has_phone: boolean;
     professional_type?: string | null;
   };
+  'bulk_test:session_resumed': {
+    bulk_test_id: string;
+    days_since_creation: number;
+    is_original_creator: boolean;
+  };
   // Potentiel création réseau
   'potentiel-creation-reseau:commune_form_submit': {
     commune: string;

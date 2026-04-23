@@ -1,6 +1,7 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Tabs } from '@codegouvfr/react-dsfr/Tabs';
 import type { ColumnFiltersState, RowSelectionState, SortingState } from '@tanstack/react-table';
+import dayjs from 'dayjs';
 import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -533,6 +534,15 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
     }
   }, [viewDetail, test.has_unseen_results, test.has_unseen_changes, markAsSeen, refetch, readOnly, isMarkAsSeenLoading]);
 
+  useEffect(() => {
+    if (!value) return;
+    trackPostHogEvent('bulk_test:session_resumed', {
+      bulk_test_id: value,
+      days_since_creation: dayjs().diff(dayjs(test.created_at), 'day'),
+      is_original_creator: test.user_id === profile?.id,
+    });
+  }, [value]);
+
   const filteredAddressesMapData = useMemo(() => {
     return filteredAddresses
       .filter((address) => address.ban_valid && address.geom)
@@ -683,7 +693,7 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
                 disabled={filteredAddresses.length === 0}
                 postHogEventKey="bulk_test:results_exported"
                 postHogEventProps={{
-                  bulk_test_id: queryParamName,
+                  bulk_test_id: test.id,
                   filter_applied: Boolean(columnFilters.length),
                   rows_exported: filteredAddresses.length,
                 }}
