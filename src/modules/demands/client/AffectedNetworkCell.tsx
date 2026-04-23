@@ -114,9 +114,9 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
   const canCancelPending = !props.isAdmin && !!pending && pending.author_id === props.currentUserId;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex w-full flex-col gap-2">
       <div className="flex items-start gap-1">
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 pt-1.5">
           <AffectedNetwork
             networkName={demand.network_name}
             networkType={demand.network_type}
@@ -167,13 +167,14 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
                 <AsyncButton
                   size="small"
                   priority="primary"
+                  className="mt-0"
                   onClick={handleAcceptPending}
                   disabled={pendingNotFound}
                   title={pendingIsUnassign ? 'Appliquer la désaffectation' : 'Appliquer la réaffectation demandée'}
                 >
                   Valider
                 </AsyncButton>
-                <AsyncButton size="small" priority="secondary" onClick={handleRejectPending}>
+                <AsyncButton size="small" priority="secondary" className="mt-0" onClick={handleRejectPending}>
                   Rejeter
                 </AsyncButton>
               </div>
