@@ -22,6 +22,7 @@ type BaseDemand = {
   pending_assignment_change: PendingAssignmentChange | null;
   pending_assignment_name: string | null;
   pending_assignment_sncu_id: string | null;
+  pending_assignment_author_email: string | null;
 };
 
 type AdminProps = {
@@ -157,6 +158,9 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
               />
             )}
             {pending.comment && <div className="italic text-gray-700">« {pending.comment} »</div>}
+            {demand.pending_assignment_author_email && (
+              <div className="text-gray-600">Demandé par {demand.pending_assignment_author_email}</div>
+            )}
 
             {props.isAdmin && (
               <div className="flex gap-1 pt-1">

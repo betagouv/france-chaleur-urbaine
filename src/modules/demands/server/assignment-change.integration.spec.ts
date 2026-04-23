@@ -198,6 +198,16 @@ describe('désaffectation / réaffectation flow', () => {
       expect(event).toBeDefined();
     });
 
+    it("expose l'email de l'auteur du pending dans la liste", async () => {
+      await setupNetwork(100);
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      await requestDemandAssignmentChange(demand.id, null, null, 'comment', gestionnaireId);
+
+      const demands = await createTestCaller(testUsers.admin).demands.gestionnaire.list();
+      const listed = demands.find((d) => d.id === demand.id);
+      expect(listed?.pending_assignment_author_email).toBe(`user-${gestionnaireId}@test.local`);
+    });
+
     it('refuse l annulation par un autre utilisateur (FORBIDDEN)', async () => {
       const otherUserId = uuid(500);
       await seedTableUser([{ id: otherUserId, role: 'gestionnaire' }]);

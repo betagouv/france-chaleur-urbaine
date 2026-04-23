@@ -52,6 +52,9 @@ export const listDemands = async (ctx: Context) => {
       Mail: anonymizeEmail(demand.Mail),
       Nom: anonymizeName(demand.Nom),
       Prénom: anonymizeName(demand.Prénom),
+      pending_assignment_author_email: demand.pending_assignment_author_email
+        ? anonymizeEmail(demand.pending_assignment_author_email)
+        : null,
       Téléphone: demand.Téléphone ? anonymizePhone() : undefined,
     }));
   }

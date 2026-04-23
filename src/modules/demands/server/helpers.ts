@@ -32,6 +32,9 @@ export const buildDemandQuery = () => {
         sql<boolean>`pending_zrc.id_fcu = (demands.pending_assignment_change->>'network_id')::int AND demands.pending_assignment_change->>'network_type' = 'en_construction'`
       )
     )
+    .leftJoin('users as pending_author', (j) =>
+      j.on(sql<boolean>`pending_author.id = (demands.pending_assignment_change->>'author_id')::uuid`)
+    )
     .selectAll('demands')
     .select(sql.raw<Selectable<ProEligibilityTestsAddresses>>(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'))
     .select([
@@ -40,6 +43,7 @@ export const buildDemandQuery = () => {
       sql<string[] | null>`COALESCE(rdc.tags, zrc.tags)`.as('network_tags'),
       sql<string | null>`COALESCE(pending_rdc.nom_reseau, pending_zrc.nom_reseau)`.as('pending_assignment_name'),
       sql<string | null>`pending_rdc."Identifiant reseau"`.as('pending_assignment_sncu_id'),
+      sql<string | null>`pending_author.email`.as('pending_assignment_author_email'),
     ]);
 };
 
