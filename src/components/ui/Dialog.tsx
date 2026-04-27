@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import React, { createContext, type PropsWithChildren, useContext, useMemo } from 'react';
 
 import cx from '@/utils/cx';
+import { stopPropagation } from '@/utils/events';
 
 export type DialogProps = PropsWithChildren<{
   trigger?: React.ReactNode;
@@ -56,6 +57,8 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
+            onClick={stopPropagation}
+            onDoubleClick={stopPropagation}
           />
         </DialogPrimitive.Overlay>
         <DialogPrimitive.Content asChild>
@@ -70,6 +73,8 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
             animate={{ opacity: 1, translateY: '-50%', x: '-50%', y: 0 }}
             exit={{ opacity: 0, translateY: '-50%', x: '-50%', y: -10 }}
             transition={{ duration: 0.3 }}
+            onClick={stopPropagation}
+            onDoubleClick={stopPropagation}
           >
             <div className="flex flex-col gap-4">
               {title && (
