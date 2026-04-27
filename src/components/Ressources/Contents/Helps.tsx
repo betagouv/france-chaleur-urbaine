@@ -61,7 +61,7 @@ const Helps = () => {
         </a>
       </p>
       <Simulator withTitle />
-      <h2>Quelles sont les conditions d’attribution ?</h2>
+      <h2 className="fr-mt-3w">Quelles sont les conditions d’attribution ?</h2>
       <ConditionsAttributionCee />
       <h2>Comment bénéficier de la prime ?</h2>
       <ol>
@@ -106,8 +106,19 @@ export const ConditionsAttributionCee = () => {
         Bâtiments résidentiels collectifs et du secteur tertiaire existant depuis plus de deux ans à la date d’engagement de l’opération.
       </ArrowItem>
       <ArrowItem>
-        Opération valable pour une date d’engagement (signature du devis) comprise entre le 1er janvier 2026 et le 31 décembre 2030. Les
-        travaux doivent être achevés au plus tard le 31 décembre 2027.
+        Opération valable pour une date d’engagement (signature du devis) et l’achèvement des travaux selon les conditions suivantes :
+        <ul>
+          <li>
+            Pour les opérations engagées entre le 23 septembre 2022 et le 10 avril 2025 – Les travaux doivent être achevés au plus tard le
+            31 décembre 2026.
+          </li>
+          <li>
+            Pour les opérations engagées à compter du 11 avril 2025 – Les travaux doivent être achevés au plus tard le 31 décembre 2027.
+          </li>
+          <li>
+            Pour les opérations engagées jusqu’au 31 décembre 2030 – Les travaux doivent être achevés au plus tard le 31 décembre 2032.
+          </li>
+        </ul>
       </ArrowItem>
       <ArrowItem>
         Le bénéficiaire ne peut prétendre pour une même opération qu’à une seule prime versée dans le cadre du dispositif des certificats
