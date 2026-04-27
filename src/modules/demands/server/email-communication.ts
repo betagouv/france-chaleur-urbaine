@@ -1,37 +1,17 @@
-import { TRPCError } from '@trpc/server';
 import type { Insertable } from 'kysely';
 
 import type { Context } from '@/modules/config/server/context-builder';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
-import { canUserAccessDemand } from '@/modules/permissions/server/service';
 import { type DemandEmails, kdb } from '@/server/db/kysely';
 
-const ensureCanAccessDemandEmails = async (ctx: Context, { demandId }: { demandId: string }) => {
-  if (ctx.user.role === 'admin') {
-    return;
-  }
-
-  const demand = await kdb
-    .selectFrom('demands')
-    .select(['network_id', 'network_type', 'validated', 'commune_code', 'epci_code', 'ept_code', 'departement_code', 'region_code'])
-    .where('id', '=', demandId)
-    .executeTakeFirstOrThrow();
-
-  const permissions = await ctx.getPermissions();
-  if (!canUserAccessDemand(ctx.user, permissions, demand)) {
-    throw new TRPCError({
-      code: 'FORBIDDEN',
-      message: 'Unauthorized',
-    });
-  }
-};
+import { ensureUserCanAccessDemand, ensureUserCanProcessDemand } from './helpers';
 
 /**
  * Retourne les emails envoyés depuis l'UI pour une demande, après vérification des droits d'accès.
  */
 export const listDemandEmails = async (ctx: Context, { demandId }: { demandId: string }) => {
-  await ensureCanAccessDemandEmails(ctx, { demandId });
+  await ensureUserCanAccessDemand(ctx, demandId);
   return await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).execute();
 };
 
@@ -65,6 +45,8 @@ export const sendDemandEmail = async (
 ) => {
   const { demandId, emailContent, key } = params;
   const { user } = ctx;
+
+  await ensureUserCanProcessDemand(ctx, demandId);
 
   await createDemandEmail({
     body: emailContent.body,

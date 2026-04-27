@@ -98,18 +98,15 @@ export const computeNetworkDistance = async (demandId: string, networkIdFcu: num
             'distance'
           )
         )
-        .executeTakeFirst()
+        .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Réseau ou demande introuvable' }))
     : kdb
         .selectFrom('zones_et_reseaux_en_construction as n')
         .innerJoin('pro_eligibility_tests_addresses as pe', (join) => join.onTrue())
         .where('n.id_fcu', '=', networkIdFcu)
         .where('pe.demand_id', '=', demandId)
         .select((eb) => sql<number>`round(ST_Distance(${eb.ref('n.geom')}, ${eb.ref('pe.geom')}))::int`.as('distance'))
-        .executeTakeFirst());
+        .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Réseau ou demande introuvable' })));
 
-  if (!reseau) {
-    throw new TRPCError({ code: 'NOT_FOUND', message: 'Réseau ou demande introuvable' });
-  }
   return reseau.distance;
 };
 

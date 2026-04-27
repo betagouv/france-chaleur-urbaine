@@ -203,11 +203,7 @@ export const rejectDemandAssignmentChangeRequest = async (demandId: string, admi
     .select(['id', 'pending_assignment_change'])
     .where('id', '=', demandId)
     .where('deleted_at', 'is', null)
-    .executeTakeFirst();
-
-  if (!demand) {
-    throw new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' });
-  }
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
 
   const pending = demand.pending_assignment_change;
   if (!pending) {
@@ -247,10 +243,11 @@ export const rejectDemandAssignmentChangeRequest = async (demandId: string, admi
 export const updateDemandByAdmin = async (demandId: string, values: UpdateAdminDemandInput, adminUserId: string) => {
   const { comment_fcu, ...legacyUpdates } = values;
 
-  const currentDemand = await kdb.selectFrom('demands').selectAll().where('id', '=', demandId).executeTakeFirst();
-  if (!currentDemand) {
-    throw new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' });
-  }
+  const currentDemand = await kdb
+    .selectFrom('demands')
+    .selectAll()
+    .where('id', '=', demandId)
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
 
   const [updatedDemand] = await kdb
     .updateTable('demands')

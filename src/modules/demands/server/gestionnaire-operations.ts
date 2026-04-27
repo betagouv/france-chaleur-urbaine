@@ -5,7 +5,7 @@ import type { Context } from '@/modules/config/server/context-builder';
 import type { UpdateGestionnaireDemandInput } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
-import { buildDemandAccessFilter } from '@/modules/permissions/server/service';
+import { buildDemandAccessFilter, isUserResponsibleForDemand } from '@/modules/permissions/server/service';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
@@ -17,6 +17,7 @@ import {
   anonymizePhone,
   buildDemandQuery,
   enrichDemandForGestionnaire,
+  ensureUserCanProcessDemand,
   getDemandById,
   resolveNetworkInfo,
 } from './helpers';
@@ -37,7 +38,6 @@ export const listDemands = async (ctx: Context) => {
   }
 
   const accessFilter = buildDemandAccessFilter(ctx.user, permissions);
-
   const records = await accessFilter(buildDemandQuery()).execute();
 
   logger.info('kdb.getDemands', {
@@ -45,7 +45,10 @@ export const listDemands = async (ctx: Context) => {
     permissionsCount: permissions.length,
     recordsCount: records.length,
   });
-  const demands = records.map(({ testAddress, ...demand }) => enrichDemandForGestionnaire({ demand, testAddress }));
+  const demands = records.map(({ testAddress, ...demand }) => ({
+    ...enrichDemandForGestionnaire({ demand, testAddress }),
+    is_responsible: isUserResponsibleForDemand(ctx.user, permissions, demand),
+  }));
 
   if (ctx.anonymize) {
     return demands.map((demand) => ({
@@ -66,14 +69,14 @@ export const listDemands = async (ctx: Context) => {
 /**
  * Gestionnaire: updates a demand from fields in `zGestionnaireDemandUpdateValues`.
  * Only `legacy_values` + `comment_gestionnaire` are affected (no column sync for network/validated).
+ *
+ * Refuse l'opération si l'utilisateur n'est pas responsable de la demande (admin exclu — il a son propre flow).
  */
-export const updateDemandByGestionnaire = async (demandId: string, values: UpdateGestionnaireDemandInput, userId: string) => {
+export const updateDemandByGestionnaire = async (ctx: Context, demandId: string, values: UpdateGestionnaireDemandInput) => {
   const { comment_gestionnaire, ...legacyUpdates } = values;
+  const userId = ctx.user.id;
 
-  const currentDemand = await kdb.selectFrom('demands').selectAll().where('id', '=', demandId).executeTakeFirst();
-  if (!currentDemand) {
-    throw new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' });
-  }
+  await ensureUserCanProcessDemand(ctx, demandId);
 
   const [updatedDemand] = await kdb
     .updateTable('demands')
@@ -101,7 +104,11 @@ export const updateDemandByGestionnaire = async (demandId: string, values: Updat
   });
 
   const demand = await getDemandById(updatedDemand.id);
-  return enrichDemandForGestionnaire({ demand, testAddress: testAddress || null });
+  const permissions = await ctx.getPermissions();
+  return {
+    ...enrichDemandForGestionnaire({ demand, testAddress: testAddress || null }),
+    is_responsible: isUserResponsibleForDemand(ctx.user, permissions, demand),
+  };
 };
 
 /**
@@ -125,11 +132,8 @@ export const requestDemandAssignmentChange = async (
     .select(['id', 'network_id', 'network_type', 'pending_assignment_change'])
     .where('id', '=', demandId)
     .where('deleted_at', 'is', null)
-    .executeTakeFirst();
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
 
-  if (!demand) {
-    throw new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' });
-  }
   if (demand.pending_assignment_change) {
     throw new TRPCError({ code: 'CONFLICT', message: 'Une demande de réaffectation est déjà en attente' });
   }
@@ -231,11 +235,7 @@ export const cancelDemandAssignmentChangeRequest = async (demandId: string, user
     .select(['id', 'pending_assignment_change'])
     .where('id', '=', demandId)
     .where('deleted_at', 'is', null)
-    .executeTakeFirst();
-
-  if (!demand) {
-    throw new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' });
-  }
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
 
   const pending = demand.pending_assignment_change;
   if (!pending) {

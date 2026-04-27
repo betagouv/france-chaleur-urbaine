@@ -6,7 +6,14 @@ import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
 import { MAX_PERMISSIONS_PER_USER, type Permission } from '../types';
 
 // Re-export for external callers (context-builder, demands-service, manager, trpc-helpers)
-export { buildDemandAccessFilter, canUserAccessDemand, getDemandForAccessCheck, getUsersWithAccessToDemand } from './demand-access';
+export {
+  buildDemandAccessFilter,
+  canUserAccessDemand,
+  type DemandForAccess,
+  getDemandForAccessCheck,
+  getUsersWithAccessToDemand,
+  isUserResponsibleForDemand,
+} from './demand-access';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

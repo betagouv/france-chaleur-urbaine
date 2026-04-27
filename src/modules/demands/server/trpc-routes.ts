@@ -122,7 +122,7 @@ export const demandsRouter = router({
     }),
     update: demandAccessRoute.input(zGestionnaireUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;
-      return await updateDemandByGestionnaire(demandId, values, ctx.user.id);
+      return await updateDemandByGestionnaire(ctx, demandId, values);
     }),
   },
   user: {

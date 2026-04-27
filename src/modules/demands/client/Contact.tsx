@@ -1,10 +1,19 @@
 import { useCallback } from 'react';
 
 import Icon from '@/components/ui/Icon';
+import cx from '@/utils/cx';
 
 import type { Demand } from '../types';
 
-const Contact = ({ demand, onEmailClick }: { demand: Demand; onEmailClick: (demandId: string) => void }) => {
+const Contact = ({
+  demand,
+  onEmailClick,
+  disabled = false,
+}: {
+  demand: Demand;
+  onEmailClick: (demandId: string) => void;
+  disabled?: boolean;
+}) => {
   const getNomStructure = useCallback(() => {
     if (
       demand['Structure accompagnante'] &&
@@ -41,11 +50,16 @@ const Contact = ({ demand, onEmailClick }: { demand: Demand; onEmailClick: (dema
       {nomStructure && <div>{nomStructure}</div>}
       {demand.Mail && (
         <div
-          className="text-gray-500 text-[13px] text-nowrap hover:bg-gray-100 cursor-pointer inline-block"
+          className={cx(
+            'text-gray-500 text-[13px] text-nowrap inline-block',
+            disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-gray-100 cursor-pointer'
+          )}
           onClick={(e) => {
             e.stopPropagation();
+            if (disabled) return;
             onEmailClick(demand.id);
           }}
+          title={disabled ? 'Demande hors de votre périmètre — envoi de mail désactivé' : undefined}
         >
           <Icon size="sm" name="ri-mail-line" className="fr-mr-1w" />
           <u className="whitespace-normal">{demand.Mail}</u>

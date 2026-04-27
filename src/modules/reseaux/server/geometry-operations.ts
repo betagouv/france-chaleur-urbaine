@@ -213,11 +213,7 @@ export async function updateEntityWithoutGeometry(tableName: NetworkTable, idFie
     .selectFrom(tableName as any)
     .select(sql<GeoJSON.Geometry>`ST_AsGeoJSON(geom)::json`.as('geom'))
     .where(idField, '=', idValue)
-    .executeTakeFirst();
-
-  if (!existingEntity) {
-    throw new Error(`Aucune entité trouvée avec ${idField} = ${idValue}`);
-  }
+    .executeTakeFirstOrThrow(() => new Error(`Aucune entité trouvée avec ${idField} = ${idValue}`));
 
   await updateEntityGeometry(tableName, idField, idValue, { geom: existingEntity.geom, srid: 2154 });
 }
@@ -230,10 +226,7 @@ export async function createPDPFromCommune(code_insee: string, id_sncu?: string)
     .selectFrom('ign_communes')
     .select((eb) => sql<GeoJSON.Geometry>`ST_AsGeoJSON(${eb.ref('geom')})::json`.as('geom'))
     .where('insee_com', '=', code_insee)
-    .executeTakeFirst();
-  if (!existingCommune) {
-    throw new Error(`La commune ${code_insee} n'a pas été trouvée`);
-  }
+    .executeTakeFirstOrThrow(() => new Error(`La commune ${code_insee} n'a pas été trouvée`));
   return insertEntityWithGeometry('zone_de_developpement_prioritaire', { geom: existingCommune.geom, srid: 2154 }, { id_sncu });
 }
 

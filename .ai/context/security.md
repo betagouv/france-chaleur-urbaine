@@ -50,28 +50,89 @@ Permissions are stored in `user_permissions` table (not in session/JWT). Each pe
 1. `getUserPermissions(userId)` loads permissions from DB (or `ctx.getPermissions()` for impersonation-aware access).
 2. `buildDemandAccessFilter(user, permissions)` returns a Kysely query builder callback for DB-level filtering.
 3. `canUserAccessDemand(user, permissions, demand)` checks a single demand in memory.
+4. `isUserResponsibleForDemand(user, permissions, demand)` checks if the user must *process* the demand (narrower than access).
 
 **Important**: `resource_id` in `user_permissions` is TEXT, but `network_id` in demands is SMALLINT. The service handles conversion at the boundary.
 
-### tRPC authorization (modern)
+### Access vs responsibility — two distinct semantics
+
+| Concept | Function | Admin | Match logic |
+|---------|----------|-------|-------------|
+| **Access** (can view) | `canUserAccessDemand` | always **true** | any matching permission (network OR territory) |
+| **Responsibility** (must process) | `isUserResponsibleForDemand` | always **false** | dispatch: if demand has a network → only matching network perm ; else → any matching territory perm |
+
+Rule of thumb: territory permission holders (collectivité/ALEC) **see** demands in their area but only **process** the unaffected ones (triage role). Once a network is affected, only its gestionnaire is responsible.
+
+### Authorization helpers — the `ensure*` pattern
+
+**Never duplicate** `if (ctx.user.role !== 'admin')` at call-sites before a permission check. Use the centralized helpers in `demands/server/helpers.ts` which encapsulate admin bypass + permission load + `FORBIDDEN` throw:
+
+| Helper | Use when |
+|--------|----------|
+| `ensureUserCanAccessDemand(ctx, demand)` | demand already loaded ; check view access |
+| `ensureUserCanAccessDemandById(ctx, demandId)` | only id available ; check view access |
+| `ensureUserCanProcessDemand(ctx, demand)` | demand already loaded ; check responsibility |
+| `ensureUserCanProcessDemandById(ctx, demandId)` | only id available ; check responsibility |
 
 ```ts
-// Restrict by role
-export const demandsRouter = router({
-  getAll: routeRole(['admin', 'gestionnaire']).query(...),
-  create: routeRole(['professionnel', 'particulier']).mutation(...),
-});
-
-// Custom authorization in service
-async function updateDemand(demandId: string, userId: string) {
-  const demand = await demandsService.getById(demandId);
-  if (!demand) throw new TRPCError({ code: 'NOT_FOUND' });
-  // Admin can do anything, gestionnaire only for their networks
-  if (!ctx.hasRole('admin') && !isGestionnaireForNetwork(userId, demand.networkId)) {
-    throw new TRPCError({ code: 'FORBIDDEN' });
+// ❌ Don't — duplicates admin guard, leaks permission-loading concern into business code
+if (ctx.user.role !== 'admin') {
+  const permissions = await ctx.getPermissions();
+  if (!isUserResponsibleForDemand(ctx.user, permissions, demand)) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: '...' });
   }
 }
+
+// ✅ Do — single line, semantics in the function name
+await ensureUserCanProcessDemand(ctx, demand);
 ```
+
+Apply in service layer (not routes) so callers from any entry point are protected.
+
+### ⚠️ Always read permissions through `ctx.getPermissions()`
+
+`user_permissions` is the **persistent** source of truth, but during impersonation `ctx.getPermissions()` returns the JWT-stored impostured permissions instead. Therefore:
+
+- **Never** write SQL that reads `user_permissions` directly to compute per-user data exposed in API responses (e.g. an `is_responsible` flag, a "my demands" view) — this bypasses impersonation and gives wrong results.
+- For per-row permission-derived flags, compute in JS after fetching, using the permissions array already loaded in the route/service. Cost is negligible vs. the correctness gain.
+- SQL access to `user_permissions` is fine for **aggregations across all users** (e.g. `access_counts` — counting how many users see a demand), since impersonation only affects the current user's view.
+
+Rule: if the SQL filters by `user_id = $currentUser`, you're probably writing a bug. Use `ctx.getPermissions()` + a JS helper instead.
+
+### Permission-match predicates (style)
+
+When writing a function that loops over `Permission[]` to check matches, **extract named predicates** at module level rather than nesting `permissions.some(p => { ... if/if/if ... })`. Pattern:
+
+```ts
+const matchesNetworkAffectation = (demand: DemandForAccess) => (p: Permission): boolean => /* ... */;
+const matchesTerritory = (demand: DemandForAccess) => (p: Permission): boolean => /* ... */;
+
+// Body becomes declarative
+return permissions.some((p) => matchesNetworkAffectation(demand)(p) || matchesTerritory(demand)(p));
+```
+
+Pre-conditions (admin / role / validated) collapse into a single guard line at the top.
+
+### tRPC authorization
+
+```ts
+// Restrict by role at the route level
+export const demandsRouter = router({
+  list: demandAccessRoute.query(...),  // admin + gestionnaire/collectivite/alec
+  update: demandAccessRoute.mutation(async ({ ctx, input }) => {
+    return updateDemandByGestionnaire(ctx, input.demandId, input.values);
+  }),
+});
+
+// Per-demand authorization in the service (not the route)
+export const updateDemandByGestionnaire = async (ctx: Context, demandId: string, values: ...) => {
+  const demand = await loadDemand(demandId); // throws NOT_FOUND
+  await ensureUserCanProcessDemand(ctx, demand); // throws FORBIDDEN if not responsible
+  // ... actual mutation
+};
+```
+
+Route-level check = role gate. Service-level check = resource ownership / responsibility gate. **Always do both.**
 
 ### Legacy API authorization
 

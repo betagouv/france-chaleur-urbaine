@@ -121,26 +121,50 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
     accessorFn: (demand) => demand.access_counts.alec,
     name: 'ALEC avec accès',
   },
+  {
+    accessorFn: (demand) => (demand.is_responsible ? 'Oui' : 'Non'),
+    name: 'À traiter par moi',
+  },
 ];
 
 // biome-ignore assist/source/useSortedKeys: presets are intentionally ordered for UI priority
 const quickFilterPresets = {
-  demandesATraiter: {
+  nouvellesDemandes: {
     filters: [
+      { id: 'is_responsible', value: { false: false, true: true } },
       { id: 'Status', value: { 'En attente de prise en charge': true } },
       { id: 'Prise de contact', value: { false: true, true: false } },
     ],
     getStat: (demands) =>
-      demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
+      demands.filter((demand) => demand.is_responsible && demand.Status === 'En attente de prise en charge' && !demand['Prise de contact'])
+        .length,
     label: (
       <>
-        demandes à traiter&nbsp;
-        <Tooltip
-          title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
-        />
+        nouvelles demandes&nbsp;
+        <Tooltip title="Demandes que vous devez traiter en priorité : non encore prises en charge et relevant de votre périmètre." />
       </>
     ),
     valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
+  },
+  demandesAffectees: {
+    filters: [{ id: 'is_responsible', value: { false: false, true: true } }],
+    getStat: (demands) => demands.filter((demand) => demand.is_responsible).length,
+    label: (
+      <>
+        demandes affectées&nbsp;
+        <Tooltip title="Toutes les demandes qui relèvent de votre périmètre (en cours, traitées, etc.)." />
+      </>
+    ),
+  },
+  horsPerimetre: {
+    filters: [{ id: 'is_responsible', value: { false: true, true: false } }],
+    getStat: (demands) => demands.filter((demand) => !demand.is_responsible).length,
+    label: (
+      <>
+        hors périmètre&nbsp;
+        <Tooltip title="Demandes que vous voyez (via une permission territoire) mais qui sont à traiter par le gestionnaire du réseau affecté." />
+      </>
+    ),
   },
   all: {
     filters: [],
@@ -210,7 +234,7 @@ function DemandesNew(): React.ReactElement {
 
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(quickFilterPresets.demandesATraiter.filters);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(quickFilterPresets.nouvellesDemandes.filters);
   const [filteredDemands, setFilteredDemands] = useState<DemandsListItem[]>([]);
 
   const { data: demands = [], isLoading } = trpc.demands.gestionnaire.list.useQuery();
@@ -260,7 +284,7 @@ function DemandesNew(): React.ReactElement {
         align: 'center',
         cell: ({ row }) => (
           <div className="flex flex-col gap-2">
-            {row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
+            {row.original.is_responsible && row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
               <Tooltip title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée.`}>
                 <Icon name="fr-icon-flag-fill" size="sm" color="red" />
               </Tooltip>
@@ -274,7 +298,9 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'Status',
-        cell: ({ row }) => <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} />,
+        cell: ({ row }) => (
+          <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={!row.original.is_responsible} />
+        ),
         enableGlobalFilter: false,
         filterProps: {
           Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
@@ -286,7 +312,9 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'Prise de contact',
         align: 'center',
-        cell: ({ row }) => <Contacted demand={row.original as unknown as Demand} updateDemand={updateDemand} />,
+        cell: ({ row }) => (
+          <Contacted demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={!row.original.is_responsible} />
+        ),
         enableGlobalFilter: false,
         filterType: 'Facets',
         header: 'Prospect recontacté',
@@ -294,7 +322,13 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={() => setModalDemand(row.original)} />,
+        cell: ({ row }) => (
+          <Contact
+            demand={row.original as unknown as Demand}
+            onEmailClick={() => setModalDemand(row.original)}
+            disabled={!row.original.is_responsible}
+          />
+        ),
         enableSorting: false,
         header: 'Contact',
         width: '280px',
@@ -388,7 +422,13 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'Logement',
         cell: ({ row }) => (
-          <AdditionalInformation demand={row.original as unknown as Demand} field="Logement" updateDemand={updateDemand} type="number" />
+          <AdditionalInformation
+            demand={row.original as unknown as Demand}
+            field="Logement"
+            updateDemand={updateDemand}
+            type="number"
+            disabled={!row.original.is_responsible}
+          />
         ),
         enableGlobalFilter: false,
         filterType: 'Range',
@@ -404,6 +444,7 @@ function DemandesNew(): React.ReactElement {
             field="Surface en m2"
             updateDemand={updateDemand}
             type="number"
+            disabled={!row.original.is_responsible}
           />
         ),
         enableGlobalFilter: false,
@@ -417,7 +458,13 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'Conso',
         cell: ({ row }) => (
-          <AdditionalInformation demand={row.original as unknown as Demand} field="Conso" updateDemand={updateDemand} type="number" />
+          <AdditionalInformation
+            demand={row.original as unknown as Demand}
+            field="Conso"
+            updateDemand={updateDemand}
+            type="number"
+            disabled={!row.original.is_responsible}
+          />
         ),
         enableGlobalFilter: false,
         filterProps: {
@@ -429,7 +476,14 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'comment_gestionnaire',
-        cell: ({ row }) => <Comment demand={row.original as unknown as Demand} field="comment_gestionnaire" updateDemand={updateDemand} />,
+        cell: ({ row }) => (
+          <Comment
+            demand={row.original as unknown as Demand}
+            field="comment_gestionnaire"
+            updateDemand={updateDemand}
+            disabled={!row.original.is_responsible}
+          />
+        ),
         enableSorting: false,
         header: 'Commentaires',
         width: '280px',
@@ -451,6 +505,11 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'en PDP',
+        filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+        visible: false,
+      },
+      {
+        accessorKey: 'is_responsible',
         filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
         visible: false,
       },

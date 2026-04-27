@@ -108,6 +108,20 @@ sql`ST_Contains(geom, ST_Transform(ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326
 - Always use `.select([...])` — never rely on `selectAll()` in production queries (over-fetches columns).
 - Prevent N+1: use joins or batch queries, never loop with individual DB calls.
 - Use `.$if()` for optional filters rather than building query strings conditionally.
+- **Throw inline, not after**: when a row is required, use `.executeTakeFirstOrThrow(() => new TRPCError({...}))` instead of `.executeTakeFirst()` followed by `if (!row) throw`. Keeps the query and its error contract on the same line and removes the dead-branch noise.
+
+  ```ts
+  // ❌ Don't
+  const demand = await kdb.selectFrom('demands').selectAll().where('id', '=', demandId).executeTakeFirst();
+  if (!demand) throw new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' });
+
+  // ✅ Do
+  const demand = await kdb
+    .selectFrom('demands')
+    .selectAll()
+    .where('id', '=', demandId)
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+  ```
 
 ### Conditional queries
 

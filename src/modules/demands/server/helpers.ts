@@ -1,7 +1,10 @@
 import * as Sentry from '@sentry/nextjs';
+import { TRPCError } from '@trpc/server';
 import type { Selectable } from 'kysely';
 
+import type { Context } from '@/modules/config/server/context-builder';
 import { demandStatusDefault, normalizeHeatingEnergy, normalizeHeatingType } from '@/modules/demands/constants';
+import { canUserAccessDemand, type DemandForAccess, isUserResponsibleForDemand } from '@/modules/permissions/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import { type Demands, kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
@@ -10,10 +13,47 @@ import { userRolesWithPermissions } from '@/types/enum/UserRole';
 import type { AccessCounts } from '../types';
 import { getEntityFromEligibilityType } from './eligibility';
 
+const loadDemandForAccessOrThrow = async (demandId: string): Promise<DemandForAccess> =>
+  kdb
+    .selectFrom('demands')
+    .select(['network_id', 'network_type', 'validated', 'commune_code', 'epci_code', 'ept_code', 'departement_code', 'region_code'])
+    .where('id', '=', demandId)
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+
+/**
+ * Garantit que la demande existe ET que l'utilisateur peut la **consulter** (lecture, historique mail, etc.).
+ * Lève NOT_FOUND si introuvable, FORBIDDEN si pas d'accès. Admin : NOT_FOUND uniquement (bypass auth).
+ */
+export const ensureUserCanAccessDemand = async (ctx: Context, demandId: string): Promise<void> => {
+  const demand = await loadDemandForAccessOrThrow(demandId);
+  if (ctx.user.role === 'admin') return;
+  const permissions = await ctx.getPermissions();
+  if (!canUserAccessDemand(ctx.user, permissions, demand)) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'Demande hors de votre périmètre' });
+  }
+};
+
+/**
+ * Garantit que la demande existe ET que l'utilisateur peut la **traiter** (statut, contact, commentaire, mail).
+ * Lève NOT_FOUND si introuvable, FORBIDDEN si pas responsable. Admin : NOT_FOUND uniquement (bypass auth).
+ */
+export const ensureUserCanProcessDemand = async (ctx: Context, demandId: string): Promise<void> => {
+  const demand = await loadDemandForAccessOrThrow(demandId);
+  if (ctx.user.role === 'admin') return;
+  const permissions = await ctx.getPermissions();
+  if (!isUserResponsibleForDemand(ctx.user, permissions, demand)) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'Demande hors de votre périmètre de traitement' });
+  }
+};
+
 /**
  * Requête de base pour les demandes, jointe avec le test d'adresse associé (exposé comme `testAddress`)
  * et enrichie avec les infos du réseau affecté (`network_name`, `network_sncu_id`, `network_tags`)
  * et les compteurs d'utilisateurs ayant accès à la demande (`access_counts`, par rôle, hors admin).
+ *
+ * Note : `is_responsible` est calculé côté JS via `isUserResponsibleForDemand` après requête, jamais en SQL.
+ * Raison : `ctx.getPermissions()` retourne les permissions du JWT (impostune-aware) ; lire `user_permissions`
+ * en SQL contournerait l'impostune et donnerait des résultats incohérents.
  */
 export const buildDemandQuery = () => {
   return kdb

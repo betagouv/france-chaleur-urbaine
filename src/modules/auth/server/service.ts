@@ -71,11 +71,7 @@ export const login = async (email: string, password: string) => {
     .selectAll()
     .where('email', '=', email.trim().toLowerCase())
     .where('active', 'is', true)
-    .executeTakeFirst();
-
-  if (!user) {
-    throw new Error('Mauvais login/mot de passe');
-  }
+    .executeTakeFirstOrThrow(() => new Error('Mauvais login/mot de passe'));
 
   if (user.status === 'pending_email_confirmation') {
     throw new Error('Vous devez confirmer votre email avant de vous connecter');
@@ -120,10 +116,11 @@ export const login = async (email: string, password: string) => {
 };
 
 export const activateUser = async (activationToken: string) => {
-  const existingUser = await kdb.selectFrom('users').select('id').where('activation_token', '=', activationToken).executeTakeFirst();
-  if (!existingUser) {
-    throw new BadRequestError('Jeton invalide');
-  }
+  const existingUser = await kdb
+    .selectFrom('users')
+    .select('id')
+    .where('activation_token', '=', activationToken)
+    .executeTakeFirstOrThrow(() => new BadRequestError('Jeton invalide'));
 
   await kdb
     .updateTable('users')
@@ -176,11 +173,12 @@ export const requestPassword = async (email: string) => {
 export const changePasswordWithResetToken = async (params: { password: string; token: { email: string; resetToken: string } }) => {
   const { password, token } = params;
 
-  const user = await kdb.selectFrom('users').selectAll().where('email', '=', token.email).where('active', 'is', true).executeTakeFirst();
-
-  if (!user) {
-    throw new BadRequestError('Email incorrect');
-  }
+  const user = await kdb
+    .selectFrom('users')
+    .selectAll()
+    .where('email', '=', token.email)
+    .where('active', 'is', true)
+    .executeTakeFirstOrThrow(() => new BadRequestError('Email incorrect'));
 
   if (!user.reset_token) {
     throw new BadRequestError('Ce lien a déjà été utilisé. Veuillez refaire une demande de réinitialisation de votre mot de passe.');

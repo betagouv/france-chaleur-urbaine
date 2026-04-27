@@ -96,16 +96,11 @@ export const sendRelanceToDemandeurs = async () => {
 };
 
 const findDemandByRelanceId = async (relanceId: string) => {
-  const demand = await kdb
+  return await kdb
     .selectFrom('demands')
     .select(['id', 'legacy_values'])
     .where(sql`legacy_values->>'Relance ID'`, '=', relanceId)
-    .executeTakeFirst();
-
-  if (!demand) {
-    throw new Error(`Relance demand not found for relance ID: ${relanceId}`);
-  }
-  return demand;
+    .executeTakeFirstOrThrow(() => new Error(`Relance demand not found for relance ID: ${relanceId}`));
 };
 
 /**

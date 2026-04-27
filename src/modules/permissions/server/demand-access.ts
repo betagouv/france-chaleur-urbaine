@@ -75,39 +75,58 @@ export const buildDemandAccessFilter = (
   };
 };
 
-/**
- * Checks if a user can access a specific demand (in-memory check for single demand).
- */
-export const canUserAccessDemand = (user: UserWithRole, permissions: Permission[], demand: DemandForAccess): boolean => {
-  if (user.role === 'admin') {
-    return true;
-  }
+// ─── Permission matchers (in-memory) ─────────────────────────────────────────
 
-  if (!isRoleWithPermissions(user.role)) {
-    return false;
-  }
+const isAffectedToNetwork = (demand: DemandForAccess): boolean => demand.network_id !== null && demand.network_type !== null;
 
-  if (!demand.validated) {
-    return false;
-  }
+/** Une perm réseau matche ssi elle cible le réseau exact auquel la demande est affectée. */
+const matchesNetworkAffectation =
+  (demand: DemandForAccess) =>
+  (p: Permission): boolean =>
+    isNetworkPermissionType(p.type) &&
+    permissionTypeToNetworkType[p.type] === demand.network_type &&
+    Number(p.resource_id) === demand.network_id;
 
-  return permissions.some((p) => {
-    if (isNetworkPermissionType(p.type)) {
-      return Number(p.resource_id) === demand.network_id && permissionTypeToNetworkType[p.type] === demand.network_type;
-    }
-    if (p.type === 'national') {
-      return true;
-    }
+/** Une perm territoire matche ssi elle couvre la maille géographique de la demande (`national` couvre tout). */
+const matchesTerritory =
+  (demand: DemandForAccess) =>
+  (p: Permission): boolean => {
+    if (p.type === 'national') return true;
     if (p.type in territoryPermissionToColumn) {
       const column = territoryPermissionToColumn[p.type as keyof typeof territoryPermissionToColumn];
       return demand[column] === p.resource_id;
     }
     return false;
-  });
+  };
+
+/**
+ * Vrai ssi l'utilisateur peut **consulter** cette demande (tableau, export, historique mail, etc.).
+ * - admin : toujours
+ * - rôles sans permissions / demande non validée : jamais
+ * - sinon : au moins une permission (réseau OU territoire) matche
+ */
+export const canUserAccessDemand = (user: UserWithRole, permissions: Permission[], demand: DemandForAccess): boolean => {
+  if (user.role === 'admin') return true;
+  if (!isRoleWithPermissions(user.role) || !demand.validated) return false;
+
+  return permissions.some((p) => matchesNetworkAffectation(demand)(p) || matchesTerritory(demand)(p));
 };
 
 /**
- * Returns users who have access — ou qui auront accès une fois la demande validée — à une demande.
+ * Vrai ssi l'utilisateur doit **traiter** cette demande (statut, contact, commentaire, mail).
+ * - admin / rôles sans permissions / demande non validée : jamais responsable
+ * - demande affectée à un réseau : seule une perm réseau matchante donne la responsabilité
+ * - demande sans réseau : toute perm territoire matchante suffit (rôle de triage)
+ */
+export const isUserResponsibleForDemand = (user: UserWithRole, permissions: Permission[], demand: DemandForAccess): boolean => {
+  if (user.role === 'admin' || !isRoleWithPermissions(user.role) || !demand.validated) return false;
+
+  const matches = isAffectedToNetwork(demand) ? matchesNetworkAffectation(demand) : matchesTerritory(demand);
+  return permissions.some(matches);
+};
+
+/**
+ * Retourne les utilisateurs qui ont accès à une demande.
  * N'applique pas le filtre `validated` pour permettre l'affichage « qui verra cette demande ».
  */
 export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
