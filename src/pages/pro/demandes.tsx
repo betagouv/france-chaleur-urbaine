@@ -123,7 +123,25 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
   },
 ];
 
+// biome-ignore assist/source/useSortedKeys: presets are intentionally ordered for UI priority
 const quickFilterPresets = {
+  demandesATraiter: {
+    filters: [
+      { id: 'Status', value: { 'En attente de prise en charge': true } },
+      { id: 'Prise de contact', value: { false: true, true: false } },
+    ],
+    getStat: (demands) =>
+      demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
+    label: (
+      <>
+        demandes à traiter&nbsp;
+        <Tooltip
+          title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
+        />
+      </>
+    ),
+    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
+  },
   all: {
     filters: [],
     getStat: (demands) => demands.length,
@@ -146,23 +164,6 @@ const quickFilterPresets = {
       </>
     ),
     valueSuffix: <Badge type="haut_potentiel" />,
-  },
-  demandesATraiter: {
-    filters: [
-      { id: 'Status', value: { 'En attente de prise en charge': true } },
-      { id: 'Prise de contact', value: { false: true, true: false } },
-    ],
-    getStat: (demands) =>
-      demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
-    label: (
-      <>
-        demandes à traiter&nbsp;
-        <Tooltip
-          title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
-        />
-      </>
-    ),
-    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
   },
   demandesDansPDP: {
     filters: [
@@ -209,7 +210,7 @@ function DemandesNew(): React.ReactElement {
 
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(quickFilterPresets.demandesATraiter.filters);
   const [filteredDemands, setFilteredDemands] = useState<DemandsListItem[]>([]);
 
   const { data: demands = [], isLoading } = trpc.demands.gestionnaire.list.useQuery();
