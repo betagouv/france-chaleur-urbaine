@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import { getCoutRaccordementResidentiel, prettyPrintCout } from '@/components/Ressources/Contents/SimulateurCoutRaccordement';
 import { type DPE, DPE_VALUES, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import { getCoutRaccordementResidentiel, prettyPrintCout } from '@/modules/simulator/client/SimulateurCoutRaccordement';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 export type ModeDeChauffage = {

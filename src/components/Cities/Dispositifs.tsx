@@ -1,8 +1,8 @@
+import Image from 'next/image';
+
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
-
-import { Image } from './City.styles';
 
 export type DispositifsData = {
   title?: string;
@@ -44,7 +44,9 @@ const Dispositifs = ({
                     {dispositif.title}
                   </Heading>
                 )}
-                {dispositif.img && <Image src={dispositif.img.src} alt={dispositif.img.alt} />}
+                {dispositif.img && (
+                  <Image src={dispositif.img.src} alt={dispositif.img.alt} className="h-16.25 w-auto" height={65} width={65} />
+                )}
                 <Box flexDirection="column">{dispositif.description}</Box>
                 {dispositif.link && (
                   <Box className="fr-btn fr-mt-2w fr-ml-4w">

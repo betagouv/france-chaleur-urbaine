@@ -1,79 +1,61 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
-import Input from '@codegouvfr/react-dsfr/Input';
-import Select from '@codegouvfr/react-dsfr/SelectNext';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import { trackEvent } from '@/modules/analytics/client';
+import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
+import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
+import { buildPublicodeSituation } from '@/modules/simulator/constants';
 import { isDefined } from '@/utils/core';
-
-import { prixSpotCEE } from './Simulator';
-
-type TypeBatiment = 'residentiel' | 'tertiaire';
-
-type FormState = {
-  typeBatiment: TypeBatiment;
-  nbLogements?: number;
-  surface?: number;
-};
-
-interface SimulateurCoutRaccordementProps {
-  typeBatiment?: TypeBatiment;
-  embedded?: boolean;
-}
 
 /**
  * Simulateur du coût de raccordement selon le nombre de logements si batiment résidentiel ou
  * la surface si batiment tertiaire.
  */
-const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
-  const [formState, setFormState] = useState<FormState>({
-    typeBatiment: props.typeBatiment ?? 'residentiel',
-  });
+const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
+  const engine = useSimulatorEngine();
   const [hasUsedFeature, setHasUsedFeature] = useState(false);
 
-  function updateState<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
-    if (!hasUsedFeature) {
-      trackEvent('Outils|Simulation coût raccordement');
-    }
-    setHasUsedFeature(true);
-    setFormState((state) => ({
-      ...state,
-      [key]: value,
-    }));
-  }
+  const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, resetFormState, updateFormState } =
+    useSimulatorFormState({
+      onAddressSituationChange: engine.updateSituation,
+      onFieldInteraction: () => {
+        if (!hasUsedFeature) {
+          trackEvent('Outils|Simulation coût raccordement');
+        }
+        setHasUsedFeature(true);
+      },
+    });
+
+  const publicodeSituation = useMemo(() => buildPublicodeSituation(formState), [formState]);
+
+  useEffect(() => {
+    engine.updateSituation(publicodeSituation);
+  }, [engine.internalEngine, publicodeSituation]);
+
+  const currentCeeValueDisplay = (engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE') * 1000).toLocaleString('fr-FR', {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  });
 
   const montantAide = useMemo(() => {
-    const value = formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface;
-    if (!value) {
+    if (!engine.loaded || !formState.selectedAddress || !(formState.nbLogements || formState.surface)) {
       return null;
     }
-    return (
-      (formState.typeBatiment === 'residentiel'
-        ? value <= 125
-          ? 12000
-          : 77 * value + 2300
-        : value <= 7500
-          ? 11000
-          : 1.07 * value + 3000) *
-      0.75 *
-      prixSpotCEE
-    );
-  }, [formState]);
+
+    return engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant');
+  }, [engine, engine.loaded, formState.selectedAddress, formState.nbLogements, formState.surface]);
 
   const montantCouts = useMemo(() => {
-    return formState.typeBatiment === 'residentiel'
-      ? isDefined(formState.nbLogements) && formState.nbLogements > 0
-        ? getCoutRaccordementResidentiel(formState.nbLogements)
-        : null
-      : isDefined(formState.surface) && formState.surface > 0
-        ? getCoutRaccordementTertiaire(formState.surface)
-        : null;
-  }, [formState]);
+    return formState.typeBatiment === 'résidentiel'
+      ? getCoutRaccordementResidentiel(formState.nbLogements ?? 0)
+      : getCoutRaccordementTertiaire(formState.surface ?? 0);
+  }, [formState.typeBatiment, formState.nbLogements, formState.surface]);
 
   const montantCoutsApresAide = useMemo(() => {
     if (Array.isArray(montantCouts) && isDefined(montantAide)) {
@@ -87,14 +69,13 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
       return [montantCoutsApresAide[0] / formState.nbLogements, montantCoutsApresAide[1] / formState.nbLogements];
     }
     return null;
-  }, [formState, montantAide]);
+  }, [formState.nbLogements, montantCoutsApresAide]);
 
   return (
     <Box border="1px solid #e7e7e7">
       <ResponsiveRow breakpoint="sm">
         <Box flex p="3w">
           <Badge severity="new" noIcon>
-            {/* the dsfr does not handle custom icons */}
             <Icon name="fr-icon-money-euro-circle-line" size="sm" mr="1v" />
             Simulateur
           </Badge>
@@ -102,47 +83,16 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
             Estimer le coût d’un raccordement*
           </Heading>
           <Box mb="3w">pour une longueur de branchement de 50 m</Box>
-          <Select
-            label="Type de bâtiment"
-            options={[
-              {
-                label: 'Résidentiel',
-                value: 'residentiel',
-              },
-              {
-                label: 'Tertiaire',
-                value: 'tertiaire',
-              },
-            ]}
-            nativeSelectProps={{
-              onChange: (e) => {
-                updateState('typeBatiment', e.target.value as TypeBatiment);
-                updateState(e.target.value === 'residentiel' ? 'nbLogements' : 'surface', undefined);
-              },
-              value: formState.typeBatiment,
-            }}
+          <SimulatorFormFields
+            addressErrorMessage={addressErrorMessage}
+            formState={formState}
+            onAddressChange={handleAddressChange}
+            onFormStateChange={updateFormState}
+            onReset={resetFormState}
+            onTypeBatimentChange={handleTypeBatimentChange}
+            showLabels
+            engine={engine}
           />
-          {formState.typeBatiment === 'residentiel' ? (
-            <Input
-              key="nbLogements"
-              label="Nombre de logements"
-              nativeInputProps={{
-                min: 0,
-                onChange: (e) => updateState('nbLogements', parseInt(e.target.value, 10)),
-                type: 'number',
-              }}
-            />
-          ) : (
-            <Input
-              key="surface"
-              label="Surface (m²)"
-              nativeInputProps={{
-                min: 0,
-                onChange: (e) => updateState('surface', parseInt(e.target.value, 10)),
-                type: 'number',
-              }}
-            />
-          )}
           <Text size="sm">
             *montants donnés à titre indicatif.
             {props.embedded && (
@@ -161,7 +111,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
             <Box mt="2w">
               <Badge severity="warning">
                 Le simulateur n'est pour le moment pas disponible pour des bâtiments de plus de{' '}
-                {formState.typeBatiment === 'residentiel' ? '330 logements' : '20 000 m²'}
+                {formState.typeBatiment === 'résidentiel' ? '330 logements' : '20 000 m²'}
               </Badge>
             </Box>
           ) : (
@@ -171,13 +121,16 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               </Heading>
               <Box border="1px solid #e7e7e7" my="3w" />
               <Text fontWeight="bold" textTransform="uppercase">
-                Montant du coup de pouce
+                Montant des aides
               </Text>
               <Heading as="h6" mt="2w">
                 {prettyPrintCout(montantAide)}
               </Heading>
+              <Text size="sm" mt="1w">
+                Montant indicatif calculé avec une valeur CEE actuelle de <strong>{currentCeeValueDisplay} €/MWh cumac</strong>.
+              </Text>
               <Box border="1px solid #e7e7e7" my="3w" />
-              <Badge severity="info">Après déduction du coup de pouce</Badge>
+              <Badge severity="info">Après déduction des aides</Badge>
               <Heading as="h6" mb="0" mt="1w">
                 {montantCoutsApresAide?.[0] === 0 && montantCoutsApresAide?.[1] === 0 ? (
                   <>Raccordement gratuit&nbsp;!</>
@@ -188,7 +141,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
                 )}
               </Heading>
 
-              {formState.typeBatiment === 'residentiel' && Array.isArray(montantCoutsParLogementApresAide) && (
+              {formState.typeBatiment === 'résidentiel' && Array.isArray(montantCoutsParLogementApresAide) && (
                 <Text mt="1w">
                   Soit {prettyPrintCout(montantCoutsParLogementApresAide[0])} à {prettyPrintCout(montantCoutsParLogementApresAide[1])} par
                   logement

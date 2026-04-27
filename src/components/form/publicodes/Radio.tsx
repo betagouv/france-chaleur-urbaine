@@ -4,7 +4,6 @@ import Radio from '@/components/form/dsfr/Radio';
 import useInViewport from '@/hooks/useInViewport';
 
 import { usePublicodesFormContext } from './FormProvider';
-import { fixupBooleanEngineValue, getOptions } from './helpers';
 import Label from './Label';
 import labels from './labels';
 
@@ -24,8 +23,8 @@ const RadioInput = ({
   const [ref, isInView] = useInViewport<HTMLFieldSetElement>();
   const { engine } = usePublicodesFormContext();
 
-  const options = isInView ? getOptions(engine, name) : [];
-  const valueInEngine = isInView ? fixupBooleanEngineValue(engine.getField(name)) : '';
+  const options = isInView ? engine.getOptions(name) : [];
+  const valueInEngine = isInView ? engine.fixupBooleanEngineValue(engine.getField(name)) : '';
 
   const displayLabel = label ? label : name in labels ? labels[name as keyof typeof labels] : name;
 

@@ -6,7 +6,6 @@ import useInViewport from '@/hooks/useInViewport';
 import { isDefined } from '@/utils/core';
 
 import { usePublicodesFormContext } from './FormProvider';
-import { fixupBooleanEngineValue, fixupSituationStringValue, getOptions } from './helpers';
 import Label from './Label';
 import labels from './labels';
 
@@ -38,11 +37,10 @@ const Select = ({
     isInViewRaw;
   const { engine } = usePublicodesFormContext();
   const unit = !hideUnit && isInView ? engine.getUnit(name) : '';
-
-  const options = isInView ? getOptions(engine, name) : [];
-  const defaultValue = isInView ? fixupBooleanEngineValue(engine.getFieldDefaultValue(name)) : '';
+  const options = isInView ? engine.getOptions(name) : [];
+  const defaultValue = isInView ? engine.fixupBooleanEngineValue(engine.getFieldDefaultValue(name)) : '';
   const value: any = isInView
-    ? `${(withDefaultOption ? fixupSituationStringValue(engine.getSituation()[name]) : fixupBooleanEngineValue(engine.getField(name))) ?? ''}`
+    ? `${(withDefaultOption ? engine.fixupSituationStringValue(engine.getSituation()[name]) : engine.fixupBooleanEngineValue(engine.getField(name))) ?? ''}`
     : '';
 
   const displayLabel = label ? label : name in labels ? labels[name as keyof typeof labels] : name;

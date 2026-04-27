@@ -1,4 +1,5 @@
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
+import dynamic from 'next/dynamic';
 import type { ComponentProps } from 'react';
 import Chart from 'react-google-charts';
 
@@ -8,7 +9,11 @@ import Link from '@/components/ui/Link';
 import { deepMergeObjects } from '@/utils/core';
 
 import { List } from './Contents.styles';
-import SimulateurCoutRaccordement from './SimulateurCoutRaccordement';
+
+// `useSimulatorEngine` is not SSR-safe.
+const SimulateurCoutRaccordement = dynamic(() => import('@/modules/simulator/client/SimulateurCoutRaccordement'), {
+  ssr: false,
+});
 
 type ChartOptions = ComponentProps<typeof Chart>['options'];
 

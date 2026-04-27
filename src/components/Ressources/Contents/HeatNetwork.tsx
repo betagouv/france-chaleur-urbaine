@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { RefObject } from 'react';
 
 import Infographie from '@/components/Infographie';
+import { ConditionsAttributionCee } from '@/components/Ressources/Contents/Helps';
 import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
 
 import { Subtitle } from './Contents.styles';
@@ -615,35 +616,8 @@ const HeatNetwork = ({
       de la prime.
       <br />
       <br />
-      Les <b>conditions d’attribution</b> sont les suivantes :
-      <ul>
-        <li>
-          remplacement d’équipements de chauffage ou de production d’eau chaude sanitaire au charbon, au fioul ou au gaz au profit d’un
-          raccordement à un réseau de chaleur alimenté majoritairement par des énergies renouvelables ou de récupération (ou, à défaut, en
-          cas d’impossibilité technique ou économique du raccordement, de la mise en place d’équipements de chauffage ou de production d’eau
-          chaude sanitaire ne consommant ni charbon ni fioul) ;
-        </li>
-        <li>
-          bâtiments résidentiels collectifs et du secteur tertiaire existant depuis plus de deux ans à la date d’engagement de
-          l’opération. ;
-        </li>
-        <li>
-          opération valable pour une date d’engagement (signature du devis) comprise entre le 1er septembre 2022 et le 31 décembre 2025. Les
-          travaux doivent être achevés au plus tard le 31 décembre 2026 ;
-        </li>
-        <li>
-          le bénéficiaire ne peut prétendre pour une même opération qu’à une seule prime versée dans le cadre du dispositif des certificats
-          d’économies d’énergie ;
-        </li>
-        <li>
-          la facture devra expressément mentionner la dépose de l’équipement existant en indiquant l’énergie de chauffage (charbon, fioul ou
-          gaz) et le type d’équipement déposé ;
-        </li>
-        <li>
-          le raccordement d’un bâtiment déraccordé existant est éligible si et seulement si le déraccordement a eu lieu au moins 5 ans
-          auparavant et que celui-ci n’a pas fait l’objet d’une demande de certificats d’économie d’énergie.
-        </li>
-      </ul>
+      Les <strong>conditions d’attribution</strong> sont les suivantes :
+      <ConditionsAttributionCee />
       <br />
       <ul>
         <li>

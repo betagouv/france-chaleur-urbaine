@@ -1,10 +1,11 @@
+import dynamic from 'next/dynamic';
+
 import LastArticles from '@/components/Articles/LastArticles';
 import IframeIntegration from '@/components/GenericContent/IframeIntegration';
 import ObligationRaccordement from '@/components/GenericContent/ObligationRaccordement';
 import ReduireImpact from '@/components/GenericContent/ReduireImpact';
 import HeadSliceForm from '@/components/HeadSliceForm';
 import Partners from '@/components/Partners/Partners';
-import SimulateurCoutRaccordement from '@/components/Ressources/Contents/SimulateurCoutRaccordement';
 import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
 import SimulatorCO2 from '@/components/SimulatorCO2';
@@ -16,6 +17,11 @@ import Heading from '@/components/ui/Heading';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+
+// `useSimulatorEngine` is not SSR-safe.
+const SimulateurCoutRaccordement = dynamic(() => import('@/modules/simulator/client/SimulateurCoutRaccordement'), {
+  ssr: false,
+});
 
 const conseillerCards = {
   aides: understandings.aides,
@@ -157,7 +163,7 @@ const Professionnels = () => {
               proposées.
             </strong>
           </Text>
-          <SimulateurCoutRaccordement embedded typeBatiment="tertiaire" />
+          <SimulateurCoutRaccordement embedded />
 
           <Heading as="h4" color="blue-france" mt="10w">
             Le coût de la chaleur
