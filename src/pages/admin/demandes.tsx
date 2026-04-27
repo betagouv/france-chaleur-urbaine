@@ -62,6 +62,30 @@ type MapCenterLocation = {
 
 // biome-ignore assist/source/useSortedKeys: keep field order as more coherent with most used actions
 const quickFilterPresets = {
+  demandesAAffecter: {
+    filters: [{ id: 'validated', value: { false: true, true: false } }],
+    getStat: (demands) => demands.filter((demand) => !demand.validated).length,
+    label: (
+      <>
+        à valider&nbsp;
+        <Tooltip title="Demandes dont l'affectation réseau n'a pas encore été validée" />
+      </>
+    ),
+    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
+  },
+  reaffectationsEnAttente: {
+    filters: [{ id: 'pending_assignment_change_present' as any, value: { Non: false, Oui: true } }],
+    getStat: (demands) => demands.filter((demand) => demand.pending_assignment_change !== null).length,
+    label: (
+      <>
+        réaffectations&nbsp;
+        <br />
+        en attente&nbsp;
+        <Tooltip title="Demandes de réaffectation formulées par une collectivité/ALEC/gestionnaire et non encore traitées." />
+      </>
+    ),
+    valueSuffix: <Icon name="fr-icon-arrow-left-right-line" size="sm" color="var(--text-default-warning)" />,
+  },
   demandesMoisEnCours: {
     filters: [
       {
@@ -76,17 +100,6 @@ const quickFilterPresets = {
       }).length;
     },
     label: `en ${dayjs().format('MMMM')}`,
-  },
-  demandesAAffecter: {
-    filters: [{ id: 'validated', value: { false: true, true: false } }],
-    getStat: (demands) => demands.filter((demand) => !demand.validated).length,
-    label: (
-      <>
-        à valider&nbsp;
-        <Tooltip title="Demandes dont l'affectation réseau n'a pas encore été validée" />
-      </>
-    ),
-    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
   },
   demandesATraiter: {
     filters: [
@@ -116,20 +129,6 @@ const quickFilterPresets = {
         />
       </>
     ),
-  },
-
-  reaffectationsEnAttente: {
-    filters: [{ id: 'pending_assignment_change_present' as any, value: { Non: false, Oui: true } }],
-    getStat: (demands) => demands.filter((demand) => demand.pending_assignment_change !== null).length,
-    label: (
-      <>
-        réaffectations&nbsp;
-        <br />
-        en attente&nbsp;
-        <Tooltip title="Demandes de réaffectation formulées par une collectivité/ALEC/gestionnaire et non encore traitées." />
-      </>
-    ),
-    valueSuffix: <Icon name="fr-icon-arrow-left-right-line" size="sm" color="var(--text-default-warning)" />,
   },
   all: {
     filters: [],
