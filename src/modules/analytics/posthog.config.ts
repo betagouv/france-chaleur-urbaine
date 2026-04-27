@@ -204,6 +204,8 @@ export type PostHogEventMap = {
   'home:pedagogic_section_clicked': ElementType;
   'home:partner_logo_clicked': { partner_name: string; target_url: string };
   'home:testimonial_carousel_clicked': { action: string; testimonial_index: number };
+
+  'account:created': never;
 };
 type ElementType = {
   element_name: string;

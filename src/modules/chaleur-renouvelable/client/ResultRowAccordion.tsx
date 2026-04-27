@@ -231,7 +231,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
         </Link>
       </div>
       {variant !== 'recommended' && (
-        <ScrollToHelpButton onClick={() => trackPostHogEvent('simu_multiENR:methodo_clicked', { chauffage_mode: item.id })} />
+        <ScrollToHelpButton onClick={() => trackPostHogEvent('simu_multiENR:methodo_clicked', { chauffage_mode: item.label })} />
       )}
     </Accordion>
   );
