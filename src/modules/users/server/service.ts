@@ -2,11 +2,11 @@ import bcrypt from 'bcryptjs';
 import type { UpdateObject } from 'kysely';
 
 import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
-import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
+import { createContact } from '@/modules/ademe-connect/server/client';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { createUserAdminSchema, type StructureType, type UpdateProfileSchema, updateUserAdminSchema } from '@/modules/users/constants';
-import { type DB, kdb, sql, type Users } from '@/server/db/kysely';
+import { type DB, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { logger } from '@/server/helpers/logger';
 import type { UserRole } from '@/types/enum/UserRole';
@@ -97,9 +97,10 @@ export const update: typeof baseModel.update = async (id, data, config, _context
  */
 export const remove: typeof baseModel.remove = async (id, config, context) => {
   const record = await baseModel.remove(id, config, context);
-  updateContact((record as Users).email, { actif: false }).catch((error) =>
-    logger.error('ademe-connect updateContact failed on user delete', { error, user_id: id })
-  );
+  // FIXME vérifier que doit être désactivé suite à réunion ademe connect
+  // updateContact((record as Users).email, { actif: false }).catch((error) =>
+  //   logger.error('ademe-connect updateContact failed on user delete', { error, user_id: id })
+  // );
   return record;
 };
 

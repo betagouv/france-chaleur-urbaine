@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import cliConfig from '@/cli-config';
-import { updateContact } from '@/modules/ademe-connect/server/client';
 import { createEvent } from '@/modules/events/server/service';
 import { create } from '@/modules/users/server/service';
 import { type ApiAccounts, kdb } from '@/server/db/kysely';
@@ -130,11 +129,12 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
           type: 'user_updated_api',
         });
 
-        if (!user.active) {
-          updateContact(sanitizedEmail, { actif: true }).catch((error) =>
-            logger.error('ademe-connect updateContact failed on engie reactivation', { email: sanitizedEmail, error })
-          );
-        }
+        // FIXME vérifier que doit être désactivé suite à réunion ademe connect
+        // if (!user.active) {
+        //   updateContact(sanitizedEmail, { actif: true }).catch((error) =>
+        //     logger.error('ademe-connect updateContact failed on engie reactivation', { email: sanitizedEmail, error })
+        //   );
+        // }
       } else {
         logger.info(' ⏭️ Skipped');
       }
@@ -155,9 +155,10 @@ export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork
           data: { api_name: account.name, email },
           type: 'user_deactivated_api',
         });
-        updateContact(email, { actif: false }).catch((error) =>
-          logger.error('ademe-connect updateContact failed on engie deactivation', { email, error })
-        );
+        // FIXME vérifier que doit être désactivé suite à réunion ademe connect
+        // updateContact(email, { actif: false }).catch((error) =>
+        //   logger.error('ademe-connect updateContact failed on engie deactivation', { email, error })
+        // );
       } else {
         logger.info(' ⏭️ Skipped');
       }
