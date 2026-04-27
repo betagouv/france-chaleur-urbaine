@@ -149,14 +149,13 @@ export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfa
   const relanceDemand = await findDemandByRelanceId(relanceId);
   const satisfactionValue = satisfaction ? 'Oui' : 'Non';
 
-  const [updatedDemand] = await kdb
+  await kdb
     .updateTable('demands')
     .set({
       legacy_values: mergeLegacyValues({ 'Recontacté par le gestionnaire': satisfactionValue }),
       updated_at: new Date(),
     })
     .where('id', '=', relanceDemand.id)
-    .returningAll()
     .execute();
 
   await createEvent({
@@ -166,13 +165,14 @@ export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfa
     type: 'demand_updated',
   });
 
+  const demand = await getDemandById(relanceDemand.id);
   const testAddress = await kdb
     .selectFrom('pro_eligibility_tests_addresses')
     .selectAll()
-    .where('demand_id', '=', updatedDemand.id)
+    .where('demand_id', '=', demand.id)
     .executeTakeFirst();
 
-  const enriched = enrichDemandForAdmin({ demand: updatedDemand, testAddress: testAddress || null });
+  const enriched = enrichDemandForAdmin({ demand, testAddress: testAddress || null });
 
   // Automation import from https://airtable.com/app9opX8gRAtBqkan/wfl3jPABYXeIrGeUr/wtrWn0m6O5tXFFdiP
   if (enriched.Structure === 'Bailleur social' || enriched.Structure === 'Tertiaire') {
@@ -226,8 +226,5 @@ export const updateDemandByUser = async (demandId: string, values: UpdateUserDem
   }
 
   const demand = await getDemandById(updatedDemand.id);
-  if (!demand) {
-    throw new Error('Demand not found');
-  }
   return enrichDemandForAdmin({ demand, testAddress: testAddress || null });
 };

@@ -19,6 +19,7 @@ import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
+import AccessCountsCell from '@/modules/demands/client/AccessCountsCell';
 import AdditionalInformation from '@/modules/demands/client/AdditionalInformation';
 import AffectedNetworkCell from '@/modules/demands/client/AffectedNetworkCell';
 import Comment from '@/modules/demands/client/Comment';
@@ -107,6 +108,18 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
   {
     accessorKey: 'Affecté à',
     name: 'Affecté à',
+  },
+  {
+    accessorFn: (demand) => demand.access_counts.gestionnaire,
+    name: 'Gestionnaires avec accès',
+  },
+  {
+    accessorFn: (demand) => demand.access_counts.collectivite,
+    name: 'Collectivités avec accès',
+  },
+  {
+    accessorFn: (demand) => demand.access_counts.alec,
+    name: 'ALEC avec accès',
   },
 ];
 
@@ -419,6 +432,15 @@ function DemandesNew(): React.ReactElement {
         enableSorting: false,
         header: 'Commentaires',
         width: '280px',
+      },
+      {
+        accessorFn: (row) => row.access_counts.gestionnaire + row.access_counts.collectivite + row.access_counts.alec,
+        cell: ({ row }) => <AccessCountsCell demandId={row.original.id} accessCounts={row.original.access_counts} />,
+        enableGlobalFilter: false,
+        filterType: 'Range',
+        header: 'Accès',
+        id: 'access',
+        width: '130px',
       },
       // obligatoire afin d'être utilisables dans les presets
       {

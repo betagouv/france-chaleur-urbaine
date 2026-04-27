@@ -5,12 +5,15 @@ import { demandStatusDefault, normalizeHeatingEnergy, normalizeHeatingType } fro
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import { type Demands, kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
+import { userRolesWithPermissions } from '@/types/enum/UserRole';
 
+import type { AccessCounts } from '../types';
 import { getEntityFromEligibilityType } from './eligibility';
 
 /**
  * Requête de base pour les demandes, jointe avec le test d'adresse associé (exposé comme `testAddress`)
- * et enrichie avec les infos du réseau affecté (`network_name`, `network_sncu_id`, `network_tags`).
+ * et enrichie avec les infos du réseau affecté (`network_name`, `network_sncu_id`, `network_tags`)
+ * et les compteurs d'utilisateurs ayant accès à la demande (`access_counts`, par rôle, hors admin).
  */
 export const buildDemandQuery = () => {
   return kdb
@@ -44,14 +47,39 @@ export const buildDemandQuery = () => {
       sql<string | null>`COALESCE(pending_rdc.nom_reseau, pending_zrc.nom_reseau)`.as('pending_assignment_name'),
       sql<string | null>`pending_rdc."Identifiant reseau"`.as('pending_assignment_sncu_id'),
       sql<string | null>`pending_author.email`.as('pending_assignment_author_email'),
-    ]);
+    ])
+    .select(
+      sql<AccessCounts>`(
+        SELECT jsonb_build_object(
+          'gestionnaire', count(*) FILTER (WHERE ${sql.ref('u.role')} = 'gestionnaire')::int,
+          'collectivite', count(*) FILTER (WHERE ${sql.ref('u.role')} = 'collectivite')::int,
+          'alec',         count(*) FILTER (WHERE ${sql.ref('u.role')} = 'alec')::int
+        )
+        FROM user_permissions up
+        JOIN users u ON ${sql.ref('u.id')} = ${sql.ref('up.user_id')}
+        WHERE ${sql.ref('u.active')} = true
+          AND ${sql.ref('u.role')} IN (${sql.join(userRolesWithPermissions.map((r) => sql.lit(r)))})
+          AND (
+            ${sql.ref('up.type')} = 'national'
+            OR (${sql.ref('up.type')} = 'reseau_existant'        AND ${sql.ref('demands.network_type')} = 'existant'        AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.network_id')}::text)
+            OR (${sql.ref('up.type')} = 'reseau_en_construction' AND ${sql.ref('demands.network_type')} = 'en_construction' AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.network_id')}::text)
+            OR (${sql.ref('up.type')} = 'commune'     AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.commune_code')})
+            OR (${sql.ref('up.type')} = 'epci'        AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.epci_code')})
+            OR (${sql.ref('up.type')} = 'ept'         AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.ept_code')})
+            OR (${sql.ref('up.type')} = 'departement' AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.departement_code')})
+            OR (${sql.ref('up.type')} = 'region'      AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.region_code')})
+          )
+      )`.as('access_counts')
+    );
 };
 
 /**
  * Récupère une demande par id avec son test d'adresse joint.
  */
 export const getDemandById = async (demandId: string) => {
-  return buildDemandQuery().where('demands.id', '=', demandId).executeTakeFirst();
+  return buildDemandQuery()
+    .where('demands.id', '=', demandId)
+    .executeTakeFirstOrThrow(() => new Error('Demande non trouvée'));
 };
 
 /**
@@ -81,12 +109,13 @@ export const resolveNetworkInfo = async (
 /**
  * Enrichit une demande pour l'affichage côté gestionnaire :
  * normalisation du chauffage, historique d'éligibilité augmenté, flag `haut_potentiel`.
+ * `access_counts` (compteurs d'accès par rôle, fournis par `buildDemandQuery`) est passé tel quel.
  */
 export const enrichDemandForGestionnaire = <T extends Selectable<Demands>>({
-  demand: { legacy_values, ...demand },
+  demand: { legacy_values, access_counts, ...demand },
   testAddress,
 }: {
-  demand: T;
+  demand: T & { access_counts: AccessCounts };
   testAddress: Selectable<ProEligibilityTestsAddresses> | null;
 }) => {
   const history = testAddress?.eligibility_history as ProEligibilityTestHistoryEntry[] | undefined;
@@ -140,6 +169,7 @@ export const enrichDemandForGestionnaire = <T extends Selectable<Demands>>({
       legacy_values.Structure === 'Tertiaire');
 
   return {
+    access_counts,
     haut_potentiel: isHautPotentiel,
     ...legacy_values,
     ...demand,
@@ -159,7 +189,7 @@ export const enrichDemandForAdmin = <T extends Selectable<Demands>>({
   demand,
   testAddress,
 }: {
-  demand: T;
+  demand: T & { access_counts: AccessCounts };
   testAddress: Selectable<ProEligibilityTestsAddresses> | null;
 }) => {
   const enriched = enrichDemandForGestionnaire({ demand, testAddress });

@@ -55,4 +55,14 @@ export type Demand = AirtableLegacyRecord & {
   updated_at: string;
 };
 
+/**
+ * Compteurs d'utilisateurs (hors admin) ayant accès à une demande, groupés par rôle.
+ * Toujours fournis par `buildDemandQuery` (compteurs SQL — chaque champ est `0` si vide, jamais absent).
+ */
+export type AccessCounts = {
+  gestionnaire: number;
+  collectivite: number;
+  alec: number;
+};
+
 export type { ReseauxStats, TagsStats } from './server/stats';

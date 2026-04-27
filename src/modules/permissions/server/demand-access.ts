@@ -107,13 +107,10 @@ export const canUserAccessDemand = (user: UserWithRole, permissions: Permission[
 };
 
 /**
- * Returns users who have access to a specific demand.
+ * Returns users who have access — ou qui auront accès une fois la demande validée — à une demande.
+ * N'applique pas le filtre `validated` pour permettre l'affichage « qui verra cette demande ».
  */
 export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
-  if (!demand.validated) {
-    return [];
-  }
-
   const query = kdb
     .selectFrom('users as u')
     .innerJoin('user_permissions as up', 'up.user_id', 'u.id')

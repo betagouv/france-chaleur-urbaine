@@ -101,9 +101,6 @@ export const updateDemandByGestionnaire = async (demandId: string, values: Updat
   });
 
   const demand = await getDemandById(updatedDemand.id);
-  if (!demand) {
-    throw new Error('Demand not found');
-  }
   return enrichDemandForGestionnaire({ demand, testAddress: testAddress || null });
 };
 

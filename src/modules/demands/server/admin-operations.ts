@@ -278,8 +278,5 @@ export const updateDemandByAdmin = async (demandId: string, values: UpdateAdminD
   });
 
   const demand = await getDemandById(updatedDemand.id);
-  if (!demand) {
-    throw new Error('Demand not found');
-  }
   return enrichDemandForAdmin({ demand, testAddress: testAddress || null });
 };

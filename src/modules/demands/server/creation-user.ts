@@ -120,9 +120,5 @@ export const createDemand = async (
 
   const demand = await getDemandById(createdDemand.id);
 
-  if (!demand) {
-    throw new Error('Demand not found');
-  }
-
   return enrichDemandForAdmin({ demand, testAddress });
 };

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { anonymizeEmail, anonymizeName } from '@/modules/demands/server/helpers';
 import { adminRoute, demandAccessRoute, router } from '@/modules/trpc/server';
 
 import { zPermissionInput } from '../types';
@@ -31,6 +32,20 @@ export const permissionsRouter = router({
       .mutation(({ input }) => setUserPermissions(input.userId, input.permissions)),
   },
 
+  listUsersWithAccessToDemand: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).query(async ({ input, ctx }) => {
+    const demand = await getDemandForAccessCheck(input.demandId);
+    if (!demand) return [];
+    const users = await getUsersWithAccessToDemand(demand);
+    if (!ctx.anonymize) return users;
+    return users.map((u) => ({
+      ...u,
+      email: anonymizeEmail(u.email),
+      first_name: anonymizeName(u.first_name ?? undefined),
+      last_name: anonymizeName(u.last_name ?? undefined),
+      structure_name: anonymizeName(u.structure_name ?? undefined),
+    }));
+  }),
+
   mine: demandAccessRoute.query(({ ctx }) => ctx.getPermissions()),
 
   mineWithLabels: demandAccessRoute.query(async ({ ctx }) => resolvePermissionsWithLabels(await ctx.getPermissions())),
@@ -49,10 +64,4 @@ export const permissionsRouter = router({
       })
     )
     .query(({ input }) => searchTerritories(input.query, input.types)),
-
-  usersWithAccessToDemand: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).query(async ({ input }) => {
-    const demand = await getDemandForAccessCheck(input.demandId);
-    if (!demand) return [];
-    return getUsersWithAccessToDemand(demand);
-  }),
 });

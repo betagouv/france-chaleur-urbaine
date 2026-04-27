@@ -28,6 +28,11 @@ export const useDialog = () => {
   return context;
 };
 
+/**
+ * Modale de référence — à privilégier face à `Modal` et `ModalSimple` (laissés pour compat).
+ * Layout titre + bouton « Fermer » alignés sur la même ligne, animations motion intégrées,
+ * tailles `sm`/`md`/`lg`, et `useDialog()` pour fermer depuis le contenu.
+ */
 const Dialog = ({ children, trigger, title, description, size = 'md', open, onOpenChange }: DialogProps) => {
   const handleClose = () => {
     onOpenChange?.(false);

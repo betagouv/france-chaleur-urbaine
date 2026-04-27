@@ -99,15 +99,12 @@ describe('helpers', () => {
 
       const result = await getDemandById(created.id);
 
-      expect(result).toBeDefined();
-      expect(result?.id).toBe(created.id);
-      expect(result?.testAddress).toBeDefined();
+      expect(result.id).toBe(created.id);
+      expect(result.testAddress).toBeDefined();
     });
 
-    it('retourne undefined pour une demande inexistante', async () => {
-      const result = await getDemandById(uuid(99999));
-
-      expect(result).toBeUndefined();
+    it('throw pour une demande inexistante', async () => {
+      await expect(getDemandById(uuid(99999))).rejects.toThrow('Demande non trouvée');
     });
   });
 });

@@ -28,6 +28,7 @@ import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
+import AccessCountsCell from '@/modules/demands/client/AccessCountsCell';
 import AffectedNetworkCell from '@/modules/demands/client/AffectedNetworkCell';
 import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
@@ -409,6 +410,19 @@ function DemandesAdmin(): React.ReactElement {
         header: 'Réseau affecté',
         id: 'network_name',
         width: '300px',
+      },
+      {
+        accessorFn: (row) => row.access_counts.gestionnaire + row.access_counts.collectivite + row.access_counts.alec,
+        cell: ({ row }) => (
+          <div onClick={stopPropagation} onDoubleClick={stopPropagation}>
+            <AccessCountsCell demandId={row.original.id} accessCounts={row.original.access_counts} />
+          </div>
+        ),
+        enableGlobalFilter: false,
+        filterType: 'Range',
+        header: 'Accès',
+        id: 'access',
+        width: '130px',
       },
       {
         accessorKey: 'validated',
