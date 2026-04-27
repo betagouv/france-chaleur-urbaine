@@ -43,11 +43,11 @@ Outil central du produit. On mesure l'interaction avec les couches et les outils
 
 | Événement | Propriétés | Description |
 |---|---|---|
-| `map:layer_toggle` | `layer_name`, `is_enabled` | Activation/désactivation d'une couche |
+| `map:layer_toggled` | `layer`, `is_enabled` | Activation/désactivation d'une couche |
 | `map:legend_toggle` | `is_open` | Ouverture/fermeture de la légende |
 | `map:tab_select` | `tab_name` | Navigation entre onglets (réseaux, potentiel, enrr, outils) |
 | `map:tool_use` | `tool_name`, `action` | Utilisation des outils carte |
-| `map:feature_click` | `feature_type`, `feature_id?` | Clic sur une feature de la carte (ouverture popup de détail) |
+| `map:feature_click` | `network_name`, `network_id?, `enr_rate?` | Clic sur une feature de la carte (ouverture popup de détail) |
 
 **`tool_name`** : `distance`, `density`, `extraction`
 **`action`** : `start`, `complete`, `reset`, `export`
@@ -103,7 +103,7 @@ Tracking unifié de la consultation de contenu.
 | 2 | `address_test:contact_form_submitted` | Conversion |
 | 3 | `potentiel-creation-reseau:commune_form_submit` | Conversion |
 | 4 | `potentiel-creation-reseau:contact_form_submit` | Conversion |
-| 5 | `map:layer_toggle` | Carte |
+| 5 | `map:layer_toggled` | Carte |
 | 6 | `map:legend_toggle` | Carte |
 | 7 | `map:tab_select` | Carte |
 | 8 | `map:tool_use` | Carte |
@@ -138,7 +138,7 @@ $pageview (page potentiel)
 ### Engagement carte
 ```
 $pageview (page carte)
-  → map:layer_toggle (au moins 1)
+  → map:layer_toggled (au moins 1)
   → map:tool_use (au moins 1)
 ```
 
@@ -152,7 +152,7 @@ $pageview (page carte)
 - Répartition des demandes par `structure_type` et `heating_energy`
 
 ### 2. Usage carte
-- Top couches activées (`map:layer_toggle` breakdown par `layer_name`)
+- Top couches activées (`map:layer_toggled` breakdown par `layer`)
 - Usage des outils (`map:tool_use` breakdown par `tool_name`)
 - Onglets les plus visités (`map:tab_select` breakdown par `tab_name`)
 

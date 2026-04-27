@@ -1,4 +1,5 @@
 import AsyncButton from '@/components/ui/AsyncButton';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { toastErrors } from '@/modules/notification';
 import type { NetworkTable } from '@/modules/reseaux/server/geometry-operations';
 import trpc from '@/modules/trpc/client';
@@ -32,6 +33,11 @@ export function DownloadNetworkGeometryButton({ id_fcu, type, networkName }: Dow
     if (!geometry) {
       throw new Error('Aucune géométrie disponible pour ce réseau');
     }
+
+    trackPostHogEvent('map:network_exported', {
+      network_id: id_fcu,
+      network_name: networkName,
+    });
 
     const geojson: GeoJSON.FeatureCollection = {
       features: [

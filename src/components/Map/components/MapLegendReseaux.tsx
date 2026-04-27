@@ -455,6 +455,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               href="/contribution"
               className="fr-btn--tertiary d-flex"
               style={{ justifyContent: 'center', width: '100%' }}
+              postHogEventKey="map:contribute_clicked"
             >
               <Icon name="fr-icon-heart-line" size="sm" mr="1v" />
               Contribuer
@@ -465,8 +466,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               variant="primary"
               href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
               eventKey="Téléchargement|Tracés|carte"
-              postHogEventKey="link:click"
-              postHogEventProps={{ link_name: 'traces_reseaux', source: 'carte' }}
+              postHogEventKey="map:download_network"
               className="fr-btn--tertiary d-flex"
               mx="auto"
               style={{ justifyContent: 'center', width: '100%' }}

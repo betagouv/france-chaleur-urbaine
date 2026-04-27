@@ -5,6 +5,7 @@ import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { DPE_BG, improveDpe, type ModeDeChauffageEnriched } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import type { DPE } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
@@ -229,7 +230,9 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
           Plus d'infos
         </Link>
       </div>
-      {variant !== 'recommended' && <ScrollToHelpButton />}
+      {variant !== 'recommended' && (
+        <ScrollToHelpButton onClick={() => trackPostHogEvent('simu_multiENR:methodo_clicked', { chauffage_mode: item.id })} />
+      )}
     </Accordion>
   );
 });

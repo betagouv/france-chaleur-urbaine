@@ -122,8 +122,9 @@ export function useMapEvents({ mapLayersLoaded, isDrawing, mapRef, onFeatureClic
       const popupFunc = layerSpec.popup;
 
       trackPostHogEvent('map:feature_click', {
-        feature_id: hoveredFeature.properties?.id_fcu ?? hoveredFeature.id?.toString(),
-        feature_type: hoveredFeature.source,
+        enr_rate: hoveredFeature?.properties?.['Taux EnR&R'],
+        network_id: hoveredFeature?.properties?.id_fcu ?? hoveredFeature?.id?.toString(),
+        network_name: hoveredFeature?.properties?.nom_reseau,
       });
 
       onFeatureClick?.(hoveredFeature);

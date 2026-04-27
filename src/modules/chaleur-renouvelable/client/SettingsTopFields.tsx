@@ -53,6 +53,10 @@ export function SettingsTopFields({
             address: nextLabel,
             source: withLabel ? 'landing' : 'result',
           });
+          trackPostHogEvent('fcr_simulator:started', {
+            address: nextLabel,
+            source: withLabel ? 'landing' : 'result',
+          });
           setAdresse(nextLabel);
           setGeoAddress(next);
           onSelectGeoAddress?.(next);
@@ -67,13 +71,25 @@ export function SettingsTopFields({
           { label: 'Maison individuelle', value: 'maison_individuelle' satisfies TypeLogement },
         ]}
         nativeSelectProps={{
-          onChange: (e) => void setTypeLogement(e.target.value as TypeLogement),
+          onChange: (e) => {
+            trackPostHogEvent('fcr_simulator:started', {
+              source: withLabel ? 'landing' : 'result',
+              typeLogement: e.target.value,
+            });
+            void setTypeLogement(e.target.value as TypeLogement);
+          },
           value: typeLogement ?? '',
         }}
       />
       <RichSelect<EspaceExterieur>
         value={espaceExterieur ?? undefined}
-        onChange={(val) => void setEspaceExterieur(val)}
+        onChange={(val) => {
+          trackPostHogEvent('fcr_simulator:started', {
+            espaceExterieur: val,
+            source: withLabel ? 'landing' : 'result',
+          });
+          void setEspaceExterieur(val);
+        }}
         options={[...espaceExterieurOptions]}
         placeholder="Sélectionner vos espaces disponibles"
         label={withLabel ? 'Espaces extérieurs disponibles' : ''}

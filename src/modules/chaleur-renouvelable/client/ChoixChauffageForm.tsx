@@ -48,6 +48,13 @@ export default function ChoixChauffageForm() {
           disabled={isFormDisabled}
           onClick={(e) => {
             e.stopPropagation();
+
+            trackPostHogEvent('fcr_simulator:contact_form_submitted', {
+              address: String(urlParams.adresse),
+              espaceExterieur: String(urlParams.espaceExterieur),
+              typeLogement: String(urlParams.typeLogement),
+            });
+
             trackPostHogEvent('chaleur-renouvelable:form_submit', {
               address: String(urlParams.adresse),
               espaceExterieur: String(urlParams.espaceExterieur),

@@ -95,6 +95,30 @@ export type PostHogEventMap = {
     rows_total: number;
   };
 
+  'fcr_simulator:started': {
+    address?: string;
+    typeLogement?: string;
+    espaceExterieur?: string;
+    source: 'landing' | 'result';
+  };
+  'simu_multiENR:params_updated': {
+    dpe?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
+    surface?: number;
+    nb_logements?: number;
+    nb_habitants?: number;
+  };
+  'fcr_simulator:accordion_opened': {
+    chauffage_mode: string;
+  };
+  'simu_multiENR:methodo_clicked': {
+    chauffage_mode: string;
+  };
+  'fcr_simulator:contact_form_submitted': {
+    address: string;
+    espaceExterieur: string;
+    typeLogement: string;
+  };
+
   // Potentiel création réseau
   'potentiel-creation-reseau:commune_form_submit': {
     commune: string;
@@ -106,9 +130,11 @@ export type PostHogEventMap = {
     potentiel: TypeCommune;
   };
 
+  'map:address_searched': never;
+  'map:download_network': never;
   // Carte
-  'map:layer_toggle': {
-    layer_name: string;
+  'map:layer_toggled': {
+    layer: string;
     is_enabled: boolean;
   };
   'map:legend_toggle': {
@@ -122,10 +148,16 @@ export type PostHogEventMap = {
     action: 'start' | 'complete' | 'reset' | 'export';
   };
   'map:feature_click': {
-    feature_type: string;
-    feature_id?: string;
+    network_name: string;
+    network_id?: string;
+    enr_rate: number;
   };
-
+  'map:network_exported': {
+    network_name: string;
+    network_id: number;
+  };
+  'map:manager_contact_form_submitted': never;
+  'map:contribute_clicked': never;
   // Comparateur
   'comparator:config_create': never;
   'comparator:config_load': {

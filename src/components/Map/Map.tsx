@@ -274,7 +274,7 @@ export const FullyFeaturedMap = ({
         setSelectedCardIndex(existingAddressIndex);
       }
       setSoughtAddressesVisible(true);
-
+      trackPostHogEvent('map:address_searched');
       jumpTo({ coordinates });
     },
     [handleOnFetchAddress, handleOnSuccessAddress, jumpTo, setSoughtAddresses, soughtAddresses]

@@ -2,6 +2,7 @@ import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
 import { type DPE, DPE_VALUES, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
@@ -102,7 +103,11 @@ export function ParamsForm({
             label="DPE (étiquette énergétique)"
             options={DPE_VALUES.map((i) => ({ label: i, value: i }))}
             nativeSelectProps={{
-              onChange: (e) => void setDpe(e.target.value as DPE),
+              onChange: (e) => {
+                const newDpe = e.target.value as DPE;
+                trackPostHogEvent('simu_multiENR:params_updated', { dpe: newDpe });
+                void setDpe(newDpe);
+              },
               value: dpe,
             }}
           />
@@ -113,6 +118,7 @@ export function ParamsForm({
               min: 1,
               onChange: (e) => {
                 const nbLogements = Number(e.target.value);
+                trackPostHogEvent('simu_multiENR:params_updated', { nb_logements: nbLogements });
                 void setNbLogements(nbLogements === 0 ? null : nbLogements);
               },
               placeholder: '25',
@@ -129,6 +135,7 @@ export function ParamsForm({
                 min: 0,
                 onChange: (e) => {
                   const surface = Number(e.target.value);
+                  trackPostHogEvent('simu_multiENR:params_updated', { surface });
                   void setSurfaceMoyenne(surface === 0 ? null : surface);
                 },
                 placeholder: '70',
@@ -159,9 +166,10 @@ export function ParamsForm({
                 void setHabitantsMoyen(String(n));
               },
               onChange: (e) => {
-                const raw = e.target.value;
-                if (!isNumericLike(raw)) return;
-                void setHabitantsMoyen(raw);
+                const nbHabitant = e.target.value;
+                if (!isNumericLike(nbHabitant)) return;
+                trackPostHogEvent('simu_multiENR:params_updated', { nb_habitants: Number(nbHabitant) });
+                void setHabitantsMoyen(nbHabitant);
               },
               placeholder: '2',
               required: true,
