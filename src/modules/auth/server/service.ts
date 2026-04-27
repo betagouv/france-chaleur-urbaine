@@ -7,7 +7,7 @@ import { createContact, updateContact } from '@/modules/ademe-connect/server/cli
 import { linkDemandsByEmail } from '@/modules/demands/server/demands-service';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
-import { type StructureType, structureTypesLabels } from '@/modules/users/constants';
+import type { StructureType } from '@/modules/users/constants';
 import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
@@ -75,7 +75,7 @@ export const register = async ({
     email: insertedUser.email,
     nom: userData.last_name,
     prenom: userData.first_name,
-    rubriques: buildRubriques(role, userData.structure_type && structureTypesLabels[userData.structure_type]),
+    rubriques: buildRubriques(role, userData.structure_type),
     telephone: userData.phone ?? undefined,
     typeOrganisme: ROLE_TYPE_ORGANISME[role],
   }).catch((error) => logger.error('ademe-connect createContact failed on register', { error, user_id: insertedUser.id }));

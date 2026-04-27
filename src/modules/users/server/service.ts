@@ -5,13 +5,7 @@ import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/con
 import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
-import {
-  createUserAdminSchema,
-  type StructureType,
-  structureTypesLabels,
-  type UpdateProfileSchema,
-  updateUserAdminSchema,
-} from '@/modules/users/constants';
+import { createUserAdminSchema, type StructureType, type UpdateProfileSchema, updateUserAdminSchema } from '@/modules/users/constants';
 import { type DB, kdb, sql, type Users } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { logger } from '@/server/helpers/logger';
@@ -83,7 +77,7 @@ export const create: typeof baseModel.create = async ({ optin_at, ...data }, _co
       email: data.email as string,
       nom: (data.last_name as string) || undefined,
       prenom: (data.first_name as string) || undefined,
-      rubriques: buildRubriques(data.role, data.structure_type && structureTypesLabels[data.structure_type as StructureType]),
+      rubriques: buildRubriques(data.role, data.structure_type as StructureType | null | undefined),
       telephone: (data.phone as string) || undefined,
       typeOrganisme: ROLE_TYPE_ORGANISME[data.role],
     }).catch((error) => logger.error('ademe-connect createContact failed on user.invite', { error, user_id: record.id }));

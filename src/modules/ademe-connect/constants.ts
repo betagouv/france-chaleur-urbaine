@@ -1,3 +1,4 @@
+import type { StructureType } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export const ROLE_TYPE_ORGANISME: Partial<Record<UserRole, string>> = {
@@ -6,15 +7,32 @@ export const ROLE_TYPE_ORGANISME: Partial<Record<UserRole, string>> = {
   professionnel: 'Entreprise',
 };
 
+// biome-ignore assist/source/useSortedKeys: keep order matching the rubriques list expected on ADEME Connect
+const ROLE_RUBRIQUES: Partial<Record<UserRole, string>> = {
+  particulier: 'FCU - rôle particulier',
+  professionnel: 'FCU - rôle professionnel',
+  gestionnaire: 'FCU - rôle gestionnaire',
+  // collectivite: 'FCU - rôle collectivité',
+  // alec: 'FCU - rôle ALEC',
+};
+
+const STRUCTURE_RUBRIQUES: Partial<Record<StructureType, string>> = {
+  autre: 'FCU - structure Autre',
+  bailleur_social: 'FCU - structure Bailleur social',
+  bureau_etudes: "FCU - structure Bureau d'études",
+  collectivite: 'FCU - structure Collectivité',
+  gestionnaire_parc_tertiaire: 'FCU - structure Gestionnaire de parc tertiaire',
+  gestionnaire_reseaux: 'FCU - structure Gestionnaire de réseau de chaleur',
+  mandataire_cee: 'FCU - structure Mandataire / délégataire CEE',
+  syndic_copropriete: 'FCU - structure Syndic de copropriété',
+  // alec: 'FCU - structure ALEC',
+};
+
 /**
- * Builds the `rubriques` array for ADEME Connect from pre-resolved labels.
- * - roleLabel: human-readable role name (e.g. "Particulier")
- * - structureLabel: human-readable structure type label (e.g. "Bailleur social")
+ * Builds the `rubriques` array for ADEME Connect from a user's role and structure type.
  * Returns undefined if no rubrique can be built.
  */
-export const buildRubriques = (roleLabel?: string | null, structureLabel?: string | null): string[] | undefined => {
-  const items = [roleLabel ? `FCU - compte ${roleLabel}` : null, structureLabel ? `FCU - type ${structureLabel}` : null].filter(
-    (v): v is string => !!v
-  );
+export const buildRubriques = (role?: UserRole | null, structureType?: StructureType | null): string[] | undefined => {
+  const items = [role && ROLE_RUBRIQUES[role], structureType && STRUCTURE_RUBRIQUES[structureType]].filter((v): v is string => !!v);
   return items.length > 0 ? items : undefined;
 };

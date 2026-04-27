@@ -5,7 +5,7 @@ import { buildRubriques } from '@/modules/ademe-connect/constants';
 import { updateContact } from '@/modules/ademe-connect/server/client';
 import { createUserEvent } from '@/modules/events/server/service';
 import { routeAuthenticated, router } from '@/modules/trpc/server/connection';
-import { structureTypesLabels, zUpdateNewsletterSchema, zUpdateProfileSchema } from '@/modules/users/constants';
+import { zUpdateNewsletterSchema, zUpdateProfileSchema } from '@/modules/users/constants';
 import * as usersService from '@/modules/users/server/service';
 import { logger } from '@/server/helpers/logger';
 
@@ -56,7 +56,7 @@ export const usersRouter = router({
     updateContact(ctx.user.email, {
       nom: input.last_name,
       prenom: input.first_name,
-      rubriques: buildRubriques(ctx.user.role, input.structure_type && structureTypesLabels[input.structure_type]),
+      rubriques: buildRubriques(ctx.user.role, input.structure_type),
       telephone: input.phone ?? undefined,
     }).catch((error) => logger.error('ademe-connect updateContact failed on updateProfile', { error, user_id: ctx.user.id }));
   }),
