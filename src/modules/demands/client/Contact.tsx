@@ -11,7 +11,7 @@ const Contact = ({
   disabled = false,
 }: {
   demand: Demand;
-  onEmailClick: (demandId: string) => void;
+  onEmailClick: (demand: Demand) => void;
   disabled?: boolean;
 }) => {
   const getNomStructure = useCallback(() => {
@@ -57,7 +57,7 @@ const Contact = ({
           onClick={(e) => {
             e.stopPropagation();
             if (disabled) return;
-            onEmailClick(demand.id);
+            onEmailClick(demand);
           }}
           title={disabled ? 'Demande hors de votre périmètre — envoi de mail désactivé' : undefined}
         >

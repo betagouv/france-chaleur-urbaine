@@ -261,6 +261,8 @@ function DemandesNew(): React.ReactElement {
   const utils = trpc.useUtils();
   const { mutateAsync: updateDemandMutation } = trpc.demands.gestionnaire.update.useMutation();
 
+  const handleEmailClick = useCallback((demand: Demand) => setModalDemand(demand as unknown as DemandsListItem), []);
+
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
       isUpdatingDemandField = true; // prevent the map from being centered on the first demand
@@ -323,11 +325,7 @@ function DemandesNew(): React.ReactElement {
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
         cell: ({ row }) => (
-          <Contact
-            demand={row.original as unknown as Demand}
-            onEmailClick={() => setModalDemand(row.original)}
-            disabled={!row.original.is_responsible}
-          />
+          <Contact demand={row.original as unknown as Demand} onEmailClick={handleEmailClick} disabled={!row.original.is_responsible} />
         ),
         enableSorting: false,
         header: 'Contact',
@@ -514,7 +512,7 @@ function DemandesNew(): React.ReactElement {
         visible: false,
       },
     ],
-    [updateDemand, currentUserId]
+    [updateDemand, currentUserId, handleEmailClick]
   );
 
   const onTableRowClick = useCallback(

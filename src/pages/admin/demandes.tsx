@@ -167,6 +167,8 @@ function DemandesAdmin(): React.ReactElement {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialColumnFilters);
   const [modalDemand, setModalDemand] = useState<DemandsListAdminItem | null>(null);
 
+  const handleEmailClick = useCallback((demand: Demand) => setModalDemand(demand as unknown as DemandsListAdminItem), []);
+
   const { data: demandsData, isLoading } = trpc.demands.admin.list.useQuery();
   const demands = demandsData?.items ?? [];
 
@@ -438,7 +440,7 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={() => setModalDemand(row.original)} />,
+        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={handleEmailClick} />,
         enableSorting: false,
         header: 'Contact',
         width: '280px',
@@ -570,7 +572,7 @@ function DemandesAdmin(): React.ReactElement {
         width: '50px',
       },
     ],
-    [updateDemand, changeNetwork, validateDemand, deleteDemand]
+    [updateDemand, changeNetwork, validateDemand, deleteDemand, handleEmailClick]
   );
 
   const onFeatureClick = useCallback(
