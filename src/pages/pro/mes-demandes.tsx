@@ -340,7 +340,7 @@ function MesDemandesPage(): React.ReactElement {
           className="p-2w mb-0! w-[350px]"
         />
         <QuickFilterPresets
-          presets={quickFilterPresets as any}
+          presets={quickFilterPresets}
           data={demands}
           loading={isLoading}
           columnFilters={columnFilters}
