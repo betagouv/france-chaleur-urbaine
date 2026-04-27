@@ -64,7 +64,7 @@ const configFunctions = [
         'https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com',
       ],
       'font-src': ["'self'", 'https:', 'data:', 'https://*.hotjar.com'],
-      'frame-src': ['https://td.doubleclick.net', 'https://www.youtube.com/'],
+      'frame-src': ['https://td.doubleclick.net', 'https://www.youtube.com/', 'https://cloud.contact.ademe.fr'],
       'img-src': ["'self'", 'https:', 'data:'],
       'script-src': [
         "'self'",

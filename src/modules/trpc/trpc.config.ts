@@ -1,6 +1,5 @@
 import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 
-import { appRouter as appModuleRouter } from '@/modules/app/server/trpc-routes';
 import { authRouter } from '@/modules/auth/server/trpc-routes';
 import { bdnbRouter } from '@/modules/bdnb/server/trpc-routes';
 import { batEnrRouter } from '@/modules/chaleur-renouvelable/server/trpc-routes';
@@ -39,7 +38,6 @@ export async function createContext(opts: CreateNextContextOptions) {
  * All routers added in /modules/[name]/server/trpc-routes.ts should be manually added here.
  */
 export const appRouter = router({
-  app: appModuleRouter,
   auth: authRouter,
   batEnr: batEnrRouter,
   bdnb: bdnbRouter,

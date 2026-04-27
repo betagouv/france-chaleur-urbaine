@@ -1,8 +1,6 @@
 import SimplePage from '@/components/shared/page/SimplePage';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
-import Section, { SectionContent } from '@/components/ui/Section';
-import ContactForm from '@/modules/app/client/components/ContactForm';
 
 function contact() {
   return (
@@ -22,11 +20,15 @@ function contact() {
           .
         </HeroSubtitle>
       </Hero>
-      <Section size="sm">
-        <SectionContent>
-          <ContactForm />
-        </SectionContent>
-      </Section>
+      <div className="fr-container">
+        {/* Marges négatives pour supprimer les marges dans l'iframe et 1250 hauteur max */}
+        <iframe
+          src="https://cloud.contact.ademe.fr/franceChaleurUrbaine"
+          title="Formulaire de contact France Chaleur Urbaine"
+          className="h-[1250px] w-[calc(100%+3rem)] fr-mx-n3w"
+          loading="lazy"
+        />
+      </div>
     </SimplePage>
   );
 }
