@@ -12,7 +12,6 @@ import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
 import Icon from '@/components/ui/Icon';
-import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
@@ -170,49 +169,6 @@ const quickFilterPresets = {
     filters: [],
     getStat: (demands) => demands.length,
     label: 'demandes totales',
-  },
-  demandesAHautPotentiel: {
-    filters: [{ id: 'haut_potentiel', value: { false: false, true: true } }],
-    getStat: (demands) => demands.filter((demand) => demand.haut_potentiel).length,
-    label: (
-      <>
-        demandes à haut potentiel&nbsp;
-        <Tooltip
-          title={
-            <>
-              Comptabilise les demandes en chauffage collectif à moins de 100m d’un réseau (moins de 60m sur Paris), ou à plus de 100
-              logements, ou tertiaires.
-            </>
-          }
-        />
-      </>
-    ),
-    valueSuffix: <Badge type="haut_potentiel" />,
-  },
-  demandesDansPDP: {
-    filters: [
-      {
-        id: 'en PDP',
-        value: { Non: false, Oui: true },
-      },
-    ],
-    getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
-    label: (
-      <>
-        demandes en PDP&nbsp;
-        <Tooltip
-          title={
-            <>
-              Périmètre de développement prioritaire (PDP) d'un réseau classé, dans lequel peut s'appliquer une obligation de raccordement.{' '}
-              <Link href="/ressources/obligations-raccordement#contenu" isExternal>
-                En savoir plus
-              </Link>
-            </>
-          }
-        />
-      </>
-    ),
-    valueSuffix: <Badge type="pdp" />,
   },
 } satisfies Record<string, QuickFilterPreset<DemandsListItem>>;
 
