@@ -82,6 +82,8 @@
   // Bad
   type Result = { success: boolean; data?: User; error?: string }
   ```
+- **No useless defensive checks.** Verify the type before adding `?.`, `!!`, `&&`-truthiness, or null guards. If the type guarantees non-null/non-empty, drop the check. Example: `perms: PermissionWithLabel[]` → use `perms.length > 0`, not `perms && perms.length > 0`.
+- **Ternary at the return.** When a function returns one of two branches based on a boolean, prefer a single `return cond ? A : B` over `if (cond) return A; return B;`.
 
 ## Environment variables
 
