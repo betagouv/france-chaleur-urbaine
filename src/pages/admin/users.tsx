@@ -114,12 +114,15 @@ function PermissionTooltipContent({ permissions }: { permissions: PermissionWith
   );
 }
 
-const startImpersonation = toastErrors(async (impersonateConfig: { role: UserRole }) => {
-  await postFetchJSON('/api/admin/impersonate', {
-    role: impersonateConfig.role,
-  });
-  location.href = '/pro/tableau-de-bord';
-});
+const startImpersonation = toastErrors(
+  async (impersonateConfig: { role: UserRole; permissions?: Pick<Permission, 'type' | 'resource_id'>[] }) => {
+    await postFetchJSON('/api/admin/impersonate', {
+      role: impersonateConfig.role,
+      ...(impersonateConfig.permissions?.length ? { permissions: impersonateConfig.permissions } : {}),
+    });
+    location.href = '/pro/tableau-de-bord';
+  }
+);
 
 const initialSortingState: SortingState = [
   {
@@ -312,7 +315,11 @@ export default function ManageUsers() {
               icon: 'ri-spy-line',
               id: 'impersonate',
               label: 'Adopter le profil',
-              onClick: () => startImpersonation(row.original),
+              onClick: () =>
+                startImpersonation({
+                  permissions: permissionsByUser?.[row.original.id]?.map(({ resource_id, type }) => ({ resource_id, type })),
+                  role: row.original.role,
+                }),
             },
             {
               icon: row.original.active ? 'ri-delete-back-2-line' : 'ri-refresh-line',
