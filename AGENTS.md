@@ -24,6 +24,10 @@ For every user message:
 - Proactively flag doubts, race conditions, or limitations before implementing.
 - No unsolicited changes to surrounding code.
 
+## Feedback storage
+
+When the user gives feedback that should persist (coding rules, conventions, project decisions), **always** record it in the project: this `AGENTS.md` for cross-cutting rules, or the relevant file in `.ai/context/` (e.g. `conventions.md` for code style). **Never** store project feedback in personal memory — memory is for user/session context, not project knowledge that the whole team should share.
+
 ## Context files index
 
 Load these files **before** working on the related area. When in doubt, load the file.
