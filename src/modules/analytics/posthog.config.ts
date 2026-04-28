@@ -233,6 +233,7 @@ export type PostHogEventMap = {
   'global:footer_link_clicked': { link_name: string };
   'global:login_cta_clicked': { is_auth: boolean };
   'contact:form_submitted': { contact_reason: string };
+  'network_page:address_test_cta_clicked': { network_id: string };
 };
 type ElementType = {
   element_name: string;
