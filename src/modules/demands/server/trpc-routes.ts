@@ -7,6 +7,7 @@ import {
   zAdminUpdateDemandInput,
   zCreateBatchDemandInput,
   zCreateDemandInput,
+  zCreateFCUTeamContactInput,
   zDeleteDemandInput,
   zGestionnaireUpdateDemandInput,
   zListEmailsInput,
@@ -79,6 +80,9 @@ export const demandsRouter = router({
       .mutation(async ({ input, ctx }) => {
         return await demandsService.createBatch(input, ctx.user);
       }),
+    createFCUTeamContact: route.input(zCreateFCUTeamContactInput).mutation(async ({ input }) => {
+      await demandsService.createFCUTeamContact(input);
+    }),
     list: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin']).query(async ({ ctx }) => {
       return await demandsService.listByUser(ctx.user.id);
     }),

@@ -15,9 +15,10 @@ type ContactFormProps = {
   cardMode?: boolean;
   city?: string;
   heatingTypeInput?: ReactNode; // gets inserted after the building type (structure), used in the network page
+  display?: 'collectContact';
 };
 
-export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeInput }: ContactFormProps) => {
+export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeInput, display }: ContactFormProps) => {
   const router = useRouter();
   const { userInfo, setUserInfo } = useUserInfo();
 
@@ -32,23 +33,23 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
     }
   };
 
-  const initialValues = {
-    company: userInfo.company ?? '',
-    companyType: userInfo.companyType ?? '',
-    demandArea: undefined as unknown as number,
-    demandCompanyName: userInfo.demandCompanyName ?? '',
-    demandCompanyType: userInfo.demandCompanyType ?? '',
-    email: userInfo.email ?? '',
-    firstName: userInfo.firstName ?? '',
-    heatingEnergy: userInfo.heatingEnergy ?? '',
-    lastName: userInfo.lastName ?? '',
-    nbLogements: undefined as unknown as number,
-    phone: userInfo.phone ?? '',
-    structure: userInfo.structure ?? getDefaultStructure(),
-    termOfUse: false,
-  };
   const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
-    defaultValues: initialValues,
+    defaultValues: {
+      acceptGestionnaire: false,
+      company: userInfo.company ?? '',
+      companyType: userInfo.companyType ?? '',
+      demandArea: undefined as unknown as number,
+      demandCompanyName: userInfo.demandCompanyName ?? '',
+      demandCompanyType: userInfo.demandCompanyType ?? '',
+      email: userInfo.email ?? '',
+      firstName: userInfo.firstName ?? '',
+      heatingEnergy: userInfo.heatingEnergy ?? '',
+      lastName: userInfo.lastName ?? '',
+      nbLogements: undefined as unknown as number,
+      phone: userInfo.phone ?? '',
+      structure: userInfo.structure ?? getDefaultStructure(),
+      termOfUse: false,
+    },
     onSubmit: async ({ value }) => {
       setUserInfo(
         pick(value, [
@@ -84,6 +85,7 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
         heatingTypeInput={heatingTypeInput}
         showHeatingEnergy
         showHouseWarning
+        display={display}
       />
       <FieldWrapper>
         <Field.Checkbox name="termOfUse" label="J’accepte les conditions générales d’utilisation du service." />

@@ -8,6 +8,7 @@ import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import type { ContactFormInfos } from '@/modules/demands/constants';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
+import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
 
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
@@ -23,10 +24,10 @@ type EligibilityFormContactType = {
 };
 
 const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: EligibilityFormContactType) => {
-  const [contactFormLoading, setContactFormLoading] = useState(false);
-  const [contactFormError, setContactFormError] = useState(false);
+  const trpcUtils = trpc.useUtils();
+  const [contactFormState, setContactFormState] = useState('');
 
-  const { title, body, computedEligibility, text } = useMemo(() => {
+  const { title, body, computedEligibility, display, text } = useMemo(() => {
     if (!addressData.eligibility) {
       return {};
     }
@@ -35,6 +36,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
       title,
       body,
       eligibility: computedEligibility,
+      display,
       text,
     } = getEligibilityResult(addressData.address || '', addressData.heatingType, addressData.eligibility);
 
@@ -55,6 +57,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
     return {
       body: computedBody,
       computedEligibility,
+      display,
       text,
       title: computedTitle,
     };
@@ -63,7 +66,8 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
   const handleSubmitForm = useCallback(
     async (values: ContactFormInfos) => {
       try {
-        setContactFormError(false);
+        setContactFormState('loading');
+
         const sendedValues: any = {
           ...addressData,
           ...values,
@@ -77,18 +81,27 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
           sendedValues.region = (context[2] || '').trim();
         }
 
-        if (onSubmit) {
-          setContactFormLoading(true);
+        const shouldCreateDemand = display !== 'collectContact' || values.acceptGestionnaire;
 
-          await onSubmit(sendedValues).finally(() => {
-            setContactFormLoading(false);
+        if (display === 'collectContact') {
+          await trpcUtils.client.demands.user.createFCUTeamContact.mutate({
+            ...values,
+            address: sendedValues.address,
           });
+          setContactFormState(!shouldCreateDemand ? 'success' : '');
         }
-      } catch (_err: any) {
-        setContactFormError(true);
+
+        if (onSubmit && shouldCreateDemand) {
+          await onSubmit(sendedValues).finally(() => {
+            setContactFormState('');
+          });
+          return;
+        }
+      } catch (_err) {
+        setContactFormState('error');
       }
     },
-    [addressData, computedEligibility, onSubmit]
+    [addressData, computedEligibility, display, onSubmit, trpcUtils]
   );
 
   return (
@@ -161,15 +174,24 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
               </>
             )}
             <ContactForm
+              display={display}
               city={addressData.geoAddress?.properties.city}
               onSubmit={handleSubmitForm}
-              isLoading={contactFormLoading}
+              isLoading={contactFormState === 'loading'}
               cardMode={cardMode}
             />
-            {contactFormError && (
+            {contactFormState === 'error' && (
               <Box textColor="#c00" mt="1w">
                 Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
               </Box>
+            )}
+            {contactFormState === 'success' && (
+              <Alert
+                className="fr-mt-2w"
+                severity="success"
+                small
+                description="Merci, votre demande a bien été envoyée. Notre équipe reviendra vers vous prochainement."
+              />
             )}
           </ContactFormContentWrapper>
         </>
