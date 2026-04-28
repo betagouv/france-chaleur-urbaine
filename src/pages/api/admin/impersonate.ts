@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { decode, encode, type JWT } from 'next-auth/jwt';
 import { z } from 'zod';
 
+import { zPermissionInput } from '@/modules/permissions/types';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors, invalidPermissionsError, requireAuthentication, validateObjectSchema } from '@/server/helpers/server';
 import type { UserRole } from '@/types/enum/UserRole';
@@ -24,7 +25,7 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const impersonatedProfile = await validateObjectSchema(req.body, {
     anonymize: z.boolean().optional(),
-    permissions: z.array(z.object({ resource_id: z.string().nullable(), type: z.string() })).optional(),
+    permissions: zPermissionInput.optional(),
     role: z.enum(['gestionnaire', 'collectivite', 'alec', 'professionnel', 'particulier'] as NonEmptyArray<UserRole>),
   });
 
