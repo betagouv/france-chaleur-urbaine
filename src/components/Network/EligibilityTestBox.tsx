@@ -71,6 +71,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         is_eligible: !!eligibilityStatus?.isEligible,
         source: 'fiche-reseau',
       });
+      trackPostHogEvent('network_page:address_test_cta_clicked', { network_id: networkId });
     } catch (_err) {
       setFormState('eligibilitySubmissionError');
     }
@@ -88,6 +89,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     setEligibilityStatus(undefined);
 
     trackPostHogEvent('address_test:started', { chauffage_type: userInfo.heatingType, source: 'fiche-reseau' });
+
     void testAddressEligibility(geoAddress);
   };
 

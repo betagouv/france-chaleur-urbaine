@@ -13,15 +13,12 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple from '@/components/ui/table/TableSimple';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 
 import { modesDeChauffage } from './mappings';
 import type { SimulatorEngine } from './useSimulatorEngine';
 
-type DebugDrawerProps = {
-  engine: SimulatorEngine;
-};
-
-const DebugDrawer = ({ engine }: DebugDrawerProps) => {
+const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const serializedSituation = encodeURIComponent(JSON.stringify(engine.getSituation()));
@@ -89,7 +86,10 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
   return (
     <>
       <FloatingButton
-        onClick={() => setDrawerOpen(true)}
+        onClick={() => {
+          trackPostHogEvent('comparator:cost_detail_posts_opened', engine.getSituation());
+          setDrawerOpen(true);
+        }}
         iconId="ri-table-2"
         style={{ background: 'grey', right: '-30px', top: '40%', width: '100px' }}
       >

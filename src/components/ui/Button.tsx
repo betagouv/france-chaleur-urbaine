@@ -121,6 +121,7 @@ function Button<Event extends PostHogEvent = PostHogEvent>({
         eventPayload?.split(',').map((v) => v.trim())
       );
     }
+
     trackPostHogEvent(postHogEventKey, postHogEventProps);
     if (!onExternalClick) {
       return;

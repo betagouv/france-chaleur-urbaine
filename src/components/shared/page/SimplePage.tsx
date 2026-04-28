@@ -14,6 +14,7 @@ import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import useRouterReady from '@/hooks/useRouterReady';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import cx from '@/utils/cx';
 import { deleteFetchJSON } from '@/utils/network';
@@ -91,99 +92,112 @@ export const publicNavigationMenu: MainNavigationProps.Item[] = [
   {
     linkProps: {
       href: '/',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'accueil', menu_level: 1 }),
     },
     text: 'Accueil',
   },
   {
     linkProps: {
       href: '/comparateur-couts-performances',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'comparateur', menu_level: 1 }),
     },
     text: 'Combien ça coûte ?',
   },
   {
     linkProps: {
       href: '/carte',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'carte', menu_level: 1 }),
     },
     text: 'Carte des réseaux',
   },
-
   {
     menuLinks: [
       {
         linkProps: {
           href: '/reseaux',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'liste_reseau', menu_level: 2 }),
         },
         text: 'Liste des réseaux de chaleur',
       },
       {
         linkProps: {
           href: '/actus',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'actus', menu_level: 2 }),
         },
         text: 'Actualités',
       },
       {
         linkProps: {
           href: '/ressources/articles',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'articles', menu_level: 2 }),
         },
         text: 'Articles',
       },
       {
         linkProps: {
           href: '/ressources/supports',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'supports', menu_level: 2 }),
         },
         text: 'Supports pédagogiques',
       },
       {
         linkProps: {
           href: '/ressources/actions-de-communication',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'communication', menu_level: 2 }),
         },
         text: 'Actions de communication',
       },
       {
         linkProps: {
           href: '/webinaires',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'webinaire', menu_level: 2 }),
         },
         text: 'Nos replays et présentations',
       },
       {
         linkProps: {
           href: '/ressources/outils',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'outils', menu_level: 2 }),
         },
         text: 'Outils',
       },
     ],
     text: 'Ressources et outils',
   },
-
   {
     menuLinks: [
       {
         linkProps: {
           href: '/collectivites-et-exploitants',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'collectivite', menu_level: 2 }),
         },
         text: 'France Chaleur Urbaine à votre service',
       },
       {
         linkProps: {
           href: '/collectivites-et-exploitants#communiquer',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'collectivite_communiquez', menu_level: 2 }),
         },
         text: 'Communiquez sur votre réseau',
       },
       {
         linkProps: {
           href: '/collectivites-et-exploitants#prospecter',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'collectivite_prospectez', menu_level: 2 }),
         },
         text: 'Trouvez des prospects',
       },
       {
         linkProps: {
           href: '/collectivites-et-exploitants#developper',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'collectivite_developpez', menu_level: 2 }),
         },
         text: 'Développez votre réseau grâce aux données',
       },
       {
         linkProps: {
           href: '/collectivites-et-exploitants/potentiel-creation-reseau',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'collectivite_potentiel', menu_level: 2 }),
         },
         text: 'Pas encore de réseau ? Testez votre potentiel',
       },
@@ -242,18 +256,21 @@ export const publicNavigationMenu: MainNavigationProps.Item[] = [
       {
         linkProps: {
           href: '/qui-sommes-nous',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'qui_sommes_nous', menu_level: 2 }),
         },
         text: 'Qui sommes-nous ?',
       },
       {
         linkProps: {
           href: '/contact',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'contact', menu_level: 2 }),
         },
         text: 'Nous contacter',
       },
       {
         linkProps: {
           href: '/stats',
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'stats', menu_level: 2 }),
         },
         text: 'Nos statistiques',
       },
@@ -266,6 +283,7 @@ const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
   {
     linkProps: {
       href: '/',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'pro_accueil', menu_level: 1 }),
     },
     text: 'Retour au site',
   },
@@ -275,24 +293,28 @@ const professionnelNavigationMenu: MainNavigationProps.Item[] = [
   {
     linkProps: {
       href: '/pro/tableau-de-bord',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'pro_dashboard', menu_level: 1 }),
     },
     text: 'Tableau de bord',
   },
   {
     linkProps: {
       href: '/pro/mes-demandes',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'pro_demandes', menu_level: 1 }),
     },
     text: 'Mes demandes',
   },
   {
     linkProps: {
       href: '/pro/comparateur-couts-performances',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'pro_comparateur', menu_level: 1 }),
     },
     text: 'Comparateur de coûts et CO2',
   },
   {
     linkProps: {
       href: '/pro/tests-adresses',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'pro_test_adresses', menu_level: 1 }),
     },
     text: "Test d'adresses",
   },
@@ -302,24 +324,28 @@ const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
   {
     linkProps: {
       href: '/pro/demandes',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'gestionnaire_demandes', menu_level: 1 }),
     },
     text: 'Demandes',
   },
   {
     linkProps: {
       href: '/pro/comparateur-couts-performances',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'gestionnaire_comparateur', menu_level: 1 }),
     },
     text: 'Comparateur de coûts et CO2',
   },
   {
     linkProps: {
       href: '/pro/tests-adresses',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'gestionnaire_test_adresse', menu_level: 1 }),
     },
     text: "Test d'adresses",
   },
   {
     linkProps: {
       href: '/pro/aide',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'gestionnaire_aide', menu_level: 1 }),
     },
     text: 'Aide',
   },
@@ -526,6 +552,7 @@ const PageHeader = (props: PageHeaderProps) => {
             iconId: isAuthenticatedClient ? 'fr-icon-account-circle-fill' : 'fr-icon-account-circle-line',
             linkProps: {
               href: '/connexion',
+              onClick: () => trackPostHogEvent('global:login_cta_clicked', { is_auth: isAuthenticatedClient }),
             },
             text: isAuthenticatedClient ? 'Espace connecté' : 'Connectez-vous',
           } satisfies HeaderProps.QuickAccessItem,
@@ -616,6 +643,7 @@ const PageFooter = () => (
     accessibility="non compliant"
     accessibilityLinkProps={{
       href: '/accessibilite',
+      onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'accessibilite' }),
     }}
     termsLinkProps={{
       href: '/mentions-legales',
@@ -624,18 +652,21 @@ const PageFooter = () => (
       {
         linkProps: {
           href: '/cgu',
+          onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'cgu' }),
         },
         text: 'CGU',
       },
       {
         linkProps: {
           href: '/donnees',
+          onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'donnees' }),
         },
         text: 'Données et sources',
       },
       {
         linkProps: {
           href: '/politique-de-confidentialite',
+          onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'politique_de_confidentialite' }),
         },
         text: 'Données personnelles',
       },
@@ -643,18 +674,21 @@ const PageFooter = () => (
       {
         linkProps: {
           href: '/stats',
+          onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'stat' }),
         },
         text: 'Statistiques',
       },
       {
         linkProps: {
           href: '/contact',
+          onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'contact' }),
         },
         text: 'Contact',
       },
       {
         linkProps: {
           href: '/plan-du-site',
+          onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'plan_du_site' }),
         },
         text: 'Plan du site',
       },
@@ -662,6 +696,7 @@ const PageFooter = () => (
         iconId: 'fr-icon-github-fill',
         linkProps: {
           href: 'https://github.com/betagouv/france-chaleur-urbaine',
+          onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'github' }),
         },
         text: 'Code source',
       },

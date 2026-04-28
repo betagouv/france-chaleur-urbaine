@@ -70,6 +70,9 @@ function Link<Event extends PostHogEvent = PostHogEvent>({
           );
         }
         trackPostHogEvent(postHogEventKey, postHogEventProps);
+        if (isExternal && !postHogEventKey) {
+          trackPostHogEvent('nav:external_link_clicked', { partner_name: String(children), partner_url: href });
+        }
         onClick?.(e);
       }}
       className={`${className} ${linkVariantToClass[variant]} ${spacingsToClasses(props)}`}

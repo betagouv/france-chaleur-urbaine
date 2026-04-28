@@ -1,3 +1,5 @@
+import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+
 import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import type { TypeCommune } from '@/server/services/communeAPotentiel';
 
@@ -193,6 +195,18 @@ export type PostHogEventMap = {
     content_category?: string;
   };
 
+  // Comparateur CO²
+  'comparator:started': { address?: string; distance_reseau_m: number; is_eligible: boolean };
+  'comparator:advanced_mode_clicked': { address?: string };
+  'comparator:step_1_completed': { address?: string };
+  'comparator:step_2_completed': { address?: string; modeChauffage?: string | null };
+  'comparator:image_saved': Partial<Record<RuleName, number | string>>;
+  'comparator:data_exported': never;
+  'comparator:cost_detail_tab_opened': Partial<Record<RuleName, number | string>>;
+  'comparator:cost_detail_posts_opened': Partial<Record<RuleName, number | string>>;
+  'comparator:co2_emissions_tab_opened': Partial<Record<RuleName, number | string>>;
+  'comparator:config_loaded': never;
+
   // Home
   'home:tool_tile_clicked': ElementType;
   'home:comparator_tile_clicked': never;
@@ -205,7 +219,20 @@ export type PostHogEventMap = {
   'home:partner_logo_clicked': { partner_name: string; target_url: string };
   'home:testimonial_carousel_clicked': { action: string; testimonial_index: number };
 
+  'nav:menu_item_clicked': {
+    item: string;
+    menu_level: number;
+  };
+
+  'nav:external_link_clicked': {
+    partner_name: string;
+    partner_url: string;
+  };
+
   'account:created': never;
+  'global:footer_link_clicked': { link_name: string };
+  'global:login_cta_clicked': { is_auth: boolean };
+  'contact:form_submitted': { contact_reason: string };
 };
 type ElementType = {
   element_name: string;

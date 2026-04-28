@@ -112,7 +112,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
         lat,
         lon,
       });
-      console.info('locations-infos', infos);
+
       if (trackAnalytics) {
         const isEligible =
           infos.nearestReseauDeChaleur &&
@@ -122,12 +122,10 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           `Eligibilité|Formulaire de test - Comparateur - Adresse ${isEligible ? 'É' : 'Iné'}ligible`,
           selectedAddress.properties.label
         );
-        trackPostHogEvent('address_test:submitted', {
+        trackPostHogEvent('comparator:started', {
           address: selectedAddress.properties.label,
-          chauffage_type: userInfo.heatingType,
-          distance_reseau_m: infos.nearestReseauDeChaleur.distance,
+          distance_reseau_m: infos.nearestReseauDeChaleur?.distance,
           is_eligible: isEligible,
-          source: 'comparateur',
         });
       }
 
@@ -159,7 +157,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
       setAddressLoading(false);
     }
   };
-
   // Refs pour accéder aux valeurs courantes sans les déclarer en dépendances de l'effet ci-dessous.
   const handleAddressSelectRef = React.useRef(handleAddressSelect);
   handleAddressSelectRef.current = handleAddressSelect;
@@ -247,7 +244,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   );
 
   const fileName = `${new Date().getFullYear()}-${slugify(userInfo.address)}`;
-
   const results = (
     <div className="p-2 lg:p-0">
       {displayGraph && !loading && userInfo.address && (
@@ -609,6 +605,8 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 priority="secondary"
                 size="small"
                 href={`/pro/comparateur-couts-performances?${searchParams?.toString() ?? ''}`}
+                postHogEventKey="comparator:advanced_mode_clicked"
+                postHogEventProps={{ address: userInfo.address }}
               >
                 Accéder au mode avancé
               </Button>
@@ -634,7 +632,14 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 >
                   {addressAutocomplete}
                   <ParametresDuBatimentTechnicien engine={engine} />
-                  <Button onClick={() => setSelectedTabId(simulatorTabs[1].tabId)} full disabled={!isAddressSelected} className="fr-mt-2w">
+                  <Button
+                    postHogEventKey="comparator:step_1_completed"
+                    postHogEventProps={{ address: userInfo.address, ...engine.getSituation() }}
+                    onClick={() => setSelectedTabId(simulatorTabs[1].tabId)}
+                    full
+                    disabled={!isAddressSelected}
+                    className="fr-mt-2w"
+                  >
                     Étape suivante
                   </Button>
                 </Accordion>
@@ -651,7 +656,14 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                     nearestReseauDeFroid={nearestReseauDeFroid}
                     advancedMode={advancedMode}
                   />
-                  <Button onClick={() => setSelectedTabId(simulatorTabs[2].tabId)} full disabled={!isAddressSelected} className="fr-mt-2w">
+                  <Button
+                    postHogEventKey="comparator:step_2_completed"
+                    postHogEventProps={{ address: userInfo.address, modeChauffage: modesDeChauffageQueryParam, ...engine.getSituation() }}
+                    onClick={() => setSelectedTabId(simulatorTabs[2].tabId)}
+                    full
+                    disabled={!isAddressSelected}
+                    className="fr-mt-2w"
+                  >
                     Étape suivante
                   </Button>
                 </Accordion>
