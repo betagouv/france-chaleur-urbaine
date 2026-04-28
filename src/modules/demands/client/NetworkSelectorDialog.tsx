@@ -91,12 +91,13 @@ export default function NetworkSelectorDialog({
   const isUnassign = mode === 'unassign';
   const hasChoice = (mode === 'select' && selected) || mode === 'unassign';
 
-  const confirmLabel = (() => {
-    if (isAdmin) {
-      return isUnassign ? 'Désaffecter' : 'Appliquer le changement';
-    }
-    return isUnassign ? 'Envoyer la demande de désaffectation' : 'Envoyer la demande';
-  })();
+  const confirmLabel = isAdmin
+    ? isUnassign
+      ? 'Désaffecter'
+      : 'Appliquer le changement'
+    : isUnassign
+      ? 'Envoyer la demande de désaffectation'
+      : 'Envoyer la demande';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} title={title} description={description} size="md">
