@@ -53,6 +53,7 @@ const PermissionsInput = ({ value, onChange, availableTypes }: PermissionsInputP
               nativeButtonProps={{
                 onClick: () => handleRemove(i),
                 title: 'Supprimer',
+                type: 'button',
               }}
             >
               {permissionTypeLabels[p.type]} : {getLabel(p)}

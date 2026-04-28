@@ -56,6 +56,7 @@ const PermissionsEditor = ({ userId }: PermissionsEditorProps) => {
               nativeButtonProps={{
                 onClick: () => handleRemove(i),
                 title: 'Supprimer',
+                type: 'button',
               }}
             >
               {permissionTypeLabels[p.type]} : {p.label}
