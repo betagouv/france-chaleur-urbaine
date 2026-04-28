@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server';
+import type { User } from 'next-auth';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { PendingAssignmentChange } from '@/modules/demands/types';
@@ -269,6 +270,50 @@ describe('désaffectation / réaffectation flow', () => {
           networkType: null,
         })
       ).rejects.toMatchObject(forbiddenError);
+    });
+  });
+
+  describe('routes territoire (collectivite / alec)', () => {
+    let demandId: string;
+
+    beforeEach(async () => {
+      await seedTableUser([
+        { id: testUsers.collectivite.id, role: 'collectivite' },
+        { id: testUsers.alec.id, role: 'alec' },
+        { id: testUsers.particulier.id, role: 'particulier' },
+      ]);
+      await setupNetwork(100);
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      demandId = demand.id;
+    });
+
+    const requestUnassignment = (user: Partial<User>, comment: string | null = null) =>
+      createTestCaller(user).demands.gestionnaire.requestAssignmentChange({
+        comment,
+        demandId,
+        networkIdFcu: null,
+        networkType: null,
+      });
+
+    it.each([
+      ['collectivite', testUsers.collectivite],
+      ['alec', testUsers.alec],
+    ] as const)('gestionnaire.requestAssignmentChange: %s peut demander une désaffectation', async (_role, user) => {
+      await requestUnassignment(user, 'mauvaise affectation');
+
+      expect(await getPending(demandId)).toMatchObject({ author_id: user.id, comment: 'mauvaise affectation' });
+    });
+
+    it('gestionnaire.requestAssignmentChange: refuse un particulier (FORBIDDEN)', async () => {
+      await expect(requestUnassignment(testUsers.particulier)).rejects.toMatchObject(forbiddenError);
+    });
+
+    it('gestionnaire.cancelAssignmentChangeRequest: collectivite peut annuler son propre pending', async () => {
+      await requestDemandAssignmentChange(demandId, null, null, 'comment', testUsers.collectivite.id!);
+
+      await createTestCaller(testUsers.collectivite).demands.gestionnaire.cancelAssignmentChangeRequest({ demandId });
+
+      expect(await getPending(demandId)).toBeNull();
     });
   });
 });

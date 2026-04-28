@@ -23,7 +23,7 @@ const particulier: UserWithRole = { id: '1', role: 'particulier' };
 const baseDemand: DemandForAccess = {
   commune_code: '75056',
   departement_code: '75',
-  epci_code: null,
+  epci_code: '200054781',
   ept_code: 'T1',
   network_id: 1,
   network_type: 'existant',
@@ -42,6 +42,8 @@ const dept75: Permission = { resource_id: '75', type: 'departement' };
 const dept13: Permission = { resource_id: '13', type: 'departement' };
 const region11: Permission = { resource_id: '11', type: 'region' };
 const eptT1: Permission = { resource_id: 'T1', type: 'ept' };
+const epci200054781: Permission = { resource_id: '200054781', type: 'epci' };
+const epciWrong: Permission = { resource_id: '200000000', type: 'epci' };
 const national: Permission = { resource_id: null, type: 'national' };
 
 const testLabel = ({ user, permissions, demand }: TestInput): string => {
@@ -83,6 +85,8 @@ describe('canUserAccessDemand', () => {
     { expectedOutput: true, input: { demand: baseDemand, permissions: [dept75], user: collectivite } },
     { expectedOutput: true, input: { demand: baseDemand, permissions: [region11], user: collectivite } },
     { expectedOutput: true, input: { demand: baseDemand, permissions: [eptT1], user: collectivite } },
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [epci200054781], user: collectivite } },
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [epciWrong], user: collectivite } },
     { expectedOutput: true, input: { demand: baseDemand, permissions: [national], user: collectivite } },
     { expectedOutput: false, input: { demand: baseDemand, permissions: [dept13], user: collectivite } },
     { expectedOutput: false, input: { demand: unvalidated, permissions: [commune75056], user: collectivite } },
@@ -92,6 +96,7 @@ describe('canUserAccessDemand', () => {
 
     // ALEC — same logic
     { expectedOutput: true, input: { demand: baseDemand, permissions: [dept75], user: alec } },
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [epci200054781], user: alec } },
     { expectedOutput: true, input: { demand: constructionDemand, permissions: [networkConstruction], user: alec } },
 
     // Multiple permissions — one match is enough
@@ -146,6 +151,8 @@ describe('isUserResponsibleForDemand', () => {
     { expectedOutput: true, input: { demand: unaffectedDemand, permissions: [dept75], user: collectivite } },
     { expectedOutput: true, input: { demand: unaffectedDemand, permissions: [region11], user: collectivite } },
     { expectedOutput: true, input: { demand: unaffectedDemand, permissions: [eptT1], user: collectivite } },
+    { expectedOutput: true, input: { demand: unaffectedDemand, permissions: [epci200054781], user: collectivite } },
+    { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [epciWrong], user: collectivite } },
     { expectedOutput: true, input: { demand: unaffectedDemand, permissions: [national], user: collectivite } },
     { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [dept13], user: collectivite } },
     // Demand without network + only network perm → NOT responsible (case theoretical, perm route wouldn't grant access)
