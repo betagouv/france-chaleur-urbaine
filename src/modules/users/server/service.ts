@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import type { UpdateObject } from 'kysely';
 
 import { sendEmailTemplate } from '@/modules/email';
+import { getAllPermissionsWithLabels } from '@/modules/permissions/server/search';
 import { createUserAdminSchema, type UpdateProfileSchema, updateUserAdminSchema } from '@/modules/users/constants';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
@@ -11,36 +12,44 @@ export const tableName = 'users';
 const baseModel = createBaseModel(tableName);
 
 export const list = async () => {
-  const records = await kdb
-    .selectFrom('users')
-    .select([
-      'id',
-      'email',
-      'role',
-      'active',
-      'status',
-      'first_name',
-      'last_name',
-      'phone',
-      'structure_name',
-      'structure_type',
-      'structure_other',
-      'siret',
-      'optin_at',
-      'created_at',
-      'last_connection',
-      'gestionnaires',
-      'gestionnaires_from_api',
-      sql<boolean>`coalesce(receive_new_demands, false)`.as('receive_new_demands'),
-      sql<boolean>`coalesce(receive_old_demands, false)`.as('receive_old_demands'),
-      sql<boolean>`from_api IS NOT NULL`.as('from_api'),
-    ])
-    .orderBy('id')
-    .execute();
+  const [records, permissionsByUser] = await Promise.all([
+    kdb
+      .selectFrom('users')
+      .select([
+        'id',
+        'email',
+        'role',
+        'active',
+        'status',
+        'first_name',
+        'last_name',
+        'phone',
+        'structure_name',
+        'structure_type',
+        'structure_other',
+        'siret',
+        'optin_at',
+        'created_at',
+        'last_connection',
+        'gestionnaires',
+        'gestionnaires_from_api',
+        sql<boolean>`coalesce(receive_new_demands, false)`.as('receive_new_demands'),
+        sql<boolean>`coalesce(receive_old_demands, false)`.as('receive_old_demands'),
+        sql<boolean>`from_api IS NOT NULL`.as('from_api'),
+      ])
+      .orderBy('id')
+      .execute(),
+    getAllPermissionsWithLabels(),
+  ]);
+
+  const items = records.map((record) => ({
+    ...record,
+    permissions: permissionsByUser[record.id] ?? [],
+  }));
 
   return {
-    count: records.length,
-    items: records,
+    count: items.length,
+    items,
   };
 };
 export type User = Awaited<ReturnType<typeof list>>['items'][number];

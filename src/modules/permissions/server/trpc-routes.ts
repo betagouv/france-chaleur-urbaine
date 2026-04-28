@@ -7,7 +7,6 @@ import { zPermissionInput } from '../types';
 import { getDemandForAccessCheck, getUsersWithAccessToDemand } from './demand-access';
 import { getPermissionsMapData } from './map-data';
 import {
-  getAllPermissionsWithLabels,
   getUserPermissionsWithLabels,
   resolvePermissionLabels,
   resolvePermissionsWithLabels,
@@ -18,8 +17,6 @@ import { setUserPermissions } from './service';
 
 export const permissionsRouter = router({
   admin: {
-    allWithLabels: adminRoute.query(() => getAllPermissionsWithLabels()),
-
     getForUser: adminRoute.input(z.object({ userId: z.uuidv4() })).query(({ input }) => getUserPermissionsWithLabels(input.userId)),
 
     setForUser: adminRoute

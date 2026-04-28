@@ -22,6 +22,7 @@ import { notify, toastErrors } from '@/modules/notification';
 import type { Permission, PermissionWithLabel } from '@/modules/permissions/types';
 import trpc from '@/modules/trpc/client';
 import { structureTypesLabels } from '@/modules/users/constants';
+import type { User } from '@/modules/users/server/service';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
 import type { UserRole } from '@/types/enum/UserRole';
@@ -143,19 +144,24 @@ export default function ManageUsers() {
   const [nbUsersFilter, setNbUsersFilter] = useState<number>(0);
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
-  const { data: permissionsByUser } = trpc.permissions.admin.allWithLabels.useQuery();
-  const setPermissions = trpc.permissions.admin.setForUser.useMutation();
 
   const {
     items: users,
     isLoading,
+    refetch: refetchUsers,
     create: createUser,
     update: updateUser,
     delete: deleteUser,
     isUpdatingId: updatingUserId,
     isCreating: creatingUser,
     isDeletingId: deletingUserId,
-  } = useCrud<UsersResponse>('/api/admin/users');
+  } = useCrud<UsersResponse, User[]>('/api/admin/users');
+
+  const setPermissions = trpc.permissions.admin.setForUser.useMutation({
+    onSuccess: () => {
+      void refetchUsers();
+    },
+  });
 
   const handleUpdateUser = (userId: string) =>
     toastErrors(async (userUpdate: UsersResponse['updateInput']) => {
@@ -178,7 +184,7 @@ export default function ManageUsers() {
     notify('success', 'Utilisateur créé');
   });
 
-  const columns: ColumnDef<UsersResponse['listItem']>[] = useMemo(
+  const columns: ColumnDef<User>[] = useMemo(
     () => [
       {
         accessorKey: 'email',
@@ -205,25 +211,22 @@ export default function ManageUsers() {
         align: 'center',
         cell: (info) => {
           const role = info.getValue<UserRole>();
-          const perms = permissionsByUser?.[info.row.original.id];
-          const hasSummary = perms && perms.length > 0;
+          const perms = info.row.original.permissions;
 
           const content = (
             <div className="flex flex-col items-center gap-1">
               <UserRoleBadge role={role} />
-              {hasSummary && <span className="text-xs text-faded">{formatPermissionSummary(perms)}</span>}
+              {perms.length > 0 && <span className="text-xs text-faded">{formatPermissionSummary(perms)}</span>}
             </div>
           );
 
-          if (hasSummary) {
-            return (
-              <Tooltip title={<PermissionTooltipContent permissions={perms} />}>
-                <div className="cursor-help">{content}</div>
-              </Tooltip>
-            );
-          }
-
-          return content;
+          return perms.length > 0 ? (
+            <Tooltip title={<PermissionTooltipContent permissions={perms} />}>
+              <div className="cursor-help">{content}</div>
+            </Tooltip>
+          ) : (
+            content
+          );
         },
         filterType: 'Facets',
         flex: 1.6,
@@ -317,7 +320,7 @@ export default function ManageUsers() {
               label: 'Adopter le profil',
               onClick: () =>
                 startImpersonation({
-                  permissions: permissionsByUser?.[row.original.id]?.map(({ resource_id, type }) => ({ resource_id, type })),
+                  permissions: row.original.permissions?.map(({ resource_id, type }) => ({ resource_id, type })),
                   role: row.original.role,
                 }),
             },
@@ -363,7 +366,7 @@ export default function ManageUsers() {
         width: '50px',
       },
     ],
-    [permissionsByUser]
+    []
   );
 
   const editingUser = useMemo(() => users?.find((u) => u.id === (userId as string)), [users, userId]);

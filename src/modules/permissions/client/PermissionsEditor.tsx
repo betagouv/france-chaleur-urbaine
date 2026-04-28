@@ -1,4 +1,5 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
+import { useQueryClient } from '@tanstack/react-query';
 
 import trpc from '@/modules/trpc/client';
 
@@ -17,10 +18,15 @@ type PermissionsEditorProps = {
  * getForUser returns permissions with labels in a single call.
  */
 const PermissionsEditor = ({ userId }: PermissionsEditorProps) => {
-  const { data: permissions, refetch } = trpc.permissions.admin.getForUser.useQuery({ userId });
+  const utils = trpc.useUtils();
+  const queryClient = useQueryClient();
+  const { data: permissions } = trpc.permissions.admin.getForUser.useQuery({ userId });
 
   const setPermissions = trpc.permissions.admin.setForUser.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      void utils.permissions.admin.getForUser.invalidate({ userId });
+      void queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+    },
   });
 
   const handleAdd = (permission: Permission) => {

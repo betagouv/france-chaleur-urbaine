@@ -10,6 +10,7 @@ import PermissionsInput from '@/modules/permissions/client/PermissionsInput';
 import type { Permission } from '@/modules/permissions/types';
 import { permissionTypes } from '@/modules/permissions/types';
 import { createUserAdminSchema, roles as roleLabels, structureTypesFormLabels, updateUserAdminSchema } from '@/modules/users/constants';
+import type { User } from '@/modules/users/server/service';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { type UserRole, userRoles, userRolesWithPermissions } from '@/types/enum/UserRole';
 import cx from '@/utils/cx';
@@ -30,7 +31,7 @@ const getAvailableTypes = (role: UserRole) => {
 
 type UserFormProps = {
   loading?: boolean;
-  user?: UsersResponse['listItem'];
+  user?: User;
   onSubmit: OnCreate | OnUpdate;
 };
 
