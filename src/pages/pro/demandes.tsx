@@ -1,7 +1,8 @@
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
-import { useCallback, useMemo, useState } from 'react';
+import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
@@ -172,6 +173,8 @@ const quickFilterPresets = {
   },
 } satisfies Record<string, QuickFilterPreset<DemandsListItem>>;
 
+const presetKeys = ['nouvellesDemandes', 'demandesAffectees', 'horsPerimetre', 'all'] as const;
+
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
 /**
@@ -190,8 +193,22 @@ function DemandesNew(): React.ReactElement {
 
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(quickFilterPresets.nouvellesDemandes.filters);
+  const [presetKey, setPresetKey] = useQueryState('preset', parseAsStringLiteral(presetKeys).withDefault('nouvellesDemandes'));
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(quickFilterPresets[presetKey].filters);
   const [filteredDemands, setFilteredDemands] = useState<DemandsListItem[]>([]);
+
+  // Sync filters when preset changes from URL (browser back/forward).
+  useEffect(() => {
+    setColumnFilters(quickFilterPresets[presetKey].filters);
+  }, [presetKey]);
+
+  const handlePresetFiltersChange = useCallback(
+    (newFilters: ColumnFiltersState, newPresetKey: keyof typeof quickFilterPresets | null) => {
+      setColumnFilters(newFilters);
+      void setPresetKey(newPresetKey ?? 'all');
+    },
+    [setPresetKey]
+  );
 
   const { data: demands = [], isLoading } = trpc.demands.gestionnaire.list.useQuery();
 
@@ -544,7 +561,7 @@ function DemandesNew(): React.ReactElement {
             data={demands}
             loading={isLoading}
             columnFilters={columnFilters}
-            onFiltersChange={setColumnFilters}
+            onFiltersChange={handlePresetFiltersChange}
           />
           <ButtonExport filename="demandes_fcu.xlsx" sheets={buildSheetData} className="ml-auto mr-2w" priority="secondary">
             Exporter
