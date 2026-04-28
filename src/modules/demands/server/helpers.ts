@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs';
 import { TRPCError } from '@trpc/server';
 import type { Selectable } from 'kysely';
+import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 import type { Context } from '@/modules/config/server/context-builder';
 import { demandStatusDefault, normalizeHeatingEnergy, normalizeHeatingType } from '@/modules/demands/constants';
@@ -12,6 +13,14 @@ import { userRolesWithPermissions } from '@/types/enum/UserRole';
 
 import type { AccessCounts } from '../types';
 import { getEntityFromEligibilityType } from './eligibility';
+
+/**
+ * Sous-ensemble des champs de `pro_eligibility_tests_addresses` que `buildDemandQuery` expose réellement.
+ */
+type DemandTestAddress = Pick<
+  Selectable<ProEligibilityTestsAddresses>,
+  'id' | 'ban_address' | 'ban_valid' | 'source_address' | 'eligibility_history'
+>;
 
 const loadDemandForAccessOrThrow = async (demandId: string): Promise<DemandForAccess> =>
   kdb
@@ -54,9 +63,55 @@ export const ensureUserCanProcessDemand = async (ctx: Context, demandId: string)
  * Note : `is_responsible` est calculé côté JS via `isUserResponsibleForDemand` après requête, jamais en SQL.
  * Raison : `ctx.getPermissions()` retourne les permissions du JWT (impostune-aware) ; lire `user_permissions`
  * en SQL contournerait l'impostune et donnerait des résultats incohérents.
+ *
+ * Perf : `access_counts` est pré-agrégé via une CTE plutôt qu'un sous-select corrélé, ce qui évite
+ * que PG exécute le calcul une fois par demande (et déclenche le JIT sur un cost estimé délirant).
  */
 export const buildDemandQuery = () => {
+  // Extraits typés des champs JSON `pending_assignment_change` (réutilisés dans plusieurs joins).
+  const pendingNetworkId = sql<number>`(demands.pending_assignment_change->>'network_id')::int`;
+  const pendingNetworkType = sql<'existant' | 'en_construction'>`demands.pending_assignment_change->>'network_type'`;
+  const pendingAuthorId = sql<string>`(demands.pending_assignment_change->>'author_id')::uuid`;
+
   return kdb
+    .with('access_counts_by_demand', (eb) =>
+      eb
+        .selectFrom('demands as d')
+        .innerJoin('user_permissions as up', (j) =>
+          j.on((eb) =>
+            eb.or([
+              eb('up.type', '=', 'national'),
+              eb.and([
+                eb('up.type', '=', 'reseau_existant'),
+                eb('d.network_type', '=', 'existant'),
+                eb('up.resource_id', '=', sql<string>`${eb.ref('d.network_id')}::text`),
+              ]),
+              eb.and([
+                eb('up.type', '=', 'reseau_en_construction'),
+                eb('d.network_type', '=', 'en_construction'),
+                eb('up.resource_id', '=', sql<string>`${eb.ref('d.network_id')}::text`),
+              ]),
+              eb.and([eb('up.type', '=', 'commune'), eb('up.resource_id', '=', eb.ref('d.commune_code'))]),
+              eb.and([eb('up.type', '=', 'epci'), eb('up.resource_id', '=', eb.ref('d.epci_code'))]),
+              eb.and([eb('up.type', '=', 'ept'), eb('up.resource_id', '=', eb.ref('d.ept_code'))]),
+              eb.and([eb('up.type', '=', 'departement'), eb('up.resource_id', '=', eb.ref('d.departement_code'))]),
+              eb.and([eb('up.type', '=', 'region'), eb('up.resource_id', '=', eb.ref('d.region_code'))]),
+            ])
+          )
+        )
+        .innerJoin('users as u', 'u.id', 'up.user_id')
+        .where('u.active', '=', true)
+        .where('u.role', 'in', userRolesWithPermissions)
+        .groupBy('d.id')
+        .select((eb) => [
+          eb.ref('d.id').as('demand_id'),
+          jsonBuildObject({
+            alec: eb.fn.countAll<number>().filterWhere('u.role', '=', 'alec'),
+            collectivite: eb.fn.countAll<number>().filterWhere('u.role', '=', 'collectivite'),
+            gestionnaire: eb.fn.countAll<number>().filterWhere('u.role', '=', 'gestionnaire'),
+          }).as('access_counts'),
+        ])
+    )
     .selectFrom('demands')
     .innerJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
     .leftJoin('reseaux_de_chaleur as rdc', (j) =>
@@ -66,51 +121,35 @@ export const buildDemandQuery = () => {
       j.onRef('zrc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'en_construction')
     )
     .leftJoin('reseaux_de_chaleur as pending_rdc', (j) =>
-      j.on(
-        sql<boolean>`pending_rdc.id_fcu = (demands.pending_assignment_change->>'network_id')::int AND demands.pending_assignment_change->>'network_type' = 'existant'`
-      )
+      j.on('pending_rdc.id_fcu', '=', pendingNetworkId).on(pendingNetworkType, '=', 'existant')
     )
     .leftJoin('zones_et_reseaux_en_construction as pending_zrc', (j) =>
-      j.on(
-        sql<boolean>`pending_zrc.id_fcu = (demands.pending_assignment_change->>'network_id')::int AND demands.pending_assignment_change->>'network_type' = 'en_construction'`
-      )
+      j.on('pending_zrc.id_fcu', '=', pendingNetworkId).on(pendingNetworkType, '=', 'en_construction')
     )
-    .leftJoin('users as pending_author', (j) =>
-      j.on(sql<boolean>`pending_author.id = (demands.pending_assignment_change->>'author_id')::uuid`)
-    )
+    .leftJoin('users as pending_author', (j) => j.on('pending_author.id', '=', pendingAuthorId))
+    .leftJoin('access_counts_by_demand as acbd', 'acbd.demand_id', 'demands.id')
     .selectAll('demands')
-    .select(sql.raw<Selectable<ProEligibilityTestsAddresses>>(`to_jsonb(pro_eligibility_tests_addresses)`).as('testAddress'))
-    .select([
-      sql<string | null>`COALESCE(rdc.nom_reseau, zrc.nom_reseau)`.as('network_name'),
-      sql<string | null>`rdc."Identifiant reseau"`.as('network_sncu_id'),
-      sql<string[] | null>`COALESCE(rdc.tags, zrc.tags)`.as('network_tags'),
-      sql<string | null>`COALESCE(pending_rdc.nom_reseau, pending_zrc.nom_reseau)`.as('pending_assignment_name'),
-      sql<string | null>`pending_rdc."Identifiant reseau"`.as('pending_assignment_sncu_id'),
-      sql<string | null>`pending_author.email`.as('pending_assignment_author_email'),
-    ])
-    .select(
-      sql<AccessCounts>`(
-        SELECT jsonb_build_object(
-          'gestionnaire', count(*) FILTER (WHERE ${sql.ref('u.role')} = 'gestionnaire')::int,
-          'collectivite', count(*) FILTER (WHERE ${sql.ref('u.role')} = 'collectivite')::int,
-          'alec',         count(*) FILTER (WHERE ${sql.ref('u.role')} = 'alec')::int
+    .select((eb) => [
+      eb.fn.coalesce('rdc.nom_reseau', 'zrc.nom_reseau').as('network_name'),
+      eb.ref('rdc.Identifiant reseau').as('network_sncu_id'),
+      eb.fn.coalesce('rdc.tags', 'zrc.tags').as('network_tags'),
+      eb.fn.coalesce('pending_rdc.nom_reseau', 'pending_zrc.nom_reseau').as('pending_assignment_name'),
+      eb.ref('pending_rdc.Identifiant reseau').as('pending_assignment_sncu_id'),
+      eb.ref('pending_author.email').as('pending_assignment_author_email'),
+      jsonBuildObject({
+        ban_address: eb.ref('pro_eligibility_tests_addresses.ban_address'),
+        ban_valid: eb.ref('pro_eligibility_tests_addresses.ban_valid'),
+        eligibility_history: eb.ref('pro_eligibility_tests_addresses.eligibility_history'),
+        id: eb.ref('pro_eligibility_tests_addresses.id'),
+        source_address: eb.ref('pro_eligibility_tests_addresses.source_address'),
+      }).as('testAddress'),
+      eb.fn
+        .coalesce(
+          eb.ref('acbd.access_counts'),
+          jsonBuildObject({ alec: sql<number>`0`, collectivite: sql<number>`0`, gestionnaire: sql<number>`0` })
         )
-        FROM user_permissions up
-        JOIN users u ON ${sql.ref('u.id')} = ${sql.ref('up.user_id')}
-        WHERE ${sql.ref('u.active')} = true
-          AND ${sql.ref('u.role')} IN (${sql.join(userRolesWithPermissions.map((r) => sql.lit(r)))})
-          AND (
-            ${sql.ref('up.type')} = 'national'
-            OR (${sql.ref('up.type')} = 'reseau_existant'        AND ${sql.ref('demands.network_type')} = 'existant'        AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.network_id')}::text)
-            OR (${sql.ref('up.type')} = 'reseau_en_construction' AND ${sql.ref('demands.network_type')} = 'en_construction' AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.network_id')}::text)
-            OR (${sql.ref('up.type')} = 'commune'     AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.commune_code')})
-            OR (${sql.ref('up.type')} = 'epci'        AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.epci_code')})
-            OR (${sql.ref('up.type')} = 'ept'         AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.ept_code')})
-            OR (${sql.ref('up.type')} = 'departement' AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.departement_code')})
-            OR (${sql.ref('up.type')} = 'region'      AND ${sql.ref('up.resource_id')} = ${sql.ref('demands.region_code')})
-          )
-      )`.as('access_counts')
-    );
+        .as('access_counts'),
+    ]);
 };
 
 /**
@@ -156,7 +195,7 @@ export const enrichDemandForGestionnaire = <T extends Selectable<Demands>>({
   testAddress,
 }: {
   demand: T & { access_counts: AccessCounts };
-  testAddress: Selectable<ProEligibilityTestsAddresses> | null;
+  testAddress: DemandTestAddress | null;
 }) => {
   const history = testAddress?.eligibility_history as ProEligibilityTestHistoryEntry[] | undefined;
   const augmentedHistory = (history || []).map((entry) => {
@@ -230,7 +269,7 @@ export const enrichDemandForAdmin = <T extends Selectable<Demands>>({
   testAddress,
 }: {
   demand: T & { access_counts: AccessCounts };
-  testAddress: Selectable<ProEligibilityTestsAddresses> | null;
+  testAddress: DemandTestAddress | null;
 }) => {
   const enriched = enrichDemandForGestionnaire({ demand, testAddress });
   enriched['Relance à activer'] ??= false;
