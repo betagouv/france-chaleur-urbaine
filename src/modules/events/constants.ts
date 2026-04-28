@@ -30,6 +30,8 @@ export const eventTypes = [
   'tag_reminder_deleted',
   'tag_comment_updated',
   'network_reminder_created',
+  'user_permissions_updated',
+  'user_permissions_synced_from_api',
 ] as const;
 
 export type EventType = (typeof eventTypes)[number];
@@ -63,6 +65,8 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_deleted: 'Suppression utilisateur',
   user_login: 'Connexion utilisateur',
   user_password_reset_requested: 'Demande réinitialisation mot de passe',
+  user_permissions_synced_from_api: 'Synchronisation permissions (API)',
+  user_permissions_updated: 'Modification permissions',
   user_updated: 'Mise à jour utilisateur',
 };
 
@@ -107,6 +111,16 @@ export type EventDataMap = {
   user_deleted: null;
   user_login: null;
   user_password_reset_requested: null;
+  user_permissions_synced_from_api: {
+    api_name: string;
+    user_email: string;
+    added: Array<{ type: string; resource_id: string | null }>;
+  };
+  user_permissions_updated: {
+    user_email: string;
+    added: Array<{ type: string; resource_id: string | null }>;
+    removed: Array<{ type: string; resource_id: string | null }>;
+  };
   user_updated: null;
 };
 

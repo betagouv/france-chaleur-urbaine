@@ -1,5 +1,6 @@
 import { sql } from 'kysely';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { kdb } from '@/server/db/kysely';
 import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
 
@@ -68,11 +69,14 @@ export const getUserPermissions = async (userId: string): Promise<Permission[]> 
 
 /**
  * Replaces all permissions for a user. Any role with permissions can have any mix of types.
+ * Emits a `user_permissions_updated` event with the diff (added/removed) when something actually changes.
  */
-export const setUserPermissions = async (userId: string, permissions: Permission[]): Promise<void> => {
+export const setUserPermissions = async (userId: string, permissions: Permission[], authorId: string): Promise<void> => {
   if (permissions.length > MAX_PERMISSIONS_PER_USER) {
     throw new Error(`Maximum ${MAX_PERMISSIONS_PER_USER} permissions par utilisateur`);
   }
+
+  const oldPermissions = await getUserPermissions(userId);
 
   await kdb.transaction().execute(async (tx) => {
     await tx.deleteFrom('user_permissions').where('user_id', '=', userId).execute();
@@ -90,4 +94,19 @@ export const setUserPermissions = async (userId: string, permissions: Permission
         .execute();
     }
   });
+
+  const sameKey = (a: Permission, b: Permission) => a.type === b.type && a.resource_id === b.resource_id;
+  const added = permissions.filter((p) => !oldPermissions.some((b) => sameKey(b, p)));
+  const removed = oldPermissions.filter((b) => !permissions.some((p) => sameKey(p, b)));
+
+  if (added.length > 0 || removed.length > 0) {
+    const targetUser = await kdb.selectFrom('users').select('email').where('id', '=', userId).executeTakeFirstOrThrow();
+    await createUserEvent({
+      author_id: authorId,
+      context_id: userId,
+      context_type: 'user',
+      data: { added, removed, user_email: targetUser.email },
+      type: 'user_permissions_updated',
+    });
+  }
 };

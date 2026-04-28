@@ -170,6 +170,26 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   user_deleted: () => 'a supprimé un compte',
   user_login: () => "s'est connecté",
   user_password_reset_requested: () => 'a demandé une réinitialisation de mot de passe',
+  user_permissions_synced_from_api: (event, updateFilters) => (
+    <>
+      <span>
+        Permissions ajoutées (<strong>{event.data.added.length}</strong>) via l'API <strong>{event.data.api_name}</strong> pour
+      </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
+        {event.data.user_email}
+      </FilterButton>
+    </>
+  ),
+  user_permissions_updated: (event, updateFilters) => (
+    <>
+      <span>
+        a modifié les permissions (+<strong>{event.data.added.length}</strong> / -<strong>{event.data.removed.length}</strong>) de
+      </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
+        {event.data.user_email}
+      </FilterButton>
+    </>
+  ),
   user_updated: () => 'a mis à jour un compte',
 };
 

@@ -29,7 +29,7 @@ export const permissionsRouter = router({
           userId: z.uuidv4(),
         })
       )
-      .mutation(({ input }) => setUserPermissions(input.userId, input.permissions)),
+      .mutation(({ ctx, input }) => setUserPermissions(input.userId, input.permissions, ctx.user.id)),
   },
 
   listUsersWithAccessToDemand: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).query(async ({ input, ctx }) => {

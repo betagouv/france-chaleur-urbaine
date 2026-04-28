@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import cliConfig from '@/cli-config';
+import { createEvent } from '@/modules/events/server/service';
 import type { NetworkPermission } from '@/modules/permissions/types';
 import { create } from '@/modules/users/server/service';
 import { type ApiAccounts, kdb } from '@/server/db/kysely';
@@ -97,7 +98,7 @@ export const handleData = async (account: ApiAccounts, data: unknown) => {
         await kdb.updateTable('users').set({ active: true }).where('id', '=', user.id).execute();
       }
 
-      await syncPermissionsForUser(userId, sncuIds, sncuToFcu);
+      await syncPermissionsForUser(userId, email, sncuIds, sncuToFcu, account.name ?? '');
     })
   );
 
@@ -118,8 +119,15 @@ export const handleData = async (account: ApiAccounts, data: unknown) => {
 /**
  * Grants network permissions to a user for the given SNCU IDs. Additive only:
  * existing permissions (manual or API-created) are never removed.
+ * Emits a `user_permissions_synced_from_api` event when new permissions are actually inserted.
  */
-async function syncPermissionsForUser(userId: string, sncuIds: Set<string>, sncuToFcu: Map<string, number>) {
+async function syncPermissionsForUser(
+  userId: string,
+  userEmail: string,
+  sncuIds: Set<string>,
+  sncuToFcu: Map<string, number>,
+  apiName: string
+) {
   const permissions: (NetworkPermission & { user_id: string })[] = [...sncuIds]
     .map((sncuId) => sncuToFcu.get(sncuId))
     .filter((idFcu): idFcu is number => idFcu !== undefined)
@@ -129,11 +137,21 @@ async function syncPermissionsForUser(userId: string, sncuIds: Set<string>, sncu
       user_id: userId,
     }));
 
-  if (permissions.length > 0) {
-    await kdb
-      .insertInto('user_permissions')
-      .values(permissions)
-      .onConflict((oc) => oc.columns(['user_id', 'type', 'resource_id']).doNothing())
-      .execute();
+  if (permissions.length === 0) return;
+
+  const inserted = await kdb
+    .insertInto('user_permissions')
+    .values(permissions)
+    .onConflict((oc) => oc.columns(['user_id', 'type', 'resource_id']).doNothing())
+    .returning(['type', 'resource_id'])
+    .execute();
+
+  if (inserted.length > 0) {
+    await createEvent({
+      context_id: userId,
+      context_type: 'user',
+      data: { added: inserted, api_name: apiName, user_email: userEmail },
+      type: 'user_permissions_synced_from_api',
+    });
   }
 }
