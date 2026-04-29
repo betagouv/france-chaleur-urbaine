@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { adminRoute, routeAuthenticated, router } from '@/modules/trpc/server/connection';
 import { zUpdateProfileSchema } from '@/modules/users/constants';
 import * as usersService from '@/modules/users/server/service';
@@ -26,5 +27,13 @@ export const usersRouter = router({
     if (!success) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Erreur lors de la mise à jour du profil' });
     }
+
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: ctx.user.id,
+      context_type: 'user',
+      data: { changes: input },
+      type: 'user_profile_updated',
+    });
   }),
 });

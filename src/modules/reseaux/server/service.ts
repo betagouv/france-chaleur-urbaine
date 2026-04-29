@@ -782,6 +782,14 @@ export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInp
     logger.info(`Created eligibility check job ${eligibilityCheckJob.id} for ${affectedBboxes.length} affected zones`);
   }
 
+  await createUserEvent({
+    author_id: context.user.id,
+    context_id: name,
+    context_type: 'network',
+    data: { affected_bboxes_count: affectedBboxes.length, name, processed },
+    type: 'network_geometries_applied',
+  });
+
   return {
     jobIds: rebuildingJobIds,
     processed,

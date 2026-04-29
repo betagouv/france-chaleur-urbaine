@@ -2,10 +2,13 @@ import bcrypt from 'bcryptjs';
 import type { UpdateObject } from 'kysely';
 
 import { sendEmailTemplate } from '@/modules/email';
+import { createUserEvent } from '@/modules/events/server/service';
 import { getAllPermissionsWithLabels } from '@/modules/permissions/server/search';
 import { createUserAdminSchema, type UpdateProfileSchema, updateUserAdminSchema } from '@/modules/users/constants';
+import type { Context } from '@/server/api/crud';
 import { type DB, kdb, sql } from '@/server/db/kysely';
-import { createBaseModel } from '@/server/db/kysely/base-model';
+import { createBaseModel, type ListConfig } from '@/server/db/kysely/base-model';
+import type { UserRole } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
 
 export const tableName = 'users';
@@ -55,28 +58,59 @@ export const list = async () => {
 };
 export type User = Awaited<ReturnType<typeof list>>['items'][number];
 
-export const create: typeof baseModel.create = async ({ optin_at, ...data }, _context) => {
+export const create: typeof baseModel.create = async ({ optin_at, ...data }, context) => {
   const salt = await bcrypt.genSalt(10);
   const password = await bcrypt.hash(Math.random().toString(36).slice(2, 10), salt);
 
-  const record = await baseModel.create({ ...data, optin_at: optin_at ? new Date() : null, password, status: 'valid' }, _context);
+  const record = await baseModel.create({ ...data, optin_at: optin_at ? new Date() : null, password, status: 'valid' }, context);
 
   if (data.active && data.role === 'gestionnaire') {
     await sendEmailTemplate('auth.inscription', { email: data.email as string, id: (record as any).id });
   }
 
+  await createUserEvent({
+    author_id: context.user.id,
+    context_id: (record as any).id,
+    context_type: 'user',
+    data: { role: data.role as UserRole, user_email: data.email as string },
+    type: 'user_created_by_admin',
+  });
+
   return record;
 };
-export const update: typeof baseModel.update = async (id, data, config, _context) => {
+export const update: typeof baseModel.update = async (id, data, config, context) => {
   const { optin_at, ...userUpdate } = data as UpdateObject<DB, 'users'>;
 
-  return baseModel.update(id, { ...userUpdate, optin_at: optin_at ? new Date() : null }, config, _context);
+  const updated = await baseModel.update(id, { ...userUpdate, optin_at: optin_at ? new Date() : null }, config, context);
+
+  await createUserEvent({
+    author_id: context.user.id,
+    context_id: id,
+    context_type: 'user',
+    data: { changes: data as any, user_email: (updated as any).email },
+    type: 'user_updated_by_admin',
+  });
+
+  return updated;
 };
 
 /**
  * Supprime un utilisateur et toutes ses données associées en cascade.
  */
-export const remove = baseModel.remove;
+export const remove = async (id: string, config: ListConfig<typeof tableName>, context: Context) => {
+  const user = await kdb.selectFrom('users').select('email').where('id', '=', id).executeTakeFirstOrThrow();
+  const result = await baseModel.remove(id, config, context);
+
+  await createUserEvent({
+    author_id: context.user.id,
+    context_id: id,
+    context_type: 'user',
+    data: { user_email: user.email },
+    type: 'user_deleted_by_admin',
+  });
+
+  return result;
+};
 
 export const validation = {
   create: createUserAdminSchema,

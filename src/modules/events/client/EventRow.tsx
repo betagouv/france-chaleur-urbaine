@@ -109,10 +109,24 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null})
     </span>
   ),
+  network_geometries_applied: (event) => (
+    <span>
+      a appliqué les modifications géométriques sur <strong>{event.data.name}</strong> (<strong>{event.data.processed.created}</strong>{' '}
+      créés, <strong>{event.data.processed.updated}</strong> mis à jour, <strong>{event.data.processed.deleted}</strong> supprimés
+      {event.data.affected_bboxes_count > 0 ? `, ${event.data.affected_bboxes_count} zones d'éligibilité affectées` : null})
+    </span>
+  ),
   network_geometry_updated: (event) => (
     <span>
       a mis à jour la géométrie d'un réseau <strong>{event.data.type}</strong>
       {event.data.nom_reseau ? ` "${event.data.nom_reseau}"` : null} (ID: {event.data.id}
+      {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null})
+    </span>
+  ),
+  network_notes_updated: (event) => (
+    <span>
+      a mis à jour les notes du réseau <strong>{event.data.network_type}</strong>
+      {event.data.nom_reseau ? ` "${event.data.nom_reseau}"` : null} (ID: {event.data.network_id}
       {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null})
     </span>
   ),
@@ -194,7 +208,24 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   ),
   user_activated: () => 'a activé son compte',
   user_created: () => 'a créé un compte',
-  user_deleted: () => 'a supprimé un compte',
+  user_created_by_admin: (event, updateFilters) => (
+    <>
+      <span>
+        a créé le compte (<strong>{event.data.role}</strong>){' '}
+      </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
+        {event.data.user_email}
+      </FilterButton>
+    </>
+  ),
+  user_deleted_by_admin: (event, updateFilters) => (
+    <>
+      <span>a supprimé le compte </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
+        {event.data.user_email}
+      </FilterButton>
+    </>
+  ),
   user_login: () => "s'est connecté",
   user_password_reset_requested: () => 'a demandé une réinitialisation de mot de passe',
   user_permissions_synced_from_api: (event, updateFilters) => (
@@ -217,7 +248,23 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
-  user_updated: () => 'a mis à jour un compte',
+  user_profile_updated: (event) => (
+    <span>
+      a mis à jour son profil (<strong>{Object.keys(event.data.changes).join(', ')}</strong>)
+    </span>
+  ),
+  user_updated_by_admin: (event, updateFilters) => (
+    <>
+      <span>a mis à jour le compte </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
+        {event.data.user_email}
+      </FilterButton>
+      <span>
+        {' '}
+        (<strong>{Object.keys(event.data.changes).join(', ')}</strong>)
+      </span>
+    </>
+  ),
 };
 
 type EventRowProps = {

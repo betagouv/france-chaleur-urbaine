@@ -88,8 +88,23 @@ const networkRemindersRouter = router({
         notes: z.string().nullable(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      const tableName = input.networkType === 'existant' ? 'reseaux_de_chaleur' : 'zones_et_reseaux_en_construction';
+      const reseau = await reseauxService.getNetworkLabel(input.networkId, tableName);
       await reseauxService.updateNetworkNotes(input.networkId, input.networkType, input.notes);
+      await createUserEvent({
+        author_id: ctx.user.id,
+        context_id: String(input.networkId),
+        context_type: 'network',
+        data: {
+          identifiant_reseau: reseau.identifiant_reseau,
+          network_id: input.networkId,
+          network_type: input.networkType,
+          nom_reseau: reseau.nom_reseau,
+          notes: input.notes,
+        },
+        type: 'network_notes_updated',
+      });
     }),
 });
 
