@@ -6,6 +6,7 @@ import { getAllPermissionsWithLabels } from '@/modules/permissions/server/search
 import { createUserAdminSchema, type UpdateProfileSchema, updateUserAdminSchema } from '@/modules/users/constants';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel } from '@/server/db/kysely/base-model';
+import { fetchJSON } from '@/utils/network';
 
 export const tableName = 'users';
 
@@ -96,26 +97,21 @@ export const updateProfile = async (userId: string, data: UpdateProfileSchema) =
   return result.numUpdatedRows > 0;
 };
 
+type RechercheEntreprisesResponse = {
+  results: Array<{
+    nom_complet: string;
+    nom_raison_sociale: string;
+    siege: { siret: string; adresse: string; code_postal: string; libelle_commune: string };
+  }>;
+};
+
 /**
  * Looks up a SIRET via the public recherche-entreprises API.
- * Returns company info for visual validation in the admin UI.
  */
 export const lookupSiret = async (siret: string) => {
-  const response = await fetch(`https://recherche-entreprises.api.gouv.fr/search?q=${encodeURIComponent(siret)}&mtm_campaign=fcu`);
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const data = (await response.json()) as {
-    results: Array<{
-      nom_complet: string;
-      nom_raison_sociale: string;
-      siege: { siret: string; adresse: string; code_postal: string; libelle_commune: string };
-      nature_juridique: string;
-      tranche_effectif_salarie: string;
-    }>;
-  };
+  const data = await fetchJSON<RechercheEntreprisesResponse>('https://recherche-entreprises.api.gouv.fr/search', {
+    params: { q: siret },
+  });
 
   const match = data.results.find((r) => r.siege.siret === siret);
   if (!match) {
@@ -123,7 +119,7 @@ export const lookupSiret = async (siret: string) => {
   }
 
   return {
-    address: `${match.siege.adresse}, ${match.siege.code_postal} ${match.siege.libelle_commune}`,
+    address: match.siege.adresse,
     name: match.nom_complet,
     siret: match.siege.siret,
   };
