@@ -5,6 +5,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { slugify } from '@/utils/strings';
 
 type FaqItem = {
@@ -514,6 +515,8 @@ function FaqPage() {
       return;
     }
 
+    trackPostHogEvent('faq:accordeon', { question: hash });
+
     setExpandedQuestionId(hash);
   }, []);
 
@@ -582,7 +585,7 @@ function FaqPage() {
       <CallOut>
         <h3>Cette page n'a pas répondu à votre question ?</h3>
         <p>Notre équipe est à votre écoute. Décrivez-nous votre situation et nous reviendrons vers vous.</p>
-        <Link href="/contact" variant="secondary">
+        <Link href="/contact" variant="secondary" postHogEventKey="faq:cta_contact_equipe">
           Contacter l'équipe France Chaleur Urbaine
         </Link>
       </CallOut>
