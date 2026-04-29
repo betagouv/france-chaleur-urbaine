@@ -45,6 +45,7 @@ const mutation = trpc.demands.create.useMutation({
 - **Invalidate after mutation:** `utils.<router>.<procedure>.invalidate()`.
 - **Optimistic update:** `utils.<router>.<procedure>.setData()`.
 - Global defaults (from `_app.tsx`): stale time 5min, retry 1x after 3s.
+- **Do NOT override `staleTime` per query.** Rely on the global default. Same for `gcTime`, `refetchOnWindowFocus`, etc. — only deviate when there's a concrete, justified reason.
 
 ## URL state (nuqs)
 
