@@ -416,6 +416,146 @@ type ResolvedPermission = {
   label: string; // human-readable label for the report
 };
 
+/**
+ * Email domains that identify a collectivity (mairie, EPCI, agglo, etc.).
+ * For matching users:
+ * - role is forced to 'collectivite'
+ * - the listed territory permissions are injected (deduplicated with tag-based ones)
+ * Domain key is the lowercase part after '@'.
+ */
+const collectiviteEmailDomains: Record<string, ResolvedPermission[]> = {
+  'agglo-bourgesplus.fr': [{ label: 'Bourges', resource_id: '18033', type: 'commune' }],
+  'agglo-haguenau.fr': [{ label: 'Haguenau', resource_id: '67180', type: 'commune' }],
+  'agglo-larochelle.fr': [{ label: 'La Rochelle', resource_id: '17300', type: 'commune' }],
+  'agglo-laval.fr': [{ label: 'Laval', resource_id: '53130', type: 'commune' }],
+  'agglo-limoges.fr': [{ label: 'CU Limoges Métropole', resource_id: '248719312', type: 'epci' }],
+  'agglo-pau.fr': [{ label: 'CA Pau Béarn Pyrénées', resource_id: '200067254', type: 'epci' }],
+  'agglo-rochefortocean.fr': [{ label: 'Rochefort', resource_id: '17299', type: 'commune' }],
+  'agglo-ville.chartres.fr': [{ label: 'CA Chartres Métropole', resource_id: '200033181', type: 'epci' }],
+  'agglo.morlaix.fr': [{ label: 'CA Morlaix Communauté', resource_id: '242900835', type: 'epci' }],
+  'agglodebrive.fr': [{ label: 'Brive-la-Gaillarde', resource_id: '19031', type: 'commune' }],
+  'aggo-laval.fr': [{ label: 'Laval', resource_id: '53130', type: 'commune' }],
+  'alfortville.fr': [{ label: 'Alfortville', resource_id: '94002', type: 'commune' }],
+  'amiens-metropole.com': [{ label: 'CA Amiens Métropole', resource_id: '248000531', type: 'epci' }],
+  'angersloiremetropole.fr': [{ label: 'CU Angers Loire Métropole', resource_id: '244900015', type: 'epci' }],
+  'annecy.fr': [{ label: 'Annecy', resource_id: '74010', type: 'commune' }],
+  'annemasse.fr': [{ label: 'Annemasse', resource_id: '74012', type: 'commune' }],
+  'ardenne-metropole.fr': [{ label: 'CA Ardenne Métropole', resource_id: '200041630', type: 'epci' }],
+  'aurillac.fr': [{ label: 'Aurillac', resource_id: '15014', type: 'commune' }],
+  'beauvaisis.fr': [{ label: 'Beauvais', resource_id: '60057', type: 'commune' }],
+  'blois.fr': [{ label: 'Blois', resource_id: '41018', type: 'commune' }],
+  'bonneuil94.fr': [{ label: 'Bonneuil-sur-Marne', resource_id: '94011', type: 'commune' }],
+  'bordeaux-metropole.fr': [{ label: 'Bordeaux Métropole', resource_id: '243300316', type: 'epci' }],
+  'bourgenbresse.fr': [{ label: 'Bourg-en-Bresse', resource_id: '01053', type: 'commune' }],
+  'bourgoinjailleu.fr': [{ label: 'Bourgoin-Jallieu', resource_id: '38053', type: 'commune' }],
+  'brest-metropole.fr': [{ label: 'Brest Métropole', resource_id: '242900314', type: 'epci' }],
+  'brive.fr': [{ label: 'Brive-la-Gaillarde', resource_id: '19031', type: 'commune' }],
+  'c-or.fr': [{ label: "CA de l'Ouest Rhodanien", resource_id: '200040566', type: 'epci' }],
+  'caenlamer.fr': [{ label: 'CU Caen la Mer', resource_id: '200065597', type: 'epci' }],
+  'cclouelison.fr': [{ label: 'CC Loue-Lison', resource_id: '200068070', type: 'epci' }],
+  'cergypontoise.fr': [{ label: 'CA de Cergy-Pontoise', resource_id: '249500109', type: 'epci' }],
+  'chateauroux-metropole.fr': [{ label: 'Châteauroux', resource_id: '36044', type: 'commune' }],
+  'clermontmetropole.eu': [{ label: 'Clermont Auvergne Métropole', resource_id: '246300701', type: 'epci' }],
+  'cu-arras.org': [{ label: 'Arras', resource_id: '62041', type: 'commune' }],
+  'decazeville.fr': [{ label: 'Decazeville', resource_id: '12089', type: 'commune' }],
+  'ecla-jura.fr': [{ label: 'Lons-le-Saunier', resource_id: '39300', type: 'commune' }],
+  'epinal.fr': [{ label: 'Épinal', resource_id: '88160', type: 'commune' }],
+  'eurometropolemetz.eu': [{ label: 'Metz Métropole', resource_id: '200039865', type: 'epci' }],
+  'fresnes94.fr': [{ label: 'Fresnes', resource_id: '94034', type: 'commune' }],
+  'grand-chatellerault.fr': [{ label: 'Châtellerault', resource_id: '86066', type: 'commune' }],
+  'grand-dole.fr': [{ label: 'Dole', resource_id: '39198', type: 'commune' }],
+  'grandangouleme.fr': [{ label: 'CA du Grand Angoulême', resource_id: '200071827', type: 'epci' }],
+  'grandbesancon.fr': [{ label: 'Besançon', resource_id: '25056', type: 'commune' }],
+  'grandlyon.com': [{ label: 'Métropole de Lyon', resource_id: '200046977', type: 'epci' }],
+  'grandnancy.eu': [{ label: 'Métropole du Grand Nancy', resource_id: '245400676', type: 'epci' }],
+  'grandparissud.fr': [{ label: 'CA Grand Paris Sud Seine Essonne Sénart', resource_id: '200059228', type: 'epci' }],
+  'grandpoitiers.fr': [{ label: 'Poitiers', resource_id: '86194', type: 'commune' }],
+  'grenoblealpesmetropole.fr': [{ label: 'Grenoble-Alpes-Métropole', resource_id: '200040715', type: 'epci' }],
+  'issoire.fr': [{ label: 'Issoire', resource_id: '63178', type: 'commune' }],
+  'issoudun.fr': [{ label: 'Issoudun', resource_id: '36088', type: 'commune' }],
+  'ivry94.fr': [{ label: 'Ivry-sur-Seine', resource_id: '94041', type: 'commune' }],
+  'langon33.fr': [{ label: 'Langon', resource_id: '33227', type: 'commune' }],
+  'lannion-tregor.com': [{ label: 'CA Lannion-Trégor Communauté', resource_id: '200065928', type: 'epci' }],
+  'lehavremetro.fr': [{ label: 'CU Le Havre Seine Métropole', resource_id: '200084952', type: 'epci' }],
+  'lemans.fr': [{ label: 'CU Le Mans Métropole', resource_id: '247200132', type: 'epci' }],
+  'lillemetropole.fr': [{ label: 'Métropole Européenne de Lille', resource_id: '200093201', type: 'epci' }],
+  'limoges-metropole.fr': [{ label: 'CU Limoges Métropole', resource_id: '248719312', type: 'epci' }],
+  'lorient.bzh': [{ label: 'Lorient', resource_id: '56121', type: 'commune' }],
+  'mairie-aixenprovence.fr': [{ label: 'Aix-en-Provence', resource_id: '13001', type: 'commune' }],
+  'mairie-alfortville.fr': [{ label: 'Alfortville', resource_id: '94002', type: 'commune' }],
+  'mairie-allos.fr': [{ label: 'Allos', resource_id: '04006', type: 'commune' }],
+  'mairie-avignon.com': [{ label: 'Avignon', resource_id: '84007', type: 'commune' }],
+  'mairie-bagneux.fr': [{ label: 'Bagneux', resource_id: '92007', type: 'commune' }],
+  'mairie-belfort.fr': [{ label: 'Belfort', resource_id: '90010', type: 'commune' }],
+  'mairie-boulogne-billancourt.fr': [{ label: 'Boulogne-Billancourt', resource_id: '92012', type: 'commune' }],
+  'mairie-bretigny91.fr': [{ label: 'Brétigny-sur-Orge', resource_id: '91103', type: 'commune' }],
+  'mairie-briancon.fr': [{ label: 'Briançon', resource_id: '05023', type: 'commune' }],
+  'mairie-cerilly.com': [{ label: 'Cérilly', resource_id: '03048', type: 'commune' }],
+  'mairie-chambery.fr': [{ label: 'Chambéry', resource_id: '73065', type: 'commune' }],
+  'mairie-champigny94.fr': [{ label: 'Champigny-sur-Marne', resource_id: '94017', type: 'commune' }],
+  'mairie-colombes.fr': [{ label: 'Colombes', resource_id: '92025', type: 'commune' }],
+  'mairie-forbach.fr': [{ label: 'Forbach', resource_id: '57227', type: 'commune' }],
+  'mairie-hennebont.fr': [{ label: 'Hennebont', resource_id: '56083', type: 'commune' }],
+  'mairie-lens.fr': [{ label: 'Lens', resource_id: '62498', type: 'commune' }],
+  'mairie-mondelange.fr': [{ label: 'Mondelange', resource_id: '57474', type: 'commune' }],
+  'mairie-nanterre.fr': [{ label: 'Nanterre', resource_id: '92050', type: 'commune' }],
+  'mairie-saintdizier.fr': [{ label: 'Saint-Dizier', resource_id: '52448', type: 'commune' }],
+  'mairie-sarrebourg.fr': [{ label: 'Sarrebourg', resource_id: '57630', type: 'commune' }],
+  'mairie-saverne.fr': [{ label: 'Saverne', resource_id: '67437', type: 'commune' }],
+  'mairie-vitry94.fr': [{ label: 'Vitry-sur-Seine', resource_id: '94081', type: 'commune' }],
+  'mairie-yenne.fr': [{ label: 'Yenne', resource_id: '73330', type: 'commune' }],
+  'marseille.fr': [{ label: 'Marseille', resource_id: '13055', type: 'commune' }],
+  'mende.fr': [{ label: 'Mende', resource_id: '48095', type: 'commune' }],
+  'metropole-dijon.fr': [{ label: 'Dijon Métropole', resource_id: '242100410', type: 'epci' }],
+  'metropole-rouen-normandie.fr': [{ label: 'Métropole Rouen Normandie', resource_id: '200023414', type: 'epci' }],
+  'metropoletpm.fr': [{ label: 'Métropole Toulon-Provence-Méditerranée', resource_id: '248300543', type: 'epci' }],
+  'montdemarsanagglo-eau.fr': [{ label: 'CA Mont de Marsan Agglomération', resource_id: '244000808', type: 'epci' }],
+  'montpellier.fr': [{ label: 'Montpellier', resource_id: '34172', type: 'commune' }],
+  'montpellier3m.fr': [{ label: 'Montpellier Méditerranée Métropole', resource_id: '243400017', type: 'epci' }],
+  'mulhouse-alsace.fr': [{ label: 'CA Mulhouse Alsace Agglomération', resource_id: '200066009', type: 'epci' }],
+  'nantesmetropole.fr': [{ label: 'Nantes Métropole', resource_id: '244400404', type: 'epci' }],
+  'neuillysurmarne.fr': [{ label: 'Neuilly-sur-Marne', resource_id: '93050', type: 'commune' }],
+  'nicecotedazur.org': [{ label: "Métropole Nice Côte d'Azur", resource_id: '200030195', type: 'epci' }],
+  'orleans-metropole.fr': [{ label: 'Orléans Métropole', resource_id: '244500468', type: 'epci' }],
+  'paris.fr': [{ label: 'Paris', resource_id: '75056', type: 'commune' }],
+  'quimper.bzh': [{ label: 'CA Quimper Bretagne Occidentale', resource_id: '200068120', type: 'epci' }],
+  'reims.fr': [{ label: 'Reims', resource_id: '51454', type: 'commune' }],
+  'rennesmetropole.fr': [{ label: 'Rennes Métropole', resource_id: '243500139', type: 'epci' }],
+  'rosnysousbois.fr': [{ label: 'Rosny-sous-Bois', resource_id: '93064', type: 'commune' }],
+  'saint-etienne-metropole.fr': [{ label: 'Saint-Étienne Métropole', resource_id: '244200770', type: 'epci' }],
+  'saint-marcellin.fr': [{ label: 'Saint-Marcellin', resource_id: '38416', type: 'commune' }],
+  'saint-nabord.fr': [{ label: 'Saint-Nabord', resource_id: '88429', type: 'commune' }],
+  'saint-quentin.fr': [{ label: 'Saint-Quentin', resource_id: '02691', type: 'commune' }],
+  'saintnazaireagglo.fr': [{ label: "CA de la Région Nazairienne et de l'Estuaire (CARENE)", resource_id: '244400644', type: 'epci' }],
+  'saumur.fr': [{ label: 'Saumur', resource_id: '49328', type: 'commune' }],
+  'strasbourg.eu': [{ label: 'Eurométropole de Strasbourg', resource_id: '246700488', type: 'epci' }],
+  'toulouse-metropole.fr': [{ label: 'Toulouse Métropole', resource_id: '243100518', type: 'epci' }],
+  'tours-metropole.fr': [{ label: 'Tours Métropole Val de Loire', resource_id: '243700754', type: 'epci' }],
+  'troyes-cm.fr': [{ label: 'CA Troyes Champagne Métropole', resource_id: '200069250', type: 'epci' }],
+  'valenceromansagglo.fr': [{ label: 'Valence', resource_id: '26362', type: 'commune' }],
+  'valenciennes-metropole.fr': [{ label: 'CA Valenciennes Métropole', resource_id: '245901160', type: 'epci' }],
+  'ville-argenteuil.fr': [{ label: 'Argenteuil', resource_id: '95018', type: 'commune' }],
+  'ville-castres.fr': [{ label: 'Castres', resource_id: '81065', type: 'commune' }],
+  'ville-chateaubriant.fr': [{ label: 'Châteaubriant', resource_id: '44036', type: 'commune' }],
+  'ville-courbevoie.fr': [{ label: 'Courbevoie', resource_id: '92026', type: 'commune' }],
+  'ville-embrun.fr': [{ label: 'Embrun', resource_id: '05046', type: 'commune' }],
+  'ville-larochelle.fr': [{ label: 'La Rochelle', resource_id: '17300', type: 'commune' }],
+  'ville-levallois.fr': [{ label: 'Levallois-Perret', resource_id: '92044', type: 'commune' }],
+  'ville-macon.fr': [{ label: 'Mâcon', resource_id: '71270', type: 'commune' }],
+  'ville-montauban.fr': [{ label: 'Montauban', resource_id: '82121', type: 'commune' }],
+  'ville-montrouge.fr': [{ label: 'Montrouge', resource_id: '92049', type: 'commune' }],
+  'ville-nice.fr': [{ label: 'Nice', resource_id: '06088', type: 'commune' }],
+  'ville-plaisir.fr': [{ label: 'Plaisir', resource_id: '78490', type: 'commune' }],
+  'ville-pont-audemer.fr': [{ label: 'Pont-Audemer', resource_id: '27467', type: 'commune' }],
+  'ville-saint-louis.fr': [{ label: 'Saint-Louis', resource_id: '68297', type: 'commune' }],
+  'ville-suresnes.fr': [{ label: 'Suresnes', resource_id: '92073', type: 'commune' }],
+  'ville-thiais.fr': [{ label: 'Thiais', resource_id: '94073', type: 'commune' }],
+  'ville-thonon.fr': [{ label: 'Thonon-les-Bains', resource_id: '74281', type: 'commune' }],
+  'ville-valenton.fr': [{ label: 'Valenton', resource_id: '94074', type: 'commune' }],
+  'ville-villepinte.fr': [{ label: 'Villepinte', resource_id: '93078', type: 'commune' }],
+  'ville-voreppe.fr': [{ label: 'Voreppe', resource_id: '38565', type: 'commune' }],
+};
+
 type TagResolution = {
   tag: string;
   tagType: 'ville' | 'metropole' | 'gestionnaire' | 'reseau' | null;
@@ -789,6 +929,25 @@ async function generateMigrationPlan(outputPath: string) {
       }
     }
 
+    // Flag tag-only resolution failure before any email-based injection
+    if (networkPerms.length === 0 && territoryPerms.length === 0) {
+      notes.push('aucune permission résolue depuis les tags');
+    }
+
+    const emailLower = user.email.toLowerCase();
+    const emailDomain = emailLower.split('@')[1] ?? '';
+    const isAduhmeEmail = emailDomain === 'aduhme.org';
+    const isMetropoleEmail = emailLower.includes('metropole');
+    const collectiviteDomainPerms = collectiviteEmailDomains[emailDomain];
+    const isCollectiviteEmailDomain = collectiviteDomainPerms !== undefined;
+
+    if (collectiviteDomainPerms) {
+      for (const perm of collectiviteDomainPerms) {
+        territoryPerms.push(perm);
+      }
+      notes.push(`permissions territoire injectées via domaine email: ${emailDomain}`);
+    }
+
     // Deduplicate permissions by type:resource_id
     const dedup = (perms: ResolvedPermission[]) => {
       const seen = new Set<string>();
@@ -802,30 +961,36 @@ async function generateMigrationPlan(outputPath: string) {
     const dedupNetwork = dedup(networkPerms);
     const dedupTerritory = dedup(territoryPerms);
 
-    // Classify
     const hasNetwork = dedupNetwork.length > 0;
     const hasTerritory = dedupTerritory.length > 0;
 
     let categorie: string;
-    let roleCible: string;
-
-    if (isAlec) {
+    if (isAlec || isAduhmeEmail) {
       categorie = 'alec';
-      roleCible = 'alec';
     } else if (isApc) {
       categorie = 'gestionnaire_territoire';
-      roleCible = 'gestionnaire';
-    } else if (hasNetwork && !hasTerritory) {
-      categorie = 'gestionnaire_pur';
-      roleCible = 'gestionnaire';
-    } else if (!hasNetwork && hasTerritory) {
-      categorie = 'collectivite_pur';
-      roleCible = 'collectivite';
     } else if (hasNetwork && hasTerritory) {
       categorie = 'mixte_reseau_territoire';
-      roleCible = ''; // à trancher
+    } else if (hasNetwork) {
+      categorie = 'gestionnaire_pur';
+    } else if (hasTerritory) {
+      categorie = 'collectivite_pur';
     } else {
       categorie = 'sans_permission';
+    }
+
+    let roleCible: string;
+    if (isAlec || isAduhmeEmail) {
+      roleCible = 'alec';
+    } else if (isMetropoleEmail || isCollectiviteEmailDomain) {
+      roleCible = 'collectivite';
+    } else if (isApc) {
+      roleCible = 'gestionnaire';
+    } else if (hasNetwork && !hasTerritory) {
+      roleCible = 'gestionnaire';
+    } else if (!hasNetwork && hasTerritory) {
+      roleCible = 'collectivite';
+    } else {
       roleCible = ''; // à trancher
     }
 
@@ -976,6 +1141,7 @@ async function applyMigrationPlan(filePath: string) {
   const validRoleSchema = z.enum(userRolesWithPermissions);
 
   let applied = 0;
+  let permsOnly = 0;
   let skipped = 0;
   let errors = 0;
 
@@ -983,21 +1149,27 @@ async function applyMigrationPlan(filePath: string) {
     const fields = parseCsvLine(lines[i]);
     const email = fields[emailIdx]?.trim();
     const rawRole = fields[roleCibleIdx]?.trim();
+    const rawTerritory = fields[permsTerritoireIdx] ?? '';
+    const rawNetwork = fields[permsReseauIdx] ?? '';
 
     if (!email) continue;
 
-    if (!rawRole) {
+    // Nothing to apply
+    if (!rawRole && !rawTerritory.trim() && !rawNetwork.trim()) {
       skipped++;
       continue;
     }
 
-    const roleResult = validRoleSchema.safeParse(rawRole);
-    if (!roleResult.success) {
-      logger.error(`Ligne ${i + 1}: rôle "${rawRole}" invalide pour ${email} (attendu: ${userRolesWithPermissions.join(', ')})`);
-      errors++;
-      continue;
+    let roleCible: (typeof userRolesWithPermissions)[number] | null = null;
+    if (rawRole) {
+      const roleResult = validRoleSchema.safeParse(rawRole);
+      if (!roleResult.success) {
+        logger.error(`Ligne ${i + 1}: rôle "${rawRole}" invalide pour ${email} (attendu: ${userRolesWithPermissions.join(', ')})`);
+        errors++;
+        continue;
+      }
+      roleCible = roleResult.data;
     }
-    const roleCible = roleResult.data;
 
     // Find user
     const user = await kdb.selectFrom('users').select(['id']).where('email', '=', email).executeTakeFirst();
@@ -1011,18 +1183,20 @@ async function applyMigrationPlan(filePath: string) {
     let territoryPerms: ParsedPermission[];
     let networkPerms: ParsedPermission[];
     try {
-      territoryPerms = parsePermsFromCsv(fields[permsTerritoireIdx] ?? '');
-      networkPerms = parsePermsFromCsv(fields[permsReseauIdx] ?? '');
+      territoryPerms = parsePermsFromCsv(rawTerritory);
+      networkPerms = parsePermsFromCsv(rawNetwork);
     } catch (e: any) {
       logger.error(`Ligne ${i + 1} (${email}): ${e.message}`);
       errors++;
       continue;
     }
 
-    // Apply: update role
-    await kdb.updateTable('users').set({ role: roleCible }).where('id', '=', user.id).execute();
+    // Apply: update role (only when provided)
+    if (roleCible) {
+      await kdb.updateTable('users').set({ role: roleCible }).where('id', '=', user.id).execute();
+    }
 
-    // Apply: replace permissions
+    // Apply: replace permissions (always — the CSV is source of truth)
     await kdb.deleteFrom('user_permissions').where('user_id', '=', user.id).execute();
 
     const allPerms = [...territoryPerms, ...networkPerms].map((p) => ({
@@ -1039,16 +1213,22 @@ async function applyMigrationPlan(filePath: string) {
         .execute();
     }
 
-    logger.info(`  [OK] ${email} → ${roleCible} (${allPerms.length} permissions)`);
-    applied++;
+    if (roleCible) {
+      logger.info(`  [OK] ${email} → ${roleCible} (${allPerms.length} permissions)`);
+      applied++;
+    } else {
+      logger.info(`  [PERMS] ${email} (${allPerms.length} permissions, rôle inchangé)`);
+      permsOnly++;
+    }
   }
 
   logger.info('');
   logger.info('═══════════════════════════════════════════════════════════');
   logger.info('  RÉSUMÉ APPLICATION');
   logger.info('═══════════════════════════════════════════════════════════');
-  logger.info(`  Appliqués: ${applied}`);
-  logger.info(`  Ignorés (role_cible vide): ${skipped}`);
+  logger.info(`  Appliqués (rôle + perms): ${applied}`);
+  logger.info(`  Permissions seules (rôle vide): ${permsOnly}`);
+  logger.info(`  Ignorés (rien à appliquer): ${skipped}`);
   logger.info(`  Erreurs: ${errors}`);
 }
 
