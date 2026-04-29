@@ -688,7 +688,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               <div className="fr-text--lg mb-0!">Faites nous part de vos retours et suggestions sur ce comparateur</div>
             </ArrowItem>
           </SectionContent>
-          <Link variant="secondary" href="/contact?reason=comparateur" className="fr-mt-2w">
+          <Link variant="secondary" href="/contact" className="fr-mt-2w">
             Nous contacter
           </Link>
         </Section>
