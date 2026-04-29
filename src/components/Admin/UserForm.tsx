@@ -26,6 +26,12 @@ const roleOptions = userRoles.map((role) => ({
   value: role,
 }));
 
+const STRUCTURE_TYPE_TO_ROLE = {
+  alec: 'alec',
+  collectivite: 'collectivite',
+  gestionnaire_reseaux: 'gestionnaire',
+} as const satisfies Partial<Record<keyof typeof structureTypesFormLabels, UserRole>>;
+
 const getAvailableTypes = (role: UserRole) => {
   if ((userRolesWithPermissions as readonly string[]).includes(role)) return permissionTypes;
   return [] as const;
@@ -142,6 +148,14 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
               name="structure_type"
               label="Type de structure"
               options={ObjectEntries(structureTypesFormLabels).map(([key, label]) => ({ label, value: key }))}
+              nativeSelectProps={{
+                onChange: (e: React.ChangeEvent<HTMLSelectElement>) => {
+                  const value = e.target.value;
+                  form.setFieldValue('structure_type', value);
+                  const mappedRole = STRUCTURE_TYPE_TO_ROLE[value as keyof typeof STRUCTURE_TYPE_TO_ROLE];
+                  if (mappedRole) form.setFieldValue('role', mappedRole);
+                },
+              }}
             />
             {structureType === 'autre' && (
               <Field.Input

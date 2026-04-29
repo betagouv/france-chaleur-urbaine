@@ -12,6 +12,7 @@ export const structureTypesLabels = {
   gestionnaire_reseaux: 'Gestionnaire de réseaux de chaleur',
   mandataire_cee: 'Mandataire / délégataire CEE',
   syndic_copropriete: 'Syndic de copropriété',
+  alec: 'ALEC',
   autre: 'Autre',
 };
 
