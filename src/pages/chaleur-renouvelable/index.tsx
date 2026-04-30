@@ -8,6 +8,7 @@ import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Carousel from '@/components/ui/Carousel';
 import Link from '@/components/ui/Link';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import ChoixChauffageForm from '@/modules/chaleur-renouvelable/client/ChoixChauffageForm';
 
 const BENEFITS = [
@@ -204,7 +205,14 @@ function OtherHeatingSystemsCarousel() {
           <p className="mb-0 max-h-12 flex-1 overflow-hidden text-ellipsis leading-6 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
             {resource.description}
           </p>
-          <Link variant="secondary" className="fr-mt-3w" href={`/ressources/${resource.slug}`} isExternal>
+          <Link
+            postHogEventKey="fcr_landing:article_clicked"
+            postHogEventProps={{ element_name: resource.slug }}
+            variant="secondary"
+            className="fr-mt-3w"
+            href={`/ressources/${resource.slug}`}
+            isExternal
+          >
             Lire l’article
           </Link>
         </CardFrame>
@@ -317,7 +325,14 @@ function TemoignageCard({
       <p className="fr-mb-1w">Type de chauffage: collectif</p>
       <p className="fr-mb-1w">Année de construction: {year}</p>
       <p className="fr-mb-1w">Nombre de logement: {nbLogement}</p>
-      <Link variant="secondary" className="fr-mt-3w" href={link} isExternal>
+      <Link
+        postHogEventKey="fcr_landing:testimonial_clicked"
+        postHogEventProps={{ element_name: title }}
+        variant="secondary"
+        className="fr-mt-3w"
+        href={link}
+        isExternal
+      >
         Lire le témoignage
       </Link>
     </CardFrame>
@@ -413,7 +428,15 @@ function ChaleurRenouvelablePage() {
           <p className="fr-h2 font-bold">Questions fréquentes sur les énergies renouvelables</p>
           <div className="fr-mt-4w">
             {FAQS.map((faq) => (
-              <Accordion key={faq.question} label={faq.question}>
+              <Accordion
+                key={faq.question}
+                label={faq.question}
+                onExpandedChange={(expanded) => {
+                  if (expanded) {
+                    trackPostHogEvent('fcr_landing:faq_clicked', { element_name: faq.question });
+                  }
+                }}
+              >
                 <div className="fr-mb-0 whitespace-pre-line" dangerouslySetInnerHTML={{ __html: faq.answer }} />
               </Accordion>
             ))}

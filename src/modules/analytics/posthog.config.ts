@@ -180,6 +180,9 @@ export type PostHogEventMap = {
     name: string;
   };
 
+  'fcr_landing:article_clicked': ElementType;
+  'fcr_landing:testimonial_clicked': ElementType;
+  'fcr_landing:faq_clicked': ElementType;
   // Navigation (liens, CTA, boutons)
   'link:click': {
     link_name: string;
@@ -235,6 +238,11 @@ export type PostHogEventMap = {
   'network_page:address_test_cta_clicked': { network_id: string };
   'network_list:filter_applied': { filter_name: string; filter_value: string };
   'city_page:network_link_clicked': { city_slug: string; target: string };
+  'tools:tool_accessed': { tool_name: string };
+  'collectivities:content_cta_clicked': { content_name: string };
+  'collectivities:section_clicked': { section_id: string };
+  'collectivities:iframe_code_copied': { iframe_type: string };
+  'collectivities:iframe_cta_clicked': never;
 };
 type ElementType = {
   element_name: string;

@@ -1,6 +1,7 @@
 import type { HTMLAttributes } from 'react';
 
 import ButtonCopy from '@/components/ui/ButtonCopy';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 
 const IFrameLink = ({
   link,
@@ -12,7 +13,14 @@ const IFrameLink = ({
   const linkWithBacklink = `${link}${withBacklink ? backlink : ''}`;
 
   return (
-    <ButtonCopy text={linkWithBacklink} showOverlay className={className}>
+    <ButtonCopy
+      text={linkWithBacklink}
+      showOverlay
+      className={className}
+      onSuccess={() =>
+        trackPostHogEvent('collectivities:iframe_code_copied', { iframe_type: link.includes('Carte') ? 'carte' : 'eligibilite' })
+      }
+    >
       <div
         className="text-left bg-faded-light cursor-pointer font-mono text-xs border! border-gray-300! rounded-md px-4 py-3 fr-btn--icon-right fr-icon-clipboard-line"
         {...props}
