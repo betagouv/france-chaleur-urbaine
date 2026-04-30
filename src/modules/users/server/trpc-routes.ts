@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
 
-import { buildRubriques } from '@/modules/ademe-connect/constants';
+import { ALL_FCU_RUBRIQUES, buildRubriques } from '@/modules/ademe-connect/constants';
 import { updateContact } from '@/modules/ademe-connect/server/client';
 import { createUserEvent } from '@/modules/events/server/service';
 import { routeAuthenticated, router } from '@/modules/trpc/server/connection';
@@ -57,6 +57,7 @@ export const usersRouter = router({
       nom: input.last_name,
       prenom: input.first_name,
       rubriques: buildRubriques(ctx.user.role, input.structure_type),
+      rubriquesASupprimer: ALL_FCU_RUBRIQUES,
       telephone: input.phone ?? undefined,
     }).catch((error) => logger.error('ademe-connect updateContact failed on updateProfile', { error, user_id: ctx.user.id }));
   }),

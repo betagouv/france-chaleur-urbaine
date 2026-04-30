@@ -21,6 +21,7 @@ type ContactData = {
   telephone?: string;
   telephonePortable?: string;
   rubriques?: string[];
+  rubriquesASupprimer?: string[];
   fonction?: string;
   typeOrganisme?: string;
   acceptationRGPD?: boolean;

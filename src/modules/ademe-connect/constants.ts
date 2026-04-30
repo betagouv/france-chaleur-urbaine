@@ -29,6 +29,13 @@ const STRUCTURE_RUBRIQUES: Partial<Record<StructureType, string>> = {
 };
 
 /**
+ * All FCU rubriques managed by this app on ADEME Connect.
+ * Used as `rubriquesASupprimer` on update so the contact ends up with only the rubriques
+ * we send in `rubriques` (full sync of FCU rubriques, leaves non-FCU rubriques untouched).
+ */
+export const ALL_FCU_RUBRIQUES: string[] = [...Object.values(ROLE_RUBRIQUES), ...Object.values(STRUCTURE_RUBRIQUES)];
+
+/**
  * Builds the `rubriques` array for ADEME Connect from a user's role and structure type.
  * Returns undefined if no rubrique can be built.
  */
