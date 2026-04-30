@@ -112,9 +112,9 @@ const NetworkPanel = ({
                 </Heading>
                 <Text size="sm" fontStyle="italic" mb="2w">
                   Données réglementaires,{' '}
-                  <a href={dataSourcesVersions.arreteDpe.link} target="_blank" rel="noreferrer noopener">
+                  <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
                     arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
-                  </a>{' '}
+                  </Link>{' '}
                   portant sur l’année 2023, ou la moyenne des années 2021, 2022 et 2023. (en attente de l'arrêté 2026)
                 </Text>
                 {!isCold && <Property label="Taux d’EnR&R" value={network['Taux EnR&R']} unit="%" />}

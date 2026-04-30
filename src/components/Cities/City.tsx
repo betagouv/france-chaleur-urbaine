@@ -35,7 +35,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
           Le chauffage urbain, une solution <strong>écologique</strong> et <strong>économique</strong> à {cityData.name}
         </HeroTitle>
       </Hero>
-      <StickyForm title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`} />
+      <StickyForm title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`} context="ville" />
       <div className="fr-container p-4">
         <h2 className="text-blue fr-my-3w">
           {hasUniqueNetwork ? `Votre réseau de chaleur ` : `Vos réseaux de chaleur `}
@@ -46,7 +46,7 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
         <div>{cityData.description}</div>
         {cityData.networksData && (
           <div className="fr-p-2w">
-            <Networks networksData={cityData.networksData} network={network} cityCoord={cityData.coord as [number, number]} />
+            <Networks citySlug={citySlug} networksData={cityData.networksData} network={network} cityCoord={cityData.coord as [number, number]} />
           </div>
         )}
       </div>

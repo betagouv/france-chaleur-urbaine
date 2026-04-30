@@ -5,7 +5,6 @@ import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
-import { trackPostHogEvent } from '@/modules/analytics/client';
 import { DPE_BG, improveDpe, type ModeDeChauffageEnriched } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import type { DPE } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
@@ -113,16 +112,19 @@ function MobileStats({
 
 type ScrollToHelpButtonProps = {
   href?: string;
+  chauffageMode: string;
   onClick?: () => void;
 };
 
-export function ScrollToHelpButton({ href = '#help-ademe', onClick }: ScrollToHelpButtonProps) {
+export function ScrollToHelpButton({ href = '#help-ademe', chauffageMode, onClick }: ScrollToHelpButtonProps) {
   return (
     <div className="fr-my-3w flex justify-center md:justify-end">
       <Button
         className="flex-1 md:flex-none md:flex justify-center"
         iconId="fr-icon-arrow-right-line"
         iconPosition="right"
+        postHogEventKey="simu_multiENR:methodo_clicked"
+        postHogEventProps={{ chauffage_mode: chauffageMode }}
         href={onClick ? undefined : href}
         onClick={onClick}
       >
@@ -230,9 +232,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
           Plus d'infos
         </Link>
       </div>
-      {variant !== 'recommended' && (
-        <ScrollToHelpButton onClick={() => trackPostHogEvent('simu_multiENR:methodo_clicked', { chauffage_mode: item.label })} />
-      )}
+      {variant !== 'recommended' && <ScrollToHelpButton chauffageMode={item.label} />}
     </Accordion>
   );
 });

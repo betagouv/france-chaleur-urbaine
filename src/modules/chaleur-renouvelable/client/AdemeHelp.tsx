@@ -4,6 +4,7 @@ import { useState } from 'react';
 import useForm from '@/components/form/react-form/useForm';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   ESPACE_EXTERIEUR_VALUES,
@@ -33,6 +34,7 @@ export default function AdemeHelp({ className }: { className?: string }) {
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
+      trackPostHogEvent('fcr_simulator:contact_form_submitted');
       const espaceExterieur =
         isDefined(urlParams.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(urlParams.espaceExterieur)
           ? urlParams.espaceExterieur

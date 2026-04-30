@@ -157,6 +157,7 @@ function Home() {
                 href="/documentation/guide-france-chaleur-urbaine.pdf"
                 eventKey="Téléchargement|Guide FCU|professionnels"
                 postHogEventKey="home:guide_download_clicked"
+                postHogEventProps={{ filename: '/documentation/guide-france-chaleur-urbaine.pdf' }}
                 isExternal
               >
                 Télécharger le guide de raccordement

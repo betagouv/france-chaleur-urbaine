@@ -209,17 +209,13 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const lienEtudeAmorce = (
     <div className="fr-text--xs">
       Voir le{' '}
-      <a
-        href="https://amorce.asso.fr/publications/enquete-sur-le-prix-de-vente-de-la-chaleur-et-du-froid-en-2021-rce39"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <Link href="https://amorce.asso.fr/publications/enquete-sur-le-prix-de-vente-de-la-chaleur-et-du-froid-en-2021-rce39" isExternal>
         rapport d'Amorce
-      </a>{' '}
+      </Link>{' '}
       pour plus d'informations ou{' '}
-      <a href="https://amorce.asso.fr/contact" target="_blank" rel="noopener noreferrer">
+      <Link href="https://amorce.asso.fr/contact" isExternal>
         contacter l'association Amorce
-      </a>
+      </Link>
       .
     </div>
   );

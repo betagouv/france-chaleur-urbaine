@@ -28,6 +28,8 @@ const Popup = defineLayerPopup<ReseauxDeFroidTile>((reseauDeFroid, { Property, T
           priority="secondary"
           full
           iconId="fr-icon-eye-line"
+          postHogEventKey="map:network_clicked"
+          postHogEventProps={{ network_id: reseauDeFroid['Identifiant reseau'] }}
           linkProps={{ href: `/reseaux/${reseauDeFroid['Identifiant reseau']}`, rel: 'noopener noreferrer', target: '_blank' }}
         >
           Voir la fiche du réseau

@@ -1,11 +1,11 @@
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
 
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import ClassedNetwork from '@/components/Network/ClassedNetwork';
 import EnergiesChart from '@/components/Network/EnergiesChart';
 import Slice from '@/components/Slice';
+import Link from '@/components/ui/Link';
 import type { Network } from '@/types/Summary/Network';
 
 import { NetworkContainer } from './Networks.styles';
@@ -19,7 +19,14 @@ type NetworksData = {
   gestionnaires?: React.ReactNode;
 };
 
-const Networks = ({ networksData, network, cityCoord }: { networksData: NetworksData; network?: Network; cityCoord: [number, number] }) => {
+type NetworksProps = {
+  citySlug: string;
+  networksData: NetworksData;
+  network?: Network;
+  cityCoord: [number, number];
+};
+
+const Networks = ({ citySlug, networksData, network, cityCoord }: NetworksProps) => {
   return (
     <NetworkContainer>
       <div className="fr-col-md-6 fr-col-12">
@@ -63,7 +70,13 @@ const Networks = ({ networksData, network, cityCoord }: { networksData: Networks
             <Slice padding={4}>
               <EnergiesChart network={network} height="250px" />
               <div className="fr-btn fr-mt-4w fr-m-auto">
-                <Link href={`/reseaux/${network['Identifiant reseau']}`}>Voir la fiche technique du réseau</Link>
+                <Link
+                  postHogEventKey="city_page:network_link_clicked"
+                  postHogEventProps={{ city_slug: citySlug, target: 'reseau_detail' }}
+                  href={`/reseaux/${network['Identifiant reseau']}`}
+                >
+                  Voir la fiche technique du réseau
+                </Link>
               </div>
             </Slice>
           </>

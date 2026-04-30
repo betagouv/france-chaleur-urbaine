@@ -33,7 +33,7 @@ export type PostHogEventMap = {
     distance_reseau_m?: number;
   };
   'address_test:discover_more_clicked': {
-    source: EligibilityContext;
+    source?: EligibilityContext;
     result_type: 'en construction' | 'pdp' | 'eligible' | 'non eligible';
     chauffage_type?: 'collectif' | 'individuel';
     distance_reseau_m?: number;
@@ -115,11 +115,7 @@ export type PostHogEventMap = {
   'simu_multiENR:methodo_clicked': {
     chauffage_mode: string;
   };
-  'fcr_simulator:contact_form_submitted': {
-    address: string;
-    espaceExterieur: string;
-    typeLogement: string;
-  };
+  'fcr_simulator:contact_form_submitted': never;
 
   // Potentiel création réseau
   'potentiel-creation-reseau:commune_form_submit': {
@@ -157,6 +153,9 @@ export type PostHogEventMap = {
   'map:network_exported': {
     network_name: string;
     network_id: number;
+  };
+  'map:network_clicked': {
+    network_id: string;
   };
   'map:manager_contact_form_submitted': never;
   'map:contribute_clicked': never;
@@ -211,7 +210,7 @@ export type PostHogEventMap = {
   'home:tool_tile_clicked': ElementType;
   'home:comparator_tile_clicked': never;
   'home:bulk_test_cta_clicked': never;
-  'home:guide_download_clicked': never;
+  'home:guide_download_clicked': { filename: string };
   'home:fcr_tile_clicked': never;
   'home:article_clicked': ElementType;
   'home:news_clicked': ElementType;
@@ -234,6 +233,8 @@ export type PostHogEventMap = {
   'global:login_cta_clicked': { is_auth: boolean };
   'contact:form_submitted': { contact_reason: string };
   'network_page:address_test_cta_clicked': { network_id: string };
+  'network_list:filter_applied': { filter_name: string; filter_value: string };
+  'city_page:network_link_clicked': { city_slug: string; target: string };
 };
 type ElementType = {
   element_name: string;

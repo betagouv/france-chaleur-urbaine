@@ -320,7 +320,7 @@ function ResultsSection({
             />
           );
         })}
-        {variant === 'recommended' && <ScrollToHelpButton onClick={onHelpButtonClick} />}
+        {variant === 'recommended' && <ScrollToHelpButton chauffageMode={items[0].label} onClick={onHelpButtonClick} />}
       </div>
     </>
   );

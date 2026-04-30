@@ -1,5 +1,7 @@
 import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 
+import Link from '@/components/ui/Link';
+
 import { Source, Subtitle } from './Contents.styles';
 
 const Actors = () => {
@@ -31,13 +33,12 @@ const Actors = () => {
       techniques et humains qui lui permettent d’assurer le fonctionnement et l’entretien des installations.
       <Source>
         Source : CEREMA{' '}
-        <a
+        <Link
           href="https://reseaux-chaleur.cerema.fr/espace-documentaire/cadre-dintervention-des-collectivites-en-matiere-reseaux-chaleur"
-          target="_blank"
-          rel="noreferrer"
+          isExternal
         >
           https://reseaux-chaleur.cerema.fr/espace-documentaire/cadre-dintervention-des-collectivites-en-matiere-reseaux-chaleur
-        </a>
+        </Link>
       </Source>
       <br />
       <br />

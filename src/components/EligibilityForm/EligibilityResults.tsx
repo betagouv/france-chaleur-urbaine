@@ -113,9 +113,9 @@ export const getEligibilityResult = (
     <ArrowItem>
       Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, pensez à améliorer l’isolation thermique de
       votre immeuble. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur{' '}
-      <a href="https://france-renov.gouv.fr/" target="_blank" rel="noreferrer">
+      <Link href="https://france-renov.gouv.fr/" isExternal>
         France Rénov’
-      </a>
+      </Link>
     </ArrowItem>
   );
 
