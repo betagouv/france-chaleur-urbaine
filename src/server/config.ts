@@ -7,8 +7,10 @@ import type { ExcludeKeys } from '@/utils/typescript';
 const serverConfigSchema = {
   AIRTABLE_BASE: z.string(),
   AIRTABLE_KEY_API: z.string(),
+  APP: z.string().optional(), // injected by Scalingo (e.g. "france-chaleur-urbaine")
   CLOCK_CRONS_ENABLE: z.boolean().default(true),
   CLOCK_JOBS_PROCESSOR_ENABLE: z.boolean().default(true),
+  CONTAINER: z.string().optional(), // injected by Scalingo (e.g. "web-1")
   DATA_GOUV_FR_API_KEY: z.string().optional(),
   DATA_GOUV_FR_API_URL: z.string().default('https://www.data.gouv.fr/api/1'),
   DATA_GOUV_FR_DATASET_ID: z.string().optional(),
@@ -24,6 +26,7 @@ const serverConfigSchema = {
   MAIL_PORT: z.number().default(587),
   MAIL_USER: z.string(),
   MATOMO_TOKEN: z.string(),
+  METRICS_AUTH_TOKEN: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PIPEDRIVE_API_KEY: z.string().optional(),
   PIPEDRIVE_BASE_URL: z.string().default('https://api.pipedrive.com/v1'),
