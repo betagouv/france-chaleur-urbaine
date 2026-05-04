@@ -15,10 +15,39 @@ const contextToAnalyticsPrefix = {
   'chaleur-renouvelable': 'Chaleur renouvelable',
   'choix-chauffage': 'Choix chauffage',
   comparateur: 'Comparateur',
+  ville: 'Ville',
 } as const;
 
 function getMatomoContextPrefix(context?: ContactFormContext) {
   return context && contextToAnalyticsPrefix[context] ? (` - ${contextToAnalyticsPrefix[context]}` as const) : '';
+}
+
+function getEligibilityMatomoContextPrefix(context?: ContactFormContext) {
+  switch (context) {
+    case undefined:
+      return '';
+    case 'carte':
+      return ' - Carte';
+    case 'comparateur':
+      return ' - Comparateur';
+    default:
+      return null;
+  }
+}
+
+function getContactMatomoContextPrefix(context?: ContactFormContext) {
+  switch (context) {
+    case undefined:
+      return '';
+    case 'carte':
+      return ' - Carte';
+    case 'choix-chauffage':
+      return ' - Choix chauffage';
+    case 'comparateur':
+      return ' - Comparateur';
+    default:
+      return null;
+  }
 }
 
 const useContactFormFCU = () => {
@@ -44,10 +73,10 @@ const useContactFormFCU = () => {
     setLoadingStatus('loading');
     setMessageSent(false);
     setMessageReceived(false);
-    const prefix = getMatomoContextPrefix(context);
+    const prefix = getEligibilityMatomoContextPrefix(context);
     // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
     // ni Chaleur renouvelable (que l'on gère uniquement via postHog)
-    if (prefix !== ' - Choix chauffage' && prefix !== ' - Chaleur renouvelable') {
+    if (prefix !== null) {
       trackEvent(`Eligibilité|Formulaire de test${prefix} - Envoi`, address);
     }
   };
@@ -56,10 +85,10 @@ const useContactFormFCU = () => {
     (data: AddressDataType, context?: ContactFormContext, options: { doTrackEvent?: boolean } = { doTrackEvent: true }) => {
       const { address, heatingType, eligibility } = data;
       if (options.doTrackEvent) {
-        const prefix = getMatomoContextPrefix(context);
+        const prefix = getEligibilityMatomoContextPrefix(context);
         // on ne track pas les événements pour le choix chauffage car ce n'est pas de l'éligibilité
         // ni Chaleur renouvelable (que l'on gère uniquement via postHog)
-        if (prefix !== ' - Choix chauffage' && prefix !== ' - Chaleur renouvelable') {
+        if (prefix !== null) {
           trackEvent(
             `Eligibilité|Formulaire de test${prefix} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
             address || 'Adresse indefini'
@@ -154,8 +183,8 @@ const useContactFormFCU = () => {
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
       // On ne track pas Matomo pour chaleur-renouvelable car ce parcours est tracké via PostHog.
-      const prefix = getMatomoContextPrefix(context);
-      if (prefix !== ' - Chaleur renouvelable') {
+      const prefix = getContactMatomoContextPrefix(context);
+      if (prefix !== null) {
         trackEvent(`Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${prefix} - Envoi`, address);
       }
       trackPostHogEvent('address_test:contact_form_submitted', {

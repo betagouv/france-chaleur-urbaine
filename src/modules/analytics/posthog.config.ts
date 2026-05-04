@@ -270,4 +270,5 @@ export type EligibilityContext =
   | 'homepage'
   | 'choix-chauffage'
   | 'chaleur-renouvelable'
-  | 'eligibility';
+  | 'eligibility'
+  | 'ville';
