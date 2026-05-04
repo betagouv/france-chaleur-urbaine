@@ -1,6 +1,8 @@
 import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import { useRef } from 'react';
 
+import Link from '@/components/ui/Link';
+
 import { List, Source, Subtitle } from './Contents.styles';
 
 const Fundings = () => {
@@ -57,9 +59,9 @@ const Fundings = () => {
       <br />
       <br />
       Pour en savoir plus :{' '}
-      <a href="https://france-renov.gouv.fr/aides/mpr/coproprietes" target="_blank" rel="noreferrer">
+      <Link href="https://france-renov.gouv.fr/aides/mpr/coproprietes" isExternal>
         https://france-renov.gouv.fr/aides/mpr/coproprietes
-      </a>
+      </Link>
       <br />
       <br />
       <br />
@@ -108,9 +110,9 @@ const Fundings = () => {
       </List>
       <br />
       Pour en savoir plus :{' '}
-      <a href="https://france-renov.gouv.fr/aides/mpr/serenite" target="_blank" rel="noreferrer">
+      <Link href="https://france-renov.gouv.fr/aides/mpr/serenite" isExternal>
         https://france-renov.gouv.fr/aides/mpr/serenite
-      </a>
+      </Link>
       <br />
       <br />
       <br />
@@ -236,9 +238,9 @@ const Fundings = () => {
       <br />
       <br />
       Seules les banques ayant signé une convention avec l’État peuvent proposer l'éco-PTZ. Vous pouvez{' '}
-      <a href="https://www2.sgfgas.fr/web/site-public/etablissements-affilies" target="_blank" rel="noreferrer">
+      <Link href="https://www2.sgfgas.fr/web/site-public/etablissements-affilies" isExternal>
         consulter la liste des banques actuellement concernées par ce dispositif
-      </a>
+      </Link>
       . Vous devez vous renseigner auprès de l'un de ces établissements.
       <br />
       <br />
@@ -292,9 +294,9 @@ const Fundings = () => {
       <br />
       <br />
       En savoir plus :{' '}
-      <a href="https://www.ecologie.gouv.fr/eco-pret-taux-zero-eco-ptz" target="_blank" rel="noreferrer">
+      <Link href="https://www.ecologie.gouv.fr/eco-pret-taux-zero-eco-ptz" isExternal>
         https://www.ecologie.gouv.fr/eco-pret-taux-zero-eco-ptz
-      </a>
+      </Link>
       <br />
       <br />
       <br />
@@ -302,9 +304,9 @@ const Fundings = () => {
       <Highlight>
         <b>
           Pour aller plus loin, contactez l’
-          <a href="https://france-renov.gouv.fr/espaces-conseil-fr" target="_blank" rel="noreferrer">
+          <Link href="https://france-renov.gouv.fr/espaces-conseil-fr" isExternal>
             espace France Rénov, le plus proche de chez vous
-          </a>{' '}
+          </Link>{' '}
           !
         </b>
       </Highlight>

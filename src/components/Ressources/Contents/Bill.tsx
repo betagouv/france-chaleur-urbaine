@@ -1,3 +1,5 @@
+import Link from '@/components/ui/Link';
+
 import { List, Source, Subtitle } from './Contents.styles';
 
 const Bill = () => {
@@ -48,9 +50,9 @@ const Bill = () => {
       ainsi un prix plus stable que celui d’un réseau encore majoritairement fossile.
       <Source>
         Pour en savoir plus :{' '}
-        <a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/prix-la-chaleur-et-facturation" target="_blank" rel="noreferrer">
+        <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/prix-la-chaleur-et-facturation" isExternal>
           https://reseaux-chaleur.cerema.fr/espace-documentaire/prix-la-chaleur-et-facturation
-        </a>
+        </Link>
       </Source>
     </>
   );

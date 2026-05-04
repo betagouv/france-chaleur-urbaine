@@ -3,6 +3,7 @@ import Input from '@codegouvfr/react-dsfr/Input';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
+import Link from '@/components/ui/Link';
 import Tooltip from '@/components/ui/Tooltip';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
@@ -245,9 +246,9 @@ function SimulatorResult({
         {(networkInformation || addressErrorMessage) && concernedHelp && (
           <div>
             Le calcul se base sur la fiche{' '}
-            <a href={concernedHelp.noteUrl} target="_blank" rel="noreferrer">
+            <Link href={concernedHelp.noteUrl} isExternal>
               <strong>{concernedHelp.label}</strong>
-            </a>
+            </Link>
             .{' '}
             {!addressErrorMessage && (
               <sup>

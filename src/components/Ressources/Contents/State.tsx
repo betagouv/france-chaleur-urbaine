@@ -1,5 +1,7 @@
 import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 
+import Link from '@/components/ui/Link';
+
 import { List, Subtitle } from './Contents.styles';
 
 const State = () => {
@@ -37,9 +39,9 @@ const State = () => {
       </List>
       <br />
       Pour en savoir plus :{' '}
-      <a href="https://fondschaleur.ademe.fr/le-fonds-chaleur/" target="_blank" rel="noreferrer">
+      <Link href="https://fondschaleur.ademe.fr/le-fonds-chaleur/" isExternal>
         https://fondschaleur.ademe.fr/le-fonds-chaleur/
-      </a>
+      </Link>
       <br />
       <br />
       <Subtitle>Un taux de TVA réduit</Subtitle>
@@ -64,9 +66,9 @@ const State = () => {
       tertiaires ». <br />
       <br />
       Pour en savoir plus :{' '}
-      <a href="https://www.ecologie.gouv.fr/operations-standardisees-deconomies-denergie" target="_blank" rel="noreferrer">
+      <Link href="https://www.ecologie.gouv.fr/operations-standardisees-deconomies-denergie" isExternal>
         https://www.ecologie.gouv.fr/operations-standardisees-deconomies-denergie
-      </a>
+      </Link>
     </>
   );
 };
