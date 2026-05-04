@@ -8,6 +8,8 @@ import Link from '@/components/ui/Link';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { slugify } from '@/utils/strings';
 
+const FAQ_ACCORDION_SCROLL_DELAY_MS = 300;
+
 type FaqItem = {
   answer: ReactNode;
   question: string;
@@ -525,8 +527,15 @@ function FaqPage() {
       return;
     }
 
-    const targetElement = document.getElementById(expandedQuestionId);
-    targetElement?.scrollIntoView();
+    const timeoutId = window.setTimeout(() => {
+      document.getElementById(expandedQuestionId)?.scrollIntoView({
+        block: 'start',
+      });
+    }, FAQ_ACCORDION_SCROLL_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
   }, [expandedQuestionId]);
 
   const updateHash = (questionId: string | null) => {
