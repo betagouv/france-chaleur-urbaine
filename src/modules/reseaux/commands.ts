@@ -5,6 +5,7 @@ import { readFileGeometry } from '@/modules/geo/server/helpers';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 
+import { diffNetworkGeometries } from './server/geometry-diff';
 import {
   createPDPFromCommune,
   insertEntityWithGeometry,
@@ -83,6 +84,15 @@ export function registerNetworkCommands(parentProgram: Command) {
       const idField = isIdSNCU ? 'Identifiant reseau' : 'id_fcu';
       const idValue = isIdSNCU ? id_fcu_or_sncu : parseInt(id_fcu_or_sncu, 10);
       await updateEntityWithoutGeometry(entityTypeToTable[type], idField, idValue);
+    });
+
+  program
+    .command('diff')
+    .description("Compare les fichiers GeoJSON d'un répertoire (nommés <id_sncu>.geojson) avec les tracés en base et écrit un rapport CSV.")
+    .argument('<directory>', 'Répertoire contenant les fichiers <id_sncu>.geojson')
+    .argument('[output]', 'Chemin du fichier CSV de sortie', 'geometry-diff.csv')
+    .action(async (directory, output) => {
+      await diffNetworkGeometries(directory, output);
     });
 
   program
