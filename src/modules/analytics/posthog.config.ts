@@ -235,8 +235,13 @@ export type PostHogEventMap = {
   'global:footer_link_clicked': { link_name: string };
   'global:login_cta_clicked': { is_auth: boolean };
   'contact:form_submitted': { contact_reason: string };
+
   'network_page:address_test_cta_clicked': { network_id: string };
   'network_list:filter_applied': { filter_name: string; filter_value: string };
+  'network_creation:contact_cta_clicked': { territory_code?: string };
+  'network_creation:layer_toggled': { layer_name: string };
+  'network_creation:territory_searched': { territory_code?: string };
+
   'city_page:network_link_clicked': { city_slug: string; target: string };
   'tools:tool_accessed': { tool_name: string };
   'collectivities:content_cta_clicked': { content_name: string };
