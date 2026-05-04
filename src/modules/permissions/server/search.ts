@@ -3,7 +3,6 @@ import { sql } from 'kysely';
 import { kdb } from '@/server/db/kysely';
 
 import type { Permission, PermissionWithLabel, TerritoryPermissionType } from '../types';
-import { isNetworkPermissionType } from './helpers';
 import { getUserPermissions } from './service';
 
 // ─── Search ──────────────────────────────────────────────────────────────────
@@ -157,7 +156,8 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
 
   const result: ResolvedPermissionLabel[] = [];
 
-  const networkIds = permissions.filter((p) => isNetworkPermissionType(p.type)).map((p) => p.resource_id!);
+  const existingNetworkIds = permissions.filter((p) => p.type === 'reseau_existant').map((p) => Number(p.resource_id));
+  const constructionNetworkIds = permissions.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resource_id));
   const communeCodes = permissions.filter((p) => p.type === 'commune').map((p) => p.resource_id!);
   const epciCodes = permissions.filter((p) => p.type === 'epci').map((p) => p.resource_id!);
   const eptCodes = permissions.filter((p) => p.type === 'ept').map((p) => p.resource_id!);
@@ -166,34 +166,41 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
 
   const lookups = [];
 
-  if (networkIds.length > 0) {
-    const numericIds = networkIds.map(Number);
+  if (existingNetworkIds.length > 0) {
     lookups.push(
-      Promise.all([
-        kdb
-          .selectFrom('reseaux_de_chaleur')
-          .select(['id_fcu', 'nom_reseau', 'Identifiant reseau'])
-          .where('id_fcu', 'in', numericIds)
-          .execute(),
-        kdb
-          .selectFrom('zones_et_reseaux_en_construction')
-          .select(['id_fcu', 'nom_reseau'])
-          .where('id_fcu', 'in', numericIds)
-          .where('is_zone', '=', false)
-          .execute(),
-      ]).then(([existing, construction]) => {
-        const existingMap = new Map(existing.map((r) => [r.id_fcu, r]));
-        const constructionMap = new Map(construction.map((r) => [r.id_fcu, r]));
+      kdb
+        .selectFrom('reseaux_de_chaleur')
+        .select(['id_fcu', 'nom_reseau', 'Identifiant reseau'])
+        .where('id_fcu', 'in', existingNetworkIds)
+        .execute()
+        .then((rows) => {
+          const map = new Map(rows.map((r) => [r.id_fcu, r]));
+          for (const id of existingNetworkIds) {
+            const row = map.get(id);
+            const name = row?.nom_reseau || 'Réseau inconnu';
+            const sncu = row?.['Identifiant reseau'] ? ` (${row['Identifiant reseau']})` : '';
+            result.push({ label: `${name}${sncu}`, resource_id: String(id), type: 'reseau_existant' });
+          }
+        })
+    );
+  }
 
-        for (const p of permissions.filter((p) => isNetworkPermissionType(p.type))) {
-          const id = Number(p.resource_id);
-          const ex = existingMap.get(id);
-          const co = constructionMap.get(id);
-          const name = ex?.nom_reseau || co?.nom_reseau || 'Réseau inconnu';
-          const sncu = ex?.['Identifiant reseau'] ? ` (${ex['Identifiant reseau']})` : '';
-          result.push({ label: `${name}${sncu}`, resource_id: p.resource_id, type: p.type as any });
-        }
-      })
+  if (constructionNetworkIds.length > 0) {
+    lookups.push(
+      kdb
+        .selectFrom('zones_et_reseaux_en_construction')
+        .select(['id_fcu', 'nom_reseau'])
+        .where('id_fcu', 'in', constructionNetworkIds)
+        .where('is_zone', '=', false)
+        .execute()
+        .then((rows) => {
+          const map = new Map(rows.map((r) => [r.id_fcu, r]));
+          for (const id of constructionNetworkIds) {
+            const row = map.get(id);
+            const name = row?.nom_reseau || 'Réseau inconnu';
+            result.push({ label: name, resource_id: String(id), type: 'reseau_en_construction' });
+          }
+        })
     );
   }
 
