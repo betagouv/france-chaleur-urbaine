@@ -1,4 +1,5 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import type { FinalityConsent } from '@codegouvfr/react-dsfr/consentManagement/types';
 
 import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import type { TypeCommune } from '@/server/services/communeAPotentiel';
@@ -246,6 +247,7 @@ export type PostHogEventMap = {
   'account:created': never;
   'global:footer_link_clicked': { link_name: string };
   'global:login_cta_clicked': { is_auth: boolean };
+  'consent:cookie_choice_made': { consent: FinalityConsent<string> };
   'contact:form_submitted': { contact_reason: string };
 
   'network_page:address_test_cta_clicked': { network_id: string };

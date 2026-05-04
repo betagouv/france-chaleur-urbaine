@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 
 import { clientConfig } from '@/client-config';
 import { usePostHog } from '@/components/ConsentBanner/usePostHog';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 
 import GoogleTagsScript from './GoogleTagsScript';
 import HotjarScript from './HotjarScript';
@@ -47,6 +48,7 @@ if (posthogEnabled) {
 export const { ConsentBannerAndConsentManagement, FooterConsentManagementItem, FooterPersonalDataPolicyItem, useConsent } =
   createConsentManagement({
     consentCallback: async ({ finalityConsent_prev, finalityConsent }) => {
+      trackPostHogEvent('consent:cookie_choice_made', { consent: finalityConsent });
       if (finalityConsent_prev === undefined && !finalityConsent.isFullConsent) {
         location.reload();
       }
