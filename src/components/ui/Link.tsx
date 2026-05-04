@@ -55,6 +55,13 @@ function Link<Event extends PostHogEvent = PostHogEvent>({
 }: PropsWithChildren<LinkProps<Event>>) {
   // when the href contains an anchor, use a classic link which works best with scrolling
   const Tag = href.includes('#') ? 'a' : NextLink;
+  const shouldTrackResourceInternalLink =
+    !isExternal &&
+    !postHogEventKey &&
+    href.startsWith('/') &&
+    typeof window !== 'undefined' &&
+    window.location.pathname.startsWith('/ressources');
+
   return (
     <Tag
       href={href}
@@ -69,7 +76,11 @@ function Link<Event extends PostHogEvent = PostHogEvent>({
             eventPayload?.split(',').map((v) => v.trim())
           );
         }
-        trackPostHogEvent(postHogEventKey, postHogEventProps);
+        if (shouldTrackResourceInternalLink) {
+          trackPostHogEvent('content:internal_link_clicked', { target_path: href });
+        } else {
+          trackPostHogEvent(postHogEventKey, postHogEventProps);
+        }
         if (isExternal && !postHogEventKey) {
           trackPostHogEvent('nav:external_link_clicked', { partner_name: String(children), partner_url: href });
         }

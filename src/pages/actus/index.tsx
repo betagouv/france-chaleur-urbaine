@@ -1,4 +1,3 @@
-import Card from '@codegouvfr/react-dsfr/Card';
 import { Pagination } from '@codegouvfr/react-dsfr/Pagination';
 import Tag from '@codegouvfr/react-dsfr/Tag';
 import { parseAsArrayOf, parseAsInteger, parseAsString, useQueryState } from 'nuqs';
@@ -6,6 +5,7 @@ import { useMemo } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
+import Card from '@/components/ui/Card';
 import Heading from '@/components/ui/Heading';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import { articles } from '@/data/contents';
@@ -89,6 +89,8 @@ const ActualitesPage = () => {
                   border
                   desc={article.abstract}
                   enlargeLink
+                  postHogEventKey="link:internal"
+                  postHogEventProps={{ news_slug: article.slug, source: 'actus_list' }}
                   imageAlt=""
                   imageUrl={article.image}
                   linkProps={{
@@ -97,7 +99,7 @@ const ActualitesPage = () => {
                   nativeImgProps={{
                     loading: index < 6 ? 'eager' : 'lazy',
                   }}
-                  size="medium"
+                  size="md"
                   start={
                     <ul className="fr-tags-group">
                       {article.themes.map((theme, index) => (

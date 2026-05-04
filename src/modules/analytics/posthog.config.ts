@@ -209,6 +209,9 @@ export type PostHogEventMap = {
     source: string;
     content_category?: string;
   };
+  'content:internal_link_clicked': {
+    target_path: string;
+  };
 
   // Comparateur CO²
   'comparator:started': { address?: string; distance_reseau_m: number; is_eligible: boolean };
@@ -264,6 +267,8 @@ export type PostHogEventMap = {
   'collectivities:iframe_cta_clicked': never;
 
   'pro:tool_cta_clicked': { tool_name: string };
+
+  'link:internal': { news_slug: string; source: 'home' | 'actus_list' };
 };
 type ElementType = {
   element_name: string;
