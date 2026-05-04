@@ -558,7 +558,7 @@ function FaqPage() {
 
   return (
     <SimplePage
-      title="FAQ: Découvrez le chauffage qui vous convient !"
+      title="FAQ : Découvrez le chauffage qui vous convient !"
       currentPage="/faq"
       description="Vos questions sur les réseaux de chaleur et France Chaleur Urbaine"
       layout="center"
