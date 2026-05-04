@@ -5,6 +5,7 @@ import { readFileGeometry } from '@/modules/geo/server/helpers';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 
+import { applyNetworkGeometries } from './server/geometry-apply';
 import { diffNetworkGeometries } from './server/geometry-diff';
 import {
   createPDPFromCommune,
@@ -93,6 +94,17 @@ export function registerNetworkCommands(parentProgram: Command) {
     .argument('[output]', 'Chemin du fichier CSV de sortie', 'geometry-diff.csv')
     .action(async (directory, output) => {
       await diffNetworkGeometries(directory, output);
+    });
+
+  program
+    .command('bulk-update')
+    .description(
+      "Met à jour les tracés des réseaux de chaleur/froid à partir d'un répertoire de <id_sncu>.geojson. Skip les fichiers vides et les ID absents de la BDD."
+    )
+    .argument('<directory>', 'Répertoire contenant les fichiers <id_sncu>.geojson')
+    .option('--apply', 'Applique réellement les mises à jour (par défaut: dry-run)', false)
+    .action(async (directory, { apply }) => {
+      await applyNetworkGeometries(directory, { dryRun: !apply });
     });
 
   program
