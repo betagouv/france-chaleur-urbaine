@@ -1241,13 +1241,13 @@ const GestionDesReseaux = () => {
                 withoutLogo
                 initialMapConfiguration={createMapConfiguration({
                   customGeojson: true,
+                  demandesEligibilite: true,
                   geomUpdate: true,
                   reseauxDeChaleur: {
                     show: true,
                   },
                   reseauxDeFroid: true,
                   reseauxEnConstruction: true,
-                  testsAdresses: true,
                   zonesDeDeveloppementPrioritaire: true,
                 })}
                 geolocDisabled
