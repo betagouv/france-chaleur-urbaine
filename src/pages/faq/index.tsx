@@ -59,12 +59,11 @@ const FAQS: FaqCategory[] = [
               reviendra vers vous.
             </p>
             <p>
-              Plus d’informations sont disponibles{' '}
               <Link
                 href="https://www.ecologie.gouv.fr/politiques-publiques/coup-pouce-chauffage-batiments-residentiels-collectifs-tertiaires"
                 isExternal
               >
-                ici
+                Plus d’informations sont disponibles ici
               </Link>
               .
             </p>
@@ -81,8 +80,10 @@ const FAQS: FaqCategory[] = [
               géothermie, solaire thermique, biomasse, ou réseau de chaleur si une extension devient possible.
             </p>
             <p>
-              Testez votre adresse pour obtenir des recommandations adaptées à votre bâtiment :{' '}
-              <Link href="/chaleur-renouvelable">france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable</Link>
+              <Link href="/chaleur-renouvelable">
+                Testez votre adresse pour obtenir des recommandations adaptées à votre bâtiment :
+                france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable
+              </Link>
             </p>
           </>
         ),
@@ -153,8 +154,10 @@ const FAQS: FaqCategory[] = [
               préparer un projet de réseau.
             </p>
             <p>
-              👉 <strong>Plus d’informations sur les données et sources utilisées</strong> :{' '}
-              <Link href="/donnees">france-chaleur-urbaine.beta.gouv.fr/donnees</Link>
+              👉{' '}
+              <Link href="/donnees">
+                <strong>Plus d’informations sur les données et sources utilisées</strong> : france-chaleur-urbaine.beta.gouv.fr/donnees
+              </Link>
             </p>
           </>
         ),
@@ -174,8 +177,10 @@ const FAQS: FaqCategory[] = [
               améliorer la qualité des informations.
             </p>
             <p>
-              👉 <strong>Plus d’informations sur les données et sources utilisées</strong> :{' '}
-              <Link href="/donnees">france-chaleur-urbaine.beta.gouv.fr/donnees</Link>
+              👉{' '}
+              <Link href="/donnees">
+                <strong>Plus d’informations sur les données et sources utilisées</strong> : france-chaleur-urbaine.beta.gouv.fr/donnees
+              </Link>
             </p>
           </>
         ),
@@ -229,8 +234,10 @@ const FAQS: FaqCategory[] = [
               Cette fonctionnalité est accessible en créant un compte professionnel via le bouton « Connectez‑vous ici » en haut à droite.
             </p>
             <p>
-              👉 <strong>Accéder au test en masse</strong> :{' '}
-              <Link href="/pro/tests-adresses">https://france-chaleur-urbaine.beta.gouv.fr/pro/tests-adresses</Link>
+              👉{' '}
+              <Link href="/pro/tests-adresses">
+                <strong>Accéder au test en masse</strong> : https://france-chaleur-urbaine.beta.gouv.fr/pro/tests-adresses
+              </Link>
             </p>
           </>
         ),
@@ -254,8 +261,9 @@ const FAQS: FaqCategory[] = [
             </ul>
             <p>Les élus peuvent également laisser leur adresse mail pour être recontactés et accompagnés. </p>
             <p>
-              👉 <strong>Tester le potentiel de votre territoire</strong> :{' '}
+              👉{' '}
               <Link href="/collectivites-et-exploitants/potentiel-creation-reseau">
+                <strong>Tester le potentiel de votre territoire</strong> :
                 https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants/potentiel-creation-reseau
               </Link>
             </p>
@@ -284,8 +292,11 @@ const FAQS: FaqCategory[] = [
               retours nous aident à améliorer la qualité des informations.
             </p>
             <p>
-              👉 <strong>Plus d’informations sur les données et sources utilisées</strong> :{' '}
-              <Link href="/donnees">https://france-chaleur-urbaine.beta.gouv.fr/donnees</Link>
+              👉{' '}
+              <Link href="/donnees">
+                <strong>Plus d’informations sur les données et sources utilisées</strong> :
+                https://france-chaleur-urbaine.beta.gouv.fr/donnees
+              </Link>
             </p>
           </>
         ),
@@ -311,7 +322,7 @@ const FAQS: FaqCategory[] = [
               (PDP) un schéma directeur, ou d’autres informations sur la carte des réseaux de chaleur et de froid, vous pouvez nous
               transmettre les éléments via <strong>le formulaire de contribution dédié</strong> :{' '}
               <Link href="/contribution">https://france-chaleur-urbaine.beta.gouv.fr/contribution</Link>
-            </p>{' '}
+            </p>
             <p>
               Formats préférentiels : geojson, shapefile, KML, ou GeoPackage. En PDF en dernier recours ou si les premiers formats ne sont
               pas disponibles.
@@ -327,11 +338,11 @@ const FAQS: FaqCategory[] = [
             <p>
               Le Périmètre de Développement Prioritaire (PDP) est une zone définie autour d’un réseau de chaleur classé où certains
               bâtiments ont l’obligation de se raccorder.
-            </p>{' '}
+            </p>
             <p>
               Cette obligation concerne notamment les bâtiments neufs et ceux qui renouvellent leur installation de chauffage au‑delà de 30
               kW (seuil ajustable par la collectivité).
-            </p>{' '}
+            </p>
             <p>
               Un réseau classé en année N doit disposer d’un PDP avant le 1er juillet de l’année N+1. La collectivité élabore ce périmètre
               en partenariat avec le gestionnaire du réseau et les services d’urbanisme.
@@ -469,9 +480,9 @@ const FAQS: FaqCategory[] = [
               <li>répondre aux attentes des usagers, qui consultent souvent en priorité le site de la collectivité.</li>
             </ul>
             <p>
-              👉 <strong>En savoir plus :</strong>{' '}
+              👉{' '}
               <Link href="/collectivites-et-exploitants#iframe-carte">
-                https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants#iframe-carte
+                <strong>En savoir plus :</strong> https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants#iframe-carte
               </Link>
             </p>
           </>
@@ -495,8 +506,10 @@ const FAQS: FaqCategory[] = [
             </ul>
             <p>Ces supports ont été conçus pour faciliter vos actions de communication et sont librement réutilisables.</p>
             <p>
-              👉 <strong>Découvrez nos supports</strong> :{' '}
-              <Link href="/ressources/supports">https://france-chaleur-urbaine.beta.gouv.fr/ressources/supports</Link>
+              👉{' '}
+              <Link href="/ressources/supports">
+                <strong>Découvrez nos supports</strong> : https://france-chaleur-urbaine.beta.gouv.fr/ressources/supports
+              </Link>
             </p>
           </>
         ),
