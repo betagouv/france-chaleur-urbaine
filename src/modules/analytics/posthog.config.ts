@@ -116,6 +116,18 @@ export type PostHogEventMap = {
     chauffage_mode: string;
   };
   'fcr_simulator:contact_form_submitted': never;
+  'simu_cee:started': never;
+  'simu_cee:field_filled': {
+    field_name: string;
+    field_value?: number | string;
+  };
+  'simu_cee:result_displayed': {
+    building_type: 'residentiel' | 'tertiaire';
+    eligible: boolean;
+    estimated_amount_eur: number;
+    network_name?: string;
+    surface_m2?: number;
+  };
 
   // Potentiel création réseau
   'potentiel-creation-reseau:commune_form_submit': {
