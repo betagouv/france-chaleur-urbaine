@@ -155,8 +155,8 @@ const FAQS: FaqCategory[] = [
             </p>
             <p>
               👉{' '}
-              <Link href="/donnees">
-                <strong>Plus d’informations sur les données et sources utilisées</strong> : france-chaleur-urbaine.beta.gouv.fr/donnees
+              <Link href="/donnees" className="font-bold">
+                Plus d’informations sur les données et sources utilisées
               </Link>
             </p>
           </>
@@ -178,8 +178,8 @@ const FAQS: FaqCategory[] = [
             </p>
             <p>
               👉{' '}
-              <Link href="/donnees">
-                <strong>Plus d’informations sur les données et sources utilisées</strong> : france-chaleur-urbaine.beta.gouv.fr/donnees
+              <Link href="/donnees" className="font-bold">
+                Plus d’informations sur les données et sources utilisées
               </Link>
             </p>
           </>
@@ -293,9 +293,8 @@ const FAQS: FaqCategory[] = [
             </p>
             <p>
               👉{' '}
-              <Link href="/donnees">
-                <strong>Plus d’informations sur les données et sources utilisées</strong> :
-                https://france-chaleur-urbaine.beta.gouv.fr/donnees
+              <Link href="/donnees" className="font-bold">
+                Plus d’informations sur les données et sources utilisées
               </Link>
             </p>
           </>
