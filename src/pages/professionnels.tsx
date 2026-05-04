@@ -110,8 +110,10 @@ const Professionnels = () => {
                 Découvrez notre cartographie
               </Heading>
               <Text size="lg">
-                <Link href="/carte">Localisez les réseaux de chaleur</Link> existants et en construction, accédez à leurs caractéristiques
-                détaillées
+                <Link href="/carte" postHogEventKey="pro:tool_cta_clicked" postHogEventProps={{ tool_name: 'carte' }}>
+                  Localisez les réseaux de chaleur
+                </Link>{' '}
+                existants et en construction, accédez à leurs caractéristiques détaillées
               </Text>
             </Box>
 
@@ -121,7 +123,10 @@ const Professionnels = () => {
                 Testez un grand nombre d’adresses
               </Heading>
               <Text size="lg">
-                <Link href="/pro/tests-adresses">Identifiez instantanément</Link> les bâtiments raccordables de votre parc
+                <Link href="/pro/tests-adresses" postHogEventKey="pro:tool_cta_clicked" postHogEventProps={{ tool_name: 'test_masse' }}>
+                  Identifiez instantanément
+                </Link>{' '}
+                les bâtiments raccordables de votre parc
               </Text>
             </Box>
 
@@ -131,8 +136,10 @@ const Professionnels = () => {
                 Estimez le montant des aides
               </Heading>
               <Text size="lg">
-                <Link href="#simulateur-aide">Découvrez le montant du coup de pouce chauffage</Link> des bâtiments résidentiels collectifs
-                et tertiaires
+                <Link href="#simulateur-aide" postHogEventKey="pro:tool_cta_clicked" postHogEventProps={{ tool_name: 'simulateur_aides' }}>
+                  Découvrez le montant du coup de pouce chauffage
+                </Link>{' '}
+                des bâtiments résidentiels collectifs et tertiaires
               </Text>
             </Box>
           </ResponsiveRow>
@@ -152,8 +159,14 @@ const Professionnels = () => {
           </Heading>
           <Text>
             Estimez le montant du Coup de pouce ”
-            <Link href="/ressources/aides#contenu">Chauffage des bâtiments résidentiels collectifs et tertiaires</Link>” pour le
-            raccordement d’un bâtiment
+            <Link
+              href="/ressources/aides#contenu"
+              postHogEventKey="pro:tool_cta_clicked"
+              postHogEventProps={{ tool_name: 'simulateur_aides' }}
+            >
+              Chauffage des bâtiments résidentiels collectifs et tertiaires
+            </Link>
+            ” pour le raccordement d’un bâtiment
           </Text>
           <Text my="3w">
             Différentes entreprises signataires de la charte "Chauffage des bâtiments résidentiels collectifs et tertiaires” offrent cette
@@ -176,7 +189,10 @@ const Professionnels = () => {
               </Text>
               <Text mt="3w">
                 Retrouvez le prix moyen de la chaleur pour les réseaux classés sur les fiches accessibles depuis notre{' '}
-                <Link href="/carte">cartographie</Link>.
+                <Link href="/carte" postHogEventKey="pro:tool_cta_clicked" postHogEventProps={{ tool_name: 'carte' }}>
+                  cartographie
+                </Link>
+                .
               </Text>
             </Box>
 
@@ -221,7 +237,14 @@ const Professionnels = () => {
                 serre, sont entrées en vigueur : elles excluent l'installation de nouvelles chaudières au fioul.
               </Text>
               <Text size="lg" mt="2w">
-                <Link href="/ressources/aides#contenu">Des aides</Link> accompagnent cette transition.
+                <Link
+                  href="/ressources/aides#contenu"
+                  postHogEventKey="pro:tool_cta_clicked"
+                  postHogEventProps={{ tool_name: 'simulateur_aides' }}
+                >
+                  Des aides
+                </Link>{' '}
+                accompagnent cette transition.
               </Text>
             </Box>
           </ResponsiveRow>

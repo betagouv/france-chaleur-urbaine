@@ -262,6 +262,8 @@ export type PostHogEventMap = {
   'collectivities:section_clicked': { section_id: string };
   'collectivities:iframe_code_copied': { iframe_type: string };
   'collectivities:iframe_cta_clicked': never;
+
+  'pro:tool_cta_clicked': { tool_name: string };
 };
 type ElementType = {
   element_name: string;
