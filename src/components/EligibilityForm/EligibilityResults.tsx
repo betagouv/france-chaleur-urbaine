@@ -77,21 +77,23 @@ export const getEligibilityResult = (
   eligibility?: HeatNetworksResponse
 ): EligibilityResult => {
   const state = getEligibilityResultState(heatingType, eligibility);
-  const AutreSolutionsChauffageItem = ({ collectif = false }) => (
+  const AutreSolutionsChauffageItem = ({ collectif = false, showCTA = true }) => (
     <ArrowItem>
       <div className="flex flex-col">
         Il existe d’autres solutions de chauffage écologiques et économiques adaptées à votre bâtiment :{' '}
-        <Link
-          href={`/chaleur-renouvelable?adresse=${encodeURIComponent(address)}${collectif ? `&typeLogement=immeuble_chauffage_collectif` : ''}`}
-          variant="secondary"
-          className="fr-mt-3v"
-          eventKey="Eligibilité|Formulaire de test - Adresse Inéligible - CTA comparateur"
-          postHogEventKey="link:click"
-          postHogEventProps={{ link_name: 'cta_autres_solutions', source: 'eligibility' }}
-        >
-          Découvrir les autres solutions
-          <span className="fr-icon-arrow-right-line fr-icon--right fr-ml-1v" />
-        </Link>
+        {showCTA && (
+          <Link
+            href={`/chaleur-renouvelable?adresse=${encodeURIComponent(address)}${collectif ? `&typeLogement=immeuble_chauffage_collectif` : ''}`}
+            variant="secondary"
+            className="fr-mt-3v"
+            eventKey="Eligibilité|Formulaire de test - Adresse Inéligible - CTA comparateur"
+            postHogEventKey="link:click"
+            postHogEventProps={{ link_name: 'cta_autres_solutions', source: 'eligibility' }}
+          >
+            Découvrir les autres solutions
+            <span className="fr-icon-arrow-right-line fr-icon--right fr-ml-1v" />
+          </Link>
+        )}
       </div>
     </ArrowItem>
   );
@@ -525,7 +527,12 @@ export const getEligibilityResult = (
   };
 
   const collectContactNonRaccordable: EligibilityResult = {
-    body: () => <></>,
+    body: () => (
+      <>
+        <AutreSolutionsChauffageItem collectif showCTA={false} />
+        {FranceRenovItem}
+      </>
+    ),
     display: 'collectContact',
     text: (
       <>
@@ -540,6 +547,7 @@ export const getEligibilityResult = (
         </p>
       </>
     ),
+    title: () => 'Il n’existe pas de réseau de chaleur ouvert au raccordement à proximité de votre adresse pour le moment.',
   };
 
   switch (state) {
@@ -568,7 +576,7 @@ export const getEligibilityResult = (
       return farCollectifInPDP;
     }
     case 'farCollectifOutPDP': {
-      return Math.floor(Math.random() * 4) === 0 // On veut collecter du contact non raccordable une fois sur 4 (simili AB test)
+      return Math.floor(Math.random() * 2) === 0 // On veut collecter du contact non raccordable une fois sur 4 (simili AB test)
         ? collectContactNonRaccordable
         : farCollectifOutPDP;
     }
