@@ -46,7 +46,12 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
         <div>{cityData.description}</div>
         {cityData.networksData && (
           <div className="fr-p-2w">
-            <Networks citySlug={citySlug} networksData={cityData.networksData} network={network} cityCoord={cityData.coord as [number, number]} />
+            <Networks
+              citySlug={citySlug}
+              networksData={cityData.networksData}
+              network={network}
+              cityCoord={cityData.coord as [number, number]}
+            />
           </div>
         )}
       </div>
