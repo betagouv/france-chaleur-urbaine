@@ -1,5 +1,6 @@
 import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
-import Link from 'next/link';
+
+import Link from '@/components/ui/Link';
 
 import { List, Subtitle } from './Contents.styles';
 

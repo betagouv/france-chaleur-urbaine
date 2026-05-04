@@ -1,9 +1,9 @@
-import Link from 'next/link';
 import type { RefObject } from 'react';
 
 import Infographie from '@/components/Infographie';
 import { ConditionsAttributionCee } from '@/components/Ressources/Contents/Helps';
 import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
+import Link from '@/components/ui/Link';
 
 import { Subtitle } from './Contents.styles';
 import { Container, WithImage, WithVideo } from './DistrictHeating.styles';
