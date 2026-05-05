@@ -33,7 +33,7 @@
 
 ## Language
 
-- **Code**: always English (variables, functions, types, comments, docs).
+- **Code**: always English (variables, functions, types, comments, docs). When extending an existing block of comments/docs, match the surrounding language — never mix French and English in the same comment, docstring, or paragraph (the English code rule means surrounding context will already be English).
 - **AI docs** (markdown files: `AGENTS.md`, `.ai/context/*.md`): always English.
 - **UI text**: always French (labels, messages, placeholders, errors shown to users).
 - **Zod error messages**: French when user-facing, English when developer-facing.

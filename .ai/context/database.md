@@ -108,6 +108,16 @@ sql`ST_Contains(geom, ST_Transform(ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326
 - Always use `.select([...])` — never rely on `selectAll()` in production queries (over-fetches columns).
 - Prevent N+1: use joins or batch queries, never loop with individual DB calls.
 - Use `.$if()` for optional filters rather than building query strings conditionally.
+- **Prefer the typed Kysely query builder over raw `sql` template literals.** Raw SQL bypasses type checking and risks referencing nonexistent columns. Reach for raw `sql` only when Kysely cannot express the operation (e.g. PostGIS, `unnest`, advanced CTEs) — and even then, **verify every table/column name against `src/server/db/kysely/database.ts` first**. When two clean Kysely queries are an option versus one raw SQL query, choose the two queries.
+- **Project string/number/boolean literals via `sql.lit<EnumType>('value')` (generic), not `sql<EnumType>\`'value'\`` (template).** The generic constrains the argument so TS rejects values outside the enum at compile time; the template form is a cast and silently accepts anything. Typical use: a `'<discriminator>' AS type` projection in a `UNION ALL`, or a constant column in a CTE.
+
+  ```ts
+  // ❌ Don't — silent cast, 'foobar' would compile fine
+  sql<NetworkEntityType>`'reseau_de_chaleur'`.as('type');
+
+  // ✅ Do — generic, TS rejects values outside NetworkEntityType
+  sql.lit<NetworkEntityType>('reseau_de_chaleur').as('type');
+  ```
 - **Throw inline, not after**: when a row is required, use `.executeTakeFirstOrThrow(() => new TRPCError({...}))` instead of `.executeTakeFirst()` followed by `if (!row) throw`. Keeps the query and its error contract on the same line and removes the dead-branch noise.
 
   ```ts
