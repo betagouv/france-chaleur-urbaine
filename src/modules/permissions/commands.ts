@@ -59,6 +59,13 @@ export function registerPermissionsCommands(parentProgram: Command) {
     .command('diagnostic-sncu')
     .description("Vérifie la cohérence entre l'id SNCU legacy et le réseau affecté (réseaux existants)")
     .action(diagnosticSncu);
+
+  program
+    .command('migrate-tag-notes')
+    .description('Migre les commentaires des tags vers la colonne notes des réseaux (RDC + ZEC)')
+    .option('-m, --max-networks <n>', 'seuil au-dessus duquel un tag est ignoré (skip-multi)', '5')
+    .option('--force', 'écrase les notes existantes (par défaut, écrit uniquement si notes IS NULL)', false)
+    .action((opts) => migrateTagNotes({ force: !!opts.force, maxNetworks: Number.parseInt(opts.maxNetworks, 10) }));
 }
 
 // ─── Backfill territory ──────────────────────────────────────────────────────
@@ -1373,5 +1380,161 @@ async function diagnosticSncu() {
     logger.info(`${mismatchCount} incohérences exportées → ${csvPath}`);
   } else {
     logger.info('Aucune incohérence détectée.');
+  }
+}
+
+// ─── Migrate tag notes → networks ───────────────────────────────────────────
+
+type TagWithComment = { name: string; type: string; comment: string };
+type TagMatches = { tag: TagWithComment; rdc: number[]; zec: number[] };
+
+function escapeCsv(value: string): string {
+  return value.includes(',') || value.includes('"') || value.includes('\n') ? `"${value.replace(/"/g, '""')}"` : value;
+}
+
+async function migrateTagNotes({ maxNetworks, force }: { maxNetworks: number; force: boolean }) {
+  logger.info(`Migration des notes des tags → réseaux (maxNetworks=${maxNetworks}, force=${force})`);
+
+  // 1. Tags commentés
+  const taggedRows = await sql<TagWithComment>`
+    SELECT name, type, comment
+    FROM tags
+    WHERE comment IS NOT NULL AND comment <> ''
+    ORDER BY type, name
+  `.execute(kdb);
+
+  logger.info(`${taggedRows.rows.length} tags avec commentaires`);
+
+  // 2. Mapping tag → réseaux (1 requête par table)
+  const [rdcRows, zecRows] = await Promise.all([
+    sql<{ id_fcu: number; tag: string }>`
+      SELECT id_fcu, unnest(tags) as tag FROM reseaux_de_chaleur WHERE tags IS NOT NULL
+    `.execute(kdb),
+    sql<{ id_fcu: number; tag: string }>`
+      SELECT id_fcu, unnest(tags) as tag FROM zones_et_reseaux_en_construction WHERE tags IS NOT NULL
+    `.execute(kdb),
+  ]);
+
+  const rdcByTag = new Map<string, number[]>();
+  for (const r of rdcRows.rows) {
+    if (!rdcByTag.has(r.tag)) rdcByTag.set(r.tag, []);
+    rdcByTag.get(r.tag)!.push(r.id_fcu);
+  }
+  const zecByTag = new Map<string, number[]>();
+  for (const r of zecRows.rows) {
+    if (!zecByTag.has(r.tag)) zecByTag.set(r.tag, []);
+    zecByTag.get(r.tag)!.push(r.id_fcu);
+  }
+
+  // 3. Classer les tags
+  const dispatched: TagMatches[] = [];
+  const skippedMulti: TagMatches[] = [];
+  const noMatch: TagMatches[] = [];
+
+  for (const tag of taggedRows.rows) {
+    const rdc = (rdcByTag.get(tag.name) ?? []).slice().sort((a, b) => a - b);
+    const zec = (zecByTag.get(tag.name) ?? []).slice().sort((a, b) => a - b);
+    const matches: TagMatches = { rdc, tag, zec };
+    const total = rdc.length + zec.length;
+    if (total === 0) {
+      noMatch.push(matches);
+    } else if (total > maxNetworks) {
+      skippedMulti.push(matches);
+    } else {
+      dispatched.push(matches);
+    }
+  }
+
+  logger.info(`  Dispatchés : ${dispatched.length}`);
+  logger.info(`  Sans match : ${noMatch.length}`);
+  logger.info(`  Ignorés (>${maxNetworks} réseaux) : ${skippedMulti.length}`);
+
+  // 4. Grouper par (table, id_fcu) avec liste des tags applicables
+  type Target = { table: 'rdc' | 'zec'; id_fcu: number; tags: { name: string; comment: string }[] };
+  const grouped = new Map<string, Target>();
+
+  for (const m of dispatched) {
+    for (const id of m.rdc) {
+      const key = `rdc:${id}`;
+      if (!grouped.has(key)) grouped.set(key, { id_fcu: id, table: 'rdc', tags: [] });
+      grouped.get(key)!.tags.push({ comment: m.tag.comment, name: m.tag.name });
+    }
+    for (const id of m.zec) {
+      const key = `zec:${id}`;
+      if (!grouped.has(key)) grouped.set(key, { id_fcu: id, table: 'zec', tags: [] });
+      grouped.get(key)!.tags.push({ comment: m.tag.comment, name: m.tag.name });
+    }
+  }
+
+  // 5. Construire la note finale et écrire
+  let updatedRdc = 0;
+  let updatedZec = 0;
+  let skippedExisting = 0;
+
+  for (const target of grouped.values()) {
+    // Tri stable par nom de tag pour des notes déterministes
+    target.tags.sort((a, b) => a.name.localeCompare(b.name));
+    const note = target.tags.length === 1 ? target.tags[0].comment : target.tags.map((t) => `[${t.name}]\n${t.comment}`).join('\n\n');
+
+    const result =
+      target.table === 'rdc'
+        ? await (force
+            ? sql`UPDATE reseaux_de_chaleur SET notes = ${note} WHERE id_fcu = ${target.id_fcu}`
+            : sql`UPDATE reseaux_de_chaleur SET notes = ${note} WHERE id_fcu = ${target.id_fcu} AND notes IS NULL`
+          ).execute(kdb)
+        : await (force
+            ? sql`UPDATE zones_et_reseaux_en_construction SET notes = ${note} WHERE id_fcu = ${target.id_fcu}`
+            : sql`UPDATE zones_et_reseaux_en_construction SET notes = ${note} WHERE id_fcu = ${target.id_fcu} AND notes IS NULL`
+          ).execute(kdb);
+
+    const affected = Number(result.numAffectedRows ?? 0);
+    if (affected > 0) {
+      if (target.table === 'rdc') updatedRdc++;
+      else updatedZec++;
+    } else {
+      skippedExisting++;
+    }
+  }
+
+  logger.info(`  RDC mis à jour : ${updatedRdc}`);
+  logger.info(`  ZEC mis à jour : ${updatedZec}`);
+  if (!force && skippedExisting > 0) {
+    logger.info(`  Réseaux ignorés (notes déjà présentes, utiliser --force pour écraser) : ${skippedExisting}`);
+  }
+
+  // 6. Récap détaillé : tags dispatchés
+  if (dispatched.length > 0) {
+    logger.info('Détail des tags dispatchés :');
+    for (const m of dispatched) {
+      const targets = [...m.rdc.map((id) => `rdc#${id}`), ...m.zec.map((id) => `zec#${id}`)].join(', ');
+      logger.info(`  ${m.tag.name} (${m.tag.type}) → ${targets}`);
+    }
+  }
+
+  // 7. Exports CSV
+  if (skippedMulti.length > 0) {
+    const csvPath = '/tmp/migrate-tag-notes-skipped-multi.csv';
+    const headers = ['tag_name', 'tag_type', 'nb_rdc', 'nb_zec', 'rdc_ids', 'zec_ids', 'comment'];
+    const lines = [headers.join(',')];
+    for (const m of skippedMulti) {
+      lines.push(
+        [m.tag.name, m.tag.type, String(m.rdc.length), String(m.zec.length), m.rdc.join(' '), m.zec.join(' '), m.tag.comment]
+          .map(escapeCsv)
+          .join(',')
+      );
+    }
+    writeFileSync(csvPath, lines.join('\n'), 'utf-8');
+    logger.info(`${skippedMulti.length} tags ignorés (multi) exportés → ${csvPath}`);
+  }
+
+  if (noMatch.length > 0) {
+    const csvPath = '/tmp/migrate-tag-notes-no-match.csv';
+    const headers = ['tag_name', 'tag_type', 'comment'];
+    const lines = [headers.join(',')];
+    for (const m of noMatch) {
+      lines.push([m.tag.name, m.tag.type, m.tag.comment].map(escapeCsv).join(','));
+    }
+    writeFileSync(csvPath, lines.join('\n'), 'utf-8');
+    logger.info(`${noMatch.length} tags sans match exportés → ${csvPath}`);
   }
 }
