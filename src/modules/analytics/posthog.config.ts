@@ -1,6 +1,7 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import type { FinalityConsent } from '@codegouvfr/react-dsfr/consentManagement/types';
 
+import type { EspaceExterieur, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import type { TypeCommune } from '@/server/services/communeAPotentiel';
 
@@ -180,15 +181,6 @@ export type PostHogEventMap = {
   'comparator:config_share': never;
 
   // Simulateur simplifié: Chaleur renouvelable
-  'chaleur-renouvelable:address_select': {
-    address: string;
-    source: 'landing' | 'result';
-  };
-  'chaleur-renouvelable:form_submit': {
-    address: string;
-    typeLogement: string;
-    espaceExterieur: string;
-  };
   'chaleur-renouvelable:accordeon': {
     name: string;
   };
@@ -196,6 +188,17 @@ export type PostHogEventMap = {
   'fcr_landing:article_clicked': ElementType;
   'fcr_landing:testimonial_clicked': ElementType;
   'fcr_landing:faq_clicked': ElementType;
+  'fcr_simulator:address_selected': {
+    address: string;
+    source: 'landing' | 'result';
+  };
+  'fcr_simulator:heating_mode_selected': { typeLogement: TypeLogement };
+  'fcr_simulator:outdoor_space_selected': { outdoorSpace: EspaceExterieur };
+  'fcr_landing:compare_cta_clicked': {
+    address: string;
+    typeLogement: string;
+    espaceExterieur: string;
+  };
   // Navigation (liens, CTA, boutons)
   'link:click': {
     link_name: string;

@@ -49,7 +49,7 @@ export function SettingsTopFields({
         onSelect={(next?: BANAddressFeature) => {
           const nextLabel = next?.properties?.label ?? '';
           if ((adresse ?? '') === nextLabel) return;
-          trackPostHogEvent('chaleur-renouvelable:address_select', {
+          trackPostHogEvent('fcr_simulator:address_selected', {
             address: nextLabel,
             source: withLabel ? 'landing' : 'result',
           });
@@ -76,6 +76,7 @@ export function SettingsTopFields({
               source: withLabel ? 'landing' : 'result',
               typeLogement: e.target.value,
             });
+            trackPostHogEvent('fcr_simulator:heating_mode_selected', { typeLogement: e.target.value as TypeLogement });
             void setTypeLogement(e.target.value as TypeLogement);
           },
           value: typeLogement ?? '',
@@ -88,6 +89,7 @@ export function SettingsTopFields({
             espaceExterieur: val,
             source: withLabel ? 'landing' : 'result',
           });
+          trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoorSpace: val as EspaceExterieur });
           void setEspaceExterieur(val);
         }}
         options={[...espaceExterieurOptions]}
