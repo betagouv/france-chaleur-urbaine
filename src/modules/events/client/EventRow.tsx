@@ -22,7 +22,7 @@ type EventRenderer<T extends EventType> = (
 export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   build_tiles: (event) => (
     <span>
-      a reconstruit les tuiles <strong>{event.data?.name}</strong>
+      a reconstruit les tuiles <strong>{event.data.name}</strong>
     </span>
   ),
   demand_assigned: (event, updateFilters) => (
@@ -70,18 +70,18 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   ),
   demand_email_sent: (event, updateFilters) => (
     <>
-      <span>a envoyé un email à {event.data?.to} pour une </span>
+      <span>a envoyé un email à {event.data.to} pour une </span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),
   demand_linked_to_user: (event) => (
     <span>
-      a eu <strong>{event.data?.count}</strong> demande(s) liée(s) à son compte
+      a eu <strong>{event.data.count}</strong> demande(s) liée(s) à son compte
     </span>
   ),
   demand_relance_sent: (event, updateFilters) => (
     <>
-      <span>Une {event.data?.isSecondRelance ? 'seconde ' : 'première '}relance a été envoyée pour la </span>
+      <span>Une {event.data.isSecondRelance ? 'seconde ' : 'première '}relance a été envoyée pour la </span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),
@@ -134,7 +134,25 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
     <>
       <span>a enregistré une relance pour le réseau</span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'network' })}>
-        {event.data?.network_id}
+        {event.data.network_id}
+      </FilterButton>
+    </>
+  ),
+  network_reminder_deleted: (event, updateFilters) => (
+    <>
+      <span>a supprimé une relance du réseau</span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'network' })}>
+        {event.data.network_id}
+      </FilterButton>
+    </>
+  ),
+  network_reminder_updated: (event, updateFilters) => (
+    <>
+      <span>
+        a modifié une relance (<strong>{Object.keys(event.data.changes ?? {}).join(', ')}</strong>) du réseau
+      </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'network' })}>
+        {event.data.network_id}
       </FilterButton>
     </>
   ),
@@ -180,30 +198,30 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   ),
   sync_geometries_to_airtable: (event) => (
     <span>
-      a synchronisé les géométries vers Airtable pour la table <strong>{event.data?.name}</strong>
+      a synchronisé les géométries vers Airtable pour la table <strong>{event.data.name}</strong>
     </span>
   ),
   sync_metadata_from_airtable: (event) => (
     <span>
-      a synchronisé les métadonnées depuis Airtable pour la table <strong>{event.data?.name}</strong>
+      a synchronisé les métadonnées depuis Airtable pour la table <strong>{event.data.name}</strong>
     </span>
   ),
   tag_comment_updated: (event, updateFilters) => (
     <>
       <span>a mis à jour un commentaire pour le tag</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>{event.data?.tag_name}</FilterButton>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>{event.data.tag_name}</FilterButton>
     </>
   ),
   tag_reminder_created: (event, updateFilters) => (
     <>
       <span>a enregistré une relance pour le tag</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>{event.data?.tag_name}</FilterButton>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>{event.data.tag_name}</FilterButton>
     </>
   ),
   tag_reminder_deleted: (event, updateFilters) => (
     <>
       <span>a supprimé la relance pour le tag</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>{event.data?.tag_name}</FilterButton>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>{event.data.tag_name}</FilterButton>
     </>
   ),
   user_activated: () => 'a activé son compte',

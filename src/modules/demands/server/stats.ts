@@ -260,7 +260,7 @@ export const getReseauxStats = async () => {
         )
       `.as('users'),
 
-      // Reminders (all, ordered most recent first)
+      // Reminders liées aux demandes (ordonnées de la plus récente)
       sql<{ id: string; author_email: string | null; note: string | null; created_at: string }[]>`
         COALESCE(
           (
@@ -276,7 +276,11 @@ export const getReseauxStats = async () => {
             FROM network_reminders nr
             LEFT JOIN users u ON u.id = nr.author_id
             WHERE nr.network_id = ${sql.ref('r.id_fcu')}
-              AND nr.network_type = ${sql.ref('r.network_type')}
+              AND nr.network_type = CASE
+                WHEN ${sql.ref('r.network_type')} = 'existant' THEN 'reseau_existant'
+                ELSE 'reseau_en_construction'
+              END
+              AND nr.type = 'demand'
           ),
           '[]'::json
         )

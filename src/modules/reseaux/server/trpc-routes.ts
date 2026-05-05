@@ -2,7 +2,9 @@ import { z } from 'zod';
 
 import { createUserEvent } from '@/modules/events/server/service';
 import {
-  networkTypes,
+  reminderNetworkTypes,
+  reminderNetworkTypeToTable,
+  reminderTypes,
   zApplyGeometriesUpdatesInput,
   zCreateNetworkInput,
   zDeleteGeomUpdateInput,
@@ -18,6 +20,7 @@ import { adminRoute, demandAccessRoute, route, router } from '@/modules/trpc/ser
 import { getCityEligilityStatus, getEligilityStatus, getNetworkEligilityStatus } from '@/server/services/addresseInformation';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
+import { createNetworkReminder, deleteNetworkReminder, updateNetworkNotes, updateNetworkReminder } from './reminders';
 import * as reseauxService from './service';
 
 const reseauDeChaleurRouter = router({
@@ -67,31 +70,49 @@ const networkRemindersRouter = router({
       z.object({
         createdAt: z.string().optional(),
         networkId: z.number(),
-        networkType: z.enum(networkTypes),
+        networkType: z.enum(reminderNetworkTypes),
         note: z.string().nullable().optional(),
+        type: z.enum(reminderTypes),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      return reseauxService.createNetworkReminder({
+      return createNetworkReminder({
         author_id: ctx.user.id,
         created_at: input.createdAt ? new Date(input.createdAt) : undefined,
         network_id: input.networkId,
         network_type: input.networkType,
         note: input.note ?? null,
+        type: input.type,
       });
+    }),
+  delete: adminRoute.input(z.object({ id: z.string().uuid() })).mutation(async ({ input, ctx }) => {
+    await deleteNetworkReminder(input.id, ctx.user.id);
+  }),
+  update: adminRoute
+    .input(
+      z.object({
+        createdAt: z.string().optional(),
+        id: z.string().uuid(),
+        note: z.string().nullable().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const changes: { note?: string | null; created_at?: Date } = {};
+      if ('note' in input) changes.note = input.note ?? null;
+      if (input.createdAt) changes.created_at = new Date(input.createdAt);
+      await updateNetworkReminder(input.id, changes, ctx.user.id);
     }),
   updateNotes: adminRoute
     .input(
       z.object({
         networkId: z.number(),
-        networkType: z.enum(networkTypes),
+        networkType: z.enum(reminderNetworkTypes),
         notes: z.string().nullable(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const tableName = input.networkType === 'existant' ? 'reseaux_de_chaleur' : 'zones_et_reseaux_en_construction';
-      const reseau = await reseauxService.getNetworkLabel(input.networkId, tableName);
-      await reseauxService.updateNetworkNotes(input.networkId, input.networkType, input.notes);
+      const reseau = await reseauxService.getNetworkLabel(input.networkId, reminderNetworkTypeToTable[input.networkType]);
+      await updateNetworkNotes(input.networkId, input.networkType, input.notes);
       await createUserEvent({
         author_id: ctx.user.id,
         context_id: String(input.networkId),

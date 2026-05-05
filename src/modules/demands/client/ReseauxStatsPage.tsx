@@ -3,28 +3,25 @@ import Tag from '@codegouvfr/react-dsfr/Tag';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import NextLink from 'next/link';
-import { type ChangeEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useMemo } from 'react';
 
-import Input from '@/components/form/dsfr/Input';
-import TextAreaInput from '@/components/form/dsfr/TextArea';
 import { reseauDeChaleurNonClasseColor } from '@/components/Map/layers/reseauxDeChaleur';
 import { reseauxEnConstructionColor } from '@/components/Map/layers/reseauxEnConstruction';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import { useCopy } from '@/components/ui/ButtonCopy';
 import CallOut from '@/components/ui/CallOut';
-import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import TimeAgo from '@/components/ui/TimeAgo';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { notify } from '@/modules/notification';
+import { NotesCell, RemindersCell } from '@/modules/reseaux/client/admin/network-reminders-cells';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import trpc from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
-import debounce from '@/utils/debounce';
 import { objectToURLSearchParams } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 
@@ -43,6 +40,24 @@ export default function ReseauxStatsPage() {
     onSuccess: () => {
       void utils.demands.admin.getReseauxStats.invalidate();
       notify('success', 'Relance enregistrée');
+    },
+  });
+  const { mutateAsync: updateReminder } = trpc.reseaux.networkReminders.update.useMutation({
+    onError: (error) => {
+      notify('error', `Erreur lors de la mise à jour de la relance : ${error.message}`);
+    },
+    onSuccess: () => {
+      void utils.demands.admin.getReseauxStats.invalidate();
+      notify('success', 'Relance mise à jour');
+    },
+  });
+  const { mutateAsync: deleteReminder } = trpc.reseaux.networkReminders.delete.useMutation({
+    onError: (error) => {
+      notify('error', `Erreur lors de la suppression de la relance : ${error.message}`);
+    },
+    onSuccess: () => {
+      void utils.demands.admin.getReseauxStats.invalidate();
+      notify('success', 'Relance supprimée');
     },
   });
   const { mutateAsync: updateNotes } = trpc.reseaux.networkReminders.updateNotes.useMutation({
@@ -245,10 +260,13 @@ export default function ReseauxStatsPage() {
               createReminder({
                 createdAt,
                 networkId: row.original.id_fcu,
-                networkType: row.original.network_type,
+                networkType: row.original.network_type === 'existant' ? 'reseau_existant' : 'reseau_en_construction',
                 note,
+                type: 'demand',
               })
             }
+            onUpdateReminder={(id, { note, createdAt }) => updateReminder({ createdAt, id, note })}
+            onDeleteReminder={(id) => deleteReminder({ id })}
           />
         ),
         enableSorting: true,
@@ -264,7 +282,7 @@ export default function ReseauxStatsPage() {
             onSave={async (notes) => {
               await updateNotes({
                 networkId: row.original.id_fcu,
-                networkType: row.original.network_type,
+                networkType: row.original.network_type === 'existant' ? 'reseau_existant' : 'reseau_en_construction',
                 notes: notes.trim() || null,
               });
             }}
@@ -293,7 +311,7 @@ export default function ReseauxStatsPage() {
         visible: false,
       },
     ],
-    [createReminder, updateNotes]
+    [createReminder, updateReminder, deleteReminder, updateNotes]
   );
 
   return (
@@ -415,121 +433,3 @@ const CopyEmailsButton = ({ emails }: { emails: string[] }) => {
     </Tooltip>
   );
 };
-
-type Reminder = ReseauxStats['reminders'][number];
-
-function RemindersCell({
-  reminders,
-  onCreateReminder,
-}: {
-  reminders: Reminder[];
-  onCreateReminder: (note: string | null, createdAt: string) => Promise<unknown>;
-}) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [note, setNote] = useState('');
-  const [reminderDate, setReminderDate] = useState(() => dayjs().format('YYYY-MM-DD'));
-  const [expanded, setExpanded] = useState(false);
-
-  const displayed = expanded ? reminders : reminders.slice(0, 2);
-  const hasMore = reminders.length > 2;
-
-  return (
-    <div className="flex flex-col gap-1 w-full">
-      {displayed.map((r) => (
-        <div key={r.id} className="text-xs border-l-2 border-blue-400 pl-2 py-0.5">
-          <div className="flex items-center gap-1 font-medium text-gray-700">
-            <Icon name="fr-icon-calendar-line" size="xs" className="text-gray-400" />
-            <TimeAgo date={r.created_at} />
-          </div>
-          {r.author_email && <div className="text-gray-400 text-[11px]">@{r.author_email}</div>}
-          {r.note && <div className="text-gray-500 italic whitespace-pre-wrap mt-0.5">{r.note}</div>}
-        </div>
-      ))}
-      {hasMore && !expanded && (
-        <button type="button" className="text-xs text-blue-600 hover:underline text-left" onClick={() => setExpanded(true)}>
-          + {reminders.length - 2} autre{reminders.length - 2 > 1 ? 's' : ''}
-        </button>
-      )}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} title="Nouvelle relance" size="sm">
-        <div className="flex flex-col gap-4">
-          <Input
-            label="Date de la relance"
-            nativeInputProps={{
-              onChange: (e) => setReminderDate(e.target.value),
-              type: 'date',
-              value: reminderDate,
-            }}
-          />
-          <Input
-            label="Note (optionnelle)"
-            nativeInputProps={{
-              onChange: (e) => setNote(e.target.value),
-              placeholder: 'Ex: relancé par email le...',
-              value: note,
-            }}
-          />
-          <div className="flex justify-end gap-2">
-            <Button priority="secondary" onClick={() => setIsDialogOpen(false)}>
-              Annuler
-            </Button>
-            <Button
-              onClick={async () => {
-                await onCreateReminder(note.trim() || null, reminderDate);
-                setNote('');
-                setReminderDate(dayjs().format('YYYY-MM-DD'));
-                setIsDialogOpen(false);
-              }}
-            >
-              Créer la relance
-            </Button>
-          </div>
-        </div>
-      </Dialog>
-      <Button
-        type="button"
-        priority="tertiary no outline"
-        size="small"
-        iconId="fr-icon-calendar-line"
-        title="Ajouter une relance"
-        onClick={() => setIsDialogOpen(true)}
-      >
-        Relancer
-      </Button>
-    </div>
-  );
-}
-
-function NotesCell({ initialNotes, onSave }: { initialNotes: string; onSave: (notes: string) => Promise<void> }) {
-  const [value, setValue] = useState(initialNotes);
-  const debouncedSave = useMemo(() => debounce((v: string) => onSave(v), 500), [onSave]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  useEffect(() => () => debouncedSave.cancel(), [debouncedSave]);
-
-  const onChangeHandler = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement>) => {
-      const v = e.target.value;
-      setValue(v);
-      debouncedSave(v);
-    },
-    [debouncedSave]
-  );
-
-  return (
-    <>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} title="Notes" size="lg">
-        <TextAreaInput
-          label=""
-          className="w-full [&>textarea]:leading-4!"
-          nativeTextAreaProps={{
-            onChange: onChangeHandler,
-            rows: 20,
-            value,
-          }}
-        />
-      </Dialog>
-      <div className="whitespace-pre-wrap">{value.length > 150 ? `${value.slice(0, 150)}...` : value}</div>
-      <Button priority="tertiary" iconId="fr-icon-pencil-line" onClick={() => setIsDialogOpen(true)} />
-    </>
-  );
-}

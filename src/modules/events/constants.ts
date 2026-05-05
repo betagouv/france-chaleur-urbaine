@@ -1,4 +1,4 @@
-import type { NetworkType } from '@/modules/reseaux/constants';
+import type { NetworkType, ReminderNetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export const eventTypes = [
@@ -33,6 +33,8 @@ export const eventTypes = [
   'tag_reminder_deleted',
   'tag_comment_updated',
   'network_reminder_created',
+  'network_reminder_updated',
+  'network_reminder_deleted',
   'user_permissions_updated',
   'user_permissions_synced_from_api',
   'pdp_updated',
@@ -65,6 +67,8 @@ export const eventTypeLabels: Record<EventType, string> = {
   network_geometry_updated: 'Mise à jour géométrie réseau',
   network_notes_updated: 'Mise à jour des notes du réseau',
   network_reminder_created: 'Création relance réseau',
+  network_reminder_deleted: 'Suppression relance réseau',
+  network_reminder_updated: 'Mise à jour relance réseau',
   pdp_updated: 'Mise à jour périmètre de développement',
   pro_eligibility_test_created: 'Création test éligibilité',
   pro_eligibility_test_deleted: 'Suppression test éligibilité',
@@ -142,7 +146,28 @@ export type EventDataMap = {
   tag_comment_updated: { comment: string; tag_name: string };
   tag_reminder_created: { tag_name: string };
   tag_reminder_deleted: { tag_name: string };
-  network_reminder_created: { network_id: number; network_type: NetworkType; note: string | null };
+  network_reminder_created: {
+    reminder_id: string;
+    network_id: number;
+    network_type: ReminderNetworkType;
+    type: ReminderType;
+    note: string | null;
+  };
+  network_reminder_updated: {
+    reminder_id: string;
+    network_id: number;
+    network_type: ReminderNetworkType;
+    type: ReminderType;
+    changes: Partial<{ note: string | null; created_at: string }>;
+  };
+  network_reminder_deleted: {
+    reminder_id: string;
+    network_id: number;
+    network_type: ReminderNetworkType;
+    type: ReminderType;
+    note: string | null;
+    created_at: string;
+  };
   user_activated: null;
   user_created: null;
   user_created_by_admin: { user_email: string; role: UserRole };

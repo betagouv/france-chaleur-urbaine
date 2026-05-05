@@ -19,6 +19,8 @@ import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/compo
 import Tag from '@/components/ui/Tag';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { notify, toastErrors } from '@/modules/notification';
+import { NotesCell, RemindersCell } from '@/modules/reseaux/client/admin/network-reminders-cells';
+import type { ReminderNetworkType } from '@/modules/reseaux/constants';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
@@ -198,6 +200,35 @@ const GestionDesReseaux = () => {
 
   const tabInfo = tabsInfo[selectedTab];
 
+  const { mutateAsync: createReminder } = trpc.reseaux.networkReminders.create.useMutation({
+    onError: (error) => notify('error', `Erreur lors de l'enregistrement de la relance : ${error.message}`),
+    onSuccess: () => {
+      void tabInfo.refetch();
+      notify('success', 'Relance enregistrée');
+    },
+  });
+
+  const { mutateAsync: updateReminder } = trpc.reseaux.networkReminders.update.useMutation({
+    onError: (error) => notify('error', `Erreur lors de la mise à jour de la relance : ${error.message}`),
+    onSuccess: () => {
+      void tabInfo.refetch();
+      notify('success', 'Relance mise à jour');
+    },
+  });
+
+  const { mutateAsync: deleteReminder } = trpc.reseaux.networkReminders.delete.useMutation({
+    onError: (error) => notify('error', `Erreur lors de la suppression de la relance : ${error.message}`),
+    onSuccess: () => {
+      void tabInfo.refetch();
+      notify('success', 'Relance supprimée');
+    },
+  });
+
+  const { mutateAsync: updateNotes } = trpc.reseaux.networkReminders.updateNotes.useMutation({
+    onError: (error) => notify('error', `Erreur lors de la mise à jour des notes : ${error.message}`),
+    onSuccess: () => void tabInfo.refetch(),
+  });
+
   const { mutateAsync: updateReseauDeChaleur } = trpc.reseaux.reseauDeChaleur.updateTags.useMutation({
     onSuccess: () => void tabInfo.refetch(),
   });
@@ -349,6 +380,46 @@ const GestionDesReseaux = () => {
   }, []);
 
   const rowSelection = selectedNetwork ? { [selectedNetwork.id_fcu]: true } : {};
+
+  const buildReminderAndNotesColumns = useCallback(
+    <T extends { id_fcu: number; notes: string | null; reminders: ReseauDeChaleur['reminders'] }>(
+      networkType: ReminderNetworkType
+    ): ColumnDef<T>[] => [
+      {
+        accessorFn: (row: T) => row.reminders?.[0]?.created_at ?? null,
+        cell: ({ row }) => (
+          <RemindersCell
+            reminders={row.original.reminders}
+            onCreateReminder={(note, createdAt) =>
+              createReminder({ createdAt, networkId: row.original.id_fcu, networkType, note, type: 'trace' })
+            }
+            onUpdateReminder={(id, { note, createdAt }) => updateReminder({ createdAt, id, note })}
+            onDeleteReminder={(id) => deleteReminder({ id })}
+          />
+        ),
+        enableSorting: true,
+        header: 'Relances',
+        id: 'reminders',
+        width: '250px',
+      },
+      {
+        accessorKey: 'notes',
+        cell: ({ row }) => (
+          <NotesCell
+            initialNotes={row.original.notes ?? ''}
+            onSave={async (notes) => {
+              await updateNotes({ networkId: row.original.id_fcu, networkType, notes: notes.trim() || null });
+            }}
+          />
+        ),
+        className: 'justify-between',
+        enableSorting: false,
+        header: 'Notes',
+        width: '280px',
+      },
+    ],
+    [createReminder, updateReminder, deleteReminder, updateNotes]
+  );
 
   const reseauxDeChaleurColumns = useMemo<ColumnDef<ReseauDeChaleur>[]>(
     () => [
@@ -529,8 +600,9 @@ const GestionDesReseaux = () => {
         header: 'Tags (obsolète)',
         width: '400px',
       },
+      ...buildReminderAndNotesColumns<ReseauDeChaleur>('reseau_existant'),
     ],
-    [updateReseauDeChaleur]
+    [updateReseauDeChaleur, buildReminderAndNotesColumns]
   );
 
   const reseauxDeFroidColumns = useMemo<ColumnDef<ReseauDeFroid>[]>(
@@ -658,8 +730,9 @@ const GestionDesReseaux = () => {
         header: `Puissance totale (MW)`,
         width: '150px',
       },
+      ...buildReminderAndNotesColumns<ReseauDeFroid>('reseau_de_froid'),
     ],
-    []
+    [buildReminderAndNotesColumns]
   );
 
   const reseauxEnConstructionColumns = useMemo<ColumnDef<ReseauEnConstruction>[]>(
@@ -775,8 +848,9 @@ const GestionDesReseaux = () => {
         header: 'Tags (obsolète)',
         width: '400px',
       },
+      ...buildReminderAndNotesColumns<ReseauEnConstruction>('reseau_en_construction'),
     ],
-    [handleUpdateReseauEnConstruction]
+    [handleUpdateReseauEnConstruction, buildReminderAndNotesColumns]
   );
 
   const perimetresDeDeveloppementPrioritaireColumns = useMemo<ColumnDef<PerimetreDeDeveloppementPrioritaire>[]>(
@@ -885,8 +959,9 @@ const GestionDesReseaux = () => {
         header: 'IDs Réseaux en construction',
         width: '140px',
       },
+      ...buildReminderAndNotesColumns<PerimetreDeDeveloppementPrioritaire>('perimetre_de_developpement_prioritaire'),
     ],
-    [handleUpdatePerimetreDeDeveloppementPrioritaire]
+    [handleUpdatePerimetreDeDeveloppementPrioritaire, buildReminderAndNotesColumns]
   );
 
   const reseauxDeChaleurWithGeomUpdate = reseauxDeChaleur?.filter((reseau) => reseau.geom_update);

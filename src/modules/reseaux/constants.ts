@@ -9,6 +9,28 @@ import { zGeometry } from '@/utils/validation';
 export const networkTypes = ['existant', 'en_construction'] as const;
 export type NetworkType = (typeof networkTypes)[number];
 
+// Cibles possibles d'une note ou d'une relance (4 entités réseau)
+export const reminderNetworkTypes = [
+  'reseau_existant',
+  'reseau_en_construction',
+  'reseau_de_froid',
+  'perimetre_de_developpement_prioritaire',
+] as const;
+export type ReminderNetworkType = (typeof reminderNetworkTypes)[number];
+
+export const reminderTypes = ['demand', 'trace'] as const;
+export type ReminderType = (typeof reminderTypes)[number];
+
+export const reminderNetworkTypeToTable = {
+  perimetre_de_developpement_prioritaire: 'zone_de_developpement_prioritaire',
+  reseau_de_froid: 'reseaux_de_froid',
+  reseau_en_construction: 'zones_et_reseaux_en_construction',
+  reseau_existant: 'reseaux_de_chaleur',
+} as const satisfies Record<
+  ReminderNetworkType,
+  'reseaux_de_chaleur' | 'reseaux_de_froid' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
+>;
+
 export const zUpdateReseauInput = z.object({
   id: z.number(),
   tags: z.array(z.string()),

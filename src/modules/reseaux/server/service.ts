@@ -1,4 +1,4 @@
-import type { ExpressionBuilder, Insertable, RawBuilder } from 'kysely';
+import type { ExpressionBuilder, RawBuilder } from 'kysely';
 
 import { createUserEvent } from '@/modules/events/server/service';
 import { parseBbox } from '@/modules/geo/client/helpers';
@@ -7,8 +7,9 @@ import type { BoundingBox } from '@/modules/geo/types';
 import { createWarnEligibilityChangesJob } from '@/modules/pro-eligibility-tests/server/service';
 import type { ApplyGeometriesUpdatesInput, NetworkType } from '@/modules/reseaux/constants';
 import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
+import { reminderJsonAggSQL } from '@/modules/reseaux/server/reminders';
 import { createBuildTilesJob, createSyncGeometriesToAirtableJob, createSyncMetadataFromAirtableJob } from '@/modules/tiles/server/service';
-import { type DB, kdb, type NetworkReminders, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
+import { type DB, kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
 import type { Network, NetworkToCompare } from '@/types/Summary/Network';
@@ -240,7 +241,7 @@ export const listNetworks = async (): Promise<NetworkToCompare[]> => {
 export const listReseauxDeChaleur = async () => {
   const reseauxDeChaleur = await kdb
     .selectFrom('reseaux_de_chaleur')
-    .select([
+    .select((eb) => [
       'id_fcu',
       'Identifiant reseau',
       'nom_reseau',
@@ -257,6 +258,8 @@ export const listReseauxDeChaleur = async () => {
       'date_actualisation_trace',
       'puissance_totale_MW',
       'ouvert_aux_raccordements',
+      'notes',
+      reminderJsonAggSQL(eb, 'reseaux_de_chaleur', 'reseau_existant', 'trace').as('reminders'),
       sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
@@ -278,7 +281,7 @@ export const updateTags = async (id: number, tags: string[]) => {
 export const listReseauxEnConstruction = async () => {
   const reseauxDeChaleur = await kdb
     .selectFrom('zones_et_reseaux_en_construction')
-    .select([
+    .select((eb) => [
       'id_fcu',
       'nom_reseau',
       'communes',
@@ -290,6 +293,8 @@ export const listReseauxEnConstruction = async () => {
       'tags',
       'date_actualisation_trace',
       'ouvert_aux_raccordements',
+      'notes',
+      reminderJsonAggSQL(eb, 'zones_et_reseaux_en_construction', 'reseau_en_construction', 'trace').as('reminders'),
       sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
@@ -311,7 +316,7 @@ export const updateReseauEnConstruction = async (id: number, tags: string[]) => 
 export const listReseauxDeFroid = async () => {
   const reseauxDeFroid = await kdb
     .selectFrom('reseaux_de_froid')
-    .select([
+    .select((eb) => [
       'id_fcu',
       'Identifiant reseau',
       'nom_reseau',
@@ -321,6 +326,8 @@ export const listReseauxDeFroid = async () => {
       'has_trace',
       'date_actualisation_trace',
       'puissance_totale_MW',
+      'notes',
+      reminderJsonAggSQL(eb, 'reseaux_de_froid', 'reseau_de_froid', 'trace').as('reminders'),
       sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),
@@ -342,12 +349,14 @@ export const listReseauxDeFroid = async () => {
 export const listPerimetresDeDeveloppementPrioritaire = async () => {
   const perimetresDeDeveloppementPrioritaire = await kdb
     .selectFrom('zone_de_developpement_prioritaire')
-    .select([
+    .select((eb) => [
       'id_fcu',
       'Identifiant reseau',
       'reseau_de_chaleur_ids',
       'reseau_en_construction_ids',
       'communes',
+      'notes',
+      reminderJsonAggSQL(eb, 'zone_de_developpement_prioritaire', 'perimetre_de_developpement_prioritaire', 'trace').as('reminders'),
       sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),
@@ -807,35 +816,6 @@ export async function getNetworkGeometry(tableName: NetworkTable, id_fcu: number
     .where('geom', 'is not', null)
     .executeTakeFirstOrThrow();
   return result.geometry;
-}
-
-// --- Network reminders & notes ---
-
-export async function createNetworkReminder(
-  params: Pick<Insertable<NetworkReminders>, 'author_id' | 'created_at' | 'network_id' | 'network_type' | 'note'>
-) {
-  const { created_at, ...rest } = params;
-  const values = created_at ? { ...rest, created_at } : rest;
-  const reminder = await kdb.insertInto('network_reminders').values(values).returning(['id', 'created_at']).executeTakeFirstOrThrow();
-
-  await createUserEvent({
-    author_id: params.author_id!,
-    context_id: String(params.network_id),
-    context_type: 'network',
-    data: {
-      network_id: params.network_id,
-      network_type: params.network_type,
-      note: params.note ?? null,
-    },
-    type: 'network_reminder_created',
-  });
-
-  return reminder;
-}
-
-export async function updateNetworkNotes(networkId: number, networkType: NetworkType, notes: string | null) {
-  const table = networkType === 'existant' ? 'reseaux_de_chaleur' : 'zones_et_reseaux_en_construction';
-  await kdb.updateTable(table).set({ notes }).where('id_fcu', '=', networkId).execute();
 }
 
 export type NetworkSearchResult = {

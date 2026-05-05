@@ -8,7 +8,7 @@ import type { ColumnType, JSONColumnType } from 'kysely';
 import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
-import type { NetworkType } from '@/modules/reseaux/constants';
+import type { NetworkType, ReminderNetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export type Generated<T> =
@@ -455,8 +455,9 @@ export interface NetworkReminders {
   created_at: Generated<Timestamp>;
   id: Generated<string>;
   network_id: number;
-  network_type: NetworkType;
+  network_type: ReminderNetworkType;
   note: string | null;
+  type: ReminderType;
 }
 
 export interface OuvragesGeothermieSurfaceEchangeursFermesTiles {
@@ -688,6 +689,7 @@ export interface ReseauxDeFroid {
   'Moyenne-annee-DPE': string | null;
   nb_pdl: number | null;
   nom_reseau: string | null;
+  notes: string | null;
   production_totale_MWh: number | null;
   puissance_totale_MW: number | null;
   region: string | null;
@@ -908,6 +910,7 @@ export interface ZoneDeDeveloppementPrioritaire {
   geom_update: string | null;
   id_fcu: number;
   'Identifiant reseau': string | null;
+  notes: string | null;
   region: string | null;
   reseau_de_chaleur_ids: number[];
   reseau_en_construction_ids: number[];
