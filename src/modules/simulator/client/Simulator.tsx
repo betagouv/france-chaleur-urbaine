@@ -246,7 +246,7 @@ function SimulatorResult({
         {(networkInformation || addressErrorMessage) && concernedHelp && (
           <div>
             Le calcul se base sur la fiche{' '}
-            <Link href={concernedHelp.noteUrl} isExternal>
+            <Link href={concernedHelp.noteUrl || '#'} isExternal>
               <strong>{concernedHelp.label}</strong>
             </Link>
             .{' '}
