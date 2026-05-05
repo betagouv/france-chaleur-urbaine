@@ -87,7 +87,7 @@ export default function ReseauxStatsPage() {
         width: '40px',
       },
       {
-        accessorFn: (row) => row.nom_reseau ?? `Réseau ${row.id_fcu}`,
+        accessorFn: (row) => `${row.nom_reseau || ''} ${row.id_fcu} ${row['Identifiant reseau'] ?? ''}`,
         cell: ({ row }) => {
           const r = row.original;
           const isExistant = r.network_type === 'existant';
