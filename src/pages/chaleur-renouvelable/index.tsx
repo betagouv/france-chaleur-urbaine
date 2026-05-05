@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { isValidElement } from 'react';
 
@@ -8,6 +9,7 @@ import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Carousel from '@/components/ui/Carousel';
 import Link from '@/components/ui/Link';
+import Notice from '@/components/ui/Notice';
 import ChoixChauffageForm from '@/modules/chaleur-renouvelable/client/ChoixChauffageForm';
 
 const BENEFITS = [
@@ -347,12 +349,19 @@ function CompareSolutionsButton() {
 }
 
 function ChaleurRenouvelablePage() {
+  const params = useSearchParams();
+  const fromPacoupa = params?.get('src') === 'pacoupa';
   return (
     <SimplePage
       title="Découvrez le chauffage qui vous convient !"
       currentPage="/chaleur-renouvelable"
       description="Découvrez les modes de chauffage renouvelables adaptés à votre logement"
     >
+      {fromPacoupa && (
+        <Notice onClose={() => null} variant="info">
+          Pacoupa est désormais un service intégré à France Chaleur Urbaine, un service de l’ADEME
+        </Notice>
+      )}
       <div className="fr-p-1w md:fr-p-5w w-full bg-[#C3E4E2] bg-[url('/img/banner_simulateur.webp')] bg-no-repeat bg-cover bg-left-center">
         <div className="fr-container">
           <h1 className="fr-mt-2w md:fr-mt-5w text-white">
