@@ -44,13 +44,13 @@ const getNetworkTypeFromEligibilityType = (type: EligibilityType): NetworkType |
     case 'reseau_existant_tres_proche':
     case 'reseau_existant_loin':
     case 'dans_ville_reseau_existant_sans_trace':
-      return 'existant';
+      return 'reseau_de_chaleur';
     case 'dans_pdp_reseau_futur':
     case 'dans_zone_reseau_futur':
     case 'reseau_futur_tres_proche':
     case 'reseau_futur_loin':
     case 'reseau_futur_proche':
-      return 'en_construction';
+      return 'reseau_en_construction';
     default:
       return null;
   }
@@ -85,7 +85,7 @@ export const getEntityFromEligibilityType = (type: EligibilityType) => {
  * Returns `null` for existing networks without trace, `0` when the point is inside a zone.
  */
 export const computeNetworkDistance = async (demandId: string, networkIdFcu: number, networkType: NetworkType): Promise<number | null> => {
-  const reseau = await (networkType === 'existant'
+  const reseau = await (networkType === 'reseau_de_chaleur'
     ? kdb
         .selectFrom('reseaux_de_chaleur as n')
         .innerJoin('pro_eligibility_tests_addresses as pe', (join) => join.onTrue())

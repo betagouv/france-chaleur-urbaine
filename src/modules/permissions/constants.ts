@@ -7,8 +7,8 @@ export const permissionTypeLabels: Record<PermissionType, string> = {
   ept: 'EPT',
   national: 'National',
   region: 'Région',
+  reseau_de_chaleur: 'Réseau de chaleur',
   reseau_en_construction: 'En construction',
-  reseau_existant: 'Réseau existant',
 };
 
 export const permissionTypeBadgeColors: Record<PermissionType, string> = {
@@ -18,6 +18,6 @@ export const permissionTypeBadgeColors: Record<PermissionType, string> = {
   ept: 'bg-[#F9CB9C]',
   national: 'bg-[#EA9999]',
   region: 'bg-[#FFE599]',
+  reseau_de_chaleur: 'bg-[#48A21A] text-white',
   reseau_en_construction: 'bg-[#DA5DD5] text-white',
-  reseau_existant: 'bg-[#48A21A] text-white',
 };

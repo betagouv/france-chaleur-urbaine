@@ -26,17 +26,17 @@ const baseDemand: DemandForAccess = {
   epci_code: '200054781',
   ept_code: 'T1',
   network_id: 1,
-  network_type: 'existant',
+  network_type: 'reseau_de_chaleur',
   region_code: '11',
   validated: true,
 };
 
 const unvalidated: DemandForAccess = { ...baseDemand, validated: false };
-const constructionDemand: DemandForAccess = { ...baseDemand, network_type: 'en_construction' };
+const constructionDemand: DemandForAccess = { ...baseDemand, network_type: 'reseau_en_construction' };
 
-const networkExistant: Permission = { resource_id: '1', type: 'reseau_existant' };
+const networkExistant: Permission = { resource_id: '1', type: 'reseau_de_chaleur' };
 const networkConstruction: Permission = { resource_id: '1', type: 'reseau_en_construction' };
-const networkWrongId: Permission = { resource_id: '999', type: 'reseau_existant' };
+const networkWrongId: Permission = { resource_id: '999', type: 'reseau_de_chaleur' };
 const commune75056: Permission = { resource_id: '75056', type: 'commune' };
 const dept75: Permission = { resource_id: '75', type: 'departement' };
 const dept13: Permission = { resource_id: '13', type: 'departement' };
@@ -54,7 +54,7 @@ const testLabel = ({ user, permissions, demand }: TestInput): string => {
     parts.push('[no perms]');
   }
   if (!demand.validated) parts.push('(unvalidated)');
-  if (demand.network_type === 'en_construction') parts.push('(construction)');
+  if (demand.network_type === 'reseau_en_construction') parts.push('(construction)');
   return parts.join(' ');
 };
 

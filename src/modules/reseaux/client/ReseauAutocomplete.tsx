@@ -46,7 +46,7 @@ export default function ReseauAutocomplete({
   const getOptionLabel = useCallback(
     (network: NetworkSearchResult, query: string) => {
       const isExcluded = network.id_fcu === excludeNetworkIdFcu && network.network_type === excludeNetworkType;
-      const typeLabel = network.network_type === 'en_construction' ? 'En construction' : 'Existant';
+      const typeLabel = network.network_type === 'reseau_en_construction' ? 'En construction' : 'Existant';
       return (
         <div className={cx('flex flex-col', isExcluded && 'opacity-50')}>
           <span className="font-medium">{highlightMatch(network.nom_reseau ?? 'Sans nom', query)}</span>

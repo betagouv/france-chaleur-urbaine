@@ -8,6 +8,33 @@ import type { AdminEvent } from '@/modules/events/server/service';
 
 import type { EventFilters } from './types';
 
+const networkTypeLabels = {
+  perimetre_de_developpement_prioritaire: 'PDP',
+  reseau_de_chaleur: 'réseau de chaleur',
+  reseau_de_froid: 'réseau de froid',
+  reseau_en_construction: 'réseau en construction',
+} as const;
+
+const formatNetworkLabel = (data: {
+  network_type: keyof typeof networkTypeLabels;
+  network_id: number;
+  nom_reseau: string | null;
+  identifiant_reseau: string | null;
+  first_commune?: string | null;
+  communes_count?: number;
+}): string => {
+  if (data.network_type === 'perimetre_de_developpement_prioritaire') {
+    if (data.identifiant_reseau) return data.identifiant_reseau;
+    if (data.first_commune) {
+      return data.communes_count && data.communes_count > 1
+        ? `${data.first_commune} (+${data.communes_count - 1} communes)`
+        : data.first_commune;
+    }
+    return `PDP ${data.network_id}`;
+  }
+  return data.nom_reseau || data.identifiant_reseau || `Réseau ${data.network_id}`;
+};
+
 const FilterButton = ({ onClick, children }: { onClick: () => void; children: ReactNode }) => (
   <Button size="small" priority="tertiary no outline" className="px-1!" onClick={onClick}>
     {children}
@@ -123,25 +150,26 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null})
     </span>
   ),
-  network_notes_updated: (event) => (
-    <span>
-      a mis à jour les notes du réseau <strong>{event.data.network_type}</strong>
-      {event.data.nom_reseau ? ` "${event.data.nom_reseau}"` : null} (ID: {event.data.network_id}
-      {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null})
-    </span>
+  network_notes_updated: (event, updateFilters) => (
+    <>
+      <span>a mis à jour les notes du {networkTypeLabels[event.data.network_type]} </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: event.data.network_type })}>
+        {formatNetworkLabel(event.data)}
+      </FilterButton>
+    </>
   ),
   network_reminder_created: (event, updateFilters) => (
     <>
-      <span>a enregistré une relance pour le réseau</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'network' })}>
+      <span>a enregistré une relance pour le {networkTypeLabels[event.data.network_type]} </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: event.data.network_type })}>
         {event.data.network_id}
       </FilterButton>
     </>
   ),
   network_reminder_deleted: (event, updateFilters) => (
     <>
-      <span>a supprimé une relance du réseau</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'network' })}>
+      <span>a supprimé une relance du {networkTypeLabels[event.data.network_type]} </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: event.data.network_type })}>
         {event.data.network_id}
       </FilterButton>
     </>
@@ -149,9 +177,10 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   network_reminder_updated: (event, updateFilters) => (
     <>
       <span>
-        a modifié une relance (<strong>{Object.keys(event.data.changes ?? {}).join(', ')}</strong>) du réseau
+        a modifié une relance (<strong>{Object.keys(event.data.changes ?? {}).join(', ')}</strong>) du{' '}
+        {networkTypeLabels[event.data.network_type]}{' '}
       </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'network' })}>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: event.data.network_type })}>
         {event.data.network_id}
       </FilterButton>
     </>

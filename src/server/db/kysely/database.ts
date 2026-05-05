@@ -8,7 +8,7 @@ import type { ColumnType, JSONColumnType } from 'kysely';
 import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
-import type { NetworkType, ReminderNetworkType, ReminderType } from '@/modules/reseaux/constants';
+import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export type Generated<T> =
@@ -455,7 +455,7 @@ export interface NetworkReminders {
   created_at: Generated<Timestamp>;
   id: Generated<string>;
   network_id: number;
-  network_type: ReminderNetworkType;
+  network_type: NetworkEntityType;
   note: string | null;
   type: ReminderType;
 }

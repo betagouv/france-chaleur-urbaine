@@ -90,7 +90,7 @@ export default function ReseauxStatsPage() {
         accessorFn: (row) => `${row.nom_reseau || ''} ${row.id_fcu} ${row['Identifiant reseau'] ?? ''}`,
         cell: ({ row }) => {
           const r = row.original;
-          const isExistant = r.network_type === 'existant';
+          const isExistant = r.network_type === 'reseau_de_chaleur';
           return (
             <div className="flex flex-col gap-1 w-full">
               <div className="flex items-center justify-between gap-1">
@@ -260,7 +260,7 @@ export default function ReseauxStatsPage() {
               createReminder({
                 createdAt,
                 networkId: row.original.id_fcu,
-                networkType: row.original.network_type === 'existant' ? 'reseau_existant' : 'reseau_en_construction',
+                networkType: row.original.network_type,
                 note,
                 type: 'demand',
               })
@@ -282,7 +282,7 @@ export default function ReseauxStatsPage() {
             onSave={async (notes) => {
               await updateNotes({
                 networkId: row.original.id_fcu,
-                networkType: row.original.network_type === 'existant' ? 'reseau_existant' : 'reseau_en_construction',
+                networkType: row.original.network_type,
                 notes: notes.trim() || null,
               });
             }}

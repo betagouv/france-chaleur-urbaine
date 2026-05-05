@@ -1,9 +1,12 @@
-import { type Expression, type SqlBool, sql } from 'kysely';
+import { type Expression, type RawBuilder, type SqlBool, sql } from 'kysely';
 
 import { kdb } from '@/server/db/kysely';
 
 import { type NetworkPermission, type Permission, type PermissionType, permissionBoundsKey } from '../types';
 import { isNetworkPermissionType } from './helpers';
+
+type PermissionGeomRow = { type: PermissionType; code: string; geom: string };
+type TerritoryGeomRow = { type: PermissionType; code: string; label: string; geometry: GeoJSON.Geometry };
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -32,7 +35,7 @@ export type PermissionsMapData = {
 export const getPermissionsMapData = async (permissions: Permission[]): Promise<PermissionsMapData> => {
   const networkPerms = permissions.filter((p): p is NetworkPermission => isNetworkPermissionType(p.type));
 
-  const existingIds = networkPerms.filter((p) => p.type === 'reseau_existant').map((p) => Number(p.resource_id));
+  const existingIds = networkPerms.filter((p) => p.type === 'reseau_de_chaleur').map((p) => Number(p.resource_id));
   const constructionIds = networkPerms.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resource_id));
 
   const pdpPromise =
@@ -95,38 +98,56 @@ const getTerritoryGeometries = async (
   const eptCodes = territoryPerms.filter((p) => p.type === 'ept').map((p) => p.resource_id!);
 
   // Build UNION ALL parts — only include types that have permissions
-  const parts: ReturnType<typeof sql>[] = [];
+  const parts: RawBuilder<TerritoryGeomRow>[] = [];
 
   if (communeCodes.length > 0) {
-    parts.push(sql`
-      SELECT 'commune' AS type, insee_com AS code, nom AS label,
-        ST_AsGeoJSON(ST_Simplify(ST_Transform(geom, 4326), 0.0005))::json AS geometry
-      FROM ign_communes
-      WHERE insee_com IN (${sql.join(communeCodes.map(sql.lit))}) AND geom IS NOT NULL
-    `);
+    parts.push(
+      sql<TerritoryGeomRow>`${kdb
+        .selectFrom('ign_communes')
+        .select((eb) => [
+          sql.lit<PermissionType>('commune').as('type'),
+          eb.ref('insee_com').as('code'),
+          eb.ref('nom').as('label'),
+          sql<GeoJSON.Geometry>`ST_AsGeoJSON(ST_Simplify(ST_Transform(${eb.ref('geom')}, 4326), 0.0005))::json`.as('geometry'),
+        ])
+        .where('insee_com', 'in', communeCodes)
+        .where('geom', 'is not', null)}`
+    );
   }
 
   if (deptCodes.length > 0) {
-    parts.push(sql`
-      SELECT 'departement' AS type, insee_dep AS code, nom AS label,
-        ST_AsGeoJSON(ST_Simplify(ST_Transform(geom, 4326), 0.001))::json AS geometry
-      FROM ign_departements
-      WHERE insee_dep IN (${sql.join(deptCodes.map(sql.lit))}) AND geom IS NOT NULL
-    `);
+    parts.push(
+      sql<TerritoryGeomRow>`${kdb
+        .selectFrom('ign_departements')
+        .select((eb) => [
+          sql.lit<PermissionType>('departement').as('type'),
+          eb.ref('insee_dep').as('code'),
+          eb.ref('nom').as('label'),
+          sql<GeoJSON.Geometry>`ST_AsGeoJSON(ST_Simplify(ST_Transform(${eb.ref('geom')}, 4326), 0.001))::json`.as('geometry'),
+        ])
+        .where('insee_dep', 'in', deptCodes)
+        .where('geom', 'is not', null)}`
+    );
   }
 
   if (regionCodes.length > 0) {
-    parts.push(sql`
-      SELECT 'region' AS type, insee_reg AS code, nom AS label,
-        ST_AsGeoJSON(ST_Simplify(ST_Transform(geom, 4326), 0.002))::json AS geometry
-      FROM ign_regions
-      WHERE insee_reg IN (${sql.join(regionCodes.map(sql.lit))}) AND geom IS NOT NULL
-    `);
+    parts.push(
+      sql<TerritoryGeomRow>`${kdb
+        .selectFrom('ign_regions')
+        .select((eb) => [
+          sql.lit<PermissionType>('region').as('type'),
+          eb.ref('insee_reg').as('code'),
+          eb.ref('nom').as('label'),
+          sql<GeoJSON.Geometry>`ST_AsGeoJSON(ST_Simplify(ST_Transform(${eb.ref('geom')}, 4326), 0.002))::json`.as('geometry'),
+        ])
+        .where('insee_reg', 'in', regionCodes)
+        .where('geom', 'is not', null)}`
+    );
   }
 
   if (epciCodes.length > 0) {
-    parts.push(sql`
-      SELECT 'epci' AS type, e.code, e.nom AS label,
+    parts.push(sql<TerritoryGeomRow>`
+      SELECT ${sql.lit<PermissionType>('epci')} AS type, e.code, e.nom AS label,
         ST_AsGeoJSON(ST_Simplify(ST_Transform(ST_Union(c.geom), 4326), 0.001))::json AS geometry
       FROM epci e
       CROSS JOIN LATERAL jsonb_array_elements(e.membres) AS m
@@ -137,8 +158,8 @@ const getTerritoryGeometries = async (
   }
 
   if (eptCodes.length > 0) {
-    parts.push(sql`
-      SELECT 'ept' AS type, e.code, e.nom AS label,
+    parts.push(sql<TerritoryGeomRow>`
+      SELECT ${sql.lit<PermissionType>('ept')} AS type, e.code, e.nom AS label,
         ST_AsGeoJSON(ST_Simplify(ST_Transform(ST_Union(c.geom), 4326), 0.001))::json AS geometry
       FROM ept e
       CROSS JOIN LATERAL jsonb_array_elements(e.membres) AS m
@@ -152,9 +173,7 @@ const getTerritoryGeometries = async (
     return { features: [], type: 'FeatureCollection' };
   }
 
-  const query = sql<{ type: string; code: string; label: string; geometry: GeoJSON.Geometry }>`
-    ${sql.join(parts, sql` UNION ALL `)}
-  `;
+  const query = sql<TerritoryGeomRow>`${sql.join(parts, sql` UNION ALL `)}`;
 
   const result = await query.execute(kdb);
 
@@ -174,8 +193,12 @@ const getTerritoryGeometries = async (
 /**
  * Builds one SELECT per permission type, each returning `(type, code, geom)`.
  * Reused both for global bounds aggregation and per-permission bounds.
+ *
+ * Simple parts use the Kysely query builder for column-level type checking.
+ * `epci` / `ept` fall back to typed raw SQL because PG's `LATERAL jsonb_array_elements`
+ * has no ergonomic Kysely equivalent.
  */
-const buildPermissionGeomParts = (permissions: Permission[]): ReturnType<typeof sql>[] => {
+const buildPermissionGeomParts = (permissions: Permission[]): RawBuilder<PermissionGeomRow>[] => {
   const territoryPerms = permissions.filter((p) => !isNetworkPermissionType(p.type) && p.type !== 'national');
   const networkPerms = permissions.filter((p): p is NetworkPermission => isNetworkPermissionType(p.type));
 
@@ -184,35 +207,53 @@ const buildPermissionGeomParts = (permissions: Permission[]): ReturnType<typeof 
   const regionCodes = territoryPerms.filter((p) => p.type === 'region').map((p) => p.resource_id!);
   const epciCodes = territoryPerms.filter((p) => p.type === 'epci').map((p) => p.resource_id!);
   const eptCodes = territoryPerms.filter((p) => p.type === 'ept').map((p) => p.resource_id!);
-  const reseauxExistantsIds = networkPerms.filter((p) => p.type === 'reseau_existant').map((p) => Number(p.resource_id));
+  const reseauxExistantsIds = networkPerms.filter((p) => p.type === 'reseau_de_chaleur').map((p) => Number(p.resource_id));
   const reseauxEnConstructionIds = networkPerms.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resource_id));
 
-  const parts: ReturnType<typeof sql>[] = [];
+  const parts: RawBuilder<PermissionGeomRow>[] = [];
 
   if (communeCodes.length > 0) {
-    parts.push(sql`
-      SELECT 'commune' AS type, insee_com AS code, ST_Transform(geom, 4326) AS geom
-      FROM ign_communes
-      WHERE insee_com IN (${sql.join(communeCodes.map(sql.lit))}) AND geom IS NOT NULL
-    `);
+    parts.push(
+      sql<PermissionGeomRow>`${kdb
+        .selectFrom('ign_communes')
+        .select((eb) => [
+          sql.lit<PermissionType>('commune').as('type'),
+          eb.ref('insee_com').as('code'),
+          sql<string>`ST_Transform(${eb.ref('geom')}, 4326)`.as('geom'),
+        ])
+        .where('insee_com', 'in', communeCodes)
+        .where('geom', 'is not', null)}`
+    );
   }
   if (deptCodes.length > 0) {
-    parts.push(sql`
-      SELECT 'departement' AS type, insee_dep AS code, ST_Transform(geom, 4326) AS geom
-      FROM ign_departements
-      WHERE insee_dep IN (${sql.join(deptCodes.map(sql.lit))}) AND geom IS NOT NULL
-    `);
+    parts.push(
+      sql<PermissionGeomRow>`${kdb
+        .selectFrom('ign_departements')
+        .select((eb) => [
+          sql.lit<PermissionType>('departement').as('type'),
+          eb.ref('insee_dep').as('code'),
+          sql<string>`ST_Transform(${eb.ref('geom')}, 4326)`.as('geom'),
+        ])
+        .where('insee_dep', 'in', deptCodes)
+        .where('geom', 'is not', null)}`
+    );
   }
   if (regionCodes.length > 0) {
-    parts.push(sql`
-      SELECT 'region' AS type, insee_reg AS code, ST_Transform(geom, 4326) AS geom
-      FROM ign_regions
-      WHERE insee_reg IN (${sql.join(regionCodes.map(sql.lit))}) AND geom IS NOT NULL
-    `);
+    parts.push(
+      sql<PermissionGeomRow>`${kdb
+        .selectFrom('ign_regions')
+        .select((eb) => [
+          sql.lit<PermissionType>('region').as('type'),
+          eb.ref('insee_reg').as('code'),
+          sql<string>`ST_Transform(${eb.ref('geom')}, 4326)`.as('geom'),
+        ])
+        .where('insee_reg', 'in', regionCodes)
+        .where('geom', 'is not', null)}`
+    );
   }
   if (epciCodes.length > 0) {
-    parts.push(sql`
-      SELECT 'epci' AS type, e.code AS code, ST_Transform(c.geom, 4326) AS geom
+    parts.push(sql<PermissionGeomRow>`
+      SELECT ${sql.lit<PermissionType>('epci')} AS type, e.code AS code, ST_Transform(c.geom, 4326) AS geom
       FROM epci e
       CROSS JOIN LATERAL jsonb_array_elements(e.membres) AS m
       JOIN ign_communes c ON c.insee_com = m->>'code'
@@ -220,8 +261,8 @@ const buildPermissionGeomParts = (permissions: Permission[]): ReturnType<typeof 
     `);
   }
   if (eptCodes.length > 0) {
-    parts.push(sql`
-      SELECT 'ept' AS type, e.code AS code, ST_Transform(c.geom, 4326) AS geom
+    parts.push(sql<PermissionGeomRow>`
+      SELECT ${sql.lit<PermissionType>('ept')} AS type, e.code AS code, ST_Transform(c.geom, 4326) AS geom
       FROM ept e
       CROSS JOIN LATERAL jsonb_array_elements(e.membres) AS m
       JOIN ign_communes c ON c.insee_com = m->>'code'
@@ -229,18 +270,30 @@ const buildPermissionGeomParts = (permissions: Permission[]): ReturnType<typeof 
     `);
   }
   if (reseauxExistantsIds.length > 0) {
-    parts.push(sql`
-      SELECT 'reseau_existant' AS type, id_fcu::text AS code, ST_Transform(geom, 4326) AS geom
-      FROM reseaux_de_chaleur
-      WHERE id_fcu IN (${sql.join(reseauxExistantsIds.map(sql.lit))}) AND geom IS NOT NULL
-    `);
+    parts.push(
+      sql<PermissionGeomRow>`${kdb
+        .selectFrom('reseaux_de_chaleur')
+        .select((eb) => [
+          sql.lit<PermissionType>('reseau_de_chaleur').as('type'),
+          sql<string>`${eb.ref('id_fcu')}::text`.as('code'),
+          sql<string>`ST_Transform(${eb.ref('geom')}, 4326)`.as('geom'),
+        ])
+        .where('id_fcu', 'in', reseauxExistantsIds)
+        .where('geom', 'is not', null)}`
+    );
   }
   if (reseauxEnConstructionIds.length > 0) {
-    parts.push(sql`
-      SELECT 'reseau_en_construction' AS type, id_fcu::text AS code, ST_Transform(geom, 4326) AS geom
-      FROM zones_et_reseaux_en_construction
-      WHERE id_fcu IN (${sql.join(reseauxEnConstructionIds.map(sql.lit))}) AND geom IS NOT NULL
-    `);
+    parts.push(
+      sql<PermissionGeomRow>`${kdb
+        .selectFrom('zones_et_reseaux_en_construction')
+        .select((eb) => [
+          sql.lit<PermissionType>('reseau_en_construction').as('type'),
+          sql<string>`${eb.ref('id_fcu')}::text`.as('code'),
+          sql<string>`ST_Transform(${eb.ref('geom')}, 4326)`.as('geom'),
+        ])
+        .where('id_fcu', 'in', reseauxEnConstructionIds)
+        .where('geom', 'is not', null)}`
+    );
   }
 
   return parts;

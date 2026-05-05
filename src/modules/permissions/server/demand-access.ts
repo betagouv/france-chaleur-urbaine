@@ -5,7 +5,7 @@ import { kdb } from '@/server/db/kysely';
 import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
 
 import { type NetworkPermission, type Permission, type TerritoryPermissionType, territoryPermissionToColumn } from '../types';
-import { isNetworkPermissionType, isRoleWithPermissions, networkTypeToPermissionType, permissionTypeToNetworkType } from './helpers';
+import { isNetworkPermissionType, isRoleWithPermissions } from './helpers';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -51,12 +51,7 @@ export const buildDemandAccessFilter = (
       const conditions: Expression<SqlBool>[] = [];
 
       for (const p of networkPerms) {
-        conditions.push(
-          eb.and([
-            eb('demands.network_id', '=', Number(p.resource_id)),
-            eb('demands.network_type', '=', permissionTypeToNetworkType[p.type]),
-          ])
-        );
+        conditions.push(eb.and([eb('demands.network_id', '=', Number(p.resource_id)), eb('demands.network_type', '=', p.type)]));
       }
 
       if (territoryPerms.some((p) => p.type === 'national')) {
@@ -83,9 +78,7 @@ const isAffectedToNetwork = (demand: DemandForAccess): boolean => demand.network
 const matchesNetworkAffectation =
   (demand: DemandForAccess) =>
   (p: Permission): boolean =>
-    isNetworkPermissionType(p.type) &&
-    permissionTypeToNetworkType[p.type] === demand.network_type &&
-    Number(p.resource_id) === demand.network_id;
+    isNetworkPermissionType(p.type) && p.type === demand.network_type && Number(p.resource_id) === demand.network_id;
 
 /** Une perm territoire matche ssi elle couvre la maille géographique de la demande (`national` couvre tout). */
 const matchesTerritory =
@@ -140,8 +133,7 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
       const conditions: Expression<SqlBool>[] = [];
 
       if (demand.network_id && demand.network_type) {
-        const permType = networkTypeToPermissionType[demand.network_type];
-        conditions.push(eb.and([eb('up.type', '=', permType), eb('up.resource_id', '=', String(demand.network_id))]));
+        conditions.push(eb.and([eb('up.type', '=', demand.network_type), eb('up.resource_id', '=', String(demand.network_id))]));
       }
 
       conditions.push(eb('up.type', '=', 'national'));

@@ -2,10 +2,10 @@ import type { ExpressionBuilder, Insertable } from 'kysely';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
 import { createUserEvent } from '@/modules/events/server/service';
-import { type ReminderNetworkType, type ReminderType, reminderNetworkTypeToTable } from '@/modules/reseaux/constants';
+import { type NetworkEntityType, networkEntityToTable, type ReminderType } from '@/modules/reseaux/constants';
 import { type DB, kdb, type NetworkReminders } from '@/server/db/kysely';
 
-type ReminderOuterTable = (typeof reminderNetworkTypeToTable)[ReminderNetworkType];
+type ReminderOuterTable = (typeof networkEntityToTable)[NetworkEntityType];
 
 export type NetworkReminderListItem = {
   id: string;
@@ -21,7 +21,7 @@ export type NetworkReminderListItem = {
 export function reminderJsonAggSQL(
   eb: ExpressionBuilder<DB, ReminderOuterTable>,
   parentTable: ReminderOuterTable,
-  networkType: ReminderNetworkType,
+  networkType: NetworkEntityType,
   reminderType: ReminderType
 ) {
   return jsonArrayFrom(
@@ -46,7 +46,7 @@ export async function createNetworkReminder(
   await createUserEvent({
     author_id: params.author_id!,
     context_id: String(params.network_id),
-    context_type: 'network',
+    context_type: params.network_type,
     data: {
       network_id: params.network_id,
       network_type: params.network_type,
@@ -84,7 +84,7 @@ export async function updateNetworkReminder(id: string, changes: { note?: string
   await createUserEvent({
     author_id: actorId,
     context_id: String(existing.network_id),
-    context_type: 'network',
+    context_type: existing.network_type,
     data: {
       changes: eventChanges,
       network_id: existing.network_id,
@@ -110,7 +110,7 @@ export async function deleteNetworkReminder(id: string, actorId: string) {
   await createUserEvent({
     author_id: actorId,
     context_id: String(existing.network_id),
-    context_type: 'network',
+    context_type: existing.network_type,
     data: {
       created_at: new Date(existing.created_at).toISOString(),
       network_id: existing.network_id,
@@ -123,7 +123,7 @@ export async function deleteNetworkReminder(id: string, actorId: string) {
   });
 }
 
-export async function updateNetworkNotes(networkId: number, networkType: ReminderNetworkType, notes: string | null) {
-  const table = reminderNetworkTypeToTable[networkType];
+export async function updateNetworkNotes(networkId: number, networkType: NetworkEntityType, notes: string | null) {
+  const table = networkEntityToTable[networkType];
   await kdb.updateTable(table).set({ notes }).where('id_fcu', '=', networkId).execute();
 }

@@ -5,7 +5,7 @@ import { parseBbox } from '@/modules/geo/client/helpers';
 import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
 import type { BoundingBox } from '@/modules/geo/types';
 import { createWarnEligibilityChangesJob } from '@/modules/pro-eligibility-tests/server/service';
-import type { ApplyGeometriesUpdatesInput, NetworkType } from '@/modules/reseaux/constants';
+import { type ApplyGeometriesUpdatesInput, type NetworkType, networkSlugToEntity } from '@/modules/reseaux/constants';
 import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
 import { reminderJsonAggSQL } from '@/modules/reseaux/server/reminders';
 import { createBuildTilesJob, createSyncGeometriesToAirtableJob, createSyncMetadataFromAirtableJob } from '@/modules/tiles/server/service';
@@ -259,7 +259,7 @@ export const listReseauxDeChaleur = async () => {
       'puissance_totale_MW',
       'ouvert_aux_raccordements',
       'notes',
-      reminderJsonAggSQL(eb, 'reseaux_de_chaleur', 'reseau_existant', 'trace').as('reminders'),
+      reminderJsonAggSQL(eb, 'reseaux_de_chaleur', 'reseau_de_chaleur', 'trace').as('reminders'),
       sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
@@ -415,27 +415,51 @@ export const deleteGeomUpdate = async (
 export const getNetworkLabel = async (
   id_fcu: number,
   tableName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire' | 'reseaux_de_froid'
-): Promise<{ nom_reseau: string | null; identifiant_reseau: string | null }> => {
+): Promise<{
+  nom_reseau: string | null;
+  identifiant_reseau: string | null;
+  first_commune: string | null;
+  communes_count: number;
+}> => {
   switch (tableName) {
     case 'reseaux_de_chaleur':
     case 'reseaux_de_froid': {
-      return await kdb
+      const row = await kdb
         .selectFrom(tableName)
         .select((eb) => ['nom_reseau', eb.ref('Identifiant reseau').as('identifiant_reseau')])
         .where('id_fcu', '=', id_fcu)
         .executeTakeFirstOrThrow();
+      return { ...row, communes_count: 0, first_commune: null };
     }
     case 'zones_et_reseaux_en_construction': {
       const row = await kdb.selectFrom(tableName).select('nom_reseau').where('id_fcu', '=', id_fcu).executeTakeFirstOrThrow();
-      return { identifiant_reseau: null, nom_reseau: row.nom_reseau };
+      return { communes_count: 0, first_commune: null, identifiant_reseau: null, nom_reseau: row.nom_reseau };
     }
     case 'zone_de_developpement_prioritaire': {
       const row = await kdb
         .selectFrom(tableName)
-        .select((eb) => eb.ref('Identifiant reseau').as('identifiant_reseau'))
+        .select((eb) => [eb.ref('Identifiant reseau').as('identifiant_reseau'), 'communes_insee'])
         .where('id_fcu', '=', id_fcu)
         .executeTakeFirstOrThrow();
-      return { identifiant_reseau: row.identifiant_reseau, nom_reseau: null };
+      const communesInsee = row.communes_insee ?? [];
+      const firstCommune =
+        communesInsee.length > 0
+          ? ((
+              await kdb
+                .selectFrom('ign_communes')
+                .select('nom')
+                .where('insee_com', 'in', communesInsee)
+                .orderBy('nom')
+                .limit(1)
+                .executeTakeFirst()
+            )?.nom ?? null)
+          : null;
+      return {
+        communes_count: communesInsee.length,
+        first_commune: firstCommune,
+        identifiant_reseau: row.identifiant_reseau,
+        nom_reseau: null,
+      };
     }
   }
 };
@@ -794,7 +818,7 @@ export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInp
   await createUserEvent({
     author_id: context.user.id,
     context_id: name,
-    context_type: 'network',
+    context_type: networkSlugToEntity[name],
     data: { affected_bboxes_count: affectedBboxes.length, name, processed },
     type: 'network_geometries_applied',
   });
@@ -849,7 +873,7 @@ export const searchNetworks = async (search: string): Promise<NetworkSearchResul
   ]);
 
   return [
-    ...existants.map((r) => ({ ...r, network_type: 'existant' as const })),
-    ...enConstruction.map((r) => ({ ...r, network_type: 'en_construction' as const })),
+    ...existants.map((r) => ({ ...r, network_type: 'reseau_de_chaleur' as const })),
+    ...enConstruction.map((r) => ({ ...r, network_type: 'reseau_en_construction' as const })),
   ];
 };

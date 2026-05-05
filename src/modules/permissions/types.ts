@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
-// Permission resource types
-export const networkPermissionTypes = ['reseau_existant', 'reseau_en_construction'] as const;
-export const territoryPermissionTypes = ['commune', 'epci', 'ept', 'departement', 'region', 'national'] as const;
-export const permissionTypes = [...networkPermissionTypes, ...territoryPermissionTypes] as const;
+import { networkTypes } from '@/modules/reseaux/constants';
 
-export type NetworkPermissionType = (typeof networkPermissionTypes)[number];
+// Permission resource types — `networkTypes` (depuis reseaux/constants) sert directement de sous-ensemble réseau.
+export const territoryPermissionResourceTypes = ['commune', 'epci', 'ept', 'departement', 'region'] as const;
+export const territoryPermissionTypes = [...territoryPermissionResourceTypes, 'national'] as const;
+export const permissionTypes = [...networkTypes, ...territoryPermissionTypes] as const;
+
 export type TerritoryPermissionType = (typeof territoryPermissionTypes)[number];
 export type PermissionType = (typeof permissionTypes)[number];
 
@@ -16,23 +17,21 @@ export const territoryPermissionToColumn = {
   epci: 'epci_code',
   ept: 'ept_code',
   region: 'region_code',
-} as const satisfies Record<Exclude<TerritoryPermissionType, 'national'>, string>;
+} as const satisfies Record<(typeof territoryPermissionResourceTypes)[number], string>;
 
 // Zod schemas (source of truth for Permission types)
-const territoryWithResourceTypes = ['commune', 'epci', 'ept', 'departement', 'region'] as const;
-
 export const zNetworkPermission = z.object({
   resource_id: z.string(),
-  type: z.enum(networkPermissionTypes),
+  type: z.enum(networkTypes),
 });
 
 export const zTerritoryPermission = z.discriminatedUnion('type', [
-  z.object({ resource_id: z.string(), type: z.enum(territoryWithResourceTypes) }),
+  z.object({ resource_id: z.string(), type: z.enum(territoryPermissionResourceTypes) }),
   z.object({ resource_id: z.null(), type: z.literal('national') }),
 ]);
 
 export const zPermission = z.discriminatedUnion('type', [
-  z.object({ resource_id: z.string(), type: z.enum([...networkPermissionTypes, ...territoryWithResourceTypes]) }),
+  z.object({ resource_id: z.string(), type: z.enum([...networkTypes, ...territoryPermissionResourceTypes]) }),
   z.object({ resource_id: z.null(), type: z.literal('national') }),
 ]);
 

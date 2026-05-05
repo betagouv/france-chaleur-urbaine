@@ -20,7 +20,7 @@ import Tag from '@/components/ui/Tag';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { notify, toastErrors } from '@/modules/notification';
 import { NotesCell, RemindersCell } from '@/modules/reseaux/client/admin/network-reminders-cells';
-import type { ReminderNetworkType } from '@/modules/reseaux/constants';
+import type { NetworkEntityType } from '@/modules/reseaux/constants';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
@@ -383,7 +383,7 @@ const GestionDesReseaux = () => {
 
   const buildReminderAndNotesColumns = useCallback(
     <T extends { id_fcu: number; notes: string | null; reminders: ReseauDeChaleur['reminders'] }>(
-      networkType: ReminderNetworkType
+      networkType: NetworkEntityType
     ): ColumnDef<T>[] => [
       {
         accessorFn: (row: T) => row.reminders?.[0]?.created_at ?? null,
@@ -600,7 +600,7 @@ const GestionDesReseaux = () => {
         header: 'Tags (obsolète)',
         width: '400px',
       },
-      ...buildReminderAndNotesColumns<ReseauDeChaleur>('reseau_existant'),
+      ...buildReminderAndNotesColumns<ReseauDeChaleur>('reseau_de_chaleur'),
     ],
     [updateReseauDeChaleur, buildReminderAndNotesColumns]
   );

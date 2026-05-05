@@ -35,7 +35,7 @@ export default function AffectedNetwork({ networkName, networkType, networkSncuI
     return <span className="text-gray-400 italic text-sm">Non affecté</span>;
   }
 
-  const isExistant = networkType === 'existant';
+  const isExistant = networkType === 'reseau_de_chaleur';
 
   return (
     <div className="flex flex-col gap-1">

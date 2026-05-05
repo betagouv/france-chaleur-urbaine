@@ -133,7 +133,7 @@ async function syncPermissionsForUser(
     .filter((idFcu): idFcu is number => idFcu !== undefined)
     .map((idFcu) => ({
       resource_id: String(idFcu),
-      type: 'reseau_existant',
+      type: 'reseau_de_chaleur',
       user_id: userId,
     }));
 

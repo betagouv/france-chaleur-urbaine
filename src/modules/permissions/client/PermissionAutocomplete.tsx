@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
+import { networkTypes } from '@/modules/reseaux/constants';
 import trpc from '@/modules/trpc/client';
 import cx from '@/utils/cx';
 
 import { permissionTypeLabels } from '../constants';
-import type { Permission, PermissionType } from '../types';
+import { type Permission, type PermissionType, territoryPermissionResourceTypes } from '../types';
 
-const networkTypes: PermissionType[] = ['reseau_existant', 'reseau_en_construction'];
-const territoryTypes: PermissionType[] = ['commune', 'epci', 'ept', 'departement', 'region'];
+const networkPermissionSet = new Set<string>(networkTypes);
+const territoryPermissionSet = new Set<string>(territoryPermissionResourceTypes);
 
 type PermissionAutocompleteProps = {
   availableTypes: readonly PermissionType[];
@@ -35,8 +36,8 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     };
   }, [query]);
 
-  const isNetworkMode = availableTypes.some((t) => networkTypes.includes(t));
-  const isTerritoryMode = availableTypes.some((t) => territoryTypes.includes(t));
+  const isNetworkMode = availableTypes.some((t) => networkPermissionSet.has(t));
+  const isTerritoryMode = availableTypes.some((t) => territoryPermissionSet.has(t));
 
   const networkResults = trpc.permissions.searchNetworks.useQuery(
     { query: debouncedQuery },
@@ -44,7 +45,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
   );
 
   const territoryResults = trpc.permissions.searchTerritories.useQuery(
-    { query: debouncedQuery, types: availableTypes.filter((t) => territoryTypes.includes(t)) },
+    { query: debouncedQuery, types: availableTypes.filter((t) => territoryPermissionSet.has(t)) },
     { enabled: isTerritoryMode && debouncedQuery.length >= 2 }
   );
 

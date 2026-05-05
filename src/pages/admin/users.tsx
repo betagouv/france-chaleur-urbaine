@@ -49,13 +49,13 @@ function formatPermissionSummary(permissions: PermissionWithLabel[]): string {
 
   const parts: string[] = [];
 
-  const networks = permissions.filter((p) => p.type === 'reseau_existant' || p.type === 'reseau_en_construction');
+  const networks = permissions.filter((p) => p.type === 'reseau_de_chaleur' || p.type === 'reseau_en_construction');
   if (networks.length > 0) {
     parts.push(`${networks.length} réseau${networks.length > 1 ? 'x' : ''}`);
   }
 
   const territories = permissions.filter(
-    (p) => p.type !== 'reseau_existant' && p.type !== 'reseau_en_construction' && p.type !== 'national'
+    (p) => p.type !== 'reseau_de_chaleur' && p.type !== 'reseau_en_construction' && p.type !== 'national'
   );
   if (territories.length > 0) {
     const byType = new Map<string, PermissionWithLabel[]>();

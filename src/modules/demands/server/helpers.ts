@@ -70,7 +70,7 @@ export const ensureUserCanProcessDemand = async (ctx: Context, demandId: string)
 export const buildDemandQuery = () => {
   // Extraits typés des champs JSON `pending_assignment_change` (réutilisés dans plusieurs joins).
   const pendingNetworkId = sql<number>`(demands.pending_assignment_change->>'network_id')::int`;
-  const pendingNetworkType = sql<'existant' | 'en_construction'>`demands.pending_assignment_change->>'network_type'`;
+  const pendingNetworkType = sql<NetworkType>`demands.pending_assignment_change->>'network_type'`;
   const pendingAuthorId = sql<string>`(demands.pending_assignment_change->>'author_id')::uuid`;
 
   return kdb
@@ -82,13 +82,13 @@ export const buildDemandQuery = () => {
             eb.or([
               eb('up.type', '=', 'national'),
               eb.and([
-                eb('up.type', '=', 'reseau_existant'),
-                eb('d.network_type', '=', 'existant'),
+                eb('up.type', '=', 'reseau_de_chaleur'),
+                eb('d.network_type', '=', 'reseau_de_chaleur'),
                 eb('up.resource_id', '=', sql<string>`${eb.ref('d.network_id')}::text`),
               ]),
               eb.and([
                 eb('up.type', '=', 'reseau_en_construction'),
-                eb('d.network_type', '=', 'en_construction'),
+                eb('d.network_type', '=', 'reseau_en_construction'),
                 eb('up.resource_id', '=', sql<string>`${eb.ref('d.network_id')}::text`),
               ]),
               eb.and([eb('up.type', '=', 'commune'), eb('up.resource_id', '=', eb.ref('d.commune_code'))]),
@@ -115,16 +115,16 @@ export const buildDemandQuery = () => {
     .selectFrom('demands')
     .innerJoin('pro_eligibility_tests_addresses', 'pro_eligibility_tests_addresses.demand_id', 'demands.id')
     .leftJoin('reseaux_de_chaleur as rdc', (j) =>
-      j.onRef('rdc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'existant')
+      j.onRef('rdc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'reseau_de_chaleur')
     )
     .leftJoin('zones_et_reseaux_en_construction as zrc', (j) =>
-      j.onRef('zrc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'en_construction')
+      j.onRef('zrc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'reseau_en_construction')
     )
     .leftJoin('reseaux_de_chaleur as pending_rdc', (j) =>
-      j.on('pending_rdc.id_fcu', '=', pendingNetworkId).on(pendingNetworkType, '=', 'existant')
+      j.on('pending_rdc.id_fcu', '=', pendingNetworkId).on(pendingNetworkType, '=', 'reseau_de_chaleur')
     )
     .leftJoin('zones_et_reseaux_en_construction as pending_zrc', (j) =>
-      j.on('pending_zrc.id_fcu', '=', pendingNetworkId).on(pendingNetworkType, '=', 'en_construction')
+      j.on('pending_zrc.id_fcu', '=', pendingNetworkId).on(pendingNetworkType, '=', 'reseau_en_construction')
     )
     .leftJoin('users as pending_author', (j) => j.on('pending_author.id', '=', pendingAuthorId))
     .leftJoin('access_counts_by_demand as acbd', 'acbd.demand_id', 'demands.id')
@@ -169,7 +169,7 @@ export const resolveNetworkInfo = async (
   networkType: NetworkType,
   networkId: number
 ): Promise<{ network_name: string | null; network_sncu_id: string | null }> => {
-  if (networkType === 'existant') {
+  if (networkType === 'reseau_de_chaleur') {
     const reseau = await kdb
       .selectFrom('reseaux_de_chaleur')
       .select([sql<string | null>`"Identifiant reseau"`.as('sncu_id'), 'nom_reseau'])

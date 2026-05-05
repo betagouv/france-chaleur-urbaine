@@ -6,30 +6,49 @@ import { Airtable } from '@/types/enum/Airtable';
 import { defineSubsetConfig, ObjectKeys } from '@/utils/typescript';
 import { zGeometry } from '@/utils/validation';
 
-export const networkTypes = ['existant', 'en_construction'] as const;
-export type NetworkType = (typeof networkTypes)[number];
-
-// Cibles possibles d'une note ou d'une relance (4 entités réseau)
-export const reminderNetworkTypes = [
-  'reseau_existant',
-  'reseau_en_construction',
+// Les 4 entités réseau (clé canonique : singulier, snake_case).
+// Réutilisée comme valeur pour : `network_reminders.network_type`, `permissions.type` (sous-ensemble), `events.context_type`.
+export const networkEntityTypes = [
+  'reseau_de_chaleur',
   'reseau_de_froid',
+  'reseau_en_construction',
   'perimetre_de_developpement_prioritaire',
 ] as const;
-export type ReminderNetworkType = (typeof reminderNetworkTypes)[number];
+export type NetworkEntityType = (typeof networkEntityTypes)[number];
+
+// Sous-ensemble pour `demands.network_type` (les demandes ne ciblent que ces 2 entités).
+export const networkTypes = ['reseau_de_chaleur', 'reseau_en_construction'] as const satisfies readonly NetworkEntityType[];
+export type NetworkType = (typeof networkTypes)[number];
 
 export const reminderTypes = ['demand', 'trace'] as const;
 export type ReminderType = (typeof reminderTypes)[number];
 
-export const reminderNetworkTypeToTable = {
+export const networkEntityToTable = {
   perimetre_de_developpement_prioritaire: 'zone_de_developpement_prioritaire',
+  reseau_de_chaleur: 'reseaux_de_chaleur',
   reseau_de_froid: 'reseaux_de_froid',
   reseau_en_construction: 'zones_et_reseaux_en_construction',
-  reseau_existant: 'reseaux_de_chaleur',
 } as const satisfies Record<
-  ReminderNetworkType,
+  NetworkEntityType,
   'reseaux_de_chaleur' | 'reseaux_de_froid' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire'
 >;
+
+export const networkSlugToEntity = {
+  'perimetres-de-developpement-prioritaire': 'perimetre_de_developpement_prioritaire',
+  'reseaux-de-chaleur': 'reseau_de_chaleur',
+  'reseaux-de-froid': 'reseau_de_froid',
+  'reseaux-en-construction': 'reseau_en_construction',
+} as const satisfies Record<
+  'reseaux-de-chaleur' | 'reseaux-de-froid' | 'reseaux-en-construction' | 'perimetres-de-developpement-prioritaire',
+  NetworkEntityType
+>;
+
+export const tableToNetworkEntity = {
+  reseaux_de_chaleur: 'reseau_de_chaleur',
+  reseaux_de_froid: 'reseau_de_froid',
+  zone_de_developpement_prioritaire: 'perimetre_de_developpement_prioritaire',
+  zones_et_reseaux_en_construction: 'reseau_en_construction',
+} as const satisfies Record<(typeof networkEntityToTable)[NetworkEntityType], NetworkEntityType>;
 
 export const zUpdateReseauInput = z.object({
   id: z.number(),

@@ -40,7 +40,7 @@ describe('computeNetworkDistance()', () => {
       tags: [],
     });
 
-    const result = await computeNetworkDistance(demandId, 100, 'existant');
+    const result = await computeNetworkDistance(demandId, 100, 'reseau_de_chaleur');
 
     expect(result).toStrictEqual(132);
   });
@@ -54,7 +54,7 @@ describe('computeNetworkDistance()', () => {
       tags: [],
     });
 
-    const result = await computeNetworkDistance(demandId, 101, 'existant');
+    const result = await computeNetworkDistance(demandId, 101, 'reseau_de_chaleur');
 
     expect(result).toBeNull();
   });
@@ -68,7 +68,7 @@ describe('computeNetworkDistance()', () => {
       tags: [],
     });
 
-    const result = await computeNetworkDistance(demandId, 200, 'en_construction');
+    const result = await computeNetworkDistance(demandId, 200, 'reseau_en_construction');
 
     expect(result).toStrictEqual(99);
   });
@@ -82,13 +82,13 @@ describe('computeNetworkDistance()', () => {
       tags: [],
     });
 
-    const result = await computeNetworkDistance(demandId, 201, 'en_construction');
+    const result = await computeNetworkDistance(demandId, 201, 'reseau_en_construction');
 
     expect(result).toStrictEqual(0);
   });
 
   it('throws NOT_FOUND when the network does not exist', async () => {
-    await expect(computeNetworkDistance(demandId, 999, 'existant')).rejects.toThrow(
+    await expect(computeNetworkDistance(demandId, 999, 'reseau_de_chaleur')).rejects.toThrow(
       new TRPCError({ code: 'NOT_FOUND', message: 'Réseau ou demande introuvable' })
     );
   });

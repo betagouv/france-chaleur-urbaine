@@ -1,4 +1,4 @@
-import type { NetworkType, ReminderNetworkType, ReminderType } from '@/modules/reseaux/constants';
+import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export const eventTypes = [
@@ -133,9 +133,11 @@ export type EventDataMap = {
   network_geometry_updated: { id: number; identifiant_reseau: string | null; nom_reseau: string | null; type: string };
   network_notes_updated: {
     network_id: number;
-    network_type: NetworkType;
+    network_type: NetworkEntityType;
     nom_reseau: string | null;
     identifiant_reseau: string | null;
+    first_commune: string | null;
+    communes_count: number;
     notes: string | null;
   };
   pdp_updated: {
@@ -149,21 +151,21 @@ export type EventDataMap = {
   network_reminder_created: {
     reminder_id: string;
     network_id: number;
-    network_type: ReminderNetworkType;
+    network_type: NetworkEntityType;
     type: ReminderType;
     note: string | null;
   };
   network_reminder_updated: {
     reminder_id: string;
     network_id: number;
-    network_type: ReminderNetworkType;
+    network_type: NetworkEntityType;
     type: ReminderType;
     changes: Partial<{ note: string | null; created_at: string }>;
   };
   network_reminder_deleted: {
     reminder_id: string;
     network_id: number;
-    network_type: ReminderNetworkType;
+    network_type: NetworkEntityType;
     type: ReminderType;
     note: string | null;
     created_at: string;

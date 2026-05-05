@@ -24,7 +24,7 @@ async function seedAffectedDemand({
   networkType,
 }: {
   networkIdFcu: number | null;
-  networkType: 'existant' | 'en_construction' | null;
+  networkType: 'reseau_de_chaleur' | 'reseau_en_construction' | null;
 }) {
   const [demand] = await kdb
     .insertInto('demands')
@@ -77,7 +77,7 @@ describe('désaffectation / réaffectation flow', () => {
   describe('admin: changeDemandAssignment()', () => {
     it('désaffecte une demande (null, null) et trace un événement avec new.network_id null', async () => {
       await setupNetwork(100);
-      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
 
       const result = await changeDemandAssignment(demand.id, null, null, adminId);
 
@@ -103,7 +103,7 @@ describe('désaffectation / réaffectation flow', () => {
 
     it('efface le pending_assignment_change lors de la désaffectation admin', async () => {
       await setupNetwork(100);
-      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
       await requestDemandAssignmentChange(demand.id, null, null, 'please unassign', gestionnaireId);
 
       expect(await getPending(demand.id)).not.toBeNull();
@@ -117,7 +117,7 @@ describe('désaffectation / réaffectation flow', () => {
   describe('admin: rejectDemandAssignmentChangeRequest()', () => {
     it('rejette le pending sans toucher à l affectation courante', async () => {
       await setupNetwork(100);
-      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
       await requestDemandAssignmentChange(demand.id, null, null, 'please unassign', gestionnaireId);
 
       await rejectDemandAssignmentChangeRequest(demand.id, adminId);
@@ -129,7 +129,7 @@ describe('désaffectation / réaffectation flow', () => {
         .where('id', '=', demand.id)
         .executeTakeFirstOrThrow();
       expect(row.network_id).toBe(100);
-      expect(row.network_type).toBe('existant');
+      expect(row.network_type).toBe('reseau_de_chaleur');
 
       const event = await getLastEvent(demand.id, 'demand_assignment_change_request_rejected');
       expect(event).toBeDefined();
@@ -147,7 +147,7 @@ describe('désaffectation / réaffectation flow', () => {
   describe('gestionnaire: requestDemandAssignmentChange() — désaffectation', () => {
     it('stocke un pending avec network_id/type null + event demand_assignment_change_requested', async () => {
       await setupNetwork(100);
-      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
 
       await requestDemandAssignmentChange(demand.id, null, null, 'comment désaffectation', gestionnaireId);
 
@@ -177,7 +177,7 @@ describe('désaffectation / réaffectation flow', () => {
 
     it('throws CONFLICT si un pending existe déjà', async () => {
       await setupNetwork(100);
-      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
       await requestDemandAssignmentChange(demand.id, null, null, null, gestionnaireId);
 
       await expect(requestDemandAssignmentChange(demand.id, null, null, null, gestionnaireId)).rejects.toThrow(
@@ -189,7 +189,7 @@ describe('désaffectation / réaffectation flow', () => {
   describe('gestionnaire: cancelDemandAssignmentChangeRequest()', () => {
     it('annule son propre pending de désaffectation', async () => {
       await setupNetwork(100);
-      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
       await requestDemandAssignmentChange(demand.id, null, null, 'comment', gestionnaireId);
 
       await cancelDemandAssignmentChangeRequest(demand.id, gestionnaireId);
@@ -201,7 +201,7 @@ describe('désaffectation / réaffectation flow', () => {
 
     it("expose l'email de l'auteur du pending dans la liste", async () => {
       await setupNetwork(100);
-      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
       await requestDemandAssignmentChange(demand.id, null, null, 'comment', gestionnaireId);
 
       const demands = await createTestCaller(testUsers.admin).demands.gestionnaire.list();
@@ -213,7 +213,7 @@ describe('désaffectation / réaffectation flow', () => {
       const otherUserId = uuid(500);
       await seedTableUser([{ id: otherUserId, role: 'gestionnaire' }]);
       await setupNetwork(100);
-      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
       await requestDemandAssignmentChange(demand.id, null, null, null, gestionnaireId);
 
       await expect(cancelDemandAssignmentChangeRequest(demand.id, otherUserId)).rejects.toThrow(
@@ -242,7 +242,7 @@ describe('désaffectation / réaffectation flow', () => {
         createTestCaller(testUsers.admin).demands.admin.changeAssignment({
           demandId: demand.id,
           networkIdFcu: null,
-          networkType: 'existant',
+          networkType: 'reseau_de_chaleur',
         })
       ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
     });
@@ -283,7 +283,7 @@ describe('désaffectation / réaffectation flow', () => {
         { id: testUsers.particulier.id, role: 'particulier' },
       ]);
       await setupNetwork(100);
-      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'existant' });
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
       demandId = demand.id;
     });
 

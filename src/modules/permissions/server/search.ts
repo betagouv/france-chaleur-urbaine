@@ -2,7 +2,7 @@ import { sql } from 'kysely';
 
 import { kdb } from '@/server/db/kysely';
 
-import type { Permission, PermissionWithLabel, TerritoryPermissionType } from '../types';
+import { type Permission, type PermissionWithLabel, type TerritoryPermissionType, territoryPermissionResourceTypes } from '../types';
 import { getUserPermissions } from './service';
 
 // ─── Search ──────────────────────────────────────────────────────────────────
@@ -11,7 +11,7 @@ type NetworkSearchResult = {
   idFcu: number;
   sncuId: string | null;
   name: string;
-  type: 'reseau_existant' | 'reseau_en_construction';
+  type: 'reseau_de_chaleur' | 'reseau_en_construction';
   gestionnaire: string | null;
 };
 
@@ -49,7 +49,7 @@ export const searchNetworks = async (query: string): Promise<NetworkSearchResult
       idFcu: r.id_fcu,
       name: r.nom_reseau || 'Nom inconnu',
       sncuId: r['Identifiant reseau'],
-      type: 'reseau_existant' as const,
+      type: 'reseau_de_chaleur' as const,
     })),
     ...construction.map((r) => ({
       gestionnaire: r.gestionnaire,
@@ -75,7 +75,7 @@ type TerritorySearchResult = {
 export const searchTerritories = async (query: string, types?: string[]): Promise<TerritorySearchResult[]> => {
   const search = `%${query}%`;
   const results: TerritorySearchResult[] = [];
-  const searchTypes = types ?? ['commune', 'epci', 'ept', 'departement', 'region'];
+  const searchTypes = types ?? territoryPermissionResourceTypes;
 
   const searches = [];
 
@@ -156,7 +156,7 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
 
   const result: ResolvedPermissionLabel[] = [];
 
-  const existingNetworkIds = permissions.filter((p) => p.type === 'reseau_existant').map((p) => Number(p.resource_id));
+  const existingNetworkIds = permissions.filter((p) => p.type === 'reseau_de_chaleur').map((p) => Number(p.resource_id));
   const constructionNetworkIds = permissions.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resource_id));
   const communeCodes = permissions.filter((p) => p.type === 'commune').map((p) => p.resource_id!);
   const epciCodes = permissions.filter((p) => p.type === 'epci').map((p) => p.resource_id!);
@@ -179,7 +179,7 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
             const row = map.get(id);
             const name = row?.nom_reseau || 'Réseau inconnu';
             const sncu = row?.['Identifiant reseau'] ? ` (${row['Identifiant reseau']})` : '';
-            result.push({ label: `${name}${sncu}`, resource_id: String(id), type: 'reseau_existant' });
+            result.push({ label: `${name}${sncu}`, resource_id: String(id), type: 'reseau_de_chaleur' });
           }
         })
     );

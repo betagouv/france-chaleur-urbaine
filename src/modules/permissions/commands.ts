@@ -155,8 +155,8 @@ async function backfillNetworkId() {
     UPDATE demands d SET
       network_id = le.id_fcu,
       network_type = CASE
-        WHEN le.elig_type LIKE '%futur%' THEN 'en_construction'
-        ELSE 'existant'
+        WHEN le.elig_type LIKE '%futur%' THEN 'reseau_en_construction'
+        ELSE 'reseau_de_chaleur'
       END
     FROM latest_eligibility le
     WHERE d.id = le.demand_id
@@ -194,7 +194,7 @@ async function backfillNetworkId() {
     ),
     pdp_candidates AS (
       -- Réseaux existants via SNCU
-      SELECT pe.demand_id, r.id_fcu AS network_id, 'existant' AS network_type,
+      SELECT pe.demand_id, r.id_fcu AS network_id, 'reseau_de_chaleur' AS network_type,
         ST_Distance(r.geom, pe.demand_geom) AS dist
       FROM pdp_eligibility pe
       JOIN zone_de_developpement_prioritaire z ON z.id_fcu = pe.pdp_id
@@ -202,7 +202,7 @@ async function backfillNetworkId() {
       WHERE z."Identifiant reseau" IS NOT NULL AND z."Identifiant reseau" != ''
       UNION ALL
       -- Réseaux existants via reseau_de_chaleur_ids
-      SELECT pe.demand_id, r.id_fcu AS network_id, 'existant' AS network_type,
+      SELECT pe.demand_id, r.id_fcu AS network_id, 'reseau_de_chaleur' AS network_type,
         ST_Distance(r.geom, pe.demand_geom) AS dist
       FROM pdp_eligibility pe
       JOIN zone_de_developpement_prioritaire z ON z.id_fcu = pe.pdp_id
@@ -210,7 +210,7 @@ async function backfillNetworkId() {
       WHERE z.reseau_de_chaleur_ids IS NOT NULL AND array_length(z.reseau_de_chaleur_ids, 1) > 0
       UNION ALL
       -- Réseaux/zones en construction via reseau_en_construction_ids
-      SELECT pe.demand_id, rec.id_fcu AS network_id, 'en_construction' AS network_type,
+      SELECT pe.demand_id, rec.id_fcu AS network_id, 'reseau_en_construction' AS network_type,
         ST_Distance(rec.geom, pe.demand_geom) AS dist
       FROM pdp_eligibility pe
       JOIN zone_de_developpement_prioritaire z ON z.id_fcu = pe.pdp_id
@@ -237,7 +237,7 @@ async function backfillNetworkId() {
   const sncuResult = await sql`
     UPDATE demands d SET
       network_id = r.id_fcu,
-      network_type = 'existant'
+      network_type = 'reseau_de_chaleur'
     FROM reseaux_de_chaleur r
     WHERE d.deleted_at IS NULL
       AND d.legacy_values->>'Identifiant réseau' IS NOT NULL
@@ -418,7 +418,7 @@ const specialTagMappings: Record<string, { type: 'epci'; search: string } | { ty
 };
 
 type ResolvedPermission = {
-  type: 'commune' | 'epci' | 'ept' | 'reseau_existant' | 'reseau_en_construction';
+  type: 'commune' | 'epci' | 'ept' | 'reseau_de_chaleur' | 'reseau_en_construction';
   resource_id: string;
   label: string; // human-readable label for the report
 };
@@ -878,7 +878,7 @@ async function generateMigrationPlan(outputPath: string) {
       // Network permissions
       const existing = existingByTag.get(tagName) ?? [];
       for (const net of existing) {
-        networkPerms.push({ label: net.nom, resource_id: String(net.id_fcu), type: 'reseau_existant' });
+        networkPerms.push({ label: net.nom, resource_id: String(net.id_fcu), type: 'reseau_de_chaleur' });
       }
 
       const construction = constructionByTag.get(tagName) ?? [];
@@ -893,7 +893,7 @@ async function generateMigrationPlan(outputPath: string) {
           const sncu = sncuMatch[1];
           const net = existingBySncu.get(sncu);
           if (net) {
-            networkPerms.push({ label: net.nom, resource_id: String(net.id_fcu), type: 'reseau_existant' });
+            networkPerms.push({ label: net.nom, resource_id: String(net.id_fcu), type: 'reseau_de_chaleur' });
             notes.push(`fallback SNCU ${sncu} → réseau #${net.id_fcu}`);
           } else {
             notes.push(`tag ${tagName}: SNCU ${sncu} non trouvé`);
@@ -1317,7 +1317,7 @@ async function diagnosticSncu() {
     LEFT JOIN reseaux_de_chaleur r_legacy ON r_legacy."Identifiant reseau" = d.legacy_values->>'Identifiant réseau'
     LEFT JOIN pro_eligibility_tests_addresses a ON a.demand_id = d.id
     WHERE d.deleted_at IS NULL
-      AND d.network_type = 'existant'
+      AND d.network_type = 'reseau_de_chaleur'
       AND d.network_id IS NOT NULL
   `.execute(kdb);
 

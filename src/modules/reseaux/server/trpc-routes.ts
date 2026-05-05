@@ -2,9 +2,10 @@ import { z } from 'zod';
 
 import { createUserEvent } from '@/modules/events/server/service';
 import {
-  reminderNetworkTypes,
-  reminderNetworkTypeToTable,
+  networkEntityToTable,
+  networkEntityTypes,
   reminderTypes,
+  tableToNetworkEntity,
   zApplyGeometriesUpdatesInput,
   zCreateNetworkInput,
   zDeleteGeomUpdateInput,
@@ -57,7 +58,7 @@ const perimetreDeDeveloppementPrioritaireRouter = router({
     await createUserEvent({
       author_id: ctx.user.id,
       context_id: String(id),
-      context_type: 'pdp',
+      context_type: 'perimetre_de_developpement_prioritaire',
       data,
       type: 'pdp_updated',
     });
@@ -70,7 +71,7 @@ const networkRemindersRouter = router({
       z.object({
         createdAt: z.string().optional(),
         networkId: z.number(),
-        networkType: z.enum(reminderNetworkTypes),
+        networkType: z.enum(networkEntityTypes),
         note: z.string().nullable().optional(),
         type: z.enum(reminderTypes),
       })
@@ -106,18 +107,20 @@ const networkRemindersRouter = router({
     .input(
       z.object({
         networkId: z.number(),
-        networkType: z.enum(reminderNetworkTypes),
+        networkType: z.enum(networkEntityTypes),
         notes: z.string().nullable(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const reseau = await reseauxService.getNetworkLabel(input.networkId, reminderNetworkTypeToTable[input.networkType]);
+      const reseau = await reseauxService.getNetworkLabel(input.networkId, networkEntityToTable[input.networkType]);
       await updateNetworkNotes(input.networkId, input.networkType, input.notes);
       await createUserEvent({
         author_id: ctx.user.id,
         context_id: String(input.networkId),
-        context_type: 'network',
+        context_type: input.networkType,
         data: {
+          communes_count: reseau.communes_count,
+          first_commune: reseau.first_commune,
           identifiant_reseau: reseau.identifiant_reseau,
           network_id: input.networkId,
           network_type: input.networkType,
@@ -141,7 +144,7 @@ export const reseauxRouter = router({
     await createUserEvent({
       author_id: ctx.user.id,
       context_id: input.id,
-      context_type: 'network',
+      context_type: tableToNetworkEntity[input.type],
       data: { id: input.id, identifiant_reseau: null, nom_reseau: null, type: input.type },
       type: 'network_created',
     });
@@ -156,7 +159,7 @@ export const reseauxRouter = router({
     await createUserEvent({
       author_id: ctx.user.id,
       context_id: String(input.id),
-      context_type: 'network',
+      context_type: tableToNetworkEntity[input.type],
       data: {
         id: input.id,
         identifiant_reseau: reseau.identifiant_reseau,
@@ -198,7 +201,7 @@ export const reseauxRouter = router({
     await createUserEvent({
       author_id: ctx.user.id,
       context_id: String(input.id),
-      context_type: 'network',
+      context_type: tableToNetworkEntity[input.type],
       data: {
         id: input.id,
         identifiant_reseau: reseau.identifiant_reseau,

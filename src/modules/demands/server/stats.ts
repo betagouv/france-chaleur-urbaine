@@ -170,7 +170,7 @@ export const getReseauxStats = async () => {
     .selectFrom(
       kdb
         .selectFrom('reseaux_de_chaleur')
-        .select(['id_fcu', 'nom_reseau', 'Identifiant reseau', 'tags', 'notes', sql<NetworkType>`'existant'`.as('network_type')])
+        .select(['id_fcu', 'nom_reseau', 'Identifiant reseau', 'tags', 'notes', sql<NetworkType>`'reseau_de_chaleur'`.as('network_type')])
         .unionAll(
           kdb
             .selectFrom('zones_et_reseaux_en_construction')
@@ -180,7 +180,7 @@ export const getReseauxStats = async () => {
               sql<string | null>`NULL`.as('Identifiant reseau'),
               'tags',
               'notes',
-              sql<NetworkType>`'en_construction'`.as('network_type'),
+              sql<NetworkType>`'reseau_en_construction'`.as('network_type'),
             ])
         )
         .as('r')
@@ -253,7 +253,7 @@ export const getReseauxStats = async () => {
             FROM users u
             JOIN user_permissions up ON up.user_id = u.id
             WHERE up.resource_id = ${sql.ref('r.id_fcu')}::text
-              AND up.type = CASE WHEN ${sql.ref('r.network_type')} = 'existant' THEN 'reseau_existant' ELSE 'reseau_en_construction' END
+              AND up.type = ${sql.ref('r.network_type')}
               AND u.active IS TRUE
           ),
           '[]'::json
@@ -276,10 +276,7 @@ export const getReseauxStats = async () => {
             FROM network_reminders nr
             LEFT JOIN users u ON u.id = nr.author_id
             WHERE nr.network_id = ${sql.ref('r.id_fcu')}
-              AND nr.network_type = CASE
-                WHEN ${sql.ref('r.network_type')} = 'existant' THEN 'reseau_existant'
-                ELSE 'reseau_en_construction'
-              END
+              AND nr.network_type = ${sql.ref('r.network_type')}
               AND nr.type = 'demand'
           ),
           '[]'::json
