@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import TextAreaInput from '@/components/form/dsfr/TextArea';
@@ -8,7 +8,6 @@ import Dialog from '@/components/ui/Dialog';
 import Icon from '@/components/ui/Icon';
 import TimeAgo from '@/components/ui/TimeAgo';
 import type { NetworkReminderListItem } from '@/modules/reseaux/server/reminders';
-import debounce from '@/utils/debounce';
 
 export type { NetworkReminderListItem };
 
@@ -151,40 +150,49 @@ export function RemindersCell({
 }
 
 /**
- * Table cell rendering a network's free-text notes with a debounced save in a modal editor.
+ * Table cell rendering a network's free-text notes in a modal editor with explicit save/cancel.
  * Shows a truncated preview in the cell and opens a large textarea dialog on edit.
  */
 export function NotesCell({ initialNotes, onSave }: { initialNotes: string; onSave: (notes: string) => Promise<void> }) {
   const [value, setValue] = useState(initialNotes);
-  const debouncedSave = useMemo(() => debounce((v: string) => onSave(v), 500), [onSave]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  useEffect(() => () => debouncedSave.cancel(), [debouncedSave]);
+  const openDialog = () => {
+    setValue(initialNotes);
+    setIsDialogOpen(true);
+  };
 
-  const onChangeHandler = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement>) => {
-      const v = e.target.value;
-      setValue(v);
-      debouncedSave(v);
-    },
-    [debouncedSave]
-  );
+  const handleSave = async () => {
+    if (value !== initialNotes) {
+      await onSave(value);
+    }
+    setIsDialogOpen(false);
+  };
 
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} title="Notes" size="lg">
-        <TextAreaInput
-          label=""
-          className="w-full [&>textarea]:leading-4!"
-          nativeTextAreaProps={{
-            onChange: onChangeHandler,
-            rows: 20,
-            value,
-          }}
-        />
+        <div className="flex flex-col gap-4">
+          <TextAreaInput
+            label=""
+            className="w-full [&>textarea]:leading-4!"
+            nativeTextAreaProps={{
+              autoFocus: true,
+              onChange: (e) => setValue(e.target.value),
+              rows: 20,
+              value,
+            }}
+          />
+          <div className="flex justify-end gap-2">
+            <Button priority="secondary" onClick={() => setIsDialogOpen(false)}>
+              Annuler
+            </Button>
+            <Button onClick={() => void handleSave()}>Enregistrer</Button>
+          </div>
+        </div>
       </Dialog>
-      <div className="whitespace-pre-wrap">{value.length > 150 ? `${value.slice(0, 150)}...` : value}</div>
-      <Button priority="tertiary" iconId="fr-icon-pencil-line" onClick={() => setIsDialogOpen(true)} />
+      <div className="whitespace-pre-wrap">{initialNotes.length > 150 ? `${initialNotes.slice(0, 150)}...` : initialNotes}</div>
+      <Button priority="tertiary" iconId="fr-icon-pencil-line" onClick={openDialog} />
     </>
   );
 }
