@@ -36,7 +36,7 @@ export const zContactFormAdemeHelp = z.object({
   }),
 });
 
-export const zAirtableAdemeHelp = z.object({
+export const zGristAdemeHelp = z.object({
   Adresse: z.string(),
   Date: z.iso.datetime(),
   DPE: z.enum(DPE_VALUES),
@@ -53,7 +53,7 @@ export const zAirtableAdemeHelp = z.object({
     .default(''),
   'Url simulation': z.string(),
 });
-export type GetAirtableAdeme = z.infer<typeof zAirtableAdemeHelp>;
+export type GetGristAdemeHelp = z.infer<typeof zGristAdemeHelp>;
 
 export const zLocationInfos = z.strictObject({
   city: z.string(),

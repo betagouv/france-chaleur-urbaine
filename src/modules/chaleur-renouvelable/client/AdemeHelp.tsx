@@ -17,7 +17,7 @@ import { isDefined } from '@/utils/core';
 export default function AdemeHelp({ className }: { className?: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
-  const trpcUtils = trpc.useUtils();
+  const addContactToGrist = trpc.batEnr.addContactToGrist.useMutation();
   const urlParams = useChoixChauffageQueryParams();
   const espaceExterieurLabel = {
     both: 'Partagés et individuels',
@@ -38,7 +38,7 @@ export default function AdemeHelp({ className }: { className?: string }) {
           ? urlParams.espaceExterieur
           : 'none';
 
-      await trpcUtils.client.batEnr.addContactToAirtable.query({
+      await addContactToGrist.mutateAsync({
         Adresse: urlParams.adresse ?? '',
         Date: new Date().toISOString(),
         DPE: urlParams.dpe,

@@ -297,7 +297,7 @@ export const zContactFormCreateDemandInput = z
   })
   .superRefine(validateDemandContactInfo);
 
-export const zAirtableFCUTeamContact = z.object({
+export const zGristFCUTeamContact = z.object({
   Adresse: z.string().min(1),
   Date: z.iso.datetime(),
   Email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),

@@ -16,14 +16,13 @@ import {
   normalizeHeatingEnergy,
   normalizeHeatingType,
   type UpdateDemandInput,
-  zAirtableFCUTeamContact,
+  zGristFCUTeamContact,
 } from '@/modules/demands/constants';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
 import { createEligibilityTestAddress, updateEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
-import { AirtableDB } from '@/server/db/airtable';
 import {
   type DemandEmails,
   type Demands,
@@ -37,9 +36,9 @@ import {
 import { createBaseModel } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
 import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
-import { Airtable } from '@/types/enum/Airtable';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { UserRole } from '@/types/enum/UserRole';
+import { addGristRows, FCU_PROD_GRIST_TABLE } from '@/utils/grist';
 import type { FrontendType } from '@/utils/typescript';
 
 import * as assignmentRulesService from './assignment-rules-service';
@@ -52,23 +51,54 @@ export const tableName = 'demands';
 export const emailsTableName = 'demand_emails';
 const baseModel = createBaseModel(tableName);
 
+type GristFCUTeamContactRow = {
+  Adresse: string;
+  Date: string;
+  Email: string;
+  Mode_de_chauffage: string;
+  Nom: string;
+  Nom_de_la_structure: string;
+  Nombre_de_logement?: number;
+  Prenom: string;
+  Structure: string;
+  Telephone: string;
+  Type_de_structure: string;
+};
+
 export const createFCUTeamContact = async (values: CreateFCUTeamContactInput) => {
-  await AirtableDB(Airtable.CONTACT_ENTRETIEN_UTILISATEUR).create(
-    zAirtableFCUTeamContact.parse({
-      Adresse: values.address,
-      Date: new Date().toISOString(),
-      Email: values.email,
-      'Mode de chauffage': values.heatingEnergy,
-      Nom: values.lastName,
-      'Nom de la structure': values.company,
-      'Nombre de logement': values.nbLogements,
-      Prenom: values.firstName,
-      Structure: values.structure,
-      Surface: values.demandArea,
-      'Type de structure': values.companyType,
-      Téléphone: values.phone,
-    })
-  );
+  const validatedContact = zGristFCUTeamContact.parse({
+    Adresse: values.address,
+    Date: new Date().toISOString(),
+    Email: values.email,
+    'Mode de chauffage': values.heatingEnergy,
+    Nom: values.lastName,
+    'Nom de la structure': values.company,
+    'Nombre de logement': values.nbLogements,
+    Prenom: values.firstName,
+    Structure: values.structure,
+    Surface: values.demandArea,
+    'Type de structure': values.companyType,
+    Téléphone: values.phone,
+  });
+
+  const record: GristFCUTeamContactRow = {
+    Adresse: validatedContact.Adresse,
+    Date: validatedContact.Date,
+    Email: validatedContact.Email,
+    Mode_de_chauffage: validatedContact['Mode de chauffage'],
+    Nom: validatedContact.Nom,
+    Nom_de_la_structure: validatedContact['Nom de la structure'],
+    Nombre_de_logement: validatedContact['Nombre de logement'],
+    Prenom: validatedContact.Prenom,
+    Structure: validatedContact.Structure,
+    Telephone: validatedContact.Téléphone,
+    Type_de_structure: validatedContact['Type de structure'],
+  };
+
+  await addGristRows({
+    records: [record],
+    tableName: FCU_PROD_GRIST_TABLE.FCU_CONTACT_ENTRETIEN_UTILISATEUR,
+  });
 };
 
 const augmentAdminDemand = <T extends Selectable<Demands>>({

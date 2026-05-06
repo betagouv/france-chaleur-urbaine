@@ -1,8 +1,7 @@
-import type { GetAirtableAdeme, GetLocationInput } from '@/modules/chaleur-renouvelable/constants';
+import type { GetGristAdemeHelp, GetLocationInput } from '@/modules/chaleur-renouvelable/constants';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
-import { AirtableDB } from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
-import { Airtable } from '@/types/enum/Airtable';
+import { addGristRows, FCU_PROD_GRIST_TABLE } from '@/utils/grist';
 import { fetchJSON } from '@/utils/network';
 
 export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) => {
@@ -54,6 +53,45 @@ export const getRnbByBanId = async ({ banId }: { banId: string }) => {
   return data.results?.[0];
 };
 
-export const addContactToAirtable = async ({ input }: { input: GetAirtableAdeme }) => {
-  AirtableDB(Airtable.CONTACT_CHALEUR_RENOUVELABLE).create(input);
+type GristContactChaleurRenouvelableRow = {
+  Adresse: string;
+  Consentement_RGPD: boolean;
+  DPE: GetGristAdemeHelp['DPE'];
+  Date: string;
+  Email: string;
+  Espace_exterieur: GetGristAdemeHelp['Espace extérieur'];
+  Mode_de_chauffage: GetGristAdemeHelp['Mode de chauffage'];
+  Nb_habitant_moyen: number;
+  Nombre_de_logement: number;
+  Surface_moyenne: number;
+  Telephone: string;
+  Url_simulation: string;
+};
+export const addContactToGrist = async ({ input }: { input: GetGristAdemeHelp }) => {
+  const gristApiEndpoint = process.env.GRIST_API_ENDPOINT;
+
+  if (!gristApiEndpoint) {
+    throw new Error('Missing GRIST_API_ENDPOINT');
+  }
+
+  const record: GristContactChaleurRenouvelableRow = {
+    Adresse: input.Adresse,
+    Consentement_RGPD: true,
+    Date: input.Date,
+    DPE: input.DPE,
+    Email: input.Email,
+    Espace_exterieur: input['Espace extérieur'],
+    Mode_de_chauffage: input['Mode de chauffage'],
+    Nb_habitant_moyen: input['Nb habitant moyen'],
+    Nombre_de_logement: input['Nombre de logement'],
+    Surface_moyenne: input['Surface moyenne'],
+    Telephone: input.Telephone,
+    Url_simulation: input['Url simulation'],
+  };
+
+  await addGristRows({
+    docIdOrUrl: gristApiEndpoint,
+    records: [record],
+    tableName: FCU_PROD_GRIST_TABLE.FCU_CONTACT_CHALEUR_RENOUVELABLE,
+  });
 };

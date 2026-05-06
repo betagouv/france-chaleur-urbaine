@@ -14,6 +14,7 @@ const serverConfigSchema = {
   DATA_GOUV_FR_DATASET_ID: z.string().optional(),
   DATABASE_URL: z.string(),
   GITHUB_CI: z.boolean().default(false),
+  GRIST_API_KEY: z.string().optional(),
   IS_REVIEW_APP: z.boolean().default(false),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   LOG_SQL_QUERIES: z.boolean().default(false),
