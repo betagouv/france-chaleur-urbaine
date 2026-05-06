@@ -7,6 +7,7 @@ import buildContext from '@/modules/config/server/context-builder';
 import { dataRouter } from '@/modules/data/server/trpc-routes';
 import { demandsRouter } from '@/modules/demands/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
+import { emailRouter } from '@/modules/email/server/trpc-routes';
 import { eventsRouter } from '@/modules/events/server/trpc-routes';
 import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
 import { permissionsRouter } from '@/modules/permissions/server/trpc-routes';
@@ -45,6 +46,7 @@ export const appRouter = router({
   data: dataRouter,
   demands: demandsRouter,
   diagnostic: diagnosticRouter,
+  email: emailRouter,
   events: eventsRouter,
   // Health check endpoint - no auth required
   healthCheck: route.query(() => {

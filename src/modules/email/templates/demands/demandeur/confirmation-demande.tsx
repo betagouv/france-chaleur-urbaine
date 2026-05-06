@@ -1,27 +1,26 @@
 import type { formatHeatingTypeToAirtable } from '@/modules/demands/constants';
+import { Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
+import { defineEmailScenarios } from '@/modules/email/scenarios';
 import type { AvailableStructure } from '@/types/AddressData';
 import type { Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
 
-import { Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '../../components';
-
-type CreationDemandeEmailProps = {
+type ConfirmationDemandeProps = {
   demand: Pick<Demand, 'Adresse' | 'Distance au réseau' | 'Structure' | 'Departement'> & {
     Structure: AvailableStructure;
     'Type de chauffage': ReturnType<typeof formatHeatingTypeToAirtable>;
   };
 };
 
-const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
+const ConfirmationDemande = ({ demand }: ConfirmationDemandeProps) => {
   const distanceThreshold = demand.Departement === 'Paris' ? 60 : 100;
   const intermediateDistanceThreshold = demand.Departement === 'Paris' ? 100 : 200;
   return (
     <Layout>
-      {process.env.NODE_ENV === 'test' && <pre>Paramètres (affiché seulement sur mailpit) : {JSON.stringify(demand, null, 2)}</pre>}
       <Text>Bonjour,</Text>
       <Text>
         Nous vous remercions pour votre demande de contact sur{' '}
-        <Link href="/" campaign="demands.user-new" content="fcu-website">
+        <Link href="/" campaign="demands.demandeur.confirmation-demande" content="fcu-website">
           France Chaleur Urbaine
         </Link>{' '}
         pour le <strong>{demand.Adresse}</strong>.
@@ -68,7 +67,11 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
                 </Text>
                 <Text>
                   Sans attendre, nous vous invitons à{' '}
-                  <Link href="/documentation/guide-france-chaleur-urbaine.pdf" campaign="demands.user-new" content="guide-pdf">
+                  <Link
+                    href="/documentation/guide-france-chaleur-urbaine.pdf"
+                    campaign="demands.demandeur.confirmation-demande"
+                    content="guide-pdf"
+                  >
                     télécharger notre guide
                   </Link>
                   , qui récapitule les grandes étapes pour se raccorder à un réseau de chaleur, ainsi que les principales aides financières
@@ -255,7 +258,7 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
 
       <Text>
         Pour toute question sur votre demande, vous pouvez utiliser le{' '}
-        <Link href="/contact" campaign="demands.user-new" content="contact">
+        <Link href="/contact" campaign="demands.demandeur.confirmation-demande" content="contact">
           formulaire de contact
         </Link>
         .
@@ -266,4 +269,276 @@ const CreationDemandeEmail = ({ demand }: CreationDemandeEmailProps) => {
   );
 };
 
-export default CreationDemandeEmail;
+const adresseProvince = '12 Place du Capitole, 31000 Toulouse';
+const adresseParis = '123 Rue de la Paix, 75002 Paris';
+const departementProvince = 'Haute-Garonne';
+const departementParis = 'Paris';
+
+export const scenarios = defineEmailScenarios<typeof ConfirmationDemande>({
+  copro_collectif_inf100m: {
+    label: 'Province · Copropriété · Collectif · < 100 m (proche)',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 80,
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  copro_collectif_inf200m: {
+    label: 'Province · Copropriété · Collectif · 100-200 m (intermédiaire)',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 150,
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  copro_collectif_sup200m: {
+    label: 'Province · Copropriété · Collectif · > 200 m (éloigné)',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 250,
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  copro_individuel_inf200m: {
+    label: 'Province · Copropriété · Individuel · < 200 m',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 150,
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Individuel',
+      },
+    },
+  },
+  copro_individuel_sup200m: {
+    label: 'Province · Copropriété · Individuel · > 200 m',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 250,
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Individuel',
+      },
+    },
+  },
+  maison_individuel_inf200m: {
+    label: 'Province · Maison · Individuel · < 200 m',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 150,
+        Structure: 'Maison individuelle',
+        'Type de chauffage': 'Individuel',
+      },
+    },
+  },
+  maison_individuel_sup200m: {
+    label: 'Province · Maison · Individuel · > 200 m',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 250,
+        Structure: 'Maison individuelle',
+        'Type de chauffage': 'Individuel',
+      },
+    },
+  },
+  paris_copro_collectif_inf60m: {
+    label: 'Paris · Copropriété · Collectif · < 60 m (proche)',
+    props: {
+      demand: {
+        Adresse: adresseParis,
+        Departement: departementParis,
+        'Distance au réseau': 40,
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  paris_copro_collectif_inf100m: {
+    label: 'Paris · Copropriété · Collectif · 60-100 m (intermédiaire)',
+    props: {
+      demand: {
+        Adresse: adresseParis,
+        Departement: departementParis,
+        'Distance au réseau': 80,
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  paris_copro_collectif_sup100m: {
+    label: 'Paris · Copropriété · Collectif · > 100 m (éloigné)',
+    props: {
+      demand: {
+        Adresse: adresseParis,
+        Departement: departementParis,
+        'Distance au réseau': 150,
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  paris_copro_individuel_inf100m: {
+    label: 'Paris · Copropriété · Individuel · < 100 m',
+    props: {
+      demand: {
+        Adresse: adresseParis,
+        Departement: departementParis,
+        'Distance au réseau': 80,
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Individuel',
+      },
+    },
+  },
+  paris_copro_individuel_sup100m: {
+    label: 'Paris · Copropriété · Individuel · > 100 m',
+    props: {
+      demand: {
+        Adresse: adresseParis,
+        Departement: departementParis,
+        'Distance au réseau': 150,
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Individuel',
+      },
+    },
+  },
+  paris_tertiaire_collectif_inf60m: {
+    label: 'Paris · Tertiaire · Collectif · < 60 m',
+    props: {
+      demand: {
+        Adresse: adresseParis,
+        Departement: departementParis,
+        'Distance au réseau': 50,
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  paris_tertiaire_collectif_inf100m: {
+    label: 'Paris · Tertiaire · Collectif · 60-100 m',
+    props: {
+      demand: {
+        Adresse: adresseParis,
+        Departement: departementParis,
+        'Distance au réseau': 80,
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  paris_tertiaire_collectif_sup100m: {
+    label: 'Paris · Tertiaire · Collectif · > 100 m',
+    props: {
+      demand: {
+        Adresse: adresseParis,
+        Departement: departementParis,
+        'Distance au réseau': 150,
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  paris_tertiaire_individuel_inf100m: {
+    label: 'Paris · Tertiaire · Individuel · < 100 m',
+    props: {
+      demand: {
+        Adresse: adresseParis,
+        Departement: departementParis,
+        'Distance au réseau': 50,
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Individuel',
+      },
+    },
+  },
+  paris_tertiaire_individuel_sup100m: {
+    label: 'Paris · Tertiaire · Individuel · > 100 m',
+    props: {
+      demand: {
+        Adresse: adresseParis,
+        Departement: departementParis,
+        'Distance au réseau': 150,
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Individuel',
+      },
+    },
+  },
+  tertiaire_collectif_inf100m: {
+    label: 'Province · Tertiaire · Collectif · < 100 m',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 80,
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  tertiaire_collectif_inf200m: {
+    label: 'Province · Tertiaire · Collectif · 100-200 m',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 150,
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  tertiaire_collectif_sup200m: {
+    label: 'Province · Tertiaire · Collectif · > 200 m',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 250,
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Collectif',
+      },
+    },
+  },
+  tertiaire_individuel_inf200m: {
+    label: 'Province · Tertiaire · Individuel · < 200 m',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 150,
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Individuel',
+      },
+    },
+  },
+  tertiaire_individuel_sup200m: {
+    label: 'Province · Tertiaire · Individuel · > 200 m',
+    props: {
+      demand: {
+        Adresse: adresseProvince,
+        Departement: departementProvince,
+        'Distance au réseau': 250,
+        Structure: 'Tertiaire',
+        'Type de chauffage': 'Individuel',
+      },
+    },
+  },
+});
+
+export default ConfirmationDemande;

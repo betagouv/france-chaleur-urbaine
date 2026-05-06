@@ -1,6 +1,7 @@
-import { Button, Callout, Layout, Link, Text } from '../../components';
+import { Button, Callout, Layout, Link, Text } from '@/modules/email/react-email/components';
+import { defineEmailScenarios } from '@/modules/email/scenarios';
 
-export const InscriptionEmail = () => {
+const OuvertureEspaceGestionnaire = () => {
   return (
     <Layout>
       <Text>Bonjour,</Text>
@@ -12,7 +13,7 @@ export const InscriptionEmail = () => {
         L'Espace gestionnaire permet aux collectivités et exploitants d'accéder à l'ensemble des demandes reçues via France Chaleur Urbaine
         sur leur territoire / leurs réseaux.
       </Text>
-      <Button href="/connexion" campaign="auth.inscription" content="connexion">
+      <Button href="/connexion" campaign="auth.gestionnaire.ouverture-espace" content="connexion">
         Se connecter à l'espace gestionnaire
       </Button>
       <Callout style={{ marginTop: '16px' }}>
@@ -30,7 +31,7 @@ export const InscriptionEmail = () => {
       </Text>
       <Text>
         Pour rappel,{' '}
-        <Link href="/collectivites-et-exploitants" campaign="auth.inscription" content="fcu-website">
+        <Link href="/collectivites-et-exploitants" campaign="auth.gestionnaire.ouverture-espace" content="fcu-website">
           France Chaleur Urbaine
         </Link>{' '}
         est un <strong>service porté par l'ADEME qui vise à accélérer la dynamique de raccordement aux réseaux de chaleur</strong>. France
@@ -51,4 +52,11 @@ export const InscriptionEmail = () => {
   );
 };
 
-export default InscriptionEmail;
+export const scenarios = defineEmailScenarios<typeof OuvertureEspaceGestionnaire>({
+  defaut: {
+    label: 'Ouverture espace gestionnaire',
+    props: {},
+  },
+});
+
+export default OuvertureEspaceGestionnaire;

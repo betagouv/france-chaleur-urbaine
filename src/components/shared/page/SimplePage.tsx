@@ -412,6 +412,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
+          href: '/admin/emails',
+        },
+        text: "Modèles d'emails",
+      },
+      {
+        linkProps: {
           href: '/admin/tests-adresses',
         },
         text: "Tests d'adresses",

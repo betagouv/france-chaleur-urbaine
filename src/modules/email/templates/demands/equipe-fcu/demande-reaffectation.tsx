@@ -1,13 +1,14 @@
-import { Layout, Link, Table, TableColumn, TableRow, Text, Title } from '../../components';
+import { Layout, Link, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
+import { defineEmailScenarios } from '@/modules/email/scenarios';
 
-type Props = {
+type DemandeReaffectationProps = {
   demandId: string;
   comment: string | null;
   requestedSncuId: string;
   requesterEmail: string;
 };
 
-const DemandAdminAssignmentChangeRequestEmail = ({ demandId, requestedSncuId, comment, requesterEmail }: Props) => {
+const DemandeReaffectation = ({ demandId, requestedSncuId, comment, requesterEmail }: DemandeReaffectationProps) => {
   return (
     <Layout>
       <Title>Demande de réaffectation</Title>
@@ -42,11 +43,16 @@ const DemandAdminAssignmentChangeRequestEmail = ({ demandId, requestedSncuId, co
   );
 };
 
-DemandAdminAssignmentChangeRequestEmail.PreviewProps = {
-  comment: 'Le réseau actuellement attribué ne dessert pas cette zone.',
-  demandId: 'abc123',
-  requestedSncuId: '7501C',
-  requesterEmail: 'collectivite@test.local',
-} satisfies Props;
+export const scenarios = defineEmailScenarios<typeof DemandeReaffectation>({
+  defaut: {
+    label: 'Demande de réaffectation par un gestionnaire',
+    props: {
+      comment: 'Le réseau actuellement attribué ne dessert pas cette zone.',
+      demandId: 'abc123',
+      requestedSncuId: '7501C',
+      requesterEmail: 'collectivite@test.local',
+    },
+  },
+});
 
-export default DemandAdminAssignmentChangeRequestEmail;
+export default DemandeReaffectation;

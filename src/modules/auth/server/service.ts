@@ -54,7 +54,7 @@ export const register = async ({
     .executeTakeFirstOrThrow();
 
   logger.info('account register', { role, user_id: insertedUser.id });
-  await sendEmailTemplate('auth.activation', insertedUser, { activationToken });
+  await sendEmailTemplate('auth.utilisateur.confirmation-inscription', insertedUser, { activationToken });
 
   await createUserEvent({
     author_id: insertedUser.id,
@@ -160,7 +160,7 @@ export const requestPassword = async (email: string) => {
 
   const token = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string);
   await kdb.updateTable('users').set({ reset_token: resetToken }).where('id', '=', user.id).execute();
-  await sendEmailTemplate('auth.reset-password', user, { token });
+  await sendEmailTemplate('auth.utilisateur.reinitialisation-mot-de-passe', user, { token });
 
   await createUserEvent({
     author_id: user.id,

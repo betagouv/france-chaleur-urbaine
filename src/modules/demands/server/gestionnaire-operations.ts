@@ -212,7 +212,7 @@ export const requestDemandAssignmentChange = async (
 
   const requester = await kdb.selectFrom('users').select('email').where('id', '=', userId).executeTakeFirst();
   await sendEmailTemplate(
-    'demands.admin-assignment-change-request',
+    'demands.equipe-fcu.demande-reaffectation',
     { email: clientConfig.destinationEmails.pro },
     {
       comment,

@@ -1,10 +1,11 @@
-import { Callout, Layout, Link, Text } from '../../components';
+import { Callout, Layout, Link, Text } from '@/modules/email/react-email/components';
+import { defineEmailScenarios } from '@/modules/email/scenarios';
 
-type NewDemandsEmailProps = {
+type NouvellesDemandesATraiterProps = {
   nbDemands: number;
 };
 
-export const NewDemandsEmail = ({ nbDemands }: NewDemandsEmailProps) => {
+const NouvellesDemandesATraiter = ({ nbDemands }: NouvellesDemandesATraiterProps) => {
   return (
     <Layout>
       <Text>Bonjour,</Text>
@@ -13,7 +14,7 @@ export const NewDemandsEmail = ({ nbDemands }: NewDemandsEmailProps) => {
           <Text>De nouvelles demandes ont été déposées sur France Chaleur Urbaine à proximité de votre réseau de chaleur.</Text>
           <Text>
             Pour retrouver les demandes, rendez-vous dans votre{' '}
-            <Link href="/pro/demandes" campaign="demands.gestionnaire-new">
+            <Link href="/pro/demandes" campaign="demands.gestionnaire.nouvelles-demandes-a-traiter">
               espace gestionnaire
             </Link>
             .
@@ -27,7 +28,7 @@ export const NewDemandsEmail = ({ nbDemands }: NewDemandsEmailProps) => {
           <Text>Une nouvelle demande a été déposée sur France Chaleur Urbaine à proximité de votre réseau de chaleur.</Text>
           <Text>
             Pour retrouver la demande, rendez-vous dans votre{' '}
-            <Link href="/pro/demandes" campaign="demands.gestionnaire-new">
+            <Link href="/pro/demandes" campaign="demands.gestionnaire.nouvelles-demandes-a-traiter">
               espace gestionnaire
             </Link>
             .
@@ -50,4 +51,15 @@ export const NewDemandsEmail = ({ nbDemands }: NewDemandsEmailProps) => {
   );
 };
 
-export default NewDemandsEmail;
+export const scenarios = defineEmailScenarios<typeof NouvellesDemandesATraiter>({
+  plusieurs_demandes: {
+    label: 'Plusieurs nouvelles demandes',
+    props: { nbDemands: 5 },
+  },
+  une_demande: {
+    label: 'Une seule nouvelle demande',
+    props: { nbDemands: 1 },
+  },
+});
+
+export default NouvellesDemandesATraiter;

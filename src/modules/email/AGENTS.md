@@ -2,228 +2,164 @@
 
 ## Architecture
 
-This module uses **[react-email](https://react.email/)** to build and render email templates.
-
-### Directory Structure
+Module qui produit et envoie les emails transactionnels de l'application.
+Le rendu HTML/texte est assuré par les composants atomiques de
+[`@react-email/components`](https://react.email/) (`Layout`, `Text`, `Button`…).
 
 ```
 src/modules/email/
-├── email.config.tsx           # Email template registry
+├── email.config.tsx           # Registre central : tous les templates, leurs scénarios et métadonnées
+├── index.tsx                  # `sendEmailTemplate(...)` : rendu + envoi via nodemailer
+├── scenarios.ts               # Helper `defineEmailScenarios` + types associés (sans dépendance vers la config)
 ├── react-email/
-│   ├── components.tsx         # Reusable email components
-│   └── templates/            # Email templates organized by module
-│       ├── auth/             # Authentication emails
-│       ├── demands/          # Demand-related emails
-│       └── legacy/           # Legacy templates
+│   └── components.tsx         # Composants atomiques réutilisables
+├── templates/                 # Un fichier par template, organisés par <module>/<destinataire>/
+│   ├── auth/
+│   │   ├── gestionnaire/
+│   │   │   └── ouverture-espace.tsx
+│   │   └── utilisateur/
+│   │       ├── confirmation-inscription.tsx
+│   │       └── reinitialisation-mot-de-passe.tsx
+│   └── demands/
+│       ├── demandeur/
+│       ├── equipe-fcu/
+│       └── gestionnaire/
+├── server/
+│   └── trpc-routes.ts         # Router admin (`email.list`, `email.preview`)
+└── client/
+    └── admin/
+        └── EmailsPage.tsx     # Visualiseur dans /admin/emails
 ```
 
-## Creating Email Templates
+## Convention de nommage
 
-### 1. Template Structure
+Clés des templates dans `email.config.tsx` :
 
-Each folder in `templates/` corresponds to a **functional module** (auth, demands, etc.).
-
-Create your template file inside the appropriate module folder:
-- `templates/auth/` for authentication-related emails
-- `templates/demands/` for demand management emails
-- `templates/legacy/` for legacy/deprecated templates
-
-### 2. Component Imports
-
-**IMPORTANT:** Always import components using relative path `../../components`:
-
-```tsx
-import { Layout, Text, Button, Title, Link } from '../../components';
+```
+<module>.<destinataire>.<intention>
 ```
 
-**NEVER** import directly from `@react-email/components`.
+- **module** : `auth` ou `demands`.
+- **destinataire** : `utilisateur`, `gestionnaire`, `demandeur`, `equipe-fcu`.
+- **intention** : verbe ou expression courte en kebab-case français
+  (ex: `confirmation-inscription`, `nouvelle-demande`, `enquete-satisfaction`).
 
-### 3. Shared Test Data
+L'arborescence des fichiers `templates/` reflète cette convention.
 
-**STANDARD:** Use `./_data.ts` to share test entities across multiple email templates in the same module.
+## Créer un nouveau template
 
-Create a `_data.ts` file in your template folder to define reusable test data:
-
-```tsx
-// templates/demands/_data.ts
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
-
-export const demand: AirtableLegacyRecord = {
-  Nom: 'MARTIN',
-  Prénom: 'ALICE',
-  Mail: 'a.martin@email.com',
-  // ... other fields
-};
-
-export const anotherDemand: AirtableLegacyRecord = {
-  // ... another test case
-};
-```
-
-Then import in your templates:
+### 1. Fichier du composant
 
 ```tsx
-import { demand } from './_data';
+// templates/auth/utilisateur/mon-email.tsx
+import { defineEmailScenarios } from '@/modules/email/scenarios';
+import { Button, Layout, Text } from '@/modules/email/react-email/components';
 
-MyTemplate.PreviewProps = { demand };
-```
+const MonEmail = ({ token }: { token: string }) => (
+  <Layout>
+    <Text>Bonjour,</Text>
+    <Button href={`/lien?token=${token}`}>Action</Button>
+  </Layout>
+);
 
-**Benefits:**
-- Single source of truth for test data across multiple templates
-- Consistent test scenarios
-- Easier maintenance
-
-### 4. Available Components
-
-Only use components exported from `components.tsx`:
-- `Layout` - Base email layout with header/footer
-- `Text` - Styled text paragraph
-- `Title` - Section title
-- `Button` - CTA button
-- `Link` - Hyperlink
-- `Note` - Small footnote text
-- `Callout` - Highlighted info box (blue left border, for critical instructions)
-- `Table`, `TableRow`, `TableColumn` - Table components
-- `Section`, `Row`, `Column` - Layout components
-- `Hr` - Horizontal rule
-- `Markdown` - Markdown content
-- `LogoFCU`, `LogoRF` - Brand logos
-
-### 5. Template Pattern
-
-```tsx
-import type { SomeType } from '@/modules/some-module/types';
-import { Layout, Text, Button, Title } from '../../components';
-import { sampleData } from './_data';
-
-const MyModuleEmailTemplate = ({ data }: { data: SomeType }) => {
-  return (
-    <Layout>
-      <Title>Email Title</Title>
-      <Text>Email content here...</Text>
-      <Button href="https://example.com">Call to Action</Button>
-    </Layout>
-  );
-};
-
-// REQUIRED: Define preview props for testing
-MyModuleEmailTemplate.PreviewProps = { data: sampleData };
-
-export default MyModuleEmailTemplate;
-```
-
-### 6. Preview Props
-
-**Always** add `.PreviewProps` to your template component for development and testing:
-
-```tsx
-MyTemplate.PreviewProps = {
-  user: testUserData,
-  token: 'sample-token'
-};
-```
-
-This allows the template to be previewed in the React Email dev tools.
-
-## Registering Templates
-
-### In `email.config.tsx`
-
-Add your template to the `emails` object with the following naming convention:
-
-**Format:** `'<module>.<template-name>'`
-
-Example:
-```tsx
-export const emails = {
-  // Auth module templates
-  'auth.activation': {
-    Component: AuthActivationEmail,
-    preview: 'Finalisez votre inscription en confirmant votre adresse email',
-    subject: '[France Chaleur Urbaine] Confirmez votre email',
+// Scénarios pré-paramétrés affichés dans /admin/emails.
+// Le helper applique un type-checking strict sur les props du composant.
+export const scenarios = defineEmailScenarios<typeof MonEmail>({
+  defaut: {
+    label: 'Cas par défaut',
+    props: { token: 'sample-token' },
   },
+});
 
-  // Demands module templates
-  'demands.admin-new': {
-    Component: DemandAdminNewEmail,
-    preview: 'Une nouvelle demande de contact a �t� cr��e',
-    subject: '[France Chaleur Urbaine] Nouvelle demande de contact',
-  },
-
-  // Your new template
-  'mymodule.template-name': {
-    Component: MyModuleEmailTemplate,
-    preview: 'Short preview text',
-    subject: '[France Chaleur Urbaine] Subject line',
-  },
-} as const;
+export default MonEmail;
 ```
 
-**Prefix Convention:**
-- Use the module name as prefix: `auth.`, `demands.`, etc.
-- Use kebab-case for template names: `admin-new`, `user-relance`
+**Règles** :
+- Les composants importent **uniquement** depuis `@/modules/email/react-email/components`,
+  jamais directement depuis `@react-email/components`.
+- Tout template doit déclarer au moins un scénario (clé `defaut` en général).
+- Pour des templates avec branches conditionnelles (éligibilité, distance, type
+  de bâtiment…), exposer un scénario par cas significatif — ils seront tous
+  navigables dans l'admin.
 
-## Example: Complete Template
+### 2. Enregistrement dans `email.config.tsx`
+
+La map est wrappée dans le helper `defineEmails({ ... })` qui :
+
+- préserve les types littéraux des clés (utilisés pour `EmailType`) ;
+- capture le type précis de chaque `Component` ;
+- **valide à la compilation** que le `scenarios` de chaque entrée matche les
+  props du `Component` de la même entrée (impossible de mélanger les
+  scénarios d'un email avec un autre — TS rejette).
+
+Ajouter une entrée :
 
 ```tsx
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
-import { Layout, Link, Note, Table, TableColumn, TableRow, Text, Title } from '../../components';
-import { demand as demandData } from './_data';
+import MonEmail, { scenarios as monEmailScenarios } from './templates/.../mon-email';
 
-const DemandAdminNewEmail = ({ demand }: { demand: AirtableLegacyRecord }) => {
-  return (
-    <Layout>
-      <Title>Nouvelle demande de contact reçue</Title>
-
-      <Text>Une nouvelle demande de contact a été créée sur France Chaleur Urbaine avec les informations suivantes :</Text>
-
-      <Table>
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Nom</TableColumn>
-          <TableColumn>{demand.Nom}</TableColumn>
-        </TableRow>
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Email</TableColumn>
-          <TableColumn>
-            <Link href={`mailto:${demand.Mail}`}>{demand.Mail}</Link>
-          </TableColumn>
-        </TableRow>
-      </Table>
-
-      <Note>Cette demande a été automatiquement générée par le système France Chaleur Urbaine.</Note>
-    </Layout>
-  );
-};
-
-DemandAdminNewEmail.PreviewProps = { demand: demandData };
-
-export default DemandAdminNewEmail;
+export const emails = defineEmails({
+  // ... entrées existantes
+  'auth.utilisateur.mon-email': {
+    Component: MonEmail,
+    scenarios: monEmailScenarios,
+    label: 'Mon email',
+    description: 'Phrase descriptive (rôle + destinataire + déclencheur).',
+    subject: '[France Chaleur Urbaine] Sujet',
+    preview: 'Ligne de preview',
+  },
+});
 ```
 
-## Sending Emails
+Champs obligatoires :
 
-Use the `sendEmailTemplate` helper from the email service:
+- `Component` : default export du fichier de template.
+- `scenarios` : export nommé `scenarios` du fichier — **renommer à l'import**
+  pour éviter les collisions (`scenarios as monEmailScenarios`).
+- `label` : titre humain affiché dans la sidebar de l'admin.
+- `description` : phrase descriptive. Peut référencer
+  `` `clientConfig.destinationEmails.<key>` `` — la valeur réelle est
+  substituée dans l'UI admin par `listEmailTypes()`.
+- `subject` : sujet par défaut envoyé au destinataire.
+- `preview` : ligne de preview affichée par certains clients mail.
 
-```tsx
-import { sendEmailTemplate } from '@/server/email';
+## Envoyer un email
 
-await sendEmailTemplate('demands.admin-new',
-  { email: 'recipient@example.com' },
-  { demand: demandData }
+```ts
+import { sendEmailTemplate } from '@/modules/email';
+
+await sendEmailTemplate(
+  'auth.utilisateur.confirmation-inscription',
+  { email: 'user@example.com' },
+  { activationToken: 'abc' }
 );
 ```
 
-## Testing
+Le typing garantit que `templateProps` correspond aux props du composant cible.
 
-1. Create test data in `_data.ts` file in your template folder
-2. Use `.PreviewProps` to reference test data
-3. Preview templates using React Email dev tools: `pnpm email:dev`
+## Composants disponibles
 
-## Key Rules
+Depuis `@/modules/email/react-email/components` :
 
-1. **DO** import components from `@/modules/email/react-email/components`
-2. **DO** add `.PreviewProps` to all templates
-3. **DO** use only components from `components.tsx`
-4. **DO** prefix template keys with module name in `email.config.tsx`
-5. L **DON'T** import from `@react-email/components` directly
-6. L **DON'T** create custom styled components outside of `components.tsx`
+`Layout`, `Text`, `Title`, `Button`, `Link`, `Note`, `Callout`, `Table`,
+`TableRow`, `TableColumn`, `Section`, `Row`, `Column`, `Hr`, `Markdown`,
+`Img`, `LogoFCU`, `LogoRF`, `LogoADEME`.
+
+Ne pas créer de composants stylés ad-hoc dans les templates — étendre
+`components.tsx` si un nouveau primitif est nécessaire.
+
+## Visualiser les templates
+
+La page `/admin/emails` (rôle `admin` requis) liste tous les modèles avec
+sélecteur de scénario et rendu HTML/texte. C'est la seule façon supportée
+de prévisualiser les emails (pas de `dev:email`).
+
+## Tests
+
+Les tests d'intégration (`*.integration.spec.ts`) qui déclenchent l'envoi
+d'emails mockent `sendEmailTemplate` :
+
+```ts
+vi.mock('@/modules/email', () => ({
+  sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
+}));
+```

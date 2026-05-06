@@ -65,7 +65,7 @@ export const create: typeof baseModel.create = async ({ optin_at, ...data }, con
   const record = await baseModel.create({ ...data, optin_at: optin_at ? new Date() : null, password, status: 'valid' }, context);
 
   if (data.active && data.role === 'gestionnaire') {
-    await sendEmailTemplate('auth.inscription', { email: data.email as string, id: (record as any).id });
+    await sendEmailTemplate('auth.gestionnaire.ouverture-espace', { email: data.email as string, id: (record as any).id });
   }
 
   await createUserEvent({

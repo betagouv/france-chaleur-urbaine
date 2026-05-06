@@ -1,8 +1,8 @@
 import { clientConfig } from '@/client-config';
+import { Button, Layout, Link, Section, Text } from '@/modules/email/react-email/components';
+import { defineEmailScenarios } from '@/modules/email/scenarios';
 
-import { Button, Layout, Link, Section, Text } from '../../components';
-
-export const ResetPasswordEmail = ({ token }: { token: string }) => {
+const ReinitialisationMotDePasse = ({ token }: { token: string }) => {
   const url = `${clientConfig.websiteUrl}/reset-password/${token}`;
 
   return (
@@ -10,7 +10,7 @@ export const ResetPasswordEmail = ({ token }: { token: string }) => {
       <Text>Bonjour,</Text>
       <Text>Pour réinitialiser votre mot de passe, veuillez cliquer sur le bouton suivant :</Text>
       <Section style={{ padding: '8px 0' }}>
-        <Button href={url} campaign="auth.reset-password">
+        <Button href={url} campaign="auth.utilisateur.reinitialisation-mot-de-passe">
           Réinitialiser
         </Button>
       </Section>
@@ -20,7 +20,7 @@ export const ResetPasswordEmail = ({ token }: { token: string }) => {
       </Text>
       <Text>
         Et si cela ne fonctionne toujours pas, ou en cas d'autres questions ou problèmes avec votre compte, vous pouvez utiliser le{' '}
-        <Link href="/contact" campaign="auth.reset-password" content="contact">
+        <Link href="/contact" campaign="auth.utilisateur.reinitialisation-mot-de-passe" content="contact">
           formulaire de contact
         </Link>
         .
@@ -31,4 +31,11 @@ export const ResetPasswordEmail = ({ token }: { token: string }) => {
   );
 };
 
-export default ResetPasswordEmail;
+export const scenarios = defineEmailScenarios<typeof ReinitialisationMotDePasse>({
+  defaut: {
+    label: 'Réinitialisation du mot de passe',
+    props: { token: 'sample-reset-token' },
+  },
+});
+
+export default ReinitialisationMotDePasse;

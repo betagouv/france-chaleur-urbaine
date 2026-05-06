@@ -65,7 +65,7 @@ export const sendDemandEmail = async (
   }
 
   await sendEmailTemplate(
-    'demands.custom-email',
+    'demands.demandeur.message-gestionnaire',
     { email: emailContent.to, id: user.id },
     {
       content: emailContent.body,

@@ -82,7 +82,7 @@ export const notifyGestionnairesOfUnhandledDemands = async () => {
   }
 
   await processInParallel(emailsToSend, EMAIL_CONCURRENCY, async (recipient) => {
-    await sendEmailTemplate('demands.gestionnaire-old', recipient);
+    await sendEmailTemplate('demands.gestionnaire.rappel-demandes-en-attente', recipient);
   });
 
   console.info(`${emailsToSend.length} email(s) envoyé(s) pour les vieilles demandes.`);
@@ -119,7 +119,7 @@ export const notifyGestionnairesOfNewDemands = async () => {
   }
 
   await processInParallel(emailsToSend, EMAIL_CONCURRENCY, async (recipient) => {
-    await sendEmailTemplate('demands.gestionnaire-new', recipient, { nbDemands: 1 });
+    await sendEmailTemplate('demands.gestionnaire.nouvelles-demandes-a-traiter', recipient, { nbDemands: 1 });
   });
 
   console.info(`${emailsToSend.length} email(s) envoyé(s) pour les nouvelles demandes.`);

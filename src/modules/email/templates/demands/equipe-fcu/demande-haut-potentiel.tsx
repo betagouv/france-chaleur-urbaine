@@ -1,10 +1,10 @@
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import { Button, Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
+import { defineEmailScenarios } from '@/modules/email/scenarios';
+import { demand as demandData } from '@/modules/email/templates/demands/_data';
 import { dayjs } from '@/utils/date';
 
-import { Button, Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '../../components';
-import { demand as demandData } from './_data';
-
-const DemandAdminGestionnaireContactEmail = ({ demand }: { demand: AirtableLegacyRecord }) => {
+const DemandeHautPotentiel = ({ demand }: { demand: AirtableLegacyRecord }) => {
   return (
     <Layout>
       <Title>Nouveau message HP à traiter</Title>
@@ -74,7 +74,7 @@ const DemandAdminGestionnaireContactEmail = ({ demand }: { demand: AirtableLegac
       </Table>
 
       <Section style={{ paddingTop: '24px', textAlign: 'center' }}>
-        <Button href="/admin/demandes" campaign="demands.admin-gestionnaire-contact">
+        <Button href="/admin/demandes" campaign="demands.equipe-fcu.demande-haut-potentiel">
           Accéder aux demandes
         </Button>
       </Section>
@@ -82,6 +82,11 @@ const DemandAdminGestionnaireContactEmail = ({ demand }: { demand: AirtableLegac
   );
 };
 
-DemandAdminGestionnaireContactEmail.PreviewProps = { demand: demandData };
+export const scenarios = defineEmailScenarios<typeof DemandeHautPotentiel>({
+  defaut: {
+    label: "Nouveau message HP à traiter (envoyé à l'équipe FCU)",
+    props: { demand: demandData },
+  },
+});
 
-export default DemandAdminGestionnaireContactEmail;
+export default DemandeHautPotentiel;

@@ -73,7 +73,7 @@ export const sendRelanceToDemandeurs = async () => {
       .execute();
 
     await sendEmailTemplate(
-      'demands.user-relance',
+      'demands.demandeur.enquete-satisfaction',
       { email: demand.Mail, id: demand.id },
       {
         adresse: demand.Adresse,
@@ -172,7 +172,7 @@ export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfa
   // Automation import from https://airtable.com/app9opX8gRAtBqkan/wfl3jPABYXeIrGeUr/wtrWn0m6O5tXFFdiP
   if (enriched.Structure === 'Bailleur social' || enriched.Structure === 'Tertiaire') {
     await sendEmailTemplate(
-      'demands.admin-gestionnaire-contact',
+      'demands.equipe-fcu.demande-haut-potentiel',
       { email: clientConfig.destinationEmails.pro },
       { demand: enriched }
     ).catch((error: unknown) => {

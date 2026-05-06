@@ -104,7 +104,7 @@ export const createDemand = async (
       type: 'demand_created',
     }),
     sendEmailTemplate(
-      'demands.user-new',
+      'demands.demandeur.confirmation-demande',
       { email: values.email },
       {
         demand: {
@@ -115,7 +115,11 @@ export const createDemand = async (
       }
     ),
     // Automation import from https://airtable.com/app9opX8gRAtBqkan/wflvqEW0CLeXZ2pO0
-    sendEmailTemplate('demands.admin-new', { email: clientConfig.destinationEmails.contact }, { demand: demandForEmail as any }),
+    sendEmailTemplate(
+      'demands.equipe-fcu.nouvelle-demande',
+      { email: clientConfig.destinationEmails.contact },
+      { demand: demandForEmail as any }
+    ),
   ]);
 
   const demand = await getDemandById(createdDemand.id);

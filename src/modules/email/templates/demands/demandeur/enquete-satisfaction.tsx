@@ -1,15 +1,15 @@
 import { clientConfig } from '@/client-config';
+import { Button, Layout, Link, Note, Section, Text } from '@/modules/email/react-email/components';
+import { defineEmailScenarios } from '@/modules/email/scenarios';
 
-import { Button, Layout, Link, Note, Section, Text } from '../../components';
-
-type RelanceEmailProps = {
+type EnqueteSatisfactionProps = {
   firstName: string;
   date: string;
   adresse: string;
   relanceId: string;
 };
 
-export const RelanceEmail = ({ firstName, date, adresse, relanceId }: RelanceEmailProps) => {
+const EnqueteSatisfaction = ({ firstName, date, adresse, relanceId }: EnqueteSatisfactionProps) => {
   return (
     <Layout>
       <Text>Bonjour {firstName},</Text>
@@ -25,13 +25,17 @@ export const RelanceEmail = ({ firstName, date, adresse, relanceId }: RelanceEma
       <Section style={{ alignItems: 'center', display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
         <Button
           href={`/satisfaction?id=${relanceId}&satisfaction=true`}
-          campaign="demands.user-relance"
+          campaign="demands.demandeur.enquete-satisfaction"
           content="satisfaction-oui"
           style={{ marginRight: '8px' }}
         >
           👍 Oui, j'ai été contacté(e)
         </Button>
-        <Button href={`/satisfaction?id=${relanceId}&satisfaction=false`} campaign="demands.user-relance" content="satisfaction-non">
+        <Button
+          href={`/satisfaction?id=${relanceId}&satisfaction=false`}
+          campaign="demands.demandeur.enquete-satisfaction"
+          content="satisfaction-non"
+        >
           👎 Non, pas encore
         </Button>
       </Section>
@@ -48,4 +52,16 @@ export const RelanceEmail = ({ firstName, date, adresse, relanceId }: RelanceEma
   );
 };
 
-export default RelanceEmail;
+export const scenarios = defineEmailScenarios<typeof EnqueteSatisfaction>({
+  defaut: {
+    label: 'Relance satisfaction utilisateur',
+    props: {
+      adresse: '15 Rue Victor Renelle 93240 Stains',
+      date: '01/08/2024',
+      firstName: 'Alain',
+      relanceId: 'sample-relance-id',
+    },
+  },
+});
+
+export default EnqueteSatisfaction;

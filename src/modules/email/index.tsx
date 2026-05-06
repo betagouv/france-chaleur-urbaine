@@ -9,7 +9,7 @@ type EmailUser = { id?: string; email: string };
 
 type EmailParams = Parameters<typeof mailTransport.sendMail>[0];
 
-export const mailTransport = nodemailer.createTransport({
+const mailTransport = nodemailer.createTransport({
   auth: {
     pass: serverConfig.MAIL_PASS,
     user: serverConfig.MAIL_USER,

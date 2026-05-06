@@ -1,12 +1,13 @@
-import { Callout, Layout, Link, Text } from '../../components';
+import { Callout, Layout, Link, Text } from '@/modules/email/react-email/components';
+import { defineEmailScenarios } from '@/modules/email/scenarios';
 
-export const OldDemandsEmail = () => {
+const RappelDemandesEnAttente = () => {
   return (
     <Layout>
       <Text>Bonjour,</Text>
       <Text>
         Vous avez une ou plusieurs demandes de raccordement en attente sur votre « 
-        <Link href="/pro/demandes" campaign="demands.gestionnaire-old">
+        <Link href="/pro/demandes" campaign="demands.gestionnaire.rappel-demandes-en-attente">
           Espace Gestionnaire
         </Link>{' '}
         ».
@@ -25,4 +26,11 @@ export const OldDemandsEmail = () => {
   );
 };
 
-export default OldDemandsEmail;
+export const scenarios = defineEmailScenarios<typeof RappelDemandesEnAttente>({
+  defaut: {
+    label: 'Relance demandes en attente',
+    props: {},
+  },
+});
+
+export default RappelDemandesEnAttente;

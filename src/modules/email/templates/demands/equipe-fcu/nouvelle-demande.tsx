@@ -1,10 +1,10 @@
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import { Layout, Link, Note, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
+import { defineEmailScenarios } from '@/modules/email/scenarios';
+import { demand as demandData } from '@/modules/email/templates/demands/_data';
 import { dayjs } from '@/utils/date';
 
-import { Layout, Link, Note, Table, TableColumn, TableRow, Text, Title } from '../../components';
-import { demand as demandData } from './_data';
-
-const DemandAdminNewEmail = ({ demand }: { demand: AirtableLegacyRecord }) => {
+const NouvelleDemande = ({ demand }: { demand: AirtableLegacyRecord }) => {
   return (
     <Layout>
       <Title>Nouvelle demande de contact reçue</Title>
@@ -67,6 +67,11 @@ const DemandAdminNewEmail = ({ demand }: { demand: AirtableLegacyRecord }) => {
   );
 };
 
-DemandAdminNewEmail.PreviewProps = { demand: demandData };
+export const scenarios = defineEmailScenarios<typeof NouvelleDemande>({
+  defaut: {
+    label: "Nouvelle demande reçue (envoyée à l'équipe FCU)",
+    props: { demand: demandData },
+  },
+});
 
-export default DemandAdminNewEmail;
+export default NouvelleDemande;
