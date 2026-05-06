@@ -75,27 +75,13 @@ export const listAdmin = async () => {
 };
 
 /**
- * Admin : valide une demande (visible aux gestionnaires) et active la relance si
- * distance < 200m + chauffage collectif.
+ * Admin : valide une demande (visible aux gestionnaires).
+ * Le champ `Relance à activer` est défini à la création, pas ici.
  */
 export const validateDemand = async (demandId: string, adminUserId: string) => {
-  const demand = await kdb
-    .selectFrom('demands')
-    .selectAll()
-    .where('id', '=', demandId)
-    .where('deleted_at', 'is', null)
-    .executeTakeFirstOrThrow();
-
-  const distance = demand.legacy_values['Distance au réseau'];
-  const isCollectif = demand.legacy_values['Type de chauffage'] === 'Collectif';
-  const relanceAActiver = distance != null && distance < 200 && isCollectif;
-
   await kdb
     .updateTable('demands')
     .set({
-      legacy_values: mergeLegacyValues({
-        'Relance à activer': relanceAActiver,
-      }),
       updated_at: new Date(),
       validated: true,
     })
@@ -107,7 +93,6 @@ export const validateDemand = async (demandId: string, adminUserId: string) => {
     author_id: adminUserId,
     context_id: demandId,
     context_type: 'demand',
-    data: { relance_a_activer: relanceAActiver },
     type: 'demand_validated',
   });
 };

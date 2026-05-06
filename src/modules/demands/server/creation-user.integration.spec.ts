@@ -4,6 +4,7 @@ import type { CreateDemandInput } from '@/modules/demands/constants';
 import { kdb } from '@/server/db/kysely';
 import { cleanDatabase, seedProEligibilityTestsAddress, seedTableUser } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
+import type { TestCase } from '@/tests/trpc-helpers';
 
 vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
@@ -238,6 +239,48 @@ describe('creation-user', () => {
 
       const legacyValues = demandInDb?.legacy_values as Record<string, unknown>;
       expect(legacyValues.Logement).toBe(150);
+    });
+
+    type EligibilityCase = TestCase<
+      { isEligible: boolean; heatingType: 'collectif' | 'individuel' },
+      { Status: string | undefined; 'Relance à activer': boolean }
+    >;
+
+    const eligibilityCases: EligibilityCase[] = [
+      {
+        expectedOutput: { 'Relance à activer': true, Status: undefined },
+        input: { heatingType: 'collectif', isEligible: true },
+        label: 'éligible + collectif → pas de Status, relance active',
+      },
+      {
+        expectedOutput: { 'Relance à activer': false, Status: undefined },
+        input: { heatingType: 'individuel', isEligible: true },
+        label: 'éligible + individuel → pas de Status, pas de relance',
+      },
+      {
+        expectedOutput: { 'Relance à activer': false, Status: 'Non réalisable' },
+        input: { heatingType: 'collectif', isEligible: false },
+        label: 'non éligible + collectif → Status "Non réalisable", pas de relance',
+      },
+      {
+        expectedOutput: { 'Relance à activer': false, Status: 'Non réalisable' },
+        input: { heatingType: 'individuel', isEligible: false },
+        label: 'non éligible + individuel → Status "Non réalisable", pas de relance',
+      },
+    ];
+
+    it.each(eligibilityCases)('$label', async ({ input, expectedOutput }) => {
+      const demandInput = createValidDemandInput({
+        eligibility: { distance: input.isEligible ? 45 : 1500, inPDP: false, isEligible: input.isEligible },
+        heatingType: input.heatingType,
+      });
+
+      const result = await createDemand(demandInput, { userId: testUserId });
+
+      const demandInDb = await kdb.selectFrom('demands').selectAll().where('id', '=', result.id).executeTakeFirst();
+      const legacyValues = demandInDb?.legacy_values as Record<string, unknown>;
+      expect(legacyValues.Status).toBe(expectedOutput.Status);
+      expect(legacyValues['Relance à activer']).toBe(expectedOutput['Relance à activer']);
     });
   });
 });

@@ -7,6 +7,7 @@ import { createEvent } from '@/modules/events/server/service';
 import { createEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
 import {
   autoAssignNetworkFromEligibility,
@@ -46,6 +47,8 @@ export const createDemand = async (
         'ID BNB': nbLogement?.batiment_groupe_id ? `${nbLogement.batiment_groupe_id}` : undefined,
         'ID réseau le plus proche': null,
         Logement: nbLogement?.nb_logements ? nbLogement.nb_logements : undefined,
+        'Relance à activer': values.eligibility.isEligible && values.heatingType === 'collectif',
+        Status: values.eligibility.isEligible ? undefined : DEMANDE_STATUS.UNREALISABLE,
       })}::jsonb`,
       updated_at: new Date(),
       user_id: userId ?? null,

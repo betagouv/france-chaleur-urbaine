@@ -16,6 +16,8 @@ const getAllDemandsToRelance = async () => {
   const records = await kdb
     .selectFrom('demands')
     .selectAll()
+    .where('validated', '=', true)
+    .where('deleted_at', 'is', null)
     .where((eb) =>
       eb.or([
         eb.and([
