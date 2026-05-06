@@ -62,11 +62,14 @@
 - Use `function` declarations for components (not arrow functions).
 - Use arrow functions for callbacks, utility functions, and handlers.
 - Keep components under 150 lines — extract sub-components if longer.
+- **One exported component per file.** Never co-locate multiple exported components in the same file — split into separate files named after each component (PascalCase, matches the component name).
+- **Always define a `<ComponentName>Props` type** for each component above its declaration. Never inline the props type in the function signature: `function Foo({ x }: { x: string })` → use `type FooProps = { x: string }; function Foo({ x }: FooProps)`.
 - Place the props/params type definition immediately above the function/component that uses it, with no other definitions in between.
 - Add a short multi-line TSDoc comment above each React component describing its purpose (1-3 content lines):
 - No `forwardRef` unless absolutely necessary.
 - Guard clauses for early returns instead of nested `if/else`.
 - Explicit names over abbreviations (`networkIdentifier` not `netId`).
+- **Never use single-letter or shortened variable names** (`r`, `n`, `el`, `ev`, `idx`, `tmp`, `acc`). Always spell the role: `reminder`, `network`, `element`, `event`, `index`, `temp`, `accumulator`. Applies to parameters, callbacks (`map`/`filter`/`reduce`), and local variables — no exceptions for short scopes.
 
 ## TypeScript patterns
 
