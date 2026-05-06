@@ -402,7 +402,7 @@ const buildDemandFilters = (
   periodMonths: number | undefined,
   pendingOnly: boolean
 ): ColumnFiltersState => [
-  { id: 'network_id', value: [`${networkType}:${networkId}`] },
+  { id: 'network_id', value: { [`${networkType}:${networkId}`]: true } },
   ...(pendingOnly
     ? [
         { id: 'Status', value: { 'En attente de prise en charge': true } },
