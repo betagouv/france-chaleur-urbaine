@@ -19,7 +19,8 @@ import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/compo
 import Tag from '@/components/ui/Tag';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { notify, toastErrors } from '@/modules/notification';
-import { NotesCell, RemindersCell } from '@/modules/reseaux/client/admin/network-reminders-cells';
+import { NotesCell } from '@/modules/reseaux/client/admin/NotesCell';
+import { RemindersCell } from '@/modules/reseaux/client/admin/RemindersCell';
 import type { NetworkEntityType } from '@/modules/reseaux/constants';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
