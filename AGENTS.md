@@ -6,6 +6,7 @@
 
 For every user message:
 - read AGENTS.md (this file) to decide which context files in `.ai/context/` are worth loading for this specific message — some messages need none, others need several. Re-evaluate on every message as the conversation evolves.
+- **re-evaluate context at each phase of the task** — implementing code, writing tests, debugging, refactoring are different phases with their own triggers. Don't bundle them: re-check the index when switching phase, even mid-message.
 - if the request is ambiguous, ask clarifying questions before proceeding (prefer asking over guessing, unless the user asks for speed — in that case, pick the simplest/fastest interpretation)
 - **for tasks involving code modifications** (writing, editing, deleting, moving files):
   - **minor changes** (typo, rename, single-line fix): implement directly, no plan needed
@@ -48,7 +49,7 @@ Load these files **before** working on the related area. When in doubt, load the
 | [stack.md](.ai/context/stack.md) | Choosing a library, checking versions, upgrading dependencies |
 | [state-management.md](.ai/context/state-management.md) | React state, forms, URL params (`nuqs`), Jotai, React Query |
 | [styling.md](.ai/context/styling.md) | Any `.tsx` with UI: Tailwind, DSFR, responsive, icons, className |
-| [testing.md](.ai/context/testing.md) | Writing or running tests, adding endpoints, fixing bugs |
+| [testing.md](.ai/context/testing.md) | Writing, modifying or running ANY test (`.spec.ts` / `.integration.spec.ts`) — load BEFORE writing the first test |
 
 ## Code navigation
 
