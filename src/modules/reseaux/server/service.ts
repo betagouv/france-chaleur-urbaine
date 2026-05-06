@@ -254,6 +254,7 @@ export const listReseauxDeChaleur = async () => {
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
       'tags',
       'has_trace',
+      'has_PDP',
       'reseaux classes',
       'date_actualisation_trace',
       'puissance_totale_MW',

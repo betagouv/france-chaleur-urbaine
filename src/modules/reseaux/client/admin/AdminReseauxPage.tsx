@@ -561,6 +561,23 @@ const GestionDesReseaux = () => {
         width: '120px',
       },
       {
+        accessorKey: 'has_PDP',
+        cell: ({ row }) => (
+          <Checkbox
+            label=""
+            small
+            nativeInputProps={{
+              checked: row.original.has_PDP,
+              disabled: true,
+              name: 'has_PDP',
+            }}
+          />
+        ),
+        filterType: 'Facets',
+        header: 'PDP',
+        width: '120px',
+      },
+      {
         accessorKey: `puissance_totale_MW`,
         filterType: 'Range',
         header: `Puissance totale (MW)`,
