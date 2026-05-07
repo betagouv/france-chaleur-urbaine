@@ -43,6 +43,9 @@ export const StyledModal = styled.div<{ customSize?: boolean }>`
 
 /**
  * Create a modal within a portal that is rendered outside the components tree.
+ *
+ * @deprecated Utiliser `Dialog` (Radix) à la place. Empilement natif, pas de hack timing,
+ * style Tailwind direct, pas de singleton DSFR qui casse l'imbrication.
  */
 const Modal = ({ modal, size, onOpen, loading, onClose, open, lazy = false, children, ...props }: ModalProps) => {
   const [isFirstLoad, setIsFirstLoad] = React.useState(true);
