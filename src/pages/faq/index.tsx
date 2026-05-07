@@ -540,7 +540,7 @@ function FaqPage() {
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, []);
+  }, [router.asPath]);
 
   const updateHash = (questionId: string | null) => {
     const nextUrl = questionId ? `${router.pathname}#${questionId}` : router.pathname;
@@ -579,9 +579,13 @@ function FaqPage() {
                     <Accordion
                       id={`${questionId}-accordion`}
                       label={faq.question}
+                      classes={{
+                        collapse: expandedQuestionId === questionId ? 'fr-collapse--expanded' : undefined,
+                      }}
                       expanded={expandedQuestionId === questionId}
                       onExpandedChange={(expanded) => {
                         const nextQuestionId = expanded ? questionId : null;
+                        if (nextQuestionId) trackPostHogEvent('faq:accordeon', { question: nextQuestionId });
                         setExpandedQuestionId(nextQuestionId);
                         updateHash(nextQuestionId);
                       }}
