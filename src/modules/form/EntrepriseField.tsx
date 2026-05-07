@@ -117,6 +117,7 @@ export function EntrepriseField({
               'fr-input--valid': state === 'success',
             })
           ),
+          placeholder: 'Nom ou SIRET',
           ...nativeInputProps,
         }}
       />
