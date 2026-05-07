@@ -265,6 +265,16 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
+  user_created_by_api: (event, updateFilters) => (
+    <>
+      <span>
+        API <strong>{event.data.api_name}</strong> a créé le compte{' '}
+      </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
+        {event.data.role && <UserRoleBadge role={event.data.role} />}&nbsp;{event.data.user_email}
+      </FilterButton>
+    </>
+  ),
   user_deleted_by_admin: (event, updateFilters) => (
     <>
       <span>a supprimé le compte </span>
@@ -295,21 +305,13 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
-  user_profile_updated: (event) => (
-    <span>
-      a mis à jour son profil (<strong>{Object.keys(event.data.changes).join(', ')}</strong>)
-    </span>
-  ),
+  user_profile_updated: () => <span>a mis à jour son profil</span>,
   user_updated_by_admin: (event, updateFilters) => (
     <>
       <span>a mis à jour le compte </span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
         {event.data.user_email}
       </FilterButton>
-      <span>
-        {' '}
-        (<strong>{Object.keys(event.data.changes).join(', ')}</strong>)
-      </span>
     </>
   ),
 };

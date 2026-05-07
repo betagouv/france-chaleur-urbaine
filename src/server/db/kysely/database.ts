@@ -9,6 +9,7 @@ import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/de
 import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
+import type { Entreprise } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export type Generated<T> =
@@ -762,6 +763,7 @@ export interface Users {
   active: Generated<boolean>;
   created_at: Generated<Date | null>;
   email: string;
+  entreprise: JSONColumnType<Entreprise> | null;
   first_name: string | null;
   from_api: string | null;
   gestionnaires: string[] | null;
@@ -777,7 +779,6 @@ export interface Users {
   reset_token: string | null;
   role: UserRole;
   signature: string | null;
-  siret: string | null;
   status: 'pending_email_confirmation' | 'valid';
   structure_name: string | null;
   structure_other: string | null;

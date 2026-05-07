@@ -8,6 +8,7 @@ export const eventTypes = [
   'user_password_reset_requested',
   'user_profile_updated',
   'user_created_by_admin',
+  'user_created_by_api',
   'user_updated_by_admin',
   'user_deleted_by_admin',
   'demand_created',
@@ -82,6 +83,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_activated: 'Activation utilisateur',
   user_created: 'Création utilisateur',
   user_created_by_admin: 'Création utilisateur (admin)',
+  user_created_by_api: 'Création utilisateur (API)',
   user_deleted_by_admin: 'Suppression utilisateur (admin)',
   user_login: 'Connexion utilisateur',
   user_password_reset_requested: 'Demande réinitialisation mot de passe',
@@ -173,6 +175,7 @@ export type EventDataMap = {
   user_activated: null;
   user_created: null;
   user_created_by_admin: { user_email: string; role: UserRole };
+  user_created_by_api: { user_email: string; role: UserRole; api_name: string };
   user_deleted_by_admin: { user_email: string };
   user_login: null;
   user_password_reset_requested: null;

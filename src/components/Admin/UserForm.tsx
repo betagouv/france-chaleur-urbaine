@@ -1,4 +1,3 @@
-import { skipToken } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import FCUTagAutocompleteInput from '@/components/form/dsfr/FCUTagAutocompleteInput';
@@ -6,11 +5,11 @@ import useForm from '@/components/form/react-form/useForm';
 import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
 import Tooltip from '@/components/ui/Tooltip';
+import { EntrepriseField } from '@/modules/form/EntrepriseField';
 import PermissionsEditor from '@/modules/permissions/client/PermissionsEditor';
 import PermissionsInput from '@/modules/permissions/client/PermissionsInput';
 import type { Permission } from '@/modules/permissions/types';
 import { permissionTypes } from '@/modules/permissions/types';
-import trpc from '@/modules/trpc/client';
 import { createUserAdminSchema, roles as roleLabels, structureTypesFormLabels, updateUserAdminSchema } from '@/modules/users/constants';
 import type { User } from '@/modules/users/server/service';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
@@ -43,22 +42,6 @@ type UserFormProps = {
   onSubmit: OnCreate | OnUpdate;
 };
 
-const SiretLookupResult = ({ siret }: { siret: string }) => {
-  const trimmed = siret.replace(/\s/g, '');
-  const isValid = /^\d{14}$/.test(trimmed);
-  const { data: companyInfos, isFetching } = trpc.users.lookupSiret.useQuery(isValid ? { siret: trimmed } : skipToken);
-
-  if (!isValid) return null;
-  if (isFetching) return <div className="text-sm text-gray-500 mt-1">Recherche en cours…</div>;
-  if (!companyInfos) return <div className="text-sm text-orange-600 mt-1">Aucune entreprise trouvée pour ce SIRET</div>;
-  return (
-    <div className="text-sm mt-1 rounded border border-green-300 bg-green-50 p-2">
-      <strong>{companyInfos.name}</strong>
-      <div>{companyInfos.address}</div>
-    </div>
-  );
-};
-
 const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
   const isNew = !user?.id;
   const [newPermissions, setNewPermissions] = useState<Permission[]>([]);
@@ -67,6 +50,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
     defaultValues: {
       active: user?.active ?? true,
       email: user?.email ?? '',
+      entreprise: user?.entreprise ?? null,
       first_name: user?.first_name ?? '',
       gestionnaires: user?.gestionnaires ?? [],
       last_name: user?.last_name ?? '',
@@ -75,7 +59,6 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
       receive_new_demands: user?.receive_new_demands ?? true,
       receive_old_demands: user?.receive_old_demands ?? true,
       role: user?.role || 'gestionnaire',
-      siret: user?.siret ?? '',
       status: user?.status || 'pending_email_confirmation',
       structure_name: user?.structure_name ?? '',
       structure_other: user?.structure_other ?? '',
@@ -168,20 +151,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
               />
             )}
 
-            <Field.Input
-              name="siret"
-              label="SIRET"
-              hideOptionalLabel
-              nativeInputProps={{
-                inputMode: 'numeric',
-                maxLength: 14,
-                placeholder: '14 chiffres',
-              }}
-            />
-            <form.Subscribe
-              selector={(state) => (state.values.siret ?? '') as string}
-              children={(siret) => <SiretLookupResult siret={siret} />}
-            />
+            <Field.Custom name="entreprise" label="Entreprise" Component={EntrepriseField} />
           </FieldWrapper>
         )}
 

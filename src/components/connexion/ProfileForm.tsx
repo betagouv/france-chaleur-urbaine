@@ -1,6 +1,7 @@
 import useForm from '@/components/form/react-form/useForm';
 import Loader from '@/components/ui/Loader';
 import Notice from '@/components/ui/Notice';
+import { EntrepriseField } from '@/modules/form/EntrepriseField';
 import { notify } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { roles, structureTypesFormLabels, updateProfileDefaultValues, zUpdateProfileSchema } from '@/modules/users/constants';
@@ -20,9 +21,10 @@ function ProfileForm() {
     },
   });
 
-  const { Input, Submit, Form, Select, PhoneInput, useValue } = useForm({
+  const { Input, Submit, Form, Select, PhoneInput, Field, useValue } = useForm({
     defaultValues: {
       ...updateProfileDefaultValues,
+      entreprise: profile?.entreprise ?? null,
       first_name: profile?.first_name ?? '',
       last_name: profile?.last_name ?? '',
       phone: profile?.phone ?? '',
@@ -38,6 +40,7 @@ function ProfileForm() {
 
   const structureType = useValue('structure_type');
   const showStructureFields = profile?.role !== 'particulier';
+  const showEntrepriseField = profile?.role !== 'particulier' && profile?.role !== 'admin';
 
   if (isLoading) {
     return <Loader variant="section" />;
@@ -67,6 +70,8 @@ function ProfileForm() {
             {structureType === 'autre' && <Input name="structure_other" label="Renseignez le type de structure" />}
           </>
         )}
+
+        {showEntrepriseField && <Field.Custom name="entreprise" label="Entreprise" Component={EntrepriseField} />}
 
         <div className="flex justify-end mt-4">
           <Submit disabled={updateProfile.isPending}>

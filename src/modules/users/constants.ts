@@ -22,6 +22,17 @@ export const structureTypesFormLabels = {
   autre: 'Autre (préciser)',
 };
 
+/**
+ * Données entreprise stockées dans `users.entreprise` (JSONB).
+ * Clés alignées sur l'API publique recherche-entreprises.
+ */
+export const zEntreprise = z.object({
+  adresse: z.string(),
+  nom_complet: z.string(),
+  siret: z.string().length(14),
+});
+export type Entreprise = z.infer<typeof zEntreprise>;
+
 export const roles: Record<UserRole, string> = {
   admin: 'Admin',
   alec: 'ALEC',
@@ -48,6 +59,7 @@ export type CredentialsSchema = z.infer<typeof zCredentialsSchema>;
 export const zIdentitySchema = z
   .object({
     email: z.email("L'adresse email n'est pas valide"),
+    entreprise: zEntreprise.nullable().optional(),
     first_name: z.string().min(1, 'Le prénom est obligatoire'),
     last_name: z.string().min(1, 'Le nom de famille est obligatoire'),
     phone: z
@@ -83,7 +95,9 @@ export const registrationSchema = z.intersection(zCredentialsSchema, zIdentitySc
 export type RegistrationSchema = z.infer<typeof registrationSchema>;
 
 export const createUserAdminSchema = z.object({
+  active: z.boolean().optional(),
   email: z.email(),
+  entreprise: zEntreprise.nullable().optional(),
   first_name: z.string().optional().nullable(),
   last_name: z.string().optional().nullable(),
   optin_at: z.boolean().nullable(),
@@ -91,7 +105,6 @@ export const createUserAdminSchema = z.object({
   receive_new_demands: z.boolean(),
   receive_old_demands: z.boolean(),
   role: z.enum(userRoles),
-  siret: z.string().optional().nullable(),
   structure_name: z.string().optional().nullable(),
   structure_other: z.string().optional().nullable(),
   structure_type: z.string().optional().nullable(),
@@ -101,6 +114,7 @@ export const updateUserAdminSchema = z
   .object({
     active: z.boolean(),
     email: z.email().optional(),
+    entreprise: zEntreprise.nullable().optional(),
     first_name: z.string().optional(),
     gestionnaires: z.array(z.string()).optional(),
     last_name: z.string().optional(),
@@ -109,7 +123,6 @@ export const updateUserAdminSchema = z
     receive_new_demands: z.boolean().optional(),
     receive_old_demands: z.boolean().optional(),
     role: z.enum(userRoles).optional(),
-    siret: z.string().optional().nullable(),
     status: z.enum(['pending_email_confirmation', 'valid']),
     structure_name: z.string().optional(),
     structure_other: z.string().optional(),
@@ -119,6 +132,7 @@ export const updateUserAdminSchema = z
 
 export const zUpdateProfileSchema = z
   .object({
+    entreprise: zEntreprise.nullable().optional(),
     first_name: z.string().min(1, 'Le prénom est obligatoire'),
     last_name: z.string().min(1, 'Le nom de famille est obligatoire'),
     phone: z
@@ -144,6 +158,7 @@ export const zUpdateProfileSchema = z
 export type UpdateProfileSchema = z.infer<typeof zUpdateProfileSchema>;
 
 export const updateProfileDefaultValues: UpdateProfileSchema = {
+  entreprise: null,
   first_name: '',
   last_name: '',
   phone: '',

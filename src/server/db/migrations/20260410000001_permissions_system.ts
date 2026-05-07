@@ -15,8 +15,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     CREATE INDEX idx_user_permissions_user ON user_permissions (user_id, type);
     CREATE INDEX idx_user_permissions_resource ON user_permissions (type, resource_id);
 
-    -- siret column on users
-    ALTER TABLE users ADD COLUMN siret TEXT;
+    -- entreprise column on users (JSONB: { siret, nom_complet, adresse })
+    ALTER TABLE users ADD COLUMN entreprise JSONB;
 
     -- New columns on demands
     ALTER TABLE demands ADD COLUMN network_id SMALLINT;
@@ -57,7 +57,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     ALTER TABLE demands DROP COLUMN IF EXISTS network_type;
     ALTER TABLE demands DROP COLUMN IF EXISTS network_id;
 
-    ALTER TABLE users DROP COLUMN IF EXISTS siret;
+    ALTER TABLE users DROP COLUMN IF EXISTS entreprise;
 
     DROP TABLE IF EXISTS user_permissions;
   `.execute(db);

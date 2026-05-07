@@ -81,14 +81,21 @@ export const handleData = async (account: ApiAccounts, data: unknown) => {
             active: true,
             email,
             from_api: account.key,
-            password: '',
+            optin_at: null,
+            receive_new_demands: true,
+            receive_old_demands: true,
             role: 'gestionnaire',
-            status: 'valid',
             structure_name: account.name,
           },
           {} as any
         );
         userId = record.id as unknown as string;
+        await createEvent({
+          context_id: userId,
+          context_type: 'user',
+          data: { api_name: account.name ?? '', role: 'gestionnaire', user_email: email },
+          type: 'user_created_by_api',
+        });
       } else {
         logger.info(`Update user ${email} (${user.id})`);
         userId = user.id;

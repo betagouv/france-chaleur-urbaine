@@ -24,6 +24,7 @@ export const clientConfig = {
   networkSearchMinimumCharactersThreshold: 3,
   publicodesDocumentationURL:
     process.env.NEXT_PUBLIC_PUBLICODES_DOCUMENTATION_URL ?? 'https://betagouv.github.io/france-chaleur-urbaine-publicodes',
+  rechercheEntreprisesApiUrl: process.env.NEXT_PUBLIC_RECHERCHE_ENTREPRISES_API_URL ?? 'https://recherche-entreprises.api.gouv.fr',
   summaryAreaSizeLimit: 5, // km²
   tracking: {
     googleTagIds: (process.env.NEXT_PUBLIC_GOOGLE_TAG_ID ?? '').split(',').filter(Boolean),

@@ -4,7 +4,9 @@ import jwt from 'jsonwebtoken';
 import { linkDemandsByEmail } from '@/modules/demands/server/account-linking';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
-import { kdb } from '@/server/db/kysely';
+import type { Entreprise } from '@/modules/users/constants';
+import { findEtablissementBySiret } from '@/modules/users/server/service';
+import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError } from '@/server/helpers/server';
 import type { UserRole } from '@/types/enum/UserRole';
@@ -16,6 +18,7 @@ export const register = async ({
   role,
   accept_cgu,
   optin_newsletter,
+  entreprise,
   ...userData
 }: {
   email: string;
@@ -29,12 +32,16 @@ export const register = async ({
   phone?: string | null;
   accept_cgu?: boolean;
   optin_newsletter?: boolean;
+  entreprise?: Entreprise | null;
 }) => {
   const lowerCaseEmail = email.trim().toLowerCase();
   const existingUser = await kdb.selectFrom('users').select('id').where('email', 'ilike', lowerCaseEmail).executeTakeFirst();
   if (existingUser) {
     throw new BadRequestError(`L'utilisateur associé à l'email '${email}' existe déjà. Connectez-vous.`);
   }
+
+  // Valide l'entreprise par le siret
+  const verifiedEntreprise = entreprise ? await findEtablissementBySiret(entreprise.siret) : null;
 
   const activationToken = generateRandomToken();
   const insertedUser = await kdb
@@ -43,6 +50,7 @@ export const register = async ({
       accepted_cgu_at: accept_cgu ? new Date() : null,
       activation_token: activationToken,
       email: lowerCaseEmail,
+      entreprise: verifiedEntreprise ? sql<string | null>`${JSON.stringify(verifiedEntreprise)}::jsonb` : null,
       gestionnaires: [],
       optin_at: optin_newsletter ? new Date() : null,
       password: await hash(password, await genSalt(10)),
