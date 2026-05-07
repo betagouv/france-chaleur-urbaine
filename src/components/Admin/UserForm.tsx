@@ -202,7 +202,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
           )}
 
           <FieldWrapper>
-            Notifications email :
+            Notifications email (si permission réseau) :
             <Field.Checkbox
               name="receive_new_demands"
               label={

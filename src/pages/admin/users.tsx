@@ -19,7 +19,7 @@ import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { notify, toastErrors } from '@/modules/notification';
-import type { Permission, PermissionWithLabel } from '@/modules/permissions/types';
+import type { Permission, PermissionType, PermissionWithLabel } from '@/modules/permissions/types';
 import trpc from '@/modules/trpc/client';
 import { structureTypesLabels } from '@/modules/users/constants';
 import type { User } from '@/modules/users/server/service';
@@ -33,15 +33,15 @@ import type { AdminUsersStats } from '../api/admin/users-stats';
 
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
-const permissionTypePluralLabels: Record<string, string> = {
+const permissionTypePluralLabels: Record<PermissionType, string> = {
   commune: 'Communes',
   departement: 'Départements',
   epci: 'EPCI',
   ept: 'EPT',
   national: 'National',
   region: 'Régions',
-  reseau_en_construction: 'En construction',
-  reseau_existant: 'Réseaux existants',
+  reseau_de_chaleur: 'Réseaux existants',
+  reseau_en_construction: 'Réseaux en construction',
 };
 
 function formatPermissionSummary(permissions: PermissionWithLabel[]): string {
@@ -87,7 +87,7 @@ function formatPermissionSummary(permissions: PermissionWithLabel[]): string {
 }
 
 function PermissionTooltipContent({ permissions }: { permissions: PermissionWithLabel[] }) {
-  const groups: [string, PermissionWithLabel[]][] = [];
+  const groups: [PermissionType, PermissionWithLabel[]][] = [];
   for (const p of permissions) {
     const existing = groups.find(([type]) => type === p.type);
     if (existing) {
@@ -101,7 +101,7 @@ function PermissionTooltipContent({ permissions }: { permissions: PermissionWith
     <div className="space-y-1.5">
       {groups.map(([type, perms]) => (
         <div key={type}>
-          <div className="font-semibold">{permissionTypePluralLabels[type] ?? type}</div>
+          <div className="font-semibold">{permissionTypePluralLabels[type]}</div>
           {type !== 'national' && (
             <ul className="list-none pl-0 m-0">
               {perms.map((p) => (

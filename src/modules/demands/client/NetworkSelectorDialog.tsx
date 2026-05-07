@@ -122,7 +122,7 @@ export default function NetworkSelectorDialog({
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">Ou</span>
                 <Button priority="secondary" size="small" iconId="fr-icon-close-line" onClick={() => setMode('unassign')}>
-                  Désaffecter le réseau
+                  Désaffecter la demande
                 </Button>
               </div>
             )}
