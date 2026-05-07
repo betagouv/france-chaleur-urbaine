@@ -63,6 +63,49 @@ export const searchNetworks = async (query: string): Promise<NetworkSearchResult
   return results.slice(0, 15);
 };
 
+export type ReseauDeChaleurBySncuIdResult = {
+  input: string;
+  status: 'found' | 'not_found';
+  network?: {
+    idFcu: number;
+    sncuId: string;
+    name: string;
+    gestionnaire: string | null;
+  };
+};
+
+/**
+ * Lookup `reseaux_de_chaleur` by SNCU ids (case-insensitive). Preserves input order
+ * and reports a status per input. Used by the admin bulk permission dialog.
+ */
+export const findReseauxDeChaleurBySncuIds = async (sncuIds: string[]): Promise<ReseauDeChaleurBySncuIdResult[]> => {
+  const normalized = sncuIds.map((id) => id.trim().toUpperCase()).filter((id) => id.length > 0);
+  if (normalized.length === 0) return [];
+
+  const rows = await kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select(['id_fcu', 'Identifiant reseau', 'nom_reseau', 'Gestionnaire'])
+    .where(sql<string>`upper("Identifiant reseau")`, 'in', normalized)
+    .execute();
+
+  const map = new Map(rows.filter((r) => r['Identifiant reseau']).map((r) => [r['Identifiant reseau']!.toUpperCase(), r]));
+
+  return normalized.map((input): ReseauDeChaleurBySncuIdResult => {
+    const row = map.get(input);
+    if (!row) return { input, status: 'not_found' };
+    return {
+      input,
+      network: {
+        gestionnaire: row.Gestionnaire,
+        idFcu: row.id_fcu,
+        name: row.nom_reseau || 'Nom inconnu',
+        sncuId: row['Identifiant reseau']!,
+      },
+      status: 'found',
+    };
+  });
+};
+
 type TerritorySearchResult = {
   code: string;
   label: string;

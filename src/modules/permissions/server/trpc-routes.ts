@@ -7,6 +7,7 @@ import { zPermissionInput } from '../types';
 import { getDemandForAccessCheck, getUsersWithAccessToDemand } from './demand-access';
 import { getPermissionsMapData } from './map-data';
 import {
+  findReseauxDeChaleurBySncuIds,
   getUserPermissionsWithLabels,
   resolvePermissionLabels,
   resolvePermissionsWithLabels,
@@ -17,6 +18,10 @@ import { setUserPermissions } from './service';
 
 export const permissionsRouter = router({
   admin: {
+    findReseauxDeChaleurBySncuIds: adminRoute
+      .input(z.object({ sncuIds: z.array(z.string().min(1).max(5)).min(1).max(500) }))
+      .query(({ input }) => findReseauxDeChaleurBySncuIds(input.sncuIds)),
+
     getForUser: adminRoute.input(z.object({ userId: z.uuidv4() })).query(({ input }) => getUserPermissionsWithLabels(input.userId)),
 
     setForUser: adminRoute

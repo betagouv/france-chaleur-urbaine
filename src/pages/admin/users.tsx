@@ -10,9 +10,10 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import Dialog from '@/components/ui/Dialog';
 import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Heading from '@/components/ui/Heading';
-import ModalSimple from '@/components/ui/ModalSimple';
+import Loader from '@/components/ui/Loader';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
@@ -380,20 +381,23 @@ export default function ManageUsers() {
 
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
-      <ModalSimple
+      <Dialog
         open={!!userId}
-        onOpenChange={() => setUserId(null)}
+        onOpenChange={(open) => {
+          if (!open) setUserId(null);
+        }}
         title={editingUser ? 'Modifier un utilisateur' : 'Créer un utilisateur'}
-        loading={isLoading}
       >
-        {isLoading ? null : editingUser ? (
+        {isLoading ? (
+          <Loader size="lg" variant="section" />
+        ) : editingUser ? (
           <UserForm loading={!!updatingUserId} onSubmit={handleUpdateUser(userId as string)} user={editingUser} />
         ) : userId === 'new' ? (
           <UserForm loading={creatingUser} onSubmit={handleCreateUser} />
         ) : (
           <span>Utilisateur non trouvé</span>
         )}
-      </ModalSimple>
+      </Dialog>
       <Box py="4w" className="fr-container">
         <Heading as="h1" color="blue-france">
           Gestion des utilisateurs

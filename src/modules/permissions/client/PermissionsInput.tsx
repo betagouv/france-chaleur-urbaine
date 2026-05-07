@@ -1,9 +1,12 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
+import { useState } from 'react';
 
+import Button from '@/components/ui/Button';
 import trpc from '@/modules/trpc/client';
 
 import { permissionTypeLabels } from '../constants';
 import type { Permission, PermissionType } from '../types';
+import BulkAddNetworksDialog from './BulkAddNetworksDialog';
 import PermissionAutocomplete from './PermissionAutocomplete';
 
 type PermissionsInputProps = {
@@ -17,6 +20,9 @@ type PermissionsInputProps = {
  * No tRPC mutations — used for impersonation and user creation.
  */
 const PermissionsInput = ({ value, onChange, availableTypes }: PermissionsInputProps) => {
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const supportsNetworks = availableTypes.includes('reseau_de_chaleur');
+
   const resolvedLabels = trpc.permissions.resolveLabels.useQuery(value, {
     enabled: value.length > 0,
   });
@@ -28,6 +34,12 @@ const PermissionsInput = ({ value, onChange, availableTypes }: PermissionsInputP
     if (!exists) {
       onChange([...value, permission]);
     }
+  };
+
+  const handleBulkAdd = (permissions: Permission[]) => {
+    const existingKeys = new Set(value.map((p) => `${p.type}:${p.resource_id}`));
+    const toAdd = permissions.filter((p) => !existingKeys.has(`${p.type}:${p.resource_id}`));
+    if (toAdd.length > 0) onChange([...value, ...toAdd]);
   };
 
   const handleRemove = (index: number) => {
@@ -63,6 +75,17 @@ const PermissionsInput = ({ value, onChange, availableTypes }: PermissionsInputP
       )}
 
       <PermissionAutocomplete availableTypes={availableTypes} onAdd={handleAdd} />
+
+      {supportsNetworks && (
+        <>
+          <div className="flex justify-end">
+            <Button type="button" priority="tertiary" size="small" iconId="fr-icon-add-line" onClick={() => setBulkOpen(true)}>
+              Ajout en masse par ID SNCU
+            </Button>
+          </div>
+          <BulkAddNetworksDialog open={bulkOpen} onOpenChange={setBulkOpen} existingPermissions={value} onAdd={handleBulkAdd} />
+        </>
+      )}
     </div>
   );
 };
