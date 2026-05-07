@@ -131,7 +131,7 @@ export const demandsRouter = router({
       return await updateCommentFromRelanceId(relanceId, comment, ctx.user.id);
     }),
     create: route.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
-      return await createDemand(input, { userId: ctx.user.id });
+      return await createDemand(input, { userId: ctx.user?.id });
     }),
     createBatch: authRoute.input(zCreateBatchDemandInput).mutation(async ({ input, ctx }) => {
       return await createBatchDemands(input, ctx.user);
