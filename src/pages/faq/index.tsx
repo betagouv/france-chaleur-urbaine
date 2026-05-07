@@ -119,7 +119,7 @@ const FAQS: FaqCategory[] = [
               chaleur et de froid, identifier les potentiels de développement et analyser les ressources énergétiques mobilisables. Elle se
               compose de quatre onglets :
             </p>
-            <ul className="[&>li]:mb-3">
+            <ul className="space-y-3">
               <li>
                 <strong>Réseaux</strong>
                 <br />
@@ -190,7 +190,7 @@ const FAQS: FaqCategory[] = [
         answer: (
           <>
             <p className="mb-0">Plusieurs situations peuvent expliquer l’absence d’un réseau sur la carte :</p>
-            <ul className="[&>li]:mb-3">
+            <ul className="space-y-3">
               <li>
                 <strong>Le tracé du réseau n’a pas encore été transmis à France Chaleur Urbaine.</strong>
                 <br />
@@ -235,8 +235,8 @@ const FAQS: FaqCategory[] = [
             </p>
             <p>
               👉{' '}
-              <Link href="/pro/tests-adresses">
-                <strong>Accéder au test en masse</strong> : https://france-chaleur-urbaine.beta.gouv.fr/pro/tests-adresses
+              <Link className="font-bold" href="/pro/tests-adresses">
+                Accéder au test en masse
               </Link>
             </p>
           </>
@@ -262,9 +262,8 @@ const FAQS: FaqCategory[] = [
             <p>Les élus peuvent également laisser leur adresse mail pour être recontactés et accompagnés. </p>
             <p>
               👉{' '}
-              <Link href="/collectivites-et-exploitants/potentiel-creation-reseau">
-                <strong>Tester le potentiel de votre territoire</strong> :
-                https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants/potentiel-creation-reseau
+              <Link className="font-bold" href="/collectivites-et-exploitants/potentiel-creation-reseau">
+                Tester le potentiel de votre territoire
               </Link>
             </p>
           </>
@@ -480,8 +479,8 @@ const FAQS: FaqCategory[] = [
             </ul>
             <p>
               👉{' '}
-              <Link href="/collectivites-et-exploitants#iframe-carte">
-                <strong>En savoir plus :</strong> https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants#iframe-carte
+              <Link className="font-bold" href="/collectivites-et-exploitants#iframe-carte">
+                En savoir plus sur l'iframe
               </Link>
             </p>
           </>
@@ -506,8 +505,8 @@ const FAQS: FaqCategory[] = [
             <p>Ces supports ont été conçus pour faciliter vos actions de communication et sont librement réutilisables.</p>
             <p>
               👉{' '}
-              <Link href="/ressources/supports">
-                <strong>Découvrez nos supports</strong> : https://france-chaleur-urbaine.beta.gouv.fr/ressources/supports
+              <Link className="font-bold" href="/ressources/supports">
+                Découvrez nos supports
               </Link>
             </p>
           </>
@@ -532,15 +531,8 @@ function FaqPage() {
     trackPostHogEvent('faq:accordeon', { question: hash });
 
     setExpandedQuestionId(hash);
-  }, []);
-
-  useEffect(() => {
-    if (!expandedQuestionId) {
-      return;
-    }
-
     const timeoutId = window.setTimeout(() => {
-      document.getElementById(expandedQuestionId)?.scrollIntoView({
+      document.getElementById(hash)?.scrollIntoView({
         block: 'start',
       });
     }, FAQ_ACCORDION_SCROLL_DELAY_MS);
@@ -548,7 +540,7 @@ function FaqPage() {
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [expandedQuestionId]);
+  }, []);
 
   const updateHash = (questionId: string | null) => {
     const nextUrl = questionId ? `${router.pathname}#${questionId}` : router.pathname;
