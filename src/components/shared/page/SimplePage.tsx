@@ -14,6 +14,7 @@ import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import useRouterReady from '@/hooks/useRouterReady';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import cx from '@/utils/cx';
 import { deleteFetchJSON } from '@/utils/network';
@@ -244,6 +245,13 @@ export const publicNavigationMenu: MainNavigationProps.Item[] = [
           href: '/qui-sommes-nous',
         },
         text: 'Qui sommes-nous ?',
+      },
+      {
+        linkProps: {
+          href: '/faq',
+          onClick: () => trackPostHogEvent('faq:click', { source: 'menu' }),
+        },
+        text: 'FAQ',
       },
       {
         linkProps: {
@@ -645,6 +653,13 @@ const PageFooter = () => (
           href: '/stats',
         },
         text: 'Statistiques',
+      },
+      {
+        linkProps: {
+          href: '/faq',
+          onClick: () => trackPostHogEvent('faq:click', { source: 'footer' }),
+        },
+        text: 'FAQ',
       },
       {
         linkProps: {

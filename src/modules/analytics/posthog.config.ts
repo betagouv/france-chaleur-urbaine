@@ -95,6 +95,12 @@ export type PostHogEventMap = {
     source: string;
     content_category?: string;
   };
+
+  'faq:accordeon': {
+    question: string;
+  };
+  'faq:cta_contact_equipe': never;
+  'faq:click': { source: 'menu' | 'footer' | 'contact' };
 };
 
 export type PostHogEvent = keyof PostHogEventMap;
