@@ -128,7 +128,7 @@ export const demandsRouter = router({
   user: {
     addRelanceComment: route.input(zAddRelanceCommentInput).mutation(async ({ input, ctx }) => {
       const { relanceId, comment } = input;
-      return await updateCommentFromRelanceId(relanceId, comment, ctx.user.id);
+      return await updateCommentFromRelanceId(relanceId, comment, ctx.user?.id);
     }),
     create: route.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
       return await createDemand(input, { userId: ctx.user?.id });
@@ -145,7 +145,7 @@ export const demandsRouter = router({
     }),
     update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
       const { demandId, values } = input;
-      return await updateDemandByUser(demandId, values, ctx.user.id);
+      return await updateDemandByUser(demandId, values, ctx.user?.id);
     }),
   },
 });
