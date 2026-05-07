@@ -80,9 +80,9 @@ const FAQS: FaqCategory[] = [
               géothermie, solaire thermique, biomasse, ou réseau de chaleur si une extension devient possible.
             </p>
             <p>
-              <Link href="/chaleur-renouvelable">
-                Testez votre adresse pour obtenir des recommandations adaptées à votre bâtiment :
-                france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable
+              👉
+              <Link className="font-bold" href="/chaleur-renouvelable">
+                Testez votre adresse pour obtenir des recommandations adaptées à votre bâtiment
               </Link>
             </p>
           </>
@@ -318,8 +318,10 @@ const FAQS: FaqCategory[] = [
             <p>
               Si vous souhaitez faire ajouter un tracé de réseau en service ou en construction, un périmètre de développement prioritaire
               (PDP) un schéma directeur, ou d’autres informations sur la carte des réseaux de chaleur et de froid, vous pouvez nous
-              transmettre les éléments via <strong>le formulaire de contribution dédié</strong> :{' '}
-              <Link href="/contribution">https://france-chaleur-urbaine.beta.gouv.fr/contribution</Link>
+              transmettre les éléments via{' '}
+              <Link className="font-bold" href="/contribution">
+                le formulaire de contribution dédié
+              </Link>
             </p>
             <p>
               Formats préférentiels : geojson, shapefile, KML, ou GeoPackage. En PDF en dernier recours ou si les premiers formats ne sont
