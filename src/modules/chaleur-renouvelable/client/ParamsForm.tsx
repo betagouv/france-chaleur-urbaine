@@ -1,185 +1,446 @@
+import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
+
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
-import Image from '@/components/ui/Image';
-import { trackPostHogEvent } from '@/modules/analytics/client';
+import RichSelect from '@/components/ui/RichSelect';
 import type { BANAddressFeature } from '@/modules/ban/types';
-import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import { type DPE, DPE_VALUES, type EspaceExterieur, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import type { ChoixChauffageParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
+import { DPE_BG } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+import {
+  type DPE,
+  DPE_VALUES,
+  type EspaceExterieur,
+  getEspaceExterieurOptions,
+  isEspaceExterieurCompatible,
+  type ModeEauChaudeSanitaire,
+  modeEauChaudeSanitaireOptions,
+  type TypeLogement,
+  type TypeRadiateur,
+  typeLogementOptions,
+  typeRadiateurOptions,
+} from '@/modules/chaleur-renouvelable/constants';
+import { AddressField } from '@/modules/form/AddressField';
 import cx from '@/utils/cx';
 
-const isNumericLike = (v: string) => v === '' || /^[0-9]+([.,][0-9]*)?$/.test(v);
+const isNumericLike = (value: string) => value === '' || /^[0-9]+([.,][0-9]*)?$/.test(value);
 
 type ParamsFormProps = {
   isOpen: boolean;
   setIsOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
-  showTopFields?: boolean;
-  adresse: string | null;
-  setAdresse: (val: string | null) => void;
+  values: ChoixChauffageParams;
+  onSave: (values: ChoixChauffageParams) => Promise<unknown> | undefined;
   geoAddress?: BANAddressFeature;
   setGeoAddress: (val: BANAddressFeature | undefined) => void;
   onSelectGeoAddress?: (val?: BANAddressFeature) => void;
   onAddressError?: () => void;
-  typeLogement: TypeLogement | null;
-  setTypeLogement: (val: TypeLogement | null) => void;
-  espaceExterieur: EspaceExterieur | null;
-  setEspaceExterieur: (val: EspaceExterieur | null) => void;
-  dpe: DPE;
-  setDpe: (val: DPE) => void;
-  nbLogements: number | null;
-  setNbLogements: (val: number | null) => void;
-  surfaceMoyenne: number | null;
-  setSurfaceMoyenne: (val: number | null) => void;
-  habitantsMoyen: string | null;
-  setHabitantsMoyen: (val: string) => void;
 };
 
+type ParamsFormDraft = {
+  adresse: NonNullable<ChoixChauffageParams['adresse']>;
+  dpe: DPE;
+  espaceExterieur: ChoixChauffageParams['espaceExterieur'];
+  habitantsMoyen: NonNullable<ChoixChauffageParams['habitantsMoyen']>;
+  modeEauChaudeSanitaire: ChoixChauffageParams['modeEauChaudeSanitaire'] | null;
+  nbLogements: string;
+  surfaceMoyenne: string;
+  typeLogement: ChoixChauffageParams['typeLogement'];
+  typeRadiateur: ChoixChauffageParams['typeRadiateur'];
+};
+
+function buildDraft(values: ChoixChauffageParams): ParamsFormDraft {
+  return {
+    adresse: values.adresse ?? '',
+    dpe: values.dpe,
+    espaceExterieur: values.espaceExterieur,
+    habitantsMoyen: values.habitantsMoyen ?? '',
+    modeEauChaudeSanitaire: values.modeEauChaudeSanitaire,
+    nbLogements: values.nbLogements === null ? '' : String(values.nbLogements),
+    surfaceMoyenne: values.surfaceMoyenne === null ? '' : String(values.surfaceMoyenne),
+    typeLogement: values.typeLogement,
+    typeRadiateur: values.typeRadiateur,
+  };
+}
+
+function parseIntegerOrNull(value: string) {
+  const trimmedValue = value.trim();
+  if (trimmedValue === '') return null;
+
+  const parsedValue = Number(trimmedValue);
+  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : null;
+}
+
+function normalizeDecimalString(value: string) {
+  const normalizedValue = value.replace(',', '.').replace(/\.$/, '').trim();
+  if (normalizedValue === '') return '';
+
+  const parsedValue = Number(normalizedValue);
+  return Number.isFinite(parsedValue) && parsedValue >= 0 ? String(parsedValue) : '';
+}
+
+function areDraftsEqual(left: ParamsFormDraft, right: ParamsFormDraft) {
+  return (
+    left.adresse === right.adresse &&
+    left.dpe === right.dpe &&
+    left.espaceExterieur === right.espaceExterieur &&
+    left.habitantsMoyen === right.habitantsMoyen &&
+    left.modeEauChaudeSanitaire === right.modeEauChaudeSanitaire &&
+    left.nbLogements === right.nbLogements &&
+    left.surfaceMoyenne === right.surfaceMoyenne &&
+    left.typeLogement === right.typeLogement &&
+    left.typeRadiateur === right.typeRadiateur
+  );
+}
+
+/**
+ * Formulaire d’ajustement des paramètres de simulation sur la page résultats.
+ * Les modifications restent locales jusqu’à validation pour permettre un vrai annuler.
+ */
 export function ParamsForm({
   isOpen,
   setIsOpen,
-  showTopFields,
-  adresse,
-  setAdresse,
-  geoAddress,
+  values,
+  onSave,
   setGeoAddress,
   onSelectGeoAddress,
-  onAddressError,
-  typeLogement,
-  setTypeLogement,
-  espaceExterieur,
-  setEspaceExterieur,
-  dpe,
-  setDpe,
-  nbLogements,
-  setNbLogements,
-  surfaceMoyenne,
-  setSurfaceMoyenne,
-  habitantsMoyen,
-  setHabitantsMoyen,
+  onAddressError: _onAddressError,
 }: ParamsFormProps) {
+  const currentValues = buildDraft(values);
+  const [draft, setDraft] = useState<ParamsFormDraft>(currentValues);
+
+  useEffect(() => {
+    setDraft(currentValues);
+  }, [
+    currentValues.adresse,
+    currentValues.dpe,
+    currentValues.espaceExterieur,
+    currentValues.habitantsMoyen,
+    currentValues.modeEauChaudeSanitaire,
+    currentValues.nbLogements,
+    currentValues.surfaceMoyenne,
+    currentValues.typeLogement,
+    currentValues.typeRadiateur,
+  ]);
+
+  const isDirty = !areDraftsEqual(draft, currentValues);
+  const espaceExterieurOptions = getEspaceExterieurOptions(draft.typeLogement);
+  const isEspaceExterieurDisabled = !draft.typeLogement;
+
+  const resetDraft = () => {
+    setDraft(currentValues);
+  };
+
+  const handleClose = () => {
+    resetDraft();
+    setIsOpen(false);
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const normalizedHabitantsMoyen = normalizeDecimalString(draft.habitantsMoyen);
+    const normalizedNbLogements = parseIntegerOrNull(draft.nbLogements);
+    const normalizedSurfaceMoyenne = parseIntegerOrNull(draft.surfaceMoyenne);
+    const nextValues: ChoixChauffageParams = {
+      adresse: draft.adresse || null,
+      dpe: draft.dpe,
+      espaceExterieur: draft.espaceExterieur,
+      habitantsMoyen: normalizedHabitantsMoyen,
+      modeEauChaudeSanitaire: draft.modeEauChaudeSanitaire ?? 'equipement-chauffage',
+      nbLogements: normalizedNbLogements,
+      surfaceMoyenne: normalizedSurfaceMoyenne,
+      typeLogement: draft.typeLogement,
+      typeRadiateur: draft.typeRadiateur,
+    };
+
+    void onSave(nextValues);
+
+    setDraft({
+      ...draft,
+      habitantsMoyen: normalizedHabitantsMoyen,
+      nbLogements: normalizedNbLogements === null ? '' : String(normalizedNbLogements),
+      surfaceMoyenne: normalizedSurfaceMoyenne === null ? '' : String(normalizedSurfaceMoyenne),
+    });
+    setIsOpen(false);
+  };
+
   return (
-    <>
-      <div className="md:hidden fr-my-2w">
+    <form id="params-form" className="rounded border border-[#d7d3cb] bg-white px-4 py-5 shadow-sm" onSubmit={handleSubmit}>
+      <div className="flex justify-between">
+        {isOpen ? (
+          <>
+            <AddressField
+              label=""
+              value={draft.adresse}
+              className="flex-2"
+              nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
+              onlyAddress
+              onClear={() => {
+                setDraft((previousDraft) => ({ ...previousDraft, adresse: '' }));
+                setGeoAddress(undefined);
+                onSelectGeoAddress?.(undefined);
+              }}
+              onSelect={(nextAddress) => {
+                setDraft((previousDraft) => ({
+                  ...previousDraft,
+                  adresse: nextAddress?.properties?.label ?? '',
+                }));
+                setGeoAddress(nextAddress);
+                onSelectGeoAddress?.(nextAddress);
+              }}
+            />
+            <div className="flex flex-1 justify-end">
+              <span className="cursor-pointer" onClick={handleClose}>
+                x
+              </span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <span className="fr-icon-pin-2-line mr-3" />
+              {draft.adresse}
+            </div>{' '}
+            <Button
+              full
+              priority="secondary"
+              iconId="fr-icon-pencil-line"
+              className="hidden w-auto md:inline-flex"
+              iconPosition="left"
+              aria-expanded={isOpen}
+              aria-controls="params-form"
+              onClick={() => setIsOpen(true)}
+            >
+              Complétez les paramètres
+            </Button>
+          </>
+        )}
+      </div>
+
+      <p className="mb-6 mt-4">
+        Ajustez les détails de votre simulation (DPE, nombre de logements, mode de production d’eau chaude...) pour obtenir un calcul plus
+        précis des coûts et économies d’énergie.
+      </p>
+
+      {!isOpen && (
         <Button
           full
           priority="secondary"
-          iconId={isOpen ? 'fr-icon-close-line' : 'fr-icon-add-line'}
-          iconPosition="right"
+          iconId="fr-icon-pencil-line"
+          className="mb-6 md:hidden"
+          iconPosition="left"
           aria-expanded={isOpen}
           aria-controls="params-form"
-          onClick={() => setIsOpen((v) => !v)}
+          onClick={() => setIsOpen(true)}
         >
-          {isOpen ? 'Fermer' : 'Ouvrir'} les paramètres
+          Complétez les paramètres
         </Button>
-      </div>
-      <div
-        id="params-form"
-        className={cx('border border-gray-200 rounded shadow-lg p-4 fr-mb-3w bg-white', 'md:block', isOpen ? 'block' : 'hidden')}
-      >
-        <div className="flex items-center gap-2 font-semibold">
-          <Image src="/icons/icon-warning.png" alt="icone d'engrenage" aria-hidden="true" width="24" height="24" />
-          Affinez les coûts en renseignant ces informations
-        </div>
-        <div className="mt-3 grid grid-cols-1 md:grid-cols-4 md:gap-4">
-          {showTopFields && (
-            <div className="mb-6 md:mb-0">
-              <SettingsTopFields
-                withLabel
-                className="grid grid-cols-1 gap-4"
-                adresse={adresse}
-                setAdresse={(v) => void setAdresse(v)}
-                geoAddress={geoAddress}
-                setGeoAddress={setGeoAddress}
-                onSelectGeoAddress={onSelectGeoAddress}
-                onAddressError={onAddressError}
-                typeLogement={typeLogement}
-                setTypeLogement={setTypeLogement}
-                espaceExterieur={espaceExterieur}
-                setEspaceExterieur={setEspaceExterieur}
-              />
-            </div>
-          )}
-          <Select
-            label="DPE (étiquette énergétique)"
-            options={DPE_VALUES.map((i) => ({ label: i, value: i }))}
-            nativeSelectProps={{
-              onChange: (e) => {
-                const newDpe = e.target.value as DPE;
-                trackPostHogEvent('simu_multi_enr:params_updated', { dpe: newDpe });
-                void setDpe(newDpe);
-              },
-              value: dpe,
-            }}
-          />
-          <Input
-            label="Nombre de logements"
-            nativeInputProps={{
-              inputMode: 'numeric',
-              min: 1,
-              onChange: (e) => {
-                const nbLogements = Number(e.target.value);
-                trackPostHogEvent('simu_multi_enr:params_updated', { nb_logements: nbLogements });
-                void setNbLogements(nbLogements === 0 ? null : nbLogements);
-              },
-              placeholder: '25',
-              required: true,
-              type: 'number',
-              value: nbLogements ?? '',
-            }}
-          />
-          <div className="relative inline-block w-full">
-            <Input
-              label="Surface moyenne / logement"
-              nativeInputProps={{
-                inputMode: 'numeric',
-                min: 0,
-                onChange: (e) => {
-                  const surface = Number(e.target.value);
-                  trackPostHogEvent('simu_multi_enr:params_updated', { surface });
-                  void setSurfaceMoyenne(surface === 0 ? null : surface);
-                },
-                placeholder: '70',
-                required: true,
-                type: 'number',
-                value: surfaceMoyenne ?? '', // espace pour le m²
-              }}
-              className="[&_input]:pr-12"
-            />
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/3 text-gray-500">m²</span>
+      )}
+
+      {isOpen && (
+        <>
+          <div className="space-y-6">
+            <section>
+              <SectionTitle iconClassName="fr-icon-home-4-line">Bâtiment</SectionTitle>
+              <div className="mt-4 grid grid-cols-1 md:gap-4 md:grid-cols-3">
+                <Input
+                  label="Nombre de logements"
+                  nativeInputProps={{
+                    inputMode: 'numeric',
+                    min: 1,
+                    onChange: (event) => setDraft((previousDraft) => ({ ...previousDraft, nbLogements: event.target.value })),
+                    placeholder: '25',
+                    type: 'number',
+                    value: draft.nbLogements,
+                  }}
+                />
+                <InputWithSuffix
+                  label="Surface habitable par logement (moy)"
+                  suffix="m²"
+                  value={draft.surfaceMoyenne}
+                  placeholder="70"
+                  onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
+                />
+                <Input
+                  label="Habitants par logement (moy)"
+                  nativeInputProps={{
+                    inputMode: 'decimal',
+                    min: 0,
+                    onBlur: () => {
+                      setDraft((previousDraft) => ({
+                        ...previousDraft,
+                        habitantsMoyen: normalizeDecimalString(previousDraft.habitantsMoyen),
+                      }));
+                    },
+                    onChange: (event) => {
+                      const nextValue = event.target.value;
+                      if (!isNumericLike(nextValue)) return;
+
+                      setDraft((previousDraft) => ({ ...previousDraft, habitantsMoyen: nextValue }));
+                    },
+                    placeholder: '2',
+                    step: 0.1,
+                    type: 'number',
+                    value: draft.habitantsMoyen,
+                  }}
+                />
+              </div>
+              <div className="mt-4 grid grid-cols-1 md:gap-4 md:grid-cols-3">
+                <RichSelect<EspaceExterieur>
+                  value={draft.espaceExterieur ?? undefined}
+                  onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }))}
+                  options={[...espaceExterieurOptions]}
+                  placeholder={isEspaceExterieurDisabled ? "Renseignez d'abord le mode de chauffage" : 'Cochez vos espaces disponibles'}
+                  label="Espaces extérieurs"
+                  disabled={isEspaceExterieurDisabled}
+                />
+                <div className="col-span-2">
+                  <DpeField value={draft.dpe} onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, dpe: value }))} />
+                </div>
+              </div>
+            </section>
+            <section>
+              <SectionTitle iconClassName="fr-icon-fire-line">Chauffage et eau chaude sanitaire</SectionTitle>
+              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                <Select
+                  label="Mode de chauffage"
+                  options={[...typeLogementOptions]}
+                  nativeSelectProps={{
+                    onChange: (event) => {
+                      const nextTypeLogement = (event.target.value || null) as TypeLogement | null;
+                      setDraft((previousDraft) => ({
+                        ...previousDraft,
+                        espaceExterieur: isEspaceExterieurCompatible(nextTypeLogement, previousDraft.espaceExterieur)
+                          ? previousDraft.espaceExterieur
+                          : null,
+                        typeLogement: nextTypeLogement,
+                      }));
+                    },
+                    value: draft.typeLogement ?? undefined,
+                  }}
+                />
+                <Select
+                  label="Type de radiateurs"
+                  options={[...typeRadiateurOptions]}
+                  nativeSelectProps={{
+                    onChange: (event) =>
+                      setDraft((previousDraft) => ({
+                        ...previousDraft,
+                        typeRadiateur: (event.target.value || null) as TypeRadiateur | null,
+                      })),
+                    value: draft.typeRadiateur ?? undefined,
+                  }}
+                />
+                <Select
+                  label="Mode d’eau chaude sanitaire"
+                  options={[{ label: 'Non renseigné', value: '' }, ...modeEauChaudeSanitaireOptions]}
+                  nativeSelectProps={{
+                    onChange: (event) =>
+                      setDraft((previousDraft) => ({
+                        ...previousDraft,
+                        modeEauChaudeSanitaire: (event.target.value || null) as ModeEauChaudeSanitaire | null,
+                      })),
+                    value: draft.modeEauChaudeSanitaire ?? undefined,
+                  }}
+                />
+              </div>
+            </section>
           </div>
-          <Input
-            label="Habitants moyen / logement"
-            nativeInputProps={{
-              inputMode: 'decimal',
-              min: 0,
-              onBlur: () => {
-                const normalized = (habitantsMoyen ?? '').replace(',', '.').replace(/\.$/, '');
-                if (normalized === '') {
-                  void setHabitantsMoyen('');
-                  return;
-                }
-                const n = Number(normalized);
-                if (!Number.isFinite(n) || n < 0) {
-                  void setHabitantsMoyen('');
-                  return;
-                }
-                void setHabitantsMoyen(String(n));
-              },
-              onChange: (e) => {
-                const nbHabitant = e.target.value;
-                if (!isNumericLike(nbHabitant)) return;
-                trackPostHogEvent('simu_multi_enr:params_updated', { nb_habitants: Number(nbHabitant) });
-                void setHabitantsMoyen(nbHabitant);
-              },
-              placeholder: '2',
-              required: true,
-              step: 0.1,
-              type: 'number',
-              value: habitantsMoyen ?? '',
-            }}
-          />
-        </div>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <Button type="submit" iconId="fr-icon-save-line" disabled={!isDirty}>
+              Enregistrer et recalculer
+            </Button>
+            <Button priority="secondary" type="button" onClick={handleClose} disabled={!isDirty}>
+              Annuler
+            </Button>
+          </div>
+        </>
+      )}
+    </form>
+  );
+}
+
+type SectionTitleProps = {
+  children: ReactNode;
+  iconClassName: string;
+};
+
+/**
+ * Titre de section compact pour structurer le formulaire de simulation.
+ */
+function SectionTitle({ children, iconClassName }: SectionTitleProps) {
+  return (
+    <div className="flex items-center gap-2 text-xl font-bold text-[#161616]">
+      <span className={cx(iconClassName, 'before:mb-0 before:block')} aria-hidden="true" />
+      <h3 className="m-0 text-xl">{children}</h3>
+    </div>
+  );
+}
+
+type DpeFieldProps = {
+  value: DPE;
+  onChange: (value: DPE) => void;
+};
+
+/**
+ * Sélecteur DPE en pastilles pour rapprocher le rendu de la maquette métier.
+ */
+function DpeField({ value, onChange }: DpeFieldProps) {
+  return (
+    <div>
+      <div className="mb-2 text-base font-medium leading-6 text-[#161616]">Étiquette DPE</div>
+      <div className="flex flex-wrap gap-2">
+        {DPE_VALUES.map((dpeValue) => {
+          const isSelected = value === dpeValue;
+
+          return (
+            <button
+              key={dpeValue}
+              type="button"
+              className={cx(
+                'flex h-11 w-11 items-center justify-center rounded-md border-2 text-base font-bold text-white transition',
+                DPE_BG[dpeValue],
+                isSelected ? 'border-[#000091] ring-2 ring-[#000091]' : 'border-transparent'
+              )}
+              aria-pressed={isSelected}
+              onClick={() => onChange(dpeValue)}
+            >
+              {dpeValue}
+            </button>
+          );
+        })}
       </div>
-    </>
+    </div>
+  );
+}
+
+type InputWithSuffixProps = {
+  label: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  suffix: string;
+  value: string;
+};
+
+/**
+ * Champ numérique avec suffixe visuel pour les unités courtes.
+ */
+function InputWithSuffix({ label, onChange, placeholder, suffix, value }: InputWithSuffixProps) {
+  return (
+    <div className="relative inline-block w-full">
+      <Input
+        label={label}
+        nativeInputProps={{
+          inputMode: 'numeric',
+          min: 1,
+          onChange: (event) => onChange(event.target.value),
+          placeholder,
+          type: 'number',
+          value,
+        }}
+        className="[&_input]:pr-12"
+      />
+      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/3 text-gray-500">{suffix}</span>
+    </div>
   );
 }
