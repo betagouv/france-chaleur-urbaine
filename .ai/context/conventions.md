@@ -87,7 +87,10 @@
   type Result = { success: boolean; data?: User; error?: string }
   ```
 - **No useless defensive checks.** Verify the type before adding `?.`, `!!`, `&&`-truthiness, or null guards. If the type guarantees non-null/non-empty, drop the check. Example: `perms: PermissionWithLabel[]` → use `perms.length > 0`, not `perms && perms.length > 0`.
-- **Ternary at the return.** When a function returns one of two branches based on a boolean, prefer a single `return cond ? A : B` over `if (cond) return A; return B;`.
+- **Ternary at the return.** Any function (or callback, or `useMemo`) whose body is `if (cond) { return A; } return B;` must be rewritten as `return cond ? A : B;`. Applies to nested cases too — chain ternaries rather than stacking `if`/`return` pairs.
+- **One statement per line.** Never put two statements on the same line. In particular, never put an `if`/`else`/`for`/`while` and another statement (return, assignment, call) on the same line — always break the body onto its own indented line, even for single-statement bodies.
+- **Avoid casts.** Casts (`as Foo`) are a smell — they bypass the type checker. Before adding one, check whether an existing typed helper (browse `src/utils/`), `satisfies`, a discriminated union, or a generic can produce the right type. Casts are acceptable only for narrow, justified cases (e.g. an unavoidable external boundary).
+- **Rely on inference.** Never annotate the type of a local `const`/`let`, a hook result (`useMemo`, `useState`, `useCallback`), or an internal helper's return when TypeScript already infers it correctly. Annotate only at boundaries (exported functions, public props, public types) or when inference is ambiguous/expensive. Redundant annotations add noise and obscure when an annotation actually carries intent.
 
 ## Environment variables
 
