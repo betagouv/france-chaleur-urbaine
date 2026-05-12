@@ -32,10 +32,13 @@ import { toastErrors } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
 import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
+import type { UserRole } from '@/types/enum/UserRole';
 import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { ExportColumn } from '@/utils/export';
+import { pick } from '@/utils/objects';
+import { ObjectKeys } from '@/utils/typescript';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
@@ -131,42 +134,75 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
   },
 ];
 
+const traiteesStatusFilterValue: Record<DemandStatus, boolean> = {
+  [DEMANDE_STATUS.EMPTY]: false,
+  [DEMANDE_STATUS.UNREALISABLE]: true,
+  [DEMANDE_STATUS.WAITING]: true,
+  [DEMANDE_STATUS.IN_PROGRESS]: true,
+  [DEMANDE_STATUS.VOTED]: true,
+  [DEMANDE_STATUS.WORK_IN_PROGRESS]: true,
+  [DEMANDE_STATUS.DONE]: true,
+  [DEMANDE_STATUS.ABANDONNED]: true,
+};
+
 // biome-ignore assist/source/useSortedKeys: presets are intentionally ordered for UI priority
-const quickFilterPresets = {
-  nouvellesDemandes: {
+const allPresetDefinitions = {
+  aTraiter: {
     filters: [
       { id: 'is_responsible', value: { false: false, true: true } },
-      { id: 'Status', value: { 'En attente de prise en charge': true } },
+      { id: 'Status', value: { [DEMANDE_STATUS.EMPTY]: true } },
       { id: 'Prise de contact', value: { false: true, true: false } },
     ],
     getStat: (demands) =>
-      demands.filter((demand) => demand.is_responsible && demand.Status === 'En attente de prise en charge' && !demand['Prise de contact'])
-        .length,
+      demands.filter((demand) => demand.is_responsible && demand.Status === DEMANDE_STATUS.EMPTY && !demand['Prise de contact']).length,
     label: (
       <>
-        nouvelles demandes&nbsp;
+        demandes à traiter&nbsp;
         <Tooltip title="Demandes que vous devez traiter en priorité : non encore prises en charge et relevant de votre périmètre." />
       </>
     ),
     valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
   },
-  demandesAffectees: {
-    filters: [{ id: 'is_responsible', value: { false: false, true: true } }],
-    getStat: (demands) => demands.filter((demand) => demand.is_responsible).length,
+  traitees: {
+    filters: [
+      { id: 'is_responsible', value: { false: false, true: true } },
+      { id: 'Status', value: traiteesStatusFilterValue },
+    ],
+    getStat: (demands) => demands.filter((demand) => demand.is_responsible && demand.Status !== DEMANDE_STATUS.EMPTY).length,
     label: (
       <>
-        demandes affectées&nbsp;
-        <Tooltip title="Toutes les demandes qui relèvent de votre périmètre (en cours, traitées, etc.)." />
+        demandes traitées&nbsp;
+        <Tooltip title="Demandes relevant de votre périmètre dont le statut a évolué." />
       </>
     ),
   },
-  horsPerimetre: {
-    filters: [{ id: 'is_responsible', value: { false: true, true: false } }],
-    getStat: (demands) => demands.filter((demand) => !demand.is_responsible).length,
+  nonAffectees: {
+    filters: [{ id: 'network_id', value: 'empty' }],
+    getStat: (demands) => demands.filter((demand) => demand.network_id == null).length,
     label: (
       <>
-        hors périmètre&nbsp;
-        <Tooltip title="Demandes que vous voyez (via une permission territoire) mais qui sont à traiter par le gestionnaire du réseau affecté." />
+        demandes non affectées&nbsp;
+        <Tooltip title="Demandes sans réseau de chaleur affecté." />
+      </>
+    ),
+  },
+  nonRealisables: {
+    filters: [{ id: 'Status', value: { [DEMANDE_STATUS.UNREALISABLE]: true } }],
+    getStat: (demands) => demands.filter((demand) => demand.Status === DEMANDE_STATUS.UNREALISABLE).length,
+    label: (
+      <>
+        demandes non réalisables&nbsp;
+        <Tooltip title="Demandes dont le statut est « Non réalisable »." />
+      </>
+    ),
+  },
+  enPDP: {
+    filters: [{ id: 'en PDP', value: { Non: false, Oui: true } }],
+    getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
+    label: (
+      <>
+        demandes en PDP&nbsp;
+        <Tooltip title="Demandes situées dans un périmètre de développement prioritaire." />
       </>
     ),
   },
@@ -177,7 +213,25 @@ const quickFilterPresets = {
   },
 } satisfies Record<string, QuickFilterPreset<DemandsListItem>>;
 
-const presetKeys = ['nouvellesDemandes', 'demandesAffectees', 'horsPerimetre', 'all'] as const;
+type PresetKey = keyof typeof allPresetDefinitions;
+
+const allPresetKeys = ObjectKeys(allPresetDefinitions);
+
+/**
+ * Presets visibles par rôle (hors `aTraiter`, géré séparément via la permission réseau).
+ */
+const presetsByRole: Partial<Record<UserRole, PresetKey[]>> = {
+  admin: ['all', 'nonRealisables', 'enPDP'],
+  alec: ['all', 'nonAffectees', 'nonRealisables', 'enPDP'],
+  ccrt: ['all', 'nonAffectees', 'nonRealisables', 'enPDP'],
+  collectivite: ['all', 'nonAffectees', 'enPDP'],
+  gestionnaire: ['traitees', 'all'],
+};
+
+const getAvailablePresetKeys = (role: UserRole | undefined, hasPermissionReseau: boolean): PresetKey[] => {
+  const rolePresets = (role && presetsByRole[role]) ?? ['all'];
+  return hasPermissionReseau ? ['aTraiter', ...rolePresets] : rolePresets;
+};
 
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
@@ -189,25 +243,38 @@ let isUpdatingDemandField = false;
 function DemandesNew(): React.ReactElement {
   const { data: session } = useSession();
   const currentUserId = session?.user?.id ?? '';
+  const userRole = session?.user?.role;
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [modalDemand, setModalDemand] = useState<DemandsListItem | null>(null);
   const tableRowSelection = useMemo(() => {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
   }, [selectedDemandId]);
 
+  const { data: userPermissions } = trpc.permissions.mine.useQuery(undefined, { enabled: !!userRole });
+  const hasPermissionReseau = (userPermissions ?? []).some((permission) => permission.type === 'reseau_de_chaleur');
+
+  const availablePresetKeys = useMemo(() => getAvailablePresetKeys(userRole, hasPermissionReseau), [userRole, hasPermissionReseau]);
+
+  const quickFilterPresets = useMemo(() => pick(allPresetDefinitions, availablePresetKeys), [availablePresetKeys]);
+
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
-  const [presetKey, setPresetKey] = useQueryState('preset', parseAsStringLiteral(presetKeys).withDefault('nouvellesDemandes'));
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(quickFilterPresets[presetKey].filters);
+  const [presetKey, setPresetKey] = useQueryState('preset', parseAsStringLiteral(allPresetKeys));
+  const activePresetKey = useMemo(
+    () =>
+      presetKey && availablePresetKeys.includes(presetKey) ? presetKey : availablePresetKeys.includes('aTraiter') ? 'aTraiter' : 'all',
+    [presetKey, availablePresetKeys]
+  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(allPresetDefinitions[activePresetKey].filters);
   const [filteredDemands, setFilteredDemands] = useState<DemandsListItem[]>([]);
 
-  // Sync filters when preset changes from URL (browser back/forward).
+  // Sync filters when preset changes from URL (browser back/forward) or when role/permissions resolve.
   useEffect(() => {
-    setColumnFilters(quickFilterPresets[presetKey].filters);
-  }, [presetKey]);
+    setColumnFilters(allPresetDefinitions[activePresetKey].filters);
+  }, [activePresetKey]);
 
   const handlePresetFiltersChange = useCallback(
-    (newFilters: ColumnFiltersState, newPresetKey: keyof typeof quickFilterPresets | null) => {
+    (newFilters: ColumnFiltersState, newPresetKey: PresetKey | null) => {
       setColumnFilters(newFilters);
       void setPresetKey(newPresetKey ?? 'all');
     },
@@ -246,12 +313,7 @@ function DemandesNew(): React.ReactElement {
       await updateDemandMutation({ demandId, values: demandUpdate });
 
       utils.demands.gestionnaire.list.setData(undefined, (demands) =>
-        (demands ?? []).map((demand) => {
-          if (demand.id === demandId) {
-            return { ...demand, ...demandUpdate } as DemandsListItem;
-          }
-          return demand;
-        })
+        (demands ?? []).map((demand) => (demand.id === demandId ? ({ ...demand, ...demandUpdate } as DemandsListItem) : demand))
       );
     }),
     [utils, updateDemandMutation]
@@ -487,6 +549,11 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'is_responsible',
         filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+        visible: false,
+      },
+      {
+        accessorKey: 'network_id',
+        filterType: 'EmptyOrFilled', // obligatoire pour faire fonctionner le filtre « Demandes non affectées »
         visible: false,
       },
     ],
