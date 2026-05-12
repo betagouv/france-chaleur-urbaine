@@ -1,4 +1,5 @@
 import { sendEmailTemplate } from '@/modules/email';
+import { createEvent } from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { processInParallel } from '@/utils/async';
@@ -82,6 +83,16 @@ export const notifyGestionnairesOfNewDemands = async () => {
       })
       .where('id', 'in', matchedDemandIds)
       .execute();
+
+    await Promise.all(
+      matchedDemandIds.map((demandId) =>
+        createEvent({
+          context_id: demandId,
+          context_type: 'demand',
+          type: 'demand_notification_sent',
+        })
+      )
+    );
   }
 
   await processInParallel(recipients, EMAIL_CONCURRENCY, async ({ id, email, demand_ids }) => {

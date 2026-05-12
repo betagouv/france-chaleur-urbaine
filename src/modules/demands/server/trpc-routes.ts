@@ -13,7 +13,7 @@ import {
   zGestionnaireUpdateDemandInput,
   zListEmailsInput,
   zSendEmailInput,
-  zUserUpdateDemandInput,
+  zSubmitSurveyInput,
 } from '../constants';
 import {
   changeDemandAssignment,
@@ -33,7 +33,7 @@ import {
   requestDemandAssignmentChange,
   updateDemandByGestionnaire,
 } from './gestionnaire-operations';
-import { updateCommentFromRelanceId, updateDemandByUser } from './relances';
+import { submitSurvey, updateCommentFromRelanceId } from './relances';
 import { getReseauxStats, getTagsStats } from './stats';
 import { listByUser } from './user-tracking';
 
@@ -126,9 +126,9 @@ export const demandsRouter = router({
     }),
   },
   user: {
-    addRelanceComment: route.input(zAddRelanceCommentInput).mutation(async ({ input, ctx }) => {
+    addRelanceComment: route.input(zAddRelanceCommentInput).mutation(async ({ input }) => {
       const { relanceId, comment } = input;
-      return await updateCommentFromRelanceId(relanceId, comment, ctx.user?.id);
+      return await updateCommentFromRelanceId(relanceId, comment);
     }),
     create: route.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
       return await createDemand(input, { userId: ctx.user?.id });
@@ -143,9 +143,9 @@ export const demandsRouter = router({
     list: authRoute.query(async ({ ctx }) => {
       return await listByUser(ctx.user.id);
     }),
-    update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
+    submitSurvey: route.input(zSubmitSurveyInput).mutation(async ({ input }) => {
       const { demandId, values } = input;
-      return await updateDemandByUser(demandId, values, ctx.user?.id);
+      return await submitSurvey(demandId, values);
     }),
   },
 });

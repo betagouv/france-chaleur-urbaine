@@ -34,14 +34,13 @@ export const zSendEmailInput = z.object({
   key: z.string(),
 });
 
-const zUserDemandUpdateValues = z
+const zSubmitSurveyValues = z
   .object({
-    'Commentaire relance': z.string().nullable(),
     Sondage: z.array(z.string()).nullable(),
   })
   .partial();
 
-export type UpdateUserDemandInput = z.infer<typeof zUserDemandUpdateValues>;
+export type SubmitSurveyInput = z.infer<typeof zSubmitSurveyValues>;
 
 export const demandStatuses = [
   { label: 'En attente de prise en charge', value: 'empty' },
@@ -102,11 +101,11 @@ export const zAdminDemandUpdateValues = z
 
 export type UpdateAdminDemandInput = z.infer<typeof zAdminDemandUpdateValues>;
 
-export type UpdateDemandInput = UpdateGestionnaireDemandInput & UpdateAdminDemandInput & UpdateUserDemandInput;
+export type UpdateDemandInput = UpdateGestionnaireDemandInput & UpdateAdminDemandInput & SubmitSurveyInput;
 
-export const zUserUpdateDemandInput = z.object({
+export const zSubmitSurveyInput = z.object({
   demandId: z.string(),
-  values: zUserDemandUpdateValues,
+  values: zSubmitSurveyValues,
 });
 
 export const zGestionnaireUpdateDemandInput = z.object({

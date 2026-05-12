@@ -25,7 +25,6 @@ import Gestionnaire from '@/modules/demands/client/Gestionnaire';
 import Status from '@/modules/demands/client/Status';
 import { eligibilityTitleByType } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
-import { toastErrors } from '@/modules/notification';
 import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
@@ -108,24 +107,8 @@ function MesDemandesPage(): React.ReactElement {
       );
   }, [demands, selectedDemandId]);
 
-  const utils = trpc.useUtils();
-  const { mutateAsync: updateDemandMutation } = trpc.demands.user.update.useMutation();
-
-  const updateDemand = useCallback(
-    toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
-      await updateDemandMutation({ demandId, values: demandUpdate });
-
-      utils.demands.user.list.setData(undefined, (demands) =>
-        (demands ?? []).map((demand) => {
-          if (demand.id === demandId) {
-            return { ...demand, ...demandUpdate } as DemandsListItem;
-          }
-          return demand;
-        })
-      );
-    }),
-    [utils, updateDemandMutation]
-  );
+  // Status est en lecture seule sur cette page (disabled=true) — noop suffit
+  const updateDemand = useCallback(async () => {}, []);
 
   const tableColumns: ColumnDef<DemandsListItem>[] = useMemo(
     () => [

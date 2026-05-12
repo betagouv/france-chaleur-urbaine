@@ -100,9 +100,36 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       a eu <strong>{event.data.count}</strong> demande(s) liée(s) à son compte
     </span>
   ),
+  demand_notification_sent: (event, updateFilters) => (
+    <>
+      <span>Notification envoyée aux gestionnaires pour la </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
   demand_relance_sent: (event, updateFilters) => (
     <>
       <span>Une {event.data.isSecondRelance ? 'seconde ' : 'première '}relance a été envoyée pour la </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  demand_satisfaction_comment_submitted: (event, updateFilters) => (
+    <>
+      <span>Le demandeur a ajouté un commentaire suite à la relance sur la </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  demand_satisfaction_submitted: (event, updateFilters) => (
+    <>
+      <span>
+        Le demandeur a indiqué <strong>{event.data.recontacted ? 'avoir été recontacté' : 'ne pas avoir été recontacté'}</strong> suite à la
+        relance sur la{' '}
+      </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  demand_survey_submitted: (event, updateFilters) => (
+    <>
+      <span>Le demandeur a répondu au sondage sur la </span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),

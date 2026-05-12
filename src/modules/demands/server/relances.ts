@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { clientConfig } from '@/client-config';
-import type { UpdateUserDemandInput } from '@/modules/demands/constants';
+import type { SubmitSurveyInput } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
-import { createEvent, createUserEvent } from '@/modules/events/server/service';
+import { createEvent } from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
@@ -107,8 +107,9 @@ const findDemandByRelanceId = async (relanceId: string) => {
 
 /**
  * User: updates the comment on a demand via the relance link (no auth needed, relanceId acts as token).
+ * Émis dans le flow satisfaction (page /satisfaction) après que l'user a répondu Oui/Non.
  */
-export const updateCommentFromRelanceId = async (relanceId: string, comment: string, userId?: string) => {
+export const updateCommentFromRelanceId = async (relanceId: string, comment: string) => {
   const demand = await findDemandByRelanceId(relanceId);
 
   await kdb
@@ -120,22 +121,12 @@ export const updateCommentFromRelanceId = async (relanceId: string, comment: str
     .where('id', '=', demand.id)
     .execute();
 
-  if (userId) {
-    await createUserEvent({
-      author_id: userId,
-      context_id: demand.id,
-      context_type: 'demand',
-      data: { 'Commentaire relance': comment },
-      type: 'demand_updated',
-    });
-  } else {
-    await createEvent({
-      context_id: demand.id,
-      context_type: 'demand',
-      data: { 'Commentaire relance': comment },
-      type: 'demand_updated',
-    });
-  }
+  await createEvent({
+    context_id: demand.id,
+    context_type: 'demand',
+    data: { comment },
+    type: 'demand_satisfaction_comment_submitted',
+  });
 };
 
 /**
@@ -158,8 +149,8 @@ export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfa
   await createEvent({
     context_id: relanceDemand.id,
     context_type: 'demand',
-    data: { 'Recontacté par le gestionnaire': satisfactionValue },
-    type: 'demand_updated',
+    data: { recontacted: satisfaction },
+    type: 'demand_satisfaction_submitted',
   });
 
   const demand = await getDemandById(relanceDemand.id);
@@ -185,10 +176,10 @@ export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfa
 };
 
 /**
- * User: updates a demand from fields in `zUserDemandUpdateValues` (Commentaire relance, Sondage).
- * Only merges into legacy_values.
+ * User: répond au sondage post-soumission de demande ("Comment avez-vous connu FCU ?").
+ * Pas d'auth nécessaire — appelé depuis DemandSondageForm sur la page de confirmation.
  */
-export const updateDemandByUser = async (demandId: string, values: UpdateUserDemandInput, userId?: string) => {
+export const submitSurvey = async (demandId: string, values: SubmitSurveyInput) => {
   const [updatedDemand] = await kdb
     .updateTable('demands')
     .set({
@@ -205,20 +196,12 @@ export const updateDemandByUser = async (demandId: string, values: UpdateUserDem
     .where('demand_id', '=', updatedDemand.id)
     .executeTakeFirst();
 
-  if (userId) {
-    await createUserEvent({
-      author_id: userId,
-      context_id: demandId,
-      context_type: 'demand',
-      data: values,
-      type: 'demand_updated',
-    });
-  } else {
+  if (values.Sondage) {
     await createEvent({
       context_id: demandId,
       context_type: 'demand',
-      data: values,
-      type: 'demand_updated',
+      data: { sondage: values.Sondage },
+      type: 'demand_survey_submitted',
     });
   }
 
