@@ -2,7 +2,14 @@ import Select from '@/components/form/dsfr/Select';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
-import { type EspaceExterieur, espaceExterieurOptions, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import {
+  type EspaceExterieur,
+  getEspaceExterieurOptions,
+  isEspaceExterieurCompatible,
+  type TypeLogement,
+  type TypeRadiateur,
+  typeRadiateurOptions,
+} from '@/modules/chaleur-renouvelable/constants';
 import { AddressField } from '@/modules/form/AddressField';
 
 type SettingsTopFieldsProps = {
@@ -17,6 +24,8 @@ type SettingsTopFieldsProps = {
   setTypeLogement: (val: TypeLogement | null) => void;
   espaceExterieur: EspaceExterieur | null;
   setEspaceExterieur: (val: EspaceExterieur | null) => void;
+  typeRadiateur?: TypeRadiateur | null;
+  setTypeRadiateur?: (val: TypeRadiateur | null) => void;
   className?: string;
 };
 
@@ -31,8 +40,13 @@ export function SettingsTopFields({
   setTypeLogement,
   espaceExterieur,
   setEspaceExterieur,
+  typeRadiateur,
+  setTypeRadiateur,
   className,
 }: SettingsTopFieldsProps) {
+  const espaceExterieurOptions = getEspaceExterieurOptions(typeLogement);
+  const isEspaceExterieurDisabled = !typeLogement;
+
   return (
     <div className={className}>
       <AddressField
@@ -72,16 +86,30 @@ export function SettingsTopFields({
         ]}
         nativeSelectProps={{
           onChange: (e) => {
+            const nextTypeLogement = (e.target.value || null) as TypeLogement | null;
             trackPostHogEvent('fcr_simulator:started', {
               source: withLabel ? 'landing' : 'result',
-              typeLogement: e.target.value,
+              typeLogement: nextTypeLogement,
             });
-            trackPostHogEvent('fcr_simulator:heating_mode_selected', { typeLogement: e.target.value as TypeLogement });
-            void setTypeLogement(e.target.value as TypeLogement);
+            trackPostHogEvent('fcr_simulator:heating_mode_selected', { typeLogement: nextTypeLogement });
+            void setTypeLogement(nextTypeLogement);
+
+            if (!isEspaceExterieurCompatible(nextTypeLogement, espaceExterieur)) {
+              void setEspaceExterieur(null);
+            }
           },
           value: typeLogement ?? '',
         }}
       />
+      {setTypeRadiateur && (
+        <RichSelect<TypeRadiateur>
+          value={typeRadiateur ?? undefined}
+          onChange={(val) => void setTypeRadiateur(val)}
+          options={[...typeRadiateurOptions]}
+          placeholder="Indiquez votre type de radiateur"
+          label={withLabel ? 'Type de radiateurs' : ''}
+        />
+      )}
       <RichSelect<EspaceExterieur>
         value={espaceExterieur ?? undefined}
         onChange={(val) => {
@@ -93,8 +121,9 @@ export function SettingsTopFields({
           void setEspaceExterieur(val);
         }}
         options={[...espaceExterieurOptions]}
-        placeholder="Sélectionner vos espaces disponibles"
-        label={withLabel ? 'Espaces extérieurs disponibles' : ''}
+        placeholder={isEspaceExterieurDisabled ? "Renseignez d'abord le mode de chauffage" : 'Sélectionner vos espaces disponibles'}
+        label={withLabel ? 'Espaces extérieurs' : ''}
+        disabled={isEspaceExterieurDisabled}
       />
     </div>
   );
