@@ -8,6 +8,7 @@ import {
   isEspaceExterieurCompatible,
   type TypeLogement,
   type TypeRadiateur,
+  typeLogementOptions,
   typeRadiateurOptions,
 } from '@/modules/chaleur-renouvelable/constants';
 import { AddressField } from '@/modules/form/AddressField';
@@ -79,11 +80,7 @@ export function SettingsTopFields({
       <Select
         label={withLabel ? 'Mode de chauffage' : ''}
         className="fr-mb-0"
-        options={[
-          { label: 'Immeuble en chauffage collectif', value: 'immeuble_chauffage_collectif' satisfies TypeLogement },
-          { label: 'Immeuble en chauffage individuel', value: 'immeuble_chauffage_individuel' satisfies TypeLogement },
-          { label: 'Maison individuelle', value: 'maison_individuelle' satisfies TypeLogement },
-        ]}
+        options={[...typeLogementOptions]}
         nativeSelectProps={{
           onChange: (e) => {
             const nextTypeLogement = (e.target.value || null) as TypeLogement | null;
@@ -98,18 +95,16 @@ export function SettingsTopFields({
               void setEspaceExterieur(null);
             }
           },
-          value: typeLogement ?? '',
+          value: typeLogement ?? undefined,
         }}
       />
-      {setTypeRadiateur && (
-        <RichSelect<TypeRadiateur>
-          value={typeRadiateur ?? undefined}
-          onChange={(val) => void setTypeRadiateur(val)}
-          options={[...typeRadiateurOptions]}
-          placeholder="Indiquez votre type de radiateur"
-          label={withLabel ? 'Type de radiateurs' : ''}
-        />
-      )}
+      <RichSelect<TypeRadiateur>
+        value={typeRadiateur ?? undefined}
+        onChange={(val) => void setTypeRadiateur?.(val)}
+        options={[...typeRadiateurOptions]}
+        placeholder="Indiquez votre type de radiateur"
+        label={withLabel ? 'Type de radiateurs' : ''}
+      />
       <RichSelect<EspaceExterieur>
         value={espaceExterieur ?? undefined}
         onChange={(val) => {

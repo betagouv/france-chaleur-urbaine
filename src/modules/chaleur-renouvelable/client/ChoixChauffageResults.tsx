@@ -1,5 +1,5 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import { EligibilityFormContact } from '@/components/EligibilityForm';
@@ -20,8 +20,7 @@ import {
   modeDeChauffageParTypeLogement,
   type Situation,
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import type { DPE } from '@/modules/chaleur-renouvelable/constants';
+import type { DPE, ModeEauChaudeSanitaire, TypeRadiateur } from '@/modules/chaleur-renouvelable/constants';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
 import { ParamsForm } from './ParamsForm';
@@ -45,6 +44,8 @@ const heatNetworkContactModal = createModal({
 
 export default function ChoixChauffageResults() {
   const engine = useSimulatorEngine();
+  const engineRef = useRef(engine);
+  engineRef.current = engine;
   const isMobile = useIsMobile();
   const urlParams = useChoixChauffageQueryParams();
   useRemoveHashOnScroll('#help-ademe');
@@ -100,18 +101,32 @@ export default function ChoixChauffageResults() {
   useEffect(() => {
     if (!codeDepartement) return;
 
-    engine.setSituation({
+    const modeEauChaudeSanitaire = (urlParams.modeEauChaudeSanitaire ?? 'equipement-chauffage') as ModeEauChaudeSanitaire;
+    const currentEngine = engineRef.current;
+
+    currentEngine.setSituation({
       'code département': `'${codeDepartement}'`,
       DPE: `'${situation.dpe}'`,
       'Inclure la climatisation': 'non',
       "Nombre d'habitants moyen par appartement": `${situation.habitantsMoyen}`,
       "nombre de logements dans l'immeuble concerné": situation.nbLogements,
-      'Production eau chaude sanitaire': 'oui',
+      'Production eau chaude sanitaire': modeEauChaudeSanitaire === 'non' ? 'non' : 'oui',
       'surface logement type tertiaire': `${situation.surfaceMoyenne}`,
       'température de référence chaud commune': temperatureRef,
-      'type de production ECS': "'Avec équipement chauffage'",
     });
-  }, [situation, codeDepartement, temperatureRef]);
+
+    if (modeEauChaudeSanitaire === 'non' || modeEauChaudeSanitaire === 'equipement-chauffage') {
+      currentEngine.resetField('type de production ECS');
+      return;
+    }
+
+    currentEngine.setStringField(
+      'type de production ECS',
+      modeEauChaudeSanitaire === 'chauffe-eau-electrique' ? 'Chauffe-eau électrique' : 'Solaire thermique'
+    );
+  }, [codeDepartement, situation, temperatureRef, urlParams.modeEauChaudeSanitaire]);
+
+  const typeRadiateur = (urlParams.typeRadiateur ?? null) as TypeRadiateur | null;
 
   const effectiveTypeLogement = urlParams.typeLogement ?? 'immeuble_chauffage_collectif';
 
@@ -176,46 +191,15 @@ export default function ChoixChauffageResults() {
 
   return (
     <>
-      {!isMobile && (
-        <div className="fr-mb-2w">
-          <SettingsTopFields
-            withLabel={false}
-            className="grid grid-cols-1 gap-4 md:grid-cols-3"
-            adresse={urlParams.adresse ?? null}
-            setAdresse={urlParams.setAdresse}
-            geoAddress={geoAddress}
-            setGeoAddress={setGeoAddress}
-            onSelectGeoAddress={handleSelectGeoAddress}
-            onAddressError={() => {}}
-            typeLogement={urlParams.typeLogement ?? null}
-            setTypeLogement={urlParams.setTypeLogement}
-            espaceExterieur={urlParams.espaceExterieur ?? null}
-            setEspaceExterieur={urlParams.setEspaceExterieur}
-          />
-        </div>
-      )}
       <ParamsForm
-        showTopFields={isMobile}
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
-        adresse={urlParams.adresse ?? null}
-        setAdresse={urlParams.setAdresse}
+        values={urlParams.simulationParams}
+        onSave={urlParams.setSimulationParams}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={handleSelectGeoAddress}
         onAddressError={() => {}}
-        typeLogement={urlParams.typeLogement ?? null}
-        setTypeLogement={urlParams.setTypeLogement}
-        espaceExterieur={urlParams.espaceExterieur ?? null}
-        setEspaceExterieur={urlParams.setEspaceExterieur}
-        dpe={urlParams.dpe}
-        setDpe={urlParams.setDpe}
-        nbLogements={urlParams.nbLogements}
-        setNbLogements={urlParams.setNbLogements}
-        surfaceMoyenne={urlParams.surfaceMoyenne}
-        setSurfaceMoyenne={urlParams.setSurfaceMoyenne}
-        habitantsMoyen={urlParams.habitantsMoyen}
-        setHabitantsMoyen={urlParams.setHabitantsMoyen}
       />
       {modesWithCout.length > 0 ? (
         <>
