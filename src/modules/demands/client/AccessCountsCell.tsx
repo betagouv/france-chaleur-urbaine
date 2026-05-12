@@ -15,7 +15,7 @@ type AccessCountsCellProps = {
   accessCounts: AccessCounts;
 };
 
-const roleBadgeBase = 'inline-flex items-center justify-center min-w-[22px] h-[22px] px-1 rounded text-xs font-semibold';
+const roleBadgeBase = 'inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs font-semibold';
 
 /**
  * Cellule compacte affichant les compteurs d'utilisateurs ayant (ou qui auront) accès à la demande,
@@ -49,9 +49,6 @@ export default function AccessCountsCell({ demandId, accessCounts }: AccessCount
       <Tooltip
         title={
           <div className="flex flex-col gap-0.5 text-left">
-            {accessCounts.gestionnaire > 0 && <div>Gestionnaires : {accessCounts.gestionnaire}</div>}
-            {accessCounts.collectivite > 0 && <div>Collectivités : {accessCounts.collectivite}</div>}
-            {accessCounts.alec > 0 && <div>ALEC : {accessCounts.alec}</div>}
             <div className="italic text-xs mt-1">Cliquer pour voir le détail</div>
           </div>
         }
@@ -64,14 +61,14 @@ export default function AccessCountsCell({ demandId, accessCounts }: AccessCount
           title="Voir le détail des utilisateurs"
           className="px-1!"
         >
-          <span className="flex items-center gap-1">
+          <span className="flex flex-col items-start gap-0.5">
             {accessCounts.gestionnaire > 0 && (
-              <span className={cx(roleBadgeBase, 'bg-purple-700 text-white')}>G {accessCounts.gestionnaire}</span>
+              <span className={cx(roleBadgeBase, 'bg-purple-700 text-white')}>Gestionnaire ({accessCounts.gestionnaire})</span>
             )}
             {accessCounts.collectivite > 0 && (
-              <span className={cx(roleBadgeBase, 'bg-orange-600 text-white')}>C {accessCounts.collectivite}</span>
+              <span className={cx(roleBadgeBase, 'bg-orange-600 text-white')}>Collectivité ({accessCounts.collectivite})</span>
             )}
-            {accessCounts.alec > 0 && <span className={cx(roleBadgeBase, 'bg-teal-600 text-white')}>A {accessCounts.alec}</span>}
+            {accessCounts.alec > 0 && <span className={cx(roleBadgeBase, 'bg-teal-600 text-white')}>ALEC ({accessCounts.alec})</span>}
           </span>
         </Button>
       </Tooltip>
