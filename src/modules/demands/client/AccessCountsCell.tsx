@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
+import { roleBadgeClasses } from '@/modules/users/role-colors';
 import cx from '@/utils/cx';
 
 import type { AccessCounts } from '../types';
@@ -63,13 +64,13 @@ export default function AccessCountsCell({ demandId, accessCounts }: AccessCount
         >
           <span className="flex flex-col items-start gap-0.5">
             {accessCounts.gestionnaire > 0 && (
-              <span className={cx(roleBadgeBase, 'bg-purple-700 text-white')}>Gestionnaire ({accessCounts.gestionnaire})</span>
+              <span className={cx(roleBadgeBase, roleBadgeClasses.gestionnaire)}>Gestionnaire ({accessCounts.gestionnaire})</span>
             )}
             {accessCounts.collectivite > 0 && (
-              <span className={cx(roleBadgeBase, 'bg-orange-600 text-white')}>Collectivité ({accessCounts.collectivite})</span>
+              <span className={cx(roleBadgeBase, roleBadgeClasses.collectivite)}>Collectivité ({accessCounts.collectivite})</span>
             )}
-            {accessCounts.alec > 0 && <span className={cx(roleBadgeBase, 'bg-teal-600 text-white')}>ALEC ({accessCounts.alec})</span>}
-            {accessCounts.ccrt > 0 && <span className={cx(roleBadgeBase, 'bg-pink-600 text-white')}>CCRT ({accessCounts.ccrt})</span>}
+            {accessCounts.alec > 0 && <span className={cx(roleBadgeBase, roleBadgeClasses.alec)}>ALEC ({accessCounts.alec})</span>}
+            {accessCounts.ccrt > 0 && <span className={cx(roleBadgeBase, roleBadgeClasses.ccrt)}>CCRT ({accessCounts.ccrt})</span>}
           </span>
         </Button>
       </Tooltip>
