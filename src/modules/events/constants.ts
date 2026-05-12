@@ -15,7 +15,6 @@ export const eventTypes = [
   'user_updated_by_admin',
   'user_deleted_by_admin',
   'demand_created',
-  'demand_assigned',
   'demand_updated',
   'demand_deleted',
   'demand_email_sent',
@@ -53,7 +52,6 @@ export type EventType = (typeof eventTypes)[number];
 
 export const eventTypeLabels: Record<EventType, string> = {
   build_tiles: 'Reconstruction tuiles',
-  demand_assigned: 'Assignation demande',
   demand_assignment_change_request_cancelled: 'Annulation de demande de réaffectation',
   demand_assignment_change_request_rejected: 'Rejet de demande de réaffectation',
   demand_assignment_change_requested: 'Demande de réaffectation',
@@ -113,7 +111,6 @@ export type EventNetworkSnapshot = {
 
 export type EventDataMap = {
   build_tiles: { name: string };
-  demand_assigned: Record<string, unknown> | null;
   demand_created: Record<string, unknown> | null;
   demand_deleted: Record<string, unknown> | null;
   demand_email_sent: { key: string; object: string; to: string };

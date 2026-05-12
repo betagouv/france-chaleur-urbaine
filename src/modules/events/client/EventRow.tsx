@@ -52,12 +52,6 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       a reconstruit les tuiles <strong>{event.data.name}</strong>
     </span>
   ),
-  demand_assigned: (event, updateFilters) => (
-    <>
-      <span>a assigné une </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
-    </>
-  ),
   demand_assignment_change_request_cancelled: (event, updateFilters) => (
     <>
       <span>a annulé sa demande de réaffectation sur une </span>
@@ -188,7 +182,7 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   pdp_updated: (event, updateFilters) => (
     <>
       <span>a mis à jour le </span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'pdp' })}>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'perimetre_de_developpement_prioritaire' })}>
         périmètre de développement
       </FilterButton>
     </>
