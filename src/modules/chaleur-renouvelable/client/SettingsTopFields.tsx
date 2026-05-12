@@ -98,13 +98,15 @@ export function SettingsTopFields({
           value: typeLogement ?? undefined,
         }}
       />
-      <RichSelect<TypeRadiateur>
-        value={typeRadiateur ?? undefined}
-        onChange={(val) => void setTypeRadiateur?.(val)}
-        options={[...typeRadiateurOptions]}
-        placeholder="Indiquez votre type de radiateur"
-        label={withLabel ? 'Type de radiateurs' : ''}
-      />
+      {setTypeRadiateur && (
+        <RichSelect<TypeRadiateur>
+          value={typeRadiateur ?? undefined}
+          onChange={(val) => void setTypeRadiateur(val ?? null)}
+          options={[...typeRadiateurOptions]}
+          placeholder="Indiquez votre type de radiateur"
+          label={withLabel ? 'Type de radiateurs' : ''}
+        />
+      )}
       <RichSelect<EspaceExterieur>
         value={espaceExterieur ?? undefined}
         onChange={(val) => {

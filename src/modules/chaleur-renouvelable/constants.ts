@@ -63,6 +63,18 @@ export function isEspaceExterieurCompatible(
   return getEspaceExterieurOptions(typeLogement).some((option) => option.value === espaceExterieur);
 }
 
+export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['non', 'equipement-chauffage', 'chauffe-eau-electrique', 'solaire-thermique'];
+export type ModeEauChaudeSanitaire = (typeof MODE_EAU_CHAUDE_SANITAIRE_VALUES)[number];
+export const modeEauChaudeSanitaireOptions = [
+  { label: 'Non', value: 'non' },
+  { label: 'Avec équipement chauffage', value: 'equipement-chauffage' },
+  { label: 'Chauffe-eau électrique', value: 'chauffe-eau-electrique' },
+  { label: 'Solaire thermique', value: 'solaire-thermique' },
+] satisfies readonly {
+  label: string;
+  value: ModeEauChaudeSanitaire;
+}[];
+
 export const TYPE_RADIATEUR_VALUES = ['radiateur-eau', 'radiateur-electrique', 'none'];
 export type TypeRadiateur = (typeof TYPE_RADIATEUR_VALUES)[number];
 export const typeRadiateurOptions = [
@@ -74,18 +86,6 @@ export const typeRadiateurOptions = [
   icone?: string;
   description?: string;
   value: TypeRadiateur;
-}[];
-
-export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['non', 'equipement-chauffage', 'chauffe-eau-electrique', 'solaire-thermique'];
-export type ModeEauChaudeSanitaire = (typeof MODE_EAU_CHAUDE_SANITAIRE_VALUES)[number];
-export const modeEauChaudeSanitaireOptions = [
-  { label: 'Non', value: 'non' },
-  { label: 'Avec équipement chauffage', value: 'equipement-chauffage' },
-  { label: 'Chauffe-eau électrique', value: 'chauffe-eau-electrique' },
-  { label: 'Solaire thermique', value: 'solaire-thermique' },
-] satisfies readonly {
-  label: string;
-  value: ModeEauChaudeSanitaire;
 }[];
 
 export const fieldLabelInformation = {
