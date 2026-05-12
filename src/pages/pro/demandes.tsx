@@ -122,6 +122,10 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
     name: 'ALEC avec accès',
   },
   {
+    accessorFn: (demand) => demand.access_counts.ccrt,
+    name: 'CCRT avec accès',
+  },
+  {
     accessorFn: (demand) => (demand.is_responsible ? 'Oui' : 'Non'),
     name: 'À traiter par moi',
   },
@@ -460,7 +464,8 @@ function DemandesNew(): React.ReactElement {
         width: '280px',
       },
       {
-        accessorFn: (row) => row.access_counts.gestionnaire + row.access_counts.collectivite + row.access_counts.alec,
+        accessorFn: (row) =>
+          row.access_counts.gestionnaire + row.access_counts.collectivite + row.access_counts.alec + row.access_counts.ccrt,
         cell: ({ row }) => <AccessCountsCell demandId={row.original.id} accessCounts={row.original.access_counts} />,
         enableGlobalFilter: false,
         filterType: 'Range',
@@ -623,4 +628,4 @@ function DemandesNew(): React.ReactElement {
 
 export default DemandesNew;
 
-export const getServerSideProps = withAuthentication(['gestionnaire', 'collectivite', 'alec', 'admin']);
+export const getServerSideProps = withAuthentication(['gestionnaire', 'collectivite', 'alec', 'ccrt', 'admin']);

@@ -107,6 +107,7 @@ export const buildDemandQuery = () => {
           eb.ref('d.id').as('demand_id'),
           jsonBuildObject({
             alec: eb.fn.countAll<number>().filterWhere('u.role', '=', 'alec'),
+            ccrt: eb.fn.countAll<number>().filterWhere('u.role', '=', 'ccrt'),
             collectivite: eb.fn.countAll<number>().filterWhere('u.role', '=', 'collectivite'),
             gestionnaire: eb.fn.countAll<number>().filterWhere('u.role', '=', 'gestionnaire'),
           }).as('access_counts'),
@@ -146,7 +147,7 @@ export const buildDemandQuery = () => {
       eb.fn
         .coalesce(
           eb.ref('acbd.access_counts'),
-          jsonBuildObject({ alec: sql<number>`0`, collectivite: sql<number>`0`, gestionnaire: sql<number>`0` })
+          jsonBuildObject({ alec: sql<number>`0`, ccrt: sql<number>`0`, collectivite: sql<number>`0`, gestionnaire: sql<number>`0` })
         )
         .as('access_counts'),
     ]);

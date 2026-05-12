@@ -26,7 +26,7 @@ import { mergeLegacyValues } from './legacy-values';
 const logger = parentLogger.child({ module: 'demands/gestionnaire-operations' });
 
 /**
- * Liste les demandes accessibles par un gestionnaire/collectivité/ALEC selon ses permissions.
+ * Liste les demandes accessibles par un gestionnaire/collectivité/ALEC/CCRT selon ses permissions.
  * Anonymise les PII (email, nom, téléphone) si `ctx.anonymize` est vrai.
  */
 export const listDemands = async (ctx: Context) => {
@@ -112,7 +112,7 @@ export const updateDemandByGestionnaire = async (ctx: Context, demandId: string,
 };
 
 /**
- * Gestionnaire/collectivité/ALEC : demande une réaffectation (changement ou retrait du réseau affecté).
+ * Gestionnaire/collectivité/ALEC/CCRT : demande une réaffectation (changement ou retrait du réseau affecté).
  * - `networkIdFcu`/`networkType` à `null` = demande de désaffectation
  * - Refuse si la demande n'existe pas / est supprimée
  * - Refuse si une demande de réaffectation est déjà en attente
@@ -226,7 +226,7 @@ export const requestDemandAssignmentChange = async (
 };
 
 /**
- * Gestionnaire/collectivité/ALEC : annule sa propre demande de réaffectation en attente.
+ * Gestionnaire/collectivité/ALEC/CCRT : annule sa propre demande de réaffectation en attente.
  * Seul l'auteur peut annuler. Trace un event avec le snapshot du pending.
  */
 export const cancelDemandAssignmentChangeRequest = async (demandId: string, userId: string) => {

@@ -18,6 +18,7 @@ const admin: UserWithRole = { id: '1', role: 'admin' };
 const gestionnaire: UserWithRole = { id: '1', role: 'gestionnaire' };
 const collectivite: UserWithRole = { id: '1', role: 'collectivite' };
 const alec: UserWithRole = { id: '1', role: 'alec' };
+const ccrt: UserWithRole = { id: '1', role: 'ccrt' };
 const particulier: UserWithRole = { id: '1', role: 'particulier' };
 
 const baseDemand: DemandForAccess = {
@@ -98,6 +99,11 @@ describe('canUserAccessDemand', () => {
     { expectedOutput: true, input: { demand: baseDemand, permissions: [dept75], user: alec } },
     { expectedOutput: true, input: { demand: baseDemand, permissions: [epci200054781], user: alec } },
     { expectedOutput: true, input: { demand: constructionDemand, permissions: [networkConstruction], user: alec } },
+
+    // CCRT — same logic
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [dept75], user: ccrt } },
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [epci200054781], user: ccrt } },
+    { expectedOutput: true, input: { demand: constructionDemand, permissions: [networkConstruction], user: ccrt } },
 
     // Multiple permissions — one match is enough
     {

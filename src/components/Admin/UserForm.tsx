@@ -33,6 +33,7 @@ const roleOptions = userRoles.map((role) => ({
 
 const STRUCTURE_TYPE_TO_ROLE = {
   alec: 'alec',
+  ccrt: 'ccrt',
   collectivite: 'collectivite',
   gestionnaire_reseaux: 'gestionnaire',
 } as const satisfies Partial<Record<keyof typeof structureTypesFormLabels, UserRole>>;
@@ -83,7 +84,8 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
   const role = useValue<UserRole>('role');
   const structureType = useValue('structure_type');
   const showPermissions = (userRolesWithPermissions as readonly string[]).includes(role);
-  const showStructureFields = role === 'professionnel' || role === 'gestionnaire' || role === 'collectivite' || role === 'alec';
+  const showStructureFields =
+    role === 'professionnel' || role === 'gestionnaire' || role === 'collectivite' || role === 'alec' || role === 'ccrt';
 
   return (
     <Form>

@@ -14,6 +14,7 @@ const ROLE_RUBRIQUES: Partial<Record<UserRole, string>> = {
   gestionnaire: 'FCU - rôle gestionnaire',
   collectivite: 'FCU - rôle collectivité',
   alec: 'FCU - rôle ALEC',
+  ccrt: 'FCU - rôle ALEC', // FIXME pas encore existant côté Ademe Connect
 };
 
 const STRUCTURE_RUBRIQUES: Partial<Record<StructureType, string>> = {
@@ -21,6 +22,7 @@ const STRUCTURE_RUBRIQUES: Partial<Record<StructureType, string>> = {
   autre: 'FCU - structure Autre',
   bailleur_social: 'FCU - structure Bailleur social',
   bureau_etudes: "FCU - structure Bureau d'études",
+  ccrt: 'FCU - structure Autre', // FIXME pas encore existant côté Ademe Connect
   collectivite: 'FCU - structure Collectivité',
   gestionnaire_parc_tertiaire: 'FCU - structure Gestionnaire de parc tertiaire',
   gestionnaire_reseaux: 'FCU - structure Gestionnaire de réseau de chaleur',

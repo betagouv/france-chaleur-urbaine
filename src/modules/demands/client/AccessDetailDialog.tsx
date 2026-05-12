@@ -12,7 +12,7 @@ type AccessDetailDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-const roleOrder: readonly UserRole[] = ['gestionnaire', 'collectivite', 'alec'] as const;
+const roleOrder: readonly UserRole[] = ['gestionnaire', 'collectivite', 'alec', 'ccrt'] as const;
 
 /**
  * Dialog listant les utilisateurs ayant (ou qui auront) accès à une demande, groupés par rôle.

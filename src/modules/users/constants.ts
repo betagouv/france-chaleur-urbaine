@@ -14,6 +14,7 @@ export const structureTypesLabels = {
   mandataire_cee: 'Mandataire / délégataire CEE',
   syndic_copropriete: 'Syndic de copropriété',
   alec: 'ALEC',
+  ccrt: 'CCRT',
   autre: 'Autre',
 };
 
@@ -39,6 +40,7 @@ export type Entreprise = z.infer<typeof zEntreprise>;
 export const roles: Record<UserRole, string> = {
   admin: 'Admin',
   alec: 'ALEC',
+  ccrt: 'CCRT',
   collectivite: 'Collectivité',
   gestionnaire: 'Gestionnaire',
   particulier: 'Particulier',

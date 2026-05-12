@@ -10,6 +10,9 @@ const roleConfig = {
   alec: {
     className: 'bg-teal-600! text-white!',
   },
+  ccrt: {
+    className: 'bg-pink-600! text-white!',
+  },
   collectivite: {
     className: 'bg-orange-600! text-white!',
   },

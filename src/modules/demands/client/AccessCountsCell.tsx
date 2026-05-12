@@ -26,7 +26,7 @@ export default function AccessCountsCell({ demandId, accessCounts }: AccessCount
   const [open, setOpen] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
 
-  const total = accessCounts.gestionnaire + accessCounts.collectivite + accessCounts.alec;
+  const total = accessCounts.gestionnaire + accessCounts.collectivite + accessCounts.alec + accessCounts.ccrt;
 
   const handleOpen = () => {
     setHasOpened(true);
@@ -35,7 +35,7 @@ export default function AccessCountsCell({ demandId, accessCounts }: AccessCount
 
   if (total === 0) {
     return (
-      <Tooltip title="Aucun utilisateur n'a accès à cette demande. Il manque un gestionnaire, une collectivité ou une ALEC avec les permissions adéquates.">
+      <Tooltip title="Aucun utilisateur n'a accès à cette demande. Il manque un gestionnaire, une collectivité, une ALEC ou un CCRT avec les permissions adéquates.">
         <span className="flex items-center gap-1 text-destructive text-xs">
           <Icon name="fr-icon-alert-line" size="sm" />
           Aucun accès
@@ -69,6 +69,7 @@ export default function AccessCountsCell({ demandId, accessCounts }: AccessCount
               <span className={cx(roleBadgeBase, 'bg-orange-600 text-white')}>Collectivité ({accessCounts.collectivite})</span>
             )}
             {accessCounts.alec > 0 && <span className={cx(roleBadgeBase, 'bg-teal-600 text-white')}>ALEC ({accessCounts.alec})</span>}
+            {accessCounts.ccrt > 0 && <span className={cx(roleBadgeBase, 'bg-pink-600 text-white')}>CCRT ({accessCounts.ccrt})</span>}
           </span>
         </Button>
       </Tooltip>

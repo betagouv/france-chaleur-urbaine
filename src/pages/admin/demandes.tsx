@@ -81,7 +81,7 @@ const quickFilterPresets = {
         réaffectations&nbsp;
         <br />
         en attente&nbsp;
-        <Tooltip title="Demandes de réaffectation formulées par une collectivité/ALEC/gestionnaire et non encore traitées." />
+        <Tooltip title="Demandes de réaffectation formulées par une collectivité/ALEC/CCRT/gestionnaire et non encore traitées." />
       </>
     ),
     valueSuffix: <Icon name="fr-icon-arrow-left-right-line" size="sm" color="var(--text-default-warning)" />,
@@ -413,7 +413,8 @@ function DemandesAdmin(): React.ReactElement {
         width: '300px',
       },
       {
-        accessorFn: (row) => row.access_counts.gestionnaire + row.access_counts.collectivite + row.access_counts.alec,
+        accessorFn: (row) =>
+          row.access_counts.gestionnaire + row.access_counts.collectivite + row.access_counts.alec + row.access_counts.ccrt,
         cell: ({ row }) => (
           <div onClick={stopPropagation} onDoubleClick={stopPropagation}>
             <AccessCountsCell demandId={row.original.id} accessCounts={row.original.access_counts} />
@@ -726,7 +727,7 @@ export default DemandesAdmin;
 
 /**
  * Bouton de validation d'une demande.
- * Valider rend la demande visible aux gestionnaires, collectivités et ALEC.
+ * Valider rend la demande visible aux gestionnaires, collectivités, ALEC et CCRT.
  */
 function ValidateDemandButton({
   demandId,

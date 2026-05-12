@@ -14,6 +14,7 @@ const roles = [
   { label: 'Gestionnaire', value: 'gestionnaire' },
   { label: 'Collectivité', value: 'collectivite' },
   { label: 'ALEC', value: 'alec' },
+  { label: 'CCRT', value: 'ccrt' },
   { label: 'Professionnel', value: 'professionnel' },
   { label: 'Particulier', value: 'particulier' },
 ] satisfies { label: string; value: UserRole }[];

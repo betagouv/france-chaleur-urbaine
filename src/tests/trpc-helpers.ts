@@ -101,6 +101,11 @@ export const testUsers = {
     id: uuid(105),
     role: 'alec' as const,
   },
+  ccrt: {
+    email: `ccrt-${uuid(106)}@test.local`,
+    id: uuid(106),
+    role: 'ccrt' as const,
+  },
   collectivite: {
     email: `collectivite-${uuid(104)}@test.local`,
     id: uuid(104),

@@ -273,13 +273,14 @@ describe('désaffectation / réaffectation flow', () => {
     });
   });
 
-  describe('routes territoire (collectivite / alec)', () => {
+  describe('routes territoire (collectivite / alec / ccrt)', () => {
     let demandId: string;
 
     beforeEach(async () => {
       await seedTableUser([
         { id: testUsers.collectivite.id, role: 'collectivite' },
         { id: testUsers.alec.id, role: 'alec' },
+        { id: testUsers.ccrt.id, role: 'ccrt' },
         { id: testUsers.particulier.id, role: 'particulier' },
       ]);
       await setupNetwork(100);
@@ -298,6 +299,7 @@ describe('désaffectation / réaffectation flow', () => {
     it.each([
       ['collectivite', testUsers.collectivite],
       ['alec', testUsers.alec],
+      ['ccrt', testUsers.ccrt],
     ] as const)('gestionnaire.requestAssignmentChange: %s peut demander une désaffectation', async (_role, user) => {
       await requestUnassignment(user, 'mauvaise affectation');
 

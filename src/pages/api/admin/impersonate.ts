@@ -26,7 +26,7 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   const impersonatedProfile = await validateObjectSchema(req.body, {
     anonymize: z.boolean().optional(),
     permissions: zPermissionInput.optional(),
-    role: z.enum(['gestionnaire', 'collectivite', 'alec', 'professionnel', 'particulier'] as NonEmptyArray<UserRole>),
+    role: z.enum(['gestionnaire', 'collectivite', 'alec', 'ccrt', 'professionnel', 'particulier'] as NonEmptyArray<UserRole>),
   });
 
   logger.info('impersonating', {

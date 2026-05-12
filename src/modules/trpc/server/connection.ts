@@ -32,7 +32,7 @@ export const routeAuthenticated = route.meta({ auth: { authenticated: true } });
  * Procédures pré-configurées par groupe de rôles — à utiliser systématiquement plutôt que `routeRole([...])` inline.
  *
  * - `adminRoute` : admin uniquement.
- * - `demandAccessRoute` : admin + rôles avec permissions territoriales (gestionnaire, collectivite, alec).
+ * - `demandAccessRoute` : admin + rôles avec permissions territoriales (gestionnaire, collectivite, alec, ccrt).
  * - `authRoute` : tout utilisateur authentifié (tous les rôles).
  */
 export const adminRoute = routeRole(['admin']);

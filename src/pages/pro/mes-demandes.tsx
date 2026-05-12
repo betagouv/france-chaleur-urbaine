@@ -401,4 +401,12 @@ function MesDemandesPage(): React.ReactElement {
 
 export default MesDemandesPage;
 
-export const getServerSideProps = withAuthentication(['particulier', 'professionnel', 'gestionnaire', 'collectivite', 'alec', 'admin']);
+export const getServerSideProps = withAuthentication([
+  'particulier',
+  'professionnel',
+  'gestionnaire',
+  'collectivite',
+  'alec',
+  'ccrt',
+  'admin',
+]);
