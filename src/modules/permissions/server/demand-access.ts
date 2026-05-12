@@ -150,7 +150,9 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
 
       return conditions.length > 0 ? eb.or(conditions) : sql.lit(false);
     })
-    .groupBy(['u.id', 'u.email', 'u.role', 'u.first_name', 'u.last_name', 'u.structure_name']);
+    .groupBy(['u.id', 'u.email', 'u.role', 'u.first_name', 'u.last_name', 'u.structure_name'])
+    .orderBy((eb) => sql<string>`split_part(${eb.ref('u.email')}, '@', 2)`)
+    .orderBy((eb) => sql<string>`split_part(${eb.ref('u.email')}, '@', 1)`);
 
   return query.execute();
 };
