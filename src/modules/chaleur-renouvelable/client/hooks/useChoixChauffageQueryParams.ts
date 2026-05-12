@@ -1,6 +1,12 @@
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryState } from 'nuqs';
 
-import { type DPE, DPE_VALUES, ESPACE_EXTERIEUR_VALUES, TYPE_LOGEMENT_VALUES } from '@/modules/chaleur-renouvelable/constants';
+import {
+  type DPE,
+  DPE_VALUES,
+  ESPACE_EXTERIEUR_VALUES,
+  TYPE_LOGEMENT_VALUES,
+  TYPE_RADIATEUR_VALUES,
+} from '@/modules/chaleur-renouvelable/constants';
 
 export function useChoixChauffageQueryParams() {
   const queryOptions = {
@@ -15,6 +21,10 @@ export function useChoixChauffageQueryParams() {
   const [espaceExterieur, setEspaceExterieur] = useQueryState(
     'espaceExterieur',
     parseAsStringLiteral(ESPACE_EXTERIEUR_VALUES).withOptions(queryOptions)
+  );
+  const [typeRadiateur, setTypeRadiateur] = useQueryState(
+    'typRadiateur',
+    parseAsStringLiteral(TYPE_RADIATEUR_VALUES).withOptions(queryOptions)
   );
   const [dpe, setDpe] = useQueryState(
     'dpe',
@@ -39,7 +49,9 @@ export function useChoixChauffageQueryParams() {
     setNbLogements,
     setSurfaceMoyenne,
     setTypeLogement,
+    setTypeRadiateur,
     surfaceMoyenne,
     typeLogement,
+    typeRadiateur,
   };
 }

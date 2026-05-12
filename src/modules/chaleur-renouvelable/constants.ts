@@ -9,15 +9,65 @@ export type TypeLogement = (typeof TYPE_LOGEMENT_VALUES)[number];
 
 export const ESPACE_EXTERIEUR_VALUES = ['shared', 'private', 'both', 'none'] as const;
 export type EspaceExterieur = (typeof ESPACE_EXTERIEUR_VALUES)[number];
+export const espaceExterieurOptionsByTypeLogement = {
+  immeuble_chauffage_collectif: [
+    { label: 'Espaces extérieurs communs disponibles (cour, jardin...)', value: 'shared' },
+    { label: 'Aucun espace commun disponible', value: 'none' },
+  ],
+  immeuble_chauffage_individuel: [
+    { label: 'Espaces extérieurs privatifs disponibles (cour, jardin...)', value: 'private' },
+    { label: 'Aucun espace privatif disponible', value: 'none' },
+  ],
+  maison_individuelle: [
+    { label: 'Terrasse / Balcon', value: 'private' },
+    { label: 'Jardin / cour', value: 'shared' },
+    { label: 'Terrasse / Balcon ET jardin / cour', value: 'both' },
+    { label: 'Aucun espace extérieur disponible', value: 'none' },
+  ],
+} satisfies Record<
+  TypeLogement,
+  readonly {
+    label: string;
+    description?: string;
+    value: EspaceExterieur;
+  }[]
+>;
+
+export function getEspaceExterieurOptions(typeLogement: TypeLogement | null | undefined) {
+  return typeLogement ? espaceExterieurOptionsByTypeLogement[typeLogement] : [];
+}
+
+export function isEspaceExterieurCompatible(
+  typeLogement: TypeLogement | null | undefined,
+  espaceExterieur: EspaceExterieur | null | undefined
+) {
+  if (!typeLogement || !espaceExterieur) return false;
+
+  return getEspaceExterieurOptions(typeLogement).some((option) => option.value === espaceExterieur);
+}
+
 export const espaceExterieurOptions = [
   { description: 'Cour, jardin, toit terrasse…', label: 'Espaces partagés uniquement', value: 'shared' },
   { description: 'Balcons, terrasses…', label: 'Espaces individuels uniquement', value: 'private' },
   { description: 'Cour, jardin, toit terrasse, balcons…', label: 'Espaces partagés et individuels', value: 'both' },
   { label: 'Aucun espace extérieur', value: 'none' },
-] as const satisfies readonly {
+] satisfies readonly {
   label: string;
   description?: string;
   value: EspaceExterieur;
+}[];
+
+export const TYPE_RADIATEUR_VALUES = ['radiateur-eau', 'radiateur-electrique', 'none'];
+export type TypeRadiateur = (typeof TYPE_RADIATEUR_VALUES)[number];
+export const typeRadiateurOptions = [
+  { icone: 'img/icon-goutte.svg', label: 'Radiateur ou plancher chauffant à eau', value: 'radiateur-eau' },
+  { icone: 'img/icon-eclair.svg', label: 'Radiateur ou plancher chauffant électrique', value: 'radiateur-electrique' },
+  { icone: 'img/icon-clim.svg', label: 'Autre : climatiseur, ...', value: 'none' },
+] satisfies readonly {
+  label: string;
+  icone?: string;
+  description?: string;
+  value: TypeRadiateur;
 }[];
 
 export const fieldLabelInformation = {
