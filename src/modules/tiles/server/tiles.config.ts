@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import * as demandsService from '@/modules/demands/server/demands-service';
+import { buildDemandFeatures } from '@/modules/demands/server/tiles';
 import type { GenerateGeoJSONConfig, ImportLayerConfig, TilesGenerationConfig, TilesTable } from '@/modules/tiles/server/generation';
 import { downloadBatimentsRaccordesReseauxChaleurFroidJSON } from '@/modules/tiles/server/generation-configs/batiments-raccordes-reseaux-chaleur-froid';
 import { reseauxDeChaleurGeoJSONQuery } from '@/modules/tiles/server/generation-configs/reseaux-de-chaleur';
@@ -144,7 +144,7 @@ export const tileSourcesConfig = {
     zoomMin: 12,
   },
   demands: {
-    cache: demandsService.buildFeatures,
+    cache: buildDemandFeatures,
     properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage', 'Structure'],
   },
   'enrr-mobilisables': {

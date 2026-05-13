@@ -137,11 +137,17 @@ dump_tables() {
 
 restore_tables() {
   local database_url=$1
+  shift
+  local tables=("$@")
+
+  # Pre-drop CASCADE pour gérer les foreign keys
+  drop_tables $database_url "${tables[@]}"
+
   if [ $NO_CONSTRAINTS = true ]; then
     echo "  (contraintes FK désactivées pour l'import)"
-    $pg_restore -j 10 -Fd -O --clean --disable-triggers -d $database_url /tmp/tables.dump
+    $pg_restore -j 10 -Fd -O --disable-triggers -d $database_url /tmp/tables.dump
   else
-    $pg_restore -j 10 -Fd -O --clean -d $database_url /tmp/tables.dump
+    $pg_restore -j 10 -Fd -O -d $database_url /tmp/tables.dump
   fi
 }
 

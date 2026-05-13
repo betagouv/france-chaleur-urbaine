@@ -3,6 +3,8 @@ import Link from 'next/link';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';
+import Icon from '@/components/ui/Icon';
+import { dataSourcesVersions } from '@/modules/app/constants';
 import { withAuthentication } from '@/server/authentication';
 
 type FaqItem = {
@@ -17,8 +19,8 @@ const faqItems: FaqItem[] = [
         <ul>
           <li>
             La <b>collectivité</b> a accès aux demandes situées sur l’ensemble de son territoire. Elle peut si elle le souhaite vérifier la
-            bonne affectation des demandes à ses délégataires (colonne « Affecté à »). Les délégataires sont en charge du traitement des
-            demandes, sauf dans les cas suivants :
+            bonne affectation des demandes à ses délégataires (colonne « Réseau affecté »). Les délégataires sont en charge du traitement
+            des demandes, sauf dans les cas suivants :
             <ul>
               <li>réseaux gérés en régie ;</li>
               <li>
@@ -38,10 +40,15 @@ const faqItems: FaqItem[] = [
   },
   {
     content: (
-      <p>
-        Cette information n’est à ce jour pas directement visible depuis l’espace gestionnaire, mais peut être obtenue en nous contactant
-        via le <Link href="/contact">formulaire de contact</Link>.
-      </p>
+      <>
+        <p className="fr-mb-0">
+          Depuis votre espace gestionnaire, consultez la dernière colonne « Accès » du tableau des demandes. Cliquez sur&nbsp;:
+        </p>
+        <ul>
+          <li>« G + nombre » pour voir le détail des gestionnaires associés</li>
+          <li>« C + nombre » pour voir le détail des agents de la collectivité</li>
+        </ul>
+      </>
     ),
     title: 'Comment savoir qui a accès aux demandes déposées sur mes réseaux ?',
   },
@@ -51,7 +58,7 @@ const faqItems: FaqItem[] = [
         Il suffit pour cela de nous contacter via le <Link href="/contact">formulaire de contact</Link>.
       </p>
     ),
-    title: 'Comment ouvrir un accès à l’espace gestionnaire à un membre de mon équipe ?',
+    title: 'Comment ouvrir un accès à l’espace gestionnaire à un membre de mon équipe ou ajouter un réseau sur un espace déjà ouvert ?',
   },
   {
     content: (
@@ -67,10 +74,7 @@ const faqItems: FaqItem[] = [
       <>
         <p className="fr-mb-0">Il est important de renseigner le statut des demandes pour permettre à France Chaleur Urbaine :</p>
         <ul>
-          <li>
-            de quantifier son impact. En tant que start-up d’État, France Chaleur Urbaine doit en effet pouvoir justifier chaque année de
-            son impact auprès de ses financeurs ;
-          </li>
+          <li>de quantifier son impact et la qualité des demandes ;</li>
           <li>
             d’informer les demandeurs qui n’auraient pas encore été recontactés suite à leur demande et solliciteraient France Chaleur
             Urbaine pour connaître l’état d’avancement de leur demande.
@@ -94,11 +98,12 @@ const faqItems: FaqItem[] = [
         Il appartient à l’opérateur à qui a été affectée une demande de reprendre contact avec le prospect pour y donner suite (demande de
         pièces supplémentaires, confirmation ou non de la faisabilité du raccordement…). Les demandes indiquées comme « non affectées »,
         situées loin des réseaux existants, ne sont visibles que par la collectivité. Celle-ci peut décider de les réaffecter à son
-        délégataire en modifiant l’information dans la colonne « Affecté à ». Elle peut également reprendre contact si elle le souhaite avec
-        le prospect pour l’informer d’éventuelles perspectives de développement du réseau à proximité de l’adresse testée. À noter que pour
-        ces adresses, le prospect a déjà été informé par une réponse automatique de France Chaleur Urbaine qu’il n’existe pas de réseau de
-        chaleur à proximité de son adresse, mais que la demande est transmise à la collectivité afin qu’il puisse être informé si le réseau
-        venait à se déployer dans son quartier.{' '}
+        délégataire en modifiant l’information dans la colonne « Réseau affecté » en cliquant sur le bouton doubles flèches{' '}
+        <Icon name="fr-icon-arrow-left-right-line" /> et en indiquant le réseau concerné. Elle peut également reprendre contact si elle le
+        souhaite avec le prospect pour l’informer d’éventuelles perspectives de développement du réseau à proximité de l’adresse testée. À
+        noter que pour ces adresses, le prospect a déjà été informé par une réponse automatique de France Chaleur Urbaine qu’il n’existe pas
+        de réseau de chaleur à proximité de son adresse, mais que la demande est transmise à la collectivité afin qu’il puisse être informé
+        si le réseau venait à se déployer dans son quartier.{' '}
       </p>
     ),
     title: 'Qui doit répondre aux demandes visibles sur mon espace gestionnaire ?',
@@ -110,8 +115,9 @@ const faqItems: FaqItem[] = [
         "Contact", en cliquant sur l'enveloppe ou sur l'adresse mail du demandeur. Plusieurs modèles de mails vous sont proposés, que vous
         pouvez librement modifier. Les champs "Répondre à" et "Copie à" sont renseignés par défaut avec l'adresse mail avec laquelle vous
         vous êtes connecté(e) à votre espace. Votre signature est enregistrée suite à l'envoi d'un premier mail, mais vous gardez la
-        possibilité de la modifier. Enfin, la rubrique "historique", qui liste les messages envoyés, est visible pour toute personne ayant
-        accès aux demandes (à noter que seul le type de message est indiqué, sans accès au message complet).
+        possibilité de la modifier. Vous recevrez l'email envoyé en copie dans votre boîte mail. Enfin, la rubrique "historique", qui liste
+        les messages envoyés, est visible pour toute personne ayant accès aux demandes (à noter que seul le type de message est indiqué,
+        sans accès au message complet).
       </p>
     ),
     title: 'Comment répondre aux demandes / envoyer un mail de réponse à une demande depuis mon espace gestionnaire ?',
@@ -136,7 +142,9 @@ const faqItems: FaqItem[] = [
             France Chaleur Urbaine.
           </li>
           <li>
-            <b>ID réseau le plus proche :</b> identifiant SNCU du réseau le plus proche identifié par France Chaleur Urbaine.
+            <b>Réseau affecté :</b> exploitant à qui France Chaleur Urbaine a affecté la demande. Lorsque “non affecté” est renseigné dans
+            cette colonne, France Chaleur Urbaine a jugé cette demande trop éloignée du réseau. La collectivité peut ajouter ou modifier une
+            affectation. Celle-ci sera effective lorsque France Chaleur Urbaine l’aura validée manuellement.
           </li>
           <li>
             <b>Nb logements (lots) :</b> information provenant de la{' '}
@@ -150,15 +158,13 @@ const faqItems: FaqItem[] = [
             de l'ANAH (lorsque disponible pour l’adresse concernée).
           </li>
           <li>
-            <b>Conso gaz (MWh) :</b> information extraite des données locales de l’énergie pour l'année 2022 (lorsque disponible pour
-            l’adresse concernée).
-          </li>
-          <li>
-            <b>Affecté à :</b> exploitant à qui France Chaleur Urbaine a affecté la demande. Lorsque “non affecté” est renseigné dans cette
-            colonne, France Chaleur Urbaine a jugé cette demande trop éloignée du réseau. La collectivité peut ajouter ou modifier une
-            affectation. Celle-ci sera effective lorsque France Chaleur Urbaine l’aura validée manuellement.
+            <b>Conso gaz (MWh) :</b> information extraite des données locales de l’énergie pour l'année{' '}
+            {dataSourcesVersions.donneesLocalesConsommationEnergieAdresse.year} (lorsque disponible pour l’adresse concernée).
           </li>
         </ul>
+        <p>
+          Retrouvez toutes les sources de données France Chaleur Urbaine dans notre page <Link href="/donnees">Données et sources</Link>
+        </p>
       </>
     ),
     title:
@@ -176,11 +182,11 @@ const faqItems: FaqItem[] = [
           note interne ou pour tout échange d’information (y compris avec France Chaleur Urbaine).
         </p>
         <p>
-          Enfin, la colonne « Affecté à » peut également être modifiée lorsque l’affectation réalisée par France Chaleur Urbaine n’est pas
-          jugée pertinente. Par exemple, une demande située loin du réseau peut être visible par la collectivité mais non transmise à
+          Enfin, la colonne « Réseau affecté » peut également être modifiée lorsque l’affectation réalisée par France Chaleur Urbaine n’est
+          pas jugée pertinente. Par exemple, une demande située loin du réseau peut être visible par la collectivité mais non transmise à
           l’exploitant (« Non affectée »). S’il s’avère que cette demande est malgré tout dans le périmètre de concession du réseau, la
-          collectivité peut l’attribuer à son exploitant en corrigeant l’information dans la colonne « Affecté à ». Cette correction sera
-          effective lorsque France Chaleur Urbaine l’aura validée manuellement.
+          collectivité peut l’attribuer à son exploitant en corrigeant l’information dans la colonne « Réseau affecté ». Cette correction
+          sera effective lorsque France Chaleur Urbaine l’aura validée manuellement.
         </p>
       </>
     ),
@@ -197,10 +203,17 @@ const faqItems: FaqItem[] = [
   },
   {
     content: (
-      <p>
-        Il est possible de filtrer les demandes par nom/adresse mail du demandeur, adresse, statut, mode et type de chauffage, ainsi que
-        gestionnaire. Pour cela, il suffit d’utiliser les champs et listes déroulantes situées en haut de l’espace.
-      </p>
+      <>
+        <p className="fr-mb-0">Oui, de deux façons :</p>
+        <ul>
+          <li>via la barre de recherche en haut du tableau (par mot-clé) ;</li>
+          <li>
+            affiner l'affichage grâce aux filtres et tris disponibles sur les colonnes suivantes : statut, prospect recontacté, date de la
+            demande, type de bâtiment, mode et type de chauffage, distance au réseau, réseau affecté, nombre de logements, surface,
+            consommation de gaz et accès.
+          </li>
+        </ul>
+      </>
     ),
     title: 'Puis-je filtrer les demandes visibles dans mon espace ?',
   },
@@ -244,4 +257,4 @@ const AidePage = () => {
 
 export default AidePage;
 
-export const getServerSideProps = withAuthentication(['gestionnaire', 'demo']);
+export const getServerSideProps = withAuthentication(['gestionnaire', 'collectivite', 'alec', 'ccrt']);

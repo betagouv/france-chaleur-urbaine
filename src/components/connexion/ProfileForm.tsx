@@ -1,6 +1,7 @@
 import useForm from '@/components/form/react-form/useForm';
 import Loader from '@/components/ui/Loader';
 import Notice from '@/components/ui/Notice';
+import { EntrepriseField } from '@/modules/form/EntrepriseField';
 import { notify } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { roles, structureTypesFormLabels, updateProfileDefaultValues, zUpdateProfileSchema } from '@/modules/users/constants';
@@ -20,15 +21,16 @@ function ProfileForm() {
     },
   });
 
-  const { Input, Submit, Form, Select, PhoneInput, useValue } = useForm({
+  const { Input, Submit, Form, Select, PhoneInput, Field, useValue } = useForm({
     defaultValues: {
       ...updateProfileDefaultValues,
+      entreprise: profile?.entreprise ?? null,
       first_name: profile?.first_name ?? '',
       last_name: profile?.last_name ?? '',
       phone: profile?.phone ?? '',
       structure_name: profile?.structure_name ?? '',
       structure_other: profile?.structure_other ?? '',
-      structure_type: profile?.structure_type ?? '',
+      structure_type: profile?.structure_type ?? undefined,
     },
     onSubmit: async ({ value }) => {
       await updateProfile.mutateAsync(value);
@@ -38,8 +40,9 @@ function ProfileForm() {
 
   const structureType = useValue('structure_type');
   const showStructureFields = profile?.role !== 'particulier';
+  const showEntrepriseField = profile?.role !== 'particulier' && profile?.role !== 'admin';
 
-  if (isLoading) {
+  if (!profile) {
     return <Loader variant="section" />;
   }
 
@@ -47,9 +50,9 @@ function ProfileForm() {
     <Form>
       <div className="flex flex-col gap-4">
         <Notice variant="info" className="mb-4">
-          <strong>Email :</strong> {profile?.email}
+          <strong>Email :</strong> {profile.email}
           <br />
-          <strong>Rôle :</strong> {roles[profile?.role as keyof typeof roles]}
+          <strong>Rôle :</strong> {roles[profile.role]}
         </Notice>
 
         <Input name="first_name" label="Prénom" />
@@ -67,6 +70,8 @@ function ProfileForm() {
             {structureType === 'autre' && <Input name="structure_other" label="Renseignez le type de structure" />}
           </>
         )}
+
+        {showEntrepriseField && <Field.Custom name="entreprise" label="Entreprise" Component={EntrepriseField} />}
 
         <div className="flex justify-end mt-4">
           <Submit disabled={updateProfile.isPending}>

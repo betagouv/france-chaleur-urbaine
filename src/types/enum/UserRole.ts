@@ -1,13 +1,7 @@
-export enum USER_ROLE {
-  ADMIN = 'admin',
-  GESTIONNAIRE = 'gestionnaire',
-  PARTICULIER = 'particulier',
-  PROFESSIONNEL = 'professionnel',
-  DEMO = 'demo', // TODO à supprimer car remplacé par l'imposture
-}
+export const userRoles = ['admin', 'gestionnaire', 'collectivite', 'alec', 'ccrt', 'particulier', 'professionnel'] as const;
 
-export type UserRole = `${USER_ROLE}`;
-
-export const userRoles = ['admin', 'gestionnaire', 'particulier', 'professionnel', 'demo'] as const;
+export type UserRole = (typeof userRoles)[number];
 
 export const userRolesInscription = ['particulier', 'professionnel'] as const satisfies UserRole[];
+
+export const userRolesWithPermissions = ['gestionnaire', 'collectivite', 'alec', 'ccrt'] as const satisfies UserRole[];

@@ -14,6 +14,7 @@ const AdditionalInformation = ({
   type,
   width,
   simpleField,
+  disabled = false,
 }: {
   demand: Demand;
   field: 'Conso' | 'Logement' | 'Surface en m2' | 'Distance au réseau' | 'Affecté à';
@@ -24,6 +25,7 @@ const AdditionalInformation = ({
    * Do not use the Gestionnaire prefix for the field name
    */
   simpleField?: boolean;
+  disabled?: boolean;
 }) => {
   const [value, setValue] = useState('');
 
@@ -55,6 +57,7 @@ const AdditionalInformation = ({
     <div style={{ width: `${width || 100}px` }}>
       <Input
         label=""
+        disabled={disabled}
         size="sm"
         nativeInputProps={{
           'aria-label': field,

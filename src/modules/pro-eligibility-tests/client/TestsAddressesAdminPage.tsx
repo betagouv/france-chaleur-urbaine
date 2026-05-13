@@ -47,7 +47,7 @@ export default function TestAddressesAdminPage() {
         ) : (
           <div className="space-y-4">
             {filteredTests?.map((test) => (
-              <ProEligibilityTestItem key={test.id} test={test as any} readOnly />
+              <ProEligibilityTestItem key={test.id} test={test} readOnly />
             ))}
           </div>
         )}

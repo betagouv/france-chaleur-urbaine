@@ -40,6 +40,7 @@ export const unauthorizedError = {
   message: 'Authentication required',
 };
 
+import { getUserPermissions } from '@/modules/permissions/server/service';
 import { appRouter } from '@/modules/trpc/trpc.config';
 import { parentLogger } from '@/server/helpers/logger';
 import type { UserRole } from '@/types/enum/UserRole';
@@ -64,6 +65,8 @@ export function createMockContext(user: Partial<User> | null = null): Context {
   } as any;
 
   return {
+    anonymize: false,
+    getPermissions: async () => (user?.id ? getUserPermissions(user.id) : []),
     hasRole: (role: UserRole) => user?.role === role,
     headers: mockReq.headers,
     logger: parentLogger.child({}),
@@ -93,9 +96,23 @@ export const testUsers = {
     id: uuid(100),
     role: 'admin' as const,
   },
+  alec: {
+    email: `alec-${uuid(105)}@test.local`,
+    id: uuid(105),
+    role: 'alec' as const,
+  },
+  ccrt: {
+    email: `ccrt-${uuid(106)}@test.local`,
+    id: uuid(106),
+    role: 'ccrt' as const,
+  },
+  collectivite: {
+    email: `collectivite-${uuid(104)}@test.local`,
+    id: uuid(104),
+    role: 'collectivite' as const,
+  },
   gestionnaire: {
     email: `gestionnaire-${uuid(101)}@test.local`,
-    gestionnaires: ['7501C'],
     id: uuid(101),
     role: 'gestionnaire' as const,
   },

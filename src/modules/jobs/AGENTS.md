@@ -207,7 +207,7 @@ const totalPages = Math.ceil((data?.pagination.total ?? 0) / limit);
 
 ## Permissions
 
-Toutes les routes TRPC sont protégées par `routeRole(['admin'])`.
+Toutes les routes TRPC sont protégées par `adminRoute` (import depuis `@/modules/trpc/server`).
 
 ## Bonnes Pratiques
 

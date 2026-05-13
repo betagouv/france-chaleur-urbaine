@@ -12,6 +12,8 @@ import CallOut from '@/components/ui/CallOut';
 import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
+import Notice from '@/components/ui/Notice';
 import TimeAgo from '@/components/ui/TimeAgo';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
@@ -345,8 +347,12 @@ export default function DemandsStatsPage() {
   return (
     <SimplePage title="Statistiques par tag" mode="authenticated" layout="center">
       <Heading as="h1" color="blue-france">
-        Statistiques par tag gestionnaire
+        Statistiques par tag gestionnaire (obsolète)
       </Heading>
+
+      <Notice variant="warning" className="mb-4">
+        Cette page est obsolète. Consultez les <Link href="/admin/reseaux/stats">statistiques par réseau</Link>.
+      </Notice>
 
       <CallOut size="sm">
         <p>

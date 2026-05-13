@@ -25,9 +25,12 @@ const dialect = new PostgresDialect({
   pool: new Pool({
     application_name: 'FCU-API',
     connectionString: process.env.DATABASE_URL,
-    connectionTimeoutMillis: 30000,
+    connectionTimeoutMillis: 30_000,
+    idleTimeoutMillis: 30_000,
+    keepAlive: true,
+    keepAliveInitialDelayMillis: 10_000,
     max: 60,
-    min: 5,
+    min: 1,
   }),
 });
 

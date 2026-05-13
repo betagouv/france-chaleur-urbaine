@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { decode, encode, type JWT } from 'next-auth/jwt';
 import { z } from 'zod';
 
+import { zPermissionInput } from '@/modules/permissions/types';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors, invalidPermissionsError, requireAuthentication, validateObjectSchema } from '@/server/helpers/server';
 import type { UserRole } from '@/types/enum/UserRole';
@@ -23,20 +24,24 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   requireAuthentication(req.user, ['admin']);
 
   const impersonatedProfile = await validateObjectSchema(req.body, {
-    gestionnaires: z.array(z.string()).optional(),
-    role: z.enum(['gestionnaire', 'professionnel', 'particulier', 'demo'] as NonEmptyArray<UserRole>),
+    anonymize: z.boolean().optional(),
+    permissions: zPermissionInput.optional(),
+    role: z.enum(['gestionnaire', 'collectivite', 'alec', 'ccrt', 'professionnel', 'particulier'] as NonEmptyArray<UserRole>),
   });
 
   logger.info('impersonating', {
-    ...impersonatedProfile,
+    anonymize: impersonatedProfile.anonymize ?? false,
+    permissionsCount: impersonatedProfile.permissions?.length ?? 0,
+    role: impersonatedProfile.role,
   });
 
   const jwt = await getSessionJWT(req);
   await generateSessionJWT(res, {
     ...jwt,
     impersonatedProfile: {
-      gestionnaires: impersonatedProfile.gestionnaires ?? [],
       role: impersonatedProfile.role,
+      ...(impersonatedProfile.permissions?.length ? { permissions: impersonatedProfile.permissions } : {}),
+      ...(impersonatedProfile.anonymize ? { anonymize: true } : {}),
     },
   });
   return;

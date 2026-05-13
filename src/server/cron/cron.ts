@@ -1,43 +1,68 @@
+import * as Sentry from '@sentry/nextjs';
 import { CronJob } from 'cron';
 
-import { launchJob } from './launch';
-import { saveStatsInDB } from './saveStatsInDB';
+import { notifyGestionnairesOfNewDemands, notifyGestionnairesOfUnhandledDemands } from '@/modules/demands/server/manager-notifications';
+import { sendRelanceToDemandeurs } from '@/modules/demands/server/relances';
+import { parentLogger } from '@/server/helpers/logger';
+
+import '@root/sentry.server.config';
+
+import { aggregateMonthlyStats } from './aggregateMonthlyStats';
+
+const logger = parentLogger.child({ module: 'cron' });
+
+type CronDefinition = {
+  name: string;
+  schedule: string;
+  handler: () => Promise<unknown>;
+};
+
+const crons: CronDefinition[] = [
+  {
+    // Prévient les gestionnaires des nouvelles demandes validées qui leur sont accessibles.
+    handler: notifyGestionnairesOfNewDemands,
+    name: 'notifyGestionnairesOfNewDemands',
+    schedule: '00 10 * * 1-5', // lun-ven 10:00 Paris
+  },
+  {
+    // Relance les gestionnaires sur les demandes "En attente de prise en charge" depuis plus de 7 jours.
+    handler: notifyGestionnairesOfUnhandledDemands,
+    name: 'notifyGestionnairesOfUnhandledDemands',
+    schedule: '55 9 * * 2', // mardi 09:55 Paris
+  },
+  {
+    // Envoie les relances aux demandeurs non recontactés par leur gestionnaire (J+30 puis J+45).
+    handler: sendRelanceToDemandeurs,
+    name: 'sendRelanceToDemandeurs',
+    schedule: '05 10 * * 1', // lundi 10:05 Paris
+  },
+  {
+    // Agrège les stats du mois précédent (Matomo + Airtable + DB) dans la table matomo_stats.
+    handler: aggregateMonthlyStats,
+    name: 'aggregateMonthlyStats',
+    schedule: '15 08 1 * *', // 1er du mois 08:15 Paris
+  },
+];
 
 export function registerCrons() {
-  console.info('-- CRON JOB --- Started cron jobs waiting to get ticked...');
-  CronJob.from({
-    cronTime: '00 10 * * 1-5', // du lundi au vendredi à 10:00
-    onTick: () => launchJob('dailyNewManagerMail'),
-    start: true,
-    timeZone: 'Europe/Paris',
-  });
+  crons.forEach((cron) => scheduleCron(cron));
+}
 
-  CronJob.from({
-    cronTime: '55 9 * * 2', // le mardi à 09:55
-    onTick: () => launchJob('weeklyOldManagerMail'),
-    start: true,
-    timeZone: 'Europe/Paris',
-  });
-
-  CronJob.from({
-    cronTime: '05 10 * * 1', // le lundi à 10:05
-    onTick: () => launchJob('demandsDailyRelanceMail'),
-    start: true,
-    timeZone: 'Europe/Paris',
-  });
-
-  CronJob.from({
-    cronTime: '00 * * * *', // toutes les heures
+function scheduleCron({ name, schedule, handler }: CronDefinition): CronJob {
+  logger.info('cron registered', { cron: name, schedule });
+  return CronJob.from({
+    cronTime: schedule,
     onTick: async () => {
-      void launchJob('syncComptesProFromUsers', '1 hour');
+      const startedAt = Date.now();
+      logger.info('cron start', { cron: name });
+      try {
+        await handler();
+        logger.info('cron done', { cron: name, duration_ms: Date.now() - startedAt });
+      } catch (err) {
+        Sentry.captureException(err, { tags: { cron: name } });
+        logger.error('cron failed', { cron: name, duration_ms: Date.now() - startedAt, err });
+      }
     },
-    start: true,
-    timeZone: 'Europe/Paris',
-  });
-
-  CronJob.from({
-    cronTime: '15 08 1 * *', // le 1er du mois à 08:15
-    onTick: () => saveStatsInDB(),
     start: true,
     timeZone: 'Europe/Paris',
   });

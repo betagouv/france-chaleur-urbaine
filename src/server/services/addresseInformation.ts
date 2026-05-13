@@ -50,11 +50,7 @@ const getDistanceToNetwork = async (networkId: string, lat: number, lon: number)
     ])
     .where('has_trace', '=', true)
     .where('Identifiant reseau', '=', networkId)
-    .executeTakeFirst();
-
-  if (!network) {
-    throw new Error(`Le réseau ${networkId} n'existe pas ou n'a pas de tracé`);
-  }
+    .executeTakeFirstOrThrow(() => new Error(`Le réseau ${networkId} n'existe pas ou n'a pas de tracé`));
 
   return network as NetworkInfos;
 };

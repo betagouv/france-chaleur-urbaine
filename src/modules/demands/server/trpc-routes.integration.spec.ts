@@ -137,12 +137,12 @@ describe('demandsRouter', () => {
 
   describe('demands.gestionnaire', () => {
     describe('list', () => {
-      // Permissions: ['gestionnaire'] - admin n'a pas accès
+      // demandAccessRoute : admin + rôles avec permissions territoriales
       const permissionTests: PermissionTestCase[] = [
         { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
         { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
         { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
-        { allowed: false, label: 'refuse admin', user: testUsers.admin },
+        { allowed: true, label: 'autorise admin', user: testUsers.admin },
         { allowed: true, label: 'autorise gestionnaire', user: testUsers.gestionnaire },
       ];
 
@@ -150,7 +150,7 @@ describe('demandsRouter', () => {
         const callRoute = () => createTestCaller(user).demands.gestionnaire.list();
 
         if (allowed) {
-          await expect(callRoute()).resolves.toStrictEqual([]);
+          await expect(callRoute()).resolves.toBeInstanceOf(Array);
         } else {
           await expect(callRoute).rejects.toMatchObject(forbiddenError);
         }
@@ -171,15 +171,20 @@ describe('demandsRouter', () => {
         );
       });
 
-      // Pour gestionnaire/admin, la permission passe mais échoue car la demande n'existe pas
-      // On vérifie que l'erreur est INTERNAL_SERVER_ERROR (pas FORBIDDEN), ce qui prouve que la permission est passée
-      it.each([
-        { label: 'gestionnaire', user: testUsers.gestionnaire },
-        { label: 'admin', user: testUsers.admin },
-      ])('autorise $label (passe les permissions)', async ({ user }) => {
-        await expect(() => createTestCaller(user).demands.gestionnaire.listEmails({ demand_id: uuid(999) })).rejects.toMatchObject({
-          code: 'INTERNAL_SERVER_ERROR',
+      // Gestionnaire: la permission passe mais la demande n'existe pas → NOT_FOUND
+      it('autorise gestionnaire (passe les permissions)', async () => {
+        await expect(() =>
+          createTestCaller(testUsers.gestionnaire).demands.gestionnaire.listEmails({ demand_id: uuid(999) })
+        ).rejects.toMatchObject({
+          code: 'NOT_FOUND',
         });
+      });
+
+      // Admin: la demande inexistante remonte un NOT_FOUND (le helper charge la demande avant de bypasser l'auth)
+      it('lève NOT_FOUND pour admin sur une demande inexistante', async () => {
+        await expect(() =>
+          createTestCaller(testUsers.admin).demands.gestionnaire.listEmails({ demand_id: uuid(999) })
+        ).rejects.toMatchObject({ code: 'NOT_FOUND' });
       });
     });
   });

@@ -9,10 +9,12 @@ const Comment = <T extends Demand>({
   demand,
   field,
   updateDemand,
+  disabled = false,
 }: {
   demand: T;
   field: 'comment_gestionnaire' | 'comment_fcu';
   updateDemand: (demandId: string, demand: Partial<T>) => Promise<void>;
+  disabled?: boolean;
 }) => {
   const [value, setValue] = useState(demand[field]);
 
@@ -42,6 +44,7 @@ const Comment = <T extends Demand>({
   return (
     <TextAreaInput
       label=""
+      disabled={disabled}
       size="sm"
       className="w-full [&>textarea]:leading-4!"
       nativeTextAreaProps={{

@@ -114,6 +114,6 @@ export const getUserSession = async (userId: string) => {
 const getUserInfos = (userId: string) =>
   kdb
     .selectFrom('users')
-    .select(['id', 'email', 'role', 'gestionnaires', 'receive_new_demands', 'receive_old_demands', 'active', 'created_at', 'signature'])
+    .select(['id', 'email', 'role', 'receive_new_demands', 'receive_old_demands', 'active', 'created_at', 'signature'])
     .where('id', '=', userId)
     .executeTakeFirst();

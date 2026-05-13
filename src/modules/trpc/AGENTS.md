@@ -50,12 +50,9 @@ When using trpc in an existing or newly created module
 import { z } from 'zod';
 
 import { zCreateModuleNameInput, zUpdateModuleNameInput } from '@/modules/pro-eligibility-tests/constants';
-import { route, router, routeRole } from '@/modules/trpc/server';
+import { adminRoute, authRoute, demandAccessRoute, route, router, routeRole } from '@/modules/trpc/server';
 
 import * as moduleNamesService from './service';
-
-const authRoute = routeRole(['admin', 'gestionnaire']);
-const adminRoute = routeRole(['admin']);
 
 export const moduleNamesRouter = router({
   create: route.input(zCreateModuleNameInput).mutation(async ({ input, ctx }) => {
@@ -75,6 +72,18 @@ export const moduleNamesRouter = router({
   }),
 });
 ```
+
+### Procédures pré-configurées par groupe de rôles
+
+Trois helpers centralisés dans `@/modules/trpc/server` couvrent tous les besoins. **À utiliser systématiquement** — plus de `routeRole([...])` inline pour éviter la redondance et les incohérences (ex. `admin` oublié dans un tableau).
+
+| Helper | Rôles autorisés | Usage |
+| --- | --- | --- |
+| `adminRoute` | `admin` uniquement | Administration (listes globales, stats, suppressions) |
+| `demandAccessRoute` | `admin`, `gestionnaire`, `collectivite`, `alec` | Tout ce qui manipule une demande avec filtrage territorial |
+| `authRoute` | tous les rôles (`userRoles`) | Utilisateur authentifié quelconque |
+
+Pour les routes publiques (non authentifiées), utiliser `route` directement (pas de `.meta.auth`). Pour un simple "authentifié, rôle indifférent", `routeAuthenticated` est disponible mais `authRoute` est préféré pour rester homogène avec les autres groupes.
 
 3. Add it to `src/modules/trpc/server/routes.ts`
 

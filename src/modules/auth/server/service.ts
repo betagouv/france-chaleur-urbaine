@@ -1,14 +1,17 @@
 import bcrypt, { genSalt, hash } from 'bcryptjs';
+import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
 
-import { linkDemandsByEmail } from '@/modules/demands/server/demands-service';
+import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
+import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
+import { linkDemandsByEmail } from '@/modules/demands/server/account-linking';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
-import { AirtableDB } from '@/server/db/airtable';
-import { kdb } from '@/server/db/kysely';
+import type { Entreprise, StructureType } from '@/modules/users/constants';
+import { findEtablissementBySiret } from '@/modules/users/server/service';
+import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError } from '@/server/helpers/server';
-import { Airtable } from '@/types/enum/Airtable';
 import type { UserRole } from '@/types/enum/UserRole';
 import { generateRandomToken } from '@/utils/random';
 
@@ -18,6 +21,7 @@ export const register = async ({
   role,
   accept_cgu,
   optin_newsletter,
+  entreprise,
   ...userData
 }: {
   email: string;
@@ -26,17 +30,21 @@ export const register = async ({
   first_name: string;
   last_name: string;
   structure?: string;
-  structure_type?: string;
+  structure_type?: StructureType;
   structure_other?: string;
   phone?: string | null;
   accept_cgu?: boolean;
   optin_newsletter?: boolean;
+  entreprise?: Entreprise | null;
 }) => {
   const lowerCaseEmail = email.trim().toLowerCase();
   const existingUser = await kdb.selectFrom('users').select('id').where('email', 'ilike', lowerCaseEmail).executeTakeFirst();
   if (existingUser) {
     throw new BadRequestError(`L'utilisateur associé à l'email '${email}' existe déjà. Connectez-vous.`);
   }
+
+  // Valide l'entreprise par le siret
+  const verifiedEntreprise = entreprise ? await findEtablissementBySiret(entreprise.siret) : null;
 
   const activationToken = generateRandomToken();
   const insertedUser = await kdb
@@ -45,6 +53,7 @@ export const register = async ({
       accepted_cgu_at: accept_cgu ? new Date() : null,
       activation_token: activationToken,
       email: lowerCaseEmail,
+      entreprise: verifiedEntreprise ? sql<string | null>`${JSON.stringify(verifiedEntreprise)}::jsonb` : null,
       gestionnaires: [],
       optin_at: optin_newsletter ? new Date() : null,
       password: await hash(password, await genSalt(10)),
@@ -56,14 +65,26 @@ export const register = async ({
     .executeTakeFirstOrThrow();
 
   logger.info('account register', { role, user_id: insertedUser.id });
-  await sendEmailTemplate('auth.activation', insertedUser, { activationToken });
+  await sendEmailTemplate('auth.utilisateur.confirmation-inscription', insertedUser, { activationToken });
 
   await createUserEvent({
     author_id: insertedUser.id,
     context_id: insertedUser.id,
     context_type: 'user',
-    type: 'user_created',
+    type: 'user_registered',
   });
+
+  createContact({
+    abonnementNewsletter: optin_newsletter,
+    acceptationRGPD: true,
+    email: insertedUser.email,
+    nom: userData.last_name,
+    prenom: userData.first_name,
+    rubriques: buildRubriques(role, userData.structure_type),
+    telephone: userData.phone ?? undefined,
+    typeOrganisme: ROLE_TYPE_ORGANISME[role],
+  }).catch((error) => logger.error('ademe-connect createContact failed on register', { error, user_id: insertedUser.id }));
+
   return insertedUser.id;
 };
 
@@ -73,11 +94,7 @@ export const login = async (email: string, password: string) => {
     .selectAll()
     .where('email', '=', email.trim().toLowerCase())
     .where('active', 'is', true)
-    .executeTakeFirst();
-
-  if (!user) {
-    throw new Error('Mauvais login/mot de passe');
-  }
+    .executeTakeFirstOrThrow(() => new Error('Mauvais login/mot de passe'));
 
   if (user.status === 'pending_email_confirmation') {
     throw new Error('Vous devez confirmer votre email avant de vous connecter');
@@ -95,6 +112,10 @@ export const login = async (email: string, password: string) => {
     context_type: 'user',
     type: 'user_login',
   });
+
+  updateContact(user.email, { dateConnexion: dayjs().format('YYYY-MM-DDTHH:mm:ss') }).catch((error) =>
+    logger.error('ademe-connect updateContact failed on login', { error, user_id: user.id })
+  );
 
   // Link demands by email on every login
   try {
@@ -115,7 +136,6 @@ export const login = async (email: string, password: string) => {
   return {
     active: !!user.active,
     email: user.email,
-    gestionnaires: user.gestionnaires,
     id: user.id,
     role: user.role,
     signature: user.signature,
@@ -123,10 +143,11 @@ export const login = async (email: string, password: string) => {
 };
 
 export const activateUser = async (activationToken: string) => {
-  const existingUser = await kdb.selectFrom('users').select('id').where('activation_token', '=', activationToken).executeTakeFirst();
-  if (!existingUser) {
-    throw new BadRequestError('Jeton invalide');
-  }
+  const existingUser = await kdb
+    .selectFrom('users')
+    .select('id')
+    .where('activation_token', '=', activationToken)
+    .executeTakeFirstOrThrow(() => new BadRequestError('Jeton invalide'));
 
   await kdb
     .updateTable('users')
@@ -154,14 +175,6 @@ export const requestPassword = async (email: string) => {
 
   if (!user) {
     logger.warn('reset-password: missing user', { email: lowerCaseEmail });
-    await AirtableDB(Airtable.CONNEXION).create([
-      {
-        fields: {
-          Date: new Date().toISOString(),
-          Email: lowerCaseEmail,
-        },
-      },
-    ]);
     return;
   }
 
@@ -174,7 +187,7 @@ export const requestPassword = async (email: string) => {
 
   const token = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string);
   await kdb.updateTable('users').set({ reset_token: resetToken }).where('id', '=', user.id).execute();
-  await sendEmailTemplate('auth.reset-password', user, { token });
+  await sendEmailTemplate('auth.utilisateur.reinitialisation-mot-de-passe', user, { token });
 
   await createUserEvent({
     author_id: user.id,
@@ -187,11 +200,12 @@ export const requestPassword = async (email: string) => {
 export const changePasswordWithResetToken = async (params: { password: string; token: { email: string; resetToken: string } }) => {
   const { password, token } = params;
 
-  const user = await kdb.selectFrom('users').selectAll().where('email', '=', token.email).where('active', 'is', true).executeTakeFirst();
-
-  if (!user) {
-    throw new BadRequestError('Email incorrect');
-  }
+  const user = await kdb
+    .selectFrom('users')
+    .selectAll()
+    .where('email', '=', token.email)
+    .where('active', 'is', true)
+    .executeTakeFirstOrThrow(() => new BadRequestError('Email incorrect'));
 
   if (!user.reset_token) {
     throw new BadRequestError('Ce lien a déjà été utilisé. Veuillez refaire une demande de réinitialisation de votre mot de passe.');

@@ -93,8 +93,6 @@ export async function processGeometry(
 
   const srid = detectSrid(geom);
 
-  logger.debug('Geometry type', { srid, type: geom.type });
-
   return {
     geom,
     srid,

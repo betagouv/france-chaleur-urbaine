@@ -58,6 +58,7 @@ const configFunctions = [
         'https://google.com/',
         'https://px.ads.linkedin.com',
         'https://data.geopf.fr',
+        'https://recherche-entreprises.api.gouv.fr',
         'https://api.mapbox.com/',
         'https://sentry.incubateur.net',
         'https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com',

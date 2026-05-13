@@ -11,6 +11,6 @@ export type ProComparateurConfigurationResponse = typeof _types;
 export default handleRouteErrors(
   { DELETE, GET, POST, PUT },
   {
-    requireAuthentication: ['particulier', 'professionnel', 'gestionnaire', 'admin', 'demo'],
+    requireAuthentication: ['particulier', 'professionnel', 'gestionnaire', 'admin'],
   }
 );

@@ -22,7 +22,7 @@ export const zJobListInput = z.object({
   orderDirection: z.enum(['asc', 'desc']).default('desc').meta({ description: 'Direction du tri' }),
   statuses: z.array(zJobStatus).optional().meta({ description: 'Filtrer par statuts' }),
   types: z.array(zJobType).optional().meta({ description: 'Filtrer par types de jobs' }),
-  userId: z.uuid().optional().meta({ description: 'Filtrer par utilisateur' }),
+  userId: z.uuidv4().optional().meta({ description: 'Filtrer par utilisateur' }),
 });
 
 export type JobType = z.infer<typeof zJobType>;

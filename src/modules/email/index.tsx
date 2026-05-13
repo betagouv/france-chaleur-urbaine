@@ -9,7 +9,7 @@ type EmailUser = { id?: string; email: string };
 
 type EmailParams = Parameters<typeof mailTransport.sendMail>[0];
 
-export const mailTransport = nodemailer.createTransport({
+const mailTransport = nodemailer.createTransport({
   auth: {
     pass: serverConfig.MAIL_PASS,
     user: serverConfig.MAIL_USER,
@@ -18,6 +18,9 @@ export const mailTransport = nodemailer.createTransport({
   dnsTimeout: 30000,
   greetingTimeout: 30000,
   host: serverConfig.MAIL_HOST,
+  maxConnections: 5,
+  maxMessages: 100,
+  pool: true,
   port: serverConfig.MAIL_PORT,
   secure: false, // upgrade later with STARTTLS
   socketTimeout: 30000,

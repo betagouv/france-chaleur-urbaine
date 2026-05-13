@@ -5,8 +5,11 @@
 
 import type { ColumnType, JSONColumnType } from 'kysely';
 
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
+import type { Permission } from '@/modules/permissions/types';
+import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
+import type { Entreprise, StructureType } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export type Generated<T> =
@@ -43,6 +46,25 @@ export interface BatimentsRaccordesReseauxChaleurFroidTiles {
   x: Int8;
   y: Int8;
   z: Int8;
+}
+
+export interface BdnbBatenr {
+  ac1: boolean | null;
+  ac2: boolean | null;
+  ac3: boolean | null;
+  ac4: boolean | null;
+  ac4bis: boolean | null;
+  adresse: string | null;
+  batiment_construction_id: string | null;
+  batiment_groupe_id: string | null;
+  etat_ppa: string | null;
+  geom: string | null;
+  gis_geo_profonde: boolean | null;
+  gmi_nappe_200: number | null;
+  gmi_sonde_200: number | null;
+  liste_ppa: string | null;
+  place_nappe: boolean | null;
+  pot_nappe: number | null;
 }
 
 export interface BdnbBatiments {
@@ -183,34 +205,44 @@ export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
   z: Int8;
 }
 
-export interface Demands {
-  airtable_id: string | null;
-  comment_gestionnaire: string | null;
-  comment_fcu: string | null;
-  created_at: Generated<Timestamp>;
-  deleted_at?: Timestamp | null;
-  id: Generated<string>;
-  legacy_values: JSONColumnType<AirtableLegacyRecord>;
-  updated_at: Generated<Timestamp>;
-  user_id: string | null;
-}
-
 export interface DemandEmails {
   airtable_id: string | null;
   body: string;
   cc: string | null;
   created_at: Generated<Timestamp>;
-  deleted_at?: Timestamp | null;
+  deleted_at: Timestamp | null;
   demand_id: string;
   email_key: string;
   id: Generated<string>;
   object: string;
   reply_to: string | null;
-  sent_at: Timestamp | string | null;
+  sent_at: Timestamp | null;
   signature: string | null;
   to: string;
   updated_at: Generated<Timestamp>;
   user_email: string;
+}
+
+export interface Demands {
+  airtable_id: string | null;
+  comment_fcu: string | null;
+  comment_gestionnaire: string | null;
+  commune_code: string | null;
+  created_at: Generated<Timestamp>;
+  deleted_at: Timestamp | null;
+  departement_code: string | null;
+  epci_code: string | null;
+  ept_code: string | null;
+  id: Generated<string>;
+  iframe_source: string | null;
+  legacy_values: JSONColumnType<AirtableLegacyRecord>;
+  network_id: number | null;
+  network_type: NetworkType | null;
+  pending_assignment_change: JSONColumnType<PendingAssignmentChange> | null;
+  region_code: string | null;
+  updated_at: Generated<Timestamp>;
+  user_id: string | null;
+  validated: Generated<boolean>;
 }
 
 export interface Departements {
@@ -397,8 +429,8 @@ export interface Jobs {
   data: Json;
   entity_id: string | null;
   id: Generated<string>;
-  status: 'pending' | 'processing' | 'finished' | 'error';
   result: Json | null;
+  status: 'pending' | 'processing' | 'finished' | 'error';
   type:
     | 'pro_eligibility_test'
     | 'build_tiles'
@@ -417,6 +449,16 @@ export interface MatomoStats {
   stat_key: string | null;
   stat_label: string | null;
   value: number;
+}
+
+export interface NetworkReminders {
+  author_id: string | null;
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  network_id: number;
+  network_type: NetworkEntityType;
+  note: string | null;
+  type: ReminderType;
 }
 
 export interface OuvragesGeothermieSurfaceEchangeursFermesTiles {
@@ -466,7 +508,6 @@ export interface ProEligibilityTestsAddresses {
   ban_score: number | null;
   ban_valid: boolean;
   geom: GeoJSON.Point | null;
-  change_viewed_at: Timestamp | null;
   demand_id: string | null;
   /**
    * JSON array storing full history of eligibility status changes. Format: [{"calculated_at": "ISO8601", "eligibility": {...getDetailedEligibilityStatus result...}}]
@@ -535,8 +576,8 @@ export interface ReseauxDeChaleur {
   departement: string | null;
   'Dev_reseau%': number | null;
   eau_chaude: string | null;
-  ecoreseau: string | null;
   eau_surchauffee: string | null;
+  ecoreseau: string | null;
   fichiers: Json | null;
   geom: string | null;
   geom_update: string | null;
@@ -557,6 +598,7 @@ export interface ReseauxDeChaleur {
   'Moyenne-annee-DPE': string | null;
   nb_pdl: number | null;
   nom_reseau: string | null;
+  ouvert_aux_raccordements: boolean;
   'PF%': number | null;
   PM: number | null;
   PM_L: number | null;
@@ -602,11 +644,12 @@ export interface ReseauxDeChaleur {
   'Rend%': number | null;
   'reseaux classes': boolean | null;
   reseaux_techniques: boolean | null;
+  notes: string | null;
   tags: string[];
   'Taux EnR&R': number | null;
   vapeur: string | null;
+  ville_mo: string | null;
   website_gestionnaire: string | null;
-  ouvert_aux_raccordements: boolean;
 }
 
 export interface ReseauxDeChaleurTiles {
@@ -647,12 +690,14 @@ export interface ReseauxDeFroid {
   'Moyenne-annee-DPE': string | null;
   nb_pdl: number | null;
   nom_reseau: string | null;
+  notes: string | null;
   production_totale_MWh: number | null;
   puissance_totale_MW: number | null;
   region: string | null;
   'Rend%': number | null;
   'reseaux classes': boolean | null;
   'Taux EnR&R': number | null;
+  ville_mo: string | null;
   website_gestionnaire: string | null;
 }
 
@@ -680,11 +725,11 @@ export interface AssignmentRules {
 }
 
 export interface Tags {
+  comment: string | null;
   created_at: Generated<Timestamp>;
   id: Generated<string>;
   name: string;
   type: string;
-  comment: string | null;
   updated_at: Generated<Timestamp>;
 }
 
@@ -694,6 +739,23 @@ export interface TagsReminders {
   tag_id: string;
 }
 
+export interface TestsAdressesTilesFeatures {
+  ban_address: string | null;
+  eligibility: Json | null;
+  eligible: boolean | null;
+  geom: string | null;
+  id: Int8 | null;
+  tests: Json | null;
+}
+
+export type UserPermissions = {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  // resource_id: string | null;
+  // type: string;
+  user_id: string;
+} & Permission;
+
 export interface Users {
   accepted_cgu_at: Date | null;
   activated_at: Date | null;
@@ -701,6 +763,7 @@ export interface Users {
   active: Generated<boolean>;
   created_at: Generated<Date | null>;
   email: string;
+  entreprise: JSONColumnType<Entreprise> | null;
   first_name: string | null;
   from_api: string | null;
   gestionnaires: string[] | null;
@@ -719,7 +782,7 @@ export interface Users {
   status: 'pending_email_confirmation' | 'valid';
   structure_name: string | null;
   structure_other: string | null;
-  structure_type: string | null;
+  structure_type: StructureType | null;
 }
 
 export interface ZoneAPotentielChaud {
@@ -744,33 +807,7 @@ export interface ZoneAPotentielChaud {
   surf_sol_8: Numeric | null;
 }
 
-export interface ZoneAPotentielFroid {
-  bat_imp: Numeric | null;
-  bes_min: string | null;
-  com_insee: string | null;
-  dens_min: string | null;
-  dep: string | null;
-  dist_con: string | null;
-  filere: string | null;
-  froid_mwh: Numeric | null;
-  geom: string | null;
-  icu_sensib: Numeric | null;
-  icu_val: string | null;
-  id_zone: string | null;
-  ogc_fid: Generated<number>;
-  part_ter: Numeric | null;
-  reg: string | null;
-  type_zone: string | null;
-}
-
 export interface ZoneAPotentielChaudTiles {
-  tile: Buffer;
-  x: Int8;
-  y: Int8;
-  z: Int8;
-}
-
-export interface ZoneAPotentielFroidTiles {
   tile: Buffer;
   x: Int8;
   y: Int8;
@@ -832,6 +869,32 @@ export interface ZoneAPotentielFortFroidTiles {
   z: Int8;
 }
 
+export interface ZoneAPotentielFroid {
+  bat_imp: Numeric | null;
+  bes_min: string | null;
+  com_insee: string | null;
+  dens_min: string | null;
+  dep: string | null;
+  dist_con: string | null;
+  filere: string | null;
+  froid_mwh: Numeric | null;
+  geom: string | null;
+  icu_sensib: Numeric | null;
+  icu_val: string | null;
+  id_zone: string | null;
+  ogc_fid: Generated<number>;
+  part_ter: Numeric | null;
+  reg: string | null;
+  type_zone: string | null;
+}
+
+export interface ZoneAPotentielFroidTiles {
+  tile: Buffer;
+  x: Int8;
+  y: Int8;
+  z: Int8;
+}
+
 export interface ZoneAUrbaniserTiles {
   tile: Buffer;
   x: Int8;
@@ -840,14 +903,15 @@ export interface ZoneAUrbaniserTiles {
 }
 
 export interface ZoneDeDeveloppementPrioritaire {
-  id_fcu: number;
   communes: string[] | null;
   communes_insee: string[] | null;
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
   geom: string | null;
   geom_update: string | null;
+  id_fcu: number;
   'Identifiant reseau': string | null;
+  notes: string | null;
   region: string | null;
   reseau_de_chaleur_ids: number[];
   reseau_en_construction_ids: number[];
@@ -872,6 +936,7 @@ export interface ZonesEtReseauxEnConstruction {
   is_zone: Generated<boolean>;
   mise_en_service: string | null;
   nom_reseau: string | null;
+  notes: string | null;
   ouvert_aux_raccordements: boolean;
   region: string | null;
   tags: string[];
@@ -888,16 +953,16 @@ export interface DB {
   api_accounts: ApiAccounts;
   assignment_rules: AssignmentRules;
   batiments_raccordes_reseaux_chaleur_froid_tiles: BatimentsRaccordesReseauxChaleurFroidTiles;
+  bdnb_batenr: BdnbBatenr;
   bdnb_batiments: BdnbBatiments;
   bdnb_batiments_tiles: BdnbBatimentsTiles;
-  bdnb_batenr: BatEnr;
   besoins_en_chaleur_batiments: BesoinsEnChaleurBatiments;
   besoins_en_chaleur_industrie_communes_tiles: BesoinsEnChaleurIndustrieCommunesTiles;
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
-  demands: Demands;
   demand_emails: DemandEmails;
+  demands: Demands;
   departements: Departements;
   donnees_de_consos: DonneesDeConsos;
   donnees_de_consos_tiles: DonneesDeConsosTiles;
@@ -920,6 +985,7 @@ export interface DB {
   installations_geothermie_surface_echangeurs_ouverts_tiles: InstallationsGeothermieSurfaceEchangeursOuvertsTiles;
   jobs: Jobs;
   matomo_stats: MatomoStats;
+  network_reminders: NetworkReminders;
   ouvrages_geothermie_surface_echangeurs_fermes_tiles: OuvragesGeothermieSurfaceEchangeursFermesTiles;
   ouvrages_geothermie_surface_echangeurs_ouverts_tiles: OuvragesGeothermieSurfaceEchangeursOuvertsTiles;
   perimetres_geothermie_profonde_tiles: PerimetresGeothermieProfondeTiles;
@@ -927,9 +993,9 @@ export interface DB {
   pro_eligibility_tests: ProEligibilityTests;
   pro_eligibility_tests_addresses: ProEligibilityTestsAddresses;
   pro_eligibility_tests_addresses_tiles: ProEligibilityTestsAddressesTiles;
+  quartiers_prioritaires_politique_ville: QuartiersPrioritairesPolitiqueVille;
   quartiers_prioritaires_politique_ville_2015_anru_tiles: QuartiersPrioritairesPolitiqueVille2015AnruTiles;
   quartiers_prioritaires_politique_ville_2024_tiles: QuartiersPrioritairesPolitiqueVille2024Tiles;
-  quartiers_prioritaires_politique_ville: QuartiersPrioritairesPolitiqueVille;
   raccordements_tiles: RaccordementsTiles;
   reseaux_de_chaleur: ReseauxDeChaleur;
   reseaux_de_chaleur_tiles: ReseauxDeChaleurTiles;
@@ -938,15 +1004,17 @@ export interface DB {
   ressources_geothermales_nappes_tiles: RessourcesGeothermalesNappesTiles;
   tags: Tags;
   tags_reminders: TagsReminders;
+  tests_adresses_tiles_features: TestsAdressesTilesFeatures;
+  user_permissions: UserPermissions;
   users: Users;
   zone_a_potentiel_chaud: ZoneAPotentielChaud;
   zone_a_potentiel_chaud_tiles: ZoneAPotentielChaudTiles;
-  zone_a_potentiel_froid: ZoneAPotentielFroid;
-  zone_a_potentiel_froid_tiles: ZoneAPotentielFroidTiles;
   zone_a_potentiel_fort_chaud: ZoneAPotentielFortChaud;
   zone_a_potentiel_fort_chaud_tiles: ZoneAPotentielFortChaudTiles;
   zone_a_potentiel_fort_froid: ZoneAPotentielFortFroid;
   zone_a_potentiel_fort_froid_tiles: ZoneAPotentielFortFroidTiles;
+  zone_a_potentiel_froid: ZoneAPotentielFroid;
+  zone_a_potentiel_froid_tiles: ZoneAPotentielFroidTiles;
   zone_a_urbaniser_tiles: ZoneAUrbaniserTiles;
   zone_de_developpement_prioritaire: ZoneDeDeveloppementPrioritaire;
   zone_de_developpement_prioritaire_tiles: ZoneDeDeveloppementPrioritaireTiles;

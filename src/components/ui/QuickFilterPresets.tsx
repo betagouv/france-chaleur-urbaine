@@ -11,7 +11,7 @@ type QuickFilterPresetsProps<TData, TPresets extends Record<string, QuickFilterP
   data: TData[];
   loading?: boolean;
   columnFilters: ColumnFiltersState;
-  onFiltersChange: (filters: ColumnFiltersState) => void;
+  onFiltersChange: (filters: ColumnFiltersState, presetKey: keyof TPresets | null) => void;
   hideDividerOnMobile?: boolean;
   className?: string;
 };
@@ -59,7 +59,8 @@ function QuickFilterPresets<TData, TPresets extends Record<string, QuickFilterPr
   const toggleFilterPreset = useCallback(
     (presetKey: keyof TPresets) => {
       const preset = presets[presetKey];
-      onFiltersChange(isPresetActive(presetKey) ? [] : preset.filters);
+      const willActivate = !isPresetActive(presetKey);
+      onFiltersChange(willActivate ? preset.filters : [], willActivate ? presetKey : null);
     },
     [presets, isPresetActive, onFiltersChange]
   );

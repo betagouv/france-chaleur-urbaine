@@ -26,6 +26,8 @@ export type AutocompleteProps<Option> = {
   onLoadingChange?: (loading: boolean) => void;
   id?: string;
   className?: string;
+  /** Message affiché quand la recherche aboutit avec 0 résultat. Défaut : "Aucun résultat". */
+  emptyMessage?: React.ReactNode;
   nativeInputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue'>;
 };
 
@@ -50,6 +52,7 @@ export function Autocomplete<Option>({
   onLoadingChange,
   id: idProp,
   className,
+  emptyMessage = 'Aucun résultat',
   nativeInputProps,
 }: AutocompleteProps<Option>) {
   const generatedId = useId();
@@ -62,6 +65,7 @@ export function Autocomplete<Option>({
   const [displayValue, setDisplayValue] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Option[]>([]);
+  const [hasNoResults, setHasNoResults] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [anchorWidth, setAnchorWidth] = useState<number | undefined>(undefined);
@@ -97,6 +101,7 @@ export function Autocomplete<Option>({
       cancel();
       setDisplayValue(value);
       setSuggestions([]);
+      setHasNoResults(false);
       setHighlightedIndex(-1);
       setSearchQuery('');
       setFetchError(null);
@@ -114,9 +119,11 @@ export function Autocomplete<Option>({
     onError: (error) => {
       setFetchError(error.message);
       setSuggestions([]);
+      setHasNoResults(false);
     },
     onSuccess: (results) => {
       setSuggestions(results);
+      setHasNoResults(results.length === 0);
       setHighlightedIndex(-1);
       setFetchError(null);
     },
@@ -133,6 +140,7 @@ export function Autocomplete<Option>({
     const optionValue = getOptionValue(option);
     cancel();
     setSuggestions([]);
+    setHasNoResults(false);
     setHighlightedIndex(-1);
     setDisplayValue(optionValue);
     setSearchQuery('');
@@ -152,10 +160,22 @@ export function Autocomplete<Option>({
     } else {
       cancel();
       setSuggestions([]);
+      setHasNoResults(false);
     }
   };
 
+  const closePopover = () => {
+    setSuggestions([]);
+    setHasNoResults(false);
+    setHighlightedIndex(-1);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if ((e.key === 'Escape' || e.key === 'Tab') && (suggestions.length || hasNoResults)) {
+      if (e.key === 'Escape') e.preventDefault();
+      closePopover();
+      return;
+    }
     if (!suggestions.length) return;
     switch (e.key) {
       case 'ArrowDown':
@@ -172,21 +192,13 @@ export function Autocomplete<Option>({
           selectOption(suggestions[highlightedIndex]);
         }
         break;
-      case 'Escape':
-        e.preventDefault();
-        setSuggestions([]);
-        setHighlightedIndex(-1);
-        break;
-      case 'Tab':
-        setSuggestions([]);
-        setHighlightedIndex(-1);
-        break;
     }
   };
 
   const handleClear = () => {
     cancel();
     setSuggestions([]);
+    setHasNoResults(false);
     setHighlightedIndex(-1);
     setDisplayValue('');
     setSearchQuery('');
@@ -200,11 +212,10 @@ export function Autocomplete<Option>({
     // Don't close if interaction is on the anchor (input + icons) itself
     const target = e.target as Node;
     if (anchorRef.current?.contains(target)) return;
-    setSuggestions([]);
-    setHighlightedIndex(-1);
+    closePopover();
   };
 
-  const isOpen = suggestions.length > 0;
+  const isOpen = suggestions.length > 0 || hasNoResults;
 
   return (
     <div className={className}>
@@ -280,39 +291,49 @@ export function Autocomplete<Option>({
             style={{ width: anchorWidth ? `${anchorWidth}px` : undefined }}
           >
             <div role="status" aria-live="polite" className="sr-only">
-              {isOpen ? `${suggestions.length} résultat${suggestions.length > 1 ? 's' : ''}` : ''}
+              {isOpen
+                ? suggestions.length > 0
+                  ? `${suggestions.length} résultat${suggestions.length > 1 ? 's' : ''}`
+                  : 'Aucun résultat'
+                : ''}
             </div>
-            <ul
-              id={listboxId}
-              role="listbox"
-              aria-label="Suggestions"
-              // onMouseDown prevents input blur before option click fires (blur-before-click race)
-              onMouseDown={(e) => e.preventDefault()}
-              className="list-none m-0 p-0 max-h-80 overflow-y-auto bg-(--background-default-grey) border border-(--border-default-grey) shadow-[0_4px_8px_rgba(0,0,0,0.12)]"
-            >
-              {suggestions.map((option, index) => {
-                const optionValue = getOptionValue(option);
-                const isHighlighted = index === highlightedIndex;
-                return (
-                  <li
-                    key={`${optionValue}_${index}`}
-                    id={`${id}-option-${index}`}
-                    role="option"
-                    aria-selected={isHighlighted}
-                    tabIndex={-1}
-                    className={cx(
-                      'cursor-pointer text-sm min-h-9 py-1 px-3 content-center',
-                      isHighlighted ? 'bg-(--background-active-blue-france) text-white' : 'bg-(--background-default-grey)'
-                    )}
-                    onMouseEnter={() => setHighlightedIndex(index)}
-                    onMouseLeave={() => setHighlightedIndex(-1)}
-                    onClick={() => selectOption(option)}
-                  >
-                    {getOptionLabel ? getOptionLabel(option, searchQuery) : optionValue}
-                  </li>
-                );
-              })}
-            </ul>
+            <div className="bg-(--background-default-grey) border border-(--border-default-grey) shadow-[0_4px_8px_rgba(0,0,0,0.12)]">
+              {suggestions.length > 0 ? (
+                <ul
+                  id={listboxId}
+                  role="listbox"
+                  aria-label="Suggestions"
+                  // onMouseDown prevents input blur before option click fires (blur-before-click race)
+                  onMouseDown={(e) => e.preventDefault()}
+                  className="list-none m-0 p-0 max-h-80 overflow-y-auto"
+                >
+                  {suggestions.map((option, index) => {
+                    const optionValue = getOptionValue(option);
+                    const isHighlighted = index === highlightedIndex;
+                    return (
+                      <li
+                        key={`${optionValue}_${index}`}
+                        id={`${id}-option-${index}`}
+                        role="option"
+                        aria-selected={isHighlighted}
+                        tabIndex={-1}
+                        className={cx(
+                          'cursor-pointer text-sm min-h-9 py-1 px-3 content-center',
+                          isHighlighted ? 'bg-(--background-active-blue-france) text-white' : 'bg-(--background-default-grey)'
+                        )}
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                        onMouseLeave={() => setHighlightedIndex(-1)}
+                        onClick={() => selectOption(option)}
+                      >
+                        {getOptionLabel ? getOptionLabel(option, searchQuery) : optionValue}
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <div className="text-sm py-2 px-3 text-(--text-mention-grey)">{emptyMessage}</div>
+              )}
+            </div>
           </PopoverPrimitive.Content>
         </PopoverPrimitive.Portal>
       </PopoverPrimitive.Root>

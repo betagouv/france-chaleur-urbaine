@@ -30,6 +30,15 @@ export default function DashboardAdmin() {
         orientation="horizontal"
         enlargeLinkOrButton
       />
+      <Tile
+        title="Diagnostic des données"
+        desc="Identifiez les incohérences (utilisateurs, permissions, demandes)"
+        linkProps={{
+          href: '/admin/data-diagnostic',
+        }}
+        orientation="horizontal"
+        enlargeLinkOrButton
+      />
     </div>
   );
 }

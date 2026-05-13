@@ -127,12 +127,13 @@ type MapProps = {
   withFCUAttribution?: boolean;
   withComptePro?: boolean;
   persistViewStateInURL?: boolean;
-  mapRef?: RefObject<MapRef>;
+  mapRef?: RefObject<MapRef | null>;
   adressesEligibles?: AdresseEligible[];
   adressesEligiblesAutoFit?: boolean;
   onFeatureClick?: (feature: MapGeoJSONFeature) => void;
   onGeomDrop?: (geojson: any) => void;
   geomUpdateFeatures?: GeoJSON.Feature[];
+  mapChildren?: ReactNode;
   children?: ReactNode;
 };
 
@@ -171,6 +172,7 @@ export const FullyFeaturedMap = ({
   onFeatureClick,
   onGeomDrop,
   geomUpdateFeatures,
+  mapChildren,
   children,
   ...props
 }: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
@@ -720,6 +722,7 @@ export const FullyFeaturedMap = ({
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
             {Popup}
             {children}
+            {mapChildren}
             {mapMarkers}
             <FileDragNDrop onDrop={onGeomDrop} />
           </MapReactGL>

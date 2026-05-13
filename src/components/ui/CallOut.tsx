@@ -9,10 +9,14 @@ const callOutVariants = cva('relative', {
     variant: 'default',
   },
   variants: {
+    noMarginBottom: {
+      true: 'mb-0!',
+    },
     size: {
       lg: '',
       md: '',
       sm: 'px-8! py-6!',
+      xs: 'px-4! py-3!',
     },
     variant: {
       blue: 'bg-[linear-gradient(0deg,var(--border-action-high-blue-france),var(--border-action-high-blue-france))]!',
@@ -37,6 +41,7 @@ const titleVariants = cva('', {
       lg: 'text-2xl!',
       md: 'text-lg!',
       sm: 'text-base!',
+      xs: 'text-sm!',
     },
   },
 });
@@ -50,19 +55,20 @@ const textVariants = cva('', {
       lg: 'text-lg!',
       md: 'text-base!',
       sm: 'text-sm!',
+      xs: 'text-xs!',
     },
   },
 });
 
 export type CallOutProps = VariantProps<typeof callOutVariants> & DSFRCallOutProps & { image?: string };
 
-const CallOut = ({ children, className, variant, size, image, bodyAs, ...props }: CallOutProps) => {
+const CallOut = ({ children, className, variant, size, image, bodyAs, noMarginBottom, ...props }: CallOutProps) => {
   return (
     <DSFRCallOut
       bodyAs={bodyAs || (typeof children !== 'string' ? 'div' : undefined)}
       classes={{
         button: undefined,
-        root: cx(callOutVariants({ size, variant, withImage: !!image }), className),
+        root: cx(callOutVariants({ noMarginBottom, size, variant, withImage: !!image }), className),
         text: textVariants({ size }),
         title: titleVariants({ size }),
       }}

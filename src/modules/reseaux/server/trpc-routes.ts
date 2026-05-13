@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import {
+  networkEntityToTable,
+  networkEntityTypes,
+  reminderTypes,
+  tableToNetworkEntity,
   zApplyGeometriesUpdatesInput,
   zCreateNetworkInput,
   zDeleteGeomUpdateInput,
@@ -12,13 +17,12 @@ import {
   zUpdateReseauEnConstructionInput,
   zUpdateReseauInput,
 } from '@/modules/reseaux/constants';
-import { route, routeRole, router } from '@/modules/trpc/server';
+import { adminRoute, demandAccessRoute, route, router } from '@/modules/trpc/server';
 import { getCityEligilityStatus, getEligilityStatus, getNetworkEligilityStatus } from '@/server/services/addresseInformation';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
+import { createNetworkReminder, deleteNetworkReminder, updateNetworkNotes, updateNetworkReminder } from './reminders';
 import * as reseauxService from './service';
-
-const adminRoute = routeRole(['admin']);
 
 const reseauDeChaleurRouter = router({
   list: adminRoute.query(async () => {
@@ -48,10 +52,84 @@ const perimetreDeDeveloppementPrioritaireRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listPerimetresDeDeveloppementPrioritaire();
   }),
-  update: adminRoute.input(zUpdatePerimetreDeDeveloppementPrioritaireInput).mutation(async ({ input }) => {
+  update: adminRoute.input(zUpdatePerimetreDeDeveloppementPrioritaireInput).mutation(async ({ input, ctx }) => {
     const { id, ...data } = input;
-    return await reseauxService.updatePerimetreDeDeveloppementPrioritaire(id, data);
+    await reseauxService.updatePerimetreDeDeveloppementPrioritaire(id, data);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(id),
+      context_type: 'perimetre_de_developpement_prioritaire',
+      data,
+      type: 'pdp_updated',
+    });
   }),
+});
+
+const networkRemindersRouter = router({
+  create: adminRoute
+    .input(
+      z.object({
+        createdAt: z.string().optional(),
+        networkId: z.number(),
+        networkType: z.enum(networkEntityTypes),
+        note: z.string().nullable().optional(),
+        type: z.enum(reminderTypes),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return createNetworkReminder({
+        author_id: ctx.user.id,
+        created_at: input.createdAt ? new Date(input.createdAt) : undefined,
+        network_id: input.networkId,
+        network_type: input.networkType,
+        note: input.note ?? null,
+        type: input.type,
+      });
+    }),
+  delete: adminRoute.input(z.object({ id: z.string().uuid() })).mutation(async ({ input, ctx }) => {
+    await deleteNetworkReminder(input.id, ctx.user.id);
+  }),
+  update: adminRoute
+    .input(
+      z.object({
+        createdAt: z.string().optional(),
+        id: z.string().uuid(),
+        note: z.string().nullable().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const changes: { note?: string | null; created_at?: Date } = {};
+      if ('note' in input) changes.note = input.note ?? null;
+      if (input.createdAt) changes.created_at = new Date(input.createdAt);
+      await updateNetworkReminder(input.id, changes, ctx.user.id);
+    }),
+  updateNotes: adminRoute
+    .input(
+      z.object({
+        networkId: z.number(),
+        networkType: z.enum(networkEntityTypes),
+        notes: z.string().nullable(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const reseau = await reseauxService.getNetworkLabel(input.networkId, networkEntityToTable[input.networkType]);
+      await updateNetworkNotes(input.networkId, input.networkType, input.notes);
+      await createUserEvent({
+        author_id: ctx.user.id,
+        context_id: String(input.networkId),
+        context_type: input.networkType,
+        data: {
+          communes_count: reseau.communes_count,
+          first_commune: reseau.first_commune,
+          identifiant_reseau: reseau.identifiant_reseau,
+          network_id: input.networkId,
+          network_type: input.networkType,
+          nom_reseau: reseau.nom_reseau,
+          notes: input.notes,
+        },
+        type: 'network_notes_updated',
+      });
+    }),
 });
 
 export const reseauxRouter = router({
@@ -61,14 +139,36 @@ export const reseauxRouter = router({
   cityNetwork: route.input(z.object({ city: z.string() })).query(async ({ input }) => {
     return (await getCityEligilityStatus(input.city)) as HeatNetworksResponse; // legacy type for compatibility
   }),
-  createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input }) => {
-    return await reseauxService.createNetwork(input.id, input.geometry, input.type);
+  createNetwork: adminRoute.input(zCreateNetworkInput).mutation(async ({ input, ctx }) => {
+    const result = await reseauxService.createNetwork(input.id, input.geometry, input.type);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: input.id,
+      context_type: tableToNetworkEntity[input.type],
+      data: { id: input.id, identifiant_reseau: null, nom_reseau: null, type: input.type },
+      type: 'network_created',
+    });
+    return result;
   }),
   deleteGeomUpdate: adminRoute.input(zDeleteGeomUpdateInput).mutation(async ({ input }) => {
     return await reseauxService.deleteGeomUpdate(input.id, input.type);
   }),
-  deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input }) => {
-    return await reseauxService.deleteNetwork(input.id, input.type);
+  deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input, ctx }) => {
+    const reseau = await reseauxService.getNetworkLabel(input.id, input.type);
+    const result = await reseauxService.deleteNetwork(input.id, input.type);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(input.id),
+      context_type: tableToNetworkEntity[input.type],
+      data: {
+        id: input.id,
+        identifiant_reseau: reseau.identifiant_reseau,
+        nom_reseau: reseau.nom_reseau,
+        type: input.type,
+      },
+      type: 'network_deleted',
+    });
+    return result;
   }),
   eligibilityStatus: route.input(z.object({ lat: z.number(), lon: z.number() })).query(async ({ input }) => {
     return (await getEligilityStatus(input.lat, input.lon)) as HeatNetworksResponse; // legacy type for compatibility
@@ -84,14 +184,32 @@ export const reseauxRouter = router({
   listNetworks: route.query(async () => {
     return await reseauxService.listNetworks();
   }),
+  networkReminders: networkRemindersRouter,
   perimetreDeDeveloppementPrioritaire: perimetreDeDeveloppementPrioritaireRouter,
   // Sous-routeurs par type
   reseauDeChaleur: reseauDeChaleurRouter,
   reseauDeFroid: reseauDeFroidRouter,
   reseauEnConstruction: reseauEnConstructionRouter,
+  searchNetworks: demandAccessRoute.input(z.object({ search: z.string().min(2).max(100) })).query(async ({ input }) => {
+    return await reseauxService.searchNetworks(input.search);
+  }),
 
   // Opérations communes à tous les types
-  updateGeomUpdate: adminRoute.input(zUpdateGeomUpdateInput).mutation(async ({ input }) => {
-    return await reseauxService.updateGeomUpdate(input.id, input.geometry, input.type);
+  updateGeomUpdate: adminRoute.input(zUpdateGeomUpdateInput).mutation(async ({ input, ctx }) => {
+    const reseau = await reseauxService.getNetworkLabel(input.id, input.type);
+    const result = await reseauxService.updateGeomUpdate(input.id, input.geometry, input.type);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(input.id),
+      context_type: tableToNetworkEntity[input.type],
+      data: {
+        id: input.id,
+        identifiant_reseau: reseau.identifiant_reseau,
+        nom_reseau: reseau.nom_reseau,
+        type: input.type,
+      },
+      type: 'network_geometry_updated',
+    });
+    return result;
   }),
 });

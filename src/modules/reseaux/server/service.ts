@@ -1,11 +1,13 @@
 import type { ExpressionBuilder, RawBuilder } from 'kysely';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { parseBbox } from '@/modules/geo/client/helpers';
 import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
 import type { BoundingBox } from '@/modules/geo/types';
 import { createWarnEligibilityChangesJob } from '@/modules/pro-eligibility-tests/server/service';
-import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
+import { type ApplyGeometriesUpdatesInput, type NetworkType, networkSlugToEntity } from '@/modules/reseaux/constants';
 import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
+import { reminderJsonAggSQL } from '@/modules/reseaux/server/reminders';
 import { createBuildTilesJob, createSyncGeometriesToAirtableJob, createSyncMetadataFromAirtableJob } from '@/modules/tiles/server/service';
 import { type DB, kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
@@ -239,7 +241,7 @@ export const listNetworks = async (): Promise<NetworkToCompare[]> => {
 export const listReseauxDeChaleur = async () => {
   const reseauxDeChaleur = await kdb
     .selectFrom('reseaux_de_chaleur')
-    .select([
+    .select((eb) => [
       'id_fcu',
       'Identifiant reseau',
       'nom_reseau',
@@ -252,10 +254,13 @@ export const listReseauxDeChaleur = async () => {
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
       'tags',
       'has_trace',
+      'has_PDP',
       'reseaux classes',
       'date_actualisation_trace',
       'puissance_totale_MW',
       'ouvert_aux_raccordements',
+      'notes',
+      reminderJsonAggSQL(eb, 'reseaux_de_chaleur', 'reseau_de_chaleur', 'trace').as('reminders'),
       sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
@@ -277,7 +282,7 @@ export const updateTags = async (id: number, tags: string[]) => {
 export const listReseauxEnConstruction = async () => {
   const reseauxDeChaleur = await kdb
     .selectFrom('zones_et_reseaux_en_construction')
-    .select([
+    .select((eb) => [
       'id_fcu',
       'nom_reseau',
       'communes',
@@ -289,6 +294,8 @@ export const listReseauxEnConstruction = async () => {
       'tags',
       'date_actualisation_trace',
       'ouvert_aux_raccordements',
+      'notes',
+      reminderJsonAggSQL(eb, 'zones_et_reseaux_en_construction', 'reseau_en_construction', 'trace').as('reminders'),
       sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
       sql<boolean>`geom IS NULL`.as('geom_create'),
     ])
@@ -310,7 +317,7 @@ export const updateReseauEnConstruction = async (id: number, tags: string[]) => 
 export const listReseauxDeFroid = async () => {
   const reseauxDeFroid = await kdb
     .selectFrom('reseaux_de_froid')
-    .select([
+    .select((eb) => [
       'id_fcu',
       'Identifiant reseau',
       'nom_reseau',
@@ -320,6 +327,8 @@ export const listReseauxDeFroid = async () => {
       'has_trace',
       'date_actualisation_trace',
       'puissance_totale_MW',
+      'notes',
+      reminderJsonAggSQL(eb, 'reseaux_de_froid', 'reseau_de_froid', 'trace').as('reminders'),
       sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),
@@ -341,12 +350,14 @@ export const listReseauxDeFroid = async () => {
 export const listPerimetresDeDeveloppementPrioritaire = async () => {
   const perimetresDeDeveloppementPrioritaire = await kdb
     .selectFrom('zone_de_developpement_prioritaire')
-    .select([
+    .select((eb) => [
       'id_fcu',
       'Identifiant reseau',
       'reseau_de_chaleur_ids',
       'reseau_en_construction_ids',
       'communes',
+      'notes',
+      reminderJsonAggSQL(eb, 'zone_de_developpement_prioritaire', 'perimetre_de_developpement_prioritaire', 'trace').as('reminders'),
       sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),
@@ -400,6 +411,58 @@ export const deleteGeomUpdate = async (
       geom_update: null,
     })
     .execute();
+};
+
+export const getNetworkLabel = async (
+  id_fcu: number,
+  tableName: 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire' | 'reseaux_de_froid'
+): Promise<{
+  nom_reseau: string | null;
+  identifiant_reseau: string | null;
+  first_commune: string | null;
+  communes_count: number;
+}> => {
+  switch (tableName) {
+    case 'reseaux_de_chaleur':
+    case 'reseaux_de_froid': {
+      const row = await kdb
+        .selectFrom(tableName)
+        .select((eb) => ['nom_reseau', eb.ref('Identifiant reseau').as('identifiant_reseau')])
+        .where('id_fcu', '=', id_fcu)
+        .executeTakeFirstOrThrow();
+      return { ...row, communes_count: 0, first_commune: null };
+    }
+    case 'zones_et_reseaux_en_construction': {
+      const row = await kdb.selectFrom(tableName).select('nom_reseau').where('id_fcu', '=', id_fcu).executeTakeFirstOrThrow();
+      return { communes_count: 0, first_commune: null, identifiant_reseau: null, nom_reseau: row.nom_reseau };
+    }
+    case 'zone_de_developpement_prioritaire': {
+      const row = await kdb
+        .selectFrom(tableName)
+        .select((eb) => [eb.ref('Identifiant reseau').as('identifiant_reseau'), 'communes_insee'])
+        .where('id_fcu', '=', id_fcu)
+        .executeTakeFirstOrThrow();
+      const communesInsee = row.communes_insee ?? [];
+      const firstCommune =
+        communesInsee.length > 0
+          ? ((
+              await kdb
+                .selectFrom('ign_communes')
+                .select('nom')
+                .where('insee_com', 'in', communesInsee)
+                .orderBy('nom')
+                .limit(1)
+                .executeTakeFirst()
+            )?.nom ?? null)
+          : null;
+      return {
+        communes_count: communesInsee.length,
+        first_commune: firstCommune,
+        identifiant_reseau: row.identifiant_reseau,
+        nom_reseau: null,
+      };
+    }
+  }
 };
 
 export const deleteNetwork = async (
@@ -753,6 +816,14 @@ export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInp
     logger.info(`Created eligibility check job ${eligibilityCheckJob.id} for ${affectedBboxes.length} affected zones`);
   }
 
+  await createUserEvent({
+    author_id: context.user.id,
+    context_id: name,
+    context_type: networkSlugToEntity[name],
+    data: { affected_bboxes_count: affectedBboxes.length, name, processed },
+    type: 'network_geometries_applied',
+  });
+
   return {
     jobIds: rebuildingJobIds,
     processed,
@@ -771,3 +842,52 @@ export async function getNetworkGeometry(tableName: NetworkTable, id_fcu: number
     .executeTakeFirstOrThrow();
   return result.geometry;
 }
+
+export type NetworkSearchResult = {
+  id_fcu: number;
+  nom_reseau: string | null;
+  identifiant_reseau: string | null;
+  network_type: NetworkType;
+  gestionnaire: string | null;
+};
+
+/**
+ * Search networks (existing + construction) by name, SNCU identifier or FCU id.
+ * Includes zones (`is_zone = true`) since demands can be affected to them.
+ */
+export const searchNetworks = async (search: string): Promise<NetworkSearchResult[]> => {
+  const pattern = `%${search}%`;
+
+  const [existants, enConstruction] = await Promise.all([
+    kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select((eb) => [
+        'id_fcu',
+        'nom_reseau',
+        eb.ref('Identifiant reseau').as('identifiant_reseau'),
+        eb.ref('Gestionnaire').as('gestionnaire'),
+      ])
+      .where((eb) =>
+        eb.or([
+          eb('nom_reseau', 'ilike', pattern),
+          eb(sql`"Identifiant reseau"`, 'ilike', pattern),
+          eb(sql<string>`"id_fcu"::TEXT`, 'like', pattern),
+        ])
+      )
+      .orderBy('nom_reseau')
+      .limit(10)
+      .execute(),
+    kdb
+      .selectFrom('zones_et_reseaux_en_construction')
+      .select(['id_fcu', 'nom_reseau', sql<null>`NULL`.as('identifiant_reseau'), 'gestionnaire'])
+      .where((eb) => eb.or([eb('nom_reseau', 'ilike', pattern), eb(sql<string>`"id_fcu"::TEXT`, 'like', pattern)]))
+      .orderBy('nom_reseau')
+      .limit(10)
+      .execute(),
+  ]);
+
+  return [
+    ...existants.map((r) => ({ ...r, network_type: 'reseau_de_chaleur' as const })),
+    ...enConstruction.map((r) => ({ ...r, network_type: 'reseau_en_construction' as const })),
+  ];
+};

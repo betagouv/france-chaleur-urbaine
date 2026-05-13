@@ -13,7 +13,6 @@ import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
-import Notice from '@/components/ui/Notice';
 import useRouterReady from '@/hooks/useRouterReady';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
@@ -54,7 +53,6 @@ const SimplePage = ({
         ]}
       />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
-      <Notice>La plateforme France Chaleur Urbaine sera indisponible le 15 mai 2026 de 10h à 12h pour une opération de migration.</Notice>
 
       <main
         id="main-content"
@@ -378,19 +376,19 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         linkProps: {
           href: '/admin/demandes/stats',
         },
-        text: 'Statistiques des demandes',
+        text: 'Statistiques des demandes (obsolète)',
       },
       {
         linkProps: {
           href: '/admin/tags',
         },
-        text: 'Gestion des tags gestionnaires',
+        text: 'Gestion des tags gestionnaires (obsolète)',
       },
       {
         linkProps: {
           href: '/admin/assignment-rules',
         },
-        text: "Gestion des règles d'affectation",
+        text: "Gestion des règles d'affectation (obsolète)",
       },
       {
         linkProps: {
@@ -400,9 +398,21 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
+          href: '/admin/reseaux/stats',
+        },
+        text: 'Statistiques par réseau',
+      },
+      {
+        linkProps: {
           href: '/admin/jobs',
         },
         text: 'Suivi des tâches',
+      },
+      {
+        linkProps: {
+          href: '/admin/emails',
+        },
+        text: "Modèles d'emails",
       },
       {
         linkProps: {
@@ -421,6 +431,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
           href: '/admin/diagnostic',
         },
         text: 'Diagnostic',
+      },
+      {
+        linkProps: {
+          href: '/admin/data-diagnostic',
+        },
+        text: 'Diagnostic des données',
       },
     ],
     text: 'Administration',
@@ -483,7 +499,7 @@ const PageHeader = (props: PageHeaderProps) => {
       return [
         ...authenticatedNavigationMenu,
         ...(hasRole('admin') ? adminNavigationMenu : []),
-        ...(hasRole('gestionnaire') || hasRole('demo') ? gestionnaireNavigationMenu : []),
+        ...(hasRole('gestionnaire') || hasRole('collectivite') || hasRole('alec') || hasRole('ccrt') ? gestionnaireNavigationMenu : []),
         ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
       ];
     }
