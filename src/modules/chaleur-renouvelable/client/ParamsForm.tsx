@@ -23,6 +23,8 @@ import {
 import { AddressField } from '@/modules/form/AddressField';
 import cx from '@/utils/cx';
 
+export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
+
 const isNumericLike = (value: string) => value === '' || /^[0-9]+([.,][0-9]*)?$/.test(value);
 
 type ParamsFormProps = {
@@ -299,7 +301,7 @@ export function ParamsForm({
                 </div>
               </div>
             </section>
-            <section>
+            <section id={HOT_WATER_PARAMS_SECTION_ID} className="scroll-mt-4">
               <SectionTitle iconClassName="fr-icon-fire-line">Chauffage et eau chaude sanitaire</SectionTitle>
               <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
                 <Select
