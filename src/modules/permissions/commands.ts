@@ -134,13 +134,18 @@ async function backfillTerritoryCodes() {
 async function backfillNetworkId() {
   logger.info('Backfill network_id via dernière éligibilité...');
 
-  // 1a. Éligibilité directe (hors dans_pdp_*) : id_fcu pointe directement vers le réseau
+  // 1a. Éligibilité directe (hors dans_pdp_*) : id_fcu pointe directement vers le réseau.
+  // L'id_fcu provient d'un snapshot d'éligibilité ; on ne l'utilise que s'il existe encore
+  // dans la table cible — sinon on crée des demandes orphelines (cf. data-diagnostic).
   const directResult = await sql`
     WITH latest_eligibility AS (
       SELECT
         a.demand_id,
         (a.eligibility_history->-1->'eligibility'->>'id_fcu')::int AS id_fcu,
-        a.eligibility_history->-1->'eligibility'->>'type' AS elig_type
+        CASE
+          WHEN a.eligibility_history->-1->'eligibility'->>'type' LIKE '%futur%' THEN 'reseau_en_construction'
+          ELSE 'reseau_de_chaleur'
+        END AS network_type
       FROM pro_eligibility_tests_addresses a
       WHERE a.demand_id IS NOT NULL
         AND jsonb_array_length(a.eligibility_history) > 0
@@ -154,14 +159,15 @@ async function backfillNetworkId() {
     )
     UPDATE demands d SET
       network_id = le.id_fcu,
-      network_type = CASE
-        WHEN le.elig_type LIKE '%futur%' THEN 'reseau_en_construction'
-        ELSE 'reseau_de_chaleur'
-      END
+      network_type = le.network_type
     FROM latest_eligibility le
     WHERE d.id = le.demand_id
       AND d.network_id IS NULL
       AND d.deleted_at IS NULL
+      AND (
+        (le.network_type = 'reseau_de_chaleur' AND EXISTS (SELECT 1 FROM reseaux_de_chaleur WHERE id_fcu = le.id_fcu))
+        OR (le.network_type = 'reseau_en_construction' AND EXISTS (SELECT 1 FROM zones_et_reseaux_en_construction WHERE id_fcu = le.id_fcu))
+      )
   `.execute(kdb);
 
   logger.info(`Network ID (éligibilité directe): ${(directResult as any).numAffectedRows ?? '?'} rows`);
