@@ -432,6 +432,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         },
         text: 'Diagnostic',
       },
+      {
+        linkProps: {
+          href: '/admin/data-diagnostic',
+        },
+        text: 'Diagnostic des données',
+      },
     ],
     text: 'Administration',
   },

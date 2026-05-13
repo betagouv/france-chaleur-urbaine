@@ -5,6 +5,7 @@ import { bdnbRouter } from '@/modules/bdnb/server/trpc-routes';
 import { batEnrRouter } from '@/modules/chaleur-renouvelable/server/trpc-routes';
 import buildContext from '@/modules/config/server/context-builder';
 import { dataRouter } from '@/modules/data/server/trpc-routes';
+import { dataDiagnosticRouter } from '@/modules/data-diagnostic/server/trpc-routes';
 import { demandsRouter } from '@/modules/demands/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
 import { emailRouter } from '@/modules/email/server/trpc-routes';
@@ -44,6 +45,7 @@ export const appRouter = router({
   batEnr: batEnrRouter,
   bdnb: bdnbRouter,
   data: dataRouter,
+  dataDiagnostic: dataDiagnosticRouter,
   demands: demandsRouter,
   diagnostic: diagnosticRouter,
   email: emailRouter,
