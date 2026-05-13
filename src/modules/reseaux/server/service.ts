@@ -848,10 +848,12 @@ export type NetworkSearchResult = {
   nom_reseau: string | null;
   identifiant_reseau: string | null;
   network_type: NetworkType;
+  gestionnaire: string | null;
 };
 
 /**
- * Search networks (existing + construction) by name or SNCU identifier.
+ * Search networks (existing + construction) by name, SNCU identifier or FCU id.
+ * Includes zones (`is_zone = true`) since demands can be affected to them.
  */
 export const searchNetworks = async (search: string): Promise<NetworkSearchResult[]> => {
   const pattern = `%${search}%`;
@@ -859,15 +861,26 @@ export const searchNetworks = async (search: string): Promise<NetworkSearchResul
   const [existants, enConstruction] = await Promise.all([
     kdb
       .selectFrom('reseaux_de_chaleur')
-      .select(['id_fcu', 'nom_reseau', sql<string | null>`"Identifiant reseau"`.as('identifiant_reseau')])
-      .where((eb) => eb.or([eb('nom_reseau', 'ilike', pattern), eb(sql`"Identifiant reseau"`, 'ilike', pattern)]))
+      .select((eb) => [
+        'id_fcu',
+        'nom_reseau',
+        eb.ref('Identifiant reseau').as('identifiant_reseau'),
+        eb.ref('Gestionnaire').as('gestionnaire'),
+      ])
+      .where((eb) =>
+        eb.or([
+          eb('nom_reseau', 'ilike', pattern),
+          eb(sql`"Identifiant reseau"`, 'ilike', pattern),
+          eb(sql<string>`"id_fcu"::TEXT`, 'like', pattern),
+        ])
+      )
       .orderBy('nom_reseau')
-      .limit(20)
+      .limit(10)
       .execute(),
     kdb
       .selectFrom('zones_et_reseaux_en_construction')
-      .select(['id_fcu', 'nom_reseau', sql<null>`NULL`.as('identifiant_reseau')])
-      .where('nom_reseau', 'ilike', pattern)
+      .select(['id_fcu', 'nom_reseau', sql<null>`NULL`.as('identifiant_reseau'), 'gestionnaire'])
+      .where((eb) => eb.or([eb('nom_reseau', 'ilike', pattern), eb(sql<string>`"id_fcu"::TEXT`, 'like', pattern)]))
       .orderBy('nom_reseau')
       .limit(10)
       .execute(),

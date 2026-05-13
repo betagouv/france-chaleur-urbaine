@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { anonymizeEmail, anonymizeName } from '@/modules/demands/server/helpers';
+import { searchNetworks } from '@/modules/reseaux/server/service';
 import { adminRoute, demandAccessRoute, router } from '@/modules/trpc/server';
 
 import { zPermissionInput } from '../types';
@@ -11,7 +12,6 @@ import {
   getUserPermissionsWithLabels,
   resolvePermissionLabels,
   resolvePermissionsWithLabels,
-  searchNetworks,
   searchTerritories,
 } from './search';
 import { setUserPermissions } from './service';
@@ -56,7 +56,7 @@ export const permissionsRouter = router({
 
   resolveLabels: demandAccessRoute.input(zPermissionInput).query(({ input }) => resolvePermissionLabels(input)),
 
-  searchNetworks: adminRoute.input(z.object({ query: z.string().min(2).max(100) })).query(({ input }) => searchNetworks(input.query)),
+  searchNetworks: adminRoute.input(z.object({ search: z.string().min(2).max(100) })).query(({ input }) => searchNetworks(input.search)),
 
   searchTerritories: adminRoute
     .input(

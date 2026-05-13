@@ -7,62 +7,6 @@ import { getUserPermissions } from './service';
 
 // ─── Search ──────────────────────────────────────────────────────────────────
 
-type NetworkSearchResult = {
-  idFcu: number;
-  sncuId: string | null;
-  name: string;
-  type: 'reseau_de_chaleur' | 'reseau_en_construction';
-  gestionnaire: string | null;
-};
-
-/**
- * Search networks by id_fcu, SNCU id, or name. Searches both existing and construction networks.
- */
-export const searchNetworks = async (query: string): Promise<NetworkSearchResult[]> => {
-  const search = `%${query}%`;
-
-  const [existing, construction] = await Promise.all([
-    kdb
-      .selectFrom('reseaux_de_chaleur')
-      .select(['id_fcu', 'Identifiant reseau', 'nom_reseau', 'Gestionnaire'])
-      .where((eb) =>
-        eb.or([
-          eb('nom_reseau', 'ilike', search),
-          eb('Identifiant reseau', 'ilike', search),
-          eb(sql<string>`"id_fcu"::TEXT`, 'like', search),
-        ])
-      )
-      .limit(10)
-      .execute(),
-    kdb
-      .selectFrom('zones_et_reseaux_en_construction')
-      .select(['id_fcu', 'nom_reseau', 'gestionnaire'])
-      .where((eb) => eb.or([eb('nom_reseau', 'ilike', search), eb(sql<string>`"id_fcu"::TEXT`, 'like', search)]))
-      .where('is_zone', '=', false)
-      .limit(10)
-      .execute(),
-  ]);
-
-  const results: NetworkSearchResult[] = [
-    ...existing.map((r) => ({
-      gestionnaire: r.Gestionnaire,
-      idFcu: r.id_fcu,
-      name: r.nom_reseau || 'Nom inconnu',
-      sncuId: r['Identifiant reseau'],
-      type: 'reseau_de_chaleur' as const,
-    })),
-    ...construction.map((r) => ({
-      gestionnaire: r.gestionnaire,
-      idFcu: r.id_fcu,
-      name: r.nom_reseau || 'Nom inconnu',
-      sncuId: null,
-      type: 'reseau_en_construction' as const,
-    })),
-  ];
-
-  return results.slice(0, 15);
-};
-
 export type ReseauDeChaleurBySncuIdResult = {
   input: string;
   status: 'found' | 'not_found';
@@ -234,7 +178,6 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
         .selectFrom('zones_et_reseaux_en_construction')
         .select(['id_fcu', 'nom_reseau'])
         .where('id_fcu', 'in', constructionNetworkIds)
-        .where('is_zone', '=', false)
         .execute()
         .then((rows) => {
           const map = new Map(rows.map((r) => [r.id_fcu, r]));

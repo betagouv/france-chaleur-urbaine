@@ -40,7 +40,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
   const isTerritoryMode = availableTypes.some((t) => territoryPermissionSet.has(t));
 
   const networkResults = trpc.permissions.searchNetworks.useQuery(
-    { query: debouncedQuery },
+    { search: debouncedQuery },
     { enabled: isNetworkMode && debouncedQuery.length >= 2 }
   );
 
@@ -59,11 +59,11 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
 
   if (isNetworkMode && networkResults.data) {
     for (const n of networkResults.data) {
-      if (!availableTypes.includes(n.type)) continue;
+      if (!availableTypes.includes(n.network_type)) continue;
       results.push({
-        label: n.name,
-        permission: { resource_id: String(n.idFcu), type: n.type },
-        sublabel: `${permissionTypeLabels[n.type]} · ${n.sncuId ?? `FCU ${n.idFcu}`}${n.gestionnaire ? ` · ${n.gestionnaire}` : ''}`,
+        label: n.nom_reseau ?? 'Sans nom',
+        permission: { resource_id: String(n.id_fcu), type: n.network_type },
+        sublabel: `${permissionTypeLabels[n.network_type]} · ${n.identifiant_reseau ?? `FCU ${n.id_fcu}`}${n.gestionnaire ? ` · ${n.gestionnaire}` : ''}`,
       });
     }
   }

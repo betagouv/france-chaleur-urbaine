@@ -190,7 +190,7 @@ export const reseauxRouter = router({
   reseauDeChaleur: reseauDeChaleurRouter,
   reseauDeFroid: reseauDeFroidRouter,
   reseauEnConstruction: reseauEnConstructionRouter,
-  searchNetworks: demandAccessRoute.input(z.object({ search: z.string().min(2) })).query(async ({ input }) => {
+  searchNetworks: demandAccessRoute.input(z.object({ search: z.string().min(2).max(100) })).query(async ({ input }) => {
     return await reseauxService.searchNetworks(input.search);
   }),
 
