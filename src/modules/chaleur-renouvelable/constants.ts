@@ -41,9 +41,22 @@ export const espaceExterieurOptionsByTypeLogement = {
   }[]
 >;
 
+export type EspaceExterieurOptionLabel = (typeof espaceExterieurOptionsByTypeLogement)[TypeLogement][number]['label'];
+
 export function getEspaceExterieurOptions(typeLogement: TypeLogement | null | undefined) {
   return typeLogement ? espaceExterieurOptionsByTypeLogement[typeLogement] : [];
 }
+
+export function getEspaceExterieurOptionLabel(typeLogement: TypeLogement, espaceExterieur: EspaceExterieur) {
+  return (
+    espaceExterieurOptionsByTypeLogement[typeLogement].find((option) => option.value === espaceExterieur)?.label ??
+    espaceExterieurOptionsByTypeLogement[typeLogement][0].label
+  );
+}
+
+const isEspaceExterieurOptionLabel = (value: unknown): value is EspaceExterieurOptionLabel =>
+  typeof value === 'string' &&
+  Object.values(espaceExterieurOptionsByTypeLogement).some((options) => options.some((option) => option.label === value));
 
 export function isEspaceExterieurCompatible(
   typeLogement: TypeLogement | null | undefined,
@@ -65,7 +78,7 @@ export const espaceExterieurOptions = [
   value: EspaceExterieur;
 }[];
 
-export const TYPE_RADIATEUR_VALUES = ['radiateur-eau', 'radiateur-electrique', 'none'] as const;
+export const TYPE_RADIATEUR_VALUES = ['radiateur-eau', 'radiateur-electrique', 'none'];
 export type TypeRadiateur = (typeof TYPE_RADIATEUR_VALUES)[number];
 export const typeRadiateurOptions = [
   { icone: 'img/icon-goutte.svg', label: 'Radiateur ou plancher chauffant à eau', value: 'radiateur-eau' },
@@ -94,13 +107,41 @@ export const fieldLabelInformation = {
   email: 'Email',
   phone: 'Téléphone',
 };
+export const OCCUPANT_STATUS_VALUES = ['Copropriétaire', 'Locataire', 'Propriétaire occupant', 'Syndic'];
+export type OccupantStatus = (typeof OCCUPANT_STATUS_VALUES)[number];
+export const occupantStatusOptions = OCCUPANT_STATUS_VALUES.map((value) => ({ label: value, value }));
+
+export const HEATING_ENERGY_VALUES = ['Électricité', 'Gaz', 'Fioul', 'Bois', 'Réseau de chaleur', 'Autre'];
+export type HeatingEnergy = (typeof HEATING_ENERGY_VALUES)[number];
+export const heatingEnergyOptions = HEATING_ENERGY_VALUES.map((value) => ({ label: value, value }));
+
+export const PROJECT_STATUS_VALUES = [
+  'Début de réflexion',
+  'DPE collectif (collectif à supprimer si maison individuelle) déjà réalisé',
+  'Audit énergétique déjà réalisé',
+  'Projet de rénovation globale en cours',
+  'Devis de changement de chauffage déjà reçus',
+  'Changement de chauffage voté en AG',
+  "Déjà accompagné par un bureau d'étude",
+];
+export type ProjectStatus = (typeof PROJECT_STATUS_VALUES)[number];
+export const projectStatusOptions = PROJECT_STATUS_VALUES.map((value) => ({
+  label: value,
+  nativeInputProps: { value },
+}));
+
 export const zContactFormAdemeHelp = z.object({
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
+  firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
+  heatingEnergy: z.enum(HEATING_ENERGY_VALUES),
+  lastName: z.string().min(1, 'Veuillez renseigner votre nom'),
+  occupantStatus: z.enum(OCCUPANT_STATUS_VALUES),
   phone: z
     .string()
     .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
     .optional()
     .default(''),
+  projectStatus: z.array(z.enum(PROJECT_STATUS_VALUES)).default([]),
   termOfUse: z.boolean().refine((val) => val, {
     error: 'Ce champ est requis',
   }),
@@ -111,10 +152,14 @@ export const zAirtableAdemeHelp = z.object({
   Date: z.iso.datetime(),
   DPE: z.enum(DPE_VALUES),
   Email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
-  'Espace extérieur': z.enum(['Partagés uniquement', 'Individuels uniquement', 'Partagés et individuels', 'Aucun']),
+  'Espace extérieur': z.custom<EspaceExterieurOptionLabel>(isEspaceExterieurOptionLabel),
   'Mode de chauffage': z.enum(TYPE_LOGEMENT_VALUES),
   'Nb habitant moyen': z.number(),
+  Nom: z.string(),
   'Nombre de logement': z.number(),
+  'Où en êtes-vous de votre projet ?': z.array(z.enum(PROJECT_STATUS_VALUES)),
+  Prénom: z.string(),
+  'Statut occupant': z.enum(OCCUPANT_STATUS_VALUES),
   'Surface moyenne': z.number(),
   Telephone: z
     .string()
@@ -122,6 +167,7 @@ export const zAirtableAdemeHelp = z.object({
     .optional()
     .default(''),
   'Url simulation': z.string(),
+  'Énergie de chauffage': z.enum(HEATING_ENERGY_VALUES),
 });
 export type GetAirtableAdeme = z.infer<typeof zAirtableAdemeHelp>;
 
