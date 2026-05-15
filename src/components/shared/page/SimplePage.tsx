@@ -399,6 +399,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
+          href: '/admin/demandes-chaleur-renouvelable',
+        },
+        text: 'Gestion des demandes chaleur renouvelable',
+      },
+      {
+        linkProps: {
           href: '/admin/demandes/stats',
         },
         text: 'Statistiques des demandes (obsolète)',
