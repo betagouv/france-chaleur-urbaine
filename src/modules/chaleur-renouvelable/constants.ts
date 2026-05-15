@@ -1,10 +1,12 @@
 import { z } from 'zod';
 
-export const DPE_VALUES = ['A', 'B', 'C', 'D', 'E', 'F', 'G'] as const;
+import { demandStatuses } from '@/modules/demands/constants';
+
+export const DPE_VALUES = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 
 export type DPE = (typeof DPE_VALUES)[number];
 
-export const TYPE_LOGEMENT_VALUES = ['immeuble_chauffage_collectif', 'immeuble_chauffage_individuel', 'maison_individuelle'] as const;
+export const TYPE_LOGEMENT_VALUES = ['immeuble_chauffage_collectif', 'immeuble_chauffage_individuel', 'maison_individuelle'];
 export type TypeLogement = (typeof TYPE_LOGEMENT_VALUES)[number];
 export const typeLogementOptions = [
   { label: 'Immeuble en chauffage collectif', value: 'immeuble_chauffage_collectif' },
@@ -15,7 +17,7 @@ export const typeLogementOptions = [
   value: TypeLogement;
 }[];
 
-export const ESPACE_EXTERIEUR_VALUES = ['shared', 'private', 'both', 'none'] as const;
+export const ESPACE_EXTERIEUR_VALUES = ['shared', 'private', 'both', 'none'];
 export type EspaceExterieur = (typeof ESPACE_EXTERIEUR_VALUES)[number];
 export const espaceExterieurOptionsByTypeLogement = {
   immeuble_chauffage_collectif: [
@@ -41,8 +43,6 @@ export const espaceExterieurOptionsByTypeLogement = {
   }[]
 >;
 
-export type EspaceExterieurOptionLabel = (typeof espaceExterieurOptionsByTypeLogement)[TypeLogement][number]['label'];
-
 export function getEspaceExterieurOptions(typeLogement: TypeLogement | null | undefined) {
   return typeLogement ? espaceExterieurOptionsByTypeLogement[typeLogement] : [];
 }
@@ -54,10 +54,6 @@ export function getEspaceExterieurOptionLabel(typeLogement: TypeLogement, espace
   );
 }
 
-const isEspaceExterieurOptionLabel = (value: unknown): value is EspaceExterieurOptionLabel =>
-  typeof value === 'string' &&
-  Object.values(espaceExterieurOptionsByTypeLogement).some((options) => options.some((option) => option.label === value));
-
 export function isEspaceExterieurCompatible(
   typeLogement: TypeLogement | null | undefined,
   espaceExterieur: EspaceExterieur | null | undefined
@@ -66,17 +62,6 @@ export function isEspaceExterieurCompatible(
 
   return getEspaceExterieurOptions(typeLogement).some((option) => option.value === espaceExterieur);
 }
-
-export const espaceExterieurOptions = [
-  { description: 'Cour, jardin, toit terrasse…', label: 'Espaces partagés uniquement', value: 'shared' },
-  { description: 'Balcons, terrasses…', label: 'Espaces individuels uniquement', value: 'private' },
-  { description: 'Cour, jardin, toit terrasse, balcons…', label: 'Espaces partagés et individuels', value: 'both' },
-  { label: 'Aucun espace extérieur', value: 'none' },
-] satisfies readonly {
-  label: string;
-  description?: string;
-  value: EspaceExterieur;
-}[];
 
 export const TYPE_RADIATEUR_VALUES = ['radiateur-eau', 'radiateur-electrique', 'none'];
 export type TypeRadiateur = (typeof TYPE_RADIATEUR_VALUES)[number];
@@ -91,7 +76,7 @@ export const typeRadiateurOptions = [
   value: TypeRadiateur;
 }[];
 
-export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['non', 'equipement-chauffage', 'chauffe-eau-electrique', 'solaire-thermique'] as const;
+export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['non', 'equipement-chauffage', 'chauffe-eau-electrique', 'solaire-thermique'];
 export type ModeEauChaudeSanitaire = (typeof MODE_EAU_CHAUDE_SANITAIRE_VALUES)[number];
 export const modeEauChaudeSanitaireOptions = [
   { label: 'Non', value: 'non' },
@@ -130,7 +115,7 @@ export const projectStatusOptions = PROJECT_STATUS_VALUES.map((value) => ({
   nativeInputProps: { value },
 }));
 
-export const zContactFormAdemeHelp = z.object({
+export const zContactFormChaleuRenouvelable = z.object({
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
   heatingEnergy: z.enum(HEATING_ENERGY_VALUES),
@@ -147,29 +132,39 @@ export const zContactFormAdemeHelp = z.object({
   }),
 });
 
-export const zAirtableAdemeHelp = z.object({
-  Adresse: z.string(),
-  Date: z.iso.datetime(),
-  DPE: z.enum(DPE_VALUES),
-  Email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
-  'Espace extérieur': z.custom<EspaceExterieurOptionLabel>(isEspaceExterieurOptionLabel),
-  'Mode de chauffage': z.enum(TYPE_LOGEMENT_VALUES),
-  'Nb habitant moyen': z.number(),
-  Nom: z.string(),
-  'Nombre de logement': z.number(),
-  'Où en êtes-vous de votre projet ?': z.array(z.enum(PROJECT_STATUS_VALUES)),
-  Prénom: z.string(),
-  'Statut occupant': z.enum(OCCUPANT_STATUS_VALUES),
-  'Surface moyenne': z.number(),
-  Telephone: z
+export const zDemandeChaleurRenouvelable = z.object({
+  address: z.string(),
+  averageArea: z.number(),
+  averageResidents: z.number(),
+  dpe: z.enum(DPE_VALUES),
+  email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
+  firstName: z.string(),
+  heatingEnergy: z.enum(HEATING_ENERGY_VALUES),
+  housingCount: z.number(),
+  housingType: z.enum(TYPE_LOGEMENT_VALUES),
+  lastName: z.string(),
+  occupantStatus: z.enum(OCCUPANT_STATUS_VALUES),
+  outdoorSpace: z.enum(ESPACE_EXTERIEUR_VALUES),
+  phone: z
     .string()
     .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
     .optional()
     .default(''),
-  'Url simulation': z.string(),
-  'Énergie de chauffage': z.enum(HEATING_ENERGY_VALUES),
+  projectStatus: z.array(z.enum(PROJECT_STATUS_VALUES)),
+  simulationUrl: z.string(),
 });
-export type GetAirtableAdeme = z.infer<typeof zAirtableAdemeHelp>;
+export type DemandeChaleurRenouvelable = z.infer<typeof zDemandeChaleurRenouvelable>;
+
+export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
+  demandId: z.string(),
+  values: z
+    .object({
+      assignedTo: z.string().nullable(),
+      status: z.enum(demandStatuses.map((status) => status.label)),
+    })
+    .partial(),
+});
+export type AdminUpdateDemandeChaleurRenouvelableInput = z.infer<typeof zAdminUpdateDemandeChaleurRenouvelableInput>;
 
 export const zLocationInfos = z.strictObject({
   city: z.string(),

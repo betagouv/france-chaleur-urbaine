@@ -1,4 +1,4 @@
-import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
+import { type SubmitEvent, useEffect, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
@@ -26,17 +26,6 @@ import cx from '@/utils/cx';
 export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
 
 const isNumericLike = (value: string) => value === '' || /^[0-9]+([.,][0-9]*)?$/.test(value);
-
-type ParamsFormProps = {
-  isOpen: boolean;
-  setIsOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
-  values: ChoixChauffageParams;
-  onSave: (values: ChoixChauffageParams) => Promise<unknown> | undefined;
-  geoAddress?: BANAddressFeature;
-  setGeoAddress: (val: BANAddressFeature | undefined) => void;
-  onSelectGeoAddress?: (val?: BANAddressFeature) => void;
-  onAddressError?: () => void;
-};
 
 type ParamsFormDraft = {
   adresse: NonNullable<ChoixChauffageParams['adresse']>;
@@ -106,7 +95,16 @@ export function ParamsForm({
   setGeoAddress,
   onSelectGeoAddress,
   onAddressError: _onAddressError,
-}: ParamsFormProps) {
+}: {
+  isOpen: boolean;
+  setIsOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
+  values: ChoixChauffageParams;
+  onSave: (values: ChoixChauffageParams) => Promise<unknown> | undefined;
+  geoAddress?: BANAddressFeature;
+  setGeoAddress: (val: BANAddressFeature | undefined) => void;
+  onSelectGeoAddress?: (val?: BANAddressFeature) => void;
+  onAddressError?: () => void;
+}) {
   const currentValues = buildDraft(values);
   const [draft, setDraft] = useState<ParamsFormDraft>(currentValues);
 
@@ -128,16 +126,12 @@ export function ParamsForm({
   const espaceExterieurOptions = getEspaceExterieurOptions(draft.typeLogement);
   const isEspaceExterieurDisabled = !draft.typeLogement;
 
-  const resetDraft = () => {
-    setDraft(currentValues);
-  };
-
   const handleClose = () => {
-    resetDraft();
+    setDraft(currentValues);
     setIsOpen(false);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const normalizedHabitantsMoyen = normalizeDecimalString(draft.habitantsMoyen);
@@ -155,7 +149,7 @@ export function ParamsForm({
       typeRadiateur: draft.typeRadiateur,
     };
 
-    void onSave(nextValues);
+    onSave(nextValues);
 
     setDraft({
       ...draft,
@@ -200,9 +194,9 @@ export function ParamsForm({
         ) : (
           <>
             <div>
-              <span className="fr-icon-pin-2-line mr-3" />
+              <span className="fr-icon-map-pin-2-line mr-3" />
               {draft.adresse}
-            </div>{' '}
+            </div>
             <Button
               full
               priority="secondary"
@@ -218,32 +212,18 @@ export function ParamsForm({
           </>
         )}
       </div>
-
       <p className="mb-6 mt-4">
         Ajustez les détails de votre simulation (DPE, nombre de logements, mode de production d’eau chaude...) pour obtenir un calcul plus
         précis des coûts et économies d’énergie.
       </p>
-
-      {!isOpen && (
-        <Button
-          full
-          priority="secondary"
-          iconId="fr-icon-pencil-line"
-          className="mb-6 md:hidden"
-          iconPosition="left"
-          aria-expanded={isOpen}
-          aria-controls="params-form"
-          onClick={() => setIsOpen(true)}
-        >
-          Complétez les paramètres
-        </Button>
-      )}
-
-      {isOpen && (
+      {isOpen ? (
         <>
           <div className="space-y-6">
             <section>
-              <SectionTitle iconClassName="fr-icon-home-4-line">Bâtiment</SectionTitle>
+              <div className="flex items-center gap-2">
+                <span className="fr-icon-community-fill" aria-hidden="true" />
+                <h3 className="m-0 text-xl">Bâtiment</h3>
+              </div>
               <div className="mt-4 grid grid-cols-1 md:gap-4 md:grid-cols-3">
                 <Input
                   label="Nombre de logements"
@@ -302,7 +282,10 @@ export function ParamsForm({
               </div>
             </section>
             <section id={HOT_WATER_PARAMS_SECTION_ID} className="scroll-mt-4">
-              <SectionTitle iconClassName="fr-icon-fire-line">Chauffage et eau chaude sanitaire</SectionTitle>
+              <div className="flex items-center gap-2">
+                <span className="fr-icon-sensor-fill" aria-hidden="true" />
+                <h3 className="m-0 text-xl">Chauffage et eau chaude sanitaire</h3>
+              </div>
               <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
                 <Select
                   label="Mode de chauffage"
@@ -357,40 +340,28 @@ export function ParamsForm({
             </Button>
           </div>
         </>
+      ) : (
+        <Button
+          full
+          priority="secondary"
+          iconId="fr-icon-pencil-line"
+          className="mb-6 md:hidden"
+          iconPosition="left"
+          aria-expanded={isOpen}
+          aria-controls="params-form"
+          onClick={() => setIsOpen(true)}
+        >
+          Complétez les paramètres
+        </Button>
       )}
     </form>
   );
 }
 
-type SectionTitleProps = {
-  children: ReactNode;
-  iconClassName: string;
-};
-
-/**
- * Titre de section compact pour structurer le formulaire de simulation.
- */
-function SectionTitle({ children, iconClassName }: SectionTitleProps) {
-  return (
-    <div className="flex items-center gap-2 text-xl font-bold text-[#161616]">
-      <span className={cx(iconClassName, 'before:mb-0 before:block')} aria-hidden="true" />
-      <h3 className="m-0 text-xl">{children}</h3>
-    </div>
-  );
-}
-
-type DpeFieldProps = {
-  value: DPE;
-  onChange: (value: DPE) => void;
-};
-
-/**
- * Sélecteur DPE en pastilles pour rapprocher le rendu de la maquette métier.
- */
-function DpeField({ value, onChange }: DpeFieldProps) {
+function DpeField({ value, onChange }: { value: DPE; onChange: (value: DPE) => void }) {
   return (
     <div>
-      <div className="mb-2 text-base font-medium leading-6 text-[#161616]">Étiquette DPE</div>
+      <div className="mb-2">Étiquette DPE</div>
       <div className="flex flex-wrap gap-2">
         {DPE_VALUES.map((dpeValue) => {
           const isSelected = value === dpeValue;
@@ -400,9 +371,9 @@ function DpeField({ value, onChange }: DpeFieldProps) {
               key={dpeValue}
               type="button"
               className={cx(
-                'flex h-11 w-11 items-center justify-center rounded-md border-2 text-base font-bold text-white transition',
+                'flex h-11 w-11 items-center justify-center rounded-md border-2 font-bold text-white transition',
                 DPE_BG[dpeValue],
-                isSelected ? 'border-[#000091] ring-2 ring-[#000091]' : 'border-transparent'
+                isSelected ? 'border-blue ring-2 ring-blue' : 'border-transparent'
               )}
               aria-pressed={isSelected}
               onClick={() => onChange(dpeValue)}
@@ -416,18 +387,19 @@ function DpeField({ value, onChange }: DpeFieldProps) {
   );
 }
 
-type InputWithSuffixProps = {
+function InputWithSuffix({
+  label,
+  onChange,
+  placeholder,
+  suffix,
+  value,
+}: {
   label: string;
   onChange: (value: string) => void;
   placeholder: string;
   suffix: string;
   value: string;
-};
-
-/**
- * Champ numérique avec suffixe visuel pour les unités courtes.
- */
-function InputWithSuffix({ label, onChange, placeholder, suffix, value }: InputWithSuffixProps) {
+}) {
   return (
     <div className="relative inline-block w-full">
       <Input

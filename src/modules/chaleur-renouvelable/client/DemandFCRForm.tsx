@@ -1,17 +1,16 @@
-import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { type ComponentType, useState } from 'react';
 
 import useForm from '@/components/form/react-form/useForm';
+import Alert from '@/components/ui/Alert';
 import Link from '@/components/ui/Link';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   ESPACE_EXTERIEUR_VALUES,
-  getEspaceExterieurOptionLabel,
   heatingEnergyOptions,
   occupantStatusOptions,
   type ProjectStatus,
   projectStatusOptions,
-  zContactFormAdemeHelp,
+  zContactFormChaleuRenouvelable,
 } from '@/modules/chaleur-renouvelable/constants';
 import trpc from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
@@ -19,9 +18,9 @@ import { isDefined } from '@/utils/core';
 export default function DemandFCRForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
-  const trpcUtils = trpc.useUtils();
+  const createDemandeChaleurRenouvelable = trpc.batEnr.createDemandeChaleurRenouvelable.useMutation();
   const urlParams = useChoixChauffageQueryParams();
-  const { Field, Form, Submit, useValue } = useForm<typeof zContactFormAdemeHelp>({
+  const { Field, Form, Submit, useValue } = useForm<typeof zContactFormChaleuRenouvelable>({
     defaultValues: {
       email: '',
       firstName: '',
@@ -34,34 +33,36 @@ export default function DemandFCRForm() {
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
-      const espaceExterieur =
-        isDefined(urlParams.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(urlParams.espaceExterieur)
-          ? urlParams.espaceExterieur
-          : 'none';
-      const typeLogement = urlParams.typeLogement ?? 'immeuble_chauffage_collectif';
+      try {
+        const espaceExterieur =
+          isDefined(urlParams.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(urlParams.espaceExterieur)
+            ? urlParams.espaceExterieur
+            : 'none';
+        const typeLogement = urlParams.typeLogement ?? 'immeuble_chauffage_collectif';
 
-      await trpcUtils.client.batEnr.addContactToAirtable.query({
-        Adresse: urlParams.adresse ?? '',
-        Date: new Date().toISOString(),
-        DPE: urlParams.dpe,
-        Email: value.email,
-        'Espace extérieur': getEspaceExterieurOptionLabel(typeLogement, espaceExterieur),
-        'Mode de chauffage': typeLogement,
-        'Nb habitant moyen': Number(urlParams.habitantsMoyen || 2),
-        Nom: value.lastName,
-        'Nombre de logement': Number(urlParams.nbLogements || 25),
-        'Où en êtes-vous de votre projet ?': value.projectStatus,
-        Prénom: value.firstName,
-        'Statut occupant': value.occupantStatus,
-        'Surface moyenne': Number(urlParams.surfaceMoyenne || 70),
-        Telephone: value.phone,
-        'Url simulation': window.location.href,
-        'Énergie de chauffage': value.heatingEnergy,
-      });
-      setIsLoading(false);
-      setIsSent(true);
+        await createDemandeChaleurRenouvelable.mutateAsync({
+          address: urlParams.adresse ?? '',
+          averageArea: Number(urlParams.surfaceMoyenne || 70),
+          averageResidents: Number(urlParams.habitantsMoyen || 2),
+          dpe: urlParams.dpe,
+          email: value.email,
+          firstName: value.firstName,
+          heatingEnergy: value.heatingEnergy,
+          housingCount: Number(urlParams.nbLogements || 25),
+          housingType: typeLogement,
+          lastName: value.lastName,
+          occupantStatus: value.occupantStatus,
+          outdoorSpace: espaceExterieur,
+          phone: value.phone,
+          projectStatus: value.projectStatus,
+          simulationUrl: window.location.href,
+        });
+        setIsSent(true);
+      } finally {
+        setIsLoading(false);
+      }
     },
-    schema: zContactFormAdemeHelp,
+    schema: zContactFormChaleuRenouvelable,
   });
   const selectedProjectStatus = useValue<ProjectStatus[]>('projectStatus') ?? [];
   const SelectProjectStatus = Field.SelectCheckboxes as ComponentType<{
@@ -82,7 +83,7 @@ export default function DemandFCRForm() {
       <Form>
         <div
           className={
-            'grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2 [&_.fr-label]:text-white [&_.fr-input]:bg-white [&_.fr-select]:bg-white [&_.fr-error-text]:text-white [&_.fr-messages-group]:text-white'
+            'grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2 [&_.fr-label]:text-white [&_.fr-input]:bg-white [&_.fr-select]:bg-white [&_.fr-error-text]:text-white'
           }
         >
           <Field.Select name="occupantStatus" label="Vous êtes" options={occupantStatusOptions} />
@@ -120,13 +121,19 @@ export default function DemandFCRForm() {
             </>
           }
         />
-        <Submit loading={isLoading} iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-4 bg-white text-blue">
+        <Submit
+          loading={isLoading}
+          disabled={isSent}
+          iconId="fr-icon-arrow-right-line"
+          iconPosition="right"
+          className="mt-4 bg-white text-blue"
+        >
           Envoyer
         </Submit>
         {isSent && (
-          <div className="fr-mt-3w">
-            <Alert severity="success" title="Merci pour votre attention" description="Nous reviendrons rapidement vers vous." />
-          </div>
+          <Alert className="text-white fr-mt-3w" variant="success" title="Merci pour votre attention">
+            Nous reviendrons rapidement vers vous.
+          </Alert>
         )}
       </Form>
     </section>
