@@ -739,6 +739,11 @@ export interface TagsReminders {
   tag_id: string;
 }
 
+export interface TilesMetadata {
+  source_id: string;
+  last_modified_at: Generated<Timestamp>;
+}
+
 export interface TestsAdressesTilesFeatures {
   ban_address: string | null;
   eligibility: Json | null;
@@ -1005,6 +1010,7 @@ export interface DB {
   tags: Tags;
   tags_reminders: TagsReminders;
   tests_adresses_tiles_features: TestsAdressesTilesFeatures;
+  tiles_metadata: TilesMetadata;
   user_permissions: UserPermissions;
   users: Users;
   zone_a_potentiel_chaud: ZoneAPotentielChaud;

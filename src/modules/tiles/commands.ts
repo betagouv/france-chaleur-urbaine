@@ -6,10 +6,11 @@ import camelcase from 'camelcase';
 import { z } from 'zod';
 
 import { logger } from '@/server/helpers/logger';
-import { nonEmptyArray } from '@/utils/typescript';
+import { nonEmptyArray, ObjectKeys } from '@/utils/typescript';
 
 import { runTilesGeneration } from './server/generation-run';
-import { type TilesType, tilesTypes } from './server/tiles.config';
+import { markTilesUpdated } from './server/service';
+import { type TilesType, tileSourcesConfig, tilesTypes, zTileSourceId } from './server/tiles.config';
 
 /**
  * Enregistre les commandes CLI pour la gestion des tuiles vectorielles
@@ -31,6 +32,23 @@ export function registerTilesCommands(parentProgram: Command) {
       logger.warn(`- de copier la table sur dev et prod`);
       logger.warn(`pnpm db:push:dev --data-only ${config.tilesTableName}`);
       logger.warn(`pnpm db:push:prod --data-only ${config.tilesTableName}`);
+    });
+
+  tilesCommand
+    .command('bump')
+    .description('Marque une source de tuiles comme mise à jour (invalide le cache HTTP côté navigateur)')
+    .argument('<source-id>', `Identifiant de la source à bumper ou "all" - ${ObjectKeys(tileSourcesConfig).join(', ')}`, (v) =>
+      z.union([z.literal('all'), zTileSourceId]).parse(v)
+    )
+    .action(async (sourceId) => {
+      if (sourceId === 'all') {
+        const allSourceIds = ObjectKeys(tileSourcesConfig);
+        await Promise.all(allSourceIds.map(markTilesUpdated));
+        logger.info(`${allSourceIds.length} sources de tuiles bumpées`);
+        return;
+      }
+      await markTilesUpdated(sourceId);
+      logger.info(`Source ${sourceId} bumpée`);
     });
 
   tilesCommand

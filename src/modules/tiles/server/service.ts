@@ -13,6 +13,44 @@ import { ObjectEntries } from '@/utils/typescript';
 let tilesCacheDay = 0;
 const cachedTilesIndex: Partial<Record<CacheTileSourceId, any>> = {};
 
+const TILES_METADATA_TTL_MS = 60_000;
+const tilesMetadataCache = new Map<TileSourceId, { lastModified: Date; expiresAt: number }>();
+
+/**
+ * Marque une source de tuiles comme mise à jour : upsert dans `tiles_metadata`
+ * et invalide le cache mémoire TTL associé. À appeler explicitement à la fin
+ * de chaque chemin d'écriture (import tippecanoe, rebuild `demands`, CLI bump).
+ */
+export const markTilesUpdated = async (sourceId: TileSourceId): Promise<void> => {
+  await kdb
+    .insertInto('tiles_metadata')
+    .values({ last_modified_at: new Date(), source_id: sourceId })
+    .onConflict((oc) => oc.column('source_id').doUpdateSet({ last_modified_at: new Date() }))
+    .execute();
+  tilesMetadataCache.delete(sourceId);
+};
+
+/**
+ * Retourne la date de dernière mise à jour d'une source de tuiles, ou null
+ * si aucune ligne n'existe. Mis en cache mémoire 60s pour éviter une requête
+ * DB par tuile servie.
+ */
+export const getTileLastModified = async (sourceId: TileSourceId): Promise<Date | null> => {
+  const now = Date.now();
+  const cached = tilesMetadataCache.get(sourceId);
+  if (cached && cached.expiresAt > now) {
+    return cached.lastModified;
+  }
+
+  const row = await kdb.selectFrom('tiles_metadata').select('last_modified_at').where('source_id', '=', sourceId).executeTakeFirst();
+
+  if (!row) {
+    return null;
+  }
+  tilesMetadataCache.set(sourceId, { expiresAt: now + TILES_METADATA_TTL_MS, lastModified: row.last_modified_at });
+  return row.last_modified_at;
+};
+
 export const createBuildTilesJob = async (
   { name }: BuildTilesInput,
   context?: ApiContext,
@@ -98,6 +136,7 @@ export const populateTilesCache = () => {
             maxZoom: 15,
           }
         );
+        await markTilesUpdated(sourceId);
 
         const duration = Date.now() - startTime;
         logger.info('tiles indexed successfully', { duration });
