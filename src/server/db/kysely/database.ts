@@ -5,6 +5,14 @@
 
 import type { ColumnType, JSONColumnType } from 'kysely';
 
+import type {
+  DPE,
+  EspaceExterieur,
+  HeatingEnergy,
+  OccupantStatus,
+  ProjectStatus,
+  TypeLogement,
+} from '@/modules/chaleur-renouvelable/constants';
 import type { ConversionEventType, ConversionIpDisposition, ConversionSourceConfig } from '@/modules/conversion-tracking/constants';
 import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
@@ -244,6 +252,29 @@ export interface ConversionSources {
   created_at: Generated<Timestamp>;
   id: Generated<string>;
   label: string;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface DemandsChaleurRenouvelable {
+  address: string;
+  assigned_to: string | null;
+  average_area: number;
+  average_residents: number;
+  created_at: Generated<Timestamp>;
+  dpe: DPE;
+  email: string;
+  first_name: string;
+  heating_energy: HeatingEnergy;
+  housing_count: number;
+  housing_type: TypeLogement;
+  id: Generated<string>;
+  last_name: string;
+  occupant_status: OccupantStatus;
+  outdoor_space: EspaceExterieur;
+  phone: Generated<string>;
+  project_status: ProjectStatus[];
+  simulation_url: string;
+  status: Generated<string>;
   updated_at: Generated<Timestamp>;
 }
 
@@ -1001,6 +1032,7 @@ export interface DB {
   conversion_events: ConversionEvents;
   conversion_ip_rules: ConversionIpRules;
   conversion_sources: ConversionSources;
+  demands_chaleur_renouvelable: DemandsChaleurRenouvelable;
   demand_emails: DemandEmails;
   demands: Demands;
   departements: Departements;
