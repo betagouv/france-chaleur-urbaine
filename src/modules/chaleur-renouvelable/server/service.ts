@@ -1,8 +1,10 @@
-import type { GetAirtableAdeme, GetLocationInput } from '@/modules/chaleur-renouvelable/constants';
+import type {
+  AdminUpdateDemandeChaleurRenouvelableInput,
+  DemandeChaleurRenouvelable,
+  GetLocationInput,
+} from '@/modules/chaleur-renouvelable/constants';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
-import { AirtableDB } from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
-import { Airtable } from '@/types/enum/Airtable';
 import { fetchJSON } from '@/utils/network';
 
 export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) => {
@@ -54,6 +56,85 @@ export const getRnbByBanId = async ({ banId }: { banId: string }) => {
   return data.results?.[0];
 };
 
-export const addContactToAirtable = async ({ input }: { input: GetAirtableAdeme }) => {
-  AirtableDB(Airtable.CONTACT_CHALEUR_RENOUVELABLE).create(input);
+export const createDemandeChaleurRenouvelable = async ({ input }: { input: DemandeChaleurRenouvelable }) => {
+  const createdDemand = await kdb
+    .insertInto('demands_chaleur_renouvelable')
+    .values({
+      address: input.address,
+      average_area: input.averageArea,
+      average_residents: input.averageResidents,
+      created_at: new Date(),
+      dpe: input.dpe,
+      email: input.email,
+      first_name: input.firstName,
+      heating_energy: input.heatingEnergy,
+      housing_count: input.housingCount,
+      housing_type: input.housingType,
+      last_name: input.lastName,
+      occupant_status: input.occupantStatus,
+      outdoor_space: input.outdoorSpace,
+      phone: input.phone,
+      project_status: input.projectStatus,
+      simulation_url: input.simulationUrl,
+      updated_at: new Date(),
+    })
+    .returning(['id'])
+    .executeTakeFirstOrThrow();
+
+  return createdDemand;
+};
+
+export const listDemandesChaleurRenouvelableAdmin = async () => {
+  const demandes = await kdb
+    .selectFrom('demands_chaleur_renouvelable')
+    .select([
+      'address',
+      'assigned_to',
+      'average_area',
+      'average_residents',
+      'created_at',
+      'dpe',
+      'email',
+      'first_name',
+      'heating_energy',
+      'housing_count',
+      'housing_type',
+      'id',
+      'last_name',
+      'occupant_status',
+      'outdoor_space',
+      'phone',
+      'project_status',
+      'simulation_url',
+      'status',
+      'updated_at',
+    ])
+    .orderBy('created_at', 'desc')
+    .execute();
+
+  const { count } = await kdb
+    .selectFrom('demands_chaleur_renouvelable')
+    .select(kdb.fn.count<number>('id').as('count'))
+    .executeTakeFirstOrThrow();
+
+  const items = demandes.map((demande) => ({
+    ...demande,
+    created_at: demande.created_at.toISOString(),
+    updated_at: demande.updated_at.toISOString(),
+  }));
+
+  return { count, items };
+};
+
+export const updateDemandeChaleurRenouvelableAdmin = async ({ demandId, values }: AdminUpdateDemandeChaleurRenouvelableInput) => {
+  return await kdb
+    .updateTable('demands_chaleur_renouvelable')
+    .set({
+      ...(values.assignedTo !== undefined && { assigned_to: values.assignedTo }),
+      ...(values.status !== undefined && { status: values.status }),
+      updated_at: new Date(),
+    })
+    .where('id', '=', demandId)
+    .returning(['assigned_to', 'id', 'status', 'updated_at'])
+    .executeTakeFirstOrThrow();
 };

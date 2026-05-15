@@ -5,6 +5,14 @@
 
 import type { ColumnType, JSONColumnType } from 'kysely';
 
+import type {
+  DPE,
+  EspaceExterieur,
+  HeatingEnergy,
+  OccupantStatus,
+  ProjectStatus,
+  TypeLogement,
+} from '@/modules/chaleur-renouvelable/constants';
 import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
@@ -204,6 +212,29 @@ export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
   x: Int8;
   y: Int8;
   z: Int8;
+}
+
+export interface DemandsChaleurRenouvelable {
+  address: string;
+  assigned_to: string | null;
+  average_area: number;
+  average_residents: number;
+  created_at: Generated<Timestamp>;
+  dpe: DPE;
+  email: string;
+  first_name: string;
+  heating_energy: HeatingEnergy;
+  housing_count: number;
+  housing_type: TypeLogement;
+  id: Generated<string>;
+  last_name: string;
+  occupant_status: OccupantStatus;
+  outdoor_space: EspaceExterieur;
+  phone: Generated<string>;
+  project_status: ProjectStatus[];
+  simulation_url: string;
+  status: Generated<string>;
+  updated_at: Generated<Timestamp>;
 }
 
 export interface DemandEmails {
@@ -967,6 +998,7 @@ export interface DB {
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
+  demands_chaleur_renouvelable: DemandsChaleurRenouvelable;
   demand_emails: DemandEmails;
   demands: Demands;
   departements: Departements;
