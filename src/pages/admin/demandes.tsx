@@ -1,4 +1,3 @@
-import DSFRTag from '@codegouvfr/react-dsfr/Tag';
 import { usePrevious } from '@react-hookz/web';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import { parseAsJson, useQueryState } from 'nuqs';
@@ -377,26 +376,6 @@ function DemandesAdmin(): React.ReactElement {
         width: '155px',
       },
       {
-        accessorFn: (row) => ((row as any).network_tags ?? []).join(', '),
-        cell: ({ row }) => {
-          const tags = (row.original as any).network_tags as string[] | null;
-          if (!tags || tags.length === 0) return null;
-          return (
-            <div className="flex flex-wrap gap-0.5">
-              {tags.map((tag) => (
-                <DSFRTag key={tag} small className="text-[10px]!">
-                  {tag}
-                </DSFRTag>
-              ))}
-            </div>
-          );
-        },
-        enableSorting: false,
-        header: 'Tags réseau',
-        id: 'network_tags',
-        width: '160px',
-      },
-      {
         accessorFn: (row) => row.network_name ?? '',
         cell: ({ row }) => (
           <div className="flex flex-col gap-1 w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
@@ -622,7 +601,7 @@ function DemandesAdmin(): React.ReactElement {
   return (
     <SimplePage
       title="Validation des demandes"
-      description="Tableau de bord administrateur pour la validation des tags des demandes de raccordement"
+      description="Tableau de bord administrateur pour la validation des demandes de raccordement"
       mode="authenticated"
     >
       <ModalSimple

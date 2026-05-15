@@ -17,7 +17,6 @@ vi.mock('@/server/services/addresseInformation', () => ({
     eligibleDistance: 50,
     futurNetwork: null,
     futurNetworkDistance: null,
-    gestionnaires: ['Paris'],
     id_fcu: 7501,
     inPDP: false,
     inZDP: false,

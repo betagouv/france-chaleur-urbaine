@@ -95,7 +95,6 @@ const reseauxEnConstructionFields = [
   'mise_en_service',
   'gestionnaire',
   'is_zone',
-  'tags',
   'ouvert_aux_raccordements',
 ] as const satisfies (keyof ZonesEtReseauxEnConstruction)[];
 export type ReseauxEnConstructionTile = AsTile<Required<Pick<ZonesEtReseauxEnConstruction, (typeof reseauxEnConstructionFields)[number]>>>;

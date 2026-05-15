@@ -30,7 +30,6 @@ export const testsAdressesGeoJSONQuery = defineTilesGenerationStrategy(async (co
           'test_created_at', t.created_at,
           'user_id', u.id,
           'user_role', u.role,
-          'user_gestionnaires', u.gestionnaires,
           'user_first_name', u.first_name,
           'user_last_name', u.last_name,
           'user_structure_name', u.structure_name,

@@ -52,8 +52,6 @@ export const list = async () => {
         'optin_at',
         'created_at',
         'last_connection',
-        'gestionnaires',
-        'gestionnaires_from_api',
         sql<boolean>`coalesce(receive_new_demands, false)`.as('receive_new_demands'),
         sql<boolean>`coalesce(receive_old_demands, false)`.as('receive_old_demands'),
         sql<boolean>`from_api IS NOT NULL`.as('from_api'),

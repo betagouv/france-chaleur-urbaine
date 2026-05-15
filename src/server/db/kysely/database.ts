@@ -35,10 +35,8 @@ export type Numeric = ColumnType<number, number | string, number | string>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface ApiAccounts {
-  gestionnaires: string[] | null;
   key: string;
   name: string | null;
-  networks: string[] | null;
   token: string;
 }
 
@@ -646,7 +644,6 @@ export interface ReseauxDeChaleur {
   'reseaux classes': boolean | null;
   reseaux_techniques: boolean | null;
   notes: string | null;
-  tags: string[];
   'Taux EnR&R': number | null;
   vapeur: string | null;
   ville_mo: string | null;
@@ -716,30 +713,6 @@ export interface RessourcesGeothermalesNappesTiles {
   z: Int8;
 }
 
-export interface AssignmentRules {
-  id: string;
-  search_pattern: string;
-  result: string;
-  active: boolean;
-  created_at: Generated<Timestamp>;
-  updated_at: Generated<Timestamp>;
-}
-
-export interface Tags {
-  comment: string | null;
-  created_at: Generated<Timestamp>;
-  id: Generated<string>;
-  name: string;
-  type: string;
-  updated_at: Generated<Timestamp>;
-}
-
-export interface TagsReminders {
-  author_id: string | null;
-  created_at: Generated<Timestamp>;
-  tag_id: string;
-}
-
 export interface TilesMetadata {
   source_id: string;
   last_modified_at: Generated<Timestamp>;
@@ -772,8 +745,6 @@ export interface Users {
   entreprise: JSONColumnType<Entreprise> | null;
   first_name: string | null;
   from_api: string | null;
-  gestionnaires: string[] | null;
-  gestionnaires_from_api: string[] | null;
   id: Generated<string>;
   last_connection: Date | null;
   last_name: string | null;
@@ -945,7 +916,6 @@ export interface ZonesEtReseauxEnConstruction {
   notes: string | null;
   ouvert_aux_raccordements: boolean;
   region: string | null;
-  tags: string[];
 }
 
 export interface ZonesEtReseauxEnConstructionTiles {
@@ -957,7 +927,6 @@ export interface ZonesEtReseauxEnConstructionTiles {
 
 export interface DB {
   api_accounts: ApiAccounts;
-  assignment_rules: AssignmentRules;
   batiments_raccordes_reseaux_chaleur_froid_tiles: BatimentsRaccordesReseauxChaleurFroidTiles;
   bdnb_batenr: BdnbBatenr;
   bdnb_batiments: BdnbBatiments;
@@ -1008,8 +977,6 @@ export interface DB {
   reseaux_de_froid: ReseauxDeFroid;
   reseaux_de_froid_tiles: ReseauxDeFroidTiles;
   ressources_geothermales_nappes_tiles: RessourcesGeothermalesNappesTiles;
-  tags: Tags;
-  tags_reminders: TagsReminders;
   tests_adresses_tiles_features: TestsAdressesTilesFeatures;
   tiles_metadata: TilesMetadata;
   user_permissions: UserPermissions;

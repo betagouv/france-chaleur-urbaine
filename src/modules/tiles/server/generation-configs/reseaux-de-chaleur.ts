@@ -38,7 +38,6 @@ const reseauxDeChaleurFields = [
   'has_trace',
   'PM',
   'annee_creation',
-  'tags',
   'ouvert_aux_raccordements',
   ...energieRatioFields,
 ] as const satisfies readonly (keyof ReseauxDeChaleur | EnergieRatioField)[];

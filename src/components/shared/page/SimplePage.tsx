@@ -402,24 +402,6 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
-          href: '/admin/demandes/stats',
-        },
-        text: 'Statistiques des demandes (obsolète)',
-      },
-      {
-        linkProps: {
-          href: '/admin/tags',
-        },
-        text: 'Gestion des tags gestionnaires (obsolète)',
-      },
-      {
-        linkProps: {
-          href: '/admin/assignment-rules',
-        },
-        text: "Gestion des règles d'affectation (obsolète)",
-      },
-      {
-        linkProps: {
           href: '/admin/reseaux',
         },
         text: 'Gestion des réseaux',

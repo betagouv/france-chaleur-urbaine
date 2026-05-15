@@ -50,7 +50,6 @@ describe('searchNetworks()', () => {
         id_fcu: chaleurNord.id_fcu,
         nom_reseau: chaleurNord.nom_reseau,
         ouvert_aux_raccordements: true,
-        tags: [],
       }),
       seedReseauDeChaleur({
         Gestionnaire: chaleurSud.gestionnaire,
@@ -58,7 +57,6 @@ describe('searchNetworks()', () => {
         id_fcu: chaleurSud.id_fcu,
         nom_reseau: chaleurSud.nom_reseau,
         ouvert_aux_raccordements: true,
-        tags: [],
       }),
       seedZoneEtReseauEnConstruction({
         gestionnaire: futurEst.gestionnaire,
@@ -66,7 +64,6 @@ describe('searchNetworks()', () => {
         is_zone: false,
         nom_reseau: futurEst.nom_reseau,
         ouvert_aux_raccordements: false,
-        tags: [],
       }),
       seedZoneEtReseauEnConstruction({
         gestionnaire: zoneOuest.gestionnaire,
@@ -74,7 +71,6 @@ describe('searchNetworks()', () => {
         is_zone: true,
         nom_reseau: zoneOuest.nom_reseau,
         ouvert_aux_raccordements: false,
-        tags: [],
       }),
     ]);
   });
@@ -109,7 +105,6 @@ describe('searchNetworkOperators()', () => {
         MO: 'Métropole de Lyon',
         nom_reseau: 'RC A',
         ouvert_aux_raccordements: true,
-        tags: [],
       }),
       seedReseauDeChaleur({
         Gestionnaire: 'ENGIE Solutions',
@@ -117,7 +112,6 @@ describe('searchNetworkOperators()', () => {
         MO: 'Ville de Paris',
         nom_reseau: 'RC B',
         ouvert_aux_raccordements: true,
-        tags: [],
       }),
       seedReseauDeFroid({ Gestionnaire: 'Dalkia', id_fcu: 3003, MO: 'Région Sud', nom_reseau: 'RF A' }),
       seedZoneEtReseauEnConstruction({
@@ -126,7 +120,6 @@ describe('searchNetworkOperators()', () => {
         is_zone: false,
         nom_reseau: 'ZC',
         ouvert_aux_raccordements: false,
-        tags: [],
       }),
     ]);
   });

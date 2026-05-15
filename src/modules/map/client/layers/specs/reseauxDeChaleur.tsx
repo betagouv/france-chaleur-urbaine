@@ -1,4 +1,3 @@
-import Tag from '@codegouvfr/react-dsfr/Tag';
 import Image from 'next/image';
 
 import { getEcoreseauImageSrc, isEcoreseauPlus } from '@/components/Network/EcoreseauLabel';
@@ -13,15 +12,7 @@ import { prettyFormatNumber } from '@/utils/strings';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from '../../core/common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau, buildFiltreMaitreOuvrage, buildReseauxDeChaleurFilters } from '../filters';
 
-const Popup = defineLayerPopup<ReseauxDeChaleurTile>((reseauDeChaleur, { Property, Title, TwoColumns }, { hasRole, pathname }) => {
-  let tags: string[] = [];
-
-  try {
-    tags = JSON.parse(reseauDeChaleur.tags);
-  } catch {
-    tags = ["Tags non affichables, veuillez contacter l'équipe"];
-  }
-
+const Popup = defineLayerPopup<ReseauxDeChaleurTile>((reseauDeChaleur, { Property, Title, TwoColumns }) => {
   return (
     <>
       <Title title={`ID FCU: ${reseauDeChaleur.id_fcu}`}>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
@@ -49,24 +40,6 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>((reseauDeChaleur, { Propert
                   className="h-10 w-auto"
                 />
               </div>
-            }
-          />
-        )}
-        {hasRole('admin') && ['/admin/demandes', '/admin/reseaux'].includes(pathname) && (
-          <Property
-            label="Tags"
-            value={
-              tags.length === 0 ? (
-                'Aucun tag'
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((tag) => (
-                    <Tag small key={tag}>
-                      {tag}
-                    </Tag>
-                  ))}
-                </div>
-              )
             }
           />
         )}

@@ -57,7 +57,7 @@ export const ensureUserCanProcessDemand = async (ctx: Context, demandId: string)
 
 /**
  * Requête de base pour les demandes, jointe avec le test d'adresse associé (exposé comme `testAddress`)
- * et enrichie avec les infos du réseau affecté (`network_name`, `network_sncu_id`, `network_tags`)
+ * et enrichie avec les infos du réseau affecté (`network_name`, `network_sncu_id`)
  * et les compteurs d'utilisateurs ayant accès à la demande (`access_counts`, par rôle, hors admin).
  *
  * Note : `is_responsible` est calculé côté JS via `isUserResponsibleForDemand` après requête, jamais en SQL.
@@ -133,7 +133,6 @@ export const buildDemandQuery = () => {
     .select((eb) => [
       eb.fn.coalesce('rdc.nom_reseau', 'zrc.nom_reseau').as('network_name'),
       eb.ref('rdc.Identifiant reseau').as('network_sncu_id'),
-      eb.fn.coalesce('rdc.tags', 'zrc.tags').as('network_tags'),
       eb.fn.coalesce('pending_rdc.nom_reseau', 'pending_zrc.nom_reseau').as('pending_assignment_name'),
       eb.ref('pending_rdc.Identifiant reseau').as('pending_assignment_sncu_id'),
       eb.ref('pending_author.email').as('pending_assignment_author_email'),
@@ -241,7 +240,7 @@ export const enrichDemandForGestionnaire = <T extends Selectable<Demands>>({
     }
   }
 
-  const isParis = legacy_values.Gestionnaires?.includes('Paris');
+  const isParis = demand.departement_code === '75';
   const distanceThreshold = isParis ? 60 : 100;
   const isHautPotentiel =
     legacy_values['Type de chauffage'] === 'Collectif' &&
