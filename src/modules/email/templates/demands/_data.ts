@@ -2,7 +2,6 @@ import type { AirtableLegacyRecord } from '@/modules/demands/types';
 
 export const demand: AirtableLegacyRecord = {
   Adresse: '15 Rue Victor Renelle 93240 Stains',
-  'Affecté à': 'ENTR',
   'Code Postal': '93240',
   Conso: 464.4905,
   'Date de la demande': '2024-07-31T07:54:32.000Z',
@@ -10,7 +9,6 @@ export const demand: AirtableLegacyRecord = {
   'Distance au réseau': 401,
   'Emails envoyés': 'Autre',
   'en PDP': 'Oui',
-  Gestionnaires: ['Stains', 'ENTR_Stains', 'ENTR', 'ENTR_IDF', 'SMIREC', 'ENTR_9301C'],
   'ID BNB': '12761220',
   'ID Conso': 217610,
   'Identifiant réseau': '9301C',

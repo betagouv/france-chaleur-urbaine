@@ -39,7 +39,6 @@ describe('computeNetworkDistance()', () => {
       has_trace: true,
       id_fcu: 100,
       ouvert_aux_raccordements: true,
-      tags: [],
     });
 
     const result = await computeNetworkDistance(demandId, 100, 'reseau_de_chaleur');
@@ -53,7 +52,6 @@ describe('computeNetworkDistance()', () => {
       has_trace: false,
       id_fcu: 101,
       ouvert_aux_raccordements: true,
-      tags: [],
     });
 
     const result = await computeNetworkDistance(demandId, 101, 'reseau_de_chaleur');
@@ -67,7 +65,6 @@ describe('computeNetworkDistance()', () => {
       id_fcu: 200,
       is_zone: false,
       ouvert_aux_raccordements: true,
-      tags: [],
     });
 
     const result = await computeNetworkDistance(demandId, 200, 'reseau_en_construction');
@@ -81,7 +78,6 @@ describe('computeNetworkDistance()', () => {
       id_fcu: 201,
       is_zone: true,
       ouvert_aux_raccordements: true,
-      tags: [],
     });
 
     const result = await computeNetworkDistance(demandId, 201, 'reseau_en_construction');

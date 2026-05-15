@@ -252,7 +252,6 @@ export const listReseauxDeChaleur = async () => {
         'bbox'
       ),
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
-      'tags',
       'has_trace',
       'has_PDP',
       'reseaux classes',
@@ -275,10 +274,6 @@ export const listReseauxDeChaleur = async () => {
   return reseauxDeChaleur;
 };
 
-export const updateTags = async (id: number, tags: string[]) => {
-  await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('id_fcu', '=', id).execute();
-};
-
 export const listReseauxEnConstruction = async () => {
   const reseauxDeChaleur = await kdb
     .selectFrom('zones_et_reseaux_en_construction')
@@ -291,7 +286,6 @@ export const listReseauxEnConstruction = async () => {
         'bbox'
       ),
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
-      'tags',
       'date_actualisation_trace',
       'ouvert_aux_raccordements',
       'notes',
@@ -308,10 +302,6 @@ export const listReseauxEnConstruction = async () => {
   });
 
   return reseauxDeChaleur;
-};
-
-export const updateReseauEnConstruction = async (id: number, tags: string[]) => {
-  await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', id).execute();
 };
 
 export const listReseauxDeFroid = async () => {
@@ -507,7 +497,6 @@ const createReseauDeChaleur = async (id: string, finalGeometry: RawBuilder<any>)
       ouvert_aux_raccordements: false,
       'reseaux classes': false,
       reseaux_techniques: false,
-      tags: [],
     })
     .returningAll()
     .executeTakeFirstOrThrow();
@@ -527,7 +516,6 @@ const createReseauEnConstruction = async (id: string, finalGeometry: RawBuilder<
       id_fcu,
       nom_reseau: `Nouveau réseau en construction ${id_fcu}`,
       ouvert_aux_raccordements: false,
-      tags: [],
     })
     .returningAll()
     .executeTakeFirstOrThrow();

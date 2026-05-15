@@ -42,7 +42,6 @@ type TestUser = {
   structure_name: string;
   structure_type: string;
   phone: string;
-  gestionnaires: string[];
   tests: Test[];
 };
 
@@ -59,7 +58,7 @@ const Popup = defineLayerPopup<TestAdresse>(
         <TwoColumns>
           {users
             .sort((a, b) => a.first_name?.toLowerCase().localeCompare(b.first_name?.toLowerCase() || '') || 0)
-            ?.map(({ id, first_name, last_name, role, structure_name, structure_type, phone, gestionnaires, tests }) => {
+            ?.map(({ id, first_name, last_name, role, structure_name, structure_type, phone, tests }) => {
               const name = first_name || last_name ? `${upperCaseFirstChar(first_name || '')} ${upperCaseFirstChar(last_name || '')}` : '';
               const roleLabel = role ? ` (${role})` : '';
 
@@ -86,7 +85,6 @@ const Popup = defineLayerPopup<TestAdresse>(
                         {structure_name || structure_type
                           ? `${structure_name || ''} ${structure_type ? `(${structureTypesLabels[structure_type as keyof typeof structureTypesLabels]})` : ''}`
                           : 'Structure non connue'}
-                        {(gestionnaires || []).join(', ')}
                       </span>
                     </Tooltip>
                   }

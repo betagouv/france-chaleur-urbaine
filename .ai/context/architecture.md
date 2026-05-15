@@ -31,7 +31,7 @@ Domain code lives in self-contained modules `src/modules/<name>/`:
   client/          # client-only: hooks, components
 ```
 - **Infrastructure**: trpc, auth, jobs, events, notification, security, config, optimization, app.
-- **Business**: reseaux, demands, pro-eligibility-tests, tiles, map, users, data, tags, email, ban, bdnb, geo, opendata, chaleur-renouvelable, form, analytics, diagnostic.
+- **Business**: reseaux, demands, pro-eligibility-tests, tiles, map, users, data, email, ban, bdnb, geo, opendata, chaleur-renouvelable, form, analytics, diagnostic.
 
 **Import rules**: within a module → relative; between modules → `@/modules/<other>/...`; client code **never** imports from any `server/`; server code **never** imports `@/components` or `@/pages`.
 

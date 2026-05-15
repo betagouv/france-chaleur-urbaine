@@ -256,24 +256,6 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       a synchronisé les métadonnées depuis Airtable pour la table <strong>{event.data.name}</strong>
     </span>
   ),
-  tag_comment_updated: (event, updateFilters) => (
-    <>
-      <span>a mis à jour un commentaire pour le tag</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>{event.data.tag_name}</FilterButton>
-    </>
-  ),
-  tag_reminder_created: (event, updateFilters) => (
-    <>
-      <span>a enregistré une relance pour le tag</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>{event.data.tag_name}</FilterButton>
-    </>
-  ),
-  tag_reminder_deleted: (event, updateFilters) => (
-    <>
-      <span>a supprimé la relance pour le tag</span>
-      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'tag' })}>{event.data.tag_name}</FilterButton>
-    </>
-  ),
   user_activated: () => 'a activé son compte',
   user_created_by_admin: (event, updateFilters) => (
     <>

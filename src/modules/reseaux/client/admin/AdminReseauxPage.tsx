@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import TableFieldInput from '@/components/Admin/TableFieldInput';
 import Checkbox from '@/components/form/dsfr/Checkbox';
 import Input from '@/components/form/dsfr/Input';
-import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
@@ -240,23 +239,6 @@ const GestionDesReseaux = () => {
     onSuccess: () => void tabInfo.refetch(),
   });
 
-  const { mutateAsync: updateReseauDeChaleur } = trpc.reseaux.reseauDeChaleur.updateTags.useMutation({
-    onSuccess: () => void tabInfo.refetch(),
-  });
-
-  const handleUpdateReseauDeChaleur = useCallback(
-    toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauDeChaleur>) => {
-      if (reseauUpdate.tags) {
-        await updateReseauDeChaleur({ id: reseauId, tags: reseauUpdate.tags });
-      }
-    }),
-    []
-  );
-
-  const { mutateAsync: updateReseauEnConstruction } = trpc.reseaux.reseauEnConstruction.updateTags.useMutation({
-    onSuccess: () => void tabInfo.refetch(),
-  });
-
   const { mutateAsync: applyGeometriesUpdates, isPending: isApplyingGeometriesUpdates } = trpc.reseaux.applyGeometriesUpdates.useMutation({
     onSuccess: async (result) => {
       try {
@@ -269,15 +251,6 @@ const GestionDesReseaux = () => {
       }
     },
   });
-
-  const handleUpdateReseauEnConstruction = useCallback(
-    toastErrors(async (reseauId: number, reseauUpdate: Partial<ReseauEnConstruction>) => {
-      if (reseauUpdate.tags) {
-        await updateReseauEnConstruction({ id: reseauId, tags: reseauUpdate.tags });
-      }
-    }),
-    [updateReseauEnConstruction]
-  );
 
   const { mutateAsync: updatePerimetreDeDeveloppementPrioritaire } = trpc.reseaux.perimetreDeDeveloppementPrioritaire.update.useMutation({
     onSuccess: () => void tabInfo.refetch(),
@@ -604,27 +577,9 @@ const GestionDesReseaux = () => {
         header: 'Ouvert aux raccordements',
         width: '120px',
       },
-      {
-        accessorFn: (row) => row.tags?.join(', '),
-        cell: (info) => (
-          <div className="block">
-            <FCUTagAutocomplete
-              value={info.row.original.tags ?? []}
-              onChange={(tags: string[] /* TODO should be handled by typescript */) =>
-                void handleUpdateReseauDeChaleur(info.row.original.id_fcu, { tags })
-              }
-              multiple
-              disabled
-            />
-          </div>
-        ),
-        enableSorting: false,
-        header: 'Tags (obsolète)',
-        width: '400px',
-      },
       ...buildReminderAndNotesColumns<ReseauDeChaleur>('reseau_de_chaleur'),
     ],
-    [updateReseauDeChaleur, buildReminderAndNotesColumns]
+    [buildReminderAndNotesColumns]
   );
 
   const reseauxDeFroidColumns = useMemo<ColumnDef<ReseauDeFroid>[]>(
@@ -852,27 +807,9 @@ const GestionDesReseaux = () => {
         header: `Date d'actualisation`,
         width: '150px',
       },
-      {
-        accessorFn: (row) => row.tags?.join(', '),
-        cell: (info) => (
-          <div className="block">
-            <FCUTagAutocomplete
-              value={info.row.original.tags ?? []}
-              onChange={(tags: string[] /* TODO should be handled by typescript */) =>
-                void handleUpdateReseauEnConstruction(info.row.original.id_fcu, { tags })
-              }
-              multiple
-              disabled
-            />
-          </div>
-        ),
-        enableSorting: false,
-        header: 'Tags (obsolète)',
-        width: '400px',
-      },
       ...buildReminderAndNotesColumns<ReseauEnConstruction>('reseau_en_construction'),
     ],
-    [handleUpdateReseauEnConstruction, buildReminderAndNotesColumns]
+    [buildReminderAndNotesColumns]
   );
 
   const perimetresDeDeveloppementPrioritaireColumns = useMemo<ColumnDef<PerimetreDeDeveloppementPrioritaire>[]>(

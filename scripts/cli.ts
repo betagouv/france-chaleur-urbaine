@@ -7,7 +7,6 @@ import { refreshStatistics } from '@cli/stats/refresh';
 import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
 import { genSalt, hash } from 'bcryptjs';
 import prompts from 'prompts';
-import XLSX from 'xlsx';
 import { z } from 'zod';
 
 import { registerAdemeConnectCommands } from '@/modules/ademe-connect/commands';
@@ -16,7 +15,6 @@ import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
-import { registerPermissionsCommands } from '@/modules/permissions/commands';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { registerEcoreseauCommand } from '@/modules/reseaux/commands/ecoreseau';
@@ -78,7 +76,6 @@ registerProEligibilityTestsCommands(program);
 registerEcoreseauCommand(program);
 registerNetworkCommands(program);
 registerOpendataCommands(program);
-registerPermissionsCommands(program);
 registerTilesCommands(program);
 registerTestCommands(program);
 
@@ -122,7 +119,7 @@ type EPCI = {
 
 program
   .command('import:epci')
-  .description('Import the french EPCI (used for tags)')
+  .description('Import the french EPCI')
   .action(async () => {
     const allEPCI = await fetchJSON<EPCI[]>('https://unpkg.com/@etalab/decoupage-administratif@5.2.0/data/epci.json');
     const epci = allEPCI.map((metropole) => ({
@@ -222,90 +219,6 @@ program
     await syncPostgresToAirtable(dryRun);
   });
 
-type XlsxRow = {
-  tag: string;
-  id_sncu?: string;
-  id_fcu?: string;
-  id_fcu_futur?: string;
-};
-
-type Output = {
-  [id: string]: string[];
-};
-
-program
-  .command('import:tags-reseaux')
-  .description('Importe les tags des réseaux de chaleur et en construction depuis un fichier CSV')
-  .argument('<file>', 'Path to the XLSX file')
-  .action(async (file) => {
-    const workbook = XLSX.readFile(file);
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data: XlsxRow[] = XLSX.utils.sheet_to_json(sheet, {
-      defval: null,
-      header: ['tag', 'id_sncu', 'id_fcu', 'id_fcu_futur'],
-      range: 1, // Skip header row
-      raw: false,
-    });
-
-    const tagsByIDSNCU = data.reduce<Output>((acc, { tag, id_sncu }) => {
-      if (id_sncu) {
-        const ids = id_sncu
-          .replaceAll('.', ',')
-          .split(',')
-          .map((id) => id.trim());
-        ids.forEach((id) => {
-          if (!acc[id]) acc[id] = [];
-          acc[id].push(tag);
-        });
-      }
-      return acc;
-    }, {});
-
-    const tagsByIDFCU = data.reduce<Output>((acc, { tag, id_fcu }) => {
-      if (id_fcu) {
-        const ids = id_fcu
-          .replaceAll('.', ',')
-          .split(',')
-          .map((id) => id.trim());
-        ids.forEach((id) => {
-          if (!acc[id]) acc[id] = [];
-          acc[id].push(tag);
-        });
-      }
-      return acc;
-    }, {});
-
-    const tagsByIDFCUFutur = data.reduce<Output>((acc, { tag, id_fcu_futur }) => {
-      if (id_fcu_futur) {
-        const ids = id_fcu_futur
-          .replaceAll('.', ',')
-          .split(',')
-          .map((id) => id.trim());
-        ids.forEach((id) => {
-          if (!acc[id]) acc[id] = [];
-          acc[id].push(tag);
-        });
-      }
-      return acc;
-    }, {});
-
-    // maj réseaux de chaleur selon id sncu
-    for (const [id_sncu, tags] of Object.entries(tagsByIDSNCU)) {
-      await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('Identifiant reseau', '=', id_sncu).execute();
-    }
-
-    // maj réseaux de chaleur selon id fcu
-    for (const [id_fcu, tags] of Object.entries(tagsByIDFCU)) {
-      await kdb.updateTable('reseaux_de_chaleur').set({ tags }).where('id_fcu', '=', parseInt(id_fcu, 10)).execute();
-    }
-
-    // maj réseaux en construction selon id fcu
-    for (const [id_fcu_futur, tags] of Object.entries(tagsByIDFCUFutur)) {
-      await kdb.updateTable('zones_et_reseaux_en_construction').set({ tags }).where('id_fcu', '=', parseInt(id_fcu_futur, 10)).execute();
-    }
-    console.info('Tags importés avec succès');
-  });
-
 program
   .command('update-simulateur')
   .description('Take AMORCE file and either create records in database or update them.')
@@ -369,13 +282,7 @@ program
   .argument('<email>', 'Email of the user', (v) => z.email().parse(v))
   .argument('<password>', 'Password of the user')
   .argument('<role>', 'Role of the user', (v) => z.enum(userRoles).parse(v))
-  .argument(
-    '[tags_gestionnaires]',
-    'Tags gestionnaires (gestionnaire only)',
-    (v) => z.preprocess((v) => String(v).split(','), z.array(z.string())).parse(v),
-    []
-  )
-  .action(async (email, password, role, tags_gestionnaires) => {
+  .action(async (email, password, role) => {
     const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', email).executeTakeFirst();
     if (existingUser) {
       throw new Error(`L'utilisateur associé à l'email '${email}' existe déjà.`);
@@ -385,7 +292,6 @@ program
       .insertInto('users')
       .values({
         email,
-        gestionnaires: tags_gestionnaires,
         password: await hash(password, await genSalt(10)),
         role,
         status: 'valid',

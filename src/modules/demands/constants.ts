@@ -62,9 +62,6 @@ export type DemandStatus = (typeof demandStatuses)[number]['label'];
 const zGestionnaireDemandUpdateValues = z
   // biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
   .object({
-    // Tags & Assignment
-    'Gestionnaire Affecté à': z.string().nullable(),
-
     // Network info
     'Gestionnaire Distance au réseau': z.number().nullable(),
 
@@ -632,14 +629,12 @@ export const eligibilityTypes = [
     type: 'reseau_futur_proche',
   },
   {
-    description:
-      "Un réseau de chaleur existant se trouve entre 200 et 1000m de l'adresse. Les tags gestionnaires sont automatiquement ajoutés si la distance est inférieure à 500m.",
+    description: "Un réseau de chaleur existant se trouve entre 200 et 1000m de l'adresse.",
     title: 'Réseau existant éloigné',
     type: 'reseau_existant_loin',
   },
   {
-    description:
-      "Un réseau de chaleur en construction se trouve entre 200 et 1000m de l'adresse. Les tags gestionnaires sont automatiquement ajoutés si la distance est inférieure à 500m.",
+    description: "Un réseau de chaleur en construction se trouve entre 200 et 1000m de l'adresse.",
     title: 'Réseau futur éloigné',
     type: 'reseau_futur_loin',
   },
