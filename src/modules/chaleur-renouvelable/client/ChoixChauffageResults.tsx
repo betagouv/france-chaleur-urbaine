@@ -219,7 +219,6 @@ export default function ChoixChauffageResults() {
     },
     [onSelectGeoAddress, resetEligibility]
   );
-  const helpButtonClick = recommended?.helpAction === 'open-heat-network-contact' ? openHeatNetworkContactModal : undefined;
 
   // pendant l’hydration, on évite de rendre conditionnellement (isMobile null)
   if (isMobile === null) return null;
@@ -243,7 +242,7 @@ export default function ChoixChauffageResults() {
             coutParAnGaz={coutParAnGaz}
             dpeFrom={urlParams.dpe}
             isOpen={openAccordionId === recommended.label}
-            onHelpButtonClick={helpButtonClick}
+            onHelpButtonClick={recommended?.helpAction === 'open-heat-network-contact' ? openHeatNetworkContactModal : undefined}
             onOpenChange={(expanded) => handleAccordionOpenChange(recommended.label, expanded)}
             situation={situation}
           />
@@ -400,7 +399,7 @@ function PrerequisiteStatusBadge({ status }: { status: PrerequisiteStatus }) {
       label: 'À VÉRIFIER',
     },
     contraignant: {
-      className: 'bg-[#FFE9E6] text-[#B34000]',
+      className: 'bg-[#FFE9E6] text-error',
       label: 'CONTRAIGNANT',
     },
     favorable: {
@@ -421,18 +420,18 @@ function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolutionRow[
     <section>
       <h3 className="fr-mt-6w mb-5">Solutions non compatibles</h3>
       <div className="border border-gray-200 bg-white px-5 py-4 shadow-sm">
-        <ul className="m-0 list-none space-y-3 p-0">
+        <ul className="m-0 space-y-3 p-0">
           {rows.map((row) => (
             <li key={row.label} className="grid gap-2 md:grid-cols-[1fr_auto_auto] md:items-center md:gap-4">
               <div className="flex items-center gap-3">
-                <span className="fr-icon-close-line text-[#B34000]" aria-hidden="true" />
-                <strong className="whitespace-nowrap text-[#B34000]">{row.label}</strong>
+                <span className="fr-icon-close-line text-error" aria-hidden="true" />
+                <strong className="whitespace-nowrap text-error">{row.label}</strong>
                 <span>{row.reason}</span>
               </div>
               <span className="justify-self-start whitespace-nowrap text-blue md:justify-self-end">
                 <span className="fr-icon-stack-line font-bold" aria-hidden="true" /> {row.source}
               </span>
-              <span className="justify-self-start rounded-sm bg-[#FFE9E6] px-2 py-1 text-xs font-bold text-[#B34000] md:justify-self-end">
+              <span className="justify-self-start rounded-sm bg-[#FFE9E6] px-2 py-1 text-xs font-bold text-error md:justify-self-end">
                 DÉFAVORABLE
               </span>
             </li>
@@ -453,8 +452,8 @@ function UsageTags({ usage }: { usage: ModeDeChauffageUsage }) {
   return (
     <div className="mb-4 flex flex-wrap gap-2">
       {tags.map((tag) => (
-        <span key={tag.label} className="inline-flex items-center gap-2 rounded-sm border border-(--border-default-grey) px-3 py-2 text-sm">
-          <Image src={tag.icon} alt="" width={20} height={20} aria-hidden="true" />
+        <span key={tag.label} className="inline-flex items-center gap-2 rounded-sm border px-3 py-2 text-sm">
+          <Image src={tag.icon} alt={`icone ${usage}`} width={20} height={20} aria-hidden="true" />
           {tag.label}
         </span>
       ))}
@@ -475,21 +474,16 @@ function DpeProgression({ from, to }: { from: DPE; to: DPE }) {
 function ProsConsLists({
   avantages,
   inconvenients,
-  headingLevel,
   layout,
 }: {
   avantages: string[];
   inconvenients: string[];
-  headingLevel: 'h4' | 'h5';
   layout: 'columns' | 'stacked';
 }) {
-  const Heading = headingLevel;
-  const headingClassName = cx('fr-h6 uppercase', layout === 'columns' ? 'mb-4 font-normal' : 'mb-3');
-
   return (
     <div className={layout === 'columns' ? 'contents' : undefined}>
       <div>
-        <Heading className={cx(headingClassName, 'text-success')}>Avantages</Heading>
+        <h4 className="text-lg uppercase font-normal mb-3 text-success">Avantages</h4>
         <ul className="m-0 list-none space-y-1 p-0">
           {avantages.map((avantage) => (
             <li key={avantage} className="flex gap-3">
@@ -500,11 +494,11 @@ function ProsConsLists({
         </ul>
       </div>
       <div className={layout === 'stacked' ? 'mt-6' : undefined}>
-        <Heading className={cx(headingClassName, 'text-[#B34000]')}>Inconvénients</Heading>
+        <h4 className="text-lg uppercase font-normal mb-3 text-error">Inconvénients</h4>
         <ul className="m-0 list-none space-y-1 p-0">
           {inconvenients.map((inconvenient) => (
             <li key={inconvenient} className="flex gap-3">
-              <span className="fr-icon-close-line text-[#B34000]" aria-hidden="true" />
+              <span className="fr-icon-close-line text-error" aria-hidden="true" />
               <span>{inconvenient}</span>
             </li>
           ))}
@@ -514,19 +508,17 @@ function ProsConsLists({
   );
 }
 
-function PrerequisitesLegend({ className, withStatusLabel = false }: { className?: string; withStatusLabel?: boolean }) {
+function PrerequisitesLegend({ className }: { className?: string }) {
   return (
     <p className={cx('text-sm', className)}>
-      {withStatusLabel && <strong>STATUT :</strong>} <strong className="text-success">FAVORABLE</strong> : vérifié, aucun obstacle{' '}
-      <strong className="text-[#B34000]">CONTRAIGNANT</strong> : vérifié, contraintes supplémentaires{' '}
+      <strong>STATUT :</strong> <strong className="text-success">FAVORABLE</strong> : vérifié, aucun obstacle{' '}
+      <strong className="text-error">CONTRAIGNANT</strong> : vérifié, contraintes supplémentaires{' '}
       <strong className="text-[#716043]">À VÉRIFIER</strong> : à vérifier par vous
     </p>
   );
 }
 
-function PrerequisiteRowItem({ row, variant }: { row: PrerequisiteRow; variant: 'recommended' | 'compact' }) {
-  const isCompact = variant === 'compact';
-
+function PrerequisiteRowItem({ row }: { row: PrerequisiteRow }) {
   return (
     <li
       className={cx(
@@ -534,12 +526,11 @@ function PrerequisiteRowItem({ row, variant }: { row: PrerequisiteRow; variant: 
         row.status === 'favorable' ? 'bg-gray-100' : 'bg-[#FFF8E5]'
       )}
     >
-      <span className={cx('flex gap-3', isCompact ? 'items-start text-sm' : 'items-center')}>
+      <span className="flex gap-3 items-center">
         <span
           className={cx(
-            'items-center justify-center rounded-sm border border-(--border-action-high-blue-france)',
-            isCompact ? 'mt-1 inline-flex h-4 w-4 shrink-0' : 'h-5 w-5',
-            row.status === 'favorable' && 'bg-(--background-action-high-blue-france) fr-icon-check-line text-white'
+            'items-center shrink-0 justify-center rounded-sm border border-blue h-5 w-5',
+            row.status === 'favorable' && 'bg-blue fr-icon-check-line text-white'
           )}
           aria-hidden="true"
         />
@@ -547,7 +538,7 @@ function PrerequisiteRowItem({ row, variant }: { row: PrerequisiteRow; variant: 
       </span>
       <span className="flex shrink-0 items-center gap-3 self-end md:self-auto">
         {row.source && (
-          <span className={cx('text-blue', isCompact && 'text-sm')}>
+          <span className="text-blue">
             <span className="fr-icon-stack-line font-bold" aria-hidden="true" /> {row.source}
           </span>
         )}
@@ -557,31 +548,19 @@ function PrerequisiteRowItem({ row, variant }: { row: PrerequisiteRow; variant: 
   );
 }
 
-function InstallationCostPrerequisite({ coutInstallation, variant }: { coutInstallation: string; variant: 'recommended' | 'compact' }) {
-  const isCompact = variant === 'compact';
-
+function InstallationCostPrerequisite({ coutInstallation }: { coutInstallation: string }) {
   return (
-    <li className={cx('flex flex-col gap-3 bg-[#FFF8E5] px-3 md:flex-row md:items-center md:justify-between', isCompact ? 'py-2' : 'py-3')}>
-      <span className={cx('flex items-start gap-3', isCompact && 'text-sm')}>
-        <span
-          className={cx('shrink-0 rounded-sm border border-(--border-action-high-blue-france)', isCompact ? 'mt-1 h-4 w-4' : 'h-5 w-5')}
-          aria-hidden="true"
-        />
+    <li className="flex flex-col gap-3 bg-[#FFF8E5] px-3 md:flex-row md:items-center md:justify-between py-2">
+      <span className="flex items-start gap-3">
+        <span className="shrink-0 rounded-sm border border-blue h-5 w-5" aria-hidden="true" />
         <span>
           <strong>{coutInstallation} : </strong>
-          {isCompact
-            ? 'Coûts d’installation, vérifiez les aides publiques disponibles'
-            : 'Coût d’installation - vérifiez les aides publiques disponibles'}
+          Coûts d’installation, vérifiez les aides publiques disponibles
         </span>
       </span>
       <span className="flex shrink-0 items-center gap-3 self-end md:self-auto">
-        <Link
-          href="https://france-renov.gouv.fr/"
-          isExternal
-          className={isCompact ? 'text-sm text-(--text-action-high-blue-france)' : 'text-blue'}
-        >
+        <Link href="https://france-renov.gouv.fr/" isExternal className="text-blue">
           En savoir plus
-          {isCompact && <span className="fr-icon-arrow-right-up-line" aria-hidden="true" />}
         </Link>
         <PrerequisiteStatusBadge status="aVerifier" />
       </span>
@@ -598,31 +577,17 @@ function PrerequisitesList({
   coutInstallation: string;
   variant: 'recommended' | 'compact';
 }) {
-  if (variant === 'recommended') {
-    return (
-      <div className="mt-10">
-        <h4 className="mb-6 text-xl uppercase text-blue">Prérequis et faisabilité</h4>
-        <PrerequisitesLegend className="mb-6" withStatusLabel />
-        <ul className="m-0 list-none space-y-3 p-0">
-          {rows.map((row, index) => (
-            <PrerequisiteRowItem key={index} row={row} variant="recommended" />
-          ))}
-          <InstallationCostPrerequisite coutInstallation={coutInstallation} variant="recommended" />
-        </ul>
-      </div>
-    );
-  }
-
   return (
     <div>
       <h5 className="fr-h6 mb-3 uppercase text-blue">Prérequis et faisabilité</h5>
-      <ul className="m-0 list-none space-y-1 p-0">
+      {variant === 'recommended' && <PrerequisitesLegend className="mb-6" />}
+      <ul className="space-y-1 p-0">
         {rows.map((row, index) => (
-          <PrerequisiteRowItem key={index} row={row} variant="compact" />
+          <PrerequisiteRowItem key={index} row={row} />
         ))}
-        <InstallationCostPrerequisite coutInstallation={coutInstallation} variant="compact" />
+        <InstallationCostPrerequisite coutInstallation={coutInstallation} />
       </ul>
-      <PrerequisitesLegend className="mt-3" />
+      {variant === 'compact' && <PrerequisitesLegend className="mt-3" />}
     </div>
   );
 }
@@ -650,7 +615,7 @@ function RecommendedSolutionCard({
   const prerequisiteRows = getPrerequisiteRows(item, situation);
 
   return (
-    <section className="fr-mt-6w border border-gray-200 border-l-4 border-l-green-600 bg-white px-5 py-6 md:px-10 md:py-8">
+    <section className="fr-mt-6w border border-gray-200 border-l-4 border-l-green-600 bg-white px-10 py-8">
       <div className="flex justify-between items-center">
         <div>
           <p className="mb-2 text-lg font-semibold uppercase">Solution recommandée</p>
@@ -663,13 +628,12 @@ function RecommendedSolutionCard({
           <p className="max-w-4xl">{item.description}</p>
         </div>
         <div>
-          <Image src={`/${item.icone}`} alt="" width={176} height={132} className="self-center object-contain md:self-start" />
+          <Image src={`/${item.icone}`} alt="" width={176} height={132} className="object-contain" />
         </div>
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} headingLevel="h4" layout="columns" />
-
+        <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} layout="columns" />
         <div className=" bg-gray-100 p-5">
           <p className="mb-2 uppercase">Gain DPE</p>
           <div className="mb-4 flex items-center gap-3 border-b border-gray-300 pb-4">
@@ -680,9 +644,7 @@ function RecommendedSolutionCard({
             {lowerBoundString} à {upperBoundString}
           </p>
           <p className="mb-3">par an par logement</p>
-          <p
-            className={cx('mb-0 flex items-center gap-2 font-bold', gainPercentVsGaz <= 0 ? 'text-success' : 'text-(--text-default-error)')}
-          >
+          <p className={cx('mb-0 flex items-center gap-2 font-bold', gainPercentVsGaz <= 0 ? 'text-success' : 'text-error')}>
             <span className={gainPercentVsGaz <= 0 ? 'fr-icon-arrow-right-down-line' : 'fr-icon-arrow-right-up-line'} aria-hidden="true" />
             {gainPercentVsGaz <= 0 ? '-' : '+'}
             {Math.abs(gainPercentVsGaz)} % d’économies vs gaz
@@ -709,7 +671,11 @@ function RecommendedSolutionCard({
         </button>
       </div>
 
-      {isOpen && <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="recommended" />}
+      {isOpen && (
+        <div className="mt-10">
+          <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="recommended" />
+        </div>
+      )}
     </section>
   );
 }
@@ -777,7 +743,7 @@ function ResultsSection({
               type="button"
               className={cx(
                 'border border-b-0 px-5 py-3 font-bold',
-                isActive ? 'border-(--border-action-high-blue-france) border-t-4 bg-white text-blue' : 'border-transparent bg-[#EEEEFF] '
+                isActive ? 'border-blue border-t-4 bg-white text-blue' : 'border-transparent bg-[#EEEEFF]'
               )}
               onClick={() => setActiveTab(tab.value)}
             >
@@ -858,13 +824,13 @@ function GainVsGazBadge({ item, coutParAnGaz }: { item: ModeDeChauffageEnriched;
     <span
       className={cx(
         'inline-flex items-center gap-2 whitespace-nowrap bg-[#E3FDEB] px-3 py-2 font-bold',
-        isSaving ? 'text-success' : 'bg-[#FFE9E6] text-(--text-default-error)'
+        isSaving ? 'text-success' : 'bg-[#FFE9E6] text-error'
       )}
     >
       <span
         className={cx(
           'flex h-6 w-6 items-center justify-center rounded-full text-white',
-          isSaving ? 'bg-[#18753C] fr-icon-arrow-right-down-line' : 'bg-[#B34000] fr-icon-arrow-right-up-line'
+          isSaving ? 'bg-success fr-icon-arrow-right-down-line' : 'bg-error fr-icon-arrow-right-up-line'
         )}
         aria-hidden="true"
       />
@@ -935,9 +901,8 @@ function OtherSolutionRow({
 
           <div className="mt-6 flex gap-8">
             <div>
-              <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} headingLevel="h5" layout="stacked" />
+              <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} layout="stacked" />
             </div>
-
             <div>
               <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="compact" />
               <Button href="#help-ademe" iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-3">
