@@ -111,15 +111,6 @@ export default function ReseauxStatsPage() {
                 )}
               </div>
               <span className="text-sm font-semibold leading-snug">{r.nom_reseau || `Réseau ${r.id_fcu}`}</span>
-              {(r.tags ?? []).length > 0 && (
-                <div className="flex flex-wrap gap-0.5">
-                  {r.tags!.map((tag) => (
-                    <Tag key={tag} small className="text-[10px]!">
-                      {tag}
-                    </Tag>
-                  ))}
-                </div>
-              )}
             </div>
           );
         },

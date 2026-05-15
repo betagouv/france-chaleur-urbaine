@@ -62,9 +62,6 @@ export type DemandStatus = (typeof demandStatuses)[number]['label'];
 const zGestionnaireDemandUpdateValues = z
   // biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
   .object({
-    // Tags & Assignment
-    'Gestionnaire Affecté à': z.string().nullable(),
-
     // Network info
     'Gestionnaire Distance au réseau': z.number().nullable(),
 

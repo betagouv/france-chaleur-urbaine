@@ -115,24 +115,6 @@ describe('demandsRouter', () => {
         });
       });
     });
-
-    describe('getTagsStats', () => {
-      const permissionTests: PermissionTestCase[] = [
-        { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-        { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
-        { allowed: true, label: 'autorise admin', user: testUsers.admin },
-      ];
-
-      it.each(permissionTests)('$label', async ({ user, allowed }) => {
-        const callRoute = () => createTestCaller(user).demands.admin.getTagsStats();
-
-        if (allowed) {
-          await expect(callRoute()).resolves.toStrictEqual([]);
-        } else {
-          await expect(callRoute).rejects.toMatchObject(forbiddenError);
-        }
-      });
-    });
   });
 
   describe('demands.gestionnaire', () => {

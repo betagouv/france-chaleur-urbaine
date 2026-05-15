@@ -109,10 +109,6 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
   },
   { accessorKey: 'comment_gestionnaire', name: 'Commentaires' },
   {
-    accessorKey: 'Affecté à',
-    name: 'Affecté à',
-  },
-  {
     accessorFn: (demand) => demand.access_counts.gestionnaire,
     name: 'Gestionnaires avec accès',
   },

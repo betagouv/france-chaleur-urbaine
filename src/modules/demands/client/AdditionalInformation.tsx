@@ -4,7 +4,7 @@ import Input from '@/components/form/dsfr/Input';
 import type { Demand } from '@/modules/demands/types';
 import debounce from '@/utils/debounce';
 
-const getFieldName = (field: 'Conso' | 'Logement' | 'Surface en m2' | 'Distance au réseau' | 'Affecté à') =>
+const getFieldName = (field: 'Conso' | 'Logement' | 'Surface en m2' | 'Distance au réseau') =>
   field === 'Surface en m2' ? field : `Gestionnaire ${field}`;
 
 const AdditionalInformation = ({
@@ -17,7 +17,7 @@ const AdditionalInformation = ({
   disabled = false,
 }: {
   demand: Demand;
-  field: 'Conso' | 'Logement' | 'Surface en m2' | 'Distance au réseau' | 'Affecté à';
+  field: 'Conso' | 'Logement' | 'Surface en m2' | 'Distance au réseau';
   updateDemand: (demandId: string, demand: Partial<Demand>) => void;
   type: 'number' | 'text';
   width?: number;

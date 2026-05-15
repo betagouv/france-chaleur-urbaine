@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import FCUTagAutocompleteInput from '@/components/form/dsfr/FCUTagAutocompleteInput';
 import useForm from '@/components/form/react-form/useForm';
 import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
@@ -59,7 +58,6 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
       email: user?.email ?? '',
       entreprise: user?.entreprise ?? null,
       first_name: user?.first_name ?? '',
-      gestionnaires: user?.gestionnaires ?? [],
       last_name: user?.last_name ?? '',
       optin_at: !!user?.optin_at,
       phone: user?.phone ?? '',
@@ -236,19 +234,6 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
               }
             />
           </FieldWrapper>
-
-          {/* Tags gestionnaire (ancien système) */}
-          {role === 'gestionnaire' && !isNew && (
-            <FieldWrapper>
-              <Field.Custom
-                name="gestionnaires"
-                label="Tags gestionnaires (obsolète)"
-                Component={(props: any) => (
-                  <FCUTagAutocompleteInput undismissibles={user?.gestionnaires_from_api ?? []} multiple disabled {...props} />
-                )}
-              />
-            </FieldWrapper>
-          )}
         </div>
 
         <div className="flex justify-end">

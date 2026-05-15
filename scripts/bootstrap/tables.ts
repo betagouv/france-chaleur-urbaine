@@ -36,10 +36,6 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'pro_eligibility_tests_addresses',
   },
   {
-    description: "Règles d'affectation pour l'application automatique de tags",
-    name: 'assignment_rules',
-  },
-  {
     description: "Événements pour le suivi de l'activité des utilisateurs",
     name: 'events',
   },
@@ -68,10 +64,6 @@ export const allDatabaseTables: TableInfo[] = [
   {
     description: 'Tuiles vectorielles des réseaux de froid',
     name: 'reseaux_de_froid_tiles',
-  },
-  {
-    description: 'Tags utilisés pour la mise en relation gestionnaires <-> demandes',
-    name: 'tags',
   },
   {
     description: 'Zones de développement prioritaire',

@@ -5,7 +5,6 @@ import { useCallback, useMemo, useState } from 'react';
 
 import UserForm from '@/components/Admin/UserForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
-import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
 import Box from '@/components/ui/Box';
@@ -243,28 +242,6 @@ export default function ManageUsers() {
         flex: 1.4,
         header: 'Type de structure',
         id: 'structure_type',
-      },
-      {
-        accessorFn: (row) => row.gestionnaires?.map((u) => u.toLowerCase()).join(' ') ?? '',
-        cell: (info) => {
-          return (
-            info.row.original.role === 'gestionnaire' && (
-              <FCUTagAutocomplete
-                undismissibles={info.row.original.gestionnaires_from_api ?? []}
-                value={info.row.original.gestionnaires ?? []}
-                onChange={(newGestionnaires: string[] /* TODO should be handled by typescript */) => {
-                  void handleUpdateUser(info.row.original.id)({ gestionnaires: newGestionnaires });
-                }}
-                multiple
-                disabled
-              />
-            )
-          );
-        },
-        flex: 3,
-        header: 'Tags gestionnaire (obsolète)',
-        id: 'gestionnaires',
-        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.gestionnaires?.[0], rowB.original.gestionnaires?.[0]),
       },
       {
         accessorKey: 'receive_new_demands',

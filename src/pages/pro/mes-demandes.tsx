@@ -21,7 +21,6 @@ import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import AffectedNetwork from '@/modules/demands/client/AffectedNetwork';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
-import Gestionnaire from '@/modules/demands/client/Gestionnaire';
 import Status from '@/modules/demands/client/Status';
 import { eligibilityTitleByType } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
@@ -172,17 +171,6 @@ function MesDemandesPage(): React.ReactElement {
         filterType: 'Facets',
         header: 'Statut',
         width: '290px',
-      },
-      {
-        accessorFn: (row) => {
-          const gestionnaires = row.Gestionnaires || [];
-          const affectation = row['Affecté à'];
-          return [...gestionnaires, ...(affectation ? [affectation].flat() : [])].join(' ');
-        },
-        cell: ({ row }) => <Gestionnaire demand={row.original as unknown as Demand} />,
-        enableSorting: false,
-        header: 'Gestionnaire',
-        width: '200px',
       },
       {
         accessorKey: 'Structure',

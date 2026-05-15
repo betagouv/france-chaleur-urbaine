@@ -121,7 +121,6 @@ export const updateUserAdminSchema = z
     email: z.email().optional(),
     entreprise: zEntreprise.nullable().optional(),
     first_name: z.string().optional(),
-    gestionnaires: z.array(z.string()).optional(),
     last_name: z.string().optional(),
     optin_at: z.boolean().optional(),
     phone: z.string().optional(),

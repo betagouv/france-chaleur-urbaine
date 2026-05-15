@@ -16,7 +16,6 @@ import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
-import { registerPermissionsCommands } from '@/modules/permissions/commands';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { registerEcoreseauCommand } from '@/modules/reseaux/commands/ecoreseau';
@@ -78,7 +77,6 @@ registerProEligibilityTestsCommands(program);
 registerEcoreseauCommand(program);
 registerNetworkCommands(program);
 registerOpendataCommands(program);
-registerPermissionsCommands(program);
 registerTilesCommands(program);
 registerTestCommands(program);
 
@@ -369,13 +367,7 @@ program
   .argument('<email>', 'Email of the user', (v) => z.email().parse(v))
   .argument('<password>', 'Password of the user')
   .argument('<role>', 'Role of the user', (v) => z.enum(userRoles).parse(v))
-  .argument(
-    '[tags_gestionnaires]',
-    'Tags gestionnaires (gestionnaire only)',
-    (v) => z.preprocess((v) => String(v).split(','), z.array(z.string())).parse(v),
-    []
-  )
-  .action(async (email, password, role, tags_gestionnaires) => {
+  .action(async (email, password, role) => {
     const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', email).executeTakeFirst();
     if (existingUser) {
       throw new Error(`L'utilisateur associé à l'email '${email}' existe déjà.`);
@@ -385,7 +377,6 @@ program
       .insertInto('users')
       .values({
         email,
-        gestionnaires: tags_gestionnaires,
         password: await hash(password, await genSalt(10)),
         role,
         status: 'valid',
