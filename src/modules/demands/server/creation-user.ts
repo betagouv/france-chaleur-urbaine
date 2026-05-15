@@ -41,7 +41,6 @@ export const createDemand = async (
       created_at: new Date(),
       legacy_values: sql<string>`${JSON.stringify({
         ...legacyValues,
-        'Affecté à': null,
         Conso: conso ? conso.conso_nb : undefined,
         'Date de la demande': new Date().toISOString(),
         'ID BNB': nbLogement?.batiment_groupe_id ? `${nbLogement.batiment_groupe_id}` : undefined,

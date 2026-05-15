@@ -10,7 +10,6 @@ export type DemandSummary = {
   'Mode de chauffage': string;
   'Type de chauffage': string;
   Structure: string;
-  Gestionnaires: string[];
 };
 
 export type EditableDemandSummary = {
@@ -43,8 +42,6 @@ export type Demand = DemandSummary &
     'Surface en m2': number;
     'Gestionnaire Logement': number;
     'Relance envoyée': string;
-    'Affecté à': string;
-    'Gestionnaire Affecté à': string | null;
     'Identifiant réseau'?: string;
     'Nom réseau'?: string;
     'Emails envoyés'?: string;

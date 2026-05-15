@@ -2,7 +2,7 @@
 
 ## High-level architecture
 
-Hybrid architecture: 25 modern modules coexist with legacy code being progressively migrated.
+Hybrid architecture: 24 modern modules coexist with legacy code being progressively migrated.
 
 ```
 Client (Browser)
@@ -54,7 +54,7 @@ src/modules/<name>/
 - Server code must NEVER import from `@/components` or `@/pages`.
 
 **Infrastructure modules:** trpc, auth, jobs, events, notification, security, config, optimization, app.
-**Business modules:** reseaux, demands, pro-eligibility-tests, tiles, users, data, tags, email, ban, bdnb, geo, opendata, chaleur-renouvelable, form, analytics, diagnostic.
+**Business modules:** reseaux, demands, pro-eligibility-tests, tiles, users, data, email, ban, bdnb, geo, opendata, chaleur-renouvelable, form, analytics, diagnostic.
 
 ## Project structure
 
@@ -84,7 +84,7 @@ src/modules/<name>/
 
 ```
 src/
-├── modules/                  # Modern module-based architecture (25 modules)
+├── modules/                  # Modern module-based architecture (24 modules)
 │   ├── auth/                 # Authentication (NextAuth, sessions)
 │   ├── users/                # User CRUD, roles, profiles
 │   ├── reseaux/              # Heat/cold network data (core business)
@@ -100,7 +100,6 @@ src/
 │   ├── bdnb/                 # National building database
 │   ├── geo/                  # Geospatial utilities
 │   ├── data/                 # Data extraction / summaries
-│   ├── tags/                 # Tagging system
 │   ├── analytics/            # Matomo, PostHog config
 │   ├── notification/         # Toast / notification system
 │   ├── security/             # Rate limiting

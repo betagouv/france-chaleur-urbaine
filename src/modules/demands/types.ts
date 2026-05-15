@@ -37,12 +37,10 @@ export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status' | 
   Mail: string;
   Adresse: string;
   'Relance à activer'?: boolean;
-  Gestionnaires: string[] | null;
   'Gestionnaire Distance au réseau'?: number | null;
   'Gestionnaire Conso'?: number | null;
   'Gestionnaire Logement'?: number | null;
   'Surface en m2'?: number | null;
-  'Affecté à': string | string[] | null;
   Logement: number;
 };
 
@@ -66,4 +64,4 @@ export type AccessCounts = {
   ccrt: number;
 };
 
-export type { ReseauxStats, TagsStats } from './server/stats';
+export type { ReseauxStats } from './server/stats';

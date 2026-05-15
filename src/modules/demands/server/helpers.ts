@@ -240,7 +240,7 @@ export const enrichDemandForGestionnaire = <T extends Selectable<Demands>>({
     }
   }
 
-  const isParis = legacy_values.Gestionnaires?.includes('Paris');
+  const isParis = demand.departement_code === '75';
   const distanceThreshold = isParis ? 60 : 100;
   const isHautPotentiel =
     legacy_values['Type de chauffage'] === 'Collectif' &&
