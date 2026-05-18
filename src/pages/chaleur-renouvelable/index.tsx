@@ -9,8 +9,8 @@ import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Carousel from '@/components/ui/Carousel';
 import Link from '@/components/ui/Link';
-import { trackPostHogEvent } from '@/modules/analytics/client';
 import Notice from '@/components/ui/Notice';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import ChoixChauffageForm from '@/modules/chaleur-renouvelable/client/ChoixChauffageForm';
 
 const BENEFITS = [
