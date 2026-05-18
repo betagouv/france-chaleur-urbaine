@@ -233,7 +233,6 @@ export type PostHogEventMap = {
   };
   'faq:cta_contact_equipe': never;
   'faq:click': { source: 'menu' | 'footer' | 'contact' };
-};
 
   // Home
   'home:tool_tile_clicked': ElementType;
