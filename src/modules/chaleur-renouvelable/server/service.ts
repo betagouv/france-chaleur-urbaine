@@ -11,7 +11,19 @@ export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) 
   if ('batiment_construction_id' in input) {
     const batiment = await kdb
       .selectFrom('bdnb_batenr')
-      .select(['batiment_construction_id', 'gmi_nappe_200', 'gmi_sonde_200', 'etat_ppa'])
+      .select([
+        'batiment_construction_id',
+        'gmi_nappe_200',
+        'gmi_sonde_200',
+        'pot_nappe',
+        'place_nappe',
+        'etat_ppa',
+        'ac1',
+        'ac2',
+        'ac3',
+        'ac4',
+        'ac4bis',
+      ])
       .where('batiment_construction_id', '=', input.batiment_construction_id)
       .executeTakeFirst();
 
@@ -22,7 +34,19 @@ export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) 
 
   const batiment = await kdb
     .selectFrom('bdnb_batenr')
-    .select(['batiment_construction_id', 'gmi_nappe_200', 'gmi_sonde_200', 'etat_ppa'])
+    .select([
+      'batiment_construction_id',
+      'gmi_nappe_200',
+      'gmi_sonde_200',
+      'pot_nappe',
+      'place_nappe',
+      'etat_ppa',
+      'ac1',
+      'ac2',
+      'ac3',
+      'ac4',
+      'ac4bis',
+    ])
     .where('geom', 'is not', null)
     .orderBy(sql`geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154)`)
     .limit(1)
