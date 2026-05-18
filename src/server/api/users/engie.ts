@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
 import cliConfig from '@/cli-config';
+import { createEvent } from '@/modules/events/server/service';
+import type { NetworkPermission } from '@/modules/permissions/types';
 import { create } from '@/modules/users/server/service';
 import { type ApiAccounts, kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
-import { sanitizeEmail } from '@/utils/validation';
 
 const logger = parentLogger.child({
   dry_run: cliConfig.dryRun,
@@ -20,113 +21,150 @@ export const validation = z.array(
   })
 );
 
-export type EngieApiNetwork = z.infer<typeof validation>;
+export type EngieApiNetworks = z.infer<typeof validation>;
 
-export const handleData = async (account: ApiAccounts, networks: EngieApiNetwork) => {
-  const { data: validatedNetworks, success, error } = validation.safeParse(networks);
+export const handleData = async (account: ApiAccounts, data: unknown) => {
+  const { data: validatedNetworks, success, error } = validation.safeParse(data);
   if (!success) {
     throw new Error('Invalid data', { cause: error });
   }
 
-  const recordsToSync = validatedNetworks.reduce(
-    (acc, network) => {
-      network.contacts.forEach((contactEmail) => {
-        const networkTag = `ENGIE_${network.id_sncu}`;
+  // Group emails → set of SNCU IDs they should be granted permission on
+  const emailToSncuIds = validatedNetworks
+    .flatMap((n) => n.contacts.map((email) => [email, n.id_sncu] as const))
+    .reduce((acc, [email, sncu]) => acc.set(email, (acc.get(email) ?? new Set<string>()).add(sncu)), new Map<string, Set<string>>());
 
-        const tagsByEmail = acc[contactEmail] || new Set([]);
+  const allSncuIds = [...new Set(validatedNetworks.map((n) => n.id_sncu))];
 
-        tagsByEmail.add(networkTag);
-        acc[contactEmail] = tagsByEmail;
-      });
-      return acc;
-    },
-    {} as Record<string, Set<string>>
+  // Resolve SNCU → FCU IDs (existing networks only; networks in construction have no SNCU ID)
+  // in parallel with fetching active users from this API account.
+  const [existingNetworks, existingUsersFromApi] = await Promise.all([
+    allSncuIds.length > 0
+      ? kdb
+          .selectFrom('reseaux_de_chaleur')
+          .select(['id_fcu', 'Identifiant reseau'])
+          .where('Identifiant reseau', 'in', allSncuIds)
+          .execute()
+      : Promise.resolve([]),
+    kdb
+      .selectFrom('users')
+      .innerJoin('api_accounts', 'users.from_api', 'api_accounts.key')
+      .select(['users.id', 'users.email'])
+      .where('api_accounts.name', '=', account.name)
+      .where('users.active', '=', true)
+      .execute(),
+  ]);
+
+  const sncuToFcu = new Map(
+    existingNetworks
+      .map((n) => [n['Identifiant reseau'], n.id_fcu] as const)
+      .filter((entry): entry is [string, number] => entry[0] !== null)
   );
 
-  const existingUsersFromApi = await kdb
-    .selectFrom('users')
-    .innerJoin('api_accounts', 'users.from_api', 'api_accounts.key')
-    .select(['users.email', 'users.gestionnaires'])
-    .where('api_accounts.name', '=', account.name)
-    .where('users.active', '=', true)
+  logger.info(`Found ${existingUsersFromApi.length} users in DB`);
+
+  const feedEmails = new Set(emailToSncuIds.keys());
+  const usersToDeactivate = existingUsersFromApi.filter((u) => !feedEmails.has(u.email));
+
+  await Promise.all(
+    [...emailToSncuIds].map(async ([email, sncuIds]) => {
+      const user = await kdb.selectFrom('users').select(['id', 'active']).where('email', '=', email).executeTakeFirst();
+
+      let userId: string;
+      if (!user) {
+        logger.info(`Create user ${email}`);
+        if (cliConfig.dryRun) {
+          return;
+        }
+        const record = await create(
+          {
+            active: true,
+            email,
+            from_api: account.key,
+            optin_at: null,
+            receive_new_demands: true,
+            receive_old_demands: true,
+            role: 'gestionnaire',
+            structure_name: account.name,
+          },
+          {} as any
+        );
+        userId = record.id as unknown as string;
+        await createEvent({
+          context_id: userId,
+          context_type: 'user',
+          data: { api_name: account.name ?? '', role: 'gestionnaire', user_email: email },
+          type: 'user_created_by_api',
+        });
+      } else {
+        logger.info(`Update user ${email} (${user.id})`);
+        userId = user.id;
+        if (cliConfig.dryRun) {
+          return;
+        }
+        await kdb.updateTable('users').set({ active: true }).where('id', '=', user.id).execute();
+      }
+
+      await syncPermissionsForUser(userId, email, sncuIds, sncuToFcu, account.name ?? '');
+    })
+  );
+
+  logger.info(`Deactivate ${usersToDeactivate.length} users not in the API`);
+
+  await Promise.all(
+    usersToDeactivate.map(async ({ id, email }) => {
+      logger.info(`Deactivate user ${email}`);
+      if (!cliConfig.dryRun) {
+        await kdb.updateTable('users').set({ active: false }).where('id', '=', id).execute();
+        await createEvent({
+          context_id: id,
+          context_type: 'user',
+          data: { api_name: account.name ?? '', user_email: email },
+          type: 'user_deactivated_by_api',
+        });
+      }
+    })
+  );
+
+  return usersToDeactivate;
+};
+
+/**
+ * Grants network permissions to a user for the given SNCU IDs. Additive only:
+ * existing permissions (manual or API-created) are never removed.
+ * Emits a `user_permissions_synced_from_api` event when new permissions are actually inserted.
+ */
+async function syncPermissionsForUser(
+  userId: string,
+  userEmail: string,
+  sncuIds: Set<string>,
+  sncuToFcu: Map<string, number>,
+  apiName: string
+) {
+  const permissions: (NetworkPermission & { user_id: string })[] = [...sncuIds]
+    .map((sncuId) => sncuToFcu.get(sncuId))
+    .filter((idFcu): idFcu is number => idFcu !== undefined)
+    .map((idFcu) => ({
+      resource_id: String(idFcu),
+      type: 'reseau_de_chaleur',
+      user_id: userId,
+    }));
+
+  if (permissions.length === 0) return;
+
+  const inserted = await kdb
+    .insertInto('user_permissions')
+    .values(permissions)
+    .onConflict((oc) => oc.columns(['user_id', 'type', 'resource_id']).doNothing())
+    .returning(['type', 'resource_id'])
     .execute();
 
-  logger.info(`🔍 Found ${existingUsersFromApi.length} users in DB`);
-
-  await Promise.all(
-    Object.entries(recordsToSync).map(async ([email, tags]) => {
-      const existingEmailIndex = existingUsersFromApi.findIndex((user) => user.email === email);
-      if (existingEmailIndex !== -1) {
-        existingUsersFromApi.splice(existingEmailIndex, 1);
-      }
-      const apiTags = Array.from(tags);
-      const sanitizedEmail = sanitizeEmail(email);
-
-      const user = await kdb
-        .selectFrom('users')
-        .select(['id', 'gestionnaires_from_api', 'gestionnaires', 'active'])
-        .where('email', '=', sanitizedEmail)
-        .executeTakeFirst();
-
-      if (!user) {
-        logger.info(`🆕 Create user ${email}`);
-        if (!cliConfig.dryRun) {
-          await create(
-            {
-              active: true,
-              email: sanitizedEmail,
-              from_api: account.key,
-              gestionnaires: apiTags,
-              gestionnaires_from_api: apiTags,
-              password: '',
-              role: 'gestionnaire',
-              status: 'valid',
-              structure_name: account.name,
-            },
-            {} as any
-          );
-        } else {
-          logger.info(' ⏭️ Skipped');
-        }
-        return;
-      }
-
-      const allTags = [...new Set([...(user.gestionnaires || []), ...apiTags])];
-
-      if (JSON.stringify(user.gestionnaires) === JSON.stringify(allTags) && user.active === true) {
-        logger.info(`💤 User ${email} already has the same tags and is active`);
-        return;
-      }
-
-      logger.info(`🔄 Update user ${email} (${user.id})`, { gestionnaires_from_api: user.gestionnaires_from_api });
-      if (!cliConfig.dryRun) {
-        logger.info(' ✅ Done');
-        await kdb
-          .updateTable('users')
-          .set({
-            active: true,
-            gestionnaires: allTags,
-            gestionnaires_from_api: apiTags,
-          })
-          .where('id', '=', user.id)
-          .execute();
-      } else {
-        logger.info(' ⏭️ Skipped');
-      }
-    })
-  );
-
-  logger.info(`🔍 Deactivate ${existingUsersFromApi.length} users not in the API`);
-
-  await Promise.all(
-    existingUsersFromApi.map(async ({ email }) => {
-      logger.info(`🚫 Deactivate user ${email}`);
-      if (!cliConfig.dryRun) {
-        await kdb.updateTable('users').set({ active: false }).where('email', '=', email).execute();
-      } else {
-        logger.info(' ⏭️ Skipped');
-      }
-    })
-  );
-  return existingUsersFromApi;
-};
+  if (inserted.length > 0) {
+    await createEvent({
+      context_id: userId,
+      context_type: 'user',
+      data: { added: inserted, api_name: apiName, user_email: userEmail },
+      type: 'user_permissions_synced_from_api',
+    });
+  }
+}

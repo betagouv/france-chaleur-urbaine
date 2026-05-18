@@ -1,14 +1,17 @@
 type FetchErrorOptions = {
   message: string;
   status: number;
+  responseBody?: unknown;
 };
 export class FetchError extends Error {
   status: number;
+  responseBody?: unknown;
 
   constructor(options: FetchErrorOptions) {
     super(options.message);
     this.name = 'FetchError';
     this.status = options.status;
+    this.responseBody = options.responseBody;
   }
 }
 export const fetchMethod =
@@ -99,8 +102,10 @@ export const postFormDataFetchJSON = async <Data = any>(url: string, formState: 
 
 export async function handleError(res: Response, url: string) {
   const isJson = res.headers.get('Content-Type')?.includes('application/json');
-  const errorData = isJson ? await res.json().catch(() => null) : null;
+  const responseBody = isJson ? await res.json().catch(() => null) : await res.text().catch(() => null);
   const errorMessage =
-    res.status === 400 && errorData?.message ? errorData.message : `Failed to load data for ${url} (status ${res.status})`;
-  throw new FetchError({ message: errorMessage, status: res.status });
+    responseBody && typeof responseBody === 'object' && 'message' in responseBody
+      ? String(responseBody.message)
+      : `Failed to load data for ${url} (status ${res.status})`;
+  throw new FetchError({ message: errorMessage, responseBody, status: res.status });
 }

@@ -97,6 +97,9 @@ const parseAssignmentRule = (rule: Pick<AssignmentRules, 'result' | 'search_patt
   }
 };
 
+/**
+ * Retourne les règles d'assignation actives (search_pattern + result), triées par pattern.
+ */
 export const listActive = async () => {
   const assignmentRules = await kdb
     .selectFrom('assignment_rules')
@@ -111,6 +114,9 @@ export const listActive = async () => {
   };
 };
 
+/**
+ * Parse les règles (expression → AST, result → actions) et filtre celles qui échouent.
+ */
 export const parseAssignmentRules = async (assignmentRules: Pick<AssignmentRules, 'result' | 'search_pattern'>[]) => {
   return assignmentRules.map(parseAssignmentRule).filter((v) => v !== null);
 };

@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { importGeoJSONWithTipeeCanoe } from '@/modules/tiles/server/generation-import';
+import { markTilesUpdated } from '@/modules/tiles/server/service';
 import { getGenerationConfig, type TilesType } from '@/modules/tiles/server/tiles.config';
 import { parentLogger } from '@/server/helpers/logger';
 
@@ -47,6 +48,7 @@ export async function runTilesGeneration(name: TilesType, inputFilePath?: string
   });
   logMemory(logger, 'after tippecanoe import');
 
+  await markTilesUpdated(name);
   logger.info(`GeoJSON importée dans la table ${config.tilesTableName}`);
   await rm(tempDirectory, { recursive: true });
   logMemory(logger, 'after cleanup');

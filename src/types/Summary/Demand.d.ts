@@ -1,6 +1,5 @@
 import type { ContactFormInfos } from '@/modules/demands/constants';
 import type { Coords } from '@/modules/geo/types';
-import type { DetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import type { DemandStatus } from '@/types/enum/DemandSatus';
 
 export type DemandSummary = {
@@ -51,7 +50,6 @@ export type Demand = DemandSummary &
     'Emails envoyés'?: string;
     Longitude: number;
     Latitude: number;
-    'Gestionnaires validés': boolean;
     Commentaires_internes_FCU: string;
 
     // computed
@@ -61,11 +59,6 @@ export type Demand = DemandSummary &
 export type AdminDemand = Demand & {
   // airtable fields
   'Relance à activer'?: boolean;
-
-  recommendedTags: string[];
-  recommendedAssignment: string;
-  detailedEligibilityStatus: DetailedEligibilityStatus;
-  networkTags: string[];
 };
 
 export type FormDemandCreation = ContactFormInfos & {

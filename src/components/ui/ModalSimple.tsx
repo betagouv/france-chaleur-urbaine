@@ -31,6 +31,9 @@ export const useModal = () => {
  * ModalSimple is a modal component that is only mounted in the DOM when opened.
  * This lazy loading approach improves initial page performance by not rendering unused modals.
  * The modal is created when the trigger is clicked and destroyed when closed.
+ *
+ * @deprecated Utiliser `Dialog` (Radix) à la place. Empilement natif, pas de hack timing,
+ * style Tailwind direct, pas de singleton DSFR qui casse l'imbrication.
  */
 const ModalSimple = ({ children, trigger, title, size = 'medium', open: controlledOpen, onOpenChange, loading }: ModalSimpleProps) => {
   const [isOpen, setOpen] = useState(!!controlledOpen);

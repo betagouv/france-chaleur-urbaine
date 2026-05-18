@@ -1,7 +1,5 @@
 import { runDiagnostic } from '@/modules/diagnostic/server/service';
-import { routeRole, router } from '@/modules/trpc/server';
-
-const adminRoute = routeRole(['admin']);
+import { adminRoute, router } from '@/modules/trpc/server';
 
 export const diagnosticRouter = router({
   run: adminRoute.query(async () => {

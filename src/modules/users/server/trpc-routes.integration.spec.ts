@@ -50,7 +50,6 @@ describe('usersRouter', () => {
           phone: null,
           structure_name: '',
           structure_other: '',
-          structure_type: '',
         });
 
       if (allowed) {

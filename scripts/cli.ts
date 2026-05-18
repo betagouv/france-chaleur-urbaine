@@ -10,11 +10,13 @@ import prompts from 'prompts';
 import XLSX from 'xlsx';
 import { z } from 'zod';
 
+import { registerAdemeConnectCommands } from '@/modules/ademe-connect/commands';
 import { registerAppCommands } from '@/modules/app/commands';
 import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
+import { registerPermissionsCommands } from '@/modules/permissions/commands';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { registerEcoreseauCommand } from '@/modules/reseaux/commands/ecoreseau';
@@ -24,10 +26,9 @@ import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates'
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
 import { getApiHandler } from '@/server/api/users';
-import { saveStatsInDB } from '@/server/cron/saveStatsInDB';
+import { aggregateMonthlyStats } from '@/server/cron/aggregateMonthlyStats';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { syncComptesProFromUsers } from '@/server/services/airtable';
 import { registerTestCommands } from '@/tests/commands';
 import { userRoles } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
@@ -67,6 +68,7 @@ program
     await kdb.destroy();
   });
 
+registerAdemeConnectCommands(program);
 registerAppCommands(program);
 registerBdnbCommands(program);
 registerDataCommands(program);
@@ -76,6 +78,7 @@ registerProEligibilityTestsCommands(program);
 registerEcoreseauCommand(program);
 registerNetworkCommands(program);
 registerOpendataCommands(program);
+registerPermissionsCommands(program);
 registerTilesCommands(program);
 registerTestCommands(program);
 
@@ -122,15 +125,12 @@ program
   .description('Import the french EPCI (used for tags)')
   .action(async () => {
     const allEPCI = await fetchJSON<EPCI[]>('https://unpkg.com/@etalab/decoupage-administratif@5.2.0/data/epci.json');
-    const epci = allEPCI
-      // seules les communautés d'agglomération, les communautés urbaines et les métropoles sont intéressantes pour le moment
-      .filter((epci) => ['CA', 'CU', 'METRO', 'MET69'].includes(epci.type))
-      .map((metropole) => ({
-        code: metropole.code,
-        membres: JSON.stringify(metropole.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
-        nom: metropole.nom,
-        type: metropole.type,
-      }));
+    const epci = allEPCI.map((metropole) => ({
+      code: metropole.code,
+      membres: JSON.stringify(metropole.membres.map((membre) => ({ code: membre.code, nom: membre.nom }))),
+      nom: metropole.nom,
+      type: metropole.type,
+    }));
 
     await kdb.transaction().execute(async (tx) => {
       await tx.deleteFrom('epci').execute();
@@ -327,7 +327,7 @@ program
       process.exit(1);
     }
 
-    await saveStatsInDB(startDate, endDate);
+    await aggregateMonthlyStats(startDate, endDate);
   });
 
 program
@@ -392,19 +392,6 @@ program
       })
       .execute();
     logger.info(`Utilisateur ${email} créé avec succès.`);
-  });
-
-program
-  .command('users:sync-comptes-pro-to-airtable')
-  .description('Sync users last connection from PostGres to Airtable.')
-  .action(async () => {
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli users:sync-last-connection-to-airtable');
-      process.exit(1);
-    }
-    await syncComptesProFromUsers();
   });
 
 program

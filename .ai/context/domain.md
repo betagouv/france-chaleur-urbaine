@@ -7,8 +7,10 @@ France Chaleur Urbaine is a French government platform (beta.gouv.fr) that accel
 The platform serves three main audiences:
 1. **Citizens (particuliers)** — test if their address is near a heating network and request a connection.
 2. **Professionals (professionnels)** — bulk-test address eligibility for building portfolios.
-3. **Network operators (gestionnaires)** — manage connection demands, track network data.
-4. **Administrators** — manage users, networks, jobs, assignment rules.
+3. **Network operators (gestionnaires)** — manage connection demands for their assigned networks.
+4. **Local authorities (collectivités)** — monitor demands on their territory, coordinate with gestionnaires.
+5. **Local energy agencies (ALEC)** — same as collectivités, scoped to their territory.
+6. **Administrators** — manage users, networks, jobs, permissions. Can impersonate any role and toggle PII anonymization for live demos.
 
 ## Glossary
 
@@ -36,7 +38,7 @@ The platform serves three main audiences:
 - A demand can be submitted by anyone (logged in or anonymous via form).
 - Demands are automatically matched to the nearest network based on address geolocation.
 - Gestionnaires only see demands related to their assigned networks.
-- Admin can assign demands to gestionnaires via assignment rules (pattern-based).
+- Admin manages demand routing via permissions (user_permissions table).
 - Eligibility is determined by geographic proximity: distance from address to nearest network trace.
 - Networks have an energy mix (solar, geothermal, biomass, gas, etc.) and an EnR&R percentage.
 - Classified networks (`reseaux_classes`) have PDPs where buildings may be legally required to connect.
@@ -47,11 +49,16 @@ The platform serves three main audiences:
 
 | Role | Can do | Cannot do |
 |------|--------|----------|
-| Admin | Everything: manage users, networks, demands, jobs, impersonate users | — |
-| Gestionnaire | View/manage demands for assigned networks, update network data | Access other networks' demands, manage users |
+| Admin | Everything: manage users, networks, demands, jobs, permissions, impersonate | — |
+| Gestionnaire | View/manage demands for assigned networks (via `user_permissions`), update network data | Access other networks' demands, manage users |
+| Collectivité | Monitor demands on their territory, see gestionnaires for their territory, request network changes | Manage demands directly, access admin features |
+| ALEC | Same as Collectivité, scoped to their territory | Same as Collectivité |
 | Professionnel | Submit demands, run bulk eligibility tests, view own demands | Access admin features, manage other users |
 | Particulier | Submit single demand, test eligibility | Bulk testing, dashboard features |
-| Demo | Pseudo-anonymized UI view (admin previews the app as anonymous user) | Real data access, admin features |
+
+PII anonymization for demos: admin enables an `anonymize` checkbox when starting an imposture at `/admin/impostures`. The flag is carried by the impersonation JWT and masks `Mail`/`Nom`/`Prénom`/`Téléphone` in `demands.gestionnaire.list`.
+
+Permissions are managed in `user_permissions` table (not string tags). See `security.md` for details.
 
 ## Key workflows
 
@@ -65,7 +72,7 @@ The platform serves three main audiences:
 **Demand lifecycle:**
 1. Citizen submits demand (status: pending).
 2. System matches demand to nearest network.
-3. Assignment rules route demand to appropriate gestionnaire.
+3. Demand is visible to gestionnaires/collectivités with matching permissions.
 4. Gestionnaire contacts citizen (status: contacted, email tracked in `demand_emails`).
 5. Demand progresses through status updates until resolved.
 6. Admin can monitor all demands and reassign.

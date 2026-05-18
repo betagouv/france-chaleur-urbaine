@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { routeRole, router } from '@/modules/trpc/server';
+import { adminRoute, router } from '@/modules/trpc/server';
 
 import * as tagsService from './service';
 
@@ -15,13 +15,13 @@ const zUpdateTagCommentInput = z.object({
 
 export const tagsRouter = router({
   admin: {
-    createReminder: routeRole(['admin'])
+    createReminder: adminRoute
       .input(zUpdateTagReminderInput)
       .mutation(({ input, ctx }) => tagsService.createTagReminder(input.tagId, ctx.user.id)),
-    deleteReminder: routeRole(['admin'])
+    deleteReminder: adminRoute
       .input(zUpdateTagReminderInput)
       .mutation(({ input, ctx }) => tagsService.deleteTagReminder(input.tagId, ctx.user.id)),
-    updateComment: routeRole(['admin'])
+    updateComment: adminRoute
       .input(zUpdateTagCommentInput)
       .mutation(({ input, ctx }) => tagsService.updateTagComment(input.tagId, input.comment, ctx.user.id)),
   },

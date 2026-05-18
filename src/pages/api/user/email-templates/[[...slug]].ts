@@ -11,6 +11,6 @@ export type EmailTemplatesResponse = typeof _types;
 export default handleRouteErrors(
   { DELETE, GET, POST, PUT },
   {
-    requireAuthentication: ['gestionnaire', 'admin', 'demo'],
+    requireAuthentication: ['gestionnaire', 'admin'],
   }
 );

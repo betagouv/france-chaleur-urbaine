@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import * as demandsService from '@/modules/demands/server/demands-service';
+import { buildDemandFeatures } from '@/modules/demands/server/tiles';
 import type { GenerateGeoJSONConfig, ImportLayerConfig, TilesGenerationConfig, TilesTable } from '@/modules/tiles/server/generation';
 import { downloadBatimentsRaccordesReseauxChaleurFroidJSON } from '@/modules/tiles/server/generation-configs/batiments-raccordes-reseaux-chaleur-froid';
 import { reseauxDeChaleurGeoJSONQuery } from '@/modules/tiles/server/generation-configs/reseaux-de-chaleur';
@@ -28,19 +28,37 @@ export type AsTile<T> = {
   [K in keyof T]: SerializeField<T[K]>;
 };
 
+/**
+ * Profil de cache HTTP appliqué sur les tuiles servies par l'API.
+ * Cf. `.ai/context/maps.md` et `.ai/plans/tiles-http-caching.md`.
+ */
+export type TilesCacheProfile = 'long' | 'short' | 'private';
+
+export const TILES_CACHE_PROFILES: Record<TilesCacheProfile, string> = {
+  long: 'public, max-age=86400',
+  private: 'private, max-age=86400, must-revalidate',
+  short: 'public, max-age=7200',
+};
+
+type CommonTileSourceConfig = {
+  /** Profil de cache HTTP (défaut: `long`, ~24h). */
+  cacheProfile?: TilesCacheProfile;
+};
+
 type DatabaseTileSourceConfig = {
   /** Si false, les tuiles ne sont pas compressées avec gzip (true par défaut) */
   compressedTiles?: boolean;
   /** Anciens identifiants pour la rétrocompatibilité des URLs */
   aliases?: readonly string[];
-} & TilesGenerationConfig;
+} & TilesGenerationConfig &
+  CommonTileSourceConfig;
 
 type InMemoryCacheTileSourceConfig = {
   /** Fonction pour construire les features GeoJSON */
   cache: (properties: string[]) => Promise<GeoJSON.Feature<GeoJSON.Point>[]>;
   /** Propriétés à inclure dans les tuiles */
   properties: string[];
-};
+} & CommonTileSourceConfig;
 
 type TileSourceConfig = DatabaseTileSourceConfig | InMemoryCacheTileSourceConfig;
 
@@ -144,7 +162,8 @@ export const tileSourcesConfig = {
     zoomMin: 12,
   },
   demands: {
-    cache: demandsService.buildFeatures,
+    cache: buildDemandFeatures,
+    cacheProfile: 'short',
     properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage', 'Structure'],
   },
   'enrr-mobilisables': {
@@ -227,6 +246,7 @@ export const tileSourcesConfig = {
   },
   'perimetres-de-developpement-prioritaire': {
     aliases: ['perimetresDeDeveloppementPrioritaire'],
+    cacheProfile: 'short',
     generateGeoJSON: extractNDJSONFromDatabaseTable('zone_de_developpement_prioritaire', {
       fields: perimetresDeDeveloppementPrioritaireFields,
       idField: 'id_fcu',
@@ -254,12 +274,14 @@ export const tileSourcesConfig = {
   },
   'reseaux-de-chaleur': {
     aliases: ['reseauxDeChaleur'],
+    cacheProfile: 'short',
     generateGeoJSON: reseauxDeChaleurGeoJSONQuery,
     tilesTableName: 'reseaux_de_chaleur_tiles',
     tippeCanoeArgs: '-r1',
   },
   'reseaux-de-froid': {
     aliases: ['reseauxDeFroid'],
+    cacheProfile: 'short',
     generateGeoJSON: extractNDJSONFromDatabaseTable('reseaux_de_froid', {
       fields: reseauxDeFroidFields,
       idField: 'id_fcu',
@@ -269,6 +291,7 @@ export const tileSourcesConfig = {
   },
   'reseaux-en-construction': {
     aliases: ['reseauxEnConstruction'],
+    cacheProfile: 'short',
     generateGeoJSON: extractNDJSONFromDatabaseTable('zones_et_reseaux_en_construction', {
       fields: reseauxEnConstructionFields,
       idField: 'id_fcu',
@@ -285,6 +308,7 @@ export const tileSourcesConfig = {
   },
   'tests-adresses': {
     aliases: ['testsAdresses'],
+    cacheProfile: 'private',
     generateGeoJSON: testsAdressesGeoJSONQuery,
     tilesTableName: 'pro_eligibility_tests_addresses_tiles',
     tippeCanoeArgs: '--drop-rate=0 --no-tile-size-limit --no-feature-limit',
@@ -332,6 +356,12 @@ export type CacheTileSourceId = {
 }[TileSourceId];
 
 export const zTileSourceId = z.enum(ObjectKeys(tileSourcesConfig));
+
+/** Accès au config d'une source, typé `TileSourceConfig` (évite les narrows littéraux du `as const`). */
+export const getTileSourceConfig = (sourceId: TileSourceId): TileSourceConfig => tileSourcesConfig[sourceId];
+
+export const getCacheControlHeader = (sourceId: TileSourceId): string =>
+  TILES_CACHE_PROFILES[getTileSourceConfig(sourceId).cacheProfile ?? 'long'];
 
 /**
  * Type union de tous les identifiants de sources générables.

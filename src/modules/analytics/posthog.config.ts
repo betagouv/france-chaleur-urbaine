@@ -228,6 +228,13 @@ export type PostHogEventMap = {
   'comparator:co2_emissions_tab_opened': Partial<Record<RuleName, number | string>>;
   'comparator:config_loaded': never;
 
+  'faq:accordeon': {
+    question: string;
+  };
+  'faq:cta_contact_equipe': never;
+  'faq:click': { source: 'menu' | 'footer' | 'contact' };
+};
+
   // Home
   'home:tool_tile_clicked': ElementType;
   'home:comparator_tile_clicked': never;

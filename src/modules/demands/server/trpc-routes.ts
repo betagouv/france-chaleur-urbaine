@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-import { route, routeRole, router } from '@/modules/trpc/server';
+import { networkTypes } from '@/modules/reseaux/constants';
+import { adminRoute, authRoute, demandAccessRoute, route, router } from '@/modules/trpc/server';
 
 import {
   zAddRelanceCommentInput,
@@ -12,88 +13,139 @@ import {
   zGestionnaireUpdateDemandInput,
   zListEmailsInput,
   zSendEmailInput,
-  zUserUpdateDemandInput,
+  zSubmitSurveyInput,
 } from '../constants';
-import * as demandsService from './demands-service';
+import {
+  changeDemandAssignment,
+  listAdmin,
+  rejectDemandAssignmentChangeRequest,
+  removeDemand,
+  updateDemandByAdmin,
+  validateDemand,
+} from './admin-operations';
+import { createBatchDemands } from './creation-batch';
+import { createDemand } from './creation-user';
+import { computeNetworkDistance, createFCUTeamContact, recalculateEligibility } from './eligibility';
+import { listDemandEmails, sendDemandEmail } from './email-communication';
+import {
+  cancelDemandAssignmentChangeRequest,
+  listDemands,
+  requestDemandAssignmentChange,
+  updateDemandByGestionnaire,
+} from './gestionnaire-operations';
+import { submitSurvey, updateCommentFromRelanceId } from './relances';
+import { getReseauxStats, getTagsStats } from './stats';
+import { listByUser } from './user-tracking';
+
+const zRequestAssignmentChangeInput = z
+  .object({
+    comment: z.string().trim().min(1).nullable(),
+    demandId: z.uuidv4(),
+    networkIdFcu: z.number().int().nullable(),
+    networkType: z.enum(networkTypes).nullable(),
+  })
+  .refine((v) => (v.networkIdFcu === null) === (v.networkType === null), {
+    message: 'networkIdFcu et networkType doivent être tous les deux renseignés ou tous les deux null (désaffectation)',
+    path: ['networkIdFcu'],
+  });
 
 export const demandsRouter = router({
   admin: {
-    delete: routeRole(['admin'])
-      .input(zDeleteDemandInput)
+    changeAssignment: adminRoute
+      .input(
+        z
+          .object({
+            demandId: z.string(),
+            networkIdFcu: z.number().nullable(),
+            networkType: z.enum(networkTypes).nullable(),
+          })
+          .refine((v) => (v.networkIdFcu === null) === (v.networkType === null), {
+            message: 'networkIdFcu et networkType doivent être tous les deux renseignés ou tous les deux null (désaffectation)',
+            path: ['networkIdFcu'],
+          })
+      )
       .mutation(async ({ input, ctx }) => {
-        const { demandId } = input;
-        await demandsService.remove(demandId, ctx.user.id);
+        return await changeDemandAssignment(input.demandId, input.networkIdFcu, input.networkType, ctx.user.id);
       }),
-    getTagsStats: routeRole(['admin']).query(async () => demandsService.getTagsStats()),
-    list: routeRole(['admin']).query(async () => {
-      const result = await demandsService.listAdmin();
+    delete: adminRoute.input(zDeleteDemandInput).mutation(async ({ input, ctx }) => {
+      const { demandId } = input;
+      await removeDemand(demandId, ctx.user.id);
+    }),
+    getReseauxStats: adminRoute.query(async () => getReseauxStats()),
+    getTagsStats: adminRoute.query(async () => getTagsStats()),
+    list: adminRoute.query(async () => {
+      const result = await listAdmin();
       return result;
     }),
-    recalculateEligibility: routeRole(['admin'])
-      .input(z.object({ demandId: z.string() }))
-      .mutation(async ({ input }) => {
-        return await demandsService.recalculateEligibility(input.demandId);
-      }),
-    update: routeRole(['admin'])
-      .input(zAdminUpdateDemandInput)
-      .mutation(async ({ input, ctx }) => {
-        const { demandId, values } = input;
-        return await demandsService.update(demandId, values, ctx.user.id);
-      }),
+    recalculateEligibility: adminRoute.input(z.object({ demandId: z.string() })).mutation(async ({ input }) => {
+      return await recalculateEligibility(input.demandId);
+    }),
+    rejectAssignmentChangeRequest: adminRoute.input(z.object({ demandId: z.uuidv4() })).mutation(async ({ input, ctx }) => {
+      await rejectDemandAssignmentChangeRequest(input.demandId, ctx.user.id);
+    }),
+    update: adminRoute.input(zAdminUpdateDemandInput).mutation(async ({ input, ctx }) => {
+      const { demandId, values } = input;
+      return await updateDemandByAdmin(demandId, values, ctx.user.id);
+    }),
+    validate: adminRoute.input(z.object({ demandId: z.string() })).mutation(async ({ input, ctx }) => {
+      await validateDemand(input.demandId, ctx.user.id);
+    }),
   },
   gestionnaire: {
-    list: routeRole(['gestionnaire', 'demo']).query(async ({ ctx }) => {
-      return await demandsService.list(ctx.user);
+    cancelAssignmentChangeRequest: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).mutation(async ({ input, ctx }) => {
+      await cancelDemandAssignmentChangeRequest(input.demandId, ctx.user.id);
     }),
-    listEmails: routeRole(['gestionnaire', 'admin'])
-      .input(zListEmailsInput)
-      .query(async ({ input, ctx }) => {
-        return await demandsService.listEmails({ demandId: input.demand_id, user: ctx.user });
+    computeNetworkDistance: demandAccessRoute
+      .input(
+        z.object({
+          demandId: z.uuidv4(),
+          networkIdFcu: z.number().int(),
+          networkType: z.enum(networkTypes),
+        })
+      )
+      .query(async ({ input }) => {
+        return await computeNetworkDistance(input.demandId, input.networkIdFcu, input.networkType);
       }),
-    sendEmail: routeRole(['gestionnaire', 'admin'])
-      .input(zSendEmailInput)
-      .mutation(async ({ input, ctx }) => {
-        await demandsService.sendEmail({
-          demand_id: input.demand_id,
-          emailContent: input.emailContent,
-          key: input.key,
-          user: ctx.user,
-        });
-      }),
-    update: routeRole(['gestionnaire', 'demo'])
-      .input(zGestionnaireUpdateDemandInput)
-      .mutation(async ({ input, ctx }) => {
-        const { demandId, values } = input;
-        return await demandsService.update(demandId, values, ctx.user.id);
-      }),
+    list: demandAccessRoute.query(async ({ ctx }) => listDemands(ctx)),
+    listEmails: demandAccessRoute.input(zListEmailsInput).query(async ({ input, ctx }) => {
+      return await listDemandEmails(ctx, { demandId: input.demand_id });
+    }),
+    requestAssignmentChange: demandAccessRoute.input(zRequestAssignmentChangeInput).mutation(async ({ input, ctx }) => {
+      await requestDemandAssignmentChange(input.demandId, input.networkIdFcu, input.networkType, input.comment, ctx.user.id);
+    }),
+    sendEmail: demandAccessRoute.input(zSendEmailInput).mutation(async ({ input, ctx }) => {
+      await sendDemandEmail(ctx, {
+        demandId: input.demand_id,
+        emailContent: input.emailContent,
+        key: input.key,
+      });
+    }),
+    update: demandAccessRoute.input(zGestionnaireUpdateDemandInput).mutation(async ({ input, ctx }) => {
+      const { demandId, values } = input;
+      return await updateDemandByGestionnaire(ctx, demandId, values);
+    }),
   },
   user: {
-    addRelanceComment: route.input(zAddRelanceCommentInput).mutation(async ({ input, ctx }) => {
+    addRelanceComment: route.input(zAddRelanceCommentInput).mutation(async ({ input }) => {
       const { relanceId, comment } = input;
-      return await demandsService.updateCommentFromRelanceId(relanceId, comment, ctx.user?.id);
+      return await updateCommentFromRelanceId(relanceId, comment);
     }),
     create: route.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
-      return await demandsService.create(input, { userId: ctx.user?.id });
+      return await createDemand(input, { userId: ctx.user?.id });
     }),
-    createBatch: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin'])
-      .input(zCreateBatchDemandInput)
-      .mutation(async ({ input, ctx }) => {
-        return await demandsService.createBatch(input, ctx.user);
-      }),
+    createBatch: authRoute.input(zCreateBatchDemandInput).mutation(async ({ input, ctx }) => {
+      return await createBatchDemands(input, ctx.user);
+    }),
+
     createFCUTeamContact: route.input(zCreateFCUTeamContactInput).mutation(async ({ input }) => {
-      await demandsService.createFCUTeamContact(input);
+      await await createFCUTeamContact(input);
     }),
-    list: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin']).query(async ({ ctx }) => {
-      return await demandsService.listByUser(ctx.user.id);
+    list: authRoute.query(async ({ ctx }) => {
+      return await listByUser(ctx.user.id);
     }),
-    listEmails: routeRole(['particulier', 'professionnel', 'gestionnaire', 'admin'])
-      .input(zListEmailsInput)
-      .query(async ({ input, ctx }) => {
-        return await demandsService.listEmails({ demandId: input.demand_id, user: ctx.user });
-      }),
-    update: route.input(zUserUpdateDemandInput).mutation(async ({ input, ctx }) => {
+    submitSurvey: route.input(zSubmitSurveyInput).mutation(async ({ input }) => {
       const { demandId, values } = input;
-      return await demandsService.update(demandId, values as any, ctx.user?.id);
+      return await submitSurvey(demandId, values);
     }),
   },
 });

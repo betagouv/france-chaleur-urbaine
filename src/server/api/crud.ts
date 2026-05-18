@@ -1,3 +1,4 @@
+import type { Selectable } from 'kysely';
 import type { NextApiRequest } from 'next';
 import type { z } from 'zod';
 
@@ -88,7 +89,7 @@ const validateSchemaIfExists = (schema?: z.ZodSchema, body?: any) => {
  * export default handleRouteErrors(
  *   { GET, POST, PUT, DELETE },
  *   {
- *     requireAuthentication: ['particulier', 'professionnel', 'gestionnaire', 'admin', 'demo'],
+ *     requireAuthentication: ['particulier', 'professionnel', 'gestionnaire', 'admin'],
  *   }
  * );
  */
@@ -215,14 +216,16 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
     throw invalidRouteError;
   };
 
+  type Row = Selectable<DB[T]>;
+
   return {
     _types: null as unknown as {
-      list: Awaited<ReturnType<typeof GET_LIST>>;
-      listItem: NonNullable<Awaited<ReturnType<typeof GET_LIST>>['items']>[number];
-      get: Awaited<ReturnType<typeof GET_ONE>>;
-      create: Awaited<ReturnType<typeof POST>>;
-      update: Awaited<ReturnType<typeof PUT>>;
-      delete: Awaited<ReturnType<typeof DELETE>>;
+      list: ApiResponseQueryList<Row>;
+      listItem: Row & { id?: string };
+      get: ApiResponseQueryGet<Row>;
+      create: ApiResponseMutation<Row>;
+      update: ApiResponseMutation<Row>;
+      delete: ApiResponseMutation<Row>;
       createInput: z.infer<NonNullable<NonNullable<typeof validation>['create']>>;
       updateInput: z.infer<NonNullable<NonNullable<typeof validation>['update']>>;
     },

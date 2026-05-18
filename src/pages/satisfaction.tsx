@@ -8,7 +8,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Link from '@/components/ui/Link';
 import { default as Section, SectionContent, SectionTitle } from '@/components/ui/Section';
 import { zAddRelanceCommentInput } from '@/modules/demands/constants';
-import { updateSatisfactionFromRelanceId } from '@/modules/demands/server/demands-service';
+import { updateSatisfactionFromRelanceId } from '@/modules/demands/server/relances';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 

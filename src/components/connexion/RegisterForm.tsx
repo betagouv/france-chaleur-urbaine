@@ -8,6 +8,7 @@ import Button from '@/components/ui/Button';
 import Highlight from '@/components/ui/Highlight';
 import Link from '@/components/ui/Link';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { EntrepriseField } from '@/modules/form/EntrepriseField';
 import { toastErrors } from '@/modules/notification';
 import {
   type CredentialsSchema,
@@ -41,13 +42,14 @@ const steps: FormStep[] = [
   {
     defaultValues: {
       email: '',
+      entreprise: null,
       first_name: '',
       last_name: '',
       phone: null,
       role: 'professionnel',
       structure_name: '',
       structure_other: '',
-      structure_type: '',
+      structure_type: undefined,
     } satisfies IdentitySchema,
     label: 'Votre profil',
     schema: zIdentitySchema,
@@ -67,7 +69,7 @@ function RegisterForm() {
   const previousStep = steps[stepIndex - 1];
   const [formData, setFormData] = useState(defaultValues);
 
-  const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input, Radio, useValue, Select, PhoneInput } = useForm({
+  const { EmailInput, PasswordInput, Checkbox, Submit, Form, Input, Radio, useValue, Select, PhoneInput, Field } = useForm({
     defaultValues: formData,
     onSubmit: toastErrors(async ({ value }) => {
       const newFormData = { ...formData, ...value };
@@ -167,6 +169,7 @@ function RegisterForm() {
                     hideOptionalLabel={true /* TODO: isOptional does not seem to be working correctly */}
                   />
                   {structureType === 'autre' && <Input name="structure_other" label="Renseignez le type de structure" />}
+                  <Field.Custom name="entreprise" label="Entreprise" Component={EntrepriseField} />
                 </>
               )}
             </>

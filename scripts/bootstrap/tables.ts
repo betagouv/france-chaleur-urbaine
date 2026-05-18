@@ -101,8 +101,12 @@ export const allDatabaseTables: TableInfo[] = [
     // différent de ign_communes qui elle est plus à jour, mais ne contient pas les altitudes moyennes ni les températures de référence
   },
   {
-    description: 'EPCI français (utilisé pour les tags)',
+    description: 'EPCI français',
     name: 'epci',
+  },
+  {
+    description: 'EPT français',
+    name: 'ept',
   },
   {
     description: 'Données IGN des communes',

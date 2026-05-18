@@ -5,13 +5,14 @@
 ## AI Agent workflow
 
 For every user message:
-- start every response with "Agent FCU au rapport !"
-- read AGENTS.md (this file) to decide which context files in `.ai/context/` are worth loading for this specific request — some requests need none, others need several
+- read AGENTS.md (this file) to decide which context files in `.ai/context/` are worth loading for this specific message — some messages need none, others need several. Re-evaluate on every message as the conversation evolves.
+- **re-evaluate context at each phase of the task** — implementing code, writing tests, debugging, refactoring are different phases with their own triggers. Don't bundle them: re-check the index when switching phase, even mid-message.
 - if the request is ambiguous, ask clarifying questions before proceeding (prefer asking over guessing, unless the user asks for speed — in that case, pick the simplest/fastest interpretation)
 - **for tasks involving code modifications** (writing, editing, deleting, moving files):
   - **minor changes** (typo, rename, single-line fix): implement directly, no plan needed
   - **significant changes** (new feature, refactor, multi-file edit): create a plan → ask user to confirm → implement
   - **after implementation**: run `pnpm lint`, check IDE Tailwind CSS extension diagnostics on modified files (canonical classes, unknown utilities — not caught by Biome), run `pnpm ts`, and `pnpm test` if relevant — fix any errors before delivering
+  - **update module docs**: if the change affects a module's high-level behavior or integration points, update the relevant `AGENTS.md` (or `.ai/context/*.md`). Skip implementation details — only what matters for high-level understanding
   - print a summary: start with a high-level overview (4-5 sentences max: what was done and why), then list main files modified/created with a one-liner per file
 
 ## Developer profile
@@ -24,6 +25,10 @@ For every user message:
 - No over-engineering — minimum viable solution only.
 - Proactively flag doubts, race conditions, or limitations before implementing.
 - No unsolicited changes to surrounding code.
+
+## Feedback storage
+
+When the user gives feedback that should persist (coding rules, conventions, project decisions), **always** record it in the project: this `AGENTS.md` for cross-cutting rules, or the relevant file in `.ai/context/` (e.g. `conventions.md` for code style). **Never** store project feedback in personal memory — memory is for user/session context, not project knowledge that the whole team should share.
 
 ## Context files index
 
@@ -45,7 +50,7 @@ Load these files **before** working on the related area. When in doubt, load the
 | [stack.md](.ai/context/stack.md) | Choosing a library, checking versions, upgrading dependencies |
 | [state-management.md](.ai/context/state-management.md) | React state, forms, URL params (`nuqs`), Jotai, React Query |
 | [styling.md](.ai/context/styling.md) | Any `.tsx` with UI: Tailwind, DSFR, responsive, icons, className |
-| [testing.md](.ai/context/testing.md) | Writing or running tests, adding endpoints, fixing bugs |
+| [testing.md](.ai/context/testing.md) | Writing, modifying or running ANY test (`.spec.ts` / `.integration.spec.ts`) — load BEFORE writing the first test |
 
 ## Code navigation
 
@@ -68,6 +73,4 @@ Think critically first, code second. One good question beats three iterations.
 
 ## Module-level docs
 
-Each module in `src/modules/` may have its own `AGENTS.md`. Read it when editing files in or importing from that module.
-
-25 modules: `analytics`, `app`, `auth`, `ban`, `bdnb`, `chaleur-renouvelable`, `config`, `data`, `demands`, `diagnostic`, `email`, `events`, `form`, `geo`, `jobs`, `notification`, `opendata`, `optimization`, `pro-eligibility-tests`, `reseaux`, `security`, `tags`, `tiles`, `trpc`, `users`.
+Each module in `src/modules/` may have its own `AGENTS.md`. Read it when editing files in or importing from that module. Use `glob src/modules/*/AGENTS.md` to discover which modules have one.

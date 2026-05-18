@@ -90,19 +90,6 @@ export const Text = ({ style, ...props }: React.ComponentProps<typeof ReactEmail
   />
 );
 
-export const Url = ({ style, ...props }: React.ComponentProps<typeof Text>) => (
-  <Text
-    style={{
-      color: colors.dark,
-      fontStyle: 'italic',
-      overflowWrap: 'anywhere',
-      wordBreak: 'break-all',
-      ...style,
-    }}
-    {...props}
-  />
-);
-
 export const Note = ({ style, ...props }: React.ComponentProps<typeof ReactEmailText>) => (
   <ReactEmailText
     style={{
@@ -259,9 +246,9 @@ export const Title = ({ children, style }: React.ComponentProps<typeof ReactEmai
   <Text style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px', ...style }}>{children}</Text>
 );
 
-export type LayoutModifiableProps = { preview?: string };
+type LayoutModifiableProps = { preview?: string };
 
-export type LayoutProps = LayoutModifiableProps &
+type LayoutProps = LayoutModifiableProps &
   (
     | {
         children: React.ReactNode;

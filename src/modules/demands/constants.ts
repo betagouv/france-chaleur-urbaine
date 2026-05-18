@@ -34,14 +34,28 @@ export const zSendEmailInput = z.object({
   key: z.string(),
 });
 
-const zUserDemandUpdateValues = z
+const zSubmitSurveyValues = z
   .object({
-    'Commentaire relance': z.string().nullable(),
     Sondage: z.array(z.string()).nullable(),
   })
   .partial();
 
-export type UpdateUserDemandInput = z.infer<typeof zUserDemandUpdateValues>;
+export type SubmitSurveyInput = z.infer<typeof zSubmitSurveyValues>;
+
+export const demandStatuses = [
+  { label: 'En attente de prise en charge', value: 'empty' },
+  { label: 'Non réalisable', value: 'unrealisable' },
+  { label: 'En attente d’éléments du prospect', value: 'waiting' },
+  { label: 'Étude en cours', value: 'in_progress' },
+  { label: 'Voté en AG', value: 'voted' },
+  { label: 'Travaux en cours', value: 'work_in_progress' },
+  { label: 'Réalisé', value: 'done' },
+  { label: 'Projet abandonné par le prospect', value: 'abandoned' },
+] as const;
+
+export const demandStatusDefault = demandStatuses[0].label;
+
+export type DemandStatus = (typeof demandStatuses)[number]['label'];
 
 // Zod schema for demand update values - only fields actually used in updateDemand calls
 // Analysis based on all updateDemand usage across the codebase
@@ -55,7 +69,7 @@ const zGestionnaireDemandUpdateValues = z
     'Gestionnaire Distance au réseau': z.number().nullable(),
 
     // Status & Contact
-    Status: z.string(), // DemandStatus | ''
+    Status: z.enum([...demandStatuses.map((s) => s.label), '']),
     'Prise de contact': z.boolean(),
 
     // Communication
@@ -73,16 +87,6 @@ export type UpdateGestionnaireDemandInput = z.infer<typeof zGestionnaireDemandUp
 export const zAdminDemandUpdateValues = z
   // biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
   .object({
-    // Tags & Assignment
-    Gestionnaires: z.union([z.string(), z.array(z.string()), z.null()]),
-    'Affecté à': z.union([z.string(), z.array(z.string()), z.null()]),
-    'Gestionnaires validés': z.boolean(),
-
-    // Network info
-    'Distance au réseau': z.number().nullable(),
-    'Identifiant réseau': z.string().nullable(),
-    'Nom réseau': z.string().nullable(),
-
     // Status & Contact
     'Relance à activer': z.boolean(),
     'Relance ID': z.string().nullable(),
@@ -97,11 +101,11 @@ export const zAdminDemandUpdateValues = z
 
 export type UpdateAdminDemandInput = z.infer<typeof zAdminDemandUpdateValues>;
 
-export type UpdateDemandInput = UpdateGestionnaireDemandInput & UpdateAdminDemandInput & UpdateUserDemandInput;
+export type UpdateDemandInput = UpdateGestionnaireDemandInput & UpdateAdminDemandInput & SubmitSurveyInput;
 
-export const zUserUpdateDemandInput = z.object({
+export const zSubmitSurveyInput = z.object({
   demandId: z.string(),
-  values: zUserDemandUpdateValues,
+  values: zSubmitSurveyValues,
 });
 
 export const zGestionnaireUpdateDemandInput = z.object({
@@ -363,22 +367,6 @@ export const zCreateBatchDemandInput = z.object({
 });
 
 export type CreateBatchDemandInput = z.infer<typeof zCreateBatchDemandInput>;
-
-export const demandStatuses = [
-  { label: 'En attente de prise en charge', value: 'empty' },
-  { label: 'Non réalisable', value: 'unrealisable' },
-  { label: 'En attente d’éléments du prospect', value: 'waiting' },
-  { label: 'Étude en cours', value: 'in_progress' },
-  { label: 'Voté en AG', value: 'voted' },
-  { label: 'Travaux en cours', value: 'work_in_progress' },
-  { label: 'Réalisé', value: 'done' },
-  { label: 'Projet abandonné par le prospect', value: 'abandoned' },
-] as const;
-
-export const demandStatusDefault = demandStatuses[0].label;
-
-export type DemandStatus = (typeof demandStatuses)[number]['label'];
-
 export const referrers = [
   { label: 'Moteur de recherche' },
   { label: 'Pub web' },

@@ -26,12 +26,12 @@ const DemandSondageForm = ({ addressData = {}, cardMode }: { addressData: Addres
     }
   };
 
-  const updateMutation = trpc.demands.user.update.useMutation();
+  const submitSurveyMutation = trpc.demands.user.submitSurvey.useMutation();
 
   const sendSondage = toastErrors(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    await updateMutation.mutateAsync({
+    await submitSurveyMutation.mutateAsync({
       demandId: addressData.demandId as string,
       values: {
         Sondage: sondage.includes('Autre') ? [...sondage, other] : sondage,

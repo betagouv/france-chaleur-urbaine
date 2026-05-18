@@ -10,15 +10,20 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import Dialog from '@/components/ui/Dialog';
 import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Heading from '@/components/ui/Heading';
-import ModalSimple from '@/components/ui/ModalSimple';
+import Loader from '@/components/ui/Loader';
 import Text from '@/components/ui/Text';
+import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { notify, toastErrors } from '@/modules/notification';
+import type { Permission, PermissionType, PermissionWithLabel } from '@/modules/permissions/types';
+import trpc from '@/modules/trpc/client';
 import { structureTypesLabels } from '@/modules/users/constants';
+import type { User } from '@/modules/users/server/service';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
 import type { UserRole } from '@/types/enum/UserRole';
@@ -29,14 +34,97 @@ import type { AdminUsersStats } from '../api/admin/users-stats';
 
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
-const startImpersonation = toastErrors(async (impersonateConfig: { role: UserRole; gestionnaires?: string[] | null }) => {
-  await postFetchJSON('/api/admin/impersonate', {
-    role: impersonateConfig.role,
-    ...(impersonateConfig.role === 'gestionnaire' && { gestionnaires: impersonateConfig.gestionnaires }),
-  });
-  // trigger a full reload
-  location.href = '/pro/tableau-de-bord';
-});
+const permissionTypePluralLabels: Record<PermissionType, string> = {
+  commune: 'Communes',
+  departement: 'Départements',
+  epci: 'EPCI',
+  ept: 'EPT',
+  national: 'National',
+  region: 'Régions',
+  reseau_de_chaleur: 'Réseaux existants',
+  reseau_en_construction: 'Réseaux en construction',
+};
+
+function formatPermissionSummary(permissions: PermissionWithLabel[]): string {
+  if (permissions.some((p) => p.type === 'national')) return 'National';
+
+  const parts: string[] = [];
+
+  const networks = permissions.filter((p) => p.type === 'reseau_de_chaleur' || p.type === 'reseau_en_construction');
+  if (networks.length > 0) {
+    parts.push(`${networks.length} réseau${networks.length > 1 ? 'x' : ''}`);
+  }
+
+  const territories = permissions.filter(
+    (p) => p.type !== 'reseau_de_chaleur' && p.type !== 'reseau_en_construction' && p.type !== 'national'
+  );
+  if (territories.length > 0) {
+    const byType = new Map<string, PermissionWithLabel[]>();
+    for (const p of territories) {
+      const list = byType.get(p.type) ?? [];
+      list.push(p);
+      byType.set(p.type, list);
+    }
+
+    const shortLabels: Record<string, [string, string]> = {
+      commune: ['commune', 'communes'],
+      departement: ['dép.', 'dép.'],
+      epci: ['EPCI', 'EPCI'],
+      ept: ['EPT', 'EPT'],
+      region: ['région', 'régions'],
+    };
+
+    for (const [type, perms] of byType) {
+      if (perms.length === 1) {
+        parts.push(perms[0].label);
+      } else {
+        const [, plural] = shortLabels[type] ?? [type, type];
+        parts.push(`${perms.length} ${plural}`);
+      }
+    }
+  }
+
+  return parts.join(', ');
+}
+
+function PermissionTooltipContent({ permissions }: { permissions: PermissionWithLabel[] }) {
+  const groups: [PermissionType, PermissionWithLabel[]][] = [];
+  for (const p of permissions) {
+    const existing = groups.find(([type]) => type === p.type);
+    if (existing) {
+      existing[1].push(p);
+    } else {
+      groups.push([p.type, [p]]);
+    }
+  }
+
+  return (
+    <div className="space-y-1.5">
+      {groups.map(([type, perms]) => (
+        <div key={type}>
+          <div className="font-semibold">{permissionTypePluralLabels[type]}</div>
+          {type !== 'national' && (
+            <ul className="list-none pl-0 m-0">
+              {perms.map((p) => (
+                <li key={p.resource_id}>{p.label}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const startImpersonation = toastErrors(
+  async (impersonateConfig: { role: UserRole; permissions?: Pick<Permission, 'type' | 'resource_id'>[] }) => {
+    await postFetchJSON('/api/admin/impersonate', {
+      role: impersonateConfig.role,
+      ...(impersonateConfig.permissions?.length ? { permissions: impersonateConfig.permissions } : {}),
+    });
+    location.href = '/pro/tableau-de-bord';
+  }
+);
 
 const initialSortingState: SortingState = [
   {
@@ -61,13 +149,20 @@ export default function ManageUsers() {
   const {
     items: users,
     isLoading,
+    refetch: refetchUsers,
     create: createUser,
     update: updateUser,
     delete: deleteUser,
     isUpdatingId: updatingUserId,
     isCreating: creatingUser,
     isDeletingId: deletingUserId,
-  } = useCrud<UsersResponse>('/api/admin/users');
+  } = useCrud<UsersResponse, User[]>('/api/admin/users');
+
+  const setPermissions = trpc.permissions.admin.setForUser.useMutation({
+    onSuccess: () => {
+      void refetchUsers();
+    },
+  });
 
   const handleUpdateUser = (userId: string) =>
     toastErrors(async (userUpdate: UsersResponse['updateInput']) => {
@@ -78,13 +173,19 @@ export default function ManageUsers() {
       notify('success', 'Utilisateur mis à jour');
     });
 
-  const handleCreateUser = toastErrors(async (userCreate: UsersResponse['createInput']) => {
-    await createUser(userCreate);
+  const handleCreateUser = toastErrors(async (userCreate: UsersResponse['createInput'], permissions?: Permission[]) => {
+    const result = await createUser(userCreate);
+    if (permissions && permissions.length > 0 && result?.item?.id) {
+      await setPermissions.mutateAsync({
+        permissions,
+        userId: result.item.id,
+      });
+    }
     void setUserId(null);
     notify('success', 'Utilisateur créé');
   });
 
-  const columns: ColumnDef<UsersResponse['listItem']>[] = useMemo(
+  const columns: ColumnDef<User>[] = useMemo(
     () => [
       {
         accessorKey: 'email',
@@ -109,9 +210,27 @@ export default function ManageUsers() {
       {
         accessorKey: 'role',
         align: 'center',
-        cell: (info) => <UserRoleBadge role={info.getValue<UserRole>()} />,
+        cell: (info) => {
+          const role = info.getValue<UserRole>();
+          const perms = info.row.original.permissions;
+
+          const content = (
+            <div className="flex flex-col items-center gap-1">
+              <UserRoleBadge role={role} />
+              {perms.length > 0 && <span className="text-xs text-faded">{formatPermissionSummary(perms)}</span>}
+            </div>
+          );
+
+          return perms.length > 0 ? (
+            <Tooltip title={<PermissionTooltipContent permissions={perms} />}>
+              <div className="cursor-help">{content}</div>
+            </Tooltip>
+          ) : (
+            content
+          );
+        },
         filterType: 'Facets',
-        flex: 1.5,
+        flex: 1.6,
         header: 'Role',
       },
       {
@@ -137,12 +256,13 @@ export default function ManageUsers() {
                   void handleUpdateUser(info.row.original.id)({ gestionnaires: newGestionnaires });
                 }}
                 multiple
+                disabled
               />
             )
           );
         },
         flex: 3,
-        header: 'Tags gestionnaire',
+        header: 'Tags gestionnaire (obsolète)',
         id: 'gestionnaires',
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.gestionnaires?.[0], rowB.original.gestionnaires?.[0]),
       },
@@ -199,7 +319,11 @@ export default function ManageUsers() {
               icon: 'ri-spy-line',
               id: 'impersonate',
               label: 'Adopter le profil',
-              onClick: () => startImpersonation(row.original),
+              onClick: () =>
+                startImpersonation({
+                  permissions: row.original.permissions?.map(({ resource_id, type }) => ({ resource_id, type })),
+                  role: row.original.role,
+                }),
             },
             {
               icon: row.original.active ? 'ri-delete-back-2-line' : 'ri-refresh-line',
@@ -257,20 +381,23 @@ export default function ManageUsers() {
 
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
-      <ModalSimple
+      <Dialog
         open={!!userId}
-        onOpenChange={() => setUserId(null)}
+        onOpenChange={(open) => {
+          if (!open) setUserId(null);
+        }}
         title={editingUser ? 'Modifier un utilisateur' : 'Créer un utilisateur'}
-        loading={isLoading}
       >
-        {isLoading ? null : editingUser ? (
+        {isLoading ? (
+          <Loader size="lg" variant="section" />
+        ) : editingUser ? (
           <UserForm loading={!!updatingUserId} onSubmit={handleUpdateUser(userId as string)} user={editingUser} />
         ) : userId === 'new' ? (
           <UserForm loading={creatingUser} onSubmit={handleCreateUser} />
         ) : (
           <span>Utilisateur non trouvé</span>
         )}
-      </ModalSimple>
+      </Dialog>
       <Box py="4w" className="fr-container">
         <Heading as="h1" color="blue-france">
           Gestion des utilisateurs

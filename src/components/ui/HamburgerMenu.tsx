@@ -1,3 +1,4 @@
+import type { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 import { Fragment, type ReactNode } from 'react';
 
 import Button from '@/components/ui/Button';
@@ -7,11 +8,13 @@ import cx from '@/utils/cx';
 export type HamburgerMenuItem = {
   id: string;
   label: string;
-  icon?: string;
-  variant?: 'destructive';
+  icon?: FrIconClassName | RiIconClassName;
+  variant?: 'destructive' | 'warning';
   href?: string;
+  target?: string;
   onClick?: () => void;
   disabled?: boolean;
+  loading?: boolean;
 };
 
 export type HamburgerMenuProps = {
@@ -41,26 +44,37 @@ const HamburgerMenu = ({ items, trigger, className }: HamburgerMenuProps) => {
         <div className="min-w-48">
           <ul className="flex flex-col pl-0 list-none" role="menu">
             {items.map((item, index) => {
+              const iconClassName = item.loading ? 'ri-loader-3-line animate-spin' : item.icon;
               const itemContent = (
                 <>
-                  {item.icon && <i className={cx(item.icon, 'mr-2 shrink-0 text-sm')} aria-hidden="true" />}
+                  {iconClassName && <i className={cx(iconClassName, 'mr-2 shrink-0 text-sm')} aria-hidden="true" />}
                   <span className="whitespace-nowrap">{item.label}</span>
                 </>
               );
 
+              const isDisabled = item.disabled || item.loading;
               const itemClassName = cx(
                 'flex items-center w-full px-3 py-2 text-xs',
                 item.variant === 'destructive'
                   ? 'text-red-600 hover:bg-red-50! focus:bg-red-50!'
-                  : 'text-gray-700 hover:bg-gray-100! focus:bg-gray-100!',
-                item.disabled && 'opacity-50 cursor-not-allowed'
+                  : item.variant === 'warning'
+                    ? 'text-orange-600 hover:bg-orange-50! focus:bg-orange-50!'
+                    : 'text-gray-700 hover:bg-gray-100! focus:bg-gray-100!',
+                isDisabled && 'opacity-50 cursor-not-allowed'
               );
 
               return (
                 <Fragment key={item.id}>
                   <li className="pb-0!">
                     {item.href ? (
-                      <a href={item.href} className={cx(itemClassName, 'bg-none')} role="menuitem" aria-disabled={item.disabled}>
+                      <a
+                        href={item.href}
+                        target={item.target}
+                        rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
+                        className={cx(itemClassName, 'bg-none')}
+                        role="menuitem"
+                        aria-disabled={isDisabled}
+                      >
                         {itemContent}
                       </a>
                     ) : (
@@ -68,7 +82,7 @@ const HamburgerMenu = ({ items, trigger, className }: HamburgerMenuProps) => {
                         type="button"
                         className={cx(itemClassName)}
                         role="menuitem"
-                        disabled={item.disabled}
+                        disabled={isDisabled}
                         onClick={() => item.onClick?.()}
                       >
                         {itemContent}

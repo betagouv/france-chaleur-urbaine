@@ -33,7 +33,7 @@
 
 ## Language
 
-- **Code**: always English (variables, functions, types, comments, docs).
+- **Code**: always English (variables, functions, types, comments, docs). When extending an existing block of comments/docs, match the surrounding language — never mix French and English in the same comment, docstring, or paragraph (the English code rule means surrounding context will already be English).
 - **AI docs** (markdown files: `AGENTS.md`, `.ai/context/*.md`): always English.
 - **UI text**: always French (labels, messages, placeholders, errors shown to users).
 - **Zod error messages**: French when user-facing, English when developer-facing.
@@ -62,11 +62,15 @@
 - Use `function` declarations for components (not arrow functions).
 - Use arrow functions for callbacks, utility functions, and handlers.
 - Keep components under 150 lines — extract sub-components if longer.
+- **One exported component per file.** Never co-locate multiple exported components in the same file — split into separate files named after each component (PascalCase, matches the component name).
+- **Always define a `<ComponentName>Props` type** for each component above its declaration. Never inline the props type in the function signature: `function Foo({ x }: { x: string })` → use `type FooProps = { x: string }; function Foo({ x }: FooProps)`.
 - Place the props/params type definition immediately above the function/component that uses it, with no other definitions in between.
 - Add a short multi-line TSDoc comment above each React component describing its purpose (1-3 content lines):
 - No `forwardRef` unless absolutely necessary.
 - Guard clauses for early returns instead of nested `if/else`.
 - Explicit names over abbreviations (`networkIdentifier` not `netId`).
+- **Never use single-letter or shortened variable names** (`r`, `n`, `el`, `ev`, `idx`, `tmp`, `acc`). Always spell the role: `reminder`, `network`, `element`, `event`, `index`, `temp`, `accumulator`. Applies to parameters, callbacks (`map`/`filter`/`reduce`), and local variables — no exceptions for short scopes.
+- **Any `for` loop is a smell** — first try a functional pipeline (`map`/`filter`/`reduce`/`flatMap`/`Set`/`Object.fromEntries`). Each step names one operation, intent reads top-to-bottom. Keep the loop only when the pipeline would force multiple passes on a hot path, or when early-exit (`break`) is the natural shape.
 
 ## TypeScript patterns
 
@@ -82,6 +86,19 @@
   // Bad
   type Result = { success: boolean; data?: User; error?: string }
   ```
+- **No useless defensive checks.** Verify the type before adding `?.`, `!!`, `&&`-truthiness, or null guards. If the type guarantees non-null/non-empty, drop the check. Example: `perms: PermissionWithLabel[]` → use `perms.length > 0`, not `perms && perms.length > 0`.
+- **Ternary at the return.** Any function (or callback, or `useMemo`) whose body is `if (cond) { return A; } return B;` must be rewritten as `return cond ? A : B;`. Applies to nested cases too — chain ternaries rather than stacking `if`/`return` pairs.
+- **One statement per line.** Never put two statements on the same line. In particular, never put an `if`/`else`/`for`/`while` and another statement (return, assignment, call) on the same line — always break the body onto its own indented line, even for single-statement bodies.
+- **Avoid casts.** Casts (`as Foo`) are a smell — they bypass the type checker. Before adding one, check whether an existing typed helper (browse `src/utils/`), `satisfies`, a discriminated union, or a generic can produce the right type. Casts are acceptable only for narrow, justified cases (e.g. an unavoidable external boundary).
+- **Rely on inference.** Never annotate the type of a local `const`/`let`, a hook result (`useMemo`, `useState`, `useCallback`), or an internal helper's return when TypeScript already infers it correctly. Annotate only at boundaries (exported functions, public props, public types) or when inference is ambiguous/expensive. Redundant annotations add noise and obscure when an annotation actually carries intent.
+
+## Environment variables
+
+- **Never use `process.env` directly** — always use the validated config objects.
+- Server-side: `import { serverConfig } from '@/server/config'` → `serverConfig.MY_VAR`
+- Client-side: `import { clientConfig } from '@/client-config'` → `clientConfig.myVar`
+- When adding a new variable: add it to `serverConfigSchema` in `src/server/config.ts` (or the client config), AND to `.env.example`.
+- Both configs use Zod validation — bypassing them loses type safety and runtime validation.
 
 ## Error handling patterns
 
@@ -97,6 +114,30 @@
 - `// HACK:` for workarounds (explain why + when to remove).
 - No commented-out code — delete it.
 - No JSDoc except on complex public utility functions.
+
+## AI communication style
+
+- Never present multiple contradictory options that go back and forth. Think through all tradeoffs internally first, then deliver ONE clear, definitive recommendation.
+- If there are genuine tradeoffs the user needs to weigh, present them as a clean comparison — not a narrative that contradicts itself paragraph by paragraph.
+- No "actually wait", no "let me reconsider", no live stream of internal deliberation.
+
+## HTTP calls to external APIs
+
+Never use raw `fetch`. Use helpers from `@/utils/network`:
+- `postFetchJSON / putFetchJSON / patchFetchJSON / deleteFetchJSON(url, body?, headers?)` for mutation methods
+- `fetchJSON(url, init?)` for GET — pass `headers` inside `init`
+
+They handle `Content-Type: application/json`, JSON parsing, and throw `FetchError` on non-OK responses.
+
+## Environment variables
+
+Never access `process.env` directly. Always use the typed config objects:
+- **Server-side**: `serverConfig` from `@/server/config` — Zod-validated, typed.
+- **Client-side**: `clientConfig` from `@/client-config` — Zod-validated, typed.
+
+When adding a new env var:
+1. Add it to `serverConfigSchema` (or client schema) in `src/server/config.ts`.
+2. Add it with a placeholder value to `.env.example`.
 
 ## Pre-commit checklist
 

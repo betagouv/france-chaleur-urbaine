@@ -801,7 +801,7 @@ const TableSimple = <T extends RowData>({
                             column.setFilterValue(newValue);
                           }}
                           filterProps={columnDef.filterProps as any}
-                          facetedMinMaxValues={facetedMinMaxValues as any}
+                          facetedMinMaxValues={facetedMinMaxValues}
                           facetedUniqueValues={facetedUniqueValues}
                           cellType={columnDef.cellType}
                         />

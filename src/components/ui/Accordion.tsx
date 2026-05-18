@@ -1,5 +1,6 @@
 import DsfrAccordion, { type AccordionProps as DsfrAccordionProps } from '@codegouvfr/react-dsfr/Accordion';
 import { useQueryState } from 'nuqs';
+import { useCallback, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 import Tooltip from '@/components/ui/Tooltip';
@@ -112,10 +113,43 @@ export type AccordionProps = DsfrAccordionProps & {
   bordered?: boolean;
   disabled?: boolean;
   help?: React.ReactNode;
+  /** When true, children are not rendered until the accordion has been opened at least once. */
+  lazy?: boolean;
   onClose?: (evt: React.MouseEvent<HTMLElement>) => void;
 };
 
-const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, simple, bordered, onClose, disabled, ...props }) => {
+const Accordion: React.FC<AccordionProps> = ({
+  children,
+  small,
+  label,
+  help,
+  simple,
+  bordered,
+  onClose,
+  disabled,
+  lazy,
+  defaultExpanded,
+  ...props
+}) => {
+  const isControlled = props.expanded !== undefined;
+  const [internalExpanded, setInternalExpanded] = useState(defaultExpanded ?? false);
+  const expanded = isControlled ? props.expanded : internalExpanded;
+
+  const hasBeenExpanded = useRef(!!expanded);
+  if (expanded) {
+    hasBeenExpanded.current = true;
+  }
+
+  const handleExpandedChange = useCallback(
+    (newExpanded: boolean, e: React.MouseEvent<HTMLButtonElement>) => {
+      if (!isControlled) {
+        setInternalExpanded(newExpanded);
+      }
+      props.onExpandedChange?.(newExpanded, e);
+    },
+    [isControlled, props.onExpandedChange]
+  );
+
   return (
     <StyledAccordion
       $small={small}
@@ -145,8 +179,10 @@ const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, sim
         </>
       }
       {...props}
+      expanded={expanded}
+      onExpandedChange={handleExpandedChange}
     >
-      {children}
+      {lazy && !hasBeenExpanded.current ? '' : children}
     </StyledAccordion>
   );
 };

@@ -1,6 +1,8 @@
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
-import { useCallback, useMemo, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
@@ -11,14 +13,15 @@ import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
 import Icon from '@/components/ui/Icon';
-import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import ModalSimple from '@/components/ui/ModalSimple';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
+import AccessCountsCell from '@/modules/demands/client/AccessCountsCell';
 import AdditionalInformation from '@/modules/demands/client/AdditionalInformation';
+import AffectedNetworkCell from '@/modules/demands/client/AffectedNetworkCell';
 import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
 import Contacted from '@/modules/demands/client/Contacted';
@@ -29,10 +32,13 @@ import { toastErrors } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
 import { DEMANDE_STATUS, type DemandStatus } from '@/types/enum/DemandSatus';
+import type { UserRole } from '@/types/enum/UserRole';
 import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { ExportColumn } from '@/utils/export';
+import { pick } from '@/utils/objects';
+import { ObjectKeys } from '@/utils/typescript';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
@@ -106,75 +112,126 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
     accessorKey: 'Affecté à',
     name: 'Affecté à',
   },
+  {
+    accessorFn: (demand) => demand.access_counts.gestionnaire,
+    name: 'Gestionnaires avec accès',
+  },
+  {
+    accessorFn: (demand) => demand.access_counts.collectivite,
+    name: 'Collectivités avec accès',
+  },
+  {
+    accessorFn: (demand) => demand.access_counts.alec,
+    name: 'ALEC avec accès',
+  },
+  {
+    accessorFn: (demand) => demand.access_counts.ccrt,
+    name: 'CCRT avec accès',
+  },
+  {
+    accessorFn: (demand) => (demand.is_responsible ? 'Oui' : 'Non'),
+    name: 'À traiter par moi',
+  },
 ];
 
-const quickFilterPresets = {
+const traiteesStatusFilterValue: Record<DemandStatus, boolean> = {
+  [DEMANDE_STATUS.EMPTY]: false,
+  [DEMANDE_STATUS.UNREALISABLE]: true,
+  [DEMANDE_STATUS.WAITING]: true,
+  [DEMANDE_STATUS.IN_PROGRESS]: true,
+  [DEMANDE_STATUS.VOTED]: true,
+  [DEMANDE_STATUS.WORK_IN_PROGRESS]: true,
+  [DEMANDE_STATUS.DONE]: true,
+  [DEMANDE_STATUS.ABANDONNED]: true,
+};
+
+// biome-ignore assist/source/useSortedKeys: presets are intentionally ordered for UI priority
+const allPresetDefinitions = {
+  aTraiter: {
+    filters: [
+      { id: 'is_responsible', value: { false: false, true: true } },
+      { id: 'Status', value: { [DEMANDE_STATUS.EMPTY]: true } },
+      { id: 'Prise de contact', value: { false: true, true: false } },
+    ],
+    getStat: (demands) =>
+      demands.filter((demand) => demand.is_responsible && demand.Status === DEMANDE_STATUS.EMPTY && !demand['Prise de contact']).length,
+    label: (
+      <>
+        demandes à traiter&nbsp;
+        <Tooltip title="Demandes que vous devez traiter en priorité : non encore prises en charge et relevant de votre périmètre." />
+      </>
+    ),
+    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
+  },
+  traitees: {
+    filters: [
+      { id: 'is_responsible', value: { false: false, true: true } },
+      { id: 'Status', value: traiteesStatusFilterValue },
+    ],
+    getStat: (demands) => demands.filter((demand) => demand.is_responsible && demand.Status !== DEMANDE_STATUS.EMPTY).length,
+    label: (
+      <>
+        demandes traitées&nbsp;
+        <Tooltip title="Demandes relevant de votre périmètre dont le statut a évolué." />
+      </>
+    ),
+  },
+  nonAffectees: {
+    filters: [{ id: 'network_id', value: 'empty' }],
+    getStat: (demands) => demands.filter((demand) => demand.network_id == null).length,
+    label: (
+      <>
+        demandes non affectées&nbsp;
+        <Tooltip title="Demandes sans réseau de chaleur affecté." />
+      </>
+    ),
+  },
+  nonRealisables: {
+    filters: [{ id: 'Status', value: { [DEMANDE_STATUS.UNREALISABLE]: true } }],
+    getStat: (demands) => demands.filter((demand) => demand.Status === DEMANDE_STATUS.UNREALISABLE).length,
+    label: (
+      <>
+        demandes non réalisables&nbsp;
+        <Tooltip title="Demandes dont le statut est « Non réalisable »." />
+      </>
+    ),
+  },
+  enPDP: {
+    filters: [{ id: 'en PDP', value: { Non: false, Oui: true } }],
+    getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
+    label: (
+      <>
+        demandes en PDP&nbsp;
+        <Tooltip title="Demandes situées dans un périmètre de développement prioritaire." />
+      </>
+    ),
+  },
   all: {
     filters: [],
     getStat: (demands) => demands.length,
     label: 'demandes totales',
   },
-  demandesAHautPotentiel: {
-    filters: [{ id: 'haut_potentiel', value: { false: false, true: true } }],
-    getStat: (demands) => demands.filter((demand) => demand.haut_potentiel).length,
-    label: (
-      <>
-        demandes à haut potentiel&nbsp;
-        <Tooltip
-          title={
-            <>
-              Comptabilise les demandes en chauffage collectif à moins de 100m d’un réseau (moins de 60m sur Paris), ou à plus de 100
-              logements, ou tertiaires.
-            </>
-          }
-        />
-      </>
-    ),
-    valueSuffix: <Badge type="haut_potentiel" />,
-  },
-  demandesATraiter: {
-    filters: [
-      { id: 'Status', value: { 'En attente de prise en charge': true } },
-      { id: 'Prise de contact', value: { false: true, true: false } },
-    ],
-    getStat: (demands) =>
-      demands.filter((demand) => demand.Status === 'En attente de prise en charge' && !demand['Prise de contact']).length,
-    label: (
-      <>
-        demandes à traiter&nbsp;
-        <Tooltip
-          title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
-        />
-      </>
-    ),
-    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
-  },
-  demandesDansPDP: {
-    filters: [
-      {
-        id: 'en PDP',
-        value: { Non: false, Oui: true },
-      },
-    ],
-    getStat: (demands) => demands.filter((demand) => demand['en PDP'] === 'Oui').length,
-    label: (
-      <>
-        demandes en PDP&nbsp;
-        <Tooltip
-          title={
-            <>
-              Périmètre de développement prioritaire (PDP) d'un réseau classé, dans lequel peut s'appliquer une obligation de raccordement.{' '}
-              <Link href="/ressources/obligations-raccordement#contenu" isExternal>
-                En savoir plus
-              </Link>
-            </>
-          }
-        />
-      </>
-    ),
-    valueSuffix: <Badge type="pdp" />,
-  },
 } satisfies Record<string, QuickFilterPreset<DemandsListItem>>;
+
+type PresetKey = keyof typeof allPresetDefinitions;
+
+const allPresetKeys = ObjectKeys(allPresetDefinitions);
+
+/**
+ * Presets visibles par rôle (hors `aTraiter`, géré séparément via la permission réseau).
+ */
+const presetsByRole: Partial<Record<UserRole, PresetKey[]>> = {
+  admin: ['all', 'nonRealisables', 'enPDP'],
+  alec: ['all', 'nonAffectees', 'nonRealisables', 'enPDP'],
+  ccrt: ['all', 'nonAffectees', 'nonRealisables', 'enPDP'],
+  collectivite: ['all', 'nonAffectees', 'enPDP'],
+  gestionnaire: ['traitees', 'all'],
+};
+
+const getAvailablePresetKeys = (role: UserRole | undefined, hasPermissionReseau: boolean): PresetKey[] => {
+  const rolePresets = (role && presetsByRole[role]) ?? ['all'];
+  return hasPermissionReseau ? ['aTraiter', ...rolePresets] : rolePresets;
+};
 
 const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 
@@ -184,16 +241,45 @@ const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
 let isUpdatingDemandField = false;
 
 function DemandesNew(): React.ReactElement {
+  const { data: session } = useSession();
+  const currentUserId = session?.user?.id ?? '';
+  const userRole = session?.user?.role;
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [modalDemand, setModalDemand] = useState<DemandsListItem | null>(null);
   const tableRowSelection = useMemo(() => {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
   }, [selectedDemandId]);
 
+  const { data: userPermissions } = trpc.permissions.mine.useQuery(undefined, { enabled: !!userRole });
+  const hasPermissionReseau = (userPermissions ?? []).some((permission) => permission.type === 'reseau_de_chaleur');
+
+  const availablePresetKeys = useMemo(() => getAvailablePresetKeys(userRole, hasPermissionReseau), [userRole, hasPermissionReseau]);
+
+  const quickFilterPresets = useMemo(() => pick(allPresetDefinitions, availablePresetKeys), [availablePresetKeys]);
+
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [presetKey, setPresetKey] = useQueryState('preset', parseAsStringLiteral(allPresetKeys));
+  const activePresetKey = useMemo(
+    () =>
+      presetKey && availablePresetKeys.includes(presetKey) ? presetKey : availablePresetKeys.includes('aTraiter') ? 'aTraiter' : 'all',
+    [presetKey, availablePresetKeys]
+  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(allPresetDefinitions[activePresetKey].filters);
   const [filteredDemands, setFilteredDemands] = useState<DemandsListItem[]>([]);
+
+  // Sync filters when preset changes from URL (browser back/forward) or when role/permissions resolve.
+  useEffect(() => {
+    setColumnFilters(allPresetDefinitions[activePresetKey].filters);
+  }, [activePresetKey]);
+
+  const handlePresetFiltersChange = useCallback(
+    (newFilters: ColumnFiltersState, newPresetKey: PresetKey | null) => {
+      setColumnFilters(newFilters);
+      void setPresetKey(newPresetKey ?? 'all');
+    },
+    [setPresetKey]
+  );
 
   const { data: demands = [], isLoading } = trpc.demands.gestionnaire.list.useQuery();
 
@@ -219,18 +305,15 @@ function DemandesNew(): React.ReactElement {
   const utils = trpc.useUtils();
   const { mutateAsync: updateDemandMutation } = trpc.demands.gestionnaire.update.useMutation();
 
+  const handleEmailClick = useCallback((demand: Demand) => setModalDemand(demand as unknown as DemandsListItem), []);
+
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<Demand>) => {
       isUpdatingDemandField = true; // prevent the map from being centered on the first demand
       await updateDemandMutation({ demandId, values: demandUpdate });
 
       utils.demands.gestionnaire.list.setData(undefined, (demands) =>
-        (demands ?? []).map((demand) => {
-          if (demand.id === demandId) {
-            return { ...demand, ...demandUpdate } as DemandsListItem;
-          }
-          return demand;
-        })
+        (demands ?? []).map((demand) => (demand.id === demandId ? ({ ...demand, ...demandUpdate } as DemandsListItem) : demand))
       );
     }),
     [utils, updateDemandMutation]
@@ -242,10 +325,8 @@ function DemandesNew(): React.ReactElement {
         align: 'center',
         cell: ({ row }) => (
           <div className="flex flex-col gap-2">
-            {row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
-              <Tooltip
-                title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée. La colonne "Affecté à" du tableau indique le gestionnaire à qui la demande a été transmise pour traitement.`}
-              >
+            {row.original.is_responsible && row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
+              <Tooltip title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée.`}>
                 <Icon name="fr-icon-flag-fill" size="sm" color="red" />
               </Tooltip>
             )}
@@ -258,7 +339,9 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'Status',
-        cell: ({ row }) => <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} />,
+        cell: ({ row }) => (
+          <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={!row.original.is_responsible} />
+        ),
         enableGlobalFilter: false,
         filterProps: {
           Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
@@ -270,7 +353,9 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'Prise de contact',
         align: 'center',
-        cell: ({ row }) => <Contacted demand={row.original as unknown as Demand} updateDemand={updateDemand} />,
+        cell: ({ row }) => (
+          <Contacted demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={!row.original.is_responsible} />
+        ),
         enableGlobalFilter: false,
         filterType: 'Facets',
         header: 'Prospect recontacté',
@@ -278,7 +363,9 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={() => setModalDemand(row.original)} />,
+        cell: ({ row }) => (
+          <Contact demand={row.original as unknown as Demand} onEmailClick={handleEmailClick} disabled={!row.original.is_responsible} />
+        ),
         enableSorting: false,
         header: 'Contact',
         width: '280px',
@@ -337,14 +424,10 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'Distance au réseau',
-        cell: ({ row }) => (
-          <AdditionalInformation
-            demand={row.original as unknown as Demand}
-            field="Distance au réseau"
-            updateDemand={updateDemand}
-            type="number"
-          />
-        ),
+        cell: ({ row }) => {
+          const distance = row.original['Distance au réseau'];
+          return distance != null ? <span>{distance}</span> : null;
+        },
         enableGlobalFilter: false,
         filterProps: {
           domain: [0, 1000],
@@ -365,35 +448,24 @@ function DemandesNew(): React.ReactElement {
         width: '120px',
       },
       {
-        accessorKey: 'testAddress.eligibility.id_sncu',
-        cell: (info) => {
-          const demand = info.row.original;
-          const testAddress = demand.testAddress;
-          return (
-            <div className="flex items-start gap-2 flex-col justify-start">
-              <div className="font-bold">{testAddress.eligibility?.id_sncu || ''}</div>
-              {testAddress.eligibility?.nom || (testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0) ? (
-                <div className="text-xs text-gray-500">
-                  {testAddress.eligibility?.distance && testAddress.eligibility?.distance > 0 && (
-                    <>
-                      <strong>{testAddress.eligibility?.distance}m</strong> de{' '}
-                    </>
-                  )}
-                  {testAddress.eligibility?.nom}
-                </div>
-              ) : null}
-            </div>
-          );
-        },
+        accessorFn: (row) => row.network_name ?? '',
+        cell: ({ row }) => <AffectedNetworkCell demand={row.original} currentUserId={currentUserId} />,
         enableSorting: false,
         filterType: 'Facets',
-        header: 'Réseau le plus proche',
-        width: '200px',
+        header: 'Réseau affecté',
+        id: 'network_name',
+        width: '260px',
       },
       {
         accessorKey: 'Logement',
         cell: ({ row }) => (
-          <AdditionalInformation demand={row.original as unknown as Demand} field="Logement" updateDemand={updateDemand} type="number" />
+          <AdditionalInformation
+            demand={row.original as unknown as Demand}
+            field="Logement"
+            updateDemand={updateDemand}
+            type="number"
+            disabled={!row.original.is_responsible}
+          />
         ),
         enableGlobalFilter: false,
         filterType: 'Range',
@@ -409,6 +481,7 @@ function DemandesNew(): React.ReactElement {
             field="Surface en m2"
             updateDemand={updateDemand}
             type="number"
+            disabled={!row.original.is_responsible}
           />
         ),
         enableGlobalFilter: false,
@@ -422,7 +495,13 @@ function DemandesNew(): React.ReactElement {
       {
         accessorKey: 'Conso',
         cell: ({ row }) => (
-          <AdditionalInformation demand={row.original as unknown as Demand} field="Conso" updateDemand={updateDemand} type="number" />
+          <AdditionalInformation
+            demand={row.original as unknown as Demand}
+            field="Conso"
+            updateDemand={updateDemand}
+            type="number"
+            disabled={!row.original.is_responsible}
+          />
         ),
         enableGlobalFilter: false,
         filterProps: {
@@ -434,43 +513,27 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorKey: 'comment_gestionnaire',
-        cell: ({ row }) => <Comment demand={row.original as unknown as Demand} field="comment_gestionnaire" updateDemand={updateDemand} />,
+        cell: ({ row }) => (
+          <Comment
+            demand={row.original as unknown as Demand}
+            field="comment_gestionnaire"
+            updateDemand={updateDemand}
+            disabled={!row.original.is_responsible}
+          />
+        ),
         enableSorting: false,
         header: 'Commentaires',
         width: '280px',
       },
       {
-        accessorKey: 'Affecté à',
-        cell: ({ row }) => (
-          <AdditionalInformation
-            demand={row.original as unknown as Demand}
-            field="Affecté à"
-            updateDemand={updateDemand}
-            type="text"
-            width={125}
-          />
-        ),
-        enableSorting: false,
-        filterType: 'Facets',
-        header: () => (
-          <div className="flex items-center">
-            Affecté à
-            <Tooltip
-              iconProps={{
-                className: 'ml-1',
-              }}
-              title={
-                <>
-                  "Non affecté" : demande éloignée du réseau non transmise aux opérateurs
-                  <br />
-                  <br />
-                  Vous pouvez ajouter ou modifier une affectation : le changement sera effectif après validation manuelle par l'équipe FCU.
-                </>
-              }
-            />
-          </div>
-        ),
-        width: '150px',
+        accessorFn: (row) =>
+          row.access_counts.gestionnaire + row.access_counts.collectivite + row.access_counts.alec + row.access_counts.ccrt,
+        cell: ({ row }) => <AccessCountsCell demandId={row.original.id} accessCounts={row.original.access_counts} />,
+        enableGlobalFilter: false,
+        filterType: 'Range',
+        header: 'Accès',
+        id: 'access',
+        width: '130px',
       },
       // obligatoire afin d'être utilisables dans les presets
       {
@@ -483,8 +546,18 @@ function DemandesNew(): React.ReactElement {
         filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
         visible: false,
       },
+      {
+        accessorKey: 'is_responsible',
+        filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+        visible: false,
+      },
+      {
+        accessorKey: 'network_id',
+        filterType: 'EmptyOrFilled', // obligatoire pour faire fonctionner le filtre « Demandes non affectées »
+        visible: false,
+      },
     ],
-    [updateDemand]
+    [updateDemand, currentUserId, handleEmailClick]
   );
 
   const onTableRowClick = useCallback(
@@ -556,11 +629,11 @@ function DemandesNew(): React.ReactElement {
             className="p-2w mb-0! w-[350px]"
           />
           <QuickFilterPresets
-            presets={quickFilterPresets as any}
+            presets={quickFilterPresets}
             data={demands}
             loading={isLoading}
             columnFilters={columnFilters}
-            onFiltersChange={setColumnFilters}
+            onFiltersChange={handlePresetFiltersChange}
           />
           <ButtonExport filename="demandes_fcu.xlsx" sheets={buildSheetData} className="ml-auto mr-2w" priority="secondary">
             Exporter
@@ -622,4 +695,4 @@ function DemandesNew(): React.ReactElement {
 
 export default DemandesNew;
 
-export const getServerSideProps = withAuthentication(['gestionnaire', 'demo', 'admin']);
+export const getServerSideProps = withAuthentication(['gestionnaire', 'collectivite', 'alec', 'ccrt', 'admin']);

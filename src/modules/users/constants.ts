@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { type UserRole, userRoles, userRolesInscription } from '@/types/enum/UserRole';
+import { ObjectKeys } from '@/utils/typescript';
 
 /** Label des types de structure  */
 // biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
@@ -12,8 +13,12 @@ export const structureTypesLabels = {
   gestionnaire_reseaux: 'Gestionnaire de réseaux de chaleur',
   mandataire_cee: 'Mandataire / délégataire CEE',
   syndic_copropriete: 'Syndic de copropriété',
+  alec: 'ALEC',
+  ccrt: 'CCRT',
   autre: 'Autre',
 };
+
+export type StructureType = keyof typeof structureTypesLabels;
 
 /** Labels utilisés sur le formulaire */
 export const structureTypesFormLabels = {
@@ -21,9 +26,22 @@ export const structureTypesFormLabels = {
   autre: 'Autre (préciser)',
 };
 
+/**
+ * Données entreprise stockées dans `users.entreprise` (JSONB).
+ * Clés alignées sur l'API publique recherche-entreprises.
+ */
+export const zEntreprise = z.object({
+  adresse: z.string(),
+  nom_complet: z.string(),
+  siret: z.string().length(14),
+});
+export type Entreprise = z.infer<typeof zEntreprise>;
+
 export const roles: Record<UserRole, string> = {
   admin: 'Admin',
-  demo: 'Demo',
+  alec: 'ALEC',
+  ccrt: 'CCRT',
+  collectivite: 'Collectivité',
   gestionnaire: 'Gestionnaire',
   particulier: 'Particulier',
   professionnel: 'Professionnel',
@@ -46,6 +64,7 @@ export type CredentialsSchema = z.infer<typeof zCredentialsSchema>;
 export const zIdentitySchema = z
   .object({
     email: z.email("L'adresse email n'est pas valide"),
+    entreprise: zEntreprise.nullable().optional(),
     first_name: z.string().min(1, 'Le prénom est obligatoire'),
     last_name: z.string().min(1, 'Le nom de famille est obligatoire'),
     phone: z
@@ -58,7 +77,7 @@ export const zIdentitySchema = z
     role: z.enum(userRolesInscription),
     structure_name: z.string().min(0, 'La structure est obligatoire').optional(),
     structure_other: z.string().optional(),
-    structure_type: z.string().optional(),
+    structure_type: z.enum(ObjectKeys(structureTypesLabels)).optional(),
   })
   .refine((data) => !(data.structure_type === 'autre' && !data.structure_other), {
     message: "Le type de structure 'Autre' doit être précisé",
@@ -81,7 +100,9 @@ export const registrationSchema = z.intersection(zCredentialsSchema, zIdentitySc
 export type RegistrationSchema = z.infer<typeof registrationSchema>;
 
 export const createUserAdminSchema = z.object({
+  active: z.boolean().optional(),
   email: z.email(),
+  entreprise: zEntreprise.nullable().optional(),
   first_name: z.string().optional().nullable(),
   last_name: z.string().optional().nullable(),
   optin_at: z.boolean().nullable(),
@@ -91,13 +112,14 @@ export const createUserAdminSchema = z.object({
   role: z.enum(userRoles),
   structure_name: z.string().optional().nullable(),
   structure_other: z.string().optional().nullable(),
-  structure_type: z.string().optional().nullable(),
+  structure_type: z.enum(ObjectKeys(structureTypesLabels)).optional().nullable(),
 });
 
 export const updateUserAdminSchema = z
   .object({
     active: z.boolean(),
     email: z.email().optional(),
+    entreprise: zEntreprise.nullable().optional(),
     first_name: z.string().optional(),
     gestionnaires: z.array(z.string()).optional(),
     last_name: z.string().optional(),
@@ -109,12 +131,13 @@ export const updateUserAdminSchema = z
     status: z.enum(['pending_email_confirmation', 'valid']),
     structure_name: z.string().optional(),
     structure_other: z.string().optional(),
-    structure_type: z.string().optional(),
+    structure_type: z.enum(ObjectKeys(structureTypesLabels)).optional(),
   })
   .partial();
 
 export const zUpdateProfileSchema = z
   .object({
+    entreprise: zEntreprise.nullable().optional(),
     first_name: z.string().min(1, 'Le prénom est obligatoire'),
     last_name: z.string().min(1, 'Le nom de famille est obligatoire'),
     phone: z
@@ -126,7 +149,7 @@ export const zUpdateProfileSchema = z
       }),
     structure_name: z.string().optional(),
     structure_other: z.string().optional(),
-    structure_type: z.string().optional(),
+    structure_type: z.enum(ObjectKeys(structureTypesLabels)).optional(),
   })
   .refine((data) => !(data.structure_type === 'autre' && !data.structure_other), {
     message: "Le type de structure 'Autre' doit être précisé",
@@ -139,11 +162,18 @@ export const zUpdateProfileSchema = z
 
 export type UpdateProfileSchema = z.infer<typeof zUpdateProfileSchema>;
 
+export const zUpdateNewsletterSchema = z.object({
+  optin_newsletter: z.boolean(),
+});
+
+export type UpdateNewsletterSchema = z.infer<typeof zUpdateNewsletterSchema>;
+
 export const updateProfileDefaultValues: UpdateProfileSchema = {
+  entreprise: null,
   first_name: '',
   last_name: '',
   phone: '',
   structure_name: '',
   structure_other: '',
-  structure_type: '',
+  structure_type: undefined,
 };

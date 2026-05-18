@@ -1,5 +1,4 @@
 import type { NextApiRequest } from 'next';
-import { v4 as uuidv4 } from 'uuid';
 
 import { serverConfig } from '@/server/config';
 import { AirtableDB } from '@/server/db/airtable';
@@ -12,17 +11,6 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
 
   // networkId est présent si test depuis fiche réseau
   const { type, networkId, ...values } = req.body;
-  if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION === 'true') {
-    logger.info('create demand', {
-      type,
-      values,
-    });
-    return {
-      ids: [{ id: uuidv4() }],
-      type,
-      values,
-    };
-  }
 
   switch (type) {
     case Airtable.NEWSLETTER: {

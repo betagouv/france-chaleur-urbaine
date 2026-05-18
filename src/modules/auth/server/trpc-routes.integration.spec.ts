@@ -23,9 +23,9 @@ describe('authRouter', () => {
       const callRoute = () => caller.auth.resetPassword({ email: 'test@example.com' });
 
       if (allowed) {
-        // Route publique - permission passe, mais Airtable est bloqué en test -> INTERNAL_SERVER_ERROR
-        // Cela prouve que la permission est passée (sinon ce serait UNAUTHORIZED/FORBIDDEN)
-        await expect(callRoute).rejects.toMatchObject({ code: 'INTERNAL_SERVER_ERROR' });
+        // Route publique - l'email ne correspond à aucun user, la mutation retourne undefined
+        // sans erreur : ça prouve que la permission est passée (sinon ce serait UNAUTHORIZED/FORBIDDEN)
+        await expect(callRoute()).resolves.toBeUndefined();
       } else {
         await expect(callRoute).rejects.toMatchObject({ code: 'UNAUTHORIZED' });
       }

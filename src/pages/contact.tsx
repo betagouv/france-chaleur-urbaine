@@ -1,4 +1,5 @@
 import SimplePage from '@/components/shared/page/SimplePage';
+import Alert from '@/components/ui/Alert';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
 
@@ -7,6 +8,13 @@ function contact() {
     <SimplePage title="Contactez-nous" description="Une question sur les réseaux de chaleur et de froid ? N'hésitez pas à nous contacter.">
       <Hero variant="ressource">
         <HeroTitle>Nous contacter</HeroTitle>
+        <Alert variant="info">
+          Avant de nous écrire, votre réponse se trouve peut-être dans notre{' '}
+          <Link href="/faq" postHogEventKey="faq:click" postHogEventProps={{ source: 'contact' }}>
+            FAQ
+          </Link>
+          .
+        </Alert>
         <HeroSubtitle>
           Vous avez une question suite à votre demande sur France Chaleur Urbaine ? Vous souhaitez nous faire part de suggestions pour
           améliorer notre service ? Vous êtes intéressé par un partenariat avec France Chaleur Urbaine ? Pour ces questions ou toute autre,

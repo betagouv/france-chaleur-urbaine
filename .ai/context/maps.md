@@ -83,6 +83,27 @@ pnpm cli tiles add-to-map <type> # Ajoute la source à la carte après générat
 
 Fichiers : `src/modules/tiles/server/api.ts`, `src/modules/tiles/server/service.ts`
 
+### HTTP cache (ETag + Last-Modified)
+
+L'API pose `Cache-Control`, `ETag` (faible) et `Last-Modified` sur chaque tuile pour permettre la revalidation navigateur (304). La fraîcheur est tracée dans la table `tiles_metadata (source_id, last_modified_at)`.
+
+**Règle d'or** : à chaque écriture sur une source de tuiles, appeler `markTilesUpdated(sourceId)` (dans `src/modules/tiles/server/service.ts`). Sans ce bump, le cache navigateur servira la version périmée jusqu'à expiration du `max-age`. Les chemins déjà câblés :
+- `runTilesGeneration` (fin du build tippecanoe)
+- `populateTilesCache` (rebuild mémoire `demands`)
+- CLI `pnpm cli tiles bump <source-id> | --all` (restore de dump, intervention manuelle)
+
+Tout nouveau chemin d'écriture sur une table `*_tiles` doit appeler `markTilesUpdated`.
+
+**Profils de cache** — champ `cacheProfile` sur chaque entrée de `tileSourcesConfig`, valeurs `'long' | 'short' | 'private'` (défaut implicite `long`) :
+
+| Profil | `Cache-Control` | Sources |
+|--------|-----------------|---------|
+| `long` (défaut) | `public, max-age=86400` | Données rarement modifiées (bdnb, geothermie, zones, besoins, communes, enrr, etc.) |
+| `short` | `public, max-age=7200` | Réseaux + `demands` |
+| `private` | `private, max-age=86400, must-revalidate` | `tests-adresses` (admin only, PII embarquées) |
+
+`tests-adresses` est réservé aux admins (auth requise sur la route, checkbox de légende masquée pour les autres rôles, pas d'`Access-Control-Allow-Origin: *`).
+
 ---
 
 ## 3. Configuration des couches (layers)

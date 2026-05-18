@@ -262,6 +262,13 @@ export const publicNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
+          href: '/faq',
+          onClick: () => trackPostHogEvent('faq:click', { source: 'menu' }),
+        },
+        text: 'FAQ',
+      },
+      {
+        linkProps: {
           href: '/contact',
           onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'contact', menu_level: 2 }),
         },
@@ -394,19 +401,19 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
         linkProps: {
           href: '/admin/demandes/stats',
         },
-        text: 'Statistiques des demandes',
+        text: 'Statistiques des demandes (obsolète)',
       },
       {
         linkProps: {
           href: '/admin/tags',
         },
-        text: 'Gestion des tags gestionnaires',
+        text: 'Gestion des tags gestionnaires (obsolète)',
       },
       {
         linkProps: {
           href: '/admin/assignment-rules',
         },
-        text: "Gestion des règles d'affectation",
+        text: "Gestion des règles d'affectation (obsolète)",
       },
       {
         linkProps: {
@@ -416,9 +423,21 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
+          href: '/admin/reseaux/stats',
+        },
+        text: 'Statistiques par réseau',
+      },
+      {
+        linkProps: {
           href: '/admin/jobs',
         },
         text: 'Suivi des tâches',
+      },
+      {
+        linkProps: {
+          href: '/admin/emails',
+        },
+        text: "Modèles d'emails",
       },
       {
         linkProps: {
@@ -437,6 +456,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
           href: '/admin/diagnostic',
         },
         text: 'Diagnostic',
+      },
+      {
+        linkProps: {
+          href: '/admin/data-diagnostic',
+        },
+        text: 'Diagnostic des données',
       },
     ],
     text: 'Administration',
@@ -499,7 +524,7 @@ const PageHeader = (props: PageHeaderProps) => {
       return [
         ...authenticatedNavigationMenu,
         ...(hasRole('admin') ? adminNavigationMenu : []),
-        ...(hasRole('gestionnaire') || hasRole('demo') ? gestionnaireNavigationMenu : []),
+        ...(hasRole('gestionnaire') || hasRole('collectivite') || hasRole('alec') || hasRole('ccrt') ? gestionnaireNavigationMenu : []),
         ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
       ];
     }
@@ -677,6 +702,13 @@ const PageFooter = () => (
           onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'stat' }),
         },
         text: 'Statistiques',
+      },
+      {
+        linkProps: {
+          href: '/faq',
+          onClick: () => trackPostHogEvent('faq:click', { source: 'footer' }),
+        },
+        text: 'FAQ',
       },
       {
         linkProps: {

@@ -31,7 +31,7 @@ Kysely is used instead of Prisma. Types are generated from the actual database s
 
 - NextAuth.js v4 with credentials provider (email/password).
 - JWT-based sessions.
-- Roles: `admin`, `gestionnaire`, `professionnel`, `particulier`, `demo`.
+- Roles: `admin`, `gestionnaire`, `collectivite`, `alec`, `professionnel`, `particulier`.
 
 ## API layer
 

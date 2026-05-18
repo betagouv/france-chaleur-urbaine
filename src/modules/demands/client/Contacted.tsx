@@ -4,9 +4,11 @@ import type { Demand } from '@/modules/demands/types';
 const Contacted = ({
   demand,
   updateDemand,
+  disabled = false,
 }: {
   demand: Demand;
   updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
+  disabled?: boolean;
 }) => {
   const handleCheckboxChange = (e: any) => {
     void updateDemand(demand.id, {
@@ -20,6 +22,7 @@ const Contacted = ({
       nativeInputProps={{
         'aria-label': 'Prise de contact',
         defaultChecked: demand['Prise de contact'],
+        disabled,
         name: 'prise_de_contact',
         onChange: handleCheckboxChange,
       }}
