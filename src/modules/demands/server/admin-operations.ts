@@ -47,7 +47,11 @@ export const listAdmin = async () => {
 
   const records = await buildDemandQuery().execute();
 
-  const { count } = await kdb.selectFrom('demands').select(kdb.fn.count<number>('id').as('count')).executeTakeFirstOrThrow();
+  const { count } = await kdb
+    .selectFrom('demands')
+    .select(kdb.fn.count<number>('id').as('count'))
+    .where('deleted_at', 'is', null)
+    .executeTakeFirstOrThrow();
 
   logger.info('kdb.getAdminDemands', {
     duration: Date.now() - startTime,

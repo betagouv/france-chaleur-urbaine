@@ -150,7 +150,8 @@ export const buildDemandQuery = () => {
           jsonBuildObject({ alec: sql<number>`0`, ccrt: sql<number>`0`, collectivite: sql<number>`0`, gestionnaire: sql<number>`0` })
         )
         .as('access_counts'),
-    ]);
+    ])
+    .where('demands.deleted_at', 'is', null);
 };
 
 /**
