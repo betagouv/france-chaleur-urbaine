@@ -1,5 +1,5 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { getCostPrecisionRange } from '@/components/ComparateurPublicodes/Graph';
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
@@ -21,32 +21,22 @@ import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/cli
 import { useRemoveHashOnScroll } from '@/modules/chaleur-renouvelable/client/hooks/useRemoveHashOnScroll';
 import {
   DPE_BG,
+  getIncompatibleSolutionRows,
+  type IncompatibleSolutionRow,
   improveDpe,
   type ModeDeChauffage,
   type ModeDeChauffageEnriched,
   type ModeDeChauffageUsage,
   modeDeChauffageParTypeLogement,
+  type PrerequisiteRow,
+  type PrerequisiteStatus,
   type Situation,
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import type { DPE, ModeEauChaudeSanitaire, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import type { DPE, ModeEauChaudeSanitaire } from '@/modules/chaleur-renouvelable/constants';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 import cx from '@/utils/cx';
 
 import { HOT_WATER_PARAMS_SECTION_ID, ParamsForm } from './ParamsForm';
-
-type PrerequisiteStatus = 'favorable' | 'contraignant' | 'aVerifier';
-
-type PrerequisiteRow = {
-  label: ReactNode;
-  source?: string;
-  status: PrerequisiteStatus;
-};
-
-type IncompatibleSolutionRow = {
-  label: string;
-  reason: string;
-  source: string;
-};
 
 type SimulatorEngine = ReturnType<typeof useSimulatorEngine>;
 
@@ -116,23 +106,43 @@ export default function ChoixChauffageResults() {
   const situation: Situation = useMemo(
     () => ({
       adresse: urlParams.adresse ?? null,
+      architecturalProtectionAc1: batEnr.architecturalProtectionAc1,
+      architecturalProtectionAc2: batEnr.architecturalProtectionAc2,
+      architecturalProtectionAc3: batEnr.architecturalProtectionAc3,
+      architecturalProtectionAc4: batEnr.architecturalProtectionAc4,
+      architecturalProtectionAc4bis: batEnr.architecturalProtectionAc4bis,
       dpe: urlParams.dpe,
       eligibiliteReseauChaleur,
       espaceExterieur: urlParams.espaceExterieur ?? 'none',
+      geothermalNappeGmi: batEnr.geothermalNappeGmi,
+      geothermalNappePotential: batEnr.geothermalNappePotential,
+      geothermalSondeGmi: batEnr.geothermalSondeGmi,
       geothermiePossible: batEnr.geothermiePossible,
       habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen || '2'),
+      hasGeothermalProbeSpace: batEnr.hasGeothermalProbeSpace,
       nbLogements: urlParams.nbLogements ?? 25,
       planProtectionAtmosphere: batEnr.planProtectionAtmosphere,
       surfaceMoyenne: urlParams.surfaceMoyenne ?? 70,
+      typeRadiateur: urlParams.typeRadiateur,
     }),
     [
       urlParams.adresse,
+      batEnr.architecturalProtectionAc1,
+      batEnr.architecturalProtectionAc2,
+      batEnr.architecturalProtectionAc3,
+      batEnr.architecturalProtectionAc4,
+      batEnr.architecturalProtectionAc4bis,
       urlParams.dpe,
       urlParams.espaceExterieur,
       urlParams.habitantsMoyen,
       urlParams.nbLogements,
       urlParams.surfaceMoyenne,
+      urlParams.typeRadiateur,
       batEnr.geothermiePossible,
+      batEnr.geothermalNappeGmi,
+      batEnr.geothermalNappePotential,
+      batEnr.geothermalSondeGmi,
+      batEnr.hasGeothermalProbeSpace,
       batEnr.planProtectionAtmosphere,
       eligibiliteReseauChaleur,
     ]
@@ -331,65 +341,7 @@ function getGainPercentVsGaz(item: ModeDeChauffageEnriched, coutParAnGaz: number
 }
 
 function getPrerequisiteRows(item: ModeDeChauffageEnriched, situation: Situation): PrerequisiteRow[] {
-  return item.contraintesTechniques.map((contrainteTechnique) => {
-    const label = contrainteTechnique;
-    const text = typeof contrainteTechnique === 'string' ? contrainteTechnique : '';
-
-    if (text.includes('PPA') || text.includes('qualité de l’air')) {
-      return {
-        label: 'Restrictions liées à un Plan de Protection de l’Atmosphère (PPA)',
-        source: 'Cerema',
-        status: situation.planProtectionAtmosphere ? 'contraignant' : 'favorable',
-      };
-    }
-
-    if (text.includes('Proximité à un réseau') || text.includes('zone de développement prioritaire')) {
-      return {
-        label,
-        source: 'FCU',
-        status: situation.eligibiliteReseauChaleur ? 'favorable' : 'aVerifier',
-      };
-    }
-
-    if (text.includes('forage')) {
-      return {
-        label,
-        source: 'BRGM',
-        status: situation.geothermiePossible ? 'favorable' : 'aVerifier',
-      };
-    }
-
-    return {
-      label,
-      status: 'aVerifier',
-    };
-  });
-}
-
-function getIncompatibleSolutionRows(situation: Situation, typeLogement: TypeLogement): IncompatibleSolutionRow[] {
-  if (typeLogement !== 'immeuble_chauffage_collectif') {
-    return [];
-  }
-
-  const rows: IncompatibleSolutionRow[] = [];
-
-  if (!situation.eligibiliteReseauChaleur?.isEligible) {
-    rows.push({
-      label: 'Réseau de chaleur',
-      reason: 'Votre adresse n’est pas raccordable à un réseau de chaleur',
-      source: 'France Chaleur Urbaine',
-    });
-  }
-
-  if (!situation.geothermiePossible) {
-    rows.push({
-      label: 'PAC géothermique',
-      reason: 'Votre terrain n’a pas de potentiel géothermique suffisant',
-      source: 'BRGM',
-    });
-  }
-
-  return rows;
+  return item.prerequis(situation);
 }
 
 function PrerequisiteStatusBadge({ status }: { status: PrerequisiteStatus }) {
@@ -422,7 +374,7 @@ function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolutionRow[
       <div className="border border-gray-200 bg-white px-5 py-4 shadow-sm">
         <ul className="m-0 space-y-3 p-0">
           {rows.map((row) => (
-            <li key={row.label} className="grid gap-2 md:grid-cols-[1fr_auto_auto] md:items-center md:gap-4">
+            <li key={`${row.label}-${row.reason}`} className="grid gap-2 md:grid-cols-[1fr_auto_auto] md:items-center md:gap-4">
               <div className="flex items-center gap-3">
                 <span className="fr-icon-close-line text-error" aria-hidden="true" />
                 <strong className="whitespace-nowrap text-error">{row.label}</strong>
@@ -529,7 +481,7 @@ function PrerequisiteRowItem({ row }: { row: PrerequisiteRow }) {
       <span className="flex gap-3 items-center">
         <span
           className={cx(
-            'items-center shrink-0 justify-center rounded-sm border border-blue h-5 w-5',
+            'flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border border-blue',
             row.status === 'favorable' && 'bg-blue fr-icon-check-line text-white'
           )}
           aria-hidden="true"
