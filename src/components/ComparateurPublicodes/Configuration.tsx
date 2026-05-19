@@ -129,7 +129,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
             trackEvent('Comparateur Coûts CO2|Création d’une configuration', {
               configId: id,
             });
-            trackPostHogEvent('comparator:config_create');
+            trackPostHogEvent('comparator:config_loaded');
             engine.setSituation(situationToLoad);
           }}
           onAdd={({ id }) => {

@@ -7,6 +7,7 @@ import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import Highlight from '@/components/ui/Highlight';
 import Link from '@/components/ui/Link';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { EntrepriseField } from '@/modules/form/EntrepriseField';
 import { toastErrors } from '@/modules/notification';
 import {
@@ -77,6 +78,7 @@ function RegisterForm() {
       if (stepIndex < steps.length - 1) {
         setStepIndex(stepIndex + 1);
       } else {
+        trackPostHogEvent('account:created');
         await postFetchJSON('/api/auth/register', value);
         router.push('/inscription/bravo');
       }

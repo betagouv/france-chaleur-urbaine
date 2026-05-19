@@ -302,7 +302,7 @@ export const TrackableCheckableAccordion = ({ children, name, trackingEvent, lay
         // Legacy Matomo
         trackEvent(`${trackingEvent}|${isChecked ? 'Active' : 'Désactive'}`);
         // PostHog
-        trackPostHogEvent('map:layer_toggle', { is_enabled: isChecked, layer_name: posthogLayerName });
+        trackPostHogEvent('map:layer_toggled', { is_enabled: isChecked, layer: posthogLayerName });
         toggleLayer(layerName);
       }}
       expandOnCheck
@@ -342,7 +342,7 @@ export function SingleCheckbox({ name, checked, onChange, trackingEvent }: Singl
             trackEvent(`${trackingEvent}|${newChecked ? 'Active' : 'Désactive'}`);
             // PostHog
             const posthogLayerName = trackingEvent.replace(/^Carto\|/, '');
-            trackPostHogEvent('map:layer_toggle', { is_enabled: newChecked, layer_name: posthogLayerName });
+            trackPostHogEvent('map:layer_toggled', { is_enabled: newChecked, layer: posthogLayerName });
           }
         }}
         className="opacity-0"

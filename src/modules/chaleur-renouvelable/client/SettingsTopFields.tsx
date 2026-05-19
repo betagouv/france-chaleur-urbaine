@@ -49,7 +49,11 @@ export function SettingsTopFields({
         onSelect={(next?: BANAddressFeature) => {
           const nextLabel = next?.properties?.label ?? '';
           if ((adresse ?? '') === nextLabel) return;
-          trackPostHogEvent('chaleur-renouvelable:address_select', {
+          trackPostHogEvent('fcr_simulator:address_selected', {
+            address: nextLabel,
+            source: withLabel ? 'landing' : 'result',
+          });
+          trackPostHogEvent('fcr_simulator:started', {
             address: nextLabel,
             source: withLabel ? 'landing' : 'result',
           });
@@ -67,13 +71,27 @@ export function SettingsTopFields({
           { label: 'Maison individuelle', value: 'maison_individuelle' satisfies TypeLogement },
         ]}
         nativeSelectProps={{
-          onChange: (e) => void setTypeLogement(e.target.value as TypeLogement),
+          onChange: (e) => {
+            trackPostHogEvent('fcr_simulator:started', {
+              source: withLabel ? 'landing' : 'result',
+              typeLogement: e.target.value,
+            });
+            trackPostHogEvent('fcr_simulator:heating_mode_selected', { typeLogement: e.target.value as TypeLogement });
+            void setTypeLogement(e.target.value as TypeLogement);
+          },
           value: typeLogement ?? '',
         }}
       />
       <RichSelect<EspaceExterieur>
         value={espaceExterieur ?? undefined}
-        onChange={(val) => void setEspaceExterieur(val)}
+        onChange={(val) => {
+          trackPostHogEvent('fcr_simulator:started', {
+            espaceExterieur: val,
+            source: withLabel ? 'landing' : 'result',
+          });
+          trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoorSpace: val as EspaceExterieur });
+          void setEspaceExterieur(val);
+        }}
         options={[...espaceExterieurOptions]}
         placeholder="Sélectionner vos espaces disponibles"
         label={withLabel ? 'Espaces extérieurs disponibles' : ''}

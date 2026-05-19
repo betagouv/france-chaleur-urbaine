@@ -1,10 +1,13 @@
+import { useCallback } from 'react';
+
 import { EligibilityFormAddress, EligibilityFormContact } from '@/components/EligibilityForm';
 import { FormWarningMessage, SliceContactFormStyle } from '@/components/HeadSliceForm/HeadSliceForm.style';
 import Box from '@/components/ui/Box';
 import Loader from '@/components/ui/Loader';
 import Modal, { createModal } from '@/components/ui/Modal';
-import useContactFormFCU from '@/hooks/useContactFormFCU';
+import useContactFormFCU, { type ContactFormContext } from '@/hooks/useContactFormFCU';
 import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
+import type { AddressDataType } from '@/types/AddressData';
 
 import { Container, Title } from './StickyForm.styles';
 
@@ -13,7 +16,7 @@ const eligibilityTestModal = createModal({
   isOpenedByDefault: false,
 });
 
-const StickyForm = ({ title }: { title?: string }) => {
+const StickyForm = ({ context, title }: { title?: string; context?: ContactFormContext }) => {
   const {
     addressData,
     contactReady,
@@ -28,6 +31,13 @@ const StickyForm = ({ title }: { title?: string }) => {
     handleResetFormContact,
   } = useContactFormFCU();
 
+  const handleSuccessAddressWithContext = useCallback(
+    (data: AddressDataType) => {
+      return handleOnSuccessAddress(data, context);
+    },
+    [context, handleOnSuccessAddress]
+  );
+
   return (
     <>
       <SliceContactFormStyle />
@@ -36,7 +46,7 @@ const StickyForm = ({ title }: { title?: string }) => {
         <EligibilityFormAddress
           onChange={handleOnChangeAddress}
           onFetch={handleOnFetchAddress}
-          onSuccess={handleOnSuccessAddress}
+          onSuccess={handleSuccessAddressWithContext}
           heatingLabel={<>Mode de chauffage actuel&nbsp;:</>}
         />
         {showWarning && <FormWarningMessage show>{warningMessage}</FormWarningMessage>}

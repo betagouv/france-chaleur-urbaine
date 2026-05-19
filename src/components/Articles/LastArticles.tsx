@@ -1,7 +1,6 @@
-import Link from 'next/link';
-
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 import { articles } from '@/data/contents';
 
 import Article from './Article';
@@ -19,8 +18,13 @@ const LastArticles = () => {
       <RemainingArticles className="fr-col-12 fr-col-lg-4 fr-py-3w">
         <div className="fr-mb-3w">
           {articles.slice(2, 6).map((article) => (
-            <Box mb="1w" key={article.title}>
-              <Link href={`/actus/${article.slug}`} className="fr-link">
+            <Box mb="1w" key={`article-${article.title}`}>
+              <Link
+                href={`/actus/${article.slug}`}
+                className="fr-link"
+                postHogEventKey="home:news_clicked"
+                postHogEventProps={{ element_name: article.slug }}
+              >
                 {article.title}
               </Link>
             </Box>

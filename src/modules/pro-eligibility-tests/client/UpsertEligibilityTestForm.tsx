@@ -4,6 +4,7 @@ import DSFRSelect from '@/components/form/dsfr/Select';
 import Upload from '@/components/form/dsfr/Upload';
 import useForm from '@/components/form/react-form/useForm';
 import Notice, { type NoticeProps } from '@/components/ui/Notice';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { parseUnknownCharsetText } from '@/utils/strings';
@@ -42,12 +43,18 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
       separator: ',',
     },
     onSubmit: toastErrors(async ({ value }) => {
+      let bulkTest = null;
       if (isUpdate) {
-        await updateTest({ ...value, id: testId });
+        bulkTest = await updateTest({ ...value, id: testId });
         void utils.proEligibilityTests.get.invalidate({ id: testId });
       } else {
-        await createTest(value);
+        bulkTest = await createTest(value);
       }
+
+      trackPostHogEvent('bulk_test:processing_started', {
+        bulk_test_id: bulkTest.id,
+        rows_count: analysis?.nbRows,
+      });
       void utils.proEligibilityTests.list.invalidate();
       onComplete?.();
     }, FormErrorMessage),
@@ -79,6 +86,10 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
       const newDataType = fileAnalysis.hasCoordinateColumns ? 'coordinates' : 'address';
       form.setFieldValue('dataType', newDataType);
 
+      trackPostHogEvent('bulk_test:file_uploaded', {
+        file_size_kb: new TextEncoder().encode(content).length / 1024,
+        rows_count: fileAnalysis.nbRows,
+      });
       setAnalysis(fileAnalysis);
     }),
     []
@@ -97,6 +108,7 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
         form.setFieldValue('name', file.name);
       }
       form.setFieldValue('content', content);
+
       void processContent(content);
     },
     [form, isUpdate]

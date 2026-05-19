@@ -1,9 +1,11 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Input from '@codegouvfr/react-dsfr/Input';
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
+import Link from '@/components/ui/Link';
 import Tooltip from '@/components/ui/Tooltip';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { SimulatorFormFields } from '@/modules/simulator/client/SimulatorFormFields';
 import { useSimulatorFormState } from '@/modules/simulator/client/useSimulatorFormState';
 import type { TypeBatiment } from '@/modules/simulator/constants';
@@ -17,9 +19,24 @@ type ConcernedHelp = {
 
 function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: boolean }) {
   const engine = useSimulatorEngine();
+  const hasTrackedStarted = useRef(false);
   const [networkName, setNetworkName] = useState<string | null>(null);
   const [isEfficientNetwork, setIsEfficientNetwork] = useState(false);
   const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE')));
+  const trackStarted = () => {
+    if (hasTrackedStarted.current) {
+      return;
+    }
+
+    trackPostHogEvent('simu_cee:started');
+    hasTrackedStarted.current = true;
+  };
+  const trackFieldFilled = (fieldName: string, fieldValue?: number | string) => {
+    trackPostHogEvent('simu_cee:field_filled', {
+      field_name: fieldName,
+      field_value: fieldValue,
+    });
+  };
   const resetSimulatorContext = () => {
     setNetworkName(null);
     setIsEfficientNetwork(false);
@@ -34,6 +51,36 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
       onAddressSituationChange: engine.updateSituation,
       onReset: resetSimulatorContext,
     });
+
+  const handleFormStateChange = <Key extends keyof typeof formState>(key: Key, value: (typeof formState)[Key]) => {
+    trackStarted();
+    trackFieldFilled(key, typeof value === 'string' || typeof value === 'number' ? value : '');
+    updateFormState(key, value);
+  };
+
+  const handleSimulatorTypeBatimentChange = (value: TypeBatiment) => {
+    trackStarted();
+    trackFieldFilled('typeBatiment', value);
+    handleTypeBatimentChange(value);
+  };
+
+  const handleSimulatorAddressChange = async (...args: Parameters<typeof handleAddressChange>) => {
+    if (args[0]) {
+      trackStarted();
+    }
+    trackFieldFilled('address', args[0]?.properties.label ?? '');
+    await handleAddressChange(...args);
+  };
+
+  const handleCeeValueChange = (value: string) => {
+    trackFieldFilled('ceeValue', value);
+    setCeeValue(value);
+  };
+
+  const handleReset = () => {
+    hasTrackedStarted.current = false;
+    resetFormState();
+  };
 
   const publicodeSituation = useMemo(
     () => ({
@@ -82,6 +129,20 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
           }
         : null;
 
+  useEffect(() => {
+    if (!hasAmountInputs) {
+      return;
+    }
+
+    trackPostHogEvent('simu_cee:result_displayed', {
+      building_type: formState.typeBatiment === 'résidentiel' ? 'residentiel' : 'tertiaire',
+      eligible: !addressErrorMessage,
+      estimated_amount_eur: Number(helpAmount.toFixed(0)),
+      network_name: networkName || '',
+      surface_m2: formState.typeBatiment === 'tertiaire' ? formState.surface : undefined,
+    });
+  }, [formState.surface, formState.typeBatiment, hasAmountInputs, helpAmount]);
+
   return (
     <div className={cx('bg-[#4550e5] text-black', withTitle && 'p-4 my-3')}>
       {withTitle && (
@@ -96,10 +157,10 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
             addressErrorMessage={addressErrorMessage}
             fieldClassName="w-full! min-w-80"
             formState={formState}
-            onAddressChange={handleAddressChange}
-            onFormStateChange={updateFormState}
-            onReset={resetFormState}
-            onTypeBatimentChange={handleTypeBatimentChange}
+            onAddressChange={handleSimulatorAddressChange}
+            onFormStateChange={handleFormStateChange}
+            onReset={handleReset}
+            onTypeBatimentChange={handleSimulatorTypeBatimentChange}
             engine={engine}
           />
         </div>
@@ -110,7 +171,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
           helpCumac={helpCumac}
           nbLogement={formState.nbLogements || 0}
           networkInformation={networkInformation}
-          onCeeValueChange={setCeeValue}
+          onCeeValueChange={handleCeeValueChange}
           typeBatiment={formState.typeBatiment}
           addressErrorMessage={addressErrorMessage}
         />
@@ -185,9 +246,9 @@ function SimulatorResult({
         {(networkInformation || addressErrorMessage) && concernedHelp && (
           <div>
             Le calcul se base sur la fiche{' '}
-            <a href={concernedHelp.noteUrl} target="_blank" rel="noreferrer">
+            <Link href={concernedHelp.noteUrl || '#'} isExternal>
               <strong>{concernedHelp.label}</strong>
-            </a>
+            </Link>
             .{' '}
             {!addressErrorMessage && (
               <sup>

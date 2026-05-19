@@ -317,9 +317,9 @@ const DistrictHeating = ({
       factures d’énergie. Il convient de réaliser les travaux nécessaires avant de souscrire un contrat pour une puissance de chauffage
       donnée, qui pourrait s’avérer surestimée suite à la rénovation du bâtiment.{' '}
       <b>Les conseillers France Rénov’ accompagnent l’ensemble des projets de rénovation de l’habitat</b> :{' '}
-      <a href="https://france-renov.gouv.fr/" target="_blank" rel="noreferrer">
+      <Link href="https://france-renov.gouv.fr/" isExternal>
         https://france-renov.gouv.fr/
-      </a>
+      </Link>
       .
       <br />
       <br />

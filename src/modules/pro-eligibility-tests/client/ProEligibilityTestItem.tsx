@@ -1,5 +1,5 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
-import Tabs from '@codegouvfr/react-dsfr/Tabs';
+import { Tabs } from '@codegouvfr/react-dsfr/Tabs';
 import type { ColumnFiltersState, RowSelectionState, SortingState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
@@ -16,6 +16,7 @@ import Notice from '@/components/ui/Notice';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { toastErrors } from '@/modules/notification';
 import { BatchDemandMultiStepForm } from '@/modules/pro-eligibility-tests/client/BatchDemandMultiStepForm';
 import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
@@ -395,9 +396,8 @@ const quickFilterPresets = {
     label: 'adresses',
   },
 } satisfies Record<string, QuickFilterPreset<RouterOutput['proEligibilityTests']['get']['addresses'][number]>>;
-type QuickFilterPresetKey = keyof typeof quickFilterPresets;
 
-const queryParamName = 'test-adresses';
+export const queryParamName = 'test-adresses';
 
 type ProEligibilityTestItemProps = {
   test: RouterOutput['proEligibilityTests']['list']['items'][number] | RouterOutput['proEligibilityTests']['listAdmin']['items'][number];
@@ -527,6 +527,14 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
 
   useEffect(() => {
     if (viewDetail && (test.has_unseen_results || test.has_unseen_changes) && !readOnly && !isMarkAsSeenLoading) {
+      trackPostHogEvent('bulk_test:result_displayed', {
+        bulk_test_id: test.id,
+        rows_eligible: filteredAddresses.map((a) => a.eligibility.eligible).length,
+        rows_error: filteredAddresses.map((a) => !a.ban_valid || !a.geom).length,
+        rows_near_network: filteredAddresses.map((a) => (a.eligibility.distance || 1000) < 100).length,
+        rows_non_eligible: filteredAddresses.map((a) => !a.eligibility.eligible).length,
+        rows_total: filteredAddresses.length,
+      });
       void (async () => {
         await markAsSeen({ id: test.id });
       })();
@@ -589,6 +597,62 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
       }));
   }, [rowSelection, adresses]);
 
+  const [selectedTabId, setSelectedTabId] = useState('list');
+  const tabs = [
+    {
+      content: (
+        <TableSimple
+          controlsLayout="block"
+          columns={columns}
+          data={adresses}
+          initialSortingState={initialSortingState}
+          columnFilters={columnFilters}
+          enableGlobalFilter
+          padding="sm"
+          rowHeight={56}
+          onFilterChange={setFilteredAddresses}
+          enableRowSelection={!readOnly}
+          rowSelection={rowSelection}
+          onRowSelectionChange={setRowSelection}
+        />
+      ),
+      iconId: 'fr-icon-list-unordered' as const,
+      isDefault: true,
+      label: `Liste (${filteredAddresses.length})`,
+      tabId: 'list',
+    },
+    {
+      content: (
+        <div className="min-h-[50vh] aspect-4/3">
+          <Map
+            initialMapConfiguration={createMapConfiguration({
+              reseauxDeChaleur: {
+                show: true,
+              },
+              reseauxEnConstruction: true,
+              zonesDeDeveloppementPrioritaire: true,
+            })}
+            geolocDisabled
+            withLegend={false}
+            withoutLogo
+            adressesEligibles={filteredAddressesMapData}
+          />
+        </div>
+      ),
+      iconId: 'fr-icon-map-pin-2-line' as const,
+      label: (
+        <>
+          Carte ({filteredAddressesMapData.length}){' '}
+          <Tooltip
+            iconProps={{ className: 'ml-1', color: 'var(--text-default-grey)' }}
+            title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
+          />
+        </>
+      ),
+      tabId: 'carte',
+    },
+  ];
+
   return (
     <UrlStateAccordion
       queryParamName={queryParamName}
@@ -614,12 +678,29 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
                 data={addresses}
                 loading={isDataLoading}
                 columnFilters={columnFilters}
-                onFiltersChange={setColumnFilters}
+                onFiltersChange={(e) => {
+                  trackPostHogEvent('bulk_test:results_filtered', {
+                    bulk_test_id: test.id,
+                    filter_type: e[0].id,
+                  });
+                  setColumnFilters(e);
+                }}
                 hideDividerOnMobile={false}
               />
             </div>
             <div className="flex items-center gap-2 w-full mt-2">
-              <Button iconId="fr-icon-download-line" priority="primary" onClick={downloadCSV} disabled={filteredAddresses.length === 0}>
+              <Button
+                iconId="fr-icon-download-line"
+                priority="primary"
+                onClick={downloadCSV}
+                disabled={filteredAddresses.length === 0}
+                postHogEventKey="bulk_test:results_exported"
+                postHogEventProps={{
+                  bulk_test_id: test.id,
+                  filter_applied: Boolean(columnFilters.length),
+                  rows_exported: filteredAddresses.length,
+                }}
+              >
                 Télécharger les résultats détaillés
               </Button>
 
@@ -640,58 +721,21 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
             <>
               <Tabs
                 className="[&_[role='tabpanel']]:p-2w!" // decrease the default big padding of tabs panels
-                tabs={[
-                  {
-                    content: (
-                      <TableSimple
-                        controlsLayout="block"
-                        columns={columns}
-                        data={adresses}
-                        initialSortingState={initialSortingState}
-                        columnFilters={columnFilters}
-                        enableGlobalFilter
-                        padding="sm"
-                        rowHeight={56}
-                        onFilterChange={setFilteredAddresses}
-                        enableRowSelection={!readOnly}
-                        rowSelection={rowSelection}
-                        onRowSelectionChange={setRowSelection}
-                      />
-                    ),
-                    iconId: 'fr-icon-list-unordered',
-                    isDefault: true,
-                    label: `Liste (${filteredAddresses.length})`,
-                  },
-                  {
-                    content: (
-                      <div className="min-h-[50vh] aspect-4/3">
-                        <Map
-                          initialMapConfiguration={createMapConfiguration({
-                            reseauxDeChaleur: {
-                              show: true,
-                            },
-                            reseauxEnConstruction: true,
-                            zonesDeDeveloppementPrioritaire: true,
-                          })}
-                          geolocDisabled
-                          withLegend={false}
-                          withoutLogo
-                          adressesEligibles={filteredAddressesMapData}
-                        />
-                      </div>
-                    ),
-                    iconId: 'fr-icon-map-pin-2-line',
-                    label: (
-                      <>
-                        Carte ({filteredAddressesMapData.length}){' '}
-                        <Tooltip
-                          iconProps={{ className: 'ml-1', color: 'var(--text-default-grey)' }}
-                          title="Une différence de nombre de résultats peut exister si la requête à la Base d'Adresse Nationale n'as pas fonctionné ou si les coordonnées géographiques ne sont pas disponibles."
-                        />
-                      </>
-                    ),
-                  },
-                ]}
+                tabs={tabs}
+                onTabChange={({ tabIndex }) => {
+                  const newTabId = tabs[tabIndex]?.tabId;
+
+                  if (!newTabId) {
+                    return;
+                  }
+
+                  setSelectedTabId(newTabId);
+                  if (newTabId === 'carte')
+                    trackPostHogEvent('bulk_test:map_viewed', {
+                      bulk_test_id: test.id,
+                      rows_displayed_on_map: filteredAddresses.length,
+                    });
+                }}
               />
               {!readOnly && (
                 <div className="flex justify-end mt-4">
@@ -703,6 +747,11 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
                       setIsBatchModalOpen(true);
                     }}
                     disabled={Object.keys(rowSelection).length === 0}
+                    postHogEventKey="bulk_test:contact_request_clicked"
+                    postHogEventProps={{
+                      bulk_test_id: test.id,
+                      selected_rows_count: Object.keys(rowSelection).length,
+                    }}
                   >
                     Être mis en relation ({Object.keys(rowSelection).length})
                   </Button>
@@ -719,6 +768,7 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
           {!readOnly && (
             <ModalSimple title="Demande de mise en relation" size="large" open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
               <BatchDemandMultiStepForm
+                testId={test.id}
                 addresses={selectedAddresses}
                 onSuccess={() => {
                   setIsBatchModalOpen(false);

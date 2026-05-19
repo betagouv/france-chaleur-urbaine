@@ -21,12 +21,12 @@ Le parcours business critique : test d'adresse → résultat → prise de contac
 
 | Événement | Propriétés | Description |
 |---|---|---|
-| `eligibility:address_form_submit` | `address`, `source`, `is_eligible` | Soumission du formulaire de test d'adresse |
-| `eligibility:contact_form_submit` | `address`, `source`, `is_eligible`, `heating_energy`, `heating_type?`, `structure_type`, `company_type?`, `nb_logements?`, `demand_area_m2?` | Soumission du formulaire de contact (conversion principale) |
+| `address_test:submitted` | `address`, `source`, `is_eligible` | Soumission du formulaire de test d'adresse |
+| `address_test:contact_form_submitted` | `address`, `source`, `is_eligible`, `heating_energy`, `heating_type?`, `structure_type`, `company_type?`, `nb_logements?`, `demand_area_m2?` | Soumission du formulaire de contact (conversion principale) |
 
 **Sources** : `carte`, `comparateur`, `fiche-reseau`, `homepage`, `choix-chauffage`
 
-**Funnel PostHog** : `eligibility:address_form_submit` → `eligibility:contact_form_submit` (breakdown par `source` et `is_eligible`)
+**Funnel PostHog** : `address_test:submitted` → `address_test:contact_form_submitted` (breakdown par `source` et `is_eligible`)
 
 ### 2. Potentiel création de réseau
 
@@ -43,11 +43,11 @@ Outil central du produit. On mesure l'interaction avec les couches et les outils
 
 | Événement | Propriétés | Description |
 |---|---|---|
-| `map:layer_toggle` | `layer_name`, `is_enabled` | Activation/désactivation d'une couche |
+| `map:layer_toggled` | `layer`, `is_enabled` | Activation/désactivation d'une couche |
 | `map:legend_toggle` | `is_open` | Ouverture/fermeture de la légende |
 | `map:tab_select` | `tab_name` | Navigation entre onglets (réseaux, potentiel, enrr, outils) |
 | `map:tool_use` | `tool_name`, `action` | Utilisation des outils carte |
-| `map:feature_click` | `feature_type`, `feature_id?` | Clic sur une feature de la carte (ouverture popup de détail) |
+| `map:feature_click` | `feature_type?`, `feature_id?` | Clic sur une feature de la carte (ouverture popup de détail) |
 
 **`tool_name`** : `distance`, `density`, `extraction`
 **`action`** : `start`, `complete`, `reset`, `export`
@@ -99,11 +99,11 @@ Tracking unifié de la consultation de contenu.
 
 | # | Événement | Catégorie |
 |---|---|---|
-| 1 | `eligibility:address_form_submit` | Conversion |
-| 2 | `eligibility:contact_form_submit` | Conversion |
+| 1 | `address_test:submitted` | Conversion |
+| 2 | `address_test:contact_form_submitted` | Conversion |
 | 3 | `potentiel-creation-reseau:commune_form_submit` | Conversion |
 | 4 | `potentiel-creation-reseau:contact_form_submit` | Conversion |
-| 5 | `map:layer_toggle` | Carte |
+| 5 | `map:layer_toggled` | Carte |
 | 6 | `map:legend_toggle` | Carte |
 | 7 | `map:tab_select` | Carte |
 | 8 | `map:tool_use` | Carte |
@@ -123,8 +123,8 @@ Tracking unifié de la consultation de contenu.
 ### Funnel éligibilité (KPI principal)
 ```
 $pageview (page avec formulaire)
-  → eligibility:address_form_submit
-    → eligibility:contact_form_submit
+  → address_test:submitted
+    → address_test:contact_form_submitted
 ```
 Breakdown par : `source`, `is_eligible`, `structure_type`
 
@@ -138,7 +138,7 @@ $pageview (page potentiel)
 ### Engagement carte
 ```
 $pageview (page carte)
-  → map:layer_toggle (au moins 1)
+  → map:layer_toggled (au moins 1)
   → map:tool_use (au moins 1)
 ```
 
@@ -152,7 +152,7 @@ $pageview (page carte)
 - Répartition des demandes par `structure_type` et `heating_energy`
 
 ### 2. Usage carte
-- Top couches activées (`map:layer_toggle` breakdown par `layer_name`)
+- Top couches activées (`map:layer_toggled` breakdown par `layer`)
 - Usage des outils (`map:tool_use` breakdown par `tool_name`)
 - Onglets les plus visités (`map:tab_select` breakdown par `tab_name`)
 

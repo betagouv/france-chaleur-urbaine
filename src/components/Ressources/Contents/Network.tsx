@@ -1,5 +1,6 @@
 import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
 import Box from '@/components/ui/Box';
+import Link from '@/components/ui/Link';
 
 import { List, Source, Subtitle } from './Contents.styles';
 
@@ -38,9 +39,9 @@ const Network = () => {
       </List>
       <Source>
         Source : Cerema{' '}
-        <a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/constitution-reseau-chaleur" target="_blank" rel="noreferrer">
+        <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/constitution-reseau-chaleur" isExternal>
           https://reseaux-chaleur.cerema.fr/espace-documentaire/constitution-reseau-chaleur
-        </a>
+        </Link>
       </Source>
       <br />
       <TrackedVideo height="100%" poster="/img/ressources-network.png" src="/videos/FCU-RC.mp4" />

@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 export const Arrow = styled.div`
   cursor: pointer;
@@ -14,16 +14,6 @@ export const PartnerImages = styled.div`
       display: none;
     }
   }
-`;
-
-export const PartnerLink = styled.a<{ show?: boolean }>`
-  background-image: unset !important;
-
-  ${({ show }) =>
-    !show &&
-    css`
-      display: none;
-    `}
 `;
 
 export const PartnerImage = styled.img`

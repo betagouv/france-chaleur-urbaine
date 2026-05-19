@@ -6,6 +6,7 @@ import useFCUMap from '@/components/Map/MapProvider';
 import Accordion from '@/components/ui/Accordion';
 import Box, { type BoxProps } from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 
 import { besoinsEnChaleurIntervals } from '../layers/besoinsEnChaleur';
 import { zonePotentielChaudColor, zonePotentielChaudOpacity, zonePotentielFortChaudColor } from '../layers/zonesPotentielChaud';
@@ -57,7 +58,10 @@ function VillesPotentielMapLegend(props?: BoxProps) {
               nativeInputProps: {
                 checked: mapConfiguration.besoinsEnChaleur,
                 name: 'besoinsEnChaleur',
-                onChange: () => toggleLayer('besoinsEnChaleur'),
+                onChange: () => {
+                  toggleLayer('besoinsEnChaleur');
+                  trackPostHogEvent('network_creation:layer_toggled', { layer_name: 'besoinsEnChaleur' });
+                },
               },
             },
             {
@@ -73,7 +77,10 @@ function VillesPotentielMapLegend(props?: BoxProps) {
               nativeInputProps: {
                 checked: mapConfiguration.zonesOpportunite.zonesPotentielFortChaud,
                 name: 'zonesPotentielFortChaud',
-                onChange: () => toggleLayer('zonesOpportunite.zonesPotentielFortChaud'),
+                onChange: () => {
+                  toggleLayer('zonesOpportunite.zonesPotentielFortChaud');
+                  trackPostHogEvent('network_creation:layer_toggled', { layer_name: 'zonesPotentielFortChaud' });
+                },
               },
             },
             {
@@ -88,7 +95,10 @@ function VillesPotentielMapLegend(props?: BoxProps) {
               nativeInputProps: {
                 checked: mapConfiguration.zonesOpportunite.zonesPotentielChaud,
                 name: 'zonesPotentielChaud',
-                onChange: () => toggleLayer('zonesOpportunite.zonesPotentielChaud'),
+                onChange: () => {
+                  toggleLayer('zonesOpportunite.zonesPotentielChaud');
+                  trackPostHogEvent('network_creation:layer_toggled', { layer_name: 'zonesPotentielChaud' });
+                },
               },
             },
           ]}

@@ -1,9 +1,9 @@
-import Link from 'next/link';
 import type { RefObject } from 'react';
 
 import Infographie from '@/components/Infographie';
 import { ConditionsAttributionCee } from '@/components/Ressources/Contents/Helps';
 import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
+import Link from '@/components/ui/Link';
 
 import { Subtitle } from './Contents.styles';
 import { Container, WithImage, WithVideo } from './DistrictHeating.styles';
@@ -178,9 +178,9 @@ const HeatNetwork = ({
       <Subtitle ref={caracteristiquesRef}>Quelles sont aujourd’hui les caractéristiques des réseaux de chaleur français ?</Subtitle>
       L’
       <b>
-        <a href="hhttps://fedene.fr/enquete-annuelle-des-reseaux-de-chaleur-froid-2024/" target="_blank" rel="noreferrer">
+        <Link href="hhttps://fedene.fr/enquete-annuelle-des-reseaux-de-chaleur-froid-2024/" isExternal>
           enquête annuelle des réseaux de chaleur et de froid
-        </a>
+        </Link>
       </b>{' '}
       réalisée par la Fedene Réseaux de chaleur et de froid, avec le concours de l’association Amorce et sous tutelle du ministère de la
       transition écologique, recense <b>1000 réseaux de chaleur en 2023</b>. <b>7 515 km</b> de réseaux alimentent ainsi{' '}
@@ -433,7 +433,7 @@ const HeatNetwork = ({
           </ul>
           <br />
           L’
-          <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000050756289" target="_blank" rel="noreferrer">
+          <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000050756289" isExternal>
             arrêté du 3 décembre 2024
           </Link>{' '}
           relatif au classement des réseaux de chaleur et de froid recense <b>617 réseaux répondant à ces critères</b>. La cartographie
@@ -492,9 +492,9 @@ const HeatNetwork = ({
         <li>
           une{' '}
           <b>
-            <a href="https://france-renov.gouv.fr" target="_blank" rel="noreferrer">
+            <Link href="https://france-renov.gouv.fr" isExternal>
               plateforme web
-            </a>
+            </Link>
           </b>{' '}
           proposant des informations sur la rénovation de l’habitat, un outil de simulation pour identifier les aides financières
           disponibles pour la rénovation énergétique de son logement, ainsi qu’un annuaire des artisans qualifiés reconnus garants de
@@ -699,9 +699,9 @@ const HeatNetwork = ({
       <br />
       <b>
         Pour en savoir plus :{' '}
-        <a href="https://fondschaleur.ademe.fr/le-fonds-chaleur/" target="_blank" rel="noreferrer">
+        <Link href="https://fondschaleur.ademe.fr/le-fonds-chaleur/" isExternal>
           https://fondschaleur.ademe.fr/le-fonds-chaleur/
-        </a>
+        </Link>
       </b>
       <br />
       <br />

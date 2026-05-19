@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { clientConfig } from '@/client-config';
 import useForm from '@/components/form/react-form/useForm';
 import SimplePage from '@/components/shared/page/SimplePage';
+import Link from '@/components/ui/Link';
 import { default as Section, SectionContent, SectionTitle } from '@/components/ui/Section';
 import { zAddRelanceCommentInput } from '@/modules/demands/constants';
 import { updateSatisfactionFromRelanceId } from '@/modules/demands/server/relances';
@@ -64,9 +65,9 @@ function Satisfaction({ relanceId, satisfaction }: InferGetServerSidePropsType<t
         <br />
         <p>
           Pour partager votre retour d’expérience de vive voix, n’hésitez pas{' '}
-          <a href={clientConfig.calendarLink} target="_blank" rel="noreferrer">
+          <Link href={clientConfig.calendarLink} isExternal>
             à prendre rendez-vous avec l’équipe France Chaleur Urbaine
-          </a>
+          </Link>
         </p>
       </Section>
     </SimplePage>

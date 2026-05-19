@@ -138,11 +138,14 @@ export default function ChoixChauffageResults() {
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
     setOpenAccordionId(expanded ? id : null);
     trackPostHogEvent('chaleur-renouvelable:accordeon', { name: id });
+    trackPostHogEvent('fcr_simulator:accordion_opened', { chauffage_mode: id });
   }, []);
   const openHeatNetworkContactModal = useCallback(() => {
     if (!geoAddress || !urlParams.adresse || !eligibiliteReseauChaleur) {
       return;
     }
+
+    trackPostHogEvent('simu_multi_enr:methodo_clicked', { chauffage_mode: 'Réseau de chaleur' });
 
     const [lon, lat] = geoAddress.geometry.coordinates;
     handleOnSuccessAddress(
@@ -317,7 +320,7 @@ function ResultsSection({
             />
           );
         })}
-        {variant === 'recommended' && <ScrollToHelpButton onClick={onHelpButtonClick} />}
+        {variant === 'recommended' && <ScrollToHelpButton chauffageMode={items[0].label} onClick={onHelpButtonClick} />}
       </div>
     </>
   );

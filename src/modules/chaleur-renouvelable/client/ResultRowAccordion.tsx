@@ -112,16 +112,19 @@ function MobileStats({
 
 type ScrollToHelpButtonProps = {
   href?: string;
+  chauffageMode: string;
   onClick?: () => void;
 };
 
-export function ScrollToHelpButton({ href = '#help-ademe', onClick }: ScrollToHelpButtonProps) {
+export function ScrollToHelpButton({ href = '#help-ademe', chauffageMode, onClick }: ScrollToHelpButtonProps) {
   return (
     <div className="fr-my-3w flex justify-center md:justify-end">
       <Button
         className="flex-1 md:flex-none md:flex justify-center"
         iconId="fr-icon-arrow-right-line"
         iconPosition="right"
+        postHogEventKey="simu_multi_enr:methodo_clicked"
+        postHogEventProps={{ chauffage_mode: chauffageMode }}
         href={onClick ? undefined : href}
         onClick={onClick}
       >
@@ -229,7 +232,7 @@ export const ResultRowAccordion = React.memo(function ResultRowAccordion({
           Plus d'infos
         </Link>
       </div>
-      {variant !== 'recommended' && <ScrollToHelpButton />}
+      {variant !== 'recommended' && <ScrollToHelpButton chauffageMode={item.label} />}
     </Accordion>
   );
 });

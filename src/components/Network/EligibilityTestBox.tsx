@@ -64,11 +64,14 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         `Eligibilité|Formulaire de test - Fiche réseau - Adresse ${eligibilityStatus?.isEligible ? 'É' : 'Iné'}ligible`,
         geoAddress.properties.label
       );
-      trackPostHogEvent('eligibility:address_form_submit', {
+      trackPostHogEvent('address_test:submitted', {
         address: geoAddress.properties.label,
+        chauffage_type: userInfo.heatingType,
+        distance_reseau_m: eligibilityStatus.distance,
         is_eligible: !!eligibilityStatus?.isEligible,
         source: 'fiche-reseau',
       });
+      trackPostHogEvent('network_page:address_test_cta_clicked', { network_id: networkId });
     } catch (_err) {
       setFormState('eligibilitySubmissionError');
     }
@@ -84,6 +87,9 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     setUserInfo({ address: geoAddress.properties.label });
     setSelectedGeoAddress(geoAddress);
     setEligibilityStatus(undefined);
+
+    trackPostHogEvent('address_test:started', { chauffage_type: userInfo.heatingType, source: 'fiche-reseau' });
+
     void testAddressEligibility(geoAddress);
   };
 
@@ -123,10 +129,11 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         `Eligibilité|Formulaire de contact ${eligibilityStatus?.isEligible ? 'é' : 'iné'}ligible - Fiche réseau - Envoi`,
         selectedGeoAddress?.properties.label
       );
-      trackPostHogEvent('eligibility:contact_form_submit', {
+      trackPostHogEvent('address_test:contact_form_submitted', {
         address: selectedGeoAddress.properties.label,
         company_type: contactFormInfos.companyType || undefined,
         demand_area_m2: contactFormInfos.demandArea,
+        has_phone: Boolean(contactFormInfos.phone),
         heating_energy: contactFormInfos.heatingEnergy as ModeDeChauffage,
         heating_type: userInfo.heatingType as TypeDeChauffage | undefined,
         is_eligible: !!eligibilityStatus?.isEligible,

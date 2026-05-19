@@ -29,6 +29,8 @@ const InterviewsVideos = () => {
         <ul className="fr-pagination__list">
           <li>
             <Button
+              postHogEventKey="home:testimonial_carousel_clicked"
+              postHogEventProps={{ action: 'Précédent', testimonial_index: videoIndex }}
               priority="tertiary no outline"
               className="fr-pagination__link"
               onClick={(e) => {
@@ -45,6 +47,8 @@ const InterviewsVideos = () => {
             <Button
               priority="tertiary no outline"
               className="fr-pagination__link"
+              postHogEventKey="home:testimonial_carousel_clicked"
+              postHogEventProps={{ action: 'Suivant', testimonial_index: videoIndex }}
               onClick={(e) => {
                 e.preventDefault();
                 setVideoIndex((videoIndex + 1) % videos.length);

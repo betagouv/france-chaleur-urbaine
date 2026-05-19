@@ -3,11 +3,13 @@ import { useCallback, useEffect, useState } from 'react';
 
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 import Section, { type SectionProps, SectionSubtitle, SectionTitle } from '@/components/ui/Section';
 import { partenaires } from '@/data/partenaires/partnerData';
 import { shuffleArray } from '@/utils/array';
+import cx from '@/utils/cx';
 
-import { Arrow, PartnerImage, PartnerImages, PartnerLink } from './Partners.style';
+import { Arrow, PartnerImage, PartnerImages } from './Partners.style';
 
 const Partners: React.FC<SectionProps> = (props) => {
   const [firstLogo, setFirstLogo] = useState(0);
@@ -43,9 +45,16 @@ const Partners: React.FC<SectionProps> = (props) => {
         </Arrow>
         <PartnerImages>
           {logos.map(({ image, title, link }, index) => (
-            <PartnerLink show={index >= firstLogo} href={link} target="_blank" rel="noreferrer noopener" key={title}>
+            <Link
+              isExternal
+              className={cx(index >= firstLogo && 'hidden')}
+              href={link}
+              key={`link-${title}`}
+              postHogEventKey="home:partner_logo_clicked"
+              postHogEventProps={{ partner_name: title, target_url: link }}
+            >
               <PartnerImage src={image} alt={title} loading="lazy" className="max-w-none" />
-            </PartnerLink>
+            </Link>
           ))}
         </PartnerImages>
         <Arrow onClick={() => setNextLogo(1)}>

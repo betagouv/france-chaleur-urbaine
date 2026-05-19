@@ -30,7 +30,12 @@ const OutilsPage = () => {
             </Text>
           </ArrowItem>
         </Box>
-        <Link variant="secondary" href="/pro/tests-adresses">
+        <Link
+          postHogEventKey="tools:tool_accessed"
+          postHogEventProps={{ tool_name: 'test_masse' }}
+          variant="secondary"
+          href="/pro/tests-adresses"
+        >
           Accéder
         </Link>
       </Box>
@@ -46,7 +51,12 @@ const OutilsPage = () => {
               </Text>
             </ArrowItem>
           </Box>
-          <Link variant="secondary" href="/collectivites-et-exploitants#iframe-carte">
+          <Link
+            postHogEventKey="tools:tool_accessed"
+            postHogEventProps={{ tool_name: 'iframe' }}
+            variant="secondary"
+            href="/collectivites-et-exploitants#iframe-carte"
+          >
             Accéder
           </Link>
         </Box>
@@ -62,7 +72,13 @@ const OutilsPage = () => {
             </Text>
           </ArrowItem>
         </Box>
-        <Link variant="secondary" href="https://www.data.gouv.fr/fr/dataservices/api-france-chaleur-urbaine/" isExternal>
+        <Link
+          postHogEventKey="tools:tool_accessed"
+          postHogEventProps={{ tool_name: 'api' }}
+          variant="secondary"
+          href="https://www.data.gouv.fr/fr/dataservices/api-france-chaleur-urbaine/"
+          isExternal
+        >
           Accéder
         </Link>
       </Box>
@@ -78,7 +94,13 @@ const OutilsPage = () => {
               </Text>
             </ArrowItem>
           </Box>
-          <Link variant="secondary" href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/" isExternal>
+          <Link
+            postHogEventKey="tools:tool_accessed"
+            postHogEventProps={{ tool_name: 'telecharger_donnees' }}
+            variant="secondary"
+            href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
+            isExternal
+          >
             Accéder
           </Link>
         </Box>
@@ -95,7 +117,12 @@ const OutilsPage = () => {
             </Text>
           </ArrowItem>
         </Box>
-        <Link variant="secondary" href="/professionnels#simulateur-aide">
+        <Link
+          postHogEventKey="tools:tool_accessed"
+          postHogEventProps={{ tool_name: 'simulateur_aide' }}
+          variant="secondary"
+          href="/professionnels#simulateur-aide"
+        >
           Accéder
         </Link>
       </Box>
@@ -111,7 +138,12 @@ const OutilsPage = () => {
               </Text>
             </ArrowItem>
           </Box>
-          <Link variant="secondary" href="/comparateur-couts-performances">
+          <Link
+            postHogEventKey="tools:tool_accessed"
+            postHogEventProps={{ tool_name: 'comparateur' }}
+            variant="secondary"
+            href="/comparateur-couts-performances"
+          >
             Accéder
           </Link>
         </Box>
@@ -127,7 +159,12 @@ const OutilsPage = () => {
             </Text>
           </ArrowItem>
         </Box>
-        <Link variant="secondary" href="/chaleur-renouvelable">
+        <Link
+          postHogEventKey="tools:tool_accessed"
+          postHogEventProps={{ tool_name: 'chaleur_renouvelable' }}
+          variant="secondary"
+          href="/chaleur-renouvelable"
+        >
           Accéder
         </Link>
       </Box>
@@ -143,7 +180,12 @@ const OutilsPage = () => {
               </Text>
             </ArrowItem>
           </Box>
-          <Link variant="secondary" href="/reseaux/modifier">
+          <Link
+            postHogEventKey="tools:tool_accessed"
+            postHogEventProps={{ tool_name: 'fiche_reseau' }}
+            variant="secondary"
+            href="/reseaux/modifier"
+          >
             Accéder
           </Link>
         </Box>
@@ -160,7 +202,7 @@ const OutilsPage = () => {
               </Text>
             </ArrowItem>
           </Box>
-          <Link variant="secondary" href="/reseaux">
+          <Link postHogEventKey="tools:tool_accessed" postHogEventProps={{ tool_name: 'liste_reseau' }} variant="secondary" href="/reseaux">
             Accéder
           </Link>
         </Box>

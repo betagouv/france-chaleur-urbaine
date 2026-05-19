@@ -1,9 +1,9 @@
-import Link from 'next/link';
 import { useMemo } from 'react';
 
 import Graph from '@/components/Graph';
 import Slice from '@/components/Slice';
 import Hero, { HeroTitle } from '@/components/ui/Hero';
+import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import Tooltip from '@/components/ui/Tooltip';
 import statistics from '@/data/statistics';
@@ -457,7 +457,10 @@ const Statistics = () => {
                 <NumberContainer>
                   <NumberBlock>
                     <NumberHighlight>{statistics.iFrameIntegration}</NumberHighlight>
-                    Intégrations de nos <Link href="/collectivites-et-exploitants#iframe-carte">iframes</Link>
+                    Intégrations de nos{' '}
+                    <Link postHogEventKey="collectivities:iframe_cta_clicked" href="/collectivites-et-exploitants#iframe-carte">
+                      iframes
+                    </Link>
                   </NumberBlock>
                   <HorizontalSeparator />
                   <NumberBlock>

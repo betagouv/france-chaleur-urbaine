@@ -3,7 +3,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 
-import { type TrackingEvent, trackEvent } from '@/modules/analytics/client';
+import { type TrackingEvent, trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
+import type { PostHogEvent, PostHogTrackingProps } from '@/modules/analytics/posthog.config';
 import cx from '@/utils/cx';
 import { stopPropagation as stopPropagationHandler } from '@/utils/events';
 
@@ -73,9 +74,10 @@ const buttonVariants = cva('', {
   variants: {},
 });
 
-export type ButtonProps = Omit<DsfrButtonProps, 'children'> &
+export type ButtonProps<Event extends PostHogEvent = PostHogEvent> = Omit<DsfrButtonProps, 'children'> &
   RemoveDollar<StyledButtonProps> &
-  VariantProps<typeof buttonVariants> & { href?: string; stopPropagation?: boolean } & { children?: React.ReactNode };
+  VariantProps<typeof buttonVariants> &
+  PostHogTrackingProps<Event> & { href?: string; stopPropagation?: boolean } & { children?: React.ReactNode };
 
 /**
  * A DSFR button component with enhanced features:
@@ -85,7 +87,7 @@ export type ButtonProps = Omit<DsfrButtonProps, 'children'> &
  * - Analytics event tracking via `eventKey` and `eventPayload`
  * - Stop propagation control via `stopPropagation` prop
  */
-const Button: React.FC<ButtonProps> = ({
+function Button<Event extends PostHogEvent = PostHogEvent>({
   children,
   iconId,
   full,
@@ -95,12 +97,14 @@ const Button: React.FC<ButtonProps> = ({
   onClick: onExternalClick,
   eventKey,
   eventPayload,
+  postHogEventKey,
+  postHogEventProps,
   stopPropagation,
   loading,
   variant = 'default',
   className,
   ...props
-}) => {
+}: ButtonProps<Event>) {
   const router = useRouter();
 
   const onClick: DsfrButtonProps['onClick'] = (e) => {
@@ -117,6 +121,8 @@ const Button: React.FC<ButtonProps> = ({
         eventPayload?.split(',').map((v) => v.trim())
       );
     }
+
+    trackPostHogEvent(postHogEventKey, postHogEventProps);
     if (!onExternalClick) {
       return;
     }
@@ -154,6 +160,6 @@ const Button: React.FC<ButtonProps> = ({
       {children}
     </StyledButton>
   );
-};
+}
 
 export default Button;

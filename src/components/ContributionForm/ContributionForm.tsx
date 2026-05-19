@@ -9,6 +9,7 @@ import Radio from '@/components/form/dsfr/Radio';
 import Upload from '@/components/form/dsfr/Upload';
 import { getInputErrorStates } from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { toastErrors } from '@/modules/notification';
 import { postFormDataFetchJSON } from '@/utils/network';
 import { formatFileSize } from '@/utils/strings';
@@ -408,6 +409,7 @@ const ContributionForm = () => {
     } satisfies Record<keyof FormData, ''> as unknown as FormData,
     onSubmit: toastErrors(
       async ({ value }: { value: FormData }) => {
+        trackPostHogEvent('map:manager_contact_form_submitted');
         await postFormDataFetchJSON('/api/contribution', await zContributionFormData.parseAsync(value));
         setFormSuccess(true);
       },

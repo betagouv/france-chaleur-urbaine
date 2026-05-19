@@ -12,7 +12,7 @@ import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import useInitialSearchParam from '@/hooks/useInitialSearchParam';
-import { AnalyticsFormId } from '@/modules/analytics/client';
+import { AnalyticsFormId, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { AvailableHeating } from '@/modules/app/types';
 import { searchBANAddresses } from '@/modules/ban/client';
@@ -192,6 +192,7 @@ const HeadSliceForm = ({
                 const address = geoAddress?.properties?.label;
                 setUserInfo({ address: address ?? '' });
                 setGeoAddress(geoAddress);
+                trackPostHogEvent('address_test:started', { chauffage_type: userInfo.heatingType, source: 'homepage' });
               }}
             />
             <div
@@ -226,6 +227,7 @@ const HeadSliceForm = ({
                   <span className="text-green-700! flex items-center gap-0.5">
                     <Icon name="ri-file-excel-2-line" />
                     <Link
+                      postHogEventKey="home:bulk_test_cta_clicked"
                       href="/pro/tests-adresses"
                       className="text-green-700! hover:bg-transparent! hover:opacity-80 shadow-none! pr-0! pl-0!"
                     >

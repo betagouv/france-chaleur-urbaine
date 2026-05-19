@@ -11,6 +11,7 @@ import Heading from '@/components/ui/Heading';
 import Notice from '@/components/ui/Notice';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
 import useScreenshot from '@/hooks/useScreenshot';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { deepMergeObjects } from '@/utils/core';
 import cx from '@/utils/cx';
 import type { exportAsXLSX } from '@/utils/export';
@@ -519,14 +520,20 @@ const Graph: React.FC<GraphProps> = ({
       label: 'Détails des coûts',
       nativeInputProps: {
         checked: graphType === 'couts',
-        onChange: () => setGraphType('couts'),
+        onChange: () => {
+          trackPostHogEvent('comparator:cost_detail_tab_opened', engine.getSituation());
+          setGraphType('couts');
+        },
       },
     },
     {
       label: 'Émissions de CO2',
       nativeInputProps: {
         checked: graphType === 'emissions',
-        onChange: () => setGraphType('emissions'),
+        onChange: () => {
+          trackPostHogEvent('comparator:co2_emissions_tab_opened', engine.getSituation());
+          setGraphType('emissions');
+        },
       },
     },
   ];
@@ -873,11 +880,18 @@ const Graph: React.FC<GraphProps> = ({
             priority="secondary"
             onClick={async () => await captureNodeAndDownload(ref, { filename: `${captureImageName}-${graphType}.png`, padding: 20 })}
             loading={capturing}
+            postHogEventKey="comparator:image_saved"
+            postHogEventProps={engine.getSituation()}
           >
             Sauvegarder l'image
           </Button>
           {exportSheets && (
-            <ButtonExport priority="secondary" filename={`${captureImageName}-${graphType}.xlsx`} sheets={exportSheets}>
+            <ButtonExport
+              postHogEventKey="comparator:data_exported"
+              priority="secondary"
+              filename={`${captureImageName}-${graphType}.xlsx`}
+              sheets={exportSheets}
+            >
               Exporter les données
             </ButtonExport>
           )}

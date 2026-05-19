@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import type { ReseauxDeChaleurLimits } from '@/components/Map/layers/filters';
 import { defaultInterval, type FiltreEnergieConfKey, percentageMaxInterval } from '@/components/Map/map-configuration';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { deepMergeObjects, setProperty } from '@/utils/core';
 import { fetchJSON } from '@/utils/network';
 import { deepIntersection } from '@/utils/objects';
@@ -73,6 +74,7 @@ const useReseauxDeChaleurFilters = ({ queryParamName = 'rdc_filters' }: { queryP
 
   const updateFilter = (property: FilterKeys, value?: any) => {
     const updatedFilters = { ...urlFilters };
+    trackPostHogEvent('network_list:filter_applied', { filter_name: property, filter_value: value });
     setProperty(updatedFilters, property as keyof typeof urlFilters, value);
     updateFilters(updatedFilters as Filters);
   };

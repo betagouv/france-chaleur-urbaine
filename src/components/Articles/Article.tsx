@@ -1,5 +1,4 @@
-import { Card } from '@codegouvfr/react-dsfr/Card';
-
+import Card from '@/components/ui/Card';
 import type { Article as ArticleType } from '@/types/Article';
 
 const Article = ({ article, isHorizontal, titleAs = 'h3' }: { article: ArticleType; isHorizontal?: boolean; titleAs?: 'h4' | 'h3' }) => {
@@ -10,12 +9,14 @@ const Article = ({ article, isHorizontal, titleAs = 'h3' }: { article: ArticleTy
       linkProps={{
         href: `/actus/${article.slug}`,
       }}
+      postHogEventKey="home:news_clicked"
+      postHogEventProps={{ element_name: article.slug }}
       imageUrl={article.image}
       imageAlt=""
       enlargeLink
       border
       background={false}
-      size="small"
+      size="sm"
       titleAs={titleAs}
       horizontal={isHorizontal}
     />

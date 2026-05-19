@@ -181,7 +181,7 @@ categorie:objet_action
 
 Examples:
 - `eligibility:address_submit`
-- `map:layer_toggle`
+- `map:layer_toggled`
 - `content:click`
 
 See [TRACKING_PLAN.md](./TRACKING_PLAN.md#conventions-de-nommage) for the full convention.
