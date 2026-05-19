@@ -6,7 +6,7 @@ export const DPE_VALUES = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 
 export type DPE = (typeof DPE_VALUES)[number];
 
-export const TYPE_LOGEMENT_VALUES = ['immeuble_chauffage_collectif', 'immeuble_chauffage_individuel', 'maison_individuelle'];
+export const TYPE_LOGEMENT_VALUES = ['immeuble_chauffage_collectif', 'immeuble_chauffage_individuel', 'maison_individuelle'] as const;
 export type TypeLogement = (typeof TYPE_LOGEMENT_VALUES)[number];
 export const typeLogementOptions = [
   { label: 'Immeuble en chauffage collectif', value: 'immeuble_chauffage_collectif' },
@@ -17,7 +17,7 @@ export const typeLogementOptions = [
   value: TypeLogement;
 }[];
 
-export const ESPACE_EXTERIEUR_VALUES = ['shared', 'private', 'both', 'none'];
+export const ESPACE_EXTERIEUR_VALUES = ['shared', 'private', 'both', 'none'] as const;
 export type EspaceExterieur = (typeof ESPACE_EXTERIEUR_VALUES)[number];
 export const espaceExterieurOptionsByTypeLogement = {
   immeuble_chauffage_collectif: [
