@@ -105,7 +105,7 @@ export function ParamsForm({
             nativeSelectProps={{
               onChange: (e) => {
                 const newDpe = e.target.value as DPE;
-                trackPostHogEvent('simu_multiENR:params_updated', { dpe: newDpe });
+                trackPostHogEvent('simu_multi_enr:params_updated', { dpe: newDpe });
                 void setDpe(newDpe);
               },
               value: dpe,
@@ -118,7 +118,7 @@ export function ParamsForm({
               min: 1,
               onChange: (e) => {
                 const nbLogements = Number(e.target.value);
-                trackPostHogEvent('simu_multiENR:params_updated', { nb_logements: nbLogements });
+                trackPostHogEvent('simu_multi_enr:params_updated', { nb_logements: nbLogements });
                 void setNbLogements(nbLogements === 0 ? null : nbLogements);
               },
               placeholder: '25',
@@ -135,7 +135,7 @@ export function ParamsForm({
                 min: 0,
                 onChange: (e) => {
                   const surface = Number(e.target.value);
-                  trackPostHogEvent('simu_multiENR:params_updated', { surface });
+                  trackPostHogEvent('simu_multi_enr:params_updated', { surface });
                   void setSurfaceMoyenne(surface === 0 ? null : surface);
                 },
                 placeholder: '70',
@@ -168,7 +168,7 @@ export function ParamsForm({
               onChange: (e) => {
                 const nbHabitant = e.target.value;
                 if (!isNumericLike(nbHabitant)) return;
-                trackPostHogEvent('simu_multiENR:params_updated', { nb_habitants: Number(nbHabitant) });
+                trackPostHogEvent('simu_multi_enr:params_updated', { nb_habitants: Number(nbHabitant) });
                 void setHabitantsMoyen(nbHabitant);
               },
               placeholder: '2',

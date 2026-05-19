@@ -47,7 +47,7 @@ Outil central du produit. On mesure l'interaction avec les couches et les outils
 | `map:legend_toggle` | `is_open` | Ouverture/fermeture de la légende |
 | `map:tab_select` | `tab_name` | Navigation entre onglets (réseaux, potentiel, enrr, outils) |
 | `map:tool_use` | `tool_name`, `action` | Utilisation des outils carte |
-| `map:feature_click` | `network_name`, `network_id?, `enr_rate?` | Clic sur une feature de la carte (ouverture popup de détail) |
+| `map:feature_click` | `feature_type?`, `feature_id?` | Clic sur une feature de la carte (ouverture popup de détail) |
 
 **`tool_name`** : `distance`, `density`, `extraction`
 **`action`** : `start`, `complete`, `reset`, `export`

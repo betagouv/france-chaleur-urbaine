@@ -105,7 +105,7 @@ export type PostHogEventMap = {
     espaceExterieur?: string;
     source: 'landing' | 'result';
   };
-  'simu_multiENR:params_updated': {
+  'simu_multi_enr:params_updated': {
     dpe?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
     surface?: number;
     nb_logements?: number;
@@ -114,7 +114,7 @@ export type PostHogEventMap = {
   'fcr_simulator:accordion_opened': {
     chauffage_mode: string;
   };
-  'simu_multiENR:methodo_clicked': {
+  'simu_multi_enr:methodo_clicked': {
     chauffage_mode: string;
   };
   'fcr_simulator:contact_form_submitted': never;
@@ -160,9 +160,8 @@ export type PostHogEventMap = {
     action: 'start' | 'complete' | 'reset' | 'export';
   };
   'map:feature_click': {
-    network_name: string;
-    network_id?: string;
-    enr_rate: number;
+    feature_id?: string;
+    feature_type?: string;
   };
   'map:network_exported': {
     network_name: string;

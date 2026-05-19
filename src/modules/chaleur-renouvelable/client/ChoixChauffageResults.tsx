@@ -145,7 +145,7 @@ export default function ChoixChauffageResults() {
       return;
     }
 
-    trackPostHogEvent('simu_multiENR:methodo_clicked', { chauffage_mode: 'Réseau de chaleur' });
+    trackPostHogEvent('simu_multi_enr:methodo_clicked', { chauffage_mode: 'Réseau de chaleur' });
 
     const [lon, lat] = geoAddress.geometry.coordinates;
     handleOnSuccessAddress(
