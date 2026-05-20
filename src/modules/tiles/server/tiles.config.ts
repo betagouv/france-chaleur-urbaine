@@ -77,6 +77,7 @@ const reseauxDeFroidFields = [
   'geom',
   'Taux EnR&R',
   'Gestionnaire',
+  'MO',
   'Identifiant reseau',
   'reseaux classes',
   'contenu CO2 ACV',

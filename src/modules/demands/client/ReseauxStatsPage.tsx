@@ -5,8 +5,6 @@ import dayjs from 'dayjs';
 import NextLink from 'next/link';
 import { type ReactNode, useMemo } from 'react';
 
-import { reseauDeChaleurNonClasseColor } from '@/components/Map/layers/reseauxDeChaleur';
-import { reseauxEnConstructionColor } from '@/components/Map/layers/reseauxEnConstruction';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import { useCopy } from '@/components/ui/ButtonCopy';
@@ -16,6 +14,8 @@ import Icon from '@/components/ui/Icon';
 import TimeAgo from '@/components/ui/TimeAgo';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
+import { reseauDeChaleurNonClasseColor } from '@/modules/map/client/layers/specs/reseauxDeChaleur';
+import { reseauxEnConstructionColor } from '@/modules/map/client/layers/specs/reseauxEnConstruction';
 import { notify } from '@/modules/notification';
 import { NotesCell } from '@/modules/reseaux/client/admin/NotesCell';
 import { RemindersCell } from '@/modules/reseaux/client/admin/RemindersCell';

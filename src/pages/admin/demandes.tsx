@@ -2,10 +2,8 @@ import DSFRTag from '@codegouvfr/react-dsfr/Tag';
 import { usePrevious } from '@react-hookz/web';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import type { Virtualizer } from '@tanstack/react-virtual';
-import dynamic from 'next/dynamic';
 import { parseAsJson, useQueryState } from 'nuqs';
 import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { MapGeoJSONFeature } from 'react-map-gl/maplibre';
 
 import TableAddressAutocomplete from '@/components/Admin/TableAddressAutocomplete';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
@@ -14,8 +12,6 @@ import Select from '@/components/form/dsfr/Select';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
-import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import FCUBadge from '@/components/ui/Badge';
@@ -38,6 +34,10 @@ import Status from '@/modules/demands/client/Status';
 import type { DemandStatus } from '@/modules/demands/constants';
 import { eligibilityTypes as eligibilityCases, eligibilityTitleByType } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
+import type { AdresseEligible } from '@/modules/map/client/layers/specs/adressesEligibles';
+import { Map } from '@/modules/map/client/Map';
 import { notify, toastErrors } from '@/modules/notification';
 import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -51,8 +51,6 @@ import { stopPropagation } from '@/utils/events';
 
 type DemandsListAdminData = RouterOutput['demands']['admin']['list'];
 type DemandsListAdminItem = DemandsListAdminData['items'][number];
-
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 type MapCenterLocation = {
   center: Point;
@@ -575,16 +573,15 @@ function DemandesAdmin(): React.ReactElement {
     [updateDemand, changeNetwork, validateDemand, deleteDemand, handleEmailClick]
   );
 
-  const onFeatureClick = useCallback(
-    (feature: MapGeoJSONFeature) => {
-      if (feature.source !== 'adressesEligibles') {
-        return;
+  const onMarkerSelect = useCallback(
+    (demandId: string) => {
+      setSelectedDemandId(demandId);
+      const rowIndex = filteredDemands.findIndex((demand) => demand.id === demandId);
+      if (rowIndex >= 0) {
+        virtualizerRef.current?.scrollToIndex(rowIndex, { align: 'center' });
       }
-      setSelectedDemandId(feature.id as string);
-      const rowIndex = filteredDemands.findIndex((demand) => demand.id === feature.id);
-      virtualizerRef.current?.scrollToIndex(rowIndex, { align: 'center' });
     },
-    [filteredDemands, virtualizerRef.current]
+    [filteredDemands]
   );
 
   const selectAndCenterOnDemand = useCallback(
@@ -692,24 +689,17 @@ function DemandesAdmin(): React.ReactElement {
             <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-164px)] bg-[#F8F4F0]')}>
               {isDefined(mapCenterLocation) ? (
                 <Map
-                  noPopup
-                  withoutLogo
-                  initialCenter={mapCenterLocation.center}
-                  initialZoom={mapCenterLocation.zoom}
-                  enableFlyToCentering
-                  initialMapConfiguration={createMapConfiguration({
+                  initialView={{ center: mapCenterLocation.center, zoom: mapCenterLocation.zoom }}
+                  config={createMapConfiguration({
                     reseauxDeChaleur: {
                       show: true,
                     },
                     reseauxEnConstruction: true,
                     zonesDeDeveloppementPrioritaire: true,
                   })}
-                  geolocDisabled
-                  withSoughtAddresses={false}
-                  adressesEligibles={filteredDemandsMapData}
-                  adressesEligiblesAutoFit={false}
-                  onFeatureClick={onFeatureClick}
-                />
+                >
+                  <AdressesEligiblesLayer adresses={filteredDemandsMapData} flyToLocation={mapCenterLocation} onSelect={onMarkerSelect} />
+                </Map>
               ) : isLoading ? (
                 <div className="absolute inset-0 flex justify-center items-center animate-pulse">
                   <Loader size="lg" />

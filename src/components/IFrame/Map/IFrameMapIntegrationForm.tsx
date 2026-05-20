@@ -1,12 +1,12 @@
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import { type ReactNode, useState } from 'react';
 
-import { type LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
 import Notice from '@/components/ui/Notice';
 import { AddressField } from '@/modules/form/AddressField';
 import type { Coords } from '@/modules/geo/types';
 
 import { StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
+import { type LegendURLKey, selectableLayers } from './selectableLayers';
 
 const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
   const [coords, setCoords] = useState<Coords | null>(null);

@@ -237,7 +237,7 @@ const HeatNetwork = ({
       <br />
       <br />
       Sur la{' '}
-      <Link href="/carte?accordions=Potentiel+par+territoire&tabId=potentiel&additionalLayers=communesFortPotentielPourCreationReseauxChaleur">
+      <Link href="/carte?accordions=potentiel-territoire&tabId=potentiel&additionalLayers=communesFortPotentielPourCreationReseauxChaleur">
         carte France Chaleur Urbaine
       </Link>
       , sont identifiées 2600 communes à fort potentiel pour la création d'un réseau de chaleur, qui n'en sont pas encore équipées.

@@ -5,8 +5,6 @@ import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
-import { reseauxDeChaleurFilters } from '@/components/Map/layers/filters';
-import { filtresEnergies, percentageMaxInterval } from '@/components/Map/map-configuration';
 import { ECORESEAU_LINK } from '@/components/Network/EcoreseauLabel';
 import ReseauxDeChaleurFilters, { type ReseauxDeChaleurFiltersProps } from '@/components/ReseauxDeChaleurFilters';
 import Box from '@/components/ui/Box';
@@ -17,6 +15,8 @@ import Text from '@/components/ui/Text';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import useReseauxDeChaleurFilters, { type FilterWithLimits } from '@/hooks/useReseauxDeChaleurFilters';
 import { dataSourcesVersions } from '@/modules/app/constants';
+import { filtresEnergies, percentageMaxInterval } from '@/modules/map/client/config/map-configuration';
+import { reseauxDeChaleurFilters } from '@/modules/map/client/layers/filters';
 import { gestionnairesFilters } from '@/modules/reseaux/constants';
 import trpc from '@/modules/trpc/client';
 import type { NetworkToCompare } from '@/types/Summary/Network';
@@ -215,6 +215,13 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
         ) {
           showReseau = false;
         }
+      }
+    }
+    if (filters.maitreOuvrage.length > 0) {
+      const maitresOuvrages = filters.maitreOuvrage.map((mo) => mo.toLowerCase());
+      const reseauMaitreOuvrage = reseau.MO?.toLowerCase();
+      if (!maitresOuvrages.some((maitreOuvrage) => reseauMaitreOuvrage?.includes(maitreOuvrage))) {
+        showReseau = false;
       }
     }
     if (filters.isClassed && !reseau['reseaux classes']) {

@@ -68,6 +68,26 @@ describe('deepMergeObjects()', () => {
       },
       label: 'should merge nested objects',
     },
+    {
+      expectedOutput: {
+        limits: { max: 100, min: 0 },
+      },
+      input: {
+        obj1: { limits: null },
+        obj2: { limits: { max: 100, min: 0 } },
+      },
+      label: 'should replace null with an object (regression: typeof null === "object")',
+    },
+    {
+      expectedOutput: {
+        limits: null,
+      },
+      input: {
+        obj1: { limits: { max: 100, min: 0 } },
+        obj2: { limits: null },
+      },
+      label: 'should overwrite with null when explicitly provided',
+    },
   ];
 
   it.each(testCases)('$label', ({ input, expectedOutput }) => {

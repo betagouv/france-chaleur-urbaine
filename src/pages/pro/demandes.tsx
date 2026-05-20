@@ -8,8 +8,6 @@ import Input from '@/components/form/dsfr/Input';
 import DemandEmailForm from '@/components/Manager/DemandEmailForm';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
-import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
 import Icon from '@/components/ui/Icon';
@@ -28,6 +26,10 @@ import Contacted from '@/modules/demands/client/Contacted';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import Status from '@/modules/demands/client/Status';
 import type { Demand } from '@/modules/demands/types';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
+import type { AdresseEligible } from '@/modules/map/client/layers/specs/adressesEligibles';
+import { Map } from '@/modules/map/client/Map';
 import { toastErrors } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
@@ -40,7 +42,6 @@ import type { ExportColumn } from '@/utils/export';
 import { pick } from '@/utils/objects';
 import { ObjectKeys } from '@/utils/typescript';
 
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 type DemandsList = RouterOutput['demands']['gestionnaire']['list'];
@@ -663,23 +664,17 @@ function DemandesNew(): React.ReactElement {
             <div className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
               {isDefined(mapCenterLocation) ? (
                 <Map
-                  noPopup
-                  withoutLogo
-                  initialCenter={mapCenterLocation.center}
-                  initialZoom={mapCenterLocation.zoom}
-                  enableFlyToCentering
-                  initialMapConfiguration={createMapConfiguration({
+                  initialView={{ center: mapCenterLocation.center, zoom: mapCenterLocation.zoom }}
+                  config={createMapConfiguration({
                     reseauxDeChaleur: {
                       show: true,
                     },
                     reseauxEnConstruction: true,
                     zonesDeDeveloppementPrioritaire: true,
                   })}
-                  geolocDisabled
-                  withSoughtAddresses={false}
-                  adressesEligibles={demandsMapData}
-                  adressesEligiblesAutoFit={false}
-                />
+                >
+                  <AdressesEligiblesLayer adresses={demandsMapData} flyToLocation={mapCenterLocation} />
+                </Map>
               ) : isLoading ? (
                 <div className="absolute inset-0 flex justify-center items-center animate-pulse">
                   <Loader size="lg" />

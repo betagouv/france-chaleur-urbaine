@@ -22,6 +22,8 @@ export type BANAddressFeature = {
     context: string;
     importance: number;
     street: string;
+    /** Distance (meters) from the queried point. Only set on `/reverse` responses. */
+    distance?: number;
   };
 };
 

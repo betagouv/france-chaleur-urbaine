@@ -193,11 +193,7 @@ Context qui expose :
 
 ### Popups
 
-Définies via `defineLayerPopup<TileType>()` — helper qui donne accès au rôle utilisateur, pathname, event bus.
-
-### Event bus
-
-`mapEventBus` — communication entre composants carte via emit/listen (pas de prop drilling).
+Définies via `defineLayerPopup<TileType>()` — helper qui donne accès au rôle utilisateur et au pathname.
 
 ---
 

@@ -21,8 +21,20 @@ import {
   zUpdateReseauInput,
 } from '@/modules/reseaux/constants';
 import { adminRoute, demandAccessRoute, route, router } from '@/modules/trpc/server';
+import { kdb, sql } from '@/server/db/kysely';
 import { getCityEligilityStatus, getEligilityStatus, getNetworkEligilityStatus } from '@/server/services/addresseInformation';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
+
+type Interval = [number, number];
+
+export type ReseauxDeChaleurLimits = {
+  tauxENRR: Interval;
+  emissionsCO2: Interval;
+  contenuCO2: Interval;
+  prixMoyen: Interval;
+  livraisonsAnnuelles: Interval;
+  anneeConstruction: Interval;
+};
 
 import { createNetworkReminder, deleteNetworkReminder, updateNetworkNotes, updateNetworkReminder } from './reminders';
 import * as reseauxService from './service';
@@ -211,12 +223,59 @@ export const reseauxRouter = router({
   listNetworks: route.query(async () => {
     return await reseauxService.listNetworks();
   }),
+  /**
+   * Limites min/max sur les dimensions filtrables des réseaux de chaleur.
+   * Utilisé par `useMapConfiguration` côté carte pour initialiser les filtres
+   * (`MapConfiguration.reseauxDeChaleur.limits`).
+   *
+   * Les noms de colonnes sont typés via `eb.fn.min`/`max` contre le schéma
+   * Kysely (`reseaux_de_chaleur`) — un rename de colonne casse à la compile.
+   */
+  networkLimits: route.query(async (): Promise<ReseauxDeChaleurLimits> => {
+    const row = await kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select((eb) => [
+        eb.fn.min<number>('Taux EnR&R').as('tauxENRR_min'),
+        eb.fn.max<number>('Taux EnR&R').as('tauxENRR_max'),
+        sql<number>`${eb.fn.min('contenu CO2 ACV')} * 1000`.as('emissionsCO2_min'),
+        sql<number>`${eb.fn.max('contenu CO2 ACV')} * 1000`.as('emissionsCO2_max'),
+        sql<number>`${eb.fn.min('contenu CO2')} * 1000`.as('contenuCO2_min'),
+        sql<number>`${eb.fn.max('contenu CO2')} * 1000`.as('contenuCO2_max'),
+        sql<number>`floor(${eb.fn.min('PM')})`.as('prixMoyen_min'),
+        sql<number>`ceil(${eb.fn.max('PM')})`.as('prixMoyen_max'),
+        sql<number>`floor(${eb.fn.min('livraisons_totale_MWh')} / 1000)`.as('livraisonsAnnuelles_min'),
+        sql<number>`ceil(${eb.fn.max('livraisons_totale_MWh')} / 1000)`.as('livraisonsAnnuelles_max'),
+        eb.fn.min<number>('annee_creation').as('anneeConstruction_min'),
+        sql<number>`extract(year from now())`.as('anneeConstruction_max'),
+      ])
+      .executeTakeFirstOrThrow();
+
+    return {
+      anneeConstruction: [row.anneeConstruction_min, row.anneeConstruction_max],
+      contenuCO2: [row.contenuCO2_min, row.contenuCO2_max],
+      emissionsCO2: [row.emissionsCO2_min, row.emissionsCO2_max],
+      livraisonsAnnuelles: [row.livraisonsAnnuelles_min, row.livraisonsAnnuelles_max],
+      prixMoyen: [row.prixMoyen_min, row.prixMoyen_max],
+      tauxENRR: [row.tauxENRR_min, row.tauxENRR_max],
+    };
+  }),
   networkReminders: networkRemindersRouter,
   perimetreDeDeveloppementPrioritaire: perimetreDeDeveloppementPrioritaireRouter,
   // Sous-routeurs par type
   reseauDeChaleur: reseauDeChaleurRouter,
   reseauDeFroid: reseauDeFroidRouter,
   reseauEnConstruction: reseauEnConstructionRouter,
+  /**
+   * Recherche publique de réseaux (de chaleur existants + en construction) par
+   * nom, identifiant SNCU ou id_fcu. Renvoie la bbox PostGIS de chaque réseau
+   * pour que la carte puisse `fitBounds` sur le résultat sélectionné.
+   *
+   * Distinct de `searchNetworks` (admin) : ce dernier ne contient pas la bbox
+   * et est limité à des rôles authentifiés ; celui-ci est public et map-centric.
+   */
+  searchForMap: route.input(z.object({ search: z.string().min(2).max(100) })).query(async ({ input }) => {
+    return await reseauxService.searchNetworksForMap(input.search);
+  }),
   searchNetworks: demandAccessRoute.input(z.object({ search: z.string().min(2).max(100) })).query(async ({ input }) => {
     return await reseauxService.searchNetworks(input.search);
   }),

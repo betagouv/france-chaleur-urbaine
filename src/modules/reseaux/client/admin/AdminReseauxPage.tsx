@@ -1,5 +1,4 @@
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
-import dynamic from 'next/dynamic';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -7,8 +6,6 @@ import TableFieldInput from '@/components/Admin/TableFieldInput';
 import Checkbox from '@/components/form/dsfr/Checkbox';
 import Input from '@/components/form/dsfr/Input';
 import FCUTagAutocomplete from '@/components/form/FCUTagAutocomplete';
-import AdminEditLegend from '@/components/Map/components/AdminEditLegend';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
@@ -18,6 +15,17 @@ import Notice from '@/components/ui/Notice';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tag from '@/components/ui/Tag';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { FileDropHandler } from '@/modules/map/client/interactions/FileDropHandler';
+import { MapFitBounds } from '@/modules/map/client/interactions/MapFitBounds';
+import { CustomGeojsonLegend } from '@/modules/map/client/layers/specs/customGeojson.legend';
+import { GeomUpdateLegend } from '@/modules/map/client/layers/specs/geomUpdate.legend';
+import { PerimetresDeDeveloppementPrioritaireLegend } from '@/modules/map/client/layers/specs/perimetresDeDeveloppementPrioritaire.legend';
+import { ReseauxDeChaleurLegend } from '@/modules/map/client/layers/specs/reseauxDeChaleur.legend';
+import { ReseauxDeFroidLegend } from '@/modules/map/client/layers/specs/reseauxDeFroid.legend';
+import { ReseauxEnConstructionLegend } from '@/modules/map/client/layers/specs/reseauxEnConstruction.legend';
+import { type MapDynamicSource, useMapLayers } from '@/modules/map/client/layers/useMapLayers';
+import { Map } from '@/modules/map/client/Map';
 import { notify, toastErrors } from '@/modules/notification';
 import DeleteNetworkDialog, { type NetworkToDelete } from '@/modules/reseaux/client/admin/DeleteNetworkDialog';
 import { NotesCell } from '@/modules/reseaux/client/admin/NotesCell';
@@ -26,8 +34,6 @@ import type { NetworkEntityType } from '@/modules/reseaux/constants';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
-
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 const tabIds = ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
 
@@ -56,8 +62,15 @@ const ModifiedIcon = <T extends Record<string, any>>(record: T & { geom_delete: 
   );
 };
 
+/** Pushes the pending geom updates to the `geomUpdate` source (general layer, page-specific data). */
+function GeomUpdateLayerData({ features }: { features: GeoJSON.Feature[] }) {
+  const sources = useMemo<MapDynamicSource[]>(() => [{ data: { features, type: 'FeatureCollection' }, id: 'geomUpdate' }], [features]);
+  useMapLayers({ sources });
+  return null;
+}
+
 const GestionDesReseaux = () => {
-  const [selectedTab, setSelectedTab] = useQueryState('tab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
+  const [selectedTab, setSelectedTab] = useQueryState('reseauxTab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
 
   const [selectedNetwork, setSelectedNetwork] = useState<
     ReseauDeChaleur | ReseauDeFroid | ReseauEnConstruction | PerimetreDeDeveloppementPrioritaire | null
@@ -169,32 +182,27 @@ const GestionDesReseaux = () => {
   const tabsInfo: Record<
     typeof selectedTab,
     {
-      enabledFeatures: React.ComponentProps<typeof AdminEditLegend>['enabledFeatures'];
       title: string;
       type: 'reseaux_de_chaleur' | 'reseaux_de_froid' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire';
       refetch: () => void;
     }
   > = {
     'perimetres-de-developpement-prioritaire': {
-      enabledFeatures: ['zonesDeDeveloppementPrioritaire', 'testsAdresses'],
       refetch: () => void trpcUtils.reseaux.perimetreDeDeveloppementPrioritaire.list.invalidate(),
       title: 'Périmètres de développement prioritaire',
       type: 'zone_de_developpement_prioritaire',
     },
     'reseaux-de-chaleur': {
-      enabledFeatures: ['reseauxDeChaleur', 'testsAdresses'],
       refetch: () => void trpcUtils.reseaux.reseauDeChaleur.list.invalidate(),
       title: 'Réseaux de chaleur',
       type: 'reseaux_de_chaleur',
     },
     'reseaux-de-froid': {
-      enabledFeatures: ['reseauxDeFroid', 'testsAdresses'],
       refetch: () => void trpcUtils.reseaux.reseauDeFroid.list.invalidate(),
       title: 'Réseaux de froid',
       type: 'reseaux_de_froid',
     },
     'reseaux-en-construction': {
-      enabledFeatures: ['reseauxEnConstruction', 'testsAdresses'],
       refetch: () => void trpcUtils.reseaux.reseauEnConstruction.list.invalidate(),
       title: 'Réseaux en construction',
       type: 'zones_et_reseaux_en_construction',
@@ -1326,28 +1334,23 @@ const GestionDesReseaux = () => {
               style={{ '--height': mapContainerHeight } as any}
             >
               <Map
-                noPopup
-                withoutLogo
-                initialMapConfiguration={createMapConfiguration({
+                config={createMapConfiguration({
                   customGeojson: true,
                   demandesEligibilite: true,
                   geomUpdate: true,
-                  reseauxDeChaleur: {
-                    show: true,
-                  },
+                  reseauxDeChaleur: { show: true },
                   reseauxDeFroid: true,
                   reseauxEnConstruction: true,
                   zonesDeDeveloppementPrioritaire: true,
                 })}
-                geolocDisabled
-                withSoughtAddresses={false}
-                bounds={selectedNetwork?.bbox}
-                withLegend={false}
-                onGeomDrop={setUpdatedGeom}
-                geomUpdateFeatures={geomUpdateFeatures}
+                legend="hidden"
+                search={editingId !== null ? 'none' : 'network'}
               >
+                <FileDropHandler onDrop={setUpdatedGeom} />
+                <GeomUpdateLayerData features={geomUpdateFeatures} />
+                <MapFitBounds bbox={selectedNetwork?.bbox as [number, number, number, number] | undefined} duration={1200} maxZoom={16} />
                 {editingId !== null && (
-                  <AdminEditLegend enabledFeatures={tabInfo.enabledFeatures}>
+                  <div className="absolute top-2 left-12 max-w-md z-10 bg-white shadow rounded overflow-y-auto p-2">
                     {networkMarkedForDeletion ? (
                       <>
                         <div className="text-center text-sm mt-2">
@@ -1493,7 +1496,19 @@ const GestionDesReseaux = () => {
                         </div>
                       </>
                     )}
-                  </AdminEditLegend>
+                    <div className="mt-2">
+                      {
+                        {
+                          'perimetres-de-developpement-prioritaire': <PerimetresDeDeveloppementPrioritaireLegend />,
+                          'reseaux-de-chaleur': <ReseauxDeChaleurLegend />,
+                          'reseaux-de-froid': <ReseauxDeFroidLegend />,
+                          'reseaux-en-construction': <ReseauxEnConstructionLegend />,
+                        }[selectedTab]
+                      }
+                      <CustomGeojsonLegend />
+                      <GeomUpdateLegend />
+                    </div>
+                  </div>
                 )}
               </Map>
             </div>

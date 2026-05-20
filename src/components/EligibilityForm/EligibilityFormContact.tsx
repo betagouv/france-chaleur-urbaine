@@ -1,20 +1,19 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
 
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import type { ContactFormInfos } from '@/modules/demands/constants';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { MapMarker } from '@/modules/map/client/interactions/MapMarker';
+import { Map } from '@/modules/map/client/Map';
 import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
 
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
 import { getEligibilityResult } from './EligibilityResults';
-
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
@@ -104,6 +103,13 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
     [addressData, computedEligibility, display, onSubmit, trpcUtils]
   );
 
+  const addressCoordinates = addressData.geoAddress?.geometry.coordinates;
+  const mapConfig = createMapConfiguration({
+    reseauxDeChaleur: { show: true },
+    reseauxEnConstruction: true,
+    zonesDeDeveloppementPrioritaire: true,
+  });
+
   return (
     <ContactFormWrapper cardMode={cardMode} className={className}>
       {addressData.eligibility?.basedOnCity && !cardMode ? (
@@ -116,18 +122,9 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
                 : "Il n'y a pour le moment pas de réseau de chaleur dans cette ville"}
           </ContactFormResultMessage>
           <ContactMapResult>
-            <Map
-              withCenterPin
-              withoutLogo
-              initialCenter={addressData.geoAddress?.geometry.coordinates}
-              initialMapConfiguration={createMapConfiguration({
-                reseauxDeChaleur: {
-                  show: true,
-                },
-                reseauxEnConstruction: true,
-                zonesDeDeveloppementPrioritaire: true,
-              })}
-            />
+            <Map config={mapConfig} initialView={addressCoordinates ? { center: addressCoordinates, zoom: 16 } : undefined}>
+              {addressCoordinates && <MapMarker longitude={addressCoordinates[0]} latitude={addressCoordinates[1]} color="#4550e5" />}
+            </Map>
           </ContactMapResult>
         </ContactFormContentWrapper>
       ) : (
@@ -140,19 +137,9 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
                   {body}
                 </ContactFormResultMessage>
                 <ContactMapResult>
-                  <Map
-                    withCenterPin
-                    withoutLogo
-                    withSoughtAddresses={false}
-                    initialCenter={addressData.geoAddress?.geometry.coordinates}
-                    initialMapConfiguration={createMapConfiguration({
-                      reseauxDeChaleur: {
-                        show: true,
-                      },
-                      reseauxEnConstruction: true,
-                      zonesDeDeveloppementPrioritaire: true,
-                    })}
-                  />
+                  <Map config={mapConfig} initialView={addressCoordinates ? { center: addressCoordinates, zoom: 16 } : undefined}>
+                    {addressCoordinates && <MapMarker longitude={addressCoordinates[0]} latitude={addressCoordinates[1]} color="#4550e5" />}
+                  </Map>
                 </ContactMapResult>
               </>
             ) : (

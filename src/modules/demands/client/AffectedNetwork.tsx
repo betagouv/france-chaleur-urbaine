@@ -1,9 +1,9 @@
 import DSFRBadge from '@codegouvfr/react-dsfr/Badge';
 
-import { reseauDeChaleurNonClasseColor } from '@/components/Map/layers/reseauxDeChaleur';
-import { reseauxEnConstructionColor } from '@/components/Map/layers/reseauxEnConstruction';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
+import { reseauDeChaleurNonClasseColor } from '@/modules/map/client/layers/specs/reseauxDeChaleur';
+import { reseauxEnConstructionColor } from '@/modules/map/client/layers/specs/reseauxEnConstruction';
 import type { NetworkType } from '@/modules/reseaux/constants';
 
 type AffectedNetworkProps = {

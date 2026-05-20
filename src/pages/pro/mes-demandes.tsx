@@ -1,7 +1,6 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import geoViewport from '@mapbox/geo-viewport';
 import type { ColumnFiltersState } from '@tanstack/react-table';
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -9,8 +8,6 @@ import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
-import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SimplePage from '@/components/shared/page/SimplePage';
 import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
@@ -25,6 +22,10 @@ import Gestionnaire from '@/modules/demands/client/Gestionnaire';
 import Status from '@/modules/demands/client/Status';
 import { eligibilityTitleByType } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
+import type { AdresseEligible } from '@/modules/map/client/layers/specs/adressesEligibles';
+import { Map } from '@/modules/map/client/Map';
 import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
@@ -34,8 +35,6 @@ import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { stopPropagation } from '@/utils/events';
 import { formatMWh } from '@/utils/strings';
-
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 type DemandsList = RouterOutput['demands']['user']['list'];
 type DemandsListItem = DemandsList[number];
@@ -353,23 +352,17 @@ function MesDemandesPage(): React.ReactElement {
           <div ref={mapContainerRef} className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
             {isDefined(mapCenterLocation) ? (
               <Map
-                noPopup
-                withoutLogo
-                initialCenter={mapCenterLocation.center}
-                initialZoom={mapCenterLocation.zoom}
-                enableFlyToCentering
-                initialMapConfiguration={createMapConfiguration({
+                initialView={{ center: mapCenterLocation.center, zoom: mapCenterLocation.zoom }}
+                config={createMapConfiguration({
                   reseauxDeChaleur: {
                     show: true,
                   },
                   reseauxEnConstruction: true,
                   zonesDeDeveloppementPrioritaire: true,
                 })}
-                geolocDisabled
-                withSoughtAddresses={false}
-                adressesEligibles={demandsMapData}
-                adressesEligiblesAutoFit={false}
-              />
+              >
+                <AdressesEligiblesLayer adresses={demandsMapData} flyToLocation={mapCenterLocation} />
+              </Map>
             ) : isLoading ? (
               <div className="absolute inset-0 flex justify-center items-center animate-pulse">
                 <Loader size="lg" />

@@ -1,27 +1,28 @@
-import IframeWrapper from '@/components/IframeWrapper';
-import Map from '@/components/Map/Map';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { FcuLogo } from '@/modules/map/client/controls/FcuLogo';
+import { IframeLegend } from '@/modules/map/client/legend/IframeLegend';
+import { Map } from '@/modules/map/client/Map';
 
 const EngieMap = () => {
   return (
-    <IframeWrapper>
+    <div className="h-dvh w-screen">
       <Map
-        initialMapConfiguration={createMapConfiguration({
+        config={createMapConfiguration({
           filtreGestionnaire: ['engie'],
           reseauxDeChaleur: {
             show: true,
           },
         })}
-        enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
-        withLegend
-        withBorder
-        legendLogoOpt={{
-          alt: 'logo ENGIE',
-          src: '/logo-ENGIE.jpg',
-        }}
-        withFCUAttribution
-      />
-    </IframeWrapper>
+        legend="auto"
+        legendContent={
+          <IframeLegend
+            layers={['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'zones-de-developpement-prioritaire']}
+          />
+        }
+      >
+        <FcuLogo />
+      </Map>
+    </div>
   );
 };
 

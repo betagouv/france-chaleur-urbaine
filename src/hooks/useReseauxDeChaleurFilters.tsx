@@ -2,9 +2,9 @@ import { useSearchParams } from 'next/navigation';
 import { parseAsJson, useQueryState } from 'nuqs';
 import { useEffect, useMemo, useState } from 'react';
 
-import type { ReseauxDeChaleurLimits } from '@/components/Map/layers/filters';
-import { defaultInterval, type FiltreEnergieConfKey, percentageMaxInterval } from '@/components/Map/map-configuration';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { defaultInterval, type FiltreEnergieConfKey, percentageMaxInterval } from '@/modules/map/client/config/map-configuration';
+import type { ReseauxDeChaleurLimits } from '@/modules/map/client/layers/filters';
 import { deepMergeObjects, setProperty } from '@/utils/core';
 import { fetchJSON } from '@/utils/network';
 import { deepIntersection } from '@/utils/objects';
@@ -26,6 +26,7 @@ export const emptyFilterLimits = {
   gestionnaires: [] as string[],
   isClassed: false,
   livraisonsAnnuelles: defaultInterval,
+  maitreOuvrage: [] as string[],
   prixMoyen: defaultInterval,
   regions: [] as string[],
   tauxENRR: percentageMaxInterval,

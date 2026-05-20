@@ -86,11 +86,10 @@ export function Autocomplete<Option>({
   }, []);
 
   // Apply the initial value after mount (client-only) to avoid SSR/CSR mismatch.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const initial = value ?? defaultValue ?? '';
     if (initial) setDisplayValue(initial);
-  }, []); // intentionally empty — runs once after mount
+  }, []);
 
   // Controlled mode: sync displayValue when value prop changes externally (e.g. form reset).
   // prevValueRef starts as undefined so the first value change after mount is picked up.
@@ -106,8 +105,7 @@ export function Autocomplete<Option>({
       setSearchQuery('');
       setFetchError(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]); // cancel is stable, omitted intentionally
+  }, [value]);
 
   // Keep fetchFn in a ref so the useDebouncedSwitchMap fn callback remains stable
   const fetchFnRef = useRef(fetchFn);
@@ -244,8 +242,9 @@ export function Autocomplete<Option>({
               <Oval
                 height={16}
                 width={16}
-                color="var(--text-default-grey)"
-                secondaryColor="var(--text-default-grey)"
+                strokeWidth={4}
+                color="var(--text-action-high-blue-france)"
+                secondaryColor="var(--border-default-grey)"
                 wrapperClass="absolute top-1/2 -translate-y-1/2 right-[calc(16px+1.5rem)] z-10"
               />
             )}

@@ -1,12 +1,9 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Tabs } from '@codegouvfr/react-dsfr/Tabs';
 import type { ColumnFiltersState, RowSelectionState, SortingState } from '@tanstack/react-table';
-import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { AdresseEligible } from '@/components/Map/Map';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
@@ -17,6 +14,10 @@ import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
+import type { AdresseEligible } from '@/modules/map/client/layers/specs/adressesEligibles';
+import { Map } from '@/modules/map/client/Map';
 import { toastErrors } from '@/modules/notification';
 import { BatchDemandMultiStepForm } from '@/modules/pro-eligibility-tests/client/BatchDemandMultiStepForm';
 import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
@@ -31,8 +32,6 @@ import { compareFrenchStrings } from '@/utils/strings';
 
 import { getProEligibilityTestAsXlsx } from '../utils/xlsx';
 import ProcheReseauBadge, { type ProcheReseauBadgeProps } from './ProcheReseauBadge';
-
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses'][number]>[] = [
   {
@@ -625,18 +624,16 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
       content: (
         <div className="min-h-[50vh] aspect-4/3">
           <Map
-            initialMapConfiguration={createMapConfiguration({
+            config={createMapConfiguration({
               reseauxDeChaleur: {
                 show: true,
               },
               reseauxEnConstruction: true,
               zonesDeDeveloppementPrioritaire: true,
             })}
-            geolocDisabled
-            withLegend={false}
-            withoutLogo
-            adressesEligibles={filteredAddressesMapData}
-          />
+          >
+            <AdressesEligiblesLayer adresses={filteredAddressesMapData} autoFit />
+          </Map>
         </div>
       ),
       iconId: 'fr-icon-map-pin-2-line' as const,

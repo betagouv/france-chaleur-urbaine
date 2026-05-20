@@ -1,78 +1,112 @@
 /**
- * Iframe carte paramétrable via query string.
+ * Iframe carte legacy (`/iframe/map`) — conservée pour les intégrations partenaires existantes.
+ * Rendue par le module carte, alignée sur les paramètres de `/iframe/carte` (cf `carteIframeParams`)
+ * avec une couche de compatibilité pour les anciens paramètres partenaires :
+ *   - `legend` accepte l'ancien booléen (`true`→auto, `false`→off) en plus de l'enum actuel.
+ *   - `displayLegend` (`reseau_chaleur,reseau_froid,futur_reseau,pdp`) est un alias legacy de `layers`
+ *     (utilisé si `layers` n'est pas fourni).
+ * Le titre de légende n'est plus paramétrable (`legendTitle` ignoré, titre figé « Légende »).
  *
- * Paramètres supportés :
- *   gestionnaire   Filtre par gestionnaire(s), séparés par virgule.
- *                  Exemple : ?gestionnaire=dalkia
- *                  Exemple : ?gestionnaire=idex,mixéner
- *
- *   legendTitle    Titre affiché au-dessus de la légende.
- *                  Exemple : ?legendTitle=Réseaux+de+chaleur
- *
- *   legend         Affiche le panneau de légende. Valeur : true | false (défaut : false).
- *                  Exemple : ?legend=true
- *
- *   displayLegend  Couches activées, séparées par virgule.
- *                  Clés disponibles : reseau_chaleur, reseau_froid, futur_reseau, pdp
- *                  Exemple : ?displayLegend=reseau_chaleur,futur_reseau,pdp,reseau_froid
- *
- *   center         Centre initial de la carte, format : longitude,latitude.
- *                  Exemple : ?center=4.717692,49.767402
- *
- *   zoom           Niveau de zoom initial (nombre entier).
- *                  Exemple : ?zoom=12
+ * Paramètres : center, zoom, min-zoom, max-zoom, max-bounds, gestionnaire, reseaux, layers, legend, mode
+ * (+ alias legacy `displayLegend`).
  */
 
-import { parseAsArrayOf, parseAsBoolean, parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
+import { createParser, parseAsArrayOf, parseAsStringLiteral, useQueryStates } from 'nuqs';
 
-import IframeWrapper from '@/components/IframeWrapper';
-import Map from '@/components/Map/Map';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
-import { legendURLKeyToLegendFeature } from '@/components/Map/map-layers';
 import useRouterReady from '@/hooks/useRouterReady';
-import { createParserForRecordValues, parseAsLngLat } from '@/utils/nuqs-parsers';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { FcuLogo } from '@/modules/map/client/controls/FcuLogo';
+import {
+  carteIframeParams,
+  carteIframeUrlKeys,
+  type LayerKey,
+  type LegendMode,
+  layerKeys,
+  legendModes,
+} from '@/modules/map/client/iframeCarteParams';
+import { IframeLegend } from '@/modules/map/client/legend/IframeLegend';
+import { Map } from '@/modules/map/client/Map';
+import type { BBox } from '@/modules/map/shared/types';
+
+// Tolère l'ancien `legend` booléen des URLs partenaires en plus de l'enum actuel.
+const parseAsLegacyLegend = createParser<LegendMode>({
+  parse: (value) => {
+    if (value === 'true') return 'auto';
+    if (value === 'false') return 'off';
+    return (legendModes as readonly string[]).includes(value) ? (value as LegendMode) : null;
+  },
+  serialize: (value) => value,
+}).withDefault('off');
+
+// Mapping de l'ancien `displayLegend` vers les clés de couches actuelles.
+const legacyLayerByDisplayLegendKey: Record<string, LayerKey> = {
+  futur_reseau: 'reseaux-en-construction',
+  pdp: 'zones-de-developpement-prioritaire',
+  reseau_chaleur: 'reseaux-de-chaleur',
+  reseau_froid: 'reseaux-de-froid',
+};
+
+// Alias legacy : `?displayLegend=reseau_chaleur,futur_reseau` → ['reseaux-de-chaleur', 'reseaux-en-construction'].
+const parseAsDisplayLegend = createParser<LayerKey[]>({
+  parse: (value) => {
+    const keys = value
+      .split(',')
+      .map((key) => legacyLayerByDisplayLegendKey[key.trim()])
+      .filter((layer): layer is LayerKey => Boolean(layer));
+    return keys.length > 0 ? keys : null;
+  },
+  serialize: (value) => value.join(','),
+});
 
 const mapIframeParams = {
-  center: parseAsLngLat,
-  displayLegend: createParserForRecordValues(legendURLKeyToLegendFeature),
-  gestionnaire: parseAsArrayOf(parseAsString).withDefault([]),
-  legend: parseAsBoolean.withDefault(false),
-  legendTitle: parseAsString,
-  zoom: parseAsInteger,
+  ...carteIframeParams,
+  displayLegend: parseAsDisplayLegend,
+  // Sans défaut : `null` quand absent, pour pouvoir retomber sur l'alias legacy `displayLegend`.
+  layers: parseAsArrayOf(parseAsStringLiteral(layerKeys)),
+  legend: parseAsLegacyLegend,
 };
 
 const MapPage = () => {
-  const [{ gestionnaire, legendTitle, legend, displayLegend: legendFeatures, center, zoom }] = useQueryStates(mapIframeParams);
+  const [{ center, zoom, minZoom, maxZoom, maxBounds, gestionnaire, reseaux, layers, displayLegend, legend, mode }] = useQueryStates(
+    mapIframeParams,
+    { urlKeys: carteIframeUrlKeys }
+  );
+
+  // `<Map config>` is mount-only — wait for the router so it mounts with the final params.
   const isRouterReady = useRouterReady();
   if (!isRouterReady) {
     return null;
   }
 
-  const initialMapConfiguration = createMapConfiguration({
-    ...(gestionnaire.length > 0 ? { filtreGestionnaire: gestionnaire } : {}),
-    reseauxDeChaleur: {
-      show: legendFeatures.includes('reseauxDeChaleur'),
-    },
-    reseauxEnConstruction: legendFeatures.includes('reseauxEnConstruction'),
-    // Pas d'affichage par défaut pour les couches ci-dessous. Il faudra sans doute passer par une iframe v2 pour changer les paramètres
-    // et mieux indiquer ce qu'on souhaite afficher dans la légende et/ou sur la carte...
-    // reseauxDeFroid: legendFeatures.includes('reseauxDeFroid'),
-    // zonesDeDeveloppementPrioritaire: legendFeatures.includes('zonesDeDeveloppementPrioritaire'),
+  // `layers` prime ; à défaut on retombe sur l'alias legacy `displayLegend`, puis sur le défaut.
+  const resolvedLayers = layers ?? displayLegend ?? ['reseaux-de-chaleur'];
+
+  const config = createMapConfiguration({
+    ...(gestionnaire.length > 0 ? { filtreGestionnaire: gestionnaire.map((value) => value.toLowerCase()) } : {}),
+    ...(reseaux.length > 0 ? { filtreIdentifiantReseau: reseaux } : {}),
+    reseauxDeChaleur: { show: resolvedLayers.includes('reseaux-de-chaleur') },
+    reseauxDeFroid: resolvedLayers.includes('reseaux-de-froid'),
+    reseauxEnConstruction: resolvedLayers.includes('reseaux-en-construction'),
+    zonesDeDeveloppementPrioritaire: resolvedLayers.includes('zones-de-developpement-prioritaire'),
   });
 
+  const validMaxBounds = maxBounds?.length === 4 ? (maxBounds as BBox) : undefined;
+
   return (
-    <IframeWrapper>
+    <div className="h-dvh w-screen">
       <Map
-        withLegend={legend}
-        withBorder
-        legendTitle={legendTitle ?? undefined}
-        enabledLegendFeatures={legendFeatures}
-        initialMapConfiguration={initialMapConfiguration}
-        initialCenter={center ?? undefined}
-        initialZoom={zoom ?? undefined}
-        withFCUAttribution
-      />
-    </IframeWrapper>
+        config={config}
+        initialView={center ? { center, zoom: zoom ?? undefined } : undefined}
+        maxBounds={validMaxBounds}
+        minZoom={minZoom ?? undefined}
+        maxZoom={maxZoom ?? undefined}
+        legend={legend === 'off' ? false : legend}
+        legendContent={<IframeLegend layers={resolvedLayers} />}
+        search={mode}
+      >
+        <FcuLogo />
+      </Map>
+    </div>
   );
 };
 

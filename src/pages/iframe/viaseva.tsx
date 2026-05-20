@@ -1,22 +1,23 @@
-import IframeWrapper from '@/components/IframeWrapper';
-import Map from '@/components/Map/Map';
-import { iframeSimpleMapConfiguration } from '@/components/Map/map-configuration';
+import { iframeSimpleMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { FcuLogo } from '@/modules/map/client/controls/FcuLogo';
+import { IframeLegend } from '@/modules/map/client/legend/IframeLegend';
+import { Map } from '@/modules/map/client/Map';
 
 const ViasevaMap = () => {
   return (
-    <IframeWrapper>
+    <div className="h-dvh w-screen">
       <Map
-        initialMapConfiguration={iframeSimpleMapConfiguration}
-        enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
-        withLegend
-        withBorder
-        legendLogoOpt={{
-          alt: 'logo viaseva',
-          src: '/logo-viaseva.svg',
-        }}
-        withFCUAttribution
-      />
-    </IframeWrapper>
+        config={iframeSimpleMapConfiguration}
+        legend="auto"
+        legendContent={
+          <IframeLegend
+            layers={['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'zones-de-developpement-prioritaire']}
+          />
+        }
+      >
+        <FcuLogo />
+      </Map>
+    </div>
   );
 };
 
