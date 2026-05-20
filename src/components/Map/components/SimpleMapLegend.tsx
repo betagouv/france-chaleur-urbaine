@@ -20,6 +20,11 @@ import Tooltip from '@/components/ui/Tooltip';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import { dataSourcesVersions } from '@/modules/app/constants';
 import { useAuthentication } from '@/modules/auth/client/hooks';
+import enrrMobilisablesDatacenter from '@/modules/map/client/core/icons/enrr_mobilisables_datacenter.png';
+import enrrMobilisablesIndustrie from '@/modules/map/client/core/icons/enrr_mobilisables_industrie.png';
+import enrrMobilisablesInstallationsElectrogenes from '@/modules/map/client/core/icons/enrr_mobilisables_installations_electrogenes.png';
+import enrrMobilisablesStationsEpuration from '@/modules/map/client/core/icons/enrr_mobilisables_stations_epuration.png';
+import enrrMobilisablesUnitesIncineration from '@/modules/map/client/core/icons/enrr_mobilisables_unites_incineration.png';
 import { ObjectEntries } from '@/utils/typescript';
 
 import { caracteristiquesBatimentsLayerStyle } from '../layers/bdnb/caracteristiquesBatiments';
@@ -1055,7 +1060,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     trackingEvent="Carto|Unités d'incinération"
                   />
 
-                  <Image src="/icons/enrr_mobilisables_unites_incineration.png" alt="" height="16" width="16" className="fr-mt-1v" />
+                  <Image src={enrrMobilisablesUnitesIncineration} alt="" height={16} width={16} className="fr-mt-1v" />
 
                   <Text
                     as="label"
@@ -1078,7 +1083,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     trackingEvent="Carto|Industrie"
                   />
 
-                  <Image src="/icons/enrr_mobilisables_industrie.png" alt="" height="16" width="16" className="fr-mt-1v" />
+                  <Image src={enrrMobilisablesIndustrie} alt="" height={16} width={16} className="fr-mt-1v" />
 
                   <Text
                     as="label"
@@ -1101,7 +1106,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     trackingEvent="Carto|Stations d'épuration"
                   />
 
-                  <Image src="/icons/enrr_mobilisables_stations_epuration.png" alt="" height="16" width="16" className="fr-mt-1v" />
+                  <Image src={enrrMobilisablesStationsEpuration} alt="" height={16} width={16} className="fr-mt-1v" />
 
                   <Text
                     as="label"
@@ -1124,7 +1129,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     trackingEvent="Carto|Datacenters"
                   />
 
-                  <Image src="/icons/enrr_mobilisables_datacenter.png" alt="" height="16" width="16" className="fr-mt-1v" />
+                  <Image src={enrrMobilisablesDatacenter} alt="" height={16} width={16} className="fr-mt-1v" />
 
                   <Text
                     as="label"
@@ -1147,7 +1152,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures, withComptePro = true }:
                     trackingEvent="Carto|Installations électrogènes"
                   />
 
-                  <Image src="/icons/enrr_mobilisables_installations_electrogenes.png" alt="" height="16" width="16" className="fr-mt-1v" />
+                  <Image src={enrrMobilisablesInstallationsElectrogenes} alt="" height={16} width={16} className="fr-mt-1v" />
 
                   <Text
                     as="label"

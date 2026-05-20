@@ -64,6 +64,7 @@
 - Keep components under 150 lines — extract sub-components if longer.
 - **One exported component per file.** Never co-locate multiple exported components in the same file — split into separate files named after each component (PascalCase, matches the component name).
 - **Always define a `<ComponentName>Props` type** for each component above its declaration. Never inline the props type in the function signature: `function Foo({ x }: { x: string })` → use `type FooProps = { x: string }; function Foo({ x }: FooProps)`.
+- **Never name a type `Props` (or any short / generic name)** — even when there is only one type in the file, it must be prefixed by the component / function name (`FooProps`, not `Props`). Same rule for params types (`FooParams`, not `Params`).
 - Place the props/params type definition immediately above the function/component that uses it, with no other definitions in between.
 - Add a short multi-line TSDoc comment above each React component describing its purpose (1-3 content lines):
 - No `forwardRef` unless absolutely necessary.

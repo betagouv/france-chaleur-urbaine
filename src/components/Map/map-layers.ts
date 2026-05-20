@@ -12,6 +12,10 @@ import { customGeojsonLayersSpec } from '@/components/Map/layers/customGeojson';
 import { geomUpdateLayersSpec } from '@/components/Map/layers/geomUpdate';
 import { quartiersPrioritairesPolitiqueVilleLayersSpec } from '@/components/Map/layers/quartiersPrioritairesPolitiqueVille';
 import type { MapConfiguration } from '@/components/Map/map-configuration';
+import markerBlue from '@/modules/map/client/core/icons/marker-blue.png';
+import markerGreen from '@/modules/map/client/core/icons/marker-green.png';
+import markerRed from '@/modules/map/client/core/icons/marker-red.png';
+import square from '@/modules/map/client/core/icons/square.png';
 import { tileSourcesMaxZoom } from '@/modules/tiles/constants';
 import { deepMergeObjects, isDefined } from '@/utils/core';
 
@@ -58,19 +62,19 @@ export const layerSymbolsImagesURLs = [
   {
     key: 'square',
     sdf: true,
-    url: '/icons/square.png',
+    url: square.src,
   },
   {
     key: 'marker-red',
-    url: '/icons/marker-red.png',
+    url: markerRed.src,
   },
   {
     key: 'marker-green',
-    url: '/icons/marker-green.png',
+    url: markerGreen.src,
   },
   {
     key: 'marker-blue',
-    url: '/icons/marker-blue.png',
+    url: markerBlue.src,
   },
   ...enrrMobilisablesChaleurFataleLayerSymbols,
 ] as const satisfies readonly LayerSymbolSpecification[];

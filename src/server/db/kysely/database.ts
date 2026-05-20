@@ -9,6 +9,7 @@ import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/de
 import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
+import type { EcoreseauLabel } from '@/modules/reseaux/types';
 import type { Entreprise, StructureType } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
@@ -577,7 +578,7 @@ export interface ReseauxDeChaleur {
   'Dev_reseau%': number | null;
   eau_chaude: string | null;
   eau_surchauffee: string | null;
-  ecoreseau: string | null;
+  ecoreseau: EcoreseauLabel | null;
   fichiers: Json | null;
   geom: string | null;
   geom_update: string | null;

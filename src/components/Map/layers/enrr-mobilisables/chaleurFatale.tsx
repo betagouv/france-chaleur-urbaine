@@ -1,6 +1,11 @@
 import type { MapConfiguration } from '@/components/Map/map-configuration';
 import type { MapLayerSpecification } from '@/components/Map/map-layers';
 import Text from '@/components/ui/Text';
+import enrrMobilisablesDatacenter from '@/modules/map/client/core/icons/enrr_mobilisables_datacenter.png';
+import enrrMobilisablesIndustrie from '@/modules/map/client/core/icons/enrr_mobilisables_industrie.png';
+import enrrMobilisablesInstallationsElectrogenes from '@/modules/map/client/core/icons/enrr_mobilisables_installations_electrogenes.png';
+import enrrMobilisablesStationsEpuration from '@/modules/map/client/core/icons/enrr_mobilisables_stations_epuration.png';
+import enrrMobilisablesUnitesIncineration from '@/modules/map/client/core/icons/enrr_mobilisables_unites_incineration.png';
 
 import {
   ifHoverElse,
@@ -13,23 +18,23 @@ import {
 export const enrrMobilisablesChaleurFataleLayerSymbols = [
   {
     key: 'enrr_mobilisables_datacenter',
-    url: '/icons/enrr_mobilisables_datacenter.png',
+    url: enrrMobilisablesDatacenter.src,
   },
   {
     key: 'enrr_mobilisables_industrie',
-    url: '/icons/enrr_mobilisables_industrie.png',
+    url: enrrMobilisablesIndustrie.src,
   },
   {
     key: 'enrr_mobilisables_installations_electrogenes',
-    url: '/icons/enrr_mobilisables_installations_electrogenes.png',
+    url: enrrMobilisablesInstallationsElectrogenes.src,
   },
   {
     key: 'enrr_mobilisables_stations_epuration',
-    url: '/icons/enrr_mobilisables_stations_epuration.png',
+    url: enrrMobilisablesStationsEpuration.src,
   },
   {
     key: 'enrr_mobilisables_unites_incineration',
-    url: '/icons/enrr_mobilisables_unites_incineration.png',
+    url: enrrMobilisablesUnitesIncineration.src,
   },
 ] as const satisfies readonly LayerSymbolSpecification[];
 

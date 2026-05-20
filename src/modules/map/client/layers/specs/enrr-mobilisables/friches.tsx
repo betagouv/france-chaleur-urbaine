@@ -1,0 +1,59 @@
+import { ifHoverElse, type MapSourceLayersSpecification, type PopupStyleHelpers } from '@/modules/map/client/core/common';
+import { darken } from '@/utils/color';
+
+export const enrrMobilisablesFrichesLayerColor = '#dc958e';
+export const enrrMobilisablesFrichesLayerOpacity = 0.7;
+
+export const enrrMobilisablesFrichesLayersSpec = [
+  {
+    layers: [
+      {
+        id: 'enrr-mobilisables-friches',
+        isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
+        paint: {
+          'fill-color': ifHoverElse(darken(enrrMobilisablesFrichesLayerColor, 30), enrrMobilisablesFrichesLayerColor),
+          'fill-opacity': enrrMobilisablesFrichesLayerOpacity,
+        },
+        popup: Popup,
+        type: 'fill',
+      },
+      {
+        id: 'enrrMobilisables-friches-contour',
+        isVisible: (config) => config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches,
+        paint: {
+          'line-color': ifHoverElse(darken(enrrMobilisablesFrichesLayerColor, 30), enrrMobilisablesFrichesLayerColor),
+          'line-width': ifHoverElse(3, 2),
+        },
+        type: 'line',
+        unselectable: true,
+      },
+    ],
+    source: { promoteId: 'GmlID' },
+    sourceId: 'enrr-mobilisables-friches',
+  },
+] as const satisfies readonly MapSourceLayersSpecification[];
+
+export type SolaireThermiqueFriche = {
+  GmlID: string;
+  comm_insee: string;
+  'db_gd5kj.hsu_pnjyu.solaire_thermique_friches_solaire_thermique_friches.fid': number;
+  site_id: string;
+  site_nom: string;
+  source_nom: string;
+  st_area_shape_: number;
+  st_length_shape_: number;
+  surf_site: number;
+  urba_zone_: string;
+};
+
+function Popup(friche: SolaireThermiqueFriche, { Property, Title, TwoColumns }: PopupStyleHelpers) {
+  return (
+    <>
+      <Title subtitle="Friche">{friche.site_nom}</Title>
+      <TwoColumns>
+        <Property label="Surface" value={friche.surf_site} unit="m²" />
+        <Property label="Source" value={friche.source_nom} />
+      </TwoColumns>
+    </>
+  );
+}

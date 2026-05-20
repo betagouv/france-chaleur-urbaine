@@ -43,11 +43,18 @@ Config: `tailwind.config.ts` — extends DSFR tokens.
 }
 ```
 
-Use `cx()` utility for conditional classes:
+Use `cx()` utility **only** for conditional classes (toggle on a boolean, optional `className` prop, etc.). For unconditional class lists, write the string directly:
 ```tsx
 import cx from '@/utils/cx'
-<div className={cn('base-classes', isActive && 'active-classes', className)} />
+// Conditional → cx
+<div className={cx('base-classes', isActive && 'active-classes', className)} />
+// Unconditional → string
+<div className="p-4 rounded border" />
 ```
+
+Do **not** wrap DSFR utility classes in `fr.cx(...)` when they're literal strings — Tailwind already scans the source. Write them inline (`'fr-text--xs font-bold'`), keep `fr.cx()` only when the value comes from a variable / typed lookup.
+
+Prefer Tailwind text sizes (`text-xs`, `text-sm`, `text-base`, `text-lg`) over DSFR's `fr-text--xs / --sm / --md / --lg`. DSFR text classes ship with a built-in `margin-bottom` (1.5rem on `--xs`) that breaks tight layouts — use them only when you explicitly want the DSFR paragraph rhythm.
 
 PostCSS config excludes DSFR from `postcss-import` to prevent build breakage.
 

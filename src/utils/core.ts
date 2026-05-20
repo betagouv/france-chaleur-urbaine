@@ -58,11 +58,12 @@ export function deepMergeObjects<T, U>(obj1: T, obj2: U): T & U {
       if (Array.isArray(obj2[key])) {
         // Handle arrays by cloning them
         result[key] = cloneDeep(obj2[key]);
-      } else if (key in result && typeof result[key] === 'object') {
-        // Recursively merge objects
+      } else if (key in result && result[key] !== null && typeof result[key] === 'object') {
+        // Recursively merge objects (skip when result[key] is null — `typeof null === 'object'`
+        // would pass otherwise and the recursive call would crash on `cloneDeep(null)`)
         result[key] = deepMergeObjects(result[key], obj2[key]);
       } else {
-        // Clone objects that don't exist in result
+        // Target slot is missing or null → clone the source object in
         result[key] = cloneDeep(obj2[key]);
       }
     } else {
