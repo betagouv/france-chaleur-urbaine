@@ -81,13 +81,15 @@ src/modules/map/
       all-layers.ts           # the built-in layer set mounted by <Map>
       specs/                  # MapSourceLayersSpecification + matching <layer>.legend.tsx
     legend/
-      atoms.ts                # legendOpenAtom (scoped via MapStoreProvider)
-      MapLegend.tsx           # the 4-tab legend (Réseaux/Potentiel/EnR&R/Outils)
-      LegendDrawer.tsx        # left-side drawer; reads/writes legendOpenAtom
+      atoms.ts                       # legendOpenAtom (scoped via MapStoreProvider)
+      MapLegend.tsx                  # the 4-tab legend (Réseaux/Potentiel/EnR&R/Outils)
+      LegendDrawer.tsx               # left-side drawer; reads/writes legendOpenAtom
       LegendCheckbox.tsx, LegendIntervalSlider.tsx, LegendSection.tsx, LegendIcon.tsx
+      ReseauxDeChaleurFilters.tsx    # V1-parity filter panel bound to the Jotai config store
     search/
-      MapSearchInput.tsx      # combined BAN + reseaux.searchForMap autocomplete
-      AddressSearchInput.tsx  # BAN-only autocomplete (eligibility flow)
+      MapSearchInput.tsx          # combined BAN + reseaux.searchForMap autocomplete
+      AddressSearchInput.tsx      # BAN-only autocomplete (eligibility flow)
+      EligibilityResultsPanel.tsx # listing of tested addresses (mounted under the search input when search='eligibility')
     dev/
       Sandbox.tsx             # one <Map> piloted by a mini-form (/dev/map-v2)
       MapV1Demo.tsx, FlyToButtons.tsx
@@ -143,7 +145,7 @@ Built-in. When `interactive=true` and `layers` are provided, `<MapCanvas>` mount
 ## Lifecycle and reliability notes
 
 - **Single instance per component lifetime**: deferred cleanup (`setTimeout 0`) preserves the MapLibre instance across React 18 strict-mode mount/unmount/mount cycles. Real `map.remove()` only on genuine unmount.
-- **Mount-only view props**: `initialView` and `interactive` are snapshotted at the first mount. Use the controller for runtime updates.
+- **Mount-only view props**: `initialView` and `interactive` are snapshotted at the first mount. Use the controller for runtime updates. To switch a map between interactive and static, remount it with a `key` derived from the value.
 - **`mapReady` gates layer setup**: `useConfiguredLayers` only adds sources/layers once `mapReady` becomes `true`. No `map.once('load', …)` race with strict-mode cleanups.
 - **Style switching**: `controller.setStyle(...)` uses MapLibre's `transformStyle` to preserve user-added sources/layers atomically. Tracking owned by `userResources` on the context.
 

@@ -18,7 +18,7 @@ export function ReseauxDeFroidLegend() {
           />
           <div>
             <div>Réseaux de froid</div>
-            <p className="mb-0 text-xs text-(--text-mention-grey)">(tracé ou cercle au centre de la commune si tracé non disponible)</p>
+            <div className="text-xs">(tracé ou cercle au centre de la commune si tracé non disponible)</div>
           </div>
         </div>
       }

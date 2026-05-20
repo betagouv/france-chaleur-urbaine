@@ -194,16 +194,25 @@ export function MapCanvas({
   );
 
   return (
-    <div className={cx('relative h-full w-full overflow-hidden bg-(--background-alt-grey)', className)}>
+    <div
+      className={cx(
+        'relative h-full w-full overflow-hidden bg-(--background-alt-grey)',
+        // Tighten the compact attribution: MapLibre ships `margin: 10px` on the
+        // ⓘ icon, which feels off given the other bottom-right controls already
+        // include their own 10px container margin.
+        '[&_.maplibregl-ctrl-attrib.maplibregl-compact]:my-1!',
+        className
+      )}
+    >
       <div ref={containerRef} className="absolute inset-0" />
       {contextValue && (
         <MapCanvasContext.Provider value={contextValue}>
           <AttributionControl />
+          <ScaleControl />
           {interactive && (
             <>
               <NavigationControl />
               <GeolocateControl />
-              <ScaleControl />
               <StyleSwitcher />
             </>
           )}

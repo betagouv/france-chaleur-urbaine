@@ -62,17 +62,17 @@ export function GeothermieProfondeLegend() {
           <div className="flex flex-col gap-2 ml-6 mt-1">
             <div className="flex flex-wrap gap-2">
               {Object.entries(aquifereColorMap).map(([aquifere, color]) => (
-                <div key={aquifere} className="flex items-center gap-1 text-xs">
+                <div key={aquifere} className="flex items-center gap-1">
                   <LegendIcon type="polygon" stroke={color} fillOpacity={perimetresGeothermieProfondeLayerOpacity} strokeWidth={0} />
                   <span>{aquifere}</span>
                 </div>
               ))}
             </div>
-            <div className="flex items-center gap-1 text-xs">
+            <div className="flex items-center gap-1">
               <LegendIcon type="polygon" stroke={statutColorMap.Existant} fillOpacity={0} />
               <span>Existant</span>
             </div>
-            <div className="flex items-center gap-1 text-xs">
+            <div className="flex items-center gap-1">
               <LegendIcon type="polygon" stroke={statutColorMap.AR} fillOpacity={0} />
               <span>Arrêté d'autorisation de recherche</span>
             </div>

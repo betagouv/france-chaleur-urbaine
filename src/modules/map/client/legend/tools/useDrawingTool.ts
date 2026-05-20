@@ -20,6 +20,10 @@ type WrappedDraw = Omit<MapboxDraw, 'changeMode'> & {
  * Shared plumbing for the drawing tools. Toggles the visibility flag for the
  * tool's render layers, exposes the map / draw references, and applies a
  * crosshair cursor while a sketch is in progress.
+ *
+ * On unmount, the draw control is forced back to `simple_select` so stray
+ * clicks (anywhere on the map) don't keep adding vertices after the user has
+ * navigated away from the tool.
  */
 export function useDrawingTool(visibilityFlag: ToolVisibilityFlag) {
   const map = useAtomValue(mapInstanceAtom);
@@ -32,10 +36,13 @@ export function useDrawingTool(visibilityFlag: ToolVisibilityFlag) {
 
   useEffect(() => {
     updateProperty(visibilityFlag as MapConfigurationProperty<boolean>, true);
-    return () => setIsDrawing(false);
+    return () => {
+      setIsDrawing(false);
+      draw?.changeMode('simple_select');
+    };
     // Flag intentionally kept `true` on unmount so previously-drawn shapes stay
     // visible after closing the tool, until the host `<Map>` itself unmounts.
-  }, [setIsDrawing, updateProperty, visibilityFlag]);
+  }, [draw, setIsDrawing, updateProperty, visibilityFlag]);
 
   // mapbox-gl-draw writes `style.cursor` on the canvas inline — only an inline
   // style on the same element overrides it.

@@ -1,35 +1,53 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { useQueryState } from 'nuqs';
 
+import { defaultTabState, tabsParser } from '../tabsUrl';
 import { BuildingsDataExtractionTool } from './BuildingsDataExtractionTool';
 import { DistancesMeasurementTool } from './DistancesMeasurementTool';
 import { LinearHeatDensityTool } from './LinearHeatDensityTool';
 
-const toolIds = ['mesure-distance', 'extraction-batiments', 'densite-thermique-lineaire'] as const;
-type ToolId = (typeof toolIds)[number];
-
-const TOOL_LABEL: Record<ToolId, string> = {
+const TOOL_LABEL = {
   'densite-thermique-lineaire': 'Calculer une densité thermique linéaire',
   'extraction-batiments': 'Extraire des données sur les bâtiments',
   'mesure-distance': 'Mesurer une distance',
-};
+} as const;
 
-/** "Outils" tab. URL-persisted sub-tab via `?outil=…`. */
+/**
+ * "Outils" tab. Reads/writes the slash-encoded `?tab=` param (`outils` or
+ * `outils/<id>`). Clicking the tab itself lands on the index — sub-tools are
+ * only reached by an explicit button click.
+ */
 export function ToolsTabContent() {
-  const [tool, setTool] = useQueryState('outil', parseAsStringLiteral(toolIds).withOptions({ history: 'replace' }));
+  const [state, setState] = useQueryState('tab', tabsParser.withDefault(defaultTabState).withOptions({ history: 'push' }));
+  const subTabId = state.tabId === 'outils' ? state.subTabId : null;
 
-  if (tool === null) {
+  if (subTabId === null) {
     return (
       <div className="flex flex-col gap-3 px-3">
         <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">Outils</h2>
         <div className="flex flex-col gap-2">
-          <Button priority="secondary" size="small" iconId="ri-ruler-line" onClick={() => setTool('mesure-distance')}>
+          <Button
+            priority="secondary"
+            size="small"
+            iconId="ri-ruler-line"
+            onClick={() => setState({ subTabId: 'mesure-distance', tabId: 'outils' })}
+          >
             Mesurer une distance
           </Button>
-          <Button priority="secondary" size="small" iconId="ri-shape-line" onClick={() => setTool('extraction-batiments')}>
+          <Button
+            priority="secondary"
+            size="small"
+            iconId="ri-shape-line"
+            onClick={() => setState({ subTabId: 'extraction-batiments', tabId: 'outils' })}
+          >
             Extraire des données sur les bâtiments
           </Button>
-          <Button priority="secondary" size="small" iconId="ri-bar-chart-line" onClick={() => setTool('densite-thermique-lineaire')}>
+          <Button
+            priority="secondary"
+            size="small"
+            iconId="ri-bar-chart-line"
+            onClick={() => setState({ subTabId: 'densite-thermique-lineaire', tabId: 'outils' })}
+          >
             Calculer une densité thermique linéaire
           </Button>
         </div>
@@ -40,14 +58,20 @@ export function ToolsTabContent() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-2 px-3">
-        <Button priority="secondary" size="small" iconId="fr-icon-arrow-left-line" onClick={() => setTool(null)}>
+        <Button
+          priority="secondary"
+          size="small"
+          iconId="fr-icon-arrow-left-line"
+          onClick={() => setState({ subTabId: null, tabId: 'outils' })}
+          className="self-start"
+        >
           Retour
         </Button>
-        <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">{TOOL_LABEL[tool]}</h2>
+        <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">{TOOL_LABEL[subTabId]}</h2>
       </div>
-      {tool === 'mesure-distance' && <DistancesMeasurementTool />}
-      {tool === 'extraction-batiments' && <BuildingsDataExtractionTool />}
-      {tool === 'densite-thermique-lineaire' && <LinearHeatDensityTool />}
+      {subTabId === 'mesure-distance' && <DistancesMeasurementTool />}
+      {subTabId === 'extraction-batiments' && <BuildingsDataExtractionTool />}
+      {subTabId === 'densite-thermique-lineaire' && <LinearHeatDensityTool />}
     </div>
   );
 }

@@ -138,7 +138,10 @@ export function BuildingsDataExtractionTool() {
       'buildings-data-extraction-outline'
     );
 
-    if (features.length === 0 && !summary) {
+    // No completed polygon to resume (incomplete polygons have <4 coords incl.
+    // closing point) and no summary already computed → start drawing.
+    const hasCompletedPolygon = features.some((f) => f.geometry.coordinates[0]?.length > 3);
+    if (!hasCompletedPolygon && !summary) {
       draw.changeMode('draw_polygon');
       setIsDrawing(true);
     }
@@ -150,9 +153,13 @@ export function BuildingsDataExtractionTool() {
         map.removeLayer(buildingsDataExtractionDrawHotLayerId);
       }
       draw.deleteAll();
+      drawingFeatureRef.current = null;
+      // Drop any incomplete polygon left by the throttled writer — otherwise
+      // a re-mount sees `features.length > 0` and skips the auto-start.
+      setFeatures((prev) => prev.filter((f) => f.geometry.coordinates[0]?.length > 3));
       setIsDrawing(false);
     };
-  }, [map, mapReady, draw]);
+  }, [map, mapReady, draw, setIsDrawing, setFeatures]);
 
   // Persisted polygon: sync the completed-feature atom to the source.
   useEffect(() => {
@@ -198,14 +205,14 @@ export function BuildingsDataExtractionTool() {
   return (
     <div className="flex flex-col gap-4 px-3 text-sm">
       <div className="flex flex-col gap-2">
-        <p className="text-xs italic text-(--text-mention-grey) mb-0">
+        <div className="text-xs italic">
           Vous pouvez extraire les adresses et nombre de logements des bâtiments à chauffage collectif gaz ou fioul, ainsi que les
           consommations de gaz à l'adresse, sur la zone de votre choix.
-        </p>
-        <p className="text-xs italic text-(--text-mention-grey) mb-0">
+        </div>
+        <div className="text-xs italic">
           Pour définir une zone, cliquez sur au moins 3 points sur la carte. <strong>Double-cliquez</strong> sur le dernier point ou{' '}
           <strong>appuyez sur la touche entrée</strong> pour finaliser la zone.
-        </p>
+        </div>
       </div>
 
       {areaHasSelfIntersections && (

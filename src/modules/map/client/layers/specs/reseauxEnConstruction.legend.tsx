@@ -23,9 +23,7 @@ export function ReseauxEnConstructionLegend() {
             </span>
             <div>
               <div>Réseaux de chaleur en construction</div>
-              <p className="mb-0 text-xs text-(--text-mention-grey)">
-                (tracé ou zone si tracé non disponible, gris si non ouvert aux raccordements)
-              </p>
+              <div className="text-xs">(tracé ou zone si tracé non disponible, gris si non ouvert aux raccordements)</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -34,7 +32,7 @@ export function ReseauxEnConstructionLegend() {
               className="inline-block h-2 min-w-6 rounded-sm"
               style={{ backgroundColor: reseauxEnConstructionNonOuvertColor }}
             />
-            <span className="text-xs text-(--text-mention-grey)">Non ouverts aux raccordements</span>
+            <span className="text-xs">Non ouverts aux raccordements</span>
           </div>
         </div>
       }

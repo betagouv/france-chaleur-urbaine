@@ -24,7 +24,7 @@ export function RessourcesGeothermalesNappesLegend() {
     >
       <div className="flex flex-col gap-1 pt-2 pl-3 pr-1">
         {ressourcesGeothermalesNappesConfig.map((item) => (
-          <div key={item.value} className="flex items-center gap-2 text-xs">
+          <div key={item.value} className="flex items-center gap-2">
             <LegendIcon type="polygon" stroke={item.color} fillOpacity={ressourcesGeothermalesNappesOpacity} />
             <span>{item.label}</span>
           </div>

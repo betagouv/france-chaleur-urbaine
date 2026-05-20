@@ -37,9 +37,9 @@ export function CaracteristiquesBatimentsLegend() {
         </>
       }
     >
-      <div className="flex flex-col gap-1 pl-3 pr-1 pt-2 text-xs">
-        <p className="italic text-(--text-mention-grey) mb-0">Cliquer sur le bâtiment souhaité</p>
-        <p className="mb-0">Diagnostic de performance énergétique</p>
+      <div className="flex flex-col gap-1 pl-3 pr-1 pt-2">
+        <div className="italic">Cliquer sur le bâtiment souhaité</div>
+        <div>Diagnostic de performance énergétique</div>
         <div className="flex gap-1">
           {dpeLetters.map((letter) => (
             <span

@@ -25,6 +25,8 @@ type Option = { type: 'network'; data: NetworkMapSearchResult } | { type: 'addre
 
 type MapSearchInputProps = {
   onSelect: (result: MapSearchResult) => void;
+  /** Called when the user clears the input via the inline X button. */
+  onClear?: () => void;
   defaultValue?: string;
   placeholder?: string;
   className?: string;
@@ -34,7 +36,7 @@ type MapSearchInputProps = {
  * Combined address + network search input. Fans out to BAN + `reseaux.searchForMap`
  * tRPC query in parallel; emits a discriminated `MapSearchResult` to the caller.
  */
-export function MapSearchInput({ onSelect, defaultValue, placeholder, className }: MapSearchInputProps) {
+export function MapSearchInput({ onSelect, onClear, defaultValue, placeholder, className }: MapSearchInputProps) {
   const trpcUtils = trpc.useUtils();
   const [error, setError] = useState(false);
   const [value, setValue] = useState(defaultValue ?? '');
@@ -103,20 +105,22 @@ export function MapSearchInput({ onSelect, defaultValue, placeholder, className 
   const handleSelect = (option: Option) => {
     if (option.type === 'network') {
       onSelect({ ...option.data, kind: 'network' });
-    } else {
-      const feature = option.data;
-      const [lng, lat] = feature.geometry.coordinates;
-      onSelect({
-        coordinates: [lng, lat],
-        feature,
-        isCity: feature.properties.label === feature.properties.city,
-        kind: 'address',
-        label: feature.properties.label,
-      });
+      // Network results aren't materialized as a marker — clear so the user can
+      // start a new search without reusing the previous label.
+      Promise.resolve().then(() => setValue(''));
+      return;
     }
-    // Deferred to a microtask so Autocomplete's `value !== prev` diff fires
-    // (otherwise React batches `'' → label → ''` into a no-op).
-    Promise.resolve().then(() => setValue(''));
+    const feature = option.data;
+    const [lng, lat] = feature.geometry.coordinates;
+    onSelect({
+      coordinates: [lng, lat],
+      feature,
+      isCity: feature.properties.label === feature.properties.city,
+      kind: 'address',
+      label: feature.properties.label,
+    });
+    // Keep the address label visible so the user can see the active selection
+    // and clear it via the inline X (which removes the associated marker).
   };
 
   return (
@@ -128,6 +132,7 @@ export function MapSearchInput({ onSelect, defaultValue, placeholder, className 
         getOptionLabel={getOptionLabel}
         value={value}
         onChange={setValue}
+        onClear={onClear}
         nativeInputProps={{
           className: fr.cx('fr-input'),
           placeholder: placeholder ?? 'Adresse, ville, réseau...',

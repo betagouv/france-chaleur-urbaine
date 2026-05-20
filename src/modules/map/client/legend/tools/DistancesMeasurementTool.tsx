@@ -119,7 +119,11 @@ export function DistancesMeasurementTool() {
 
     map.on('draw.create', onDrawCreate);
     map.on('draw.render', onDrawRender);
-    if (featuresRef.current.length === 0) {
+    // Auto-start drawing whenever there's no completed measurement to resume —
+    // in-progress sketches have <2 coords and shouldn't block the auto-start
+    // on re-mount (e.g. coming back to the tool after a Retour).
+    const hasCompletedFeature = featuresRef.current.some((f) => f.geometry.coordinates.length > 1);
+    if (!hasCompletedFeature) {
       draw.changeMode('draw_line_string');
       setIsDrawing(true);
     }
@@ -128,13 +132,11 @@ export function DistancesMeasurementTool() {
       map.off('draw.create', onDrawCreate);
       map.off('draw.render', onDrawRender);
       draw.deleteAll();
-      // Drop the in-progress sketch if the user navigated away mid-draw.
-      setIsDrawing((wasDrawing) => {
-        if (wasDrawing) {
-          setFeatures((prev) => prev.slice(0, -1));
-        }
-        return false;
-      });
+      // Drop any in-progress sketch from the atom so a re-mount sees a clean
+      // state (filter is more robust than slice(0, -1) — `onDrawRender` may
+      // have pushed several incomplete entries during the same session).
+      setFeatures((prev) => prev.filter((f) => f.geometry.coordinates.length > 1));
+      setIsDrawing(false);
     };
   }, [map, mapReady, draw, setFeatures, setIsDrawing]);
 
@@ -187,10 +189,10 @@ export function DistancesMeasurementTool() {
 
   return (
     <div className="flex flex-col gap-4 px-3">
-      <p className="text-xs italic text-(--text-mention-grey) mb-0">
+      <div className="text-xs italic">
         Pour mesurer une distance, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point ou{' '}
         <strong>appuyez sur la touche entrée</strong> pour finaliser le tracé.
-      </p>
+      </div>
 
       {displayedFeatures.length > 0 && <div className="h-px bg-(--border-default-grey)" />}
       {displayedFeatures.map((feature) => (

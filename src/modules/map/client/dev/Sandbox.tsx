@@ -119,6 +119,7 @@ export function Sandbox() {
             </h2>
             <div className="relative flex-1 overflow-hidden rounded border border-(--border-default-grey)">
               <Map
+                key={`interactive=${params.interactive}`}
                 mapRef={mapRef}
                 config={baseConfig}
                 initialView={baseInitialView}

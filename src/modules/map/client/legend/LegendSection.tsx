@@ -25,6 +25,12 @@ const titleClasses = 'flex items-start w-full text-sm font-normal! text-(--text-
 
 const TOOLTIP_BLUE_ICON = { className: 'text-(--text-action-high-blue-france)' };
 
+// Default body text size for legend sub-sections. ~13px so it stays denser than
+// the standard DSFR 14/16px without being squinty. Descendants inherit via the
+// CSS cascade — only override locally if a specific element needs a different
+// size.
+const bodyClasses = 'text-[13px]';
+
 /** Either a checkable accordion (when `togglePath` is set) or a plain URL-state accordion. */
 export function LegendSection({ id, title, togglePath, icon, tooltip, children }: LegendSectionProps) {
   const { read, toggleLayer } = useMapConfig();
@@ -48,14 +54,14 @@ export function LegendSection({ id, title, togglePath, icon, tooltip, children }
         showToggle
         defaultExpanded={checked}
       >
-        {children}
+        <div className={bodyClasses}>{children}</div>
       </CheckableAccordion>
     );
   }
 
   return (
     <UrlStateAccordion id={id} label={title} simple>
-      {children}
+      <div className={bodyClasses}>{children}</div>
     </UrlStateAccordion>
   );
 }

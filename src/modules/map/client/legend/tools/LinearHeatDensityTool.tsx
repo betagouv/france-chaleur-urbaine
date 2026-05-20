@@ -196,13 +196,11 @@ export function LinearHeatDensityTool() {
   return (
     <div className="flex flex-col gap-4 px-3 text-sm">
       <div className="flex flex-col gap-2">
-        <p className="text-xs italic text-(--text-mention-grey) mb-0">
-          Vous pouvez calculer la densité thermique linéaire sur le tracé de votre choix.
-        </p>
-        <p className="text-xs italic text-(--text-mention-grey) mb-0">
+        <div className="text-xs italic">Vous pouvez calculer la densité thermique linéaire sur le tracé de votre choix.</div>
+        <div className="text-xs italic">
           Pour définir un tracé, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point ou{' '}
           <strong>appuyez sur la touche entrée</strong> pour finaliser. Vous pouvez ajouter d'autres segments.
-        </p>
+        </div>
       </div>
       <div className="h-px bg-(--border-default-grey)" />
 

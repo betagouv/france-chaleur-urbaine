@@ -38,7 +38,7 @@ export function LegendCheckbox({ path, label, icon, tooltip, hintText, className
         {icon}
         <span className="flex-1 mt-1">
           {label}
-          {hintText && <span className="block text-xs text-(--text-mention-grey)">{hintText}</span>}
+          {hintText && <span className="block text-xs">{hintText}</span>}
         </span>
         {tooltip && <Tooltip title={tooltip} iconProps={{ className: 'mt-1 text-(--text-action-high-blue-france)' }} />}
       </label>

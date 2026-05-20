@@ -27,12 +27,12 @@ export function ReseauxDeChaleurLegend() {
             <LineSwatch color={reseauDeChaleurNonClasseColor} />
             <div>
               <div>Réseaux de chaleur non classés</div>
-              <p className="mb-0 text-xs text-(--text-mention-grey)">(tracé ou cercle au centre de la commune si tracé non disponible)</p>
+              <div className="text-xs">(tracé ou cercle au centre de la commune si tracé non disponible)</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <LineSwatch color={reseauDeChaleurNonOuvertColor} />
-            <span className="text-xs text-(--text-mention-grey)">Non ouverts aux raccordements</span>
+            <span className="text-xs">Non ouverts aux raccordements</span>
           </div>
         </div>
       }

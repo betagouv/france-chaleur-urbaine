@@ -33,7 +33,7 @@ function GradientBar({ intervals }: { intervals: LegendInterval[] }) {
           />
         ))}
       </div>
-      <div className="flex justify-between text-xs text-(--text-mention-grey)">
+      <div className="flex justify-between text-xs">
         <span>{first.min}</span>
         <span>{last.max}</span>
       </div>
