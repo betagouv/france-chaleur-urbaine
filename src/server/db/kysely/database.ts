@@ -66,6 +66,8 @@ export interface BdnbBatenr {
   adresse: string | null;
   batiment_construction_id: string | null;
   batiment_groupe_id: string | null;
+  categorie_majoritaire: string | null;
+  classe_bilan_dpe: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
   etat_ppa: string | null;
   geom: string | null;
   gis_geo_profonde: boolean | null;
@@ -74,6 +76,10 @@ export interface BdnbBatenr {
   liste_ppa: string | null;
   place_nappe: boolean | null;
   pot_nappe: number | null;
+  couv_st_ecs_2025: number | null;
+  couv_sondes_200_2025: number | null;
+  prod_st_mwh_an: number | null;
+  propri_uni: string | null;
 }
 
 export interface BdnbBatiments {
