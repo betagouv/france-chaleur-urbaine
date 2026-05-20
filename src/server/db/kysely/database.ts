@@ -1034,6 +1034,7 @@ export interface DB {
   conversion_sources: ConversionSources;
   demands_chaleur_renouvelable: DemandsChaleurRenouvelable;
   demand_emails: DemandEmails;
+  demands: Demands;
   departements: Departements;
   donnees_de_consos: DonneesDeConsos;
   donnees_de_consos_tiles: DonneesDeConsosTiles;

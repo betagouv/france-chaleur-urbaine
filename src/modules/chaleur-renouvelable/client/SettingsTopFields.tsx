@@ -86,9 +86,11 @@ export function SettingsTopFields({
             const nextTypeLogement = (e.target.value || null) as TypeLogement | null;
             trackPostHogEvent('fcr_simulator:started', {
               source: withLabel ? 'landing' : 'result',
-              typeLogement: nextTypeLogement,
+              typeLogement: nextTypeLogement ?? undefined,
             });
-            trackPostHogEvent('fcr_simulator:heating_mode_selected', { typeLogement: nextTypeLogement });
+            if (nextTypeLogement) {
+              trackPostHogEvent('fcr_simulator:heating_mode_selected', { typeLogement: nextTypeLogement });
+            }
             void setTypeLogement(nextTypeLogement);
 
             if (!isEspaceExterieurCompatible(nextTypeLogement, espaceExterieur)) {

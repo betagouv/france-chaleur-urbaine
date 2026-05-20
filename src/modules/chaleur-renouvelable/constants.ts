@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { demandStatuses } from '@/modules/demands/constants';
 
-export const DPE_VALUES = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+export const DPE_VALUES = ['A', 'B', 'C', 'D', 'E', 'F', 'G'] as const;
 
 export type DPE = (typeof DPE_VALUES)[number];
 
@@ -86,18 +86,6 @@ export const typeRadiateurOptions = [
   icone?: string;
   description?: string;
   value: TypeRadiateur;
-}[];
-
-export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['non', 'equipement-chauffage', 'chauffe-eau-electrique', 'solaire-thermique'];
-export type ModeEauChaudeSanitaire = (typeof MODE_EAU_CHAUDE_SANITAIRE_VALUES)[number];
-export const modeEauChaudeSanitaireOptions = [
-  { label: 'Non', value: 'non' },
-  { label: 'Avec équipement chauffage', value: 'equipement-chauffage' },
-  { label: 'Chauffe-eau électrique', value: 'chauffe-eau-electrique' },
-  { label: 'Solaire thermique', value: 'solaire-thermique' },
-] satisfies readonly {
-  label: string;
-  value: ModeEauChaudeSanitaire;
 }[];
 
 export const fieldLabelInformation = {
