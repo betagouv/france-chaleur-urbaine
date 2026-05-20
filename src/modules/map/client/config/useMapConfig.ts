@@ -1,39 +1,76 @@
-import { useContext, useMemo } from 'react';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { useMemo } from 'react';
 
-import { getProperty } from '@/utils/core';
+import { getProperty, setProperty, toggleBoolean } from '@/utils/core';
 import type { Interval } from '@/utils/interval';
 
-import { MapConfigContext } from './MapConfigProvider';
 import type { MapConfiguration, MapConfigurationProperty } from './map-configuration';
 
-/**
- * Read + mutate the active `MapConfiguration` from inside a `<MapConfigProvider>`.
- *
- * The signatures mirror V1's `useFCUMap` (`toggleLayer`, `updateProperty`,
- * `updateScaleInterval`) so migration of legend sections is a near-direct
- * `useFCUMap` → `useMapConfig` swap. Paths are statically typed through
- * `MapConfigurationProperty<T>` — typos and stale paths fail at compile time.
- *
- * Also exposes `read(path)` for reading a single field by path (e.g. the
- * `<LegendCheckbox path="…" />` primitive).
- */
-export function useMapConfig() {
-  const ctx = useContext(MapConfigContext);
-  if (!ctx) {
-    throw new Error('useMapConfig() must be called from inside a <MapConfigProvider>.');
-  }
-  const { config, dispatch } = ctx;
+export type MapConfigAction =
+  | { type: 'toggleLayer'; path: MapConfigurationProperty<boolean> }
+  | { type: 'updateProperty'; path: MapConfigurationProperty<unknown>; value: unknown }
+  | { type: 'updateInterval'; path: MapConfigurationProperty<Interval>; interval: Interval }
+  | { type: 'replace'; config: MapConfiguration };
 
-  return useMemo(
+/** `null` until `<MapStoreProvider>` hydrates it from the `useMapConfiguration` query. */
+export const mapConfigAtom = atom<MapConfiguration | null>(null);
+
+export const mapConfigDispatchAtom = atom(null, (get, set, action: MapConfigAction) => {
+  const current = get(mapConfigAtom);
+  if (!current) return;
+  set(mapConfigAtom, reducer(current, action));
+});
+
+function reducer(state: MapConfiguration, action: MapConfigAction): MapConfiguration {
+  switch (action.type) {
+    case 'replace':
+      return action.config;
+    case 'toggleLayer': {
+      const next = structuredClone(state);
+      toggleBoolean(next, action.path);
+      return next;
+    }
+    case 'updateProperty': {
+      const next = structuredClone(state);
+      setProperty(next, action.path, action.value);
+      return next;
+    }
+    case 'updateInterval': {
+      const next = structuredClone(state);
+      setProperty(next, action.path, action.interval);
+      return next;
+    }
+  }
+}
+
+/** Read + mutate the active `MapConfiguration`. Must be called below `<MapStoreProvider>`. */
+export function useMapConfig() {
+  const config = useAtomValue(mapConfigAtom);
+  const dispatch = useSetAtom(mapConfigDispatchAtom);
+
+  if (!config) {
+    throw new Error('useMapConfig() must be called from inside a <MapStoreProvider>.');
+  }
+
+  // Setters depend on `dispatch` only (stable), so they're memoised
+  // independently of `config` and stay referentially stable across config changes.
+  const setters = useMemo(
     () => ({
-      config,
-      read: <T>(path: MapConfigurationProperty<T>): T => getProperty<MapConfiguration, T>(config, path) as T,
       setConfig: (next: MapConfiguration) => dispatch({ config: next, type: 'replace' }),
       toggleLayer: (path: MapConfigurationProperty<boolean>) => dispatch({ path, type: 'toggleLayer' }),
       updateInterval: (path: MapConfigurationProperty<Interval>) => (interval: Interval) =>
         dispatch({ interval, path, type: 'updateInterval' }),
       updateProperty: <T>(path: MapConfigurationProperty<T>, value: T) => dispatch({ path, type: 'updateProperty', value }),
     }),
-    [config, dispatch]
+    [dispatch]
+  );
+
+  return useMemo(
+    () => ({
+      config,
+      read: <T>(path: MapConfigurationProperty<T>): T => getProperty<MapConfiguration, T>(config, path) as T,
+      ...setters,
+    }),
+    [config, setters]
   );
 }

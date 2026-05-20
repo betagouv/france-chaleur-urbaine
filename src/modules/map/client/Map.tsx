@@ -3,12 +3,7 @@ import type { ComponentType } from 'react';
 
 import type { MapProps } from './core/MapImpl';
 
-/**
- * High-level map component. Forced client-only via `dynamic({ ssr: false })`
- * because the implementation pulls in `maplibre-gl` (which references `window`
- * at module load) and is not SSR-safe. Consumers can `import { Map }` from any
- * page — Next.js will defer the chunk to the browser.
- */
+/** SSR-disabled wrapper around `MapImpl::Map` (the impl pulls in `maplibre-gl`). */
 export const Map = dynamic<MapProps>(() => import('./core/MapImpl').then((mod) => mod.Map), {
   ssr: false,
 }) as ComponentType<MapProps>;

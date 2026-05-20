@@ -6,11 +6,8 @@ import type { Interval } from '@/utils/interval';
 import type { MapConfigurationProperty } from '../config/map-configuration';
 import { useMapConfig } from '../config/useMapConfig';
 
-type DomainProp =
-  /** Resolve the domain (min/max bounds) from a `MapConfiguration` path. */
-  | { domainPath: MapConfigurationProperty<Interval>; domain?: never }
-  /** Pass a static `Interval` literal for the domain. */
-  | { domain: Interval; domainPath?: never };
+/** Domain = bounds the slider can range over. Either resolved from another config path, or a static literal. */
+type DomainProp = { domainPath: MapConfigurationProperty<Interval>; domain?: never } | { domain: Interval; domainPath?: never };
 
 type LegendIntervalSliderProps = {
   /** Path to an `Interval` on the active `MapConfiguration`. */
@@ -20,14 +17,7 @@ type LegendIntervalSliderProps = {
   tooltip?: ReactNode;
 } & DomainProp;
 
-/**
- * DSFR range slider bound to an `Interval` on the `MapConfiguration` by path.
- * The slider's domain is either:
- *  - resolved from another `MapConfiguration` path (`domainPath`) — typically a
- *    `reseauxDeChaleur.limits.<dimension>` fetched at runtime via tRPC;
- *  - or supplied as a static `Interval` literal (`domain`) — for layers whose
- *    bounds are constants.
- */
+/** DSFR range slider bound to an `Interval` on the `MapConfiguration`. */
 export function LegendIntervalSlider({ path, label, unit, tooltip, ...rest }: LegendIntervalSliderProps) {
   const { read, updateInterval } = useMapConfig();
   const value = read<Interval>(path);

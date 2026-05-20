@@ -12,20 +12,12 @@ type MapMarkerProps = {
   anchor?: PositionAnchor;
 };
 
-/**
- * Mounts a `maplibregl.Marker` (HTML overlay) on the parent `<Map>` at the
- * given lng/lat. Mount/unmount manages the marker lifecycle; lng/lat updates
- * are applied imperatively via `setLngLat` (no re-mount).
- *
- * Render as a child of `<Map>` — the `useMapInstance()` hook needs the
- * `MapCanvasContext` provided by `<MapCanvas>` (which `<Map>` wraps).
- */
+/** `maplibregl.Marker` overlay. Must be rendered as a child of `<MapCanvas>`. */
 export function MapMarker({ longitude, latitude, color, anchor }: MapMarkerProps) {
   const map = useMapInstance();
   const markerRef = useRef<maplibregl.Marker | null>(null);
 
-  // Mount/unmount the underlying marker. Color & anchor are mount-only props
-  // because MapLibre doesn't expose setters for them.
+  // Color & anchor are mount-only — MapLibre doesn't expose setters.
   useEffect(() => {
     const marker = new Marker({ anchor, color }).setLngLat([longitude, latitude]).addTo(map);
     markerRef.current = marker;
@@ -35,7 +27,6 @@ export function MapMarker({ longitude, latitude, color, anchor }: MapMarkerProps
     };
   }, [map, color, anchor]);
 
-  // Apply lng/lat changes without re-creating the marker.
   useEffect(() => {
     markerRef.current?.setLngLat([longitude, latitude]);
   }, [longitude, latitude]);

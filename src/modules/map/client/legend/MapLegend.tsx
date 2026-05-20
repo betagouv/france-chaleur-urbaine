@@ -1,4 +1,3 @@
-import Button from '@codegouvfr/react-dsfr/Button';
 import Tabs, { type TabsProps } from '@codegouvfr/react-dsfr/Tabs';
 import IconEnrr from '@root/public/icons/enrr.svgr';
 import IconOutils from '@root/public/icons/outils.svgr';
@@ -40,6 +39,7 @@ import { ZonesAUrbaniserLegend } from '../layers/specs/zonesAUrbaniser.legend';
 import { ZonesPotentielChaudLegend } from '../layers/specs/zonesPotentielChaud.legend';
 import { ZonesPotentielFroidLegend } from '../layers/specs/zonesPotentielFroid.legend';
 import { LegendAccordion } from './LegendAccordion';
+import { ToolsTabContent } from './tools/ToolsTabContent';
 
 const tabIds = ['reseaux', 'potentiel', 'enrr', 'outils'] as const;
 type TabId = (typeof tabIds)[number];
@@ -85,16 +85,7 @@ const tabs: Tab[] = [
   },
 ];
 
-/**
- * Top-level legend layout: 4 tabs (Réseaux / Potentiel / EnR&R / Outils),
- * each rendering its own sections. Tab selection is persisted in the URL
- * (query param `tab`) for shareable carte URLs.
- *
- * Sections come from `<layer>.legend.tsx` siblings of the layer specs.
- * Grouping (UrlStateAccordion) and section order are explicit here — no
- * auto-iteration over `allLayers`, since legends need custom arrangement
- * and per-section layout tweaks.
- */
+/** 4-tab legend layout (Réseaux / Potentiel / EnR&R / Outils). */
 export function MapLegend() {
   const [selectedTabId, setSelectedTabId] = useQueryState('tab', parseAsString.withDefault('reseaux').withOptions({ history: 'replace' }));
 
@@ -103,10 +94,7 @@ export function MapLegend() {
       selectedTabId={selectedTabId}
       tabs={tabs}
       onTabChange={(next) => void setSelectedTabId(next)}
-      // DSFR overrides on the Tabs components: kept here because `<Tabs>` is opaque
-      // and ships CSS we cannot reach through props. Accordion / checkbox padding
-      // overrides previously living on this string moved into `<LegendAccordion>`
-      // and `<LegendCheckbox>` respectively.
+      // DSFR tab overrides — kept here because `<Tabs>` is opaque through props.
       className="[&_.fr-tabs\_\_panel]:py-3! [&_.fr-tabs\_\_panel]:px-0! [&_.fr-tabs\_\_tab]:py-1! [&_.fr-tabs\_\_tab]:px-2! [&_.fr-tabs\_\_tab]:h-auto! [&_.fr-tabs\_\_tab]:font-normal!"
 
       // className="[&_.fr-tabs\_\_panel]:py-3! [&_.fr-tabs\_\_panel]:px-0! [&_.fr-tabs\_\_tab]:py-1! [&_.fr-tabs\_\_tab]:px-2! [&_.fr-tabs\_\_tab]:h-auto! [&_.fr-tabs\_\_tab]:font-normal! [&_.fr-collapse--expanded]:pl-3! [&_.fr-collapse--expanded]:pr-0! [&_.fr-collapse--expanded]:py-2! [&_.fr-collapse_.fr-checkbox-group]:py-1! [&_.fr-collapse_.fr-checkbox-group]:min-h-9!"
@@ -206,25 +194,7 @@ export function MapLegend() {
         </div>
       )}
 
-      {selectedTabId === 'outils' && (
-        <div className="flex flex-col gap-3 px-3">
-          <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">Outils</h2>
-
-          <div className="flex flex-col gap-2">
-            <Button priority="secondary" size="small" iconId="ri-ruler-line" disabled>
-              Mesurer une distance
-            </Button>
-            <Button priority="secondary" size="small" iconId="ri-shape-line" disabled>
-              Extraire des données sur les bâtiments
-            </Button>
-            <Button priority="secondary" size="small" iconId="ri-bar-chart-line" disabled>
-              Calculer une densité thermique linéaire
-            </Button>
-          </div>
-
-          <p className="text-xs text-(--text-mention-grey) mb-0 italic">Outils à venir.</p>
-        </div>
-      )}
+      {selectedTabId === 'outils' && <ToolsTabContent />}
     </Tabs>
   );
 }

@@ -6,35 +6,23 @@ import cx from '@/utils/cx';
 import type { MapConfigurationProperty } from '../config/map-configuration';
 import { useMapConfig } from '../config/useMapConfig';
 
-/**
- * Set to `true` from a parent (typically `<LegendAccordion>`) to render
- * descendant `<LegendCheckbox>` in compact mode (denser padding + smaller
- * height). Default is `false` for top-level usage.
- */
+/** Provider-driven compact mode (denser layout) — used by `<LegendAccordion>`. */
 export const LegendCheckboxCompactContext = createContext(false);
 
 type LegendCheckboxProps = {
   /** Path to a boolean on the `MapConfiguration`. */
   path: MapConfigurationProperty<boolean>;
   label: ReactNode;
-  /** Optional colored swatch / icon between the checkbox and the label (V1 pattern). */
+  /** Optional colored swatch / icon between the checkbox and the label. */
   icon?: ReactNode;
-  /** Optional tooltip displayed after the label (rendered as `<Tooltip title={…}>`). */
+  /** Optional tooltip displayed after the label. */
   tooltip?: ReactNode;
   /** DSFR hint text shown below the label. */
   hintText?: ReactNode;
   className?: string;
 };
 
-/**
- * DSFR checkbox bound to a `MapConfiguration` boolean by path. Supports an
- * optional `icon` rendered between the checkbox and the label (V1 pattern)
- * and an optional `tooltip`.
- *
- * Compact mode (denser layout) is opted in by a parent via
- * `<LegendCheckboxCompactContext.Provider value={true}>` — used by
- * `<LegendAccordion>` for its body.
- */
+/** DSFR checkbox bound to a `MapConfiguration` boolean path. */
 export function LegendCheckbox({ path, label, icon, tooltip, hintText, className }: LegendCheckboxProps) {
   const { read, toggleLayer } = useMapConfig();
   const compact = useContext(LegendCheckboxCompactContext);

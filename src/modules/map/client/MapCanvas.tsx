@@ -23,35 +23,18 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 type MapCanvasProps = {
   initialView?: InitialView;
   className?: string;
-  /**
-   * When `false`, the map is static: pan/zoom/touch is disabled, controls
-   * (navigation, scale, geolocate, style switcher) aren't mounted, and
-   * click/hover popups are disabled. Attribution still renders for license
-   * compliance. Defaults to `true`.
-   */
+  /** When `false`: pan/zoom/touch disabled, controls + popups skipped (attribution still renders). */
   interactive?: boolean;
-  /**
-   * V1-style layer specs. When provided together with `config`, sources/layers
-   * are mounted once the style is loaded, kept in sync via per-layer diff, and
-   * become click/hover-able when `interactive` is `true`.
-   */
+  /** Layer specs auto-mounted + diffed against `config`. */
   layers?: readonly MapSourceLayersSpecification[];
-  /** Page-level `MapConfiguration` driving each spec's `isVisible(config)` / `filter(config)`. */
+  /** Drives each spec's `isVisible(config)` / `filter(config)`. */
   config?: MapConfiguration;
-  /**
-   * Optional ref populated with the imperative `MapCanvasController` once the map mounts.
-   * Use it from outside the canvas subtree to call `flyTo`, `fitBounds`, etc.
-   */
+  /** Imperative access from outside the canvas subtree (`flyTo`, `fitBounds`). */
   mapRef?: RefObject<MapCanvasController | null>;
   children?: React.ReactNode;
 };
 
-/**
- * Core map component. Creates a single MapLibre instance for the component
- * lifetime, mounts the default controls when `interactive`, drives layer
- * setup + interactions via dedicated child components, and exposes the
- * controller via context and the optional `mapRef` prop.
- */
+/** Single MapLibre instance + controls + layers + interactions. */
 export function MapCanvas({
   initialView,
   className,
@@ -69,10 +52,8 @@ export function MapCanvas({
   const [map, setMap] = useState<maplibregl.Map | null>(null);
   const [mapReady, setMapReady] = useState(false);
 
-  // Create the MapLibre instance exactly once per component lifetime. The
-  // deferred-cleanup pattern (setTimeout 0) cancels the disposal when React
-  // 18 strict-mode does an immediate re-mount, so we never tear down a map
-  // we're about to keep using.
+  // Create the MapLibre instance once per lifetime. Deferred cleanup
+  // (`setTimeout 0`) survives React 18 strict-mode's mount/unmount/mount cycle.
   useEffect(() => {
     if (cleanupTimerRef.current) {
       clearTimeout(cleanupTimerRef.current);
@@ -128,11 +109,8 @@ export function MapCanvas({
     };
   }, []);
 
-  // Flip `mapReady` once the base style is loaded AND all icon symbols are
-  // registered into the MapLibre style. Downstream hooks (layer setup,
-  // interactions) gate on this so they never touch an uninitialised style and
-  // never render a layer whose icon hasn't been loaded yet (which would log a
-  // MapLibre warning and miss the marker visually).
+  // `mapReady` flips once the style is loaded AND every icon symbol is
+  // registered — downstream hooks gate on it to avoid missing-marker warnings.
   useEffect(() => {
     if (!map) {
       return;
@@ -177,8 +155,8 @@ export function MapCanvas({
     };
   }, [map]);
 
-  // Keep the canvas sized to its container. MapLibre needs an explicit `resize()`
-  // call on container changes (CSS-only resizes don't fire window 'resize').
+  // MapLibre needs an explicit `resize()` on container changes (CSS-only
+  // resizes don't fire window 'resize').
   useEffect(() => {
     const container = containerRef.current;
     if (!map || !container) {
@@ -191,8 +169,7 @@ export function MapCanvas({
 
   const controller = useMemo(() => (map ? createMapCanvasController(map, userResourcesRef.current) : null), [map]);
 
-  // Forward the imperative controller to the optional external ref, so the
-  // parent can call `flyTo` / `fitBounds` from outside the canvas subtree.
+  // Forward the controller to the optional external ref.
   useEffect(() => {
     if (!externalMapRef) {
       return;

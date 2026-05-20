@@ -31,7 +31,7 @@ Two entry points, picked by usage:
 | Component | Use when… | Source of config | Built-in features |
 |-----------|-----------|------------------|-------------------|
 | `MapCanvas` | mini-map / embed / custom layer set — no legend, no search | `config` prop (full `MapConfiguration`) | controls, layers via `layers` prop |
-| `Map` | app pages, iframes, sandboxes — built-in layers + provider | `config` prop (initial `DeepPartial<MapConfiguration>`) | mounts own `MapConfigProvider`, legend drawer, search/eligibility overlay |
+| `Map` | app pages, iframes, sandboxes — built-in layers + provider | `config` prop (initial `DeepPartial<MapConfiguration>`) | mounts own `MapStoreProvider` (Jotai store scoped per-instance), legend drawer, search/eligibility overlay |
 
 `Map` is `dynamic({ ssr: false })` (defined in `client/Map.tsx`) and lazily loads its implementation `client/core/MapImpl.tsx`. **Don't merge `MapImpl` into `Map.tsx`** — the wrapper file must stay free of `maplibre-gl` imports for the `dynamic` split to work.
 
@@ -59,18 +59,21 @@ src/modules/map/
   client/
     Map.tsx                   # dynamic({ ssr: false }) wrapper — keep slim
     MapCanvas.tsx             # core — single MapLibre instance + ConfiguredLayers + MapInteractions
+    MapStoreProvider.tsx      # per-<Map> Jotai store (createStore + Provider + hydrate config)
     config/
-      MapConfigProvider.tsx   # owns runtime MapConfiguration state via useReducer
-      useMapConfig.ts         # read/mutate the config from inside the provider
-      useMapConfiguration.ts  # build a full MapConfiguration (fetches RDC limits via tRPC)
+      useMapConfig.ts         # reads/mutates `mapConfigAtom` + reducer (atoms declared here)
+      useMapConfiguration.ts  # builds a full MapConfiguration (fetches RDC limits via tRPC)
       map-configuration.ts    # types + createMapConfiguration
     core/
-      MapImpl.tsx             # impl loaded by Map — mounts provider + canvas + legend/search overlays
-      MapCanvasContext.tsx    # context: map, mapReady, controller, userResources
+      MapImpl.tsx             # impl loaded by Map — mounts MapStoreProvider + canvas + overlays
+      MapCanvasContext.tsx    # context (local to MapCanvas subtree): map, mapReady, controller, userResources
       controller.ts           # imperative API (flyTo, fitBounds, setStyle)
       common.tsx              # MapSourceLayersSpecification, popup helpers
     interactions/
-      MapInteractions.tsx     # V1-style click/hover + turf snap + popup portal
+      atoms.ts                # mapInstance / mapReady / mapDraw / isDrawing atoms (scoped via MapStoreProvider)
+      MapInteractions.tsx     # V1-style click/hover + turf snap + popup portal (paused while isDrawing)
+      MapInstanceSync.tsx     # bridges MapCanvasContext into atoms (mounted under MapCanvas)
+      MapDrawHost.tsx         # mounts a MapboxDraw control, exposed via mapDrawAtom
       MapMarker.tsx           # HTML marker overlay (uses useMapInstance)
     controls/                 # IControl wrappers (mounted by MapCanvas when interactive)
     layers/
@@ -78,8 +81,9 @@ src/modules/map/
       all-layers.ts           # the built-in layer set mounted by <Map>
       specs/                  # MapSourceLayersSpecification + matching <layer>.legend.tsx
     legend/
+      atoms.ts                # legendOpenAtom (scoped via MapStoreProvider)
       MapLegend.tsx           # the 4-tab legend (Réseaux/Potentiel/EnR&R/Outils)
-      LegendDrawer.tsx        # left-side drawer mounted by <Map legend>
+      LegendDrawer.tsx        # left-side drawer; reads/writes legendOpenAtom
       LegendCheckbox.tsx, LegendIntervalSlider.tsx, LegendSection.tsx, LegendIcon.tsx
     search/
       MapSearchInput.tsx      # combined BAN + reseaux.searchForMap autocomplete

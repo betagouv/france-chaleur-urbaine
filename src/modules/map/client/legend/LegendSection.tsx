@@ -8,45 +8,24 @@ import type { MapConfigurationProperty } from '../config/map-configuration';
 import { useMapConfig } from '../config/useMapConfig';
 
 type LegendSectionProps = {
-  /** Section title (will be rendered next to the optional `icon`). */
   title: NonNullable<ReactNode>;
-  /** Unique id used to persist the open/closed state in the URL (`?accordions=`). Only used when `togglePath` is absent. */
+  /** Unique id; persists open/closed state via `?accordions=`. */
   id: string;
-  /**
-   * When provided, the section header is a `CheckableAccordion` whose checkbox
-   * mirrors the boolean at this `MapConfiguration` path. Toggling the checkbox
-   * also expands the section (V1's `TrackableCheckableAccordion` pattern).
-   *
-   * Without `togglePath`, the section is a plain URL-state accordion (no
-   * checkbox). Use for grouping containers, e.g. "Outils".
-   */
+  /** If set, the header is a checkable accordion bound to this config path. */
   togglePath?: MapConfigurationProperty<boolean>;
-  /**
-   * Optional swatch / icon rendered right after the checkbox, before the title.
-   * Typically a colored square or line matching the layer's paint color.
-   */
+  /** Optional swatch / icon rendered right after the checkbox, before the title. */
   icon?: ReactNode;
-  /** Optional tooltip rendered after the title (DSFR Tooltip with `title` prop). */
+  /** Optional tooltip rendered after the title. */
   tooltip?: ReactNode;
-  /** Children rendered inside the section body. */
   children: NonNullable<ReactNode>;
 };
 
-// Title classes copied from V1's StyledCheckableAccordion : flex layout with
-// gap, extra-small text, normal weight (DSFR default is bold/medium), default-grey
-// color to match the rest of the legend. The `!` suffix forces precedence over
-// the styled-components rules in `CheckableAccordion` (`& .fr-accordion__title { font-weight: 500 }`).
+// `!` overrides the font-weight injected by `CheckableAccordion`'s styled rules.
 const titleClasses = 'flex items-start w-full text-sm font-normal! text-(--text-default-grey)! gap-2';
 
 const TOOLTIP_BLUE_ICON = { className: 'text-(--text-action-high-blue-france)' };
 
-/**
- * Standard legend section.
- *
- * - With `togglePath`: `CheckableAccordion` (checkbox + optional swatch + title).
- *   Master toggle for the layer; expand-on-check (V1's `TrackableCheckableAccordion`).
- * - Without `togglePath`: `UrlStateAccordion`. Open/closed state persisted in URL.
- */
+/** Either a checkable accordion (when `togglePath` is set) or a plain URL-state accordion. */
 export function LegendSection({ id, title, togglePath, icon, tooltip, children }: LegendSectionProps) {
   const { read, toggleLayer } = useMapConfig();
 

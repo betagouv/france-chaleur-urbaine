@@ -31,16 +31,8 @@ type MapSearchInputProps = {
 };
 
 /**
- * Combined address + network search input.
- *
- * For each keystroke (debounced inside `<Autocomplete>`), fans out to both the
- * BAN geocoder and the public `reseaux.searchForMap` tRPC query in parallel.
- * Networks are listed first (more targeted), addresses after. Selection emits
- * a discriminated `MapSearchResult` — the caller decides whether to `flyTo`
- * (address) or `fitBounds` (network bbox).
- *
- * After a selection (address, city or network), the input is cleared so the
- * user can type another query without manually erasing.
+ * Combined address + network search input. Fans out to BAN + `reseaux.searchForMap`
+ * tRPC query in parallel; emits a discriminated `MapSearchResult` to the caller.
  */
 export function MapSearchInput({ onSelect, defaultValue, placeholder, className }: MapSearchInputProps) {
   const trpcUtils = trpc.useUtils();
@@ -122,11 +114,8 @@ export function MapSearchInput({ onSelect, defaultValue, placeholder, className 
         label: feature.properties.label,
       });
     }
-    // Clear the input after any selection — the search is "consumed" by the
-    // flyTo / fitBounds. Deferred to a microtask so the `value` prop transitions
-    // `'' → label → ''` across two renders; otherwise React batches the writes
-    // and Autocomplete's value-prop diff check (`value !== prev`) sees the
-    // same `''` on both ends and skips the displayValue reset.
+    // Deferred to a microtask so Autocomplete's `value !== prev` diff fires
+    // (otherwise React batches `'' → label → ''` into a no-op).
     Promise.resolve().then(() => setValue(''));
   };
 

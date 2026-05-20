@@ -1,26 +1,17 @@
+import { useAtom } from 'jotai';
+
 import Icon from '@/components/ui/Icon';
 import cx from '@/utils/cx';
 
+import { legendOpenAtom } from './atoms';
 import { MapLegend } from './MapLegend';
 
-type LegendDrawerProps = {
-  /** Open state, controlled by the parent (typically `<Map>`). */
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-};
-
 /**
- * Slide-in legend drawer anchored to the left of the map. Fully controlled
- * — the parent owns the `open` state so adjacent overlays (search input,
- * map controls) can adapt their layout when the drawer expands.
- *
- * Width is container-query driven: `w-full` on narrow containers (the drawer
- * blankets the map), `w-80` on `@xl` containers and up (sits beside the rest
- * of the UI). The vertical "Légende" tab toggles the drawer; on narrow
- * containers it is hidden when the drawer is open since the drawer takes the
- * full width — users rely on the in-drawer close button instead.
+ * Slide-in legend drawer anchored to the left of the map. Width is container-
+ * query driven: full-width on narrow containers, 350px on `@xl` and up.
  */
-export function LegendDrawer({ open, onOpenChange }: LegendDrawerProps) {
+export function LegendDrawer() {
+  const [open, setOpen] = useAtom(legendOpenAtom);
   return (
     <>
       <aside
@@ -35,7 +26,7 @@ export function LegendDrawer({ open, onOpenChange }: LegendDrawerProps) {
 
       <button
         type="button"
-        onClick={() => onOpenChange(!open)}
+        onClick={() => setOpen(!open)}
         aria-label={open ? 'Masquer la légende' : 'Afficher la légende'}
         className={cx(
           'absolute top-1/2 z-10 -translate-y-1/2 h-[140px] w-[30px] flex items-center justify-center bg-(--background-flat-blue-france) hover:bg-(--background-active-blue-france-hover) text-white shadow transition-[left] duration-200',

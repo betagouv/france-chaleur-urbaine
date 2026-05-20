@@ -19,26 +19,15 @@ type ConfiguredLayersProps = {
   config: MapConfiguration;
 };
 
-/**
- * Drives V1-style layer specs against a `MapConfiguration`. Mount it
- * conditionally — when mounted, sources/layers are added and kept in sync;
- * when unmounted, everything is removed. Click/hover are handled by the
- * sibling `<MapInteractions>`.
- */
+/** Mounts the V1-style layer specs against a `MapConfiguration` and keeps them in sync. */
 export function ConfiguredLayers({ layers, config }: ConfiguredLayersProps) {
   useConfiguredLayers(layers, config);
   return null;
 }
 
 /**
- * Hook backing `<ConfiguredLayers>`:
- *  - mounts sources + sublayers once the style is loaded (mirrors V1 `loadMapLayers`),
- *  - on config change, diffs `isVisible(config)` / `filter(config)` per layer and
- *    only pushes the ones that actually changed,
- *  - removes sources + layers on unmount.
- *
- * Style swaps (`controller.setStyle`) preserve user resources via `transformStyle`,
- * so this hook never re-registers across base-style changes.
+ * Mounts sources + sublayers on style-ready, diffs `isVisible` / `filter` on
+ * config changes, removes everything on unmount.
  */
 export function useConfiguredLayers(layers: readonly MapSourceLayersSpecification[], config: MapConfiguration) {
   const map = useMapInstance();
@@ -48,10 +37,6 @@ export function useConfiguredLayers(layers: readonly MapSourceLayersSpecificatio
   configRef.current = config;
   const appliedRef = useRef(new Map<string, AppliedState>());
 
-  // Mount sources + sublayers as soon as the style is loaded. Mirrors V1's
-  // imperative `loadMapLayers`: one tight `addSource` + `addLayer` loop, no
-  // fragmentation across React subtrees. Cleanup removes them in reverse on
-  // unmount so toggling a spec off cleans up.
   useEffect(() => {
     if (!mapReady) {
       return;
@@ -110,9 +95,7 @@ export function useConfiguredLayers(layers: readonly MapSourceLayersSpecificatio
     };
   }, [map, mapReady, userResources, layers]);
 
-  // Diff per-layer on config change: compare the previous `isVisible` /
-  // `filter` outputs against the current ones and only push the ones that
-  // actually changed (no global re-walk like V1's `applyMapConfigurationToLayers`).
+  // Diff per-layer on config change — only push what actually changed.
   useEffect(() => {
     if (!mapReady) {
       return;

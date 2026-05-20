@@ -1,22 +1,6 @@
 import cx from '@/utils/cx';
 
-/**
- * Single icon primitive for legend sections. Discriminated on `type` :
- * - `'circle'` / `'square'` — colored 16×16 swatch (with optional `stroke`)
- * - `'line'` — colored horizontal stripe (typical for line layers)
- * - `'polygon'` — SVG polygon with stroke + fill opacity (V1 `IconPolygon`)
- *
- * Anything more exotic (DPE colored letter, gradient bar swatch, …) → pass
- * your own JSX directly through the consumer's `icon` prop.
- *
- * Usage:
- * ```tsx
- * <LegendIcon type="circle" color="#FF8329" opacity={0.7} />
- * <LegendIcon type="square" color="#9181F4" stroke="#000" />
- * <LegendIcon type="line"   color="#0D543F" thickness={2} />
- * <LegendIcon type="polygon" stroke="#B9E713" fillOpacity={0.3} />
- * ```
- */
+/** Discriminated swatch primitive (`circle` / `square` / `line` / `polygon`). */
 
 const BASE = 'mt-1 inline-block shrink-0';
 

@@ -11,13 +11,8 @@ type LegendAccordionProps = {
 };
 
 /**
- * Module-Map wrapper around `UrlStateAccordion`. Two roles:
- * - posts the Tailwind overrides required to retro-fit the DSFR/styled
- *   accordion panel padding (`.fr-collapse--expanded`), localised here rather
- *   than declared globally on the legend `<Tabs>`,
- * - sets `LegendCheckboxCompactContext` to `true` so descendant
- *   `<LegendCheckbox>` render in compact mode (denser padding + smaller height)
- *   without any explicit prop at the call site.
+ * `UrlStateAccordion` wrapper that retrofits the DSFR panel padding and turns
+ * on compact mode for descendant `<LegendCheckbox>`.
  */
 export function LegendAccordion({ id, label, children }: LegendAccordionProps) {
   return (

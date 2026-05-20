@@ -5,6 +5,7 @@ import { lineString, point } from '@turf/helpers';
 import { nearestPoint } from '@turf/nearest-point';
 import { nearestPointOnLine } from '@turf/nearest-point-on-line';
 import type { Feature, Geometry, GeometryCollection, Point, Position } from 'geojson';
+import { useAtomValue } from 'jotai';
 import maplibregl, { type MapGeoJSONFeature, type MapMouseEvent } from 'maplibre-gl';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -15,6 +16,7 @@ import { isDefined } from '@/utils/core';
 
 import { buildPopupStyleHelpers, type MapLayerSpecification, type MapSourceLayersSpecification, type PopupContext } from '../core/common';
 import { useMapInstance } from '../core/MapCanvasContext';
+import { isDrawingAtom } from './atoms';
 
 const SELECTION_BUFFER_PX = 15;
 
@@ -36,27 +38,20 @@ type HoveredFeatureRef = {
   sourceLayer?: string;
 };
 
-/**
- * Wires V1-style click / hover handling to the parent `<MapCanvas>`. Mount it
- * conditionally — when it's mounted, interactions are on; when it isn't, none
- * of its hooks run. Returns the popup node (or `null`).
- */
+/** V1-style click / hover handling on the parent `<MapCanvas>`. Paused while `isDrawing`. */
 export function MapInteractions({ layers }: { layers: readonly MapSourceLayersSpecification[] }) {
   return useMapInteractions(layers);
 }
 
 /**
- * Hook backing `<MapInteractions>`. Derives the list of clickable layers
- * statically from `layers` (every sublayer whose spec doesn't carry
- * `unselectable: true`). On `mousemove`/`click`, queries features within a
- * 15px buffer, picks one via geometry priority (Point > Line > Polygon) with
- * a nearest-distance tie-break via turf, applies `feature-state.hover`, and
- * opens a popup at the snap point.
+ * Hover/click handlers with 15px buffer, geometry priority (Point > Line >
+ * Polygon) and a turf-snapped popup anchor.
  */
 export function useMapInteractions(layers: readonly MapSourceLayersSpecification[]): React.ReactNode {
   const map = useMapInstance();
   const router = useRouter();
   const { hasRole, isAuthenticated } = useAuthentication();
+  const isDrawing = useAtomValue(isDrawingAtom);
   const [popup, setPopup] = useState<PopupState | null>(null);
   const popupContainerRef = useRef<HTMLDivElement | null>(null);
   if (!popupContainerRef.current && typeof document !== 'undefined') {
@@ -75,18 +70,12 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
     [layers]
   );
 
-  // `useAuthentication()` returns a fresh `hasRole` function on every render,
-  // which would invalidate `popupContext` and re-fire the listeners effect on
-  // every click (the cleanup calls `clearHover()` → the hover visually drops
-  // the moment the popup opens). We stash the context in a ref so the click
-  // handler reads the current value at click time without forcing the effect
-  // to re-attach.
+  // Stashed in a ref because `useAuthentication()` returns a fresh `hasRole`
+  // function each render — would otherwise re-fire the listeners effect.
   const popupContextRef = useRef<PopupContext>({ hasRole, isAuthenticated, pathname: router.pathname });
   popupContextRef.current = { hasRole, isAuthenticated, pathname: router.pathname };
 
-  // Register one mousemove + one click/touchend handler at the map level.
-  // Drives the hover feature-state on the closest matching feature and opens
-  // the popup state on click. Bails out when nothing is clickable.
+  // Register mousemove + click/touchend handlers on the map.
   useEffect(() => {
     if (selectableLayers.length === 0) {
       return;
@@ -160,11 +149,14 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
       });
     };
 
-    // No `mouseleave` handler on purpose: when a popup opens, the cursor moves
-    // over the popup DOM and leaves the canvas — clearing hover here would kill
-    // the visual feedback on the clicked feature while the user is reading the
-    // popup. The hover state is naturally cleared by the next `mousemove` over
-    // a feature-less area on the canvas.
+    // No `mouseleave`: would kill the hover state when the cursor moves over
+    // the popup DOM. Hover clears naturally on the next feature-less mousemove.
+    if (isDrawing) {
+      clearHover();
+      map.getCanvas().style.cursor = '';
+      return;
+    }
+
     map.on('mousemove', onMouseMove);
     map.on('click', onClick);
     map.on('touchend', onClick);
@@ -176,10 +168,9 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
       clearHover();
       map.getCanvas().style.cursor = '';
     };
-  }, [map, selectableLayers]);
+  }, [map, selectableLayers, isDrawing]);
 
-  // Open/close the native maplibregl.Popup whenever `popup` state changes.
-  // The React content is portal'd into the popup's DOM container below.
+  // Open/close the maplibregl.Popup whenever the `popup` state changes.
   useEffect(() => {
     if (!popup || !popupContainerRef.current) {
       return;

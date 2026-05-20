@@ -5,17 +5,11 @@ import type { BBox, LngLat } from '../../shared/types';
 import type { UserResources } from './MapCanvasContext';
 
 export type MapCanvasController = {
-  /** Underlying MapLibre instance. Escape hatch — prefer the typed methods below. */
+  /** Escape hatch — prefer the typed methods below. */
   getMap: () => maplibregl.Map;
   flyTo: (center: LngLat, options?: { zoom?: number; duration?: number }) => void;
   fitBounds: (bbox: BBox, options?: { padding?: number; duration?: number; maxZoom?: number }) => void;
-  /**
-   * Switch the base style while preserving user-added sources and layers.
-   *
-   * Sources and layers registered via `useConfiguredLayers` are carried over
-   * atomically by MapLibre's `transformStyle` — no flicker, no manual
-   * re-registration on `style.load`.
-   */
+  /** Switches the base style while preserving user-added sources/layers via `transformStyle`. */
   setStyle: (style: StyleSpecification) => void;
   on: maplibregl.Map['on'];
   off: maplibregl.Map['off'];

@@ -15,22 +15,13 @@ export type AddressSelection = {
 };
 
 type AddressSearchInputProps = {
-  /** Called when the user picks a BAN suggestion. */
   onSelect: (selection: AddressSelection) => void;
-  /** Optional initial value (useful for restoring an address from a URL param). */
   defaultValue?: string;
-  /** Override the placeholder. */
   placeholder?: string;
   className?: string;
 };
 
-/**
- * BAN autocomplete input dedicated to map use cases — picks an address or a
- * city and notifies the parent via `onSelect`. Unopinionated about what the
- * parent does next (flyTo, eligibility query, marker, etc.).
- *
- * For combined address + network search, use `<MapSearchInput>` instead.
- */
+/** BAN-only autocomplete. For combined address + network search use `<MapSearchInput>`. */
 export function AddressSearchInput({ onSelect, defaultValue, placeholder, className }: AddressSearchInputProps) {
   const [error, setError] = useState(false);
 

@@ -27,20 +27,14 @@ import { reseauxDeFroidLayersSpec } from './specs/reseauxDeFroid';
 import { reseauxEnConstructionLayersSpec } from './specs/reseauxEnConstruction';
 import { ressourcesGeothermalesNappesLayersSpec } from './specs/ressourcesGeothermalesNappes';
 import { testsAdressesLayersSpec } from './specs/testsAdresses';
+import { buildingsDataExtractionLayersSpec } from './specs/tools/buildingsDataExtraction';
+import { distancesMeasurementLayersSpec } from './specs/tools/distancesMeasurement';
+import { linearHeatDensityLayersSpec } from './specs/tools/linearHeatDensity';
 import { zonesAUrbaniserLayersSpec } from './specs/zonesAUrbaniser';
 import { zonesPotentielChaudLayersSpec } from './specs/zonesPotentielChaud';
 import { zonesPotentielFroidLayersSpec } from './specs/zonesPotentielFroid';
 
-/**
- * All built-in layer specs, in MapLibre paint order (last-rendered on top).
- * The high-level `<Map>` component mounts this list against the provided
- * `MapConfiguration` — each spec's `isVisible(config)` decides whether it
- * actually shows.
- *
- * V1 measurement tools (`distancesMeasurementLayers`, `linearHeatDensityLayers`,
- * `buildingsDataExtractionLayers`) are intentionally NOT included here — they
- * have their own state hooks and will be migrated in a later iteration.
- */
+/** Built-in layer specs in MapLibre paint order (last-rendered on top). */
 export const allLayers = [
   ...customGeojsonLayersSpec,
   ...geomUpdateLayersSpec,
@@ -73,6 +67,10 @@ export const allLayers = [
   ...communesFortPotentielPourCreationReseauxChaleurLayersSpec,
   ...etudesEnCoursLayersSpec,
   ...adressesEligiblesLayersSpec,
+  // Tools — appended last so they paint above the data layers.
+  ...distancesMeasurementLayersSpec,
+  ...linearHeatDensityLayersSpec,
+  ...buildingsDataExtractionLayersSpec,
 ] as const satisfies readonly MapSourceLayersSpecification[];
 
 export type LayerId = (typeof allLayers)[number]['layers'][number]['id'];
