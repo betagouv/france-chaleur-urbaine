@@ -1,4 +1,9 @@
 export type BatEnrBatiment = {
+  ac1: boolean | null;
+  ac2: boolean | null;
+  ac3: boolean | null;
+  ac4: boolean | null;
+  ac4bis: boolean | null;
   adresse: string | null;
   batiment_construction_id: string | null;
   batiment_groupe_id: string | null;
