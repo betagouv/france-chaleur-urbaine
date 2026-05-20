@@ -11,6 +11,7 @@ import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import AdemeHelp from '@/modules/chaleur-renouvelable/client/AdemeHelp';
+import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
 import FranceRenovHelp from '@/modules/chaleur-renouvelable/client/FranceRenovHelp';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
@@ -52,11 +53,14 @@ export default function ChoixChauffageResults() {
     geoAddress,
     setGeoAddress,
     batEnr,
+    batEnrBatiments,
     codeDepartement,
     eligibiliteReseauChaleur,
+    shouldSelectBatEnrBatiment,
     temperatureRef,
     onSelectGeoAddress,
     resetEligibility,
+    selectBatEnrBatiment,
   } = useAddressEligibility(urlParams.adresse ?? null);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
@@ -217,6 +221,13 @@ export default function ChoixChauffageResults() {
         habitantsMoyen={urlParams.habitantsMoyen}
         setHabitantsMoyen={urlParams.setHabitantsMoyen}
       />
+      {shouldSelectBatEnrBatiment && (
+        <BatEnrBatimentSelection
+          batiments={batEnrBatiments}
+          initialCenter={geoAddress?.geometry.coordinates}
+          onSelect={selectBatEnrBatiment}
+        />
+      )}
       {modesWithCout.length > 0 ? (
         <>
           <ResultsSection
