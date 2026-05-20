@@ -14,6 +14,7 @@ import useContactFormFCU from '@/hooks/useContactFormFCU';
 import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
+import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
 import DemandeFCRForm from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
 import FranceRenovHelp from '@/modules/chaleur-renouvelable/client/FranceRenovHelp';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
@@ -84,11 +85,14 @@ export default function ChoixChauffageResults() {
     geoAddress,
     setGeoAddress,
     batEnr,
+    batEnrBatiments,
     codeDepartement,
     eligibiliteReseauChaleur,
+    shouldSelectBatEnrBatiment,
     temperatureRef,
     onSelectGeoAddress,
     resetEligibility,
+    selectBatEnrBatiment,
   } = useAddressEligibility(urlParams.adresse ?? null);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
@@ -245,6 +249,13 @@ export default function ChoixChauffageResults() {
         onSelectGeoAddress={handleSelectGeoAddress}
         onAddressError={() => {}}
       />
+      {shouldSelectBatEnrBatiment && (
+        <BatEnrBatimentSelection
+          batiments={batEnrBatiments}
+          initialCenter={geoAddress?.geometry.coordinates}
+          onSelect={selectBatEnrBatiment}
+        />
+      )}
       {modesEnriched.length > 0 ? (
         <>
           <RecommendedSolutionCard
