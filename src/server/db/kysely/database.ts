@@ -1000,7 +1000,6 @@ export interface DB {
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
   demands_chaleur_renouvelable: DemandsChaleurRenouvelable;
   demand_emails: DemandEmails;
-  demands: Demands;
   departements: Departements;
   donnees_de_consos: DonneesDeConsos;
   donnees_de_consos_tiles: DonneesDeConsosTiles;
