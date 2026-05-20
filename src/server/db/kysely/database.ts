@@ -79,6 +79,10 @@ export interface BdnbBatenr {
   couv_sondes_200_2025: number | null;
   prod_st_mwh_an: number | null;
   propri_uni: string | null;
+  type_energie_chauffage: string | null;
+  type_energie_ecs: string | null;
+  type_installation_chauffage: string | null;
+  type_installation_ecs: string | null;
 }
 
 export interface BdnbBatiments {
