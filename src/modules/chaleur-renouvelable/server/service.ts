@@ -14,6 +14,11 @@ type BdnbConstructionAddressRelation = {
 };
 
 const batEnrBatimentColumns = [
+  'ac1',
+  'ac2',
+  'ac3',
+  'ac4',
+  'ac4bis',
   'adresse',
   'batiment_construction_id',
   'batiment_groupe_id',
@@ -31,7 +36,7 @@ const batEnrBatimentColumns = [
   'propri_uni',
 ] as const;
 
-export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) => {
+export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput): Promise<BatEnrBatiment | undefined> => {
   if ('batiment_construction_id' in input) {
     const batiment = await kdb
       .selectFrom('bdnb_batenr')
