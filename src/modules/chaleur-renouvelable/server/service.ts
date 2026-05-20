@@ -1,29 +1,42 @@
 import type {
   AdminUpdateDemandeChaleurRenouvelableInput,
+  BatEnrByBanIdInput,
   DemandeChaleurRenouvelable,
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
+import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { kdb, sql } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
+
+type BdnbConstructionAddressRelation = {
+  batiment_construction_id: string | null;
+};
+
+const batEnrBatimentColumns = [
+  'adresse',
+  'batiment_construction_id',
+  'batiment_groupe_id',
+  'categorie_majoritaire',
+  'classe_bilan_dpe',
+  'couv_sondes_200_2025',
+  'couv_st_ecs_2025',
+  'etat_ppa',
+  'gis_geo_profonde',
+  'gmi_nappe_200',
+  'gmi_sonde_200',
+  'place_nappe',
+  'pot_nappe',
+  'prod_st_mwh_an',
+  'propri_uni',
+] as const;
 
 export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) => {
   if ('batiment_construction_id' in input) {
     const batiment = await kdb
       .selectFrom('bdnb_batenr')
-      .select([
-        'batiment_construction_id',
-        'gmi_nappe_200',
-        'gmi_sonde_200',
-        'pot_nappe',
-        'place_nappe',
-        'etat_ppa',
-        'ac1',
-        'ac2',
-        'ac3',
-        'ac4',
-        'ac4bis',
-      ])
+      .select(batEnrBatimentColumns)
+      .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
       .where('batiment_construction_id', '=', input.batiment_construction_id)
       .executeTakeFirst();
 
@@ -34,19 +47,8 @@ export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) 
 
   const batiment = await kdb
     .selectFrom('bdnb_batenr')
-    .select([
-      'batiment_construction_id',
-      'gmi_nappe_200',
-      'gmi_sonde_200',
-      'pot_nappe',
-      'place_nappe',
-      'etat_ppa',
-      'ac1',
-      'ac2',
-      'ac3',
-      'ac4',
-      'ac4bis',
-    ])
+    .select(batEnrBatimentColumns)
+    .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
     .where('geom', 'is not', null)
     .orderBy(sql`geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154)`)
     .limit(1)
@@ -54,6 +56,22 @@ export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) 
 
   return batiment;
 };
+
+export const getBatEnrBatimentsByConstructionIds = async (batimentConstructionIds: string[]): Promise<BatEnrBatiment[]> => {
+  const uniqueBatimentConstructionIds = [...new Set(batimentConstructionIds)];
+
+  if (uniqueBatimentConstructionIds.length === 0) {
+    return [];
+  }
+
+  return await kdb
+    .selectFrom('bdnb_batenr')
+    .select(batEnrBatimentColumns)
+    .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
+    .where('batiment_construction_id', 'in', uniqueBatimentConstructionIds)
+    .execute();
+};
+
 export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => {
   const communeInfo = await kdb
     .selectFrom('communes')
@@ -72,12 +90,17 @@ export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => 
   return communeInfo;
 };
 
-export const getRnbByBanId = async ({ banId }: { banId: string }) => {
-  const url = `https://rnb-api.beta.gouv.fr/api/alpha/buildings/address/?cle_interop_ban=${encodeURIComponent(banId)}`;
+export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) => {
+  const url = `https://api.bdnb.io/v1/bdnb/donnees/rel_batiment_construction_adresse?select=batiment_construction_id&cle_interop_adr=eq.${encodeURIComponent(
+    banId
+  )}`;
 
-  const data = await fetchJSON(url);
+  const data = await fetchJSON<BdnbConstructionAddressRelation[]>(url);
+  const batimentConstructionIds = data
+    .map((relation) => relation.batiment_construction_id)
+    .filter((batimentConstructionId): batimentConstructionId is string => batimentConstructionId !== null);
 
-  return data.results?.[0];
+  return await getBatEnrBatimentsByConstructionIds(batimentConstructionIds);
 };
 
 export const createDemandeChaleurRenouvelable = async ({ input }: { input: DemandeChaleurRenouvelable }) => {
