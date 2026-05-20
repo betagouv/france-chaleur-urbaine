@@ -1,14 +1,14 @@
 import {
   zAdminUpdateDemandeChaleurRenouvelableInput,
+  zBatEnrByBanIdInput,
   zDemandeChaleurRenouvelable,
   zLocationInfos,
-  zRnbByBanIdInput,
 } from '@/modules/chaleur-renouvelable/constants';
 import {
   createDemandeChaleurRenouvelable,
   getBatEnrBatimentDetails,
+  getBatEnrBatimentsByBanId,
   getLocationInfos,
-  getRnbByBanId,
   listDemandesChaleurRenouvelableAdmin,
   updateDemandeChaleurRenouvelableAdmin,
 } from '@/modules/chaleur-renouvelable/server/service';
@@ -26,6 +26,6 @@ export const batEnrRouter = router({
     .input(zDemandeChaleurRenouvelable)
     .mutation(async ({ input }) => await createDemandeChaleurRenouvelable({ input })),
   getBatEnrBatimentDetails: route.input(zGetBdnbConstructionInput).query(async ({ input }) => await getBatEnrBatimentDetails(input)),
+  getBatEnrBatimentsByBanId: route.input(zBatEnrByBanIdInput).query(async ({ input }) => await getBatEnrBatimentsByBanId(input)),
   getLocationInfos: route.input(zLocationInfos).query(async ({ input }) => await getLocationInfos(input)),
-  getRnbByBanId: route.input(zRnbByBanIdInput).query(async ({ input }) => await getRnbByBanId(input)),
 });
