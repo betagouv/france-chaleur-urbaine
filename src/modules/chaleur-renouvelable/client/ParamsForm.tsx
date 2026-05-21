@@ -142,7 +142,7 @@ export function ParamsForm({
       dpe: draft.dpe,
       espaceExterieur: draft.espaceExterieur,
       habitantsMoyen: normalizedHabitantsMoyen,
-      modeEauChaudeSanitaire: draft.modeEauChaudeSanitaire ?? 'equipement-chauffage',
+      modeEauChaudeSanitaire: draft.modeEauChaudeSanitaire,
       nbLogements: normalizedNbLogements,
       surfaceMoyenne: normalizedSurfaceMoyenne,
       typeLogement: draft.typeLogement,

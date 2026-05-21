@@ -79,6 +79,16 @@ function enrichHeatingMode(mode: ModeDeChauffage, engine: SimulatorEngine, situa
   return { ...mode, contraintesTechniques, coutInstallation, coutParAn };
 }
 
+const getModeEauChaudeSanitaireFromBatEnr = (typeInstallationEcs: string | null): ModeEauChaudeSanitaire | null => {
+  const normalizedTypeInstallationEcs = typeInstallationEcs?.trim().toLowerCase();
+
+  if (normalizedTypeInstallationEcs === 'individuel') {
+    return 'Individuel';
+  }
+
+  return normalizedTypeInstallationEcs === 'collectif' ? 'Collectif' : null;
+};
+
 export default function ChoixChauffageResults() {
   const engine = useSimulatorEngine();
   const engineRef = useRef(engine);
@@ -163,7 +173,7 @@ export default function ChoixChauffageResults() {
   useEffect(() => {
     if (!codeDepartement) return;
 
-    const modeEauChaudeSanitaire = (urlParams.modeEauChaudeSanitaire ?? 'equipement-chauffage') as ModeEauChaudeSanitaire;
+    const modeEauChaudeSanitaire = urlParams.modeEauChaudeSanitaire;
     const currentEngine = engineRef.current;
 
     currentEngine.setSituation({
@@ -172,20 +182,12 @@ export default function ChoixChauffageResults() {
       'Inclure la climatisation': 'non',
       "Nombre d'habitants moyen par appartement": `${situation.habitantsMoyen}`,
       "nombre de logements dans l'immeuble concerné": situation.nbLogements,
-      'Production eau chaude sanitaire': modeEauChaudeSanitaire === 'non' ? 'non' : 'oui',
+      'Production eau chaude sanitaire': modeEauChaudeSanitaire ? 'oui' : 'non',
       'surface logement type tertiaire': `${situation.surfaceMoyenne}`,
       'température de référence chaud commune': temperatureRef,
     });
 
-    if (modeEauChaudeSanitaire === 'non' || modeEauChaudeSanitaire === 'equipement-chauffage') {
-      currentEngine.resetField('type de production ECS');
-      return;
-    }
-
-    currentEngine.setStringField(
-      'type de production ECS',
-      modeEauChaudeSanitaire === 'chauffe-eau-electrique' ? 'Chauffe-eau électrique' : 'Solaire thermique'
-    );
+    currentEngine.resetField('type de production ECS');
   }, [codeDepartement, situation, temperatureRef, urlParams.modeEauChaudeSanitaire]);
 
   const effectiveTypeLogement = urlParams.typeLogement ?? 'immeuble_chauffage_collectif';
@@ -266,6 +268,12 @@ export default function ChoixChauffageResults() {
 
     if (selectedBatEnrBatiment.classe_bilan_dpe && !searchParams.has('dpe')) {
       void urlParams.setDpe(selectedBatEnrBatiment.classe_bilan_dpe);
+    }
+
+    const modeEauChaudeSanitaire = getModeEauChaudeSanitaireFromBatEnr(selectedBatEnrBatiment.type_installation_ecs);
+
+    if (modeEauChaudeSanitaire && !searchParams.has('modeEauChaudeSanitaire')) {
+      void urlParams.setModeEauChaudeSanitaire(modeEauChaudeSanitaire);
     }
 
     if (selectedBatEnrBatiment.ffo_bat_nb_log != null && selectedBatEnrBatiment.ffo_bat_nb_log > 0 && !searchParams.has('nbLogements')) {

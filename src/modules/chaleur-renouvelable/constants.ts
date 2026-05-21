@@ -29,9 +29,9 @@ export const espaceExterieurOptionsByTypeLogement = {
     { label: 'Aucun espace privatif disponible', value: 'none' },
   ],
   maison_individuelle: [
-    { label: 'Terrasse / Balcon', value: 'private' },
-    { label: 'Jardin / cour', value: 'shared' },
-    { label: 'Terrasse / Balcon ET jardin / cour', value: 'both' },
+    { label: 'Terrasse / balcon', value: 'private' },
+    { label: 'Jardin / cours', value: 'shared' },
+    { label: 'Terrasse / balcon ET jardin / cours', value: 'both' },
     { label: 'Aucun espace extérieur disponible', value: 'none' },
   ],
 } satisfies Record<
@@ -63,13 +63,11 @@ export function isEspaceExterieurCompatible(
   return getEspaceExterieurOptions(typeLogement).some((option) => option.value === espaceExterieur);
 }
 
-export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['non', 'equipement-chauffage', 'chauffe-eau-electrique', 'solaire-thermique'] as const;
+export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['Individuel', 'Collectif'] as const;
 export type ModeEauChaudeSanitaire = (typeof MODE_EAU_CHAUDE_SANITAIRE_VALUES)[number];
 export const modeEauChaudeSanitaireOptions = [
-  { label: 'Non', value: 'non' },
-  { label: 'Avec équipement chauffage', value: 'equipement-chauffage' },
-  { label: 'Chauffe-eau électrique', value: 'chauffe-eau-electrique' },
-  { label: 'Solaire thermique', value: 'solaire-thermique' },
+  { label: 'Individuel', value: 'Individuel' },
+  { label: 'Collectif', value: 'Collectif' },
 ] satisfies readonly {
   label: string;
   value: ModeEauChaudeSanitaire;
