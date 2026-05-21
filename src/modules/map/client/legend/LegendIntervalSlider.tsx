@@ -17,13 +17,15 @@ type LegendIntervalSliderProps = {
   tooltip?: ReactNode;
   /** Non-linear domain mapping (e.g. for `livraisonsAnnuelles`). */
   domainTransform?: RangeFilterProps['domainTransform'];
+  /** DSFR slot overrides forwarded to the underlying `<Range>` (e.g. `{ label: 'text-xs' }`). */
+  classes?: RangeFilterProps['classes'];
 } & DomainProp;
 
 /** DSFR range slider bound to an `Interval` on the `MapConfiguration`. */
-export function LegendIntervalSlider({ path, label, unit, tooltip, domainTransform, ...rest }: LegendIntervalSliderProps) {
+export function LegendIntervalSlider({ path, label, unit, tooltip, domainTransform, classes, ...rest }: LegendIntervalSliderProps) {
   const { read, updateInterval } = useMapConfig();
   const value = read<Interval>(path);
-  const domain = rest.domain ?? read<Interval>(rest.domainPath as MapConfigurationProperty<Interval>);
+  const domain = rest.domain ?? read<Interval>(rest.domainPath);
 
   return (
     <RangeFilter
@@ -35,6 +37,7 @@ export function LegendIntervalSlider({ path, label, unit, tooltip, domainTransfo
       unit={unit}
       tooltip={tooltip}
       domainTransform={domainTransform}
+      classes={classes}
     />
   );
 }

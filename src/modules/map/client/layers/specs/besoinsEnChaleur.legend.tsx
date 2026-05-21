@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import Link from '@/components/ui/Link';
 import type { LegendInterval } from '@/modules/map/client/core/common';
 
+import { GradientBar } from '../../legend/GradientBar';
 import { LegendIcon } from '../../legend/LegendIcon';
 import { LegendSection } from '../../legend/LegendSection';
 import { besoinsEnChaleurIntervals, besoinsEnFroidIntervals } from './besoinsEnChaleur';
@@ -16,30 +17,6 @@ const enrezoTooltip = (
     </Link>
   </>
 );
-
-/** Shared gradient bar UI used by both Besoins en chaleur and Besoins en froid. */
-function GradientBar({ intervals }: { intervals: LegendInterval[] }) {
-  const first = intervals[0];
-  const last = intervals[intervals.length - 1];
-  return (
-    <>
-      <div className="flex h-2.5 border border-(--border-default-grey) mb-3">
-        {intervals.map((interval) => (
-          <div
-            key={interval.color}
-            title={`${interval.min} – ${interval.max}`}
-            className="flex-1"
-            style={{ backgroundColor: interval.color }}
-          />
-        ))}
-      </div>
-      <div className="flex justify-between text-xs">
-        <span>{first.min}</span>
-        <span>{last.max}</span>
-      </div>
-    </>
-  );
-}
 
 function PolygonIconForIntervals({ intervals }: { intervals: LegendInterval[] }): ReactNode {
   // V1 uses the third-from-last color (a lighter colour) for the icon swatch.
@@ -55,6 +32,7 @@ export function BesoinsEnChaleurLegend() {
       togglePath="besoinsEnChaleur"
       icon={<PolygonIconForIntervals intervals={besoinsEnChaleurIntervals} />}
       tooltip={enrezoTooltip}
+      contentClassName="m-4"
     >
       <GradientBar intervals={besoinsEnChaleurIntervals} />
     </LegendSection>
@@ -69,6 +47,7 @@ export function BesoinsEnFroidLegend() {
       togglePath="besoinsEnFroid"
       icon={<PolygonIconForIntervals intervals={besoinsEnFroidIntervals} />}
       tooltip={enrezoTooltip}
+      contentClassName="m-4"
     >
       <GradientBar intervals={besoinsEnFroidIntervals} />
     </LegendSection>

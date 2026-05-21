@@ -51,6 +51,7 @@ export function ConsommationsGazLegend() {
         domain={[consommationsGazInterval.min, consommationsGazInterval.max]}
         label="Niveau de consommation de gaz"
         unit=" MWh/an"
+        classes={{ label: 'text-sm', root: 'mr-4' }}
       />
     </LegendSection>
   );

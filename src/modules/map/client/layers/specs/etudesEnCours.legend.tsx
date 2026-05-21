@@ -12,6 +12,7 @@ export function EtudesEnCoursLegend() {
       label="Communes couvertes par une étude pour la création de réseaux"
       icon={<LegendIcon type="polygon" stroke={etudesEnCoursColor} fillOpacity={etudesEnCoursOpacity} />}
       tooltip={<>Information actuellement limitée à l'Île-de-France. Source : ADEME.</>}
+      className="pl-3 pr-9"
     />
   );
 }

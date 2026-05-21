@@ -1,11 +1,11 @@
 import Link from '@/components/ui/Link';
 
+import { GradientBar } from '../../legend/GradientBar';
 import { LegendIcon } from '../../legend/LegendIcon';
 import { LegendSection } from '../../legend/LegendSection';
 import { besoinsEnChaleurIndustrieCommunesIntervals } from './besoinsEnChaleurIndustrieCommunes';
 
 const last = besoinsEnChaleurIndustrieCommunesIntervals[besoinsEnChaleurIndustrieCommunesIntervals.length - 1];
-const first = besoinsEnChaleurIndustrieCommunesIntervals[0];
 
 /**
  * Besoins en chaleur du secteur industriel — toggle + color-gradient bar.
@@ -29,22 +29,9 @@ export function BesoinsEnChaleurIndustrieCommunesLegend() {
           </Link>
         </>
       }
-      contentClassName="gap-1"
+      contentClassName="m-4"
     >
-      <div className="flex h-2.5 border border-(--border-default-grey)">
-        {besoinsEnChaleurIndustrieCommunesIntervals.map((interval) => (
-          <div
-            key={interval.color}
-            title={`${interval.min} – ${interval.max}`}
-            className="flex-1"
-            style={{ backgroundColor: interval.color }}
-          />
-        ))}
-      </div>
-      <div className="flex justify-between text-xs">
-        <span>{first.min}</span>
-        <span>{last.max}</span>
-      </div>
+      <GradientBar intervals={besoinsEnChaleurIndustrieCommunesIntervals} />
     </LegendSection>
   );
 }

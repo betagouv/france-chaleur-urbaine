@@ -30,14 +30,14 @@ export function BatimentsGazCollectifLegend() {
       togglePath="batimentsGazCollectif.show"
       icon={<LegendIcon type="square" color={typeChauffageBatimentsCollectifsStyle.gaz} opacity={typeChauffageBatimentsOpacity} />}
       tooltip={bdnbTooltip}
+      contentClassName="mx-4"
     >
-      <div className="pt-2 px-3">
-        <LegendIntervalSlider
-          path="batimentsGazCollectif.interval"
-          domain={[energyFilterInterval.min, energyFilterInterval.max]}
-          label="Nombre de lots d'habitation"
-        />
-      </div>
+      <LegendIntervalSlider
+        path="batimentsGazCollectif.interval"
+        domain={[energyFilterInterval.min, energyFilterInterval.max]}
+        label="Nombre de lots d'habitation"
+        classes={{ label: 'text-sm' }}
+      />
     </LegendSection>
   );
 }
@@ -53,14 +53,14 @@ export function BatimentsFioulCollectifLegend() {
       togglePath="batimentsFioulCollectif.show"
       icon={<LegendIcon type="square" color={typeChauffageBatimentsCollectifsStyle.fioul} opacity={typeChauffageBatimentsOpacity} />}
       tooltip={bdnbTooltip}
+      contentClassName="mx-4"
     >
-      <div className="pt-2 px-3">
-        <LegendIntervalSlider
-          path="batimentsFioulCollectif.interval"
-          domain={[energyFilterInterval.min, energyFilterInterval.max]}
-          label="Nombre de lots d'habitation"
-        />
-      </div>
+      <LegendIntervalSlider
+        path="batimentsFioulCollectif.interval"
+        domain={[energyFilterInterval.min, energyFilterInterval.max]}
+        label="Nombre de lots d'habitation"
+        classes={{ label: 'text-sm' }}
+      />
     </LegendSection>
   );
 }

@@ -38,14 +38,14 @@ export function CommunesFortPotentielLegend() {
           </Link>
         </>
       }
+      contentClassName="mx-4"
     >
-      <div className="pt-2 px-3">
-        <LegendIntervalSlider
-          path="communesFortPotentielPourCreationReseauxChaleur.population"
-          domain={[0, 100_000]}
-          label="Nombre d'habitants"
-        />
-      </div>
+      <LegendIntervalSlider
+        path="communesFortPotentielPourCreationReseauxChaleur.population"
+        domain={[0, 100_000]}
+        label="Nombre d'habitants"
+        classes={{ label: 'text-sm' }}
+      />
     </LegendSection>
   );
 }

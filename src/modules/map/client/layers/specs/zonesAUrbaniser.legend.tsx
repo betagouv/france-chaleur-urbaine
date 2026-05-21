@@ -18,6 +18,7 @@ export function ZonesAUrbaniserLegend() {
           Source : Cerema
         </>
       }
+      className="pl-3 pr-9"
     />
   );
 }
