@@ -62,6 +62,11 @@ const heatNetworkContactModal = createModal({
   isOpenedByDefault: false,
 });
 
+const batEnrBatimentSelectionModal = createModal({
+  id: 'bat-enr-batiment-selection-modal',
+  isOpenedByDefault: false,
+});
+
 function enrichHeatingMode(mode: ModeDeChauffage, engine: SimulatorEngine, situation: Situation): ModeDeChauffageEnriched {
   const coutParAn = mode.coutParAnPublicodeKey
     ? engine.getFieldAsNumber(`Bilan x ${mode.coutParAnPublicodeKey} . total sans installation` as RuleName)
@@ -93,7 +98,7 @@ export default function ChoixChauffageResults() {
     onSelectGeoAddress,
     resetEligibility,
     selectBatEnrBatiment,
-  } = useAddressEligibility(urlParams.adresse ?? null);
+  } = useAddressEligibility(urlParams.adresse ?? null, urlParams.constructionId);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
@@ -225,13 +230,26 @@ export default function ChoixChauffageResults() {
   }, [eligibiliteReseauChaleur, geoAddress, handleOnSuccessAddress, urlParams.adresse]);
   const handleSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {
+      void urlParams.setConstructionId(null);
+
       if (!geoAddress) {
         resetEligibility();
         return;
       }
       onSelectGeoAddress(geoAddress);
     },
-    [onSelectGeoAddress, resetEligibility]
+    [onSelectGeoAddress, resetEligibility, urlParams]
+  );
+  const handleSelectBatEnrBatiment = useCallback(
+    (batEnrBatiment: (typeof batEnrBatiments)[number]) => {
+      if (!batEnrBatiment.batiment_construction_id) {
+        return;
+      }
+
+      void urlParams.setConstructionId(batEnrBatiment.batiment_construction_id);
+      selectBatEnrBatiment(batEnrBatiment);
+    },
+    [selectBatEnrBatiment, urlParams]
   );
 
   // pendant l’hydration, on évite de rendre conditionnellement (isMobile null)
@@ -249,13 +267,19 @@ export default function ChoixChauffageResults() {
         onSelectGeoAddress={handleSelectGeoAddress}
         onAddressError={() => {}}
       />
-      {shouldSelectBatEnrBatiment && (
+      <Modal
+        modal={batEnrBatimentSelectionModal}
+        title="Plusieurs batiments sont recensés à cette adresse, veuillez choisir le batiment concerné"
+        open={shouldSelectBatEnrBatiment}
+        size="custom"
+        lazy
+      >
         <BatEnrBatimentSelection
           batiments={batEnrBatiments}
           initialCenter={geoAddress?.geometry.coordinates}
-          onSelect={selectBatEnrBatiment}
+          onSelect={handleSelectBatEnrBatiment}
         />
-      )}
+      </Modal>
       {modesEnriched.length > 0 ? (
         <>
           <RecommendedSolutionCard

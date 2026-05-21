@@ -79,9 +79,11 @@ const getBatEnrInfoFromBatiment = (batEnrDetails?: BatEnrBatiment | null): BatEn
 
 const getBatEnrLookupResult = async ({
   geoAddress,
+  selectedBatimentConstructionId,
   trpcUtils,
 }: {
   geoAddress: BANAddressFeature;
+  selectedBatimentConstructionId?: string | null;
   trpcUtils: TrpcUtils;
 }): Promise<BatEnrLookupResult> => {
   const [lon, lat] = geoAddress.geometry.coordinates;
@@ -97,6 +99,18 @@ const getBatEnrLookupResult = async ({
   }
 
   if (batEnrBatiments.length > 1) {
+    const selectedBatEnrBatiment = selectedBatimentConstructionId
+      ? batEnrBatiments.find((batiment) => batiment.batiment_construction_id === selectedBatimentConstructionId)
+      : undefined;
+
+    if (selectedBatEnrBatiment) {
+      return {
+        batEnr: getBatEnrInfoFromBatiment(selectedBatEnrBatiment),
+        batEnrBatiments,
+        shouldSelectBatEnrBatiment: false,
+      };
+    }
+
     return {
       batEnr: getBatEnrInfoFromBatiment(null),
       batEnrBatiments,
@@ -113,7 +127,7 @@ const getBatEnrLookupResult = async ({
   };
 };
 
-export function useAddressEligibility(adresse: string | null) {
+export function useAddressEligibility(adresse: string | null, selectedBatimentConstructionId?: string | null) {
   const trpcUtils = trpc.useUtils();
   const [state, setState] = useState<EligibilityState>(emptyState);
 
@@ -127,7 +141,7 @@ export function useAddressEligibility(adresse: string | null) {
       const { city, citycode } = geoAddress.properties;
 
       const [batEnrLookup, infos, eligibiliteReseauChaleur] = await Promise.all([
-        getBatEnrLookupResult({ geoAddress, trpcUtils }),
+        getBatEnrLookupResult({ geoAddress, selectedBatimentConstructionId, trpcUtils }),
         trpcUtils.client.batEnr.getLocationInfos.query({
           city,
           cityCode: citycode,
@@ -148,7 +162,7 @@ export function useAddressEligibility(adresse: string | null) {
         temperatureRef: infos?.temperature_ref_altitude_moyenne != null ? Number(infos.temperature_ref_altitude_moyenne) : null,
       });
     }),
-    [trpcUtils]
+    [selectedBatimentConstructionId, trpcUtils]
   );
 
   const triggerEligibilityFromString = useCallback(
