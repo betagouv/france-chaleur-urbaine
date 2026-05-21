@@ -11,7 +11,9 @@ export type BatEnrBatiment = {
   classe_bilan_dpe: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
   couv_sondes_200_2025: number | null;
   couv_st_ecs_2025: number | null;
+  dpe_representatif_logement_surface_habitable_immeuble: number | null;
   etat_ppa: string | null;
+  ffo_bat_nb_log: number | null;
   geometry: GeoJSON.Geometry | null;
   gis_geo_profonde: boolean | null;
   gmi_nappe_200: number | null;
@@ -20,4 +22,8 @@ export type BatEnrBatiment = {
   pot_nappe: number | null;
   prod_st_mwh_an: number | null;
   propri_uni: string | null;
+  type_energie_chauffage: string | null;
+  type_energie_ecs: string | null;
+  type_installation_chauffage: string | null;
+  type_installation_ecs: string | null;
 };

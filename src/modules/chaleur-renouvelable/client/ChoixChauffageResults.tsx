@@ -98,10 +98,12 @@ export default function ChoixChauffageResults() {
     onSelectGeoAddress,
     resetEligibility,
     selectBatEnrBatiment,
+    selectedBatEnrBatiment,
   } = useAddressEligibility(urlParams.adresse ?? null, urlParams.constructionId);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
+  const lastPrefilledBatimentConstructionIdRef = useRef<string | null>(null);
   const {
     addressData,
     contactReady,
@@ -251,6 +253,36 @@ export default function ChoixChauffageResults() {
     },
     [selectBatEnrBatiment, urlParams]
   );
+
+  useEffect(() => {
+    const batimentConstructionId = selectedBatEnrBatiment?.batiment_construction_id;
+
+    if (!batimentConstructionId || lastPrefilledBatimentConstructionIdRef.current === batimentConstructionId) {
+      return;
+    }
+
+    lastPrefilledBatimentConstructionIdRef.current = batimentConstructionId;
+    const searchParams = new URLSearchParams(window.location.search);
+
+    if (selectedBatEnrBatiment.classe_bilan_dpe && !searchParams.has('dpe')) {
+      void urlParams.setDpe(selectedBatEnrBatiment.classe_bilan_dpe);
+    }
+
+    if (selectedBatEnrBatiment.ffo_bat_nb_log != null && selectedBatEnrBatiment.ffo_bat_nb_log > 0 && !searchParams.has('nbLogements')) {
+      void urlParams.setNbLogements(selectedBatEnrBatiment.ffo_bat_nb_log);
+    }
+
+    if (
+      selectedBatEnrBatiment.dpe_representatif_logement_surface_habitable_immeuble != null &&
+      selectedBatEnrBatiment.ffo_bat_nb_log != null &&
+      selectedBatEnrBatiment.ffo_bat_nb_log > 0 &&
+      !searchParams.has('surfaceMoyenne')
+    ) {
+      void urlParams.setSurfaceMoyenne(
+        Math.round(selectedBatEnrBatiment.dpe_representatif_logement_surface_habitable_immeuble / selectedBatEnrBatiment.ffo_bat_nb_log)
+      );
+    }
+  }, [selectedBatEnrBatiment, urlParams]);
 
   // pendant l’hydration, on évite de rendre conditionnellement (isMobile null)
   if (isMobile === null) return null;

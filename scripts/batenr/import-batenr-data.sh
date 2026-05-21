@@ -48,7 +48,8 @@ SELECT
   gmi_sonde_200, gis_geo_profonde,
   ac1, ac2, ac3, ac4bis,
   liste_ppa, etat_ppa,
-  categorie_majoritaire, propri_uni, classe_bilan_dpe, couv_st_ecs_2025, couv_sondes_200_2025, prod_st_mwh_an
+  categorie_majoritaire, propri_uni, classe_bilan_dpe, couv_st_ecs_2025, couv_sondes_200_2025, prod_st_mwh_an,
+  type_installation_chauffage, type_energie_chauffage, type_installation_ecs, type_energie_ecs
 FROM ${GPKG_LAYER}
 "
 
