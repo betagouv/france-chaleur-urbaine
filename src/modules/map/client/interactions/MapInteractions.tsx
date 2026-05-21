@@ -59,6 +59,9 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
     popupContainerRef.current = document.createElement('div');
   }
 
+  // True while the previous run was in drawing mode; gates the post-draw delay.
+  const wasDrawingRef = useRef(false);
+
   const selectableLayers = useMemo<SelectableLayer[]>(
     () =>
       layers.flatMap((spec) =>
@@ -157,19 +160,31 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
     // No `mouseleave`: would kill the hover state when the cursor moves over
     // the popup DOM. Hover clears naturally on the next feature-less mousemove.
     if (isDrawing) {
+      wasDrawingRef.current = true;
       clearHover();
       map.getCanvas().style.cursor = '';
       return;
     }
 
-    map.on('mousemove', onMouseMove);
-    map.on('click', onClick);
-    map.on('touchend', onClick);
+    // Defer re-attach after a drawing ended: the trailing dblclick click would
+    // otherwise open a popup on the feature underneath.
+    const reactivateDelayMs = wasDrawingRef.current ? 300 : 0;
+    wasDrawingRef.current = false;
+    let attached = false;
+    const timeoutId = window.setTimeout(() => {
+      map.on('mousemove', onMouseMove);
+      map.on('click', onClick);
+      map.on('touchend', onClick);
+      attached = true;
+    }, reactivateDelayMs);
 
     return () => {
-      map.off('mousemove', onMouseMove);
-      map.off('click', onClick);
-      map.off('touchend', onClick);
+      window.clearTimeout(timeoutId);
+      if (attached) {
+        map.off('mousemove', onMouseMove);
+        map.off('click', onClick);
+        map.off('touchend', onClick);
+      }
       clearHover();
       map.getCanvas().style.cursor = '';
     };
