@@ -79,6 +79,9 @@ export function useConfiguredLayers(layers: readonly MapSourceLayersSpecificatio
     }
 
     return () => {
+      // Two-pass: all layers first, then sources. Sources can be shared across
+      // specs (e.g. `bdnb-batiments`) — removing one while a sibling's layer
+      // still references it throws.
       for (const spec of layers) {
         for (const layer of spec.layers) {
           if (map.getLayer(layer.id)) {
@@ -87,10 +90,13 @@ export function useConfiguredLayers(layers: readonly MapSourceLayersSpecificatio
           userResources.layers.delete(layer.id);
           appliedRef.current.delete(layer.id);
         }
-        if (map.getSource(spec.sourceId)) {
-          map.removeSource(spec.sourceId);
+      }
+      const sourceIds = new Set(layers.map((spec) => spec.sourceId));
+      for (const sourceId of sourceIds) {
+        if (map.getSource(sourceId)) {
+          map.removeSource(sourceId);
         }
-        userResources.sources.delete(spec.sourceId);
+        userResources.sources.delete(sourceId);
       }
     };
   }, [map, mapReady, userResources, layers]);

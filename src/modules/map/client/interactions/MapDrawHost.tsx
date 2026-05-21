@@ -25,8 +25,16 @@ export function MapDrawHost() {
     map.addControl(instance as unknown as maplibregl.IControl);
     setDraw(instance);
     return () => {
-      map.removeControl(instance as unknown as maplibregl.IControl);
       setDraw(null);
+      // Defer `removeControl`: it nullifies MapboxDraw's internals sync, which
+      // would zombify the `draw` ref still held by sibling tool cleanups.
+      setTimeout(() => {
+        try {
+          map.removeControl(instance as unknown as maplibregl.IControl);
+        } catch {
+          // Map already removed by MapCanvas deferred cleanup.
+        }
+      }, 0);
     };
   }, [map, setDraw]);
 
