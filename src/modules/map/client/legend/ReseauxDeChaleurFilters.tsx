@@ -2,7 +2,7 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 
-import { roundNumberProgressively } from '@/components/form/dsfr/RangeFilter';
+import { type RangeFilterProps, roundNumberProgressively } from '@/components/form/dsfr/RangeFilter';
 import SelectCheckboxes from '@/components/form/dsfr/SelectCheckboxes';
 import { getLivraisonsAnnuellesFromPercentage, getPercentageFromLivraisonsAnnuelles } from '@/components/ReseauxDeChaleurFilters';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
@@ -19,7 +19,53 @@ import { useMapConfig } from '../config/useMapConfig';
 import { LegendCheckbox } from './LegendCheckbox';
 import { LegendIntervalSlider } from './LegendIntervalSlider';
 
-type RDC = MapConfiguration['reseauxDeChaleur'];
+type ReseauxDeChaleurConfig = MapConfiguration['reseauxDeChaleur'];
+type ReseauxDeChaleurRangeKey = keyof ReseauxDeChaleurConfig['limits'];
+
+type RangeFilterDef = {
+  key: ReseauxDeChaleurRangeKey;
+  label: string;
+  unit?: string;
+  tooltip?: string;
+  domainTransform?: RangeFilterProps['domainTransform'];
+};
+
+/**
+ * Single source of truth for the réseaux de chaleur range filters — used to
+ * render the sliders, count active filters and serialize them for `/reseaux`.
+ */
+const reseauxDeChaleurRangeFilters: readonly RangeFilterDef[] = [
+  { key: 'tauxENRR', label: "Taux d'EnR&R", unit: '%' },
+  {
+    key: 'emissionsCO2',
+    label: 'Contenu CO2 ACV',
+    tooltip: 'Émissions en analyse du cycle de vie (directes et indirectes)',
+    unit: 'gCO2/kWh',
+  },
+  {
+    key: 'contenuCO2',
+    label: 'Contenu CO2',
+    tooltip: 'Émissions en analyse du cycle de vie (directes et indirectes)',
+    unit: 'gCO2/kWh',
+  },
+  {
+    key: 'prixMoyen',
+    label: 'Prix moyen de la chaleur',
+    tooltip:
+      "La comparaison avec le prix d'autres modes de chauffage n'est pertinente qu'en coût global annuel, en intégrant les coûts d'exploitation, de maintenance et d'investissement, amortis sur la durée de vie des installations.",
+    unit: '€TTC/MWh',
+  },
+  {
+    domainTransform: {
+      percentToValue: (v) => roundNumberProgressively(getLivraisonsAnnuellesFromPercentage(v)),
+      valueToPercent: (v) => roundNumberProgressively(getPercentageFromLivraisonsAnnuelles(v)),
+    },
+    key: 'livraisonsAnnuelles',
+    label: 'Livraisons annuelles de chaleur',
+    unit: 'GWh',
+  },
+  { key: 'anneeConstruction', label: 'Année de construction' },
+];
 
 /**
  * Réseaux de chaleur filter panel (V1 parity).
@@ -107,43 +153,17 @@ export function ReseauxDeChaleurFilters() {
 
       <SelectCheckboxes small label="Gestionnaires" options={gestionnaireOptions} />
 
-      <LegendIntervalSlider path="reseauxDeChaleur.tauxENRR" domainPath="reseauxDeChaleur.limits.tauxENRR" label="Taux d'EnR&R" unit="%" />
-      <LegendIntervalSlider
-        path="reseauxDeChaleur.emissionsCO2"
-        domainPath="reseauxDeChaleur.limits.emissionsCO2"
-        label="Contenu CO2 ACV"
-        unit="gCO2/kWh"
-        tooltip="Émissions en analyse du cycle de vie (directes et indirectes)"
-      />
-      <LegendIntervalSlider
-        path="reseauxDeChaleur.contenuCO2"
-        domainPath="reseauxDeChaleur.limits.contenuCO2"
-        label="Contenu CO2"
-        unit="gCO2/kWh"
-        tooltip="Émissions en analyse du cycle de vie (directes et indirectes)"
-      />
-      <LegendIntervalSlider
-        path="reseauxDeChaleur.prixMoyen"
-        domainPath="reseauxDeChaleur.limits.prixMoyen"
-        label="Prix moyen de la chaleur"
-        unit="€TTC/MWh"
-        tooltip="La comparaison avec le prix d'autres modes de chauffage n'est pertinente qu'en coût global annuel, en intégrant les coûts d'exploitation, de maintenance et d'investissement, amortis sur la durée de vie des installations."
-      />
-      <LegendIntervalSlider
-        path="reseauxDeChaleur.livraisonsAnnuelles"
-        domainPath="reseauxDeChaleur.limits.livraisonsAnnuelles"
-        label="Livraisons annuelles de chaleur"
-        unit="GWh"
-        domainTransform={{
-          percentToValue: (v) => roundNumberProgressively(getLivraisonsAnnuellesFromPercentage(v)),
-          valueToPercent: (v) => roundNumberProgressively(getPercentageFromLivraisonsAnnuelles(v)),
-        }}
-      />
-      <LegendIntervalSlider
-        path="reseauxDeChaleur.anneeConstruction"
-        domainPath="reseauxDeChaleur.limits.anneeConstruction"
-        label="Année de construction"
-      />
+      {reseauxDeChaleurRangeFilters.map((filter) => (
+        <LegendIntervalSlider
+          key={filter.key}
+          path={`reseauxDeChaleur.${filter.key}`}
+          domainPath={`reseauxDeChaleur.limits.${filter.key}`}
+          label={filter.label}
+          unit={filter.unit}
+          tooltip={filter.tooltip}
+          domainTransform={filter.domainTransform}
+        />
+      ))}
 
       {/* Action footer sticks to the bottom of the drawer (V1 parity) — the
           filters list scrolls underneath while the buttons stay reachable. */}
@@ -169,51 +189,29 @@ export function ReseauxDeChaleurFilters() {
 }
 
 /** Active-filter count = filters whose value differs from the limits/default. */
-export function countActiveFilters(rdc: RDC): number {
-  let n = 0;
-  if (rdc.isClassed) n++;
-  if (rdc.energieMobilisee.length > 0) n++;
-  if (rdc.gestionnaires.length > 0) n++;
-
-  const rangeKeys: (keyof RDC['limits'])[] = [
-    'tauxENRR',
-    'emissionsCO2',
-    'contenuCO2',
-    'prixMoyen',
-    'livraisonsAnnuelles',
-    'anneeConstruction',
-  ];
-  for (const key of rangeKeys) {
-    if (!intervalsEqual(rdc[key], rdc.limits[key])) n++;
-  }
-  for (const { confKey } of filtresEnergies) {
-    if (!intervalsEqual(rdc[`energie_ratio_${confKey}`], percentageMaxInterval)) n++;
-  }
-  return n;
+export function countActiveFilters(rdc: ReseauxDeChaleurConfig): number {
+  const rangeActive = reseauxDeChaleurRangeFilters.filter(({ key }) => !intervalsEqual(rdc[key], rdc.limits[key])).length;
+  const energieRatioActive = filtresEnergies.filter(
+    ({ confKey }) => !intervalsEqual(rdc[`energie_ratio_${confKey}`], percentageMaxInterval)
+  ).length;
+  return (
+    (rdc.isClassed ? 1 : 0) +
+    (rdc.energieMobilisee.length > 0 ? 1 : 0) +
+    (rdc.gestionnaires.length > 0 ? 1 : 0) +
+    rangeActive +
+    energieRatioActive
+  );
 }
 
-function resetReseauxDeChaleurFilters(rdc: RDC): RDC {
-  const next: RDC = {
+function resetReseauxDeChaleurFilters(rdc: ReseauxDeChaleurConfig): ReseauxDeChaleurConfig {
+  return {
     ...rdc,
-    anneeConstruction: rdc.limits.anneeConstruction,
-    contenuCO2: rdc.limits.contenuCO2,
-    emissionsCO2: rdc.limits.emissionsCO2,
-    energie_ratio_biomasse: percentageMaxInterval,
-    energie_ratio_chaleurIndustrielle: percentageMaxInterval,
-    energie_ratio_fioul: percentageMaxInterval,
-    energie_ratio_gaz: percentageMaxInterval,
-    energie_ratio_geothermie: percentageMaxInterval,
-    energie_ratio_pompeAChaleur: percentageMaxInterval,
-    energie_ratio_solaireThermique: percentageMaxInterval,
-    energie_ratio_uve: percentageMaxInterval,
     energieMobilisee: [],
     gestionnaires: [],
     isClassed: false,
-    livraisonsAnnuelles: rdc.limits.livraisonsAnnuelles,
-    prixMoyen: rdc.limits.prixMoyen,
-    tauxENRR: rdc.limits.tauxENRR,
+    ...Object.fromEntries(reseauxDeChaleurRangeFilters.map(({ key }) => [key, rdc.limits[key]])),
+    ...Object.fromEntries(filtresEnergies.map(({ confKey }) => [`energie_ratio_${confKey}`, percentageMaxInterval])),
   };
-  return next;
 }
 
 /**
@@ -221,26 +219,18 @@ function resetReseauxDeChaleurFilters(rdc: RDC): RDC {
  * `/reseaux` page : a `Partial<Filters>` shape containing only filters that
  * differ from their default (limits or `percentageMaxInterval`).
  */
-function serializeActiveFilters(rdc: RDC): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  if (rdc.isClassed) out.isClassed = true;
-  if (rdc.energieMobilisee.length > 0) out.energieMobilisee = rdc.energieMobilisee;
-  if (rdc.gestionnaires.length > 0) out.gestionnaires = rdc.gestionnaires;
-
-  const rangeKeys: (keyof RDC['limits'])[] = [
-    'tauxENRR',
-    'emissionsCO2',
-    'contenuCO2',
-    'prixMoyen',
-    'livraisonsAnnuelles',
-    'anneeConstruction',
-  ];
-  for (const key of rangeKeys) {
-    if (!intervalsEqual(rdc[key], rdc.limits[key])) out[key] = rdc[key];
-  }
-  for (const { confKey } of filtresEnergies) {
-    const key = `energie_ratio_${confKey}` as const;
-    if (!intervalsEqual(rdc[key], percentageMaxInterval)) out[key] = rdc[key];
-  }
-  return out;
+function serializeActiveFilters(rdc: ReseauxDeChaleurConfig): Record<string, unknown> {
+  return {
+    ...(rdc.isClassed && { isClassed: true }),
+    ...(rdc.energieMobilisee.length > 0 && { energieMobilisee: rdc.energieMobilisee }),
+    ...(rdc.gestionnaires.length > 0 && { gestionnaires: rdc.gestionnaires }),
+    ...Object.fromEntries(
+      reseauxDeChaleurRangeFilters.filter(({ key }) => !intervalsEqual(rdc[key], rdc.limits[key])).map(({ key }) => [key, rdc[key]])
+    ),
+    ...Object.fromEntries(
+      filtresEnergies
+        .filter(({ confKey }) => !intervalsEqual(rdc[`energie_ratio_${confKey}`], percentageMaxInterval))
+        .map(({ confKey }) => [`energie_ratio_${confKey}`, rdc[`energie_ratio_${confKey}`]])
+    ),
+  };
 }

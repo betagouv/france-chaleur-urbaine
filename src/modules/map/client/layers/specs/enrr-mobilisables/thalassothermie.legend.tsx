@@ -26,7 +26,7 @@ export function ThalassothermieLegend() {
           du Cerema.
         </>
       }
-      className="ml-3 mr-9"
+      className="ml-3 mr-9 min-h-12"
     />
   );
 }

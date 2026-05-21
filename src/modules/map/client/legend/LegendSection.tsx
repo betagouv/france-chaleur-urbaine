@@ -4,14 +4,14 @@ import cx from '@/utils/cx';
 
 import type { MapConfigurationProperty } from '../config/map-configuration';
 import { useMapConfig } from '../config/useMapConfig';
-import { MapAccordion, MapCheckableAccordion } from './MapAccordion';
+import { MapCheckableAccordion } from './MapAccordion';
 
 type LegendSectionProps = {
   title: NonNullable<ReactNode>;
-  /** Unique id; persists open/closed state via `?accordions=`. */
+  /** Unique id; persists open/closed state via `?accordions=` (on `/carte`) or local state elsewhere. */
   id: string;
-  /** If set, the header is a checkable row bound to this config path. */
-  togglePath?: MapConfigurationProperty<boolean>;
+  /** Config path bound to the checkbox row at the top of the section. */
+  togglePath: MapConfigurationProperty<boolean>;
   /** Optional swatch / icon between the checkbox and the label. */
   icon?: ReactNode;
   /** Optional tooltip rendered after the title. */
@@ -22,34 +22,25 @@ type LegendSectionProps = {
 };
 
 /**
- * Either a checkable accordion (when `togglePath` is set) or a plain
- * url-state accordion. Both share the same radix-based `MapAccordion`
- * primitives — DSFR styled-components are not used here anymore.
+ * Layer-toggle section header used across the legend tabs. Thin wrapper around
+ * `MapCheckableAccordion` that binds the checkbox + accordion ID to a config
+ * path on `MapConfiguration`.
  */
 export function LegendSection({ id, title, togglePath, icon, tooltip, contentClassName, children }: LegendSectionProps) {
   const { read, toggleLayer } = useMapConfig();
-
-  if (togglePath) {
-    const checked = read<boolean>(togglePath);
-    return (
-      <MapCheckableAccordion
-        label={title}
-        checked={checked}
-        onCheckChange={() => toggleLayer(togglePath)}
-        icon={icon}
-        tooltip={tooltip}
-        urlStateId={id}
-        defaultExpanded={checked}
-        contentClassName={cx('ml-4', contentClassName)}
-      >
-        {children}
-      </MapCheckableAccordion>
-    );
-  }
-
+  const checked = read<boolean>(togglePath);
   return (
-    <MapAccordion label={title} urlStateId={id}>
+    <MapCheckableAccordion
+      label={title}
+      checked={checked}
+      onCheckChange={() => toggleLayer(togglePath)}
+      icon={icon}
+      tooltip={tooltip}
+      urlStateId={id}
+      defaultExpanded={checked}
+      contentClassName={cx('ml-4', contentClassName)}
+    >
       {children}
-    </MapAccordion>
+    </MapCheckableAccordion>
   );
 }

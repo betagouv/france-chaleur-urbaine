@@ -31,7 +31,7 @@ export function ZonesGeothermieProfondeLegend() {
           </Link>
         </>
       }
-      className="ml-3 mr-9 p2-3"
+      className="ml-3 mr-9 min-h-12"
     />
   );
 }
