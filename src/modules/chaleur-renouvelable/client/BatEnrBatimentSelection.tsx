@@ -1,5 +1,4 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { bbox } from '@turf/bbox';
 import type { MapGeoJSONFeature } from 'maplibre-gl';
 import dynamic from 'next/dynamic';
@@ -83,14 +82,9 @@ export function BatEnrBatimentSelection({ batiments, initialCenter, onSelect }: 
   );
 
   return (
-    <div className="fr-mb-4w">
-      <Alert
-        severity="info"
-        title="Plusieurs batiments sont recensés à cette adresse, veuillez choisir le batiment concerné"
-        description="Vous pouvez sélectionner le bâtiment depuis la carte ou depuis la liste ci-dessous."
-      />
+    <div>
       {features.length > 0 && (
-        <div className="fr-mt-2w h-[360px] overflow-hidden border border-solid border-border-default-grey">
+        <div className="h-[560px] min-h-[420px] overflow-hidden border border-solid border-border-default-grey">
           <Map
             withoutLogo
             withBorder
@@ -106,13 +100,9 @@ export function BatEnrBatimentSelection({ batiments, initialCenter, onSelect }: 
           />
         </div>
       )}
-      <div className="fr-mt-2w flex flex-wrap gap-2">
-        {batiments.map((batiment, index) => (
-          <Button key={batiment.batiment_construction_id ?? `batiment-${index}`} priority="secondary" onClick={() => onSelect(batiment)}>
-            Choisir {getBatimentLabel(batiment, index)}
-          </Button>
-        ))}
-      </div>
+      {features.length === 0 && (
+        <Alert small severity="warning" description="Aucun bâtiment avec géométrie n’est disponible pour cette adresse." />
+      )}
     </div>
   );
 }

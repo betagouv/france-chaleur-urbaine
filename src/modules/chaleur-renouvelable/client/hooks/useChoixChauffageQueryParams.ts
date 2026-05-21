@@ -32,6 +32,7 @@ export function useChoixChauffageQueryParams() {
   };
   const [queryParams, setQueryParams] = useQueryStates({
     adresse: parseAsString.withOptions(queryOptions),
+    construction_id: parseAsString.withOptions(queryOptions),
     dpe: parseAsStringLiteral(DPE_VALUES)
       .withDefault('E' as DPE)
       .withOptions(queryOptions),
@@ -58,12 +59,14 @@ export function useChoixChauffageQueryParams() {
 
   return {
     adresse: queryParams.adresse,
+    constructionId: queryParams.construction_id,
     dpe: queryParams.dpe,
     espaceExterieur: queryParams.espaceExterieur,
     habitantsMoyen: queryParams.habitantsMoyen,
     modeEauChaudeSanitaire: queryParams.modeEauChaudeSanitaire,
     nbLogements: queryParams.nbLogements,
     setAdresse: (adresse: string | null) => setQueryParams({ adresse }),
+    setConstructionId: (constructionId: string | null) => setQueryParams({ construction_id: constructionId }),
     setDpe: (dpe: DPE) => setQueryParams({ dpe }),
     setEspaceExterieur: (espaceExterieur: EspaceExterieur | null) => setQueryParams({ espaceExterieur }),
     setHabitantsMoyen: (habitantsMoyen: string | null) => setQueryParams({ habitantsMoyen }),
