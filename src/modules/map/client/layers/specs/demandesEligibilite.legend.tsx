@@ -10,6 +10,7 @@ export function DemandesEligibiliteLegend() {
   return (
     <LegendCheckbox
       path="demandesEligibilite"
+      trackingEvent="Carto|Demandes de raccordement"
       label="Demandes de raccordement sur France Chaleur Urbaine"
       icon={
         <LegendIcon type="circle" color={demandesEligibiliteLayerStyle.fill.color} stroke={demandesEligibiliteLayerStyle.stroke.color} />

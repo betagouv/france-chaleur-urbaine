@@ -15,6 +15,7 @@ export function QuartiersPrioritairesLegend() {
       id="quartiers-prioritaires"
       title="Quartiers prioritaires de la politique de la ville (QPV)"
       togglePath="quartiersPrioritairesPolitiqueVille.show"
+      trackingEvent="Carto|Quartiers Prioritaires politique Ville"
       icon={
         <LegendIcon
           type="polygon"
@@ -35,6 +36,7 @@ export function QuartiersPrioritairesLegend() {
     >
       <LegendCheckbox
         path="quartiersPrioritairesPolitiqueVille.qpv2015anru"
+        trackingEvent="Carto|Quartiers Prioritaires politique Ville 2015 ANRU"
         label="QPV du Nouveau Programme National de Renouvellement Urbain (ANRU)"
         icon={
           <LegendIcon
@@ -46,6 +48,7 @@ export function QuartiersPrioritairesLegend() {
       />
       <LegendCheckbox
         path="quartiersPrioritairesPolitiqueVille.qpv2024"
+        trackingEvent="Carto|Quartiers Prioritaires politique Ville 2024"
         label="QPV 2024"
         icon={
           <LegendIcon

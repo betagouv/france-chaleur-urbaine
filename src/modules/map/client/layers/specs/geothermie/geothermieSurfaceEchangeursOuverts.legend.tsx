@@ -21,6 +21,7 @@ export function GeothermieSurfaceEchangeursOuvertsLegend() {
       id="geothermie-surface-ouverts"
       title="Géothermie de surface sur échangeurs ouverts (nappe)"
       togglePath="geothermieSurfaceEchangeursOuverts.show"
+      trackingEvent="Carto|Géothermie sur nappe"
       tooltip={
         <>
           Une installation peut être constituée d'un ou plusieurs ouvrages.
@@ -35,6 +36,7 @@ export function GeothermieSurfaceEchangeursOuvertsLegend() {
     >
       <LegendCheckbox
         path="geothermieSurfaceEchangeursOuverts.showInstallationsRealisees"
+        trackingEvent="Carto|Installations géothermie sur nappe réalisées"
         label="Installations réalisées"
         icon={
           <LegendIcon
@@ -46,6 +48,7 @@ export function GeothermieSurfaceEchangeursOuvertsLegend() {
       />
       <LegendCheckbox
         path="geothermieSurfaceEchangeursOuverts.showInstallationsDeclarees"
+        trackingEvent="Carto|Installations géothermie sur nappe déclarées"
         label="Installations déclarées"
         icon={
           <LegendIcon
@@ -57,6 +60,7 @@ export function GeothermieSurfaceEchangeursOuvertsLegend() {
       />
       <LegendCheckbox
         path="geothermieSurfaceEchangeursOuverts.showOuvragesRealises"
+        trackingEvent="Carto|Ouvrages géothermie sur nappe réalisés"
         label="Ouvrages réalisés"
         icon={
           <LegendIcon
@@ -68,6 +72,7 @@ export function GeothermieSurfaceEchangeursOuvertsLegend() {
       />
       <LegendCheckbox
         path="geothermieSurfaceEchangeursOuverts.showOuvragesDeclares"
+        trackingEvent="Carto|Ouvrages géothermie sur nappe déclarés"
         label="Ouvrages déclarés"
         icon={
           <LegendIcon

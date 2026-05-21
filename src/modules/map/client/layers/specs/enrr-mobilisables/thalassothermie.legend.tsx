@@ -9,6 +9,7 @@ export function ThalassothermieLegend() {
   return (
     <LegendCheckbox
       path="enrrMobilisablesThalassothermie"
+      trackingEvent="Carto|Thalassothermie"
       label="Thalassothermie"
       icon={
         <LegendIcon

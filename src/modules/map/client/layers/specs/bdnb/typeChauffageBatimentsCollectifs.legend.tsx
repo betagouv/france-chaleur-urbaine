@@ -28,6 +28,7 @@ export function BatimentsGazCollectifLegend() {
       id="batiments-gaz-collectif"
       title="Bâtiments chauffés au gaz collectif"
       togglePath="batimentsGazCollectif.show"
+      trackingEvent="Carto|Bâtiments au gaz collectif"
       icon={<LegendIcon type="square" color={typeChauffageBatimentsCollectifsStyle.gaz} opacity={typeChauffageBatimentsOpacity} />}
       tooltip={bdnbTooltip}
       contentClassName="mx-4"
@@ -51,6 +52,7 @@ export function BatimentsFioulCollectifLegend() {
       id="batiments-fioul-collectif"
       title="Bâtiments chauffés au fioul collectif"
       togglePath="batimentsFioulCollectif.show"
+      trackingEvent="Carto|Bâtiments au fioul collectif"
       icon={<LegendIcon type="square" color={typeChauffageBatimentsCollectifsStyle.fioul} opacity={typeChauffageBatimentsOpacity} />}
       tooltip={bdnbTooltip}
       contentClassName="mx-4"

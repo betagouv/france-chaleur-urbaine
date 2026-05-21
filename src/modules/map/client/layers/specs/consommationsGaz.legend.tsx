@@ -19,6 +19,7 @@ export function ConsommationsGazLegend() {
       id="consommations-gaz"
       title="Consommations globales de gaz"
       togglePath="consommationsGaz.show"
+      trackingEvent="Carto|Consommations globales de gaz"
       icon={<LegendIcon type="circle" color={consommationsGazLegendColor} opacity={consommationsGazLayerMaxOpacity} />}
       tooltip={
         <>

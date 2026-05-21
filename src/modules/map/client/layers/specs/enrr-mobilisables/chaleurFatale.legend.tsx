@@ -27,29 +27,40 @@ function PngIcon({ src, alt }: { src: typeof enrrMobilisablesDatacenter; alt: st
 
 export function ChaleurFataleLegend() {
   return (
-    <LegendSection id="enrr-chaleur-fatale" title="Chaleur fatale" togglePath="enrrMobilisablesChaleurFatale.show" tooltip={enrezoTooltip}>
+    <LegendSection
+      id="enrr-chaleur-fatale"
+      title="Chaleur fatale"
+      togglePath="enrrMobilisablesChaleurFatale.show"
+      trackingEvent="Carto|ENR&R Mobilisables"
+      tooltip={enrezoTooltip}
+    >
       <LegendCheckbox
         path="enrrMobilisablesChaleurFatale.showUnitesDIncineration"
+        trackingEvent="Carto|Unités d'incinération"
         label="Unités d'incinération"
         icon={<PngIcon src={enrrMobilisablesUnitesIncineration} alt="" />}
       />
       <LegendCheckbox
         path="enrrMobilisablesChaleurFatale.showIndustrie"
+        trackingEvent="Carto|Industrie"
         label="Industrie"
         icon={<PngIcon src={enrrMobilisablesIndustrie} alt="" />}
       />
       <LegendCheckbox
         path="enrrMobilisablesChaleurFatale.showStationsDEpuration"
+        trackingEvent="Carto|Stations d'épuration"
         label="Stations d'épuration"
         icon={<PngIcon src={enrrMobilisablesStationsEpuration} alt="" />}
       />
       <LegendCheckbox
         path="enrrMobilisablesChaleurFatale.showDatacenters"
+        trackingEvent="Carto|Datacenters"
         label="Datacenters"
         icon={<PngIcon src={enrrMobilisablesDatacenter} alt="" />}
       />
       <LegendCheckbox
         path="enrrMobilisablesChaleurFatale.showInstallationsElectrogenes"
+        trackingEvent="Carto|Installations électrogènes"
         label="Installations électrogènes"
         icon={<PngIcon src={enrrMobilisablesInstallationsElectrogenes} alt="" />}
       />

@@ -24,16 +24,19 @@ export function ZonesPotentielChaudLegend() {
       id="zones-potentiel-chaud"
       title="Zones d'opportunité pour la création de réseaux de chaleur"
       togglePath="zonesOpportunite.show"
+      trackingEvent="Carto|Zones d'opportunité"
       icon={<LegendIcon type="polygon" stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} />}
       tooltip={tooltip}
     >
       <LegendCheckbox
         path="zonesOpportunite.zonesPotentielChaud"
+        trackingEvent="Carto|Zones à potentiel chaud"
         label="Zones à potentiel"
         icon={<LegendIcon type="polygon" stroke={zonePotentielChaudColor} fillOpacity={zonePotentielChaudOpacity} />}
       />
       <LegendCheckbox
         path="zonesOpportunite.zonesPotentielFortChaud"
+        trackingEvent="Carto|Zones à potentiel fort chaud"
         label="Zones à fort potentiel"
         icon={<LegendIcon type="polygon" stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} />}
       />

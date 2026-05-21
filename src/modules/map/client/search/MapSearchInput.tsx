@@ -1,6 +1,7 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { useCallback, useState } from 'react';
 
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { BAN_MIN_QUERY_LENGTH, searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { highlightMatch } from '@/modules/form/AddressSearch';
@@ -103,6 +104,7 @@ export function MapSearchInput({ onSelect, onClear, defaultValue, placeholder, c
   }, []);
 
   const handleSelect = (option: Option) => {
+    trackPostHogEvent('map:address_searched');
     if (option.type === 'network') {
       onSelect({ ...option.data, kind: 'network' });
       // Network results aren't materialized as a marker — clear so the user can

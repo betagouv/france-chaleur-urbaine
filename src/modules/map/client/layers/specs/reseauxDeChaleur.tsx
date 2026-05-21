@@ -81,6 +81,8 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>((reseauDeChaleur, { Propert
           priority="secondary"
           full
           iconId="fr-icon-eye-line"
+          postHogEventKey="map:network_clicked"
+          postHogEventProps={{ network_id: reseauDeChaleur['Identifiant reseau'] }}
           linkProps={{ href: `/reseaux/${reseauDeChaleur['Identifiant reseau']}`, rel: 'noopener noreferrer', target: '_blank' }}
         >
           Voir la fiche du réseau

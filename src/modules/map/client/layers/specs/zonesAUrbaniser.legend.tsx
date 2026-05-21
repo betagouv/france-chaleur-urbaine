@@ -9,6 +9,7 @@ export function ZonesAUrbaniserLegend() {
   return (
     <LegendCheckbox
       path="zonesAUrbaniser"
+      trackingEvent="Carto|Zones à urbaniser"
       label="Zones à urbaniser"
       icon={<LegendIcon type="polygon" stroke={zonesAUrbaniserColor} fillOpacity={zonesAUrbaniserOpacity} />}
       tooltip={

@@ -16,6 +16,7 @@ export function SolaireThermiqueLegend() {
       id="enrr-solaire-thermique"
       title="Solaire thermique"
       togglePath="enrrMobilisablesSolaireThermique.show"
+      trackingEvent="Carto|ENR&R Mobilisables"
       tooltip={
         <>
           Données du projet{' '}
@@ -28,11 +29,13 @@ export function SolaireThermiqueLegend() {
     >
       <LegendCheckbox
         path="enrrMobilisablesSolaireThermique.showFriches"
+        trackingEvent="Carto|Solaire thermique - friches"
         label="Friches"
         icon={<LegendIcon type="polygon" stroke={enrrMobilisablesFrichesLayerColor} fillOpacity={enrrMobilisablesFrichesLayerOpacity} />}
       />
       <LegendCheckbox
         path="enrrMobilisablesSolaireThermique.showParkings"
+        trackingEvent="Carto|Solaire thermique - parkings"
         label="Parkings"
         icon={<LegendIcon type="polygon" stroke={enrrMobilisablesParkingsLayerColor} fillOpacity={enrrMobilisablesParkingsLayerOpacity} />}
       />

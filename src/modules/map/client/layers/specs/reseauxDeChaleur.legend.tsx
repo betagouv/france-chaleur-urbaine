@@ -17,6 +17,7 @@ export function ReseauxDeChaleurLegend() {
   return (
     <LegendCheckbox
       path="reseauxDeChaleur.show"
+      trackingEvent="Carto|Réseaux chaleur"
       label={
         <div className="flex flex-col gap-1">
           <div className="flex items-start gap-2">

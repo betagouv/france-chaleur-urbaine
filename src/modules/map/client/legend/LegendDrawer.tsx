@@ -1,6 +1,7 @@
 import { useAtom } from 'jotai';
 
 import Icon from '@/components/ui/Icon';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 
 import { legendOpenAtom } from './atoms';
@@ -28,7 +29,12 @@ export function LegendDrawer() {
 
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          const next = !open;
+          trackEvent(`Carto|Légende|${next ? 'Ouvre' : 'Ferme'}`);
+          trackPostHogEvent('map:legend_toggle', { is_open: next });
+          setOpen(next);
+        }}
         aria-label={open ? 'Masquer la légende' : 'Afficher la légende'}
         className={cx(
           'absolute top-1/2 z-10 -translate-y-1/2 h-[140px] w-[30px] flex items-center justify-center bg-(--background-flat-blue-france) hover:bg-(--background-active-blue-france-hover) text-white shadow transition-[left] duration-200',

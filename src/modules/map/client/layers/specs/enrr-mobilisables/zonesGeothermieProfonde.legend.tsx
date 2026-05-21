@@ -12,6 +12,7 @@ export function ZonesGeothermieProfondeLegend() {
   return (
     <LegendCheckbox
       path="enrrMobilisablesGeothermieProfonde"
+      trackingEvent="Carto|Zones géothermie profonde"
       label="Géothermie profonde"
       icon={
         <LegendIcon

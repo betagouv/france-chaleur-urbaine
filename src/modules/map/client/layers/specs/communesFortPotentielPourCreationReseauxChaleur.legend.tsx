@@ -18,6 +18,7 @@ export function CommunesFortPotentielLegend() {
       id="communes-fort-potentiel"
       title="Communes à fort potentiel pour la création de réseaux de chaleur"
       togglePath="communesFortPotentielPourCreationReseauxChaleur.show"
+      trackingEvent="Carto|Communes à fort potentiel pour la création de réseaux de chaleur"
       icon={
         <LegendIcon
           type="circle"

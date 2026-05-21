@@ -9,6 +9,7 @@ export function ReseauxDeFroidLegend() {
   return (
     <LegendCheckbox
       path="reseauxDeFroid"
+      trackingEvent="Carto|Réseaux de froid"
       label={
         <div className="flex items-start gap-2">
           <span

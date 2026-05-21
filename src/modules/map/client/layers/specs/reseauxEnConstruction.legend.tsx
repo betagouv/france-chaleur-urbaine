@@ -10,6 +10,7 @@ export function ReseauxEnConstructionLegend() {
   return (
     <LegendCheckbox
       path="reseauxEnConstruction"
+      trackingEvent="Carto|Réseaux en construction"
       label={
         <div className="flex flex-col gap-1">
           <div className="flex items-start gap-2">

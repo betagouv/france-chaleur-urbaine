@@ -21,6 +21,7 @@ export function GeothermieSurfaceEchangeursFermesLegend() {
       id="geothermie-surface-fermes"
       title="Géothermie de surface sur échangeurs fermés (sonde)"
       togglePath="geothermieSurfaceEchangeursFermes.show"
+      trackingEvent="Carto|Géothermie sur sonde"
       tooltip={
         <>
           Une installation peut être constituée d'un ou plusieurs ouvrages.
@@ -34,6 +35,7 @@ export function GeothermieSurfaceEchangeursFermesLegend() {
     >
       <LegendCheckbox
         path="geothermieSurfaceEchangeursFermes.showInstallationsRealisees"
+        trackingEvent="Carto|Installations géothermie sur sonde réalisées"
         label="Installations réalisées"
         icon={
           <LegendIcon
@@ -45,6 +47,7 @@ export function GeothermieSurfaceEchangeursFermesLegend() {
       />
       <LegendCheckbox
         path="geothermieSurfaceEchangeursFermes.showInstallationsDeclarees"
+        trackingEvent="Carto|Installations géothermie sur sonde déclarées"
         label="Installations déclarées"
         icon={
           <LegendIcon
@@ -56,6 +59,7 @@ export function GeothermieSurfaceEchangeursFermesLegend() {
       />
       <LegendCheckbox
         path="geothermieSurfaceEchangeursFermes.showOuvragesRealises"
+        trackingEvent="Carto|Ouvrages géothermie sur sonde réalisés"
         label="Ouvrages réalisés"
         icon={
           <LegendIcon
@@ -67,6 +71,7 @@ export function GeothermieSurfaceEchangeursFermesLegend() {
       />
       <LegendCheckbox
         path="geothermieSurfaceEchangeursFermes.showOuvragesDeclares"
+        trackingEvent="Carto|Ouvrages géothermie sur sonde déclarés"
         label="Ouvrages déclarés"
         icon={
           <LegendIcon

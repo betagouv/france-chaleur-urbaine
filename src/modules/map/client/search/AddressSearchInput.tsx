@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { AddressField, type AddressFieldProps } from '@/modules/form/AddressField';
 
@@ -30,6 +31,7 @@ export function AddressSearchInput({ onSelect, defaultValue, placeholder, classN
       return;
     }
     setError(false);
+    trackPostHogEvent('map:address_searched');
     const [lng, lat] = feature.geometry.coordinates;
     onSelect({
       coordinates: [lng, lat],

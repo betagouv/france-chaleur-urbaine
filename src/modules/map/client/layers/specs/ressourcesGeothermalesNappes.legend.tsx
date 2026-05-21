@@ -11,6 +11,7 @@ export function RessourcesGeothermalesNappesLegend() {
       id="enrr-ressources-geothermales-nappes"
       title="Ressources géothermales sur nappes"
       togglePath="ressourcesGeothermalesNappes"
+      trackingEvent="Carto|Ressources géothermales nappes"
       tooltip={
         <>
           Potentiel de géothermie sur nappes pour la production de chaleur ou de froid.

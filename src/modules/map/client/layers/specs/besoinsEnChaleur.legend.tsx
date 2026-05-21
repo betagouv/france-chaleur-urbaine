@@ -30,6 +30,7 @@ export function BesoinsEnChaleurLegend() {
       id="besoins-chaleur"
       title="Besoins en chaleur"
       togglePath="besoinsEnChaleur"
+      trackingEvent="Carto|Besoins en chaleur"
       icon={<PolygonIconForIntervals intervals={besoinsEnChaleurIntervals} />}
       tooltip={enrezoTooltip}
       contentClassName="m-4"
@@ -45,6 +46,7 @@ export function BesoinsEnFroidLegend() {
       id="besoins-froid"
       title="Besoins en froid"
       togglePath="besoinsEnFroid"
+      trackingEvent="Carto|Besoins en froid"
       icon={<PolygonIconForIntervals intervals={besoinsEnFroidIntervals} />}
       tooltip={enrezoTooltip}
       contentClassName="m-4"

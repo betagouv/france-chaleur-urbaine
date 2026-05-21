@@ -127,6 +127,8 @@ function Popup(
         className="fr-mt-1w"
         full
         iconId="fr-icon-eye-line"
+        postHogEventKey="map:network_clicked"
+        postHogEventProps={{ network_id: batimentRaccordeReseauxChaleurFroid.id_reseau }}
         linkProps={{ href: `/reseaux/${batimentRaccordeReseauxChaleurFroid.id_reseau}`, rel: 'noopener noreferrer', target: '_blank' }}
       >
         Voir la fiche du réseau

@@ -21,6 +21,7 @@ export function BatimentsRaccordesReseauxChaleurLegend() {
   return (
     <LegendCheckbox
       path="batimentsRaccordesReseauxChaleur"
+      trackingEvent="Carto|Bâtiments raccordés réseau chaleur"
       label={
         <div className="flex items-start gap-2">
           <SquareSwatch color={batimentsRaccordesReseauxDeChaleurColor} opacity={batimentsRaccordesReseauxChaleurFroidOpacity} />
@@ -35,6 +36,7 @@ export function BatimentsRaccordesReseauxFroidLegend() {
   return (
     <LegendCheckbox
       path="batimentsRaccordesReseauxFroid"
+      trackingEvent="Carto|Bâtiments raccordés réseau froid"
       label={
         <div className="flex items-start gap-2">
           <SquareSwatch color={batimentsRaccordesReseauxDeFroidColor} opacity={batimentsRaccordesReseauxChaleurFroidOpacity} />

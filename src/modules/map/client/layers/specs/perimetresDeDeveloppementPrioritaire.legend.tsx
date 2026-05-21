@@ -12,6 +12,7 @@ export function PerimetresDeDeveloppementPrioritaireLegend() {
   return (
     <LegendCheckbox
       path="zonesDeDeveloppementPrioritaire"
+      trackingEvent="Carto|Périmètres de développement prioritaire"
       label={
         <div className="flex items-start gap-2">
           <span

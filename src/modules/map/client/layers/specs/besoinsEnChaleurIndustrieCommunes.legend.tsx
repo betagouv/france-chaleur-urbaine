@@ -16,6 +16,7 @@ export function BesoinsEnChaleurIndustrieCommunesLegend() {
       id="besoins-chaleur-industrie"
       title="Besoins en chaleur du secteur industriel"
       togglePath="besoinsEnChaleurIndustrieCommunes"
+      trackingEvent="Carto|Besoins en chaleur secteur industriel"
       icon={<LegendIcon type="polygon" stroke={last.color} fillOpacity={0.7} />}
       tooltip={
         <>

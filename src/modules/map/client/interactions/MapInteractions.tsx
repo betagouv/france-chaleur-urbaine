@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import { isDefined } from '@/utils/core';
 
@@ -139,6 +140,10 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
       if (!selected?.spec.popup) {
         return;
       }
+      trackPostHogEvent('map:feature_click', {
+        feature_id: feature.properties?.id_fcu ?? feature.id?.toString(),
+        feature_type: feature.source,
+      });
       const close = () => setPopup(null);
       const helpers = buildPopupStyleHelpers(close);
       setPopup({

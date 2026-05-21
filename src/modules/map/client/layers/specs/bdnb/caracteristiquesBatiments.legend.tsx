@@ -17,6 +17,7 @@ export function CaracteristiquesBatimentsLegend() {
       id="caracteristiques-batiments"
       title="Caractéristiques des bâtiments"
       togglePath="caracteristiquesBatiments"
+      trackingEvent="Carto|DPE"
       icon={
         <span
           aria-hidden

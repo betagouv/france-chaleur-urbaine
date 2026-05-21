@@ -21,6 +21,7 @@ export function GeothermieProfondeLegend() {
       id="geothermie-profonde"
       title="Géothermie profonde"
       togglePath="geothermieProfonde.show"
+      trackingEvent="Carto|Géothermie profonde"
       tooltip={
         <>
           Sources :
@@ -43,6 +44,7 @@ export function GeothermieProfondeLegend() {
     >
       <LegendCheckbox
         path="geothermieProfonde.showInstallations"
+        trackingEvent="Carto|Installations géothermie profonde"
         label="Installations"
         icon={
           <LegendIcon
@@ -54,6 +56,7 @@ export function GeothermieProfondeLegend() {
       />
       <LegendCheckbox
         path="geothermieProfonde.showPerimetres"
+        trackingEvent="Carto|Périmètres géothermie profonde"
         label="Périmètres d'exploitation"
         icon={<LegendIcon type="polygon" stroke={aquifereColorMap.Dogger} fillOpacity={perimetresGeothermieProfondeLayerOpacity} />}
       />

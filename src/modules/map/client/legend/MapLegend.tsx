@@ -10,6 +10,7 @@ import CallOut from '@/components/ui/CallOut';
 import Divider from '@/components/ui/Divider';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
+import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 
 import { useMapConfig } from '../config/useMapConfig';
 import {
@@ -91,7 +92,12 @@ export function MapLegend() {
   const [state, setState] = useQueryState('tab', tabsParser.withDefault(defaultTabState).withOptions({ history: 'push' }));
 
   // Resets sub-tab on tab change so clicking a tab always lands on its index.
-  const handleTabChange = (next: string) => void setState({ subTabId: null, tabId: next as TabId });
+  const handleTabChange = (next: string) => {
+    const tabId = next as TabId;
+    trackEvent(`Carto|Tabs|${tabId}`);
+    trackPostHogEvent('map:tab_select', { tab_name: tabId });
+    void setState({ subTabId: null, tabId });
+  };
 
   return (
     <Tabs
@@ -200,7 +206,7 @@ function ReseauxTabIndex({ onShowFilters }: { onShowFilters: () => void }) {
       </div>
 
       <div className="flex flex-col items-stretch justify-center gap-2">
-        <Link href="/contribution" className="fr-btn fr-btn--tertiary justify-center! w-full">
+        <Link href="/contribution" className="fr-btn fr-btn--tertiary justify-center! w-full" postHogEventKey="map:contribute_clicked">
           <Icon name="fr-icon-heart-line" size="sm" className="mr-1" />
           Contribuer
         </Link>
@@ -208,6 +214,8 @@ function ReseauxTabIndex({ onShowFilters }: { onShowFilters: () => void }) {
           href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
           isExternal
           className="fr-btn fr-btn--tertiary justify-center! w-full"
+          eventKey="Téléchargement|Tracés|carte"
+          postHogEventKey="map:download_network"
         >
           Télécharger les tracés
         </Link>

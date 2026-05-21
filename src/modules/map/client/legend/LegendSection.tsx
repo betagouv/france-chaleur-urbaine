@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import { type LegendTrackingEvent, trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import cx from '@/utils/cx';
 
 import type { MapConfigurationProperty } from '../config/map-configuration';
@@ -18,6 +19,12 @@ type LegendSectionProps = {
   tooltip?: ReactNode;
   /** Extra classes on the accordion content (merged with the default padding). */
   contentClassName?: string;
+  /**
+   * V1-style tracking event prefix (e.g. `'Carto|Réseaux de chaleur'`). When set, fires Matomo
+   * (`<trackingEvent>|Active/Désactive`) and PostHog (`map:layer_toggled` with the human label
+   * derived by stripping `Carto|`). When absent, PostHog falls back to `togglePath`, no Matomo.
+   */
+  trackingEvent?: LegendTrackingEvent;
   children: NonNullable<ReactNode>;
 };
 
@@ -26,14 +33,23 @@ type LegendSectionProps = {
  * `MapCheckableAccordion` that binds the checkbox + accordion ID to a config
  * path on `MapConfiguration`.
  */
-export function LegendSection({ id, title, togglePath, icon, tooltip, contentClassName, children }: LegendSectionProps) {
+export function LegendSection({ id, title, togglePath, icon, tooltip, contentClassName, trackingEvent, children }: LegendSectionProps) {
   const { read, toggleLayer } = useMapConfig();
   const checked = read<boolean>(togglePath);
   return (
     <MapCheckableAccordion
       label={title}
       checked={checked}
-      onCheckChange={() => toggleLayer(togglePath)}
+      onCheckChange={(next) => {
+        if (trackingEvent) {
+          trackEvent(`${trackingEvent}|${next ? 'Active' : 'Désactive'}`);
+        }
+        trackPostHogEvent('map:layer_toggled', {
+          is_enabled: next,
+          layer: trackingEvent ? trackingEvent.replace(/^Carto\|/, '') : togglePath,
+        });
+        toggleLayer(togglePath);
+      }}
       icon={icon}
       tooltip={tooltip}
       urlStateId={id}
