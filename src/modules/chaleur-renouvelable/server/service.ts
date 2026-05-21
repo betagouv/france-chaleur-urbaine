@@ -34,13 +34,47 @@ const batEnrBatimentColumns = [
   'pot_nappe',
   'prod_st_mwh_an',
   'propri_uni',
+  'type_energie_chauffage',
+  'type_energie_ecs',
+  'type_installation_chauffage',
+  'type_installation_ecs',
 ] as const;
+
+const singleConstructionHousingCount = sql<number | null>`
+  (
+    SELECT
+      CASE
+        WHEN jsonb_array_length(COALESCE(bdnb_batiments.constructions, '[]'::jsonb)) = 1
+          THEN bdnb_batiments.ffo_bat_nb_log
+        ELSE NULL
+      END
+    FROM bdnb_batiments
+    WHERE bdnb_batiments.batiment_groupe_id = bdnb_batenr.batiment_groupe_id
+    LIMIT 1
+  )
+`.as('ffo_bat_nb_log');
+
+const singleConstructionBuildingArea = sql<number | null>`
+  (
+    SELECT
+      CASE
+        WHEN jsonb_array_length(COALESCE(bdnb_batiments.constructions, '[]'::jsonb)) = 1
+          THEN bdnb_batiments.dpe_representatif_logement_surface_habitable_immeuble
+        ELSE NULL
+      END
+    FROM bdnb_batiments
+    WHERE bdnb_batiments.batiment_groupe_id = bdnb_batenr.batiment_groupe_id
+    LIMIT 1
+  )
+`.as('dpe_representatif_logement_surface_habitable_immeuble');
 
 export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput): Promise<BatEnrBatiment | undefined> => {
   if ('batiment_construction_id' in input) {
     const batiment = await kdb
       .selectFrom('bdnb_batenr')
       .select(batEnrBatimentColumns)
+      .select(singleConstructionHousingCount)
+      .select(singleConstructionBuildingArea)
       .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
       .where('batiment_construction_id', '=', input.batiment_construction_id)
       .executeTakeFirst();
@@ -53,6 +87,8 @@ export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput):
   const batiment = await kdb
     .selectFrom('bdnb_batenr')
     .select(batEnrBatimentColumns)
+    .select(singleConstructionHousingCount)
+    .select(singleConstructionBuildingArea)
     .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
     .where('geom', 'is not', null)
     .orderBy(sql`geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154)`)
@@ -72,6 +108,8 @@ export const getBatEnrBatimentsByConstructionIds = async (batimentConstructionId
   return await kdb
     .selectFrom('bdnb_batenr')
     .select(batEnrBatimentColumns)
+    .select(singleConstructionHousingCount)
+    .select(singleConstructionBuildingArea)
     .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
     .where('batiment_construction_id', 'in', uniqueBatimentConstructionIds)
     .execute();
