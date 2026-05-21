@@ -32,52 +32,50 @@ export function GeothermieSurfaceEchangeursFermesLegend() {
         </>
       }
     >
-      <div className="flex flex-col pt-2 pl-3 pr-1">
-        <LegendCheckbox
-          path="geothermieSurfaceEchangeursFermes.showInstallationsRealisees"
-          label="Installations réalisées"
-          icon={
-            <LegendIcon
-              type="circle"
-              color={installationsGeothermieSurfaceEchangeursFermesRealiseeColor}
-              opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
-            />
-          }
-        />
-        <LegendCheckbox
-          path="geothermieSurfaceEchangeursFermes.showInstallationsDeclarees"
-          label="Installations déclarées"
-          icon={
-            <LegendIcon
-              type="circle"
-              color={installationsGeothermieSurfaceEchangeursFermesDeclareeColor}
-              opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
-            />
-          }
-        />
-        <LegendCheckbox
-          path="geothermieSurfaceEchangeursFermes.showOuvragesRealises"
-          label="Ouvrages réalisés"
-          icon={
-            <LegendIcon
-              type="square"
-              color={ouvragesGeothermieSurfaceEchangeursFermesRealiseeColor}
-              opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
-            />
-          }
-        />
-        <LegendCheckbox
-          path="geothermieSurfaceEchangeursFermes.showOuvragesDeclares"
-          label="Ouvrages déclarés"
-          icon={
-            <LegendIcon
-              type="square"
-              color={ouvragesGeothermieSurfaceEchangeursFermesDeclareeColor}
-              opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
-            />
-          }
-        />
-      </div>
+      <LegendCheckbox
+        path="geothermieSurfaceEchangeursFermes.showInstallationsRealisees"
+        label="Installations réalisées"
+        icon={
+          <LegendIcon
+            type="circle"
+            color={installationsGeothermieSurfaceEchangeursFermesRealiseeColor}
+            opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
+          />
+        }
+      />
+      <LegendCheckbox
+        path="geothermieSurfaceEchangeursFermes.showInstallationsDeclarees"
+        label="Installations déclarées"
+        icon={
+          <LegendIcon
+            type="circle"
+            color={installationsGeothermieSurfaceEchangeursFermesDeclareeColor}
+            opacity={installationsGeothermieSurfaceEchangeursFermesOpacity}
+          />
+        }
+      />
+      <LegendCheckbox
+        path="geothermieSurfaceEchangeursFermes.showOuvragesRealises"
+        label="Ouvrages réalisés"
+        icon={
+          <LegendIcon
+            type="square"
+            color={ouvragesGeothermieSurfaceEchangeursFermesRealiseeColor}
+            opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
+          />
+        }
+      />
+      <LegendCheckbox
+        path="geothermieSurfaceEchangeursFermes.showOuvragesDeclares"
+        label="Ouvrages déclarés"
+        icon={
+          <LegendIcon
+            type="square"
+            color={ouvragesGeothermieSurfaceEchangeursFermesDeclareeColor}
+            opacity={ouvragesGeothermieSurfaceEchangeursFermesOpacity}
+          />
+        }
+      />
     </LegendSection>
   );
 }

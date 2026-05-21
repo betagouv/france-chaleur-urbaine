@@ -98,8 +98,11 @@ export function MapLegend() {
       selectedTabId={state.tabId}
       tabs={tabs}
       onTabChange={handleTabChange}
-      // DSFR tab overrides — kept here because `<Tabs>` is opaque through props.
-      className="[&_.fr-tabs\_\_panel]:py-3! [&_.fr-tabs\_\_panel]:px-0! [&_.fr-tabs\_\_tab]:py-1! [&_.fr-tabs\_\_tab]:px-2! [&_.fr-tabs\_\_tab]:h-auto! [&_.fr-tabs\_\_tab]:font-normal!"
+      // V1-style sizing: the tabs container fills the drawer, the active panel
+      // is `flex flex-col` and takes the remaining height so its children can
+      // own their own scroll via `flex-1 min-h-0 overflow-y-auto`.
+      // 58px ≈ tab strip height with our tab overrides below.
+      className="h-full! max-h-full! overflow-hidden! [&_.fr-tabs\_\_panel]:flex! [&_.fr-tabs\_\_panel]:flex-col! [&_.fr-tabs\_\_panel]:h-[calc(100%-58px)]! [&_.fr-tabs\_\_panel]:px-0! [&_.fr-tabs\_\_panel]:pt-2! [&_.fr-tabs\_\_panel]:pb-0! [&_.fr-tabs\_\_tab]:py-1! [&_.fr-tabs\_\_tab]:px-2! [&_.fr-tabs\_\_tab]:h-auto! [&_.fr-tabs\_\_tab]:font-normal!"
     >
       {state.tabId === 'reseaux' && state.subTabId === null && (
         <ReseauxTabIndex onShowFilters={() => setState({ subTabId: 'filtres', tabId: 'reseaux' })} />
@@ -109,7 +112,7 @@ export function MapLegend() {
       )}
 
       {state.tabId === 'potentiel' && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 flex-1 min-h-0 overflow-y-auto">
           <h2 className="text-base font-bold mb-0 text-(--text-title-grey) px-3">Potentiel</h2>
 
           <div className="px-3">
@@ -141,7 +144,7 @@ export function MapLegend() {
       )}
 
       {state.tabId === 'enrr' && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 flex-1 min-h-0 overflow-y-auto">
           <h2 className="text-base font-bold mb-0 text-(--text-title-grey) px-3">Énergies renouvelables et de récupération</h2>
 
           <LegendAccordion id="enrr-mobilisables" label="Mobilisables">
@@ -170,7 +173,7 @@ function ReseauxTabIndex({ onShowFilters }: { onShowFilters: () => void }) {
   const { config } = useMapConfig();
   const nbFilters = countActiveFilters(config.reseauxDeChaleur);
   return (
-    <div className="flex flex-col gap-3 px-3">
+    <div className="flex flex-col gap-3 px-3 flex-1 min-h-0 overflow-y-auto">
       <div>
         <h2 className="text-base font-bold mb-1 text-(--text-title-grey)">Réseaux de chaleur et de froid</h2>
         <div className="text-xs">Cliquez sur un réseau pour connaître ses caractéristiques</div>
@@ -223,25 +226,25 @@ function ReseauxTabIndex({ onShowFilters }: { onShowFilters: () => void }) {
   );
 }
 
-/** Sub-view of the réseaux tab: full filter panel + Retour button (V1 parity). */
+/**
+ * Sub-view of the réseaux tab: fixed header (Retour + title) at the top of the
+ * panel + second-level scroll on the filters list. Keeps the way back and the
+ * page title pinned while only the long filter list scrolls.
+ */
 function ReseauxFiltersView({ onBack }: { onBack: () => void }) {
   const { config } = useMapConfig();
   const nbFilters = countActiveFilters(config.reseauxDeChaleur);
   return (
-    <div className="flex flex-col gap-3 px-3">
-      {/* Retour sticks to the top of the scrollable drawer — keeps the way
-          out reachable while the filters list extends below the fold. */}
-      <Button
-        priority="secondary"
-        size="small"
-        iconId="fr-icon-arrow-left-line"
-        onClick={onBack}
-        className="sticky top-0 z-1 self-start bg-white"
-      >
-        Retour
-      </Button>
-      <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">Filtres{nbFilters > 0 ? ` (${nbFilters})` : ''}</h2>
-      <ReseauxDeChaleurFilters />
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="flex flex-col gap-3 px-3 pb-2">
+        <Button priority="secondary" size="small" iconId="fr-icon-arrow-left-line" onClick={onBack} className="self-start">
+          Retour
+        </Button>
+        <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">Filtres{nbFilters > 0 ? ` (${nbFilters})` : ''}</h2>
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-3">
+        <ReseauxDeChaleurFilters />
+      </div>
     </div>
   );
 }

@@ -46,11 +46,11 @@ export function LinearHeatDensityTool() {
   const syncMap = useCallback(() => {
     if (!map || !mapReady) return;
     const allFeatures = drawingFeatureRef.current ? [...featuresRef.current, drawingFeatureRef.current] : featuresRef.current;
-    (map.getSource(linearHeatDensityLinesSourceId) as GeoJSONSource | undefined)?.setData({
+    map.getSource<GeoJSONSource>(linearHeatDensityLinesSourceId)?.setData({
       features: allFeatures,
       type: 'FeatureCollection',
     });
-    (map.getSource(linearHeatDensityLabelsSourceId) as GeoJSONSource | undefined)?.setData({
+    map.getSource<GeoJSONSource>(linearHeatDensityLabelsSourceId)?.setData({
       features: allFeatures.flatMap((feature) =>
         feature.geometry.coordinates.slice(0, -1).map(
           (coordinates, index) =>

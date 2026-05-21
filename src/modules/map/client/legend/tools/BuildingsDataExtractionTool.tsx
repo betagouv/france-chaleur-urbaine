@@ -47,7 +47,7 @@ export function BuildingsDataExtractionTool() {
 
   const syncDrawingToMap = useCallback(() => {
     if (!map || !mapReady) return;
-    const source = map.getSource(buildingsDataExtractionPolygonsSourceId) as GeoJSONSource | undefined;
+    const source = map.getSource<GeoJSONSource>(buildingsDataExtractionPolygonsSourceId);
     source?.setData({
       features: drawingFeatureRef.current ? [drawingFeatureRef.current] : [],
       type: 'FeatureCollection',
@@ -164,7 +164,7 @@ export function BuildingsDataExtractionTool() {
   // Persisted polygon: sync the completed-feature atom to the source.
   useEffect(() => {
     if (!map || !mapReady) return;
-    (map.getSource(buildingsDataExtractionPolygonsSourceId) as GeoJSONSource | undefined)?.setData({
+    map.getSource<GeoJSONSource>(buildingsDataExtractionPolygonsSourceId)?.setData({
       features,
       type: 'FeatureCollection',
     });

@@ -26,20 +26,16 @@ export function SolaireThermiqueLegend() {
         </>
       }
     >
-      <div className="flex flex-col pt-2 pl-3 pr-1">
-        <LegendCheckbox
-          path="enrrMobilisablesSolaireThermique.showFriches"
-          label="Friches"
-          icon={<LegendIcon type="polygon" stroke={enrrMobilisablesFrichesLayerColor} fillOpacity={enrrMobilisablesFrichesLayerOpacity} />}
-        />
-        <LegendCheckbox
-          path="enrrMobilisablesSolaireThermique.showParkings"
-          label="Parkings"
-          icon={
-            <LegendIcon type="polygon" stroke={enrrMobilisablesParkingsLayerColor} fillOpacity={enrrMobilisablesParkingsLayerOpacity} />
-          }
-        />
-      </div>
+      <LegendCheckbox
+        path="enrrMobilisablesSolaireThermique.showFriches"
+        label="Friches"
+        icon={<LegendIcon type="polygon" stroke={enrrMobilisablesFrichesLayerColor} fillOpacity={enrrMobilisablesFrichesLayerOpacity} />}
+      />
+      <LegendCheckbox
+        path="enrrMobilisablesSolaireThermique.showParkings"
+        label="Parkings"
+        icon={<LegendIcon type="polygon" stroke={enrrMobilisablesParkingsLayerColor} fillOpacity={enrrMobilisablesParkingsLayerOpacity} />}
+      />
     </LegendSection>
   );
 }

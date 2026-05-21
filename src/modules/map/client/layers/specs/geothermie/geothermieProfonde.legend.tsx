@@ -41,44 +41,40 @@ export function GeothermieProfondeLegend() {
         </>
       }
     >
-      <div className="flex flex-col pt-2 pl-3 pr-1">
-        <LegendCheckbox
-          path="geothermieProfonde.showInstallations"
-          label="Installations"
-          icon={
-            <LegendIcon
-              type="circle"
-              color={installationsGeothermieProfondeLayerColor}
-              opacity={installationsGeothermieProfondeLayerOpacity}
-            />
-          }
-        />
-        <LegendCheckbox
-          path="geothermieProfonde.showPerimetres"
-          label="Périmètres d'exploitation"
-          icon={<LegendIcon type="polygon" stroke={aquifereColorMap.Dogger} fillOpacity={perimetresGeothermieProfondeLayerOpacity} />}
-        />
-        {showPerimetres && (
-          <div className="flex flex-col gap-2 ml-6 mt-1">
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(aquifereColorMap).map(([aquifere, color]) => (
-                <div key={aquifere} className="flex items-center gap-1">
-                  <LegendIcon type="polygon" stroke={color} fillOpacity={perimetresGeothermieProfondeLayerOpacity} strokeWidth={0} />
-                  <span>{aquifere}</span>
-                </div>
-              ))}
+      <LegendCheckbox
+        path="geothermieProfonde.showInstallations"
+        label="Installations"
+        icon={
+          <LegendIcon
+            type="circle"
+            color={installationsGeothermieProfondeLayerColor}
+            opacity={installationsGeothermieProfondeLayerOpacity}
+          />
+        }
+      />
+      <LegendCheckbox
+        path="geothermieProfonde.showPerimetres"
+        label="Périmètres d'exploitation"
+        icon={<LegendIcon type="polygon" stroke={aquifereColorMap.Dogger} fillOpacity={perimetresGeothermieProfondeLayerOpacity} />}
+      />
+      {showPerimetres && (
+        <div className="flex flex-wrap gap-2 ml-6 text-xs">
+          {Object.entries(aquifereColorMap).map(([aquifere, color]) => (
+            <div key={aquifere} className="flex items-end gap-1">
+              <LegendIcon type="polygon" stroke={color} fillOpacity={perimetresGeothermieProfondeLayerOpacity} strokeWidth={0} />
+              <span>{aquifere}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <LegendIcon type="polygon" stroke={statutColorMap.Existant} fillOpacity={0} />
-              <span>Existant</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <LegendIcon type="polygon" stroke={statutColorMap.AR} fillOpacity={0} />
-              <span>Arrêté d'autorisation de recherche</span>
-            </div>
+          ))}
+          <div className="flex items-end gap-1">
+            <LegendIcon type="polygon" stroke={statutColorMap.Existant} fillOpacity={0} />
+            <span>Existant</span>
           </div>
-        )}
-      </div>
+          <div className="flex items-end gap-1">
+            <LegendIcon type="polygon" stroke={statutColorMap.AR} fillOpacity={0} />
+            <span>Arrêté d'autorisation de recherche</span>
+          </div>
+        </div>
+      )}
     </LegendSection>
   );
 }

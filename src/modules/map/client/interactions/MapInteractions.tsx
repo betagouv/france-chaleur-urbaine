@@ -176,7 +176,7 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
       return;
     }
     const instance = new maplibregl.Popup({
-      closeButton: true,
+      closeButton: false,
       closeOnClick: true,
       maxWidth: '500px',
       offset: popup.offset,

@@ -27,18 +27,16 @@ export function ZonesPotentielChaudLegend() {
       icon={<LegendIcon type="polygon" stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} />}
       tooltip={tooltip}
     >
-      <div className="flex flex-col pt-2 pl-3 pr-1">
-        <LegendCheckbox
-          path="zonesOpportunite.zonesPotentielChaud"
-          label="Zones à potentiel"
-          icon={<LegendIcon type="polygon" stroke={zonePotentielChaudColor} fillOpacity={zonePotentielChaudOpacity} />}
-        />
-        <LegendCheckbox
-          path="zonesOpportunite.zonesPotentielFortChaud"
-          label="Zones à fort potentiel"
-          icon={<LegendIcon type="polygon" stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} />}
-        />
-      </div>
+      <LegendCheckbox
+        path="zonesOpportunite.zonesPotentielChaud"
+        label="Zones à potentiel"
+        icon={<LegendIcon type="polygon" stroke={zonePotentielChaudColor} fillOpacity={zonePotentielChaudOpacity} />}
+      />
+      <LegendCheckbox
+        path="zonesOpportunite.zonesPotentielFortChaud"
+        label="Zones à fort potentiel"
+        icon={<LegendIcon type="polygon" stroke={zonePotentielFortChaudColor} fillOpacity={zonePotentielChaudOpacity} />}
+      />
     </LegendSection>
   );
 }

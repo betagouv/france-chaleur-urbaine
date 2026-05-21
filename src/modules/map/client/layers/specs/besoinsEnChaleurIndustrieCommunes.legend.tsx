@@ -29,22 +29,21 @@ export function BesoinsEnChaleurIndustrieCommunesLegend() {
           </Link>
         </>
       }
+      contentClassName="gap-1"
     >
-      <div className="flex flex-col gap-1 pt-2 pl-3 pr-1">
-        <div className="flex h-2.5 border border-(--border-default-grey)">
-          {besoinsEnChaleurIndustrieCommunesIntervals.map((interval) => (
-            <div
-              key={interval.color}
-              title={`${interval.min} – ${interval.max}`}
-              className="flex-1"
-              style={{ backgroundColor: interval.color }}
-            />
-          ))}
-        </div>
-        <div className="flex justify-between text-xs">
-          <span>{first.min}</span>
-          <span>{last.max}</span>
-        </div>
+      <div className="flex h-2.5 border border-(--border-default-grey)">
+        {besoinsEnChaleurIndustrieCommunesIntervals.map((interval) => (
+          <div
+            key={interval.color}
+            title={`${interval.min} – ${interval.max}`}
+            className="flex-1"
+            style={{ backgroundColor: interval.color }}
+          />
+        ))}
+      </div>
+      <div className="flex justify-between text-xs">
+        <span>{first.min}</span>
+        <span>{last.max}</span>
       </div>
     </LegendSection>
   );

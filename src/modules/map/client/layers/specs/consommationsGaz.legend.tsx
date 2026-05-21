@@ -31,29 +31,27 @@ export function ConsommationsGazLegend() {
         </>
       }
     >
-      <div className="flex flex-col pt-2 px-3">
-        <LegendCheckbox
-          path="consommationsGaz.logements"
-          label="Logements (tous types)"
-          icon={<LegendIcon type="circle" color={consommationsGazLayerStyle.R} />}
-        />
-        <LegendCheckbox
-          path="consommationsGaz.tertiaire"
-          label="Tertiaire"
-          icon={<LegendIcon type="circle" color={consommationsGazLayerStyle.T} />}
-        />
-        <LegendCheckbox
-          path="consommationsGaz.industrie"
-          label="Industrie"
-          icon={<LegendIcon type="circle" color={consommationsGazLayerStyle.I} />}
-        />
-        <LegendIntervalSlider
-          path="consommationsGaz.interval"
-          domain={[consommationsGazInterval.min, consommationsGazInterval.max]}
-          label="Niveau de consommation de gaz"
-          unit=" MWh/an"
-        />
-      </div>
+      <LegendCheckbox
+        path="consommationsGaz.logements"
+        label="Logements (tous types)"
+        icon={<LegendIcon type="circle" color={consommationsGazLayerStyle.R} />}
+      />
+      <LegendCheckbox
+        path="consommationsGaz.tertiaire"
+        label="Tertiaire"
+        icon={<LegendIcon type="circle" color={consommationsGazLayerStyle.T} />}
+      />
+      <LegendCheckbox
+        path="consommationsGaz.industrie"
+        label="Industrie"
+        icon={<LegendIcon type="circle" color={consommationsGazLayerStyle.I} />}
+      />
+      <LegendIntervalSlider
+        path="consommationsGaz.interval"
+        domain={[consommationsGazInterval.min, consommationsGazInterval.max]}
+        label="Niveau de consommation de gaz"
+        unit=" MWh/an"
+      />
     </LegendSection>
   );
 }

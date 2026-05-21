@@ -75,6 +75,7 @@ src/modules/map/
       MapInstanceSync.tsx     # bridges MapCanvasContext into atoms (mounted under MapCanvas)
       MapDrawHost.tsx         # mounts a MapboxDraw control, exposed via mapDrawAtom
       MapMarker.tsx           # HTML marker overlay (uses useMapInstance)
+      BdnbBatimentSelector.tsx # building selector on the bdnb-batiments source (controlled, lock-on-select)
     controls/                 # IControl wrappers (mounted by MapCanvas when interactive)
     layers/
       ConfiguredLayers.tsx    # component + useConfiguredLayers hook
@@ -141,6 +142,17 @@ Built-in. When `interactive=true` and `layers` are provided, `<MapCanvas>` mount
 - popup opened at the turf-snapped nearest point on the feature, content portal'd into a `maplibregl.Popup`.
 
 `MapInteractions.tsx` exports both the component and the underlying `useMapInteractions(layers)` hook for advanced callers.
+
+### Building selector
+
+`<BdnbBatimentSelector value onSelect />` — child of `<Map>` or `<MapCanvas>`. Mounts its own `fill` + `line` layers on the `bdnb-batiments` source (reuses the existing source if `caracteristiquesBatiments` is in `allLayers`, otherwise adds one). Controlled by the parent:
+
+- `value === null` → user can hover (blue highlight) and click to pick. `onSelect(batiment_groupe_id)` fires.
+- `value === '<id>'` → that building is painted blue (`feature-state.selected`), all clicks/hovers are ignored. To unlock, parent passes `value = null` (typically via an out-of-map button).
+
+Style is intentionally sober : gray translucent fill + thin outline; blue accent on hover/selected. Don't activate `caracteristiquesBatiments` in the same map — both layers paint on the same source and overlap.
+
+Only the `batiment_groupe_id` is emitted. Callers that need details should query `trpc.bdnb.getBdnbBatimentDetails` themselves.
 
 ## Lifecycle and reliability notes
 

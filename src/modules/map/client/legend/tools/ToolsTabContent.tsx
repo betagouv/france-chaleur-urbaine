@@ -23,7 +23,7 @@ export function ToolsTabContent() {
 
   if (subTabId === null) {
     return (
-      <div className="flex flex-col gap-3 px-3">
+      <div className="flex flex-col gap-3 px-3 flex-1 min-h-0 overflow-y-auto">
         <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">Outils</h2>
         <div className="flex flex-col gap-2">
           <Button
@@ -56,8 +56,8 @@ export function ToolsTabContent() {
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2 px-3">
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="flex flex-col gap-2 px-3 pb-2">
         <Button
           priority="secondary"
           size="small"
@@ -69,9 +69,11 @@ export function ToolsTabContent() {
         </Button>
         <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">{TOOL_LABEL[subTabId]}</h2>
       </div>
-      {subTabId === 'mesure-distance' && <DistancesMeasurementTool />}
-      {subTabId === 'extraction-batiments' && <BuildingsDataExtractionTool />}
-      {subTabId === 'densite-thermique-lineaire' && <LinearHeatDensityTool />}
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        {subTabId === 'mesure-distance' && <DistancesMeasurementTool />}
+        {subTabId === 'extraction-batiments' && <BuildingsDataExtractionTool />}
+        {subTabId === 'densite-thermique-lineaire' && <LinearHeatDensityTool />}
+      </div>
     </div>
   );
 }

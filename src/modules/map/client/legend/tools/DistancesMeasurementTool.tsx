@@ -35,11 +35,11 @@ export function DistancesMeasurementTool() {
   // Sync the atom into the MapLibre sources whenever it changes.
   useEffect(() => {
     if (!map || !mapReady) return;
-    (map.getSource(distancesMeasurementLinesSourceId) as GeoJSONSource | undefined)?.setData({
+    map.getSource<GeoJSONSource>(distancesMeasurementLinesSourceId)?.setData({
       features,
       type: 'FeatureCollection',
     });
-    (map.getSource(distancesMeasurementLabelsSourceId) as GeoJSONSource | undefined)?.setData({
+    map.getSource<GeoJSONSource>(distancesMeasurementLabelsSourceId)?.setData({
       features: features.flatMap((feature) =>
         feature.geometry.coordinates.slice(0, -1).map(
           (coordinates, index) =>

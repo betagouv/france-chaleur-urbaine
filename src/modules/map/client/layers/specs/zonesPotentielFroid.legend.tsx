@@ -27,18 +27,16 @@ export function ZonesPotentielFroidLegend() {
       icon={<LegendIcon type="polygon" stroke={zonePotentielFortFroidColor} fillOpacity={zonePotentielFroidOpacity} />}
       tooltip={tooltip}
     >
-      <div className="flex flex-col pt-2 pl-3 pr-1">
-        <LegendCheckbox
-          path="zonesOpportuniteFroid.zonesPotentielFroid"
-          label="Zones à potentiel froid"
-          icon={<LegendIcon type="polygon" stroke={zonePotentielFroidColor} fillOpacity={zonePotentielFroidOpacity} />}
-        />
-        <LegendCheckbox
-          path="zonesOpportuniteFroid.zonesPotentielFortFroid"
-          label="Zones à fort potentiel froid"
-          icon={<LegendIcon type="polygon" stroke={zonePotentielFortFroidColor} fillOpacity={zonePotentielFroidOpacity} />}
-        />
-      </div>
+      <LegendCheckbox
+        path="zonesOpportuniteFroid.zonesPotentielFroid"
+        label="Zones à potentiel froid"
+        icon={<LegendIcon type="polygon" stroke={zonePotentielFroidColor} fillOpacity={zonePotentielFroidOpacity} />}
+      />
+      <LegendCheckbox
+        path="zonesOpportuniteFroid.zonesPotentielFortFroid"
+        label="Zones à fort potentiel froid"
+        icon={<LegendIcon type="polygon" stroke={zonePotentielFortFroidColor} fillOpacity={zonePotentielFroidOpacity} />}
+      />
     </LegendSection>
   );
 }

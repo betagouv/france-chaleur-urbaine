@@ -21,15 +21,14 @@ export function RessourcesGeothermalesNappesLegend() {
           </Link>
         </>
       }
+      contentClassName="text-xs"
     >
-      <div className="flex flex-col gap-1 pt-2 pl-3 pr-1">
-        {ressourcesGeothermalesNappesConfig.map((item) => (
-          <div key={item.value} className="flex items-center gap-2">
-            <LegendIcon type="polygon" stroke={item.color} fillOpacity={ressourcesGeothermalesNappesOpacity} />
-            <span>{item.label}</span>
-          </div>
-        ))}
-      </div>
+      {ressourcesGeothermalesNappesConfig.map((item) => (
+        <div key={item.value} className="flex items-baseline gap-2">
+          <LegendIcon type="polygon" stroke={item.color} fillOpacity={ressourcesGeothermalesNappesOpacity} />
+          <span>{item.label}</span>
+        </div>
+      ))}
     </LegendSection>
   );
 }

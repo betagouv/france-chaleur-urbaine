@@ -33,30 +33,28 @@ export function QuartiersPrioritairesLegend() {
         </>
       }
     >
-      <div className="flex flex-col pt-2 pl-3 pr-1">
-        <LegendCheckbox
-          path="quartiersPrioritairesPolitiqueVille.qpv2015anru"
-          label="QPV du Nouveau Programme National de Renouvellement Urbain (ANRU)"
-          icon={
-            <LegendIcon
-              type="polygon"
-              stroke={quartiersPrioritairesPolitiqueVille2015anruColor}
-              fillOpacity={quartiersPrioritairesPolitiqueVilleOpacity}
-            />
-          }
-        />
-        <LegendCheckbox
-          path="quartiersPrioritairesPolitiqueVille.qpv2024"
-          label="QPV 2024"
-          icon={
-            <LegendIcon
-              type="polygon"
-              stroke={quartiersPrioritairesPolitiqueVille2024Color}
-              fillOpacity={quartiersPrioritairesPolitiqueVilleOpacity}
-            />
-          }
-        />
-      </div>
+      <LegendCheckbox
+        path="quartiersPrioritairesPolitiqueVille.qpv2015anru"
+        label="QPV du Nouveau Programme National de Renouvellement Urbain (ANRU)"
+        icon={
+          <LegendIcon
+            type="polygon"
+            stroke={quartiersPrioritairesPolitiqueVille2015anruColor}
+            fillOpacity={quartiersPrioritairesPolitiqueVilleOpacity}
+          />
+        }
+      />
+      <LegendCheckbox
+        path="quartiersPrioritairesPolitiqueVille.qpv2024"
+        label="QPV 2024"
+        icon={
+          <LegendIcon
+            type="polygon"
+            stroke={quartiersPrioritairesPolitiqueVille2024Color}
+            fillOpacity={quartiersPrioritairesPolitiqueVilleOpacity}
+          />
+        }
+      />
     </LegendSection>
   );
 }

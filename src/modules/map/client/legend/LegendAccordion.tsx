@@ -1,28 +1,24 @@
 import type { ReactNode } from 'react';
 
-import { UrlStateAccordion } from '@/components/ui/Accordion';
-
 import { LegendCheckboxCompactContext } from './LegendCheckbox';
+import { MapAccordion } from './MapAccordion';
 
 type LegendAccordionProps = {
+  /** Unique id; persists open/closed state via `?accordions=`. */
   id: string;
   label: ReactNode;
   children: ReactNode;
 };
 
 /**
- * `UrlStateAccordion` wrapper that retrofits the DSFR panel padding and turns
- * on compact mode for descendant `<LegendCheckbox>`.
+ * Simple URL-state accordion used by the legend tabs. Compact mode is enabled
+ * for descendant `<LegendCheckbox>`. Backed by `MapAccordion` (radix-based),
+ * not the DSFR styled-components accordion.
  */
 export function LegendAccordion({ id, label, children }: LegendAccordionProps) {
   return (
-    <UrlStateAccordion
-      id={id}
-      label={label}
-      small
-      className="[&_.fr-collapse--expanded]:pl-3! [&_.fr-collapse--expanded]:pr-0! [&_.fr-collapse--expanded]:py-2!"
-    >
+    <MapAccordion label={label} urlStateId={id}>
       <LegendCheckboxCompactContext.Provider value={true}>{children}</LegendCheckboxCompactContext.Provider>
-    </UrlStateAccordion>
+    </MapAccordion>
   );
 }

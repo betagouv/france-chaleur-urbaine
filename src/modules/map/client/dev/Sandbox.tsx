@@ -1,21 +1,24 @@
 import dynamic from 'next/dynamic';
-import { parseAsBoolean, parseAsStringLiteral, useQueryStates } from 'nuqs';
-import { useRef } from 'react';
+import { parseAsBoolean, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
+import { useRef, useState } from 'react';
 
 import useRouterReady from '@/hooks/useRouterReady';
 import cx from '@/utils/cx';
 
 import type { MapCanvasController } from '../core/controller';
 import type { MapProps } from '../core/MapImpl';
+import { BdnbBatimentSelector } from '../interactions/BdnbBatimentSelector';
 import { FlyToButtons } from './FlyToButtons';
 
 const Map = dynamic(() => import('../core/MapImpl').then((mod) => mod.Map), { ssr: false });
-const MapV1Demo = dynamic(() => import('./MapV1Demo'), { ssr: false });
+// const MapV1Demo = dynamic(() => import('./MapV1Demo'), { ssr: false });
 
 const legendOptions = ['false', 'hidden', 'auto'] as const;
 const searchOptions = ['none', 'network', 'eligibility'] as const;
 
 const sandboxParams = {
+  buildingSelector: parseAsBoolean.withDefault(false),
+  initialBuildingId: parseAsString.withDefault(''),
   interactive: parseAsBoolean.withDefault(true),
   legend: parseAsStringLiteral(legendOptions).withDefault('auto'),
   search: parseAsStringLiteral(searchOptions).withDefault('none'),
@@ -25,6 +28,7 @@ const sandboxParams = {
 
 const baseConfig: MapProps['config'] = { reseauxDeChaleur: { show: true } };
 const baseInitialView: MapProps['initialView'] = { center: [2.3522, 48.8566], zoom: 5 };
+const buildingSelectorInitialView: MapProps['initialView'] = { center: [2.3522, 48.8566], zoom: 17 };
 
 /**
  * Sandbox shell for the map V2 module.
@@ -39,6 +43,7 @@ export function Sandbox() {
   const [params, setParam] = useQueryStates(sandboxParams, { history: 'replace' });
   const isRouterReady = useRouterReady();
   const mapRef = useRef<MapCanvasController | null>(null);
+  const [selectedBuildingId, setSelectedBuildingId] = useState<string | null>(params.initialBuildingId || null);
 
   if (!isRouterReady) {
     return null;
@@ -109,6 +114,31 @@ export function Sandbox() {
           <span className="text-xs text-(--text-mention-grey)">flyTo (controller)</span>
           <FlyToButtons mapRef={mapRef} />
         </div>
+        <div className="h-6 w-px bg-(--border-default-grey)" aria-hidden />
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={params.buildingSelector}
+            onChange={(e) => void setParam({ buildingSelector: e.target.checked })}
+            className="size-4"
+          />
+          <code>BdnbBatimentSelector</code>
+        </label>
+        {params.buildingSelector && (
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="text-xs text-(--text-mention-grey)">
+              sélection : <code>{selectedBuildingId ?? 'null'}</code>
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedBuildingId(null)}
+              disabled={selectedBuildingId === null}
+              className="rounded border border-(--border-default-grey) px-2 py-1 text-xs disabled:opacity-50"
+            >
+              Changer le bâtiment
+            </button>
+          </div>
+        )}
       </section>
 
       <div className={cx('grid flex-1 gap-4', params.v1 && params.v2 ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1')}>
@@ -119,26 +149,28 @@ export function Sandbox() {
             </h2>
             <div className="relative flex-1 overflow-hidden rounded border border-(--border-default-grey)">
               <Map
-                key={`interactive=${params.interactive}`}
+                key={`interactive=${params.interactive}-bs=${params.buildingSelector}`}
                 mapRef={mapRef}
-                config={baseConfig}
-                initialView={baseInitialView}
+                config={params.buildingSelector ? {} : baseConfig}
+                initialView={params.buildingSelector ? buildingSelectorInitialView : baseInitialView}
                 interactive={params.interactive}
-                legend={params.legend === 'false' ? false : params.legend}
-                search={params.search}
-              />
+                legend={params.buildingSelector ? false : params.legend === 'false' ? false : params.legend}
+                search={params.buildingSelector ? 'none' : params.search}
+              >
+                {params.buildingSelector && <BdnbBatimentSelector value={selectedBuildingId} onSelect={setSelectedBuildingId} />}
+              </Map>
             </div>
           </section>
         )}
 
-        {params.v1 && (
+        {/* {params.v1 && (
           <section className="flex min-h-[600px] flex-col gap-2">
             <h2 className="text-base font-semibold">V1 (référence)</h2>
             <div className="relative flex-1 overflow-hidden rounded border border-(--border-default-grey)">
               <MapV1Demo />
             </div>
           </section>
-        )}
+        )} */}
       </div>
     </div>
   );

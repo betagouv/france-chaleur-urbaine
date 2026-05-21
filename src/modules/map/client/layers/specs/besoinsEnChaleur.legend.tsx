@@ -22,8 +22,8 @@ function GradientBar({ intervals }: { intervals: LegendInterval[] }) {
   const first = intervals[0];
   const last = intervals[intervals.length - 1];
   return (
-    <div className="flex flex-col gap-1 pt-2 pl-3 pr-1">
-      <div className="flex h-2.5 border border-(--border-default-grey)">
+    <>
+      <div className="flex h-2.5 border border-(--border-default-grey) mb-3">
         {intervals.map((interval) => (
           <div
             key={interval.color}
@@ -37,7 +37,7 @@ function GradientBar({ intervals }: { intervals: LegendInterval[] }) {
         <span>{first.min}</span>
         <span>{last.max}</span>
       </div>
-    </div>
+    </>
   );
 }
 
