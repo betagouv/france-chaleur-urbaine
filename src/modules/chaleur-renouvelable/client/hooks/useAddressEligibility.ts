@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
@@ -25,6 +25,7 @@ type EligibilityState = {
   geoAddress?: BANAddressFeature;
   batEnr: BatEnrInfo;
   batEnrBatiments: BatEnrBatiment[];
+  selectedBatEnrBatiment?: BatEnrBatiment;
   codeDepartement: string;
   temperatureRef: number | null;
   eligibiliteReseauChaleur: HeatNetworksResponse | null;
@@ -34,6 +35,7 @@ type EligibilityState = {
 type BatEnrLookupResult = {
   batEnr: BatEnrInfo;
   batEnrBatiments: BatEnrBatiment[];
+  selectedBatEnrBatiment?: BatEnrBatiment;
   shouldSelectBatEnrBatiment: boolean;
 };
 
@@ -57,6 +59,7 @@ const emptyState: EligibilityState = {
   codeDepartement: '',
   eligibiliteReseauChaleur: null,
   geoAddress: undefined,
+  selectedBatEnrBatiment: undefined,
   shouldSelectBatEnrBatiment: false,
   temperatureRef: null,
 };
@@ -94,6 +97,7 @@ const getBatEnrLookupResult = async ({
     return {
       batEnr: getBatEnrInfoFromBatiment(batEnrBatiments[0]),
       batEnrBatiments,
+      selectedBatEnrBatiment: batEnrBatiments[0],
       shouldSelectBatEnrBatiment: false,
     };
   }
@@ -107,6 +111,7 @@ const getBatEnrLookupResult = async ({
       return {
         batEnr: getBatEnrInfoFromBatiment(selectedBatEnrBatiment),
         batEnrBatiments,
+        selectedBatEnrBatiment,
         shouldSelectBatEnrBatiment: false,
       };
     }
@@ -114,6 +119,7 @@ const getBatEnrLookupResult = async ({
     return {
       batEnr: getBatEnrInfoFromBatiment(null),
       batEnrBatiments,
+      selectedBatEnrBatiment: undefined,
       shouldSelectBatEnrBatiment: true,
     };
   }
@@ -123,6 +129,7 @@ const getBatEnrLookupResult = async ({
   return {
     batEnr: getBatEnrInfoFromBatiment(batEnrDetails),
     batEnrBatiments: batEnrDetails ? [batEnrDetails] : [],
+    selectedBatEnrBatiment: batEnrDetails ?? undefined,
     shouldSelectBatEnrBatiment: false,
   };
 };
@@ -130,6 +137,11 @@ const getBatEnrLookupResult = async ({
 export function useAddressEligibility(adresse: string | null, selectedBatimentConstructionId?: string | null) {
   const trpcUtils = trpc.useUtils();
   const [state, setState] = useState<EligibilityState>(emptyState);
+  const selectedBatimentConstructionIdRef = useRef(selectedBatimentConstructionId);
+
+  useEffect(() => {
+    selectedBatimentConstructionIdRef.current = selectedBatimentConstructionId;
+  }, [selectedBatimentConstructionId]);
 
   const resetEligibility = useCallback(() => {
     setState(emptyState);
@@ -141,7 +153,7 @@ export function useAddressEligibility(adresse: string | null, selectedBatimentCo
       const { city, citycode } = geoAddress.properties;
 
       const [batEnrLookup, infos, eligibiliteReseauChaleur] = await Promise.all([
-        getBatEnrLookupResult({ geoAddress, selectedBatimentConstructionId, trpcUtils }),
+        getBatEnrLookupResult({ geoAddress, selectedBatimentConstructionId: selectedBatimentConstructionIdRef.current, trpcUtils }),
         trpcUtils.client.batEnr.getLocationInfos.query({
           city,
           cityCode: citycode,
@@ -158,11 +170,12 @@ export function useAddressEligibility(adresse: string | null, selectedBatimentCo
         codeDepartement: infos?.departement_id ?? '',
         eligibiliteReseauChaleur,
         geoAddress,
+        selectedBatEnrBatiment: batEnrLookup.selectedBatEnrBatiment,
         shouldSelectBatEnrBatiment: batEnrLookup.shouldSelectBatEnrBatiment,
         temperatureRef: infos?.temperature_ref_altitude_moyenne != null ? Number(infos.temperature_ref_altitude_moyenne) : null,
       });
     }),
-    [selectedBatimentConstructionId, trpcUtils]
+    [trpcUtils]
   );
 
   const triggerEligibilityFromString = useCallback(
@@ -190,9 +203,13 @@ export function useAddressEligibility(adresse: string | null, selectedBatimentCo
   );
 
   useEffect(() => {
-    if (!adresse) return;
+    if (!adresse) {
+      resetEligibility();
+      return;
+    }
+
     void triggerEligibilityFromString(adresse);
-  }, [adresse, triggerEligibilityFromString]);
+  }, [adresse, resetEligibility, triggerEligibilityFromString]);
 
   const onSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {
@@ -210,6 +227,7 @@ export function useAddressEligibility(adresse: string | null, selectedBatimentCo
     setState((current) => ({
       ...current,
       batEnr: getBatEnrInfoFromBatiment(batEnrBatiment),
+      selectedBatEnrBatiment: batEnrBatiment,
       shouldSelectBatEnrBatiment: false,
     }));
   }, []);
