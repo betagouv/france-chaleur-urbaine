@@ -5,14 +5,13 @@ import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
-import DemandEmailForm from '@/components/Manager/DemandEmailForm';
+import DemandEmailModal from '@/components/Manager/DemandEmailModal';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
-import ModalSimple from '@/components/ui/ModalSimple';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
@@ -604,14 +603,7 @@ function DemandesNew(): React.ReactElement {
       description="Votre tableau de bord pour la gestion des demandes des réseaux de chaleur"
       mode="authenticated"
     >
-      <ModalSimple
-        title={`Envoi d'un courriel à ${modalDemand?.Mail}`}
-        open={!!modalDemand}
-        size="large"
-        onOpenChange={(open) => !open && setModalDemand(null)}
-      >
-        {modalDemand && <DemandEmailForm currentDemand={modalDemand as unknown as Demand} updateDemand={updateDemand} />}
-      </ModalSimple>
+      <DemandEmailModal demand={modalDemand as unknown as Demand | null} onClose={() => setModalDemand(null)} updateDemand={updateDemand} />
       <div className="mb-8">
         <div className="flex items-center flex-wrap">
           <Input

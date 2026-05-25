@@ -13,6 +13,8 @@ export type DialogProps = PropsWithChildren<{
   size?: 'sm' | 'md' | 'lg';
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** Masque la croix de fermeture (Échap et clic extérieur restent actifs). */
+  hideCloseButton?: boolean;
 }>;
 
 type DialogContextType = {
@@ -34,7 +36,7 @@ export const useDialog = () => {
  * Layout titre + bouton « Fermer » alignés sur la même ligne, animations motion intégrées,
  * tailles `sm`/`md`/`lg`, et `useDialog()` pour fermer depuis le contenu.
  */
-const Dialog = ({ children, trigger, title, description, size = 'md', open, onOpenChange }: DialogProps) => {
+const Dialog = ({ children, trigger, title, description, size = 'md', open, onOpenChange, hideCloseButton }: DialogProps) => {
   const handleClose = () => {
     onOpenChange?.(false);
   };
@@ -84,11 +86,13 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
                     <DialogPrimitive.Title className="fr-modal__title">{title}</DialogPrimitive.Title>
                     {description && <DialogPrimitive.Description className="mt-1 text-gray-600">{description}</DialogPrimitive.Description>}
                   </div>
-                  <DialogPrimitive.Close asChild>
-                    <button type="button" className={fr.cx('fr-btn--close', 'fr-btn')}>
-                      Fermer
-                    </button>
-                  </DialogPrimitive.Close>
+                  {!hideCloseButton && (
+                    <DialogPrimitive.Close asChild>
+                      <button type="button" className={fr.cx('fr-btn--close', 'fr-btn')}>
+                        Fermer
+                      </button>
+                    </DialogPrimitive.Close>
+                  )}
                 </div>
               )}
               <DialogContext.Provider value={contextValue}>
