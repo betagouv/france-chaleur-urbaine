@@ -1,6 +1,6 @@
-import { DownloadNetworkGeometryButton } from '@/components/Map/components/DownloadNetworkGeometryButton';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
+import { DownloadNetworkGeometryButton } from '@/modules/map/client/components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from '@/modules/map/client/core/common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau } from '@/modules/map/client/layers/filters';
 import type { ReseauxDeFroidTile } from '@/modules/tiles/server/tiles.config';

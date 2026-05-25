@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 
-import { createMapConfiguration, type MapConfiguration } from '@/components/Map/map-configuration';
 import trpc from '@/modules/trpc/client';
 import type { DeepPartial } from '@/utils/typescript';
+
+import { createMapConfiguration, type MapConfiguration } from './map-configuration';
 
 /**
  * Resolves a full `MapConfiguration` by fetching the réseaux-de-chaleur limits

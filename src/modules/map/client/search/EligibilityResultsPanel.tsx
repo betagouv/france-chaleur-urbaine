@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 
-import CardSearchDetails from '@/components/Map/components/CardSearchDetails';
 import Accordion from '@/components/ui/Accordion';
 import type { Point } from '@/types/Point';
 import type { StoredAddress } from '@/types/StoredAddress';
+
+import CardSearchDetails from './legacy/CardSearchDetails';
 
 type EligibilityResultsPanelProps = {
   addresses: StoredAddress[];

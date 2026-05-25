@@ -1,8 +1,7 @@
 import type { StyleSpecification } from 'maplibre-gl';
 
-import rawOsmStyle from '@/components/Map/osm.config.json';
-import rawSatelliteStyle from '@/components/Map/satellite.config.json';
-
+import rawOsmStyle from './osm.config.json';
+import rawSatelliteStyle from './satellite.config.json';
 import type { LngLat } from './types';
 
 // Default view roughly centered on metropolitan France.

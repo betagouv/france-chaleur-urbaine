@@ -7,7 +7,6 @@ import type {
 } from 'maplibre-gl';
 import { type ComponentProps, isValidElement, type PropsWithChildren } from 'react';
 
-import type { MapConfiguration } from '@/components/Map/map-configuration';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Tooltip from '@/components/ui/Tooltip';
@@ -15,6 +14,8 @@ import type { useAuthentication } from '@/modules/auth/client/hooks';
 import type { TileSourceId } from '@/modules/tiles/server/tiles.config';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
+
+import type { MapConfiguration } from '../config/map-configuration';
 
 export type InternalSourceId =
   | 'distance-measurements-lines'

@@ -1,11 +1,11 @@
 import Tag from '@codegouvfr/react-dsfr/Tag';
 import Image from 'next/image';
 
-import { DownloadNetworkGeometryButton } from '@/components/Map/components/DownloadNetworkGeometryButton';
 import { getEcoreseauImageSrc, isEcoreseauPlus } from '@/components/Network/EcoreseauLabel';
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
+import { DownloadNetworkGeometryButton } from '@/modules/map/client/components/DownloadNetworkGeometryButton';
 import type { ReseauxDeChaleurTile } from '@/modules/tiles/server/generation-configs/reseaux-de-chaleur';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';

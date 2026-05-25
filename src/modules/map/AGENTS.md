@@ -42,7 +42,7 @@ Two entry points, picked by usage:
 | `config` | — | Initial `DeepPartial<MapConfiguration>`. `Map` mounts its own provider from this; runtime mutations (legend toggles) live in the provider. Changing this prop after mount has no effect. |
 | `initialView` | center=France, zoom=5 | Same shape as `MapCanvas`. |
 | `interactive` | `true` | Forwards to `MapCanvas`. |
-| `legend` | `false` | `false` / `'hidden'` (button only) / `'auto'` (open on ≥ 768px). |
+| `legend` | `false` | `false` / `'hidden'` (button only) / `'auto'` (open on ≥ 768px). When enabled, `MapLegend` owns the `?tab` URL param (nuqs) — host pages must not reuse `tab` for their own state. |
 | `search` | `'none'` | `'none'` / `'network'` (address + heating-network → flyTo/fitBounds) / `'eligibility'` (address → tRPC query + colored marker history). |
 | `searchPlaceholder` | — | Override the search input placeholder. |
 | `mapRef` | — | External `RefObject<MapCanvasController \| null>` (e.g. for FlyToButtons). |
@@ -56,10 +56,13 @@ src/modules/map/
   shared/
     types.ts                  # LngLat, BBox, InitialView
     config.ts                 # default view, OSM + satellite styles, defaultStyles
+    osm.config.json, satellite.config.json  # raw MapLibre style specs
   client/
     Map.tsx                   # dynamic({ ssr: false }) wrapper — keep slim
     MapCanvas.tsx             # core — single MapLibre instance + ConfiguredLayers + MapInteractions
     MapStoreProvider.tsx      # per-<Map> Jotai store (createStore + Provider + hydrate config)
+    components/
+      DownloadNetworkGeometryButton.tsx  # network geometry export button (used by réseaux specs)
     config/
       useMapConfig.ts         # reads/mutates `mapConfigAtom` + reducer (atoms declared here)
       useMapConfiguration.ts  # builds a full MapConfiguration (fetches RDC limits via tRPC)
@@ -76,6 +79,8 @@ src/modules/map/
       MapDrawHost.tsx         # mounts a MapboxDraw control, exposed via mapDrawAtom
       MapMarker.tsx           # HTML marker overlay (uses useMapInstance)
       BdnbBatimentSelector.tsx # building selector on the bdnb-batiments source (controlled, lock-on-select)
+      FileDropHandler.tsx     # drag/drop + paste geo-file → GeoJSON source overlay
+      fileConversion.ts       # file → GeoJSON helpers (kml/kmz/geojson/shapefile, proj4)
     controls/                 # IControl wrappers (mounted by MapCanvas when interactive)
     layers/
       ConfiguredLayers.tsx    # component + useConfiguredLayers hook
@@ -91,6 +96,8 @@ src/modules/map/
       MapSearchInput.tsx          # combined BAN + reseaux.searchForMap autocomplete
       AddressSearchInput.tsx      # BAN-only autocomplete (eligibility flow)
       EligibilityResultsPanel.tsx # listing of tested addresses (mounted under the search input when search='eligibility')
+      legacy/
+        CardSearchDetails.tsx # ⚠️ styled-components — to port/revisit (eligibility result card, used by V1 too)
     dev/
       Sandbox.tsx             # one <Map> piloted by a mini-form (/dev/map-v2)
       MapV1Demo.tsx, FlyToButtons.tsx

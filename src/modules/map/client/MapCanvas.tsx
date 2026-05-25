@@ -1,11 +1,11 @@
 import maplibregl from 'maplibre-gl';
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { MapConfiguration } from '@/components/Map/map-configuration';
 import cx from '@/utils/cx';
 
 import { defaultCenter, defaultMaxZoom, defaultMinZoom, defaultZoom, osmStyle } from '../shared/config';
 import type { InitialView } from '../shared/types';
+import type { MapConfiguration } from './config/map-configuration';
 import { AttributionControl } from './controls/AttributionControl';
 import { GeolocateControl } from './controls/GeolocateControl';
 import { NavigationControl } from './controls/NavigationControl';

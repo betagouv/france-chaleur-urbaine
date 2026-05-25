@@ -3,9 +3,9 @@ import Tag from '@codegouvfr/react-dsfr/Tag';
 import Accordion from '@/components/ui/Accordion';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
+import { DownloadNetworkGeometryButton } from '@/modules/map/client/components/DownloadNetworkGeometryButton';
 import type { ReseauxEnConstructionTile } from '@/modules/tiles/server/tiles.config';
 
-import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire } from './filters';
 

@@ -1,7 +1,7 @@
 import Accordion from '@/components/ui/Accordion';
+import { DownloadNetworkGeometryButton } from '@/modules/map/client/components/DownloadNetworkGeometryButton';
 import type { PerimetreDeveloppementPrioritaireTile } from '@/modules/tiles/server/tiles.config';
 
-import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, type MapSourceLayersSpecification } from './common';
 
 const Popup = defineLayerPopup<PerimetreDeveloppementPrioritaireTile>((perimetre, { Property, Title, TwoColumns }) => {

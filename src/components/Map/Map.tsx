@@ -34,6 +34,10 @@ import useRouterReady from '@/hooks/useRouterReady';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { BoundingBox } from '@/modules/geo/types';
+import CardSearchDetails from '@/modules/map/client/search/legacy/CardSearchDetails';
+// https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json
+import rawOsmConfig from '@/modules/map/shared/osm.config.json';
+import rawSatelliteConfig from '@/modules/map/shared/satellite.config.json';
 import { notify } from '@/modules/notification';
 import type { AddressDetail, HandleAddressSelect } from '@/types/HeatNetworksResponse';
 import type { MapMarkerInfos } from '@/types/MapComponentsInfos';
@@ -42,7 +46,6 @@ import type { StoredAddress } from '@/types/StoredAddress';
 import type { TypeLegendLogo } from '@/types/TypeLegendLogo';
 import cx from '@/utils/cx';
 
-import CardSearchDetails from './components/CardSearchDetails';
 import MapMarker from './components/MapMarker';
 import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
@@ -66,10 +69,7 @@ import {
 import useFCUMap, { FCUMapContextProvider } from './MapProvider';
 import { useMapEvents } from './map-events';
 import { applyMapConfigurationToLayers, layerSymbolsImagesURLs, loadMapLayers, type MapLegendFeature } from './map-layers';
-// https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json
-import rawOsmConfig from './osm.config.json';
 import { type MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
-import rawSatelliteConfig from './satellite.config.json';
 
 export type { AdresseEligible };
 

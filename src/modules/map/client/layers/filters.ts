@@ -1,9 +1,10 @@
 import type { ExpressionSpecification } from 'maplibre-gl';
 
-import { filtresEnergies, type MapConfiguration, percentageMaxInterval } from '@/components/Map/map-configuration';
 import { gestionnairesFilters } from '@/modules/reseaux/constants';
 import type { Network } from '@/types/Summary/Network';
 import { type Interval, intervalsEqual } from '@/utils/interval';
+
+import { filtresEnergies, type MapConfiguration, percentageMaxInterval } from '../config/map-configuration';
 
 type ReseauxDeChaleurFilter = {
   valueKey: keyof Network;

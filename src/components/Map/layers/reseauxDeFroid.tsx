@@ -1,10 +1,10 @@
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
+import { DownloadNetworkGeometryButton } from '@/modules/map/client/components/DownloadNetworkGeometryButton';
 import type { ReseauxDeFroidTile } from '@/modules/tiles/server/tiles.config';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
 
-import { DownloadNetworkGeometryButton } from '../components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from './common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau } from './filters';
 

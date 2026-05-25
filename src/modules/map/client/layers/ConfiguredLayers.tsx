@@ -2,9 +2,9 @@ import type { GeoJSONSourceSpecification, LayerSpecification, SourceSpecificatio
 import { useEffect, useRef } from 'react';
 
 import { clientConfig } from '@/client-config';
-import type { MapConfiguration } from '@/components/Map/map-configuration';
 import { tileSourcesMaxZoom } from '@/modules/tiles/constants';
 
+import type { MapConfiguration } from '../config/map-configuration';
 import type { MapSourceLayersSpecification } from '../core/common';
 import { useMapInstance, useMapReady, useUserResources } from '../core/MapCanvasContext';
 
