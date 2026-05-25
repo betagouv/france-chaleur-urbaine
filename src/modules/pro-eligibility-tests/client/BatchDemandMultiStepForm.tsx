@@ -150,7 +150,7 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
                   label="Type"
                   orientation="horizontal"
                   small
-                  className="!mb-0"
+                  className="mb-0!"
                   options={[
                     { label: 'Collectif', nativeInputProps: { value: 'collectif' } },
                     { label: 'Individuel', nativeInputProps: { value: 'individuel' } },
@@ -161,7 +161,7 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
                   label="Énergie"
                   orientation="horizontal"
                   small
-                  className="!mb-0"
+                  className="mb-0!"
                   options={[
                     { label: 'Gaz', nativeInputProps: { value: 'gaz' } },
                     { label: 'Fioul', nativeInputProps: { value: 'fioul' } },
