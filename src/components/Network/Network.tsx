@@ -1,7 +1,5 @@
-import dynamic from 'next/dynamic';
 import type { ReactElement } from 'react';
 
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Accordion from '@/components/ui/Accordion';
 import Alert from '@/components/ui/Alert';
 import Box, { type BoxProps } from '@/components/ui/Box';
@@ -11,6 +9,8 @@ import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { dataSourcesVersions } from '@/modules/app/constants';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { Map } from '@/modules/map/client/Map';
 import type { Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
@@ -21,8 +21,6 @@ import EcoreseauLabelBlock from './EcoreseauLabel';
 import EligibilityTestBox from './EligibilityTestBox';
 import EnergiesChart from './EnergiesChart';
 import { BoxSection, InformationsComplementairesBox } from './Network.styles';
-
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`;
@@ -522,10 +520,8 @@ const NetworkPanel = ({
             {(!displayBlocks || displayBlocks.includes('map')) && (
               <Box height="655px">
                 <Map
-                  noPopup
-                  initialCenter={[network.lon, network.lat]}
-                  initialZoom={13}
-                  initialMapConfiguration={createMapConfiguration({
+                  initialView={{ center: [network.lon, network.lat], zoom: 13 }}
+                  config={createMapConfiguration({
                     filtreIdentifiantReseau: [network['Identifiant reseau']],
                     reseauxDeChaleur: {
                       show: true,
