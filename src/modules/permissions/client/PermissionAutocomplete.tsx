@@ -38,6 +38,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
 
   const isNetworkMode = availableTypes.some((t) => networkPermissionSet.has(t));
   const isTerritoryMode = availableTypes.some((t) => territoryPermissionSet.has(t));
+  const showNationalOption = isTerritoryMode && availableTypes.includes('national' as PermissionType);
 
   const networkResults = trpc.permissions.searchNetworks.useQuery(
     { search: debouncedQuery },
@@ -78,8 +79,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     }
   }
 
-  // National option always available for territory modes
-  if (isTerritoryMode && availableTypes.includes('national' as PermissionType) && !debouncedQuery) {
+  if (showNationalOption) {
     results.unshift({
       label: 'National (tout le territoire)',
       permission: { resource_id: null, type: 'national' },
@@ -110,7 +110,10 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     }
   };
 
-  const showPopover = isOpen && query.length >= 2 && (results.length > 0 || networkResults.isFetching || territoryResults.isFetching);
+  const showPopover =
+    isOpen &&
+    ((query.length === 0 && showNationalOption) ||
+      (query.length >= 2 && (results.length > 0 || networkResults.isFetching || territoryResults.isFetching)));
 
   return (
     <Popover open={showPopover} onOpenChange={setIsOpen}>
@@ -132,7 +135,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
             setIsOpen(true);
             setHighlightedIndex(0);
           }}
-          onFocus={() => query.length >= 2 && setIsOpen(true)}
+          onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
         />
       </PopoverTrigger>
