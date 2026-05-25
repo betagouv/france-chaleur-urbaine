@@ -203,6 +203,14 @@ export default function ReseauxStatsPage() {
         width: '110px',
       },
       {
+        accessorFn: (row) => row.allTime.total,
+        exportHeader: 'Demandes totales (toutes périodes)',
+        exportOnly: true,
+        header: 'allTimeTotal',
+        id: 'allTimeTotal',
+        visible: false,
+      },
+      {
         accessorFn: (row) => row.lastSixMonths.pending,
         cell: ({ row }) => {
           const { pending, total } = row.original.lastSixMonths;
@@ -228,6 +236,14 @@ export default function ReseauxStatsPage() {
         width: '110px',
       },
       {
+        accessorFn: (row) => row.lastSixMonths.total,
+        exportHeader: 'Demandes totales (6 mois)',
+        exportOnly: true,
+        header: 'lastSixMonthsTotal',
+        id: 'lastSixMonthsTotal',
+        visible: false,
+      },
+      {
         accessorFn: (row) => row.lastThreeMonths.pending,
         cell: ({ row }) => {
           const { pending, total } = row.original.lastThreeMonths;
@@ -251,6 +267,14 @@ export default function ReseauxStatsPage() {
         ),
         id: 'lastThreeMonths',
         width: '110px',
+      },
+      {
+        accessorFn: (row) => row.lastThreeMonths.total,
+        exportHeader: 'Demandes totales (3 mois)',
+        exportOnly: true,
+        header: 'lastThreeMonthsTotal',
+        id: 'lastThreeMonthsTotal',
+        visible: false,
       },
       {
         accessorFn: (row) => row.reminders?.[0]?.created_at ?? null,

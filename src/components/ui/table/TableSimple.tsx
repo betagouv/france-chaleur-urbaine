@@ -151,6 +151,10 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   visible?: boolean;
   exportHeader?: string;
   exportFn?: (row: T) => string | number | boolean;
+  /**
+   * Inclut la colonne dans l'export même si elle n'est pas affichée dans le tableau (`visible: false`).
+   */
+  exportOnly?: boolean;
 } & ({ flex?: number } | { width?: 'auto' | string });
 
 const cellCustomClasses = cva('', {
@@ -665,7 +669,7 @@ const TableSimple = <T extends RowData>({
       return [];
     }
     const computedExportColumns = tableColumns
-      .filter((col) => col.visible !== false && col.id !== 'selection' && col.id !== 'actions')
+      .filter((col) => (col.visible !== false || col.exportOnly === true) && col.id !== 'selection' && col.id !== 'actions')
       .map((col) => {
         const header = (col.exportHeader ??
           (typeof col.header === 'string' ? col.header : (col as AccessorKeyColumnDefBase<T, any>).accessorKey || col.id || '')) as string;
