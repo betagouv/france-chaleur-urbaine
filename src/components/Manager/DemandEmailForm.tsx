@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import TextArea from '@/components/form/dsfr/TextArea';
@@ -21,6 +21,8 @@ import { isUUID } from '@/utils/core';
 type Props = {
   currentDemand: Demand;
   updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
+  /** Notifie le parent quand le contenu diffère des valeurs pré-remplies (pour confirmer avant fermeture). */
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 type EmailContent = {
   object: string;
@@ -76,6 +78,7 @@ function DemandEmailForm(props: Props) {
   const [alreadySent, setAlreadySent] = useState<string[]>([]);
   const [emailKey, setEmailKey] = useState('');
   const [emailContent, setEmailContent] = useState<EmailContent>(getDefaultEmailContent());
+  const initialContentRef = useRef(emailContent);
   const [sent, setSent] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [sentError, setSentError] = useState(false);
@@ -90,9 +93,20 @@ function DemandEmailForm(props: Props) {
 
   useEffect(() => {
     if (userPreferences) {
-      setEmailContent(getDefaultEmailContent());
+      const defaultContent = getDefaultEmailContent();
+      setEmailContent(defaultContent);
+      initialContentRef.current = defaultContent;
     }
   }, [userPreferences]);
+
+  const isDirty =
+    !sent &&
+    !sentError &&
+    (Object.keys(emailContent) as Array<keyof EmailContent>).some((key) => emailContent[key] !== initialContentRef.current[key]);
+
+  useEffect(() => {
+    props.onDirtyChange?.(isDirty);
+  }, [isDirty, props.onDirtyChange]);
 
   const { data: emailTemplatesData } = useFetch<EmailTemplatesResponse['list']>(`/api/user/email-templates`);
 

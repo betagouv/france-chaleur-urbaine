@@ -11,7 +11,7 @@ import TableAddressAutocomplete from '@/components/Admin/TableAddressAutocomplet
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
-import DemandEmailForm from '@/components/Manager/DemandEmailForm';
+import DemandEmailModal from '@/components/Manager/DemandEmailModal';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
 import type { AdresseEligible } from '@/components/Map/layers/adressesEligibles';
@@ -23,7 +23,6 @@ import Button from '@/components/ui/Button';
 import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
-import ModalSimple from '@/components/ui/ModalSimple';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
@@ -635,14 +634,7 @@ function DemandesAdmin(): React.ReactElement {
       description="Tableau de bord administrateur pour la validation des tags des demandes de raccordement"
       mode="authenticated"
     >
-      <ModalSimple
-        title={`Envoi d'un courriel à ${modalDemand?.Mail}`}
-        open={!!modalDemand}
-        size="large"
-        onOpenChange={(open) => !open && setModalDemand(null)}
-      >
-        {modalDemand && <DemandEmailForm currentDemand={modalDemand as unknown as Demand} updateDemand={updateDemand} />}
-      </ModalSimple>
+      <DemandEmailModal demand={modalDemand as unknown as Demand | null} onClose={() => setModalDemand(null)} updateDemand={updateDemand} />
       <div className="mb-8">
         <div className="flex items-center flex-wrap gap-4">
           <Input
