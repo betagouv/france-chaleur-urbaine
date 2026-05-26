@@ -355,7 +355,7 @@ export default function ReseauxStatsPage() {
   );
 
   return (
-    <SimplePage title="Statistiques par réseau" mode="authenticated" layout="center">
+    <SimplePage title="Statistiques par réseau" mode="authenticated" layout="fluid" className="p-4">
       <Heading as="h1" color="blue-france">
         Statistiques par réseau
       </Heading>
