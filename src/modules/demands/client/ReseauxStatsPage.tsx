@@ -24,7 +24,7 @@ import trpc from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { objectToURLSearchParams } from '@/utils/network';
-import { compareFrenchStrings } from '@/utils/strings';
+import { compareFrenchStrings, formatMW } from '@/utils/strings';
 
 import type { ReseauxStats } from '../types';
 
@@ -131,6 +131,21 @@ export default function ReseauxStatsPage() {
             rowB.original.nom_reseau ?? `Réseau ${rowB.original.id_fcu}`
           ),
         width: '280px',
+      },
+      {
+        accessorFn: (row) => row.puissance_totale_MW ?? undefined,
+        align: 'right',
+        cell: ({ row }) =>
+          isDefined(row.original.puissance_totale_MW) ? (
+            formatMW(row.original.puissance_totale_MW)
+          ) : (
+            <span className="text-gray-400">—</span>
+          ),
+        exportHeader: 'Puissance (MW)',
+        header: 'Puissance',
+        id: 'puissance',
+        sortUndefined: 'last',
+        width: '90px',
       },
       {
         accessorKey: 'network_type',
