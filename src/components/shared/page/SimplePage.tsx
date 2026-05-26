@@ -429,6 +429,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
+          href: '/admin/iframes',
+        },
+        text: "Générateur d'iframes",
+      },
+      {
+        linkProps: {
           href: '/admin/jobs',
         },
         text: 'Suivi des tâches',

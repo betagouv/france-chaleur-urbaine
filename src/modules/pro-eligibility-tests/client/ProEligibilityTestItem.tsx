@@ -1,12 +1,10 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Tabs } from '@codegouvfr/react-dsfr/Tabs';
 import type { ColumnFiltersState, RowSelectionState, SortingState } from '@tanstack/react-table';
-import dynamic from 'next/dynamic';
+import type maplibregl from 'maplibre-gl';
 import { useQueryState } from 'nuqs';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { AdresseEligible } from '@/components/Map/Map';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
@@ -17,6 +15,10 @@ import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { useMapInstance, useMapReady } from '@/modules/map/client/core/MapCanvasContext';
+import type { AdresseEligible } from '@/modules/map/client/layers/specs/adressesEligibles';
+import { Map } from '@/modules/map/client/Map';
 import { toastErrors } from '@/modules/notification';
 import { BatchDemandMultiStepForm } from '@/modules/pro-eligibility-tests/client/BatchDemandMultiStepForm';
 import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
@@ -32,7 +34,41 @@ import { compareFrenchStrings } from '@/utils/strings';
 import { getProEligibilityTestAsXlsx } from '../utils/xlsx';
 import ProcheReseauBadge, { type ProcheReseauBadgeProps } from './ProcheReseauBadge';
 
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
+/**
+ * Pushes the eligible addresses into the V2 `adressesEligibles` source and fits the map
+ * on their bounds — replaces the V1 `adressesEligibles` prop (imperative bridge).
+ */
+function AdressesEligiblesLayer({ adresses }: { adresses: AdresseEligible[] }) {
+  const map = useMapInstance();
+  const mapReady = useMapReady();
+  useEffect(() => {
+    if (!mapReady) {
+      return;
+    }
+    const source = map.getSource('adressesEligibles') as maplibregl.GeoJSONSource | undefined;
+    source?.setData({
+      features: adresses.map((adresse) => ({
+        geometry: { coordinates: [adresse.longitude, adresse.latitude], type: 'Point' },
+        id: adresse.id,
+        properties: { ...adresse },
+        type: 'Feature',
+      })),
+      type: 'FeatureCollection',
+    });
+    if (adresses.length > 0) {
+      const longitudes = adresses.map((adresse) => adresse.longitude);
+      const latitudes = adresses.map((adresse) => adresse.latitude);
+      map.fitBounds(
+        [
+          [Math.min(...longitudes), Math.min(...latitudes)],
+          [Math.max(...longitudes), Math.max(...latitudes)],
+        ],
+        { duration: 1000, maxZoom: 16, padding: 40 }
+      );
+    }
+  }, [map, mapReady, adresses]);
+  return null;
+}
 
 const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses'][number]>[] = [
   {
@@ -625,18 +661,16 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
       content: (
         <div className="min-h-[50vh] aspect-4/3">
           <Map
-            initialMapConfiguration={createMapConfiguration({
+            config={createMapConfiguration({
               reseauxDeChaleur: {
                 show: true,
               },
               reseauxEnConstruction: true,
               zonesDeDeveloppementPrioritaire: true,
             })}
-            geolocDisabled
-            withLegend={false}
-            withoutLogo
-            adressesEligibles={filteredAddressesMapData}
-          />
+          >
+            <AdressesEligiblesLayer adresses={filteredAddressesMapData} />
+          </Map>
         </div>
       ),
       iconId: 'fr-icon-map-pin-2-line' as const,

@@ -39,6 +39,15 @@ export default function DashboardAdmin() {
         orientation="horizontal"
         enlargeLinkOrButton
       />
+      <Tile
+        title="Générateur d'iframes"
+        desc="Générez l'URL et le code d'intégration d'une carte à embarquer"
+        linkProps={{
+          href: '/admin/iframes',
+        }}
+        orientation="horizontal"
+        enlargeLinkOrButton
+      />
     </div>
   );
 }

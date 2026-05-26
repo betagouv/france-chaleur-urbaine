@@ -43,6 +43,7 @@ Two entry points, picked by usage:
 | `initialView` | center=France, zoom=5 | Same shape as `MapCanvas`. |
 | `interactive` | `true` | Forwards to `MapCanvas`. |
 | `legend` | `false` | `false` / `'hidden'` (button only) / `'auto'` (open on ≥ 768px). When enabled, `MapLegend` owns the `?tab` URL param (nuqs) — host pages must not reuse `tab` for their own state. |
+| `legendContent` | — | Custom legend node rendered inside the drawer instead of the full `MapLegend` (caller composes shared legend rows — e.g. `<IframeLegend layers={…}>`). Reuses the drawer mechanics (collapse, padding, atom). |
 | `search` | `'none'` | `'none'` / `'network'` (address + heating-network → flyTo/fitBounds) / `'eligibility'` (address → tRPC query + colored marker history). |
 | `searchPlaceholder` | — | Override the search input placeholder. |
 | `mapRef` | — | External `RefObject<MapCanvasController \| null>` (e.g. for FlyToButtons). |

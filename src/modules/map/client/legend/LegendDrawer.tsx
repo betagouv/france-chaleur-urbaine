@@ -1,4 +1,5 @@
 import { useAtom } from 'jotai';
+import type { ReactNode } from 'react';
 
 import Icon from '@/components/ui/Icon';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
@@ -10,8 +11,11 @@ import { MapLegend } from './MapLegend';
 /**
  * Slide-in legend drawer anchored to the left of the map. Width is container-
  * query driven: full-width on narrow containers, 345px on `@xl` and up.
+ *
+ * `children` overrides the default full app legend — used to inject a custom,
+ * parameterizable legend (e.g. iframes) while reusing the drawer mechanics.
  */
-export function LegendDrawer() {
+export function LegendDrawer({ children }: { children?: ReactNode }) {
   const [open, setOpen] = useAtom(legendOpenAtom);
   return (
     <>
@@ -24,7 +28,7 @@ export function LegendDrawer() {
         )}
         aria-hidden={!open}
       >
-        <MapLegend />
+        {children ?? <MapLegend />}
       </aside>
 
       <button

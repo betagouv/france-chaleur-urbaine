@@ -13,7 +13,7 @@ import type { StoredAddress } from '@/types/StoredAddress';
 import cx from '@/utils/cx';
 import type { DeepPartial } from '@/utils/typescript';
 
-import type { InitialView } from '../../shared/types';
+import type { BBox, InitialView } from '../../shared/types';
 import type { MapConfiguration } from '../config/map-configuration';
 import { useMapConfig } from '../config/useMapConfig';
 import { MapDrawHost } from '../interactions/MapDrawHost';
@@ -57,11 +57,18 @@ export type MapProps = {
   /** Initial map configuration. Changing this prop after mount has no effect. */
   config: DeepPartial<MapConfiguration>;
   initialView?: InitialView;
+  /** Restricts panning to this `[w, s, e, n]` box. */
+  maxBounds?: BBox;
+  /** Zoom bounds (default to the map's). */
+  minZoom?: number;
+  maxZoom?: number;
   /** Disables pan/zoom/touch and built-in controls (attribution still renders). */
   interactive?: boolean;
   /** Imperative access from outside the subtree (`flyTo`, `fitBounds`). */
   mapRef?: RefObject<MapCanvasController | null>;
   legend?: LegendMode;
+  /** Custom legend rendered inside the drawer instead of the default full app legend (composed by the caller). */
+  legendContent?: React.ReactNode;
   search?: SearchMode;
   /** Placeholder for the search overlay's input. */
   searchPlaceholder?: string;
@@ -86,9 +93,13 @@ export function Map({ config, ...rest }: MapProps) {
 
 function MapImplInner({
   initialView,
+  maxBounds,
+  minZoom,
+  maxZoom,
   interactive = true,
   mapRef: externalMapRef,
   legend = false,
+  legendContent,
   search = 'none',
   searchPlaceholder,
   className,
@@ -218,7 +229,16 @@ function MapImplInner({
 
   return (
     <div className={wrapperClass}>
-      <MapCanvas mapRef={effectiveRef} initialView={initialView} interactive={interactive} layers={allLayers} config={config}>
+      <MapCanvas
+        mapRef={effectiveRef}
+        initialView={initialView}
+        maxBounds={maxBounds}
+        minZoom={minZoom}
+        maxZoom={maxZoom}
+        interactive={interactive}
+        layers={allLayers}
+        config={config}
+      >
         <MapInstanceSync />
         {legend && <MapDrawHost />}
         {legend && <LegendPaddingSync />}
@@ -243,7 +263,7 @@ function MapImplInner({
         {children}
       </MapCanvas>
 
-      {legend && <LegendDrawer />}
+      {legend && <LegendDrawer>{legendContent}</LegendDrawer>}
 
       {search === 'network' && (
         <MapSearchInput

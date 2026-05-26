@@ -1,24 +1,24 @@
-import IframeWrapper from '@/components/IframeWrapper';
-import Map from '@/components/Map/Map';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { FcuLogo } from '@/modules/map/client/controls/FcuLogo';
+import { IframeLegend } from '@/modules/map/client/legend/IframeLegend';
+import { Map } from '@/modules/map/client/Map';
 
 const CollectivityMap = () => {
   return (
-    <IframeWrapper>
+    <div className="h-dvh w-screen">
       <Map
-        initialMapConfiguration={createMapConfiguration({
+        config={createMapConfiguration({
           reseauxDeChaleur: {
             show: true,
           },
           zonesDeDeveloppementPrioritaire: true,
         })}
-        enabledLegendFeatures={['reseauxDeChaleur', 'zonesDeDeveloppementPrioritaire']}
-        withLegend
-        withBorder
-        legendTitle="Réseaux de chaleur"
-        withFCUAttribution
-      />
-    </IframeWrapper>
+        legend="auto"
+        legendContent={<IframeLegend layers={['reseaux-de-chaleur', 'zones-de-developpement-prioritaire']} title="Réseaux de chaleur" />}
+      >
+        <FcuLogo />
+      </Map>
+    </div>
   );
 };
 

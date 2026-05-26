@@ -4,7 +4,7 @@ import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import cx from '@/utils/cx';
 
 import { defaultCenter, defaultMaxZoom, defaultMinZoom, defaultZoom, osmStyle } from '../shared/config';
-import type { InitialView } from '../shared/types';
+import type { BBox, InitialView } from '../shared/types';
 import type { MapConfiguration } from './config/map-configuration';
 import { AttributionControl } from './controls/AttributionControl';
 import { GeolocateControl } from './controls/GeolocateControl';
@@ -29,6 +29,11 @@ type MapCanvasProps = {
   layers?: readonly MapSourceLayersSpecification[];
   /** Drives each spec's `isVisible(config)` / `filter(config)`. */
   config?: MapConfiguration;
+  /** Restricts panning to this `[w, s, e, n]` box. Applied live; pass a stable ref. */
+  maxBounds?: BBox;
+  /** Zoom bounds (default to the map's). Applied live. */
+  minZoom?: number;
+  maxZoom?: number;
   /** Imperative access from outside the canvas subtree (`flyTo`, `fitBounds`). */
   mapRef?: RefObject<MapCanvasController | null>;
   children?: React.ReactNode;
@@ -41,6 +46,9 @@ export function MapCanvas({
   interactive = true,
   layers,
   config,
+  maxBounds,
+  minZoom,
+  maxZoom,
   mapRef: externalMapRef,
   children,
 }: MapCanvasProps) {
@@ -108,6 +116,28 @@ export function MapCanvas({
       }, 0);
     };
   }, []);
+
+  // Zoom bounds: min & max are interdependent — MapLibre throws if it ever sees
+  // `max < min`, even transiently. Order them, then widen (min→0) before applying
+  // the new max and narrowing back, so no intermediate state is invalid.
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    const lo = Math.max(0, Math.min(minZoom ?? defaultMinZoom, maxZoom ?? defaultMaxZoom));
+    const hi = Math.max(lo, maxZoom ?? defaultMaxZoom, minZoom ?? defaultMinZoom);
+    map.setMinZoom(0);
+    map.setMaxZoom(hi);
+    map.setMinZoom(lo);
+  }, [map, minZoom, maxZoom]);
+
+  // Pan constraint (independent of zoom).
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    map.setMaxBounds(maxBounds ? [maxBounds[0], maxBounds[1], maxBounds[2], maxBounds[3]] : null);
+  }, [map, maxBounds]);
 
   // `mapReady` flips once the style is loaded AND every icon symbol is
   // registered — downstream hooks gate on it to avoid missing-marker warnings.

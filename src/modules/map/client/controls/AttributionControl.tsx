@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useMapInstance } from '../core/MapCanvasContext';
 import { useControl } from './useControl';
 
-const FCU_ATTRIBUTION = '<a href="/donnees" target="_blank" rel="noopener noreferrer">Sources</a>';
+const FCU_ATTRIBUTION = '<a href="/donnees" target="_blank" rel="noopener noreferrer">France Chaleur Urbaine</a>';
 
 /**
  * Attribution credits, bottom-right. Always mounted for license compliance.

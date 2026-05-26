@@ -84,6 +84,7 @@ export function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeCh
   ].filter((v) => v !== null);
 }
 
+/** Values must be lowercase (the feature value is lowercased in the expression). */
 export function buildFiltreGestionnaire(filtreGestionnaire: MapConfiguration['filtreGestionnaire']): ExpressionSpecification[] {
   if ((filtreGestionnaire || []).length === 0) {
     return [];
