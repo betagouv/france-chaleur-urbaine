@@ -378,7 +378,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         distance: networkInfos?.distance ?? 0,
         gestionnaire: networkInfos?.gestionnaire ?? null,
         hasPDP: true,
-        id_fcu: pdp.id_fcu,
+        id_fcu: networkInfos?.id_fcu ?? null,
         id_sncu: pdp['Identifiant reseau'] ?? (networkInfos?.type === 'existant' ? networkInfos?.['Identifiant reseau'] : null) ?? '',
         isClasse: networkInfos?.type === 'existant' ? (networkInfos?.['reseaux classes'] ?? null) : null,
         nom: networkInfos?.nom_reseau ?? '',
