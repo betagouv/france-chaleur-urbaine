@@ -110,9 +110,14 @@ export const computeNetworkDistance = async (demandId: string, networkIdFcu: num
   return reseau.distance;
 };
 
+/** Max distance (m) to auto-assign a network for the non-eligible "réseau loin" cases. */
+const networkAssignmentDistanceThreshold = 500;
+
 /**
- * Auto-assigns network_id and network_type on a demand based on its eligibility test address.
- * Also populates legacy fields for backward compatibility.
+ * Auto-assigns network_id and network_type on a demand based on its eligibility case.
+ * Eligible cases (PDP, in-zone, within the eligible distance) are assigned by definition; the
+ * non-eligible "réseau loin" cases only within the 500m limit. Cases beyond that (no trace, too far)
+ * have a null distance and stay unassigned. Also populates legacy fields for backward compatibility.
  */
 export const autoAssignNetworkFromEligibility = async (demandId: string) => {
   const testAddress = await kdb
@@ -125,11 +130,11 @@ export const autoAssignNetworkFromEligibility = async (demandId: string) => {
 
   const history = testAddress.eligibility_history as ProEligibilityTestHistoryEntry[] | null;
   const lastEligibility = history?.[history.length - 1]?.eligibility;
+  if (!lastEligibility?.id_fcu) return;
 
-  if (!lastEligibility?.id_fcu || lastEligibility.type === 'trop_eloigne') return;
-
-  const networkType = getNetworkTypeFromEligibilityType(lastEligibility.type);
-  if (!networkType) return;
+  const isAssignable =
+    lastEligibility.eligible || (lastEligibility.distance !== null && lastEligibility.distance < networkAssignmentDistanceThreshold);
+  if (!isAssignable) return;
 
   await kdb
     .updateTable('demands')
@@ -140,7 +145,7 @@ export const autoAssignNetworkFromEligibility = async (demandId: string) => {
         'Nom réseau': lastEligibility.nom,
       }),
       network_id: lastEligibility.id_fcu,
-      network_type: networkType,
+      network_type: getNetworkTypeFromEligibilityType(lastEligibility.type),
     })
     .where('id', '=', demandId)
     .execute();

@@ -3,7 +3,7 @@ import { TRPCError } from '@trpc/server';
 import type { UpdateAdminDemandInput } from '@/modules/demands/constants';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
 import type { NetworkType } from '@/modules/reseaux/constants';
-import { kdb } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
 import { computeNetworkDistance } from './eligibility';
@@ -45,7 +45,25 @@ export const removeDemand = async (demandId: string, userId?: string) => {
 export const listAdmin = async () => {
   const startTime = Date.now();
 
-  const records = await buildDemandQuery().execute();
+  // Flag admin (booléen, jamais renvoyé sous forme de liste de communes) : commune de la demande absente du réseau affecté.
+  const records = await buildDemandQuery()
+    .select((eb) => {
+      const communes = eb.fn.coalesce('rdc.communes_insee', 'zrc.communes_insee');
+      return eb
+        .case()
+        .when(
+          eb.and([
+            eb('demands.commune_code', 'is not', null),
+            eb(eb.fn<number>('array_length', [communes, eb.val(1)]), '>', 0),
+            eb.not(eb(communes, '&&', sql<string[]>`ARRAY[${eb.ref('demands.commune_code')}]`)),
+          ])
+        )
+        .then(true)
+        .else(false)
+        .end()
+        .as('ville_differente');
+    })
+    .execute();
 
   const { count } = await kdb
     .selectFrom('demands')

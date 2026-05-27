@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import AsyncButton from '@/components/ui/AsyncButton';
+import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import CallOut from '@/components/ui/CallOut';
 import Tooltip from '@/components/ui/Tooltip';
@@ -18,6 +19,7 @@ type BaseDemand = {
   network_type: NetworkType | null;
   network_name: string | null;
   network_sncu_id: string | null;
+  ville_differente?: boolean;
   'Distance au réseau'?: number | null;
   pending_assignment_change: PendingAssignmentChange | null;
   pending_assignment_name: string | null;
@@ -108,6 +110,7 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
     })();
   };
 
+  const villeDifferente = !!props.isAdmin && !!demand.ville_differente;
   const pending = demand.pending_assignment_change;
   const pendingIsUnassign = !!pending && pending.network_id === null;
   const pendingNotFound = !!pending && !pendingIsUnassign && !demand.pending_assignment_name;
@@ -123,6 +126,7 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
             networkSncuId={demand.network_sncu_id}
             distance={demand['Distance au réseau']}
           />
+          {villeDifferente && <FCUBadge type="warning_ville_differente" size="xs" className="mt-1" />}
         </div>
         <Tooltip title={props.isAdmin ? "Changer l'affectation du réseau" : 'Demander une réaffectation'}>
           <Button

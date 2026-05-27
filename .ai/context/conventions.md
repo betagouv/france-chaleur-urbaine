@@ -70,6 +70,7 @@
 - Guard clauses for early returns instead of nested `if/else`.
 - Explicit names over abbreviations (`networkIdentifier` not `netId`).
 - **Never use single-letter or shortened variable names** (`r`, `n`, `el`, `ev`, `idx`, `tmp`, `acc`). Always spell the role: `reminder`, `network`, `element`, `event`, `index`, `temp`, `accumulator`. Applies to parameters, callbacks (`map`/`filter`/`reduce`), and local variables — no exceptions for short scopes.
+- **Don't destructure to read just a few properties** — access them directly (`lastEligibility.distance`, `lastEligibility.type`), not `const { distance, type } = lastEligibility`. Destructuring is reserved for React components in general (props).
 - **Any `for` loop is a smell** — first try a functional pipeline (`map`/`filter`/`reduce`/`flatMap`/`Set`/`Object.fromEntries`). Each step names one operation, intent reads top-to-bottom. Keep the loop only when the pipeline would force multiple passes on a hot path, or when early-exit (`break`) is the natural shape.
 
 ## TypeScript patterns
