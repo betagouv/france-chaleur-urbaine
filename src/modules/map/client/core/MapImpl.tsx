@@ -3,6 +3,8 @@ import { useAtomValue } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import useContactFormFCU from '@/hooks/useContactFormFCU';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { notify } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
@@ -121,6 +123,8 @@ function MapImplInner({
   const legendOpen = useAtomValue(legendOpenAtom);
 
   const trpcUtils = trpc.useUtils();
+  // Eligibility-search tracking (Matomo + PostHog), parity with the public map.
+  const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
   // Persisted across reloads + shared with V1 `/carte` until full migration.
   const { value: soughtAddresses, set: setSoughtAddresses } = useLocalStorageValue<StoredAddress[], StoredAddress[], true>(
     'mapSoughtAddresses',
@@ -173,12 +177,15 @@ function MapImplInner({
       };
       const existing = addresses.findIndex((entry) => entry.id === id);
       if (existing === -1) {
+        handleOnFetchAddress({ address: selection.label }, 'carte');
+        handleOnSuccessAddress({ address: selection.label, eligibility, geoAddress: selection.feature }, 'carte');
         setSoughtAddresses([newAddress, ...addresses]);
         setSelectedCardIndex(0);
       } else {
         setSelectedCardIndex(existing);
       }
       setResultsVisible(true);
+      trackPostHogEvent('map:address_searched');
     } catch {
       notify('error', 'Impossible de tester cette adresse. Réessayez ou contactez le support.');
     }

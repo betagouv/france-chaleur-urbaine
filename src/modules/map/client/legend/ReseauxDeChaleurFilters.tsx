@@ -219,7 +219,7 @@ function resetReseauxDeChaleurFilters(rdc: ReseauxDeChaleurConfig): ReseauxDeCha
  * `/reseaux` page : a `Partial<Filters>` shape containing only filters that
  * differ from their default (limits or `percentageMaxInterval`).
  */
-function serializeActiveFilters(rdc: ReseauxDeChaleurConfig): Record<string, unknown> {
+export function serializeActiveFilters(rdc: ReseauxDeChaleurConfig): Record<string, unknown> {
   return {
     ...(rdc.isClassed && { isClassed: true }),
     ...(rdc.energieMobilisee.length > 0 && { energieMobilisee: rdc.energieMobilisee }),

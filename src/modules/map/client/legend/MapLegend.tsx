@@ -89,7 +89,7 @@ const tabs: Tab[] = [
 
 /** 4-tab legend layout (Réseaux / Potentiel / EnR&R / Outils). */
 export function MapLegend() {
-  const [state, setState] = useQueryState('tab', tabsParser.withDefault(defaultTabState).withOptions({ history: 'push' }));
+  const [state, setState] = useQueryState('tabId', tabsParser.withDefault(defaultTabState).withOptions({ history: 'push' }));
 
   // Resets sub-tab on tab change so clicking a tab always lands on its index.
   const handleTabChange = (next: string) => {

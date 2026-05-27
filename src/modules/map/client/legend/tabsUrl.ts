@@ -1,7 +1,7 @@
 import { createParser } from 'nuqs';
 
 /**
- * Tab + sub-tab tree backing the legend's `?tab=` URL param. Single source of
+ * Tab + sub-tab tree backing the legend's `?tabId=` URL param. Single source of
  * truth for valid values: anything not listed here parses as `null`.
  */
 export const tabsTree = {
@@ -17,7 +17,7 @@ export type TabState = {
 }[TabId];
 
 /**
- * `tab` URL param parser. Encodes the tab tree as a `tabId/subTabId` path so a
+ * `tabId` URL param parser. Encodes the tab tree as a `tabId/subTabId` path so a
  * shared link drops the user directly on the right view (V1 parity).
  */
 export const tabsParser = createParser<TabState>({

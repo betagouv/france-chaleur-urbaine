@@ -18,7 +18,7 @@ const TOOL_LABEL = {
  * only reached by an explicit button click.
  */
 export function ToolsTabContent() {
-  const [state, setState] = useQueryState('tab', tabsParser.withDefault(defaultTabState).withOptions({ history: 'push' }));
+  const [state, setState] = useQueryState('tabId', tabsParser.withDefault(defaultTabState).withOptions({ history: 'push' }));
   const subTabId = state.tabId === 'outils' ? state.subTabId : null;
 
   if (subTabId === null) {

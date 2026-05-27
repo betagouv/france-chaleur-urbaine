@@ -42,7 +42,7 @@ Two entry points, picked by usage:
 | `config` | — | Initial `DeepPartial<MapConfiguration>`. `Map` mounts its own provider from this; runtime mutations (legend toggles) live in the provider. Changing this prop after mount has no effect. |
 | `initialView` | center=France, zoom=5 | Same shape as `MapCanvas`. |
 | `interactive` | `true` | Forwards to `MapCanvas`. |
-| `legend` | `false` | `false` / `'hidden'` (button only) / `'auto'` (open on ≥ 768px). When enabled, `MapLegend` owns the `?tab` URL param (nuqs) — host pages must not reuse `tab` for their own state. |
+| `legend` | `false` | `false` / `'hidden'` (button only) / `'auto'` (open on ≥ 768px). When enabled, `MapLegend` owns the `?tabId` URL param (nuqs, V1-compatible) — host pages must not reuse `tabId` for their own state. |
 | `legendContent` | — | Custom legend node rendered inside the drawer instead of the full `MapLegend` (caller composes shared legend rows — e.g. `<IframeLegend layers={…}>`). Reuses the drawer mechanics (collapse, padding, atom). |
 | `search` | `'none'` | `'none'` / `'network'` (address + heating-network → flyTo/fitBounds) / `'eligibility'` (address → tRPC query + colored marker history). |
 | `searchPlaceholder` | — | Override the search input placeholder. |
