@@ -13,6 +13,7 @@ import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
+import { useHeaderHeightVar } from '@/hooks/useHeaderHeightVar';
 import useRouterReady from '@/hooks/useRouterReady';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
@@ -42,6 +43,8 @@ const SimplePage = ({
   className,
   ...props
 }: SimplePageProps) => {
+  // Exposes the real header height as `--header-height` for full-screen layouts.
+  useHeaderHeightVar();
   return (
     <>
       <SEO noIndex={mode === 'authenticated' ? true : noIndex} {...props} />

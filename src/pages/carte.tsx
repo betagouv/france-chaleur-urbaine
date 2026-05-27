@@ -136,8 +136,8 @@ const Carte = () => {
       includeFooter={false}
     >
       <h1 className="fr-sr-only">Carte nationale des réseaux de chaleur et de froid en France</h1>
-      {/* Remplit le viewport sous le header public-fullscreen (105px en mobile, 57px ≥lg — cf. MainLayout.data.ts). */}
-      <div className="w-full h-[calc(100dvh-105px)] lg:h-[calc(100dvh-57px)]">
+      {/* Remplit le viewport sous le header. Hauteur mesurée → `--header-height` (cf. useHeaderHeightVar) ; repli 57px avant la mesure. */}
+      <div className="w-full h-[calc(100dvh_-_var(--header-height,57px))]">
         <Map config={config} initialView={initialView} legend="auto" search="eligibility" contextMenu={hasRole('admin')}>
           <MapViewUrlSync />
           <ReseauxFiltersUrlSync />
