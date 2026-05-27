@@ -1,9 +1,11 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { getCostPrecisionRange } from '@/components/ComparateurPublicodes/Graph';
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import { EligibilityFormContact } from '@/components/EligibilityForm';
+import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Button from '@/components/ui/Button';
 import CallOut from '@/components/ui/CallOut';
 import Image from '@/components/ui/Image';
@@ -35,11 +37,15 @@ import {
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import type { DPE, ModeEauChaudeSanitaire } from '@/modules/chaleur-renouvelable/constants';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
+import type { BoundingBox } from '@/modules/geo/types';
+import type { Point } from '@/types/Point';
 import cx from '@/utils/cx';
 
 import { HOT_WATER_PARAMS_SECTION_ID, ParamsForm } from './ParamsForm';
 
 type SimulatorEngine = ReturnType<typeof useSimulatorEngine>;
+
+const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 const usageTagConfig = {
   heating: {
@@ -66,6 +72,14 @@ const batEnrBatimentSelectionModal = createModal({
   id: 'bat-enr-batiment-selection-modal',
   isOpenedByDefault: false,
 });
+
+function getBoundsAroundPoint([longitude, latitude]: Point, radiusMeters: number): BoundingBox {
+  const metersPerDegreeLatitude = 111_320;
+  const latitudeDelta = radiusMeters / metersPerDegreeLatitude;
+  const longitudeDelta = radiusMeters / (metersPerDegreeLatitude * Math.max(Math.cos((latitude * Math.PI) / 180), 0.1));
+
+  return [longitude - longitudeDelta, latitude - latitudeDelta, longitude + longitudeDelta, latitude + latitudeDelta];
+}
 
 function enrichHeatingMode(mode: ModeDeChauffage, engine: SimulatorEngine, situation: Situation): ModeDeChauffageEnriched {
   const coutParAn = mode.coutParAnPublicodeKey
@@ -307,13 +321,7 @@ export default function ChoixChauffageResults() {
         onSelectGeoAddress={handleSelectGeoAddress}
         onAddressError={() => {}}
       />
-      <Modal
-        modal={batEnrBatimentSelectionModal}
-        title="Plusieurs batiments sont recensés à cette adresse, veuillez choisir le batiment concerné"
-        open={shouldSelectBatEnrBatiment}
-        size="custom"
-        lazy
-      >
+      <Modal modal={batEnrBatimentSelectionModal} title="" open={shouldSelectBatEnrBatiment} size="custom" lazy isClosableByUser={false}>
         <BatEnrBatimentSelection
           batiments={batEnrBatiments}
           initialCenter={geoAddress?.geometry.coordinates}
@@ -326,6 +334,7 @@ export default function ChoixChauffageResults() {
             item={recommended}
             coutParAnGaz={coutParAnGaz}
             dpeFrom={urlParams.dpe}
+            geoAddress={geoAddress}
             isOpen={openAccordionId === recommended.label}
             onHelpButtonClick={recommended?.helpAction === 'open-heat-network-contact' ? openHeatNetworkContactModal : undefined}
             onOpenChange={(expanded) => handleAccordionOpenChange(recommended.label, expanded)}
@@ -341,8 +350,8 @@ export default function ChoixChauffageResults() {
             onEditParamsClick={handleEditHotWaterParamsClick}
             onOpenChange={handleAccordionOpenChange}
           />
-          <DemandeFCRForm />
           <IncompatibleSolutionsSection rows={incompatibleSolutionRows} />
+          <DemandeFCRForm />
           <CallOut
             title={
               <>
@@ -429,6 +438,10 @@ function PrerequisiteStatusBadge({ status }: { status: PrerequisiteStatus }) {
       className: 'bg-[#FFE9E6] text-error',
       label: 'CONTRAIGNANT',
     },
+    defavorable: {
+      className: 'bg-[#FFE9E6] text-error',
+      label: 'DÉFAVORABLE',
+    },
     favorable: {
       className: 'bg-[#B8FEC9] text-success',
       label: 'FAVORABLE',
@@ -451,15 +464,12 @@ function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolutionRow[
           {rows.map((row) => (
             <li key={`${row.label}-${row.reason}`} className="grid gap-2 md:grid-cols-[1fr_auto_auto] md:items-center md:gap-4">
               <div className="flex items-center gap-3">
-                <span className="fr-icon-close-line text-error" aria-hidden="true" />
+                <PrerequisiteStatusBadge status="defavorable" />
                 <strong className="whitespace-nowrap text-error">{row.label}</strong>
                 <span>{row.reason}</span>
               </div>
               <span className="justify-self-start whitespace-nowrap text-blue md:justify-self-end">
                 <span className="fr-icon-stack-line font-bold" aria-hidden="true" /> {row.source}
-              </span>
-              <span className="justify-self-start rounded-sm bg-[#FFE9E6] px-2 py-1 text-xs font-bold text-error md:justify-self-end">
-                DÉFAVORABLE
               </span>
             </li>
           ))}
@@ -554,22 +564,16 @@ function PrerequisiteRowItem({ row }: { row: PrerequisiteRow }) {
       )}
     >
       <span className="flex gap-3 items-center">
-        <span
-          className={cx(
-            'flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border border-blue',
-            row.status === 'favorable' && 'bg-blue fr-icon-check-line text-white'
-          )}
-          aria-hidden="true"
-        />
+        <PrerequisiteStatusBadge status={row.status} />
         <span>{row.label}</span>
       </span>
       <span className="flex shrink-0 items-center gap-3 self-end md:self-auto">
         {row.source && (
           <span className="text-blue">
-            <span className="fr-icon-stack-line font-bold" aria-hidden="true" /> {row.source}
+            <span className="fr-icon-stack-line font-bold mr-1" aria-hidden="true" />
+            <strong>sources :</strong> {row.source}
           </span>
         )}
-        <PrerequisiteStatusBadge status={row.status} />
       </span>
     </li>
   );
@@ -579,18 +583,14 @@ function InstallationCostPrerequisite({ coutInstallation }: { coutInstallation: 
   return (
     <li className="flex flex-col gap-3 bg-[#FFF8E5] px-3 md:flex-row md:items-center md:justify-between py-2">
       <span className="flex items-start gap-3">
-        <span className="shrink-0 rounded-sm border border-blue h-5 w-5" aria-hidden="true" />
+        <PrerequisiteStatusBadge status="aVerifier" />
         <span>
-          <strong>{coutInstallation} : </strong>
-          Coûts d’installation, vérifiez les aides publiques disponibles
+          <strong>Coûts d’installation : {coutInstallation}</strong>. Vérifiez votre éligibilité aux aides
         </span>
       </span>
-      <span className="flex shrink-0 items-center gap-3 self-end md:self-auto">
-        <Link href="https://france-renov.gouv.fr/" isExternal className="text-blue">
-          En savoir plus
-        </Link>
-        <PrerequisiteStatusBadge status="aVerifier" />
-      </span>
+      <Link href="https://france-renov.gouv.fr/" isExternal className="text-blue">
+        En savoir plus sur les aides
+      </Link>
     </li>
   );
 }
@@ -619,23 +619,42 @@ function PrerequisitesList({
   );
 }
 
-function RecommendedSolutionCard({
-  item,
-  dpeFrom,
-  coutParAnGaz,
-  isOpen,
-  onHelpButtonClick,
-  onOpenChange,
-  situation,
-}: {
+type RecommendedSolutionCardProps = {
   item: ModeDeChauffageEnriched;
   dpeFrom: DPE;
+  geoAddress?: BANAddressFeature;
   coutParAnGaz: number;
   isOpen: boolean;
   onHelpButtonClick?: () => void;
   onOpenChange: (expanded: boolean) => void;
   situation: Situation;
-}) {
+};
+
+function RecommendedSolutionCard({
+  item,
+  dpeFrom,
+  geoAddress,
+  coutParAnGaz,
+  isOpen,
+  onHelpButtonClick,
+  onOpenChange,
+  situation,
+}: RecommendedSolutionCardProps) {
+  if (item.label === 'Réseau de chaleur' && situation.eligibiliteReseauChaleur) {
+    return (
+      <HeatNetworkRecommendedSolutionCard
+        item={item}
+        dpeFrom={dpeFrom}
+        geoAddress={geoAddress}
+        coutParAnGaz={coutParAnGaz}
+        isOpen={isOpen}
+        onHelpButtonClick={onHelpButtonClick}
+        onOpenChange={onOpenChange}
+        situation={situation}
+      />
+    );
+  }
+
   const dpeTo = improveDpe(dpeFrom, item.gainClasse);
   const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn);
   const gainPercentVsGaz = getGainPercentVsGaz(item, coutParAnGaz);
@@ -700,6 +719,143 @@ function RecommendedSolutionCard({
 
       {isOpen && (
         <div className="mt-10">
+          <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="recommended" />
+        </div>
+      )}
+    </section>
+  );
+}
+
+function HeatNetworkRecommendedSolutionCard({
+  item,
+  dpeFrom,
+  geoAddress,
+  coutParAnGaz,
+  isOpen,
+  onHelpButtonClick,
+  onOpenChange,
+  situation,
+}: RecommendedSolutionCardProps) {
+  const heatNetwork = situation.eligibiliteReseauChaleur;
+  const dpeTo = improveDpe(dpeFrom, item.gainClasse);
+  const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn);
+  const gainPercentVsGaz = getGainPercentVsGaz(item, coutParAnGaz);
+  const prerequisiteRows = getPrerequisiteRows(item, situation);
+  const mapConfiguration = useMemo(
+    () =>
+      createMapConfiguration({
+        filtreIdentifiantReseau: heatNetwork?.id ? [heatNetwork.id] : [],
+        reseauxDeChaleur: {
+          show: true,
+        },
+      }),
+    [heatNetwork?.id]
+  );
+  const mapBounds = useMemo(() => {
+    if (!geoAddress) {
+      return undefined;
+    }
+
+    const radiusMeters = Math.max((heatNetwork?.distance ?? 0) + 120, 250);
+
+    return getBoundsAroundPoint(geoAddress.geometry.coordinates, radiusMeters);
+  }, [geoAddress, heatNetwork?.distance]);
+  const networkName = heatNetwork?.name ? ` de ${heatNetwork.name}` : '';
+  const distanceLabel = heatNetwork?.distance !== null && heatNetwork?.distance !== undefined ? `${heatNetwork.distance} m` : 'proximité';
+
+  return (
+    <section className="fr-mt-6w border border-gray-200 border-l-4 border-l-green-600 bg-white px-6 py-6 md:px-10">
+      <div className="flex items-start justify-between gap-6">
+        <div>
+          <p className="mb-2 text-sm font-semibold uppercase tracking-wide">Solution recommandée</p>
+          <h3 className="mb-3 text-3xl font-bold text-blue">{item.label}</h3>
+          <UsageTags usage={item.usage} />
+        </div>
+        <Image src={`/${item.icone}`} alt="" width={136} height={104} className="hidden object-contain md:block" />
+      </div>
+
+      <p className="max-w-5xl">
+        Votre bâtiment est situé à <strong>{distanceLabel}</strong> du réseau de chaleur{networkName}. C’est la solution à privilégier pour
+        un chauffage collectif. Une énergie majoritairement <strong>renouvelable et locale</strong>, un <strong>prix stable</strong> et une{' '}
+        <strong>TVA réduite à 5,5 %</strong>, le tout garanti par un service public.
+      </p>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(14rem,1.1fr)_minmax(12rem,1fr)_minmax(18rem,1.8fr)]">
+        {geoAddress && (
+          <div className="h-56 overflow-hidden border border-solid border-border-default-grey">
+            <Map
+              withCenterPin
+              initialCenter={geoAddress.geometry.coordinates}
+              bounds={mapBounds}
+              initialZoom={15}
+              initialMapConfiguration={mapConfiguration}
+            />
+          </div>
+        )}
+        <div className="bg-gray-100 p-5">
+          <p className="mb-2 uppercase">Gain DPE</p>
+          <div className="mb-4 flex items-center gap-3 border-b border-gray-300 pb-4">
+            <DpeProgression from={dpeFrom} to={dpeTo} />
+          </div>
+          <p className="mb-1 uppercase">Coût consommation</p>
+          <p className="mb-1 font-bold text-blue">
+            {lowerBoundString} à {upperBoundString}
+          </p>
+          <p className="mb-3">par an par logement</p>
+          <p className={cx('mb-0 flex items-center gap-2 font-bold', gainPercentVsGaz <= 0 ? 'text-success' : 'text-error')}>
+            <span className={gainPercentVsGaz <= 0 ? 'fr-icon-arrow-right-down-line' : 'fr-icon-arrow-right-up-line'} aria-hidden="true" />
+            {gainPercentVsGaz <= 0 ? '-' : '+'}
+            {Math.abs(gainPercentVsGaz)} % d’économies vs gaz
+          </p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-[1fr_auto_1fr]">
+          <div>
+            <h4 className="mb-3 text-lg font-bold uppercase text-success">Avantages</h4>
+            <ul className="m-0 list-none space-y-1 p-0">
+              {item.avantages.map((avantage) => (
+                <li key={avantage} className="flex gap-3">
+                  <span className="fr-icon-check-line text-success" aria-hidden="true" />
+                  <span>{avantage}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <span className="hidden text-lg font-bold text-blue lg:block">/</span>
+          <div>
+            <h4 className="mb-3 text-lg font-bold uppercase text-error">Inconvénients</h4>
+            <ul className="m-0 list-none space-y-1 p-0">
+              {item.inconvenients.map((inconvenient) => (
+                <li key={inconvenient} className="flex gap-3">
+                  <span className="fr-icon-close-line text-error" aria-hidden="true" />
+                  <span>{inconvenient}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex flex-col items-start gap-4 md:flex-row md:items-center">
+        <Button
+          href={onHelpButtonClick ? undefined : '#help-ademe'}
+          onClick={onHelpButtonClick}
+          iconId="fr-icon-arrow-right-line"
+          iconPosition="right"
+        >
+          Passer à l’étape suivante
+        </Button>
+        <button
+          type="button"
+          className="bg-transparent p-0 text-lg text-blue underline"
+          onClick={() => onOpenChange(!isOpen)}
+          aria-expanded={isOpen}
+        >
+          {isOpen ? 'Lire moins −' : 'Lire plus +'}
+        </button>
+      </div>
+
+      {isOpen && (
+        <div className="mt-8">
           <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="recommended" />
         </div>
       )}

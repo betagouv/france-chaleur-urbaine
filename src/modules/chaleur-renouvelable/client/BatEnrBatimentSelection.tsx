@@ -83,8 +83,9 @@ export function BatEnrBatimentSelection({ batiments, initialCenter, onSelect }: 
 
   return (
     <div>
+      <p className="my-3 font-bold text-xl">Plusieurs batiments sont recensés à cette adresse, veuillez choisir le batiment concerné</p>
       {features.length > 0 && (
-        <div className="h-[560px] min-h-[420px] overflow-hidden border border-solid border-border-default-grey">
+        <div className="h-140 min-h-105 overflow-hidden border border-solid border-border-default-grey">
           <Map
             withoutLogo
             withBorder
