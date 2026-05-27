@@ -19,12 +19,20 @@ type ModalProps = Omit<React.ComponentProps<CreateModal['Component']>, 'size'> &
   onOpen?: NonNullable<Parameters<typeof useIsDSFRModalOpen>[1]>['onConceal'];
   open?: boolean;
   loading?: boolean;
+  isClosableByUser?: boolean;
 };
 
-export const StyledModal = styled.div<{ customSize?: boolean }>`
+export const StyledModal = styled.div<{ customSize?: boolean; isClosableByUser?: boolean }>`
   .fr-modal__title:empty {
     display: none;
   }
+  ${({ isClosableByUser }) =>
+    isClosableByUser === false &&
+    css`
+      .fr-modal__header {
+        display: none;
+      }
+    `}
   ${({ customSize }) =>
     customSize &&
     css`
@@ -47,7 +55,19 @@ export const StyledModal = styled.div<{ customSize?: boolean }>`
  * @deprecated Utiliser `Dialog` (Radix) à la place. Empilement natif, pas de hack timing,
  * style Tailwind direct, pas de singleton DSFR qui casse l'imbrication.
  */
-const Modal = ({ modal, size, onOpen, loading, onClose, open, lazy = false, children, ...props }: ModalProps) => {
+const Modal = ({
+  modal,
+  size,
+  onOpen,
+  loading,
+  onClose,
+  open,
+  lazy = false,
+  children,
+  isClosableByUser = true,
+  concealingBackdrop,
+  ...props
+}: ModalProps) => {
   const [isFirstLoad, setIsFirstLoad] = React.useState(true);
   const previousOpen = usePrevious(open);
   const isOpened = useIsModalOpen(modal, {
@@ -59,6 +79,10 @@ const Modal = ({ modal, size, onOpen, loading, onClose, open, lazy = false, chil
         return;
       }
       setIsFirstLoad(false);
+      if (!isClosableByUser && open) {
+        modal.open();
+        return;
+      }
       onClose?.();
     },
     onDisclose: onOpen,
@@ -87,8 +111,12 @@ const Modal = ({ modal, size, onOpen, loading, onClose, open, lazy = false, chil
   }, []);
 
   return createPortal(
-    <StyledModal customSize={size === 'custom'} onClick={preventPropagationClick}>
-      <modal.Component size={size !== 'custom' ? size : undefined} {...props}>
+    <StyledModal customSize={size === 'custom'} isClosableByUser={isClosableByUser} onClick={preventPropagationClick}>
+      <modal.Component
+        size={size !== 'custom' ? size : undefined}
+        concealingBackdrop={isClosableByUser ? concealingBackdrop : false}
+        {...props}
+      >
         {loading && <Loader size="lg" variant="section" />}
         {(!lazy || isOpened) && children}
       </modal.Component>
