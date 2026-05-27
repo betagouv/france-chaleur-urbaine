@@ -46,6 +46,7 @@ Two entry points, picked by usage:
 | `legendContent` | — | Custom legend node rendered inside the drawer instead of the full `MapLegend` (caller composes shared legend rows — e.g. `<IframeLegend layers={…}>`). Reuses the drawer mechanics (collapse, padding, atom). |
 | `search` | `'none'` | `'none'` / `'network'` (address + heating-network → flyTo/fitBounds) / `'eligibility'` (address → tRPC query + colored marker history). |
 | `searchPlaceholder` | — | Override the search input placeholder. |
+| `contextMenu` | `false` | Right-click context menu. Currently a single "tester l'éligibilité à ce point" action (`reseaux.eligibilityStatus` on the clicked coords → result popup + persistent marker, no address input). Gate by role at the call site (e.g. admin only). |
 | `mapRef` | — | External `RefObject<MapCanvasController \| null>` (e.g. for FlyToButtons). |
 | `className`, `children` | — | Standard. |
 
@@ -79,6 +80,7 @@ src/modules/map/
       MapInstanceSync.tsx     # bridges MapCanvasContext into atoms (mounted under MapCanvas)
       MapDrawHost.tsx         # mounts a MapboxDraw control, exposed via mapDrawAtom
       MapMarker.tsx           # HTML marker overlay (uses useMapInstance)
+      MapContextMenu.tsx      # right-click context menu (extensible). Single action today: eligibility test at the clicked point (parallel reseaux.eligibilityStatus + BAN reverse-geocode for the nearest address < 100m); drops a persistent MapMarker + EligibilityPopup
       BdnbBatimentSelector.tsx # building selector on the bdnb-batiments source (controlled, lock-on-select)
       FileDropHandler.tsx     # drag/drop + paste geo-file → GeoJSON source overlay
       fileConversion.ts       # file → GeoJSON helpers (kml/kmz/geojson/shapefile, proj4)
@@ -96,6 +98,7 @@ src/modules/map/
     search/
       MapSearchInput.tsx          # combined BAN + reseaux.searchForMap autocomplete
       AddressSearchInput.tsx      # BAN-only autocomplete (eligibility flow)
+      EligibilityPopup.tsx        # eligibility result popup (shared: network-search marker + right-click context menu); optional `nearestAddress` line + `isEligibilityClose` helper
       EligibilityResultsPanel.tsx # listing of tested addresses (mounted under the search input when search='eligibility')
       legacy/
         CardSearchDetails.tsx # ⚠️ styled-components — to port/revisit (eligibility result card, used by V1 too)

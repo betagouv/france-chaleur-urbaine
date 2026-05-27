@@ -18,6 +18,7 @@ const searchOptions = ['none', 'network', 'eligibility'] as const;
 
 const sandboxParams = {
   buildingSelector: parseAsBoolean.withDefault(false),
+  contextMenu: parseAsBoolean.withDefault(false),
   initialBuildingId: parseAsString.withDefault(''),
   interactive: parseAsBoolean.withDefault(true),
   legend: parseAsStringLiteral(legendOptions).withDefault('auto'),
@@ -76,6 +77,15 @@ export function Sandbox() {
             className="size-4"
           />
           <code>interactive</code>
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={params.contextMenu}
+            onChange={(e) => void setParam({ contextMenu: e.target.checked })}
+            className="size-4"
+          />
+          <code>contextMenu</code>
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span className="text-xs text-(--text-mention-grey)">
@@ -156,6 +166,7 @@ export function Sandbox() {
                 interactive={params.interactive}
                 legend={params.buildingSelector ? false : params.legend === 'false' ? false : params.legend}
                 search={params.buildingSelector ? 'none' : params.search}
+                contextMenu={params.contextMenu}
               >
                 {params.buildingSelector && <BdnbBatimentSelector value={selectedBuildingId} onSelect={setSelectedBuildingId} />}
               </Map>

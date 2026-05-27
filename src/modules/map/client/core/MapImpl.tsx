@@ -1,10 +1,8 @@
-import Badge from '@codegouvfr/react-dsfr/Badge';
 import { useLocalStorageValue } from '@react-hookz/web';
 import { useAtomValue } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { getReadableDistance } from '@/modules/geo/client/helpers';
 import { notify } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
@@ -16,6 +14,7 @@ import type { DeepPartial } from '@/utils/typescript';
 import type { BBox, InitialView } from '../../shared/types';
 import type { MapConfiguration } from '../config/map-configuration';
 import { useMapConfig } from '../config/useMapConfig';
+import { MapContextMenu } from '../interactions/MapContextMenu';
 import { MapDrawHost } from '../interactions/MapDrawHost';
 import { MapInstanceSync } from '../interactions/MapInstanceSync';
 import { MapMarker } from '../interactions/MapMarker';
@@ -25,9 +24,9 @@ import { LegendDrawer } from '../legend/LegendDrawer';
 import { MapCanvas } from '../MapCanvas';
 import { MapStoreProvider } from '../MapStoreProvider';
 import { AddressSearchInput, type AddressSelection } from '../search/AddressSearchInput';
+import { EligibilityPopup } from '../search/EligibilityPopup';
 import { EligibilityResultsPanel } from '../search/EligibilityResultsPanel';
 import { MapSearchInput, type MapSearchResult } from '../search/MapSearchInput';
-import { buildPopupTitle } from './common';
 import type { MapCanvasController } from './controller';
 import { useMapInstance } from './MapCanvasContext';
 
@@ -72,6 +71,8 @@ export type MapProps = {
   search?: SearchMode;
   /** Placeholder for the search overlay's input. */
   searchPlaceholder?: string;
+  /** Enables the right-click context menu (currently a "test eligibility at this point" action). Gate by role at the call site. */
+  contextMenu?: boolean;
   className?: string;
   /** JSX overlays inside the canvas (e.g. custom `<MapMarker>`). */
   children?: React.ReactNode;
@@ -102,6 +103,7 @@ function MapImplInner({
   legendContent,
   search = 'none',
   searchPlaceholder,
+  contextMenu = false,
   className,
   children,
 }: Omit<MapProps, 'config'>) {
@@ -240,6 +242,7 @@ function MapImplInner({
         config={config}
       >
         <MapInstanceSync />
+        {contextMenu && <MapContextMenu />}
         {legend && <MapDrawHost />}
         {legend && <LegendPaddingSync />}
         {search === 'eligibility' &&
@@ -257,7 +260,9 @@ function MapImplInner({
             longitude={networkSearchMarker.coordinates[0]}
             latitude={networkSearchMarker.coordinates[1]}
             color="#4550e5"
-            popupContent={(close) => <NetworkSearchPopup marker={networkSearchMarker} close={close} />}
+            popupContent={(close) => (
+              <EligibilityPopup label={networkSearchMarker.label} eligibility={networkSearchMarker.eligibility} close={close} />
+            )}
           />
         )}
         {children}
@@ -290,65 +295,6 @@ function MapImplInner({
           />
         </div>
       )}
-    </div>
-  );
-}
-
-/**
- * Inline popup attached to the network-search marker. Reuses the layer-popup
- * `Title` helper (close button at top-right) and the V1 distance icon to keep
- * the visual language consistent with the rest of the map.
- */
-function NetworkSearchPopup({ marker, close }: { marker: NetworkSearchMarker; close: () => void }) {
-  const { label, eligibility } = marker;
-  const { isEligible, distance, basedOnCity, cityHasNetwork, cityHasFuturNetwork, futurNetwork, inPDP, hasNoTraceNetwork } = eligibility;
-  const isClose = basedOnCity ? cityHasNetwork || cityHasFuturNetwork : isEligible;
-  const readableDistance = getReadableDistance(distance);
-  const Title = buildPopupTitle(close);
-
-  return (
-    <div className="flex flex-col gap-2 text-sm leading-5">
-      <Title
-        subtitle={
-          isClose ? (
-            <Badge small severity="success" className="mt-1">
-              Réseau proche
-            </Badge>
-          ) : (
-            <Badge small severity="error" className="mt-1">
-              Pas de réseau connu
-            </Badge>
-          )
-        }
-      >
-        {label}
-      </Title>
-      <p className="mb-0">
-        {basedOnCity
-          ? cityHasNetwork
-            ? 'Un réseau de chaleur passe dans cette ville.'
-            : cityHasFuturNetwork
-              ? 'Un réseau de chaleur passera bientôt dans cette ville.'
-              : "Il n'y a pour le moment pas de réseau de chaleur dans cette ville."
-          : (isEligible && distance === null) || (distance !== null && distance < 100)
-            ? futurNetwork
-              ? 'Un réseau de chaleur passera bientôt à proximité de cette adresse.'
-              : 'Un réseau de chaleur passe à proximité de cette adresse.'
-            : distance !== null && distance < 200
-              ? "Le réseau n'est pas très loin."
-              : hasNoTraceNetwork
-                ? 'Réseau présent sur la commune, mais sans tracé connu.'
-                : 'Pas de réseau de chaleur à proximité de cette adresse.'}
-      </p>
-      {readableDistance && !basedOnCity && (
-        <div className="flex items-center gap-2 text-(--text-label-blue-france)">
-          <img src="/icons/grid-line.svg" alt="" height={16} width={16} />
-          <span>
-            {futurNetwork ? 'passera à' : ''} {readableDistance}
-          </span>
-        </div>
-      )}
-      {inPDP && !basedOnCity && <p className="mb-0 text-xs">Adresse située dans un périmètre de développement prioritaire.</p>}
     </div>
   );
 }
