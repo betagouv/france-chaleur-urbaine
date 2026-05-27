@@ -5,8 +5,9 @@ import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
 import RichSelect from '@/components/ui/RichSelect';
 import type { BANAddressFeature } from '@/modules/ban/types';
+import { BatEnrBatimentsMap } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentsMap';
+import { DpeTag } from '@/modules/chaleur-renouvelable/client/ChoixChauffageResults';
 import type { ChoixChauffageParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
-import { DPE_BG } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import {
   type DPE,
   DPE_VALUES,
@@ -20,8 +21,8 @@ import {
   typeLogementOptions,
   typeRadiateurOptions,
 } from '@/modules/chaleur-renouvelable/constants';
+import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
 import { AddressField } from '@/modules/form/AddressField';
-import cx from '@/utils/cx';
 
 export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
 
@@ -83,28 +84,37 @@ function areDraftsEqual(left: ParamsFormDraft, right: ParamsFormDraft) {
   );
 }
 
-/**
- * Formulaire d’ajustement des paramètres de simulation sur la page résultats.
- * Les modifications restent locales jusqu’à validation pour permettre un vrai annuler.
- */
-export function ParamsForm({
-  isOpen,
-  setIsOpen,
-  values,
-  onSave,
-  setGeoAddress,
-  onSelectGeoAddress,
-  onAddressError: _onAddressError,
-}: {
+type ParamsFormProps = {
+  batiments: BatEnrBatiment[];
   isOpen: boolean;
   setIsOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
   values: ChoixChauffageParams;
   onSave: (values: ChoixChauffageParams) => Promise<unknown> | undefined;
   geoAddress?: BANAddressFeature;
+  selectedBatiment?: BatEnrBatiment;
   setGeoAddress: (val: BANAddressFeature | undefined) => void;
   onSelectGeoAddress?: (val?: BANAddressFeature) => void;
+  onSelectBatiment: (batiment: BatEnrBatiment) => void;
   onAddressError?: () => void;
-}) {
+};
+
+/**
+ * Formulaire d’ajustement des paramètres de simulation sur la page résultats.
+ * Les modifications restent locales jusqu’à validation pour permettre un vrai annuler.
+ */
+export function ParamsForm({
+  batiments,
+  isOpen,
+  setIsOpen,
+  values,
+  onSave,
+  geoAddress,
+  selectedBatiment,
+  setGeoAddress,
+  onSelectGeoAddress,
+  onSelectBatiment,
+  onAddressError: _onAddressError,
+}: ParamsFormProps) {
   const currentValues = buildDraft(values);
   const [draft, setDraft] = useState<ParamsFormDraft>(currentValues);
 
@@ -161,14 +171,18 @@ export function ParamsForm({
   };
 
   return (
-    <form id="params-form" className="rounded border border-[#d7d3cb] bg-white px-4 py-5 shadow-sm" onSubmit={handleSubmit}>
-      <div className="flex justify-between">
+    <form
+      id="params-form"
+      className="border border-[#c8efd7] bg-white px-4 py-4 shadow-[0_0_0_1px_rgba(199,239,215,0.45),0_4px_12px_rgba(0,0,0,0.08)]"
+      onSubmit={handleSubmit}
+    >
+      <div className="flex items-start justify-between gap-4">
         {isOpen ? (
           <>
             <AddressField
               label=""
               value={draft.adresse}
-              className="flex-2"
+              className="max-w-90 flex-1"
               nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
               onlyAddress
               onClear={() => {
@@ -185,11 +199,7 @@ export function ParamsForm({
                 onSelectGeoAddress?.(nextAddress);
               }}
             />
-            <div className="flex flex-1 justify-end">
-              <span className="cursor-pointer" onClick={handleClose}>
-                x
-              </span>
-            </div>
+            <button type="button" className="fr-icon-close-line mt-1 text-sm" aria-label="Fermer" onClick={handleClose} />
           </>
         ) : (
           <>
@@ -212,81 +222,90 @@ export function ParamsForm({
           </>
         )}
       </div>
-      <p className="mb-6 mt-4">
+      <p className="my-3">
         Ajustez les détails de votre simulation (DPE, nombre de logements, mode de production d’eau chaude...) pour obtenir un calcul plus
         précis des coûts et économies d’énergie.
       </p>
       {isOpen ? (
         <>
-          <div className="space-y-6">
+          <div className="space-y-4 text-(--text-title-grey)">
             <section>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-sm font-bold">
                 <span className="fr-icon-community-fill" aria-hidden="true" />
-                <h3 className="m-0 text-xl">Bâtiment</h3>
+                <h3 className="m-0 text-sm font-bold">Bâtiment</h3>
               </div>
-              <div className="mt-4 grid grid-cols-1 md:gap-4 md:grid-cols-3">
-                <Input
-                  label="Nombre de logements"
-                  nativeInputProps={{
-                    inputMode: 'numeric',
-                    min: 1,
-                    onChange: (event) => setDraft((previousDraft) => ({ ...previousDraft, nbLogements: event.target.value })),
-                    placeholder: '25',
-                    type: 'number',
-                    value: draft.nbLogements,
-                  }}
+              <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+                <BatimentMapField
+                  batiments={batiments}
+                  initialCenter={geoAddress?.geometry.coordinates}
+                  selectedBatiment={selectedBatiment}
+                  onSelect={onSelectBatiment}
                 />
-                <InputWithSuffix
-                  label="Surface habitable par logement (moy)"
-                  suffix="m²"
-                  value={draft.surfaceMoyenne}
-                  placeholder="70"
-                  onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
-                />
-                <Input
-                  label="Habitants par logement (moy)"
-                  nativeInputProps={{
-                    inputMode: 'decimal',
-                    min: 0,
-                    onBlur: () => {
-                      setDraft((previousDraft) => ({
-                        ...previousDraft,
-                        habitantsMoyen: normalizeDecimalString(previousDraft.habitantsMoyen),
-                      }));
-                    },
-                    onChange: (event) => {
-                      const nextValue = event.target.value;
-                      if (!isNumericLike(nextValue)) return;
+                <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 content-start">
+                  <InputWithSuffix
+                    label="Surface habitable par logement (moy)"
+                    suffix="m²"
+                    value={draft.surfaceMoyenne}
+                    placeholder="70"
+                    onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
+                  />
+                  <Input
+                    hideOptionalLabel
+                    label="Habitants par logement (moy)"
+                    nativeInputProps={{
+                      inputMode: 'decimal',
+                      min: 0,
+                      onBlur: () => {
+                        setDraft((previousDraft) => ({
+                          ...previousDraft,
+                          habitantsMoyen: normalizeDecimalString(previousDraft.habitantsMoyen),
+                        }));
+                      },
+                      onChange: (event) => {
+                        const nextValue = event.target.value;
+                        if (!isNumericLike(nextValue)) return;
 
-                      setDraft((previousDraft) => ({ ...previousDraft, habitantsMoyen: nextValue }));
-                    },
-                    placeholder: '2',
-                    step: 0.1,
-                    type: 'number',
-                    value: draft.habitantsMoyen,
-                  }}
-                />
-              </div>
-              <div className="mt-4 grid grid-cols-1 md:gap-4 md:grid-cols-3">
-                <RichSelect<EspaceExterieur>
-                  value={draft.espaceExterieur ?? undefined}
-                  onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }))}
-                  options={[...espaceExterieurOptions]}
-                  placeholder={isEspaceExterieurDisabled ? "Renseignez d'abord le mode de chauffage" : 'Cochez vos espaces disponibles'}
-                  label="Espaces extérieurs"
-                  disabled={isEspaceExterieurDisabled}
-                />
-                <div className="col-span-2">
-                  <DpeField value={draft.dpe} onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, dpe: value }))} />
+                        setDraft((previousDraft) => ({ ...previousDraft, habitantsMoyen: nextValue }));
+                      },
+                      placeholder: '2',
+                      step: 0.1,
+                      type: 'number',
+                      value: draft.habitantsMoyen,
+                    }}
+                  />
+                  <RichSelect<EspaceExterieur>
+                    value={draft.espaceExterieur ?? undefined}
+                    onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }))}
+                    options={[...espaceExterieurOptions]}
+                    placeholder={isEspaceExterieurDisabled ? "Renseignez d'abord le mode de chauffage" : 'Cochez vos espaces disponibles'}
+                    label="Espaces extérieurs"
+                    disabled={isEspaceExterieurDisabled}
+                    className="min-w-0"
+                  />
+                  <Input
+                    hideOptionalLabel
+                    label="Nombre de logements"
+                    nativeInputProps={{
+                      inputMode: 'numeric',
+                      min: 1,
+                      onChange: (event) => setDraft((previousDraft) => ({ ...previousDraft, nbLogements: event.target.value })),
+                      placeholder: '25',
+                      type: 'number',
+                      value: draft.nbLogements,
+                    }}
+                  />
+                  <div className="md:col-span-2">
+                    <DpeField value={draft.dpe} onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, dpe: value }))} />
+                  </div>
                 </div>
               </div>
             </section>
             <section id={HOT_WATER_PARAMS_SECTION_ID} className="scroll-mt-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-sm font-bold">
                 <span className="fr-icon-sensor-fill" aria-hidden="true" />
-                <h3 className="m-0 text-xl">Chauffage et eau chaude sanitaire</h3>
+                <h3 className="m-0 text-sm font-bold">Chauffage et eau chaude sanitaire</h3>
               </div>
-              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="mt-3 grid grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-3">
                 <Select
                   label="Mode de chauffage"
                   options={[...typeLogementOptions]}
@@ -331,7 +350,7 @@ export function ParamsForm({
               </div>
             </section>
           </div>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <Button type="submit" iconId="fr-icon-save-line" disabled={!isDirty}>
               Enregistrer et recalculer
             </Button>
@@ -358,30 +377,40 @@ export function ParamsForm({
   );
 }
 
+type BatimentMapFieldProps = {
+  batiments: BatEnrBatiment[];
+  initialCenter?: [number, number];
+  selectedBatiment?: BatEnrBatiment;
+  onSelect: (batiment: BatEnrBatiment) => void;
+};
+
+function BatimentMapField({ batiments, initialCenter, selectedBatiment, onSelect }: BatimentMapFieldProps) {
+  const buildingLabel = selectedBatiment?.batiment_construction_id
+    ? `Bâtiment ${selectedBatiment.batiment_construction_id}`
+    : 'Cliquez sur un bâtiment';
+
+  return (
+    <div className="overflow-hidden bg-[#f6f6f6]">
+      <BatEnrBatimentsMap batiments={batiments} initialCenter={initialCenter} onSelect={onSelect} className="h-43 min-h-0 border-0" />
+      <div className="flex min-h-11 items-center gap-3 bg-[#f1eee8] px-3 py-2 text-xs">
+        <span className="fr-icon-home-4-line text-lg text-blue" aria-hidden="true" />
+        <span className="min-w-0">
+          <span className="block truncate font-bold">{buildingLabel}</span>
+          <span className="block truncate text-grey">Bâtiments rattachés à l’adresse</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function DpeField({ value, onChange }: { value: DPE; onChange: (value: DPE) => void }) {
   return (
     <div>
       <div className="mb-2">Étiquette DPE</div>
-      <div className="flex flex-wrap gap-2">
-        {DPE_VALUES.map((dpeValue) => {
-          const isSelected = value === dpeValue;
-
-          return (
-            <button
-              key={dpeValue}
-              type="button"
-              className={cx(
-                'flex h-11 w-11 items-center justify-center rounded-md border-2 font-bold text-white transition',
-                DPE_BG[dpeValue],
-                isSelected ? 'border-blue ring-2 ring-blue' : 'border-transparent'
-              )}
-              aria-pressed={isSelected}
-              onClick={() => onChange(dpeValue)}
-            >
-              {dpeValue}
-            </button>
-          );
-        })}
+      <div className="flex flex-wrap gap-1.5">
+        {DPE_VALUES.map((dpeValue) => (
+          <DpeTag letter={dpeValue} isSelected={value === dpeValue} onClick={() => onChange(dpeValue)} />
+        ))}
       </div>
     </div>
   );
@@ -403,6 +432,7 @@ function InputWithSuffix({
   return (
     <div className="relative inline-block w-full">
       <Input
+        hideOptionalLabel
         label={label}
         nativeInputProps={{
           inputMode: 'numeric',
