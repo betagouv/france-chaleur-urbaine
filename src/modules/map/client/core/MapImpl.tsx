@@ -1,7 +1,7 @@
 import { useLocalStorageValue } from '@react-hookz/web';
 import { useAtomValue } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
-import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type CSSProperties, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { trackPostHogEvent } from '@/modules/analytics/client';
@@ -32,8 +32,17 @@ import { MapSearchInput, type MapSearchResult } from '../search/MapSearchInput';
 import type { MapCanvasController } from './controller';
 import { useMapInstance } from './MapCanvasContext';
 
-const LEGEND_DRAWER_WIDTH_PX = 350;
+/**
+ * Single source of truth for the open legend drawer width (`@xl` and up). Used
+ * by JS (`setPadding`) and exposed as the `--legend-drawer-width` CSS var on the
+ * map wrapper so the drawer, its toggle, the controls margin and the search
+ * overlay all stay in sync.
+ */
+const LEGEND_DRAWER_WIDTH_PX = 345;
 const LEGEND_AUTO_OPEN_VIEWPORT_PX = 768;
+
+/** Style exposing the drawer width as a CSS var on the map wrapper. */
+const mapWrapperStyle = { '--legend-drawer-width': `${LEGEND_DRAWER_WIDTH_PX}px` } as CSSProperties;
 
 /**
  * Legend drawer behaviour:
@@ -220,24 +229,25 @@ function MapImplInner({
 
   // Default position: left-3. When the legend feature is active the 30px-wide
   // toggle sits at the left edge — push the search column to `left-[30px]` so
-  // they touch but don't overlap. With the drawer open on `@xl`, slide past
-  // both the drawer (350px) and its toggle (30px).
+  // they touch but don't overlap. With the drawer open on `@xl`, slide past both
+  // the drawer (`--legend-drawer-width`, +35px gap) and its toggle.
   const searchClassName = cx(
     'absolute top-3 z-10 w-80 transition-[left,max-width] duration-200',
     legend && !legendOpen ? 'left-[30px] max-w-[calc(100%-2.5rem)]' : 'left-3 max-w-[calc(100%-1.5rem)]',
-    legendOpen && '@xl:left-[380px] @xl:max-w-[calc(100%-24.5rem)]'
+    legendOpen && '@xl:left-[calc(var(--legend-drawer-width)_+_35px)] @xl:max-w-[calc(100%_-_var(--legend-drawer-width)_-_47px)]'
   );
 
   const wrapperClass = cx(
     '@container relative h-full w-full',
     '[&_.maplibregl-ctrl-bottom-left]:transition-[margin-left] [&_.maplibregl-ctrl-bottom-left]:duration-200',
     '[&_.maplibregl-ctrl-top-left]:transition-[margin-left] [&_.maplibregl-ctrl-top-left]:duration-200',
-    legendOpen && '@xl:[&_.maplibregl-ctrl-bottom-left]:ml-[350px] @xl:[&_.maplibregl-ctrl-top-left]:ml-[350px]',
+    legendOpen &&
+      '@xl:[&_.maplibregl-ctrl-bottom-left]:ml-(--legend-drawer-width) @xl:[&_.maplibregl-ctrl-top-left]:ml-(--legend-drawer-width)',
     className
   );
 
   return (
-    <div className={wrapperClass}>
+    <div className={wrapperClass} style={mapWrapperStyle}>
       <MapCanvas
         mapRef={effectiveRef}
         initialView={initialView}
