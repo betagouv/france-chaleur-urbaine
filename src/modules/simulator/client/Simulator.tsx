@@ -264,8 +264,8 @@ function SimulatorResult({
             hideLabel
             label="Le prix actuel d'un CEE"
             classes={{
-              nativeInputOrTextArea: '!w-[3rem] mx-1 rounded px-1 py-0.5',
-              root: '!inline-block !w-auto align-middle',
+              nativeInputOrTextArea: 'w-[3rem]! mx-1 rounded px-1 py-0.5',
+              root: 'inline-block! w-auto! align-middle',
               wrap: 'fr-my-0',
             }}
             nativeInputProps={{
