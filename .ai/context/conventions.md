@@ -110,11 +110,13 @@
 
 ## Comment conventions
 
+- **Comment the "why", not the "what".** Explain non-obvious rationale, trade-offs, gotchas or edge cases — never restate what the code already says.
+- **Don't narrate trivial statements** — a comment before *every* line is noise. But the non-obvious still gets one: in particular **a `useEffect` almost always takes a one-line comment** saying what it does/syncs and why.
 - No comments for self-explanatory code.
 - `// TODO:` for planned work.
 - `// HACK:` for workarounds (explain why + when to remove).
 - No commented-out code — delete it.
-- No JSDoc except on complex public utility functions.
+- TSDoc header (purpose, 1-3 lines) above functions, hooks and React components — see *Function and component patterns*. The rules above target inline comments, not these doc headers.
 
 ## AI communication style
 
