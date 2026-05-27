@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import Button from '@/components/ui/Button';
-import CallOut from '@/components/ui/CallOut';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { fetchJSON } from '@/utils/network';
 
@@ -42,7 +41,7 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
         );
 
         setCoordonneesECFR(line.result as FranceRenovLine | null);
-      } catch (e: any) {
+      } catch {
         setCoordonneesECFR(null);
         setErrorMsg('Impossible de charger les infos France Rénov’ pour cette commune.');
       } finally {
@@ -69,84 +68,91 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
     if (!raw) return [] as string[];
     try {
       const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string' && x.trim() !== '') : [];
+      return Array.isArray(parsed) ? parsed.filter((horaire) => typeof horaire === 'string' && horaire.trim() !== '') : [];
     } catch {
       return [];
     }
   }, [coordonneesECFR]);
 
   return (
-    <>
-      <h3>👉 Contactez gratuitement un conseiller France Rénov&apos; pour faire le point</h3>
-      <CallOut title="Rencontrez votre conseiller France Rénov’" size="lg" colorVariant="yellow-moutarde">
-        <p>
-          Les conseillers France Rénov vous aident gratuitement à élaborer votre projet de rénovation, trouver des aides financières et
-          choisir les professionnels compétents.
-        </p>
-        <Button
-          iconId="fr-icon-arrow-right-line"
-          iconPosition="right"
-          onClick={() => {
-            trackPostHogEvent('link:click', { link_name: 'cta_rdv_france_renov', source: 'chaleur_renouvelable' });
-            setIsOpen((prev) => !prev);
-          }}
-          aria-expanded={isOpen}
-        >
-          {isOpen ? 'Masquer les coordonnées' : 'Prendre rdv avec un conseiller'}
-        </Button>
-        {isOpen && (
-          <>
-            <h4 className="text-lg fr-mt-3w">😕 Nous n'avons pas trouvé d'espace Conseil France Rénov' pour votre territoire.</h4>
-            <p>
-              👉️ Appelez un téléconseiller France Rénov' pour vous accompagner dans votre démarche :<br />
-              <span className="underline">0 808 800 700</span> Service gratuit + prix appel
-            </p>
-            <p className="fr-mt-3w">Du lundi au vendredi de 9h à 18h (heure métropolitaine).</p>
-            {isLoading && <p>Chargement…</p>}
-            {false && !isLoading && errorMsg && <p className="text-sm text-red-600">{errorMsg}</p>}
-            {false && !isLoading && !errorMsg && (
-              <>
-                <div>
-                  <div>{nom}</div>
-                  {rue && <div>{rue}</div>}
-                  {ville && <div>{ville}</div>}
-                </div>
-                <div className="flex flex-col gap-2 text-sm">
-                  {telephone && (
-                    <a href={`tel:${telephone}`} title="Contacter par téléphone">
-                      📞 {telephone}
-                    </a>
-                  )}
-                  {email && (
-                    <a href={`mailto:${email}`} title="Contacter par courriel">
-                      ✉️ {email}
-                    </a>
-                  )}
-                  {site && (
-                    <a rel="noopener noreferrer" href={site} target="_blank" title={`${site} - nouvelle fenêtre`}>
-                      🌐 {site}
-                    </a>
-                  )}
-                </div>
-
-                {horaires.length > 0 && (
-                  <div className="text-sm">
-                    <div className="mb-1 font-medium">🕑 Horaires</div>
-                    <ul className="list-inside list-disc space-y-1 text-gray-700">
-                      {horaires.map((h, i) => (
-                        <li key={i}>{h}</li>
-                      ))}
-                    </ul>
-                  </div>
+    <section className="mt-8 border-l-4 border-[#d6a100] bg-[#feeccf] px-6 py-6 text-(--text-title-grey)">
+      <h3 className="mb-4 flex items-start gap-2 text-xl font-bold">
+        <span className="fr-icon-customer-service-line mt-0.5 text-[#c74700]" aria-hidden="true" />
+        Contactez gratuitement un conseiller France Rénov’ pour faire le point
+      </h3>
+      <p className="mb-4 max-w-4xl">
+        Les conseillers France Rénov vous aident gratuitement à élaborer votre projet de rénovation, trouver des aides financières et
+        choisir les professionnels compétents.
+      </p>
+      <Button
+        iconId="fr-icon-arrow-right-line"
+        iconPosition="right"
+        onClick={() => {
+          trackPostHogEvent('link:click', { link_name: 'cta_rdv_france_renov', source: 'chaleur_renouvelable' });
+          setIsOpen((prev) => !prev);
+        }}
+        aria-expanded={isOpen}
+      >
+        {isOpen ? 'Masquer les coordonnées' : 'Prendre rdv avec un conseiller'}
+      </Button>
+      {isOpen && (
+        <div className="mt-5">
+          <h4 className="mb-2 text-lg font-bold">Nous n’avons pas trouvé d’espace Conseil France Rénov’ pour votre territoire.</h4>
+          <p>
+            Appelez un téléconseiller France Rénov’ pour vous accompagner dans votre démarche :<br />
+            <span className="underline">0 808 800 700</span> Service gratuit + prix appel
+          </p>
+          <p className="fr-mt-3w">Du lundi au vendredi de 9h à 18h (heure métropolitaine).</p>
+          {isLoading && <p>Chargement…</p>}
+          {false && !isLoading && errorMsg && <p className="text-sm text-red-600">{errorMsg}</p>}
+          {false && !isLoading && !errorMsg && (
+            <>
+              <div>
+                <div>{nom}</div>
+                {rue && <div>{rue}</div>}
+                {ville && <div>{ville}</div>}
+              </div>
+              <div className="flex flex-col gap-2 text-sm">
+                {telephone && (
+                  <a href={`tel:${telephone}`} title="Contacter par téléphone">
+                    <span className="fr-icon-phone-line mr-1" aria-hidden="true" />
+                    {telephone}
+                  </a>
                 )}
+                {email && (
+                  <a href={`mailto:${email}`} title="Contacter par courriel">
+                    <span className="fr-icon-mail-line mr-1" aria-hidden="true" />
+                    {email}
+                  </a>
+                )}
+                {site && (
+                  <a rel="noopener noreferrer" href={site} target="_blank" title={`${site} - nouvelle fenêtre`}>
+                    <span className="fr-icon-global-line mr-1" aria-hidden="true" />
+                    {site}
+                  </a>
+                )}
+              </div>
 
-                {!coordonneesECFR && <p className="text-sm text-gray-600">Aucune structure trouvée pour cette commune.</p>}
-              </>
-            )}
-          </>
-        )}
-      </CallOut>
-    </>
+              {horaires.length > 0 && (
+                <div className="text-sm">
+                  <div className="mb-1 font-medium">
+                    <span className="fr-icon-time-line mr-1" aria-hidden="true" />
+                    Horaires
+                  </div>
+                  <ul className="list-inside list-disc space-y-1 text-gray-700">
+                    {horaires.map((horaire) => (
+                      <li key={horaire}>{horaire}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {!coordonneesECFR && <p className="text-sm text-gray-600">Aucune structure trouvée pour cette commune.</p>}
+            </>
+          )}
+        </div>
+      )}
+    </section>
   );
 }
 

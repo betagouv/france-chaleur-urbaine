@@ -312,13 +312,16 @@ export default function ChoixChauffageResults() {
   return (
     <>
       <ParamsForm
+        batiments={batEnrBatiments}
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
         values={urlParams.simulationParams}
         onSave={urlParams.setSimulationParams}
         geoAddress={geoAddress}
+        selectedBatiment={selectedBatEnrBatiment}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={handleSelectGeoAddress}
+        onSelectBatiment={handleSelectBatEnrBatiment}
         onAddressError={() => {}}
       />
       <Modal modal={batEnrBatimentSelectionModal} title="" open={shouldSelectBatEnrBatiment} size="custom" lazy isClosableByUser={false}>
@@ -403,15 +406,30 @@ export default function ChoixChauffageResults() {
   );
 }
 
-function DpeTag({ letter }: { letter: DPE }) {
+export function DpeTag({ letter, isSelected = false, onClick }: { letter: DPE; isSelected?: boolean; onClick?: (letter: DPE) => void }) {
+  const className = cx(
+    'flex h-12 w-12 items-center justify-center rounded-sm border-2',
+    DPE_BG[letter],
+    onClick && 'cursor-pointer',
+    isSelected ? 'border-blue ring-2 ring-blue' : 'border-white'
+  );
+  const content = (
+    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
+      <span className="font-bold">{letter}</span>
+    </div>
+  );
+
+  if (onClick) {
+    return (
+      <button type="button" className={className} aria-label={`Classe énergétique ${letter}`} onClick={() => onClick(letter)}>
+        {content}
+      </button>
+    );
+  }
+
   return (
-    <div
-      className={cx('flex h-12 w-12 items-center justify-center rounded-sm', DPE_BG[letter])}
-      aria-label={`Classe énergétique ${letter}`}
-    >
-      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
-        <span className="font-bold">{letter}</span>
-      </div>
+    <div className={className} aria-label={`Classe énergétique ${letter}`}>
+      {content}
     </div>
   );
 }
@@ -508,20 +526,12 @@ function DpeProgression({ from, to }: { from: DPE; to: DPE }) {
   );
 }
 
-function ProsConsLists({
-  avantages,
-  inconvenients,
-  layout,
-}: {
-  avantages: string[];
-  inconvenients: string[];
-  layout: 'columns' | 'stacked';
-}) {
-  return (
-    <div className={layout === 'columns' ? 'contents' : undefined}>
+function ProsConsLists({ avantages, inconvenients, layout }: { avantages: string[]; inconvenients: string[]; layout?: string }) {
+  return layout === 'column' ? (
+    <>
       <div>
-        <h4 className="text-lg uppercase font-normal mb-3 text-success">Avantages</h4>
-        <ul className="m-0 list-none space-y-1 p-0">
+        <h4 className="text-lg font-bold uppercase text-success">Avantages</h4>
+        <ul className="space-y-1 p-0">
           {avantages.map((avantage) => (
             <li key={avantage} className="flex gap-3">
               <span className="fr-icon-check-line text-success" aria-hidden="true" />
@@ -530,9 +540,9 @@ function ProsConsLists({
           ))}
         </ul>
       </div>
-      <div className={layout === 'stacked' ? 'mt-6' : undefined}>
-        <h4 className="text-lg uppercase font-normal mb-3 text-error">Inconvénients</h4>
-        <ul className="m-0 list-none space-y-1 p-0">
+      <div>
+        <h4 className="text-lg font-bold uppercase text-error">Inconvénients</h4>
+        <ul className="space-y-1 p-0">
           {inconvenients.map((inconvenient) => (
             <li key={inconvenient} className="flex gap-3">
               <span className="fr-icon-close-line text-error" aria-hidden="true" />
@@ -541,6 +551,31 @@ function ProsConsLists({
           ))}
         </ul>
       </div>
+    </>
+  ) : (
+    <div>
+      <h4 className="text-lg font-bold uppercase">
+        <span className="text-success">Avantages</span>
+        <span className="inline-block font-normal mx-3">/</span>
+        <span className="text-error">Inconvénients</span>
+      </h4>
+      <ul className="m-0 list-none space-y-1 p-0">
+        {avantages.map((avantage) => (
+          <li key={avantage} className="flex gap-3">
+            <span className="fr-icon-check-line text-success" aria-hidden="true" />
+            <span>{avantage}</span>
+          </li>
+        ))}
+      </ul>
+      <span className="text-error">Inconvénients</span>
+      <ul className="m-0 list-none space-y-1 p-0">
+        {inconvenients.map((inconvenient) => (
+          <li key={inconvenient} className="flex gap-3">
+            <span className="fr-icon-close-line text-error" aria-hidden="true" />
+            <span>{inconvenient}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -679,7 +714,7 @@ function RecommendedSolutionCard({
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} layout="columns" />
+        <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} layout="column" />
         <div className=" bg-gray-100 p-5">
           <p className="mb-2 uppercase">Gain DPE</p>
           <div className="mb-4 flex items-center gap-3 border-b border-gray-300 pb-4">
@@ -751,15 +786,7 @@ function HeatNetworkRecommendedSolutionCard({
       }),
     [heatNetwork?.id]
   );
-  const mapBounds = useMemo(() => {
-    if (!geoAddress) {
-      return undefined;
-    }
 
-    const radiusMeters = Math.max((heatNetwork?.distance ?? 0) + 120, 250);
-
-    return getBoundsAroundPoint(geoAddress.geometry.coordinates, radiusMeters);
-  }, [geoAddress, heatNetwork?.distance]);
   const networkName = heatNetwork?.name ? ` de ${heatNetwork.name}` : '';
   const distanceLabel = heatNetwork?.distance !== null && heatNetwork?.distance !== undefined ? `${heatNetwork.distance} m` : 'proximité';
 
@@ -774,19 +801,18 @@ function HeatNetworkRecommendedSolutionCard({
         <Image src={`/${item.icone}`} alt="" width={136} height={104} className="hidden object-contain md:block" />
       </div>
 
-      <p className="max-w-5xl">
+      <p>
         Votre bâtiment est situé à <strong>{distanceLabel}</strong> du réseau de chaleur{networkName}. C’est la solution à privilégier pour
         un chauffage collectif. Une énergie majoritairement <strong>renouvelable et locale</strong>, un <strong>prix stable</strong> et une{' '}
         <strong>TVA réduite à 5,5 %</strong>, le tout garanti par un service public.
       </p>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(14rem,1.1fr)_minmax(12rem,1fr)_minmax(18rem,1.8fr)]">
+      <div className="grid gap-6 grid-1 md:grid-cols-3">
         {geoAddress && (
-          <div className="h-56 overflow-hidden border border-solid border-border-default-grey">
+          <div className="h-full overflow-hidden border border-solid border-border-default-grey">
             <Map
               withCenterPin
               initialCenter={geoAddress.geometry.coordinates}
-              bounds={mapBounds}
               initialZoom={15}
               initialMapConfiguration={mapConfiguration}
             />
@@ -798,7 +824,7 @@ function HeatNetworkRecommendedSolutionCard({
             <DpeProgression from={dpeFrom} to={dpeTo} />
           </div>
           <p className="mb-1 uppercase">Coût consommation</p>
-          <p className="mb-1 font-bold text-blue">
+          <p className="mb-1 font-bold text-xl text-blue">
             {lowerBoundString} à {upperBoundString}
           </p>
           <p className="mb-3">par an par logement</p>
@@ -808,33 +834,8 @@ function HeatNetworkRecommendedSolutionCard({
             {Math.abs(gainPercentVsGaz)} % d’économies vs gaz
           </p>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-[1fr_auto_1fr]">
-          <div>
-            <h4 className="mb-3 text-lg font-bold uppercase text-success">Avantages</h4>
-            <ul className="m-0 list-none space-y-1 p-0">
-              {item.avantages.map((avantage) => (
-                <li key={avantage} className="flex gap-3">
-                  <span className="fr-icon-check-line text-success" aria-hidden="true" />
-                  <span>{avantage}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <span className="hidden text-lg font-bold text-blue lg:block">/</span>
-          <div>
-            <h4 className="mb-3 text-lg font-bold uppercase text-error">Inconvénients</h4>
-            <ul className="m-0 list-none space-y-1 p-0">
-              {item.inconvenients.map((inconvenient) => (
-                <li key={inconvenient} className="flex gap-3">
-                  <span className="fr-icon-close-line text-error" aria-hidden="true" />
-                  <span>{inconvenient}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
       </div>
-
       <div className="mt-6 flex flex-col items-start gap-4 md:flex-row md:items-center">
         <Button
           href={onHelpButtonClick ? undefined : '#help-ademe'}
@@ -853,7 +854,6 @@ function HeatNetworkRecommendedSolutionCard({
           {isOpen ? 'Lire moins −' : 'Lire plus +'}
         </button>
       </div>
-
       {isOpen && (
         <div className="mt-8">
           <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="recommended" />
@@ -1043,7 +1043,7 @@ function OtherSolutionRow({
   const prerequisiteRows = getPrerequisiteRows(item, situation);
 
   return (
-    <article className="border-b border-gray-200 py-6 last:border-b-0">
+    <div className="border-b border-gray-200 py-6 last:border-b-0">
       <div className="grid gap-5 md:grid-cols-[minmax(12rem,2fr)_minmax(9rem,1fr)_max-content_max-content_max-content] md:items-center">
         <div>
           <p className="mb-3 text-blue font-bold">{item.label}</p>
@@ -1070,59 +1070,93 @@ function OtherSolutionRow({
         </button>
       </div>
       {isOpen && (
-        <div className="mt-6 border-t border-gray-200 pt-6">
-          <div className="flex gap-6">
-            <p className="mb-0">{item.description}</p>
-            <Image
-              src={`/${item.icone}`}
-              alt=""
-              width={144}
-              height={108}
-              className="justify-self-center object-contain md:justify-self-end"
-            />
-          </div>
-
-          <div className="mt-6 flex gap-8">
-            <div>
-              <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} layout="stacked" />
+        <>
+          <div className="grid gap-5 grid-cols-5 border-t border-gray-200 pt-6">
+            <div className="col-span-2">
+              <h4 className="text-lg uppercase">Description</h4>
+              <p className="mb-0">{item.description}</p>
+            </div>
+            <div className="col-span-2">
+              <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
             </div>
             <div>
-              <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="compact" />
-              <Button href="#help-ademe" iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-3">
-                Passer à l’étape suivante
-              </Button>
+              <Image
+                src={`/${item.icone}`}
+                alt=""
+                width={144}
+                height={108}
+                className="justify-self-center object-contain md:justify-self-end"
+              />
             </div>
           </div>
-        </div>
+          <div className="mt-6">
+            <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="compact" />
+            <Button href="#help-ademe" iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-3">
+              Passer à l’étape suivante
+            </Button>
+          </div>
+        </>
       )}
-    </article>
+    </div>
   );
 }
 
 function NoResultSection({ codeInsee }: { codeInsee?: string }) {
+  const renovationActions = [
+    {
+      description: 'toiture, murs, fenêtres, planchers, c’est souvent le geste le plus efficace',
+      title: 'Isoler votre logement',
+    },
+    {
+      description: 'une VMC performante améliore la qualité de l’air et limite les pertes de chaleur',
+      title: 'Améliorer votre système de ventilation',
+    },
+    {
+      description: 'entretien de la chaudière, désembouage des radiateurs, installation de robinets thermostatiques',
+      title: 'Optimiser votre chauffage actuel',
+    },
+    {
+      description: 'mousseurs, pommeaux économes, calorifugeage des tuyaux',
+      title: 'Réduire vos consommations d’eau chaude',
+    },
+  ];
+
   return (
     <>
-      <h3>Aucune solution de chauffage alternative n'est adaptée à votre situation actuelle</h3>
-      <p>
-        Pas d'inquiétude, d'autres actions permettent de réduire vos consommations d'énergie, vos factures et votre impact environnemental :
-      </p>
-      <ul>
-        <li>
-          <strong>Isoler votre logement</strong> : toiture, murs, fenêtres, planchers — c'est souvent le geste le plus efficace
-        </li>
-        <li>
-          <strong>Améliorer votre système de ventilation</strong> : une VMC performante améliore la qualité de l'air et limite les pertes de
-          chaleur
-        </li>
-        <li>
-          <strong>Optimiser votre chauffage actuel</strong> : entretien de la chaudière, désembouage des radiateurs, installation de
-          robinets thermostatiques
-        </li>
-        <li>
-          <strong>Réduire vos consommations d'eau chaude</strong> : mousseurs, pommeaux économes, calorifugeage des tuyaux
-        </li>
-      </ul>
-      <p>Ces travaux peuvent être éligibles à des aides financières (MaPrimeRénov', CEE, éco-prêt à taux zéro).</p>
+      <section className="mt-6 border border-[#e5e5e5] border-l-4 border-l-[#c74700] bg-white px-6 py-5 text-(--text-title-grey)">
+        <h3 className="mb-4 flex items-start gap-2 text-xl font-bold">
+          <span className="fr-icon-information-line mt-0.5 text-[#c74700]" aria-hidden="true" />
+          Aucune solution de chauffage alternatif n’est adaptée à votre situation
+        </h3>
+        <p className="mb-4 max-w-5xl">
+          Pas d’inquiétude, d’autres actions permettent de réduire vos consommations d’énergie, vos factures et votre impact environnemental
+          :
+        </p>
+        <ul className="mb-4 space-y-2 pl-0">
+          {renovationActions.map((action) => (
+            <li key={action.title} className="flex items-start gap-2">
+              <span className="mt-1.5 h-3 w-3 shrink-0 rounded-xs border border-blue" aria-hidden="true" />
+              <span>
+                <strong>{action.title}</strong> : {action.description}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="mb-3">Ces travaux peuvent être éligibles à des aides financières (MaPrimeRénov’, CEE, éco-prêt à taux zéro).</p>
+        <p className="mb-0 font-bold">
+          <span className="fr-icon-search-line mr-1 text-sm" aria-hidden="true" />
+          Pour encore plus d’actions possibles,&nbsp;
+          <Link
+            href="https://agirpourlatransition.ademe.fr/particuliers/"
+            isExternal
+            className="font-normal underline underline-offset-4"
+            postHogEventKey="link:click"
+            postHogEventProps={{ link_name: 'agir_actions_renovation', source: 'chaleur_renouvelable' }}
+          >
+            rendez-vous sur Agir
+          </Link>
+        </p>
+      </section>
       <FranceRenovHelp codeInsee={codeInsee} />
     </>
   );
