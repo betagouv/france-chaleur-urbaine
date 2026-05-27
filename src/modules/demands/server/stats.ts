@@ -170,18 +170,26 @@ export const getReseauxStats = async () => {
     .selectFrom(
       kdb
         .selectFrom('reseaux_de_chaleur')
-        .select(['id_fcu', 'nom_reseau', 'Identifiant reseau', 'tags', 'notes', sql<NetworkType>`'reseau_de_chaleur'`.as('network_type')])
+        .select([
+          'id_fcu',
+          'nom_reseau',
+          'Identifiant reseau',
+          'tags',
+          'notes',
+          'puissance_totale_MW',
+          sql<NetworkType>`'reseau_de_chaleur'`.as('network_type'),
+        ])
         .unionAll(
-          kdb
-            .selectFrom('zones_et_reseaux_en_construction')
-            .select([
-              'id_fcu',
-              'nom_reseau',
-              sql<string | null>`NULL`.as('Identifiant reseau'),
-              'tags',
-              'notes',
-              sql<NetworkType>`'reseau_en_construction'`.as('network_type'),
-            ])
+          kdb.selectFrom('zones_et_reseaux_en_construction').select([
+            'id_fcu',
+            'nom_reseau',
+            sql<string | null>`NULL`.as('Identifiant reseau'),
+            'tags',
+            'notes',
+            // Les réseaux en construction n'ont pas de puissance renseignée
+            sql<number | null>`NULL`.as('puissance_totale_MW'),
+            sql<NetworkType>`'reseau_en_construction'`.as('network_type'),
+          ])
         )
         .as('r')
     )
@@ -237,6 +245,7 @@ export const getReseauxStats = async () => {
       'r.network_type',
       'r.tags',
       'r.notes',
+      'r.puissance_totale_MW',
 
       // Users with permissions on this network
       sql<FrontendType<Selectable<Pick<Users, 'id' | 'email' | 'last_connection'>>>[]>`
