@@ -1,9 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import type { Coords } from '@/modules/geo/types';
-import type { EligibilityType } from '@/server/services/addresseInformation';
-import { cleanDatabase, seedEligibilityTestsData } from '@/tests/fixtures';
-import { eligibilityFixtures } from '@/tests/fixtures/eligibility';
+import { cleanDatabase, getTestPointCoordinates, seedEligibilityTestsData } from '@/tests/fixtures';
 import type { TestCase } from '@/tests/trpc-helpers';
 import { createTestCaller } from '@/tests/trpc-helpers';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -239,17 +237,3 @@ describe('reseauxRouter.eligibilityStatus', () => {
     });
   });
 });
-
-/**
- * Helper pour extraire les coordonnées d'un point de test depuis les fixtures
- */
-function getTestPointCoordinates(expectedEligibilityType: EligibilityType): { lat: number; lon: number } {
-  const testPoint = eligibilityFixtures.features.find(
-    (f) => f.properties.type === 'test' && f.properties.expectedEligibilityType === expectedEligibilityType
-  );
-  if (!testPoint || testPoint.geometry.type !== 'Point') {
-    throw new Error(`Point de test non trouvé pour ${expectedEligibilityType}`);
-  }
-  const [lon, lat] = testPoint.geometry.coordinates;
-  return { lat, lon };
-}

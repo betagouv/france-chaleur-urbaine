@@ -3,9 +3,24 @@ import type { InsertObject, RawBuilder, Selectable } from 'kysely';
 import { createGeometryExpression } from '@/modules/geo/server/helpers';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { type DB, kdb, sql } from '@/server/db/kysely';
+import type { EligibilityType } from '@/server/services/addresseInformation';
 import { omit } from '@/utils/objects';
 
 import { eligibilityFixtures } from './fixtures/eligibility';
+
+/**
+ * Coordonnées du point de test de la fixture d'éligibilité correspondant à un type d'éligibilité.
+ */
+export function getTestPointCoordinates(expectedEligibilityType: EligibilityType): { lat: number; lon: number } {
+  const testPoint = eligibilityFixtures.features.find(
+    (feature) => feature.properties.type === 'test' && feature.properties.expectedEligibilityType === expectedEligibilityType
+  );
+  if (!testPoint || testPoint.geometry.type !== 'Point') {
+    throw new Error(`Point de test non trouvé pour ${expectedEligibilityType}`);
+  }
+  const [lon, lat] = testPoint.geometry.coordinates;
+  return { lat, lon };
+}
 
 /**
  * Creates a LineString geometry (for networks) from a point with an offset in meters
