@@ -134,12 +134,15 @@ export const zDemandeChaleurRenouvelable = z.object({
   address: z.string(),
   averageArea: z.number(),
   averageResidents: z.number(),
+  batimentConstructionId: z.string().nullable().default(null),
   dpe: z.enum(DPE_VALUES),
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   firstName: z.string(),
   heatingEnergy: z.enum(HEATING_ENERGY_VALUES),
+  hotWaterSystemType: z.enum(MODE_EAU_CHAUDE_SANITAIRE_VALUES).nullable().default(null),
   housingCount: z.number(),
   housingType: z.enum(TYPE_LOGEMENT_VALUES),
+  isPublicAdvisorSelected: z.boolean().default(false),
   lastName: z.string(),
   occupantStatus: z.enum(OCCUPANT_STATUS_VALUES),
   outdoorSpace: z.enum(ESPACE_EXTERIEUR_VALUES),
@@ -149,6 +152,9 @@ export const zDemandeChaleurRenouvelable = z.object({
     .optional()
     .default(''),
   projectStatus: z.array(z.enum(PROJECT_STATUS_VALUES)),
+  radiatorType: z.enum(TYPE_RADIATEUR_VALUES).nullable().default(null),
+  refusalPeriod: z.string().nullable().default(null),
+  refusalReason: z.string().nullable().default(null),
   simulationUrl: z.string(),
 });
 export type DemandeChaleurRenouvelable = z.infer<typeof zDemandeChaleurRenouvelable>;
