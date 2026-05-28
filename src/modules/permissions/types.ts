@@ -35,9 +35,11 @@ export const zPermission = z.discriminatedUnion('type', [
   z.object({ resource_id: z.null(), type: z.literal('national') }),
 ]);
 
-export const zPermissionInput = z.array(zPermission).max(200, 'Maximum 200 permissions par utilisateur');
+export const MAX_PERMISSIONS_PER_USER = 400;
 
-export const MAX_PERMISSIONS_PER_USER = 200;
+export const zPermissionInput = z
+  .array(zPermission)
+  .max(MAX_PERMISSIONS_PER_USER, `Maximum ${MAX_PERMISSIONS_PER_USER} permissions par utilisateur`);
 
 export type NetworkPermission = z.infer<typeof zNetworkPermission>;
 export type TerritoryPermission = z.infer<typeof zTerritoryPermission>;

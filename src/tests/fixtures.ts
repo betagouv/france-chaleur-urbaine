@@ -1,11 +1,54 @@
 import type { InsertObject, RawBuilder, Selectable } from 'kysely';
 
+import type { CreateDemandInput } from '@/modules/demands/constants';
 import { createGeometryExpression } from '@/modules/geo/server/helpers';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { omit } from '@/utils/objects';
 
 import { eligibilityFixtures } from './fixtures/eligibility';
+
+/**
+ * Construit un input de création de demande valide. Surcharger les champs nécessaires au test
+ * (`coords` pilote le calcul d'éligibilité ; les autres champs alimentent les legacy_values).
+ */
+export const buildDemandInput = (overrides: Partial<CreateDemandInput> = {}): CreateDemandInput => ({
+  address: '10 Rue de Rivoli 75001 Paris',
+  city: 'Paris',
+  company: '',
+  companyType: '',
+  coords: { lat: 48.8566, lon: 2.3522 },
+  demandCompanyName: '',
+  demandCompanyType: '',
+  department: 'Paris',
+  eligibility: { distance: 45, inPDP: false, isEligible: true },
+  email: 'test@example.com',
+  firstName: 'Jean',
+  heatingEnergy: 'gaz',
+  heatingType: 'collectif',
+  lastName: 'Dupont',
+  phone: '',
+  postcode: '75001',
+  region: 'Île-de-France',
+  structure: 'Copropriété',
+  termOfUse: true,
+  ...overrides,
+});
+
+/**
+ * Coordonnées du point de test de la fixture d'éligibilité, identifié par sa clé (`name` du point,
+ * ou à défaut son `expectedEligibilityType`).
+ */
+export function getTestPointCoordinates(name: string): { lat: number; lon: number } {
+  const testPoint = eligibilityFixtures.features.find(
+    (feature) => feature.properties.type === 'test' && (feature.properties.name ?? feature.properties.expectedEligibilityType) === name
+  );
+  if (!testPoint || testPoint.geometry.type !== 'Point') {
+    throw new Error(`Point de test non trouvé pour ${name}`);
+  }
+  const [lon, lat] = testPoint.geometry.coordinates;
+  return { lat, lon };
+}
 
 /**
  * Creates a LineString geometry (for networks) from a point with an offset in meters

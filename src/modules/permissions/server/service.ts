@@ -1,6 +1,7 @@
 import { sql } from 'kysely';
 
 import { createUserEvent } from '@/modules/events/server/service';
+import type { NetworkType } from '@/modules/reseaux/constants';
 import { kdb } from '@/server/db/kysely';
 import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
 
@@ -109,4 +110,37 @@ export const setUserPermissions = async (userId: string, permissions: Permission
       type: 'user_permissions_updated',
     });
   }
+};
+
+// ─── Network deletion cleanup ──────────────────────────────────────────────────
+
+/**
+ * Loads users (id + email) holding a permission on a given network.
+ * Network permissions only exist for `reseau_de_chaleur` and `reseau_en_construction`,
+ * with `resource_id` being the network `id_fcu` stored as text.
+ */
+export const getUsersWithNetworkPermission = async (type: NetworkType, resourceId: string): Promise<{ id: string; email: string }[]> => {
+  return kdb
+    .selectFrom('user_permissions as up')
+    .innerJoin('users as u', 'u.id', 'up.user_id')
+    .select(['u.id', 'u.email'])
+    .where('up.type', '=', type)
+    .where('up.resource_id', '=', resourceId)
+    .orderBy('u.email')
+    .execute();
+};
+
+/**
+ * Removes the permission targeting a given network from every user holding it.
+ * Reuses `setUserPermissions` per user to keep validation and audit event emission consistent.
+ */
+export const removeNetworkPermissionFromAllUsers = async (type: NetworkType, resourceId: string, authorId: string): Promise<void> => {
+  const users = await getUsersWithNetworkPermission(type, resourceId);
+  await Promise.all(
+    users.map(async (user) => {
+      const current = await getUserPermissions(user.id);
+      const next = current.filter((p) => !(p.type === type && p.resource_id === resourceId));
+      await setUserPermissions(user.id, next, authorId);
+    })
+  );
 };

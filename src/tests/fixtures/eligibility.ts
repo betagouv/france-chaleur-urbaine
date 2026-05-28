@@ -1,5 +1,7 @@
+import type { NetworkType } from '@/modules/reseaux/constants';
 import type { DB, InsertObject } from '@/server/db/kysely';
 import type { EligibilityType } from '@/server/services/addresseInformation';
+import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 type FeatureStyleProperties =
   | {
@@ -19,6 +21,9 @@ type EntitiesProperties =
   | {
       type: 'test';
       expectedEligibilityType: EligibilityType;
+      // Clé unique du point de test ; par défaut on l'identifie par `expectedEligibilityType`.
+      // À renseigner uniquement pour distinguer plusieurs points d'un même type d'éligibilité.
+      name?: string;
     }
   | ({
       type: 'commune';
@@ -57,6 +62,21 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
         expectedEligibilityType: 'reseau_existant_loin',
         'marker-color': '#FF0000',
         'marker-size': 'medium',
+        type: 'test',
+      },
+      type: 'Feature',
+    },
+    {
+      // Réseau loin mais à moins de 500m → éligibilité `reseau_existant_loin`, mais affecté (distance 376m).
+      geometry: {
+        coordinates: [5.3857, 43.3258],
+        type: 'Point',
+      },
+      properties: {
+        expectedEligibilityType: 'reseau_existant_loin',
+        'marker-color': '#FF0000',
+        'marker-size': 'medium',
+        name: 'reseau_existant_loin_sous_500',
         type: 'test',
       },
       type: 'Feature',
@@ -165,9 +185,9 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
       properties: {
         fill: '#f0bb00',
         'fill-opacity': 0.47,
-        id_fcu: 1,
-        reseau_de_chaleur_ids: [1],
-        reseau_en_construction_ids: [1],
+        id_fcu: 1001,
+        reseau_de_chaleur_ids: [2001],
+        reseau_en_construction_ids: [3001],
         stroke: '#f0bb00',
         'stroke-opacity': 1,
         'stroke-width': 2,
@@ -190,7 +210,7 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
         has_PDP: true,
         has_trace: true,
         'Identifiant reseau': '1301C',
-        id_fcu: 1,
+        id_fcu: 2001,
         nom_reseau: 'Réseau de chaleur PDP',
         ouvert_aux_raccordements: true,
         'reseaux classes': true,
@@ -217,7 +237,7 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
         has_PDP: false,
         has_trace: true,
         'Identifiant reseau': '1302C',
-        id_fcu: 2,
+        id_fcu: 2002,
         nom_reseau: 'Réseau de chaleur',
         ouvert_aux_raccordements: true,
         'reseaux classes': false,
@@ -239,7 +259,7 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
         has_PDP: false,
         has_trace: false,
         'Identifiant reseau': '1303C',
-        id_fcu: 204,
+        id_fcu: 2003,
         'marker-color': '#48a21a',
         'marker-size': 'medium',
         'marker-symbol': 'circle',
@@ -263,7 +283,7 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
         has_PDP: false,
         has_trace: true,
         'Identifiant reseau': '1304C',
-        id_fcu: 403,
+        id_fcu: 2004,
         ouvert_aux_raccordements: false,
         stroke: '#48A21A',
         'stroke-opacity': 1,
@@ -284,7 +304,7 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
       },
       properties: {
         gestionnaire: 'Gestionnaire',
-        id_fcu: 1,
+        id_fcu: 3001,
         is_zone: false,
         nom_reseau: 'Réseau en construction PDP',
         ouvert_aux_raccordements: true,
@@ -313,7 +333,7 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
         fill: '#DA5DD5',
         'fill-opacity': 0.47,
         gestionnaire: 'Gestionnaire',
-        id_fcu: 2,
+        id_fcu: 3002,
         is_zone: true,
         nom_reseau: 'Réseau en construction',
         ouvert_aux_raccordements: true,
@@ -336,7 +356,7 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
       },
       properties: {
         gestionnaire: 'Gestionnaire',
-        id_fcu: 3,
+        id_fcu: 3003,
         is_zone: false,
         nom_reseau: 'Réseau en construction',
         ouvert_aux_raccordements: true,
@@ -360,7 +380,7 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
       properties: {
         fill: '#DA5DD5',
         'fill-opacity': 0.47,
-        id_fcu: 403,
+        id_fcu: 3004,
         is_zone: false,
         ouvert_aux_raccordements: false,
         stroke: '#DA5DD5',
@@ -491,3 +511,270 @@ export const eligibilityFixtures: GeoJSON.FeatureCollection<GeoJSON.Geometry, El
   ],
   type: 'FeatureCollection',
 };
+
+/**
+ * Source de vérité unique pour les scénarios d'éligibilité, alignée sur les points de test ci-dessus
+ * (ids distincts : PDP 1001, réseaux de chaleur 2001+, constructions 3001+).
+ *
+ * Chaque scénario décrit les trois facettes attendues pour le point de test du type donné :
+ * - `eligibility` : résultat brut de `getDetailedEligibilityStatus` (réseau résolu, jamais l'id du PDP) ;
+ * - `assignment`  : affectation réseau finale d'une demande créée sur ce point (affecté si
+ *   `eligible` OU `distance < 500m`) — identique quel que soit le contexte de création ;
+ * - `heatNetwork` : sortie publique `trpc.reseaux.eligibilityStatus`.
+ */
+export type EligibilityScenario = {
+  type: EligibilityType;
+  /** Clé unique du scénario ; par défaut le `type`. À renseigner pour plusieurs scénarios d'un même type. */
+  name?: string;
+  eligibility: { id_fcu: number | null; eligible: boolean; distance: number | null };
+  assignment: { network_id: number | null; network_type: NetworkType | null };
+  heatNetwork: HeatNetwork;
+};
+
+export const eligibilityScenarios: EligibilityScenario[] = [
+  {
+    assignment: { network_id: 2001, network_type: 'reseau_de_chaleur' },
+    eligibility: { distance: 215, eligible: true, id_fcu: 2001 },
+    heatNetwork: {
+      co2: null,
+      distance: 215,
+      futurNetwork: false,
+      gestionnaire: 'Gestionnaire',
+      hasNoTraceNetwork: null,
+      hasPDP: true,
+      id: '1301C',
+      inPDP: true,
+      isClasse: true,
+      isEligible: true,
+      name: 'Réseau de chaleur PDP',
+      tauxENRR: null,
+      veryEligibleDistance: 100,
+    },
+    type: 'dans_pdp_reseau_existant',
+  },
+  {
+    assignment: { network_id: 3001, network_type: 'reseau_en_construction' },
+    eligibility: { distance: 210, eligible: true, id_fcu: 3001 },
+    heatNetwork: {
+      co2: null,
+      distance: 210,
+      futurNetwork: true,
+      gestionnaire: 'Gestionnaire',
+      hasNoTraceNetwork: null,
+      hasPDP: true,
+      id: null,
+      inPDP: true,
+      isClasse: null,
+      isEligible: true,
+      name: 'Réseau en construction PDP',
+      tauxENRR: null,
+      veryEligibleDistance: 100,
+    },
+    type: 'dans_pdp_reseau_futur',
+  },
+  {
+    assignment: { network_id: 2002, network_type: 'reseau_de_chaleur' },
+    eligibility: { distance: 47, eligible: true, id_fcu: 2002 },
+    heatNetwork: {
+      co2: null,
+      distance: 47,
+      futurNetwork: false,
+      gestionnaire: 'Gestionnaire',
+      hasNoTraceNetwork: null,
+      hasPDP: false,
+      id: '1302C',
+      inPDP: false,
+      isClasse: false,
+      isEligible: true,
+      name: 'Réseau de chaleur',
+      tauxENRR: null,
+      veryEligibleDistance: 100,
+    },
+    type: 'reseau_existant_tres_proche',
+  },
+  {
+    assignment: { network_id: 3003, network_type: 'reseau_en_construction' },
+    eligibility: { distance: 51, eligible: true, id_fcu: 3003 },
+    heatNetwork: {
+      co2: null,
+      distance: 51,
+      futurNetwork: true,
+      gestionnaire: 'Gestionnaire',
+      hasNoTraceNetwork: null,
+      hasPDP: false,
+      id: null,
+      inPDP: false,
+      isClasse: null,
+      isEligible: true,
+      name: 'Réseau en construction',
+      tauxENRR: null,
+      veryEligibleDistance: 100,
+    },
+    type: 'reseau_futur_tres_proche',
+  },
+  {
+    assignment: { network_id: 3002, network_type: 'reseau_en_construction' },
+    eligibility: { distance: null, eligible: true, id_fcu: 3002 },
+    heatNetwork: {
+      co2: null,
+      distance: null,
+      futurNetwork: true,
+      gestionnaire: 'Gestionnaire',
+      hasNoTraceNetwork: null,
+      hasPDP: false,
+      id: null,
+      inPDP: false,
+      isClasse: null,
+      isEligible: true,
+      name: 'Réseau en construction',
+      tauxENRR: null,
+      veryEligibleDistance: null,
+    },
+    type: 'dans_zone_reseau_futur',
+  },
+  {
+    assignment: { network_id: 2002, network_type: 'reseau_de_chaleur' },
+    eligibility: { distance: 195, eligible: true, id_fcu: 2002 },
+    heatNetwork: {
+      co2: null,
+      distance: 195,
+      futurNetwork: false,
+      gestionnaire: 'Gestionnaire',
+      hasNoTraceNetwork: null,
+      hasPDP: false,
+      id: '1302C',
+      inPDP: false,
+      isClasse: false,
+      isEligible: true,
+      name: 'Réseau de chaleur',
+      tauxENRR: null,
+      veryEligibleDistance: 100,
+    },
+    type: 'reseau_existant_proche',
+  },
+  {
+    assignment: { network_id: 3003, network_type: 'reseau_en_construction' },
+    eligibility: { distance: 194, eligible: true, id_fcu: 3003 },
+    heatNetwork: {
+      co2: null,
+      distance: 194,
+      futurNetwork: true,
+      gestionnaire: 'Gestionnaire',
+      hasNoTraceNetwork: null,
+      hasPDP: false,
+      id: null,
+      inPDP: false,
+      isClasse: null,
+      isEligible: true,
+      name: 'Réseau en construction',
+      tauxENRR: null,
+      veryEligibleDistance: 100,
+    },
+    type: 'reseau_futur_proche',
+  },
+  {
+    // 759m ≥ 500m → non affecté
+    assignment: { network_id: null, network_type: null },
+    eligibility: { distance: 759, eligible: false, id_fcu: 2002 },
+    heatNetwork: {
+      co2: null,
+      distance: 759,
+      futurNetwork: false,
+      gestionnaire: 'Gestionnaire',
+      hasNoTraceNetwork: null,
+      hasPDP: false,
+      id: '1302C',
+      inPDP: false,
+      isClasse: false,
+      isEligible: false,
+      name: 'Réseau de chaleur',
+      tauxENRR: null,
+      veryEligibleDistance: 100,
+    },
+    type: 'reseau_existant_loin',
+  },
+  {
+    // réseau loin mais < 500m (376m) → non eligible mais affecté
+    assignment: { network_id: 2002, network_type: 'reseau_de_chaleur' },
+    eligibility: { distance: 376, eligible: false, id_fcu: 2002 },
+    heatNetwork: {
+      co2: null,
+      distance: 376,
+      futurNetwork: false,
+      gestionnaire: 'Gestionnaire',
+      hasNoTraceNetwork: null,
+      hasPDP: false,
+      id: '1302C',
+      inPDP: false,
+      isClasse: false,
+      isEligible: false,
+      name: 'Réseau de chaleur',
+      tauxENRR: null,
+      veryEligibleDistance: 100,
+    },
+    name: 'reseau_existant_loin_sous_500',
+    type: 'reseau_existant_loin',
+  },
+  {
+    // 956m ≥ 500m → non affecté
+    assignment: { network_id: null, network_type: null },
+    eligibility: { distance: 956, eligible: false, id_fcu: 3003 },
+    heatNetwork: {
+      co2: null,
+      distance: 956,
+      futurNetwork: true,
+      gestionnaire: 'Gestionnaire',
+      hasNoTraceNetwork: null,
+      hasPDP: false,
+      id: null,
+      inPDP: false,
+      isClasse: null,
+      isEligible: false,
+      name: 'Réseau en construction',
+      tauxENRR: null,
+      veryEligibleDistance: 100,
+    },
+    type: 'reseau_futur_loin',
+  },
+  {
+    // réseau sans tracé → non affecté
+    assignment: { network_id: null, network_type: null },
+    eligibility: { distance: null, eligible: false, id_fcu: 2003 },
+    heatNetwork: {
+      co2: null,
+      distance: null,
+      futurNetwork: false,
+      gestionnaire: null,
+      hasNoTraceNetwork: true,
+      hasPDP: false,
+      id: '1303C',
+      inPDP: false,
+      isClasse: null,
+      isEligible: false,
+      name: null,
+      tauxENRR: null,
+      veryEligibleDistance: null,
+    },
+    type: 'dans_ville_reseau_existant_sans_trace',
+  },
+  {
+    assignment: { network_id: null, network_type: null },
+    eligibility: { distance: null, eligible: false, id_fcu: null },
+    heatNetwork: {
+      co2: null,
+      distance: null,
+      futurNetwork: false,
+      gestionnaire: null,
+      hasNoTraceNetwork: false,
+      hasPDP: null,
+      id: null,
+      inPDP: false,
+      isClasse: null,
+      isEligible: false,
+      name: null,
+      tauxENRR: null,
+      veryEligibleDistance: null,
+    },
+    type: 'trop_eloigne',
+  },
+];
