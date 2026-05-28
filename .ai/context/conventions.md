@@ -112,6 +112,7 @@
 ## Comment conventions
 
 - **Comment the "why", not the "what".** Explain non-obvious rationale, trade-offs, gotchas or edge cases — never restate what the code already says.
+- **Keep inline comments to one line.** Even a justified "why" comment must be terse — name the constraint, not the full explanation. If it can't fit on one line, the detail belongs in a TSDoc header or a doc file, not inline. Prefer a trailing `// …` on the line it explains.
 - **Don't narrate trivial statements** — a comment before *every* line is noise. But the non-obvious still gets one: in particular **a `useEffect` almost always takes a one-line comment** saying what it does/syncs and why.
 - No comments for self-explanatory code.
 - `// TODO:` for planned work.
