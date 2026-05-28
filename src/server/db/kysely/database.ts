@@ -9,9 +9,11 @@ import type {
   DPE,
   EspaceExterieur,
   HeatingEnergy,
+  ModeEauChaudeSanitaire,
   OccupantStatus,
   ProjectStatus,
   TypeLogement,
+  TypeRadiateur,
 } from '@/modules/chaleur-renouvelable/constants';
 import type { ConversionEventType, ConversionIpDisposition, ConversionSourceConfig } from '@/modules/conversion-tracking/constants';
 import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
@@ -270,19 +272,25 @@ export interface DemandsChaleurRenouvelable {
   assigned_to: string | null;
   average_area: number;
   average_residents: number;
+  batiment_construction_id: string | null;
   created_at: Generated<Timestamp>;
   dpe: DPE;
   email: string;
   first_name: string;
   heating_energy: HeatingEnergy;
+  hot_water_system_type: ModeEauChaudeSanitaire | null;
   housing_count: number;
   housing_type: TypeLogement;
   id: Generated<string>;
+  is_public_advisor_selected: Generated<boolean>;
   last_name: string;
   occupant_status: OccupantStatus;
   outdoor_space: EspaceExterieur;
   phone: Generated<string>;
   project_status: ProjectStatus[];
+  radiator_type: TypeRadiateur | null;
+  refusal_period: string | null;
+  refusal_reason: string | null;
   simulation_url: string;
   status: Generated<string>;
   updated_at: Generated<Timestamp>;

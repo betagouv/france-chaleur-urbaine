@@ -7,7 +7,13 @@ import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoCompl
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
-import { getEspaceExterieurOptionLabel, PROJECT_STATUS_VALUES, typeLogementOptions } from '@/modules/chaleur-renouvelable/constants';
+import {
+  getEspaceExterieurOptionLabel,
+  modeEauChaudeSanitaireOptions,
+  PROJECT_STATUS_VALUES,
+  typeLogementOptions,
+  typeRadiateurOptions,
+} from '@/modules/chaleur-renouvelable/constants';
 import { type DemandStatus, demandStatuses } from '@/modules/demands/constants';
 import { toastErrors } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
@@ -158,6 +164,14 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         width: '200px',
       },
       {
+        accessorFn: (row) => (row.is_public_advisor_selected ? 'Conseiller public' : 'Gestionnaire réseau'),
+        enableGlobalFilter: false,
+        filterType: 'Facets',
+        header: 'Destinataire',
+        id: 'Destinataire',
+        width: '170px',
+      },
+      {
         accessorFn: (row) =>
           Object.fromEntries(typeLogementOptions.map((option) => [option.value, option.label]))[row.housing_type] ?? row.housing_type,
         enableGlobalFilter: false,
@@ -190,6 +204,23 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         width: '160px',
       },
       {
+        accessorFn: (row) =>
+          modeEauChaudeSanitaireOptions.find((option) => option.value === row.hot_water_system_type)?.label ?? 'Non renseigné',
+        enableGlobalFilter: false,
+        filterType: 'Facets',
+        header: 'ECS',
+        id: 'ECS',
+        width: '130px',
+      },
+      {
+        accessorFn: (row) => typeRadiateurOptions.find((option) => option.value === row.radiator_type)?.label ?? 'Non renseigné',
+        enableGlobalFilter: false,
+        filterType: 'Facets',
+        header: 'Radiateurs',
+        id: 'Radiateurs',
+        width: '240px',
+      },
+      {
         accessorKey: 'occupant_status',
         enableGlobalFilter: false,
         filterType: 'Facets',
@@ -213,6 +244,18 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         filterType: 'ComboBox',
         header: 'Projet',
         width: '300px',
+      },
+      {
+        accessorFn: (row) => [row.refusal_period, row.refusal_reason].filter(Boolean).join(' - ') || 'Non renseigné',
+        header: 'Refus réseau',
+        id: 'Refus réseau',
+        width: '260px',
+      },
+      {
+        accessorFn: (row) => row.batiment_construction_id ?? 'Non renseigné',
+        header: 'Bâtiment',
+        id: 'Bâtiment',
+        width: '190px',
       },
       {
         accessorKey: 'housing_count',
