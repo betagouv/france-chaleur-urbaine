@@ -178,12 +178,16 @@ const checkOrphanPermissions: IssueBuilder = async () => {
       eb.or([
         eb.and([
           eb('up.type', '=', 'reseau_de_chaleur'),
-          eb.not(eb.exists(eb.selectFrom('reseaux_de_chaleur').select('id_fcu').whereRef(sql`id_fcu::text`, '=', 'up.resource_id'))),
+          eb.not(
+            eb.exists(eb.selectFrom('reseaux_de_chaleur').select('id_fcu').whereRef(sql<string>`id_fcu::text`, '=', 'up.resource_id'))
+          ),
         ]),
         eb.and([
           eb('up.type', '=', 'reseau_en_construction'),
           eb.not(
-            eb.exists(eb.selectFrom('zones_et_reseaux_en_construction').select('id_fcu').whereRef(sql`id_fcu::text`, '=', 'up.resource_id'))
+            eb.exists(
+              eb.selectFrom('zones_et_reseaux_en_construction').select('id_fcu').whereRef(sql<string>`id_fcu::text`, '=', 'up.resource_id')
+            )
           ),
         ]),
         eb.and([
@@ -275,7 +279,12 @@ const checkDemandMissingCoordinates: IssueBuilder = async () => {
       sql<string | null>`legacy_values->>'Longitude'`.as('longitude'),
     ])
     .where('deleted_at', 'is', null)
-    .where((eb) => eb.or([eb(sql`legacy_values->>'Latitude'`, 'is', null), eb(sql`legacy_values->>'Longitude'`, 'is', null)]))
+    .where((eb) =>
+      eb.or([
+        eb(sql<string | null>`legacy_values->>'Latitude'`, 'is', null),
+        eb(sql<string | null>`legacy_values->>'Longitude'`, 'is', null),
+      ])
+    )
     .orderBy('created_at', 'desc')
     .execute();
 
@@ -381,6 +390,62 @@ const checkDemandOrphanNetwork: IssueBuilder = async () => {
 };
 
 /**
+ * PDP référençant un réseau absent de la base, via `reseau_de_chaleur_ids`, `reseau_en_construction_ids`
+ * ou l'identifiant SNCU (`Identifiant reseau`). Casse la résolution PDP → réseau et donc l'affectation
+ * des demandes situées dans ces PDP.
+ */
+const checkPdpOrphanNetwork: IssueBuilder = async () => {
+  const missingRdc = sql<
+    number[]
+  >`ARRAY(SELECT rid FROM unnest(p.reseau_de_chaleur_ids) AS rid WHERE NOT EXISTS (SELECT 1 FROM reseaux_de_chaleur r WHERE r.id_fcu = rid))`;
+  const missingZrc = sql<
+    number[]
+  >`ARRAY(SELECT rid FROM unnest(p.reseau_en_construction_ids) AS rid WHERE NOT EXISTS (SELECT 1 FROM zones_et_reseaux_en_construction z WHERE z.id_fcu = rid))`;
+  const sncuMissing = sql<boolean>`(
+    p."Identifiant reseau" IS NOT NULL
+    AND p."Identifiant reseau" <> ''
+    AND NOT EXISTS (SELECT 1 FROM reseaux_de_chaleur r WHERE r."Identifiant reseau" = p."Identifiant reseau")
+  )`;
+
+  const rows = await kdb
+    .selectFrom('zone_de_developpement_prioritaire as p')
+    .select((eb) => [
+      'p.id_fcu',
+      eb.ref('p.Identifiant reseau').as('sncu'),
+      missingRdc.as('missing_rdc'),
+      missingZrc.as('missing_zrc'),
+      sncuMissing.as('sncu_missing'),
+    ])
+    .where((eb) => eb.or([sql<boolean>`cardinality(${missingRdc}) > 0`, sql<boolean>`cardinality(${missingZrc}) > 0`, sncuMissing]))
+    .orderBy('p.id_fcu')
+    .execute();
+
+  if (rows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+    context: [
+      row.missing_rdc.length ? `réseaux de chaleur ${row.missing_rdc.join(', ')}` : null,
+      row.missing_zrc.length ? `réseaux en construction ${row.missing_zrc.join(', ')}` : null,
+      row.sncu_missing ? `SNCU ${row.sncu} introuvable` : null,
+    ]
+      .filter(Boolean)
+      .join(' / '),
+    label: `PDP #${row.id_fcu}${row.sncu ? ` (${row.sncu})` : ''}`,
+  }));
+
+  return {
+    description:
+      'Ces PDP référencent un réseau (de chaleur, en construction, ou via l’identifiant SNCU) absent de la base. La résolution PDP → réseau échoue, donc les demandes situées dans ces PDP ne sont pas affectées au bon réseau.',
+    items,
+    severity: 'error',
+    title: 'PDP lié à un réseau inexistant',
+    totalCount,
+    truncated,
+    type: 'pdp.orphan_network',
+  };
+};
+
+/**
  * Demandes non validées depuis plus de 30 jours.
  */
 const checkDemandUnvalidatedOld: IssueBuilder = async () => {
@@ -425,8 +490,8 @@ const checkDemandPendingAssignmentStale: IssueBuilder = async () => {
     ])
     .where('deleted_at', 'is', null)
     .where('pending_assignment_change', 'is not', null)
-    .where(sql`(pending_assignment_change->>'requested_at')::timestamptz`, '<', sql<Date>`now() - interval '14 days'`)
-    .orderBy(sql`(pending_assignment_change->>'requested_at')::timestamptz`)
+    .where(sql<Date>`(pending_assignment_change->>'requested_at')::timestamptz`, '<', sql<Date>`now() - interval '14 days'`)
+    .orderBy(sql<Date>`(pending_assignment_change->>'requested_at')::timestamptz`)
     .execute();
 
   if (rows.length === 0) return null;
@@ -464,6 +529,7 @@ const checks: IssueBuilder[] = [
   checkDemandMissingCoordinates,
   checkDemandNetworkMismatch,
   checkDemandOrphanNetwork,
+  checkPdpOrphanNetwork,
   checkDemandUnvalidatedOld,
   checkDemandPendingAssignmentStale,
 ];
