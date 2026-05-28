@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { CreateDemandInput } from '@/modules/demands/constants';
 import { kdb } from '@/server/db/kysely';
-import { cleanDatabase, seedProEligibilityTestsAddress, seedTableUser } from '@/tests/fixtures';
+import { buildDemandInput, cleanDatabase, seedProEligibilityTestsAddress, seedTableUser } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
 import type { TestCase } from '@/tests/trpc-helpers';
 
@@ -62,29 +61,6 @@ import { createDemand } from './creation-user';
 
 const testUserId = uuid(100);
 
-const createValidDemandInput = (overrides: Partial<CreateDemandInput> = {}): CreateDemandInput => ({
-  address: '10 Rue de Rivoli 75001 Paris',
-  city: 'Paris',
-  company: '',
-  companyType: '',
-  coords: { lat: 48.8566, lon: 2.3522 },
-  demandCompanyName: '',
-  demandCompanyType: '',
-  department: 'Paris',
-  eligibility: { distance: 45, inPDP: false, isEligible: true },
-  email: 'test@example.com',
-  firstName: 'Jean',
-  heatingEnergy: 'gaz',
-  heatingType: 'collectif',
-  lastName: 'Dupont',
-  phone: '',
-  postcode: '75001',
-  region: 'Île-de-France',
-  structure: 'Copropriété',
-  termOfUse: true,
-  ...overrides,
-});
-
 describe('creation-user', () => {
   beforeEach(async () => {
     await cleanDatabase();
@@ -97,7 +73,7 @@ describe('creation-user', () => {
 
   describe('createDemand()', () => {
     it('crée une demande avec adresse de test, eligibility_history et événement', async () => {
-      const input = createValidDemandInput();
+      const input = buildDemandInput();
 
       const result = await createDemand(input, { userId: testUserId });
 
@@ -141,7 +117,7 @@ describe('creation-user', () => {
     });
 
     it('stocke les legacy_values avec les bonnes données', async () => {
-      const input = createValidDemandInput({
+      const input = buildDemandInput({
         email: 'marie.martin@test.fr',
         firstName: 'Marie',
         heatingEnergy: 'fioul', // lowercase to match formatHeatingEnergyToAirtable
@@ -165,7 +141,7 @@ describe('creation-user', () => {
     });
 
     it('crée une demande sans userId (utilisateur anonyme)', async () => {
-      const input = createValidDemandInput();
+      const input = buildDemandInput();
 
       const result = await createDemand(input);
 
@@ -177,7 +153,7 @@ describe('creation-user', () => {
     });
 
     it('associe une demande à une adresse de test existante', async () => {
-      const input = createValidDemandInput();
+      const input = buildDemandInput();
 
       // First create a test address without a demand
       const existingTestAddress = await seedProEligibilityTestsAddress({
@@ -206,7 +182,7 @@ describe('creation-user', () => {
     });
 
     it('retourne haut_potentiel=true pour une demande Collectif avec >= 100 logements', async () => {
-      const input = createValidDemandInput({
+      const input = buildDemandInput({
         heatingType: 'collectif', // lowercase to match formatHeatingTypeToAirtable
         nbLogements: 150, // >= 100 satisfies the condition
       });
@@ -218,7 +194,7 @@ describe('creation-user', () => {
     });
 
     it('retourne haut_potentiel=true pour une demande Collectif + Tertiaire', async () => {
-      const input = createValidDemandInput({
+      const input = buildDemandInput({
         heatingType: 'collectif', // lowercase - required for haut_potentiel
         structure: 'Tertiaire',
       });
@@ -229,7 +205,7 @@ describe('creation-user', () => {
     });
 
     it('utilise nbLogements fourni au lieu de le récupérer', async () => {
-      const input = createValidDemandInput({
+      const input = buildDemandInput({
         nbLogements: 150,
       });
 
@@ -270,7 +246,7 @@ describe('creation-user', () => {
     ];
 
     it.each(eligibilityCases)('$label', async ({ input, expectedOutput }) => {
-      const demandInput = createValidDemandInput({
+      const demandInput = buildDemandInput({
         eligibility: { distance: input.isEligible ? 45 : 1500, inPDP: false, isEligible: input.isEligible },
         heatingType: input.heatingType,
       });

@@ -1,5 +1,6 @@
 import type { InsertObject, RawBuilder, Selectable } from 'kysely';
 
+import type { CreateDemandInput } from '@/modules/demands/constants';
 import { createGeometryExpression } from '@/modules/geo/server/helpers';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { type DB, kdb, sql } from '@/server/db/kysely';
@@ -7,6 +8,33 @@ import type { EligibilityType } from '@/server/services/addresseInformation';
 import { omit } from '@/utils/objects';
 
 import { eligibilityFixtures } from './fixtures/eligibility';
+
+/**
+ * Construit un input de création de demande valide. Surcharger les champs nécessaires au test
+ * (`coords` pilote le calcul d'éligibilité ; les autres champs alimentent les legacy_values).
+ */
+export const buildDemandInput = (overrides: Partial<CreateDemandInput> = {}): CreateDemandInput => ({
+  address: '10 Rue de Rivoli 75001 Paris',
+  city: 'Paris',
+  company: '',
+  companyType: '',
+  coords: { lat: 48.8566, lon: 2.3522 },
+  demandCompanyName: '',
+  demandCompanyType: '',
+  department: 'Paris',
+  eligibility: { distance: 45, inPDP: false, isEligible: true },
+  email: 'test@example.com',
+  firstName: 'Jean',
+  heatingEnergy: 'gaz',
+  heatingType: 'collectif',
+  lastName: 'Dupont',
+  phone: '',
+  postcode: '75001',
+  region: 'Île-de-France',
+  structure: 'Copropriété',
+  termOfUse: true,
+  ...overrides,
+});
 
 /**
  * Coordonnées du point de test de la fixture d'éligibilité correspondant à un type d'éligibilité.
