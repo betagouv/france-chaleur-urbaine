@@ -19,6 +19,7 @@ import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/compo
 import Tag from '@/components/ui/Tag';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { notify, toastErrors } from '@/modules/notification';
+import DeleteNetworkDialog, { type NetworkToDelete } from '@/modules/reseaux/client/admin/DeleteNetworkDialog';
 import { NotesCell } from '@/modules/reseaux/client/admin/NotesCell';
 import { RemindersCell } from '@/modules/reseaux/client/admin/RemindersCell';
 import type { NetworkEntityType } from '@/modules/reseaux/constants';
@@ -63,6 +64,7 @@ const GestionDesReseaux = () => {
   >(null);
   const [editingId, setEditingId] = useState<string | number | null>(null);
   const [updatedGeom, setUpdatedGeom] = useState<any>(null);
+  const [networkToDelete, setNetworkToDelete] = useState<NetworkToDelete | null>(null);
   const [isPollingJobs, setIsPollingJobs] = useState(true);
 
   const {
@@ -347,25 +349,19 @@ const GestionDesReseaux = () => {
     [selectedNetwork, deleteGeomUpdate, selectedTab]
   );
 
-  const handleDeleteNetwork = useCallback(
-    toastErrors(
-      async (
-        id: number,
-        type: 'reseaux_de_chaleur' | 'reseaux_de_froid' | 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire',
-        name: string
-      ) => {
-        if (
-          !window.confirm(
-            `Êtes-vous sûr de vouloir supprimer "${name}" ?\n\nCette action marquera le réseau comme supprimé et sera effectif à la prochaine synchronisation.`
-          )
-        ) {
-          return;
-        }
+  const handleDeleteNetwork = useCallback((id: number, type: NetworkToDelete['type'], name: string) => {
+    setNetworkToDelete({ id, name, type });
+  }, []);
 
-        await deleteNetwork({ id, type });
+  const handleConfirmDeleteNetwork = useCallback(
+    toastErrors(async () => {
+      if (!networkToDelete) {
+        return;
       }
-    ),
-    [deleteNetwork]
+      await deleteNetwork({ id: networkToDelete.id, type: networkToDelete.type });
+      setNetworkToDelete(null);
+    }),
+    [networkToDelete, deleteNetwork]
   );
 
   const handleAddNewNetwork = useCallback(() => {
@@ -1504,6 +1500,7 @@ const GestionDesReseaux = () => {
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
+      <DeleteNetworkDialog network={networkToDelete} onClose={() => setNetworkToDelete(null)} onConfirm={handleConfirmDeleteNetwork} />
     </SimplePage>
   );
 };

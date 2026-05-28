@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
 import { createUserEvent } from '@/modules/events/server/service';
+import { getUsersWithNetworkPermission, removeNetworkPermissionFromAllUsers } from '@/modules/permissions/server/service';
 import {
+  type DeleteNetworkInput,
+  type NetworkType,
   networkEntityToTable,
   networkEntityTypes,
   reminderTypes,
@@ -23,6 +26,15 @@ import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
 import { createNetworkReminder, deleteNetworkReminder, updateNetworkNotes, updateNetworkReminder } from './reminders';
 import * as reseauxService from './service';
+
+/**
+ * Returns the permission type matching a network table, or null when the network
+ * cannot be a permission resource (cold networks and PDPs have no linked permissions).
+ */
+const networkPermissionType = (table: DeleteNetworkInput['type']): NetworkType | null => {
+  const entity = tableToNetworkEntity[table];
+  return entity === 'reseau_de_chaleur' || entity === 'reseau_en_construction' ? entity : null;
+};
 
 const reseauDeChaleurRouter = router({
   list: adminRoute.query(async () => {
@@ -156,6 +168,13 @@ export const reseauxRouter = router({
   deleteNetwork: adminRoute.input(zDeleteNetworkInput).mutation(async ({ input, ctx }) => {
     const reseau = await reseauxService.getNetworkLabel(input.id, input.type);
     const result = await reseauxService.deleteNetwork(input.id, input.type);
+
+    // Remove now-dangling permissions so users don't keep access to a deleted network.
+    const permissionType = networkPermissionType(input.type);
+    if (permissionType) {
+      await removeNetworkPermissionFromAllUsers(permissionType, String(input.id), ctx.user.id);
+    }
+
     await createUserEvent({
       author_id: ctx.user.id,
       context_id: String(input.id),
@@ -179,6 +198,14 @@ export const reseauxRouter = router({
   }),
   getNetworkGeometry: route.input(zDownloadNetworkGeometryInput).query(async ({ input }) => {
     return await reseauxService.getNetworkGeometry(input.type, input.id);
+  }),
+  // Lists users whose permissions reference this network (to warn before deletion).
+  getNetworkLinkedUsers: adminRoute.input(zDeleteNetworkInput).query(async ({ input }) => {
+    const type = networkPermissionType(input.type);
+    if (!type) {
+      return [];
+    }
+    return await getUsersWithNetworkPermission(type, String(input.id));
   }),
   // Route publique pour lister tous les réseaux (utilisé pour la comparaison)
   listNetworks: route.query(async () => {
