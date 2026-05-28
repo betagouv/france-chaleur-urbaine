@@ -56,6 +56,8 @@ Do **not** wrap DSFR utility classes in `fr.cx(...)` when they're literal string
 
 Prefer Tailwind text sizes (`text-xs`, `text-sm`, `text-base`, `text-lg`) over DSFR's `fr-text--xs / --sm / --md / --lg`. DSFR text classes ship with a built-in `margin-bottom` (1.5rem on `--xs`) that breaks tight layouts — use them only when you explicitly want the DSFR paragraph rhythm.
 
+**CSS variables in classes (Tailwind v4):** use the shorthand `prop-(--my-var)`, not `prop-[var(--my-var)]`. Follow the IDE Tailwind extension diagnostics when present.
+
 PostCSS config excludes DSFR from `postcss-import` to prevent build breakage.
 
 ## Component styling patterns
