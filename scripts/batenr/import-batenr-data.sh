@@ -29,6 +29,7 @@ curl -fsSL -L "$DATASET_API" -o "$DATASET_JSON"
 # -----------------------------
 TARGET_TABLE="${TARGET_TABLE:-bdnb_batenr}"
 GPKG_LAYER="${GPKG_LAYER:-construction_batenr}"
+DEPARTEMENT_FILTER="${DEPARTEMENT_FILTER:-}"
 
 # Réimport même si déjà dans state (ne redownload pas si le ZIP/GPKG existe)
 FORCE_REIMPORT="${FORCE_REIMPORT:-1}"
@@ -46,7 +47,9 @@ SELECT
   gmi_nappe_200, pot_nappe, place_nappe,
   gmi_sonde_200, gis_geo_profonde,
   ac1, ac2, ac3, ac4bis,
-  liste_ppa, etat_ppa
+  liste_ppa, etat_ppa,
+  categorie_majoritaire, propri_uni, classe_bilan_dpe, couv_st_ecs_2025, couv_sondes_200_2025, prod_st_mwh_an,
+  type_installation_chauffage, type_energie_chauffage, type_installation_ecs, type_energie_ecs
 FROM ${GPKG_LAYER}
 "
 
@@ -81,10 +84,15 @@ download_zip_atomic() {
 
 # Lister ressources gpkg.zip (id + latest + title)
 mapfile -t RES_LINES < <(
-  jq -r '
+  DEPARTEMENT_FILTER="$DEPARTEMENT_FILTER" jq -r '
+    def matches_departement_filter($filter):
+      ($filter == "")
+      or ((.title // "") | startswith("d" + $filter + "_"));
+
     .resources[]
     | select((.format // "" | ascii_downcase) == "gpkg.zip")
     | select(.latest != null and .id != null)
+    | select(matches_departement_filter(env.DEPARTEMENT_FILTER))
     | "\(.id)\t\(.latest)\t\(.title // .id)"
   ' "$DATASET_JSON"
 )
@@ -92,6 +100,10 @@ mapfile -t RES_LINES < <(
 if [[ "${#RES_LINES[@]}" -eq 0 ]]; then
   echo "Aucune ressource gpkg.zip trouvée (format==gpkg.zip)."
   exit 0
+fi
+
+if [[ -n "$DEPARTEMENT_FILTER" ]]; then
+  echo "Filtre département: ${DEPARTEMENT_FILTER}"
 fi
 
 echo "Ressources gpkg.zip trouvées: ${#RES_LINES[@]}"

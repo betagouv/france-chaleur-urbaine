@@ -6,7 +6,7 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import type { EspaceExterieur } from '@/modules/chaleur-renouvelable/constants';
+import type { EspaceExterieur, TypeRadiateur } from '@/modules/chaleur-renouvelable/constants';
 
 export default function ChoixChauffageForm() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function ChoixChauffageForm() {
     <form>
       <SettingsTopFields
         withLabel
-        className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-3 bg-[#fbf6ed]"
+        className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-4 bg-[#fbf6ed]"
         adresse={urlParams.adresse ?? null}
         setAdresse={urlParams.setAdresse}
         geoAddress={geoAddress}
@@ -34,6 +34,8 @@ export default function ChoixChauffageForm() {
         setTypeLogement={urlParams.setTypeLogement}
         espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
         setEspaceExterieur={urlParams.setEspaceExterieur}
+        typeRadiateur={(urlParams.typeRadiateur ?? null) as TypeRadiateur | null}
+        setTypeRadiateur={urlParams.setTypeRadiateur}
       />
 
       <div className="mt-5 flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-end">

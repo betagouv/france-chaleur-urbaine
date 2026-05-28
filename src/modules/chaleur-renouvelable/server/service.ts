@@ -1,15 +1,81 @@
-import type { GetAirtableAdeme, GetLocationInput } from '@/modules/chaleur-renouvelable/constants';
+import type {
+  AdminUpdateDemandeChaleurRenouvelableInput,
+  BatEnrByBanIdInput,
+  DemandeChaleurRenouvelable,
+  GetLocationInput,
+} from '@/modules/chaleur-renouvelable/constants';
+import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
-import { AirtableDB } from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
-import { Airtable } from '@/types/enum/Airtable';
 import { fetchJSON } from '@/utils/network';
 
-export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) => {
+type BdnbConstructionAddressRelation = {
+  batiment_construction_id: string | null;
+};
+
+const batEnrBatimentColumns = [
+  'ac1',
+  'ac2',
+  'ac3',
+  'ac4',
+  'ac4bis',
+  'adresse',
+  'batiment_construction_id',
+  'batiment_groupe_id',
+  'categorie_majoritaire',
+  'classe_bilan_dpe',
+  'couv_sondes_200_2025',
+  'couv_st_ecs_2025',
+  'etat_ppa',
+  'gis_geo_profonde',
+  'gmi_nappe_200',
+  'gmi_sonde_200',
+  'place_nappe',
+  'pot_nappe',
+  'prod_st_mwh_an',
+  'propri_uni',
+  'type_energie_chauffage',
+  'type_energie_ecs',
+  'type_installation_chauffage',
+  'type_installation_ecs',
+] as const;
+
+const singleConstructionHousingCount = sql<number | null>`
+  (
+    SELECT
+      CASE
+        WHEN jsonb_array_length(COALESCE(bdnb_batiments.constructions, '[]'::jsonb)) = 1
+          THEN bdnb_batiments.ffo_bat_nb_log
+        ELSE NULL
+      END
+    FROM bdnb_batiments
+    WHERE bdnb_batiments.batiment_groupe_id = bdnb_batenr.batiment_groupe_id
+    LIMIT 1
+  )
+`.as('ffo_bat_nb_log');
+
+const singleConstructionBuildingArea = sql<number | null>`
+  (
+    SELECT
+      CASE
+        WHEN jsonb_array_length(COALESCE(bdnb_batiments.constructions, '[]'::jsonb)) = 1
+          THEN bdnb_batiments.dpe_representatif_logement_surface_habitable_immeuble
+        ELSE NULL
+      END
+    FROM bdnb_batiments
+    WHERE bdnb_batiments.batiment_groupe_id = bdnb_batenr.batiment_groupe_id
+    LIMIT 1
+  )
+`.as('dpe_representatif_logement_surface_habitable_immeuble');
+
+export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput): Promise<BatEnrBatiment | undefined> => {
   if ('batiment_construction_id' in input) {
     const batiment = await kdb
       .selectFrom('bdnb_batenr')
-      .select(['batiment_construction_id', 'gmi_nappe_200', 'gmi_sonde_200', 'etat_ppa'])
+      .select(batEnrBatimentColumns)
+      .select(singleConstructionHousingCount)
+      .select(singleConstructionBuildingArea)
+      .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
       .where('batiment_construction_id', '=', input.batiment_construction_id)
       .executeTakeFirst();
 
@@ -20,7 +86,10 @@ export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) 
 
   const batiment = await kdb
     .selectFrom('bdnb_batenr')
-    .select(['batiment_construction_id', 'gmi_nappe_200', 'gmi_sonde_200', 'etat_ppa'])
+    .select(batEnrBatimentColumns)
+    .select(singleConstructionHousingCount)
+    .select(singleConstructionBuildingArea)
+    .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
     .where('geom', 'is not', null)
     .orderBy(sql`geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154)`)
     .limit(1)
@@ -28,6 +97,24 @@ export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput) 
 
   return batiment;
 };
+
+export const getBatEnrBatimentsByConstructionIds = async (batimentConstructionIds: string[]): Promise<BatEnrBatiment[]> => {
+  const uniqueBatimentConstructionIds = [...new Set(batimentConstructionIds)];
+
+  if (uniqueBatimentConstructionIds.length === 0) {
+    return [];
+  }
+
+  return await kdb
+    .selectFrom('bdnb_batenr')
+    .select(batEnrBatimentColumns)
+    .select(singleConstructionHousingCount)
+    .select(singleConstructionBuildingArea)
+    .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
+    .where('batiment_construction_id', 'in', uniqueBatimentConstructionIds)
+    .execute();
+};
+
 export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => {
   const communeInfo = await kdb
     .selectFrom('communes')
@@ -46,14 +133,98 @@ export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => 
   return communeInfo;
 };
 
-export const getRnbByBanId = async ({ banId }: { banId: string }) => {
-  const url = `https://rnb-api.beta.gouv.fr/api/alpha/buildings/address/?cle_interop_ban=${encodeURIComponent(banId)}`;
+export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) => {
+  const url = `https://api.bdnb.io/v1/bdnb/donnees/rel_batiment_construction_adresse?select=batiment_construction_id&cle_interop_adr=eq.${encodeURIComponent(
+    banId
+  )}`;
 
-  const data = await fetchJSON(url);
+  const data = await fetchJSON<BdnbConstructionAddressRelation[]>(url);
+  const batimentConstructionIds = data
+    .map((relation) => relation.batiment_construction_id)
+    .filter((batimentConstructionId): batimentConstructionId is string => batimentConstructionId !== null);
 
-  return data.results?.[0];
+  return await getBatEnrBatimentsByConstructionIds(batimentConstructionIds);
 };
 
-export const addContactToAirtable = async ({ input }: { input: GetAirtableAdeme }) => {
-  AirtableDB(Airtable.CONTACT_CHALEUR_RENOUVELABLE).create(input);
+export const createDemandeChaleurRenouvelable = async ({ input }: { input: DemandeChaleurRenouvelable }) => {
+  const createdDemand = await kdb
+    .insertInto('demands_chaleur_renouvelable')
+    .values({
+      address: input.address,
+      average_area: input.averageArea,
+      average_residents: input.averageResidents,
+      created_at: new Date(),
+      dpe: input.dpe,
+      email: input.email,
+      first_name: input.firstName,
+      heating_energy: input.heatingEnergy,
+      housing_count: input.housingCount,
+      housing_type: input.housingType,
+      last_name: input.lastName,
+      occupant_status: input.occupantStatus,
+      outdoor_space: input.outdoorSpace,
+      phone: input.phone,
+      project_status: input.projectStatus,
+      simulation_url: input.simulationUrl,
+      updated_at: new Date(),
+    })
+    .returning(['id'])
+    .executeTakeFirstOrThrow();
+
+  return createdDemand;
+};
+
+export const listDemandesChaleurRenouvelableAdmin = async () => {
+  const demandes = await kdb
+    .selectFrom('demands_chaleur_renouvelable')
+    .select([
+      'address',
+      'assigned_to',
+      'average_area',
+      'average_residents',
+      'created_at',
+      'dpe',
+      'email',
+      'first_name',
+      'heating_energy',
+      'housing_count',
+      'housing_type',
+      'id',
+      'last_name',
+      'occupant_status',
+      'outdoor_space',
+      'phone',
+      'project_status',
+      'simulation_url',
+      'status',
+      'updated_at',
+    ])
+    .orderBy('created_at', 'desc')
+    .execute();
+
+  const { count } = await kdb
+    .selectFrom('demands_chaleur_renouvelable')
+    .select(kdb.fn.count<number>('id').as('count'))
+    .executeTakeFirstOrThrow();
+
+  const items = demandes.map((demande) => ({
+    ...demande,
+    created_at: demande.created_at.toISOString(),
+    updated_at: demande.updated_at.toISOString(),
+  }));
+
+  return { count, items };
+};
+
+export const updateDemandeChaleurRenouvelableAdmin = async ({ demandId, values }: AdminUpdateDemandeChaleurRenouvelableInput) => {
+  return await kdb
+    .updateTable('demands_chaleur_renouvelable')
+    .set({
+      ...(values.assignedTo !== undefined && { assigned_to: values.assignedTo }),
+      ...(values.status !== undefined && { status: values.status }),
+      updated_at: new Date(),
+    })
+    .where('id', '=', demandId)
+    .returning(['assigned_to', 'id', 'status', 'updated_at'])
+    .executeTakeFirstOrThrow();
 };

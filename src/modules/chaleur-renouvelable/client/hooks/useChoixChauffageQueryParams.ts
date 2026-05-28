@@ -1,45 +1,95 @@
-import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryState } from 'nuqs';
+import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 
-import { type DPE, DPE_VALUES, ESPACE_EXTERIEUR_VALUES, TYPE_LOGEMENT_VALUES } from '@/modules/chaleur-renouvelable/constants';
+import {
+  type DPE,
+  DPE_VALUES,
+  ESPACE_EXTERIEUR_VALUES,
+  type EspaceExterieur,
+  MODE_EAU_CHAUDE_SANITAIRE_VALUES,
+  type ModeEauChaudeSanitaire,
+  TYPE_LOGEMENT_VALUES,
+  TYPE_RADIATEUR_VALUES,
+  type TypeLogement,
+  type TypeRadiateur,
+} from '@/modules/chaleur-renouvelable/constants';
+
+export type ChoixChauffageParams = {
+  adresse: string | null;
+  dpe: DPE;
+  espaceExterieur: EspaceExterieur | null;
+  habitantsMoyen: string | null;
+  modeEauChaudeSanitaire: ModeEauChaudeSanitaire | null;
+  nbLogements: number | null;
+  surfaceMoyenne: number | null;
+  typeLogement: TypeLogement | null;
+  typeRadiateur: TypeRadiateur | null;
+};
 
 export function useChoixChauffageQueryParams() {
   const queryOptions = {
     history: 'replace' as const,
     scroll: false,
   };
-  const [adresse, setAdresse] = useQueryState('adresse', parseAsString.withOptions(queryOptions));
-  const [typeLogement, setTypeLogement] = useQueryState(
-    'typeLogement',
-    parseAsStringLiteral(TYPE_LOGEMENT_VALUES).withOptions(queryOptions)
-  );
-  const [espaceExterieur, setEspaceExterieur] = useQueryState(
-    'espaceExterieur',
-    parseAsStringLiteral(ESPACE_EXTERIEUR_VALUES).withOptions(queryOptions)
-  );
-  const [dpe, setDpe] = useQueryState(
-    'dpe',
-    parseAsStringLiteral(DPE_VALUES)
+  const [queryParams, setQueryParams] = useQueryStates({
+    adresse: parseAsString.withOptions(queryOptions),
+    construction_id: parseAsString.withOptions(queryOptions),
+    dpe: parseAsStringLiteral(DPE_VALUES)
       .withDefault('E' as DPE)
-      .withOptions(queryOptions)
-  );
-  const [nbLogements, setNbLogements] = useQueryState('nbLogements', parseAsInteger.withOptions(queryOptions));
-  const [surfaceMoyenne, setSurfaceMoyenne] = useQueryState('surfaceMoyenne', parseAsInteger.withOptions(queryOptions));
-  const [habitantsMoyen, setHabitantsMoyen] = useQueryState('habitantsMoyen', parseAsString.withOptions(queryOptions));
+      .withOptions(queryOptions),
+    espaceExterieur: parseAsStringLiteral(ESPACE_EXTERIEUR_VALUES).withOptions(queryOptions),
+    habitantsMoyen: parseAsString.withOptions(queryOptions),
+    modeEauChaudeSanitaire: parseAsStringLiteral(MODE_EAU_CHAUDE_SANITAIRE_VALUES).withOptions(queryOptions),
+    nbLogements: parseAsInteger.withOptions(queryOptions),
+    surfaceMoyenne: parseAsInteger.withOptions(queryOptions),
+    typeLogement: parseAsStringLiteral(TYPE_LOGEMENT_VALUES).withOptions(queryOptions),
+    typeRadiateur: parseAsStringLiteral(TYPE_RADIATEUR_VALUES).withOptions(queryOptions),
+  });
+
+  const simulationParams: ChoixChauffageParams = {
+    adresse: queryParams.adresse,
+    dpe: queryParams.dpe,
+    espaceExterieur: queryParams.espaceExterieur,
+    habitantsMoyen: queryParams.habitantsMoyen,
+    modeEauChaudeSanitaire: queryParams.modeEauChaudeSanitaire,
+    nbLogements: queryParams.nbLogements,
+    surfaceMoyenne: queryParams.surfaceMoyenne,
+    typeLogement: queryParams.typeLogement,
+    typeRadiateur: queryParams.typeRadiateur,
+  };
 
   return {
-    adresse,
-    dpe,
-    espaceExterieur,
-    habitantsMoyen,
-    nbLogements,
-    setAdresse,
-    setDpe,
-    setEspaceExterieur,
-    setHabitantsMoyen,
-    setNbLogements,
-    setSurfaceMoyenne,
-    setTypeLogement,
-    surfaceMoyenne,
-    typeLogement,
+    adresse: queryParams.adresse,
+    constructionId: queryParams.construction_id,
+    dpe: queryParams.dpe,
+    espaceExterieur: queryParams.espaceExterieur,
+    habitantsMoyen: queryParams.habitantsMoyen,
+    modeEauChaudeSanitaire: queryParams.modeEauChaudeSanitaire,
+    nbLogements: queryParams.nbLogements,
+    setAdresse: (adresse: string | null) => setQueryParams({ adresse }),
+    setConstructionId: (constructionId: string | null) => setQueryParams({ construction_id: constructionId }),
+    setDpe: (dpe: DPE) => setQueryParams({ dpe }),
+    setEspaceExterieur: (espaceExterieur: EspaceExterieur | null) => setQueryParams({ espaceExterieur }),
+    setHabitantsMoyen: (habitantsMoyen: string | null) => setQueryParams({ habitantsMoyen }),
+    setModeEauChaudeSanitaire: (modeEauChaudeSanitaire: ModeEauChaudeSanitaire | null) => setQueryParams({ modeEauChaudeSanitaire }),
+    setNbLogements: (nbLogements: number | null) => setQueryParams({ nbLogements }),
+    setSimulationParams: (params: Partial<ChoixChauffageParams>) =>
+      setQueryParams({
+        adresse: params.adresse,
+        dpe: params.dpe,
+        espaceExterieur: params.espaceExterieur,
+        habitantsMoyen: params.habitantsMoyen,
+        modeEauChaudeSanitaire: params.modeEauChaudeSanitaire,
+        nbLogements: params.nbLogements,
+        surfaceMoyenne: params.surfaceMoyenne,
+        typeLogement: params.typeLogement,
+        typeRadiateur: params.typeRadiateur,
+      }),
+    setSurfaceMoyenne: (surfaceMoyenne: number | null) => setQueryParams({ surfaceMoyenne }),
+    setTypeLogement: (typeLogement: TypeLogement | null) => setQueryParams({ typeLogement }),
+    setTypeRadiateur: (typeRadiateur: TypeRadiateur | null) => setQueryParams({ typeRadiateur }),
+    simulationParams,
+    surfaceMoyenne: queryParams.surfaceMoyenne,
+    typeLogement: queryParams.typeLogement,
+    typeRadiateur: queryParams.typeRadiateur,
   };
 }
