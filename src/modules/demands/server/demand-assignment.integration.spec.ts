@@ -1,6 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import type { NetworkType } from '@/modules/reseaux/constants';
 import { kdb, sql } from '@/server/db/kysely';
 import { type EligibilityType, getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
 import {
@@ -11,7 +10,9 @@ import {
   seedProEligibilityTestsAddress,
   seedTableUser,
 } from '@/tests/fixtures';
+import { eligibilityScenarios } from '@/tests/fixtures/eligibility';
 import { uuid } from '@/tests/helpers';
+import { pick } from '@/utils/objects';
 
 vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
@@ -46,46 +47,6 @@ import { createDemand } from './creation-user';
 
 const testUserId = uuid(200);
 
-type NetworkAssignment = { network_id: number | null; network_type: NetworkType | null };
-
-/**
- * Vérité-terrain dérivée de la fixture d'éligibilité (ids distincts : PDP 1001, réseaux 2001+,
- * constructions 3001+). `eligibilityIdFcu` = id_fcu du réseau résolu par l'éligibilité (jamais
- * l'id du PDP). `network_assignment` = affectation finale attendue (affecté si eligible OU distance < 500m).
- */
-const cases: { type: EligibilityType; eligibilityIdFcu: number | null; network_assignment: NetworkAssignment }[] = [
-  { eligibilityIdFcu: 2001, network_assignment: { network_id: 2001, network_type: 'reseau_de_chaleur' }, type: 'dans_pdp_reseau_existant' },
-  {
-    eligibilityIdFcu: 3001,
-    network_assignment: { network_id: 3001, network_type: 'reseau_en_construction' },
-    type: 'dans_pdp_reseau_futur',
-  },
-  {
-    eligibilityIdFcu: 2002,
-    network_assignment: { network_id: 2002, network_type: 'reseau_de_chaleur' },
-    type: 'reseau_existant_tres_proche',
-  },
-  {
-    eligibilityIdFcu: 3003,
-    network_assignment: { network_id: 3003, network_type: 'reseau_en_construction' },
-    type: 'reseau_futur_tres_proche',
-  },
-  {
-    eligibilityIdFcu: 3002,
-    network_assignment: { network_id: 3002, network_type: 'reseau_en_construction' },
-    type: 'dans_zone_reseau_futur',
-  },
-  { eligibilityIdFcu: 2002, network_assignment: { network_id: 2002, network_type: 'reseau_de_chaleur' }, type: 'reseau_existant_proche' },
-  { eligibilityIdFcu: 3003, network_assignment: { network_id: 3003, network_type: 'reseau_en_construction' }, type: 'reseau_futur_proche' },
-  // 759m ≥ 500m → non affecté
-  { eligibilityIdFcu: 2002, network_assignment: { network_id: null, network_type: null }, type: 'reseau_existant_loin' },
-  // 956m ≥ 500m → non affecté
-  { eligibilityIdFcu: 3003, network_assignment: { network_id: null, network_type: null }, type: 'reseau_futur_loin' },
-  // réseau sans tracé → non affecté
-  { eligibilityIdFcu: 2003, network_assignment: { network_id: null, network_type: null }, type: 'dans_ville_reseau_existant_sans_trace' },
-  { eligibilityIdFcu: null, network_assignment: { network_id: null, network_type: null }, type: 'trop_eloigne' },
-];
-
 const creationContexts = ['formulaire', 'test en masse'] as const;
 type CreationContext = (typeof creationContexts)[number];
 
@@ -108,7 +69,7 @@ const createDemandInContext = async (context: CreationContext, type: Eligibility
   return createDemand(input, { pro_eligibility_tests_addresse_id: testAddress.id, userId: testUserId });
 };
 
-const getAssignment = (demandId: string): Promise<NetworkAssignment> =>
+const getAssignment = (demandId: string) =>
   kdb.selectFrom('demands').select(['network_id', 'network_type']).where('id', '=', demandId).executeTakeFirstOrThrow();
 
 describe('création de demande → affectation réseau', () => {
@@ -119,20 +80,24 @@ describe('création de demande → affectation réseau', () => {
   });
 
   describe("calcul d'éligibilité : id_fcu = réseau résolu (jamais l'id du PDP)", () => {
-    it.each(cases)('$type', async ({ type, eligibilityIdFcu }) => {
-      const { lat, lon } = getTestPointCoordinates(type);
-      const eligibility = await getDetailedEligibilityStatus(lat, lon);
-      expect({ id_fcu: eligibility.id_fcu, type: eligibility.type }).toStrictEqual({ id_fcu: eligibilityIdFcu, type });
+    const scenarios = eligibilityScenarios.map((scenario) => ({ ...scenario, label: scenario.name ?? scenario.type }));
+
+    it.each(scenarios)('$label', async ({ label, type, eligibility }) => {
+      const { lat, lon } = getTestPointCoordinates(label);
+      const result = await getDetailedEligibilityStatus(lat, lon);
+      expect(pick(result, ['distance', 'eligible', 'id_fcu', 'type'])).toStrictEqual({ ...eligibility, type });
     });
   });
 
   describe('affectation réseau finale (par contexte de création)', () => {
-    const scenarios = creationContexts.flatMap((context) => cases.map((testCase) => ({ context, ...testCase })));
+    const scenarios = creationContexts.flatMap((context) =>
+      eligibilityScenarios.map((scenario) => ({ context, label: scenario.name ?? scenario.type, ...scenario }))
+    );
 
-    it.each(scenarios)('$context — $type', async ({ context, type, network_assignment }) => {
-      const coords = getTestPointCoordinates(type);
+    it.each(scenarios)('$context — $label', async ({ context, label, type, assignment }) => {
+      const coords = getTestPointCoordinates(label);
       const { id } = await createDemandInContext(context, type, coords);
-      expect(await getAssignment(id)).toStrictEqual(network_assignment);
+      expect(await getAssignment(id)).toStrictEqual(assignment);
     });
   });
 });

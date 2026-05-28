@@ -395,37 +395,54 @@ const checkDemandOrphanNetwork: IssueBuilder = async () => {
  * des demandes situées dans ces PDP.
  */
 const checkPdpOrphanNetwork: IssueBuilder = async () => {
-  const missingRdc = sql<
-    number[]
-  >`ARRAY(SELECT rid FROM unnest(p.reseau_de_chaleur_ids) AS rid WHERE NOT EXISTS (SELECT 1 FROM reseaux_de_chaleur r WHERE r.id_fcu = rid))`;
-  const missingZrc = sql<
-    number[]
-  >`ARRAY(SELECT rid FROM unnest(p.reseau_en_construction_ids) AS rid WHERE NOT EXISTS (SELECT 1 FROM zones_et_reseaux_en_construction z WHERE z.id_fcu = rid))`;
-  const sncuMissing = sql<boolean>`(
-    p."Identifiant reseau" IS NOT NULL
-    AND p."Identifiant reseau" <> ''
-    AND NOT EXISTS (SELECT 1 FROM reseaux_de_chaleur r WHERE r."Identifiant reseau" = p."Identifiant reseau")
-  )`;
-
-  const rows = await kdb
+  // Sous-requête typée calculant, par PDP, si chaque type de lien référence un réseau inexistant.
+  // `arr <@ ARRAY(...)` = tous les ids du PDP existent ; on inverse pour détecter les liens cassés.
+  const flagged = kdb
     .selectFrom('zone_de_developpement_prioritaire as p')
     .select((eb) => [
       'p.id_fcu',
+      'p.reseau_de_chaleur_ids',
+      'p.reseau_en_construction_ids',
       eb.ref('p.Identifiant reseau').as('sncu'),
-      missingRdc.as('missing_rdc'),
-      missingZrc.as('missing_zrc'),
-      sncuMissing.as('sncu_missing'),
+      eb
+        .not(eb('p.reseau_de_chaleur_ids', '<@', sql<number[]>`ARRAY(${eb.selectFrom('reseaux_de_chaleur').select('id_fcu')})::int[]`))
+        .as('broken_rdc'),
+      eb
+        .not(
+          eb(
+            'p.reseau_en_construction_ids',
+            '<@',
+            sql<number[]>`ARRAY(${eb.selectFrom('zones_et_reseaux_en_construction').select('id_fcu')})::int[]`
+          )
+        )
+        .as('broken_zrc'),
+      eb
+        .and([
+          eb('p.Identifiant reseau', 'is not', null),
+          eb('p.Identifiant reseau', '!=', ''),
+          eb.not(
+            eb.exists(
+              eb.selectFrom('reseaux_de_chaleur as r').select('r.id_fcu').whereRef('r.Identifiant reseau', '=', 'p.Identifiant reseau')
+            )
+          ),
+        ])
+        .as('sncu_missing'),
     ])
-    .where((eb) => eb.or([sql<boolean>`cardinality(${missingRdc}) > 0`, sql<boolean>`cardinality(${missingZrc}) > 0`, sncuMissing]))
-    .orderBy('p.id_fcu')
+    .as('pdp');
+
+  const rows = await kdb
+    .selectFrom(flagged)
+    .selectAll()
+    .where((eb) => eb.or([eb('pdp.broken_rdc', '=', true), eb('pdp.broken_zrc', '=', true), eb('pdp.sncu_missing', '=', true)]))
+    .orderBy('pdp.id_fcu')
     .execute();
 
   if (rows.length === 0) return null;
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: [
-      row.missing_rdc.length ? `réseaux de chaleur ${row.missing_rdc.join(', ')}` : null,
-      row.missing_zrc.length ? `réseaux en construction ${row.missing_zrc.join(', ')}` : null,
+      row.broken_rdc ? `réseaux de chaleur ${row.reseau_de_chaleur_ids.join(', ')}` : null,
+      row.broken_zrc ? `réseaux en construction ${row.reseau_en_construction_ids.join(', ')}` : null,
       row.sncu_missing ? `SNCU ${row.sncu} introuvable` : null,
     ]
       .filter(Boolean)
