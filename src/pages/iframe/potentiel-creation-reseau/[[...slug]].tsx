@@ -1,14 +1,12 @@
 import type { GetStaticPaths } from 'next';
 
 import { clientConfig } from '@/client-config';
-import { FCUMapContextProvider } from '@/components/Map/MapProvider';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Link from '@/components/ui/Link';
 import Newsletter from '@/components/ui/Newsletter';
 import {
+  CommuneMap,
   DetailsCommune,
   franceBounds,
-  Map,
   type PotentielCreationReseauPageProps,
   SearchCommune,
   submitDemandeCommuneSansReseau,
@@ -42,23 +40,7 @@ const Page: React.FC<PotentielCreationReseauPageProps> = ({ commune }) => {
         <div className="fr-col-12 fr-col-lg-8">
           <div className="mx-2 lg:mx-0 h-full">
             {/* This div is made so that a user can still scroll on mobile */}
-            <FCUMapContextProvider
-              initialMapConfiguration={createMapConfiguration({
-                besoinsEnChaleur: !!commune,
-                communesFortPotentielPourCreationReseauxChaleur: {
-                  show: !commune,
-                },
-                reseauxDeChaleur: {
-                  show: !!commune,
-                },
-                reseauxEnConstruction: !!commune,
-                zonesOpportunite: {
-                  show: !!commune,
-                },
-              })}
-            >
-              <Map commune={commune} bounds={bounds} />
-            </FCUMapContextProvider>
+            <CommuneMap commune={commune} bounds={bounds} />
           </div>
         </div>
       </div>
