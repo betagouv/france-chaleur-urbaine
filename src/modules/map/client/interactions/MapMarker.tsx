@@ -32,7 +32,13 @@ export function MapMarker({ longitude, latitude, color, anchor, popupContent, de
   useEffect(() => {
     const marker = new Marker({ anchor, color }).setLngLat([longitude, latitude]);
     if (popupContainer) {
-      const popup = new Popup({ closeButton: false, closeOnClick: false, maxWidth: '320px', offset: 24 }).setDOMContent(popupContainer);
+      const popup = new Popup({
+        closeButton: false,
+        closeOnClick: false,
+        maxWidth: '320px',
+        offset: 24,
+        padding: map.getPadding(), // keeps the popup clear of the legend drawer
+      }).setDOMContent(popupContainer);
       marker.setPopup(popup);
       popupRef.current = popup;
     }

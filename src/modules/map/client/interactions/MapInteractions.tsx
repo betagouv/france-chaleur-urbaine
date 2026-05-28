@@ -200,6 +200,7 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
       closeOnClick: true,
       maxWidth: '500px',
       offset: popup.offset,
+      padding: map.getPadding(), // keeps the anchor clear of the legend drawer
     })
       .setLngLat([popup.longitude, popup.latitude])
       .setDOMContent(popupContainerRef.current)

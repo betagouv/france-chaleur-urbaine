@@ -152,6 +152,8 @@ Built-in. When `interactive=true` and `layers` are provided, `<MapCanvas>` mount
 - hover state applied via `setFeatureState`,
 - popup opened at the turf-snapped nearest point on the feature, content portal'd into a `maplibregl.Popup`.
 
+Popups pass `padding: map.getPadding()` so the anchor avoids the legend drawer (drawer width reflected into the viewport padding by `LegendPaddingSync` in `core/MapImpl.tsx`).
+
 `MapInteractions.tsx` exports both the component and the underlying `useMapInteractions(layers)` hook for advanced callers.
 
 ### Building selector
