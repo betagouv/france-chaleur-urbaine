@@ -37,8 +37,6 @@ import {
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import type { DPE, ModeEauChaudeSanitaire } from '@/modules/chaleur-renouvelable/constants';
 import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
-import type { BoundingBox } from '@/modules/geo/types';
-import type { Point } from '@/types/Point';
 import cx from '@/utils/cx';
 
 import { HOT_WATER_PARAMS_SECTION_ID, ParamsForm } from './ParamsForm';
@@ -73,24 +71,14 @@ const batEnrBatimentSelectionModal = createModal({
   isOpenedByDefault: false,
 });
 
-function getBoundsAroundPoint([longitude, latitude]: Point, radiusMeters: number): BoundingBox {
-  const metersPerDegreeLatitude = 111_320;
-  const latitudeDelta = radiusMeters / metersPerDegreeLatitude;
-  const longitudeDelta = radiusMeters / (metersPerDegreeLatitude * Math.max(Math.cos((latitude * Math.PI) / 180), 0.1));
-
-  return [longitude - longitudeDelta, latitude - latitudeDelta, longitude + longitudeDelta, latitude + latitudeDelta];
-}
-
 function enrichHeatingMode(mode: ModeDeChauffage, engine: SimulatorEngine, situation: Situation): ModeDeChauffageEnriched {
   const coutParAn = mode.coutParAnPublicodeKey
     ? engine.getFieldAsNumber(`Bilan x ${mode.coutParAnPublicodeKey} . total sans installation` as RuleName)
     : 0;
   const coutInstallation =
     typeof mode.coutInstallation === 'function' ? mode.coutInstallation(situation) : String(mode.coutInstallation ?? '0');
-  const contraintesTechniques =
-    typeof mode.contraintesTechniques === 'function' ? mode.contraintesTechniques(situation) : mode.contraintesTechniques;
 
-  return { ...mode, contraintesTechniques, coutInstallation, coutParAn };
+  return { ...mode, coutInstallation, coutParAn };
 }
 
 const getModeEauChaudeSanitaireFromBatEnr = (typeInstallationEcs: string | null): ModeEauChaudeSanitaire | null => {
@@ -155,8 +143,10 @@ export default function ChoixChauffageResults() {
       geothermiePossible: batEnr.geothermiePossible,
       habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen || '2'),
       hasGeothermalProbeSpace: batEnr.hasGeothermalProbeSpace,
+      modeEauChaudeSanitaire: urlParams.modeEauChaudeSanitaire,
       nbLogements: urlParams.nbLogements ?? 25,
       planProtectionAtmosphere: batEnr.planProtectionAtmosphere,
+      solarThermalCoverage: batEnr.solarThermalCoverage,
       surfaceMoyenne: urlParams.surfaceMoyenne ?? 70,
       typeRadiateur: urlParams.typeRadiateur,
     }),
@@ -170,6 +160,7 @@ export default function ChoixChauffageResults() {
       urlParams.dpe,
       urlParams.espaceExterieur,
       urlParams.habitantsMoyen,
+      urlParams.modeEauChaudeSanitaire,
       urlParams.nbLogements,
       urlParams.surfaceMoyenne,
       urlParams.typeRadiateur,
@@ -179,6 +170,7 @@ export default function ChoixChauffageResults() {
       batEnr.geothermalSondeGmi,
       batEnr.hasGeothermalProbeSpace,
       batEnr.planProtectionAtmosphere,
+      batEnr.solarThermalCoverage,
       eligibiliteReseauChaleur,
     ]
   );
@@ -318,7 +310,6 @@ export default function ChoixChauffageResults() {
         values={urlParams.simulationParams}
         onSave={urlParams.setSimulationParams}
         geoAddress={geoAddress}
-        selectedBatiment={selectedBatEnrBatiment}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={handleSelectGeoAddress}
         onSelectBatiment={handleSelectBatEnrBatiment}
@@ -567,7 +558,6 @@ function ProsConsLists({ avantages, inconvenients, layout }: { avantages: string
           </li>
         ))}
       </ul>
-      <span className="text-error">Inconvénients</span>
       <ul className="m-0 list-none space-y-1 p-0">
         {inconvenients.map((inconvenient) => (
           <li key={inconvenient} className="flex gap-3">
@@ -706,15 +696,18 @@ function RecommendedSolutionCard({
               <UsageTags usage={item.usage} />
             </div>
           </div>
-          <p className="max-w-4xl">{item.description}</p>
         </div>
         <div>
-          <Image src={`/${item.icone}`} alt="" width={176} height={132} className="object-contain" />
+          <Image src={`/${item.icone}`} alt="" width={120} height={72} className="object-contain" />
         </div>
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} layout="column" />
+        <div>
+          <h4 className="text-lg font-bold uppercase text-grey">Description</h4>
+          <p>{item.description}</p>
+        </div>
+        <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
         <div className=" bg-gray-100 p-5">
           <p className="mb-2 uppercase">Gain DPE</p>
           <div className="mb-4 flex items-center gap-3 border-b border-gray-300 pb-4">
@@ -912,6 +905,8 @@ function ResultsSection({
     return null;
   }
 
+  const currentHotWaterModeLabel = situation.modeEauChaudeSanitaire ?? 'Non renseigné';
+
   return (
     <>
       <h3 className="fr-mt-6w mb-5">{title}</h3>
@@ -945,7 +940,7 @@ function ResultsSection({
                   aria-hidden="true"
                 />
                 <div>
-                  <p className="mb-1 font-bold text-blue">Mode actuel : Individuel</p>
+                  <p className="mb-1 font-bold text-blue">Mode actuel : {currentHotWaterModeLabel}</p>
                   <p className="mb-0 text-sm">
                     Si ce n’est pas correct, vous pouvez le{' '}
                     <button type="button" className="font-bold text-blue underline" onClick={onEditParamsClick}>
