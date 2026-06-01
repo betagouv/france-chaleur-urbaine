@@ -19,6 +19,7 @@ type BatEnrInfo = {
   geothermalSondeGmi: number | null;
   hasGeothermalProbeSpace: boolean | null;
   planProtectionAtmosphere: boolean;
+  solarThermalCoverage: number | null;
 };
 
 type EligibilityState = {
@@ -54,6 +55,7 @@ const emptyState: EligibilityState = {
     geothermiePossible: false,
     hasGeothermalProbeSpace: null,
     planProtectionAtmosphere: false,
+    solarThermalCoverage: null,
   },
   batEnrBatiments: [],
   codeDepartement: '',
@@ -77,6 +79,7 @@ const getBatEnrInfoFromBatiment = (batEnrDetails?: BatEnrBatiment | null): BatEn
     geothermiePossible: [1, 2].includes(Number(batEnrDetails?.gmi_nappe_200)) || [1, 2].includes(Number(batEnrDetails?.gmi_sonde_200)),
     hasGeothermalProbeSpace: batEnrDetails?.place_nappe ?? null,
     planProtectionAtmosphere: batEnrDetails?.etat_ppa === 'PPA Validés',
+    solarThermalCoverage: batEnrDetails?.couv_st_ecs_2025 != null ? Number(batEnrDetails.couv_st_ecs_2025) : null,
   };
 };
 

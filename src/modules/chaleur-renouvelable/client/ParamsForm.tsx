@@ -26,8 +26,6 @@ import { AddressField } from '@/modules/form/AddressField';
 
 export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
 
-const isNumericLike = (value: string) => value === '' || /^[0-9]+([.,][0-9]*)?$/.test(value);
-
 type ParamsFormDraft = {
   adresse: NonNullable<ChoixChauffageParams['adresse']>;
   dpe: DPE;
@@ -39,20 +37,6 @@ type ParamsFormDraft = {
   typeLogement: ChoixChauffageParams['typeLogement'];
   typeRadiateur: ChoixChauffageParams['typeRadiateur'];
 };
-
-function buildDraft(values: ChoixChauffageParams): ParamsFormDraft {
-  return {
-    adresse: values.adresse ?? '',
-    dpe: values.dpe,
-    espaceExterieur: values.espaceExterieur,
-    habitantsMoyen: values.habitantsMoyen ?? '',
-    modeEauChaudeSanitaire: values.modeEauChaudeSanitaire,
-    nbLogements: values.nbLogements === null ? '' : String(values.nbLogements),
-    surfaceMoyenne: values.surfaceMoyenne === null ? '' : String(values.surfaceMoyenne),
-    typeLogement: values.typeLogement,
-    typeRadiateur: values.typeRadiateur,
-  };
-}
 
 function parseIntegerOrNull(value: string) {
   const trimmedValue = value.trim();
@@ -91,7 +75,6 @@ type ParamsFormProps = {
   values: ChoixChauffageParams;
   onSave: (values: ChoixChauffageParams) => Promise<unknown> | undefined;
   geoAddress?: BANAddressFeature;
-  selectedBatiment?: BatEnrBatiment;
   setGeoAddress: (val: BANAddressFeature | undefined) => void;
   onSelectGeoAddress?: (val?: BANAddressFeature) => void;
   onSelectBatiment: (batiment: BatEnrBatiment) => void;
@@ -109,13 +92,22 @@ export function ParamsForm({
   values,
   onSave,
   geoAddress,
-  selectedBatiment,
   setGeoAddress,
   onSelectGeoAddress,
   onSelectBatiment,
   onAddressError: _onAddressError,
 }: ParamsFormProps) {
-  const currentValues = buildDraft(values);
+  const currentValues = {
+    adresse: values.adresse ?? '',
+    dpe: values.dpe,
+    espaceExterieur: values.espaceExterieur,
+    habitantsMoyen: values.habitantsMoyen ?? '',
+    modeEauChaudeSanitaire: values.modeEauChaudeSanitaire,
+    nbLogements: values.nbLogements === null ? '' : String(values.nbLogements),
+    surfaceMoyenne: values.surfaceMoyenne === null ? '' : String(values.surfaceMoyenne),
+    typeLogement: values.typeLogement,
+    typeRadiateur: values.typeRadiateur,
+  };
   const [draft, setDraft] = useState<ParamsFormDraft>(currentValues);
 
   useEffect(() => {
@@ -171,18 +163,14 @@ export function ParamsForm({
   };
 
   return (
-    <form
-      id="params-form"
-      className="border border-[#c8efd7] bg-white px-4 py-4 shadow-[0_0_0_1px_rgba(199,239,215,0.45),0_4px_12px_rgba(0,0,0,0.08)]"
-      onSubmit={handleSubmit}
-    >
+    <form id="params-form" className="border border-[#c8efd7] bg-white p-4" onSubmit={handleSubmit}>
       <div className="flex items-start justify-between gap-4">
         {isOpen ? (
           <>
             <AddressField
               label=""
               value={draft.adresse}
-              className="max-w-90 flex-1"
+              className="max-w-100 flex-1"
               nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
               onlyAddress
               onClear={() => {
@@ -228,19 +216,21 @@ export function ParamsForm({
       </p>
       {isOpen ? (
         <>
-          <div className="space-y-4 text-(--text-title-grey)">
+          <div className="space-y-4">
             <section>
-              <div className="flex items-center gap-2 text-sm font-bold">
+              <div className="flex items-center gap-2">
                 <span className="fr-icon-community-fill" aria-hidden="true" />
                 <h3 className="m-0 text-sm font-bold">Bâtiment</h3>
               </div>
               <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-                <BatimentMapField
-                  batiments={batiments}
-                  initialCenter={geoAddress?.geometry.coordinates}
-                  selectedBatiment={selectedBatiment}
-                  onSelect={onSelectBatiment}
-                />
+                <div className="overflow-hidden bg-[#f6f6f6]">
+                  <BatEnrBatimentsMap
+                    batiments={batiments}
+                    initialCenter={geoAddress?.geometry.coordinates}
+                    onSelect={onSelectBatiment}
+                    className="h-43 min-h-0 border-0"
+                  />
+                </div>
                 <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 content-start">
                   <InputWithSuffix
                     label="Surface habitable par logement (moy)"
@@ -263,7 +253,7 @@ export function ParamsForm({
                       },
                       onChange: (event) => {
                         const nextValue = event.target.value;
-                        if (!isNumericLike(nextValue)) return;
+                        if (!(nextValue === '' || /^[0-9]+([.,][0-9]*)?$/.test(nextValue))) return;
 
                         setDraft((previousDraft) => ({ ...previousDraft, habitantsMoyen: nextValue }));
                       },
@@ -280,7 +270,6 @@ export function ParamsForm({
                     placeholder={isEspaceExterieurDisabled ? "Renseignez d'abord le mode de chauffage" : 'Cochez vos espaces disponibles'}
                     label="Espaces extérieurs"
                     disabled={isEspaceExterieurDisabled}
-                    className="min-w-0"
                   />
                   <Input
                     hideOptionalLabel
@@ -301,7 +290,7 @@ export function ParamsForm({
               </div>
             </section>
             <section id={HOT_WATER_PARAMS_SECTION_ID} className="scroll-mt-4">
-              <div className="flex items-center gap-2 text-sm font-bold">
+              <div className="flex items-center gap-2">
                 <span className="fr-icon-sensor-fill" aria-hidden="true" />
                 <h3 className="m-0 text-sm font-bold">Chauffage et eau chaude sanitaire</h3>
               </div>
@@ -374,32 +363,6 @@ export function ParamsForm({
         </Button>
       )}
     </form>
-  );
-}
-
-type BatimentMapFieldProps = {
-  batiments: BatEnrBatiment[];
-  initialCenter?: [number, number];
-  selectedBatiment?: BatEnrBatiment;
-  onSelect: (batiment: BatEnrBatiment) => void;
-};
-
-function BatimentMapField({ batiments, initialCenter, selectedBatiment, onSelect }: BatimentMapFieldProps) {
-  const buildingLabel = selectedBatiment?.batiment_construction_id
-    ? `Bâtiment ${selectedBatiment.batiment_construction_id}`
-    : 'Cliquez sur un bâtiment';
-
-  return (
-    <div className="overflow-hidden bg-[#f6f6f6]">
-      <BatEnrBatimentsMap batiments={batiments} initialCenter={initialCenter} onSelect={onSelect} className="h-43 min-h-0 border-0" />
-      <div className="flex min-h-11 items-center gap-3 bg-[#f1eee8] px-3 py-2 text-xs">
-        <span className="fr-icon-home-4-line text-lg text-blue" aria-hidden="true" />
-        <span className="min-w-0">
-          <span className="block truncate font-bold">{buildingLabel}</span>
-          <span className="block truncate text-grey">Bâtiments rattachés à l’adresse</span>
-        </span>
-      </div>
-    </div>
   );
 }
 
