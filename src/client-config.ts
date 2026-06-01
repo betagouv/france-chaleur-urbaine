@@ -3,7 +3,6 @@
 // exemple: ENABLE_INSCRIPTIONS: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS),
 export const clientConfig = {
   banApiBaseUrl: process.env.NEXT_PUBLIC_BAN_API_BASE_URL ?? 'https://data.geopf.fr/geocodage/',
-  calendarLink: 'https://cal.com/erwangravez/15min',
   destinationEmails: Object.entries({
     carto: 'laetitia.gabreau@beta.gouv.fr',
     comparateur: 'rbeaulieu@amorce.asso.fr,dponcet@elcimai.com',

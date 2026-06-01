@@ -39,9 +39,6 @@ const EnqueteSatisfaction = ({ firstName, date, adresse, relanceId }: EnqueteSat
           👎 Non, pas encore
         </Button>
       </Section>
-      <Text>
-        <Link href={clientConfig.calendarLink}>Je prends rendez-vous</Link> avec France Chaleur Urbaine
-      </Text>
       <Text>Nous restons à votre disposition pour toute information complémentaire.</Text>
       <Text>Bien cordialement,</Text>
       <Text>L'équipe France Chaleur Urbaine</Text>

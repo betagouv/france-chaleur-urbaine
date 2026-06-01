@@ -15,7 +15,6 @@ process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_
 vi.mock('@/server/config', () => ({
   clientConfig: {
     banApiBaseUrl: 'https://data.geopf.fr/geocodage/',
-    calendarLink: 'https://cal.com/test',
     destinationEmails: {
       carto: 'test@example.com',
       comparateur: 'test@example.com',
