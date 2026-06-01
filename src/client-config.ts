@@ -4,10 +4,10 @@
 export const clientConfig = {
   banApiBaseUrl: process.env.NEXT_PUBLIC_BAN_API_BASE_URL ?? 'https://data.geopf.fr/geocodage/',
   destinationEmails: Object.entries({
-    carto: 'laetitia.gabreau@beta.gouv.fr',
+    carto: 'lea.landrieu@beta.gouv.fr',
     comparateur: 'rbeaulieu@amorce.asso.fr,dponcet@elcimai.com',
-    contact: 'erwan.gravez@beta.gouv.fr,laetitia.gabreau@beta.gouv.fr',
-    contribution: 'laetitia.gabreau@beta.gouv.fr',
+    contact: 'erwan.gravez@beta.gouv.fr,lea.landrieu@beta.gouv.fr',
+    contribution: 'lea.landrieu@beta.gouv.fr',
     pro: 'erwan.gravez@beta.gouv.fr',
   }).reduce(
     (acc, [key, value]) => ({
