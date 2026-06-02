@@ -1,4 +1,3 @@
-import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -19,32 +18,40 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
 import DemandeFCRForm from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
 import FranceRenovHelp from '@/modules/chaleur-renouvelable/client/FranceRenovHelp';
+import { getHeatingModeCosts, setPublicodesSituation } from '@/modules/chaleur-renouvelable/client/heatingModeCosts';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import { useRemoveHashOnScroll } from '@/modules/chaleur-renouvelable/client/hooks/useRemoveHashOnScroll';
 import {
-  DPE_BG,
   getIncompatibleSolutionRows,
+  getModesDeChauffage,
   type IncompatibleSolutionRow,
   improveDpe,
-  type ModeDeChauffage,
   type ModeDeChauffageEnriched,
   type ModeDeChauffageUsage,
-  modeDeChauffageParTypeLogement,
   type PrerequisiteRow,
   type PrerequisiteStatus,
   type Situation,
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import type { DPE, ModeEauChaudeSanitaire } from '@/modules/chaleur-renouvelable/constants';
+import { buildSimulationSituation } from '@/modules/chaleur-renouvelable/client/simulationSituation';
+import type { DPE } from '@/modules/chaleur-renouvelable/constants';
+import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
 import cx from '@/utils/cx';
 
 import { HOT_WATER_PARAMS_SECTION_ID, ParamsForm } from './ParamsForm';
 
-type SimulatorEngine = ReturnType<typeof useSimulatorEngine>;
-
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
+const DPE_BG: Record<DPE, string> = {
+  A: 'bg-[#00A06C]',
+  B: 'bg-[#52B053]',
+  C: 'bg-[#A6CB71]',
+  D: 'bg-[#F5E70F]',
+  E: 'bg-[#F0B50E]',
+  F: 'bg-[#EC8136]',
+  G: 'bg-[#D7211F]',
+};
 const usageTagConfig = {
   heating: {
     icon: '/img/icon-chauffage.svg',
@@ -70,26 +77,6 @@ const batEnrBatimentSelectionModal = createModal({
   id: 'bat-enr-batiment-selection-modal',
   isOpenedByDefault: false,
 });
-
-function enrichHeatingMode(mode: ModeDeChauffage, engine: SimulatorEngine, situation: Situation): ModeDeChauffageEnriched {
-  const coutParAn = mode.coutParAnPublicodeKey
-    ? engine.getFieldAsNumber(`Bilan x ${mode.coutParAnPublicodeKey} . total sans installation` as RuleName)
-    : 0;
-  const coutInstallation =
-    typeof mode.coutInstallation === 'function' ? mode.coutInstallation(situation) : String(mode.coutInstallation ?? '0');
-
-  return { ...mode, coutInstallation, coutParAn };
-}
-
-const getModeEauChaudeSanitaireFromBatEnr = (typeInstallationEcs: string | null): ModeEauChaudeSanitaire | null => {
-  const normalizedTypeInstallationEcs = typeInstallationEcs?.trim().toLowerCase();
-
-  if (normalizedTypeInstallationEcs === 'individuel') {
-    return 'Individuel';
-  }
-
-  return normalizedTypeInstallationEcs === 'collectif' ? 'Collectif' : null;
-};
 
 export default function ChoixChauffageResults() {
   const engine = useSimulatorEngine();
@@ -127,29 +114,7 @@ export default function ChoixChauffageResults() {
   } = useContactFormFCU();
 
   const situation: Situation = useMemo(
-    () => ({
-      adresse: urlParams.adresse ?? null,
-      architecturalProtectionAc1: batEnr.architecturalProtectionAc1,
-      architecturalProtectionAc2: batEnr.architecturalProtectionAc2,
-      architecturalProtectionAc3: batEnr.architecturalProtectionAc3,
-      architecturalProtectionAc4: batEnr.architecturalProtectionAc4,
-      architecturalProtectionAc4bis: batEnr.architecturalProtectionAc4bis,
-      dpe: urlParams.dpe,
-      eligibiliteReseauChaleur,
-      espaceExterieur: urlParams.espaceExterieur ?? 'none',
-      geothermalNappeGmi: batEnr.geothermalNappeGmi,
-      geothermalNappePotential: batEnr.geothermalNappePotential,
-      geothermalSondeGmi: batEnr.geothermalSondeGmi,
-      geothermiePossible: batEnr.geothermiePossible,
-      habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen || '2'),
-      hasGeothermalProbeSpace: batEnr.hasGeothermalProbeSpace,
-      modeEauChaudeSanitaire: urlParams.modeEauChaudeSanitaire,
-      nbLogements: urlParams.nbLogements ?? 25,
-      planProtectionAtmosphere: batEnr.planProtectionAtmosphere,
-      solarThermalCoverage: batEnr.solarThermalCoverage,
-      surfaceMoyenne: urlParams.surfaceMoyenne ?? 70,
-      typeRadiateur: urlParams.typeRadiateur,
-    }),
+    () => buildSimulationSituation({ batEnr, eligibiliteReseauChaleur, urlParams: urlParams.simulationParams }),
     [
       urlParams.adresse,
       batEnr.architecturalProtectionAc1,
@@ -179,38 +144,23 @@ export default function ChoixChauffageResults() {
   useEffect(() => {
     if (!codeDepartement) return;
 
-    const modeEauChaudeSanitaire = urlParams.modeEauChaudeSanitaire;
-    const currentEngine = engineRef.current;
-
-    currentEngine.setSituation({
-      'code département': `'${codeDepartement}'`,
-      DPE: `'${situation.dpe}'`,
-      'Inclure la climatisation': 'non',
-      "Nombre d'habitants moyen par appartement": `${situation.habitantsMoyen}`,
-      "nombre de logements dans l'immeuble concerné": situation.nbLogements,
-      'Production eau chaude sanitaire': modeEauChaudeSanitaire ? 'oui' : 'non',
-      'surface logement type tertiaire': `${situation.surfaceMoyenne}`,
-      'température de référence chaud commune': temperatureRef,
-    });
-
-    currentEngine.resetField('type de production ECS');
-  }, [codeDepartement, situation, temperatureRef, urlParams.modeEauChaudeSanitaire]);
+    setPublicodesSituation(engineRef.current, { codeDepartement, situation, temperatureRef });
+  }, [codeDepartement, situation, temperatureRef]);
 
   const effectiveTypeLogement = urlParams.typeLogement ?? 'immeuble_chauffage_collectif';
 
   const modesDeChauffage = useMemo(() => {
-    return modeDeChauffageParTypeLogement[effectiveTypeLogement].filter((m) => m.estPossible(situation));
+    return getModesDeChauffage(effectiveTypeLogement, situation);
   }, [effectiveTypeLogement, situation]);
   const incompatibleSolutionRows = useMemo(
     () => getIncompatibleSolutionRows(situation, effectiveTypeLogement),
     [effectiveTypeLogement, situation]
   );
 
-  const modesEnriched = useMemo(
-    () => modesDeChauffage.map((modeDeChauffage) => enrichHeatingMode(modeDeChauffage, engine, situation)),
+  const { coutParAnGaz, coutParAnGazHotWaterOnly, modesEnriched } = useMemo(
+    () => getHeatingModeCosts(engine, modesDeChauffage, situation),
     [engine, modesDeChauffage, situation]
   );
-  const coutParAnGaz = engine.getFieldAsNumber(`Bilan x Gaz coll sans cond . total avec aides` as RuleName);
   const [recommended, ...others] = modesEnriched;
 
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
@@ -240,7 +190,7 @@ export default function ChoixChauffageResults() {
   }, [eligibiliteReseauChaleur, geoAddress, handleOnSuccessAddress, urlParams.adresse]);
   const handleSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {
-      void urlParams.setConstructionId(null);
+      urlParams.setConstructionId(null);
 
       if (!geoAddress) {
         resetEligibility();
@@ -256,7 +206,7 @@ export default function ChoixChauffageResults() {
         return;
       }
 
-      void urlParams.setConstructionId(batEnrBatiment.batiment_construction_id);
+      urlParams.setConstructionId(batEnrBatiment.batiment_construction_id);
       selectBatEnrBatiment(batEnrBatiment);
     },
     [selectBatEnrBatiment, urlParams]
@@ -270,32 +220,7 @@ export default function ChoixChauffageResults() {
     }
 
     lastPrefilledBatimentConstructionIdRef.current = batimentConstructionId;
-    const searchParams = new URLSearchParams(window.location.search);
-
-    if (selectedBatEnrBatiment.classe_bilan_dpe && !searchParams.has('dpe')) {
-      void urlParams.setDpe(selectedBatEnrBatiment.classe_bilan_dpe);
-    }
-
-    const modeEauChaudeSanitaire = getModeEauChaudeSanitaireFromBatEnr(selectedBatEnrBatiment.type_installation_ecs);
-
-    if (modeEauChaudeSanitaire && !searchParams.has('modeEauChaudeSanitaire')) {
-      void urlParams.setModeEauChaudeSanitaire(modeEauChaudeSanitaire);
-    }
-
-    if (selectedBatEnrBatiment.ffo_bat_nb_log != null && selectedBatEnrBatiment.ffo_bat_nb_log > 0 && !searchParams.has('nbLogements')) {
-      void urlParams.setNbLogements(selectedBatEnrBatiment.ffo_bat_nb_log);
-    }
-
-    if (
-      selectedBatEnrBatiment.dpe_representatif_logement_surface_habitable_immeuble != null &&
-      selectedBatEnrBatiment.ffo_bat_nb_log != null &&
-      selectedBatEnrBatiment.ffo_bat_nb_log > 0 &&
-      !searchParams.has('surfaceMoyenne')
-    ) {
-      void urlParams.setSurfaceMoyenne(
-        Math.round(selectedBatEnrBatiment.dpe_representatif_logement_surface_habitable_immeuble / selectedBatEnrBatiment.ffo_bat_nb_log)
-      );
-    }
+    urlParams.setPrefillParams(getSimulationPrefillFromBatEnrBatiment(selectedBatEnrBatiment));
   }, [selectedBatEnrBatiment, urlParams]);
 
   // pendant l’hydration, on évite de rendre conditionnellement (isMobile null)
@@ -327,6 +252,7 @@ export default function ChoixChauffageResults() {
           <RecommendedSolutionCard
             item={recommended}
             coutParAnGaz={coutParAnGaz}
+            coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
             dpeFrom={urlParams.dpe}
             geoAddress={geoAddress}
             isOpen={openAccordionId === recommended.label}
@@ -335,9 +261,9 @@ export default function ChoixChauffageResults() {
             situation={situation}
           />
           <ResultsSection
-            title="Autres solutions possibles"
             items={others}
             coutParAnGaz={coutParAnGaz}
+            coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
             dpeFrom={urlParams.dpe}
             openAccordionId={openAccordionId}
             situation={situation}
@@ -425,16 +351,14 @@ export function DpeTag({ letter, isSelected = false, onClick }: { letter: DPE; i
   );
 }
 
-function getGainPercentVsGaz(item: ModeDeChauffageEnriched, coutParAnGaz: number) {
-  if (item.gainVsGaz !== undefined) {
+function getGainPercentVsGaz(item: ModeDeChauffageEnriched, coutParAnGaz: number, coutParAnGazHotWaterOnly: number) {
+  if (item.usage !== 'hotWaterOnly' && item.gainVsGaz !== undefined) {
     return item.gainVsGaz;
   }
 
-  return coutParAnGaz > 0 ? Math.round(((item.coutParAn - coutParAnGaz) / coutParAnGaz) * 100) : 0;
-}
+  const referenceCost = item.usage === 'hotWaterOnly' ? coutParAnGazHotWaterOnly : coutParAnGaz;
 
-function getPrerequisiteRows(item: ModeDeChauffageEnriched, situation: Situation): PrerequisiteRow[] {
-  return item.prerequis(situation);
+  return referenceCost > 0 ? Math.round(((item.coutParAn - referenceCost) / referenceCost) * 100) : 0;
 }
 
 function PrerequisiteStatusBadge({ status }: { status: PrerequisiteStatus }) {
@@ -517,33 +441,8 @@ function DpeProgression({ from, to }: { from: DPE; to: DPE }) {
   );
 }
 
-function ProsConsLists({ avantages, inconvenients, layout }: { avantages: string[]; inconvenients: string[]; layout?: string }) {
-  return layout === 'column' ? (
-    <>
-      <div>
-        <h4 className="text-lg font-bold uppercase text-success">Avantages</h4>
-        <ul className="space-y-1 p-0">
-          {avantages.map((avantage) => (
-            <li key={avantage} className="flex gap-3">
-              <span className="fr-icon-check-line text-success" aria-hidden="true" />
-              <span>{avantage}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h4 className="text-lg font-bold uppercase text-error">Inconvénients</h4>
-        <ul className="space-y-1 p-0">
-          {inconvenients.map((inconvenient) => (
-            <li key={inconvenient} className="flex gap-3">
-              <span className="fr-icon-close-line text-error" aria-hidden="true" />
-              <span>{inconvenient}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </>
-  ) : (
+function ProsConsLists({ avantages, inconvenients }: { avantages: string[]; inconvenients: string[] }) {
+  return (
     <div>
       <h4 className="text-lg font-bold uppercase">
         <span className="text-success">Avantages</span>
@@ -649,6 +548,7 @@ type RecommendedSolutionCardProps = {
   dpeFrom: DPE;
   geoAddress?: BANAddressFeature;
   coutParAnGaz: number;
+  coutParAnGazHotWaterOnly: number;
   isOpen: boolean;
   onHelpButtonClick?: () => void;
   onOpenChange: (expanded: boolean) => void;
@@ -660,6 +560,7 @@ function RecommendedSolutionCard({
   dpeFrom,
   geoAddress,
   coutParAnGaz,
+  coutParAnGazHotWaterOnly,
   isOpen,
   onHelpButtonClick,
   onOpenChange,
@@ -672,6 +573,7 @@ function RecommendedSolutionCard({
         dpeFrom={dpeFrom}
         geoAddress={geoAddress}
         coutParAnGaz={coutParAnGaz}
+        coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
         isOpen={isOpen}
         onHelpButtonClick={onHelpButtonClick}
         onOpenChange={onOpenChange}
@@ -682,8 +584,8 @@ function RecommendedSolutionCard({
 
   const dpeTo = improveDpe(dpeFrom, item.gainClasse);
   const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn);
-  const gainPercentVsGaz = getGainPercentVsGaz(item, coutParAnGaz);
-  const prerequisiteRows = getPrerequisiteRows(item, situation);
+  const gainPercentVsGaz = getGainPercentVsGaz(item, coutParAnGaz, coutParAnGazHotWaterOnly);
+  const prerequisiteRows = item.prerequis(situation);
 
   return (
     <section className="fr-mt-6w border border-gray-200 border-l-4 border-l-green-600 bg-white px-10 py-8">
@@ -701,7 +603,6 @@ function RecommendedSolutionCard({
           <Image src={`/${item.icone}`} alt="" width={120} height={72} className="object-contain" />
         </div>
       </div>
-
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <div>
           <h4 className="text-lg font-bold uppercase text-grey">Description</h4>
@@ -725,7 +626,6 @@ function RecommendedSolutionCard({
           </p>
         </div>
       </div>
-
       <div className="mt-8 flex flex-col items-start gap-4 md:flex-row md:items-center">
         <Button
           href={onHelpButtonClick ? undefined : '#help-ademe'}
@@ -744,7 +644,6 @@ function RecommendedSolutionCard({
           {isOpen ? 'Afficher moins −' : 'Afficher plus +'}
         </button>
       </div>
-
       {isOpen && (
         <div className="mt-10">
           <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="recommended" />
@@ -759,6 +658,7 @@ function HeatNetworkRecommendedSolutionCard({
   dpeFrom,
   geoAddress,
   coutParAnGaz,
+  coutParAnGazHotWaterOnly,
   isOpen,
   onHelpButtonClick,
   onOpenChange,
@@ -767,8 +667,8 @@ function HeatNetworkRecommendedSolutionCard({
   const heatNetwork = situation.eligibiliteReseauChaleur;
   const dpeTo = improveDpe(dpeFrom, item.gainClasse);
   const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn);
-  const gainPercentVsGaz = getGainPercentVsGaz(item, coutParAnGaz);
-  const prerequisiteRows = getPrerequisiteRows(item, situation);
+  const gainPercentVsGaz = getGainPercentVsGaz(item, coutParAnGaz, coutParAnGazHotWaterOnly);
+  const prerequisiteRows = item.prerequis(situation);
   const mapConfiguration = useMemo(
     () =>
       createMapConfiguration({
@@ -793,13 +693,11 @@ function HeatNetworkRecommendedSolutionCard({
         </div>
         <Image src={`/${item.icone}`} alt="" width={136} height={104} className="hidden object-contain md:block" />
       </div>
-
       <p>
         Votre bâtiment est situé à <strong>{distanceLabel}</strong> du réseau de chaleur{networkName}. C’est la solution à privilégier pour
         un chauffage collectif. Une énergie majoritairement <strong>renouvelable et locale</strong>, un <strong>prix stable</strong> et une{' '}
         <strong>TVA réduite à 5,5 %</strong>, le tout garanti par un service public.
       </p>
-
       <div className="grid gap-6 grid-1 md:grid-cols-3">
         {geoAddress && (
           <div className="h-full overflow-hidden border border-solid border-border-default-grey">
@@ -857,20 +755,20 @@ function HeatNetworkRecommendedSolutionCard({
 }
 
 function ResultsSection({
-  title,
   items,
   coutParAnGaz,
+  coutParAnGazHotWaterOnly,
   dpeFrom,
   openAccordionId,
   situation,
   onEditParamsClick,
   onOpenChange,
 }: {
-  title: string;
   items: ModeDeChauffageEnriched[];
   dpeFrom: DPE;
   openAccordionId: string | null;
   coutParAnGaz: number;
+  coutParAnGazHotWaterOnly: number;
   situation: Situation;
   onEditParamsClick: () => void;
   onOpenChange: (id: string, expanded: boolean) => void;
@@ -895,7 +793,6 @@ function ResultsSection({
     }
 
     const firstAvailableTab = resultsTabs.find((tab) => itemsByUsage[tab.value].length > 0);
-
     if (firstAvailableTab) {
       setActiveTab(firstAvailableTab.value);
     }
@@ -909,7 +806,7 @@ function ResultsSection({
 
   return (
     <>
-      <h3 className="fr-mt-6w mb-5">{title}</h3>
+      <h3 className="fr-mt-6w mb-5">Autres solutions possibles</h3>
       <div className="flex flex-wrap items-end">
         {resultsTabs.map((tab) => {
           const count = itemsByUsage[tab.value].length;
@@ -962,6 +859,7 @@ function ResultsSection({
               key={id}
               item={item}
               coutParAnGaz={coutParAnGaz}
+              coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
               dpeFrom={dpeFrom}
               situation={situation}
               isOpen={openAccordionId === id}
@@ -994,8 +892,16 @@ function Stars({ value }: { value: number }) {
   );
 }
 
-function GainVsGazBadge({ item, coutParAnGaz }: { item: ModeDeChauffageEnriched; coutParAnGaz: number }) {
-  const gainPercentVsGaz = getGainPercentVsGaz(item, coutParAnGaz);
+function GainVsGazBadge({
+  item,
+  coutParAnGaz,
+  coutParAnGazHotWaterOnly,
+}: {
+  item: ModeDeChauffageEnriched;
+  coutParAnGaz: number;
+  coutParAnGazHotWaterOnly: number;
+}) {
+  const gainPercentVsGaz = getGainPercentVsGaz(item, coutParAnGaz, coutParAnGazHotWaterOnly);
   const isSaving = gainPercentVsGaz <= 0;
 
   return (
@@ -1022,6 +928,7 @@ function OtherSolutionRow({
   item,
   dpeFrom,
   coutParAnGaz,
+  coutParAnGazHotWaterOnly,
   isOpen,
   situation,
   onOpenChange,
@@ -1029,17 +936,18 @@ function OtherSolutionRow({
   item: ModeDeChauffageEnriched;
   dpeFrom: DPE;
   coutParAnGaz: number;
+  coutParAnGazHotWaterOnly: number;
   isOpen: boolean;
   situation: Situation;
   onOpenChange: (expanded: boolean) => void;
 }) {
   const dpeTo = improveDpe(dpeFrom, item.gainClasse);
   const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn);
-  const prerequisiteRows = getPrerequisiteRows(item, situation);
+  const prerequisiteRows = item.prerequis(situation);
 
   return (
-    <div className="border-b border-gray-200 py-6 last:border-b-0">
-      <div className="grid gap-5 md:grid-cols-[minmax(12rem,2fr)_minmax(9rem,1fr)_max-content_max-content_max-content] md:items-center">
+    <div className="border-b border-gray-200 last:border-b-0">
+      <div className="grid gap-5 md:grid-cols-[minmax(12rem,2fr)_minmax(9rem,1fr)_max-content_max-content_max-content] md:items-center py-6">
         <div>
           <p className="mb-3 text-blue font-bold">{item.label}</p>
           <Stars value={item.pertinence} />
@@ -1051,7 +959,7 @@ function OtherSolutionRow({
           <br />
           <span>par an par logement</span>
         </div>
-        <GainVsGazBadge item={item} coutParAnGaz={coutParAnGaz} />
+        <GainVsGazBadge item={item} coutParAnGaz={coutParAnGaz} coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly} />
         <div className="flex items-center gap-3 md:justify-self-center">
           <DpeProgression from={dpeFrom} to={dpeTo} />
         </div>
@@ -1120,7 +1028,7 @@ function NoResultSection({ codeInsee }: { codeInsee?: string }) {
     <>
       <section className="mt-6 border border-[#e5e5e5] border-l-4 border-l-[#c74700] bg-white px-6 py-5 text-(--text-title-grey)">
         <h3 className="mb-4 flex items-start gap-2 text-xl font-bold">
-          <span className="fr-icon-information-line mt-0.5 text-[#c74700]" aria-hidden="true" />
+          <span className="fr-icon-information-line mt-0.5 text-error" aria-hidden="true" />
           Aucune solution de chauffage alternatif n’est adaptée à votre situation
         </h3>
         <p className="mb-4 max-w-5xl">

@@ -17,7 +17,15 @@ export const typeLogementOptions = [
   value: TypeLogement;
 }[];
 
-export const ESPACE_EXTERIEUR_VALUES = ['shared', 'private', 'both', 'none'] as const;
+export const ESPACE_EXTERIEUR_VALUES = [
+  'shared',
+  'private',
+  'both',
+  'terrasseBalcon',
+  'jardinCours',
+  'terrasseBalconEtJardinCours',
+  'none',
+] as const;
 export type EspaceExterieur = (typeof ESPACE_EXTERIEUR_VALUES)[number];
 export const espaceExterieurOptionsByTypeLogement = {
   immeuble_chauffage_collectif: [
@@ -29,9 +37,9 @@ export const espaceExterieurOptionsByTypeLogement = {
     { label: 'Aucun espace privatif disponible', value: 'none' },
   ],
   maison_individuelle: [
-    { label: 'Terrasse / balcon', value: 'private' },
-    { label: 'Jardin / cours', value: 'shared' },
-    { label: 'Terrasse / balcon ET jardin / cours', value: 'both' },
+    { label: 'Terrasse / balcon', value: 'terrasseBalcon' },
+    { label: 'Jardin / cours', value: 'jardinCours' },
+    { label: 'Terrasse / balcon ET jardin / cours', value: 'terrasseBalconEtJardinCours' },
     { label: 'Aucun espace extérieur disponible', value: 'none' },
   ],
 } satisfies Record<
@@ -86,10 +94,6 @@ export const typeRadiateurOptions = [
   value: TypeRadiateur;
 }[];
 
-export const fieldLabelInformation = {
-  email: 'Email',
-  phone: 'Téléphone',
-};
 export const OCCUPANT_STATUS_VALUES = ['Copropriétaire', 'Locataire', 'Propriétaire occupant', 'Syndic'];
 export type OccupantStatus = (typeof OCCUPANT_STATUS_VALUES)[number];
 export const occupantStatusOptions = OCCUPANT_STATUS_VALUES.map((value) => ({ label: value, value }));
