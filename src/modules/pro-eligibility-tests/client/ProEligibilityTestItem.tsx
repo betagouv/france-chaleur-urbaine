@@ -358,7 +358,7 @@ const quickFilterPresets = {
     ),
   },
   adressesEligibles: {
-    filters: [{ id: 'eligibility_type', value: { aucun: false, en_construction: true, existant: true } }],
+    filters: [{ id: 'etat_reseau', value: { aucun: false, en_construction: true, existant: true } }],
     getStat: (addresses) => addresses.filter((address) => address.eligibility?.eligible).length,
     label: (
       <>
@@ -675,12 +675,12 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
                 data={addresses}
                 loading={isDataLoading}
                 columnFilters={columnFilters}
-                onFiltersChange={(e) => {
+                onFiltersChange={(filters, presetKey) => {
                   trackPostHogEvent('bulk_test:results_filtered', {
                     bulk_test_id: test.id,
-                    filter_type: e[0].id,
+                    filter_type: presetKey ?? 'all',
                   });
-                  setColumnFilters(e);
+                  setColumnFilters(filters);
                 }}
                 hideDividerOnMobile={false}
               />
