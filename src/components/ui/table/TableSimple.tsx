@@ -453,6 +453,8 @@ export type TableSimpleProps<T> = {
   loadingEmptyMessage?: string;
   height?: string;
   virtualizerRef?: RefObject<Virtualizer<HTMLDivElement, Element>>;
+  /** Imperative: scrolls the row whose `rowIdKey` matches into view, using the current sorted/filtered order. */
+  scrollToRowRef?: RefObject<((rowId: string) => void) | null>;
   topRightActions?: React.ReactNode;
   export?: {
     fileName: string;
@@ -495,6 +497,7 @@ const TableSimple = <T extends RowData>({
   loadingEmptyMessage = 'Aucun résultat',
   height = '600px',
   virtualizerRef,
+  scrollToRowRef,
   topRightActions,
   export: exportConfig,
   urlSyncKey,
@@ -714,6 +717,23 @@ const TableSimple = <T extends RowData>({
     tableContainerRef,
     virtualizerRef,
   });
+
+  // Imperative scroll-to-row by id: resolves the index in the current sorted/filtered row model
+  // (what the virtualizer indexes), so callers don't have to mirror the table's ordering.
+  React.useEffect(() => {
+    if (!scrollToRowRef) {
+      return;
+    }
+    scrollToRowRef.current = (rowId) => {
+      const index = table.getRowModel().rows.findIndex((row) => (row.original as any)[rowIdKey] === rowId);
+      if (index >= 0) {
+        rowVirtualizer.scrollToIndex(index, { align: 'center' });
+      }
+    };
+    return () => {
+      scrollToRowRef.current = null;
+    };
+  }, [scrollToRowRef, table, rowVirtualizer, rowIdKey]);
 
   const gridTemplateColumns = table
     .getHeaderGroups()[0]

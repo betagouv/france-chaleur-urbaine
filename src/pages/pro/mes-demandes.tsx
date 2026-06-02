@@ -62,6 +62,7 @@ function MesDemandesPage(): React.ReactElement {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
   }, [selectedDemandId]);
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const scrollToRowRef = useRef<((rowId: string) => void) | null>(null);
 
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
   const [globalFilter, setGlobalFilter] = useState('');
@@ -276,6 +277,12 @@ function MesDemandesPage(): React.ReactElement {
     [demands]
   );
 
+  // Map marker click → select the matching table row and scroll it into view.
+  const onMarkerSelect = useCallback((demandId: string) => {
+    setSelectedDemandId(demandId);
+    scrollToRowRef.current?.(demandId);
+  }, []);
+
   // Fit the map to the demands on mount
   useEffect(() => {
     if (mapCenterLocation || router.query.demand_id || !demandsMapData.length) {
@@ -343,6 +350,7 @@ function MesDemandesPage(): React.ReactElement {
             padding="sm"
             rowSelection={tableRowSelection}
             onRowClick={onTableRowClick}
+            scrollToRowRef={scrollToRowRef}
             loadingEmptyMessage="Vous n'avez pas encore de demandes"
             height="calc(100dvh - 140px)"
           />
@@ -361,7 +369,7 @@ function MesDemandesPage(): React.ReactElement {
                   zonesDeDeveloppementPrioritaire: true,
                 })}
               >
-                <AdressesEligiblesLayer adresses={demandsMapData} flyToLocation={mapCenterLocation} />
+                <AdressesEligiblesLayer adresses={demandsMapData} flyToLocation={mapCenterLocation} onSelect={onMarkerSelect} />
               </Map>
             ) : isLoading ? (
               <div className="absolute inset-0 flex justify-center items-center animate-pulse">

@@ -1,9 +1,8 @@
 import DSFRTag from '@codegouvfr/react-dsfr/Tag';
 import { usePrevious } from '@react-hookz/web';
 import type { ColumnFiltersState } from '@tanstack/react-table';
-import type { Virtualizer } from '@tanstack/react-virtual';
 import { parseAsJson, useQueryState } from 'nuqs';
-import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import TableAddressAutocomplete from '@/components/Admin/TableAddressAutocomplete';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
@@ -145,7 +144,7 @@ let isUpdatingDemandField = false;
 const demandsTableUrlSyncKey = 'demands';
 
 function DemandesAdmin(): React.ReactElement {
-  const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element>>(null) as RefObject<Virtualizer<HTMLDivElement, Element>>;
+  const scrollToRowRef = useRef<((rowId: string) => void) | null>(null);
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const tableRowSelection = useMemo(() => {
     return selectedDemandId ? { [selectedDemandId]: true } : {};
@@ -573,16 +572,10 @@ function DemandesAdmin(): React.ReactElement {
     [updateDemand, changeNetwork, validateDemand, deleteDemand, handleEmailClick]
   );
 
-  const onMarkerSelect = useCallback(
-    (demandId: string) => {
-      setSelectedDemandId(demandId);
-      const rowIndex = filteredDemands.findIndex((demand) => demand.id === demandId);
-      if (rowIndex >= 0) {
-        virtualizerRef.current?.scrollToIndex(rowIndex, { align: 'center' });
-      }
-    },
-    [filteredDemands]
-  );
+  const onMarkerSelect = useCallback((demandId: string) => {
+    setSelectedDemandId(demandId);
+    scrollToRowRef.current?.(demandId);
+  }, []);
 
   const selectAndCenterOnDemand = useCallback(
     (demandId: string, zoom: number) => {
@@ -680,7 +673,7 @@ function DemandesAdmin(): React.ReactElement {
               onRowDoubleClick={onTableRowDoubleClick}
               loadingEmptyMessage="Aucune demande à afficher"
               height="calc(100dvh - 164px)"
-              virtualizerRef={virtualizerRef}
+              scrollToRowRef={scrollToRowRef}
               urlSyncKey={demandsTableUrlSyncKey}
             />
           </ResizablePanel>
