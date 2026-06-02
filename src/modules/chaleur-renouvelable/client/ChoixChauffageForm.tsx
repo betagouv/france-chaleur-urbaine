@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
@@ -7,18 +8,27 @@ import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hoo
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
 import type { EspaceExterieur, TypeRadiateur } from '@/modules/chaleur-renouvelable/constants';
+import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 
 export default function ChoixChauffageForm() {
   const router = useRouter();
   const urlParams = useChoixChauffageQueryParams();
-  const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility } = useAddressEligibility(urlParams.adresse ?? null);
+  const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility, selectedBatEnrBatiment } = useAddressEligibility(
+    urlParams.adresse ?? null
+  );
   const isFormDisabled = !urlParams.adresse || !geoAddress || !urlParams.typeLogement || !urlParams.espaceExterieur;
+
+  useEffect(() => {
+    if (!selectedBatEnrBatiment) {
+      return;
+    }
+
+    urlParams.setPrefillParams(getSimulationPrefillFromBatEnrBatiment(selectedBatEnrBatiment));
+  }, [selectedBatEnrBatiment, urlParams]);
 
   return (
     <form>
       <SettingsTopFields
-        withLabel
-        className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-4 bg-[#fbf6ed]"
         adresse={urlParams.adresse ?? null}
         setAdresse={urlParams.setAdresse}
         geoAddress={geoAddress}
@@ -31,7 +41,7 @@ export default function ChoixChauffageForm() {
           onSelectGeoAddress(geoAddress);
         }}
         typeLogement={urlParams.typeLogement ?? null}
-        setTypeLogement={urlParams.setTypeLogement}
+        setTypeLogement={urlParams.setTypeLogementAndResetInvalidOutdoorSpace}
         espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
         setEspaceExterieur={urlParams.setEspaceExterieur}
         typeRadiateur={(urlParams.typeRadiateur ?? null) as TypeRadiateur | null}

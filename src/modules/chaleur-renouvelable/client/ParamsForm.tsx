@@ -3,7 +3,6 @@ import { type SubmitEvent, useEffect, useState } from 'react';
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
-import RichSelect from '@/components/ui/RichSelect';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { BatEnrBatimentsMap } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentsMap';
 import { DpeTag } from '@/modules/chaleur-renouvelable/client/ChoixChauffageResults';
@@ -11,8 +10,6 @@ import type { ChoixChauffageParams } from '@/modules/chaleur-renouvelable/client
 import {
   type DPE,
   DPE_VALUES,
-  type EspaceExterieur,
-  getEspaceExterieurOptions,
   isEspaceExterieurCompatible,
   type ModeEauChaudeSanitaire,
   modeEauChaudeSanitaireOptions,
@@ -23,6 +20,8 @@ import {
 } from '@/modules/chaleur-renouvelable/constants';
 import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
 import { AddressField } from '@/modules/form/AddressField';
+
+import { OutdoorSpaceSelect } from './OutdoorSpaceSelect';
 
 export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
 
@@ -124,9 +123,7 @@ export function ParamsForm({
     currentValues.typeRadiateur,
   ]);
 
-  const isDirty = !areDraftsEqual(draft, currentValues);
-  const espaceExterieurOptions = getEspaceExterieurOptions(draft.typeLogement);
-  const isEspaceExterieurDisabled = !draft.typeLogement;
+  const isModified = !areDraftsEqual(draft, currentValues);
 
   const handleClose = () => {
     setDraft(currentValues);
@@ -143,7 +140,7 @@ export function ParamsForm({
       adresse: draft.adresse || null,
       dpe: draft.dpe,
       espaceExterieur: draft.espaceExterieur,
-      habitantsMoyen: normalizedHabitantsMoyen,
+      habitantsMoyen: normalizedHabitantsMoyen || null,
       modeEauChaudeSanitaire: draft.modeEauChaudeSanitaire,
       nbLogements: normalizedNbLogements,
       surfaceMoyenne: normalizedSurfaceMoyenne,
@@ -263,13 +260,11 @@ export function ParamsForm({
                       value: draft.habitantsMoyen,
                     }}
                   />
-                  <RichSelect<EspaceExterieur>
-                    value={draft.espaceExterieur ?? undefined}
-                    onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }))}
-                    options={[...espaceExterieurOptions]}
-                    placeholder={isEspaceExterieurDisabled ? "Renseignez d'abord le mode de chauffage" : 'Cochez vos espaces disponibles'}
+                  <OutdoorSpaceSelect
                     label="Espaces extérieurs"
-                    disabled={isEspaceExterieurDisabled}
+                    typeLogement={draft.typeLogement}
+                    value={draft.espaceExterieur}
+                    onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }))}
                   />
                   <Input
                     hideOptionalLabel
@@ -340,10 +335,10 @@ export function ParamsForm({
             </section>
           </div>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Button type="submit" iconId="fr-icon-save-line" disabled={!isDirty}>
+            <Button type="submit" iconId="fr-icon-save-line" disabled={!isModified}>
               Enregistrer et recalculer
             </Button>
-            <Button priority="secondary" type="button" onClick={handleClose} disabled={!isDirty}>
+            <Button priority="secondary" type="button" onClick={handleClose} disabled={!isModified}>
               Annuler
             </Button>
           </div>
