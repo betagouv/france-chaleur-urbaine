@@ -34,7 +34,7 @@ import {
   type Situation,
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { buildSimulationSituation } from '@/modules/chaleur-renouvelable/client/simulationSituation';
-import type { DPE } from '@/modules/chaleur-renouvelable/constants';
+import type { DPE, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 import cx from '@/utils/cx';
@@ -102,6 +102,8 @@ export default function ChoixChauffageResults() {
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
+  const trackedRecommendedSolutionRef = useRef<string | null>(null);
+  const hasTrackedNoSolutionRef = useRef(false);
   const lastPrefilledBatimentConstructionIdRef = useRef<string | null>(null);
   const {
     addressData,
@@ -162,6 +164,27 @@ export default function ChoixChauffageResults() {
     [engine, modesDeChauffage, situation]
   );
   const [recommended, ...others] = modesEnriched;
+
+  useEffect(() => {
+    if (!recommended || trackedRecommendedSolutionRef.current === recommended.label) {
+      return;
+    }
+
+    trackedRecommendedSolutionRef.current = recommended.label;
+    trackPostHogEvent('fcr_results:recommended_solution_displayed', { solution_type: recommended.label });
+  }, [recommended]);
+
+  useEffect(() => {
+    if (modesEnriched.length > 0 || hasTrackedNoSolutionRef.current) {
+      return;
+    }
+
+    hasTrackedNoSolutionRef.current = true;
+    trackPostHogEvent('fcr_results:no_solution_displayed', {
+      heating_mode: urlParams.typeLogement,
+      outdoor_space: urlParams.espaceExterieur,
+    });
+  }, [modesEnriched.length, urlParams.espaceExterieur, urlParams.typeLogement]);
 
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
     setOpenAccordionId(expanded ? id : null);
@@ -257,7 +280,12 @@ export default function ChoixChauffageResults() {
             geoAddress={geoAddress}
             isOpen={openAccordionId === recommended.label}
             onHelpButtonClick={recommended?.helpAction === 'open-heat-network-contact' ? openHeatNetworkContactModal : undefined}
-            onOpenChange={(expanded) => handleAccordionOpenChange(recommended.label, expanded)}
+            onOpenChange={(expanded) => {
+              if (expanded) {
+                trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: recommended.label });
+              }
+              handleAccordionOpenChange(recommended.label, expanded);
+            }}
             situation={situation}
           />
           <ResultsSection
@@ -267,11 +295,12 @@ export default function ChoixChauffageResults() {
             dpeFrom={urlParams.dpe}
             openAccordionId={openAccordionId}
             situation={situation}
+            typeLogement={effectiveTypeLogement}
             onEditParamsClick={handleEditHotWaterParamsClick}
             onOpenChange={handleAccordionOpenChange}
           />
           <IncompatibleSolutionsSection rows={incompatibleSolutionRows} />
-          <DemandeFCRForm />
+          <DemandeFCRForm topSolution={recommended.label} />
           <CallOut
             title={
               <>
@@ -287,11 +316,7 @@ export default function ChoixChauffageResults() {
             DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer les coûts
             et contraintes techniques propres à votre situation.
             <div className="fr-mt-3w">
-              <Link
-                postHogEventKey="link:click"
-                postHogEventProps={{ link_name: 'cta_comment_calculer_resultat', source: 'chaleur_renouvelable' }}
-                href="/chaleur-renouvelable/methodologie"
-              >
+              <Link href="/chaleur-renouvelable/methodologie" onClick={() => trackPostHogEvent('fcr_results:methodology_link_clicked')}>
                 En savoir plus
               </Link>
             </div>
@@ -501,7 +526,7 @@ function PrerequisiteRowItem({ row }: { row: PrerequisiteRow }) {
   );
 }
 
-function InstallationCostPrerequisite({ coutInstallation }: { coutInstallation: string }) {
+function InstallationCostPrerequisite({ coutInstallation, solutionType }: { coutInstallation: string; solutionType: string }) {
   return (
     <li className="flex flex-col gap-3 bg-[#FFF8E5] px-3 md:flex-row md:items-center md:justify-between py-2">
       <span className="flex items-start gap-3">
@@ -510,7 +535,17 @@ function InstallationCostPrerequisite({ coutInstallation }: { coutInstallation: 
           <strong>Coûts d’installation : {coutInstallation}</strong>. Vérifiez votre éligibilité aux aides
         </span>
       </span>
-      <Link href="https://france-renov.gouv.fr/" isExternal className="text-blue">
+      <Link
+        href="https://france-renov.gouv.fr/"
+        isExternal
+        className="text-blue"
+        onClick={() =>
+          trackPostHogEvent('fcr_results:prerequisite_detail_clicked', {
+            prerequisite_label: 'Coûts d’installation',
+            solution_type: solutionType,
+          })
+        }
+      >
         En savoir plus sur les aides
       </Link>
     </li>
@@ -520,10 +555,12 @@ function InstallationCostPrerequisite({ coutInstallation }: { coutInstallation: 
 function PrerequisitesList({
   rows,
   coutInstallation,
+  solutionType,
   variant,
 }: {
   rows: PrerequisiteRow[];
   coutInstallation: string;
+  solutionType: string;
   variant: 'recommended' | 'compact';
 }) {
   return (
@@ -534,7 +571,7 @@ function PrerequisitesList({
         {rows.map((row, index) => (
           <PrerequisiteRowItem key={index} row={row} />
         ))}
-        <InstallationCostPrerequisite coutInstallation={coutInstallation} />
+        <InstallationCostPrerequisite coutInstallation={coutInstallation} solutionType={solutionType} />
       </ul>
       {variant === 'compact' && <PrerequisitesLegend className="mt-3" />}
     </div>
@@ -627,7 +664,10 @@ function RecommendedSolutionCard({
       <div className="mt-8 flex flex-col items-start gap-4 md:flex-row md:items-center">
         <Button
           href={onHelpButtonClick ? undefined : '#help-ademe'}
-          onClick={onHelpButtonClick}
+          onClick={() => {
+            trackPostHogEvent('fcr_results:recommended_solution_cta_clicked', { solution_type: item.label });
+            onHelpButtonClick?.();
+          }}
           iconId="fr-icon-arrow-right-line"
           iconPosition="right"
         >
@@ -644,7 +684,12 @@ function RecommendedSolutionCard({
       </div>
       {isOpen && (
         <div className="mt-10">
-          <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="recommended" />
+          <PrerequisitesList
+            rows={prerequisiteRows}
+            coutInstallation={item.coutInstallation}
+            solutionType={item.label}
+            variant="recommended"
+          />
         </div>
       )}
     </section>
@@ -667,6 +712,7 @@ function HeatNetworkRecommendedSolutionCard({
   const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn);
   const gainPercentVsGaz = getGainPercentVsGaz(item, coutParAnGaz, coutParAnGazHotWaterOnly);
   const prerequisiteRows = item.prerequis(situation);
+  const hasTrackedContactMapViewedRef = useRef(false);
   const mapConfiguration = useMemo(
     () =>
       createMapConfiguration({
@@ -680,6 +726,15 @@ function HeatNetworkRecommendedSolutionCard({
 
   const networkName = heatNetwork?.name ? ` de ${heatNetwork.name}` : '';
   const distanceLabel = heatNetwork?.distance !== null && heatNetwork?.distance !== undefined ? `${heatNetwork.distance} m` : 'proximité';
+
+  useEffect(() => {
+    if (!geoAddress || hasTrackedContactMapViewedRef.current) {
+      return;
+    }
+
+    hasTrackedContactMapViewedRef.current = true;
+    trackPostHogEvent('fcr_contact:map_viewed');
+  }, [geoAddress]);
 
   return (
     <section className="fr-mt-6w border border-gray-200 border-l-4 border-l-green-600 bg-white px-6 py-6 md:px-10">
@@ -728,7 +783,10 @@ function HeatNetworkRecommendedSolutionCard({
       <div className="mt-6 flex flex-col items-start gap-4 md:flex-row md:items-center">
         <Button
           href={onHelpButtonClick ? undefined : '#help-ademe'}
-          onClick={onHelpButtonClick}
+          onClick={() => {
+            trackPostHogEvent('fcr_results:recommended_solution_cta_clicked', { solution_type: item.label });
+            onHelpButtonClick?.();
+          }}
           iconId="fr-icon-arrow-right-line"
           iconPosition="right"
         >
@@ -745,7 +803,12 @@ function HeatNetworkRecommendedSolutionCard({
       </div>
       {isOpen && (
         <div className="mt-8">
-          <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="recommended" />
+          <PrerequisitesList
+            rows={prerequisiteRows}
+            coutInstallation={item.coutInstallation}
+            solutionType={item.label}
+            variant="recommended"
+          />
         </div>
       )}
     </section>
@@ -759,6 +822,7 @@ function ResultsSection({
   dpeFrom,
   openAccordionId,
   situation,
+  typeLogement,
   onEditParamsClick,
   onOpenChange,
 }: {
@@ -768,6 +832,7 @@ function ResultsSection({
   coutParAnGaz: number;
   coutParAnGazHotWaterOnly: number;
   situation: Situation;
+  typeLogement: TypeLogement;
   onEditParamsClick: () => void;
   onOpenChange: (id: string, expanded: boolean) => void;
 }) {
@@ -786,7 +851,7 @@ function ResultsSection({
   const activeItems = itemsByUsage[activeTab];
 
   useEffect(() => {
-    if (activeItems.length > 0) {
+    if (activeItems.length > 0 || activeTab === 'hotWaterOnly') {
       return;
     }
 
@@ -794,7 +859,7 @@ function ResultsSection({
     if (firstAvailableTab) {
       setActiveTab(firstAvailableTab.value);
     }
-  }, [activeItems.length, itemsByUsage]);
+  }, [activeItems.length, activeTab, itemsByUsage]);
 
   if (items.length === 0) {
     return null;
@@ -818,7 +883,15 @@ function ResultsSection({
                 'border border-b-0 px-5 py-3 font-bold',
                 isActive ? 'border-blue border-t-4 bg-white text-blue' : 'border-transparent bg-[#EEEEFF]'
               )}
-              onClick={() => setActiveTab(tab.value)}
+              onClick={() => {
+                trackPostHogEvent('fcr_results:tab_switched', {
+                  tab_value: tab.value === 'heatingAndHotWater' ? 'chauffage_ecs' : 'ecs_uniquement',
+                });
+                if (tab.value === 'hotWaterOnly' && count === 0) {
+                  trackPostHogEvent('fcr_results:no_ecs_solution_displayed', { heating_mode: typeLogement });
+                }
+                setActiveTab(tab.value);
+              }}
             >
               {tab.label} ({count})
             </button>
@@ -849,7 +922,22 @@ function ResultsSection({
             <p>Voici des solutions qui produisent uniquement de l’eau chaude, en complément d’un système de chauffage existant :</p>
           </>
         )}
-        {activeItems.map((item) => {
+        {activeTab === 'hotWaterOnly' && activeItems.length === 0 && (
+          <div className="border-l-4 border-blue bg-gray-100 px-4 py-3">
+            <p className="mb-2 font-bold text-blue">Aucune solution eau chaude seule n’est adaptée à votre situation.</p>
+            <button
+              type="button"
+              className="font-bold text-blue underline"
+              onClick={() => {
+                trackPostHogEvent('fcr_results:ecs_to_full_tab_clicked');
+                setActiveTab('heatingAndHotWater');
+              }}
+            >
+              Voir les solutions chauffage + eau chaude
+            </button>
+          </div>
+        )}
+        {activeItems.map((item, index) => {
           const id = item.label;
 
           return (
@@ -861,6 +949,7 @@ function ResultsSection({
               dpeFrom={dpeFrom}
               situation={situation}
               isOpen={openAccordionId === id}
+              position={index + 1}
               onOpenChange={(expanded) => onOpenChange(id, expanded)}
             />
           );
@@ -928,6 +1017,7 @@ function OtherSolutionRow({
   coutParAnGaz,
   coutParAnGazHotWaterOnly,
   isOpen,
+  position,
   situation,
   onOpenChange,
 }: {
@@ -936,6 +1026,7 @@ function OtherSolutionRow({
   coutParAnGaz: number;
   coutParAnGazHotWaterOnly: number;
   isOpen: boolean;
+  position: number;
   situation: Situation;
   onOpenChange: (expanded: boolean) => void;
 }) {
@@ -964,7 +1055,13 @@ function OtherSolutionRow({
         <button
           type="button"
           className="justify-self-start whitespace-nowrap text-blue underline md:justify-self-end"
-          onClick={() => onOpenChange(!isOpen)}
+          onClick={() => {
+            trackPostHogEvent(isOpen ? 'fcr_results:alternative_solution_closed' : 'fcr_results:alternative_solution_opened', {
+              position,
+              solution_type: item.label,
+            });
+            onOpenChange(!isOpen);
+          }}
           aria-expanded={isOpen}
         >
           {isOpen ? 'Fermer −' : 'Ouvrir +'}
@@ -991,8 +1088,19 @@ function OtherSolutionRow({
             </div>
           </div>
           <div className="mt-6">
-            <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} variant="compact" />
-            <Button href="#help-ademe" iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-3">
+            <PrerequisitesList
+              rows={prerequisiteRows}
+              coutInstallation={item.coutInstallation}
+              solutionType={item.label}
+              variant="compact"
+            />
+            <Button
+              href="#help-ademe"
+              iconId="fr-icon-arrow-right-line"
+              iconPosition="right"
+              className="mt-3"
+              onClick={() => trackPostHogEvent('fcr_results:alternative_solution_cta_clicked', { solution_type: item.label })}
+            >
               Passer à l’étape suivante
             </Button>
           </div>
@@ -1051,8 +1159,7 @@ function NoResultSection({ codeInsee }: { codeInsee?: string }) {
             href="https://agirpourlatransition.ademe.fr/particuliers/"
             isExternal
             className="font-normal underline underline-offset-4"
-            postHogEventKey="link:click"
-            postHogEventProps={{ link_name: 'agir_actions_renovation', source: 'chaleur_renouvelable' }}
+            onClick={() => trackPostHogEvent('fcr_results:agir_link_clicked')}
           >
             rendez-vous sur Agir
           </Link>

@@ -57,14 +57,7 @@ export function SettingsTopFields({
         onSelect={(next?: BANAddressFeature) => {
           const nextLabel = next?.properties?.label ?? '';
           if ((adresse ?? '') === nextLabel) return;
-          trackPostHogEvent('fcr_simulator:address_selected', {
-            address: nextLabel,
-            source: 'landing',
-          });
-          trackPostHogEvent('fcr_simulator:started', {
-            address: nextLabel,
-            source: 'landing',
-          });
+          trackPostHogEvent('fcr_landing:address_typed');
           setAdresse(nextLabel);
           setGeoAddress(next);
           onSelectGeoAddress?.(next);
@@ -77,12 +70,8 @@ export function SettingsTopFields({
         nativeSelectProps={{
           onChange: (e) => {
             const nextTypeLogement = (e.target.value || null) as TypeLogement | null;
-            trackPostHogEvent('fcr_simulator:started', {
-              source: 'landing',
-              typeLogement: nextTypeLogement ?? undefined,
-            });
             if (nextTypeLogement) {
-              trackPostHogEvent('fcr_simulator:heating_mode_selected', { typeLogement: nextTypeLogement });
+              trackPostHogEvent('fcr_landing:heating_mode_selected', { heating_mode: nextTypeLogement });
             }
             setTypeLogement(nextTypeLogement);
           },
@@ -91,22 +80,23 @@ export function SettingsTopFields({
       />
       <RichSelect<TypeRadiateur>
         value={typeRadiateur ?? undefined}
-        onChange={(val) => setTypeRadiateur(val ?? null)}
+        onChange={(value) => {
+          if (value) {
+            trackPostHogEvent('fcr_landing:emitter_type_selected', { emitter_type: value });
+          }
+          setTypeRadiateur(value ?? null);
+        }}
         options={[...typeRadiateurOptions]}
         placeholder="Indiquez votre type de radiateur"
         label="Type de radiateurs"
       />
       <OutdoorSpaceSelect
         value={espaceExterieur}
-        onChange={(val) => {
-          trackPostHogEvent('fcr_simulator:started', {
-            espaceExterieur: val ?? undefined,
-            source: 'landing',
-          });
-          if (val) {
-            trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoorSpace: val });
+        onChange={(value) => {
+          if (value) {
+            trackPostHogEvent('fcr_landing:outdoor_space_selected', { outdoor_space: value });
           }
-          setEspaceExterieur(val);
+          setEspaceExterieur(value);
         }}
         label="Espaces extérieurs"
         typeLogement={typeLogement}

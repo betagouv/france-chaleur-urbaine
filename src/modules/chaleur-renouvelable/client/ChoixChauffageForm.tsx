@@ -58,8 +58,16 @@ export default function ChoixChauffageForm() {
           iconId="fr-icon-arrow-right-line"
           iconPosition="right"
           disabled={isFormDisabled}
-          onClick={(e) => {
-            e.stopPropagation();
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            trackPostHogEvent('fcr_landing:hero_cta_clicked');
+            trackPostHogEvent('fcr_landing:simulation_started', {
+              address_filled: Boolean(urlParams.adresse),
+              emitter_type: urlParams.typeRadiateur,
+              heating_mode: urlParams.typeLogement,
+              outdoor_space: urlParams.espaceExterieur,
+            });
             trackPostHogEvent('fcr_landing:compare_cta_clicked', {
               address: String(urlParams.adresse),
               espaceExterieur: String(urlParams.espaceExterieur),
