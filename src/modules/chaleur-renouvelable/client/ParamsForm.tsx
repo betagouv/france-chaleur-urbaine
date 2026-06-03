@@ -3,6 +3,7 @@ import { type SubmitEvent, useEffect, useState } from 'react';
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { BatEnrBatimentsMap } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentsMap';
 import { DpeTag } from '@/modules/chaleur-renouvelable/client/ChoixChauffageResults';
@@ -125,9 +126,19 @@ export function ParamsForm({
 
   const isModified = !areDraftsEqual(draft, currentValues);
 
+  const handleOpen = () => {
+    trackPostHogEvent('fcr_simulator:params_panel_opened');
+    setIsOpen(true);
+  };
+
   const handleClose = () => {
     setDraft(currentValues);
     setIsOpen(false);
+  };
+
+  const handleCancel = () => {
+    trackPostHogEvent('fcr_simulator:parameters_cancelled');
+    handleClose();
   };
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
@@ -148,6 +159,15 @@ export function ParamsForm({
       typeRadiateur: draft.typeRadiateur,
     };
 
+    trackPostHogEvent('fcr_simulator:parameters_saved', {
+      dpe: nextValues.dpe,
+      ecs_mode: nextValues.modeEauChaudeSanitaire,
+      emitter_type: nextValues.typeRadiateur,
+      habitants: nextValues.habitantsMoyen ? Number(nextValues.habitantsMoyen) : undefined,
+      heating_mode: nextValues.typeLogement,
+      nb_logements: nextValues.nbLogements ?? undefined,
+      surface_m2: nextValues.surfaceMoyenne ?? undefined,
+    });
     onSave(nextValues);
 
     setDraft({
@@ -176,9 +196,18 @@ export function ParamsForm({
                 onSelectGeoAddress?.(undefined);
               }}
               onSelect={(nextAddress) => {
+                const nextAddressLabel = nextAddress?.properties?.label ?? '';
+                if (nextAddressLabel) {
+                  trackPostHogEvent('fcr_simulator:address_selected', {
+                    address: nextAddressLabel,
+                    city: nextAddress?.properties.city,
+                    postcode: nextAddress?.properties.postcode,
+                    source: 'result',
+                  });
+                }
                 setDraft((previousDraft) => ({
                   ...previousDraft,
-                  adresse: nextAddress?.properties?.label ?? '',
+                  adresse: nextAddressLabel,
                 }));
                 setGeoAddress(nextAddress);
                 onSelectGeoAddress?.(nextAddress);
@@ -200,7 +229,7 @@ export function ParamsForm({
               iconPosition="left"
               aria-expanded={isOpen}
               aria-controls="params-form"
-              onClick={() => setIsOpen(true)}
+              onClick={handleOpen}
             >
               Complétez les paramètres
             </Button>
@@ -233,6 +262,12 @@ export function ParamsForm({
                     value={draft.surfaceMoyenne}
                     placeholder="70"
                     onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
+                    onBlur={() => {
+                      const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
+                      if (surfaceM2 !== null) {
+                        trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
+                      }
+                    }}
                   />
                   <Input
                     hideOptionalLabel
@@ -241,9 +276,13 @@ export function ParamsForm({
                       inputMode: 'decimal',
                       min: 0,
                       onBlur: () => {
+                        const normalizedHabitantsMoyen = normalizeDecimalString(draft.habitantsMoyen);
+                        if (normalizedHabitantsMoyen) {
+                          trackPostHogEvent('fcr_simulator:habitants_changed', { habitants: Number(normalizedHabitantsMoyen) });
+                        }
                         setDraft((previousDraft) => ({
                           ...previousDraft,
-                          habitantsMoyen: normalizeDecimalString(previousDraft.habitantsMoyen),
+                          habitantsMoyen: normalizedHabitantsMoyen,
                         }));
                       },
                       onChange: (event) => {
@@ -262,7 +301,12 @@ export function ParamsForm({
                     label="Espaces extérieurs"
                     typeLogement={draft.typeLogement}
                     value={draft.espaceExterieur}
-                    onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }))}
+                    onChange={(value) => {
+                      if (value) {
+                        trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoor_space: value });
+                      }
+                      setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }));
+                    }}
                   />
                   <Input
                     hideOptionalLabel
@@ -270,6 +314,12 @@ export function ParamsForm({
                     nativeInputProps={{
                       inputMode: 'numeric',
                       min: 1,
+                      onBlur: () => {
+                        const nbLogements = parseIntegerOrNull(draft.nbLogements);
+                        if (nbLogements !== null) {
+                          trackPostHogEvent('fcr_simulator:nb_logements_changed', { nb_logements: nbLogements });
+                        }
+                      },
                       onChange: (event) => setDraft((previousDraft) => ({ ...previousDraft, nbLogements: event.target.value })),
                       placeholder: '25',
                       type: 'number',
@@ -277,7 +327,13 @@ export function ParamsForm({
                     }}
                   />
                   <div className="md:col-span-2">
-                    <DpeField value={draft.dpe} onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, dpe: value }))} />
+                    <DpeField
+                      value={draft.dpe}
+                      onChange={(value) => {
+                        trackPostHogEvent('fcr_simulator:dpe_changed', { dpe: value });
+                        setDraft((previousDraft) => ({ ...previousDraft, dpe: value }));
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -294,6 +350,9 @@ export function ParamsForm({
                   nativeSelectProps={{
                     onChange: (event) => {
                       const nextTypeLogement = (event.target.value || null) as TypeLogement | null;
+                      if (nextTypeLogement) {
+                        trackPostHogEvent('fcr_simulator:heating_mode_selected', { heating_mode: nextTypeLogement });
+                      }
                       setDraft((previousDraft) => ({
                         ...previousDraft,
                         espaceExterieur: isEspaceExterieurCompatible(nextTypeLogement, previousDraft.espaceExterieur)
@@ -309,11 +368,16 @@ export function ParamsForm({
                   label="Type de radiateurs"
                   options={[...typeRadiateurOptions]}
                   nativeSelectProps={{
-                    onChange: (event) =>
+                    onChange: (event) => {
+                      const nextTypeRadiateur = (event.target.value || null) as TypeRadiateur | null;
+                      if (nextTypeRadiateur) {
+                        trackPostHogEvent('fcr_simulator:emitter_type_selected', { emitter_type: nextTypeRadiateur });
+                      }
                       setDraft((previousDraft) => ({
                         ...previousDraft,
-                        typeRadiateur: (event.target.value || null) as TypeRadiateur | null,
-                      })),
+                        typeRadiateur: nextTypeRadiateur,
+                      }));
+                    },
                     value: draft.typeRadiateur ?? undefined,
                   }}
                 />
@@ -321,11 +385,16 @@ export function ParamsForm({
                   label="Mode d’eau chaude sanitaire"
                   options={[{ label: 'Non renseigné', value: '' }, ...modeEauChaudeSanitaireOptions]}
                   nativeSelectProps={{
-                    onChange: (event) =>
+                    onChange: (event) => {
+                      const nextModeEauChaudeSanitaire = (event.target.value || null) as ModeEauChaudeSanitaire | null;
+                      if (nextModeEauChaudeSanitaire) {
+                        trackPostHogEvent('fcr_simulator:ecs_mode_changed', { ecs_mode: nextModeEauChaudeSanitaire });
+                      }
                       setDraft((previousDraft) => ({
                         ...previousDraft,
-                        modeEauChaudeSanitaire: (event.target.value || null) as ModeEauChaudeSanitaire | null,
-                      })),
+                        modeEauChaudeSanitaire: nextModeEauChaudeSanitaire,
+                      }));
+                    },
                     value: draft.modeEauChaudeSanitaire ?? undefined,
                   }}
                 />
@@ -336,7 +405,7 @@ export function ParamsForm({
             <Button type="submit" iconId="fr-icon-save-line" disabled={!isModified}>
               Enregistrer et recalculer
             </Button>
-            <Button priority="secondary" type="button" onClick={handleClose} disabled={!isModified}>
+            <Button priority="secondary" type="button" onClick={handleCancel} disabled={!isModified}>
               Annuler
             </Button>
           </div>
@@ -350,7 +419,7 @@ export function ParamsForm({
           iconPosition="left"
           aria-expanded={isOpen}
           aria-controls="params-form"
-          onClick={() => setIsOpen(true)}
+          onClick={handleOpen}
         >
           Complétez les paramètres
         </Button>
@@ -365,7 +434,7 @@ function DpeField({ value, onChange }: { value: DPE; onChange: (value: DPE) => v
       <div className="mb-2">Étiquette DPE</div>
       <div className="flex flex-wrap gap-1.5">
         {DPE_VALUES.map((dpeValue) => (
-          <DpeTag letter={dpeValue} isSelected={value === dpeValue} onClick={() => onChange(dpeValue)} />
+          <DpeTag key={dpeValue} letter={dpeValue} isSelected={value === dpeValue} onClick={() => onChange(dpeValue)} />
         ))}
       </div>
     </div>
@@ -375,12 +444,14 @@ function DpeField({ value, onChange }: { value: DPE; onChange: (value: DPE) => v
 function InputWithSuffix({
   label,
   onChange,
+  onBlur,
   placeholder,
   suffix,
   value,
 }: {
   label: string;
   onChange: (value: string) => void;
+  onBlur?: () => void;
   placeholder: string;
   suffix: string;
   value: string;
@@ -393,6 +464,7 @@ function InputWithSuffix({
         nativeInputProps={{
           inputMode: 'numeric',
           min: 1,
+          onBlur,
           onChange: (event) => onChange(event.target.value),
           placeholder,
           type: 'number',

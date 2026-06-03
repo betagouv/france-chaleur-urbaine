@@ -1,9 +1,10 @@
-import { type ComponentType, useState } from 'react';
+import { type ComponentType, useEffect, useRef, useState } from 'react';
 
 import useForm from '@/components/form/react-form/useForm';
 import Alert from '@/components/ui/Alert';
 import Link from '@/components/ui/Link';
 import Select from '@/components/ui/RichSelect';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   ESPACE_EXTERIEUR_VALUES,
@@ -82,7 +83,7 @@ function ContactRecipientSelector({
   );
 }
 
-export default function DemandFCRForm() {
+export default function DemandFCRForm({ topSolution }: { topSolution?: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [selectedRecipientId, setSelectedRecipientId] = useState<ContactRecipientId>('network-manager');
@@ -109,6 +110,18 @@ export default function DemandFCRForm() {
             ? urlParams.espaceExterieur
             : 'none';
         const typeLogement = urlParams.typeLogement ?? 'immeuble_chauffage_collectif';
+        const housingCount = Number(urlParams.nbLogements || 25);
+
+        trackPostHogEvent('fcr_contact:form_submitted', {
+          energy: value.heatingEnergy,
+          is_raccordable: !isPublicAdvisorSelected,
+          nb_logements: housingCount,
+          non_raccordable_reason: isPublicAdvisorSelected ? refusalReason || undefined : undefined,
+          phone_filled: value.phone.trim().length > 0,
+          profile: value.occupantStatus,
+          project_stages: value.projectStatus,
+          top_solution: topSolution,
+        });
 
         await createDemandeChaleurRenouvelable.mutateAsync({
           address: urlParams.adresse ?? '',
@@ -120,7 +133,7 @@ export default function DemandFCRForm() {
           firstName: value.firstName,
           heatingEnergy: value.heatingEnergy,
           hotWaterSystemType: urlParams.modeEauChaudeSanitaire,
-          housingCount: Number(urlParams.nbLogements || 25),
+          housingCount,
           housingType: typeLogement,
           isPublicAdvisorSelected,
           lastName: value.lastName,
@@ -141,6 +154,14 @@ export default function DemandFCRForm() {
     schema: zContactFormChaleuRenouvelable,
   });
   const selectedProjectStatus = useValue<ProjectStatus[]>('projectStatus') ?? [];
+  const selectedOccupantStatus = useValue<(typeof occupantStatusOptions)[number]['value']>('occupantStatus');
+  const selectedHeatingEnergy = useValue<(typeof heatingEnergyOptions)[number]['value']>('heatingEnergy');
+  const hasAcceptedTerms = useValue<boolean>('termOfUse');
+  const hasTrackedInitialContactValuesRef = useRef(false);
+  const trackedProfileRef = useRef<string | null>(null);
+  const trackedEnergyRef = useRef<string | null>(null);
+  const trackedProjectStagesRef = useRef('');
+  const hasTrackedCguAcceptedRef = useRef(false);
   const SelectProjectStatus = Field.SelectCheckboxes as ComponentType<{
     className?: string;
     label: string;
@@ -149,6 +170,62 @@ export default function DemandFCRForm() {
     small?: boolean;
   }>;
   const isPublicAdvisorSelected = selectedRecipientId === 'public-advisor';
+
+  useEffect(() => {
+    if (!hasTrackedInitialContactValuesRef.current && urlParams.nbLogements !== null) {
+      hasTrackedInitialContactValuesRef.current = true;
+      trackPostHogEvent('fcr_contact:nb_logements_filled', {
+        is_raccordable: !isPublicAdvisorSelected,
+        nb_logements: urlParams.nbLogements,
+      });
+    }
+  }, [isPublicAdvisorSelected, urlParams.nbLogements]);
+
+  useEffect(() => {
+    if (!selectedOccupantStatus || trackedProfileRef.current === selectedOccupantStatus) {
+      return;
+    }
+
+    trackedProfileRef.current = selectedOccupantStatus;
+    trackPostHogEvent('fcr_contact:profile_selected', {
+      is_raccordable: !isPublicAdvisorSelected,
+      profile: selectedOccupantStatus,
+    });
+  }, [isPublicAdvisorSelected, selectedOccupantStatus]);
+
+  useEffect(() => {
+    if (!selectedHeatingEnergy || trackedEnergyRef.current === selectedHeatingEnergy) {
+      return;
+    }
+
+    trackedEnergyRef.current = selectedHeatingEnergy;
+    trackPostHogEvent('fcr_contact:energy_selected', {
+      energy: selectedHeatingEnergy,
+      is_raccordable: !isPublicAdvisorSelected,
+    });
+  }, [isPublicAdvisorSelected, selectedHeatingEnergy]);
+
+  useEffect(() => {
+    const stagesKey = selectedProjectStatus.join('|');
+    if (selectedProjectStatus.length === 0 || trackedProjectStagesRef.current === stagesKey) {
+      return;
+    }
+
+    trackedProjectStagesRef.current = stagesKey;
+    trackPostHogEvent('fcr_contact:project_stage_selected', {
+      is_raccordable: !isPublicAdvisorSelected,
+      stages: selectedProjectStatus,
+    });
+  }, [isPublicAdvisorSelected, selectedProjectStatus]);
+
+  useEffect(() => {
+    if (!hasAcceptedTerms || hasTrackedCguAcceptedRef.current) {
+      return;
+    }
+
+    hasTrackedCguAcceptedRef.current = true;
+    trackPostHogEvent('fcr_contact:cgu_accepted', { is_raccordable: !isPublicAdvisorSelected });
+  }, [hasAcceptedTerms, isPublicAdvisorSelected]);
 
   return (
     <section id="help-ademe" className="mt-6 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">
@@ -162,7 +239,15 @@ export default function DemandFCRForm() {
           ? 'Le raccordement au réseau n’a pas pu aboutir. Un conseiller du service public reprend le dossier avec vous pour identifier la meilleure alternative parmi les solutions compatibles ci-dessus.'
           : 'Vous êtes éligible au réseau de chaleur. C’est lui qu’il faut contacter en priorité : le gestionnaire évaluera gratuitement la faisabilité technique et le coût exact du raccordement pour votre bâtiment.'}
       </p>
-      <ContactRecipientSelector selectedRecipientId={selectedRecipientId} onSelect={setSelectedRecipientId} />
+      <ContactRecipientSelector
+        selectedRecipientId={selectedRecipientId}
+        onSelect={(recipientId) => {
+          if (recipientId === 'public-advisor') {
+            trackPostHogEvent('fcr_contact:non_raccordable_checked');
+          }
+          setSelectedRecipientId(recipientId);
+        }}
+      />
       <div className="mb-4 flex items-start gap-3 border-l-4 border-[#F6C23E] bg-[#FFEBA3] px-4 py-3 font-bold">
         <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
         <span>
@@ -205,7 +290,12 @@ export default function DemandFCRForm() {
                 ]}
                 placeholder="Sélectionner le motif"
                 value={refusalReason}
-                onChange={setRefusalReason}
+                onChange={(reason) => {
+                  if (reason) {
+                    trackPostHogEvent('fcr_contact:non_raccordable_reason_selected', { reason });
+                  }
+                  setRefusalReason(reason);
+                }}
               />
             </>
           )}

@@ -8,6 +8,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import Modal from '@/components/ui/Modal';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 
 const ChoixChauffageResults = dynamic(() => import('@/modules/chaleur-renouvelable/client/ChoixChauffageResults'), {
   //loading: () => <Placeholder advancedMode={false} />,
@@ -35,7 +36,15 @@ export default function ChaleurRenouvelableResultatPage() {
           <Link variant="secondary" href={`/chaleur-renouvelable?${searchParams?.toString() ?? ''}`}>
             <span className="fr-icon-arrow-left-line fr-mr-1w" /> Retour
           </Link>
-          <Button priority="secondary" iconId="fr-icon-share-forward-line" iconPosition="right" onClick={() => setOpenShareModal(true)}>
+          <Button
+            priority="secondary"
+            iconId="fr-icon-share-forward-line"
+            iconPosition="right"
+            onClick={() => {
+              trackPostHogEvent('fcr_results:share_button_clicked');
+              setOpenShareModal(true);
+            }}
+          >
             Partager
           </Button>
 

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { isValidElement } from 'react';
+import { isValidElement, useEffect, useRef } from 'react';
 
 import { issues, otherHeatingSystem, understandings } from '@/components/Ressources/config';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -209,7 +209,7 @@ function OtherHeatingSystemsCarousel() {
           </p>
           <Link
             postHogEventKey="fcr_landing:article_clicked"
-            postHogEventProps={{ element_name: resource.slug }}
+            postHogEventProps={{ article_title: resource.title, element_name: resource.slug }}
             variant="secondary"
             className="fr-mt-3w"
             href={`/ressources/${resource.slug}`}
@@ -329,7 +329,7 @@ function TemoignageCard({
       <p className="fr-mb-1w">Nombre de logement: {nbLogement}</p>
       <Link
         postHogEventKey="fcr_landing:testimonial_clicked"
-        postHogEventProps={{ element_name: title }}
+        postHogEventProps={{ element_name: title, testimonial_title: title }}
         variant="secondary"
         className="fr-mt-3w"
         href={link}
@@ -356,7 +356,14 @@ function TemoignagesCarousel() {
 function CompareSolutionsButton() {
   return (
     <div className="fr-mt-4w flex justify-center">
-      <Button priority="primary" iconId="fr-icon-arrow-up-line" onClick={() => window.scrollTo({ top: 0 })}>
+      <Button
+        priority="primary"
+        iconId="fr-icon-arrow-up-line"
+        onClick={() => {
+          trackPostHogEvent('fcr_landing:bottom_cta_clicked');
+          window.scrollTo({ top: 0 });
+        }}
+      >
         Comparer les solutions
       </Button>
     </div>
@@ -366,6 +373,33 @@ function CompareSolutionsButton() {
 function ChaleurRenouvelablePage() {
   const params = useSearchParams();
   const fromPacoupa = params?.get('src') === 'pacoupa';
+  const trackedScrollDepthsRef = useRef(new Set<number>());
+
+  useEffect(() => {
+    const depths = [25, 50, 75, 100] as const;
+    const handleScroll = () => {
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollableHeight <= 0) {
+        return;
+      }
+
+      const depthPercent = Math.min(100, Math.round((window.scrollY / scrollableHeight) * 100));
+      depths
+        .filter((depth) => depthPercent >= depth && !trackedScrollDepthsRef.current.has(depth))
+        .forEach((depth) => {
+          trackedScrollDepthsRef.current.add(depth);
+          trackPostHogEvent('fcr_landing:scroll_depth_reached', { depth_percent: depth });
+        });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <SimplePage
       title="Découvrez le chauffage qui vous convient !"
@@ -442,7 +476,7 @@ function ChaleurRenouvelablePage() {
                 label={faq.question}
                 onExpandedChange={(expanded) => {
                   if (expanded) {
-                    trackPostHogEvent('fcr_landing:faq_clicked', { element_name: faq.question });
+                    trackPostHogEvent('fcr_landing:faq_item_opened', { faq_question: faq.question });
                   }
                 }}
               >

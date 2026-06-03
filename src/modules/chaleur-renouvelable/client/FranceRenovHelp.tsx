@@ -77,7 +77,7 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
   return (
     <section className="mt-8 border-l-4 border-[#d6a100] bg-[#feeccf] px-6 py-6 text-(--text-title-grey)">
       <h3 className="mb-4 flex items-start gap-2 text-xl font-bold">
-        <span className="fr-icon-customer-service-line mt-0.5 text-[#c74700]" aria-hidden="true" />
+        <span className="fr-icon-customer-service-line mt-0.5 text-danger" aria-hidden="true" />
         Contactez gratuitement un conseiller France Rénov’ pour faire le point
       </h3>
       <p className="mb-4 max-w-4xl">
@@ -88,7 +88,7 @@ export default function FranceRenovHelp({ codeInsee }: { codeInsee?: string }) {
         iconId="fr-icon-arrow-right-line"
         iconPosition="right"
         onClick={() => {
-          trackPostHogEvent('link:click', { link_name: 'cta_rdv_france_renov', source: 'chaleur_renouvelable' });
+          trackPostHogEvent('fcr_results:france_renov_cta_clicked');
           setIsOpen((prev) => !prev);
         }}
         aria-expanded={isOpen}
