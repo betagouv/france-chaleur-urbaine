@@ -1,5 +1,6 @@
 import type { ChoixChauffageParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import type { Situation } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+import { DEFAULT_SIMULATION_PARAMS } from '@/modules/chaleur-renouvelable/constants';
 
 type BuildSimulationSituationParams = {
   batEnr: Pick<
@@ -31,18 +32,18 @@ export function buildSimulationSituation({ batEnr, eligibiliteReseauChaleur, url
     architecturalProtectionAc4bis: batEnr.architecturalProtectionAc4bis,
     dpe: urlParams.dpe,
     eligibiliteReseauChaleur,
-    espaceExterieur: urlParams.espaceExterieur ?? 'none',
+    espaceExterieur: urlParams.espaceExterieur ?? DEFAULT_SIMULATION_PARAMS.espaceExterieur,
     geothermalNappeGmi: batEnr.geothermalNappeGmi,
     geothermalNappePotential: batEnr.geothermalNappePotential,
     geothermalSondeGmi: batEnr.geothermalSondeGmi,
     geothermiePossible: batEnr.geothermiePossible,
-    habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen || '2'),
+    habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen || String(DEFAULT_SIMULATION_PARAMS.habitantsMoyen)),
     hasGeothermalProbeSpace: batEnr.hasGeothermalProbeSpace,
     modeEauChaudeSanitaire: urlParams.modeEauChaudeSanitaire,
-    nbLogements: urlParams.nbLogements ?? 25,
+    nbLogements: urlParams.nbLogements ?? DEFAULT_SIMULATION_PARAMS.nbLogements,
     planProtectionAtmosphere: batEnr.planProtectionAtmosphere,
     solarThermalCoverage: batEnr.solarThermalCoverage,
-    surfaceMoyenne: urlParams.surfaceMoyenne ?? 70,
+    surfaceMoyenne: urlParams.surfaceMoyenne ?? DEFAULT_SIMULATION_PARAMS.surfaceMoyenne,
     typeRadiateur: urlParams.typeRadiateur,
   };
 }

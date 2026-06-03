@@ -1,4 +1,4 @@
-import { type ComponentType, useEffect, useRef, useState } from 'react';
+import { type ComponentType, useEffect, useState } from 'react';
 
 import useForm from '@/components/form/react-form/useForm';
 import Alert from '@/components/ui/Alert';
@@ -7,6 +7,7 @@ import Select from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
+  DEFAULT_SIMULATION_PARAMS,
   ESPACE_EXTERIEUR_VALUES,
   heatingEnergyOptions,
   occupantStatusOptions,
@@ -56,7 +57,7 @@ function ContactRecipientSelector({
               key={recipient.id}
               type="button"
               className={cx(
-                'flex min-h-24 items-start gap-3 border border-transparent bg-white px-4 py-4 text-left',
+                'flex min-h-24 items-start gap-3 border border-transparent bg-white p-4 text-left',
                 isSelected && 'border-blue'
               )}
               aria-pressed={isSelected}
@@ -109,9 +110,9 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
         const espaceExterieur =
           isDefined(urlParams.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(urlParams.espaceExterieur)
             ? urlParams.espaceExterieur
-            : 'none';
-        const typeLogement = urlParams.typeLogement ?? 'immeuble_chauffage_collectif';
-        const housingCount = Number(urlParams.nbLogements || 25);
+            : DEFAULT_SIMULATION_PARAMS.espaceExterieur;
+        const typeLogement = urlParams.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
+        const housingCount = Number(urlParams.nbLogements || DEFAULT_SIMULATION_PARAMS.nbLogements);
 
         trackPostHogEvent('fcr_contact:form_submitted', {
           energy: value.heatingEnergy,
@@ -126,8 +127,8 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
 
         await createDemandeChaleurRenouvelable.mutateAsync({
           address: urlParams.adresse ?? '',
-          averageArea: Number(urlParams.surfaceMoyenne || 70),
-          averageResidents: Number(urlParams.habitantsMoyen || 2),
+          averageArea: Number(urlParams.surfaceMoyenne || DEFAULT_SIMULATION_PARAMS.surfaceMoyenne),
+          averageResidents: Number(urlParams.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
           batimentConstructionId: urlParams.constructionId,
           dpe: urlParams.dpe,
           email: value.email,
@@ -158,11 +159,6 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
   const selectedOccupantStatus = useValue<(typeof occupantStatusOptions)[number]['value']>('occupantStatus');
   const selectedHeatingEnergy = useValue<(typeof heatingEnergyOptions)[number]['value']>('heatingEnergy');
   const hasAcceptedTerms = useValue<boolean>('termOfUse');
-  const hasTrackedInitialContactValuesRef = useRef(false);
-  const trackedProfileRef = useRef<string | null>(null);
-  const trackedEnergyRef = useRef<string | null>(null);
-  const trackedProjectStagesRef = useRef('');
-  const hasTrackedCguAcceptedRef = useRef(false);
   const SelectProjectStatus = Field.SelectCheckboxes as ComponentType<{
     className?: string;
     label: string;
@@ -175,21 +171,10 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
   const isPublicAdvisorSelected = selectedRecipientId === 'public-advisor';
 
   useEffect(() => {
-    if (!hasTrackedInitialContactValuesRef.current && urlParams.nbLogements !== null) {
-      hasTrackedInitialContactValuesRef.current = true;
-      trackPostHogEvent('fcr_contact:nb_logements_filled', {
-        is_raccordable: !isPublicAdvisorSelected,
-        nb_logements: urlParams.nbLogements,
-      });
-    }
-  }, [isPublicAdvisorSelected, urlParams.nbLogements]);
-
-  useEffect(() => {
-    if (!selectedOccupantStatus || trackedProfileRef.current === selectedOccupantStatus) {
+    if (!selectedOccupantStatus) {
       return;
     }
 
-    trackedProfileRef.current = selectedOccupantStatus;
     trackPostHogEvent('fcr_contact:profile_selected', {
       is_raccordable: !isPublicAdvisorSelected,
       profile: selectedOccupantStatus,
@@ -197,11 +182,10 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
   }, [isPublicAdvisorSelected, selectedOccupantStatus]);
 
   useEffect(() => {
-    if (!selectedHeatingEnergy || trackedEnergyRef.current === selectedHeatingEnergy) {
+    if (!selectedHeatingEnergy) {
       return;
     }
 
-    trackedEnergyRef.current = selectedHeatingEnergy;
     trackPostHogEvent('fcr_contact:energy_selected', {
       energy: selectedHeatingEnergy,
       is_raccordable: !isPublicAdvisorSelected,
@@ -209,12 +193,10 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
   }, [isPublicAdvisorSelected, selectedHeatingEnergy]);
 
   useEffect(() => {
-    const stagesKey = selectedProjectStatus.join('|');
-    if (selectedProjectStatus.length === 0 || trackedProjectStagesRef.current === stagesKey) {
+    if (selectedProjectStatus.length === 0) {
       return;
     }
 
-    trackedProjectStagesRef.current = stagesKey;
     trackPostHogEvent('fcr_contact:project_stage_selected', {
       is_raccordable: !isPublicAdvisorSelected,
       stages: selectedProjectStatus,
@@ -222,11 +204,10 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
   }, [isPublicAdvisorSelected, selectedProjectStatus]);
 
   useEffect(() => {
-    if (!hasAcceptedTerms || hasTrackedCguAcceptedRef.current) {
+    if (!hasAcceptedTerms) {
       return;
     }
 
-    hasTrackedCguAcceptedRef.current = true;
     trackPostHogEvent('fcr_contact:cgu_accepted', { is_raccordable: !isPublicAdvisorSelected });
   }, [hasAcceptedTerms, isPublicAdvisorSelected]);
 

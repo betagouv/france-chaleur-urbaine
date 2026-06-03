@@ -68,14 +68,17 @@ const singleConstructionBuildingArea = sql<number | null>`
   )
 `.as('dpe_representatif_logement_surface_habitable_immeuble');
 
+const selectBatEnrBatimentDetails = () =>
+  kdb
+    .selectFrom('bdnb_batenr')
+    .select(batEnrBatimentColumns)
+    .select(singleConstructionHousingCount)
+    .select(singleConstructionBuildingArea)
+    .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'));
+
 export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput): Promise<BatEnrBatiment | undefined> => {
   if ('batiment_construction_id' in input) {
-    const batiment = await kdb
-      .selectFrom('bdnb_batenr')
-      .select(batEnrBatimentColumns)
-      .select(singleConstructionHousingCount)
-      .select(singleConstructionBuildingArea)
-      .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
+    const batiment = await selectBatEnrBatimentDetails()
       .where('batiment_construction_id', '=', input.batiment_construction_id)
       .executeTakeFirst();
 
@@ -84,12 +87,7 @@ export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput):
 
   const { lat, lon } = input;
 
-  const batiment = await kdb
-    .selectFrom('bdnb_batenr')
-    .select(batEnrBatimentColumns)
-    .select(singleConstructionHousingCount)
-    .select(singleConstructionBuildingArea)
-    .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
+  const batiment = await selectBatEnrBatimentDetails()
     .where('geom', 'is not', null)
     .orderBy(sql`geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154)`)
     .limit(1)
@@ -105,14 +103,7 @@ export const getBatEnrBatimentsByConstructionIds = async (batimentConstructionId
     return [];
   }
 
-  return await kdb
-    .selectFrom('bdnb_batenr')
-    .select(batEnrBatimentColumns)
-    .select(singleConstructionHousingCount)
-    .select(singleConstructionBuildingArea)
-    .select(sql<GeoJSON.Geometry | null>`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geometry'))
-    .where('batiment_construction_id', 'in', uniqueBatimentConstructionIds)
-    .execute();
+  return await selectBatEnrBatimentDetails().where('batiment_construction_id', 'in', uniqueBatimentConstructionIds).execute();
 };
 
 export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => {

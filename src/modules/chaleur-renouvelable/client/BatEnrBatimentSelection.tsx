@@ -14,7 +14,12 @@ export function BatEnrBatimentSelection({
   return (
     <div>
       <p className="my-3 font-bold text-xl">Plusieurs bâtiments sont recensés à cette adresse, veuillez choisir le bâtiment concerné</p>
-      <BatEnrBatimentsMap batiments={batiments} initialCenter={initialCenter} onSelect={onSelect} />
+      <BatEnrBatimentsMap
+        batiments={batiments}
+        className="h-[60vh] min-h-96 w-full overflow-hidden"
+        initialCenter={initialCenter}
+        onSelect={onSelect}
+      />
     </div>
   );
 }

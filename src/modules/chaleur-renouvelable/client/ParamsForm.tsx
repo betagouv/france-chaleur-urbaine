@@ -6,8 +6,16 @@ import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { BatEnrBatimentsMap } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentsMap';
-import { DpeTag } from '@/modules/chaleur-renouvelable/client/ChoixChauffageResults';
 import type { ChoixChauffageParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
+import {
+  areParamsFormDraftsEqual,
+  normalizeDecimalString,
+  normalizeDraftNumbers,
+  parseIntegerOrNull,
+  toChoixChauffageParams,
+  toParamsFormDraft,
+} from '@/modules/chaleur-renouvelable/client/params-form-draft';
+import { DpeTag } from '@/modules/chaleur-renouvelable/client/results/SolutionCommon';
 import {
   type DPE,
   DPE_VALUES,
@@ -25,48 +33,6 @@ import { AddressField } from '@/modules/form/AddressField';
 import { OutdoorSpaceSelect } from './OutdoorSpaceSelect';
 
 export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
-
-type ParamsFormDraft = {
-  adresse: NonNullable<ChoixChauffageParams['adresse']>;
-  dpe: DPE;
-  espaceExterieur: ChoixChauffageParams['espaceExterieur'];
-  habitantsMoyen: NonNullable<ChoixChauffageParams['habitantsMoyen']>;
-  modeEauChaudeSanitaire: ChoixChauffageParams['modeEauChaudeSanitaire'] | null;
-  nbLogements: string;
-  surfaceMoyenne: string;
-  typeLogement: ChoixChauffageParams['typeLogement'];
-  typeRadiateur: ChoixChauffageParams['typeRadiateur'];
-};
-
-function parseIntegerOrNull(value: string) {
-  const trimmedValue = value.trim();
-  if (trimmedValue === '') return null;
-
-  const parsedValue = Number(trimmedValue);
-  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : null;
-}
-
-function normalizeDecimalString(value: string) {
-  const normalizedValue = value.replace(',', '.').replace(/\.$/, '').trim();
-  if (normalizedValue === '') return '';
-
-  const parsedValue = Number(normalizedValue);
-  return Number.isFinite(parsedValue) && parsedValue >= 0 ? String(parsedValue) : '';
-}
-
-function areDraftsEqual(left: ParamsFormDraft, right: ParamsFormDraft) {
-  return (
-    left.adresse === right.adresse &&
-    left.dpe === right.dpe &&
-    left.espaceExterieur === right.espaceExterieur &&
-    left.habitantsMoyen === right.habitantsMoyen &&
-    left.modeEauChaudeSanitaire === right.modeEauChaudeSanitaire &&
-    left.nbLogements === right.nbLogements &&
-    left.surfaceMoyenne === right.surfaceMoyenne &&
-    left.typeLogement === right.typeLogement &&
-    left.typeRadiateur === right.typeRadiateur
-  );
-}
 
 type ParamsFormProps = {
   batiments: BatEnrBatiment[];
@@ -97,18 +63,8 @@ export function ParamsForm({
   onSelectBatiment,
   onAddressError: _onAddressError,
 }: ParamsFormProps) {
-  const currentValues = {
-    adresse: values.adresse ?? '',
-    dpe: values.dpe,
-    espaceExterieur: values.espaceExterieur,
-    habitantsMoyen: values.habitantsMoyen ?? '',
-    modeEauChaudeSanitaire: values.modeEauChaudeSanitaire,
-    nbLogements: values.nbLogements === null ? '' : String(values.nbLogements),
-    surfaceMoyenne: values.surfaceMoyenne === null ? '' : String(values.surfaceMoyenne),
-    typeLogement: values.typeLogement,
-    typeRadiateur: values.typeRadiateur,
-  };
-  const [draft, setDraft] = useState<ParamsFormDraft>(currentValues);
+  const currentValues = toParamsFormDraft(values);
+  const [draft, setDraft] = useState(currentValues);
 
   useEffect(() => {
     setDraft(currentValues);
@@ -124,7 +80,7 @@ export function ParamsForm({
     currentValues.typeRadiateur,
   ]);
 
-  const isModified = !areDraftsEqual(draft, currentValues);
+  const isModified = !areParamsFormDraftsEqual(draft, currentValues);
 
   const handleOpen = () => {
     trackPostHogEvent('fcr_simulator:params_panel_opened');
@@ -144,20 +100,7 @@ export function ParamsForm({
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const normalizedHabitantsMoyen = normalizeDecimalString(draft.habitantsMoyen);
-    const normalizedNbLogements = parseIntegerOrNull(draft.nbLogements);
-    const normalizedSurfaceMoyenne = parseIntegerOrNull(draft.surfaceMoyenne);
-    const nextValues: ChoixChauffageParams = {
-      adresse: draft.adresse || null,
-      dpe: draft.dpe,
-      espaceExterieur: draft.espaceExterieur,
-      habitantsMoyen: normalizedHabitantsMoyen || null,
-      modeEauChaudeSanitaire: draft.modeEauChaudeSanitaire,
-      nbLogements: normalizedNbLogements,
-      surfaceMoyenne: normalizedSurfaceMoyenne,
-      typeLogement: draft.typeLogement,
-      typeRadiateur: draft.typeRadiateur,
-    };
+    const nextValues = toChoixChauffageParams(draft);
 
     trackPostHogEvent('fcr_simulator:parameters_saved', {
       dpe: nextValues.dpe,
@@ -170,12 +113,7 @@ export function ParamsForm({
     });
     onSave(nextValues);
 
-    setDraft({
-      ...draft,
-      habitantsMoyen: normalizedHabitantsMoyen,
-      nbLogements: normalizedNbLogements === null ? '' : String(normalizedNbLogements),
-      surfaceMoyenne: normalizedSurfaceMoyenne === null ? '' : String(normalizedSurfaceMoyenne),
-    });
+    setDraft(normalizeDraftNumbers(draft));
     setIsOpen(false);
   };
 
