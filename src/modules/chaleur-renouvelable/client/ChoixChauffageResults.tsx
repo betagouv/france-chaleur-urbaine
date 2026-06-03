@@ -381,7 +381,7 @@ function PrerequisiteStatusBadge({ status }: { status: PrerequisiteStatus }) {
     },
   } satisfies Record<PrerequisiteStatus, { className: string; label: string }>;
 
-  return <span className={cx('rounded-sm px-2 py-1 text-sm font-bold', config[status].className)}>{config[status].label}</span>;
+  return <span className={cx('w-fit rounded-sm px-2 py-1 text-sm font-bold', config[status].className)}>{config[status].label}</span>;
 }
 
 function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolutionRow[] }) {
@@ -395,13 +395,11 @@ function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolutionRow[
       <div className="border border-gray-200 bg-white px-5 py-4 shadow-sm">
         <ul className="m-0 space-y-3 p-0">
           {rows.map((row) => (
-            <li key={`${row.label}-${row.reason}`} className="grid gap-2 md:grid-cols-[1fr_auto_auto] md:items-center md:gap-4">
-              <div className="flex items-center gap-3">
-                <PrerequisiteStatusBadge status="defavorable" />
-                <strong className="whitespace-nowrap text-error">{row.label}</strong>
-                <span>{row.reason}</span>
-              </div>
-              <span className="justify-self-start whitespace-nowrap text-blue md:justify-self-end">
+            <li key={`${row.label}-${row.reason}`} className="grid gap-2 md:grid-cols-[auto_2fr_3fr_auto] md:items-center md:gap-4">
+              <PrerequisiteStatusBadge status="defavorable" />
+              <strong className="whitespace-nowrap text-error">{row.label}</strong>
+              <span>{row.reason}</span>
+              <span className="justify-self-start w-fit whitespace-nowrap text-blue md:justify-self-end">
                 <span className="fr-icon-stack-line font-bold" aria-hidden="true" /> {row.source}
               </span>
             </li>
