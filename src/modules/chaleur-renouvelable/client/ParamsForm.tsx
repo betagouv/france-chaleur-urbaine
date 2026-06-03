@@ -219,15 +219,13 @@ export function ParamsForm({
                 <span className="fr-icon-community-fill" aria-hidden="true" />
                 <h3 className="m-0 text-sm font-bold">Bâtiment</h3>
               </div>
-              <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="overflow-hidden bg-[#f6f6f6]">
-                  <BatEnrBatimentsMap
-                    batiments={batiments}
-                    initialCenter={geoAddress?.geometry.coordinates}
-                    onSelect={onSelectBatiment}
-                    className="h-43 min-h-0 border-0"
-                  />
-                </div>
+              <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-[1fr_2fr]">
+                <BatEnrBatimentsMap
+                  batiments={batiments}
+                  initialCenter={geoAddress?.geometry.coordinates}
+                  onSelect={onSelectBatiment}
+                  className="h-full"
+                />
                 <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 content-start">
                   <InputWithSuffix
                     label="Surface habitable par logement (moy)"
@@ -402,7 +400,7 @@ function InputWithSuffix({
         }}
         className="[&_input]:pr-12"
       />
-      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/3 text-gray-500">{suffix}</span>
+      <span className="pointer-events-none absolute right-3 top-1/2 text-gray-500">{suffix}</span>
     </div>
   );
 }

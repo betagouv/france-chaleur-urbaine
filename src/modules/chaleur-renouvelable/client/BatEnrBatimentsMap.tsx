@@ -5,7 +5,6 @@ import { useCallback, useMemo } from 'react';
 
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
-import cx from '@/utils/cx';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
@@ -57,7 +56,7 @@ export function BatEnrBatimentsMap({
   );
 
   return features.length > 0 ? (
-    <div className={cx('h-140 min-h-105 overflow-hidden border border-border-default-grey', className)}>
+    <div className={className}>
       <Map
         initialCenter={initialCenter}
         initialZoom={18}
