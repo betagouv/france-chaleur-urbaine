@@ -104,7 +104,7 @@ export const heatingEnergyOptions = HEATING_ENERGY_VALUES.map((value) => ({ labe
 
 export const PROJECT_STATUS_VALUES = [
   'Début de réflexion',
-  'DPE collectif (collectif à supprimer si maison individuelle) déjà réalisé',
+  'DPE déjà réalisé',
   'Audit énergétique déjà réalisé',
   'Projet de rénovation globale en cours',
   'Devis de changement de chauffage déjà reçus',
