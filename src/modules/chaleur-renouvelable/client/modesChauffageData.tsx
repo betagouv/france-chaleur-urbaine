@@ -27,7 +27,7 @@ export type {
   PrerequisiteRow,
   PrerequisiteStatus,
   Situation,
-} from '@/modules/chaleur-renouvelable/client/heating-modes-types';
+} from '@/modules/chaleur-renouvelable/constants';
 
 export function improveDpe(dpe: DPE, gainClasse: number): DPE {
   const currentIndex = DPE_VALUES.indexOf(dpe);
