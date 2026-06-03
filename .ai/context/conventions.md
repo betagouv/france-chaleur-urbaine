@@ -63,6 +63,7 @@
 - Use arrow functions for callbacks, utility functions, and handlers.
 - Keep components under 150 lines — extract sub-components if longer.
 - **One exported component per file.** Never co-locate multiple exported components in the same file — split into separate files named after each component (PascalCase, matches the component name).
+- **Top-down file order.** The main/exported component and its key types go at the **top** (what the file is *for*, at a glance); internal sub-components and small helpers go **below** it — JS hoisting of the `function` declarations (above) makes this work. Details come last, for when you need to dig in.
 - **Always define a `<ComponentName>Props` type** for each component above its declaration. Never inline the props type in the function signature: `function Foo({ x }: { x: string })` → use `type FooProps = { x: string }; function Foo({ x }: FooProps)`.
 - **Never name a type `Props` (or any short / generic name)** — even when there is only one type in the file, it must be prefixed by the component / function name (`FooProps`, not `Props`). Same rule for params types (`FooParams`, not `Params`).
 - Place the props/params type definition immediately above the function/component that uses it, with no other definitions in between.

@@ -4,7 +4,8 @@
 - **DSFR** (`@codegouvfr/react-dsfr`) for standard UI (buttons, inputs, alerts, modals, tabs…) — mandatory, ships RGAA accessibility. Custom wrappers in `src/components/ui/`.
 - **Tailwind 4** (`important: true`, overrides DSFR) for layout / spacing / custom styling.
 - **styled-components** (`*.style.tsx`) — legacy, do NOT create new; migrate when touching.
-- **Never**: inline `style={}`, new CSS-in-JS, global CSS for component styles, the legacy `Box` component (use `div` + Tailwind), emojis (use icons).
+- **Never**: new CSS-in-JS, global CSS for component styles, the legacy `Box` component (use `div` + Tailwind), emojis (use icons).
+- **Inline `style={}`**: allowed only for genuinely dynamic/computed values (a JS-derived color, width, transform), and only for that property — everything static stays in Tailwind.**
 
 ## Tailwind rules
 - `cx()` (`@/utils/cx`) **only** for conditional classes; write unconditional class lists as plain strings.
