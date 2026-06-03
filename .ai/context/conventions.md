@@ -120,12 +120,6 @@
 - No commented-out code — delete it.
 - TSDoc header (purpose, 1-3 lines) above functions, hooks and React components — see *Function and component patterns*. The rules above target inline comments, not these doc headers.
 
-## AI communication style
-
-- Never present multiple contradictory options that go back and forth. Think through all tradeoffs internally first, then deliver ONE clear, definitive recommendation.
-- If there are genuine tradeoffs the user needs to weigh, present them as a clean comparison — not a narrative that contradicts itself paragraph by paragraph.
-- No "actually wait", no "let me reconsider", no live stream of internal deliberation.
-
 ## HTTP calls to external APIs
 
 Never use raw `fetch`. Use helpers from `@/utils/network`:
@@ -133,22 +127,3 @@ Never use raw `fetch`. Use helpers from `@/utils/network`:
 - `fetchJSON(url, init?)` for GET — pass `headers` inside `init`
 
 They handle `Content-Type: application/json`, JSON parsing, and throw `FetchError` on non-OK responses.
-
-## Environment variables
-
-Never access `process.env` directly. Always use the typed config objects:
-- **Server-side**: `serverConfig` from `@/server/config` — Zod-validated, typed.
-- **Client-side**: `clientConfig` from `@/client-config` — Zod-validated, typed.
-
-When adding a new env var:
-1. Add it to `serverConfigSchema` (or client schema) in `src/server/config.ts`.
-2. Add it with a placeholder value to `.env.example`.
-
-## Pre-commit checklist
-
-Always run before committing:
-```bash
-pnpm lint    # Biome checks
-pnpm ts      # TypeScript type check
-pnpm test    # Run relevant tests
-```

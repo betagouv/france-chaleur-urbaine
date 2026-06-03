@@ -1,224 +1,77 @@
-# Carte interactive — Documentation IA
+# Maps & tiles
 
-## Quand lire ce fichier
+> Server-side **vector tiles pipeline** + geographic data (`src/modules/tiles/`).
+> **Client rendering architecture is NOT here** — components, layers, interactions, `MapConfiguration`, legend, search all live in **`src/modules/map/AGENTS.md`**. Read that file for anything under `src/modules/map/`.
 
-- Ajouter ou modifier une couche cartographique (layer/source)
-- Générer ou régénérer des tuiles vecteur
-- Travailler sur `src/components/Map/`, `src/modules/tiles/`, ou `src/pages/carte.tsx`
-- Comprendre pourquoi une donnée n'apparaît pas sur la carte
-- Configurer des filtres, popups, ou la visibilité d'une couche
+## Load when…
 
----
+- Generating / regenerating vector tiles, or adding/changing a tile source.
+- A map layer is empty or serving stale data (cache).
+- Working anywhere in `src/modules/tiles/`.
 
-## Vue d'ensemble
-
-La carte utilise **MapLibre GL v5 + react-map-gl 8**. Les données sont servies sous forme de tuiles vecteur (MVT/PBF) générées via un pipeline PostGIS → Tippecanoe → PostgreSQL, puis exposées par une API Next.js.
+## Pipeline
 
 ```
-Données source (DB / URL / shapefile)
-  ↓  pnpm cli tiles generate <type>
-GeoJSON
-  ↓  tippecanoe
-Tuiles vecteur ({z}/{x}/{y})
-  ↓  import en base
-Table PostgreSQL `{sourceId}_tiles`
-  ↓  GET /api/map/{sourceId}/{z}/{x}/{y}
-MapLibre GL (navigateur)
+Source (DB table / URL / shapefile)
+  → pnpm cli tiles generate <type>   → GeoJSON
+  → tippecanoe                       → vector tiles {z}/{x}/{y}
+  → import                           → PostgreSQL `{sourceId}_tiles`
+  → GET /api/map/{sourceId}/{z}/{x}/{y}  → MapLibre GL (browser)
 ```
 
----
-
-## 1. Génération des tuiles
-
-### Commandes CLI
+## Tile generation
 
 ```bash
-pnpm cli tiles generate <type>   # Génère les tuiles pour un type donné
-pnpm cli tiles add-to-map <type> # Ajoute la source à la carte après génération
+pnpm cli tiles generate <type>     # generate tiles for a config key
+pnpm cli tiles add-to-map <type>   # register the source on the map afterwards
 ```
 
-`<type>` correspond à une clé de `tiles.config.ts` (ex: `reseaux-de-chaleur`, `bdnb-batiments`).
+`<type>` = a key of `tiles.config.ts` (e.g. `reseaux-de-chaleur`, `bdnb-batiments`).
 
-### Fichiers clés
+| File | Role |
+|------|------|
+| `src/modules/tiles/server/tiles.config.ts` | Registry of all tile sources (70+) |
+| `src/modules/tiles/server/generation-run.ts` | Orchestration: GeoJSON → tiles → DB import |
+| `src/modules/tiles/server/generation-strategies.ts` | Extraction strategies (DB / URL / shapefile / custom SQL) |
+| `src/modules/tiles/server/generation-import.ts` | tippecanoe call + DB import |
+| `src/modules/tiles/server/jobs.ts` | `build_tiles` background job |
 
-| Fichier | Rôle |
-|---------|------|
-| `src/modules/tiles/server/tiles.config.ts` | Registre de toutes les sources de tuiles (70+) |
-| `src/modules/tiles/server/generation-run.ts` | Orchestration : GeoJSON → tuiles → import DB |
-| `src/modules/tiles/server/generation-strategies.ts` | Stratégies d'extraction (DB, URL, shapefile, SQL custom) |
-| `src/modules/tiles/server/generation-import.ts` | Appel tippecanoe + import en base |
-| `src/modules/tiles/commands.ts` | Enregistrement des commandes CLI |
-| `src/modules/tiles/server/jobs.ts` | Job background `build_tiles` |
+Source entry shape (`tiles.config.ts`): `aliases` (legacy URLs), `generateGeoJSON` (strategy), `tilesTableName`, `zoomMin`/`zoomMax` (default 5/14), `tippeCanoeArgs`, `compressedTiles` (gzip, default true), `cacheProfile` (see below).
 
-### Configuration d'une source (`tiles.config.ts`)
+Extraction strategies: `extractGeoJSONFromDatabaseTable` (OGR2OGR), `extractNDJSONFromDatabaseTable` (large tables, `{ fields, idField }`), `downloadGeoJSONFromURL`, `extractZippedShapefileToGeoJSON`, `generateGeoJSONFromSQLQuery` (custom PostGIS — `ST_AsGeoJSON` + Lambert93→WGS84). Per-source GeoJSON builders live in `generation-configs/`.
 
-```typescript
-'reseaux-de-chaleur': {
-  aliases: ['reseauxDeChaleur'],          // anciennes URLs (rétrocompatibilité)
-  generateGeoJSON: reseauxDeChaleurQuery, // stratégie d'extraction
-  tilesTableName: 'reseaux_de_chaleur_tiles',
-  zoomMin: 5,                             // défaut: 5
-  zoomMax: 14,                            // défaut: 14
-  tippeCanoeArgs: '-r1',                  // flags tippecanoe additionnels
-  compressedTiles: true,                  // gzip (défaut: true)
-}
-```
+## Tile serving + HTTP cache
 
-### Stratégies d'extraction disponibles
+`GET /api/map/{sourceId}/{z}/{x}/{y}` (`src/modules/tiles/server/api.ts`, `service.ts`):
+- Pre-generated sources → direct lookup in `{sourceId}_tiles` by `(x, y, z)`.
+- Dynamic sources (e.g. `demands`) → built on the fly via `geojson-vt` + in-memory cache, refreshed daily.
 
-- `extractGeoJSONFromDatabaseTable(tableName)` — export OGR2OGR depuis une table
-- `extractNDJSONFromDatabaseTable(tableName, { fields, idField })` — optimisé pour grandes tables
-- `downloadGeoJSONFromURL(url)` — fetch + transformation
-- `extractZippedShapefileToGeoJSON()` — dézip + conversion shapefile
-- `generateGeoJSONFromSQLQuery(sqlQuery, mapFunction)` — requête PostGIS custom (ST_AsGeoJSON, ST_Transform Lambert93→WGS84)
+Cache: the API sets `Cache-Control`, a weak `ETag` and `Last-Modified` per tile (browser 304 revalidation). Freshness is tracked in `tiles_metadata (source_id, last_modified_at)`.
 
----
+**Golden rule** — every write to a tile source must call `markTilesUpdated(sourceId)` (`service.ts`). Without the bump, browsers serve the stale version until `max-age` expires. Wired paths: `runTilesGeneration` (end of build), `populateTilesCache` (`demands` rebuild), CLI `pnpm cli tiles bump <source-id> | --all` (dump restore / manual). Any new write path to a `*_tiles` table must call it.
 
-## 2. Serving des tuiles
+Cache profiles — `cacheProfile` field per source (`'long' | 'short' | 'private'`, default `long`):
 
-**Endpoint** : `GET /api/map/{sourceId}/{z}/{x}/{y}`
-
-- **Tuiles pré-générées** : lookup direct dans la table `{sourceId}_tiles` par `(x, y, z)`
-- **Tuiles dynamiques** (ex: `demands`) : générées à la volée via `geojson-vt` + cache mémoire, rafraîchi quotidiennement
-
-Fichiers : `src/modules/tiles/server/api.ts`, `src/modules/tiles/server/service.ts`
-
-### HTTP cache (ETag + Last-Modified)
-
-L'API pose `Cache-Control`, `ETag` (faible) et `Last-Modified` sur chaque tuile pour permettre la revalidation navigateur (304). La fraîcheur est tracée dans la table `tiles_metadata (source_id, last_modified_at)`.
-
-**Règle d'or** : à chaque écriture sur une source de tuiles, appeler `markTilesUpdated(sourceId)` (dans `src/modules/tiles/server/service.ts`). Sans ce bump, le cache navigateur servira la version périmée jusqu'à expiration du `max-age`. Les chemins déjà câblés :
-- `runTilesGeneration` (fin du build tippecanoe)
-- `populateTilesCache` (rebuild mémoire `demands`)
-- CLI `pnpm cli tiles bump <source-id> | --all` (restore de dump, intervention manuelle)
-
-Tout nouveau chemin d'écriture sur une table `*_tiles` doit appeler `markTilesUpdated`.
-
-**Profils de cache** — champ `cacheProfile` sur chaque entrée de `tileSourcesConfig`, valeurs `'long' | 'short' | 'private'` (défaut implicite `long`) :
-
-| Profil | `Cache-Control` | Sources |
-|--------|-----------------|---------|
-| `long` (défaut) | `public, max-age=86400` | Données rarement modifiées (bdnb, geothermie, zones, besoins, communes, enrr, etc.) |
+| Profile | `Cache-Control` | Sources |
+|---------|-----------------|---------|
+| `long` (default) | `public, max-age=86400` | Rarely-changed data (bdnb, geothermie, zones, besoins, communes, enrr…) |
 | `short` | `public, max-age=7200` | Réseaux + `demands` |
-| `private` | `private, max-age=86400, must-revalidate` | `tests-adresses` (admin only, PII embarquées) |
+| `private` | `private, max-age=86400, must-revalidate` | `tests-adresses` (admin-only, embedded PII) |
 
-`tests-adresses` est réservé aux admins (auth requise sur la route, checkbox de légende masquée pour les autres rôles, pas d'`Access-Control-Allow-Origin: *`).
+`tests-adresses` is admin-only: auth required on the route, legend checkbox hidden for other roles, no `Access-Control-Allow-Origin: *`.
 
----
+## Constants
 
-## 3. Configuration des couches (layers)
-
-### Structure d'un layer
-
-Chaque couche vit dans `src/components/Map/layers/<nom>.tsx` et exporte un `MapSourceLayersSpecification` :
-
-```typescript
-export const reseauxDeChaleurLayer: MapSourceLayersSpecification = {
-  sourceId: 'reseaux-de-chaleur',
-  source: {
-    type: 'vector',
-    tiles: ['/api/map/reseaux-de-chaleur/{z}/{x}/{y}'],
-    maxzoom: 17,
-  },
-  layers: [
-    {
-      id: 'reseaux-de-chaleur-trace',
-      type: 'line',
-      paint: { 'line-color': '#e11', 'line-width': 2 },
-      filter: (config) => ['all', ...buildReseauxDeChaleurFilters(config)],
-      isVisible: (config) => config.reseauxDeChaleur.show,
-      popup: ReseauxDeChaleurPopup,  // composant React
-    },
-  ],
-};
-```
-
-### Agrégation des couches
-
-`src/components/Map/map-layers.ts` — importe tous les layer specs et exporte :
-- `mapLayers` : tableau de toutes les couches (40+)
-- `loadMapLayers(map, config)` : charge sources + couches sur l'instance MapLibre
-- `applyMapConfigurationToLayers(map, config)` : applique filtres et visibilité
-
-### Répertoire `src/components/Map/layers/`
-
-Un fichier par groupe de couches :
-- `reseauxDeChaleur.tsx`, `reseauxDeFroid.tsx`, `reseauxEnConstruction.tsx`
-- `batimentsRaccordesReseauxChaleurFroid.tsx`, `adressesEligibles.tsx`
-- `bdnb/` — caractéristiques bâtiments
-- `geothermie/` — installations géothermiques
-- `enrr-mobilisables/` — ressources ENR&R
-
----
-
-## 4. Configuration de la carte (`MapConfiguration`)
-
-**Fichier** : `src/components/Map/map-configuration.ts`
-
-Type avec 50+ propriétés contrôlant visibilité, filtres, outils. Exemples :
-
-```typescript
-type MapConfiguration = {
-  reseauxDeChaleur: { show: boolean; filters: ReseauxFilters; ... };
-  reseauxDeFroid: boolean;
-  bdnb: { show: boolean; filters: BdnbFilters };
-  consommationsGaz: { show: boolean; logements: boolean; tertiaire: boolean };
-  // ...outils
-  outilDistance: boolean;
-  outilDensiteLineaire: boolean;
-};
-```
-
-L'état est persisté dans l'URL via `nuqs` (`useQueryStates`).
-
----
-
-## 5. Composants principaux
-
-| Fichier | Rôle |
-|---------|------|
-| `src/pages/carte.tsx` | Page carte (import dynamique, SSR désactivé) |
-| `src/components/Map/Map.tsx` | Composant principal MapLibre (~670 lignes) |
-| `src/components/Map/MapProvider.tsx` | Context React + hook `useFCUMap()` |
-| `src/components/Map/map-configuration.ts` | Type `MapConfiguration` + défauts |
-| `src/components/Map/map-layers.ts` | Agrégation et chargement des couches |
-
-### `MapProvider` / `useFCUMap()`
-
-Context qui expose :
-- Instance map MapLibre
-- `mapConfiguration` + setters
-- État des outils (dessin, mesure, densité)
-- Filtres réseaux
-
-### Popups
-
-Définies via `defineLayerPopup<TileType>()` — helper qui donne accès au rôle utilisateur et au pathname.
-
----
-
-## 6. Constantes importantes
-
-```typescript
-// src/modules/tiles/constants.tsx
-intermediateTileLayersMinZoom = 12  // zoom min pour couches intermédiaires
-tileSourcesMaxZoom = 17             // zoom max global
-```
-
----
+`src/modules/tiles/constants.tsx`: `intermediateTileLayersMinZoom = 12`, `tileSourcesMaxZoom = 17`.
 
 ## Performance
 
-- **Cache tuiles** : contrôlé par la variable d'env `DISABLE_TILES_CACHE=true` (désactiver en dev si besoin de tuiles fraîches).
-- **Visibilité des couches** : les couches sont chargées/masquées dynamiquement selon l'état URL (`useQueryStates`) — ne pas charger toutes les sources au démarrage.
-- **Turf.js** : les calculs GIS lourds (intersections, buffers complexes) doivent tourner côté serveur quand possible, pas dans le navigateur.
+- `DISABLE_TILES_CACHE=true` — disable the server tile cache in dev when you need fresh tiles.
+- Heavy GIS (intersections, complex buffers via Turf.js) → run server-side, not in the browser.
 
-## Ajouter une nouvelle couche — checklist
+## Add a new tile-backed layer — checklist
 
-1. Créer la stratégie GeoJSON dans `generation-strategies.ts` ou `generation-configs/`
-2. Ajouter l'entrée dans `tiles.config.ts`
-3. Générer : `pnpm cli tiles generate <type>`
-4. Créer `src/components/Map/layers/<nom>.tsx` avec `MapSourceLayersSpecification`
-5. Ajouter la propriété dans `MapConfiguration`
-6. Importer et ajouter dans `map-layers.ts`
-7. Ajouter le toggle dans la légende si nécessaire
+1. Create the GeoJSON strategy in `generation-strategies.ts` or `generation-configs/`.
+2. Add the source entry in `tiles.config.ts` (pick `cacheProfile`).
+3. Generate: `pnpm cli tiles generate <type>`.
+4. **Client side** (spec in `layers/specs/`, register in `all-layers.ts`, add the `MapConfiguration` property + legend toggle) → see **`src/modules/map/AGENTS.md`**.

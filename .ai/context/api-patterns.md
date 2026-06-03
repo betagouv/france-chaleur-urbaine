@@ -1,126 +1,37 @@
 # API Patterns
 
-## API strategy
+## Strategy
+- **All new endpoints = tRPC.** No new REST routes in `src/pages/api/` (legacy — migrate, don't extend).
+- Exceptions that stay REST: public API (`/api/v1/`, OpenAPI), webhooks (signature-verified), file downloads, NextAuth.
 
-- **Rule: all new endpoints = tRPC. No new REST routes in `src/pages/api/`.**
-- **Internal mutations + queries:** tRPC (type-safe, end-to-end).
-- **External consumers:** REST Route Handlers at `/api/v1/` (OpenAPI documented).
-- **Webhooks:** REST Route Handlers with signature verification.
-- **Legacy REST routes:** `src/pages/api/` — do NOT extend, migrate to tRPC.
-
-## tRPC route conventions
-
-Location: `src/modules/<domain>/server/trpc-routes.ts`
-
+## tRPC routes (`src/modules/<domain>/server/trpc-routes.ts`)
 ```ts
-import { router } from '@/modules/trpc/server/connection';
-import { routeRole } from '@/modules/trpc/server/connection';
-
 export const demandsRouter = router({
-  // Query (read)
   getById: routeRole(['admin', 'gestionnaire'])
     .input(z.object({ id: z.string() }))
-    .query(async ({ input, ctx }) => {
-      return demandsService.getById(input.id, ctx.userId);
-    }),
-
-  // Mutation (write)
+    .query(({ input, ctx }) => demandsService.getById(input.id, ctx.userId)),
   create: routeRole(['professionnel', 'particulier'])
     .input(zCreateDemand)
-    .mutation(async ({ input, ctx }) => {
-      return demandsService.create(input, ctx.userId);
-    }),
+    .mutation(({ input, ctx }) => demandsService.create(input, ctx.userId)),
 });
 ```
+- Zod input schemas live in the module `constants.ts`. Auth via `routeRole([...])`. `query` reads, `mutation` writes.
+- **Business logic in service functions, never inline in routes.**
 
-**Patterns:**
-- Input validation always with Zod schemas (defined in module `constants.ts`).
-- Auth via `routeRole()` middleware (restrict by user role list).
-- Business logic delegated to service functions — never inline in routes.
-- Use `query` for reads, `mutation` for writes.
+## Context (`ctx` in every procedure)
+`ctx.user` / `ctx.userId` (or null), `ctx.hasRole(role)`, `ctx.isAuthenticated`, `ctx.logger` (contextualized Winston).
 
-## tRPC context
+## Client
+tRPC hooks (`trpc.<router>.<proc>.useQuery/useMutation`). Wrap mutation calls in `toastErrors(...)` for automatic error notifications. Cache/invalidation: see state-management.md.
 
-Available in every procedure via `ctx`:
-- `ctx.user` — full user object (or null).
-- `ctx.userId` — user ID string (or null).
-- `ctx.hasRole(role)` — check if user has a specific role.
-- `ctx.isAuthenticated` — boolean.
-- `ctx.logger` — contextualized Winston logger.
-
-## tRPC client usage
-
-```tsx
-import { trpc } from '@/modules/trpc/client/next';
-
-// Query
-const { data, isLoading } = trpc.reseaux.getAll.useQuery(
-  { filters },
-  { enabled: !!filters, refetchInterval: 30_000 }
-);
-
-// Mutation
-const createMutation = trpc.demands.create.useMutation({
-  onSuccess: () => {
-    utils.demands.getAll.invalidate(); // Invalidate cache
-  },
-});
-```
-
-Wrap mutation calls with `toastErrors()` for automatic error notifications:
-```ts
-await toastErrors(async () => {
-  await createMutation.mutateAsync(data);
-});
-```
-
-## Cache management
-
-See [state-management.md](state-management.md) for cache invalidation, optimistic updates, and React Query defaults.
+## Errors
+Throw `TRPCError`: `BAD_REQUEST` (400, validation), `UNAUTHORIZED` (401, not logged in), `FORBIDDEN` (403, role/permission), `NOT_FOUND` (404), `INTERNAL_SERVER_ERROR` (500). Never expose stack traces or raw DB errors; log full detail server-side via `ctx.logger`. The client receives a structured error (with Zod details).
 
 ## Rate limiting
+`src/modules/security/` (`express-rate-limit`), applied per-route via tRPC middleware; stricter on auth endpoints.
 
-- Middleware: `src/modules/security/` using `express-rate-limit`.
-- Applied per-route via tRPC middleware.
-- Stricter limits on auth endpoints.
+## Public REST API
+OpenAPI spec `public/openapi-schema.yaml` (registered on data.gouv.fr). Only two endpoints — `GET /api/v1/eligibility` (test an address) and `GET /api/v1/networks` (download geometries). Everything else goes through tRPC.
 
-## Error handling in API
-
-- tRPC routes throw `TRPCError` with codes:
-  | Code | HTTP | Usage |
-  |------|------|-------|
-  | `BAD_REQUEST` | 400 | Validation errors, bad input |
-  | `UNAUTHORIZED` | 401 | Not logged in |
-  | `FORBIDDEN` | 403 | Insufficient role/permissions |
-  | `NOT_FOUND` | 404 | Resource doesn't exist |
-  | `INTERNAL_SERVER_ERROR` | 500 | Unexpected errors |
-- Never expose stack traces or raw DB errors.
-- Log full error details server-side with `ctx.logger`.
-- Client receives structured error via tRPC error formatter (includes Zod validation details).
-
-## Public API (REST)
-
-OpenAPI spec: `public/openapi-schema.yaml` (registered on data.gouv.fr).
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/v1/eligibility` | GET | Test address eligibility for district heating |
-| `/api/v1/networks` | GET | Download heat/cold network geometries |
-
-These are the only public REST endpoints. All other API access goes through tRPC.
-
-## Third-party integrations
-
-| Service | Location | Purpose |
-|---------|----------|---------|
-| BAN (Base Adresse Nationale) | `src/modules/ban/` | Address geocoding and autocomplete |
-| BDNB (Base de Données Nationale des Bâtiments) | `src/modules/bdnb/` | Building data lookup |
-| Pipedrive | `src/server/services/` (legacy) | CRM / deal tracking |
-| Airtable | `src/server/db/airtable.ts` (legacy) | Legacy CRM data sync |
-| Matomo | `src/modules/analytics/` | Web analytics |
-| data.gouv.fr | `src/modules/opendata/` | Open data publishing |
-
-Rules:
-- Wrap third-party APIs in dedicated service files.
-- Store API keys in environment variables.
-- Never call third-party APIs directly from components.
+## Third-party calls
+Wrap each in a dedicated service file (never call from components), keys via env config. Integrations are listed in domain.md.
