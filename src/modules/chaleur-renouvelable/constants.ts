@@ -1,6 +1,79 @@
+import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import type { ReactNode } from 'react';
 import { z } from 'zod';
 
 import { demandStatuses } from '@/modules/demands/constants';
+import type { HeatNetwork } from '@/types/HeatNetworksResponse';
+
+export type ModeDeChauffageUsage = 'heatingAndHotWater' | 'hotWaterOnly';
+
+export type Situation = {
+  architecturalProtectionAc1: boolean;
+  architecturalProtectionAc2: boolean;
+  architecturalProtectionAc3: boolean;
+  architecturalProtectionAc4: boolean;
+  architecturalProtectionAc4bis: boolean;
+  espaceExterieur: EspaceExterieur;
+  planProtectionAtmosphere: boolean;
+  geothermiePossible: boolean;
+  dpe: DPE;
+  adresse: string | null;
+  nbLogements: number;
+  surfaceMoyenne: number;
+  habitantsMoyen: number;
+  eligibiliteReseauChaleur: HeatNetwork | null;
+  geothermalNappeGmi: number | null;
+  geothermalNappePotential: number | null;
+  geothermalSondeGmi: number | null;
+  hasGeothermalProbeSpace: boolean | null;
+  modeEauChaudeSanitaire: ModeEauChaudeSanitaire | null;
+  solarThermalCoverage: number | null;
+  typeRadiateur: TypeRadiateur | null;
+};
+
+export type IncompatibleSolutionRow = {
+  label: string;
+  reason: string;
+  source: string;
+};
+
+export type PrerequisiteStatus = 'favorable' | 'defavorable' | 'contraignant' | 'aVerifier';
+
+export type PrerequisiteRow = {
+  label: ReactNode;
+  source?: string;
+  status: PrerequisiteStatus;
+};
+
+type IncompatibleSolutionRule = {
+  reason: string;
+  source: string;
+  isIncompatible: (situation: Situation) => boolean;
+};
+
+export type ModeDeChauffage = {
+  label: string;
+  usage: ModeDeChauffageUsage;
+  icone: string;
+  pertinence: number;
+  description: string;
+  avantages: string[];
+  inconvenients: string[];
+  coutParAnPublicodeKey: string;
+  coutParAnPublicodesSituation?: Partial<Record<RuleName, string | number>>;
+  coutInstallation?: string | ((situation: Situation) => string);
+  gainClasse: number;
+  gainVsGaz?: number;
+  helpAction?: 'open-heat-network-contact';
+  estPossible: (situation: Situation) => boolean;
+  incompatibilites?: IncompatibleSolutionRule[];
+  prerequis: (situation: Situation) => PrerequisiteRow[];
+};
+
+export type ModeDeChauffageEnriched = ModeDeChauffage & {
+  coutParAn: number;
+  coutInstallation: string;
+};
 
 export const DPE_VALUES = ['A', 'B', 'C', 'D', 'E', 'F', 'G'] as const;
 
@@ -116,6 +189,20 @@ export const projectStatusOptions = PROJECT_STATUS_VALUES.map((value) => ({
   label: value,
   nativeInputProps: { value },
 }));
+
+export const DEFAULT_SIMULATION_PARAMS = {
+  espaceExterieur: 'none',
+  habitantsMoyen: 2,
+  nbLogements: 25,
+  surfaceMoyenne: 70,
+  typeLogement: 'immeuble_chauffage_collectif',
+} satisfies {
+  espaceExterieur: EspaceExterieur;
+  habitantsMoyen: number;
+  nbLogements: number;
+  surfaceMoyenne: number;
+  typeLogement: TypeLogement;
+};
 
 export const zContactFormChaleuRenouvelable = z.object({
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),

@@ -1,89 +1,33 @@
-import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
-import type { ReactNode } from 'react';
-
 import {
-  type DPE,
-  DPE_VALUES,
-  type EspaceExterieur,
-  type ModeEauChaudeSanitaire,
-  type TypeLogement,
-  type TypeRadiateur,
-} from '@/modules/chaleur-renouvelable/constants';
+  getArchitecturalProtectionPrerequisites,
+  getGeothermalPrerequisites,
+  getPdpPrerequisite,
+  getPpaPrerequisite,
+  HEAT_NETWORK_MAX_DISTANCE,
+  hasCompatibleGeothermalPotential,
+  hasCompatibleHotWaterMode,
+  hasCompatibleRadiator,
+  hasEspaceForHouseEquipment,
+  hasEspacePrivate,
+  hasEspaceShared,
+  hasInsufficientSolarThermalCoverage,
+  hasSufficientSolarThermalCoverage,
+  isNearHeatNetwork,
+  outdoorPacPrerequisites,
+} from '@/modules/chaleur-renouvelable/client/heating-mode-rules';
+import type { IncompatibleSolutionRow, ModeDeChauffage, Situation } from '@/modules/chaleur-renouvelable/constants';
+import { type DPE, DPE_VALUES, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import { getCoutRaccordementResidentiel, prettyPrintCout } from '@/modules/simulator/client/SimulateurCoutRaccordement';
-import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
-export type ModeDeChauffageUsage = 'heatingAndHotWater' | 'hotWaterOnly';
-
-export type ModeDeChauffage = {
-  label: string;
-  typeLogement: TypeLogement;
-  usage: ModeDeChauffageUsage;
-  icone: string;
-  pertinence: number;
-  description: string;
-  avantages: string[];
-  inconvenients: string[];
-  coutParAnPublicodeKey: string;
-  coutParAnPublicodesSituation?: Partial<Record<RuleName, string | number>>;
-  coutInstallation?: string | ((situation: Situation) => string);
-  gainClasse: number;
-  gainVsGaz?: number;
-  helpAction?: 'open-heat-network-contact';
-  estPossible: (situation: Situation) => boolean;
-  incompatibilites?: IncompatibleSolutionRule[];
-  prerequis: (situation: Situation) => PrerequisiteRow[];
-};
-
-export type ModeDeChauffageEnriched = ModeDeChauffage & {
-  coutParAn: number;
-  coutInstallation: string;
-};
-
-export type Situation = {
-  architecturalProtectionAc1: boolean;
-  architecturalProtectionAc2: boolean;
-  architecturalProtectionAc3: boolean;
-  architecturalProtectionAc4: boolean;
-  architecturalProtectionAc4bis: boolean;
-  espaceExterieur: EspaceExterieur;
-  planProtectionAtmosphere: boolean;
-  geothermiePossible: boolean;
-  dpe: DPE;
-  adresse: string | null;
-  nbLogements: number;
-  surfaceMoyenne: number;
-  habitantsMoyen: number;
-  eligibiliteReseauChaleur: HeatNetwork | null;
-  geothermalNappeGmi: number | null;
-  geothermalNappePotential: number | null;
-  geothermalSondeGmi: number | null;
-  hasGeothermalProbeSpace: boolean | null;
-  modeEauChaudeSanitaire: ModeEauChaudeSanitaire | null;
-  solarThermalCoverage: number | null;
-  typeRadiateur: TypeRadiateur | null;
-};
-
-export type IncompatibleSolutionRow = {
-  label: string;
-  reason: string;
-  source: string;
-};
-
-export type PrerequisiteStatus = 'favorable' | 'defavorable' | 'contraignant' | 'aVerifier';
-
-export type PrerequisiteRow = {
-  label: ReactNode;
-  source?: string;
-  status: PrerequisiteStatus;
-};
-
-type IncompatibleSolutionRule = {
-  reason: string;
-  source: string;
-  isIncompatible: (situation: Situation) => boolean;
-};
-
-type ModeDeChauffageWithoutTypeLogement = Omit<ModeDeChauffage, 'typeLogement'>;
+export type {
+  IncompatibleSolutionRow,
+  ModeDeChauffage,
+  ModeDeChauffageEnriched,
+  ModeDeChauffageUsage,
+  PrerequisiteRow,
+  PrerequisiteStatus,
+  Situation,
+} from '@/modules/chaleur-renouvelable/client/heating-modes-types';
 
 export function improveDpe(dpe: DPE, gainClasse: number): DPE {
   const currentIndex = DPE_VALUES.indexOf(dpe);
@@ -91,124 +35,8 @@ export function improveDpe(dpe: DPE, gainClasse: number): DPE {
   return DPE_VALUES[nextIndex];
 }
 
-const hasEspaceShared = (situation: Situation) => ['shared', 'both'].includes(situation.espaceExterieur);
-const hasEspacePrivate = (situation: Situation) =>
-  ['private', 'both', 'terrasseBalcon', 'jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
-const hasEspaceForHouseEquipment = (situation: Situation) =>
-  ['shared', 'both', 'jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
-const hasCompatibleHotWaterMode = (situation: Situation, modes: ModeEauChaudeSanitaire[]) =>
-  !situation.modeEauChaudeSanitaire || modes.includes(situation.modeEauChaudeSanitaire);
-const hasCompatibleRadiator = (situation: Situation, radiators: TypeRadiateur[]) =>
-  situation.typeRadiateur ? radiators.includes(situation.typeRadiateur) : false;
-const hasCompatibleGeothermalPotential = (situation: Situation) =>
-  situation.geothermiePossible &&
-  hasFavorableGeothermalArea(situation) &&
-  (hasUnknownGeothermalResource(situation) || hasSufficientGeothermalResource(situation)) &&
-  situation.hasGeothermalProbeSpace !== false;
-const HEAT_NETWORK_MAX_DISTANCE = 200;
-const SOLAR_THERMAL_MIN_COVERAGE = 80;
-const isNearHeatNetwork = (situation: Situation) =>
-  (situation.eligibiliteReseauChaleur?.distance ?? Number.POSITIVE_INFINITY) < HEAT_NETWORK_MAX_DISTANCE;
-const hasSufficientSolarThermalCoverage = (situation: Situation) =>
-  (situation.solarThermalCoverage ?? Number.NEGATIVE_INFINITY) > SOLAR_THERMAL_MIN_COVERAGE;
-const hasInsufficientSolarThermalCoverage = (situation: Situation) =>
-  situation.solarThermalCoverage != null && situation.solarThermalCoverage < SOLAR_THERMAL_MIN_COVERAGE;
-const hasFavorableGeothermalArea = (situation: Situation) =>
-  [1, 2].includes(situation.geothermalNappeGmi ?? 0) || [1, 2].includes(situation.geothermalSondeGmi ?? 0);
-const hasSufficientGeothermalResource = (situation: Situation) => [7, 8, 9].includes(situation.geothermalNappePotential ?? 0);
-const hasUnknownGeothermalResource = (situation: Situation) => [0, 1].includes(situation.geothermalNappePotential ?? 0);
-const getPdpPrerequisite = (situation: Situation): PrerequisiteRow[] =>
-  situation.eligibiliteReseauChaleur?.inPDP
-    ? [
-        {
-          label:
-            'Votre bâtiment est situé dans un Périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau.',
-          source: 'France Chaleur Urbaine',
-          status: 'contraignant',
-        },
-      ]
-    : [];
-const architecturalProtectionPrerequisites = [
-  ['architecturalProtectionAc1', 'Monuments historiques'],
-  ['architecturalProtectionAc2', 'Sites inscrits et classés'],
-  ['architecturalProtectionAc3', 'Réserves naturelles'],
-  ['architecturalProtectionAc4', 'Sites patrimoniaux remarquables'],
-  ['architecturalProtectionAc4bis', "Plans de valorisation de l'architecture et du patrimoine"],
-] as const;
-const getArchitecturalProtectionPrerequisites = (situation: Situation): PrerequisiteRow[] => {
-  const labels = architecturalProtectionPrerequisites.filter(([key]) => situation[key]).map(([, label]) => label);
-
-  return labels.length > 0
-    ? [
-        {
-          label: `Votre bâtiment se trouve dans une zone architecturale classée « ${labels.join(', ')} », ce qui peut présenter des contraintes d’intégration`,
-          source: 'Cerema',
-          status: 'contraignant',
-        },
-      ]
-    : [];
-};
-const getPpaPrerequisite = (situation: Situation): PrerequisiteRow[] =>
-  situation.planProtectionAtmosphere
-    ? [
-        {
-          label: 'Votre bâtiment est situé dans une zone de protection de l’atmosphère',
-          source: 'Cerema',
-          status: 'contraignant',
-        },
-      ]
-    : [];
-const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRow[] => [
-  ...(hasFavorableGeothermalArea(situation)
-    ? [
-        {
-          label: 'Votre bâtiment est situé dans une zone favorable au forage',
-          source: 'Cerema',
-          status: 'favorable' as const,
-        },
-      ]
-    : []),
-  ...(hasSufficientGeothermalResource(situation)
-    ? [
-        {
-          label: 'La ressource énergétique de la parcelle est suffisante',
-          source: 'Cerema',
-          status: 'favorable' as const,
-        },
-      ]
-    : []),
-  ...(hasUnknownGeothermalResource(situation)
-    ? [
-        {
-          label: 'La ressource énergétique de la parcelle est inconnue',
-          source: 'Cerema',
-          status: 'aVerifier' as const,
-        },
-      ]
-    : []),
-  ...(situation.hasGeothermalProbeSpace
-    ? [
-        {
-          label: 'Place suffisante pour l’implantation de sondes géothermiques',
-          source: 'Cerema',
-          status: 'favorable' as const,
-        },
-      ]
-    : []),
-];
-const outdoorPacPrerequisites = [
-  { label: 'Espace requis pour les modules extérieurs', status: 'aVerifier' },
-  {
-    label: 'Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique',
-    status: 'aVerifier',
-  },
-] satisfies PrerequisiteRow[];
-
-const withTypeLogement = (typeLogement: TypeLogement, heatingModes: ModeDeChauffageWithoutTypeLogement[]): ModeDeChauffage[] =>
-  heatingModes.map((heatingMode) => ({ ...heatingMode, typeLogement }));
-
-export const modesDeChauffage = [
-  ...withTypeLogement('immeuble_chauffage_collectif', [
+export const modesDeChauffage = {
+  immeuble_chauffage_collectif: [
     {
       avantages: ['Faibles émissions de CO₂', 'Prix stables', 'TVA réduite à 5,5 %', "Garantie d'un service public"],
       coutInstallation: (situation: Situation) => {
@@ -576,8 +404,8 @@ export const modesDeChauffage = [
       ],
       usage: 'hotWaterOnly',
     },
-  ]),
-  ...withTypeLogement('immeuble_chauffage_individuel', [
+  ],
+  immeuble_chauffage_individuel: [
     {
       avantages: [
         'Faibles émissions de CO₂',
@@ -787,8 +615,8 @@ export const modesDeChauffage = [
       ],
       usage: 'hotWaterOnly',
     },
-  ]),
-  ...withTypeLogement('maison_individuelle', [
+  ],
+  maison_individuelle: [
     {
       avantages: [
         'Faibles émissions de CO₂',
@@ -1082,23 +910,21 @@ export const modesDeChauffage = [
       ],
       usage: 'hotWaterOnly',
     },
-  ]),
-];
+  ],
+} satisfies Record<TypeLogement, ModeDeChauffage[]>;
 
 export function getModesDeChauffage(typeLogement: TypeLogement, situation: Situation) {
-  return modesDeChauffage.filter((heatingMode) => heatingMode.typeLogement === typeLogement && heatingMode.estPossible(situation));
+  return modesDeChauffage[typeLogement].filter((heatingMode) => heatingMode.estPossible(situation));
 }
 
 export function getIncompatibleSolutionRows(situation: Situation, typeLogement: TypeLogement): IncompatibleSolutionRow[] {
-  return modesDeChauffage
-    .filter((heatingMode) => heatingMode.typeLogement === typeLogement)
-    .flatMap((heatingMode) =>
-      (heatingMode.incompatibilites ?? [])
-        .filter((incompatibilite) => incompatibilite.isIncompatible(situation))
-        .map(({ reason, source }) => ({
-          label: heatingMode.label,
-          reason,
-          source,
-        }))
-    );
+  return modesDeChauffage[typeLogement].flatMap((heatingMode) =>
+    (heatingMode.incompatibilites ?? [])
+      .filter((incompatibilite) => incompatibilite.isIncompatible(situation))
+      .map(({ reason, source }) => ({
+        label: heatingMode.label,
+        reason,
+        source,
+      }))
+  );
 }
