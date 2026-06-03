@@ -87,6 +87,7 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [selectedRecipientId, setSelectedRecipientId] = useState<ContactRecipientId>('network-manager');
+  const [isProjectStatusSelectOpen, setIsProjectStatusSelectOpen] = useState(false);
   const [refusalPeriod, setRefusalPeriod] = useState('');
   const [refusalReason, setRefusalReason] = useState('');
   const createDemandeChaleurRenouvelable = trpc.batEnr.createDemandeChaleurRenouvelable.useMutation();
@@ -166,6 +167,8 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
     className?: string;
     label: string;
     name: 'projectStatus';
+    onOpenChange?: (isOpen: boolean) => void;
+    open?: boolean;
     options: typeof projectStatusOptions;
     small?: boolean;
   }>;
@@ -262,7 +265,7 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
         )}
         <div
           className={
-            'grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2 [&_.fr-error-text]:text-error [&_.fr-input]:bg-white [&_.fr-label]:text-(--text-title-grey) [&_.fr-select]:bg-white'
+            'mb-6 grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 [&_.fr-error-text]:text-error [&_.fr-input]:bg-white [&_.fr-label]:text-(--text-title-grey) [&_.fr-select]:bg-white'
           }
         >
           {isPublicAdvisorSelected && (
@@ -304,11 +307,13 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
           <Field.Input name="lastName" label="Nom" />
           <Field.Input name="firstName" label="Prénom" />
           <Field.EmailInput name="email" label="Email" />
-          <Field.PhoneInput name="phone" label="Téléphone (optionnel)" />
+          <Field.PhoneInput name="phone" label="Téléphone" />
           <div>
             <SelectProjectStatus
               name="projectStatus"
               label="Où en êtes-vous de votre projet ? (optionnel)"
+              open={isProjectStatusSelectOpen}
+              onOpenChange={setIsProjectStatusSelectOpen}
               options={projectStatusOptions}
               small
             />
@@ -325,7 +330,6 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
         </div>
         <Field.Checkbox
           name="termOfUse"
-          className="mt-4 [&_.fr-label]:text-(--text-title-grey) [&_.fr-label::before]:border [&_.fr-label::before]:border-(--text-title-grey)"
           label={
             <>
               J’accepte les&nbsp;

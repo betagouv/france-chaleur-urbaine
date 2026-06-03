@@ -5,7 +5,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover
 import Checkboxes, { type CheckboxesProps } from './Checkboxes';
 import FieldWrapper, { type FieldWrapperProps } from './FieldWrapper';
 
-export type SelectCheckboxesProps = Omit<FieldWrapperProps, 'onSelect' | 'children'> & CheckboxesProps;
+export type SelectCheckboxesProps = Omit<FieldWrapperProps, 'onSelect' | 'children'> &
+  CheckboxesProps & {
+    onOpenChange?: (isOpen: boolean) => void;
+    open?: boolean;
+  };
 
 const StyledCheckboxes = styled(Checkboxes)`
   margin-bottom: 0.5rem;
@@ -29,7 +33,17 @@ const StyledButton = styled.button<{ $small?: boolean }>`
   `}
 `;
 
-const SelectCheckboxes = ({ fieldId, label, hintText, state, stateRelatedMessage, className, ...props }: SelectCheckboxesProps) => {
+const SelectCheckboxes = ({
+  fieldId,
+  label,
+  hintText,
+  state,
+  stateRelatedMessage,
+  className,
+  onOpenChange,
+  open,
+  ...props
+}: SelectCheckboxesProps) => {
   const nbCheckedCheckboxes = props.options.filter(({ nativeInputProps }: any) => nativeInputProps.checked).length;
   return (
     <FieldWrapper
@@ -40,7 +54,7 @@ const SelectCheckboxes = ({ fieldId, label, hintText, state, stateRelatedMessage
       stateRelatedMessage={stateRelatedMessage}
       className={className}
     >
-      <Popover>
+      <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>
           <StyledButton
             $small={props.small}
