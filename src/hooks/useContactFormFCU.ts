@@ -2,25 +2,17 @@ import { useCallback, useState } from 'react';
 
 import useURLParamOrLocalStorage, { parseAsString } from '@/hooks/useURLParamOrLocalStorage';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
+import type { EligibilityContext } from '@/modules/analytics/posthog.config';
+import { getDemandOrigin } from '@/modules/conversion-tracking/client/trackingContext';
+import { useRecordConversionEvent } from '@/modules/conversion-tracking/client/useRecordConversionEvent';
 import type { CreateDemandInput, ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
 import type { AddressDataType } from '@/types/AddressData';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
-export type ContactFormContext = 'comparateur' | 'carte' | 'choix-chauffage' | 'chaleur-renouvelable' | 'ville';
-
-const contextToAnalyticsPrefix = {
-  carte: 'Carte',
-  'chaleur-renouvelable': 'Chaleur renouvelable',
-  'choix-chauffage': 'Choix chauffage',
-  comparateur: 'Comparateur',
-  ville: 'Ville',
-} as const;
-
-function getMatomoContextPrefix(context?: ContactFormContext) {
-  return context && contextToAnalyticsPrefix[context] ? (` - ${contextToAnalyticsPrefix[context]}` as const) : '';
-}
+/** Contexte interne d'une surface de test/demande ; `undefined` = page d'accueil et pages génériques. */
+export type ContactFormContext = Exclude<EligibilityContext, 'eligibility' | 'homepage'>;
 
 function getEligibilityMatomoContextPrefix(context?: ContactFormContext) {
   switch (context) {
@@ -61,6 +53,7 @@ const useContactFormFCU = () => {
   const [mtm_kwd] = useURLParamOrLocalStorage('mtm_kwd', 'mtm_kwd', null, parseAsString);
   const [mtm_source] = useURLParamOrLocalStorage('mtm_source', 'mtm_source', null, parseAsString);
   const trpcUtils = trpc.useUtils();
+  const recordConversionEvent = useRecordConversionEvent();
 
   const handleOnChangeAddress = useCallback((data: AddressDataType) => {
     const { address, heatingType } = data;
@@ -101,6 +94,7 @@ const useContactFormFCU = () => {
             source: context || 'homepage',
           });
         }
+        recordConversionEvent('address_test', { eligible: !!eligibility?.isEligible });
       }
       trackPostHogEvent('address_test:result_displayed', {
         chauffage_type: heatingType,
@@ -119,7 +113,7 @@ const useContactFormFCU = () => {
         setContactReady(true);
       }
     },
-    []
+    [recordConversionEvent]
   );
 
   const handleOnSubmitContact = useCallback(
@@ -178,10 +172,13 @@ const useContactFormFCU = () => {
         mtm_campaign: mtm_campaign ?? undefined,
         mtm_kwd: mtm_kwd ?? undefined,
         mtm_source: mtm_source ?? undefined,
+        ...getDemandOrigin(),
       } as unknown as CreateDemandInput);
 
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
+      // Tracking de conversion : la demande = niveau final du funnel (IP/UA captés par la route).
+      recordConversionEvent('demand', { eligible: !!eligibility?.isEligible });
       // On ne track pas Matomo pour chaleur-renouvelable car ce parcours est tracké via PostHog.
       const prefix = getContactMatomoContextPrefix(context);
       if (prefix !== null) {
@@ -205,7 +202,7 @@ const useContactFormFCU = () => {
       });
       setMessageReceived(true);
     },
-    [addressData]
+    [addressData, recordConversionEvent]
   );
 
   const handleResetFormContact = useCallback(() => {

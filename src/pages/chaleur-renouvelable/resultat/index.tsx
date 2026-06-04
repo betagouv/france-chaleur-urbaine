@@ -8,6 +8,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import Modal from '@/components/ui/Modal';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 const ChoixChauffageResults = dynamic(() => import('@/modules/chaleur-renouvelable/client/ChoixChauffageResults'), {
   //loading: () => <Placeholder advancedMode={false} />,
@@ -21,6 +22,7 @@ const shareModal = createModal({
 });
 
 export default function ChaleurRenouvelableResultatPage() {
+  useTrackPageView();
   const searchParams = useSearchParams();
   const [openShareModal, setOpenShareModal] = useState(false);
   return (

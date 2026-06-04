@@ -5,6 +5,7 @@ import type React from 'react';
 import Placeholder, { Explanations, Logos, title } from '@/components/ComparateurPublicodes/Placeholder';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Hero, { HeroContent, HeroTitle } from '@/components/ui/Hero';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 const ComparateurPublicodes = dynamic(() => import('@/components/ComparateurPublicodes'), {
   loading: () => <Placeholder advancedMode={false} />,
@@ -13,6 +14,7 @@ const ComparateurPublicodes = dynamic(() => import('@/components/ComparateurPubl
 });
 
 const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ query }) => {
+  useTrackPageView();
   return (
     <SimplePage
       title="Comparateur de coûts et d’émissions de CO2"

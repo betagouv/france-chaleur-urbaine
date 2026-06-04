@@ -19,6 +19,7 @@ import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
+import { useRecordConversionEvent } from '@/modules/conversion-tracking/client/useRecordConversionEvent';
 import { AddressField } from '@/modules/form/AddressField';
 import trpc from '@/modules/trpc/client';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
@@ -71,6 +72,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
   const inclureLaClimatisation = engine.getField('Inclure la climatisation');
   const trpcUtils = trpc.useUtils();
+  const recordConversionEvent = useRecordConversionEvent();
   const [selectedTabId, setSelectedTabId] = useQueryState(
     'tabId',
     parseAsStringLiteral(simulatorTabs.map((tab) => tab.tabId)).withDefault(defaultTabId ?? 'batiment')
@@ -127,6 +129,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           distance_reseau_m: infos.nearestReseauDeChaleur?.distance,
           is_eligible: isEligible,
         });
+        recordConversionEvent('address_test', { eligible: !!isEligible });
       }
 
       setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);

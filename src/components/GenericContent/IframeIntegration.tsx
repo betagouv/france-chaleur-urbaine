@@ -1,11 +1,12 @@
 import Link from 'next/link';
 
 import { CartoImage } from '@/components/CollectivitesExploitantsPage.style';
+import IframeCodeBlock from '@/components/IFrame/IframeCodeBlock';
 import IFrameMapIntegrationForm from '@/components/IFrame/Map/IFrameMapIntegrationForm';
-import { StyledIFrameLink } from '@/components/IFrame/Map/IFrameMapIntegrationForm.styles';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
+import { buildFormIframeCode } from '@/modules/map/client/admin/iframeGenerator';
 
 type PageFromType = 'copro' | 'pro';
 
@@ -56,9 +57,7 @@ const IframeIntegration = ({ pageFrom }: { pageFrom?: PageFromType }) => {
           <Text size="lg" mb="2w">
             Intégrez le champ de recherche sur votre site en copiant ces lignes de code&nbsp;:
           </Text>
-          <StyledIFrameLink
-            link={`<iframe title="France chaleur urbaine - Éligibilité" src="https://france-chaleur-urbaine.beta.gouv.fr/form" width="100%" height="330"></iframe>`}
-          />
+          <IframeCodeBlock code={buildFormIframeCode(null)} />
           <Text size="sm" mt="3w" legacyColor="darkerblue">
             Ajustez les valeurs des variables <strong>"width"</strong> et <strong>"height"</strong> pour obtenir un affichage optimal sur
             votre site.

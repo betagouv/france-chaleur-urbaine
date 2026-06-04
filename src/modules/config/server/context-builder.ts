@@ -4,6 +4,7 @@ import { getUserPermissions } from '@/modules/permissions/server/service';
 import type { Permission } from '@/modules/permissions/types';
 import { getServerSession } from '@/server/authentication';
 import { parentLogger } from '@/server/helpers/logger';
+import { getClientIp } from '@/server/helpers/request-ip';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export type Context = Awaited<ReturnType<typeof buildContext>>;
@@ -21,7 +22,7 @@ const buildContext = async (req: NextApiRequest, res?: NextApiResponse) => {
 
   // Attention le contexte est partagé parmi toutes les requêtes trpc batchées
   const logger = parentLogger.child({
-    ip: process.env.LOG_REQUEST_IP ? (req.headers['x-forwarded-for'] ?? req.socket.remoteAddress) : undefined,
+    ip: process.env.LOG_REQUEST_IP ? getClientIp(req) : undefined,
     user: process.env.LOG_REQUEST_USER ? req.user?.id : undefined,
   });
 

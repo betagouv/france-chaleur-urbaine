@@ -420,6 +420,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
       },
       {
         linkProps: {
+          href: '/admin/conversion',
+        },
+        text: 'Conversion par source',
+      },
+      {
+        linkProps: {
           href: '/admin/jobs',
         },
         text: 'Suivi des tâches',

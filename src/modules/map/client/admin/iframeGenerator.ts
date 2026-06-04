@@ -41,7 +41,7 @@ export const defaultIframeConfig: IframeConfig = {
 const serializeCarteParams = createSerializer(carteIframeParams, { urlKeys: carteIframeUrlKeys });
 
 /** Full `/iframe/carte` URL for the given config (defaults omitted → clean URL). */
-export function buildIframeUrl(config: IframeConfig): string {
+export function buildIframeUrl(config: IframeConfig, source?: string | null): string {
   const query = serializeCarteParams({
     center: config.center ?? null,
     gestionnaire: config.gestionnaire,
@@ -53,6 +53,7 @@ export function buildIframeUrl(config: IframeConfig): string {
     minZoom: config.minZoom ?? null,
     mode: config.mode,
     reseaux: config.reseaux,
+    source: source ?? null,
     zoom: config.zoom ?? null,
   });
   return `${clientConfig.websiteUrl}/iframe/carte${query}`;
@@ -76,11 +77,25 @@ export function toCssSize(value: string, fallback: string): string {
 }
 
 /** `<iframe>` snippet (+ "Fourni par" credit) to paste on a partner site. */
-export function buildIframeCode(config: IframeConfig): string {
-  const url = buildIframeUrl(config);
+export function buildIframeCode(config: IframeConfig, source?: string | null): string {
+  const url = buildIframeUrl(config, source);
   // Inline `style` (not the HTML width/height attributes) so any CSS unit works — the
   // attributes only accept a bare number or a percentage, breaking on e.g. `600px`.
   const width = toCssSize(config.width, DEFAULT_IFRAME_WIDTH);
   const height = toCssSize(config.height, DEFAULT_IFRAME_HEIGHT);
   return `<iframe src="${url}" style="width:${width};height:${height};border:0;" allowfullscreen loading="lazy" title="Carte France Chaleur Urbaine"></iframe>${fcuBacklinkHtml}`;
+}
+
+/** Height fitting the form teaser (header + one field row); the snippet stays editable by the partner. */
+const FORM_IFRAME_HEIGHT = '330px';
+
+/** Full `/iframe/form` URL — teaser form whose only param is the tracking `source`. */
+export function buildFormIframeUrl(source?: string | null): string {
+  return `${clientConfig.websiteUrl}/iframe/form${source ? `?source=${encodeURIComponent(source)}` : ''}`;
+}
+
+/** `<iframe>` snippet for `/iframe/form` (+ "Fourni par" credit) to paste on a partner site. */
+export function buildFormIframeCode(source?: string | null): string {
+  const url = buildFormIframeUrl(source);
+  return `<iframe src="${url}" style="width:100%;height:${FORM_IFRAME_HEIGHT};border:0;" loading="lazy" title="Test d'adresse France Chaleur Urbaine"></iframe>${fcuBacklinkHtml}`;
 }

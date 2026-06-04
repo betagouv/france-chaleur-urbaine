@@ -1,42 +1,50 @@
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import { type ReactNode, useState } from 'react';
 
+import IframeCodeBlock from '@/components/IFrame/IframeCodeBlock';
 import Notice from '@/components/ui/Notice';
 import { AddressField } from '@/modules/form/AddressField';
 import type { Coords } from '@/modules/geo/types';
+import { buildIframeCode, defaultIframeConfig, type IframeConfig } from '@/modules/map/client/admin/iframeGenerator';
+import { type LayerKey, layerKeys } from '@/modules/map/client/iframeCarteParams';
 
-import { StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
-import { type LegendURLKey, selectableLayers } from './selectableLayers';
+const layerLabels: Record<LayerKey, string> = {
+  'perimetres-de-developpement-prioritaire': 'Périmètres de développement prioritaire',
+  'reseaux-de-chaleur': 'Réseaux de chaleur',
+  'reseaux-de-froid': 'Réseaux de froid',
+  'reseaux-en-construction': 'Réseaux en construction',
+};
 
 const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
+  const [layers, setLayers] = useState<LayerKey[]>([...defaultIframeConfig.layers]);
   const [coords, setCoords] = useState<Coords | null>(null);
-  const [selectedLayers, setSelectedLayers] = useState<LegendURLKey[]>(selectableLayers.map((l) => l.key));
 
-  const url = `legend=true${coords ? `&coord=${coords.lon},${coords.lat}&zoom=12` : ''}&displayLegend=${selectedLayers.join(',')}`;
+  const toggleLayer = (key: LayerKey, enable: boolean) => {
+    setLayers((current) => (enable ? [...current, key] : current.filter((layer) => layer !== key)));
+  };
 
-  const toggleLayerSelection = (layerName: LegendURLKey, enable: boolean) => {
-    if (enable) {
-      setSelectedLayers([...selectedLayers, layerName]);
-    } else {
-      setSelectedLayers(selectedLayers.filter((layer) => layer !== layerName));
-    }
+  // Public self-service embed: open legend (legacy parity), no tracking source. Annotated so
+  // `center` keeps its tuple type through the spread.
+  const config: IframeConfig = {
+    ...defaultIframeConfig,
+    layers,
+    legend: 'auto',
+    ...(coords ? { center: [coords.lon, coords.lat], zoom: 12 } : {}),
   };
 
   return (
     <>
       <Checkbox
         legend=""
-        options={selectableLayers.map((selectableLayer) => ({
-          label: selectableLayer.label,
+        options={layerKeys.map((key) => ({
+          label: layerLabels[key],
           nativeInputProps: {
-            defaultChecked: true,
-            onClick: (e) => toggleLayerSelection(selectableLayer.key, (e.target as any).checked),
+            checked: layers.includes(key),
+            onChange: (event) => toggleLayer(key, event.target.checked),
           },
         }))}
       />
-      {label ? (
-        label
-      ) : (
+      {label ?? (
         <Notice variant="info" size="xs">
           Vous souhaitez centrer la carte sur un endroit en particulier ?
         </Notice>
@@ -48,10 +56,7 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
           onClear={() => setCoords(null)}
         />
       </div>
-      <StyledIFrameLink
-        className="fr-mt-3w"
-        link={`<iframe title="France chaleur urbaine - Carte" src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}" width="100%" height="600"></iframe>`}
-      />
+      <IframeCodeBlock className="fr-mt-3w" code={buildIframeCode(config, null)} />
     </>
   );
 };

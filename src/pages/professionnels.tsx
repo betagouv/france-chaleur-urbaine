@@ -17,6 +17,7 @@ import Heading from '@/components/ui/Heading';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 // `useSimulatorEngine` is not SSR-safe.
 const SimulateurCoutRaccordement = dynamic(() => import('@/modules/simulator/client/SimulateurCoutRaccordement'), {
@@ -31,6 +32,7 @@ const conseillerCards = {
 };
 
 const Professionnels = () => {
+  useTrackPageView();
   return (
     <SimplePage
       title="Le chauffage urbain pour les professionels"

@@ -9,6 +9,7 @@ import { getServerSession } from '@/server/authentication';
 import type { UserRole } from '@/types/enum/UserRole';
 
 import { parentLogger } from './logger';
+import { getClientIp } from './request-ip';
 
 const FormidableError = (formidableErrors as any).default;
 
@@ -54,7 +55,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const startTime = Date.now();
     let logger = parentLogger.child({
-      ip: process.env.LOG_REQUEST_IP ? (req.headers['x-forwarded-for'] ?? req.socket.remoteAddress) : undefined,
+      ip: process.env.LOG_REQUEST_IP ? getClientIp(req) : undefined,
       method: req.method,
       url: req.url,
       'user-agent': req.headers['user-agent'],

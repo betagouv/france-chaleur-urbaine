@@ -47,12 +47,18 @@ export const eventTypes = [
   'network_geometry_updated',
   'network_geometries_applied',
   'network_notes_updated',
+  'conversion_source_created',
+  'conversion_source_updated',
+  'conversion_source_archived',
 ] as const;
 
 export type EventType = (typeof eventTypes)[number];
 
 export const eventTypeLabels: Record<EventType, string> = {
   build_tiles: 'Reconstruction tuiles',
+  conversion_source_archived: "Archivage d'intégration iframe",
+  conversion_source_created: "Création d'intégration iframe",
+  conversion_source_updated: "Mise à jour d'intégration iframe",
   demand_assignment_change_request_cancelled: 'Annulation de demande de réaffectation',
   demand_assignment_change_request_rejected: 'Rejet de demande de réaffectation',
   demand_assignment_change_requested: 'Demande de réaffectation',
@@ -113,6 +119,9 @@ export type EventNetworkSnapshot = {
 
 export type EventDataMap = {
   build_tiles: { name: string };
+  conversion_source_archived: { key: string; label: string };
+  conversion_source_created: { key: string; label: string };
+  conversion_source_updated: { key: string; label: string };
   demand_created: Record<string, unknown> | null;
   demand_deleted: Record<string, unknown> | null;
   demand_email_sent: { key: string; object: string; to: string };

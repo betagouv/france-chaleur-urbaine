@@ -19,6 +19,7 @@ import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle, SectionTwoColumns } from '@/components/ui/Section';
 import Text from '@/components/ui/Text';
 import type { TrackingEvent } from '@/modules/analytics/client';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 const coproprietaireCards = {
   atouts: issues.atouts,
@@ -123,6 +124,7 @@ const mainTools = [
   },
 ] as const;
 function Home() {
+  useTrackPageView();
   return (
     <SimplePage
       title="Développer le chauffage urbain"

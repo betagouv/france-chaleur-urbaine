@@ -1,7 +1,9 @@
 import SimplePage from '@/components/shared/page/SimplePage';
 import Tertiaire from '@/components/Tertiaire';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 function DecretTertiairePage() {
+  useTrackPageView();
   return (
     <SimplePage
       title="Décret tertiaire et chauffage urbain: atteignez vos objectifs de performance énergétique"

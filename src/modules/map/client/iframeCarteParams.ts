@@ -32,6 +32,8 @@ export const carteIframeParams = {
   minZoom: parseAsFloat,
   mode: parseAsStringLiteral(searchModes).withDefault('none'),
   reseaux: parseAsArrayOf(parseAsString).withDefault([]),
+  // Niveau 1 du tracking de conversion : clé d'intégration (module conversion-tracking).
+  source: parseAsString,
   zoom: parseAsFloat,
 };
 

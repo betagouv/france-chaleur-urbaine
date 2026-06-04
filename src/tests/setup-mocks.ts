@@ -91,6 +91,9 @@ vi.mock('@/modules/trpc/client', () => ({
     // Provide utils with a minimal client shape used in components
     useUtils: () => ({
       client: {
+        conversionTracking: {
+          recordEvent: { mutate: vi.fn().mockResolvedValue({}) },
+        },
         reseaux: {
           cityNetwork: { query: vi.fn().mockResolvedValue({}) },
           eligibilityStatus: { query: vi.fn().mockResolvedValue({}) },

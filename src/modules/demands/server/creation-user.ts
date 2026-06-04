@@ -48,6 +48,8 @@ export const createDemand = async (
         'Relance à activer': values.eligibility.isEligible && values.heatingType === 'collectif',
         Status: values.eligibility.isEligible ? undefined : DEMANDE_STATUS.UNREALISABLE,
       })}::jsonb`,
+      origin_page: values.origin_page ?? null,
+      origin_source: values.origin_source ?? null,
       updated_at: new Date(),
       user_id: userId ?? null,
     })

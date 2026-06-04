@@ -1,5 +1,7 @@
 import { ipKeyGenerator, MemoryStore, type Options, rateLimit } from 'express-rate-limit';
 
+import { getClientIp } from '@/server/helpers/request-ip';
+
 export const rateLimitError = new Error('too many requests'); // 429
 
 // Store global partagé par toutes les routes
@@ -18,7 +20,7 @@ export function createRateLimiter({ path, ...options }: RateLimiterOptions) {
     },
     keyGenerator: path
       ? (req) => {
-          const ip = ipKeyGenerator(req.headers['x-forwarded-for'] ?? req.socket.remoteAddress ?? '');
+          const ip = ipKeyGenerator(getClientIp(req) ?? '');
           return `${ip}:${path}`;
         }
       : ipKeyGenerator,

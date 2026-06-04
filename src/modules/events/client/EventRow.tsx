@@ -52,6 +52,21 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       a reconstruit les tuiles <strong>{event.data.name}</strong>
     </span>
   ),
+  conversion_source_archived: (event) => (
+    <span>
+      a archivé l'intégration iframe <strong>{event.data.label}</strong> (source <strong>{event.data.key}</strong>)
+    </span>
+  ),
+  conversion_source_created: (event) => (
+    <span>
+      a créé l'intégration iframe <strong>{event.data.label}</strong> (source <strong>{event.data.key}</strong>)
+    </span>
+  ),
+  conversion_source_updated: (event) => (
+    <span>
+      a mis à jour l'intégration iframe <strong>{event.data.label}</strong> (source <strong>{event.data.key}</strong>)
+    </span>
+  ),
   demand_assignment_change_request_cancelled: (event, updateFilters) => (
     <>
       <span>a annulé sa demande de réaffectation sur une </span>

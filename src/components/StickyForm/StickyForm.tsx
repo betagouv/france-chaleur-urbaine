@@ -63,7 +63,9 @@ const StickyForm = ({ context, title }: { title?: string; context?: ContactFormC
         loading={loadingStatus === 'loading'}
       >
         <Box position="relative" width="100%">
-          {contactReady && !messageReceived && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
+          {contactReady && !messageReceived && (
+            <EligibilityFormContact addressData={addressData} onSubmit={(data) => handleOnSubmitContact(data, context)} />
+          )}
           {messageReceived && <DemandSondageForm addressData={addressData} />}
         </Box>
       </Modal>
