@@ -156,6 +156,47 @@ describe('Autocomplete', () => {
     expect(screen.queryByRole('listbox')).toBeNull();
   });
 
+  it('rouvre les résultats déjà chargés au focus, sans nouveau fetch', async () => {
+    render(<Autocomplete {...defaultProps} />);
+    const input = screen.getByRole('combobox');
+
+    await typeAndWaitForResults(input, 'Par');
+    expect(screen.getByRole('listbox')).toBeDefined();
+    expect(defaultFetchFn).toHaveBeenCalledOnce();
+
+    // Fermeture (équivalent d'un clic en dehors)
+    await act(async () => {
+      fireEvent.keyDown(input, { key: 'Escape' });
+    });
+    expect(screen.queryByRole('listbox')).toBeNull();
+
+    // Le focus rouvre les résultats mémorisés sans relancer fetchFn
+    await act(async () => {
+      fireEvent.focus(input);
+    });
+    expect(screen.getByRole('listbox')).toBeDefined();
+    expect(screen.getByText('Paris')).toBeDefined();
+    expect(defaultFetchFn).toHaveBeenCalledOnce();
+  });
+
+  it("affiche le message d'erreur dans le dropdown quand le fetch échoue", async () => {
+    const failingFetch = vi.fn(async (): Promise<Option[]> => {
+      throw new Error('Network down');
+    });
+    const { container } = render(<Autocomplete {...defaultProps} fetchFn={failingFetch} errorMessage="Oups, réessayez" />);
+    const input = screen.getByRole('combobox');
+
+    await typeAndWaitForResults(input, 'Par');
+
+    expect(screen.getByRole('alert')).toBeDefined();
+    expect(screen.getByText('Oups, réessayez')).toBeDefined();
+    expect(screen.queryByRole('listbox')).toBeNull();
+    // isRunning doit être repassé à false → le picto d'alerte (SVG inline) doit s'afficher.
+    // SVG inline = pas de dépendance réseau (les icônes DSFR chargent leur glyphe via mask-image).
+    expect(input.getAttribute('aria-busy')).toBe('false');
+    expect(container.querySelector('svg')).not.toBeNull();
+  });
+
   it('navigue avec ArrowDown/ArrowUp et sélectionne avec Enter', async () => {
     render(<Autocomplete {...defaultProps} />);
     const input = screen.getByRole('combobox');
