@@ -1,10 +1,10 @@
 import type {
   AdminUpdateDemandeChaleurRenouvelableInput,
+  BatEnrBatiment,
   BatEnrByBanIdInput,
   DemandeChaleurRenouvelable,
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
-import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { kdb, sql } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';

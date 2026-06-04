@@ -17,6 +17,7 @@ import {
 } from '@/modules/chaleur-renouvelable/client/params-form-draft';
 import { DpeTag } from '@/modules/chaleur-renouvelable/client/results/SolutionCommon';
 import {
+  type BatEnrBatiment,
   type DPE,
   DPE_VALUES,
   isEspaceExterieurCompatible,
@@ -27,7 +28,6 @@ import {
   typeLogementOptions,
   typeRadiateurOptions,
 } from '@/modules/chaleur-renouvelable/constants';
-import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
 import { AddressField } from '@/modules/form/AddressField';
 
 import { OutdoorSpaceSelect } from './OutdoorSpaceSelect';

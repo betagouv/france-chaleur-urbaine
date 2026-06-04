@@ -1,5 +1,4 @@
-import type { DPE, ModeEauChaudeSanitaire, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
-import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
+import type { BatEnrBatiment, DPE, ModeEauChaudeSanitaire, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 
 export type SimulationPrefillParams = {
   dpe?: DPE;

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
-import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
+import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/constants';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
