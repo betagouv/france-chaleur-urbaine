@@ -1,4 +1,4 @@
-import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
+import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/constants';
 
 import { BatEnrBatimentsMap } from './BatEnrBatimentsMap';
 

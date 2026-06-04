@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { useCallback, useMemo } from 'react';
 
 import { createMapConfiguration } from '@/components/Map/map-configuration';
-import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/types';
+import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/constants';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
