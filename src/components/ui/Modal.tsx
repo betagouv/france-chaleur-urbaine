@@ -55,19 +55,7 @@ export const StyledModal = styled.div<{ customSize?: boolean; isClosableByUser?:
  * @deprecated Utiliser `Dialog` (Radix) à la place. Empilement natif, pas de hack timing,
  * style Tailwind direct, pas de singleton DSFR qui casse l'imbrication.
  */
-const Modal = ({
-  modal,
-  size,
-  onOpen,
-  loading,
-  onClose,
-  open,
-  lazy = false,
-  children,
-  isClosableByUser = true,
-  concealingBackdrop,
-  ...props
-}: ModalProps) => {
+const Modal = ({ modal, size, onOpen, loading, onClose, open, lazy = false, children, isClosableByUser = true, ...props }: ModalProps) => {
   const [isFirstLoad, setIsFirstLoad] = React.useState(true);
   const previousOpen = usePrevious(open);
   const isOpened = useIsModalOpen(modal, {
@@ -112,11 +100,7 @@ const Modal = ({
 
   return createPortal(
     <StyledModal customSize={size === 'custom'} isClosableByUser={isClosableByUser} onClick={preventPropagationClick}>
-      <modal.Component
-        size={size !== 'custom' ? size : undefined}
-        concealingBackdrop={isClosableByUser ? concealingBackdrop : false}
-        {...props}
-      >
+      <modal.Component size={size !== 'custom' ? size : undefined} concealingBackdrop={isClosableByUser} {...props}>
         {loading && <Loader size="lg" variant="section" />}
         {(!lazy || isOpened) && children}
       </modal.Component>

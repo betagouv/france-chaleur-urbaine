@@ -202,7 +202,7 @@ function OtherSolutionRow({
 
   return (
     <div className="border-b border-gray-200 last:border-b-0">
-      <div className="grid gap-5 py-6 md:grid-cols-[minmax(12rem,2fr)_minmax(9rem,1fr)_max-content_max-content_max-content] md:items-center">
+      <div className="grid gap-5 py-6 md:grid-cols-[2fr_1fr_auto_auto_auto] md:items-center">
         <div>
           <p className="mb-3 font-bold text-blue">{item.label}</p>
           <Stars value={item.pertinence} />
@@ -264,8 +264,9 @@ function OtherSolutionRow({
               href="#help-ademe"
               iconId="fr-icon-arrow-right-line"
               iconPosition="right"
-              className="mt-3"
-              onClick={() => trackPostHogEvent('fcr_results:alternative_solution_cta_clicked', { solution_type: item.label })}
+              className="my-3"
+              postHogEventKey="fcr_results:alternative_solution_cta_clicked"
+              postHogEventProps={{ solution_type: item.label }}
             >
               Passer à l’étape suivante
             </Button>

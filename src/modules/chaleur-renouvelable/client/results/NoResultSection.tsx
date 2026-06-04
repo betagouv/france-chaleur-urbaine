@@ -1,5 +1,4 @@
 import Link from '@/components/ui/Link';
-import { trackPostHogEvent } from '@/modules/analytics/client';
 import FranceRenovHelp from '@/modules/chaleur-renouvelable/client/FranceRenovHelp';
 
 export function NoResultSection({ codeInsee }: { codeInsee?: string }) {
@@ -51,7 +50,7 @@ export function NoResultSection({ codeInsee }: { codeInsee?: string }) {
             href="https://agirpourlatransition.ademe.fr/particuliers/"
             isExternal
             className="font-normal underline underline-offset-4"
-            onClick={() => trackPostHogEvent('fcr_results:agir_link_clicked')}
+            postHogEventKey="fcr_results:agir_link_clicked"
           >
             rendez-vous sur Agir
           </Link>

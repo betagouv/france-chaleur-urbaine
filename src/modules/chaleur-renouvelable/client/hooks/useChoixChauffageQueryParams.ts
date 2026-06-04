@@ -70,15 +70,14 @@ export function useChoixChauffageQueryParams() {
       typeLogement,
     });
   const setPrefillParams = (params: SimulationPrefillParams) => {
-    const shouldSetParam = (paramName: string) => !hasQueryParam(paramName);
-    const nextTypeLogement = shouldSetParam('typeLogement') ? params.typeLogement : undefined;
+    const nextTypeLogement = !hasQueryParam('typeLogement') ? params.typeLogement : undefined;
 
     return setQueryParams({
-      dpe: shouldSetParam('dpe') ? params.dpe : undefined,
+      dpe: !hasQueryParam('dpe') ? params.dpe : undefined,
       espaceExterieur: nextTypeLogement && !isEspaceExterieurCompatible(nextTypeLogement, espaceExterieur) ? null : undefined,
-      modeEauChaudeSanitaire: shouldSetParam('modeEauChaudeSanitaire') ? params.modeEauChaudeSanitaire : undefined,
-      nbLogements: shouldSetParam('nbLogements') ? params.nbLogements : undefined,
-      surfaceMoyenne: shouldSetParam('surfaceMoyenne') ? params.surfaceMoyenne : undefined,
+      modeEauChaudeSanitaire: !hasQueryParam('modeEauChaudeSanitaire') ? params.modeEauChaudeSanitaire : undefined,
+      nbLogements: !hasQueryParam('nbLogements') ? params.nbLogements : undefined,
+      surfaceMoyenne: !hasQueryParam('surfaceMoyenne') ? params.surfaceMoyenne : undefined,
       typeLogement: nextTypeLogement,
     });
   };

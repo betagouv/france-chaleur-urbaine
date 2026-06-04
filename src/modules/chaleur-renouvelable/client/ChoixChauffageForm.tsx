@@ -68,11 +68,6 @@ export default function ChoixChauffageForm() {
               heating_mode: urlParams.typeLogement,
               outdoor_space: urlParams.espaceExterieur,
             });
-            trackPostHogEvent('fcr_landing:compare_cta_clicked', {
-              address: String(urlParams.adresse),
-              espaceExterieur: String(urlParams.espaceExterieur),
-              typeLogement: String(urlParams.typeLogement),
-            });
             const search = window.location.search;
             router.push(`/chaleur-renouvelable/resultat${search}`);
           }}

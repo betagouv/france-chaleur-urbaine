@@ -236,7 +236,6 @@ export function ParamsForm({
                     }}
                   />
                   <OutdoorSpaceSelect
-                    label="Espaces extérieurs"
                     typeLogement={draft.typeLogement}
                     value={draft.espaceExterieur}
                     onChange={(value) => {

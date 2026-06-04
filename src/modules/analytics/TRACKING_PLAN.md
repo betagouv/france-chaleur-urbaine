@@ -95,7 +95,7 @@ Tracking unifié de la consultation de contenu.
 
 ### 7. Chaleur renouvelable (FCR)
 
-Parcours issu de `docs/planTracking.xlsx` : landing → simulateur → résultats → contact.
+Parcours classique : landing → simulateur → résultats → contact.
 
 #### Landing page
 
@@ -167,8 +167,6 @@ Parcours issu de `docs/planTracking.xlsx` : landing → simulateur → résultat
 ---
 
 ## Récapitulatif
-
-### Événements socle
 
 | # | Événement | Catégorie |
 |---|---|---|

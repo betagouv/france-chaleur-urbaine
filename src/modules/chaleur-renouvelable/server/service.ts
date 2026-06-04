@@ -9,10 +9,6 @@ import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { kdb, sql } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
 
-type BdnbConstructionAddressRelation = {
-  batiment_construction_id: string | null;
-};
-
 const batEnrBatimentColumns = [
   'ac1',
   'ac2',
@@ -129,6 +125,9 @@ export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) =
     banId
   )}`;
 
+  type BdnbConstructionAddressRelation = {
+    batiment_construction_id: string | null;
+  };
   const data = await fetchJSON<BdnbConstructionAddressRelation[]>(url);
   const batimentConstructionIds = data
     .map((relation) => relation.batiment_construction_id)

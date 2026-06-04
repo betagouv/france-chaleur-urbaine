@@ -2,19 +2,18 @@ import Select from '@/components/form/dsfr/Select';
 import { type EspaceExterieur, getEspaceExterieurOptions, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 
 type OutdoorSpaceSelectProps = {
-  label: string;
   onChange: (value: EspaceExterieur | null) => void;
   typeLogement: TypeLogement | null;
   value: EspaceExterieur | null;
 };
 
-export function OutdoorSpaceSelect({ label, onChange, typeLogement, value }: OutdoorSpaceSelectProps) {
+export function OutdoorSpaceSelect({ onChange, typeLogement, value }: OutdoorSpaceSelectProps) {
   const isDisabled = !typeLogement;
   const options = getEspaceExterieurOptions(typeLogement);
 
   return (
     <Select
-      label={label}
+      label="Espaces extérieurs"
       options={[
         {
           disabled: true,
