@@ -183,7 +183,7 @@ describe('Autocomplete', () => {
     const failingFetch = vi.fn(async (): Promise<Option[]> => {
       throw new Error('Network down');
     });
-    render(<Autocomplete {...defaultProps} fetchFn={failingFetch} errorMessage="Oups, réessayez" />);
+    const { container } = render(<Autocomplete {...defaultProps} fetchFn={failingFetch} errorMessage="Oups, réessayez" />);
     const input = screen.getByRole('combobox');
 
     await typeAndWaitForResults(input, 'Par');
@@ -191,9 +191,10 @@ describe('Autocomplete', () => {
     expect(screen.getByRole('alert')).toBeDefined();
     expect(screen.getByText('Oups, réessayez')).toBeDefined();
     expect(screen.queryByRole('listbox')).toBeNull();
-    // isRunning doit être repassé à false → le picto d'alerte doit s'afficher
+    // isRunning doit être repassé à false → le picto d'alerte (SVG inline) doit s'afficher.
+    // SVG inline = pas de dépendance réseau (les icônes DSFR chargent leur glyphe via mask-image).
     expect(input.getAttribute('aria-busy')).toBe('false');
-    expect(screen.getByTitle('Network down')).toBeDefined();
+    expect(container.querySelector('svg')).not.toBeNull();
   });
 
   it('navigue avec ArrowDown/ArrowUp et sélectionne avec Enter', async () => {
