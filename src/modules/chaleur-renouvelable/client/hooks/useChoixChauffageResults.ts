@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
@@ -16,8 +16,6 @@ import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouv
 
 export function useChoixChauffageResults() {
   const engine = useSimulatorEngine();
-  const engineRef = useRef(engine);
-  engineRef.current = engine;
   const urlParams = useChoixChauffageQueryParams();
   useRemoveHashOnScroll('#help-ademe');
   const {
@@ -37,9 +35,6 @@ export function useChoixChauffageResults() {
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
-  const trackedRecommendedSolutionRef = useRef<string | null>(null);
-  const hasTrackedNoSolutionRef = useRef(false);
-  const lastPrefilledBatimentConstructionIdRef = useRef<string | null>(null);
   const contactForm = useContactFormFCU();
 
   const situation = useMemo(
@@ -74,7 +69,7 @@ export function useChoixChauffageResults() {
       return;
     }
 
-    setPublicodesSituation(engineRef.current, { codeDepartement, situation, temperatureRef });
+    setPublicodesSituation(engine, { codeDepartement, situation, temperatureRef });
   }, [codeDepartement, situation, temperatureRef]);
 
   const effectiveTypeLogement = urlParams.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
@@ -90,20 +85,18 @@ export function useChoixChauffageResults() {
   const [recommended, ...otherModes] = modesEnriched;
 
   useEffect(() => {
-    if (!recommended || trackedRecommendedSolutionRef.current === recommended.label) {
+    if (!recommended) {
       return;
     }
 
-    trackedRecommendedSolutionRef.current = recommended.label;
     trackPostHogEvent('fcr_results:recommended_solution_displayed', { solution_type: recommended.label });
   }, [recommended]);
 
   useEffect(() => {
-    if (modesEnriched.length > 0 || hasTrackedNoSolutionRef.current) {
+    if (modesEnriched.length > 0) {
       return;
     }
 
-    hasTrackedNoSolutionRef.current = true;
     trackPostHogEvent('fcr_results:no_solution_displayed', {
       heating_mode: urlParams.typeLogement,
       outdoor_space: urlParams.espaceExterieur,
@@ -167,11 +160,10 @@ export function useChoixChauffageResults() {
   useEffect(() => {
     const batimentConstructionId = selectedBatEnrBatiment?.batiment_construction_id;
 
-    if (!batimentConstructionId || lastPrefilledBatimentConstructionIdRef.current === batimentConstructionId) {
+    if (!batimentConstructionId) {
       return;
     }
 
-    lastPrefilledBatimentConstructionIdRef.current = batimentConstructionId;
     urlParams.setPrefillParams(getSimulationPrefillFromBatEnrBatiment(selectedBatEnrBatiment));
   }, [selectedBatEnrBatiment, urlParams]);
 

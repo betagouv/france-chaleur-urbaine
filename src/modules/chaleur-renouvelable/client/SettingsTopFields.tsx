@@ -98,7 +98,6 @@ export function SettingsTopFields({
           }
           setEspaceExterieur(value);
         }}
-        label="Espaces extérieurs"
         typeLogement={typeLogement}
       />
     </div>

@@ -91,6 +91,11 @@ export default function DemandesChaleurRenouvelableAdminPage() {
   const columns: ColumnDef<DemandesChaleurRenouvelableAdminItem>[] = useMemo(
     () => [
       {
+        accessorKey: 'id',
+        header: 'ID',
+        width: '260px',
+      },
+      {
         accessorFn: (row) => row.created_at,
         cellType: 'DateTime',
         enableGlobalFilter: false,
@@ -98,6 +103,15 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         header: 'Date de la demande',
         id: 'Date de la demande',
         width: '110px',
+      },
+      {
+        accessorFn: (row) => row.updated_at,
+        cellType: 'DateTime',
+        enableGlobalFilter: false,
+        filterType: 'Range',
+        header: 'Dernière mise à jour',
+        id: 'Dernière mise à jour',
+        width: '130px',
       },
       {
         accessorFn: (row) => `${row.last_name} ${row.first_name} ${row.email} ${row.phone}`,

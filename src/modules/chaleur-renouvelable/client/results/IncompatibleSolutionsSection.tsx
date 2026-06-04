@@ -1,11 +1,7 @@
 import type { IncompatibleSolutionRow } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { PrerequisiteStatusBadge } from '@/modules/chaleur-renouvelable/client/results/SolutionCommon';
 
-type IncompatibleSolutionsSectionProps = {
-  rows: IncompatibleSolutionRow[];
-};
-
-export function IncompatibleSolutionsSection({ rows }: IncompatibleSolutionsSectionProps) {
+export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolutionRow[] }) {
   if (rows.length === 0) {
     return null;
   }

@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Image from '@/components/ui/Image';
@@ -91,7 +91,7 @@ export function RecommendedSolutionCard({
         <SolutionCta item={item} onHelpButtonClick={onHelpButtonClick} />
         <button
           type="button"
-          className="bg-transparent p-0 text-lg text-blue underline"
+          className="bg-transparent p-0 text-blue underline"
           onClick={() => onOpenChange(!isOpen)}
           aria-expanded={isOpen}
         >
@@ -125,7 +125,6 @@ function HeatNetworkRecommendedSolutionCard({
 }: RecommendedSolutionCardProps) {
   const heatNetwork = situation.eligibiliteReseauChaleur;
   const prerequisiteRows = item.prerequis(situation);
-  const hasTrackedContactMapViewedRef = useRef(false);
   const mapConfiguration = useMemo(
     () =>
       createMapConfiguration({
@@ -141,11 +140,10 @@ function HeatNetworkRecommendedSolutionCard({
   const distanceLabel = heatNetwork?.distance !== null && heatNetwork?.distance !== undefined ? `${heatNetwork.distance} m` : 'proximité';
 
   useEffect(() => {
-    if (!geoAddress || hasTrackedContactMapViewedRef.current) {
+    if (!geoAddress) {
       return;
     }
 
-    hasTrackedContactMapViewedRef.current = true;
     trackPostHogEvent('fcr_contact:map_viewed');
   }, [geoAddress]);
 
@@ -188,7 +186,7 @@ function HeatNetworkRecommendedSolutionCard({
         <SolutionCta item={item} onHelpButtonClick={onHelpButtonClick} />
         <button
           type="button"
-          className="bg-transparent p-0 text-lg text-blue underline"
+          className="bg-transparent p-0 text-blue underline"
           onClick={() => onOpenChange(!isOpen)}
           aria-expanded={isOpen}
         >

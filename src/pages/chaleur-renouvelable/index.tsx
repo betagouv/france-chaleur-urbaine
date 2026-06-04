@@ -359,8 +359,8 @@ function CompareSolutionsButton() {
       <Button
         priority="primary"
         iconId="fr-icon-arrow-up-line"
+        postHogEventKey="fcr_landing:bottom_cta_clicked"
         onClick={() => {
-          trackPostHogEvent('fcr_landing:bottom_cta_clicked');
           window.scrollTo({ top: 0 });
         }}
       >

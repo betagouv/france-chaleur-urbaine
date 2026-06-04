@@ -45,13 +45,7 @@ export function getGainPercentVsGaz(item: ModeDeChauffageEnriched, coutParAnGaz:
   return referenceCost > 0 ? Math.round(((item.coutParAn - referenceCost) / referenceCost) * 100) : 0;
 }
 
-type DpeTagProps = {
-  letter: DPE;
-  isSelected?: boolean;
-  onClick?: (letter: DPE) => void;
-};
-
-export function DpeTag({ letter, isSelected = false, onClick }: DpeTagProps) {
+export function DpeTag({ letter, isSelected = false, onClick }: { letter: DPE; isSelected?: boolean; onClick?: (letter: DPE) => void }) {
   const className = cx(
     'flex h-12 w-12 items-center justify-center rounded-sm border-2',
     DPE_BG[letter],
@@ -112,7 +106,7 @@ export function ProsConsLists({ avantages, inconvenients }: { avantages: string[
         <span className="mx-3 inline-block font-normal">/</span>
         <span className="text-error">Inconvénients</span>
       </h4>
-      <ul className="m-0 list-none space-y-1 p-0">
+      <ul className="p-0">
         {avantages.map((avantage) => (
           <li key={avantage} className="flex gap-3">
             <span className="fr-icon-check-line text-success" aria-hidden="true" />
@@ -120,7 +114,7 @@ export function ProsConsLists({ avantages, inconvenients }: { avantages: string[
           </li>
         ))}
       </ul>
-      <ul className="m-0 list-none space-y-1 p-0">
+      <ul className="p-0">
         {inconvenients.map((inconvenient) => (
           <li key={inconvenient} className="flex gap-3">
             <span className="fr-icon-close-line text-error" aria-hidden="true" />
@@ -209,8 +203,8 @@ function PrerequisitesLegend({ className }: { className?: string }) {
   return (
     <p className={cx('text-sm', className)}>
       <strong>STATUT :</strong> <strong className="text-success">FAVORABLE</strong> : vérifié, aucun obstacle{' '}
-      <strong className="text-error">CONTRAIGNANT</strong> : vérifié, contraintes supplémentaires{' '}
-      <strong className="text-[#716043]">À VÉRIFIER</strong> : à vérifier par vous
+      <strong className="text-error ml-3">CONTRAIGNANT</strong> : vérifié, contraintes supplémentaires{' '}
+      <strong className="text-[#716043] ml-3">À VÉRIFIER</strong> : à vérifier par vous
     </p>
   );
 }
@@ -254,13 +248,15 @@ export function Stars({ value }: { value: number }) {
   );
 }
 
-type GainVsGazBadgeProps = {
+export function GainVsGazBadge({
+  item,
+  coutParAnGaz,
+  coutParAnGazHotWaterOnly,
+}: {
   item: ModeDeChauffageEnriched;
   coutParAnGaz: number;
   coutParAnGazHotWaterOnly: number;
-};
-
-export function GainVsGazBadge({ item, coutParAnGaz, coutParAnGazHotWaterOnly }: GainVsGazBadgeProps) {
+}) {
   const gainPercentVsGaz = getGainPercentVsGaz(item, coutParAnGaz, coutParAnGazHotWaterOnly);
   const isSaving = gainPercentVsGaz <= 0;
 
@@ -279,7 +275,7 @@ export function GainVsGazBadge({ item, coutParAnGaz, coutParAnGazHotWaterOnly }:
         aria-hidden="true"
       />
       {isSaving ? '-' : '+'}
-      {Math.abs(gainPercentVsGaz)} % {isSaving ? 'd’économies vs gaz' : 'vs gaz'}
+      {Math.abs(gainPercentVsGaz)} % 'd’économies vs gaz
     </span>
   );
 }
@@ -323,13 +319,15 @@ export function SolutionConsumptionPanel({
   );
 }
 
-type SolutionCtaProps = {
+export function SolutionCta({
+  item,
+  onHelpButtonClick,
+  className,
+}: {
   item: ModeDeChauffageEnriched;
   onHelpButtonClick?: () => void;
   className?: string;
-};
-
-export function SolutionCta({ item, onHelpButtonClick, className }: SolutionCtaProps) {
+}) {
   return (
     <Button
       href={onHelpButtonClick ? undefined : '#help-ademe'}
