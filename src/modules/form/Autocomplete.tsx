@@ -28,6 +28,8 @@ export type AutocompleteProps<Option> = {
   className?: string;
   /** Message affiché quand la recherche aboutit avec 0 résultat. Défaut : "Aucun résultat". */
   emptyMessage?: React.ReactNode;
+  /** Message affiché dans le dropdown quand la recherche échoue (réseau/serveur). Défaut : message générique. */
+  errorMessage?: React.ReactNode;
   nativeInputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue'>;
 };
 
@@ -53,6 +55,7 @@ export function Autocomplete<Option>({
   id: idProp,
   className,
   emptyMessage = 'Aucun résultat',
+  errorMessage = 'La recherche a échoué, veuillez réessayer.',
   nativeInputProps,
 }: AutocompleteProps<Option>) {
   const generatedId = useId();
@@ -66,6 +69,10 @@ export function Autocomplete<Option>({
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Option[]>([]);
   const [hasNoResults, setHasNoResults] = useState(false);
+  // Open state is decoupled from the presence of suggestions so the dropdown can be
+  // closed (click outside, Escape) while keeping the last results in memory, then
+  // reopened on focus without re-fetching.
+  const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [anchorWidth, setAnchorWidth] = useState<number | undefined>(undefined);
@@ -104,6 +111,7 @@ export function Autocomplete<Option>({
       setHighlightedIndex(-1);
       setSearchQuery('');
       setFetchError(null);
+      setIsOpen(false);
     }
   }, [value]);
 
@@ -118,12 +126,15 @@ export function Autocomplete<Option>({
       setFetchError(error.message);
       setSuggestions([]);
       setHasNoResults(false);
+      // Open the dropdown so the error is readable (the alert icon's tooltip is unusable on touch).
+      setIsOpen(true);
     },
     onSuccess: (results) => {
       setSuggestions(results);
       setHasNoResults(results.length === 0);
       setHighlightedIndex(-1);
       setFetchError(null);
+      setIsOpen(true);
     },
   });
 
@@ -143,6 +154,7 @@ export function Autocomplete<Option>({
     setDisplayValue(optionValue);
     setSearchQuery('');
     setFetchError(null);
+    setIsOpen(false);
     onChange?.(optionValue);
     onSelect(option);
   };
@@ -159,22 +171,23 @@ export function Autocomplete<Option>({
       cancel();
       setSuggestions([]);
       setHasNoResults(false);
+      setIsOpen(false);
     }
   };
 
+  // Close the dropdown but keep suggestions/hasNoResults in memory so focus can reopen them.
   const closePopover = () => {
-    setSuggestions([]);
-    setHasNoResults(false);
+    setIsOpen(false);
     setHighlightedIndex(-1);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if ((e.key === 'Escape' || e.key === 'Tab') && (suggestions.length || hasNoResults)) {
+    if ((e.key === 'Escape' || e.key === 'Tab') && isOpen) {
       if (e.key === 'Escape') e.preventDefault();
       closePopover();
       return;
     }
-    if (!suggestions.length) return;
+    if (!isOpen || !suggestions.length) return;
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
@@ -201,6 +214,7 @@ export function Autocomplete<Option>({
     setDisplayValue('');
     setSearchQuery('');
     setFetchError(null);
+    setIsOpen(false);
     onChange?.('');
     onClear?.();
     inputRef.current?.focus();
@@ -213,7 +227,14 @@ export function Autocomplete<Option>({
     closePopover();
   };
 
-  const isOpen = suggestions.length > 0 || hasNoResults;
+  // Reopen the previously fetched results when the user returns to the field
+  // (e.g. after clicking outside or pressing Escape), without re-querying.
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    nativeInputProps?.onFocus?.(e);
+    if (suggestions.length > 0 || hasNoResults || fetchError !== null) {
+      setIsOpen(true);
+    }
+  };
 
   return (
     <div className={className}>
@@ -234,6 +255,7 @@ export function Autocomplete<Option>({
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               {...nativeInputProps}
+              onFocus={handleFocus}
               autoComplete="off"
               className={cx('pr-10 text-ellipsis', nativeInputProps?.className)}
             />
@@ -255,7 +277,7 @@ export function Autocomplete<Option>({
                 size="sm"
                 color="var(--text-default-error)"
                 title={fetchError}
-                className="absolute top-1/2 -translate-y-1/2 right-[calc(16px+1.5rem)] z-10"
+                className="absolute top-1/2 -translate-y-1/2 right-10 z-10"
               />
             )}
 
@@ -290,14 +312,19 @@ export function Autocomplete<Option>({
             style={{ width: anchorWidth ? `${anchorWidth}px` : undefined }}
           >
             <div role="status" aria-live="polite" className="sr-only">
-              {isOpen
+              {/* Error is announced by the visible role="alert" below, not here */}
+              {isOpen && !fetchError
                 ? suggestions.length > 0
                   ? `${suggestions.length} résultat${suggestions.length > 1 ? 's' : ''}`
                   : 'Aucun résultat'
                 : ''}
             </div>
             <div className="bg-(--background-default-grey) border border-(--border-default-grey) shadow-[0_4px_8px_rgba(0,0,0,0.12)]">
-              {suggestions.length > 0 ? (
+              {fetchError ? (
+                <div role="alert" className="text-sm py-2 px-3 text-(--text-default-error)">
+                  {errorMessage}
+                </div>
+              ) : suggestions.length > 0 ? (
                 <ul
                   id={listboxId}
                   role="listbox"
