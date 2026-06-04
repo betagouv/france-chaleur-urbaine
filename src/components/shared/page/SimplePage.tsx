@@ -108,7 +108,7 @@ export const publicNavigationMenu: MainNavigationProps.Item[] = [
       href: '/carte',
       onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'carte', menu_level: 1 }),
     },
-    text: 'Carte',
+    text: 'Carte des réseaux',
   },
   {
     menuLinks: [
