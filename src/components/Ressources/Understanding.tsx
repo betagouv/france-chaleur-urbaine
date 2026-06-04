@@ -4,7 +4,7 @@ import { type Document, understandings } from './config';
 
 const Understanding = ({ cards }: { cards?: Record<string, Document> }) => {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 flex-wrap">
       {Object.entries(cards || understandings).map(([key, understanding]) => (
         <Card
           className="flex-1"
