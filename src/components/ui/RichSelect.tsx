@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { useId } from 'react';
 
 import FieldWrapper from '@/components/form/dsfr/FieldWrapper';
+import { trackPostHogEvent } from '@/modules/analytics/client';
+import type { PostHogEvent, PostHogEventMap } from '@/modules/analytics/posthog.config';
 import cx from '@/utils/cx';
 
 export type RichSelectOption<T extends string = string> = {
@@ -12,7 +14,20 @@ export type RichSelectOption<T extends string = string> = {
   description?: string;
 };
 
-type RichSelectProps<T extends string = string> = {
+type ValuePostHogTrackingProps<Value, Event extends PostHogEvent = PostHogEvent> = {
+  postHogEventKey?: Event;
+} & ([PostHogEventMap[Event]] extends [never]
+  ? { postHogEventProps?: never }
+  : { postHogEventProps?: PostHogEventMap[Event] | ((value: Value) => PostHogEventMap[Event]) });
+
+function getPostHogEventProps<Value, Event extends PostHogEvent>(
+  postHogEventProps: ValuePostHogTrackingProps<Value, Event>['postHogEventProps'],
+  value: Value
+) {
+  return typeof postHogEventProps === 'function' ? postHogEventProps(value) : postHogEventProps;
+}
+
+type RichSelectProps<T extends string = string, Event extends PostHogEvent = PostHogEvent> = {
   value?: T;
   onChange: (value: T) => void;
   options: RichSelectOption<T>[];
@@ -20,9 +35,9 @@ type RichSelectProps<T extends string = string> = {
   className?: string;
   label?: string;
   disabled?: boolean;
-};
+} & ValuePostHogTrackingProps<T, Event>;
 
-export default function RichSelect<T extends string>({
+export default function RichSelect<T extends string, Event extends PostHogEvent = PostHogEvent>({
   value,
   onChange,
   options,
@@ -30,7 +45,9 @@ export default function RichSelect<T extends string>({
   className,
   label,
   disabled = false,
-}: RichSelectProps<T>) {
+  postHogEventKey,
+  postHogEventProps,
+}: RichSelectProps<T, Event>) {
   const id = useId();
 
   const radixValue = value ?? '';
@@ -41,7 +58,11 @@ export default function RichSelect<T extends string>({
         value={radixValue}
         disabled={disabled}
         onValueChange={(v) => {
-          if (v) onChange(v as T);
+          if (v) {
+            const nextValue = v as T;
+            onChange(nextValue);
+            trackPostHogEvent(postHogEventKey, getPostHogEventProps(postHogEventProps, nextValue));
+          }
         }}
       >
         <Select.Trigger
