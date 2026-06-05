@@ -33,7 +33,7 @@ function InstallationCostPrerequisite({ coutInstallation, solutionType }: { cout
   return (
     <li className="flex flex-col gap-3 bg-[#FFF8E5] px-3 py-2 md:flex-row md:items-center md:justify-between">
       <span className="flex items-start gap-3">
-        <PrerequisiteStatusBadge status="aVerifier" />
+        <PrerequisiteStatusBadge status="averifier" />
         <span>
           <strong>Coûts d’installation : {coutInstallation}</strong>. Vérifiez votre éligibilité aux aides
         </span>
