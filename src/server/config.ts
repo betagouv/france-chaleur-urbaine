@@ -12,6 +12,7 @@ const serverConfigSchema = {
   AIRTABLE_BASE: z.string(),
   AIRTABLE_KEY_API: z.string(),
   APP: z.string().optional(), // injected by Scalingo (e.g. "france-chaleur-urbaine")
+  BDNB_API_BASE_URL: z.string().default('https://api.bdnb.io/v1/bdnb/donnees'),
   CLOCK_CRONS_ENABLE: z.boolean().default(true),
   CLOCK_JOBS_PROCESSOR_ENABLE: z.boolean().default(true),
   CONTAINER: z.string().optional(), // injected by Scalingo (e.g. "web-1")

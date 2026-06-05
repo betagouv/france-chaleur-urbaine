@@ -6,6 +6,7 @@ import type {
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
+import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
 
@@ -121,7 +122,7 @@ export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => 
 };
 
 export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) => {
-  const url = `https://api.bdnb.io/v1/bdnb/donnees/rel_batiment_construction_adresse?select=batiment_construction_id&cle_interop_adr=eq.${encodeURIComponent(
+  const url = `${serverConfig.BDNB_API_BASE_URL}/rel_batiment_construction_adresse?select=batiment_construction_id&cle_interop_adr=eq.${encodeURIComponent(
     banId
   )}`;
 
