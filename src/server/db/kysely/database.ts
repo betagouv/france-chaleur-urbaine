@@ -79,7 +79,7 @@ export interface BdnbBatenr {
   batiment_construction_id: string | null;
   batiment_groupe_id: string | null;
   categorie_majoritaire: string | null;
-  classe_bilan_dpe: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
+  classe_bilan_dpe: DPE | null;
   etat_ppa: string | null;
   geom: string | null;
   gis_geo_profonde: boolean | null;
@@ -113,8 +113,8 @@ export interface BdnbBatiments {
   dle_reseaux_multimillesime_conso_pro: Numeric | null;
   dle_reseaux_multimillesime_conso_res: Numeric | null;
   dle_reseaux_multimillesime_conso_tot: Numeric | null;
-  dpe_representatif_logement_classe_bilan_dpe: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
-  dpe_representatif_logement_classe_emission_ges: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
+  dpe_representatif_logement_classe_bilan_dpe: DPE | null;
+  dpe_representatif_logement_classe_emission_ges: DPE | null;
   dpe_representatif_logement_surface_habitable_immeuble: number | null;
   dpe_representatif_logement_type_batiment_dpe: 'appartement' | 'immeuble' | 'maison' | null;
   dpe_representatif_logement_type_dpe:
