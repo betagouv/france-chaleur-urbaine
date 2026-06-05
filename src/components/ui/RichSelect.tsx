@@ -46,7 +46,7 @@ export default function RichSelect<T extends string>({
       >
         <Select.Trigger
           className={cx(
-            'fr-select w-full data-[disabled]:cursor-not-allowed data-[disabled]:bg-gray-100 data-[disabled]:text-gray-500',
+            'fr-select w-full data-disabled:cursor-not-allowed data-disabled:bg-gray-100 data-disabled:text-gray-500',
             className
           )}
         >
@@ -66,7 +66,7 @@ export default function RichSelect<T extends string>({
                   <Select.ItemText>
                     <div className="flex">
                       {option.icone && <Image src={option.icone} alt="icone" width="16" height="16" className="mr-1" />}
-                      <span dangerouslySetInnerHTML={{ __html: option.label }} />
+                      <span>{option.label}</span>
                     </div>
                   </Select.ItemText>
                   {option.description && <div className="text-xs text-slate-500">{option.description}</div>}
