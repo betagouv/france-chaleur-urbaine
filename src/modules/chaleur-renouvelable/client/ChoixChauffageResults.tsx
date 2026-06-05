@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { EligibilityFormContact } from '@/components/EligibilityForm';
 import CallOut from '@/components/ui/CallOut';
 import Dialog from '@/components/ui/Dialog';
@@ -5,7 +7,7 @@ import Link from '@/components/ui/Link';
 import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
-import DemandeFCRForm from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
+import DemandeFCRForm, { type ContactRecipientId } from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
 import { useChoixChauffageResults } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageResults';
 import { IncompatibleSolutionsSection } from '@/modules/chaleur-renouvelable/client/results/ui/IncompatibleSolutionsSection';
 import { NoResultSection } from '@/modules/chaleur-renouvelable/client/results/ui/NoResultSection';
@@ -17,6 +19,7 @@ import { ParamsForm } from './ParamsForm';
 
 export default function ChoixChauffageResults() {
   const isMobile = useIsMobile();
+  const [selectedContactRecipientId, setSelectedContactRecipientId] = useState<ContactRecipientId>('network-manager');
   const {
     batEnrBatiments,
     contactForm,
@@ -42,6 +45,7 @@ export default function ChoixChauffageResults() {
     urlParams,
   } = useChoixChauffageResults();
   const params = urlParams.params;
+  const shouldPreselectPublicAdvisor = Boolean(situation.eligibiliteReseauChaleur);
 
   if (isMobile === null) {
     return null;
@@ -96,9 +100,18 @@ export default function ChoixChauffageResults() {
             typeLogement={effectiveTypeLogement}
             onEditParamsClick={handleEditHotWaterParamsClick}
             onOpenChange={handleAccordionOpenChange}
+            onCtaClick={() => {
+              if (shouldPreselectPublicAdvisor) {
+                setSelectedContactRecipientId('public-advisor');
+              }
+            }}
           />
           <IncompatibleSolutionsSection rows={incompatibleSolutionRows} />
-          <DemandeFCRForm topSolution={recommended.label} />
+          <DemandeFCRForm
+            selectedRecipientId={selectedContactRecipientId}
+            setSelectedRecipientId={setSelectedContactRecipientId}
+            topSolution={recommended.label}
+          />
           <CallOut
             title={
               <>

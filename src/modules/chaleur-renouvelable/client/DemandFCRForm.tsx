@@ -34,7 +34,7 @@ const contactRecipients = [
   },
 ] as const;
 
-type ContactRecipientId = (typeof contactRecipients)[number]['id'];
+export type ContactRecipientId = (typeof contactRecipients)[number]['id'];
 
 function ContactRecipientSelector({
   selectedRecipientId,
@@ -134,10 +134,15 @@ function ProjectStatusSelect({ label, onChange, options, isPublicAdvisorSelected
   );
 }
 
-export default function DemandFCRForm({ topSolution }: { topSolution?: string }) {
+type DemandFCRFormProps = {
+  selectedRecipientId: ContactRecipientId;
+  setSelectedRecipientId: (recipientId: ContactRecipientId) => void;
+  topSolution?: string;
+};
+
+export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipientId, topSolution }: DemandFCRFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
-  const [selectedRecipientId, setSelectedRecipientId] = useState<ContactRecipientId>('network-manager');
   const [isProjectStatusSelectOpen, setIsProjectStatusSelectOpen] = useState(false);
   const [refusalPeriod, setRefusalPeriod] = useState('');
   const [refusalReason, setRefusalReason] = useState('');
