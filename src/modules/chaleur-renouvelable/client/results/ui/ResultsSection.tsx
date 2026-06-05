@@ -10,13 +10,11 @@ import {
   type ModeDeChauffageUsage,
   type Situation,
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import {
-  DpeProgression,
-  GainVsGazBadge,
-  PrerequisitesList,
-  ProsConsLists,
-  Stars,
-} from '@/modules/chaleur-renouvelable/client/results/SolutionCommon';
+import { DpeProgression } from '@/modules/chaleur-renouvelable/client/results/ui/DpeProgression';
+import { GainVsGazBadge } from '@/modules/chaleur-renouvelable/client/results/ui/GainVsGazBadge';
+import { PrerequisitesList } from '@/modules/chaleur-renouvelable/client/results/ui/PrerequisitesList';
+import { ProsConsLists } from '@/modules/chaleur-renouvelable/client/results/ui/ProsConsLists';
+import { Stars } from '@/modules/chaleur-renouvelable/client/results/ui/Stars';
 import type { DPE, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
 

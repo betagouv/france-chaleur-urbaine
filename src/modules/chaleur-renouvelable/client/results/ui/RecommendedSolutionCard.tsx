@@ -6,13 +6,11 @@ import Image from '@/components/ui/Image';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import type { ModeDeChauffageEnriched, Situation } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import {
-  PrerequisitesList,
-  ProsConsLists,
-  SolutionConsumptionPanel,
-  SolutionCta,
-  UsageTags,
-} from '@/modules/chaleur-renouvelable/client/results/SolutionCommon';
+import { PrerequisitesList } from '@/modules/chaleur-renouvelable/client/results/ui/PrerequisitesList';
+import { ProsConsLists } from '@/modules/chaleur-renouvelable/client/results/ui/ProsConsLists';
+import { SolutionConsumptionPanel } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionConsumptionPanel';
+import { SolutionCta } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionCta';
+import { UsageTags } from '@/modules/chaleur-renouvelable/client/results/ui/UsageTags';
 import type { DPE } from '@/modules/chaleur-renouvelable/constants';
 
 const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });

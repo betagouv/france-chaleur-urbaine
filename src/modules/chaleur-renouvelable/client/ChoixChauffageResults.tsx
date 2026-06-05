@@ -7,10 +7,10 @@ import { trackPostHogEvent } from '@/modules/analytics/client';
 import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
 import DemandeFCRForm from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
 import { useChoixChauffageResults } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageResults';
-import { IncompatibleSolutionsSection } from '@/modules/chaleur-renouvelable/client/results/IncompatibleSolutionsSection';
-import { NoResultSection } from '@/modules/chaleur-renouvelable/client/results/NoResultSection';
-import { RecommendedSolutionCard } from '@/modules/chaleur-renouvelable/client/results/RecommendedSolutionCard';
-import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ResultsSection';
+import { IncompatibleSolutionsSection } from '@/modules/chaleur-renouvelable/client/results/ui/IncompatibleSolutionsSection';
+import { NoResultSection } from '@/modules/chaleur-renouvelable/client/results/ui/NoResultSection';
+import { RecommendedSolutionCard } from '@/modules/chaleur-renouvelable/client/results/ui/RecommendedSolutionCard';
+import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui/ResultsSection';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
 import { ParamsForm } from './ParamsForm';

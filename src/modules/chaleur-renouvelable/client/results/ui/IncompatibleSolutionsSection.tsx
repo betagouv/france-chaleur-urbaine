@@ -1,5 +1,5 @@
 import type { IncompatibleSolutionRow } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import { PrerequisiteStatusBadge } from '@/modules/chaleur-renouvelable/client/results/SolutionCommon';
+import { PrerequisiteStatusBadge } from '@/modules/chaleur-renouvelable/client/results/ui/PrerequisiteStatusBadge';
 
 export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolutionRow[] }) {
   if (rows.length === 0) {
