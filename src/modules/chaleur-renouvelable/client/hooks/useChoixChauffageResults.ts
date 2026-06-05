@@ -17,6 +17,7 @@ import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouv
 export function useChoixChauffageResults() {
   const engine = useSimulatorEngine();
   const urlParams = useChoixChauffageQueryParams();
+  const params = urlParams.params;
   useRemoveHashOnScroll('#help-ademe');
   const {
     geoAddress,
@@ -31,28 +32,21 @@ export function useChoixChauffageResults() {
     resetEligibility,
     selectBatEnrBatiment,
     selectedBatEnrBatiment,
-  } = useAddressEligibility(urlParams.adresse ?? null, urlParams.constructionId);
+  } = useAddressEligibility(params.adresse ?? null, params.constructionId);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
   const contactForm = useContactFormFCU();
 
   const situation = useMemo(
-    () => buildSimulationSituation({ batEnr, eligibiliteReseauChaleur, urlParams: urlParams.simulationParams }),
+    () => buildSimulationSituation({ batEnr, eligibiliteReseauChaleur, urlParams: params }),
     [
-      urlParams.adresse,
+      params,
       batEnr.architecturalProtectionAc1,
       batEnr.architecturalProtectionAc2,
       batEnr.architecturalProtectionAc3,
       batEnr.architecturalProtectionAc4,
       batEnr.architecturalProtectionAc4bis,
-      urlParams.dpe,
-      urlParams.espaceExterieur,
-      urlParams.habitantsMoyen,
-      urlParams.modeEauChaudeSanitaire,
-      urlParams.nbLogements,
-      urlParams.surfaceMoyenne,
-      urlParams.typeRadiateur,
       batEnr.geothermiePossible,
       batEnr.geothermalNappeGmi,
       batEnr.geothermalNappePotential,
@@ -72,7 +66,7 @@ export function useChoixChauffageResults() {
     setPublicodesSituation(engine, { codeDepartement, situation, temperatureRef });
   }, [codeDepartement, situation, temperatureRef]);
 
-  const effectiveTypeLogement = urlParams.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
+  const effectiveTypeLogement = params.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
   const modesDeChauffage = useMemo(() => getModesDeChauffage(effectiveTypeLogement, situation), [effectiveTypeLogement, situation]);
   const incompatibleSolutionRows = useMemo(
     () => getIncompatibleSolutionRows(situation, effectiveTypeLogement),
@@ -98,10 +92,10 @@ export function useChoixChauffageResults() {
     }
 
     trackPostHogEvent('fcr_results:no_solution_displayed', {
-      heating_mode: urlParams.typeLogement,
-      outdoor_space: urlParams.espaceExterieur,
+      heating_mode: params.typeLogement,
+      outdoor_space: params.espaceExterieur,
     });
-  }, [modesEnriched.length, urlParams.espaceExterieur, urlParams.typeLogement]);
+  }, [modesEnriched.length, params.espaceExterieur, params.typeLogement]);
 
   const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
     setOpenAccordionId(expanded ? id : null);
@@ -114,14 +108,14 @@ export function useChoixChauffageResults() {
   }, []);
 
   const openHeatNetworkContactModal = useCallback(() => {
-    if (!geoAddress || !urlParams.adresse || !eligibiliteReseauChaleur) {
+    if (!geoAddress || !params.adresse || !eligibiliteReseauChaleur) {
       return;
     }
 
     const [lon, lat] = geoAddress.geometry.coordinates;
     contactForm.handleOnSuccessAddress(
       {
-        address: urlParams.adresse,
+        address: params.adresse,
         coords: { lat, lon },
         eligibility: eligibiliteReseauChaleur,
         geoAddress,
@@ -129,11 +123,11 @@ export function useChoixChauffageResults() {
       },
       'chaleur-renouvelable'
     );
-  }, [contactForm, eligibiliteReseauChaleur, geoAddress, urlParams.adresse]);
+  }, [contactForm, eligibiliteReseauChaleur, geoAddress, params.adresse]);
 
   const handleSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {
-      urlParams.setConstructionId(null);
+      urlParams.setParams({ constructionId: null });
 
       if (!geoAddress) {
         resetEligibility();
@@ -151,7 +145,7 @@ export function useChoixChauffageResults() {
         return;
       }
 
-      urlParams.setConstructionId(batEnrBatiment.batiment_construction_id);
+      urlParams.setParams({ constructionId: batEnrBatiment.batiment_construction_id });
       selectBatEnrBatiment(batEnrBatiment);
     },
     [selectBatEnrBatiment, urlParams]

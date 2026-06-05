@@ -1,16 +1,16 @@
-import type { ChoixChauffageParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
+import type { ChoixChauffageSimulationParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import type { DPE } from '@/modules/chaleur-renouvelable/constants';
 
 export type ParamsFormDraft = {
-  adresse: NonNullable<ChoixChauffageParams['adresse']>;
+  adresse: NonNullable<ChoixChauffageSimulationParams['adresse']>;
   dpe: DPE;
-  espaceExterieur: ChoixChauffageParams['espaceExterieur'];
-  habitantsMoyen: NonNullable<ChoixChauffageParams['habitantsMoyen']>;
-  modeEauChaudeSanitaire: ChoixChauffageParams['modeEauChaudeSanitaire'] | null;
+  espaceExterieur: ChoixChauffageSimulationParams['espaceExterieur'];
+  habitantsMoyen: NonNullable<ChoixChauffageSimulationParams['habitantsMoyen']>;
+  modeEauChaudeSanitaire: ChoixChauffageSimulationParams['modeEauChaudeSanitaire'] | null;
   nbLogements: string;
   surfaceMoyenne: string;
-  typeLogement: ChoixChauffageParams['typeLogement'];
-  typeRadiateur: ChoixChauffageParams['typeRadiateur'];
+  typeLogement: ChoixChauffageSimulationParams['typeLogement'];
+  typeRadiateur: ChoixChauffageSimulationParams['typeRadiateur'];
 };
 
 export function parseIntegerOrNull(value: string) {
@@ -33,7 +33,7 @@ export function normalizeDecimalString(value: string) {
   return Number.isFinite(parsedValue) && parsedValue >= 0 ? String(parsedValue) : '';
 }
 
-export function toParamsFormDraft(values: ChoixChauffageParams): ParamsFormDraft {
+export function toParamsFormDraft(values: ChoixChauffageSimulationParams): ParamsFormDraft {
   return {
     adresse: values.adresse ?? '',
     dpe: values.dpe,
@@ -47,7 +47,7 @@ export function toParamsFormDraft(values: ChoixChauffageParams): ParamsFormDraft
   };
 }
 
-export function toChoixChauffageParams(draft: ParamsFormDraft): ChoixChauffageParams {
+export function toChoixChauffageParams(draft: ParamsFormDraft): ChoixChauffageSimulationParams {
   const normalizedHabitantsMoyen = normalizeDecimalString(draft.habitantsMoyen);
   const normalizedNbLogements = parseIntegerOrNull(draft.nbLogements);
   const normalizedSurfaceMoyenne = parseIntegerOrNull(draft.surfaceMoyenne);

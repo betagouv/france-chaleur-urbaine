@@ -41,6 +41,7 @@ export default function ChoixChauffageResults() {
     situation,
     urlParams,
   } = useChoixChauffageResults();
+  const params = urlParams.params;
 
   if (isMobile === null) {
     return null;
@@ -53,7 +54,7 @@ export default function ChoixChauffageResults() {
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
         values={urlParams.simulationParams}
-        onSave={urlParams.setSimulationParams}
+        onSave={urlParams.setParams}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={handleSelectGeoAddress}
@@ -73,7 +74,7 @@ export default function ChoixChauffageResults() {
             item={recommended}
             coutParAnGaz={coutParAnGaz}
             coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
-            dpeFrom={urlParams.dpe}
+            dpeFrom={params.dpe}
             geoAddress={geoAddress}
             isOpen={openAccordionId === recommended.label}
             onHelpButtonClick={recommended.helpAction === 'open-heat-network-contact' ? openHeatNetworkContactModal : undefined}
@@ -89,7 +90,7 @@ export default function ChoixChauffageResults() {
             items={otherModes}
             coutParAnGaz={coutParAnGaz}
             coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
-            dpeFrom={urlParams.dpe}
+            dpeFrom={params.dpe}
             openAccordionId={openAccordionId}
             situation={situation}
             typeLogement={effectiveTypeLogement}
