@@ -33,6 +33,7 @@ type ResultsSectionProps = {
   typeLogement: TypeLogement;
   onEditParamsClick: () => void;
   onOpenChange: (id: string, expanded: boolean) => void;
+  onCtaClick?: () => void;
 };
 
 export function ResultsSection({
@@ -45,6 +46,7 @@ export function ResultsSection({
   typeLogement,
   onEditParamsClick,
   onOpenChange,
+  onCtaClick,
 }: ResultsSectionProps) {
   const [activeTab, setActiveTab] = useState<ModeDeChauffageUsage>('heatingAndHotWater');
   const itemsByUsage = useMemo(
@@ -161,6 +163,7 @@ export function ResultsSection({
               isOpen={openAccordionId === id}
               position={index + 1}
               onOpenChange={(expanded) => onOpenChange(id, expanded)}
+              onCtaClick={onCtaClick}
             />
           );
         })}
@@ -182,6 +185,7 @@ type OtherSolutionRowProps = {
   position: number;
   situation: Situation;
   onOpenChange: (expanded: boolean) => void;
+  onCtaClick?: () => void;
 };
 
 function OtherSolutionRow({
@@ -193,6 +197,7 @@ function OtherSolutionRow({
   position,
   situation,
   onOpenChange,
+  onCtaClick,
 }: OtherSolutionRowProps) {
   const dpeTo = improveDpe(dpeFrom, item.gainClasse);
   const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn);
@@ -265,6 +270,7 @@ function OtherSolutionRow({
               className="my-3"
               postHogEventKey="fcr_results:alternative_solution_cta_clicked"
               postHogEventProps={{ solution_type: item.label }}
+              onClick={onCtaClick}
             >
               Passer à l’étape suivante
             </Button>
