@@ -10,7 +10,6 @@ import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/cli
 import { useRemoveHashOnScroll } from '@/modules/chaleur-renouvelable/client/hooks/useRemoveHashOnScroll';
 import { getIncompatibleSolutionRows, getModesDeChauffage } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { HOT_WATER_PARAMS_SECTION_ID } from '@/modules/chaleur-renouvelable/client/ParamsForm';
-import { buildSimulationSituation } from '@/modules/chaleur-renouvelable/client/simulationSituation';
 import { DEFAULT_SIMULATION_PARAMS } from '@/modules/chaleur-renouvelable/constants';
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 
@@ -18,7 +17,9 @@ export function useChoixChauffageResults() {
   const engine = useSimulatorEngine();
   const urlParams = useChoixChauffageQueryParams();
   const params = urlParams.params;
+
   useRemoveHashOnScroll('#help-ademe');
+
   const {
     geoAddress,
     setGeoAddress,
@@ -36,21 +37,51 @@ export function useChoixChauffageResults() {
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
+
   const contactForm = useContactFormFCU();
 
   const situation = useMemo(
-    () => buildSimulationSituation({ batEnr, eligibiliteReseauChaleur, urlParams: params }),
+    () => ({
+      adresse: params.adresse,
+      architecturalProtectionAc1: batEnr.architecturalProtectionAc1,
+      architecturalProtectionAc2: batEnr.architecturalProtectionAc2,
+      architecturalProtectionAc3: batEnr.architecturalProtectionAc3,
+      architecturalProtectionAc4: batEnr.architecturalProtectionAc4,
+      architecturalProtectionAc4bis: batEnr.architecturalProtectionAc4bis,
+      dpe: params.dpe,
+      eligibiliteReseauChaleur,
+      espaceExterieur: params.espaceExterieur ?? DEFAULT_SIMULATION_PARAMS.espaceExterieur,
+      geothermalNappeGmi: batEnr.geothermalNappeGmi,
+      geothermalNappePotential: batEnr.geothermalNappePotential,
+      geothermalSondeGmi: batEnr.geothermalSondeGmi,
+      geothermiePossible: batEnr.geothermiePossible,
+      habitantsMoyen: Number.parseFloat(params.habitantsMoyen || String(DEFAULT_SIMULATION_PARAMS.habitantsMoyen)),
+      hasGeothermalProbeSpace: batEnr.hasGeothermalProbeSpace,
+      modeEauChaudeSanitaire: params.modeEauChaudeSanitaire,
+      nbLogements: params.nbLogements ?? DEFAULT_SIMULATION_PARAMS.nbLogements,
+      planProtectionAtmosphere: batEnr.planProtectionAtmosphere,
+      solarThermalCoverage: batEnr.solarThermalCoverage,
+      surfaceMoyenne: params.surfaceMoyenne ?? DEFAULT_SIMULATION_PARAMS.surfaceMoyenne,
+      typeRadiateur: params.typeRadiateur,
+    }),
     [
-      params,
+      params.adresse,
+      params.dpe,
+      params.espaceExterieur,
+      params.habitantsMoyen,
+      params.modeEauChaudeSanitaire,
+      params.nbLogements,
+      params.surfaceMoyenne,
+      params.typeRadiateur,
       batEnr.architecturalProtectionAc1,
       batEnr.architecturalProtectionAc2,
       batEnr.architecturalProtectionAc3,
       batEnr.architecturalProtectionAc4,
       batEnr.architecturalProtectionAc4bis,
-      batEnr.geothermiePossible,
       batEnr.geothermalNappeGmi,
       batEnr.geothermalNappePotential,
       batEnr.geothermalSondeGmi,
+      batEnr.geothermiePossible,
       batEnr.hasGeothermalProbeSpace,
       batEnr.planProtectionAtmosphere,
       batEnr.solarThermalCoverage,
@@ -64,18 +95,22 @@ export function useChoixChauffageResults() {
     }
 
     setPublicodesSituation(engine, { codeDepartement, situation, temperatureRef });
-  }, [codeDepartement, situation, temperatureRef]);
+  }, [codeDepartement, engine, situation, temperatureRef]);
 
   const effectiveTypeLogement = params.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
+
   const modesDeChauffage = useMemo(() => getModesDeChauffage(effectiveTypeLogement, situation), [effectiveTypeLogement, situation]);
+
   const incompatibleSolutionRows = useMemo(
     () => getIncompatibleSolutionRows(situation, effectiveTypeLogement),
     [effectiveTypeLogement, situation]
   );
+
   const { coutParAnGaz, coutParAnGazHotWaterOnly, modesEnriched } = useMemo(
     () => getHeatingModeCosts(engine, modesDeChauffage, situation),
     [engine, modesDeChauffage, situation]
   );
+
   const [recommended, ...otherModes] = modesEnriched;
 
   useEffect(() => {
@@ -113,6 +148,7 @@ export function useChoixChauffageResults() {
     }
 
     const [lon, lat] = geoAddress.geometry.coordinates;
+
     contactForm.handleOnSuccessAddress(
       {
         address: params.adresse,
