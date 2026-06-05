@@ -6,7 +6,7 @@ import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { BatEnrBatimentsMap } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentsMap';
-import type { ChoixChauffageParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
+import type { ChoixChauffageSimulationParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   areParamsFormDraftsEqual,
   normalizeDecimalString,
@@ -38,8 +38,8 @@ type ParamsFormProps = {
   batiments: BatEnrBatiment[];
   isOpen: boolean;
   setIsOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
-  values: ChoixChauffageParams;
-  onSave: (values: ChoixChauffageParams) => Promise<unknown> | undefined;
+  values: ChoixChauffageSimulationParams;
+  onSave: (values: ChoixChauffageSimulationParams) => Promise<unknown> | undefined;
   geoAddress?: BANAddressFeature;
   setGeoAddress: (val: BANAddressFeature | undefined) => void;
   onSelectGeoAddress?: (val?: BANAddressFeature) => void;

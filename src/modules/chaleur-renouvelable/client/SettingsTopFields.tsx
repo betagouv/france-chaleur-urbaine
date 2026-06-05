@@ -2,7 +2,7 @@ import Select from '@/components/form/dsfr/Select';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
-import type { SetChoixChauffageParam } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
+import type { SetChoixChauffageParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   type EspaceExterieur,
   type TypeLogement,
@@ -23,7 +23,7 @@ type SettingsTopFieldsProps = {
   typeLogement: TypeLogement | null;
   espaceExterieur: EspaceExterieur | null;
   typeRadiateur?: TypeRadiateur | null;
-  setSimulationParam: SetChoixChauffageParam;
+  setParams: SetChoixChauffageParams;
 };
 
 export function SettingsTopFields({
@@ -34,7 +34,7 @@ export function SettingsTopFields({
   typeLogement,
   espaceExterieur,
   typeRadiateur,
-  setSimulationParam,
+  setParams,
 }: SettingsTopFieldsProps) {
   return (
     <div className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-4 bg-[#fbf6ed]">
@@ -45,7 +45,7 @@ export function SettingsTopFields({
         nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
         onlyAddress
         onClear={() => {
-          if (adresse !== null) void setSimulationParam('adresse', null);
+          if (adresse !== null) void setParams({ adresse: null });
           if (geoAddress !== undefined) setGeoAddress(undefined);
           onSelectGeoAddress?.(undefined);
         }}
@@ -53,7 +53,7 @@ export function SettingsTopFields({
           const nextLabel = next?.properties?.label ?? '';
           if ((adresse ?? '') === nextLabel) return;
           trackPostHogEvent('fcr_landing:address_typed');
-          setSimulationParam('adresse', nextLabel);
+          setParams({ adresse: nextLabel });
           setGeoAddress(next);
           onSelectGeoAddress?.(next);
         }}
@@ -68,7 +68,7 @@ export function SettingsTopFields({
             if (nextTypeLogement) {
               trackPostHogEvent('fcr_landing:heating_mode_selected', { heating_mode: nextTypeLogement });
             }
-            setSimulationParam('typeLogement', nextTypeLogement);
+            setParams({ typeLogement: nextTypeLogement });
           },
           value: typeLogement ?? undefined,
         }}
@@ -79,7 +79,7 @@ export function SettingsTopFields({
           if (value) {
             trackPostHogEvent('fcr_landing:emitter_type_selected', { emitter_type: value });
           }
-          setSimulationParam('typeRadiateur', value ?? null);
+          setParams({ typeRadiateur: value ?? null });
         }}
         options={[...typeRadiateurOptions]}
         placeholder="Indiquez votre type de radiateur"
@@ -91,7 +91,7 @@ export function SettingsTopFields({
           if (value) {
             trackPostHogEvent('fcr_landing:outdoor_space_selected', { outdoor_space: value });
           }
-          setSimulationParam('espaceExterieur', value);
+          setParams({ espaceExterieur: value });
         }}
         typeLogement={typeLogement}
       />

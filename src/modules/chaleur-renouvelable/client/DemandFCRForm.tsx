@@ -92,7 +92,8 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
   const [refusalPeriod, setRefusalPeriod] = useState('');
   const [refusalReason, setRefusalReason] = useState('');
   const createDemandeChaleurRenouvelable = trpc.batEnr.createDemandeChaleurRenouvelable.useMutation();
-  const urlParams = useChoixChauffageQueryParams();
+  const chauffageQuery = useChoixChauffageQueryParams();
+  const params = chauffageQuery.params;
   const { Field, Form, Submit, useValue } = useForm<typeof zContactFormChaleuRenouvelable>({
     defaultValues: {
       email: '',
@@ -108,11 +109,11 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
       setIsLoading(true);
       try {
         const espaceExterieur =
-          isDefined(urlParams.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(urlParams.espaceExterieur)
-            ? urlParams.espaceExterieur
+          isDefined(params.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(params.espaceExterieur)
+            ? params.espaceExterieur
             : DEFAULT_SIMULATION_PARAMS.espaceExterieur;
-        const typeLogement = urlParams.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
-        const housingCount = Number(urlParams.nbLogements || DEFAULT_SIMULATION_PARAMS.nbLogements);
+        const typeLogement = params.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
+        const housingCount = Number(params.nbLogements || DEFAULT_SIMULATION_PARAMS.nbLogements);
 
         trackPostHogEvent('fcr_contact:form_submitted', {
           energy: value.heatingEnergy,
@@ -126,15 +127,15 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
         });
 
         await createDemandeChaleurRenouvelable.mutateAsync({
-          address: urlParams.adresse ?? '',
-          averageArea: Number(urlParams.surfaceMoyenne || DEFAULT_SIMULATION_PARAMS.surfaceMoyenne),
-          averageResidents: Number(urlParams.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
-          batimentConstructionId: urlParams.constructionId,
-          dpe: urlParams.dpe,
+          address: params.adresse ?? '',
+          averageArea: Number(params.surfaceMoyenne || DEFAULT_SIMULATION_PARAMS.surfaceMoyenne),
+          averageResidents: Number(params.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
+          batimentConstructionId: params.constructionId,
+          dpe: params.dpe,
           email: value.email,
           firstName: value.firstName,
           heatingEnergy: value.heatingEnergy,
-          hotWaterSystemType: urlParams.modeEauChaudeSanitaire,
+          hotWaterSystemType: params.modeEauChaudeSanitaire,
           housingCount,
           housingType: typeLogement,
           isPublicAdvisorSelected,
@@ -143,7 +144,7 @@ export default function DemandFCRForm({ topSolution }: { topSolution?: string })
           outdoorSpace: espaceExterieur,
           phone: value.phone,
           projectStatus: value.projectStatus,
-          radiatorType: urlParams.typeRadiateur,
+          radiatorType: params.typeRadiateur,
           refusalPeriod: isPublicAdvisorSelected ? refusalPeriod || null : null,
           refusalReason: isPublicAdvisorSelected ? refusalReason || null : null,
           simulationUrl: window.location.href,

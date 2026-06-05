@@ -11,24 +11,25 @@ import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouv
 
 export default function ChoixChauffageForm() {
   const router = useRouter();
-  const urlParams = useChoixChauffageQueryParams();
+  const chauffageQuery = useChoixChauffageQueryParams();
+  const params = chauffageQuery.params;
   const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility, selectedBatEnrBatiment } = useAddressEligibility(
-    urlParams.adresse ?? null
+    params.adresse ?? null
   );
-  const isFormDisabled = !urlParams.adresse || !geoAddress || !urlParams.typeLogement || !urlParams.espaceExterieur;
+  const isFormDisabled = !params.adresse || !geoAddress || !params.typeLogement || !params.espaceExterieur;
 
   useEffect(() => {
     if (!selectedBatEnrBatiment) {
       return;
     }
 
-    urlParams.setPrefillParams(getSimulationPrefillFromBatEnrBatiment(selectedBatEnrBatiment));
-  }, [selectedBatEnrBatiment, urlParams]);
+    chauffageQuery.setPrefillParams(getSimulationPrefillFromBatEnrBatiment(selectedBatEnrBatiment));
+  }, [chauffageQuery, selectedBatEnrBatiment]);
 
   return (
     <form>
       <SettingsTopFields
-        adresse={urlParams.adresse ?? null}
+        adresse={params.adresse ?? null}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={(geoAddress?: BANAddressFeature) => {
@@ -38,10 +39,10 @@ export default function ChoixChauffageForm() {
           }
           onSelectGeoAddress(geoAddress);
         }}
-        typeLogement={urlParams.typeLogement ?? null}
-        espaceExterieur={urlParams.espaceExterieur ?? null}
-        typeRadiateur={urlParams.typeRadiateur ?? null}
-        setSimulationParam={urlParams.setSimulationParam}
+        typeLogement={params.typeLogement ?? null}
+        espaceExterieur={params.espaceExterieur ?? null}
+        typeRadiateur={params.typeRadiateur ?? null}
+        setParams={chauffageQuery.setParams}
       />
 
       <div className="mt-5 flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-end">
@@ -59,10 +60,10 @@ export default function ChoixChauffageForm() {
             event.stopPropagation();
             trackPostHogEvent('fcr_landing:hero_cta_clicked');
             trackPostHogEvent('fcr_landing:simulation_started', {
-              address_filled: Boolean(urlParams.adresse),
-              emitter_type: urlParams.typeRadiateur,
-              heating_mode: urlParams.typeLogement,
-              outdoor_space: urlParams.espaceExterieur,
+              address_filled: Boolean(params.adresse),
+              emitter_type: params.typeRadiateur,
+              heating_mode: params.typeLogement,
+              outdoor_space: params.espaceExterieur,
             });
             const search = window.location.search;
             router.push(`/chaleur-renouvelable/resultat${search}`);
