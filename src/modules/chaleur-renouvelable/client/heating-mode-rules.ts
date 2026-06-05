@@ -51,13 +51,22 @@ export const getPdpPrerequisite = (situation: Situation): PrerequisiteRow[] =>
       ]
     : [];
 
+type ArchitecturalProtectionKey = keyof Pick<
+  Situation,
+  | 'architecturalProtectionAc1'
+  | 'architecturalProtectionAc2'
+  | 'architecturalProtectionAc3'
+  | 'architecturalProtectionAc4'
+  | 'architecturalProtectionAc4bis'
+>;
+
 const architecturalProtectionPrerequisites = [
   ['architecturalProtectionAc1', 'Monuments historiques'],
   ['architecturalProtectionAc2', 'Sites inscrits et classés'],
   ['architecturalProtectionAc3', 'Réserves naturelles'],
   ['architecturalProtectionAc4', 'Sites patrimoniaux remarquables'],
   ['architecturalProtectionAc4bis', "Plans de valorisation de l'architecture et du patrimoine"],
-] as const;
+] satisfies readonly [ArchitecturalProtectionKey, string][];
 
 export const getArchitecturalProtectionPrerequisites = (situation: Situation): PrerequisiteRow[] => {
   const labels = architecturalProtectionPrerequisites.filter(([key]) => situation[key]).map(([, label]) => label);
