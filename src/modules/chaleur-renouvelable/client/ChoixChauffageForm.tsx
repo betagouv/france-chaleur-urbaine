@@ -7,7 +7,6 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import type { EspaceExterieur, TypeRadiateur } from '@/modules/chaleur-renouvelable/constants';
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 
 export default function ChoixChauffageForm() {
@@ -30,7 +29,6 @@ export default function ChoixChauffageForm() {
     <form>
       <SettingsTopFields
         adresse={urlParams.adresse ?? null}
-        setAdresse={urlParams.setAdresse}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={(geoAddress?: BANAddressFeature) => {
@@ -41,11 +39,9 @@ export default function ChoixChauffageForm() {
           onSelectGeoAddress(geoAddress);
         }}
         typeLogement={urlParams.typeLogement ?? null}
-        setTypeLogement={urlParams.setTypeLogementAndResetInvalidOutdoorSpace}
-        espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
-        setEspaceExterieur={urlParams.setEspaceExterieur}
-        typeRadiateur={(urlParams.typeRadiateur ?? null) as TypeRadiateur | null}
-        setTypeRadiateur={urlParams.setTypeRadiateur}
+        espaceExterieur={urlParams.espaceExterieur ?? null}
+        typeRadiateur={urlParams.typeRadiateur ?? null}
+        setSimulationParam={urlParams.setSimulationParam}
       />
 
       <div className="mt-5 flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-end">
