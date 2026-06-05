@@ -16,7 +16,7 @@ export type BatEnrBatiment = {
   batiment_construction_id: string | null;
   batiment_groupe_id: string | null;
   categorie_majoritaire: string | null;
-  classe_bilan_dpe: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
+  classe_bilan_dpe: DPE | null;
   couv_sondes_200_2025: number | null;
   couv_st_ecs_2025: number | null;
   dpe_representatif_logement_surface_habitable_immeuble: number | null;
