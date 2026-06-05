@@ -15,7 +15,7 @@ import {
   toChoixChauffageParams,
   toParamsFormDraft,
 } from '@/modules/chaleur-renouvelable/client/params-form-draft';
-import { DpeTag } from '@/modules/chaleur-renouvelable/client/results/SolutionCommon';
+import { DpeTag } from '@/modules/chaleur-renouvelable/client/results/ui/DpeTag';
 import {
   type BatEnrBatiment,
   type DPE,
