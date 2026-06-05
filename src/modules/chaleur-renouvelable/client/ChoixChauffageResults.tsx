@@ -1,7 +1,7 @@
 import { EligibilityFormContact } from '@/components/EligibilityForm';
 import CallOut from '@/components/ui/CallOut';
+import Dialog from '@/components/ui/Dialog';
 import Link from '@/components/ui/Link';
-import Modal, { createModal } from '@/components/ui/Modal';
 import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
@@ -14,16 +14,6 @@ import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/Re
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
 import { ParamsForm } from './ParamsForm';
-
-const heatNetworkContactModal = createModal({
-  id: 'heat-network-contact-modal',
-  isOpenedByDefault: false,
-});
-
-const batEnrBatimentSelectionModal = createModal({
-  id: 'bat-enr-batiment-selection-modal',
-  isOpenedByDefault: false,
-});
 
 export default function ChoixChauffageResults() {
   const isMobile = useIsMobile();
@@ -70,13 +60,13 @@ export default function ChoixChauffageResults() {
         onSelectBatiment={handleSelectBatEnrBatiment}
         onAddressError={() => {}}
       />
-      <Modal modal={batEnrBatimentSelectionModal} title="" open={shouldSelectBatEnrBatiment} size="custom" lazy isClosableByUser={false}>
+      <Dialog title="" open={shouldSelectBatEnrBatiment} size="lg">
         <BatEnrBatimentSelection
           batiments={batEnrBatiments}
           initialCenter={geoAddress?.geometry.coordinates}
           onSelect={handleSelectBatEnrBatiment}
         />
-      </Modal>
+      </Dialog>
       {modesEnriched.length > 0 && recommended ? (
         <>
           <RecommendedSolutionCard
@@ -128,13 +118,15 @@ export default function ChoixChauffageResults() {
               </Link>
             </div>
           </CallOut>
-          <Modal
-            modal={heatNetworkContactModal}
+          <Dialog
             title=""
             open={contactForm.contactReady}
-            size="custom"
-            loading={contactForm.loadingStatus === 'loading'}
-            onClose={contactForm.handleResetFormContact}
+            size="lg"
+            onOpenChange={(open) => {
+              if (!open) {
+                contactForm.handleResetFormContact();
+              }
+            }}
           >
             <div>
               {contactForm.contactReady && !contactForm.messageReceived && (
@@ -148,7 +140,7 @@ export default function ChoixChauffageResults() {
                 <DemandSubmittedPanel submissionResult={contactForm.addressData.submissionResult} />
               )}
             </div>
-          </Modal>
+          </Dialog>
         </>
       ) : (
         <NoResultSection codeInsee={geoAddress?.properties.citycode} />

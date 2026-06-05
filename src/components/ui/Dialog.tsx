@@ -66,7 +66,7 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay asChild>
           <motion.div
-            className="fixed inset-0 z-50 bg-black/50"
+            className="fixed inset-0 z-[2002] bg-black/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -78,7 +78,8 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
         <DialogPrimitive.Content asChild onOpenAutoFocus={focusFirstField}>
           <motion.div
             className={cx(
-              'fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full overflow-auto bg-white p-8 shadow-xl',
+              'fixed left-1/2 top-1/2 max-h-[85vh] w-full overflow-auto bg-white p-8 shadow-xl',
+              'z-[2003]',
               size === 'sm' && 'max-w-sm',
               size === 'md' && 'max-w-lg',
               size === 'lg' && 'max-w-4xl'
