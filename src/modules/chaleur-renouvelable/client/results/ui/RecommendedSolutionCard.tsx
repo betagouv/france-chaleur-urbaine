@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useMemo } from 'react';
 
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import Image from '@/components/ui/Image';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
@@ -12,8 +11,9 @@ import { SolutionConsumptionPanel } from '@/modules/chaleur-renouvelable/client/
 import { SolutionCta } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionCta';
 import { UsageTags } from '@/modules/chaleur-renouvelable/client/results/ui/UsageTags';
 import type { DPE } from '@/modules/chaleur-renouvelable/constants';
+import { Map } from '@/modules/map/client/Map';
 
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
+const MapMarker = dynamic(() => import('@/modules/map/client/interactions/MapMarker').then((mod) => mod.MapMarker), { ssr: false });
 
 export type RecommendedSolutionCardProps = {
   item: ModeDeChauffageEnriched;
@@ -124,13 +124,12 @@ function HeatNetworkRecommendedSolutionCard({
   const heatNetwork = situation.eligibiliteReseauChaleur;
   const prerequisiteRows = item.prerequis(situation);
   const mapConfiguration = useMemo(
-    () =>
-      createMapConfiguration({
-        filtreIdentifiantReseau: heatNetwork?.id ? [heatNetwork.id] : [],
-        reseauxDeChaleur: {
-          show: true,
-        },
-      }),
+    () => ({
+      filtreIdentifiantReseau: heatNetwork?.id ? [heatNetwork.id] : [],
+      reseauxDeChaleur: {
+        show: true,
+      },
+    }),
     [heatNetwork?.id]
   );
 
@@ -163,12 +162,9 @@ function HeatNetworkRecommendedSolutionCard({
       <div className="grid-1 grid gap-6 md:grid-cols-3">
         {geoAddress && (
           <div className="h-full overflow-hidden border border-solid border-border-default-grey">
-            <Map
-              withCenterPin
-              initialCenter={geoAddress.geometry.coordinates}
-              initialZoom={15}
-              initialMapConfiguration={mapConfiguration}
-            />
+            <Map config={mapConfiguration} initialView={{ center: geoAddress.geometry.coordinates, zoom: 15 }} legend={false} search="none">
+              <MapMarker longitude={geoAddress.geometry.coordinates[0]} latitude={geoAddress.geometry.coordinates[1]} />
+            </Map>
           </div>
         )}
         <SolutionConsumptionPanel
