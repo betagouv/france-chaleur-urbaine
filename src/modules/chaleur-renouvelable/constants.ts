@@ -66,7 +66,7 @@ export type IncompatibleSolutionRow = {
   source: string;
 };
 
-export type PrerequisiteStatus = 'favorable' | 'defavorable' | 'contraignant' | 'aVerifier';
+export type PrerequisiteStatus = 'favorable' | 'defavorable' | 'contraignant' | 'averifier';
 
 export type PrerequisiteRow = {
   label: ReactNode;

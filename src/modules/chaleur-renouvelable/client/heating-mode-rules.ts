@@ -108,7 +108,7 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
         {
           label: 'La ressource énergétique de la parcelle est inconnue',
           source: 'Cerema',
-          status: 'aVerifier' as const,
+          status: 'averifier' as const,
         },
       ]
     : []),
@@ -124,9 +124,9 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
 ];
 
 export const outdoorPacPrerequisites = [
-  { label: 'Espace requis pour les modules extérieurs', status: 'aVerifier' },
+  { label: 'Espace requis pour les modules extérieurs', status: 'averifier' },
   {
     label: 'Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique',
-    status: 'aVerifier',
+    status: 'averifier',
   },
 ] satisfies PrerequisiteRow[];

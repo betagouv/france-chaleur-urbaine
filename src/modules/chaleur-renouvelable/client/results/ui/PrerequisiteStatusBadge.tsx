@@ -3,7 +3,7 @@ import cx from '@/utils/cx';
 
 export function PrerequisiteStatusBadge({ status }: { status: PrerequisiteStatus }) {
   const config = {
-    aVerifier: {
+    averifier: {
       className: 'bg-[#FEECC2] text-[#716043]',
       label: 'À VÉRIFIER',
     },
