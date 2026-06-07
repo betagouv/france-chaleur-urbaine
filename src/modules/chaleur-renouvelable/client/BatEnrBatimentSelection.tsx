@@ -6,10 +6,12 @@ export function BatEnrBatimentSelection({
   batiments,
   initialCenter,
   onSelect,
+  selectedBatiment,
 }: {
   batiments: BatEnrBatiment[];
   initialCenter?: [number, number];
   onSelect: (batiment: BatEnrBatiment) => void;
+  selectedBatiment?: BatEnrBatiment | null;
 }) {
   return (
     <div>
@@ -19,6 +21,7 @@ export function BatEnrBatimentSelection({
         className="h-[60vh] min-h-96 w-full overflow-hidden"
         initialCenter={initialCenter}
         onSelect={onSelect}
+        selectedBatiment={selectedBatiment}
       />
     </div>
   );

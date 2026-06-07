@@ -1,41 +1,67 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import dynamic from 'next/dynamic';
-import { useCallback } from 'react';
+import { bbox as getBbox } from '@turf/bbox';
+import { useCallback, useMemo } from 'react';
 
 import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/constants';
+import { MapFitBounds } from '@/modules/map/client/interactions/MapFitBounds';
 import { Map } from '@/modules/map/client/Map';
+import type { BBox, InitialView } from '@/modules/map/shared/types';
 
-const BdnbBatimentSelector = dynamic(
-  () => import('@/modules/map/client/interactions/BdnbBatimentSelector').then((mod) => mod.BdnbBatimentSelector),
-  { ssr: false }
-);
+import { BatEnrBatimentSelector, getBatEnrBatimentsFeatureCollection, isSelectableBatEnrBatiment } from './BatEnrBatimentSelector';
 
 type BatEnrBatimentsMapProps = {
   batiments: BatEnrBatiment[];
   className?: string;
   initialCenter?: [number, number];
   onSelect: (batiment: BatEnrBatiment) => void;
+  selectedBatiment?: BatEnrBatiment | null;
 };
 
-export function BatEnrBatimentsMap({ batiments, className, initialCenter, onSelect }: BatEnrBatimentsMapProps) {
-  const handleSelectBatiment = useCallback(
-    (batimentGroupeId: string) => {
-      const selectedBatiment = batiments.find((batiment) => batiment.batiment_groupe_id === batimentGroupeId);
+export function BatEnrBatimentsMap({ batiments, className, initialCenter, onSelect, selectedBatiment }: BatEnrBatimentsMapProps) {
+  const selectableBatiments = useMemo(() => batiments.filter(isSelectableBatEnrBatiment), [batiments]);
+  const selectedBatimentConstructionId = selectedBatiment?.batiment_construction_id ?? null;
+  const batimentsBounds = useMemo(() => getBatimentsBounds(selectableBatiments), [selectableBatiments]);
+  const initialView = useMemo(
+    (): InitialView | undefined =>
+      batimentsBounds ? { bbox: batimentsBounds } : initialCenter ? { center: initialCenter, zoom: 18 } : undefined,
+    [batimentsBounds, initialCenter]
+  );
 
-      if (selectedBatiment) {
-        onSelect(selectedBatiment);
+  const handleSelectBatiment = useCallback(
+    (batimentConstructionId: string) => {
+      const nextBatiment = selectableBatiments.find((batiment) => batiment.batiment_construction_id === batimentConstructionId);
+
+      if (nextBatiment) {
+        onSelect(nextBatiment);
       }
     },
-    [batiments, onSelect]
+    [onSelect, selectableBatiments]
   );
 
-  return batiments.length > 0 ? (
+  if (batiments.length === 0) {
+    return <Alert small severity="warning" description="Aucun bâtiment n’est recensé à cette adresse." />;
+  }
+
+  if (selectableBatiments.length === 0) {
+    return <Alert small severity="warning" description="Aucune géométrie de bâtiment n’est disponible pour cette adresse." />;
+  }
+
+  return (
     <div className={className}>
-      <Map config={{}} initialView={initialCenter ? { center: initialCenter, zoom: 18 } : undefined} legend={false} search="none">
-        <BdnbBatimentSelector value={null} onSelect={handleSelectBatiment} />
+      <Map config={{}} initialView={initialView} legend={false} search="none">
+        <MapFitBounds bbox={batimentsBounds} maxZoom={18} />
+        <BatEnrBatimentSelector batiments={selectableBatiments} value={selectedBatimentConstructionId} onSelect={handleSelectBatiment} />
       </Map>
     </div>
-  ) : (
-    <Alert small severity="warning" description="Aucun bâtiment n’est recensé à cette adresse." />
   );
+}
+
+function getBatimentsBounds(batiments: Parameters<typeof getBatEnrBatimentsFeatureCollection>[0]): BBox | undefined {
+  if (batiments.length === 0) {
+    return undefined;
+  }
+
+  const bounds = getBbox(getBatEnrBatimentsFeatureCollection(batiments));
+
+  return [bounds[0], bounds[1], bounds[2], bounds[3]];
 }

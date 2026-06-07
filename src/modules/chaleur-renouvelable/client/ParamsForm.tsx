@@ -45,6 +45,7 @@ type ParamsFormProps = {
   onSelectGeoAddress?: (val?: BANAddressFeature) => void;
   onSelectBatiment: (batiment: BatEnrBatiment) => void;
   onAddressError?: () => void;
+  selectedBatiment?: BatEnrBatiment | null;
 };
 
 /**
@@ -62,6 +63,7 @@ export function ParamsForm({
   onSelectGeoAddress,
   onSelectBatiment,
   onAddressError: _onAddressError,
+  selectedBatiment,
 }: ParamsFormProps) {
   const currentValues = toParamsFormDraft(values);
   const [draft, setDraft] = useState(currentValues);
@@ -191,6 +193,7 @@ export function ParamsForm({
                   batiments={batiments}
                   initialCenter={geoAddress?.geometry.coordinates}
                   onSelect={onSelectBatiment}
+                  selectedBatiment={selectedBatiment}
                   className="h-full"
                 />
                 <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 content-start">
