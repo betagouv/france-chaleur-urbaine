@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { z } from 'zod';
 
-import DsfrSelectCheckboxes from '@/components/form/dsfr/SelectCheckboxes';
+import FieldWrapper from '@/components/form/dsfr/FieldWrapper';
 import useForm from '@/components/form/react-form/useForm';
 import Alert from '@/components/ui/Alert';
 import Link from '@/components/ui/Link';
@@ -10,7 +11,9 @@ import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/cli
 import {
   DEFAULT_SIMULATION_PARAMS,
   ESPACE_EXTERIEUR_VALUES,
+  type HeatingEnergy,
   heatingEnergyOptions,
+  type OccupantStatus,
   occupantStatusOptions,
   type ProjectStatus,
   projectStatusOptions,
@@ -34,7 +37,34 @@ const contactRecipients = [
   },
 ] as const;
 
+const refusalPeriodOptions = [
+  { label: 'Il y a moins de 3 mois', value: 'Il y a moins de 3 mois' },
+  { label: 'Il y a 3 à 12 mois', value: 'Il y a 3 à 12 mois' },
+  { label: 'Il y a plus d’un an', value: 'Il y a plus d’un an' },
+];
+
+const refusalReasonOptions = [
+  { label: 'Bâtiment trop éloigné du réseau', value: 'Bâtiment trop éloigné du réseau' },
+  { label: 'Puissance insuffisante', value: 'Puissance insuffisante' },
+  { label: 'Coût du raccordement trop élevé', value: 'Coût du raccordement trop élevé' },
+  { label: 'Mode de chauffage individuel', value: 'Mode de chauffage individuel' },
+  { label: 'Autre', value: 'Autre' },
+  { label: 'Motif inconnu', value: 'Motif inconnu' },
+];
+
 export type ContactRecipientId = (typeof contactRecipients)[number]['id'];
+type ContactFormChaleurRenouvelable = z.infer<typeof zContactFormChaleuRenouvelable>;
+
+const CONTACT_FORM_DEFAULT_VALUES = {
+  email: '',
+  firstName: '',
+  heatingEnergy: 'Électricité',
+  lastName: '',
+  occupantStatus: 'Copropriétaire',
+  phone: '',
+  projectStatus: [] as ProjectStatus[],
+  termOfUse: false,
+} satisfies ContactFormChaleurRenouvelable;
 
 function ContactRecipientSelector({
   selectedRecipientId,
@@ -84,54 +114,136 @@ function ContactRecipientSelector({
   );
 }
 
-type ProjectStatusSelectProps = {
-  className?: string;
-  label?: string;
-  onChange?: (value: ProjectStatus[]) => void;
-  onOpenChange?: (isOpen: boolean) => void;
-  open?: boolean;
-  options: typeof projectStatusOptions;
-  small?: boolean;
-  value?: ProjectStatus[];
+function ProjectStatusSelect({
+  isPublicAdvisorSelected,
+  onChange,
+  value,
+}: {
   isPublicAdvisorSelected: boolean;
-};
+  onChange: (value: ProjectStatus[]) => void;
+  value: ProjectStatus[];
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const triggerLabel = getProjectStatusTriggerLabel(value);
 
-function ProjectStatusSelect({ label, onChange, options, isPublicAdvisorSelected, value = [], ...props }: ProjectStatusSelectProps) {
+  const handleToggleOption = (optionValue: ProjectStatus) => {
+    const nextValue = value.includes(optionValue)
+      ? value.filter((selectedValue) => selectedValue !== optionValue)
+      : [...value, optionValue];
+
+    onChange(nextValue);
+
+    if (nextValue.length > 0) {
+      trackPostHogEvent('fcr_contact:project_stage_selected', {
+        is_raccordable: !isPublicAdvisorSelected,
+        stages: nextValue,
+      });
+    }
+  };
+
+  const handleTriggerClick = () => {
+    setIsOpen((currentIsOpen) => !currentIsOpen);
+  };
+
+  // Closes the dropdown on outside pointer down.
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleDocumentPointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && !containerRef.current?.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handleDocumentPointerDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handleDocumentPointerDown);
+    };
+  }, [isOpen]);
+
   return (
-    <DsfrSelectCheckboxes
-      fieldId="projectStatus"
-      label={label}
-      options={options.map((option) => {
-        const optionValue = option.nativeInputProps.value;
-
-        return {
-          ...option,
-          nativeInputProps: {
-            ...option.nativeInputProps,
-            'aria-label': option.label,
-            checked: value.includes(optionValue),
-            name: 'projectStatus',
-            onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-              const nextValue = event.target.checked
-                ? [...value, optionValue]
-                : value.filter((selectedValue) => selectedValue !== optionValue);
-
-              onChange?.(nextValue);
-
-              if (nextValue.length > 0) {
-                trackPostHogEvent('fcr_contact:project_stage_selected', {
-                  is_raccordable: !isPublicAdvisorSelected,
-                  stages: nextValue,
-                });
+    <div ref={containerRef}>
+      <FieldWrapper label="Où en êtes-vous de votre projet ? (optionnel)" className="mb-0">
+        <div className="relative">
+          <button
+            type="button"
+            className="fr-select w-full cursor-pointer bg-white text-left"
+            aria-expanded={isOpen}
+            aria-haspopup="listbox"
+            onClick={handleTriggerClick}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                setIsOpen(false);
               }
-            },
-            value: optionValue,
-          },
-        };
-      })}
-      {...props}
-    />
+            }}
+          >
+            <span className={cx('block truncate whitespace-nowrap overflow-hidden text-left', value.length === 0 && 'text-gray-500')}>
+              {triggerLabel}
+            </span>
+          </button>
+
+          {isOpen && <ProjectStatusOptionList selectedValues={value} onToggleOption={handleToggleOption} />}
+        </div>
+      </FieldWrapper>
+    </div>
   );
+}
+
+function ProjectStatusOptionList({
+  onToggleOption,
+  selectedValues,
+}: {
+  onToggleOption: (optionValue: ProjectStatus) => void;
+  selectedValues: ProjectStatus[];
+}) {
+  return (
+    <ul
+      className="absolute top-full right-0 left-0 z-50 mt-1 max-h-64 overflow-auto border border-gray-200 bg-white p-0 shadow-lg"
+      role="listbox"
+      aria-multiselectable="true"
+    >
+      {projectStatusOptions.map((option) => {
+        const optionValue = option.nativeInputProps.value;
+        const isSelected = selectedValues.includes(optionValue);
+
+        return (
+          <li key={optionValue} className="p-0">
+            <button
+              type="button"
+              className={cx('flex w-full cursor-pointer items-start gap-3 px-4 py-2 text-left', isSelected && 'bg-blue-50')}
+              aria-selected={isSelected}
+              role="option"
+              onClick={() => onToggleOption(optionValue)}
+              onMouseDown={(event) => event.preventDefault()}
+            >
+              <span
+                className={cx(
+                  'mt-1 flex h-4 w-4 p-2 shrink-0 items-center justify-center border border-blue',
+                  isSelected && 'bg-blue text-white'
+                )}
+                aria-hidden="true"
+              >
+                {isSelected && <span className="fr-icon-check-line" />}
+              </span>
+              <span>{option.label}</span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function getProjectStatusTriggerLabel(value: ProjectStatus[]) {
+  if (value.length === 0) {
+    return 'Sélectionner une ou plusieurs étapes';
+  }
+
+  return value.length === 1 ? value[0] : `${value.length} étapes sélectionnées`;
 }
 
 type DemandFCRFormProps = {
@@ -143,7 +255,6 @@ type DemandFCRFormProps = {
 export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipientId, topSolution }: DemandFCRFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
-  const [isProjectStatusSelectOpen, setIsProjectStatusSelectOpen] = useState(false);
   const [refusalPeriod, setRefusalPeriod] = useState('');
   const [refusalReason, setRefusalReason] = useState('');
 
@@ -153,74 +264,98 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
   const chauffageQuery = useChoixChauffageQueryParams();
   const params = chauffageQuery.params;
 
-  const { Field, Form, Submit, form, useValue } = useForm<typeof zContactFormChaleuRenouvelable>({
-    defaultValues: {
-      email: '',
-      firstName: '',
-      heatingEnergy: 'Électricité',
-      lastName: '',
-      occupantStatus: 'Copropriétaire',
-      phone: '',
-      projectStatus: [] as ProjectStatus[],
-      termOfUse: false,
-    },
-    onSubmit: toastErrors(
-      async ({ value }) => {
-        setIsLoading(true);
-
-        try {
-          const espaceExterieur =
-            isDefined(params.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(params.espaceExterieur)
-              ? params.espaceExterieur
-              : DEFAULT_SIMULATION_PARAMS.espaceExterieur;
-
-          const typeLogement = params.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
-          const housingCount = Number(params.nbLogements || DEFAULT_SIMULATION_PARAMS.nbLogements);
-
-          trackPostHogEvent('fcr_contact:form_submitted', {
-            energy: value.heatingEnergy,
-            is_raccordable: !isPublicAdvisorSelected,
-            nb_logements: housingCount,
-            non_raccordable_reason: isPublicAdvisorSelected ? refusalReason || undefined : undefined,
-            phone_filled: value.phone.trim().length > 0,
-            profile: value.occupantStatus,
-            project_stages: value.projectStatus,
-            top_solution: topSolution,
-          });
-
-          await createDemandeChaleurRenouvelable.mutateAsync({
-            address: params.adresse ?? '',
-            averageArea: Number(params.surfaceMoyenne || DEFAULT_SIMULATION_PARAMS.surfaceMoyenne),
-            averageResidents: Number(params.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
-            batimentConstructionId: params.constructionId,
-            dpe: params.dpe,
-            email: value.email,
-            firstName: value.firstName,
-            heatingEnergy: value.heatingEnergy,
-            hotWaterSystemType: params.modeEauChaudeSanitaire,
-            housingCount,
-            housingType: typeLogement,
-            isPublicAdvisorSelected,
-            lastName: value.lastName,
-            occupantStatus: value.occupantStatus,
-            outdoorSpace: espaceExterieur,
-            phone: value.phone,
-            projectStatus: value.projectStatus,
-            radiatorType: params.typeRadiateur,
-            refusalPeriod: isPublicAdvisorSelected ? refusalPeriod || null : null,
-            refusalReason: isPublicAdvisorSelected ? refusalReason || null : null,
-            simulationUrl: window.location.href,
-          });
-
-          setIsSent(true);
-        } finally {
-          setIsLoading(false);
-        }
-      },
-      () => 'Une erreur est survenue pendant l’envoi de votre demande. Veuillez réessayer dans quelques instants.'
-    ),
-    schema: zContactFormChaleuRenouvelable,
+  const submitContextRef = useRef({
+    createDemandeChaleurRenouvelable,
+    isPublicAdvisorSelected,
+    params,
+    refusalPeriod,
+    refusalReason,
+    topSolution,
   });
+  submitContextRef.current = {
+    createDemandeChaleurRenouvelable,
+    isPublicAdvisorSelected,
+    params,
+    refusalPeriod,
+    refusalReason,
+    topSolution,
+  };
+
+  const handleSubmit = useCallback(async ({ value }: { value: ContactFormChaleurRenouvelable }) => {
+    const submitContext = submitContextRef.current;
+    const submitParams = submitContext.params;
+
+    setIsLoading(true);
+
+    try {
+      const espaceExterieur =
+        isDefined(submitParams.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(submitParams.espaceExterieur)
+          ? submitParams.espaceExterieur
+          : DEFAULT_SIMULATION_PARAMS.espaceExterieur;
+
+      const typeLogement = submitParams.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
+      const housingCount = Number(submitParams.nbLogements || DEFAULT_SIMULATION_PARAMS.nbLogements);
+
+      trackPostHogEvent('fcr_contact:form_submitted', {
+        energy: value.heatingEnergy,
+        is_raccordable: !submitContext.isPublicAdvisorSelected,
+        nb_logements: housingCount,
+        non_raccordable_reason: submitContext.isPublicAdvisorSelected ? submitContext.refusalReason || undefined : undefined,
+        phone_filled: value.phone.trim().length > 0,
+        profile: value.occupantStatus,
+        project_stages: value.projectStatus,
+        top_solution: submitContext.topSolution,
+      });
+
+      await submitContext.createDemandeChaleurRenouvelable.mutateAsync({
+        address: submitParams.adresse ?? '',
+        averageArea: Number(submitParams.surfaceMoyenne || DEFAULT_SIMULATION_PARAMS.surfaceMoyenne),
+        averageResidents: Number(submitParams.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
+        batimentConstructionId: submitParams.constructionId,
+        dpe: submitParams.dpe,
+        email: value.email,
+        firstName: value.firstName,
+        heatingEnergy: value.heatingEnergy,
+        hotWaterSystemType: submitParams.modeEauChaudeSanitaire,
+        housingCount,
+        housingType: typeLogement,
+        isPublicAdvisorSelected: submitContext.isPublicAdvisorSelected,
+        lastName: value.lastName,
+        occupantStatus: value.occupantStatus,
+        outdoorSpace: espaceExterieur,
+        phone: value.phone,
+        projectStatus: value.projectStatus,
+        radiatorType: submitParams.typeRadiateur,
+        refusalPeriod: submitContext.isPublicAdvisorSelected ? submitContext.refusalPeriod || null : null,
+        refusalReason: submitContext.isPublicAdvisorSelected ? submitContext.refusalReason || null : null,
+        simulationUrl: window.location.href,
+      });
+
+      setIsSent(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const handleSubmitWithErrors = useMemo(
+    () =>
+      toastErrors(
+        handleSubmit,
+        () => 'Une erreur est survenue pendant l’envoi de votre demande. Veuillez réessayer dans quelques instants.'
+      ),
+    [handleSubmit]
+  );
+
+  const formOptions = useMemo(
+    () => ({
+      defaultValues: CONTACT_FORM_DEFAULT_VALUES,
+      onSubmit: handleSubmitWithErrors,
+      schema: zContactFormChaleuRenouvelable,
+    }),
+    [handleSubmitWithErrors]
+  );
+
+  const { Field, Form, Submit, form, useValue } = useForm<typeof zContactFormChaleuRenouvelable>(formOptions);
 
   const selectedProjectStatus = useValue<ProjectStatus[]>('projectStatus') ?? [];
 
@@ -262,32 +397,18 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
             <>
               <RichSelect
                 label="Quand avez-vous reçu le refus du gestionnaire ?"
-                options={[
-                  { label: 'Il y a moins de 3 mois', value: 'Il y a moins de 3 mois' },
-                  { label: 'Il y a 3 à 12 mois', value: 'Il y a 3 à 12 mois' },
-                  { label: 'Il y a plus d’un an', value: 'Il y a plus d’un an' },
-                ]}
+                options={refusalPeriodOptions}
                 placeholder="Sélectionner..."
-                value={refusalPeriod}
+                value={refusalPeriod || undefined}
                 onChange={setRefusalPeriod}
               />
               <RichSelect
                 label="Motif communiqué"
-                options={[
-                  { label: 'Bâtiment trop éloigné du réseau', value: 'Bâtiment trop éloigné du réseau' },
-                  { label: 'Puissance insuffisante', value: 'Puissance insuffisante' },
-                  { label: 'Coût du raccordement trop élevé', value: 'Coût du raccordement trop élevé' },
-                  { label: 'Mode de chauffage individuel', value: 'Mode de chauffage individuel' },
-                  { label: 'Autre', value: 'Autre' },
-                  { label: 'Motif inconnu', value: 'Motif inconnu' },
-                ]}
+                options={refusalReasonOptions}
                 placeholder="Sélectionner le motif"
-                value={refusalReason}
+                value={refusalReason || undefined}
                 onChange={(reason) => {
-                  if (reason) {
-                    trackPostHogEvent('fcr_contact:non_raccordable_reason_selected', { reason });
-                  }
-
+                  trackPostHogEvent('fcr_contact:non_raccordable_reason_selected', { reason });
                   setRefusalReason(reason);
                 }}
               />
@@ -296,7 +417,7 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
           <form.Field
             name="occupantStatus"
             children={(field) => (
-              <RichSelect
+              <RichSelect<OccupantStatus>
                 label="Vous êtes"
                 value={field.state.value}
                 onChange={field.handleChange}
@@ -312,7 +433,7 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
           <form.Field
             name="heatingEnergy"
             children={(field) => (
-              <RichSelect
+              <RichSelect<HeatingEnergy>
                 label="Énergie de chauffage"
                 value={field.state.value}
                 onChange={field.handleChange}
@@ -334,14 +455,9 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
               name="projectStatus"
               children={(field) => (
                 <ProjectStatusSelect
-                  label="Où en êtes-vous de votre projet ? (optionnel)"
                   value={field.state.value}
                   onChange={field.handleChange}
-                  open={isProjectStatusSelectOpen}
-                  onOpenChange={setIsProjectStatusSelectOpen}
-                  options={projectStatusOptions}
                   isPublicAdvisorSelected={isPublicAdvisorSelected}
-                  small
                 />
               )}
             />

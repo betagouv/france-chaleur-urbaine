@@ -1,6 +1,5 @@
-import * as Select from '@radix-ui/react-select';
 import Image from 'next/image';
-import { useId } from 'react';
+import { type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import FieldWrapper from '@/components/form/dsfr/FieldWrapper';
 import { trackPostHogEvent } from '@/modules/analytics/client';
@@ -48,55 +47,212 @@ export default function RichSelect<T extends string, Event extends PostHogEvent 
   postHogEventKey,
   postHogEventProps,
 }: RichSelectProps<T, Event>) {
-  const id = useId();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeOptionIndex, setActiveOptionIndex] = useState(-1);
 
-  const radixValue = value ?? '';
+  const selectedOption = useMemo(() => options.find((option) => option.value === value), [options, value]);
+  const selectedOptionIndex = useMemo(() => options.findIndex((option) => option.value === value), [options, value]);
+  const activeOption = options[activeOptionIndex];
+
+  const openSelect = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+
+    setActiveOptionIndex(getInitialActiveOptionIndex(selectedOptionIndex, options.length));
+    setIsOpen(true);
+  }, [disabled, options.length, selectedOptionIndex]);
+
+  const closeSelect = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  const selectOption = useCallback(
+    (nextValue: T) => {
+      if (nextValue !== value) {
+        onChange(nextValue);
+        trackPostHogEvent(postHogEventKey, getPostHogEventProps(postHogEventProps, nextValue));
+      }
+
+      closeSelect();
+    },
+    [closeSelect, onChange, postHogEventKey, postHogEventProps, value]
+  );
+
+  const moveActiveOption = useCallback(
+    (offset: number) => {
+      setActiveOptionIndex((currentActiveOptionIndex) => getNextActiveOptionIndex(currentActiveOptionIndex, offset, options.length));
+    },
+    [options.length]
+  );
+
+  const handleTriggerClick = useCallback(() => {
+    if (isOpen) {
+      closeSelect();
+      return;
+    }
+
+    openSelect();
+  }, [closeSelect, isOpen, openSelect]);
+
+  const handleTriggerKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLButtonElement>) => {
+      if (disabled) {
+        return;
+      }
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (isOpen) {
+          moveActiveOption(1);
+          return;
+        }
+
+        openSelect();
+        return;
+      }
+
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (isOpen) {
+          moveActiveOption(-1);
+          return;
+        }
+
+        openSelect();
+        return;
+      }
+
+      if (event.key === 'Home') {
+        event.preventDefault();
+        setActiveOptionIndex(getInitialActiveOptionIndex(-1, options.length));
+        setIsOpen(true);
+        return;
+      }
+
+      if (event.key === 'End') {
+        event.preventDefault();
+        setActiveOptionIndex(options.length - 1);
+        setIsOpen(true);
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeSelect();
+        return;
+      }
+
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+
+        if (!isOpen) {
+          openSelect();
+          return;
+        }
+
+        if (activeOption) {
+          selectOption(activeOption.value);
+        }
+      }
+    },
+    [activeOption, closeSelect, disabled, isOpen, moveActiveOption, openSelect, options.length, selectOption]
+  );
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleDocumentPointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && !containerRef.current?.contains(event.target)) {
+        closeSelect();
+      }
+    };
+
+    document.addEventListener('pointerdown', handleDocumentPointerDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handleDocumentPointerDown);
+    };
+  }, [closeSelect, isOpen]);
 
   return (
-    <FieldWrapper fieldId={id} label={label || ''} className={className}>
-      <Select.Root
-        value={radixValue}
-        disabled={disabled}
-        onValueChange={(v) => {
-          if (v) {
-            const nextValue = v as T;
-            onChange(nextValue);
-            trackPostHogEvent(postHogEventKey, getPostHogEventProps(postHogEventProps, nextValue));
-          }
-        }}
-      >
-        <Select.Trigger
-          className={cx(
-            'fr-select w-full data-disabled:cursor-not-allowed data-disabled:bg-gray-100 data-disabled:text-gray-500',
-            className
+    <div ref={containerRef}>
+      <FieldWrapper label={label || ''} className={className}>
+        <div className="relative">
+          <button
+            type="button"
+            className="fr-select w-full cursor-pointer text-left disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
+            aria-expanded={isOpen}
+            aria-haspopup="listbox"
+            disabled={disabled}
+            role="combobox"
+            onClick={handleTriggerClick}
+            onKeyDown={handleTriggerKeyDown}
+          >
+            <span className="block truncate overflow-hidden whitespace-nowrap text-left">{selectedOption?.label ?? placeholder}</span>
+          </button>
+
+          {isOpen && (
+            <RichSelectOptionList activeOptionIndex={activeOptionIndex} onSelect={selectOption} options={options} selectedValue={value} />
           )}
-        >
-          <span className="block truncate whitespace-nowrap overflow-hidden text-left">
-            <Select.Value placeholder={<span className="block truncate whitespace-nowrap overflow-hidden">{placeholder}</span>} />
-          </span>
-        </Select.Trigger>
-        <Select.Portal>
-          <Select.Content className="bg-white shadow-lg" position="popper">
-            <Select.Viewport>
-              {options.map((option) => (
-                <Select.Item
-                  key={option.value}
-                  value={option.value}
-                  className={cx('cursor-pointer select-none px-4 py-3 outline-none', 'data-highlighted:bg-blue-50')}
-                >
-                  <Select.ItemText>
-                    <div className="flex">
-                      {option.icone && <Image src={option.icone} alt="icone" width="16" height="16" className="mr-1" />}
-                      <span>{option.label}</span>
-                    </div>
-                  </Select.ItemText>
-                  {option.description && <div className="text-xs text-slate-500">{option.description}</div>}
-                </Select.Item>
-              ))}
-            </Select.Viewport>
-          </Select.Content>
-        </Select.Portal>
-      </Select.Root>
-    </FieldWrapper>
+        </div>
+      </FieldWrapper>
+    </div>
   );
+}
+
+type RichSelectOptionListProps<T extends string> = {
+  activeOptionIndex: number;
+  onSelect: (value: T) => void;
+  options: RichSelectOption<T>[];
+  selectedValue?: T;
+};
+
+function RichSelectOptionList<T extends string>({ activeOptionIndex, onSelect, options, selectedValue }: RichSelectOptionListProps<T>) {
+  return (
+    <ul
+      className="absolute top-full left-0 z-50 mt-1 max-h-64 min-w-full w-max overflow-y-auto border border-gray-200 bg-white p-0 shadow-lg"
+      role="listbox"
+    >
+      {options.map((option, optionIndex) => {
+        const isActive = optionIndex === activeOptionIndex;
+        const isSelected = option.value === selectedValue;
+
+        return (
+          <li
+            key={option.value}
+            className={cx('cursor-pointer select-none px-4 py-3 whitespace-nowrap outline-none', isActive && 'bg-blue-50')}
+            aria-selected={isSelected}
+            role="option"
+            tabIndex={-1}
+            onClick={() => onSelect(option.value)}
+            onMouseDown={(event) => event.preventDefault()}
+          >
+            <span className="flex">
+              {option.icone && <Image src={option.icone} alt="" width="16" height="16" className="mr-1" />}
+              <span>{option.label}</span>
+            </span>
+            {option.description && <span className="block whitespace-nowrap text-xs text-slate-500">{option.description}</span>}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function getInitialActiveOptionIndex(selectedOptionIndex: number, optionsCount: number) {
+  return selectedOptionIndex >= 0 ? selectedOptionIndex : Math.min(optionsCount - 1, 0);
+}
+
+function getNextActiveOptionIndex(currentActiveOptionIndex: number, offset: number, optionsCount: number) {
+  if (optionsCount === 0) {
+    return -1;
+  }
+
+  const normalizedActiveOptionIndex = currentActiveOptionIndex >= 0 ? currentActiveOptionIndex : 0;
+
+  return (normalizedActiveOptionIndex + offset + optionsCount) % optionsCount;
 }
