@@ -140,6 +140,7 @@ const getBatEnrLookupResult = async ({
 export function useAddressEligibility(adresse: string | null, selectedBatimentConstructionId?: string | null) {
   const trpcUtils = trpc.useUtils();
   const [state, setState] = useState<EligibilityState>(emptyState);
+  const [isEligibilityLoading, setIsEligibilityLoading] = useState(false);
   const selectedBatimentConstructionIdRef = useRef(selectedBatimentConstructionId);
 
   useEffect(() => {
@@ -152,31 +153,37 @@ export function useAddressEligibility(adresse: string | null, selectedBatimentCo
 
   const computeEligibilityFromSuggestion = useCallback(
     toastErrors(async (geoAddress: BANAddressFeature) => {
-      const [lon, lat] = geoAddress.geometry.coordinates;
-      const { city, citycode } = geoAddress.properties;
+      setIsEligibilityLoading(true);
 
-      const [batEnrLookup, infos, eligibiliteReseauChaleur] = await Promise.all([
-        getBatEnrLookupResult({ geoAddress, selectedBatimentConstructionId: selectedBatimentConstructionIdRef.current, trpcUtils }),
-        trpcUtils.client.batEnr.getLocationInfos.query({
-          city,
-          cityCode: citycode,
-        }),
-        trpcUtils.client.reseaux.eligibilityStatus.query({
-          lat,
-          lon,
-        }),
-      ]);
+      try {
+        const [lon, lat] = geoAddress.geometry.coordinates;
+        const { city, citycode } = geoAddress.properties;
 
-      setState({
-        batEnr: batEnrLookup.batEnr,
-        batEnrBatiments: batEnrLookup.batEnrBatiments,
-        codeDepartement: infos?.departement_id ?? '',
-        eligibiliteReseauChaleur,
-        geoAddress,
-        selectedBatEnrBatiment: batEnrLookup.selectedBatEnrBatiment,
-        shouldSelectBatEnrBatiment: batEnrLookup.shouldSelectBatEnrBatiment,
-        temperatureRef: infos?.temperature_ref_altitude_moyenne != null ? Number(infos.temperature_ref_altitude_moyenne) : null,
-      });
+        const [batEnrLookup, infos, eligibiliteReseauChaleur] = await Promise.all([
+          getBatEnrLookupResult({ geoAddress, selectedBatimentConstructionId: selectedBatimentConstructionIdRef.current, trpcUtils }),
+          trpcUtils.client.batEnr.getLocationInfos.query({
+            city,
+            cityCode: citycode,
+          }),
+          trpcUtils.client.reseaux.eligibilityStatus.query({
+            lat,
+            lon,
+          }),
+        ]);
+
+        setState({
+          batEnr: batEnrLookup.batEnr,
+          batEnrBatiments: batEnrLookup.batEnrBatiments,
+          codeDepartement: infos?.departement_id ?? '',
+          eligibiliteReseauChaleur,
+          geoAddress,
+          selectedBatEnrBatiment: batEnrLookup.selectedBatEnrBatiment,
+          shouldSelectBatEnrBatiment: batEnrLookup.shouldSelectBatEnrBatiment,
+          temperatureRef: infos?.temperature_ref_altitude_moyenne != null ? Number(infos.temperature_ref_altitude_moyenne) : null,
+        });
+      } finally {
+        setIsEligibilityLoading(false);
+      }
     }),
     [trpcUtils]
   );
@@ -237,6 +244,7 @@ export function useAddressEligibility(adresse: string | null, selectedBatimentCo
 
   return {
     ...state,
+    isEligibilityLoading,
     onSelectGeoAddress,
     resetEligibility,
     selectBatEnrBatiment,

@@ -38,7 +38,7 @@ export function GainVsGazBadge({
         aria-hidden="true"
       />
       {isSaving ? '-' : '+'}
-      {Math.abs(gainPercentVsGaz)} % 'd’économies vs gaz
+      {Math.abs(gainPercentVsGaz)} % d’économies vs gaz
     </span>
   );
 }
