@@ -41,6 +41,7 @@ export default function ChoixChauffageResults() {
     recommended,
     setGeoAddress,
     setIsParamsOpen,
+    selectedBatEnrBatiment,
     shouldSelectBatEnrBatiment,
     situation,
     urlParams,
@@ -65,12 +66,14 @@ export default function ChoixChauffageResults() {
         onSelectGeoAddress={handleSelectGeoAddress}
         onSelectBatiment={handleSelectBatEnrBatiment}
         onAddressError={() => {}}
+        selectedBatiment={selectedBatEnrBatiment}
       />
       <Dialog title="" open={shouldSelectBatEnrBatiment} size="lg">
         <BatEnrBatimentSelection
           batiments={batEnrBatiments}
           initialCenter={geoAddress?.geometry.coordinates}
           onSelect={handleSelectBatEnrBatiment}
+          selectedBatiment={selectedBatEnrBatiment}
         />
       </Dialog>
       {isEligibilityLoading ? (

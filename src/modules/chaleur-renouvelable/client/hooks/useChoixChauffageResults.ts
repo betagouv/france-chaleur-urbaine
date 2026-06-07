@@ -217,6 +217,7 @@ export function useChoixChauffageResults() {
     openHeatNetworkContactModal,
     otherModes,
     recommended,
+    selectedBatEnrBatiment,
     setGeoAddress,
     setIsParamsOpen,
     shouldSelectBatEnrBatiment,
