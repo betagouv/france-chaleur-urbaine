@@ -32,6 +32,7 @@ export default function ChoixChauffageResults() {
     handleSelectBatEnrBatiment,
     handleSelectGeoAddress,
     incompatibleSolutionRows,
+    isEligibilityLoading,
     isParamsOpen,
     modesEnriched,
     openAccordionId,
@@ -72,7 +73,9 @@ export default function ChoixChauffageResults() {
           onSelect={handleSelectBatEnrBatiment}
         />
       </Dialog>
-      {modesEnriched.length > 0 && recommended ? (
+      {isEligibilityLoading ? (
+        <div className="mt-6 border border-gray-200 bg-white px-5 py-6 md:px-10">Chargement des résultats...</div>
+      ) : modesEnriched.length > 0 && recommended ? (
         <>
           <RecommendedSolutionCard
             item={recommended}

@@ -1,5 +1,4 @@
 import Image from '@/components/ui/Image';
-import Tooltip from '@/components/ui/Tooltip';
 
 export function Stars({ value }: { value: number }) {
   return (
@@ -7,10 +6,9 @@ export function Stars({ value }: { value: number }) {
       {Array.from({ length: value }).map((_, index) => (
         <Image key={index} src="/icons/icon-star.png" alt="" aria-hidden="true" width="20" height="20" />
       ))}
-      <Tooltip
-        iconProps={{
-          className: 'text-blue',
-        }}
+      <sup
+        className="fr-icon-information-fill text-blue before:[--icon-size:1rem] cursor-pointer"
+        aria-label="Classement Ademe ENR Choix"
         title="Classement Ademe ENR Choix"
       />
     </div>
