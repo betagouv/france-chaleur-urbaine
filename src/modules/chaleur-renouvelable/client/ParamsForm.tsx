@@ -397,22 +397,26 @@ function InputWithSuffix({
   value: string;
 }) {
   return (
-    <div className="relative inline-block w-full">
-      <Input
-        hideOptionalLabel
-        label={label}
-        nativeInputProps={{
-          inputMode: 'numeric',
-          min: 1,
-          onBlur,
-          onChange: (event) => onChange(event.target.value),
-          placeholder,
-          type: 'number',
-          value,
-        }}
-        className="[&_input]:pr-12"
-      />
-      <span className="pointer-events-none absolute right-3 top-1/2 text-gray-500">{suffix}</span>
+    <div className="fr-input-group w-full">
+      <label className="fr-label mb-2">{label}</label>
+      <div className="relative">
+        <input
+          className="fr-input pr-12"
+          inputMode="numeric"
+          min={1}
+          onBlur={onBlur}
+          onChange={(event) => onChange(event.target.value)}
+          onWheel={(event) => {
+            if (event.currentTarget.type === 'number') {
+              event.currentTarget.blur();
+            }
+          }}
+          placeholder={placeholder}
+          type="number"
+          value={value}
+        />
+        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">{suffix}</span>
+      </div>
     </div>
   );
 }
