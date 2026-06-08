@@ -85,6 +85,7 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>((reseauDeChaleur, { Propert
           postHogEventKey="map:network_clicked"
           postHogEventProps={{ network_id: reseauDeChaleur['Identifiant reseau'] }}
           linkProps={{ href: `/reseaux/${reseauDeChaleur['Identifiant reseau']}`, rel: 'noopener noreferrer', target: '_blank' }}
+          className="mt-2"
         >
           Voir la fiche du réseau
         </Button>
