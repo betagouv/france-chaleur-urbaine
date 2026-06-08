@@ -111,9 +111,9 @@ export function MapCheckableAccordion({
           />
           {/* The DSFR `.fr-checkbox-group` renders the visual checkbox via
               `label::before`, so icon + text live inside the label. */}
-          <label htmlFor={id} className="cursor-pointer flex items-center gap-2 w-full mb-0! text-sm">
+          <label htmlFor={id} className="cursor-pointer flex items-start gap-2 w-full mb-0! text-sm">
             {icon}
-            <span className="flex-1">{label}</span>
+            <span className="flex-1 mt-1">{label}</span>
           </label>
           {tooltip && (
             <>
