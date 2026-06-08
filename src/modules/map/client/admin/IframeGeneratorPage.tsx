@@ -143,7 +143,7 @@ const IframeGeneratorPage = () => {
               <TokenField
                 label="Filtrer par maître d'ouvrage"
                 hintText="Texte libre — Entrée ou virgule pour ajouter."
-                placeholder="Ex : Engie"
+                placeholder="Ex : Métropole de Lyon"
                 scope={['reseaux-de-chaleur', 'reseaux-de-froid']}
                 values={config.maitreOuvrage}
                 onChange={(maitreOuvrage) => update({ maitreOuvrage })}
@@ -171,8 +171,8 @@ const IframeGeneratorPage = () => {
               }}
               options={[
                 { label: 'Masquée', value: 'off' },
-                { label: 'Repliée (bouton)', value: 'hidden' },
-                { label: 'Ouverte', value: 'auto' },
+                { label: 'Repliée', value: 'hidden' },
+                { label: 'Ouverte (auto)', value: 'auto' },
               ]}
             />
             <Select
