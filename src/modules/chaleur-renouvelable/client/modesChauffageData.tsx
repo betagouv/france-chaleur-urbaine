@@ -348,7 +348,7 @@ export const modesDeChauffage = {
       avantages: ['Faibles émissions de CO₂', 'Solution compacte et éprouvée', 'Permet de conserver le système de chauffage existant'],
       coutInstallation: '2 000 à 3 000 €',
       coutParAnPublicodeKey: 'PAC air-eau collective ECS',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Chauffe-eau électrique'" },
+      coutParAnPublicodesSituation: { 'type de production ECS': "'Avec équipement chauffage'" },
       description:
         "Votre bâtiment semble disposer d’un espace extérieur pour accueillir une pompe à chaleur air/eau collective destinée à l’eau chaude sanitaire. Elle capte les calories de l'air extérieur pour chauffer l’eau.",
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
