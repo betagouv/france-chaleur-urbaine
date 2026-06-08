@@ -1,7 +1,7 @@
 import { useLocalStorageValue } from '@react-hookz/web';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
-import { type CSSProperties, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type CSSProperties, type RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { trackPostHogEvent } from '@/modules/analytics/client';
@@ -122,14 +122,11 @@ function MapImplInner({
   const internalRef = useRef<MapCanvasController | null>(null);
   const effectiveRef = externalMapRef ?? internalRef;
 
-  // Seed legendOpen synchronously (before children render) to avoid a flash.
-  const initialLegendOpen = useMemo(() => {
-    if (legend !== 'auto') return false;
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth >= LEGEND_AUTO_OPEN_VIEWPORT_PX;
-  }, [legend]);
-  useHydrateAtoms([[legendOpenAtom, initialLegendOpen]]);
-  const legendOpen = useAtomValue(legendOpenAtom);
+  // Seed during render so the drawer doesn't animate open on mount; the effect re-syncs on later mode changes.
+  const autoOpen = legend === 'auto' && typeof window !== 'undefined' && window.innerWidth >= LEGEND_AUTO_OPEN_VIEWPORT_PX;
+  useHydrateAtoms([[legendOpenAtom, autoOpen]]);
+  const [legendOpen, setLegendOpen] = useAtom(legendOpenAtom);
+  useEffect(() => setLegendOpen(autoOpen), [autoOpen, setLegendOpen]);
 
   const trpcUtils = trpc.useUtils();
   // Eligibility-search tracking (Matomo + PostHog), parity with the public map.
