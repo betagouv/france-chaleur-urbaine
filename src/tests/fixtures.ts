@@ -90,6 +90,7 @@ export async function cleanDatabase() {
     kdb.deleteFrom('zone_de_developpement_prioritaire').execute(),
     kdb.deleteFrom('zones_et_reseaux_en_construction').execute(),
     kdb.deleteFrom('reseaux_de_chaleur').execute(),
+    kdb.deleteFrom('reseaux_de_froid').execute(),
 
     // Geographic tables
     kdb.deleteFrom('ign_communes').execute(),
@@ -167,6 +168,10 @@ export async function seedProEligibilityTestsAddress(
 
 export async function seedReseauDeChaleur(data: InsertObject<DB, 'reseaux_de_chaleur'>) {
   return await kdb.insertInto('reseaux_de_chaleur').values(data).returningAll().executeTakeFirstOrThrow();
+}
+
+export async function seedReseauDeFroid(data: InsertObject<DB, 'reseaux_de_froid'>) {
+  return await kdb.insertInto('reseaux_de_froid').values(data).returningAll().executeTakeFirstOrThrow();
 }
 
 export async function seedZoneEtReseauEnConstruction(data: InsertObject<DB, 'zones_et_reseaux_en_construction'>) {

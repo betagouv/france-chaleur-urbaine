@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import Checkbox from '@/components/form/dsfr/Checkbox';
@@ -8,9 +8,10 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import ButtonCopy from '@/components/ui/ButtonCopy';
 import Heading from '@/components/ui/Heading';
-import Tag from '@/components/ui/Tag';
+import { MultiAutocompleteField } from '@/modules/form/MultiAutocompleteField';
 import { defaultMaxZoom, defaultMinZoom } from '@/modules/map/shared/config';
 import { gestionnairesFilters } from '@/modules/reseaux/constants';
+import trpc from '@/modules/trpc/client';
 
 import { createMapConfiguration } from '../config/map-configuration';
 import { useMapConfig } from '../config/useMapConfig';
@@ -55,8 +56,18 @@ const gestionnaireSuggestions = gestionnairesFilters.filter((option) => option.v
 const IframeGeneratorPage = () => {
   const [config, setConfig] = useState<IframeConfig>(defaultIframeConfig);
   const mapRef = useRef<MapCanvasController | null>(null);
+  const trpcUtils = trpc.useUtils();
 
   const update = (patch: Partial<IframeConfig>) => setConfig((current) => ({ ...current, ...patch }));
+
+  const fetchGestionnaires = useCallback(
+    (search: string) => trpcUtils.reseaux.searchOperators.fetch({ field: 'gestionnaire', search }),
+    [trpcUtils]
+  );
+  const fetchMaitresOuvrage = useCallback(
+    (search: string) => trpcUtils.reseaux.searchOperators.fetch({ field: 'maitreOuvrage', search }),
+    [trpcUtils]
+  );
 
   const toggleLayer = (key: LayerKey) =>
     setConfig((current) => ({
@@ -130,30 +141,35 @@ const IframeGeneratorPage = () => {
             </fieldset>
 
             <div className="flex flex-col gap-4">
-              <TokenField
+              <MultiAutocompleteField
                 label="Filtrer par gestionnaire"
-                hintText="Texte libre — Entrée ou virgule pour ajouter. Suggestions ci-dessous."
+                hintText={scopeHint(
+                  ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction'],
+                  'Saisie ou suggestions — Entrée pour ajouter.'
+                )}
                 placeholder="Ex : dalkia"
-                scope={['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction']}
                 values={config.gestionnaire}
-                onChange={(gestionnaire) => update({ gestionnaire: gestionnaire.map((value) => value.toLowerCase()) })}
+                onChange={(gestionnaire) => update({ gestionnaire: [...new Set(gestionnaire.map((value) => value.toLowerCase()))] })}
                 suggestions={gestionnaireSuggestions}
+                fetchFn={fetchGestionnaires}
               />
 
-              <TokenField
+              <MultiAutocompleteField
                 label="Filtrer par maître d'ouvrage"
-                hintText="Texte libre — Entrée ou virgule pour ajouter."
+                hintText={scopeHint(['reseaux-de-chaleur', 'reseaux-de-froid'], 'Saisie ou suggestions — Entrée pour ajouter.')}
                 placeholder="Ex : Métropole de Lyon"
-                scope={['reseaux-de-chaleur', 'reseaux-de-froid']}
                 values={config.maitreOuvrage}
                 onChange={(maitreOuvrage) => update({ maitreOuvrage })}
+                fetchFn={fetchMaitresOuvrage}
               />
 
-              <TokenField
+              <MultiAutocompleteField
                 label="Filtrer par identifiants SNCU"
-                hintText="Isole ces réseaux. Limité aux identifiants SNCU pour le moment."
+                hintText={scopeHint(
+                  ['reseaux-de-chaleur', 'reseaux-de-froid'],
+                  'Isole ces réseaux. Limité aux identifiants SNCU pour le moment. Entrée pour ajouter.'
+                )}
                 placeholder="Ex : 7412C"
-                scope={['reseaux-de-chaleur', 'reseaux-de-froid']}
                 values={config.reseaux}
                 onChange={(reseaux) => update({ reseaux })}
               />
@@ -352,74 +368,13 @@ function ConfigSync({
   return null;
 }
 
-/** Free-text token input + removable chips, with optional clickable suggestions. */
-function TokenField({
-  label,
-  hintText,
-  placeholder,
-  values,
-  onChange,
-  suggestions,
-  scope,
-}: {
-  label: string;
-  hintText?: ReactNode;
-  placeholder?: string;
-  values: string[];
-  onChange: (next: string[]) => void;
-  suggestions?: { label: string; value: string }[];
-  /** Réseau layers this filter applies to — shown as colored pastilles under the label. */
-  scope?: readonly ReseauLayerKey[];
-}) {
-  const [draft, setDraft] = useState('');
-  const addValue = (rawValue: string) => {
-    const trimmedValue = rawValue.trim();
-    if (trimmedValue && !values.includes(trimmedValue)) {
-      onChange([...values, trimmedValue]);
-    }
-    setDraft('');
-  };
+/** Builds a `MultiAutocompleteField` hint with the réseau-scope pastilles prefixed. */
+function scopeHint(scope: readonly ReseauLayerKey[], text: ReactNode): ReactNode {
   return (
-    <div>
-      <Input
-        label={label}
-        hintText={
-          <>
-            {scope && scope.length > 0 && <FilterScope layers={scope} />}
-            {hintText}
-          </>
-        }
-        nativeInputProps={{
-          onChange: (event) => setDraft(event.target.value),
-          onKeyDown: (event) => {
-            if (event.key === 'Enter' || event.key === ',') {
-              event.preventDefault();
-              addValue(draft);
-            }
-          },
-          placeholder,
-          value: draft,
-        }}
-      />
-      {suggestions && suggestions.length > 0 && (
-        <div className="flex flex-wrap gap-1 mt-1">
-          {suggestions.map((suggestion) => (
-            <Button key={suggestion.value} type="button" size="small" priority="tertiary" onClick={() => addValue(suggestion.value)}>
-              {suggestion.label}
-            </Button>
-          ))}
-        </div>
-      )}
-      {values.length > 0 && (
-        <div className="flex flex-wrap gap-1 mt-2">
-          {values.map((value) => (
-            <Tag key={value} dismissible nativeButtonProps={{ onClick: () => onChange(values.filter((item) => item !== value)) }}>
-              {value}
-            </Tag>
-          ))}
-        </div>
-      )}
-    </div>
+    <>
+      <FilterScope layers={scope} />
+      {text}
+    </>
   );
 }
 

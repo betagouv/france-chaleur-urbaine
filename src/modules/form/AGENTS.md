@@ -41,6 +41,36 @@ import { Autocomplete } from '@/modules/form/Autocomplete';
 />
 ```
 
+**Multiple mode** (`multiple` — discriminated union, inline tags):
+```tsx
+<Autocomplete<string>
+  multiple
+  values={values}                       // controlled tag values (string[])
+  onValuesChange={setValues}            // add/remove
+  allowFreeText                         // Enter adds the typed text when no suggestion is highlighted
+  fetchFn={fetchFn}                     // optional — omit for a pure free-text tags field (no dropdown)
+  getOptionValue={(v) => v}
+  getOptionLabel={(v, q) => highlightMatch(v, q)}
+/>
+```
+Tags render inside the field; Enter picks the highlighted suggestion else adds free text (`allowFreeText`), Backspace on an empty input removes the last tag, duplicates are ignored. Single-mode props (`value`/`onChange`/`onClear`/`defaultValue`) don't apply. Wrap with `FieldWrapper` for a DSFR label/hint. Caller-side normalisation (lowercase, dedup) goes in `onValuesChange`.
+
+### `MultiAutocompleteField`
+
+DSFR-wrapped multi-value autocomplete (inline tags). Composes `FieldWrapper` + `Autocomplete` in `multiple` mode over `string` values, with optional clickable quick-picks. Use for tag/operator filters.
+
+```tsx
+import { MultiAutocompleteField } from '@/modules/form/MultiAutocompleteField';
+
+<MultiAutocompleteField
+  label="Gestionnaire"
+  values={values}
+  onChange={setValues}
+  fetchFn={(q) => trpc.…fetch({ search: q })}  // omit → pure free-text tags
+  suggestions={[{ label: 'Dalkia', value: 'dalkia' }]}  // optional quick-picks below
+/>
+```
+
 ### `AddressAutocomplete`
 
 BAN-specific wrapper. Handles `onlyCities` / `excludeCities` / `limit` filtering.

@@ -5,9 +5,9 @@ import { BAN_MIN_QUERY_LENGTH, searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { normalize } from '@/utils/strings';
 
-import { Autocomplete, type AutocompleteProps } from './Autocomplete';
+import { Autocomplete, type AutocompleteSingleProps } from './Autocomplete';
 
-export type AddressSearchProps = Omit<AutocompleteProps<BANAddressFeature>, 'fetchFn' | 'getOptionValue'> & {
+export type AddressSearchProps = Omit<AutocompleteSingleProps<BANAddressFeature>, 'fetchFn' | 'getOptionValue'> & {
   onlyAddress?: boolean;
   onlyCities?: boolean;
   excludeCities?: boolean;

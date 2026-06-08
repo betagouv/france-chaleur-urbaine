@@ -960,6 +960,47 @@ export const searchNetworksForMap = async (search: string): Promise<NetworkMapSe
   ];
 };
 
+/**
+ * Distinct operator names (gestionnaire / maître d'ouvrage) matching `search`, for the
+ * iframe generator autocomplete. Gestionnaire spans chaleur + froid + construction; MO
+ * spans chaleur + froid (construction has no MO column). Public, map-level data.
+ */
+export const searchNetworkOperators = async (field: 'gestionnaire' | 'maitreOuvrage', search: string): Promise<string[]> => {
+  const pattern = `%${search}%`;
+  const column = field === 'gestionnaire' ? ('Gestionnaire' as const) : ('MO' as const);
+
+  const chaleur = kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select((eb) => eb.ref(column).as('value'))
+    .where(column, 'ilike', pattern);
+  const froid = kdb
+    .selectFrom('reseaux_de_froid')
+    .select((eb) => eb.ref(column).as('value'))
+    .where(column, 'ilike', pattern);
+
+  const operators =
+    field === 'gestionnaire'
+      ? chaleur.union(froid).union(
+          kdb
+            .selectFrom('zones_et_reseaux_en_construction')
+            .select((eb) => eb.ref('gestionnaire').as('value'))
+            .where('gestionnaire', 'ilike', pattern)
+        )
+      : chaleur.union(froid);
+
+  const rows = await kdb
+    .selectFrom(operators.as('operators'))
+    .select('value')
+    .distinct()
+    .where('value', 'is not', null)
+    .where('value', '<>', '')
+    .orderBy('value')
+    .limit(15)
+    .execute();
+
+  return rows.map((r) => r.value).filter(isDefined);
+};
+
 export const searchNetworks = async (search: string): Promise<NetworkSearchResult[]> => {
   const pattern = `%${search}%`;
 
