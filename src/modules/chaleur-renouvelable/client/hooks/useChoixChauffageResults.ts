@@ -96,7 +96,7 @@ export function useChoixChauffageResults() {
     }
 
     setPublicodesSituation(engine, { codeDepartement, situation, temperatureRef });
-  }, [codeDepartement, engine, situation, temperatureRef]);
+  }, [codeDepartement, situation, temperatureRef]);
 
   const effectiveTypeLogement = params.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
 
