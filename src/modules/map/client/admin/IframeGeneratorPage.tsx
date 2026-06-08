@@ -49,12 +49,8 @@ const layerScopeMeta = {
 type ReseauLayerKey = keyof typeof layerScopeMeta;
 
 // Known gestionnaires for the suggestion chips (free text stays allowed). `autre`
-// is a filter pseudo-value, excluded; `mixéner` is used by existing iframes but
-// isn't in the shared filter list.
-const gestionnaireSuggestions = [
-  ...gestionnairesFilters.filter((option) => option.value !== 'autre'),
-  { label: 'Mixéner', value: 'mixéner' },
-];
+// is a filter pseudo-value, excluded.
+const gestionnaireSuggestions = gestionnairesFilters.filter((option) => option.value !== 'autre');
 
 const IframeGeneratorPage = () => {
   const [config, setConfig] = useState<IframeConfig>(defaultIframeConfig);
