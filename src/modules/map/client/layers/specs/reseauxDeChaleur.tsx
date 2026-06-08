@@ -28,6 +28,7 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>((reseauDeChaleur, { Propert
       <TwoColumns>
         <Property label="Identifiant" value={reseauDeChaleur['Identifiant reseau']} />
         <Property label="Gestionnaire" value={reseauDeChaleur.Gestionnaire} />
+        <Property label="Maître d'ouvrage" value={reseauDeChaleur.MO} />
         <Property label="Taux EnR&R" value={reseauDeChaleur['Taux EnR&R']} unit="%" />
         <Property
           label="Contenu CO2 ACV"
