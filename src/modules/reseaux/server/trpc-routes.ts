@@ -279,6 +279,11 @@ export const reseauxRouter = router({
   searchNetworks: demandAccessRoute.input(z.object({ search: z.string().min(2).max(100) })).query(async ({ input }) => {
     return await reseauxService.searchNetworks(input.search);
   }),
+  searchOperators: route
+    .input(z.object({ field: z.enum(['gestionnaire', 'maitreOuvrage']), search: z.string().min(1).max(100) }))
+    .query(async ({ input }) => {
+      return await reseauxService.searchNetworkOperators(input.field, input.search);
+    }),
 
   // Opérations communes à tous les types
   updateGeomUpdate: adminRoute.input(zUpdateGeomUpdateInput).mutation(async ({ input, ctx }) => {
