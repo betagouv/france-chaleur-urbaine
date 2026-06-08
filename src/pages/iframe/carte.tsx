@@ -46,7 +46,7 @@ const CarteIframePage = () => {
     reseauxDeChaleur: { show: layers.includes('reseaux-de-chaleur') },
     reseauxDeFroid: layers.includes('reseaux-de-froid'),
     reseauxEnConstruction: layers.includes('reseaux-en-construction'),
-    zonesDeDeveloppementPrioritaire: layers.includes('zones-de-developpement-prioritaire'),
+    zonesDeDeveloppementPrioritaire: layers.includes('perimetres-de-developpement-prioritaire'),
   });
 
   const validMaxBounds = maxBounds?.length === 4 ? (maxBounds as BBox) : undefined;

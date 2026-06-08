@@ -34,10 +34,10 @@ import {
 } from './iframeGenerator';
 
 const layerLabels: Record<LayerKey, string> = {
+  'perimetres-de-developpement-prioritaire': 'Périmètres de développement prioritaire',
   'reseaux-de-chaleur': 'Réseaux de chaleur',
   'reseaux-de-froid': 'Réseaux de froid',
   'reseaux-en-construction': 'Réseaux en construction',
-  'zones-de-developpement-prioritaire': 'Périmètres de développement prioritaire',
 };
 
 /** Short label + legend color per réseau layer, used by the filter-scope pastilles. */
@@ -103,7 +103,7 @@ const IframeGeneratorPage = () => {
         reseauxDeChaleur: { show: config.layers.includes('reseaux-de-chaleur') },
         reseauxDeFroid: config.layers.includes('reseaux-de-froid'),
         reseauxEnConstruction: config.layers.includes('reseaux-en-construction'),
-        zonesDeDeveloppementPrioritaire: config.layers.includes('zones-de-developpement-prioritaire'),
+        zonesDeDeveloppementPrioritaire: config.layers.includes('perimetres-de-developpement-prioritaire'),
       }),
     [config.layers, config.gestionnaire, config.maitreOuvrage, config.reseaux]
   );
@@ -360,7 +360,7 @@ function ConfigSync({
     updateProperty('reseauxDeChaleur.show', layers.includes('reseaux-de-chaleur'));
     updateProperty('reseauxDeFroid', layers.includes('reseaux-de-froid'));
     updateProperty('reseauxEnConstruction', layers.includes('reseaux-en-construction'));
-    updateProperty('zonesDeDeveloppementPrioritaire', layers.includes('zones-de-developpement-prioritaire'));
+    updateProperty('zonesDeDeveloppementPrioritaire', layers.includes('perimetres-de-developpement-prioritaire'));
     updateProperty('filtreGestionnaire', gestionnaire);
     updateProperty('filtreMaitreOuvrage', maitreOuvrage);
     updateProperty('filtreIdentifiantReseau', reseaux);

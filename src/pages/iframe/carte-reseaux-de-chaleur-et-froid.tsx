@@ -22,7 +22,9 @@ const CeremaMap = () => {
             zonesDeDeveloppementPrioritaire: true,
           })}
           legend="auto"
-          legendContent={<IframeLegend layers={['reseaux-de-chaleur', 'reseaux-en-construction', 'zones-de-developpement-prioritaire']} />}
+          legendContent={
+            <IframeLegend layers={['reseaux-de-chaleur', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire']} />
+          }
         >
           <FcuLogo />
         </Map>

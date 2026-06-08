@@ -10,10 +10,10 @@ import { ReseauxDeFroidLegend } from '../layers/specs/reseauxDeFroid.legend';
 import { ReseauxEnConstructionLegend } from '../layers/specs/reseauxEnConstruction.legend';
 
 const legendRowByLayer: Record<LayerKey, () => ReactNode> = {
+  'perimetres-de-developpement-prioritaire': PerimetresDeDeveloppementPrioritaireLegend,
   'reseaux-de-chaleur': ReseauxDeChaleurLegend,
   'reseaux-de-froid': ReseauxDeFroidLegend,
   'reseaux-en-construction': ReseauxEnConstructionLegend,
-  'zones-de-developpement-prioritaire': PerimetresDeDeveloppementPrioritaireLegend,
 };
 
 /**

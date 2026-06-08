@@ -7,7 +7,7 @@ export const layerKeys = [
   'reseaux-de-chaleur',
   'reseaux-de-froid',
   'reseaux-en-construction',
-  'zones-de-developpement-prioritaire',
+  'perimetres-de-developpement-prioritaire',
 ] as const;
 export type LayerKey = (typeof layerKeys)[number];
 
