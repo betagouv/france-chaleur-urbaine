@@ -30,10 +30,10 @@ export const DEFAULT_IFRAME_HEIGHT = '600px';
 export const defaultIframeConfig: IframeConfig = {
   gestionnaire: [],
   height: '',
-  layers: ['reseaux-de-chaleur'],
-  legend: 'auto',
+  layers: ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'],
+  legend: 'hidden',
   maitreOuvrage: [],
-  mode: 'none',
+  mode: 'eligibility',
   reseaux: [],
   width: '',
 };
