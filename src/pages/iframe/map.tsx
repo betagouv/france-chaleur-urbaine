@@ -41,7 +41,7 @@ const parseAsLegacyLegend = createParser<LegendMode>({
 // Mapping de l'ancien `displayLegend` vers les clés de couches actuelles.
 const legacyLayerByDisplayLegendKey: Record<string, LayerKey> = {
   futur_reseau: 'reseaux-en-construction',
-  pdp: 'zones-de-developpement-prioritaire',
+  pdp: 'perimetres-de-developpement-prioritaire',
   reseau_chaleur: 'reseaux-de-chaleur',
   reseau_froid: 'reseaux-de-froid',
 };
@@ -87,7 +87,7 @@ const MapPage = () => {
     reseauxDeChaleur: { show: resolvedLayers.includes('reseaux-de-chaleur') },
     reseauxDeFroid: resolvedLayers.includes('reseaux-de-froid'),
     reseauxEnConstruction: resolvedLayers.includes('reseaux-en-construction'),
-    zonesDeDeveloppementPrioritaire: resolvedLayers.includes('zones-de-developpement-prioritaire'),
+    zonesDeDeveloppementPrioritaire: resolvedLayers.includes('perimetres-de-developpement-prioritaire'),
   });
 
   const validMaxBounds = maxBounds?.length === 4 ? (maxBounds as BBox) : undefined;

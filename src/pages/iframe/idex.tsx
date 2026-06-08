@@ -16,7 +16,7 @@ const IdexMap = () => {
         legend="auto"
         legendContent={
           <IframeLegend
-            layers={['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'zones-de-developpement-prioritaire']}
+            layers={['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire']}
           />
         }
       >
