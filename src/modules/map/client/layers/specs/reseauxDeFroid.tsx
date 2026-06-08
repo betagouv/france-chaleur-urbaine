@@ -16,6 +16,7 @@ const Popup = defineLayerPopup<ReseauxDeFroidTile>((reseauDeFroid, { Property, T
       <TwoColumns>
         <Property label="Identifiant" value={reseauDeFroid['Identifiant reseau']} />
         <Property label="Gestionnaire" value={reseauDeFroid.Gestionnaire} />
+        <Property label="Maître d'ouvrage" value={reseauDeFroid.MO} />
         <Property
           label="Contenu CO2 ACV"
           value={reseauDeFroid['contenu CO2 ACV']}
