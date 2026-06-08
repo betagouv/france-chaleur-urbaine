@@ -31,7 +31,7 @@ export const defaultIframeConfig: IframeConfig = {
   gestionnaire: [],
   height: '',
   layers: ['reseaux-de-chaleur'],
-  legend: 'off',
+  legend: 'auto',
   maitreOuvrage: [],
   mode: 'none',
   reseaux: [],
