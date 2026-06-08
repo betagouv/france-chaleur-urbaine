@@ -294,7 +294,7 @@ function MapImplInner({
       )}
       {search === 'eligibility' && (
         <div className={cx(searchClassName, 'flex flex-col gap-1 bg-white rounded-lg shadow-md p-3')}>
-          <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">Rechercher une adresse</h2>
+          <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">Testez votre éligibilité</h2>
           <AddressSearchInput onSelect={handleEligibilitySelect} placeholder={searchPlaceholder} />
           <EligibilityResultsPanel
             addresses={addresses}
