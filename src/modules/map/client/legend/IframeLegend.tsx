@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react';
 
+import { clientConfig } from '@/client-config';
+import Link from '@/components/ui/Link';
+
 import type { LayerKey } from '../iframeCarteParams';
 import { PerimetresDeDeveloppementPrioritaireLegend } from '../layers/specs/perimetresDeDeveloppementPrioritaire.legend';
 import { ReseauxDeChaleurLegend } from '../layers/specs/reseauxDeChaleur.legend';
@@ -27,6 +30,14 @@ export function IframeLegend({ layers, title = 'Légende' }: { layers: readonly 
           return <LegendRow key={layer} />;
         })}
       </div>
+      <Link
+        href={clientConfig.websiteUrl}
+        isExternal
+        title="France Chaleur Urbaine"
+        className="reset-external bg-none! mt-auto flex shrink-0 items-center justify-center pt-2"
+      >
+        <img src="/logo-fcu-with-typo-tight.webp" alt="France Chaleur Urbaine" className="block h-12 w-auto" />
+      </Link>
     </div>
   );
 }
