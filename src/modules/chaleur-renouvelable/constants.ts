@@ -196,7 +196,16 @@ export const typeRadiateurOptions = [
   value: TypeRadiateur;
 }[];
 
-export const OCCUPANT_STATUS_VALUES = ['Copropriétaire', 'Locataire', 'Propriétaire occupant', 'Syndic'];
+export const OCCUPANT_STATUS_VALUES = [
+  'Copropriétaire',
+  'Propriétaire de maison individuelle',
+  'Syndicat de copropriété',
+  'TPE ou PME',
+  'Grande entreprisee ou Foncière',
+  'Bailleur social',
+  "Bureau d'étude ou AMO",
+  'Mandataire ou Délégataire CEE',
+];
 export type OccupantStatus = (typeof OCCUPANT_STATUS_VALUES)[number];
 export const occupantStatusOptions = OCCUPANT_STATUS_VALUES.map((value) => ({ label: value, value }));
 
@@ -234,6 +243,7 @@ export const DEFAULT_SIMULATION_PARAMS = {
 };
 
 export const zContactFormChaleuRenouvelable = z.object({
+  comments: z.string().default(''),
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
   heatingEnergy: z.enum(HEATING_ENERGY_VALUES),
@@ -255,6 +265,7 @@ export const zDemandeChaleurRenouvelable = z.object({
   averageArea: z.number(),
   averageResidents: z.number(),
   batimentConstructionId: z.string().nullable().default(null),
+  comments: z.string().nullable().default(null),
   dpe: z.enum(DPE_VALUES),
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   firstName: z.string(),

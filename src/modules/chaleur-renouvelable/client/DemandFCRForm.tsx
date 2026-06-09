@@ -48,14 +48,15 @@ const refusalReasonOptions = [
   { label: 'Puissance insuffisante', value: 'Puissance insuffisante' },
   { label: 'Coût du raccordement trop élevé', value: 'Coût du raccordement trop élevé' },
   { label: 'Mode de chauffage individuel', value: 'Mode de chauffage individuel' },
+  { label: 'Motif non communiqué', value: 'Motif non communiqué' },
   { label: 'Autre', value: 'Autre' },
-  { label: 'Motif inconnu', value: 'Motif inconnu' },
 ];
 
 export type ContactRecipientId = (typeof contactRecipients)[number]['id'];
 type ContactFormChaleurRenouvelable = z.infer<typeof zContactFormChaleuRenouvelable>;
 
 const CONTACT_FORM_DEFAULT_VALUES = {
+  comments: '',
   email: '',
   firstName: '',
   heatingEnergy: 'Électricité',
@@ -312,6 +313,7 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
         averageArea: Number(submitParams.surfaceMoyenne || DEFAULT_SIMULATION_PARAMS.surfaceMoyenne),
         averageResidents: Number(submitParams.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
         batimentConstructionId: submitParams.constructionId,
+        comments: value.comments.trim() || null,
         dpe: submitParams.dpe,
         email: value.email,
         firstName: value.firstName,
@@ -472,6 +474,14 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
               </div>
             )}
           </div>
+          <Field.Textarea
+            name="comments"
+            label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet (optionnel)"
+            className="w-full"
+            nativeTextAreaProps={{
+              rows: 3,
+            }}
+          />
         </div>
         <Field.Checkbox
           name="termOfUse"
