@@ -46,11 +46,18 @@ export const communesFortPotentielPourCreationReseauxChaleurLayersSpec = [
   {
     layers: [
       {
-        filter: (config) => [
-          'all',
-          ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
-          ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
-        ],
+        filter: (config) => {
+          const [populationMinValue, populationMaxValue] = config.communesFortPotentielPourCreationReseauxChaleur.population;
+          const populationMin =
+            populationMinValue === communesFortPotentielPourCreationReseauxChaleurInterval[0]
+              ? Number.MIN_SAFE_INTEGER
+              : populationMinValue;
+          const populationMax =
+            populationMaxValue === communesFortPotentielPourCreationReseauxChaleurInterval[1]
+              ? Number.MAX_SAFE_INTEGER
+              : populationMaxValue;
+          return ['all', ['>=', ['get', 'population'], populationMin], ['<=', ['get', 'population'], populationMax]];
+        },
         id: 'communes-fort-potentiel-pour-creation-reseaux-chaleur',
         isVisible: (config) => config.communesFortPotentielPourCreationReseauxChaleur.show,
         layout: {

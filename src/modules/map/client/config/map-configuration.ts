@@ -179,13 +179,6 @@ export function isMapConfigurationInitialized(conf: MaybeEmptyMapConfiguration):
 export const percentageMaxInterval: Interval = [0, 100];
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 
-/**
- * Population interval bound for the "communes à fort potentiel" filter.
- * Inlined here (rather than imported from the layer file) to avoid a circular
- * dependency layer → map-configuration → layer.
- */
-const communesFortPotentielPourCreationReseauxChaleurInterval: Interval = [0, 100_000];
-
 export const emptyMapConfiguration: EmptyMapConfiguration = {
   batimentsFioulCollectif: {
     interval: [50, Number.MAX_VALUE],
@@ -202,7 +195,7 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
   besoinsEnFroid: false,
   caracteristiquesBatiments: false,
   communesFortPotentielPourCreationReseauxChaleur: {
-    population: communesFortPotentielPourCreationReseauxChaleurInterval,
+    population: [0, Number.MAX_VALUE],
     show: false,
   },
   consommationsGaz: {

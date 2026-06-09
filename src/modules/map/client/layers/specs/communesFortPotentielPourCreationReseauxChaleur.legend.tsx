@@ -46,6 +46,7 @@ export function CommunesFortPotentielLegend() {
         domain={[0, 100_000]}
         label="Nombre d'habitants"
         classes={{ label: 'text-sm' }}
+        openEndedBounds
       />
     </LegendSection>
   );
