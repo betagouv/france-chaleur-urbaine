@@ -15,7 +15,7 @@ const CharlevilleMezieresMap = () => {
         })}
         initialView={{ center: [4.717692, 49.767402], zoom: 12 }}
         legend="auto"
-        legendContent={<IframeLegend layers={['reseaux-de-chaleur', 'reseaux-en-construction']} title="Réseaux de chaleur" />}
+        legendContent={<IframeLegend layers={['reseaux-de-chaleur', 'reseaux-en-construction']} />}
       >
         <FcuLogo />
       </Map>
