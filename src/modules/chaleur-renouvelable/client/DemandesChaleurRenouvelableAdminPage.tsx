@@ -266,6 +266,12 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         width: '260px',
       },
       {
+        accessorFn: (row) => row.comments ?? 'Non renseigné',
+        header: 'Commentaires',
+        id: 'Commentaires',
+        width: '320px',
+      },
+      {
         accessorFn: (row) => row.batiment_construction_id ?? 'Non renseigné',
         header: 'Bâtiment',
         id: 'Bâtiment',

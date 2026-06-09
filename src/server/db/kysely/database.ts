@@ -232,6 +232,7 @@ export interface DemandsChaleurRenouvelable {
   average_area: number;
   average_residents: number;
   batiment_construction_id: string | null;
+  comments: string | null;
   created_at: Generated<Timestamp>;
   dpe: DPE;
   email: string;
