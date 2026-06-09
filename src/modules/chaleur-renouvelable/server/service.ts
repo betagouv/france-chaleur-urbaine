@@ -147,6 +147,7 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
       batiment_construction_id: input.batimentConstructionId,
       comments: input.comments,
       created_at: new Date(),
+      demand_concern: input.demandConcern,
       dpe: input.dpe,
       email: input.email,
       first_name: input.firstName,
@@ -157,6 +158,7 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
       is_public_advisor_selected: input.isPublicAdvisorSelected,
       last_name: input.lastName,
       occupant_status: input.occupantStatus,
+      organization_name: input.organizationName,
       outdoor_space: input.outdoorSpace,
       phone: input.phone,
       project_status: input.projectStatus,
@@ -164,6 +166,7 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
       refusal_period: input.refusalPeriod,
       refusal_reason: input.refusalReason,
       simulation_url: input.simulationUrl,
+      surface_area: input.surfaceArea,
       updated_at: new Date(),
     })
     .returning(['id'])
@@ -183,6 +186,7 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
       'batiment_construction_id',
       'comments',
       'created_at',
+      'demand_concern',
       'dpe',
       'email',
       'first_name',
@@ -195,6 +199,7 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
       'last_name',
       'occupant_status',
       'outdoor_space',
+      'organization_name',
       'phone',
       'project_status',
       'radiator_type',
@@ -202,6 +207,7 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
       'refusal_reason',
       'simulation_url',
       'status',
+      'surface_area',
       'updated_at',
     ])
     .orderBy('created_at', 'desc')

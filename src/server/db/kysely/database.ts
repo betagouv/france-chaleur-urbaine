@@ -6,6 +6,7 @@
 import type { ColumnType, JSONColumnType } from 'kysely';
 
 import type {
+  DemandConcern,
   DPE,
   EspaceExterieur,
   HeatingEnergy,
@@ -275,6 +276,7 @@ export interface DemandsChaleurRenouvelable {
   batiment_construction_id: string | null;
   comments: string | null;
   created_at: Generated<Timestamp>;
+  demand_concern: DemandConcern | null;
   dpe: DPE;
   email: string;
   first_name: string;
@@ -287,6 +289,7 @@ export interface DemandsChaleurRenouvelable {
   last_name: string;
   occupant_status: OccupantStatus;
   outdoor_space: EspaceExterieur;
+  organization_name: string | null;
   phone: Generated<string>;
   project_status: ProjectStatus[];
   radiator_type: TypeRadiateur | null;
@@ -294,6 +297,7 @@ export interface DemandsChaleurRenouvelable {
   refusal_reason: string | null;
   simulation_url: string;
   status: Generated<string>;
+  surface_area: number | null;
   updated_at: Generated<Timestamp>;
 }
 
