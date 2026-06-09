@@ -57,6 +57,7 @@ function createMigrator() {
   const excludeFile = path.basename(thisFilePath);
 
   return new Migrator({
+    allowUnorderedMigrations: true,
     db: kdb,
     migrationTableName: 'kysely_migrations',
     provider: new UrlFileMigrationProvider({ excludeFile, migrationFolder }),

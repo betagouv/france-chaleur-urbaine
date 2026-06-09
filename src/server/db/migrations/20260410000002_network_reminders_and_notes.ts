@@ -3,7 +3,7 @@ import { sql } from 'kysely';
 
 export async function up(db: Kysely<any>): Promise<void> {
   await sql`
-    CREATE TABLE network_reminders (
+    CREATE TABLE IF NOT EXISTS network_reminders (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       network_id INTEGER NOT NULL,
       network_type TEXT NOT NULL,
@@ -12,12 +12,12 @@ export async function up(db: Kysely<any>): Promise<void> {
       note TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
-    CREATE INDEX idx_network_reminders_network ON network_reminders (network_id, network_type, type);
+    CREATE INDEX IF NOT EXISTS idx_network_reminders_network ON network_reminders (network_id, network_type, type);
 
-    ALTER TABLE reseaux_de_chaleur ADD COLUMN notes TEXT;
-    ALTER TABLE reseaux_de_froid ADD COLUMN notes TEXT;
-    ALTER TABLE zones_et_reseaux_en_construction ADD COLUMN notes TEXT;
-    ALTER TABLE zone_de_developpement_prioritaire ADD COLUMN notes TEXT;
+    ALTER TABLE reseaux_de_chaleur ADD COLUMN IF NOT EXISTS notes TEXT;
+    ALTER TABLE reseaux_de_froid ADD COLUMN IF NOT EXISTS notes TEXT;
+    ALTER TABLE zones_et_reseaux_en_construction ADD COLUMN IF NOT EXISTS notes TEXT;
+    ALTER TABLE zone_de_developpement_prioritaire ADD COLUMN IF NOT EXISTS notes TEXT;
   `.execute(db);
 }
 
