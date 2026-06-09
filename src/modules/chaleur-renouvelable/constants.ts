@@ -2,7 +2,6 @@ import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import type { ReactNode } from 'react';
 import { z } from 'zod';
 
-import { demandStatuses } from '@/modules/demands/constants';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 export type ModeDeChauffageUsage = 'heatingAndHotWater' | 'hotWaterOnly';
@@ -237,6 +236,23 @@ export const projectStatusOptions = PROJECT_STATUS_VALUES.map((value) => ({
   nativeInputProps: { value },
 }));
 
+export const demandeChaleurRenouvelableStatuses = [
+  { label: 'à traiter CCR', value: 'waiting_ccr' },
+  { label: 'à traiter ALEC', value: 'waiting_alec' },
+  { label: 'recontacté pour diagnostic', value: 'waiting_diagnostic' },
+  { label: '[à traiter alec] Réorientation du prospect vers isolation/rénovation globale', value: 'alec_reorientation' },
+  { label: 'Accompagnement ALEC en cours', value: 'alec' },
+  { label: "En attente d'éléments du prospect", value: 'waiting_prospect' },
+  { label: 'Étude technico-financière réalisée', value: 'finance' },
+  { label: "Appel d'offre bureau d'études réalisé", value: 'be' },
+  { label: 'Travaux votés en AG', value: 'voted' },
+  { label: 'Travaux réalisés', value: 'done' },
+  { label: 'Demande non pertinente', value: 'abandoned' },
+] as const;
+export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR = demandeChaleurRenouvelableStatuses[0].label;
+export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC = demandeChaleurRenouvelableStatuses[1].label;
+export type DemandeChaleurRenouvelableStatus = (typeof demandeChaleurRenouvelableStatuses)[number]['label'];
+
 export const DEFAULT_SIMULATION_PARAMS = {
   espaceExterieur: 'none',
   habitantsMoyen: 2,
@@ -311,7 +327,7 @@ export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
   values: z
     .object({
       assignedTo: z.string().nullable(),
-      status: z.enum(demandStatuses.map((status) => status.label)),
+      status: z.enum(demandeChaleurRenouvelableStatuses.map((status) => status.label)),
     })
     .partial(),
 });

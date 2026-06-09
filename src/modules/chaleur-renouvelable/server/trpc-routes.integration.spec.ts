@@ -2,7 +2,11 @@ import type { Insertable } from 'kysely';
 import type { User } from 'next-auth';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import type { DemandeChaleurRenouvelable } from '@/modules/chaleur-renouvelable/constants';
+import type { DemandeChaleurRenouvelable, DemandeChaleurRenouvelableStatus } from '@/modules/chaleur-renouvelable/constants';
+import {
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
+} from '@/modules/chaleur-renouvelable/constants';
 import { kdb } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
 import { cleanDatabase } from '@/tests/fixtures';
@@ -15,6 +19,7 @@ type PermissionTestCase = {
 };
 
 type DemandChaleurRenouvelableInsert = Insertable<DB['demands_chaleur_renouvelable']>;
+const ADMIN_UPDATED_STATUS = 'Étude technico-financière réalisée';
 
 function toDemandDatabaseFields(input: DemandeChaleurRenouvelable) {
   return {
@@ -110,12 +115,92 @@ describe('batEnrRouter', () => {
           'refusal_period',
           'refusal_reason',
           'simulation_url',
+          'status',
           'surface_area',
         ])
         .where('id', '=', result.id)
         .executeTakeFirstOrThrow();
 
-      expect(demand).toStrictEqual(toDemandDatabaseFields(input));
+      expect(demand).toStrictEqual({
+        ...toDemandDatabaseFields(input),
+        status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
+      });
+    });
+
+    const statusTestCases = [
+      {
+        demandConcern: null,
+        expectedStatus: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
+        housingType: 'maison_individuelle',
+        label: 'maison individuelle → ALEC',
+      },
+      {
+        demandConcern: null,
+        expectedStatus: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
+        housingType: 'immeuble_chauffage_individuel',
+        label: 'chauffage individuel → ALEC',
+      },
+      {
+        demandConcern: 'Une maison individuelle',
+        expectedStatus: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
+        housingType: 'immeuble_chauffage_collectif',
+        label: 'demande concernant une maison individuelle → ALEC',
+      },
+      {
+        demandConcern: 'Une copropriété',
+        expectedStatus: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
+        housingType: 'immeuble_chauffage_collectif',
+        label: 'chauffage collectif → CCR',
+      },
+    ] satisfies readonly {
+      demandConcern: DemandeChaleurRenouvelable['demandConcern'];
+      expectedStatus: DemandeChaleurRenouvelableStatus;
+      housingType: DemandeChaleurRenouvelable['housingType'];
+      label: string;
+    }[];
+
+    it.each(statusTestCases)('détermine automatiquement le statut initial : $label', async ({
+      demandConcern,
+      expectedStatus,
+      housingType,
+    }) => {
+      const input = {
+        address: '10 rue du test',
+        averageArea: 72,
+        averageResidents: 2,
+        batimentConstructionId: null,
+        comments: null,
+        demandConcern,
+        dpe: 'C',
+        email: 'contact@example.com',
+        firstName: 'Claire',
+        heatingEnergy: 'Gaz',
+        hotWaterSystemType: 'Collectif',
+        housingCount: 18,
+        housingType,
+        isPublicAdvisorSelected: false,
+        lastName: 'Test',
+        occupantStatus: 'Copropriétaire',
+        organizationName: null,
+        outdoorSpace: 'shared',
+        phone: '',
+        projectStatus: ['Début de réflexion'],
+        radiatorType: 'radiateur-eau',
+        refusalPeriod: null,
+        refusalReason: null,
+        simulationUrl: 'https://example.com/simulation',
+        surfaceArea: null,
+      } satisfies DemandeChaleurRenouvelable;
+
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
+
+      const demand = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['status'])
+        .where('id', '=', result.id)
+        .executeTakeFirstOrThrow();
+
+      expect(demand).toStrictEqual({ status: expectedStatus });
     });
   });
 
@@ -267,14 +352,14 @@ describe('batEnrRouter', () => {
       const callRoute = () =>
         caller.batEnr.admin.updateDemandeChaleurRenouvelable({
           demandId: demand.id,
-          values: { assignedTo: 'Gestionnaire test', status: 'Étude en cours' },
+          values: { assignedTo: 'Gestionnaire test', status: ADMIN_UPDATED_STATUS },
         });
 
       if (allowed) {
         await expect(callRoute()).resolves.toMatchObject({
           assigned_to: 'Gestionnaire test',
           id: demand.id,
-          status: 'Étude en cours',
+          status: ADMIN_UPDATED_STATUS,
         });
       } else {
         await expect(callRoute).rejects.toMatchObject(forbiddenError);
@@ -306,7 +391,7 @@ describe('batEnrRouter', () => {
 
       await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
         demandId: demand.id,
-        values: { assignedTo: 'Gestionnaire test', status: 'Étude en cours' },
+        values: { assignedTo: 'Gestionnaire test', status: ADMIN_UPDATED_STATUS },
       });
 
       const updatedDemand = await kdb
@@ -317,7 +402,7 @@ describe('batEnrRouter', () => {
 
       expect(updatedDemand).toStrictEqual({
         assigned_to: 'Gestionnaire test',
-        status: 'Étude en cours',
+        status: ADMIN_UPDATED_STATUS,
       });
     });
   });

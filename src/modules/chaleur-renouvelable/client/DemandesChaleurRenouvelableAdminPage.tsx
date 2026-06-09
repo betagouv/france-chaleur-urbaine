@@ -8,13 +8,14 @@ import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import {
+  type DemandeChaleurRenouvelableStatus,
+  demandeChaleurRenouvelableStatuses,
   getEspaceExterieurOptionLabel,
   modeEauChaudeSanitaireOptions,
   PROJECT_STATUS_VALUES,
   typeLogementOptions,
   typeRadiateurOptions,
 } from '@/modules/chaleur-renouvelable/constants';
-import { type DemandStatus, demandStatuses } from '@/modules/demands/constants';
 import { toastErrors } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { dayjs } from '@/utils/date';
@@ -67,7 +68,7 @@ export default function DemandesChaleurRenouvelableAdminPage() {
   const { mutateAsync: updateDemandMutation } = trpc.batEnr.admin.updateDemandeChaleurRenouvelable.useMutation();
 
   const updateDemand = useCallback(
-    toastErrors(async (demandId: string, demandUpdate: { assigned_to?: string | null; status?: DemandStatus }) => {
+    toastErrors(async (demandId: string, demandUpdate: { assigned_to?: string | null; status?: DemandeChaleurRenouvelableStatus }) => {
       utils.batEnr.admin.listDemandesChaleurRenouvelable.setData(undefined, (demandsData) => {
         if (!demandsData) return demandsData;
 
@@ -142,15 +143,15 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         cell: ({ row }) => (
           <Select
             label=""
-            options={demandStatuses.map((status) => ({
+            options={demandeChaleurRenouvelableStatuses.map((status) => ({
               label: status.label,
               value: status.label,
             }))}
             size="sm"
             nativeSelectProps={{
               'aria-label': 'Statut de la demande',
-              onChange: (event) => void updateDemand(row.original.id, { status: event.target.value as DemandStatus }),
-              value: row.original.status as DemandStatus,
+              onChange: (event) => void updateDemand(row.original.id, { status: event.target.value as DemandeChaleurRenouvelableStatus }),
+              value: row.original.status as DemandeChaleurRenouvelableStatus,
             }}
           />
         ),
