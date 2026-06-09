@@ -23,6 +23,7 @@ function toDemandDatabaseFields(input: DemandeChaleurRenouvelable) {
     average_residents: input.averageResidents,
     batiment_construction_id: input.batimentConstructionId,
     comments: input.comments,
+    demand_concern: input.demandConcern,
     dpe: input.dpe,
     email: input.email,
     first_name: input.firstName,
@@ -33,6 +34,7 @@ function toDemandDatabaseFields(input: DemandeChaleurRenouvelable) {
     is_public_advisor_selected: input.isPublicAdvisorSelected,
     last_name: input.lastName,
     occupant_status: input.occupantStatus,
+    organization_name: input.organizationName,
     outdoor_space: input.outdoorSpace,
     phone: input.phone,
     project_status: input.projectStatus,
@@ -40,6 +42,7 @@ function toDemandDatabaseFields(input: DemandeChaleurRenouvelable) {
     refusal_period: input.refusalPeriod,
     refusal_reason: input.refusalReason,
     simulation_url: input.simulationUrl,
+    surface_area: input.surfaceArea,
   };
 }
 
@@ -56,6 +59,7 @@ describe('batEnrRouter', () => {
         averageResidents: 2,
         batimentConstructionId: 'CONSTRUCTION-123',
         comments: 'Besoin de préciser le calendrier du projet.',
+        demandConcern: 'Une copropriété',
         dpe: 'C',
         email: 'contact@example.com',
         firstName: 'Claire',
@@ -66,6 +70,7 @@ describe('batEnrRouter', () => {
         isPublicAdvisorSelected: true,
         lastName: 'Test',
         occupantStatus: 'Syndicat de copropriété',
+        organizationName: 'Syndicat test',
         outdoorSpace: 'shared',
         phone: '0605040302',
         projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],
@@ -73,6 +78,7 @@ describe('batEnrRouter', () => {
         refusalPeriod: 'Il y a moins de 3 mois',
         refusalReason: 'Coût du raccordement trop élevé',
         simulationUrl: 'https://example.com/simulation',
+        surfaceArea: null,
       } satisfies DemandeChaleurRenouvelable;
 
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
@@ -85,6 +91,7 @@ describe('batEnrRouter', () => {
           'average_residents',
           'batiment_construction_id',
           'comments',
+          'demand_concern',
           'dpe',
           'email',
           'first_name',
@@ -96,12 +103,14 @@ describe('batEnrRouter', () => {
           'last_name',
           'occupant_status',
           'outdoor_space',
+          'organization_name',
           'phone',
           'project_status',
           'radiator_type',
           'refusal_period',
           'refusal_reason',
           'simulation_url',
+          'surface_area',
         ])
         .where('id', '=', result.id)
         .executeTakeFirstOrThrow();
@@ -140,6 +149,7 @@ describe('batEnrRouter', () => {
         batiment_construction_id: null,
         comments: null,
         created_at: olderDate,
+        demand_concern: null,
         dpe: 'E',
         email: 'older@example.com',
         first_name: 'Ancien',
@@ -150,6 +160,7 @@ describe('batEnrRouter', () => {
         is_public_advisor_selected: false,
         last_name: 'Contact',
         occupant_status: 'Copropriétaire',
+        organization_name: null,
         outdoor_space: 'shared',
         phone: '',
         project_status: ['Début de réflexion'],
@@ -157,6 +168,7 @@ describe('batEnrRouter', () => {
         refusal_period: null,
         refusal_reason: null,
         simulation_url: 'https://example.com/older',
+        surface_area: null,
         updated_at: olderDate,
       } satisfies DemandChaleurRenouvelableInsert;
       const newerDemandInput = {
@@ -166,6 +178,7 @@ describe('batEnrRouter', () => {
         batiment_construction_id: 'BATIMENT-RECENT',
         comments: 'Demande à traiter rapidement',
         created_at: newerDate,
+        demand_concern: 'Un bâtiment tertiaire',
         dpe: 'D',
         email: 'newer@example.com',
         first_name: 'Récent',
@@ -176,6 +189,7 @@ describe('batEnrRouter', () => {
         is_public_advisor_selected: true,
         last_name: 'Contact',
         occupant_status: 'Propriétaire de maison individuelle',
+        organization_name: 'Entreprise récente',
         outdoor_space: 'private',
         phone: '0605040302',
         project_status: ['Audit énergétique déjà réalisé'],
@@ -183,6 +197,7 @@ describe('batEnrRouter', () => {
         refusal_period: 'Il y a 3 à 12 mois',
         refusal_reason: 'Bâtiment trop éloigné du réseau',
         simulation_url: 'https://example.com/newer',
+        surface_area: 240,
         updated_at: newerDate,
       } satisfies DemandChaleurRenouvelableInsert;
       const [olderDemand, newerDemand] = await Promise.all([

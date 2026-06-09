@@ -10,6 +10,8 @@ import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   DEFAULT_SIMULATION_PARAMS,
+  type DemandConcern,
+  demandConcernOptions,
   ESPACE_EXTERIEUR_VALUES,
   type HeatingEnergy,
   heatingEnergyOptions,
@@ -54,18 +56,45 @@ const refusalReasonOptions = [
 
 export type ContactRecipientId = (typeof contactRecipients)[number]['id'];
 type ContactFormChaleurRenouvelable = z.infer<typeof zContactFormChaleuRenouvelable>;
+type OccupantStatusDetailField = 'demandConcern' | 'housingCount' | 'surfaceArea';
 
 const CONTACT_FORM_DEFAULT_VALUES = {
   comments: '',
+  demandConcern: '',
   email: '',
   firstName: '',
   heatingEnergy: 'Électricité',
+  housingCount: undefined,
   lastName: '',
   occupantStatus: 'Copropriétaire',
+  organizationName: '',
   phone: '',
   projectStatus: [] as ProjectStatus[],
+  surfaceArea: undefined,
   termOfUse: false,
 } satisfies ContactFormChaleurRenouvelable;
+
+const ORGANIZATION_NAME_OCCUPANT_STATUSES = [
+  'Bailleur social',
+  "Bureau d'étude ou AMO",
+  'Grande entreprise ou Foncière',
+  'Mandataire ou Délégataire CEE',
+  'Syndicat de copropriété',
+  'TPE ou PME',
+] as const satisfies readonly OccupantStatus[];
+
+const HOUSING_COUNT_OCCUPANT_STATUSES = [
+  'Bailleur social',
+  'Copropriétaire',
+  'Syndicat de copropriété',
+] as const satisfies readonly OccupantStatus[];
+
+const SURFACE_AREA_OCCUPANT_STATUSES = ['Grande entreprise ou Foncière', 'TPE ou PME'] as const satisfies readonly OccupantStatus[];
+
+const DEMAND_CONCERN_OCCUPANT_STATUSES = [
+  "Bureau d'étude ou AMO",
+  'Mandataire ou Délégataire CEE',
+] as const satisfies readonly OccupantStatus[];
 
 function ContactRecipientSelector({
   selectedRecipientId,
@@ -247,6 +276,24 @@ function getProjectStatusTriggerLabel(value: ProjectStatus[]) {
   return value.length === 1 ? value[0] : `${value.length} étapes sélectionnées`;
 }
 
+function hasOrganizationNameField(occupantStatus: OccupantStatus) {
+  return ORGANIZATION_NAME_OCCUPANT_STATUSES.some((organizationNameOccupantStatus) => organizationNameOccupantStatus === occupantStatus);
+}
+
+function getOccupantStatusDetailField(occupantStatus: OccupantStatus): OccupantStatusDetailField | null {
+  if (HOUSING_COUNT_OCCUPANT_STATUSES.some((housingCountOccupantStatus) => housingCountOccupantStatus === occupantStatus)) {
+    return 'housingCount';
+  }
+
+  if (SURFACE_AREA_OCCUPANT_STATUSES.some((surfaceAreaOccupantStatus) => surfaceAreaOccupantStatus === occupantStatus)) {
+    return 'surfaceArea';
+  }
+
+  return DEMAND_CONCERN_OCCUPANT_STATUSES.some((demandConcernOccupantStatus) => demandConcernOccupantStatus === occupantStatus)
+    ? 'demandConcern'
+    : null;
+}
+
 type DemandFCRFormProps = {
   selectedRecipientId: ContactRecipientId;
   setSelectedRecipientId: (recipientId: ContactRecipientId) => void;
@@ -295,7 +342,19 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
           : DEFAULT_SIMULATION_PARAMS.espaceExterieur;
 
       const typeLogement = submitParams.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
-      const housingCount = Number(submitParams.nbLogements || DEFAULT_SIMULATION_PARAMS.nbLogements);
+      const occupantStatusDetailField = getOccupantStatusDetailField(value.occupantStatus);
+      const housingCount =
+        occupantStatusDetailField === 'housingCount' && value.housingCount !== undefined
+          ? value.housingCount
+          : Number(submitParams.nbLogements || DEFAULT_SIMULATION_PARAMS.nbLogements);
+      const averageArea =
+        occupantStatusDetailField === 'surfaceArea' && value.surfaceArea !== undefined
+          ? value.surfaceArea
+          : Number(submitParams.surfaceMoyenne || DEFAULT_SIMULATION_PARAMS.surfaceMoyenne);
+      const demandConcern = occupantStatusDetailField === 'demandConcern' && value.demandConcern ? value.demandConcern : null;
+      const organizationName =
+        hasOrganizationNameField(value.occupantStatus) && value.organizationName.trim().length > 0 ? value.organizationName.trim() : null;
+      const surfaceArea = occupantStatusDetailField === 'surfaceArea' ? (value.surfaceArea ?? null) : null;
 
       trackPostHogEvent('fcr_contact:form_submitted', {
         energy: value.heatingEnergy,
@@ -310,10 +369,11 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
 
       await submitContext.createDemandeChaleurRenouvelable.mutateAsync({
         address: submitParams.adresse ?? '',
-        averageArea: Number(submitParams.surfaceMoyenne || DEFAULT_SIMULATION_PARAMS.surfaceMoyenne),
+        averageArea,
         averageResidents: Number(submitParams.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
         batimentConstructionId: submitParams.constructionId,
         comments: value.comments.trim() || null,
+        demandConcern,
         dpe: submitParams.dpe,
         email: value.email,
         firstName: value.firstName,
@@ -324,6 +384,7 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
         isPublicAdvisorSelected: submitContext.isPublicAdvisorSelected,
         lastName: value.lastName,
         occupantStatus: value.occupantStatus,
+        organizationName,
         outdoorSpace: espaceExterieur,
         phone: value.phone,
         projectStatus: value.projectStatus,
@@ -331,6 +392,7 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
         refusalPeriod: submitContext.isPublicAdvisorSelected ? submitContext.refusalPeriod || null : null,
         refusalReason: submitContext.isPublicAdvisorSelected ? submitContext.refusalReason || null : null,
         simulationUrl: window.location.href,
+        surfaceArea,
       });
 
       setIsSent(true);
@@ -360,6 +422,9 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
   const { Field, Form, Submit, form, useValue } = useForm<typeof zContactFormChaleuRenouvelable>(formOptions);
 
   const selectedProjectStatus = useValue<ProjectStatus[]>('projectStatus') ?? [];
+  const selectedOccupantStatus = useValue<OccupantStatus>('occupantStatus') ?? CONTACT_FORM_DEFAULT_VALUES.occupantStatus;
+  const occupantStatusDetailField = getOccupantStatusDetailField(selectedOccupantStatus);
+  const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
 
   return (
     <section id="help-ademe" className="mt-6 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">
@@ -416,22 +481,29 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
               />
             </>
           )}
-          <form.Field
-            name="occupantStatus"
-            children={(field) => (
-              <RichSelect<OccupantStatus>
-                label="Vous êtes"
-                value={field.state.value}
-                onChange={field.handleChange}
-                options={occupantStatusOptions}
-                postHogEventKey="fcr_contact:profile_selected"
-                postHogEventProps={(profile) => ({
-                  is_raccordable: !isPublicAdvisorSelected,
-                  profile,
-                })}
-              />
-            )}
-          />
+          <div className={cx(!shouldShowOrganizationName && 'md:col-span-2 mb-5')}>
+            <form.Field
+              name="occupantStatus"
+              children={(field) => (
+                <RichSelect<OccupantStatus>
+                  label="Vous êtes"
+                  value={field.state.value}
+                  onChange={field.handleChange}
+                  options={occupantStatusOptions}
+                  postHogEventKey="fcr_contact:profile_selected"
+                  postHogEventProps={(profile) => ({
+                    is_raccordable: !isPublicAdvisorSelected,
+                    profile,
+                  })}
+                />
+              )}
+            />
+          </div>
+          {shouldShowOrganizationName && <Field.Input name="organizationName" label="Nom de votre structure" />}
+          <Field.Input name="lastName" label="Nom" />
+          <Field.Input name="firstName" label="Prénom" />
+          <Field.EmailInput name="email" label="Email" />
+          <Field.PhoneInput name="phone" label="Téléphone" />
           <form.Field
             name="heatingEnergy"
             children={(field) => (
@@ -448,10 +520,42 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
               />
             )}
           />
-          <Field.Input name="lastName" label="Nom" />
-          <Field.Input name="firstName" label="Prénom" />
-          <Field.EmailInput name="email" label="Email" />
-          <Field.PhoneInput name="phone" label="Téléphone" />
+          {occupantStatusDetailField === 'housingCount' && (
+            <Field.Input
+              name="housingCount"
+              label="Nombre de logements"
+              nativeInputProps={{
+                inputMode: 'numeric',
+                min: 1,
+                type: 'number',
+              }}
+            />
+          )}
+          {occupantStatusDetailField === 'surfaceArea' && (
+            <Field.Input
+              name="surfaceArea"
+              label="Surface en m²"
+              nativeInputProps={{
+                inputMode: 'numeric',
+                min: 1,
+                type: 'number',
+              }}
+            />
+          )}
+          {occupantStatusDetailField === 'demandConcern' && (
+            <form.Field
+              name="demandConcern"
+              children={(field) => (
+                <RichSelect<DemandConcern>
+                  label="Votre demande concerne"
+                  value={field.state.value || undefined}
+                  onChange={field.handleChange}
+                  options={demandConcernOptions}
+                  placeholder="Sélectionner une option"
+                />
+              )}
+            />
+          )}
           <div>
             <form.Field
               name="projectStatus"
@@ -476,8 +580,8 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
           </div>
           <Field.Textarea
             name="comments"
-            label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet (optionnel)"
-            className="w-full"
+            label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
+            className="w-full md:col-span-2 mt-5"
             nativeTextAreaProps={{
               rows: 3,
             }}

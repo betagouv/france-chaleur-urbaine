@@ -201,13 +201,22 @@ export const OCCUPANT_STATUS_VALUES = [
   'Propriétaire de maison individuelle',
   'Syndicat de copropriété',
   'TPE ou PME',
-  'Grande entreprisee ou Foncière',
+  'Grande entreprise ou Foncière',
   'Bailleur social',
   "Bureau d'étude ou AMO",
   'Mandataire ou Délégataire CEE',
 ];
 export type OccupantStatus = (typeof OCCUPANT_STATUS_VALUES)[number];
 export const occupantStatusOptions = OCCUPANT_STATUS_VALUES.map((value) => ({ label: value, value }));
+
+export const DEMAND_CONCERN_VALUES = [
+  'Une copropriété',
+  'Une maison individuelle',
+  'Un bâtiment tertiaire',
+  'Plusieurs bâtiments',
+] as const;
+export type DemandConcern = (typeof DEMAND_CONCERN_VALUES)[number];
+export const demandConcernOptions = DEMAND_CONCERN_VALUES.map((value) => ({ label: value, value }));
 
 export const HEATING_ENERGY_VALUES = ['Électricité', 'Gaz', 'Fioul', 'Bois', 'Réseau de chaleur', 'Autre'];
 export type HeatingEnergy = (typeof HEATING_ENERGY_VALUES)[number];
@@ -244,17 +253,21 @@ export const DEFAULT_SIMULATION_PARAMS = {
 
 export const zContactFormChaleuRenouvelable = z.object({
   comments: z.string().default(''),
+  demandConcern: z.enum(DEMAND_CONCERN_VALUES).or(z.literal('')).default(''),
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
   heatingEnergy: z.enum(HEATING_ENERGY_VALUES),
+  housingCount: z.number().int().positive().optional(),
   lastName: z.string().min(1, 'Veuillez renseigner votre nom'),
   occupantStatus: z.enum(OCCUPANT_STATUS_VALUES),
+  organizationName: z.string().default(''),
   phone: z
     .string()
     .regex(/^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$|^$/, 'Veuillez renseigner votre numéro de téléphone sous le format 0605040302')
     .optional()
     .default(''),
   projectStatus: z.array(z.enum(PROJECT_STATUS_VALUES)).default([]),
+  surfaceArea: z.number().positive().optional(),
   termOfUse: z.boolean().refine((val) => val, {
     error: 'Ce champ est requis',
   }),
@@ -266,6 +279,7 @@ export const zDemandeChaleurRenouvelable = z.object({
   averageResidents: z.number(),
   batimentConstructionId: z.string().nullable().default(null),
   comments: z.string().nullable().default(null),
+  demandConcern: z.enum(DEMAND_CONCERN_VALUES).nullable().default(null),
   dpe: z.enum(DPE_VALUES),
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   firstName: z.string(),
@@ -276,6 +290,7 @@ export const zDemandeChaleurRenouvelable = z.object({
   isPublicAdvisorSelected: z.boolean().default(false),
   lastName: z.string(),
   occupantStatus: z.enum(OCCUPANT_STATUS_VALUES),
+  organizationName: z.string().nullable().default(null),
   outdoorSpace: z.enum(ESPACE_EXTERIEUR_VALUES),
   phone: z
     .string()
@@ -287,6 +302,7 @@ export const zDemandeChaleurRenouvelable = z.object({
   refusalPeriod: z.string().nullable().default(null),
   refusalReason: z.string().nullable().default(null),
   simulationUrl: z.string(),
+  surfaceArea: z.number().nullable().default(null),
 });
 export type DemandeChaleurRenouvelable = z.infer<typeof zDemandeChaleurRenouvelable>;
 
