@@ -12,7 +12,7 @@ import { sql } from 'kysely';
  */
 export async function up(db: Kysely<any>): Promise<void> {
   await sql`
-    CREATE TABLE tiles_metadata (
+    CREATE TABLE IF NOT EXISTS tiles_metadata (
       source_id text PRIMARY KEY,
       last_modified_at timestamptz NOT NULL DEFAULT now()
     );
@@ -49,7 +49,8 @@ export async function up(db: Kysely<any>): Promise<void> {
       ('zones-opportunite-fort-froid'),
       ('zones-opportunite-froid'),
       ('zones-potentiel-chaud'),
-      ('zones-potentiel-fort-chaud');
+      ('zones-potentiel-fort-chaud')
+    ON CONFLICT (source_id) DO NOTHING;
   `.execute(db);
 }
 

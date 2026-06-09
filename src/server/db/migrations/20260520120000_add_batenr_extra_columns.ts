@@ -4,16 +4,16 @@ import { sql } from 'kysely';
 export async function up(db: Kysely<any>): Promise<void> {
   await sql`
     ALTER TABLE bdnb_batenr
-      ADD COLUMN categorie_majoritaire text,
-      ADD COLUMN propri_uni text,
-      ADD COLUMN classe_bilan_dpe character varying(1),
-      ADD COLUMN couv_st_ecs_2025 double precision,
-      ADD COLUMN couv_sondes_200_2025 double precision,
-      ADD COLUMN prod_st_mwh_an double precision,
-      ADD COLUMN type_installation_chauffage text,
-      ADD COLUMN type_energie_chauffage text,
-      ADD COLUMN type_installation_ecs text,
-      ADD COLUMN type_energie_ecs text;
+      ADD COLUMN IF NOT EXISTS categorie_majoritaire text,
+      ADD COLUMN IF NOT EXISTS propri_uni text,
+      ADD COLUMN IF NOT EXISTS classe_bilan_dpe character varying(1),
+      ADD COLUMN IF NOT EXISTS couv_st_ecs_2025 double precision,
+      ADD COLUMN IF NOT EXISTS couv_sondes_200_2025 double precision,
+      ADD COLUMN IF NOT EXISTS prod_st_mwh_an double precision,
+      ADD COLUMN IF NOT EXISTS type_installation_chauffage text,
+      ADD COLUMN IF NOT EXISTS type_energie_chauffage text,
+      ADD COLUMN IF NOT EXISTS type_installation_ecs text,
+      ADD COLUMN IF NOT EXISTS type_energie_ecs text;
   `.execute(db);
 }
 
