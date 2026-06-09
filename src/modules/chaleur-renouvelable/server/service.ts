@@ -3,7 +3,12 @@ import type {
   BatEnrBatiment,
   BatEnrByBanIdInput,
   DemandeChaleurRenouvelable,
+  DemandeChaleurRenouvelableStatus,
   GetLocationInput,
+} from '@/modules/chaleur-renouvelable/constants';
+import {
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
 } from '@/modules/chaleur-renouvelable/constants';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
@@ -64,6 +69,14 @@ const singleConstructionBuildingArea = sql<number | null>`
     LIMIT 1
   )
 `.as('dpe_representatif_logement_surface_habitable_immeuble');
+
+const getInitialDemandeChaleurRenouvelableStatus = (input: DemandeChaleurRenouvelable): DemandeChaleurRenouvelableStatus => {
+  return input.housingType === 'maison_individuelle' ||
+    input.housingType === 'immeuble_chauffage_individuel' ||
+    input.demandConcern === 'Une maison individuelle'
+    ? DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC
+    : DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR;
+};
 
 const selectBatEnrBatimentDetails = () =>
   kdb
@@ -166,6 +179,7 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
       refusal_period: input.refusalPeriod,
       refusal_reason: input.refusalReason,
       simulation_url: input.simulationUrl,
+      status: getInitialDemandeChaleurRenouvelableStatus(input),
       surface_area: input.surfaceArea,
       updated_at: new Date(),
     })
