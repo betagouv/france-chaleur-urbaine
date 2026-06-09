@@ -53,6 +53,7 @@ export function ConsommationsGazLegend() {
         label="Niveau de consommation de gaz"
         unit=" MWh/an"
         classes={{ label: 'text-sm', root: 'mr-4' }}
+        openEndedBounds
       />
     </LegendSection>
   );

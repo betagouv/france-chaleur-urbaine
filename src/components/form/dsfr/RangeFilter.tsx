@@ -24,6 +24,12 @@ export type RangeFilterProps = Omit<RangeProps, 'min' | 'max' | 'nativeInputProp
   };
   loading?: boolean;
   formatNumber?: (value: number) => string;
+  /**
+   * For sliders whose bound means "and beyond" (number of units, gas consumption…): the config stores an
+   * out-of-domain sentinel (e.g. `Number.MAX_VALUE`). Clamps the displayed value to the domain and shows
+   * `< min` / `> max` on the bound labels when a thumb reaches the edge (no `<` when `domain[0] === 0`).
+   */
+  openEndedBounds?: boolean;
 };
 
 const RangeFilter = ({
@@ -38,6 +44,7 @@ const RangeFilter = ({
   disabled,
   domainTransform,
   formatNumber = (v) => `${roundNumberProgressively(v)}`,
+  openEndedBounds = false,
   ...props
 }: RangeFilterProps) => {
   const values = defaultValues || domain;
@@ -49,13 +56,16 @@ const RangeFilter = ({
   const [min, max] = domainTransform ? [0, 100] : domain;
   const ref = useRef<HTMLDivElement>(null);
 
-  // This is needed because DSFR does not give ability to change it through a prop
+  // DSFR doesn't let us change this text through a prop and rewrites `.fr-range__output` on every `update()`
+  // (drag/resize): we keep its "plain" format (the `< `/`> ` hints live on the bound labels, which are stable).
   const reformatRangeOutputText = useCallback(
     (min: number, max: number) => {
+      // Clamp to the domain: with `openEndedBounds` the config stores an out-of-domain sentinel (e.g. Number.MAX_VALUE).
+      const clamp = (v: number) => (openEndedBounds ? Math.min(Math.max(v, domain[0]), domain[1]) : v);
       const updateRangeText = () => {
         const textToUpdate = ref.current?.querySelector('.fr-range__output');
         if (textToUpdate && textToUpdate.textContent !== '') {
-          textToUpdate.textContent = loading ? '...' : `${formatNumber(min)}${unit} - ${formatNumber(max)}${unit}`;
+          textToUpdate.textContent = loading ? '...' : `${formatNumber(clamp(min))}${unit} - ${formatNumber(clamp(max))}${unit}`;
           return;
         }
         // Retry after 50ms if the element is not found
@@ -64,7 +74,7 @@ const RangeFilter = ({
 
       updateRangeText();
     },
-    [formatNumber, unit, loading]
+    [formatNumber, unit, loading, openEndedBounds, domain[0], domain[1]]
   );
 
   useEffect(() => {
@@ -73,10 +83,10 @@ const RangeFilter = ({
   }, [values[0], values[1], renderKey]);
 
   useEffect(() => {
-    // DSFR component does not redraw the full colored background when resetting values
-    // This is an attempt to fix it
-
-    if (values[0] === domain[0] && values[1] === domain[1]) {
+    // Remount (via `key`) to force DSFR to redraw the colored track on a programmatic reset (the "Réinitialiser"
+    // button) — but never during an interaction: it would steal focus from the thumb, and DSFR already redraws
+    // by itself on a real input event.
+    if (values[0] === domain[0] && values[1] === domain[1] && !ref.current?.contains(document.activeElement)) {
       inc();
     }
   }, [values[0], values[1], domain[0], domain[1]]);
@@ -105,7 +115,10 @@ const RangeFilter = ({
     [domainTransform, onChange, values]
   );
 
-  const hideMinMax = !!domainTransform || loading;
+  // `openEndedBounds` switches to our custom bound labels (like `domainTransform`) so we can prefix them.
+  const hideMinMax = !!domainTransform || loading || openEndedBounds;
+  const lowerBoundPrefix = openEndedBounds && values[0] <= domain[0] && domain[0] !== 0 ? '< ' : '';
+  const upperBoundPrefix = openEndedBounds && values[1] >= domain[1] ? '> ' : '';
 
   return (
     <>
@@ -144,6 +157,7 @@ const RangeFilter = ({
               <Loader size="sm" className="fr-mt-1v" />
             ) : (
               <>
+                {lowerBoundPrefix}
                 {formatNumber(domain[0])}
                 {unit}
               </>
@@ -154,6 +168,7 @@ const RangeFilter = ({
               <Loader size="sm" className="fr-mt-1v" />
             ) : (
               <>
+                {upperBoundPrefix}
                 {formatNumber(domain[1])}
                 {unit}
               </>

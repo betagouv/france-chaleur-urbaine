@@ -19,10 +19,21 @@ type LegendIntervalSliderProps = {
   domainTransform?: RangeFilterProps['domainTransform'];
   /** DSFR slot overrides forwarded to the underlying `<Range>` (e.g. `{ label: 'text-xs' }`). */
   classes?: RangeFilterProps['classes'];
+  /** Open-ended bound: shows `< min` / `> max` when a thumb reaches the edge (see `RangeFilter`). */
+  openEndedBounds?: RangeFilterProps['openEndedBounds'];
 } & DomainProp;
 
 /** DSFR range slider bound to an `Interval` on the `MapConfiguration`. */
-export function LegendIntervalSlider({ path, label, unit, tooltip, domainTransform, classes, ...rest }: LegendIntervalSliderProps) {
+export function LegendIntervalSlider({
+  path,
+  label,
+  unit,
+  tooltip,
+  domainTransform,
+  classes,
+  openEndedBounds,
+  ...rest
+}: LegendIntervalSliderProps) {
   const { read, updateInterval } = useMapConfig();
   const value = read<Interval>(path);
   const domain = rest.domain ?? read<Interval>(rest.domainPath);
@@ -38,6 +49,7 @@ export function LegendIntervalSlider({ path, label, unit, tooltip, domainTransfo
       tooltip={tooltip}
       domainTransform={domainTransform}
       classes={classes}
+      openEndedBounds={openEndedBounds}
     />
   );
 }

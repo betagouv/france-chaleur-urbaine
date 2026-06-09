@@ -38,6 +38,7 @@ export function BatimentsGazCollectifLegend() {
         domain={[energyFilterInterval.min, energyFilterInterval.max]}
         label="Nombre de lots d'habitation"
         classes={{ label: 'text-sm' }}
+        openEndedBounds
       />
     </LegendSection>
   );
@@ -62,6 +63,7 @@ export function BatimentsFioulCollectifLegend() {
         domain={[energyFilterInterval.min, energyFilterInterval.max]}
         label="Nombre de lots d'habitation"
         classes={{ label: 'text-sm' }}
+        openEndedBounds
       />
     </LegendSection>
   );
