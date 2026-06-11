@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { getCostPrecisionRange } from '@/components/ComparateurPublicodes/Graph';
+import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import { trackPostHogEvent } from '@/modules/analytics/client';
@@ -110,9 +111,9 @@ export function ResultsSection({
           );
         })}
       </div>
-      <div className="border border-gray-200 bg-white px-5 py-6 md:px-10">
+      <div className="border border-gray-200 bg-white py-6 pr-3">
         {activeTab === 'hotWaterOnly' && (
-          <>
+          <div className="px-5">
             <div className="mb-6 border-l-4 border-blue bg-gray-100 px-4 py-3">
               <div className="flex items-start gap-3">
                 <span
@@ -132,7 +133,7 @@ export function ResultsSection({
               </div>
             </div>
             <p>Voici des solutions qui produisent uniquement de l’eau chaude, en complément d’un système de chauffage existant :</p>
-          </>
+          </div>
         )}
         {activeTab === 'hotWaterOnly' && activeItems.length === 0 && (
           <div className="border-l-4 border-blue bg-gray-100 px-4 py-3">
@@ -204,79 +205,98 @@ function OtherSolutionRow({
   const prerequisiteRows = item.prerequis(situation);
 
   return (
-    <div className="border-b border-gray-200 last:border-b-0">
-      <div className="grid gap-5 py-6 md:grid-cols-[2fr_1fr_auto_auto_auto] md:items-center">
+    <Accordion
+      simple
+      expanded={isOpen}
+      onExpandedChange={(expanded) => {
+        trackPostHogEvent(expanded ? 'fcr_results:alternative_solution_opened' : 'fcr_results:alternative_solution_closed', {
+          position,
+          solution_type: item.label,
+        });
+        onOpenChange(expanded);
+      }}
+      label={
+        <OtherSolutionLabel
+          item={item}
+          lowerBoundString={lowerBoundString}
+          upperBoundString={upperBoundString}
+          coutParAnGaz={coutParAnGaz}
+          coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
+          dpeFrom={dpeFrom}
+          dpeTo={dpeTo}
+        />
+      }
+    >
+      <div className="grid grid-cols-5 gap-5 px-5">
+        <div className="col-span-2">
+          <h4 className="text-lg uppercase">Description</h4>
+          <p className="mb-0">{item.description}</p>
+        </div>
+        <div className="col-span-2">
+          <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
+        </div>
         <div>
-          <p className="mb-3 font-bold text-blue">{item.label}</p>
-          <Stars value={item.pertinence} />
+          <Image
+            src={`/${item.icone}`}
+            alt=""
+            width={144}
+            height={108}
+            className="justify-self-center object-contain md:justify-self-end"
+          />
         </div>
-        <div className="text-center">
-          <span className="font-bold text-blue">
-            {lowerBoundString} à {upperBoundString}
-          </span>
-          <br />
-          <span>par an par logement</span>
-        </div>
-        <GainVsGazBadge item={item} coutParAnGaz={coutParAnGaz} coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly} />
-        <div className="flex items-center gap-3 md:justify-self-center">
-          <DpeProgression from={dpeFrom} to={dpeTo} />
-        </div>
-        <button
-          type="button"
-          className="justify-self-start whitespace-nowrap text-blue underline md:justify-self-end"
-          onClick={() => {
-            trackPostHogEvent(isOpen ? 'fcr_results:alternative_solution_closed' : 'fcr_results:alternative_solution_opened', {
-              position,
-              solution_type: item.label,
-            });
-            onOpenChange(!isOpen);
-          }}
-          aria-expanded={isOpen}
-        >
-          {isOpen ? 'Fermer −' : 'Ouvrir +'}
-        </button>
       </div>
-      {isOpen && (
-        <>
-          <div className="grid grid-cols-5 gap-5 border-t border-gray-200 pt-6">
-            <div className="col-span-2">
-              <h4 className="text-lg uppercase">Description</h4>
-              <p className="mb-0">{item.description}</p>
-            </div>
-            <div className="col-span-2">
-              <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
-            </div>
-            <div>
-              <Image
-                src={`/${item.icone}`}
-                alt=""
-                width={144}
-                height={108}
-                className="justify-self-center object-contain md:justify-self-end"
-              />
-            </div>
-          </div>
-          <div className="mt-6">
-            <PrerequisitesList
-              rows={prerequisiteRows}
-              coutInstallation={item.coutInstallation}
-              solutionType={item.label}
-              variant="compact"
-            />
-            <Button
-              href="#help-ademe"
-              iconId="fr-icon-arrow-right-line"
-              iconPosition="right"
-              className="my-3"
-              postHogEventKey="fcr_results:alternative_solution_cta_clicked"
-              postHogEventProps={{ solution_type: item.label }}
-              onClick={onCtaClick}
-            >
-              Passer à l’étape suivante
-            </Button>
-          </div>
-        </>
-      )}
-    </div>
+      <div className="mt-6 px-5">
+        <PrerequisitesList rows={prerequisiteRows} coutInstallation={item.coutInstallation} solutionType={item.label} variant="compact" />
+        <Button
+          href="#help-ademe"
+          iconId="fr-icon-arrow-right-line"
+          iconPosition="right"
+          className="my-3"
+          postHogEventKey="fcr_results:alternative_solution_cta_clicked"
+          postHogEventProps={{ solution_type: item.label }}
+          onClick={onCtaClick}
+        >
+          Passer à l’étape suivante
+        </Button>
+      </div>
+    </Accordion>
+  );
+}
+
+type OtherSolutionLabelProps = {
+  item: ModeDeChauffageEnriched;
+  lowerBoundString: string;
+  upperBoundString: string;
+  coutParAnGaz: number;
+  coutParAnGazHotWaterOnly: number;
+  dpeFrom: DPE;
+  dpeTo: DPE;
+};
+
+function OtherSolutionLabel({
+  item,
+  lowerBoundString,
+  upperBoundString,
+  coutParAnGaz,
+  coutParAnGazHotWaterOnly,
+  dpeFrom,
+  dpeTo,
+}: OtherSolutionLabelProps) {
+  return (
+    <span className="grid w-full gap-5 p-5 text-left md:grid-cols-[2fr_1fr_auto_auto] md:items-center">
+      <span>
+        <span className="mb-3 block font-bold text-blue">{item.label}</span>
+        <Stars value={item.pertinence} />
+      </span>
+      <span className="text-center">
+        <span className="font-bold text-blue">
+          {lowerBoundString} à {upperBoundString}
+        </span>
+        <br />
+        <span>par an par logement</span>
+      </span>
+      <GainVsGazBadge item={item} coutParAnGaz={coutParAnGaz} coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly} />
+      <DpeProgression from={dpeFrom} to={dpeTo} />
+    </span>
   );
 }
