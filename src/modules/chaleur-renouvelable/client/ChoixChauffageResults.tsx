@@ -36,7 +36,6 @@ export default function ChoixChauffageResults() {
     isParamsOpen,
     modesEnriched,
     openAccordionId,
-    openHeatNetworkContactModal,
     otherModes,
     recommended,
     setGeoAddress,
@@ -87,7 +86,6 @@ export default function ChoixChauffageResults() {
             dpeFrom={params.dpe}
             geoAddress={geoAddress}
             isOpen={openAccordionId === recommended.label}
-            onHelpButtonClick={recommended.helpAction === 'open-heat-network-contact' ? openHeatNetworkContactModal : undefined}
             onOpenChange={(expanded) => {
               if (expanded) {
                 trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: recommended.label });

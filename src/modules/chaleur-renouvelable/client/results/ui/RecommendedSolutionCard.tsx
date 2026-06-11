@@ -22,7 +22,6 @@ export type RecommendedSolutionCardProps = {
   coutParAnGaz: number;
   coutParAnGazHotWaterOnly: number;
   isOpen: boolean;
-  onHelpButtonClick?: () => void;
   onOpenChange: (expanded: boolean) => void;
   situation: Situation;
 };
@@ -34,7 +33,6 @@ export function RecommendedSolutionCard({
   coutParAnGaz,
   coutParAnGazHotWaterOnly,
   isOpen,
-  onHelpButtonClick,
   onOpenChange,
   situation,
 }: RecommendedSolutionCardProps) {
@@ -47,7 +45,6 @@ export function RecommendedSolutionCard({
         coutParAnGaz={coutParAnGaz}
         coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
         isOpen={isOpen}
-        onHelpButtonClick={onHelpButtonClick}
         onOpenChange={onOpenChange}
         situation={situation}
       />
@@ -86,7 +83,7 @@ export function RecommendedSolutionCard({
         />
       </div>
       <div className="mt-8 flex flex-col items-start gap-4 md:flex-row md:items-center">
-        <SolutionCta item={item} onHelpButtonClick={onHelpButtonClick} />
+        <SolutionCta item={item} />
         <button
           type="button"
           className="bg-transparent p-0 text-blue underline"
@@ -117,7 +114,6 @@ function HeatNetworkRecommendedSolutionCard({
   coutParAnGaz,
   coutParAnGazHotWaterOnly,
   isOpen,
-  onHelpButtonClick,
   onOpenChange,
   situation,
 }: RecommendedSolutionCardProps) {
@@ -177,7 +173,7 @@ function HeatNetworkRecommendedSolutionCard({
         <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
       </div>
       <div className="mt-6 flex flex-col items-start gap-4 md:flex-row md:items-center">
-        <SolutionCta item={item} onHelpButtonClick={onHelpButtonClick} />
+        <SolutionCta item={item} />
         <button
           type="button"
           className="bg-transparent p-0 text-blue underline"

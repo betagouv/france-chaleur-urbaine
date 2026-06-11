@@ -143,25 +143,6 @@ export function useChoixChauffageResults() {
     document.getElementById(HOT_WATER_PARAMS_SECTION_ID)?.scrollIntoView({ block: 'start' });
   }, []);
 
-  const openHeatNetworkContactModal = useCallback(() => {
-    if (!geoAddress || !params.adresse || !eligibiliteReseauChaleur) {
-      return;
-    }
-
-    const [lon, lat] = geoAddress.geometry.coordinates;
-
-    contactForm.handleOnSuccessAddress(
-      {
-        address: params.adresse,
-        coords: { lat, lon },
-        eligibility: eligibiliteReseauChaleur,
-        geoAddress,
-        heatingType: 'collectif',
-      },
-      'chaleur-renouvelable'
-    );
-  }, [contactForm, eligibiliteReseauChaleur, geoAddress, params.adresse]);
-
   const handleSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {
       urlParams.setParams({ constructionId: null });
@@ -214,7 +195,6 @@ export function useChoixChauffageResults() {
     isParamsOpen,
     modesEnriched,
     openAccordionId,
-    openHeatNetworkContactModal,
     otherModes,
     recommended,
     selectedBatEnrBatiment,
