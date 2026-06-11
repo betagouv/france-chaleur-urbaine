@@ -4,17 +4,15 @@ import type { ModeDeChauffageEnriched } from '@/modules/chaleur-renouvelable/cli
 
 type SolutionCtaProps = {
   item: ModeDeChauffageEnriched;
-  onHelpButtonClick?: () => void;
   className?: string;
 };
 
-export function SolutionCta({ item, onHelpButtonClick, className }: SolutionCtaProps) {
+export function SolutionCta({ item, className }: SolutionCtaProps) {
   return (
     <Button
-      href={onHelpButtonClick ? undefined : '#help-ademe'}
+      href="#help-ademe"
       onClick={() => {
         trackPostHogEvent('fcr_results:recommended_solution_cta_clicked', { solution_type: item.label });
-        onHelpButtonClick?.();
       }}
       iconId="fr-icon-arrow-right-line"
       iconPosition="right"

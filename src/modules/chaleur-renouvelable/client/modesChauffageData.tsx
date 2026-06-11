@@ -55,7 +55,6 @@ export const modesDeChauffage = {
         isNearHeatNetwork(situation) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 1,
-      helpAction: 'open-heat-network-contact',
       icone: 'img/icon-rcu.webp',
       incompatibilites: [
         {

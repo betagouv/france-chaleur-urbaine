@@ -92,7 +92,6 @@ export type ModeDeChauffage = {
   coutInstallation?: string | ((situation: Situation) => string);
   gainClasse: number;
   gainVsGaz?: number;
-  helpAction?: 'open-heat-network-contact';
   estPossible: (situation: Situation) => boolean;
   incompatibilites?: IncompatibleSolutionRule[];
   prerequis: (situation: Situation) => PrerequisiteRow[];
