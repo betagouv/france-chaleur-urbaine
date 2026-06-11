@@ -357,7 +357,7 @@ export const modesDeChauffage = {
       label: 'Pompe à chaleur air-eau collective',
       pertinence: 2,
       prerequis: (situation) => [
-        { label: 'Système ECS collectif', source: 'Formulaire', status: 'favorable' },
+        { label: "Système d'eau chaude sanitaire collectif", source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         { label: 'Espace requis pour les modules extérieurs', status: 'averifier' },
         { label: 'Espace requis en local technique pour les ballons de stockage', status: 'averifier' },
@@ -599,7 +599,7 @@ export const modesDeChauffage = {
       label: 'Pompe à chaleur air-eau collective',
       pertinence: 2,
       prerequis: (situation) => [
-        { label: 'Système ECS collectif', source: 'Formulaire', status: 'favorable' },
+        { label: "Système d'eau chaude sanitaire collectif", source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         { label: 'Espace requis pour les modules extérieurs', status: 'averifier' },
         { label: 'Espace requis en local technique pour les ballons de stockage', status: 'averifier' },
