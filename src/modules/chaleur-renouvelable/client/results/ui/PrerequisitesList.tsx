@@ -13,7 +13,7 @@ function PrerequisiteRowItem({ row }: { row: PrerequisiteRow }) {
         row.status === 'favorable' ? 'bg-gray-100' : 'bg-[#FFF8E5]'
       )}
     >
-      <span className="flex items-center gap-3">
+      <span className="flex flex-col md:flex-row items-center gap-3">
         <PrerequisiteStatusBadge status={row.status} />
         <span>{row.label}</span>
       </span>

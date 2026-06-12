@@ -227,22 +227,16 @@ function OtherSolutionRow({
         />
       }
     >
-      <div className="grid grid-cols-5 gap-5 px-5">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 gap-5 px-5 md:grid-cols-5">
+        <div className="md:col-span-2">
           <h4 className="text-lg uppercase">Description</h4>
           <p className="mb-0">{item.description}</p>
         </div>
-        <div className="col-span-2">
+        <div className="md:col-span-2">
           <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
         </div>
-        <div>
-          <Image
-            src={`/${item.icone}`}
-            alt=""
-            width={144}
-            height={108}
-            className="justify-self-center object-contain md:justify-self-end"
-          />
+        <div className="flex justify-center">
+          <Image src={`/${item.icone}`} alt="" width={144} height={108} className="justify-self-center object-contain" />
         </div>
       </div>
       <div className="mt-6 px-5">
