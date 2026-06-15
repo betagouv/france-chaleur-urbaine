@@ -4,6 +4,39 @@
 
 @source inline("flex-{2..12}");
 
+/*
+ * Radix-Accordion height animations for the legend's `MapAccordion`. Defined
+ * here (raw CSS, no Tailwind utilities) so the rules don't carry Tailwind's
+ * global `important: true`. Radix temporarily sets `animation-name: none`
+ * inline during height measurement — that inline value must be able to win
+ * over our class-level rule, which is only possible without `!important`.
+ */
+@keyframes legend-accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+@keyframes legend-accordion-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+.legend-accordion-content {
+  overflow: hidden;
+}
+.legend-accordion-content[data-state="open"] {
+  animation: legend-accordion-down 200ms ease-out;
+}
+.legend-accordion-content[data-state="closed"] {
+  animation: legend-accordion-up 200ms ease-out;
+}
+
 /* Restore native file upload button appearance broken by Tailwind reset rules */
 .fr-upload-group .fr-upload::file-selector-button {
   background-color: revert;

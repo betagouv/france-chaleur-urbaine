@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { useMapController } from '@/components/Map/useMapController';
 import Accordion from '@/components/ui/Accordion';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
@@ -18,7 +17,6 @@ import PermissionsMap from './PermissionsMap';
 const PermissionsView = () => {
   const { data: permissions, isLoading: isLoadingPermissions } = trpc.permissions.mineWithLabels.useQuery();
   const { data: mapData } = trpc.permissions.myMapData.useQuery(undefined);
-  const { mapRef, fitBounds } = useMapController();
   const [expanded, setExpanded] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
@@ -32,12 +30,11 @@ const PermissionsView = () => {
 
   const handleSelect = (p: PermissionWithLabel) => {
     if (p.type === 'national') return;
-    const key = permissionBoundsKey(p.type, p.resource_id);
-    setSelectedKey(key);
+    setSelectedKey(permissionBoundsKey(p.type, p.resource_id));
     setExpanded(true);
-    const bbox = mapData?.perPermissionBounds[key];
-    if (bbox) fitBounds(bbox);
   };
+
+  const focusBounds = selectedKey ? mapData?.perPermissionBounds[selectedKey] : undefined;
 
   return (
     <div className="space-y-4">
@@ -47,8 +44,10 @@ const PermissionsView = () => {
         Ces permissions sont incorrectes ? <Link href="/contact">Contactez-nous</Link> pour demander une correction.
       </p>
 
-      <Accordion label="Voir sur la carte" simple expanded={expanded} onExpandedChange={setExpanded}>
-        <PermissionsMap mapRef={mapRef} />
+      {/* `lazy`: don't mount the map while collapsed — it would init in a 0-sized hidden container
+          and `fitBounds` (initial view + selection) would yield NaN. Mounts on first open, sized. */}
+      <Accordion label="Voir sur la carte" simple lazy expanded={expanded} onExpandedChange={setExpanded}>
+        <PermissionsMap focusBounds={focusBounds} />
       </Accordion>
     </div>
   );

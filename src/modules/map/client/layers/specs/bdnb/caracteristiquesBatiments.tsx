@@ -1,0 +1,69 @@
+import type { ExpressionInputType } from 'maplibre-gl';
+
+import { ifHoverElse, type MapSourceLayersSpecification } from '@/modules/map/client/core/common';
+import { BdnbBatimentPopup, bdnbBatimentsTilesSource } from '@/modules/map/client/layers/specs/bdnb/common';
+import { intermediateTileLayersMinZoom } from '@/modules/tiles/constants';
+import { darken } from '@/utils/color';
+import { ObjectEntries } from '@/utils/typescript';
+
+import { caracteristiquesBatimentsLayerStyle } from './caracteristiquesBatimentsLayerStyle';
+
+const opacity = 0.65;
+
+const dpeWithColorPairs = ObjectEntries(caracteristiquesBatimentsLayerStyle).flatMap(([dpeCode, dpeColor]) => [
+  dpeCode,
+  ifHoverElse(darken(dpeColor, 40), dpeColor),
+]) as [string, ExpressionInputType, ...ExpressionInputType[]];
+
+export const caracteristiquesBatimentsLayersSpec = [
+  {
+    layers: [
+      {
+        id: 'caracteristiquesBatiments',
+        isVisible: (config) => config.caracteristiquesBatiments,
+        minzoom: intermediateTileLayersMinZoom,
+        paint: {
+          'fill-color': [
+            'match',
+            ['coalesce', ['get', 'dpe_representatif_logement_classe_bilan_dpe'], 'N'],
+            ...dpeWithColorPairs,
+            ifHoverElse(darken(caracteristiquesBatimentsLayerStyle.N, 40), caracteristiquesBatimentsLayerStyle.N),
+          ],
+          'fill-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            intermediateTileLayersMinZoom + 0.2,
+            0,
+            intermediateTileLayersMinZoom + 0.2 + 1,
+            opacity,
+          ],
+        },
+        popup: BdnbBatimentPopup,
+        type: 'fill',
+      },
+      {
+        id: 'caracteristiquesBatiments-contour',
+        isVisible: (config) => config.caracteristiquesBatiments,
+        minzoom: intermediateTileLayersMinZoom,
+        paint: {
+          'line-color': ifHoverElse('#333', '#777'),
+          'line-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            intermediateTileLayersMinZoom + 0.2,
+            0,
+            intermediateTileLayersMinZoom + 0.2 + 1,
+            opacity,
+          ],
+          'line-width': ifHoverElse(2, 0.5),
+        },
+        type: 'line',
+        unselectable: true,
+      },
+    ],
+    source: bdnbBatimentsTilesSource,
+    sourceId: 'bdnb-batiments',
+  },
+] as const satisfies readonly MapSourceLayersSpecification[];

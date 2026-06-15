@@ -4,7 +4,7 @@
 
 France Chaleur Urbaine is a French government platform (beta.gouv.fr) that accelerates the adoption of district heating networks (réseaux de chaleur urbains). District heating delivers heat from a centralized plant to buildings through underground pipes, often using renewable energy sources.
 
-The platform serves three main audiences:
+The platform serves several audiences:
 1. **Citizens (particuliers)** — test if their address is near a heating network and request a connection.
 2. **Professionals (professionnels)** — bulk-test address eligibility for building portfolios.
 3. **Network operators (gestionnaires)** — manage connection demands for their assigned networks.
@@ -106,10 +106,7 @@ Permissions are managed in `user_permissions` table (not string tags). See `secu
 | Sentry | Error tracking | Sentry SDK |
 | SMTP (Mailpit local) | Email sending | `src/modules/email/` |
 
-## Geographic data context
+## Geographic data
 
-- All spatial data stored in PostGIS with Lambert 93 (EPSG:2154) projection.
-- WGS84 (EPSG:4326) used for API input/output (GPS coordinates).
-- GDAL/ogr2ogr used for geographic file conversions (shapefiles → GeoJSON → PostGIS).
-- Tippecanoe generates vector tiles for performant map rendering.
-- Map supports 30+ toggleable layers (networks, buildings, potential zones, etc.).
+- Spatial data in PostGIS: **Lambert 93 (EPSG:2154)** for storage, **WGS84 (EPSG:4326)** for API I/O — convert at the boundary.
+- File conversions (shapefile → GeoJSON → PostGIS) via GDAL/ogr2ogr; map tiles via Tippecanoe (see maps.md).

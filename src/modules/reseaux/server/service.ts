@@ -855,6 +855,152 @@ export type NetworkSearchResult = {
  * Search networks (existing + construction) by name, SNCU identifier or FCU id.
  * Includes zones (`is_zone = true`) since demands can be affected to them.
  */
+/**
+ * Public, map-centric search: matches by name / SNCU id / id_fcu and returns
+ * the bbox of each network so the carte can `fitBounds` on the selected result.
+ * Excludes networks without a geometry (we couldn't position the map on them).
+ */
+export type NetworkMapSearchResult = {
+  id_fcu: number;
+  nom_reseau: string | null;
+  identifiant_reseau: string | null;
+  gestionnaire: string | null;
+  network_type: 'reseau_de_chaleur' | 'reseau_en_construction' | 'reseau_de_froid';
+  /** [minLng, minLat, maxLng, maxLat] — geometry envelope in WGS84. */
+  bbox: [number, number, number, number];
+};
+
+export const searchNetworksForMap = async (search: string): Promise<NetworkMapSearchResult[]> => {
+  const pattern = `%${search}%`;
+  const bboxCols = [
+    sql<number>`ST_XMin(ST_Transform(geom, 4326))`.as('xmin'),
+    sql<number>`ST_YMin(ST_Transform(geom, 4326))`.as('ymin'),
+    sql<number>`ST_XMax(ST_Transform(geom, 4326))`.as('xmax'),
+    sql<number>`ST_YMax(ST_Transform(geom, 4326))`.as('ymax'),
+  ];
+
+  const [existants, enConstruction, froid] = await Promise.all([
+    kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select((eb) => [
+        'id_fcu',
+        'nom_reseau',
+        eb.ref('Identifiant reseau').as('identifiant_reseau'),
+        eb.ref('Gestionnaire').as('gestionnaire'),
+        ...bboxCols,
+      ])
+      .where('geom', 'is not', null)
+      .where((eb) =>
+        eb.or([
+          eb('nom_reseau', 'ilike', pattern),
+          eb(eb.ref('Identifiant reseau'), 'ilike', pattern),
+          eb(eb.ref('Gestionnaire'), 'ilike', pattern),
+          eb(sql<string>`"id_fcu"::TEXT`, 'like', pattern),
+        ])
+      )
+      .orderBy('nom_reseau')
+      .limit(10)
+      .execute(),
+    kdb
+      .selectFrom('zones_et_reseaux_en_construction')
+      .select((_eb) => ['id_fcu', 'nom_reseau', sql<string | null>`NULL`.as('identifiant_reseau'), 'gestionnaire', ...bboxCols])
+      .where('geom', 'is not', null)
+      .where((eb) => eb.or([eb('nom_reseau', 'ilike', pattern), eb(sql<string>`"id_fcu"::TEXT`, 'like', pattern)]))
+      .orderBy('nom_reseau')
+      .limit(10)
+      .execute(),
+    kdb
+      .selectFrom('reseaux_de_froid')
+      .select((eb) => [
+        'id_fcu',
+        'nom_reseau',
+        eb.ref('Identifiant reseau').as('identifiant_reseau'),
+        eb.ref('Gestionnaire').as('gestionnaire'),
+        ...bboxCols,
+      ])
+      .where('geom', 'is not', null)
+      .where((eb) =>
+        eb.or([
+          eb('nom_reseau', 'ilike', pattern),
+          eb(eb.ref('Identifiant reseau'), 'ilike', pattern),
+          eb(eb.ref('Gestionnaire'), 'ilike', pattern),
+          eb(sql<string>`"id_fcu"::TEXT`, 'like', pattern),
+        ])
+      )
+      .orderBy('nom_reseau')
+      .limit(10)
+      .execute(),
+  ]);
+
+  const toResult = (
+    row: {
+      id_fcu: number;
+      nom_reseau: string | null;
+      identifiant_reseau: string | null;
+      gestionnaire: string | null;
+      xmin: number;
+      ymin: number;
+      xmax: number;
+      ymax: number;
+    },
+    network_type: NetworkMapSearchResult['network_type']
+  ): NetworkMapSearchResult => ({
+    bbox: [row.xmin, row.ymin, row.xmax, row.ymax],
+    gestionnaire: row.gestionnaire,
+    id_fcu: row.id_fcu,
+    identifiant_reseau: row.identifiant_reseau,
+    network_type,
+    nom_reseau: row.nom_reseau,
+  });
+
+  return [
+    ...existants.map((r) => toResult(r, 'reseau_de_chaleur')),
+    ...enConstruction.map((r) => toResult(r, 'reseau_en_construction')),
+    ...froid.map((r) => toResult(r, 'reseau_de_froid')),
+  ];
+};
+
+/**
+ * Distinct operator names (gestionnaire / maître d'ouvrage) matching `search`, for the
+ * iframe generator autocomplete. Gestionnaire spans chaleur + froid + construction; MO
+ * spans chaleur + froid (construction has no MO column). Public, map-level data.
+ */
+export const searchNetworkOperators = async (field: 'gestionnaire' | 'maitreOuvrage', search: string): Promise<string[]> => {
+  const pattern = `%${search}%`;
+  const column = field === 'gestionnaire' ? ('Gestionnaire' as const) : ('MO' as const);
+
+  const chaleur = kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select((eb) => eb.ref(column).as('value'))
+    .where(column, 'ilike', pattern);
+  const froid = kdb
+    .selectFrom('reseaux_de_froid')
+    .select((eb) => eb.ref(column).as('value'))
+    .where(column, 'ilike', pattern);
+
+  const operators =
+    field === 'gestionnaire'
+      ? chaleur.union(froid).union(
+          kdb
+            .selectFrom('zones_et_reseaux_en_construction')
+            .select((eb) => eb.ref('gestionnaire').as('value'))
+            .where('gestionnaire', 'ilike', pattern)
+        )
+      : chaleur.union(froid);
+
+  const rows = await kdb
+    .selectFrom(operators.as('operators'))
+    .select('value')
+    .distinct()
+    .where('value', 'is not', null)
+    .where('value', '<>', '')
+    .orderBy('value')
+    .limit(15)
+    .execute();
+
+  return rows.map((r) => r.value).filter(isDefined);
+};
+
 export const searchNetworks = async (search: string): Promise<NetworkSearchResult[]> => {
   const pattern = `%${search}%`;
 

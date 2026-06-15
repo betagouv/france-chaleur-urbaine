@@ -10,8 +10,6 @@ import { SessionProvider } from 'next-auth/react';
 import { NuqsAdapter } from 'nuqs/adapters/next/pages';
 import { useState } from 'react';
 
-import '@/components/Map/StyleSwitcher/styles.css';
-
 import SEO from '@/components/SEO';
 import ThemeProvider, { dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
 import useHtmlAttributes from '@/hooks/useHtmlAttributes';

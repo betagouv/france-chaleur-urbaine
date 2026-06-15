@@ -2,11 +2,31 @@ import { generateGeoJSONFromSQLQuery } from '@/modules/tiles/server/generation-s
 import type { AsTile } from '@/modules/tiles/server/tiles.config';
 import type { ReseauxDeChaleur } from '@/server/db/kysely/database';
 
+/**
+ * Liste des champs émis dans les properties des tuiles RDC.
+ *
+ * Les `energie_ratio_*` ne sont pas des colonnes de la table `reseaux_de_chaleur`
+ * mais des champs calculés dans la requête SQL ci-dessous (division par
+ * `production_totale_MWh`). Le typage les distingue des colonnes Kysely.
+ */
+const energieRatioFields = [
+  'energie_ratio_biomasse',
+  'energie_ratio_geothermie',
+  'energie_ratio_uve',
+  'energie_ratio_chaleurIndustrielle',
+  'energie_ratio_solaireThermique',
+  'energie_ratio_pompeAChaleur',
+  'energie_ratio_gaz',
+  'energie_ratio_fioul',
+] as const;
+type EnergieRatioField = (typeof energieRatioFields)[number];
+
 const reseauxDeChaleurFields = [
   'id_fcu',
 
   'Taux EnR&R',
   'Gestionnaire',
+  'MO',
   'Identifiant reseau',
   'reseaux classes',
   'contenu CO2',
@@ -20,8 +40,13 @@ const reseauxDeChaleurFields = [
   'annee_creation',
   'tags',
   'ouvert_aux_raccordements',
-] as const satisfies (keyof ReseauxDeChaleur)[];
-export type ReseauxDeChaleurTile = AsTile<Required<Pick<ReseauxDeChaleur, (typeof reseauxDeChaleurFields)[number]>>>;
+  ...energieRatioFields,
+] as const satisfies readonly (keyof ReseauxDeChaleur | EnergieRatioField)[];
+
+type ReseauxDeChaleurDbField = Exclude<(typeof reseauxDeChaleurFields)[number], EnergieRatioField>;
+export type ReseauxDeChaleurTile = AsTile<Required<Pick<ReseauxDeChaleur, ReseauxDeChaleurDbField>>> & {
+  [K in EnergieRatioField]: number | null;
+};
 
 export const reseauxDeChaleurGeoJSONQuery = generateGeoJSONFromSQLQuery(
   `

@@ -4,12 +4,13 @@ import type React from 'react';
 import styled from 'styled-components';
 
 import Checkboxes from '@/components/form/dsfr/Checkboxes';
+import Input from '@/components/form/dsfr/Input';
 import RangeFilter, { roundNumberProgressively } from '@/components/form/dsfr/RangeFilter';
 import SelectCheckboxes from '@/components/form/dsfr/SelectCheckboxes';
-import { filtresEnergies } from '@/components/Map/map-configuration';
 import { UrlStateAccordion } from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import useReseauxDeChaleurFilters from '@/hooks/useReseauxDeChaleurFilters';
+import { filtresEnergies } from '@/modules/map/client/config/map-configuration';
 import { gestionnairesFilters } from '@/modules/reseaux/constants';
 
 export type ReseauxDeChaleurFiltersProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -161,6 +162,17 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
           />
         </>
       )}
+      <br />
+      <Input
+        label="Maître d'ouvrage"
+        hideOptionalLabel
+        hintText="Texte libre"
+        nativeInputProps={{
+          onChange: (e) => updateFilter('maitreOuvrage', e.target.value.trim() ? [e.target.value] : undefined),
+          placeholder: 'Ex : Engie',
+          value: filters.maitreOuvrage[0] ?? '',
+        }}
+      />
       <br />
       <RangeFilter
         loading={loading}

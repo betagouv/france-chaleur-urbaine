@@ -1,9 +1,9 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { cleanDatabase, seedReseauDeChaleur, seedZoneEtReseauEnConstruction } from '@/tests/fixtures';
+import { cleanDatabase, seedReseauDeChaleur, seedReseauDeFroid, seedZoneEtReseauEnConstruction } from '@/tests/fixtures';
 import type { TestCase } from '@/tests/trpc-helpers';
 
-import { type NetworkSearchResult, searchNetworks } from './service';
+import { type NetworkSearchResult, searchNetworkOperators, searchNetworks } from './service';
 
 const chaleurNord: NetworkSearchResult = {
   gestionnaire: 'Dalkia',
@@ -43,39 +43,40 @@ describe('searchNetworks()', () => {
   beforeAll(async () => {
     await cleanDatabase();
 
-    await seedReseauDeChaleur({
-      Gestionnaire: chaleurNord.gestionnaire,
-      'Identifiant reseau': chaleurNord.identifiant_reseau,
-      id_fcu: chaleurNord.id_fcu,
-      nom_reseau: chaleurNord.nom_reseau,
-      ouvert_aux_raccordements: true,
-      tags: [],
-    });
-    await seedReseauDeChaleur({
-      Gestionnaire: chaleurSud.gestionnaire,
-      'Identifiant reseau': chaleurSud.identifiant_reseau,
-      id_fcu: chaleurSud.id_fcu,
-      nom_reseau: chaleurSud.nom_reseau,
-      ouvert_aux_raccordements: true,
-      tags: [],
-    });
-
-    await seedZoneEtReseauEnConstruction({
-      gestionnaire: futurEst.gestionnaire,
-      id_fcu: futurEst.id_fcu,
-      is_zone: false,
-      nom_reseau: futurEst.nom_reseau,
-      ouvert_aux_raccordements: false,
-      tags: [],
-    });
-    await seedZoneEtReseauEnConstruction({
-      gestionnaire: zoneOuest.gestionnaire,
-      id_fcu: zoneOuest.id_fcu,
-      is_zone: true,
-      nom_reseau: zoneOuest.nom_reseau,
-      ouvert_aux_raccordements: false,
-      tags: [],
-    });
+    await Promise.all([
+      seedReseauDeChaleur({
+        Gestionnaire: chaleurNord.gestionnaire,
+        'Identifiant reseau': chaleurNord.identifiant_reseau,
+        id_fcu: chaleurNord.id_fcu,
+        nom_reseau: chaleurNord.nom_reseau,
+        ouvert_aux_raccordements: true,
+        tags: [],
+      }),
+      seedReseauDeChaleur({
+        Gestionnaire: chaleurSud.gestionnaire,
+        'Identifiant reseau': chaleurSud.identifiant_reseau,
+        id_fcu: chaleurSud.id_fcu,
+        nom_reseau: chaleurSud.nom_reseau,
+        ouvert_aux_raccordements: true,
+        tags: [],
+      }),
+      seedZoneEtReseauEnConstruction({
+        gestionnaire: futurEst.gestionnaire,
+        id_fcu: futurEst.id_fcu,
+        is_zone: false,
+        nom_reseau: futurEst.nom_reseau,
+        ouvert_aux_raccordements: false,
+        tags: [],
+      }),
+      seedZoneEtReseauEnConstruction({
+        gestionnaire: zoneOuest.gestionnaire,
+        id_fcu: zoneOuest.id_fcu,
+        is_zone: true,
+        nom_reseau: zoneOuest.nom_reseau,
+        ouvert_aux_raccordements: false,
+        tags: [],
+      }),
+    ]);
   });
 
   const cases: TestCase<string, NetworkSearchResult[]>[] = [
@@ -93,5 +94,59 @@ describe('searchNetworks()', () => {
   it.each(cases)('$label', async ({ input, expectedOutput }) => {
     const results = await searchNetworks(input);
     expect(results.sort(byIdFcu)).toStrictEqual(expectedOutput.sort(byIdFcu));
+  });
+});
+
+describe('searchNetworkOperators()', () => {
+  beforeAll(async () => {
+    await cleanDatabase();
+
+    // Dalkia appears in chaleur + froid (distinct test); IDEX only in construction (gestionnaire-only table).
+    await Promise.all([
+      seedReseauDeChaleur({
+        Gestionnaire: 'Dalkia',
+        id_fcu: 3001,
+        MO: 'Métropole de Lyon',
+        nom_reseau: 'RC A',
+        ouvert_aux_raccordements: true,
+        tags: [],
+      }),
+      seedReseauDeChaleur({
+        Gestionnaire: 'ENGIE Solutions',
+        id_fcu: 3002,
+        MO: 'Ville de Paris',
+        nom_reseau: 'RC B',
+        ouvert_aux_raccordements: true,
+        tags: [],
+      }),
+      seedReseauDeFroid({ Gestionnaire: 'Dalkia', id_fcu: 3003, MO: 'Région Sud', nom_reseau: 'RF A' }),
+      seedZoneEtReseauEnConstruction({
+        gestionnaire: 'IDEX',
+        id_fcu: 3004,
+        is_zone: false,
+        nom_reseau: 'ZC',
+        ouvert_aux_raccordements: false,
+        tags: [],
+      }),
+    ]);
+  });
+
+  const cases = [
+    {
+      expected: ['Dalkia'],
+      field: 'gestionnaire',
+      label: 'gestionnaire : insensible à la casse + distinct (chaleur + froid)',
+      search: 'dalkia',
+    },
+    { expected: ['IDEX'], field: 'gestionnaire', label: 'gestionnaire : inclut les réseaux en construction', search: 'idex' },
+    { expected: ['Dalkia', 'IDEX'], field: 'gestionnaire', label: 'gestionnaire : multi-résultats triés, toutes tables', search: 'd' },
+    { expected: [], field: 'gestionnaire', label: 'gestionnaire : aucun match', search: 'zzz' },
+    { expected: ['Métropole de Lyon'], field: 'maitreOuvrage', label: 'MO : match chaleur', search: 'métropole' },
+    { expected: ['Région Sud'], field: 'maitreOuvrage', label: 'MO : inclut les réseaux de froid', search: 'région' },
+    { expected: [], field: 'maitreOuvrage', label: 'MO : ne cherche pas dans le champ gestionnaire', search: 'idex' },
+  ] as const;
+
+  it.each(cases)('$label', async ({ field, search, expected }) => {
+    expect(await searchNetworkOperators(field, search)).toStrictEqual(expected);
   });
 });

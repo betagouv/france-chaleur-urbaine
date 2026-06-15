@@ -63,7 +63,9 @@
 - Use arrow functions for callbacks, utility functions, and handlers.
 - Keep components under 150 lines — extract sub-components if longer.
 - **One exported component per file.** Never co-locate multiple exported components in the same file — split into separate files named after each component (PascalCase, matches the component name).
+- **Top-down file order.** The main/exported component and its key types go at the **top** (what the file is *for*, at a glance); internal sub-components and small helpers go **below** it — JS hoisting of the `function` declarations (above) makes this work. Details come last, for when you need to dig in.
 - **Always define a `<ComponentName>Props` type** for each component above its declaration. Never inline the props type in the function signature: `function Foo({ x }: { x: string })` → use `type FooProps = { x: string }; function Foo({ x }: FooProps)`.
+- **Never name a type `Props` (or any short / generic name)** — even when there is only one type in the file, it must be prefixed by the component / function name (`FooProps`, not `Props`). Same rule for params types (`FooParams`, not `Params`).
 - Place the props/params type definition immediately above the function/component that uses it, with no other definitions in between.
 - Add a short multi-line TSDoc comment above each React component describing its purpose (1-3 content lines):
 - No `forwardRef` unless absolutely necessary.
@@ -110,17 +112,14 @@
 
 ## Comment conventions
 
+- **Comment the "why", not the "what".** Explain non-obvious rationale, trade-offs, gotchas or edge cases — never restate what the code already says.
+- **Keep inline comments to one line.** Even a justified "why" comment must be terse — name the constraint, not the full explanation. If it can't fit on one line, the detail belongs in a TSDoc header or a doc file, not inline. Prefer a trailing `// …` on the line it explains.
+- **Don't narrate trivial statements** — a comment before *every* line is noise. But the non-obvious still gets one: in particular **a `useEffect` almost always takes a one-line comment** saying what it does/syncs and why.
 - No comments for self-explanatory code.
 - `// TODO:` for planned work.
 - `// HACK:` for workarounds (explain why + when to remove).
 - No commented-out code — delete it.
-- No JSDoc except on complex public utility functions.
-
-## AI communication style
-
-- Never present multiple contradictory options that go back and forth. Think through all tradeoffs internally first, then deliver ONE clear, definitive recommendation.
-- If there are genuine tradeoffs the user needs to weigh, present them as a clean comparison — not a narrative that contradicts itself paragraph by paragraph.
-- No "actually wait", no "let me reconsider", no live stream of internal deliberation.
+- TSDoc header (purpose, 1-3 lines) above functions, hooks and React components — see *Function and component patterns*. The rules above target inline comments, not these doc headers.
 
 ## HTTP calls to external APIs
 
@@ -129,22 +128,3 @@ Never use raw `fetch`. Use helpers from `@/utils/network`:
 - `fetchJSON(url, init?)` for GET — pass `headers` inside `init`
 
 They handle `Content-Type: application/json`, JSON parsing, and throw `FetchError` on non-OK responses.
-
-## Environment variables
-
-Never access `process.env` directly. Always use the typed config objects:
-- **Server-side**: `serverConfig` from `@/server/config` — Zod-validated, typed.
-- **Client-side**: `clientConfig` from `@/client-config` — Zod-validated, typed.
-
-When adding a new env var:
-1. Add it to `serverConfigSchema` (or client schema) in `src/server/config.ts`.
-2. Add it with a placeholder value to `.env.example`.
-
-## Pre-commit checklist
-
-Always run before committing:
-```bash
-pnpm lint    # Biome checks
-pnpm ts      # TypeScript type check
-pnpm test    # Run relevant tests
-```

@@ -44,6 +44,25 @@ export const searchBANAddresses = async ({
   return features;
 };
 
+type ReverseGeocodeOptions = {
+  lat: number;
+  lon: number;
+  signal?: AbortSignal;
+};
+
+/**
+ * Reverse geocoding sur l'API BAN : retourne la feature de l'adresse la plus
+ * proche d'une coordonnée (avec `properties.distance` en mètres), ou `null`.
+ */
+export const reverseGeocodeBANAddress = async ({ lat, lon, signal }: ReverseGeocodeOptions) => {
+  const response = await fetchWithRetry<BANAddressSearchResponse>(`${clientConfig.banApiBaseUrl}reverse`, {
+    params: { lat, limit: 1, lon },
+    signal,
+  });
+
+  return response.features[0] ?? null;
+};
+
 type BANAddressSearchResponse = {
   type: 'FeatureCollection';
   version: string;

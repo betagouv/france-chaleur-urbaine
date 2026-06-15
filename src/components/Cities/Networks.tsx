@@ -1,16 +1,14 @@
-import dynamic from 'next/dynamic';
-
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import ClassedNetwork from '@/components/Network/ClassedNetwork';
 import EnergiesChart from '@/components/Network/EnergiesChart';
 import Slice from '@/components/Slice';
 import Link from '@/components/ui/Link';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { MapMarker } from '@/modules/map/client/interactions/MapMarker';
+import { Map } from '@/modules/map/client/Map';
 import type { Network } from '@/types/Summary/Network';
 
 import { NetworkContainer } from './Networks.styles';
-
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
 
 type NetworksData = {
   isClassed: boolean;
@@ -83,18 +81,19 @@ const Networks = ({ citySlug, networksData, network, cityCoord }: NetworksProps)
         )}
       </div>
       <div className="fr-col-md-6 fr-col-12">
-        <Map
-          noPopup
-          withCenterPin
-          initialCenter={cityCoord}
-          initialZoom={11}
-          initialMapConfiguration={createMapConfiguration({
-            filtreIdentifiantReseau: networksData.identifiant ? [networksData.identifiant] : [],
-            reseauxDeChaleur: {
-              show: true,
-            },
-          })}
-        />
+        <div className="h-[500px]">
+          <Map
+            initialView={{ center: cityCoord, zoom: 11 }}
+            config={createMapConfiguration({
+              filtreIdentifiantReseau: networksData.identifiant ? [networksData.identifiant] : [],
+              reseauxDeChaleur: {
+                show: true,
+              },
+            })}
+          >
+            <MapMarker longitude={cityCoord[0]} latitude={cityCoord[1]} color="#4550e5" />
+          </Map>
+        </div>
       </div>
     </NetworkContainer>
   );

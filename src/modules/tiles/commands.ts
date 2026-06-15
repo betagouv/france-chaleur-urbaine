@@ -69,13 +69,13 @@ async function generateAddToMapInstructions(type: TilesType): Promise<void> {
   );
 
   const typeCamelCase = camelcase(type);
-  const layerFilePath = `src/components/Map/layers/${typeCamelCase}.tsx`;
-  const mapConfigurationFilePath = `src/components/Map/map-configuration.ts`;
-  const mapLayersFilePath = `src/components/Map/map-layers.ts`;
+  const layerFilePath = `src/modules/map/client/layers/specs/${typeCamelCase}.tsx`;
+  const mapConfigurationFilePath = `src/modules/map/client/config/map-configuration.ts`;
+  const mapLayersFilePath = `src/modules/map/client/layers/all-layers.ts`;
   const mapFilePath = `src/pages/carte.tsx`;
   const tilesConfigFilePath = `src/modules/tiles/server/tiles.config.ts`;
   const analyticsFilePath = `src/modules/analytics/analytics.config.ts`;
-  const simpleMapLegendFilePath = `src/components/Map/components/SimpleMapLegend.tsx`;
+  const simpleMapLegendFilePath = `src/modules/map/client/legend/MapLegend.tsx`;
 
   // Instructions pour chaque fichier
   logger.info(`Dans ${tilesConfigFilePath}`);
@@ -105,7 +105,7 @@ export const ${typeCamelCase}LayersSpec = [];`
   logger.warn(`  🚧 Modifier le fichier layer`);
 
   logger.info(`Dans ${mapLayersFilePath}`);
-  logger.warn(`  🚧 Importer dans mapLayers -> "...${typeCamelCase}LayersSpec,"`);
+  logger.warn(`  🚧 Importer dans allLayers -> "...${typeCamelCase}LayersSpec,"`);
 
   logger.info(`Dans ${mapFilePath}`);
   logger.warn(`  🚧 Ajouter la config à layerURLKeysToMapConfigPath -> "${typeCamelCase}: '${typeCamelCase}'"`);

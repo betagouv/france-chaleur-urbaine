@@ -1,0 +1,162 @@
+import dynamic from 'next/dynamic';
+import { parseAsBoolean, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
+import { useRef, useState } from 'react';
+
+import useRouterReady from '@/hooks/useRouterReady';
+
+import type { MapCanvasController } from '../core/controller';
+import type { MapProps } from '../core/MapImpl';
+import { BdnbBatimentSelector } from '../interactions/BdnbBatimentSelector';
+import { FlyToButtons } from './FlyToButtons';
+
+const Map = dynamic(() => import('../core/MapImpl').then((mod) => mod.Map), { ssr: false });
+
+const legendOptions = ['false', 'hidden', 'auto'] as const;
+const searchOptions = ['none', 'network', 'eligibility'] as const;
+
+const sandboxParams = {
+  buildingSelector: parseAsBoolean.withDefault(false),
+  contextMenu: parseAsBoolean.withDefault(false),
+  initialBuildingId: parseAsString.withDefault(''),
+  interactive: parseAsBoolean.withDefault(true),
+  legend: parseAsStringLiteral(legendOptions).withDefault('auto'),
+  search: parseAsStringLiteral(searchOptions).withDefault('none'),
+};
+
+const baseConfig: MapProps['config'] = { reseauxDeChaleur: { show: true } };
+const baseInitialView: MapProps['initialView'] = { center: [2.3522, 48.8566], zoom: 5 };
+const buildingSelectorInitialView: MapProps['initialView'] = { center: [2.3522, 48.8566], zoom: 17 };
+
+/**
+ * Sandbox shell for the map module.
+ *
+ * One `<Map>` instance, piloted by a tiny form: toggle `interactive`, pick a
+ * `legend` mode, pick a `search` mode. The selected values are reflected in
+ * the URL via `nuqs` so combinations can be shared.
+ */
+export function Sandbox() {
+  const [params, setParam] = useQueryStates(sandboxParams, { history: 'replace' });
+  const isRouterReady = useRouterReady();
+  const mapRef = useRef<MapCanvasController | null>(null);
+  const [selectedBuildingId, setSelectedBuildingId] = useState<string | null>(params.initialBuildingId || null);
+
+  if (!isRouterReady) {
+    return null;
+  }
+
+  return (
+    <div className="flex h-full w-full flex-col gap-4 p-4">
+      <header className="flex flex-col gap-2">
+        <h1 className="text-xl font-bold">Map — sandbox</h1>
+        <p className="text-sm text-(--text-mention-grey)">
+          Une seule instance de <code>&lt;Map&gt;</code> pilotée ci-dessous. Modifie les paramètres pour visualiser chaque combinaison.
+        </p>
+      </header>
+
+      <section className="flex flex-wrap items-end gap-4 rounded border border-(--border-default-grey) bg-white p-3">
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={params.interactive}
+            onChange={(e) => void setParam({ interactive: e.target.checked })}
+            className="size-4"
+          />
+          <code>interactive</code>
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={params.contextMenu}
+            onChange={(e) => void setParam({ contextMenu: e.target.checked })}
+            className="size-4"
+          />
+          <code>contextMenu</code>
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="text-xs text-(--text-mention-grey)">
+            <code>legend</code>
+          </span>
+          <select
+            value={String(params.legend)}
+            onChange={(e) => void setParam({ legend: e.target.value as (typeof legendOptions)[number] })}
+            className="rounded border border-(--border-default-grey) px-2 py-1"
+          >
+            {legendOptions.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="text-xs text-(--text-mention-grey)">
+            <code>search</code>
+          </span>
+          <select
+            value={params.search}
+            onChange={(e) => void setParam({ search: e.target.value as (typeof searchOptions)[number] })}
+            className="rounded border border-(--border-default-grey) px-2 py-1"
+          >
+            {searchOptions.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="h-6 w-px bg-(--border-default-grey)" aria-hidden />
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-(--text-mention-grey)">flyTo (controller)</span>
+          <FlyToButtons mapRef={mapRef} />
+        </div>
+        <div className="h-6 w-px bg-(--border-default-grey)" aria-hidden />
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={params.buildingSelector}
+            onChange={(e) => void setParam({ buildingSelector: e.target.checked })}
+            className="size-4"
+          />
+          <code>BdnbBatimentSelector</code>
+        </label>
+        {params.buildingSelector && (
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="text-xs text-(--text-mention-grey)">
+              sélection : <code>{selectedBuildingId ?? 'null'}</code>
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedBuildingId(null)}
+              disabled={selectedBuildingId === null}
+              className="rounded border border-(--border-default-grey) px-2 py-1 text-xs disabled:opacity-50"
+            >
+              Changer le bâtiment
+            </button>
+          </div>
+        )}
+      </section>
+
+      <div className="grid flex-1 gap-4 grid-cols-1">
+        <section className="flex min-h-[600px] flex-col gap-2">
+          <h2 className="text-base font-semibold">
+            <code>&lt;Map&gt;</code>
+          </h2>
+          <div className="relative flex-1 overflow-hidden rounded border border-(--border-default-grey)">
+            <Map
+              key={`interactive=${params.interactive}-bs=${params.buildingSelector}`}
+              mapRef={mapRef}
+              config={params.buildingSelector ? {} : baseConfig}
+              initialView={params.buildingSelector ? buildingSelectorInitialView : baseInitialView}
+              interactive={params.interactive}
+              legend={params.buildingSelector ? false : params.legend === 'false' ? false : params.legend}
+              search={params.buildingSelector ? 'none' : params.search}
+              contextMenu={params.contextMenu}
+            >
+              {params.buildingSelector && <BdnbBatimentSelector value={selectedBuildingId} onSelect={setSelectedBuildingId} />}
+            </Map>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}

@@ -1,25 +1,23 @@
-import dynamic from 'next/dynamic';
-import styled from 'styled-components';
+import { useMemo } from 'react';
 
-import { createMapConfiguration, defaultMapConfiguration, type MapConfigurationProperty } from '@/components/Map/map-configuration';
-import { fullscreenHeaderHeight, tabHeaderHeight } from '@/components/shared/layout/MainLayout.data';
 import SimplePage from '@/components/shared/page/SimplePage';
 import useInitialSearchParam from '@/hooks/useInitialSearchParam';
+import useRouterReady from '@/hooks/useRouterReady';
+import { useAuthentication } from '@/modules/auth/client/hooks';
+import type { MapConfiguration, MapConfigurationProperty } from '@/modules/map/client/config/map-configuration';
+import { FileDropHandler } from '@/modules/map/client/interactions/FileDropHandler';
+import { MapViewUrlSync } from '@/modules/map/client/interactions/MapViewUrlSync';
+import { ReseauxFiltersUrlSync } from '@/modules/map/client/interactions/ReseauxFiltersUrlSync';
+import { Map } from '@/modules/map/client/Map';
+import type { BBox, InitialView } from '@/modules/map/shared/types';
 import { setProperty } from '@/utils/core';
+import type { DeepPartial } from '@/utils/typescript';
 
-const Map = dynamic(() => import('@/components/Map/Map'), { ssr: false });
-
-const MapWrapper = styled.div`
-  height: calc(100vh - ${tabHeaderHeight});
-  height: calc(100dvh - ${tabHeaderHeight});
-
-  ${({ theme }) => theme.media.lg`
-    height: calc(100vh - ${fullscreenHeaderHeight});
-    height: calc(100dvh - ${fullscreenHeaderHeight});
-  `}
-`;
-
-export const layerURLKeysToMapConfigPath = {
+/**
+ * URL layer keys (`?additionalLayers=key1,key2`) → boolean config paths.
+ * Kept for backward compatibility with existing deep-links into `/carte`.
+ */
+const additionalLayersToConfigPath = {
   batimentsFioulCollectif: 'batimentsFioulCollectif.show',
   batimentsGazCollectif: 'batimentsGazCollectif.show',
   batimentsRaccordesReseauxChaleur: 'batimentsRaccordesReseauxChaleur',
@@ -56,30 +54,88 @@ export const layerURLKeysToMapConfigPath = {
   zonesDeDeveloppementPrioritaire: 'zonesDeDeveloppementPrioritaire',
   zonesOpportunite: 'zonesOpportunite.show',
   zonesOpportuniteFroid: 'zonesOpportuniteFroid.show',
-} as const satisfies { [key: string]: MapConfigurationProperty<boolean> };
+} as const satisfies Record<string, MapConfigurationProperty<boolean>>;
 
-export type LayerURLKey = keyof typeof layerURLKeysToMapConfigPath;
+type AdditionalLayerKey = keyof typeof additionalLayersToConfigPath;
 
-export const layerURLKeys = Object.keys(layerURLKeysToMapConfigPath) as readonly LayerURLKey[];
+const parseCoordinates = (value: string): [number, number] | null => {
+  const [lng, lat] = value.split(',').map(Number);
+  return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+};
 
+const parseBBox = (value: string, asJson: boolean): BBox | null => {
+  try {
+    const parsed = asJson ? JSON.parse(value) : value.split(',').map(Number);
+    return Array.isArray(parsed) && parsed.length === 4 && parsed.every((entry) => Number.isFinite(entry)) ? (parsed as BBox) : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Carte nationale. Reads the legacy deep-link params from the URL
+ * (`coord`/`zoom`/`bounds`/`bbox`, `additionalLayers`, `rdc_filters`) to seed the
+ * map, then keeps view + réseau filters in sync with the URL. Right-click
+ * eligibility test enabled for admins.
+ */
 const Carte = () => {
-  // amend the initial map configuration with additional layers
-  const additionalLayersQuery = useInitialSearchParam('additionalLayers');
-  const additionalLayers = additionalLayersQuery
-    ? additionalLayersQuery
-        .split(',')
-        .filter((key) => layerURLKeys.includes(key as LayerURLKey))
-        .map((key) => layerURLKeysToMapConfigPath[key as LayerURLKey])
-    : [];
-  const initialMapConfiguration = createMapConfiguration({
-    ...defaultMapConfiguration,
-    densiteThermiqueLineaire: true,
-    extractionDonneesBatiment: true,
-    mesureDistance: true,
-  });
-  additionalLayers.forEach((updateKey) => {
-    setProperty(initialMapConfiguration, updateKey, true);
-  });
+  const isRouterReady = useRouterReady();
+  const { hasRole } = useAuthentication();
+
+  const coordParam = useInitialSearchParam('coord');
+  const zoomParam = useInitialSearchParam('zoom');
+  const boundsParam = useInitialSearchParam('bounds');
+  const bboxParam = useInitialSearchParam('bbox');
+  const additionalLayersParam = useInitialSearchParam('additionalLayers');
+  const rdcFiltersParam = useInitialSearchParam('rdc_filters');
+
+  const initialView = useMemo<InitialView | undefined>(() => {
+    const coordinates = coordParam ? parseCoordinates(coordParam) : null;
+    if (coordinates) {
+      return { center: coordinates, zoom: zoomParam ? Number(zoomParam) : 13 };
+    }
+    const bbox = boundsParam ? parseBBox(boundsParam, true) : bboxParam ? parseBBox(bboxParam, false) : null;
+    return bbox ? { bbox } : undefined;
+  }, [coordParam, zoomParam, boundsParam, bboxParam]);
+
+  const config = useMemo<DeepPartial<MapConfiguration>>(() => {
+    // The legacy `regions` filter key has no map equivalent (region framing is handled via coord/zoom);
+    // it's harmless if present and is never re-emitted by the URL sync.
+    const rdcFilters = ((): DeepPartial<MapConfiguration['reseauxDeChaleur']> & {
+      gestionnaires?: string[];
+      maitreOuvrage?: string[];
+    } => {
+      if (!rdcFiltersParam) return {};
+      try {
+        return JSON.parse(rdcFiltersParam);
+      } catch {
+        return {};
+      }
+    })();
+
+    // `gestionnaires` / `maitreOuvrage` are top-level filters, not reseauxDeChaleur dimensions.
+    const { gestionnaires, maitreOuvrage, ...rdcDimensions } = rdcFilters;
+
+    const draft: DeepPartial<MapConfiguration> = {
+      customGeojson: true,
+      ...(gestionnaires?.length ? { filtreGestionnaire: gestionnaires } : {}),
+      ...(maitreOuvrage?.length ? { filtreMaitreOuvrage: maitreOuvrage } : {}),
+      reseauxDeChaleur: { show: true, ...rdcDimensions },
+      reseauxEnConstruction: true,
+    };
+
+    additionalLayersParam
+      ?.split(',')
+      .filter((key): key is AdditionalLayerKey => key in additionalLayersToConfigPath)
+      .forEach((key) => setProperty(draft, additionalLayersToConfigPath[key], true));
+
+    return draft;
+  }, [additionalLayersParam, rdcFiltersParam]);
+
+  // `<Map config>` is mount-only — wait for the router so it mounts with the final URL params.
+  if (!isRouterReady) {
+    return null;
+  }
 
   return (
     <SimplePage
@@ -89,9 +145,14 @@ const Carte = () => {
       includeFooter={false}
     >
       <h1 className="fr-sr-only">Carte nationale des réseaux de chaleur et de froid en France</h1>
-      <MapWrapper>
-        <Map withoutLogo withLegend initialMapConfiguration={initialMapConfiguration} persistViewStateInURL />
-      </MapWrapper>
+      {/* Remplit le viewport sous le header. Hauteur mesurée → `--header-height` (cf. useHeaderHeightVar) ; repli 57px avant la mesure. */}
+      <div className="w-full h-[calc(100dvh_-_var(--header-height,57px))]">
+        <Map config={config} initialView={initialView} legend="auto" search="eligibility" contextMenu={hasRole('admin')}>
+          <MapViewUrlSync />
+          <ReseauxFiltersUrlSync />
+          <FileDropHandler />
+        </Map>
+      </div>
     </SimplePage>
   );
 };

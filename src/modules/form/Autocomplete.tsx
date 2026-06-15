@@ -4,23 +4,18 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import Icon from '@/components/ui/Icon';
+import Tag from '@/components/ui/Tag';
 import cx from '@/utils/cx';
 
 import { useDebouncedSwitchMap } from './useDebouncedSwitchMap';
 
 export const DEFAULT_DEBOUNCE_TIME = 300;
 
-export type AutocompleteProps<Option> = {
-  fetchFn: (query: string, signal: AbortSignal) => Promise<Option[]>;
+type AutocompleteBaseProps<Option> = {
+  /** Async source of suggestions. Optional in multiple mode (omit for a pure free-text tags field). */
+  fetchFn?: (query: string, signal: AbortSignal) => Promise<Option[]>;
   getOptionValue: (option: Option) => string;
   getOptionLabel?: (option: Option, query: string) => React.ReactNode;
-  onSelect: (option: Option) => void;
-  onClear?: () => void;
-  /** Called on selection or clear — for TanStack Form (field.handleChange) */
-  onChange?: (value: string) => void;
-  /** Controlled value — for TanStack Form (field.state.value) */
-  value?: string;
-  defaultValue?: string;
   minCharThreshold?: number;
   debounceTime?: number;
   onLoadingChange?: (loading: boolean) => void;
@@ -33,37 +28,78 @@ export type AutocompleteProps<Option> = {
   nativeInputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue'>;
 };
 
+export type AutocompleteSingleProps<Option> = AutocompleteBaseProps<Option> & {
+  multiple?: false;
+  /** Required in single mode. */
+  fetchFn: (query: string, signal: AbortSignal) => Promise<Option[]>;
+  onSelect: (option: Option) => void;
+  onClear?: () => void;
+  /** Called on selection or clear — for TanStack Form (field.handleChange) */
+  onChange?: (value: string) => void;
+  /** Controlled value — for TanStack Form (field.state.value) */
+  value?: string;
+  defaultValue?: string;
+};
+
+export type AutocompleteMultipleProps<Option> = AutocompleteBaseProps<Option> & {
+  multiple: true;
+  /** Selected tag values (controlled). */
+  values: string[];
+  /** Called when a tag is added or removed. */
+  onValuesChange: (values: string[]) => void;
+  /** Enter adds the trimmed input as a tag when no suggestion is highlighted. */
+  allowFreeText?: boolean;
+  /** Optional side-effect when a suggestion is picked. */
+  onSelect?: (option: Option) => void;
+};
+
+export type AutocompleteProps<Option> = AutocompleteSingleProps<Option> | AutocompleteMultipleProps<Option>;
+
+/**
+ * ri-alert-line inlined: DSFR icons fetch their glyph via mask-image (network), which fails
+ * offline — exactly when this error icon is needed. Decorative (message announced by the alert).
+ */
+const OfflineAlertIcon = ({ className }: { className?: string }) => (
+  <svg aria-hidden viewBox="0 0 24 24" fill="currentColor" className={cx('size-4 text-(--text-default-error)', className)}>
+    <path d="M12.8659 3.00017L22.3922 19.5002C22.6684 19.9785 22.5045 20.5901 22.0262 20.8662C21.8742 20.954 21.7017 21.0002 21.5262 21.0002H2.47363C1.92135 21.0002 1.47363 20.5525 1.47363 20.0002C1.47363 19.8246 1.51984 19.6522 1.60761 19.5002L11.1339 3.00017C11.41 2.52187 12.0216 2.358 12.4999 2.63414C12.6519 2.72191 12.7782 2.84815 12.8659 3.00017ZM4.20568 19.0002H19.7941L11.9999 5.50017L4.20568 19.0002ZM10.9999 16.0002H12.9999V18.0002H10.9999V16.0002ZM10.9999 9.00017H12.9999V14.0002H10.9999V9.00017Z" />
+  </svg>
+);
+
 /**
  * Composant d'autocompletion générique avec dropdown en portail (Radix Popover),
  * navigation clavier accessible (WCAG 2.2 combobox) et debounce intégré.
  *
- * Le dropdown ne peut jamais être coupé par un `overflow: hidden` parent grâce
- * au portail Radix. Supporte les modes contrôlé (value) et non contrôlé (defaultValue).
+ * Deux modes (discriminés par `multiple`) :
+ * - **mono** (défaut) : un seul `value` affiché dans l'input ; modes contrôlé (`value`) et non contrôlé (`defaultValue`).
+ * - **multiple** : tags inline dans le champ, `values`/`onValuesChange` contrôlés ; `allowFreeText` ajoute la saisie
+ *   libre à l'Entrée, Backspace sur input vide retire le dernier tag. `fetchFn` optionnel (champ texte-libre pur).
+ *
+ * Le dropdown ne peut jamais être coupé par un `overflow: hidden` parent grâce au portail Radix.
  */
-export function Autocomplete<Option>({
-  fetchFn,
-  getOptionValue,
-  getOptionLabel,
-  onSelect,
-  onClear,
-  onChange,
-  value,
-  defaultValue,
-  minCharThreshold = 0,
-  debounceTime = DEFAULT_DEBOUNCE_TIME,
-  onLoadingChange,
-  id: idProp,
-  className,
-  emptyMessage = 'Aucun résultat',
-  errorMessage = 'La recherche a échoué, veuillez réessayer.',
-  nativeInputProps,
-}: AutocompleteProps<Option>) {
+export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
+  const {
+    fetchFn,
+    getOptionValue,
+    getOptionLabel,
+    minCharThreshold = 0,
+    debounceTime = DEFAULT_DEBOUNCE_TIME,
+    onLoadingChange,
+    id: idProp,
+    className,
+    emptyMessage = 'Aucun résultat',
+    errorMessage = 'La recherche a échoué, veuillez réessayer.',
+    nativeInputProps,
+  } = props;
+
+  const multiple = props.multiple === true;
+  const allowFreeText = props.multiple === true && props.allowFreeText === true;
+
   const generatedId = useId();
   const id = idProp ?? generatedId;
   const listboxId = `${id}-listbox`;
 
   // Always initialize to '' to match SSR output and avoid hydration mismatches.
-  // The actual initial value (from value/defaultValue props, which may come from
+  // The actual initial value (single mode, from value/defaultValue which may come from
   // client-only sources like localStorage) is applied in a useEffect after mount.
   const [displayValue, setDisplayValue] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,7 +119,9 @@ export function Autocomplete<Option>({
   // Measure anchor width so the popover matches the input's width
   useEffect(() => {
     const anchor = anchorRef.current;
-    if (!anchor) return;
+    if (!anchor) {
+      return;
+    }
     setAnchorWidth(anchor.getBoundingClientRect().width);
     const observer = new ResizeObserver((entries) => {
       setAnchorWidth(entries[0]?.contentRect.width);
@@ -92,21 +130,26 @@ export function Autocomplete<Option>({
     return () => observer.disconnect();
   }, []);
 
-  // Apply the initial value after mount (client-only) to avoid SSR/CSR mismatch.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Single mode: apply the initial value after mount (client-only) to avoid SSR/CSR mismatch.
   useEffect(() => {
-    const initial = value ?? defaultValue ?? '';
-    if (initial) setDisplayValue(initial);
-  }, []); // intentionally empty — runs once after mount
+    if (props.multiple) {
+      return;
+    }
+    const initial = props.value ?? props.defaultValue ?? '';
+    if (initial) {
+      setDisplayValue(initial);
+    }
+  }, []);
 
-  // Controlled mode: sync displayValue when value prop changes externally (e.g. form reset).
+  // Single controlled mode: sync displayValue when value prop changes externally (e.g. form reset).
   // prevValueRef starts as undefined so the first value change after mount is picked up.
   const prevValueRef = useRef<string | undefined>(undefined);
+  const controlledValue = props.multiple ? undefined : props.value;
   useEffect(() => {
-    if (value !== undefined && value !== prevValueRef.current) {
-      prevValueRef.current = value;
+    if (controlledValue !== undefined && controlledValue !== prevValueRef.current) {
+      prevValueRef.current = controlledValue;
       cancel();
-      setDisplayValue(value);
+      setDisplayValue(controlledValue);
       setSuggestions([]);
       setHasNoResults(false);
       setHighlightedIndex(-1);
@@ -114,8 +157,7 @@ export function Autocomplete<Option>({
       setFetchError(null);
       setIsOpen(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]); // cancel is stable, omitted intentionally
+  }, [controlledValue]);
 
   // Keep fetchFn in a ref so the useDebouncedSwitchMap fn callback remains stable
   const fetchFnRef = useRef(fetchFn);
@@ -123,7 +165,7 @@ export function Autocomplete<Option>({
 
   const { run, cancel, isRunning } = useDebouncedSwitchMap<string, Option[]>({
     debounce: debounceTime,
-    fn: (query, signal) => fetchFnRef.current(query, signal),
+    fn: (query, signal) => fetchFnRef.current?.(query, signal) ?? Promise.resolve([]),
     onError: (error) => {
       setFetchError(error.message);
       setSuggestions([]);
@@ -147,18 +189,55 @@ export function Autocomplete<Option>({
     onLoadingChangeRef.current?.(isRunning);
   }, [isRunning]);
 
-  const selectOption = (option: Option) => {
-    const optionValue = getOptionValue(option);
+  const resetSearch = () => {
     cancel();
     setSuggestions([]);
     setHasNoResults(false);
     setHighlightedIndex(-1);
-    setDisplayValue(optionValue);
     setSearchQuery('');
     setFetchError(null);
     setIsOpen(false);
-    onChange?.(optionValue);
-    onSelect(option);
+  };
+
+  const addTag = (raw: string) => {
+    if (!props.multiple) {
+      return;
+    }
+    const value = raw.trim();
+    if (!value || props.values.includes(value)) {
+      return;
+    }
+    props.onValuesChange([...props.values, value]);
+  };
+
+  const removeTag = (value: string) => {
+    if (!props.multiple) {
+      return;
+    }
+    props.onValuesChange(props.values.filter((v) => v !== value));
+  };
+
+  const selectOption = (option: Option) => {
+    const optionValue = getOptionValue(option);
+    resetSearch();
+    setDisplayValue(props.multiple ? '' : optionValue);
+    if (props.multiple) {
+      addTag(optionValue);
+      props.onSelect?.(option);
+    } else {
+      props.onChange?.(optionValue);
+      props.onSelect(option);
+    }
+  };
+
+  const submitFreeText = (): boolean => {
+    if (!allowFreeText || !displayValue.trim()) {
+      return false;
+    }
+    addTag(displayValue);
+    setDisplayValue('');
+    resetSearch();
+    return true;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,7 +246,7 @@ export function Autocomplete<Option>({
     setDisplayValue(query);
     setSearchQuery(trimmedQuery);
     setFetchError(null);
-    if (trimmedQuery.length >= minCharThreshold) {
+    if (fetchFn && trimmedQuery.length >= minCharThreshold) {
       run(trimmedQuery);
     } else {
       cancel();
@@ -185,47 +264,52 @@ export function Autocomplete<Option>({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if ((e.key === 'Escape' || e.key === 'Tab') && isOpen) {
-      if (e.key === 'Escape') e.preventDefault();
+      if (e.key === 'Escape') {
+        e.preventDefault();
+      }
       closePopover();
       return;
     }
-    if (!isOpen || !suggestions.length) return;
-    switch (e.key) {
-      case 'ArrowDown':
+    if (props.multiple && e.key === 'Backspace' && displayValue === '' && props.values.length > 0) {
+      removeTag(props.values[props.values.length - 1]);
+      return;
+    }
+    if (e.key === 'ArrowDown' && isOpen && suggestions.length) {
+      e.preventDefault();
+      setHighlightedIndex((i) => Math.min(i + 1, suggestions.length - 1));
+      return;
+    }
+    if (e.key === 'ArrowUp' && isOpen && suggestions.length) {
+      e.preventDefault();
+      setHighlightedIndex((i) => Math.max(i - 1, -1));
+      return;
+    }
+    if (e.key === 'Enter') {
+      if (highlightedIndex >= 0 && suggestions[highlightedIndex]) {
         e.preventDefault();
-        setHighlightedIndex((i) => Math.min(i + 1, suggestions.length - 1));
-        break;
-      case 'ArrowUp':
+        selectOption(suggestions[highlightedIndex]);
+      } else if (submitFreeText()) {
         e.preventDefault();
-        setHighlightedIndex((i) => Math.max(i - 1, -1));
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (highlightedIndex >= 0 && suggestions[highlightedIndex]) {
-          selectOption(suggestions[highlightedIndex]);
-        }
-        break;
+      }
     }
   };
 
   const handleClear = () => {
-    cancel();
-    setSuggestions([]);
-    setHasNoResults(false);
-    setHighlightedIndex(-1);
+    resetSearch();
     setDisplayValue('');
-    setSearchQuery('');
-    setFetchError(null);
-    setIsOpen(false);
-    onChange?.('');
-    onClear?.();
+    if (!props.multiple) {
+      props.onChange?.('');
+      props.onClear?.();
+    }
     inputRef.current?.focus();
   };
 
   const handleInteractOutside = (e: Event) => {
     // Don't close if interaction is on the anchor (input + icons) itself
     const target = e.target as Node;
-    if (anchorRef.current?.contains(target)) return;
+    if (anchorRef.current?.contains(target)) {
+      return;
+    }
     closePopover();
   };
 
@@ -238,72 +322,120 @@ export function Autocomplete<Option>({
     }
   };
 
+  // Free-text mode hints that Enter adds the typed value; otherwise the plain empty message.
+  const emptyContent =
+    allowFreeText && searchQuery ? (
+      <>
+        Appuyez sur <b>Entrée</b> pour ajouter «&nbsp;{searchQuery}&nbsp;»
+      </>
+    ) : (
+      emptyMessage
+    );
+
+  const sharedInputProps = {
+    'aria-activedescendant': highlightedIndex >= 0 ? `${id}-option-${highlightedIndex}` : undefined,
+    'aria-autocomplete': (multiple ? 'list' : 'both') as 'list' | 'both',
+    'aria-busy': isRunning,
+    'aria-controls': listboxId,
+    'aria-expanded': isOpen,
+    autoComplete: 'off' as const,
+    id,
+    onChange: handleInputChange,
+    onKeyDown: handleKeyDown,
+    role: 'combobox' as const,
+    type: 'text' as const,
+    value: displayValue,
+  };
+
   return (
     <div className={className}>
       <PopoverPrimitive.Root open={isOpen}>
         <PopoverPrimitive.Anchor asChild>
-          <div ref={anchorRef} className="relative">
-            <input
-              ref={inputRef}
-              id={id}
-              type="text"
-              role="combobox"
-              aria-autocomplete="both"
-              aria-expanded={isOpen}
-              aria-controls={listboxId}
-              aria-activedescendant={highlightedIndex >= 0 ? `${id}-option-${highlightedIndex}` : undefined}
-              aria-busy={isRunning}
-              value={displayValue}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              {...nativeInputProps}
-              onFocus={handleFocus}
-              autoComplete="off"
-              className={cx('pr-10 text-ellipsis', nativeInputProps?.className)}
-            />
-
-            {isRunning && (
-              <Oval
-                height={16}
-                width={16}
-                color="var(--text-default-grey)"
-                secondaryColor="var(--text-default-grey)"
-                wrapperClass="absolute top-1/2 -translate-y-1/2 right-10 z-10"
+          {multiple ? (
+            <div
+              ref={anchorRef}
+              onClick={() => inputRef.current?.focus()}
+              className={cx(
+                // Mirrors `.fr-input`: contrast-grey bg, 2px bottom border, top-rounded corners,
+                // and the DSFR focus outline (2px #0a76f6, offset 2px) lifted to the whole box.
+                'relative flex min-h-10 w-full cursor-text flex-wrap items-center gap-1 rounded-t-sm px-2 py-1',
+                'text-(--text-default-grey) bg-(--background-contrast-grey) shadow-[inset_0_-2px_0_0_var(--border-plain-grey)]',
+                'focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#0a76f6]'
+              )}
+            >
+              {props.multiple &&
+                props.values.map((value) => (
+                  <Tag
+                    key={value}
+                    size="sm"
+                    dismissible
+                    nativeButtonProps={{ 'aria-label': `Retirer ${value}`, onClick: () => removeTag(value) }}
+                  >
+                    {value}
+                  </Tag>
+                ))}
+              <input
+                ref={inputRef}
+                {...nativeInputProps}
+                {...sharedInputProps}
+                onFocus={handleFocus}
+                className="min-w-[8ch] flex-1 bg-transparent outline-hidden placeholder:italic placeholder:text-(--text-mention-grey)"
               />
-            )}
-
-            {fetchError && !isRunning && (
-              // ri-alert-line inlined: DSFR icons fetch their glyph via mask-image (network), which fails
-              // offline — exactly when this error icon is needed. Decorative (message announced by the alert).
-              <svg
-                aria-hidden
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="absolute top-1/2 -translate-y-1/2 right-10 z-10 size-4 text-(--text-default-error)"
-              >
-                <path d="M12.8659 3.00017L22.3922 19.5002C22.6684 19.9785 22.5045 20.5901 22.0262 20.8662C21.8742 20.954 21.7017 21.0002 21.5262 21.0002H2.47363C1.92135 21.0002 1.47363 20.5525 1.47363 20.0002C1.47363 19.8246 1.51984 19.6522 1.60761 19.5002L11.1339 3.00017C11.41 2.52187 12.0216 2.358 12.4999 2.63414C12.6519 2.72191 12.7782 2.84815 12.8659 3.00017ZM4.20568 19.0002H19.7941L11.9999 5.50017L4.20568 19.0002ZM10.9999 16.0002H12.9999V18.0002H10.9999V16.0002ZM10.9999 9.00017H12.9999V14.0002H10.9999V9.00017Z" />
-              </svg>
-            )}
-
-            {displayValue ? (
-              <Icon
-                size="sm"
-                name="ri-close-line"
-                color="var(--text-default-grey)"
-                title="Effacer"
-                className="absolute top-1/2 -translate-y-1/2 right-4 z-10 cursor-pointer"
-                onClick={handleClear}
+              {isRunning && (
+                <Oval
+                  height={16}
+                  width={16}
+                  strokeWidth={4}
+                  color="var(--text-action-high-blue-france)"
+                  secondaryColor="var(--border-default-grey)"
+                  wrapperClass="ml-auto self-center"
+                />
+              )}
+              {fetchError && !isRunning && <OfflineAlertIcon className="ml-auto self-center" />}
+            </div>
+          ) : (
+            <div ref={anchorRef} className="relative">
+              <input
+                ref={inputRef}
+                {...sharedInputProps}
+                {...nativeInputProps}
+                onFocus={handleFocus}
+                className={cx('pr-10 text-ellipsis', nativeInputProps?.className)}
               />
-            ) : (
-              <Icon
-                size="sm"
-                name="ri-search-line"
-                color="var(--text-default-grey)"
-                title="Rechercher"
-                className="absolute top-1/2 -translate-y-1/2 right-4 z-10"
-              />
-            )}
-          </div>
+
+              {isRunning && (
+                <Oval
+                  height={16}
+                  width={16}
+                  strokeWidth={4}
+                  color="var(--text-action-high-blue-france)"
+                  secondaryColor="var(--border-default-grey)"
+                  wrapperClass="absolute top-1/2 -translate-y-1/2 right-10 z-10"
+                />
+              )}
+
+              {fetchError && !isRunning && <OfflineAlertIcon className="absolute top-1/2 -translate-y-1/2 right-10 z-10" />}
+
+              {displayValue ? (
+                <Icon
+                  size="sm"
+                  name="ri-close-line"
+                  color="var(--text-default-grey)"
+                  title="Effacer"
+                  className="absolute top-1/2 -translate-y-1/2 right-4 z-10 cursor-pointer"
+                  onClick={handleClear}
+                />
+              ) : (
+                <Icon
+                  size="sm"
+                  name="ri-search-line"
+                  color="var(--text-default-grey)"
+                  title="Rechercher"
+                  className="absolute top-1/2 -translate-y-1/2 right-4 z-10"
+                />
+              )}
+            </div>
+          )}
         </PopoverPrimitive.Anchor>
 
         <PopoverPrimitive.Portal>
@@ -361,7 +493,7 @@ export function Autocomplete<Option>({
                   })}
                 </ul>
               ) : (
-                <div className="text-sm py-2 px-3 text-(--text-mention-grey)">{emptyMessage}</div>
+                <div className="text-sm py-2 px-3 text-(--text-mention-grey)">{emptyContent}</div>
               )}
             </div>
           </PopoverPrimitive.Content>

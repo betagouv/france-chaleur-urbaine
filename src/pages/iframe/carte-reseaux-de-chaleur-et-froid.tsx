@@ -1,7 +1,8 @@
-import IframeWrapper from '@/components/IframeWrapper';
-import Map from '@/components/Map/Map';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
 import SEO from '@/components/SEO';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { FcuLogo } from '@/modules/map/client/controls/FcuLogo';
+import { IframeLegend } from '@/modules/map/client/legend/IframeLegend';
+import { Map } from '@/modules/map/client/Map';
 
 const CeremaMap = () => {
   return (
@@ -11,25 +12,23 @@ const CeremaMap = () => {
         title="Carte des réseaux de chaleur et de froid"
         description="Découvrez la carte de référence des réseaux de chaleur et de froid, identifiez les opportunités de raccordement pour votre bâtiment."
       />
-      <IframeWrapper>
+      <div className="h-dvh w-screen">
         <Map
-          initialMapConfiguration={createMapConfiguration({
+          config={createMapConfiguration({
             reseauxDeChaleur: {
               show: true,
             },
             reseauxEnConstruction: true,
             zonesDeDeveloppementPrioritaire: true,
           })}
-          withLegend
-          withBorder
-          legendLogoOpt={{
-            alt: 'logo CEREMA',
-            src: '/logo-CEREMA.jpg',
-          }}
-          withFCUAttribution
-          withComptePro={false}
-        />
-      </IframeWrapper>
+          legend="auto"
+          legendContent={
+            <IframeLegend layers={['reseaux-de-chaleur', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire']} />
+          }
+        >
+          <FcuLogo />
+        </Map>
+      </div>
     </>
   );
 };

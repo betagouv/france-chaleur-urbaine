@@ -255,3 +255,115 @@ describe('Autocomplete', () => {
     expect(input.getAttribute('aria-expanded')).toBe('false');
   });
 });
+
+describe('Autocomplete - mode multiple (tags)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const multipleProps = {
+    fetchFn: defaultFetchFn,
+    getOptionValue: (o: Option) => o.label,
+    multiple: true as const,
+  };
+
+  it('affiche les valeurs sélectionnées comme tags', () => {
+    render(<Autocomplete {...multipleProps} values={['Paris', 'Lyon']} onValuesChange={vi.fn()} />);
+    expect(screen.getByText('Paris')).toBeDefined();
+    expect(screen.getByText('Lyon')).toBeDefined();
+  });
+
+  it("ajoute un tag et vide l'input à la sélection d'une suggestion", async () => {
+    const onValuesChange = vi.fn();
+    render(<Autocomplete {...multipleProps} allowFreeText values={[]} onValuesChange={onValuesChange} />);
+    const input = screen.getByRole('combobox') as HTMLInputElement;
+
+    await typeAndWaitForResults(input, 'Par');
+    await act(async () => fireEvent.click(screen.getByText('Paris')));
+
+    expect(onValuesChange).toHaveBeenCalledWith(['Paris']);
+    expect(input.value).toBe('');
+  });
+
+  it('ajoute la saisie libre comme tag à Entrée quand allowFreeText', async () => {
+    const onValuesChange = vi.fn();
+    const emptyFetch = vi.fn(async (): Promise<Option[]> => []);
+    render(<Autocomplete {...multipleProps} fetchFn={emptyFetch} allowFreeText values={[]} onValuesChange={onValuesChange} />);
+    const input = screen.getByRole('combobox') as HTMLInputElement;
+
+    await typeAndWaitForResults(input, 'Custom');
+    await act(async () => fireEvent.keyDown(input, { key: 'Enter' }));
+
+    expect(onValuesChange).toHaveBeenCalledWith(['Custom']);
+    expect(input.value).toBe('');
+  });
+
+  it('Entrée sélectionne la suggestion surlignée plutôt que le texte libre', async () => {
+    const onValuesChange = vi.fn();
+    render(<Autocomplete {...multipleProps} allowFreeText values={[]} onValuesChange={onValuesChange} />);
+    const input = screen.getByRole('combobox');
+
+    await typeAndWaitForResults(input, 'L');
+    await act(async () => fireEvent.keyDown(input, { key: 'ArrowDown' })); // surligne Paris (index 0)
+    await act(async () => fireEvent.keyDown(input, { key: 'Enter' }));
+
+    expect(onValuesChange).toHaveBeenCalledWith(['Paris']);
+  });
+
+  it('Backspace sur input vide retire le dernier tag', async () => {
+    const onValuesChange = vi.fn();
+    render(<Autocomplete {...multipleProps} values={['Paris', 'Lyon']} onValuesChange={onValuesChange} />);
+    const input = screen.getByRole('combobox');
+
+    await act(async () => fireEvent.keyDown(input, { key: 'Backspace' }));
+
+    expect(onValuesChange).toHaveBeenCalledWith(['Paris']);
+  });
+
+  it('ne duplique pas une valeur déjà présente', async () => {
+    const onValuesChange = vi.fn();
+    render(<Autocomplete {...multipleProps} allowFreeText values={['Paris']} onValuesChange={onValuesChange} />);
+    const input = screen.getByRole('combobox');
+
+    await act(async () => fireEvent.change(input, { target: { value: 'Paris' } }));
+    await act(async () => fireEvent.keyDown(input, { key: 'Enter' }));
+
+    expect(onValuesChange).not.toHaveBeenCalled();
+  });
+
+  it("arrête le spinner quand on ajoute un tag pendant qu'une requête est en vol", async () => {
+    // fetchFn qui ne résout jamais → la requête reste « en vol » (isRunning = true)
+    const pendingFetch = vi.fn((_query: string, _signal: AbortSignal) => new Promise<Option[]>(() => {}));
+    const onValuesChange = vi.fn();
+    render(<Autocomplete {...multipleProps} fetchFn={pendingFetch} allowFreeText values={[]} onValuesChange={onValuesChange} />);
+    const input = screen.getByRole('combobox');
+
+    await act(async () => fireEvent.change(input, { target: { value: 'Custom' } }));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(DEFAULT_DEBOUNCE_TIME);
+    });
+    expect(input.getAttribute('aria-busy')).toBe('true');
+
+    // Entrée ajoute le texte libre → resetSearch → cancel() : le spinner doit s'arrêter
+    await act(async () => fireEvent.keyDown(input, { key: 'Enter' }));
+    expect(onValuesChange).toHaveBeenCalledWith(['Custom']);
+    expect(input.getAttribute('aria-busy')).toBe('false');
+  });
+
+  it('sans fetchFn : pas de dropdown, mais Entrée ajoute le texte libre', async () => {
+    const onValuesChange = vi.fn();
+    render(<Autocomplete<string> multiple allowFreeText getOptionValue={(o) => o} values={[]} onValuesChange={onValuesChange} />);
+    const input = screen.getByRole('combobox');
+
+    await act(async () => fireEvent.change(input, { target: { value: 'ABC' } }));
+    expect(screen.queryByRole('listbox')).toBeNull();
+
+    await act(async () => fireEvent.keyDown(input, { key: 'Enter' }));
+    expect(onValuesChange).toHaveBeenCalledWith(['ABC']);
+  });
+});

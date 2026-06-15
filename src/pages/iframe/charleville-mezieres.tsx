@@ -1,30 +1,25 @@
-import IframeWrapper from '@/components/IframeWrapper';
-import Map from '@/components/Map/Map';
-import { createMapConfiguration } from '@/components/Map/map-configuration';
+import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
+import { FcuLogo } from '@/modules/map/client/controls/FcuLogo';
+import { IframeLegend } from '@/modules/map/client/legend/IframeLegend';
+import { Map } from '@/modules/map/client/Map';
 
 const CharlevilleMezieresMap = () => {
   return (
-    <IframeWrapper>
+    <div className="h-dvh w-screen">
       <Map
-        initialMapConfiguration={createMapConfiguration({
+        config={createMapConfiguration({
           reseauxDeChaleur: {
             show: true,
           },
           reseauxEnConstruction: true,
         })}
-        enabledLegendFeatures={['reseauxDeChaleur', 'reseauxEnConstruction']}
-        withLegend
-        withBorder
-        initialCenter={[4.717692, 49.767402]}
-        initialZoom={12}
-        legendTitle="Réseaux de chaleur"
-        legendLogoOpt={{
-          alt: 'logo Charleville Mezieres',
-          src: '/logo-CM.svg',
-        }}
-        withFCUAttribution
-      />
-    </IframeWrapper>
+        initialView={{ center: [4.717692, 49.767402], zoom: 12 }}
+        legend="auto"
+        legendContent={<IframeLegend layers={['reseaux-de-chaleur', 'reseaux-en-construction']} />}
+      >
+        <FcuLogo />
+      </Map>
+    </div>
   );
 };
 
