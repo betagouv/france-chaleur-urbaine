@@ -36,9 +36,6 @@ export const eventTypes = [
   'build_tiles',
   'sync_metadata_from_airtable',
   'sync_geometries_to_airtable',
-  'tag_reminder_created',
-  'tag_reminder_deleted',
-  'tag_comment_updated',
   'network_reminder_created',
   'network_reminder_updated',
   'network_reminder_deleted',
@@ -86,9 +83,6 @@ export const eventTypeLabels: Record<EventType, string> = {
   pro_eligibility_test_updated: 'Mise à jour test éligibilité',
   sync_geometries_to_airtable: 'Sync géométries Airtable',
   sync_metadata_from_airtable: 'Sync métadonnées Airtable',
-  tag_comment_updated: 'Mise à jour commentaire tag',
-  tag_reminder_created: 'Création rappel tag',
-  tag_reminder_deleted: 'Suppression rappel tag',
   user_activated: 'Activation utilisateur',
   user_created_by_admin: 'Création utilisateur (admin)',
   user_created_by_api: 'Création utilisateur (API)',
@@ -162,9 +156,6 @@ export type EventDataMap = {
     reseau_de_chaleur_ids?: number[];
     reseau_en_construction_ids?: number[];
   };
-  tag_comment_updated: { comment: string; tag_name: string };
-  tag_reminder_created: { tag_name: string };
-  tag_reminder_deleted: { tag_name: string };
   network_reminder_created: {
     reminder_id: string;
     network_id: number;

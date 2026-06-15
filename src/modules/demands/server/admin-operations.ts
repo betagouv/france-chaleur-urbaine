@@ -40,7 +40,7 @@ export const removeDemand = async (demandId: string, userId?: string) => {
 };
 
 /**
- * Liste toutes les demandes pour l'admin, avec infos réseau résolues (nom, SNCU, tags) et test d'adresse joint.
+ * Liste toutes les demandes pour l'admin, avec infos réseau résolues (nom, SNCU) et test d'adresse joint.
  */
 export const listAdmin = async () => {
   const startTime = Date.now();

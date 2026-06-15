@@ -45,7 +45,6 @@ async function setupNetwork(idFcu: number) {
     has_trace: true,
     id_fcu: idFcu,
     ouvert_aux_raccordements: true,
-    tags: [],
   });
 }
 

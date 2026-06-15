@@ -34,7 +34,7 @@ import {
   updateDemandByGestionnaire,
 } from './gestionnaire-operations';
 import { submitSurvey, updateCommentFromRelanceId } from './relances';
-import { getReseauxStats, getTagsStats } from './stats';
+import { getReseauxStats } from './stats';
 import { listByUser } from './user-tracking';
 
 const zRequestAssignmentChangeInput = z
@@ -72,7 +72,6 @@ export const demandsRouter = router({
       await removeDemand(demandId, ctx.user.id);
     }),
     getReseauxStats: adminRoute.query(async () => getReseauxStats()),
-    getTagsStats: adminRoute.query(async () => getTagsStats()),
     list: adminRoute.query(async () => {
       const result = await listAdmin();
       return result;

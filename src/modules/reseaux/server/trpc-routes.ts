@@ -17,8 +17,6 @@ import {
   zGetNetworkEligibilityStatusInput,
   zUpdateGeomUpdateInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
-  zUpdateReseauEnConstructionInput,
-  zUpdateReseauInput,
 } from '@/modules/reseaux/constants';
 import { adminRoute, demandAccessRoute, route, router } from '@/modules/trpc/server';
 import { kdb, sql } from '@/server/db/kysely';
@@ -52,17 +50,11 @@ const reseauDeChaleurRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listReseauxDeChaleur();
   }),
-  updateTags: adminRoute.input(zUpdateReseauInput).mutation(async ({ input }) => {
-    return await reseauxService.updateTags(input.id, input.tags);
-  }),
 });
 
 const reseauEnConstructionRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listReseauxEnConstruction();
-  }),
-  updateTags: adminRoute.input(zUpdateReseauEnConstructionInput).mutation(async ({ input }) => {
-    return await reseauxService.updateReseauEnConstruction(input.id, input.tags);
   }),
 });
 

@@ -54,7 +54,6 @@ export const register = async ({
       activation_token: activationToken,
       email: lowerCaseEmail,
       entreprise: verifiedEntreprise ? sql<string | null>`${JSON.stringify(verifiedEntreprise)}::jsonb` : null,
-      gestionnaires: [],
       optin_at: optin_newsletter ? new Date() : null,
       password: await hash(password, await genSalt(10)),
       role,

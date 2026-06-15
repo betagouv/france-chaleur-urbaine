@@ -50,13 +50,6 @@ export const tableToNetworkEntity = {
   zones_et_reseaux_en_construction: 'reseau_en_construction',
 } as const satisfies Record<(typeof networkEntityToTable)[NetworkEntityType], NetworkEntityType>;
 
-export const zUpdateReseauInput = z.object({
-  id: z.number(),
-  tags: z.array(z.string()),
-});
-
-export type UpdateReseauInput = z.infer<typeof zUpdateReseauInput>;
-
 const tableNames = [
   'reseaux_de_chaleur',
   'zones_et_reseaux_en_construction',
@@ -73,11 +66,6 @@ export const zApplyGeometriesUpdatesInput = z.strictObject({
 
 export type ApplyGeometriesUpdatesInput = z.infer<typeof zApplyGeometriesUpdatesInput>;
 
-export const zUpdateReseauEnConstructionInput = z.object({
-  id: z.number(),
-  tags: z.array(z.string()),
-});
-
 export const zUpdateGeomUpdateInput = z.object({
   geometry: zGeometry,
   id: z.number(),
@@ -85,8 +73,6 @@ export const zUpdateGeomUpdateInput = z.object({
 });
 
 export type UpdateGeomUpdateInput = z.infer<typeof zUpdateGeomUpdateInput>;
-
-export type UpdateReseauEnConstructionInput = z.infer<typeof zUpdateReseauEnConstructionInput>;
 
 export const zUpdatePerimetreDeDeveloppementPrioritaireInput = z.object({
   'Identifiant reseau': z.string().optional(),

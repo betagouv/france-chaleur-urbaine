@@ -1,5 +1,3 @@
-import Tag from '@codegouvfr/react-dsfr/Tag';
-
 import Accordion from '@/components/ui/Accordion';
 import Icon from '@/components/ui/Icon';
 import { DownloadNetworkGeometryButton } from '@/modules/map/client/components/DownloadNetworkGeometryButton';
@@ -7,62 +5,35 @@ import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from
 import { buildFiltreGestionnaire } from '@/modules/map/client/layers/filters';
 import type { ReseauxEnConstructionTile } from '@/modules/tiles/server/tiles.config';
 
-const Popup = defineLayerPopup<ReseauxEnConstructionTile>(
-  (reseauEnConstruction, { Property, Title, TwoColumns }, { hasRole, pathname }) => {
-    let tags: string[] = [];
-
-    try {
-      tags = JSON.parse(reseauEnConstruction.tags);
-    } catch {
-      tags = ["Tags non affichables, veuillez contacter l'équipe"];
-    }
-    return (
-      <>
-        <Title title={`ID FCU: ${reseauEnConstruction.id_fcu}`}>{reseauEnConstruction.nom_reseau ?? 'Réseau en construction'}</Title>
-        <TwoColumns>
-          <Property label="Gestionnaire" value={reseauEnConstruction.gestionnaire} />
-          <Property label="Mise en service" value={reseauEnConstruction.mise_en_service} />
-          {hasRole('admin') && ['/admin/demandes', '/admin/reseaux'].includes(pathname) && (
-            <Property
-              label="Tags"
-              value={
-                tags.length === 0 ? (
-                  'Aucun tag'
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {tags.map((tag) => (
-                      <Tag small key={tag}>
-                        {tag}
-                      </Tag>
-                    ))}
-                  </div>
-                )
-              }
-            />
-          )}
-        </TwoColumns>
-        {!reseauEnConstruction.ouvert_aux_raccordements && (
-          <div className="text-sm">
-            <Icon name="ri-lock-2-fill" size="sm" className="mr-1" />
-            Ce réseau n'est pas ouvert aux raccordements.
-          </div>
-        )}
-        <div className="text-sm text-gray-500">
-          <Icon name="ri-alert-line" size="sm" className="mr-1" />
-          Ce tracé est prévisionnel. Le gestionnaire est susceptible
-          <br /> de le modifier avant sa mise en service définitive.
+const Popup = defineLayerPopup<ReseauxEnConstructionTile>((reseauEnConstruction, { Property, Title, TwoColumns }) => {
+  return (
+    <>
+      <Title title={`ID FCU: ${reseauEnConstruction.id_fcu}`}>{reseauEnConstruction.nom_reseau ?? 'Réseau en construction'}</Title>
+      <TwoColumns>
+        <Property label="Gestionnaire" value={reseauEnConstruction.gestionnaire} />
+        <Property label="Mise en service" value={reseauEnConstruction.mise_en_service} />
+      </TwoColumns>
+      {!reseauEnConstruction.ouvert_aux_raccordements && (
+        <div className="text-sm">
+          <Icon name="ri-lock-2-fill" size="sm" className="mr-1" />
+          Ce réseau n'est pas ouvert aux raccordements.
         </div>
-        <Accordion label="Informations supplémentaires" simple small>
-          <DownloadNetworkGeometryButton
-            id_fcu={reseauEnConstruction.id_fcu}
-            type="zones_et_reseaux_en_construction"
-            networkName={reseauEnConstruction.nom_reseau || 'reseau_en_construction'}
-          />
-        </Accordion>
-      </>
-    );
-  }
-);
+      )}
+      <div className="text-sm text-gray-500">
+        <Icon name="ri-alert-line" size="sm" className="mr-1" />
+        Ce tracé est prévisionnel. Le gestionnaire est susceptible
+        <br /> de le modifier avant sa mise en service définitive.
+      </div>
+      <Accordion label="Informations supplémentaires" simple small>
+        <DownloadNetworkGeometryButton
+          id_fcu={reseauEnConstruction.id_fcu}
+          type="zones_et_reseaux_en_construction"
+          networkName={reseauEnConstruction.nom_reseau || 'reseau_en_construction'}
+        />
+      </Accordion>
+    </>
+  );
+});
 
 export const reseauxEnConstructionColor = '#DA5DD5';
 export const reseauxEnConstructionNonOuvertColor = '#aaaaaa';
