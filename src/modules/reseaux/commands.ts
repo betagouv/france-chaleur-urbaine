@@ -15,6 +15,7 @@ import {
   updateEntityWithoutGeometry,
   updateNetworkHasPDP,
 } from './server/geometry-operations';
+import { mergeConstructionNetworks } from './server/merge-construction-networks';
 
 const entityTypes = ['rdc', 'rdf', 'pdp', 'futur'] as const;
 type EntityType = (typeof entityTypes)[number];
@@ -105,6 +106,16 @@ export function registerNetworkCommands(parentProgram: Command) {
     .option('--apply', 'Applique réellement les mises à jour (par défaut: dry-run)', false)
     .action(async (directory, { apply }) => {
       await applyNetworkGeometries(directory, { dryRun: !apply });
+    });
+
+  program
+    .command('merge-construction')
+    .description(
+      "Fusionne les réseaux/zones en construction dupliqués (même nom = tronçons d'un même réseau par horizon) en une entité avec fourchette de dates et géométrie fusionnée. Remap demandes/rappels/PDP/permissions, MAJ + nettoyage Airtable, en une étape. Dry-run par défaut."
+    )
+    .option('--apply', 'Exécute réellement la fusion (base + Airtable, par défaut: dry-run)', false)
+    .action(async ({ apply }) => {
+      await mergeConstructionNetworks({ dryRun: !apply });
     });
 
   program
