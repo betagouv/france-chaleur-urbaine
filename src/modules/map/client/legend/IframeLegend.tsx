@@ -37,13 +37,8 @@ export function IframeLegend({ layers }: { layers: readonly LayerKey[] }) {
           return <LegendRow key={layer} />;
         })}
       </div>
-      <Link
-        href={clientConfig.websiteUrl}
-        isExternal
-        title="France Chaleur Urbaine"
-        className="reset-external bg-none! mt-auto flex shrink-0 items-center justify-center pt-2"
-      >
-        <img src="/logo-fcu-with-typo-tight.webp" alt="France Chaleur Urbaine" className="block h-12 w-auto" />
+      <Link href={clientConfig.websiteUrl} isExternal variant="link" className="self-start text-xs">
+        Sources : France Chaleur Urbaine
       </Link>
     </div>
   );
