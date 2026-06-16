@@ -101,7 +101,7 @@ export type RegistrationSchema = z.infer<typeof registrationSchema>;
 
 export const createUserAdminSchema = z.object({
   active: z.boolean().optional(),
-  email: z.email(),
+  email: z.email().trim().toLowerCase(),
   entreprise: zEntreprise.nullable().optional(),
   first_name: z.string().optional().nullable(),
   last_name: z.string().optional().nullable(),
@@ -118,7 +118,7 @@ export const createUserAdminSchema = z.object({
 export const updateUserAdminSchema = z
   .object({
     active: z.boolean(),
-    email: z.email().optional(),
+    email: z.email().trim().toLowerCase().optional(),
     entreprise: zEntreprise.nullable().optional(),
     first_name: z.string().optional(),
     last_name: z.string().optional(),
