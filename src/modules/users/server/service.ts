@@ -75,6 +75,12 @@ export type User = Awaited<ReturnType<typeof list>>['items'][number];
 
 export const create = async (data: CreateUserInput, context: Context): Promise<DB['users']> => {
   const { optin_at, entreprise, ...rest } = data;
+
+  const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', data.email).executeTakeFirst();
+  if (existingUser) {
+    throw new TRPCError({ code: 'CONFLICT', message: `L'utilisateur associé à l'email '${data.email}' existe déjà.` });
+  }
+
   const salt = await bcrypt.genSalt(10);
   const password = await bcrypt.hash(Math.random().toString(36).slice(2, 10), salt);
 

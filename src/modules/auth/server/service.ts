@@ -38,7 +38,7 @@ export const register = async ({
   entreprise?: Entreprise | null;
 }) => {
   const lowerCaseEmail = email.trim().toLowerCase();
-  const existingUser = await kdb.selectFrom('users').select('id').where('email', 'ilike', lowerCaseEmail).executeTakeFirst();
+  const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', lowerCaseEmail).executeTakeFirst();
   if (existingUser) {
     throw new BadRequestError(`L'utilisateur associé à l'email '${email}' existe déjà. Connectez-vous.`);
   }
