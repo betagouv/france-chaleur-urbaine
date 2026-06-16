@@ -99,7 +99,7 @@ export function registerNetworkCommands(parentProgram: Command) {
   program
     .command('bulk-update')
     .description(
-      "Met à jour les tracés des réseaux de chaleur/froid à partir d'un répertoire de <id_sncu>.geojson. Skip les fichiers vides et les ID absents de la BDD."
+      "Met à jour (ou crée) les tracés des réseaux de chaleur/froid à partir d'un répertoire de <id_sncu>.geojson. Les réseaux absents de la BDD sont créés en récupérant leur id_fcu depuis Airtable. Skip les fichiers vides."
     )
     .argument('<directory>', 'Répertoire contenant les fichiers <id_sncu>.geojson')
     .option('--apply', 'Applique réellement les mises à jour (par défaut: dry-run)', false)
