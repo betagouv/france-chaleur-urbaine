@@ -1,4 +1,3 @@
-import { deepMergeObjects } from '@/utils/core';
 import type { Interval } from '@/utils/interval';
 import type { DeepPartial, FlattenKeys } from '@/utils/typescript';
 
@@ -306,6 +305,6 @@ export const iframeSimpleMapConfiguration = createMapConfiguration({
   },
 });
 
-export function createMapConfiguration(config: DeepPartial<MapConfiguration>): MapConfiguration {
-  return deepMergeObjects(emptyMapConfiguration, config);
+export function createMapConfiguration(config: DeepPartial<MapConfiguration>): DeepPartial<MapConfiguration> {
+  return config;
 }
