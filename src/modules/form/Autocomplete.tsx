@@ -56,6 +56,16 @@ export type AutocompleteMultipleProps<Option> = AutocompleteBaseProps<Option> & 
 export type AutocompleteProps<Option> = AutocompleteSingleProps<Option> | AutocompleteMultipleProps<Option>;
 
 /**
+ * ri-alert-line inlined: DSFR icons fetch their glyph via mask-image (network), which fails
+ * offline — exactly when this error icon is needed. Decorative (message announced by the alert).
+ */
+const OfflineAlertIcon = ({ className }: { className?: string }) => (
+  <svg aria-hidden viewBox="0 0 24 24" fill="currentColor" className={cx('size-4 text-(--text-default-error)', className)}>
+    <path d="M12.8659 3.00017L22.3922 19.5002C22.6684 19.9785 22.5045 20.5901 22.0262 20.8662C21.8742 20.954 21.7017 21.0002 21.5262 21.0002H2.47363C1.92135 21.0002 1.47363 20.5525 1.47363 20.0002C1.47363 19.8246 1.51984 19.6522 1.60761 19.5002L11.1339 3.00017C11.41 2.52187 12.0216 2.358 12.4999 2.63414C12.6519 2.72191 12.7782 2.84815 12.8659 3.00017ZM4.20568 19.0002H19.7941L11.9999 5.50017L4.20568 19.0002ZM10.9999 16.0002H12.9999V18.0002H10.9999V16.0002ZM10.9999 9.00017H12.9999V14.0002H10.9999V9.00017Z" />
+  </svg>
+);
+
+/**
  * Composant d'autocompletion générique avec dropdown en portail (Radix Popover),
  * navigation clavier accessible (WCAG 2.2 combobox) et debounce intégré.
  *
@@ -77,6 +87,7 @@ export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
     id: idProp,
     className,
     emptyMessage = 'Aucun résultat',
+    errorMessage = 'La recherche a échoué, veuillez réessayer.',
     nativeInputProps,
   } = props;
 
@@ -185,6 +196,7 @@ export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
     setHighlightedIndex(-1);
     setSearchQuery('');
     setFetchError(null);
+    setIsOpen(false);
   };
 
   const addTag = (raw: string) => {
@@ -251,7 +263,7 @@ export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if ((e.key === 'Escape' || e.key === 'Tab') && (suggestions.length || hasNoResults)) {
+    if ((e.key === 'Escape' || e.key === 'Tab') && isOpen) {
       if (e.key === 'Escape') {
         e.preventDefault();
       }
@@ -262,12 +274,12 @@ export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
       removeTag(props.values[props.values.length - 1]);
       return;
     }
-    if (e.key === 'ArrowDown' && suggestions.length) {
+    if (e.key === 'ArrowDown' && isOpen && suggestions.length) {
       e.preventDefault();
       setHighlightedIndex((i) => Math.min(i + 1, suggestions.length - 1));
       return;
     }
-    if (e.key === 'ArrowUp' && suggestions.length) {
+    if (e.key === 'ArrowUp' && isOpen && suggestions.length) {
       e.preventDefault();
       setHighlightedIndex((i) => Math.max(i - 1, -1));
       return;
@@ -301,7 +313,14 @@ export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
     closePopover();
   };
 
-  const isOpen = suggestions.length > 0 || hasNoResults;
+  // Reopen the previously fetched results when the user returns to the field
+  // (e.g. after clicking outside or pressing Escape), without re-querying.
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    nativeInputProps?.onFocus?.(e);
+    if (suggestions.length > 0 || hasNoResults || fetchError !== null) {
+      setIsOpen(true);
+    }
+  };
 
   // Free-text mode hints that Enter adds the typed value; otherwise the plain empty message.
   const emptyContent =
@@ -359,6 +378,7 @@ export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
                 ref={inputRef}
                 {...nativeInputProps}
                 {...sharedInputProps}
+                onFocus={handleFocus}
                 className="min-w-[8ch] flex-1 bg-transparent outline-hidden placeholder:italic placeholder:text-(--text-mention-grey)"
               />
               {isRunning && (
@@ -371,6 +391,7 @@ export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
                   wrapperClass="ml-auto self-center"
                 />
               )}
+              {fetchError && !isRunning && <OfflineAlertIcon className="ml-auto self-center" />}
             </div>
           ) : (
             <div ref={anchorRef} className="relative">
@@ -378,6 +399,7 @@ export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
                 ref={inputRef}
                 {...sharedInputProps}
                 {...nativeInputProps}
+                onFocus={handleFocus}
                 className={cx('pr-10 text-ellipsis', nativeInputProps?.className)}
               />
 
@@ -388,19 +410,11 @@ export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
                   strokeWidth={4}
                   color="var(--text-action-high-blue-france)"
                   secondaryColor="var(--border-default-grey)"
-                  wrapperClass="absolute top-1/2 -translate-y-1/2 right-[calc(16px+1.5rem)] z-10"
+                  wrapperClass="absolute top-1/2 -translate-y-1/2 right-10 z-10"
                 />
               )}
 
-              {fetchError && !isRunning && (
-                <Icon
-                  name="ri-alert-line"
-                  size="sm"
-                  color="var(--text-default-error)"
-                  title={fetchError}
-                  className="absolute top-1/2 -translate-y-1/2 right-[calc(16px+1.5rem)] z-10"
-                />
-              )}
+              {fetchError && !isRunning && <OfflineAlertIcon className="absolute top-1/2 -translate-y-1/2 right-10 z-10" />}
 
               {displayValue ? (
                 <Icon
