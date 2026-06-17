@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 
 import trpc from '@/modules/trpc/client';
+import { deepMergeObjects } from '@/utils/core';
 import type { DeepPartial } from '@/utils/typescript';
 
-import { createMapConfiguration, type MapConfiguration } from './map-configuration';
+import { emptyMapConfiguration, type MapConfiguration } from './map-configuration';
 
 /**
  * Resolves a full `MapConfiguration` by fetching the réseaux-de-chaleur limits
@@ -17,7 +18,7 @@ export function useMapConfiguration(partial: DeepPartial<MapConfiguration>): Map
     if (!limits) {
       return null;
     }
-    return createMapConfiguration({
+    return deepMergeObjects(emptyMapConfiguration, {
       ...partial,
       reseauxDeChaleur: {
         ...limits,
