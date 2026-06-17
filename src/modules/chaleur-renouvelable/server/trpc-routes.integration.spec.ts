@@ -1,16 +1,21 @@
 import type { Insertable } from 'kysely';
 import type { User } from 'next-auth';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { DemandeChaleurRenouvelable, DemandeChaleurRenouvelableStatus } from '@/modules/chaleur-renouvelable/constants';
 import {
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
 } from '@/modules/chaleur-renouvelable/constants';
+import { sendEmailTemplate } from '@/modules/email';
 import { kdb } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
 import { cleanDatabase } from '@/tests/fixtures';
 import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
+
+vi.mock('@/modules/email', () => ({
+  sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
+}));
 
 type PermissionTestCase = {
   label: string;
@@ -20,6 +25,7 @@ type PermissionTestCase = {
 
 type DemandChaleurRenouvelableInsert = Insertable<DB['demands_chaleur_renouvelable']>;
 const ADMIN_UPDATED_STATUS = 'Étude technico-financière réalisée';
+const sentEmailTemplate = vi.mocked(sendEmailTemplate);
 
 function toDemandDatabaseFields(input: DemandeChaleurRenouvelable) {
   return {
@@ -54,6 +60,7 @@ function toDemandDatabaseFields(input: DemandeChaleurRenouvelable) {
 describe('batEnrRouter', () => {
   beforeEach(async () => {
     await cleanDatabase();
+    vi.clearAllMocks();
   });
 
   describe('batEnr.createDemandeChaleurRenouvelable', () => {
@@ -125,6 +132,16 @@ describe('batEnrRouter', () => {
         ...toDemandDatabaseFields(input),
         status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
       });
+      expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
+      expect(sentEmailTemplate).toHaveBeenCalledWith(
+        'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable',
+        { email: 'france.chaleur.urbaine@gmail.com' },
+        {
+          demand: input,
+          demandId: result.id,
+          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
+        }
+      );
     });
 
     const statusTestCases = [

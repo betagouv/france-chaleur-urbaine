@@ -17,6 +17,9 @@ import MessageGestionnaire, { scenarios as messageGestionnaireScenarios } from '
 import DemandeHautPotentiel, { scenarios as demandeHautPotentielScenarios } from './templates/demands/equipe-fcu/demande-haut-potentiel';
 import DemandeReaffectation, { scenarios as demandeReaffectationScenarios } from './templates/demands/equipe-fcu/demande-reaffectation';
 import NouvelleDemande, { scenarios as nouvelleDemandeScenarios } from './templates/demands/equipe-fcu/nouvelle-demande';
+import NouvelleDemandeChaleurRenouvelable, {
+  scenarios as nouvelleDemandeChaleurRenouvelableScenarios,
+} from './templates/demands/equipe-fcu/nouvelle-demande-chaleur-renouvelable';
 import NouvellesDemandesATraiter, {
   scenarios as nouvellesDemandesATraiterScenarios,
 } from './templates/demands/gestionnaire/nouvelles-demandes-a-traiter';
@@ -147,6 +150,14 @@ export const emails = defineEmails({
     preview: 'Une nouvelle demande de contact a été créée',
     scenarios: nouvelleDemandeScenarios,
     subject: '[France Chaleur Urbaine] Nouvelle demande de contact',
+  },
+  'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable': {
+    Component: NouvelleDemandeChaleurRenouvelable,
+    description: 'Notification interne envoyée à france.chaleur.urbaine@gmail.com à chaque nouvelle demande chaleur renouvelable reçue.',
+    label: 'Nouvelle demande chaleur renouvelable',
+    preview: 'Une nouvelle demande chaleur renouvelable est à traiter',
+    scenarios: nouvelleDemandeChaleurRenouvelableScenarios,
+    subject: '[France Chaleur Urbaine] Nouvelle demande chaleur renouvelable à traiter',
   },
   'demands.gestionnaire.nouvelles-demandes-a-traiter': {
     Component: NouvellesDemandesATraiter,

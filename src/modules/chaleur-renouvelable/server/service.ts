@@ -10,6 +10,7 @@ import {
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
 } from '@/modules/chaleur-renouvelable/constants';
+import { sendEmailTemplate } from '@/modules/email';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
@@ -41,6 +42,8 @@ const batEnrBatimentColumns = [
   'type_installation_chauffage',
   'type_installation_ecs',
 ] as const;
+
+const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = 'france.chaleur.urbaine@gmail.com';
 
 const singleConstructionHousingCount = sql<number | null>`
   (
@@ -151,6 +154,8 @@ export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) =
 };
 
 export const createDemandeChaleurRenouvelable = async ({ input }: { input: DemandeChaleurRenouvelable }) => {
+  const initialStatus = getInitialDemandeChaleurRenouvelableStatus(input);
+
   const createdDemand = await kdb
     .insertInto('demands_chaleur_renouvelable')
     .values({
@@ -179,12 +184,22 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
       refusal_period: input.refusalPeriod,
       refusal_reason: input.refusalReason,
       simulation_url: input.simulationUrl,
-      status: getInitialDemandeChaleurRenouvelableStatus(input),
+      status: initialStatus,
       surface_area: input.surfaceArea,
       updated_at: new Date(),
     })
     .returning(['id'])
     .executeTakeFirstOrThrow();
+
+  await sendEmailTemplate(
+    'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable',
+    { email: DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL },
+    {
+      demand: input,
+      demandId: createdDemand.id,
+      status: initialStatus,
+    }
+  );
 
   return createdDemand;
 };
