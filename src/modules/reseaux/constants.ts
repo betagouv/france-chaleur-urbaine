@@ -50,6 +50,16 @@ export const tableToNetworkEntity = {
   zones_et_reseaux_en_construction: 'reseau_en_construction',
 } as const satisfies Record<(typeof networkEntityToTable)[NetworkEntityType], NetworkEntityType>;
 
+/**
+ * Détermine la table réseau à partir du suffixe de l'identifiant SNCU.
+ * `…C` → réseau de chaleur, `…F` → réseau de froid, sinon `null`.
+ */
+export function networkTableForId(id_sncu: string): 'reseaux_de_chaleur' | 'reseaux_de_froid' | null {
+  if (id_sncu.endsWith('C')) return 'reseaux_de_chaleur';
+  if (id_sncu.endsWith('F')) return 'reseaux_de_froid';
+  return null;
+}
+
 const tableNames = [
   'reseaux_de_chaleur',
   'zones_et_reseaux_en_construction',

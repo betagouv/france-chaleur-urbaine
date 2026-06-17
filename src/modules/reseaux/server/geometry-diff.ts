@@ -5,6 +5,8 @@ import { createGeometryExpression, processGeometry } from '@/modules/geo/server/
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 
+import { networkTableForId } from '../constants';
+
 const BUFFER_SMALL_M = 5;
 const BUFFER_LARGE_M = 20;
 // Below this %, we consider the geometry unchanged (covers floating-point noise).
@@ -73,12 +75,6 @@ export async function diffNetworkGeometries(directory: string, outputPath: strin
   logger.info(`  ${counts.inchangé} inchangés`);
   logger.info(`  ${counts.vide} fichiers vides (potentiellement à supprimer)`);
   if (counts.erreur > 0) logger.warn(`  ${counts.erreur} erreurs`);
-}
-
-function networkTableForId(id_sncu: string): 'reseaux_de_chaleur' | 'reseaux_de_froid' | null {
-  if (id_sncu.endsWith('C')) return 'reseaux_de_chaleur';
-  if (id_sncu.endsWith('F')) return 'reseaux_de_froid';
-  return null;
 }
 
 async function diffSingle(id_sncu: string, filePath: string): Promise<DiffRow> {
