@@ -2,6 +2,7 @@ import type { Command } from '@commander-js/extra-typings';
 import { z } from 'zod';
 
 import { readFileGeometry } from '@/modules/geo/server/helpers';
+import { identifyNetworkGeometries } from '@/modules/reseaux/server/geometry-identify';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 
@@ -105,6 +106,28 @@ export function registerNetworkCommands(parentProgram: Command) {
     .option('--apply', 'Applique réellement les mises à jour (par défaut: dry-run)', false)
     .action(async (directory, { apply }) => {
       await applyNetworkGeometries(directory, { dryRun: !apply });
+    });
+
+  program
+    .command('identify')
+    .description(
+      "Identifie l'id SNCU de fichiers KML/GeoJSON (nommés par ville) par overlap géométrique avec les réseaux existants, et écrit un rapport CSV de scoring."
+    )
+    .argument('<directory>', 'Répertoire contenant les fichiers .kml / .geojson')
+    .argument('[output]', 'Chemin du fichier CSV de sortie', 'network-identify.csv')
+    .option(
+      '--write <dir>',
+      'Convertit et écrit tous les fichiers en GeoJSON : <id_sncu>.geojson si un réseau est identifié, <nom_original>.geojson sinon. Supprimer les fichiers indésirables puis lancer bulk-update.'
+    )
+    .option('--min-score <n>', 'Score minimal (0-100) pour considérer un match comme fort', '50')
+    .option('--max-distance <m>', 'Distance de recherche des réseaux candidats en mètres', '300')
+    .action(async (directory, output, { write, minScore, maxDistance }) => {
+      await identifyNetworkGeometries(directory, {
+        maxDistance: parseFloat(maxDistance),
+        minScore: parseFloat(minScore),
+        outputPath: output,
+        writeDir: write,
+      });
     });
 
   program
