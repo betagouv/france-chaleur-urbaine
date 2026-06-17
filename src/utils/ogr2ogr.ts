@@ -58,16 +58,62 @@ export async function ogr2ogrConvertToGeoJSON(
     inputFileName = `${randomPrefix}${inputFileName}`;
     await rename(inputFilePath, join(dockerVolumePath, inputFileName));
   }
-  await runOgr2ogr(
-    `-f GeoJSON ${serverConfig.USE_DOCKER_GEO_COMMANDS ? 'output.geojson' : outputFilePath} ${serverConfig.USE_DOCKER_GEO_COMMANDS ? inputFileName : inputFilePath} -t_srs EPSG:4326`,
-    options
-  );
+
+  const inputArg = serverConfig.USE_DOCKER_GEO_COMMANDS ? inputFileName : inputFilePath;
+  const outputArg = serverConfig.USE_DOCKER_GEO_COMMANDS ? 'output.geojson' : outputFilePath;
+
+  const layers = await listNonEmptyLayers(inputArg);
+  if (layers.length <= 1) {
+    await runOgr2ogr(`-f GeoJSON ${outputArg} ${inputArg} -t_srs EPSG:4326`, options);
+  } else {
+    // KML (and other multi-layer formats): GeoJSON only supports one layer per file.
+    // Convert the first layer normally, then append the rest under the same layer name.
+    const [first, ...rest] = layers;
+    await runOgr2ogr(`-f GeoJSON ${outputArg} ${inputArg} "${first}" -t_srs EPSG:4326 -nlt GEOMETRY`, options);
+    for (const layer of rest) {
+      await runOgr2ogr(
+        `-f GeoJSON -update -append ${outputArg} ${inputArg} "${layer}" -t_srs EPSG:4326 -nlt GEOMETRY -nln "${first}"`,
+        options
+      );
+    }
+  }
+
   if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
     // input
     await rename(join(dockerVolumePath, inputFileName), inputFilePath);
     // output
     await rename(join(dockerVolumePath, 'output.geojson'), outputFilePath);
   }
+}
+
+/**
+ * Returns the names of layers that contain at least one feature.
+ * Skips empty layers (e.g. LIBKML metadata containers named after the source file).
+ */
+async function listNonEmptyLayers(filePath: string): Promise<string[]> {
+  const run = serverConfig.USE_DOCKER_GEO_COMMANDS
+    ? (cmd: string) => runDocker(`ghcr.io/osgeo/gdal:alpine-normal-latest-${dockerImageArch}`, cmd, { captureOutput: true })
+    : (cmd: string) => runBash(cmd, { captureOutput: true });
+
+  const { output } = await run(`ogrinfo -al -so "${filePath}"`);
+
+  const layers: string[] = [];
+  let currentLayer: string | null = null;
+  for (const line of output.split('\n')) {
+    const layerMatch = line.match(/^Layer name: (.+)$/);
+    if (layerMatch) {
+      currentLayer = layerMatch[1].trim();
+      continue;
+    }
+    const countMatch = line.match(/^Feature Count: (\d+)/);
+    if (countMatch && currentLayer) {
+      if (parseInt(countMatch[1], 10) > 0) {
+        layers.push(currentLayer);
+      }
+      currentLayer = null;
+    }
+  }
+  return layers;
 }
 
 export async function ogr2ogrExtractNDJSONFromDatabaseTable(
