@@ -43,8 +43,8 @@ conversion-tracking/
   snapshot `config`, `archived_at`) et `conversion_events` (log append-only).
 - **Funnel autonome** : les 3 events (`display`, `address_test`, `demand`) sont émis **côté client** via
   `useRecordConversionEvent` → `getStats` lit la seule table `conversion_events`. Les colonnes
-  `demands.origin_source` / `origin_page` sont **du bonus** (posées via `getDemandOrigin()` dans les
-  payloads de création), pas la source du funnel.
+  `demands.origin_source` / `origin_page` / `origin_host` sont **du bonus** (posées via `getDemandOrigin()`
+  dans les payloads de création), pas la source du funnel.
 - **Câblage** : `display` via `useTrackPageView()` (sans argument) sur `/iframe/carte`, `/iframe/form` et
   toutes les pages internes portant un test d'adresse ; `address_test` / `demand` depuis le hub
   `useContactFormFCU`, plus `ComparateurPublicodes` et `EligibilityTestBox` en direct. La preview admin est
@@ -83,7 +83,8 @@ Chaque mutation `sources.*` émet un event d'audit `conversion_source_created` /
   (`display`/`address_test`/`demand`), `eligible`, `ip`, `user_agent`, `created_at`.
   Index B-tree `(created_at)` (toutes les lectures filtrent par plage de dates ; pas de BRIN car la
   purge UPDATE chaque ligne à ~90 j) + partiel `(created_at) WHERE ip IS NOT NULL` pour la purge.
-- `demands.origin_source` / `origin_page` — colonnes **bonus** (hors module, écrites par `createDemand`).
+- `demands.origin_source` / `origin_page` / `origin_host` — colonnes **bonus** (hors module, écrites par
+  `createDemand`). `origin_host` = page embarquante, décisive pour attribuer une demande iframe au partenaire.
 
 ## Dépendances
 

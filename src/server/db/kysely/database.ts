@@ -256,6 +256,7 @@ export interface Demands {
   epci_code: string | null;
   ept_code: string | null;
   id: Generated<string>;
+  origin_host: string | null;
   origin_page: string | null;
   origin_source: string | null;
   legacy_values: JSONColumnType<AirtableLegacyRecord>;

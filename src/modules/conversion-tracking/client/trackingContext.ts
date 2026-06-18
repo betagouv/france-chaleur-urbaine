@@ -51,13 +51,19 @@ export function getTrackingContext(): { inIframe: boolean; host: string | undefi
 export const isTrackablePage = () => typeof window !== 'undefined' && !window.location.pathname.startsWith('/admin');
 
 /**
- * Attribution bonus posée sur la demande (`demands.origin_source` / `origin_page`).
+ * Attribution bonus posée sur la demande (`demands.origin_source` / `origin_page` / `origin_host`).
  * `origin_source` n'est renseignée que pour une demande attribuée à une intégration (`?source=`).
+ * `origin_host` = page embarquante (cf. `getTrackingContext`) : décisif pour les iframes, où `origin_page`
+ * (`/iframe/carte`, ou `/` après redirection) et `origin_source` (souvent absent) n'identifient pas le partenaire.
  * Vide hors page trackable (admin, SSR).
  */
-export function getDemandOrigin(): { origin_page?: string; origin_source?: string } {
+export function getDemandOrigin(): { origin_page?: string; origin_source?: string; origin_host?: string } {
   if (!isTrackablePage()) {
     return {};
   }
-  return { origin_page: window.location.pathname, origin_source: getConversionSource() ?? undefined };
+  return {
+    origin_host: getTrackingContext().host,
+    origin_page: window.location.pathname,
+    origin_source: getConversionSource() ?? undefined,
+  };
 }

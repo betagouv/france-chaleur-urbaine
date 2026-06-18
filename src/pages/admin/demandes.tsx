@@ -494,6 +494,13 @@ function DemandesAdmin(): React.ReactElement {
         width: '220px',
       },
       {
+        accessorKey: 'origin_host',
+        enableGlobalFilter: false,
+        enableSorting: false,
+        header: 'Site hôte',
+        width: '200px',
+      },
+      {
         accessorKey: 'testAddress.eligibility.id_sncu',
         filterType: 'Facets',
         header: 'Réseau le plus proche',

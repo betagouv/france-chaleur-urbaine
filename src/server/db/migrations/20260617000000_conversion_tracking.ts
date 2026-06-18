@@ -18,6 +18,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await sql`
     ALTER TABLE demands ADD COLUMN origin_source text;
     ALTER TABLE demands ADD COLUMN origin_page text;
+    ALTER TABLE demands ADD COLUMN origin_host text;
 
     CREATE TABLE conversion_sources (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -58,5 +59,6 @@ export async function down(db: Kysely<any>): Promise<void> {
     DROP TABLE conversion_sources;
     ALTER TABLE demands DROP COLUMN origin_source;
     ALTER TABLE demands DROP COLUMN origin_page;
+    ALTER TABLE demands DROP COLUMN origin_host;
   `.execute(db);
 }
