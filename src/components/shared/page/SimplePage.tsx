@@ -8,7 +8,7 @@ import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import { adminPages } from '@/components/Admin/adminPages';
+import { adminPageGroups, adminPages } from '@/components/Admin/adminPages';
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
@@ -382,32 +382,52 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
     text: "Test d'adresses",
   },
   {
-    menuLinks: adminPages.map((page) => ({
-      linkProps: {
-        href: page.href,
-      },
-      text: page.label,
-    })),
+    megaMenu: {
+      categories: adminPageGroups.map(({ id, label }) => ({
+        categoryMainText: label,
+        links: adminPages
+          .filter((page) => page.group === id)
+          .map((page) => ({
+            linkProps: {
+              href: page.href,
+            },
+            text: page.label,
+          })),
+      })),
+    },
     text: 'Administration',
   },
 ];
 
 function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl: string): MainNavigationProps.Item[] {
   return menuItems.map((item) => {
-    const subMenu = markCurrentPageActive(item.menuLinks ?? [], currentUrl) as MainNavigationProps.Item.Link[];
-
-    const subMenuItemActive = subMenu.some((child) => child.isActive);
-
-    if (item.menuLinks) {
+    if (item.megaMenu) {
+      const categories = item.megaMenu.categories.map((category) => ({
+        ...category,
+        links: category.links.map((link) => ({
+          ...link,
+          isActive: link.linkProps.href === currentUrl,
+        })),
+      }));
       return {
         ...item,
-        isActive: subMenuItemActive,
+        isActive: categories.some((category) => category.links.some((link) => link.isActive)),
+        megaMenu: { ...item.megaMenu, categories },
+      };
+    }
+
+    if (item.menuLinks) {
+      const subMenu = markCurrentPageActive(item.menuLinks, currentUrl) as MainNavigationProps.Item.Link[];
+      return {
+        ...item,
+        isActive: subMenu.some((child) => child.isActive),
         menuLinks: subMenu,
       };
     }
+
     return {
       ...item,
-      isActive: item.linkProps?.href === currentUrl || subMenuItemActive,
+      isActive: item.linkProps?.href === currentUrl,
     };
   });
 }
