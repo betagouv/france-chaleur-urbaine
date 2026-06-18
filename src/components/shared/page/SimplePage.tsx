@@ -8,6 +8,7 @@ import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 
+import { adminPages } from '@/components/Admin/adminPages';
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
@@ -381,86 +382,12 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
     text: "Test d'adresses",
   },
   {
-    menuLinks: [
-      {
-        linkProps: {
-          href: '/admin/events',
-        },
-        text: 'Activité du site',
+    menuLinks: adminPages.map((page) => ({
+      linkProps: {
+        href: page.href,
       },
-      {
-        linkProps: {
-          href: '/admin/users',
-        },
-        text: 'Gestion des utilisateurs',
-      },
-      {
-        linkProps: {
-          href: '/admin/demandes',
-        },
-        text: 'Gestion des demandes',
-      },
-      {
-        linkProps: {
-          href: '/admin/reseaux',
-        },
-        text: 'Gestion des réseaux',
-      },
-      {
-        linkProps: {
-          href: '/admin/reseaux/stats',
-        },
-        text: 'Statistiques par réseau',
-      },
-      {
-        linkProps: {
-          href: '/admin/iframes',
-        },
-        text: "Générateur d'iframes",
-      },
-      {
-        linkProps: {
-          href: '/admin/conversion',
-        },
-        text: 'Conversion par source',
-      },
-      {
-        linkProps: {
-          href: '/admin/jobs',
-        },
-        text: 'Suivi des tâches',
-      },
-      {
-        linkProps: {
-          href: '/admin/emails',
-        },
-        text: "Modèles d'emails",
-      },
-      {
-        linkProps: {
-          href: '/admin/tests-adresses',
-        },
-        text: "Tests d'adresses",
-      },
-      {
-        linkProps: {
-          href: '/admin/impostures',
-        },
-        text: 'Impostures',
-      },
-      {
-        linkProps: {
-          href: '/admin/diagnostic',
-        },
-        text: 'Diagnostic',
-      },
-      {
-        linkProps: {
-          href: '/admin/data-diagnostic',
-        },
-        text: 'Diagnostic des données',
-      },
-    ],
+      text: page.label,
+    })),
     text: 'Administration',
   },
 ];

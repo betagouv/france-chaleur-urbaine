@@ -1,53 +1,35 @@
+import { adminPageGroups, adminPages } from '@/components/Admin/adminPages';
+import Heading from '@/components/ui/Heading';
 import Tile from '@/components/ui/Tile';
 
 export default function DashboardAdmin() {
   return (
-    <div className="grid gap-8 grid-cols-2 items-center justify-between mb-5">
-      <Tile
-        title="Gestion des demandes"
-        desc="Gérez les demandes de raccordement à affecter"
-        linkProps={{
-          href: '/admin/demandes',
-        }}
-        orientation="horizontal"
-        enlargeLinkOrButton
-      />
-      <Tile
-        title="Gestion des utilisateurs"
-        desc="Gérez les utilisateurs de l'application"
-        linkProps={{
-          href: '/admin/users',
-        }}
-        orientation="horizontal"
-        enlargeLinkOrButton
-      />
-      <Tile
-        title="Gestion des réseaux"
-        desc="Gérez les réseaux de chaleur et de froid"
-        linkProps={{
-          href: '/admin/reseaux',
-        }}
-        orientation="horizontal"
-        enlargeLinkOrButton
-      />
-      <Tile
-        title="Diagnostic des données"
-        desc="Identifiez les incohérences (utilisateurs, permissions, demandes)"
-        linkProps={{
-          href: '/admin/data-diagnostic',
-        }}
-        orientation="horizontal"
-        enlargeLinkOrButton
-      />
-      <Tile
-        title="Générateur d'iframes"
-        desc="Générez l'URL et le code d'intégration d'une carte à embarquer"
-        linkProps={{
-          href: '/admin/iframes',
-        }}
-        orientation="horizontal"
-        enlargeLinkOrButton
-      />
+    <div className="flex flex-col gap-8 mb-5">
+      {adminPageGroups.map(({ id, label }) => {
+        const pages = adminPages.filter((page) => page.group === id);
+        if (pages.length === 0) {
+          return null;
+        }
+        return (
+          <section key={id}>
+            <Heading as="h2" size="h5" color="grey" className="mb-4">
+              {label}
+            </Heading>
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+              {pages.map((page) => (
+                <Tile
+                  key={page.href}
+                  title={page.label}
+                  desc={page.desc}
+                  linkProps={{ href: page.href }}
+                  orientation="horizontal"
+                  enlargeLinkOrButton
+                />
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
