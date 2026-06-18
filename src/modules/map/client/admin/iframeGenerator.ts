@@ -81,9 +81,13 @@ export function buildIframeCode(config: IframeConfig, source?: string | null): s
   const url = buildIframeUrl(config, source);
   // Inline `style` (not the HTML width/height attributes) so any CSS unit works — the
   // attributes only accept a bare number or a percentage, breaking on e.g. `600px`.
+  // `referrerpolicy` overrides the partner page's policy for this iframe's request, so the
+  // embedding page URL reaches us as `document.referrer` (host attribution) even when the
+  // partner defaults to `strict-origin-when-cross-origin`. `no-referrer-when-downgrade` (not
+  // `unsafe-url`) keeps the full URL over HTTPS→HTTPS without leaking on a HTTP downgrade.
   const width = toCssSize(config.width, DEFAULT_IFRAME_WIDTH);
   const height = toCssSize(config.height, DEFAULT_IFRAME_HEIGHT);
-  return `<iframe src="${url}" style="width:${width};height:${height};border:0;" allowfullscreen loading="lazy" title="Carte France Chaleur Urbaine"></iframe>${fcuBacklinkHtml}`;
+  return `<iframe src="${url}" style="width:${width};height:${height};border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Carte France Chaleur Urbaine"></iframe>${fcuBacklinkHtml}`;
 }
 
 /** Height fitting the form teaser (header + one field row); the snippet stays editable by the partner. */
@@ -97,5 +101,5 @@ export function buildFormIframeUrl(source?: string | null): string {
 /** `<iframe>` snippet for `/iframe/form` (+ "Fourni par" credit) to paste on a partner site. */
 export function buildFormIframeCode(source?: string | null): string {
   const url = buildFormIframeUrl(source);
-  return `<iframe src="${url}" style="width:100%;height:${FORM_IFRAME_HEIGHT};border:0;" loading="lazy" title="Test d'adresse France Chaleur Urbaine"></iframe>${fcuBacklinkHtml}`;
+  return `<iframe src="${url}" style="width:100%;height:${FORM_IFRAME_HEIGHT};border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Test d'adresse France Chaleur Urbaine"></iframe>${fcuBacklinkHtml}`;
 }
