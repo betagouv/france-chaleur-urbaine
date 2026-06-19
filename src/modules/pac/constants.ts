@@ -5,7 +5,6 @@ import { DPE_VALUES } from '@/modules/chaleur-renouvelable/constants';
 export const INCOME_CATEGORY_VALUES = ['Très modeste', 'Modeste', 'Intermédiaire', 'Supérieur'] as const;
 
 export const zHeatingSimulationInput = z.object({
-  cityCode: z.string().min(2),
   departmentCode: z.string().min(2),
   dpe: z.enum(DPE_VALUES),
   incomeCategory: z.enum(INCOME_CATEGORY_VALUES),

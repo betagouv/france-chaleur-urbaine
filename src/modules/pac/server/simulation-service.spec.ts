@@ -6,7 +6,6 @@ import type { HeatingSimulationInput } from '../constants';
 import { getHeatingSimulation } from './simulation-service';
 
 const baseInput = {
-  cityCode: '75056',
   departmentCode: '75',
   dpe: 'D',
   incomeCategory: 'Modeste',
