@@ -76,7 +76,7 @@ export function getIncomeOptions(input: IncomeOptionsInput): IncomeOption[] {
   return [
     {
       help: 'Catégorie Très modeste',
-      label: `Revenu fiscal de référence inférieur ou égal à ${formatCurrency(veryLowThreshold)}.`,
+      label: `Inférieur ou égal à ${formatCurrency(veryLowThreshold)}.`,
       value: 'Très modeste',
     },
     {
