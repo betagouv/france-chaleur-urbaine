@@ -1,14 +1,14 @@
 import type { NextApiRequest } from 'next';
 
-import { zIfpenIncomeOptionsInput } from '@/modules/ifpen/constants';
-import { getIfpenIncomeOptions } from '@/modules/ifpen/server/heating-simulation-service';
+import { zIncomeOptionsInput } from '@/modules/pac/constants';
+import { getIncomeOptions } from '@/modules/pac/server/simulation-service';
 import { handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { withCors } from '@/services/api/cors';
 
 const handler = async (req: NextApiRequest) => {
   requirePostMethod(req);
 
-  return getIfpenIncomeOptions(zIfpenIncomeOptionsInput.parse(req.body));
+  return getIncomeOptions(zIncomeOptionsInput.parse(req.body));
 };
 
 export default withCors(handleRouteErrors(handler));

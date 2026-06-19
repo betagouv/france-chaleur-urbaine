@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import type { TestCase } from '@/tests/trpc-helpers';
 
-import type { IfpenHeatingSimulationInput } from '../constants';
-import { getIfpenHeatingSimulation } from './heating-simulation-service';
+import type { HeatingSimulationInput } from '../constants';
+import { getHeatingSimulation } from './simulation-service';
 
 const baseInput = {
   cityCode: '75056',
@@ -13,11 +13,11 @@ const baseInput = {
   occupants: 3,
   surface: 100,
   temperatureReference: -7,
-} satisfies IfpenHeatingSimulationInput;
+} satisfies HeatingSimulationInput;
 
-describe('getIfpenHeatingSimulation', () => {
+describe('getHeatingSimulation', () => {
   it('returns individual residential heating costs and heat pump prices', () => {
-    const result = getIfpenHeatingSimulation(baseInput);
+    const result = getHeatingSimulation(baseInput);
 
     expect(result).toStrictEqual({
       gasBoilerAnnualBill: 2365.08,
@@ -42,22 +42,22 @@ describe('getIfpenHeatingSimulation', () => {
         },
       ],
       heatPumpAnnualBill: 1649.26,
+      heatPumpBoilerReplacementBonus: 0,
       heatPumpGrossPrice: 21781.5,
-      heatPumpNetPrice: 13781.5,
+      heatPumpMaprimerenovAid: 4000,
+      heatPumpNetPrice: 17781.5,
       heatPumpProposedPower: 10.64,
       oilBoilerAnnualBill: 2553.83,
     });
   });
 
-  const incomeCases: TestCase<IfpenHeatingSimulationInput['incomeCategory'], number>[] = [
-    { expectedOutput: 14281.5, input: 'Très modeste', label: 'very low income gets the highest aid' },
-    { expectedOutput: 16281.5, input: 'Intermédiaire', label: 'middle income gets a lower aid' },
-    { expectedOutput: 19281.5, input: 'Supérieur', label: 'high income still gets non MaPrimeRénov aids' },
+  const incomeCases: TestCase<HeatingSimulationInput['incomeCategory'], number>[] = [
+    { expectedOutput: 16781.5, input: 'Très modeste', label: 'very low income gets the highest MaPrimeRénov aid' },
+    { expectedOutput: 18781.5, input: 'Intermédiaire', label: 'middle income gets a lower MaPrimeRénov aid' },
+    { expectedOutput: 21781.5, input: 'Supérieur', label: 'high income gets no aid in the default heat pump case' },
   ];
 
   it.each(incomeCases)('$label', (testCase) => {
-    expect(getIfpenHeatingSimulation({ ...baseInput, incomeCategory: testCase.input }).heatPumpNetPrice).toStrictEqual(
-      testCase.expectedOutput
-    );
+    expect(getHeatingSimulation({ ...baseInput, incomeCategory: testCase.input }).heatPumpNetPrice).toStrictEqual(testCase.expectedOutput);
   });
 });

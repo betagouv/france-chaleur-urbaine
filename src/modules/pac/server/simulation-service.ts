@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Engine from 'publicodes';
 
-import type { IfpenHeatingSimulationInput, IfpenHeatingSimulationResult, IfpenIncomeOption, IfpenIncomeOptionsInput } from '../constants';
+import type { HeatingSimulationInput, HeatingSimulationResult, IncomeOption, IncomeOptionsInput } from '../constants';
 
 const require = createRequire(import.meta.url);
 const publicodesRules = require('@betagouv/france-chaleur-urbaine-publicodes/publicodes-build/france-chaleur-urbaine-publicodes.model.json');
@@ -15,9 +15,9 @@ const INCOME_PUBLICODES_THRESHOLDS = {
   Intermédiaire: 'ménage . revenu . plafond intermédiaire',
   Modeste: 'ménage . revenu . plafond modeste',
   'Très modeste': 'ménage . revenu . plafond très modeste',
-} as const satisfies Record<Exclude<IfpenHeatingSimulationInput['incomeCategory'], 'Supérieur'>, string>;
+} as const satisfies Record<Exclude<HeatingSimulationInput['incomeCategory'], 'Supérieur'>, string>;
 
-export function getIfpenHeatingSimulation(input: IfpenHeatingSimulationInput): IfpenHeatingSimulationResult {
+export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimulationResult {
   const engine = new Engine<RuleName>(publicodesRules);
 
   engine.setSituation({
@@ -40,6 +40,14 @@ export function getIfpenHeatingSimulation(input: IfpenHeatingSimulationInput): I
   });
 
   const heatPumpGrossPrice = getRuleValue(engine, 'Calcul Eco . PAC air-eau indiv . Investissement équipement Total');
+  const heatPumpMaprimerenovAid = getRuleValue(
+    engine,
+    "Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Ma prime renov'"
+  );
+  const heatPumpBoilerReplacementBonus = getRuleValue(
+    engine,
+    'Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Coup de pouce'
+  );
   const heatPumpAidAmount = getRuleValue(engine, 'Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Total');
 
   return {
@@ -50,14 +58,16 @@ export function getIfpenHeatingSimulation(input: IfpenHeatingSimulationInput): I
       getHeatingCostBreakdown(engine, 'Chaudière fioul', 'Bilan x Fioul indiv'),
     ],
     heatPumpAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x PAC air-eau indiv')),
+    heatPumpBoilerReplacementBonus: roundNumber(heatPumpBoilerReplacementBonus),
     heatPumpGrossPrice: roundNumber(heatPumpGrossPrice),
+    heatPumpMaprimerenovAid: roundNumber(heatPumpMaprimerenovAid),
     heatPumpNetPrice: roundNumber(Math.max(0, heatPumpGrossPrice - heatPumpAidAmount)),
     heatPumpProposedPower: roundNumber(getRuleValue(engine, 'Installation x PAC air-eau x Individuel . puissance équipement')),
     oilBoilerAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x Fioul indiv')),
   };
 }
 
-export function getIfpenIncomeOptions(input: IfpenIncomeOptionsInput): IfpenIncomeOption[] {
+export function getIncomeOptions(input: IncomeOptionsInput): IncomeOption[] {
   const engine = createEngineForIncome(input);
   const veryLowThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS['Très modeste'] as RuleName);
   const lowThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS.Modeste as RuleName);
@@ -87,7 +97,7 @@ export function getIfpenIncomeOptions(input: IfpenIncomeOptionsInput): IfpenInco
   ];
 }
 
-function createEngineForIncome(input: IfpenIncomeOptionsInput) {
+function createEngineForIncome(input: IncomeOptionsInput) {
   const engine = new Engine<RuleName>(publicodesRules);
 
   engine.setSituation({
