@@ -60,12 +60,14 @@ const IframeGeneratorPage = () => {
 
   const update = (patch: Partial<IframeConfig>) => setConfig((current) => ({ ...current, ...patch }));
 
+  // Vanilla client (not `.fetch`/React Query): forwards the abort signal for switchMap cancellation
+  // and bypasses staleTime caching + retry, which would otherwise stall the autocomplete spinner.
   const fetchGestionnaires = useCallback(
-    (search: string) => trpcUtils.reseaux.searchOperators.fetch({ field: 'gestionnaire', search }),
+    (search: string, signal: AbortSignal) => trpcUtils.client.reseaux.searchOperators.query({ field: 'gestionnaire', search }, { signal }),
     [trpcUtils]
   );
   const fetchMaitresOuvrage = useCallback(
-    (search: string) => trpcUtils.reseaux.searchOperators.fetch({ field: 'maitreOuvrage', search }),
+    (search: string, signal: AbortSignal) => trpcUtils.client.reseaux.searchOperators.query({ field: 'maitreOuvrage', search }, { signal }),
     [trpcUtils]
   );
 

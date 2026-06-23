@@ -51,6 +51,10 @@ export function useDebouncedSwitchMap<TInput, TOutput>({
     abortControllerRef.current = null;
     // Reset last input so the same value can trigger a new run after cancel
     lastInputRef.current = null;
+    // An aborted in-flight request never reaches its `finally` (guarded by `signal.aborted`),
+    // so reset the flag here — otherwise the spinner stays stuck after an explicit cancel
+    // (e.g. selecting an option / adding a tag while a fetch is still running).
+    setIsRunning(false);
   }, []);
 
   const run = useCallback(
