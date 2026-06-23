@@ -47,6 +47,8 @@ export function useChoixChauffageQueryParams() {
   const espaceExterieur = isEspaceExterieurCompatible(queryParams.typeLogement, queryParams.espaceExterieur)
     ? queryParams.espaceExterieur
     : null;
+  const modeEauChaudeSanitaire =
+    queryParams.modeEauChaudeSanitaire ?? (queryParams.typeLogement === 'immeuble_chauffage_collectif' ? 'Collectif' : null);
 
   const simulationParams = useMemo(
     () => ({
@@ -54,7 +56,7 @@ export function useChoixChauffageQueryParams() {
       dpe: queryParams.dpe,
       espaceExterieur,
       habitantsMoyen: queryParams.habitantsMoyen,
-      modeEauChaudeSanitaire: queryParams.modeEauChaudeSanitaire,
+      modeEauChaudeSanitaire,
       nbLogements: queryParams.nbLogements,
       surfaceMoyenne: queryParams.surfaceMoyenne,
       typeLogement: queryParams.typeLogement,
@@ -65,7 +67,7 @@ export function useChoixChauffageQueryParams() {
       queryParams.dpe,
       espaceExterieur,
       queryParams.habitantsMoyen,
-      queryParams.modeEauChaudeSanitaire,
+      modeEauChaudeSanitaire,
       queryParams.nbLogements,
       queryParams.surfaceMoyenne,
       queryParams.typeLogement,

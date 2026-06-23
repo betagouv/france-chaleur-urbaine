@@ -125,6 +125,7 @@ function HeatNetworkRecommendedSolutionCard({
       reseauxDeChaleur: {
         show: true,
       },
+      zonesDeDeveloppementPrioritaire: true,
     }),
     [heatNetwork?.id]
   );

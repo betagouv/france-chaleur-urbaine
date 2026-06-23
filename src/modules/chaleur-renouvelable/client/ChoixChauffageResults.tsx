@@ -85,7 +85,7 @@ export default function ChoixChauffageResults() {
             coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
             dpeFrom={params.dpe}
             geoAddress={geoAddress}
-            isOpen={openAccordionId === recommended.label}
+            isOpen={openAccordionId === undefined || openAccordionId === recommended.label}
             onOpenChange={(expanded) => {
               if (expanded) {
                 trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: recommended.label });
@@ -99,7 +99,7 @@ export default function ChoixChauffageResults() {
             coutParAnGaz={coutParAnGaz}
             coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
             dpeFrom={params.dpe}
-            openAccordionId={openAccordionId}
+            openAccordionId={openAccordionId ?? null}
             situation={situation}
             typeLogement={effectiveTypeLogement}
             onEditParamsClick={handleEditHotWaterParamsClick}

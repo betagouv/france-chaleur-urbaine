@@ -157,7 +157,7 @@ export function ParamsForm({
           </>
         ) : (
           <>
-            <div>
+            <div className="uppercase font-bold">
               <span className="fr-icon-map-pin-2-line mr-3" />
               {draft.adresse}
             </div>

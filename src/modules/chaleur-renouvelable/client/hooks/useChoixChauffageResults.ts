@@ -37,8 +37,7 @@ export function useChoixChauffageResults() {
   } = useAddressEligibility(params.adresse ?? null, params.constructionId);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
-  const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
-
+  const [openAccordionId, setOpenAccordionId] = useState<string | null>();
   const contactForm = useContactFormFCU();
 
   const situation = useMemo(

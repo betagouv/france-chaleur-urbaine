@@ -17,7 +17,8 @@ export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolut
               <strong className="whitespace-nowrap text-error">{row.label}</strong>
               <span>{row.reason}</span>
               <span className="w-fit justify-self-start whitespace-nowrap text-blue md:justify-self-end">
-                <span className="fr-icon-stack-line font-bold" aria-hidden="true" /> {row.source}
+                <span className="fr-icon-stack-line mr-1 font-bold" aria-hidden="true" />
+                <strong>sources :</strong> {row.source}
               </span>
             </li>
           ))}

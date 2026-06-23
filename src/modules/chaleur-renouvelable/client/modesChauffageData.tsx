@@ -127,7 +127,7 @@ export const modesDeChauffage = {
         'Investissement initial important',
         'Travaux importants dans les parties extérieures collectives pour le forage dans le sol',
       ],
-      label: 'Pompe à chaleur géothermique',
+      label: 'PAC géothermique',
       pertinence: 3,
       prerequis: (situation) => [
         {
@@ -185,7 +185,7 @@ export const modesDeChauffage = {
           ? [
               {
                 label: 'Votre bâtiment est situé dans une zone de protection de l’atmosphère',
-                source: 'France Chaleur Urbaine',
+                source: 'CEREMA',
                 status: 'contraignant' as const,
               },
             ]
@@ -226,7 +226,7 @@ export const modesDeChauffage = {
         },
       ],
       inconvenients: ['Étude acoustique nécessaire', 'Impact esthétique des modules extérieurs'],
-      label: 'Pompe à chaleur air-eau collective',
+      label: 'PAC air-eau collective',
       pertinence: 2,
       prerequis: (situation) => [
         {
@@ -354,7 +354,7 @@ export const modesDeChauffage = {
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
       inconvenients: ['Nuisances sonores', 'Étude acoustique nécessaire', "Impact esthétique de l'unité extérieure"],
-      label: 'Pompe à chaleur air-eau collective',
+      label: 'PAC air-eau collective',
       pertinence: 2,
       prerequis: (situation) => [
         { label: "Système d'eau chaude sanitaire collectif", source: 'Formulaire', status: 'favorable' },
@@ -434,7 +434,7 @@ export const modesDeChauffage = {
         },
       ],
       inconvenients: ['Nuisance sonore', 'Impact esthétique des modules extérieurs', "Travaux de changement de système dans l'appartement"],
-      label: 'Pompe à chaleur air-eau individuelle',
+      label: 'PAC air-eau individuelle',
       pertinence: 3,
       prerequis: (situation) => [
         {
@@ -482,7 +482,7 @@ export const modesDeChauffage = {
         'Impact esthétique des modules extérieurs',
         "N'assure pas la production d'eau chaude sanitaire",
       ],
-      label: 'Pompe à chaleur air-air individuelle',
+      label: 'PAC air-air individuelle',
       pertinence: 1,
       prerequis: (situation) => [
         {
@@ -596,7 +596,7 @@ export const modesDeChauffage = {
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
       inconvenients: ['Nuisances sonores', 'Étude acoustique nécessaire', "Impact esthétique de l'unité extérieure"],
-      label: 'Pompe à chaleur air-eau collective',
+      label: 'PAC air-eau collective',
       pertinence: 2,
       prerequis: (situation) => [
         { label: "Système d'eau chaude sanitaire collectif", source: 'Formulaire', status: 'favorable' },
@@ -662,7 +662,7 @@ export const modesDeChauffage = {
         },
       ],
       inconvenients: ['Investissement initial important', 'Travaux d’installation conséquents'],
-      label: 'Pompe à chaleur géothermique',
+      label: 'PAC géothermique',
       pertinence: 3,
       prerequis: (situation) => [
         {
@@ -749,7 +749,7 @@ export const modesDeChauffage = {
         },
       ],
       inconvenients: ['Nuisances sonores (unité extérieure)', 'Impact esthétique des modules extérieurs'],
-      label: 'Pompe à chaleur air-eau individuelle',
+      label: 'PAC air-eau individuelle',
       pertinence: 2,
       prerequis: (situation) => [
         {
@@ -828,7 +828,7 @@ export const modesDeChauffage = {
         'Impact esthétique des modules extérieurs',
         "N'assure pas la production d'eau chaude sanitaire",
       ],
-      label: 'Pompe à chaleur air-air individuelle',
+      label: 'PAC air-air individuelle',
       pertinence: 1,
       prerequis: (situation) => [
         {

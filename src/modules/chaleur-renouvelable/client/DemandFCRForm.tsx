@@ -105,7 +105,7 @@ function ContactRecipientSelector({
 }) {
   return (
     <div className="mb-4">
-      <p className="mb-4 text-lg">Où en êtes-vous avec le réseau de chaleur ?</p>
+      <p className="mb-4 text-lg font-bold">Où en êtes-vous avec le réseau de chaleur ?</p>
 
       <div className="grid gap-4 md:grid-cols-2">
         {contactRecipients.map((recipient) => {

@@ -133,13 +133,13 @@ export const espaceExterieurOptionsByTypeLogement = {
     { label: 'Aucun espace commun disponible', value: 'none' },
   ],
   immeuble_chauffage_individuel: [
-    { label: 'Espaces extérieurs privatifs disponibles (cour, jardin...)', value: 'private' },
+    { label: 'Espaces extérieurs privatifs disponibles (balcons, terrasse...)', value: 'private' },
     { label: 'Aucun espace privatif disponible', value: 'none' },
   ],
   maison_individuelle: [
-    { label: 'Terrasse / balcon', value: 'terrasseBalcon' },
-    { label: 'Jardin / cours', value: 'jardinCours' },
-    { label: 'Terrasse / balcon ET jardin / cours', value: 'terrasseBalconEtJardinCours' },
+    { label: 'Terrasse / Balcon', value: 'terrasseBalcon' },
+    { label: 'Jardin / Cours', value: 'jardinCours' },
+    { label: 'Terrasse / Balcon ET Jardin / Cours', value: 'terrasseBalconEtJardinCours' },
     { label: 'Aucun espace extérieur disponible', value: 'none' },
   ],
 } satisfies Record<
