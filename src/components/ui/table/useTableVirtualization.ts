@@ -21,7 +21,7 @@ export function useTableVirtualization<T>({
       typeof window !== 'undefined' && navigator.userAgent.indexOf('Firefox') === -1
         ? (element) => element?.getBoundingClientRect().height
         : undefined,
-    overscan: 20, // The number of items to render above and below the visible area
+    overscan: 8, // The number of items to render above and below the visible area
   });
 
   // Sync virtualizer to external ref if provided

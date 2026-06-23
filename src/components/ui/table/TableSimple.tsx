@@ -172,10 +172,11 @@ const cellCustomClasses = cva('', {
 
 type TableRowProps<T> = {
   row: Row<T>;
-  virtualRow: { index: number; start: number };
+  virtualIndex: number;
+  virtualStart: number;
   gridTemplateColumns: string;
   rowIdKey: keyof T;
-  rowSelection?: RowSelectionState;
+  isSelected?: boolean;
   padding: 'sm' | 'md' | 'lg';
   onRowClick?: (rowId: any) => void;
   onRowDoubleClick?: (rowId: any) => void;
@@ -183,12 +184,15 @@ type TableRowProps<T> = {
   columnClassName: (columnDef: ColumnDef<T>) => string;
 };
 
-const TableRow = <T extends RowData>({
+// Memoized: with stable, primitive props (no `rowSelection` object), a selection change only
+// re-renders the two affected rows, and scroll-convergence passes skip unchanged rows.
+const TableRowInner = <T extends RowData>({
   row,
-  virtualRow,
+  virtualIndex,
+  virtualStart,
   gridTemplateColumns,
   rowIdKey,
-  rowSelection,
+  isSelected,
   padding,
   onRowClick,
   onRowDoubleClick,
@@ -196,20 +200,19 @@ const TableRow = <T extends RowData>({
   columnClassName,
 }: TableRowProps<T>) => {
   const canSelectRow = onRowClick || onRowDoubleClick;
-  const isSelected = rowSelection?.[(row.original as any)[rowIdKey]];
   return (
     <tr
-      data-index={virtualRow.index}
+      data-index={virtualIndex}
       ref={measureElement}
       className={cx(
         'grid absolute w-full',
         canSelectRow && 'cursor-pointer transition-colors duration-100',
         !isSelected && 'hover:bg-gray-200!',
-        isSelected ? 'bg-[#e1f1f5]! hover:bg-[#d2eaf1]!' : virtualRow.index % 2 === 0 ? 'bg-white!' : 'bg-stripe!'
+        isSelected ? 'bg-[#e1f1f5]! hover:bg-[#d2eaf1]!' : virtualIndex % 2 === 0 ? 'bg-white!' : 'bg-stripe!'
       )}
       style={{
         gridTemplateColumns,
-        transform: `translateY(${virtualRow.start}px)`,
+        transform: `translateY(${virtualStart}px)`,
       }}
       onClick={
         onRowClick
@@ -278,6 +281,9 @@ const TableRow = <T extends RowData>({
     </tr>
   );
 };
+
+// `as typeof TableRowInner` keeps the generic signature through React.memo.
+const TableRow = React.memo(TableRowInner) as typeof TableRowInner;
 
 type TableTHProps<T> = {
   header: Header<T, unknown>;
@@ -718,6 +724,10 @@ const TableSimple = <T extends RowData>({
     virtualizerRef,
   });
 
+  // Stable ref callback: a new function each render would re-trigger the row's measurement and
+  // break TableRow's memoization.
+  const measureRow = React.useCallback((node: Element | null) => rowVirtualizer.measureElement(node), [rowVirtualizer]);
+
   // Imperative scroll-to-row by id: resolves the index in the current sorted/filtered row model
   // (what the virtualizer indexes), so callers don't have to mirror the table's ordering.
   React.useEffect(() => {
@@ -951,14 +961,15 @@ const TableSimple = <T extends RowData>({
                     <TableRow
                       key={`${row.id}${enableRowSelection ? `-${row?.getIsSelected?.()}` : ''}`}
                       row={row}
-                      virtualRow={virtualRow}
+                      virtualIndex={virtualRow.index}
+                      virtualStart={virtualRow.start}
                       gridTemplateColumns={gridTemplateColumns}
                       rowIdKey={rowIdKey}
-                      rowSelection={rowSelection}
+                      isSelected={!!rowSelection?.[(row.original as any)[rowIdKey]]}
                       padding={padding}
                       onRowClick={onRowClick}
                       onRowDoubleClick={onRowDoubleClick}
-                      measureElement={(node) => rowVirtualizer.measureElement(node)}
+                      measureElement={measureRow}
                       columnClassName={columnClassName}
                     />
                   );

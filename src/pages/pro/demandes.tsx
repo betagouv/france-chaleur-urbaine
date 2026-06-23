@@ -2,7 +2,7 @@ import type { ColumnFiltersState } from '@tanstack/react-table';
 import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import DemandEmailModal from '@/components/Manager/DemandEmailModal';
@@ -279,24 +279,37 @@ function DemandesNew(): React.ReactElement {
 
   const { data: demands = [], isLoading } = trpc.demands.gestionnaire.list.useQuery();
 
-  const demandsMapData = useMemo(() => {
-    return filteredDemands.map(
-      (demand) =>
-        ({
-          address: demand.Adresse,
-          id: demand.id,
-          latitude: demand.Latitude ?? 0,
-          longitude: demand.Longitude ?? 0,
-          modeDeChauffage:
-            getModeDeChauffageDisplay({
-              modeDeChauffage: demand['Mode de chauffage'],
-              typeDeChauffage: demand['Type de chauffage'],
-            }) ?? undefined,
-          selected: demand.id === selectedDemandId,
-          typeDeLogement: demand.Structure,
-        }) satisfies AdresseEligible
-    );
-  }, [filteredDemands, selectedDemandId]);
+  // Signature des seuls champs utilisés par la carte : évite de reconstruire la FeatureCollection
+  // (et donc le setData MapLibre) lors d'une édition de contenu (commentaire, nombres…).
+  const mapDataKey = useMemo(
+    () =>
+      filteredDemands
+        .map(
+          (demand) =>
+            `${demand.id}:${demand.Latitude}:${demand.Longitude}:${demand.Structure}:${demand['Mode de chauffage']}:${demand['Type de chauffage']}:${demand.Adresse}`
+        )
+        .join('|'),
+    [filteredDemands]
+  );
+  const demandsMapData = useMemo(
+    () =>
+      filteredDemands.map(
+        (demand) =>
+          ({
+            address: demand.Adresse,
+            id: demand.id,
+            latitude: demand.Latitude ?? 0,
+            longitude: demand.Longitude ?? 0,
+            modeDeChauffage:
+              getModeDeChauffageDisplay({
+                modeDeChauffage: demand['Mode de chauffage'],
+                typeDeChauffage: demand['Type de chauffage'],
+              }) ?? undefined,
+            typeDeLogement: demand.Structure,
+          }) satisfies AdresseEligible
+      ),
+    [mapDataKey]
+  );
 
   const utils = trpc.useUtils();
   const { mutateAsync: updateDemandMutation } = trpc.demands.gestionnaire.update.useMutation();
@@ -556,6 +569,8 @@ function DemandesNew(): React.ReactElement {
     [updateDemand, currentUserId, handleEmailClick]
   );
 
+  const scrollToRowRef = useRef<((rowId: string) => void) | null>(null);
+
   const onTableRowClick = useCallback(
     (demandId: string) => {
       setSelectedDemandId(demandId);
@@ -570,6 +585,12 @@ function DemandesNew(): React.ReactElement {
     },
     [demands]
   );
+
+  // Clic sur un pin de la carte : sélectionne la demande et la fait défiler dans le tableau
+  const onMarkerSelect = useCallback((demandId: string) => {
+    setSelectedDemandId(demandId);
+    scrollToRowRef.current?.(demandId);
+  }, []);
 
   const buildSheetData = useCallback(
     () => [
@@ -645,6 +666,7 @@ function DemandesNew(): React.ReactElement {
               onRowClick={onTableRowClick}
               loadingEmptyMessage="Vous n'avez pas encore reçu de demandes"
               height="calc(100dvh - 140px)"
+              scrollToRowRef={scrollToRowRef}
             />
           </ResizablePanel>
           <ResizableSeparator />
@@ -661,7 +683,12 @@ function DemandesNew(): React.ReactElement {
                     zonesDeDeveloppementPrioritaire: true,
                   })}
                 >
-                  <AdressesEligiblesLayer adresses={demandsMapData} flyToLocation={mapCenterLocation} />
+                  <AdressesEligiblesLayer
+                    adresses={demandsMapData}
+                    flyToLocation={mapCenterLocation}
+                    selectedId={selectedDemandId}
+                    onSelect={onMarkerSelect}
+                  />
                 </Map>
               ) : isLoading ? (
                 <div className="absolute inset-0 flex justify-center items-center animate-pulse">

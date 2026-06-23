@@ -166,45 +166,51 @@ function DemandesAdmin(): React.ReactElement {
   const { data: demandsData, isLoading } = trpc.demands.admin.list.useQuery();
   const demands = demandsData?.items ?? [];
 
-  // Only reset selection if the filteredDemands array has changed in content, not just selectedDemandId.
-  // Use usePrevious to keep track of the previous filteredDemands for comparison.
-  const prevFilteredDemands = usePrevious(filteredDemands);
+  // Réinitialise la sélection quand l'ensemble des demandes affichées change (filtres/recherche),
+  // mais pas lors d'une simple édition de ligne, d'un tri ou d'un changement de sélection.
+  // On compare une signature d'appartenance (les ids visibles) en O(n) plutôt que par deep-compare.
+  const filteredIds = useMemo(() => new Set(filteredDemands.map((demand) => demand.id)), [filteredDemands]);
+  const prevFilteredIds = usePrevious(filteredIds);
 
   useEffect(() => {
-    if (!prevFilteredDemands) return;
-
-    const hasOtherDemandChanged = filteredDemands.some((currDemand) => {
-      if (currDemand.id === selectedDemandId) return false; // ignore selected
-      const prevDemand = prevFilteredDemands.find((d) => d.id === currDemand.id);
-      if (!prevDemand) return true; // new item appeared
-      return JSON.stringify(currDemand) !== JSON.stringify(prevDemand); // changed content
-    });
-
-    const demandsLengthChanged = filteredDemands.length !== prevFilteredDemands.length;
-
-    if (demandsLengthChanged || hasOtherDemandChanged) {
+    if (!prevFilteredIds) return;
+    const setChanged = prevFilteredIds.size !== filteredIds.size || [...filteredIds].some((id) => !prevFilteredIds.has(id));
+    if (setChanged) {
       setSelectedDemandId(null);
     }
-  }, [filteredDemands, prevFilteredDemands, selectedDemandId]);
+  }, [filteredIds, prevFilteredIds]);
 
-  const filteredDemandsMapData = useMemo(() => {
-    return filteredDemands.map(
-      (demand) =>
-        ({
-          address: demand.Adresse,
-          id: demand.id,
-          latitude: demand.Latitude ?? 0,
-          longitude: demand.Longitude ?? 0,
-          modeDeChauffage:
-            getModeDeChauffageDisplay({
-              modeDeChauffage: demand['Mode de chauffage'],
-              typeDeChauffage: demand['Type de chauffage'],
-            }) ?? undefined,
-          selected: demand.id === selectedDemandId,
-          typeDeLogement: demand.Structure,
-        }) satisfies AdresseEligible
-    );
-  }, [filteredDemands, selectedDemandId]);
+  // Signature des seuls champs utilisés par la carte : évite de reconstruire la FeatureCollection
+  // (et donc le setData MapLibre) lors d'une édition de contenu (commentaire, nombres…).
+  const mapDataKey = useMemo(
+    () =>
+      filteredDemands
+        .map(
+          (demand) =>
+            `${demand.id}:${demand.Latitude}:${demand.Longitude}:${demand.Structure}:${demand['Mode de chauffage']}:${demand['Type de chauffage']}:${demand.Adresse}`
+        )
+        .join('|'),
+    [filteredDemands]
+  );
+  const filteredDemandsMapData = useMemo(
+    () =>
+      filteredDemands.map(
+        (demand) =>
+          ({
+            address: demand.Adresse,
+            id: demand.id,
+            latitude: demand.Latitude ?? 0,
+            longitude: demand.Longitude ?? 0,
+            modeDeChauffage:
+              getModeDeChauffageDisplay({
+                modeDeChauffage: demand['Mode de chauffage'],
+                typeDeChauffage: demand['Type de chauffage'],
+              }) ?? undefined,
+            typeDeLogement: demand.Structure,
+          }) satisfies AdresseEligible
+      ),
+    [mapDataKey]
+  );
 
   const utils = trpc.useUtils();
   const { mutateAsync: updateDemandMutation } = trpc.demands.admin.update.useMutation();
@@ -662,7 +668,12 @@ function DemandesAdmin(): React.ReactElement {
                     zonesDeDeveloppementPrioritaire: true,
                   })}
                 >
-                  <AdressesEligiblesLayer adresses={filteredDemandsMapData} flyToLocation={mapCenterLocation} onSelect={onMarkerSelect} />
+                  <AdressesEligiblesLayer
+                    adresses={filteredDemandsMapData}
+                    flyToLocation={mapCenterLocation}
+                    selectedId={selectedDemandId}
+                    onSelect={onMarkerSelect}
+                  />
                 </Map>
               ) : isLoading ? (
                 <div className="absolute inset-0 flex justify-center items-center animate-pulse">

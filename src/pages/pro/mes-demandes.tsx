@@ -100,11 +100,10 @@ function MesDemandesPage(): React.ReactElement {
                 modeDeChauffage: demand['Mode de chauffage'],
                 typeDeChauffage: demand['Type de chauffage'],
               }) ?? undefined,
-            selected: demand.id === selectedDemandId,
             typeDeLogement: demand.Structure,
           }) satisfies AdresseEligible
       );
-  }, [demands, selectedDemandId]);
+  }, [demands]);
 
   // Status est en lecture seule sur cette page (disabled=true) — noop suffit
   const updateDemand = useCallback(async () => {}, []);
@@ -357,7 +356,12 @@ function MesDemandesPage(): React.ReactElement {
                   zonesDeDeveloppementPrioritaire: true,
                 })}
               >
-                <AdressesEligiblesLayer adresses={demandsMapData} flyToLocation={mapCenterLocation} onSelect={onMarkerSelect} />
+                <AdressesEligiblesLayer
+                  adresses={demandsMapData}
+                  flyToLocation={mapCenterLocation}
+                  selectedId={selectedDemandId}
+                  onSelect={onMarkerSelect}
+                />
               </Map>
             ) : isLoading ? (
               <div className="absolute inset-0 flex justify-center items-center animate-pulse">
