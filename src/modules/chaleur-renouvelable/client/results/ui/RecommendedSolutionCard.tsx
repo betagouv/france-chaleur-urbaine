@@ -158,7 +158,7 @@ function HeatNetworkRecommendedSolutionCard({
       </p>
       <div className="grid-1 grid gap-6 md:grid-cols-3">
         {geoAddress && (
-          <div className="h-full overflow-hidden border border-solid border-border-default-grey">
+          <div className="h-full overflow-hidden">
             <Map config={mapConfiguration} initialView={{ center: geoAddress.geometry.coordinates, zoom: 15 }} legend={false} search="none">
               <MapMarker longitude={geoAddress.geometry.coordinates[0]} latitude={geoAddress.geometry.coordinates[1]} />
             </Map>
@@ -181,7 +181,7 @@ function HeatNetworkRecommendedSolutionCard({
           onClick={() => onOpenChange(!isOpen)}
           aria-expanded={isOpen}
         >
-          {isOpen ? 'Lire moins −' : 'Lire plus +'}
+          {isOpen ? 'Fermer −' : 'Lire plus +'}
         </button>
       </div>
       {isOpen && (

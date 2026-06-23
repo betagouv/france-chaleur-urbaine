@@ -917,13 +917,25 @@ export function getModesDeChauffage(typeLogement: TypeLogement, situation: Situa
 }
 
 export function getIncompatibleSolutionRows(situation: Situation, typeLogement: TypeLogement): IncompatibleSolutionRow[] {
-  return modesDeChauffage[typeLogement].flatMap((heatingMode) =>
+  const rowsByLabel = new Map<string, IncompatibleSolutionRow>();
+
+  modesDeChauffage[typeLogement].forEach((heatingMode) => {
     (heatingMode.incompatibilites ?? [])
       .filter((incompatibilite) => incompatibilite.isIncompatible(situation))
-      .map(({ reason, source }) => ({
-        label: heatingMode.label,
-        reason,
-        source,
-      }))
-  );
+      .forEach(({ reason, source }) => {
+        const existingRow = rowsByLabel.get(heatingMode.label);
+
+        if (existingRow) {
+          existingRow.reasons.push({ reason, source });
+          return;
+        }
+
+        rowsByLabel.set(heatingMode.label, {
+          label: heatingMode.label,
+          reasons: [{ reason, source }],
+        });
+      });
+  });
+
+  return [...rowsByLabel.values()];
 }
