@@ -47,6 +47,35 @@ type EventRenderer<T extends EventType> = (
 ) => ReactNode;
 
 export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
+  api_demand_updated: (event, updateFilters) => {
+    const changes = [
+      event.data.statut ? `statut → ${event.data.statut}` : null,
+      event.data.commentaire !== undefined ? 'commentaire' : null,
+    ].filter(Boolean);
+    return (
+      <>
+        <span>L'organisation </span>
+        <FilterButton onClick={() => updateFilters({ organizationId: event.data.organization_id })}>
+          {event.data.organization_name}
+        </FilterButton>
+        <span> a mis à jour une </span>
+        <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+        <span> via l'API{changes.length > 0 ? ` (${changes.join(', ')})` : ''}</span>
+      </>
+    );
+  },
+  api_demands_listed: (event, updateFilters) => (
+    <>
+      <span>L'organisation </span>
+      <FilterButton onClick={() => updateFilters({ organizationId: event.data.organization_id })}>
+        {event.data.organization_name}
+      </FilterButton>
+      <span>
+        {' '}
+        a récupéré {event.data.count} demande(s) via l'API <strong>{event.data.version}</strong>
+      </span>
+    </>
+  ),
   build_tiles: (event) => (
     <span>
       a reconstruit les tuiles <strong>{event.data.name}</strong>
@@ -244,6 +273,21 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
         {event.data.network_id}
       </FilterButton>
     </>
+  ),
+  organization_created: (event) => (
+    <span>
+      a créé l'organisation <strong>{event.data.name}</strong>
+    </span>
+  ),
+  organization_deleted: (event) => (
+    <span>
+      a supprimé l'organisation <strong>{event.data.name}</strong>
+    </span>
+  ),
+  organization_updated: (event) => (
+    <span>
+      a mis à jour l'organisation <strong>{event.data.name}</strong>
+    </span>
   ),
   pdp_updated: (event, updateFilters) => (
     <>

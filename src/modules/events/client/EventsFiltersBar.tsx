@@ -13,9 +13,11 @@ type EventsFiltersBarProps = {
   authorIds: string[];
   contextType: string | null;
   contextId: string | null;
+  organizationId: string | null;
   onTypesChange: (types: string[]) => void;
   onAuthorsChange: (ids: string[]) => void;
   onClearContext: () => void;
+  onClearOrganization: () => void;
 };
 
 const typeOptions = eventTypes.map((t) => ({ key: t, label: eventTypeLabels[t] }));
@@ -29,11 +31,15 @@ export function EventsFiltersBar({
   authorIds,
   contextType,
   contextId,
+  organizationId,
   onTypesChange,
   onAuthorsChange,
   onClearContext,
+  onClearOrganization,
 }: EventsFiltersBarProps) {
   const utils = trpc.useUtils();
+
+  const { data: organization } = trpc.organizations.admin.get.useQuery({ id: organizationId ?? '' }, { enabled: !!organizationId });
 
   const { data: fetchedAuthors, isLoading: isLoadingAuthors } = trpc.events.admin.getAuthorsByIds.useQuery(
     { ids: authorIds },
@@ -93,18 +99,32 @@ export function EventsFiltersBar({
         </div>
       </div>
 
-      {hasContextFilter && (
+      {(hasContextFilter || organizationId) && (
         <div className="flex items-center gap-2 flex-wrap">
-          <Tag
-            dismissible
-            small
-            nativeButtonProps={{
-              onClick: onClearContext,
-              title: 'Supprimer le filtre de contexte',
-            }}
-          >
-            {`${contextType}:${contextId}`}
-          </Tag>
+          {hasContextFilter && (
+            <Tag
+              dismissible
+              small
+              nativeButtonProps={{
+                onClick: onClearContext,
+                title: 'Supprimer le filtre de contexte',
+              }}
+            >
+              {`${contextType}:${contextId}`}
+            </Tag>
+          )}
+          {organizationId && (
+            <Tag
+              dismissible
+              small
+              nativeButtonProps={{
+                onClick: onClearOrganization,
+                title: "Supprimer le filtre d'organisation",
+              }}
+            >
+              {`Organisation : ${organization?.name ?? organizationId}`}
+            </Tag>
+          )}
         </div>
       )}
     </div>

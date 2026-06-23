@@ -14,6 +14,7 @@ import Notice from '@/components/ui/Notice';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tag from '@/components/ui/Tag';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
+import { useDialogState } from '@/hooks/useDialogState';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { FileDropHandler } from '@/modules/map/client/interactions/FileDropHandler';
 import { MapFitBounds } from '@/modules/map/client/interactions/MapFitBounds';
@@ -76,7 +77,7 @@ const GestionDesReseaux = () => {
   >(null);
   const [editingId, setEditingId] = useState<string | number | null>(null);
   const [updatedGeom, setUpdatedGeom] = useState<any>(null);
-  const [networkToDelete, setNetworkToDelete] = useState<NetworkToDelete | null>(null);
+  const deleteNetworkDialog = useDialogState<NetworkToDelete>();
   const [isPollingJobs, setIsPollingJobs] = useState(true);
 
   const {
@@ -330,19 +331,17 @@ const GestionDesReseaux = () => {
     [selectedNetwork, deleteGeomUpdate, selectedTab]
   );
 
-  const handleDeleteNetwork = useCallback((id: number, type: NetworkToDelete['type'], name: string) => {
-    setNetworkToDelete({ id, name, type });
-  }, []);
+  const handleDeleteNetwork = useCallback(
+    (id: number, type: NetworkToDelete['type'], name: string) => deleteNetworkDialog.open({ id, name, type }),
+    [deleteNetworkDialog.open]
+  );
 
+  // Le toast d'erreur + la fermeture sur succès sont gérés par ConfirmDialog (via DeleteNetworkDialog).
   const handleConfirmDeleteNetwork = useCallback(
-    toastErrors(async () => {
-      if (!networkToDelete) {
-        return;
-      }
-      await deleteNetwork({ id: networkToDelete.id, type: networkToDelete.type });
-      setNetworkToDelete(null);
-    }),
-    [networkToDelete, deleteNetwork]
+    async (network: NetworkToDelete) => {
+      await deleteNetwork({ id: network.id, type: network.type });
+    },
+    [deleteNetwork]
   );
 
   const handleAddNewNetwork = useCallback(() => {
@@ -1452,7 +1451,7 @@ const GestionDesReseaux = () => {
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
-      <DeleteNetworkDialog network={networkToDelete} onClose={() => setNetworkToDelete(null)} onConfirm={handleConfirmDeleteNetwork} />
+      <DeleteNetworkDialog control={deleteNetworkDialog} onConfirm={handleConfirmDeleteNetwork} />
     </SimplePage>
   );
 };

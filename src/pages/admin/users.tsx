@@ -39,6 +39,7 @@ const permissionTypePluralLabels: Record<PermissionType, string> = {
   epci: 'EPCI',
   ept: 'EPT',
   national: 'National',
+  organization: 'Organisations',
   region: 'Régions',
   reseau_de_chaleur: 'Réseaux existants',
   reseau_en_construction: 'Réseaux en construction',
@@ -192,7 +193,7 @@ export default function ManageUsers() {
           <div>
             <div>
               {info.getValue<string>()}
-              {!!info.row.original.from_api && <Badge type="api_user" className="mt-1" />}
+              {!!info.row.original.from_organization_id && <Badge type="api_user" className="mt-1" />}
             </div>
             {(info.row.original.first_name || info.row.original.last_name) && (
               <div className="text-sm text-faded font-bold">
@@ -275,6 +276,15 @@ export default function ManageUsers() {
         cellType: 'Date',
         filterType: 'Range',
         header: 'Créé le',
+      },
+      {
+        accessorFn: (row) => !!row.from_organization_id,
+        cellType: 'Boolean',
+        filtersDialogLabel: 'Créé via API',
+        filterType: 'Facets',
+        header: 'Créé via API',
+        id: 'from_organization_id',
+        visible: false,
       },
       {
         align: 'right',
@@ -410,6 +420,7 @@ export default function ManageUsers() {
           columnFilters={initialColumnFilters}
           onFilterChange={onFilterChange}
           enableGlobalFilter
+          enableFiltersDialog
           export={{
             fileName: 'utilisateurs.xlsx',
             sheetName: 'utilisateurs',

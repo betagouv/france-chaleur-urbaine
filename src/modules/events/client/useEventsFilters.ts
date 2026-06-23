@@ -11,6 +11,7 @@ const parsers = {
   dateFrom: parseAsString,
   dateTo: parseAsString,
   granularity: parseAsStringLiteral(eventGranularities).withDefault('day'),
+  organizationId: parseAsString,
   preset: parseAsStringLiteral(eventPeriodPresets).withDefault('1m'),
   types: parseAsArrayOf(parseAsString).withDefault([]),
 };
@@ -49,9 +50,10 @@ export function useEventsFilters() {
       contextType: filters.contextType && filters.contextId ? filters.contextType : undefined,
       dateFrom: computedDateRange.from,
       dateTo: computedDateRange.to,
+      organizationId: filters.organizationId ?? undefined,
       types: filters.types.length > 0 ? (filters.types as EventType[]) : undefined,
     }),
-    [computedDateRange, filters.types, filters.authorIds, filters.contextType, filters.contextId]
+    [computedDateRange, filters.types, filters.authorIds, filters.contextType, filters.contextId, filters.organizationId]
   );
 
   const statsInput = useMemo(

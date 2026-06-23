@@ -1,6 +1,6 @@
 # Data Diagnostic Module
 
-> Admin-only data quality report. Detects inconsistencies in users, permissions and demands.
+> Admin-only data quality report. Detects inconsistencies in users, permissions, demands and organisations (network/gestionnaire-pattern curation).
 
 ## Structure
 
@@ -60,6 +60,9 @@ Warnings (suspicious):
 - `demand.missing_coordinates` — `legacy_values.Latitude`/`Longitude` null
 - `demand.unvalidated_old` — `validated=false` for > 30 days
 - `demand.pending_assignment_stale` — `pending_assignment_change` open > 14 days
+- `organization.without_networks` — organization with no heat/cold/under-construction network attached
+- `user.national_candidate_unmigrated` — active account with ≥ 50 network permissions and no organization (migrate to org scope)
+- `network.gestionnaire_split_across_organizations` — one `Gestionnaire` value mapped to several organizations
 
 ## Adding a new check
 

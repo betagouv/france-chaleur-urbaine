@@ -144,3 +144,26 @@ export const removeNetworkPermissionFromAllUsers = async (type: NetworkType, res
     })
   );
 };
+
+// ─── Organization deletion cleanup ─────────────────────────────────────────────
+
+/**
+ * Retire la permission `organization` ciblant une organisation donnée chez tous les users la détenant.
+ * `user_permissions.resource_id` n'a pas de FK vers `organizations` → à appeler avant de supprimer l'org,
+ * sinon des permissions orphelines (pointant un id mort) subsistent. Miroir de `removeNetworkPermissionFromAllUsers`.
+ */
+export const removeOrganizationPermissionFromAllUsers = async (organizationId: string, authorId: string): Promise<void> => {
+  const users = await kdb
+    .selectFrom('user_permissions')
+    .select('user_id')
+    .where('type', '=', 'organization')
+    .where('resource_id', '=', organizationId)
+    .execute();
+  await Promise.all(
+    users.map(async ({ user_id }) => {
+      const current = await getUserPermissions(user_id);
+      const next = current.filter((p) => !(p.type === 'organization' && p.resource_id === organizationId));
+      await setUserPermissions(user_id, next, authorId);
+    })
+  );
+};

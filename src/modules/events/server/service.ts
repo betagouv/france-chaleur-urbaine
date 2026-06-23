@@ -8,6 +8,7 @@ import type { EventDataMap, EventGranularity, EventType } from '../constants';
 type ListEventsOptions = {
   authorIds?: string[];
   context?: { type: string; id: string };
+  organizationId?: string;
   types?: EventType[];
   dateFrom?: Date;
   dateTo?: Date;
@@ -29,7 +30,7 @@ export type AdminEvent = {
 }[EventType];
 
 export async function listEvents(options: ListEventsOptions) {
-  const { authorIds, context, types, dateFrom, dateTo, limit = 50, offset = 0 } = options;
+  const { authorIds, context, organizationId, types, dateFrom, dateTo, limit = 50, offset = 0 } = options;
 
   let baseQuery = kdb.selectFrom('events');
 
@@ -40,6 +41,9 @@ export async function listEvents(options: ListEventsOptions) {
   }
   if (context) {
     baseQuery = baseQuery.where('context_type', '=', context.type).where('context_id', '=', context.id);
+  }
+  if (organizationId) {
+    baseQuery = baseQuery.where(sql<boolean>`data->>'organization_id' = ${organizationId}`);
   }
   if (types && types.length > 0) {
     baseQuery = baseQuery.where('type', 'in', types);
@@ -84,6 +88,7 @@ type EventStatsOptions = {
   types?: EventType[];
   authorIds?: string[];
   context?: { type: string; id: string };
+  organizationId?: string;
   dateFrom: Date;
   dateTo: Date;
   granularity: EventGranularity;
@@ -96,7 +101,7 @@ export type EventStats = {
 };
 
 export async function getEventStats(options: EventStatsOptions): Promise<EventStats> {
-  const { types, authorIds, context, dateFrom, dateTo, granularity } = options;
+  const { types, authorIds, context, organizationId, dateFrom, dateTo, granularity } = options;
 
   const applyFilters = (query: ReturnType<typeof kdb.selectFrom<'events'>>, from: Date, to: Date) => {
     let q = query.where('created_at', '>=', from).where('created_at', '<=', to);
@@ -110,6 +115,9 @@ export async function getEventStats(options: EventStatsOptions): Promise<EventSt
     }
     if (context) {
       q = q.where('context_type', '=', context.type).where('context_id', '=', context.id);
+    }
+    if (organizationId) {
+      q = q.where(sql<boolean>`data->>'organization_id' = ${organizationId}`);
     }
     return q;
   };

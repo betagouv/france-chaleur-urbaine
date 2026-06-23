@@ -31,6 +31,18 @@ export const useDialog = () => {
   return context;
 };
 
+// À l'ouverture, focus le premier champ de formulaire du contenu (au lieu du bouton « Fermer », 1er focusable par défaut).
+// Aucun champ → on laisse le focus par défaut de Radix. Profite ainsi à tout formulaire placé dans un Dialog.
+const focusFirstField = (event: Event) => {
+  const field = (event.currentTarget as HTMLElement | null)?.querySelector<HTMLElement>(
+    'input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled])'
+  );
+  if (field) {
+    event.preventDefault();
+    field.focus();
+  }
+};
+
 /**
  * Modale de référence — à privilégier face à `Modal` et `ModalSimple` (laissés pour compat).
  * Layout titre + bouton « Fermer » alignés sur la même ligne, animations motion intégrées,
@@ -63,7 +75,7 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
             onDoubleClick={stopPropagation}
           />
         </DialogPrimitive.Overlay>
-        <DialogPrimitive.Content asChild>
+        <DialogPrimitive.Content asChild onOpenAutoFocus={focusFirstField}>
           <motion.div
             className={cx(
               'fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full overflow-auto bg-white p-8 shadow-xl',
