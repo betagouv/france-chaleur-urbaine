@@ -136,11 +136,11 @@ export function ResultsSection({
           </div>
         )}
         {activeTab === 'hotWaterOnly' && activeItems.length === 0 && (
-          <div className="border-l-4 border-blue bg-gray-100 px-4 py-3">
+          <div className="border-l-4 border-blue bg-gray-100 px-5 py-3 mx-5">
             <p className="mb-2 font-bold text-blue">Aucune solution eau chaude seule n’est adaptée à votre situation.</p>
             <button
               type="button"
-              className="font-bold text-blue underline"
+              className="text-blue underline"
               onClick={() => {
                 trackPostHogEvent('fcr_results:ecs_to_full_tab_clicked');
                 setActiveTab('heatingAndHotWater');
@@ -279,15 +279,15 @@ function OtherSolutionLabel({
   return (
     <span className="grid w-full gap-5 p-5 text-left md:grid-cols-[2fr_1fr_auto_auto] md:items-center">
       <span>
-        <span className="mb-3 block font-bold text-blue">{item.label}</span>
+        <span className="mb-3 block text-blue text-lg">{item.label}</span>
         <Stars value={item.pertinence} />
       </span>
       <span className="text-center">
-        <span className="font-bold text-blue">
+        <span className="text-blue text-lg">
           {lowerBoundString} à {upperBoundString}
         </span>
         <br />
-        <span>par an par logement</span>
+        <span className="text-(--text-default-grey)">par an par logement</span>
       </span>
       <GainVsGazBadge item={item} coutParAnGaz={coutParAnGaz} coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly} />
       <DpeProgression from={dpeFrom} to={dpeTo} />
