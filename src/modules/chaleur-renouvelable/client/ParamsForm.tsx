@@ -120,7 +120,7 @@ export function ParamsForm({
   };
 
   return (
-    <form id="params-form" className="border border-[#c8efd7] bg-white p-4" onSubmit={handleSubmit}>
+    <form id="params-form" className="border border-[#c8efd7] bg-white p-4 shadow-sm" onSubmit={handleSubmit}>
       <div className="flex items-start justify-between gap-4">
         {isOpen ? (
           <>

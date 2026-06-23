@@ -14,11 +14,11 @@ export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolut
           {rows.map((row) => (
             <li key={`${row.label}-${row.reason}`} className="grid gap-2 md:grid-cols-[auto_2fr_3fr_auto] md:items-center md:gap-4">
               <PrerequisiteStatusBadge status="defavorable" />
-              <strong className="whitespace-nowrap text-error">{row.label}</strong>
+              <strong className="whitespace-nowrap text-error text-lg">{row.label}</strong>
               <span>{row.reason}</span>
               <span className="w-fit justify-self-start whitespace-nowrap text-blue md:justify-self-end">
                 <span className="fr-icon-stack-line mr-1 font-bold" aria-hidden="true" />
-                <strong>sources :</strong> {row.source}
+                source : {row.source}
               </span>
             </li>
           ))}

@@ -216,7 +216,9 @@ function ProjectStatusSelect({
             </span>
           </button>
 
-          {isOpen && <ProjectStatusOptionList selectedValues={value} onToggleOption={handleToggleOption} />}
+          {isOpen && (
+            <ProjectStatusOptionList selectedValues={value} onClose={() => setIsOpen(false)} onToggleOption={handleToggleOption} />
+          )}
         </div>
       </FieldWrapper>
     </div>
@@ -224,47 +226,51 @@ function ProjectStatusSelect({
 }
 
 function ProjectStatusOptionList({
+  onClose,
   onToggleOption,
   selectedValues,
 }: {
+  onClose: () => void;
   onToggleOption: (optionValue: ProjectStatus) => void;
   selectedValues: ProjectStatus[];
 }) {
   return (
-    <ul
-      className="absolute top-full right-0 left-0 z-50 mt-1 max-h-64 overflow-auto border border-gray-200 bg-white p-0 shadow-lg"
-      role="listbox"
-      aria-multiselectable="true"
-    >
-      {projectStatusOptions.map((option) => {
-        const optionValue = option.nativeInputProps.value;
-        const isSelected = selectedValues.includes(optionValue);
+    <div className="absolute top-full right-0 left-0 z-50 mt-1 border border-gray-200 bg-white shadow-lg">
+      <div className="flex justify-end border-b border-gray-200 px-2 py-1">
+        <button type="button" className="fr-icon-close-line text-sm" aria-label="Fermer la liste" onClick={onClose} />
+      </div>
 
-        return (
-          <li key={optionValue} className="p-0">
-            <button
-              type="button"
-              className={cx('flex w-full cursor-pointer items-start gap-3 px-4 py-2 text-left', isSelected && 'bg-blue-50')}
-              aria-selected={isSelected}
-              role="option"
-              onClick={() => onToggleOption(optionValue)}
-              onMouseDown={(event) => event.preventDefault()}
-            >
-              <span
-                className={cx(
-                  'mt-1 flex h-4 w-4 p-2 shrink-0 items-center justify-center border border-blue',
-                  isSelected && 'bg-blue text-white'
-                )}
-                aria-hidden="true"
+      <ul className="max-h-64 overflow-auto p-0" role="listbox" aria-multiselectable="true">
+        {projectStatusOptions.map((option) => {
+          const optionValue = option.nativeInputProps.value;
+          const isSelected = selectedValues.includes(optionValue);
+
+          return (
+            <li key={optionValue} className="p-0">
+              <button
+                type="button"
+                className={cx('flex w-full cursor-pointer items-start gap-3 px-4 py-2 text-left', isSelected && 'bg-blue-50')}
+                aria-selected={isSelected}
+                role="option"
+                onClick={() => onToggleOption(optionValue)}
+                onMouseDown={(event) => event.preventDefault()}
               >
-                {isSelected && <span className="fr-icon-check-line" />}
-              </span>
-              <span>{option.label}</span>
-            </button>
-          </li>
-        );
-      })}
-    </ul>
+                <span
+                  className={cx(
+                    'mt-1 flex h-4 w-4 p-2 shrink-0 items-center justify-center border border-blue',
+                    isSelected && 'bg-blue text-white'
+                  )}
+                  aria-hidden="true"
+                >
+                  {isSelected && <span className="fr-icon-check-line" />}
+                </span>
+                <span>{option.label}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 
@@ -421,7 +427,6 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
 
   const { Field, Form, Submit, form, useValue } = useForm<typeof zContactFormChaleuRenouvelable>(formOptions);
 
-  const selectedProjectStatus = useValue<ProjectStatus[]>('projectStatus') ?? [];
   const selectedOccupantStatus = useValue<OccupantStatus>('occupantStatus') ?? CONTACT_FORM_DEFAULT_VALUES.occupantStatus;
   const occupantStatusDetailField = getOccupantStatusDetailField(selectedOccupantStatus);
   const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
@@ -560,23 +565,25 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
             <form.Field
               name="projectStatus"
               children={(field) => (
-                <ProjectStatusSelect
-                  value={field.state.value}
-                  onChange={field.handleChange}
-                  isPublicAdvisorSelected={isPublicAdvisorSelected}
-                />
+                <>
+                  <ProjectStatusSelect
+                    value={field.state.value}
+                    onChange={field.handleChange}
+                    isPublicAdvisorSelected={isPublicAdvisorSelected}
+                  />
+
+                  {field.state.value.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {field.state.value.map((status) => (
+                        <span key={status} className="rounded-full bg-[#E3E3FD] px-3 py-1 text-xs font-medium text-blue">
+                          {status}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             />
-
-            {selectedProjectStatus.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {selectedProjectStatus.map((status) => (
-                  <span key={status} className="rounded-full bg-[#E3E3FD] px-3 py-1 text-xs font-medium text-blue">
-                    {status}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
           <Field.Textarea
             name="comments"

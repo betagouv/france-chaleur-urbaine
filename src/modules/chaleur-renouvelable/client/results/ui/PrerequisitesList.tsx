@@ -21,7 +21,7 @@ function PrerequisiteRowItem({ row }: { row: PrerequisiteRow }) {
         {row.source && (
           <span className="text-blue">
             <span className="fr-icon-stack-line mr-1 font-bold" aria-hidden="true" />
-            <strong>sources :</strong> {row.source}
+            source : {row.source}
           </span>
         )}
       </span>
