@@ -1,5 +1,6 @@
 import { sql } from 'kysely';
 
+import { findAttachedNetworksNotMatchingPatterns, findUnattachedNetworksMatchingPatterns } from '@/modules/organizations/server/service';
 import { kdb } from '@/server/db/kysely';
 
 import { MAX_ITEMS_PER_ISSUE } from '../constants';
@@ -530,6 +531,193 @@ const checkDemandPendingAssignmentStale: IssueBuilder = async () => {
   };
 };
 
+/**
+ * Organisations sans aucun réseau rattaché (chaleur / froid / en construction).
+ * Un token API rattaché donnerait alors accès à zéro demande.
+ */
+const checkOrganizationWithoutNetworks: IssueBuilder = async () => {
+  const rows = await kdb
+    .selectFrom('organizations as o')
+    .select((eb) => [
+      'o.id',
+      'o.name',
+      eb
+        .exists(
+          eb
+            .selectFrom('organization_api_credentials as c')
+            .select('c.id')
+            .whereRef('c.organization_id', '=', 'o.id')
+            .where('c.revoked_at', 'is', null)
+        )
+        .as('has_active_credential'),
+    ])
+    .where((eb) =>
+      eb.not(eb.exists(eb.selectFrom('reseaux_de_chaleur as r').select('r.id_fcu').whereRef('r.organization_id', '=', 'o.id')))
+    )
+    .where((eb) => eb.not(eb.exists(eb.selectFrom('reseaux_de_froid as r').select('r.id_fcu').whereRef('r.organization_id', '=', 'o.id'))))
+    .where((eb) =>
+      eb.not(
+        eb.exists(eb.selectFrom('zones_et_reseaux_en_construction as z').select('z.id_fcu').whereRef('z.organization_id', '=', 'o.id'))
+      )
+    )
+    .orderBy('o.name')
+    .execute();
+
+  if (rows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+    context: row.has_active_credential ? 'token API actif — portée vide' : undefined,
+    href: '/admin/organizations',
+    label: row.name,
+  }));
+
+  return {
+    description:
+      'Ces organisations n’ont aucun réseau rattaché. Une éventuelle clé d’API donnerait accès à zéro demande. Rattacher des réseaux depuis l’écran d’administration de l’organisation, ou supprimer l’organisation.',
+    items,
+    severity: 'warning',
+    title: 'Organisation sans réseau rattaché',
+    totalCount,
+    truncated,
+    type: 'organization.without_networks',
+  };
+};
+
+const NATIONAL_CANDIDATE_MIN_NETWORKS = 50;
+
+/**
+ * Comptes actifs portant beaucoup de permissions réseau énumérées et sans organisation : candidats à un
+ * accès national (à migrer vers une portée d'organisation plutôt que N permissions par-utilisateur).
+ */
+const checkNationalCandidateUnmigrated: IssueBuilder = async () => {
+  const rows = await kdb
+    .selectFrom('users as u')
+    .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
+    .select((eb) => ['u.id', 'u.email', 'u.first_name', 'u.last_name', eb.fn.count('up.id').as('network_perms')])
+    .where('u.active', '=', true)
+    .where((eb) =>
+      eb.not(
+        eb.exists(
+          eb.selectFrom('user_permissions as op').select('op.id').whereRef('op.user_id', '=', 'u.id').where('op.type', '=', 'organization')
+        )
+      )
+    )
+    .where('up.type', 'in', ['reseau_de_chaleur', 'reseau_en_construction'])
+    .groupBy(['u.id', 'u.email', 'u.first_name', 'u.last_name'])
+    .having((eb) => eb.fn.count('up.id'), '>=', NATIONAL_CANDIDATE_MIN_NETWORKS)
+    .orderBy((eb) => eb.fn.count('up.id'), 'desc')
+    .execute();
+
+  if (rows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+    context: `${row.network_perms} permissions réseau — ${fullName(row.first_name, row.last_name) ?? 'sans nom'}`,
+    href: userHref(row.id, row.email),
+    label: row.email,
+  }));
+
+  return {
+    description: `Ces comptes actifs portent au moins ${NATIONAL_CANDIDATE_MIN_NETWORKS} permissions réseau énumérées et ne sont rattachés à aucune organisation. Ce sont des candidats à un accès national : créer/rattacher une organisation et remplacer ces permissions par une portée d’organisation.`,
+    items,
+    severity: 'warning',
+    title: 'Candidat à un accès national non rattaché à une organisation',
+    totalCount,
+    truncated,
+    type: 'user.national_candidate_unmigrated',
+  };
+};
+
+/**
+ * Une même valeur de `Gestionnaire` rattachée à plusieurs organisations : incohérence de curation
+ * (un opérateur ne doit correspondre qu'à une organisation).
+ */
+const checkGestionnaireSplitAcrossOrganizations: IssueBuilder = async () => {
+  const rows = await kdb
+    .selectFrom('reseaux_de_chaleur as r')
+    .innerJoin('organizations as o', 'o.id', 'r.organization_id')
+    .select((eb) => [
+      eb.ref('r.Gestionnaire').as('gestionnaire'),
+      eb.fn.count('r.organization_id').distinct().as('org_count'),
+      sql<string[]>`array_agg(distinct o.name)`.as('org_names'),
+    ])
+    .where('r.organization_id', 'is not', null)
+    .where('r.Gestionnaire', 'is not', null)
+    .groupBy('r.Gestionnaire')
+    .having((eb) => eb.fn.count('r.organization_id').distinct(), '>', 1)
+    .execute();
+
+  if (rows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+    context: `${row.org_count} organisations : ${row.org_names.join(', ')}`,
+    href: '/admin/organizations',
+    label: row.gestionnaire ?? '(gestionnaire vide)',
+  }));
+
+  return {
+    description:
+      'Une même valeur de « Gestionnaire » est rattachée à plusieurs organisations différentes. L’affectation réseau → organisation est incohérente : un opérateur ne devrait correspondre qu’à une seule organisation.',
+    items,
+    severity: 'warning',
+    title: 'Gestionnaire rattaché à plusieurs organisations',
+    totalCount,
+    truncated,
+    type: 'network.gestionnaire_split_across_organizations',
+  };
+};
+
+/**
+ * Réseaux de chaleur matchant un motif gestionnaire déclaré par une org mais non rattachés (à rattacher).
+ */
+const checkNetworkMatchingPatternUnattached: IssueBuilder = async () => {
+  const rows = await findUnattachedNetworksMatchingPatterns();
+
+  if (rows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+    context: `devrait être rattaché à ${row.organization_name}${row.gestionnaire ? ` — ${row.gestionnaire}` : ''}`,
+    href: '/admin/organizations',
+    label: row.nom_reseau ?? `Réseau #${row.id_fcu}`,
+  }));
+
+  return {
+    description:
+      'Ces réseaux de chaleur correspondent au motif gestionnaire déclaré par une organisation mais ne lui sont pas rattachés. Les rattacher via le bouton Rafraîchir du dialog Réseaux de cette organisation.',
+    items,
+    severity: 'warning',
+    title: 'Réseau matchant un motif mais non rattaché',
+    totalCount,
+    truncated,
+    type: 'organization.network_matching_pattern_unattached',
+  };
+};
+
+/**
+ * Réseaux rattachés à une org dont le `Gestionnaire` ne matche aucun de ses motifs déclarés (anomalie).
+ */
+const checkNetworkAttachedNotMatchingPattern: IssueBuilder = async () => {
+  const rows = await findAttachedNetworksNotMatchingPatterns();
+
+  if (rows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+    context: `rattaché à ${row.organization_name} — gestionnaire : ${row.gestionnaire ?? '(vide)'}`,
+    href: '/admin/organizations',
+    label: row.nom_reseau ?? `Réseau #${row.id_fcu}`,
+  }));
+
+  return {
+    description:
+      'Ces réseaux sont rattachés à une organisation alors que leur gestionnaire ne correspond à aucun motif déclaré. Rattachement manuel à vérifier, ou motif à ajuster.',
+    items,
+    severity: 'warning',
+    title: 'Réseau rattaché hors motif gestionnaire',
+    totalCount,
+    truncated,
+    type: 'organization.network_attached_not_matching_pattern',
+  };
+};
+
 const formatDate = (value: Date | string | null): string => {
   if (value === null) return '—';
   const date = value instanceof Date ? value : new Date(value);
@@ -549,6 +737,11 @@ const checks: IssueBuilder[] = [
   checkPdpOrphanNetwork,
   checkDemandUnvalidatedOld,
   checkDemandPendingAssignmentStale,
+  checkOrganizationWithoutNetworks,
+  checkNationalCandidateUnmigrated,
+  checkGestionnaireSplitAcrossOrganizations,
+  checkNetworkMatchingPatternUnattached,
+  checkNetworkAttachedNotMatchingPattern,
 ];
 
 const severityWeight = { error: 0, warning: 1 } as const;

@@ -27,6 +27,7 @@ const baseDemand: DemandForAccess = {
   epci_code: '200054781',
   ept_code: 'T1',
   network_id: 1,
+  network_organization_id: null,
   network_type: 'reseau_de_chaleur',
   region_code: '11',
   validated: true,
@@ -34,10 +35,14 @@ const baseDemand: DemandForAccess = {
 
 const unvalidated: DemandForAccess = { ...baseDemand, validated: false };
 const constructionDemand: DemandForAccess = { ...baseDemand, network_type: 'reseau_en_construction' };
+const orgDemand: DemandForAccess = { ...baseDemand, network_organization_id: 'org-1' };
+const orgDemandUnvalidated: DemandForAccess = { ...orgDemand, validated: false };
 
 const networkExistant: Permission = { resource_id: '1', type: 'reseau_de_chaleur' };
 const networkConstruction: Permission = { resource_id: '1', type: 'reseau_en_construction' };
 const networkWrongId: Permission = { resource_id: '999', type: 'reseau_de_chaleur' };
+const org1: Permission = { resource_id: 'org-1', type: 'organization' };
+const org2: Permission = { resource_id: 'org-2', type: 'organization' };
 const commune75056: Permission = { resource_id: '75056', type: 'commune' };
 const dept75: Permission = { resource_id: '75', type: 'departement' };
 const dept13: Permission = { resource_id: '13', type: 'departement' };
@@ -114,6 +119,14 @@ describe('canUserAccessDemand', () => {
     // Mixed network + territory permissions
     { expectedOutput: true, input: { demand: baseDemand, permissions: [networkExistant, dept75], user: gestionnaire } },
     { expectedOutput: true, input: { demand: baseDemand, permissions: [networkWrongId, dept75], user: gestionnaire } },
+
+    // Organization scope — access iff the demand's network belongs to that org
+    { expectedOutput: true, input: { demand: orgDemand, permissions: [org1], user: gestionnaire } },
+    { expectedOutput: false, input: { demand: orgDemand, permissions: [org2], user: gestionnaire } },
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [org1], user: gestionnaire } }, // network sans org
+    { expectedOutput: false, input: { demand: orgDemandUnvalidated, permissions: [org1], user: gestionnaire } },
+    // Org perm covering a network the explicit network perm misses → still granted
+    { expectedOutput: true, input: { demand: orgDemand, permissions: [networkWrongId, org1], user: gestionnaire } },
   ];
 
   cases.forEach(({ input, expectedOutput }) => {
@@ -163,6 +176,18 @@ describe('isUserResponsibleForDemand', () => {
     { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [dept13], user: collectivite } },
     // Demand without network + only network perm → NOT responsible (case theoretical, perm route wouldn't grant access)
     { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [networkExistant], user: gestionnaire } },
+
+    // Organization scope — responsible for a network-affected demand of one of the org's networks
+    { expectedOutput: true, input: { demand: orgDemand, permissions: [org1], user: gestionnaire } },
+    { expectedOutput: false, input: { demand: orgDemand, permissions: [org2], user: gestionnaire } },
+    { expectedOutput: false, input: { demand: orgDemandUnvalidated, permissions: [org1], user: gestionnaire } },
+    // Org perm wins over a non-matching explicit network perm
+    { expectedOutput: true, input: { demand: orgDemand, permissions: [networkWrongId, org1], user: gestionnaire } },
+    // Unaffected demand → org scope does NOT grant responsibility (operator scope = networks)
+    {
+      expectedOutput: false,
+      input: { demand: { ...unaffectedDemand, network_organization_id: 'org-1' }, permissions: [org1], user: gestionnaire },
+    },
 
     // No permissions
     { expectedOutput: false, input: { demand: baseDemand, permissions: [], user: gestionnaire } },

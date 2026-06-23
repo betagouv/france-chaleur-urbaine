@@ -244,7 +244,7 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
             <label className="fr-label">
               ID
               <span className="text-gray-500 mx-2">(Lecture seule)</span>
-              {user?.from_api && <Badge type="api_user" />}
+              {user?.from_organization_id && <Badge type="api_user" />}
             </label>
             <div className="fr-input-group">
               <input type="text" value={user?.id?.toString() || ''} disabled className="fr-input" />

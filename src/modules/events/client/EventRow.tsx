@@ -245,6 +245,21 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
+  organization_created: (event) => (
+    <span>
+      a créé l'organisation <strong>{event.data.name}</strong>
+    </span>
+  ),
+  organization_deleted: (event) => (
+    <span>
+      a supprimé l'organisation <strong>{event.data.name}</strong>
+    </span>
+  ),
+  organization_updated: (event) => (
+    <span>
+      a mis à jour l'organisation <strong>{event.data.name}</strong>
+    </span>
+  ),
   pdp_updated: (event, updateFilters) => (
     <>
       <span>a mis à jour le </span>

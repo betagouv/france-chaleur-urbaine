@@ -50,7 +50,7 @@ None — this module is a server-side client only. It is called by other modules
 | `modules/users/server/trpc-routes.ts` → `updateProfile` | `updateContact` | Profile update: first/last name, phone |
 | `modules/users/server/trpc-routes.ts` → `updateNewsletterSubscription` | `updateContact` | Newsletter opt-in/out |
 | `modules/users/server/service.ts` → `remove` | `updateContact` | User deletion: set `actif: false` |
-| `server/api/users/engie.ts` | `updateContact` | Engie user reactivation (`actif: true`) / deactivation (`actif: false`) |
+| `modules/partner-api/server/legacy/engie-users.ts` | `updateContact` | Engie user reactivation (`actif: true`) / deactivation (`actif: false`) |
 | `modules/ademe-connect/commands.ts` → CLI | `createContact`, `getContact` | Manual commands / bulk backfill |
 
 All calls are fire-and-forget: errors are logged but not propagated to the caller.

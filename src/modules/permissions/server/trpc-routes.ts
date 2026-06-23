@@ -12,6 +12,7 @@ import {
   getUserPermissionsWithLabels,
   resolvePermissionLabels,
   resolvePermissionsWithLabels,
+  searchOrganizations,
   searchTerritories,
 } from './search';
 import { setUserPermissions } from './service';
@@ -57,6 +58,10 @@ export const permissionsRouter = router({
   resolveLabels: demandAccessRoute.input(zPermissionInput).query(({ input }) => resolvePermissionLabels(input)),
 
   searchNetworks: adminRoute.input(z.object({ search: z.string().min(2).max(100) })).query(({ input }) => searchNetworks(input.search)),
+
+  searchOrganizations: adminRoute
+    .input(z.object({ search: z.string().min(2).max(100) }))
+    .query(({ input }) => searchOrganizations(input.search)),
 
   searchTerritories: adminRoute
     .input(

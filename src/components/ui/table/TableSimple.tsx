@@ -830,10 +830,8 @@ const TableSimple = <T extends RowData>({
                         <TableFilter
                           key={column.id}
                           type={columnDef.filterType as any}
+                          onChange={column.setFilterValue}
                           value={filterValue as any}
-                          onChange={(newValue) => {
-                            column.setFilterValue(newValue);
-                          }}
                           filterProps={columnDef.filterProps as any}
                           facetedMinMaxValues={facetedMinMaxValues}
                           facetedUniqueValues={facetedUniqueValues}
