@@ -820,8 +820,7 @@ describe('modesDeChauffage', () => {
 
     expect(rows).toContainEqual({
       label: testCase.label,
-      reason: testCase.reason,
-      source: testCase.source,
+      reasons: [{ reason: testCase.reason, source: testCase.source }],
     });
   });
 
@@ -833,8 +832,12 @@ describe('modesDeChauffage', () => {
 
     expect(rows).not.toContainEqual({
       label: 'Solaire thermique',
-      reason: 'La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale.',
-      source: 'Cerema',
+      reasons: [
+        {
+          reason: 'La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale.',
+          source: 'Cerema',
+        },
+      ],
     });
   });
 });
