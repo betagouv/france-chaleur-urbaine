@@ -44,7 +44,7 @@ export const getPdpPrerequisite = (situation: Situation): PrerequisiteRow[] =>
     ? [
         {
           label:
-            'Votre bâtiment est situé dans un Périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau.',
+            'Votre bâtiment est situé dans un périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau de chaleur.',
           source: 'France Chaleur Urbaine',
           status: 'contraignant',
         },
