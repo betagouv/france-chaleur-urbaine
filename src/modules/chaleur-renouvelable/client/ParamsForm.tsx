@@ -120,62 +120,60 @@ export function ParamsForm({
   };
 
   return (
-    <form id="params-form" className="border border-[#c8efd7] bg-white p-4 shadow-sm" onSubmit={handleSubmit}>
-      <div className="flex items-start justify-between gap-4">
-        {isOpen ? (
-          <>
-            <AddressField
-              label=""
-              value={draft.adresse}
-              className="max-w-100 flex-1"
-              nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
-              onlyAddress
-              onClear={() => {
-                setDraft((previousDraft) => ({ ...previousDraft, adresse: '' }));
-                setGeoAddress(undefined);
-                onSelectGeoAddress?.(undefined);
-              }}
-              onSelect={(nextAddress) => {
-                const nextAddressLabel = nextAddress?.properties?.label ?? '';
-                if (nextAddressLabel) {
-                  trackPostHogEvent('fcr_simulator:address_selected', {
-                    address: nextAddressLabel,
-                    city: nextAddress?.properties.city,
-                    postcode: nextAddress?.properties.postcode,
-                    source: 'result',
-                  });
-                }
-                setDraft((previousDraft) => ({
-                  ...previousDraft,
-                  adresse: nextAddressLabel,
-                }));
-                setGeoAddress(nextAddress);
-                onSelectGeoAddress?.(nextAddress);
-              }}
-            />
-            <button type="button" className="fr-icon-close-line mt-1 text-sm" aria-label="Fermer" onClick={handleClose} />
-          </>
-        ) : (
-          <>
-            <div className="uppercase font-bold">
-              <span className="fr-icon-map-pin-2-line mr-3" />
-              {draft.adresse}
-            </div>
-            <Button
-              full
-              priority="secondary"
-              iconId="fr-icon-pencil-line"
-              className="hidden w-auto md:inline-flex"
-              iconPosition="left"
-              aria-expanded={isOpen}
-              aria-controls="params-form"
-              onClick={handleOpen}
-            >
-              Complétez les paramètres
-            </Button>
-          </>
-        )}
-      </div>
+    <form id="params-form" className="border border-gray-200 bg-white p-4 shadow-sm" onSubmit={handleSubmit}>
+      {isOpen ? (
+        <div className="flex items-start justify-between gap-4">
+          <AddressField
+            label=""
+            value={draft.adresse}
+            className="max-w-100 flex-1"
+            nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
+            onlyAddress
+            onClear={() => {
+              setDraft((previousDraft) => ({ ...previousDraft, adresse: '' }));
+              setGeoAddress(undefined);
+              onSelectGeoAddress?.(undefined);
+            }}
+            onSelect={(nextAddress) => {
+              const nextAddressLabel = nextAddress?.properties?.label ?? '';
+              if (nextAddressLabel) {
+                trackPostHogEvent('fcr_simulator:address_selected', {
+                  address: nextAddressLabel,
+                  city: nextAddress?.properties.city,
+                  postcode: nextAddress?.properties.postcode,
+                  source: 'result',
+                });
+              }
+              setDraft((previousDraft) => ({
+                ...previousDraft,
+                adresse: nextAddressLabel,
+              }));
+              setGeoAddress(nextAddress);
+              onSelectGeoAddress?.(nextAddress);
+            }}
+          />
+          <button type="button" className="fr-icon-close-line mt-1 text-sm" aria-label="Fermer" onClick={handleClose} />
+        </div>
+      ) : (
+        <div className="flex items-center justify-between gap-4">
+          <div className="uppercase font-bold">
+            <span className="fr-icon-map-pin-2-line mr-3" />
+            {draft.adresse}
+          </div>
+          <Button
+            full
+            priority="secondary"
+            iconId="fr-icon-pencil-line"
+            className="hidden w-auto md:inline-flex"
+            iconPosition="left"
+            aria-expanded={isOpen}
+            aria-controls="params-form"
+            onClick={handleOpen}
+          >
+            Complétez les paramètres
+          </Button>
+        </div>
+      )}
       <p className="my-3">
         Ajustez les détails de votre simulation (DPE, nombre de logements, mode de production d’eau chaude...) pour obtenir un calcul plus
         précis des coûts et économies d’énergie.

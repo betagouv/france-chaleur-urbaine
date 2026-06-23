@@ -37,6 +37,7 @@ export function useChoixChauffageResults() {
   } = useAddressEligibility(params.adresse ?? null, params.constructionId);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
+  const [shouldScrollToHotWaterParams, setShouldScrollToHotWaterParams] = useState(false);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>();
   const contactForm = useContactFormFCU();
 
@@ -138,9 +139,19 @@ export function useChoixChauffageResults() {
   }, []);
 
   const handleEditHotWaterParamsClick = useCallback(() => {
+    setShouldScrollToHotWaterParams(true);
     setIsParamsOpen(true);
-    document.getElementById(HOT_WATER_PARAMS_SECTION_ID)?.scrollIntoView({ block: 'start' });
   }, []);
+
+  // Scroll only after React has rendered the newly opened parameters section.
+  useEffect(() => {
+    if (!isParamsOpen || !shouldScrollToHotWaterParams) {
+      return;
+    }
+
+    document.getElementById(HOT_WATER_PARAMS_SECTION_ID)?.scrollIntoView({ block: 'start' });
+    setShouldScrollToHotWaterParams(false);
+  }, [isParamsOpen, shouldScrollToHotWaterParams]);
 
   const handleSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {

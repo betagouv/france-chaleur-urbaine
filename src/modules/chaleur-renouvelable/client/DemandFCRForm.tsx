@@ -133,7 +133,7 @@ function ContactRecipientSelector({
               </span>
 
               <span>
-                <span className="block font-bold">{recipient.label}</span>
+                <span className="block">{recipient.label}</span>
                 <span className="mt-1 block text-sm text-(--text-default-grey)">{recipient.description}</span>
               </span>
             </button>
@@ -176,7 +176,6 @@ function ProjectStatusSelect({
     setIsOpen((currentIsOpen) => !currentIsOpen);
   };
 
-  // Closes the dropdown on outside pointer down.
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -300,13 +299,15 @@ function getOccupantStatusDetailField(occupantStatus: OccupantStatus): OccupantS
     : null;
 }
 
-type DemandFCRFormProps = {
+export default function DemandFCRForm({
+  selectedRecipientId,
+  setSelectedRecipientId,
+  topSolution,
+}: {
   selectedRecipientId: ContactRecipientId;
   setSelectedRecipientId: (recipientId: ContactRecipientId) => void;
   topSolution?: string;
-};
-
-export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipientId, topSolution }: DemandFCRFormProps) {
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [refusalPeriod, setRefusalPeriod] = useState('');
@@ -432,7 +433,7 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
   const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
 
   return (
-    <section id="help-ademe" className="mt-6 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">
+    <section id="help-ademe" className="mt-6 scroll-mt-4 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">
       <h4 className="mb-4 text-2xl font-bold">
         {isPublicAdvisorSelected
           ? 'Échangez avec un conseiller neutre et gratuit du service public'
@@ -468,14 +469,7 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
           {isPublicAdvisorSelected && (
             <>
               <RichSelect
-                label="Quand avez-vous reçu le refus du gestionnaire ?"
-                options={refusalPeriodOptions}
-                placeholder="Sélectionner..."
-                value={refusalPeriod || undefined}
-                onChange={setRefusalPeriod}
-              />
-              <RichSelect
-                label="Motif communiqué"
+                label="Motif communiqué par le gestionnaire de réseau"
                 options={refusalReasonOptions}
                 placeholder="Sélectionner le motif"
                 value={refusalReason || undefined}
@@ -483,6 +477,13 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
                   trackPostHogEvent('fcr_contact:non_raccordable_reason_selected', { reason });
                   setRefusalReason(reason);
                 }}
+              />
+              <RichSelect
+                label="Quand avez-vous reçu le refus du gestionnaire ? (optionnel)"
+                options={refusalPeriodOptions}
+                placeholder="Sélectionner..."
+                value={refusalPeriod || undefined}
+                onChange={setRefusalPeriod}
               />
             </>
           )}

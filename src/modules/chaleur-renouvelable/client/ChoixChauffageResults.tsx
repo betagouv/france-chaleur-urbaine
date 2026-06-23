@@ -9,6 +9,7 @@ import { trackPostHogEvent } from '@/modules/analytics/client';
 import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
 import DemandeFCRForm, { type ContactRecipientId } from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
 import { useChoixChauffageResults } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageResults';
+import { HeatNetworkContactSteps } from '@/modules/chaleur-renouvelable/client/results/ui/HeatNetworkContactSteps';
 import { IncompatibleSolutionsSection } from '@/modules/chaleur-renouvelable/client/results/ui/IncompatibleSolutionsSection';
 import { NoResultSection } from '@/modules/chaleur-renouvelable/client/results/ui/NoResultSection';
 import { RecommendedSolutionCard } from '@/modules/chaleur-renouvelable/client/results/ui/RecommendedSolutionCard';
@@ -47,6 +48,14 @@ export default function ChoixChauffageResults() {
   } = useChoixChauffageResults();
   const params = urlParams.params;
   const shouldPreselectPublicAdvisor = Boolean(situation.eligibiliteReseauChaleur);
+  const isHeatNetworkRecommended = recommended?.label === 'Réseau de chaleur' && Boolean(situation.eligibiliteReseauChaleur);
+
+  const handleSelectContactRecipient = (recipientId: ContactRecipientId) => {
+    setSelectedContactRecipientId(recipientId);
+    requestAnimationFrame(() => {
+      document.getElementById('help-ademe')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
 
   if (isMobile === null) {
     return null;
@@ -94,6 +103,7 @@ export default function ChoixChauffageResults() {
             }}
             situation={situation}
           />
+          {isHeatNetworkRecommended && <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />}
           <ResultsSection
             items={otherModes}
             coutParAnGaz={coutParAnGaz}

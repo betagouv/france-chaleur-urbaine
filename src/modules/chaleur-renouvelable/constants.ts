@@ -61,8 +61,7 @@ export type Situation = {
 
 export type IncompatibleSolutionRow = {
   label: string;
-  reason: string;
-  source: string;
+  reasons: { reason: string; source: string }[];
 };
 
 export type PrerequisiteStatus = 'favorable' | 'defavorable' | 'contraignant' | 'averifier';

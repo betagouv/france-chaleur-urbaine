@@ -10,19 +10,36 @@ export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolut
     <section>
       <h3 className="fr-mt-6w mb-5">Solutions non compatibles</h3>
       <div className="border border-gray-200 bg-white px-5 py-4 shadow-sm">
-        <ul className="m-0 space-y-3 p-0">
-          {rows.map((row) => (
-            <li key={`${row.label}-${row.reason}`} className="grid gap-2 md:grid-cols-[auto_2fr_3fr_auto] md:items-center md:gap-4">
-              <PrerequisiteStatusBadge status="defavorable" />
-              <strong className="whitespace-nowrap text-error text-lg">{row.label}</strong>
-              <span>{row.reason}</span>
-              <span className="w-fit justify-self-start whitespace-nowrap text-blue md:justify-self-end">
-                <span className="fr-icon-stack-line mr-1 font-bold" aria-hidden="true" />
-                source : {row.source}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.label} className="align-top">
+                  <td className="py-3">
+                    <PrerequisiteStatusBadge status="defavorable" />
+                  </td>
+                  <td className="p-3 max-w-62.5 text-error text-lg">{row.label}</td>
+                  <td className="py-3">
+                    <div className="space-y-2">
+                      {row.reasons.map(({ reason, source }) => (
+                        <div
+                          key={`${reason}-${source}`}
+                          className="flex flex-col gap-1 md:flex-row md:items-start md:justify-between md:gap-4"
+                        >
+                          <span>{reason}</span>
+                          <span className="w-fit shrink-0 whitespace-nowrap text-blue">
+                            <span className="fr-icon-stack-line mr-1 font-bold" aria-hidden="true" />
+                            source : {source}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <div className="mt-4 flex justify-end text-sm">
           <span className="fr-icon-stack-line mr-2" aria-hidden="true" />
           Vérifié automatiquement à partir de votre adresse et de vos paramètres

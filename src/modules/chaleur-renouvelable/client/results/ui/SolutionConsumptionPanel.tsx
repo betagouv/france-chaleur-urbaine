@@ -32,7 +32,7 @@ export function SolutionConsumptionPanel({
         <DpeProgression from={dpeFrom} to={dpeTo} />
       </div>
       <p className="mb-1 uppercase">Coût consommation</p>
-      <p className="mb-1 font-bold text-blue">
+      <p className="mb-1 font-bold text-blue text-lg">
         {lowerBoundString} à {upperBoundString}
       </p>
       <p className="mb-3">par an par logement</p>
