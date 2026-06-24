@@ -149,7 +149,7 @@ function HeatNetworkRecommendedSolutionCard({
           <h3 className="mb-3 text-3xl font-bold text-blue">{item.label}</h3>
           <UsageTags usage={item.usage} />
         </div>
-        <Image src={`/${item.icone}`} alt="" width={136} height={104} className="hidden object-contain md:block" />
+        <Image src={`/${item.icone}`} alt="icone reseau de chaleur" width={192} height={128} className="hidden object-contain md:block" />
       </div>
       <p>
         Votre bâtiment est situé à <strong>{distanceLabel}</strong> du réseau de chaleur{networkName}. C’est la solution à privilégier pour
