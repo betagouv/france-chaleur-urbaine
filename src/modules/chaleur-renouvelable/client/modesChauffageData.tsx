@@ -326,8 +326,10 @@ export const modesDeChauffage = {
       description: (
         <>
           L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir
-          une partie de votre eau chaude sanitaire. Une solution fiable, mature et économique à l'usage, qui fonctionne avec un appoint pour
-          les périodes de faible ensoleillement.
+          une partie de votre eau chaude sanitaire.
+          <br />
+          <br /> Une solution <strong>fiable, mature et économique</strong> à l'usage, qui fonctionne avec un appoint pour les périodes de
+          faible ensoleillement.
         </>
       ),
       estPossible: (situation) =>
@@ -563,8 +565,10 @@ export const modesDeChauffage = {
       description: (
         <>
           L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir
-          une partie de votre eau chaude sanitaire. Une solution fiable, mature et économique à l'usage, qui fonctionne avec un appoint pour
-          les périodes de faible ensoleillement.
+          une partie de votre eau chaude sanitaire.
+          <br />
+          <br /> Une solution <strong>fiable, mature et économique</strong> à l'usage, qui fonctionne avec un appoint pour les périodes de
+          faible ensoleillement.
         </>
       ),
       estPossible: (situation) =>

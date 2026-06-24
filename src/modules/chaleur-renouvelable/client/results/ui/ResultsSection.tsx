@@ -4,6 +4,7 @@ import { getCostPrecisionRange } from '@/components/ComparateurPublicodes/Graph'
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
+import Link from '@/components/ui/Link';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import {
   improveDpe,
@@ -112,7 +113,7 @@ export function ResultsSection({
         })}
       </div>
       <div className="border border-gray-200 bg-white py-6 pr-3">
-        {activeTab === 'hotWaterOnly' && (
+        {activeTab === 'hotWaterOnly' && activeItems.length > 0 && (
           <div className="px-5">
             <div className="mb-6 border-l-4 border-blue bg-gray-100 px-4 py-3">
               <div className="flex items-start gap-3">
@@ -136,18 +137,45 @@ export function ResultsSection({
           </div>
         )}
         {activeTab === 'hotWaterOnly' && activeItems.length === 0 && (
-          <div className="border-l-4 border-blue bg-gray-100 px-5 py-3 mx-5">
-            <p className="mb-2 font-bold text-blue">Aucune solution eau chaude seule n’est adaptée à votre situation.</p>
-            <button
-              type="button"
-              className="text-blue underline"
-              onClick={() => {
-                trackPostHogEvent('fcr_results:ecs_to_full_tab_clicked');
-                setActiveTab('heatingAndHotWater');
-              }}
-            >
-              Voir les solutions chauffage + eau chaude
-            </button>
+          <div className="px-5 py-3 mx-5">
+            <p>Malheureusement, aucune solution en production d’eau chaude uniquement n’est adaptée à votre situation actuelle.</p>
+            <p className="font-bold">
+              👉 Heureusement, des solutions existent en{' '}
+              <button
+                type="button"
+                className="text-blue underline"
+                onClick={() => {
+                  trackPostHogEvent('fcr_results:ecs_to_full_tab_clicked');
+                  setActiveTab('heatingAndHotWater');
+                }}
+              >
+                Chauffage + Eau chaude
+              </button>
+            </p>
+            <p>D'autres actions permettent de réduire vos consommations d'énergie, vos factures et votre impact environnemental :</p>
+            <ul>
+              <li>
+                <strong>Isoler votre logement</strong>: toiture, murs, fenêtres, planchers, c'est souvent le geste le plus efficace
+              </li>
+              <li>
+                <strong>Améliorer votre système de ventilation</strong>: une VMC performante améliore la qualité de l'air et limite les
+                pertes de chaleur
+              </li>
+              <li>
+                <strong>Optimiser votre chauffage actuel</strong>: entretien de la chaudière, désembouage des radiateurs, installation de
+                robinets thermostatiques
+              </li>
+              <li>
+                <strong>Réduire vos consommations d'eau chaude</strong>: mousseurs, pommeaux économes, calorifugeage des tuyaux
+              </li>
+            </ul>
+            <p>Ces travaux peuvent être éligibles à des aides financières (MaPrimeRénov', CEE, éco-prêt à taux zéro).</p>
+            <p>
+              🔎 Pour encore plus d’actions possibles,{' '}
+              <Link href="https://agirpourlatransition.ademe.fr/particuliers/economiser/energie" isExternal className="text-blue">
+                rendez-vous sur Agir
+              </Link>
+            </p>
           </div>
         )}
         {activeItems.map((item, index) => {
