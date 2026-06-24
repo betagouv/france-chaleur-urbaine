@@ -75,7 +75,7 @@ export const getArchitecturalProtectionPrerequisites = (situation: Situation): P
     ? [
         {
           label: `Votre bâtiment se trouve dans une zone architecturale classée « ${labels.join(', ')} », ce qui peut présenter des contraintes d’intégration`,
-          source: 'Cerema',
+          source: 'CEREMA',
           status: 'contraignant',
         },
       ]
@@ -87,7 +87,7 @@ export const getPpaPrerequisite = (situation: Situation): PrerequisiteRow[] =>
     ? [
         {
           label: 'Votre bâtiment est situé dans une zone de protection de l’atmosphère',
-          source: 'Cerema',
+          source: 'CEREMA',
           status: 'contraignant',
         },
       ]
@@ -98,7 +98,7 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
     ? [
         {
           label: 'Votre bâtiment est situé dans une zone favorable au forage',
-          source: 'Cerema',
+          source: 'CEREMA',
           status: 'favorable' as const,
         },
       ]
@@ -107,7 +107,7 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
     ? [
         {
           label: 'La ressource énergétique de la parcelle est suffisante',
-          source: 'Cerema',
+          source: 'CEREMA',
           status: 'favorable' as const,
         },
       ]
@@ -116,7 +116,7 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
     ? [
         {
           label: 'La ressource énergétique de la parcelle est inconnue',
-          source: 'Cerema',
+          source: 'CEREMA',
           status: 'averifier' as const,
         },
       ]
@@ -125,7 +125,7 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
     ? [
         {
           label: 'Place suffisante pour l’implantation de sondes géothermiques',
-          source: 'Cerema',
+          source: 'CEREMA',
           status: 'favorable' as const,
         },
       ]
