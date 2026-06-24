@@ -158,11 +158,9 @@ function HeatNetworkRecommendedSolutionCard({
       </p>
       <div className="grid-1 grid gap-6 md:grid-cols-3">
         {geoAddress && (
-          <div className="h-full overflow-hidden">
-            <Map config={mapConfiguration} initialView={{ center: geoAddress.geometry.coordinates, zoom: 15 }} legend={false} search="none">
-              <MapMarker longitude={geoAddress.geometry.coordinates[0]} latitude={geoAddress.geometry.coordinates[1]} />
-            </Map>
-          </div>
+          <Map config={mapConfiguration} initialView={{ center: geoAddress.geometry.coordinates, zoom: 15 }} legend={false} search="none">
+            <MapMarker longitude={geoAddress.geometry.coordinates[0]} latitude={geoAddress.geometry.coordinates[1]} />
+          </Map>
         )}
         <SolutionConsumptionPanel
           dpeFrom={dpeFrom}
