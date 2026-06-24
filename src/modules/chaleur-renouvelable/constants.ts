@@ -83,7 +83,7 @@ export type ModeDeChauffage = {
   usage: ModeDeChauffageUsage;
   icone: string;
   pertinence: number;
-  description: string;
+  description: React.ReactNode;
   avantages: string[];
   inconvenients: string[];
   coutParAnPublicodeKey: string;
