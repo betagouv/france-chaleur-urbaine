@@ -98,7 +98,7 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
     ? [
         {
           label: 'Votre bâtiment est situé dans une zone favorable au forage',
-          source: 'CEREMA',
+          source: 'BRGM',
           status: 'favorable' as const,
         },
       ]
@@ -107,7 +107,7 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
     ? [
         {
           label: 'La ressource énergétique de la parcelle est suffisante',
-          source: 'CEREMA',
+          source: 'BRGM',
           status: 'favorable' as const,
         },
       ]
@@ -116,7 +116,7 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
     ? [
         {
           label: 'La ressource énergétique de la parcelle est inconnue',
-          source: 'CEREMA',
+          source: 'BRGM',
           status: 'averifier' as const,
         },
       ]
@@ -125,7 +125,7 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
     ? [
         {
           label: 'Place suffisante pour l’implantation de sondes géothermiques',
-          source: 'CEREMA',
+          source: 'BRGM',
           status: 'favorable' as const,
         },
       ]
