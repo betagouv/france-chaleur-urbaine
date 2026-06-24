@@ -226,7 +226,7 @@ export function MapCanvas({
   return (
     <div
       className={cx(
-        'relative h-full w-full overflow-hidden bg-(--background-alt-grey)',
+        'relative h-full w-full bg-(--background-alt-grey)',
         // Tighten the compact attribution: MapLibre ships `margin: 10px` on the
         // ⓘ icon, which feels off given the other bottom-right controls already
         // include their own 10px container margin.
