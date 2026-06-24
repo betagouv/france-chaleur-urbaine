@@ -160,7 +160,7 @@ function CardFrame({ children, className = '' }: { children: ReactNode; classNam
 
 function CardImage({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
   return (
-    <div className={`relative fr-mb-3w h-[180px] w-full rounded-t-lg shrink-0 overflow-hidden ${className}`}>
+    <div className={`relative fr-mb-3w h-45 w-full rounded-t-lg shrink-0 overflow-hidden ${className}`}>
       <Image src={src} alt={alt} fill className="object-cover" />
     </div>
   );
@@ -201,12 +201,14 @@ function OtherHeatingSystemsCarousel() {
       previousLabel="Voir le système précédent"
       nextLabel="Voir le système suivant"
       renderItem={(resource) => (
-        <CardFrame className="flex h-full flex-col">
-          <CardImage src={`/img/${resource.image}`} alt="" />
-          <h5 className="fr-h4">{resource.title}</h5>
-          <p className="mb-0 max-h-12 flex-1 overflow-hidden text-ellipsis leading-6 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
-            {resource.description}
-          </p>
+        <CardFrame className="flex h-full flex-col justify-between">
+          <div>
+            <CardImage src={`/img/${resource.image}`} alt="" />
+            <h5 className="fr-h4">{resource.title}</h5>
+            <p className="mb-0 max-h-12 flex-1 overflow-hidden text-ellipsis leading-6 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+              {resource.description}
+            </p>
+          </div>
           <Link
             postHogEventKey="fcr_landing:article_clicked"
             postHogEventProps={{ article_title: resource.title, element_name: resource.slug }}
