@@ -16,6 +16,7 @@ export const eventTypes = [
   'user_deleted_by_admin',
   'demand_created',
   'demand_updated',
+  'demand_updated_by_system',
   'demand_satisfaction_submitted',
   'demand_satisfaction_comment_submitted',
   'demand_survey_submitted',
@@ -73,6 +74,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   demand_satisfaction_submitted: 'Réponse satisfaction',
   demand_survey_submitted: 'Réponse au sondage',
   demand_updated: 'Mise à jour demande',
+  demand_updated_by_system: 'Mise à jour demande (automatique)',
   demand_validated: 'Validation demande',
   network_created: 'Création réseau/PDP',
   network_deleted: 'Suppression réseau/PDP',
@@ -136,6 +138,7 @@ export type EventDataMap = {
   demand_satisfaction_submitted: { recontacted: boolean };
   demand_survey_submitted: { sondage: string[] };
   demand_updated: Record<string, unknown> | null;
+  demand_updated_by_system: Record<string, unknown> | null;
   demand_validated: { relance_a_activer: boolean };
   pro_eligibility_test_created: Record<string, unknown> | null;
   pro_eligibility_test_deleted: Record<string, unknown> | null;

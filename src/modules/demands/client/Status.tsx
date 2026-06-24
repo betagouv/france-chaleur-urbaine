@@ -25,7 +25,8 @@ const Status = ({
     <Select
       label=""
       options={demandStatuses.map((status) => ({
-        label: status.label,
+        // Le picto n'est affiché que dans la liste déroulante (pas dans le badge)
+        label: 'icon' in status ? `${status.icon} ${status.label}` : status.label,
         value: status.label /** For now, we use the label as the value as we use legacy values */,
       }))}
       placeholder="Sélectionner un statut"

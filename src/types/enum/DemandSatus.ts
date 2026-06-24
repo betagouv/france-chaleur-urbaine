@@ -1,8 +1,8 @@
 export enum DEMANDE_STATUS {
-  EMPTY = 'En attente de prise en charge',
+  TO_PROCESS = 'À traiter',
   UNREALISABLE = 'Non réalisable',
-  WAITING = 'En attente d’éléments du prospect',
-  IN_PROGRESS = 'Étude en cours',
+  RECONTACTED = 'Recontacté pour étude',
+  COMMERCIAL_PROPOSAL = 'Proposition commerciale envoyée',
   VOTED = 'Voté en AG',
   WORK_IN_PROGRESS = 'Travaux en cours',
   DONE = 'Réalisé',

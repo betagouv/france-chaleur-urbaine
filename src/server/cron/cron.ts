@@ -26,7 +26,7 @@ const crons: CronDefinition[] = [
     schedule: '00 10 * * 1-5', // lun-ven 10:00 Paris
   },
   {
-    // Relance les gestionnaires sur les demandes "En attente de prise en charge" depuis plus de 7 jours.
+    // Relance les gestionnaires sur les demandes "À traiter" depuis plus de 7 jours.
     handler: notifyGestionnairesOfUnhandledDemands,
     name: 'notifyGestionnairesOfUnhandledDemands',
     schedule: '55 9 * * 2', // mardi 09:55 Paris

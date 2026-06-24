@@ -123,7 +123,7 @@ export const emails = defineEmails({
   },
   'demands.gestionnaire.rappel-demandes-en-attente': {
     Component: RappelDemandesEnAttente,
-    description: 'Relance envoyée aux gestionnaires ayant des demandes encore au statut « En attente de prise en charge ».',
+    description: 'Relance envoyée aux gestionnaires ayant des demandes encore au statut « À traiter ».',
     label: 'Rappel demandes en attente',
     preview: 'Action requise : Des demandes nécessitent votre attention',
     scenarios: rappelDemandesEnAttenteScenarios,

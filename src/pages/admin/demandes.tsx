@@ -26,7 +26,6 @@ import AccessCountsCell from '@/modules/demands/client/AccessCountsCell';
 import AffectedNetworkCell from '@/modules/demands/client/AffectedNetworkCell';
 import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
-import Contacted from '@/modules/demands/client/Contacted';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import Status from '@/modules/demands/client/Status';
 import type { DemandStatus } from '@/modules/demands/constants';
@@ -41,6 +40,7 @@ import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/El
 import type { NetworkType } from '@/modules/reseaux/constants';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
@@ -99,8 +99,7 @@ const quickFilterPresets = {
   },
   demandesATraiter: {
     filters: [
-      { id: 'Status', value: { 'En attente de prise en charge': true } },
-      { id: 'Prise de contact', value: { false: true, true: false } },
+      { id: 'Status', value: { [DEMANDE_STATUS.TO_PROCESS]: true } },
       {
         id: 'testAddress_eligibility_type' as any, // Filters do not support nested filters
         value: Object.fromEntries(
@@ -109,20 +108,12 @@ const quickFilterPresets = {
       },
     ],
     getStat: (demands) =>
-      demands.filter(
-        (demand) =>
-          demand.Status === 'En attente de prise en charge' &&
-          !demand['Prise de contact'] &&
-          demand.testAddress.eligibility?.type !== 'trop_eloigne'
-      ).length,
+      demands.filter((demand) => demand.Status === DEMANDE_STATUS.TO_PROCESS && demand.testAddress.eligibility?.type !== 'trop_eloigne')
+        .length,
     label: (
       <>
-        en attente
-        <br />
-        de prise en charge&nbsp;
-        <Tooltip
-          title={`Le statut est "en attente de prise en charge", la case "prospect recontacté" n'est pas cochée et l'adresse n'est pas trop éloignée d'un réseau.`}
-        />
+        à traiter&nbsp;
+        <Tooltip title={`Le statut de la demande est "À traiter" et l'adresse n'est pas trop éloignée d'un réseau.`} />
       </>
     ),
   },
@@ -346,15 +337,6 @@ function DemandesAdmin(): React.ReactElement {
         filterType: 'Facets',
         header: 'Statut',
         width: '290px',
-      },
-      {
-        accessorKey: 'Prise de contact',
-        align: 'center',
-        cell: ({ row }) => <Contacted demand={row.original as unknown as Demand} updateDemand={updateDemand} />,
-        enableGlobalFilter: false,
-        filterType: 'Facets',
-        header: 'Prospect recontacté',
-        width: '110px',
       },
       {
         accessorKey: 'Recontacté par le gestionnaire',

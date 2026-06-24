@@ -54,24 +54,21 @@ export const getReseauxStats = async () => {
                   'total', jsonb_build_object(
                     'total', COUNT(*),
                     'pending', COUNT(*) FILTER (
-                      WHERE COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}'
-                        AND COALESCE((legacy_values->>'Prise de contact')::boolean, false) = false
+                      WHERE COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.TO_PROCESS}') = '${DEMANDE_STATUS.TO_PROCESS}'
                     )
                   ),
                   'lastThreeMonths', jsonb_build_object(
                     'total', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '3 months'),
                     'pending', COUNT(*) FILTER (
                       WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '3 months'
-                        AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}'
-                        AND COALESCE((legacy_values->>'Prise de contact')::boolean, false) = false
+                        AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.TO_PROCESS}') = '${DEMANDE_STATUS.TO_PROCESS}'
                     )
                   ),
                   'lastSixMonths', jsonb_build_object(
                     'total', COUNT(*) FILTER (WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '6 months'),
                     'pending', COUNT(*) FILTER (
                       WHERE (legacy_values->>'Date de la demande')::date >= NOW() - INTERVAL '6 months'
-                        AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.EMPTY}') = '${DEMANDE_STATUS.EMPTY}'
-                        AND COALESCE((legacy_values->>'Prise de contact')::boolean, false) = false
+                        AND COALESCE(legacy_values->>'Status', '${DEMANDE_STATUS.TO_PROCESS}') = '${DEMANDE_STATUS.TO_PROCESS}'
                     )
                   )
                 )

@@ -21,7 +21,6 @@ import AdditionalInformation from '@/modules/demands/client/AdditionalInformatio
 import AffectedNetworkCell from '@/modules/demands/client/AffectedNetworkCell';
 import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
-import Contacted from '@/modules/demands/client/Contacted';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import Status from '@/modules/demands/client/Status';
 import type { Demand } from '@/modules/demands/types';
@@ -56,10 +55,6 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
   {
     accessorKey: 'Status',
     name: 'Statut',
-  },
-  {
-    accessorFn: (demand) => (demand['Prise de contact'] ? 'Oui' : 'Non'),
-    name: 'Prospect recontacté',
   },
   {
     accessorFn: (demand) => `${demand.Prénom ? demand.Prénom : ''} ${demand.Nom}`,
@@ -131,10 +126,10 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
 ];
 
 const traiteesStatusFilterValue: Record<DemandStatus, boolean> = {
-  [DEMANDE_STATUS.EMPTY]: false,
+  [DEMANDE_STATUS.TO_PROCESS]: false,
   [DEMANDE_STATUS.UNREALISABLE]: true,
-  [DEMANDE_STATUS.WAITING]: true,
-  [DEMANDE_STATUS.IN_PROGRESS]: true,
+  [DEMANDE_STATUS.RECONTACTED]: true,
+  [DEMANDE_STATUS.COMMERCIAL_PROPOSAL]: true,
   [DEMANDE_STATUS.VOTED]: true,
   [DEMANDE_STATUS.WORK_IN_PROGRESS]: true,
   [DEMANDE_STATUS.DONE]: true,
@@ -146,11 +141,9 @@ const allPresetDefinitions = {
   aTraiter: {
     filters: [
       { id: 'is_responsible', value: { false: false, true: true } },
-      { id: 'Status', value: { [DEMANDE_STATUS.EMPTY]: true } },
-      { id: 'Prise de contact', value: { false: true, true: false } },
+      { id: 'Status', value: { [DEMANDE_STATUS.TO_PROCESS]: true } },
     ],
-    getStat: (demands) =>
-      demands.filter((demand) => demand.is_responsible && demand.Status === DEMANDE_STATUS.EMPTY && !demand['Prise de contact']).length,
+    getStat: (demands) => demands.filter((demand) => demand.is_responsible && demand.Status === DEMANDE_STATUS.TO_PROCESS).length,
     label: (
       <>
         demandes à traiter&nbsp;
@@ -164,7 +157,7 @@ const allPresetDefinitions = {
       { id: 'is_responsible', value: { false: false, true: true } },
       { id: 'Status', value: traiteesStatusFilterValue },
     ],
-    getStat: (demands) => demands.filter((demand) => demand.is_responsible && demand.Status !== DEMANDE_STATUS.EMPTY).length,
+    getStat: (demands) => demands.filter((demand) => demand.is_responsible && demand.Status !== DEMANDE_STATUS.TO_PROCESS).length,
     label: (
       <>
         demandes traitées&nbsp;
@@ -334,8 +327,8 @@ function DemandesNew(): React.ReactElement {
         align: 'center',
         cell: ({ row }) => (
           <div className="flex flex-col gap-2">
-            {row.original.is_responsible && row.original.Status === DEMANDE_STATUS.EMPTY && !row.original['Prise de contact'] && (
-              <Tooltip title={`Le statut est "en attente de prise en charge" et la case "prospect recontacté" n'est pas cochée.`}>
+            {row.original.is_responsible && row.original.Status === DEMANDE_STATUS.TO_PROCESS && (
+              <Tooltip title={`Le statut de la demande est "À traiter".`}>
                 <Icon name="fr-icon-flag-fill" size="sm" color="red" />
               </Tooltip>
             )}
@@ -358,17 +351,6 @@ function DemandesNew(): React.ReactElement {
         filterType: 'Facets',
         header: 'Statut',
         width: '290px',
-      },
-      {
-        accessorKey: 'Prise de contact',
-        align: 'center',
-        cell: ({ row }) => (
-          <Contacted demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={!row.original.is_responsible} />
-        ),
-        enableGlobalFilter: false,
-        filterType: 'Facets',
-        header: 'Prospect recontacté',
-        width: '85px',
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,

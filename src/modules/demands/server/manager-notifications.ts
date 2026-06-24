@@ -28,7 +28,7 @@ const baseNotifiableQuery = () =>
     .where('d.network_type', 'is not', null);
 
 /**
- * Envoie un email de relance aux gestionnaires qui ont des demandes en attente de prise en charge
+ * Envoie un email de relance aux gestionnaires qui ont des demandes à traiter
  * depuis plus de 7 jours sur un réseau pour lequel ils ont une permission.
  */
 export const notifyGestionnairesOfUnhandledDemands = async () => {
@@ -41,7 +41,7 @@ export const notifyGestionnairesOfUnhandledDemands = async () => {
       eb.or([
         eb(sql`d.legacy_values->>'Status'`, '=', ''),
         eb(sql`d.legacy_values->>'Status'`, 'is', null),
-        eb(sql`d.legacy_values->>'Status'`, '=', DEMANDE_STATUS.EMPTY),
+        eb(sql`d.legacy_values->>'Status'`, '=', DEMANDE_STATUS.TO_PROCESS),
       ])
     )
     .execute();

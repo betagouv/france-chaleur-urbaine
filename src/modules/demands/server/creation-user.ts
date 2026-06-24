@@ -46,7 +46,7 @@ export const createDemand = async (
         'ID réseau le plus proche': null,
         Logement: nbLogement?.nb_logements ? nbLogement.nb_logements : undefined,
         'Relance à activer': values.eligibility.isEligible && values.heatingType === 'collectif',
-        Status: values.eligibility.isEligible ? undefined : DEMANDE_STATUS.UNREALISABLE,
+        Status: values.eligibility.isEligible ? DEMANDE_STATUS.TO_PROCESS : DEMANDE_STATUS.UNREALISABLE,
       })}::jsonb`,
       origin_host: values.origin_host ?? null,
       origin_page: values.origin_page ?? null,

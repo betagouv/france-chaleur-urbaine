@@ -208,9 +208,9 @@ const faqItems: FaqItem[] = [
         <ul>
           <li>via la barre de recherche en haut du tableau (par mot-clé) ;</li>
           <li>
-            affiner l'affichage grâce aux filtres et tris disponibles sur les colonnes suivantes : statut, prospect recontacté, date de la
-            demande, type de bâtiment, mode et type de chauffage, distance au réseau, réseau affecté, nombre de logements, surface,
-            consommation de gaz et accès.
+            affiner l'affichage grâce aux filtres et tris disponibles sur les colonnes suivantes : statut, date de la demande, type de
+            bâtiment, mode et type de chauffage, distance au réseau, réseau affecté, nombre de logements, surface, consommation de gaz et
+            accès.
           </li>
         </ul>
       </>
