@@ -121,17 +121,17 @@ export const modesDeChauffage = {
         {
           isIncompatible: (situation) => situation.geothermalNappeGmi === 3 || situation.geothermalSondeGmi === 3,
           reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
-          source: 'Cerema',
+          source: 'CEREMA',
         },
         {
           isIncompatible: (situation) => situation.geothermalNappePotential === 5 || situation.geothermalNappePotential === 6,
           reason: 'La ressource énergétique de la parcelle est insuffisante',
-          source: 'Cerema',
+          source: 'CEREMA',
         },
         {
           isIncompatible: (situation) => situation.hasGeothermalProbeSpace === false,
           reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
-          source: 'Cerema',
+          source: 'CEREMA',
         },
       ],
       inconvenients: [
@@ -339,7 +339,7 @@ export const modesDeChauffage = {
         {
           isIncompatible: hasInsufficientSolarThermalCoverage,
           reason: 'La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale.',
-          source: 'Cerema',
+          source: 'CEREMA',
         },
       ],
       inconvenients: [
@@ -576,7 +576,7 @@ export const modesDeChauffage = {
         {
           isIncompatible: hasInsufficientSolarThermalCoverage,
           reason: 'La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale.',
-          source: 'Cerema',
+          source: 'CEREMA',
         },
       ],
       inconvenients: [
@@ -722,17 +722,17 @@ export const modesDeChauffage = {
         {
           isIncompatible: (situation) => situation.geothermalNappeGmi === 3 || situation.geothermalSondeGmi === 3,
           reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
-          source: 'Cerema',
+          source: 'CEREMA',
         },
         {
           isIncompatible: (situation) => situation.geothermalNappePotential === 5 || situation.geothermalNappePotential === 6,
           reason: 'La ressource énergétique de la parcelle est insuffisante',
-          source: 'Cerema',
+          source: 'CEREMA',
         },
         {
           isIncompatible: (situation) => situation.hasGeothermalProbeSpace === false,
           reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
-          source: 'Cerema',
+          source: 'CEREMA',
         },
         {
           isIncompatible: (situation) => situation.typeRadiateur === 'radiateur-electrique',
