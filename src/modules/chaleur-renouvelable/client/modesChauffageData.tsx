@@ -121,17 +121,17 @@ export const modesDeChauffage = {
         {
           isIncompatible: (situation) => situation.geothermalNappeGmi === 3 || situation.geothermalSondeGmi === 3,
           reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
-          source: 'CEREMA',
+          source: 'BRGM',
         },
         {
           isIncompatible: (situation) => situation.geothermalNappePotential === 5 || situation.geothermalNappePotential === 6,
           reason: 'La ressource énergétique de la parcelle est insuffisante',
-          source: 'CEREMA',
+          source: 'BRGM',
         },
         {
           isIncompatible: (situation) => situation.hasGeothermalProbeSpace === false,
           reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
-          source: 'CEREMA',
+          source: 'BRGM',
         },
       ],
       inconvenients: [
@@ -726,17 +726,17 @@ export const modesDeChauffage = {
         {
           isIncompatible: (situation) => situation.geothermalNappeGmi === 3 || situation.geothermalSondeGmi === 3,
           reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
-          source: 'CEREMA',
+          source: 'BRGM',
         },
         {
           isIncompatible: (situation) => situation.geothermalNappePotential === 5 || situation.geothermalNappePotential === 6,
           reason: 'La ressource énergétique de la parcelle est insuffisante',
-          source: 'CEREMA',
+          source: 'BRGM',
         },
         {
           isIncompatible: (situation) => situation.hasGeothermalProbeSpace === false,
           reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
-          source: 'CEREMA',
+          source: 'BRGM',
         },
         {
           isIncompatible: (situation) => situation.typeRadiateur === 'radiateur-electrique',
