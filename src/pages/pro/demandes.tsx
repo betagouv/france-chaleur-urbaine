@@ -10,7 +10,6 @@ import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Mana
 import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
-import Icon from '@/components/ui/Icon';
 import Loader from '@/components/ui/Loader';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
@@ -150,7 +149,7 @@ const allPresetDefinitions = {
         <Tooltip title="Demandes que vous devez traiter en priorité : non encore prises en charge et relevant de votre périmètre." />
       </>
     ),
-    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
+    valueSuffix: <span className="text-base">⚠️</span>,
   },
   traitees: {
     filters: [
@@ -325,16 +324,7 @@ function DemandesNew(): React.ReactElement {
     () => [
       {
         align: 'center',
-        cell: ({ row }) => (
-          <div className="flex flex-col gap-2">
-            {row.original.is_responsible && row.original.Status === DEMANDE_STATUS.TO_PROCESS && (
-              <Tooltip title={`Le statut de la demande est "À traiter".`}>
-                <Icon name="fr-icon-flag-fill" size="sm" color="red" />
-              </Tooltip>
-            )}
-            {row.original.haut_potentiel && <Badge type="haut_potentiel" />}
-          </div>
-        ),
+        cell: ({ row }) => <div className="flex flex-col gap-2">{row.original.haut_potentiel && <Badge type="haut_potentiel" />}</div>,
         header: '',
         id: 'indicators',
         width: '46px',
