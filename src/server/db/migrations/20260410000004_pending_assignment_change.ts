@@ -3,8 +3,8 @@ import { sql } from 'kysely';
 
 export async function up(db: Kysely<any>): Promise<void> {
   await sql`
-    ALTER TABLE demands ADD COLUMN pending_assignment_change JSONB;
-    CREATE INDEX idx_demands_pending_assignment_change ON demands (id) WHERE pending_assignment_change IS NOT NULL;
+    ALTER TABLE demands ADD COLUMN IF NOT EXISTS pending_assignment_change JSONB;
+    CREATE INDEX IF NOT EXISTS idx_demands_pending_assignment_change ON demands (id) WHERE pending_assignment_change IS NOT NULL;
   `.execute(db);
 }
 

@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
@@ -6,21 +7,29 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import type { EspaceExterieur } from '@/modules/chaleur-renouvelable/constants';
+import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 
 export default function ChoixChauffageForm() {
   const router = useRouter();
-  const urlParams = useChoixChauffageQueryParams();
-  const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility } = useAddressEligibility(urlParams.adresse ?? null);
-  const isFormDisabled = !urlParams.adresse || !geoAddress || !urlParams.typeLogement || !urlParams.espaceExterieur;
+  const chauffageQuery = useChoixChauffageQueryParams();
+  const params = chauffageQuery.params;
+  const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility, selectedBatEnrBatiment } = useAddressEligibility(
+    params.adresse ?? null
+  );
+  const isFormDisabled = !params.adresse || !geoAddress || !params.typeLogement || !params.espaceExterieur;
+
+  useEffect(() => {
+    if (!selectedBatEnrBatiment) {
+      return;
+    }
+
+    chauffageQuery.setPrefillParams(getSimulationPrefillFromBatEnrBatiment(selectedBatEnrBatiment));
+  }, [chauffageQuery, selectedBatEnrBatiment]);
 
   return (
     <form>
       <SettingsTopFields
-        withLabel
-        className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-3 bg-[#fbf6ed]"
-        adresse={urlParams.adresse ?? null}
-        setAdresse={urlParams.setAdresse}
+        adresse={params.adresse ?? null}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={(geoAddress?: BANAddressFeature) => {
@@ -30,10 +39,10 @@ export default function ChoixChauffageForm() {
           }
           onSelectGeoAddress(geoAddress);
         }}
-        typeLogement={urlParams.typeLogement ?? null}
-        setTypeLogement={urlParams.setTypeLogement}
-        espaceExterieur={(urlParams.espaceExterieur ?? null) as EspaceExterieur | null}
-        setEspaceExterieur={urlParams.setEspaceExterieur}
+        typeLogement={params.typeLogement ?? null}
+        espaceExterieur={params.espaceExterieur ?? null}
+        typeRadiateur={params.typeRadiateur ?? null}
+        setParams={chauffageQuery.setParams}
       />
 
       <div className="mt-5 flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-end">
@@ -46,12 +55,15 @@ export default function ChoixChauffageForm() {
           iconId="fr-icon-arrow-right-line"
           iconPosition="right"
           disabled={isFormDisabled}
-          onClick={(e) => {
-            e.stopPropagation();
-            trackPostHogEvent('fcr_landing:compare_cta_clicked', {
-              address: String(urlParams.adresse),
-              espaceExterieur: String(urlParams.espaceExterieur),
-              typeLogement: String(urlParams.typeLogement),
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            trackPostHogEvent('fcr_landing:hero_cta_clicked');
+            trackPostHogEvent('fcr_landing:simulation_started', {
+              address_filled: Boolean(params.adresse),
+              emitter_type: params.typeRadiateur,
+              heating_mode: params.typeLogement,
+              outdoor_space: params.espaceExterieur,
             });
             const search = window.location.search;
             router.push(`/chaleur-renouvelable/resultat${search}`);

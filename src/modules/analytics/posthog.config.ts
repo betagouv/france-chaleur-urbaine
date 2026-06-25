@@ -1,7 +1,16 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import type { FinalityConsent } from '@codegouvfr/react-dsfr/consentManagement/types';
 
-import type { EspaceExterieur, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import type {
+  DPE,
+  EspaceExterieur,
+  HeatingEnergy,
+  ModeEauChaudeSanitaire,
+  OccupantStatus,
+  ProjectStatus,
+  TypeLogement,
+  TypeRadiateur,
+} from '@/modules/chaleur-renouvelable/constants';
 import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import type { TypeCommune } from '@/server/services/communeAPotentiel';
 
@@ -105,6 +114,30 @@ export type PostHogEventMap = {
     espaceExterieur?: string;
     source: 'landing' | 'result';
   };
+  'fcr_landing:hero_cta_clicked': never;
+  'fcr_landing:address_typed': never;
+  'fcr_landing:heating_mode_selected': {
+    heating_mode: TypeLogement;
+  };
+  'fcr_landing:emitter_type_selected': {
+    emitter_type: TypeRadiateur;
+  };
+  'fcr_landing:outdoor_space_selected': {
+    outdoor_space: EspaceExterieur;
+  };
+  'fcr_landing:simulation_started': {
+    address_filled: boolean;
+    emitter_type?: TypeRadiateur | null;
+    heating_mode?: TypeLogement | null;
+    outdoor_space?: EspaceExterieur | null;
+  };
+  'fcr_landing:scroll_depth_reached': {
+    depth_percent: 25 | 50 | 75 | 100;
+  };
+  'fcr_landing:bottom_cta_clicked': never;
+  'fcr_landing:faq_item_opened': {
+    faq_question: string;
+  };
   'simu_multi_enr:params_updated': {
     dpe?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
     surface?: number;
@@ -184,19 +217,116 @@ export type PostHogEventMap = {
     name: string;
   };
 
-  'fcr_landing:article_clicked': ElementType;
-  'fcr_landing:testimonial_clicked': ElementType;
+  'fcr_landing:article_clicked': ElementType & {
+    article_position?: number;
+    article_title?: string;
+  };
+  'fcr_landing:testimonial_clicked': ElementType & {
+    testimonial_title?: string;
+  };
   'fcr_landing:faq_clicked': ElementType;
   'fcr_simulator:address_selected': {
     address: string;
+    city?: string;
+    postcode?: string;
     source: 'landing' | 'result';
   };
-  'fcr_simulator:heating_mode_selected': { typeLogement: TypeLogement };
-  'fcr_simulator:outdoor_space_selected': { outdoorSpace: EspaceExterieur };
+  'fcr_simulator:heating_mode_selected': { heating_mode?: TypeLogement; typeLogement?: TypeLogement };
+  'fcr_simulator:emitter_type_selected': { emitter_type: TypeRadiateur };
+  'fcr_simulator:outdoor_space_selected': { outdoorSpace?: EspaceExterieur; outdoor_space?: EspaceExterieur };
+  'fcr_simulator:params_panel_opened': never;
+  'fcr_simulator:nb_logements_changed': { nb_logements: number };
+  'fcr_simulator:surface_changed': { surface_m2: number };
+  'fcr_simulator:habitants_changed': { habitants: number };
+  'fcr_simulator:dpe_changed': { dpe: DPE };
+  'fcr_simulator:ecs_mode_changed': { ecs_mode: ModeEauChaudeSanitaire };
+  'fcr_simulator:parameters_saved': {
+    dpe: DPE;
+    ecs_mode?: ModeEauChaudeSanitaire | null;
+    emitter_type?: TypeRadiateur | null;
+    habitants?: number;
+    heating_mode?: TypeLogement | null;
+    nb_logements?: number;
+    surface_m2?: number;
+  };
+  'fcr_simulator:parameters_cancelled': never;
   'fcr_landing:compare_cta_clicked': {
     address: string;
     typeLogement: string;
     espaceExterieur: string;
+  };
+  'fcr_results:no_solution_displayed': {
+    heating_mode?: TypeLogement | null;
+    outdoor_space?: EspaceExterieur | null;
+  };
+  'fcr_results:recommended_solution_displayed': {
+    solution_type: string;
+  };
+  'fcr_results:recommended_solution_expanded': {
+    solution_type: string;
+  };
+  'fcr_results:recommended_solution_cta_clicked': {
+    solution_type: string;
+  };
+  'fcr_results:tab_switched': {
+    tab_value: 'chauffage_ecs' | 'ecs_uniquement';
+  };
+  'fcr_results:alternative_solution_opened': {
+    position: number;
+    solution_type: string;
+  };
+  'fcr_results:alternative_solution_closed': {
+    position: number;
+    solution_type: string;
+  };
+  'fcr_results:prerequisite_detail_clicked': {
+    prerequisite_label: string;
+    solution_type: string;
+  };
+  'fcr_results:alternative_solution_cta_clicked': {
+    solution_type: string;
+  };
+  'fcr_results:methodology_link_clicked': never;
+  'fcr_results:share_button_clicked': never;
+  'fcr_results:agir_link_clicked': never;
+  'fcr_results:france_renov_cta_clicked': never;
+  'fcr_results:no_ecs_solution_displayed': {
+    heating_mode?: TypeLogement | null;
+  };
+  'fcr_results:ecs_to_full_tab_clicked': never;
+  'fcr_contact:profile_selected': {
+    is_raccordable: boolean;
+    profile: OccupantStatus;
+  };
+  'fcr_contact:energy_selected': {
+    energy: HeatingEnergy;
+    is_raccordable: boolean;
+  };
+  'fcr_contact:nb_logements_filled': {
+    is_raccordable: boolean;
+    nb_logements: number;
+  };
+  'fcr_contact:project_stage_selected': {
+    is_raccordable: boolean;
+    stages: ProjectStatus[];
+  };
+  'fcr_contact:non_raccordable_checked': never;
+  'fcr_contact:non_raccordable_reason_selected': {
+    reason: string;
+  };
+  'fcr_contact:map_viewed': never;
+  'fcr_contact:cgu_accepted': {
+    is_raccordable: boolean;
+  };
+  'fcr_contact:form_submitted': {
+    energy: HeatingEnergy;
+    is_raccordable: boolean;
+    nb_logements?: number;
+    non_raccordable_reason?: string;
+    phone_filled: boolean;
+    profile: OccupantStatus;
+    project_stages: ProjectStatus[];
+    top_solution?: string;
   };
   // Navigation (liens, CTA, boutons)
   'link:click': {

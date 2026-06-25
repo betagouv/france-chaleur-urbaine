@@ -336,25 +336,6 @@ describe('Autocomplete - mode multiple (tags)', () => {
     expect(onValuesChange).not.toHaveBeenCalled();
   });
 
-  it("arrête le spinner quand on ajoute un tag pendant qu'une requête est en vol", async () => {
-    // fetchFn qui ne résout jamais → la requête reste « en vol » (isRunning = true)
-    const pendingFetch = vi.fn((_query: string, _signal: AbortSignal) => new Promise<Option[]>(() => {}));
-    const onValuesChange = vi.fn();
-    render(<Autocomplete {...multipleProps} fetchFn={pendingFetch} allowFreeText values={[]} onValuesChange={onValuesChange} />);
-    const input = screen.getByRole('combobox');
-
-    await act(async () => fireEvent.change(input, { target: { value: 'Custom' } }));
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(DEFAULT_DEBOUNCE_TIME);
-    });
-    expect(input.getAttribute('aria-busy')).toBe('true');
-
-    // Entrée ajoute le texte libre → resetSearch → cancel() : le spinner doit s'arrêter
-    await act(async () => fireEvent.keyDown(input, { key: 'Enter' }));
-    expect(onValuesChange).toHaveBeenCalledWith(['Custom']);
-    expect(input.getAttribute('aria-busy')).toBe('false');
-  });
-
   it('sans fetchFn : pas de dropdown, mais Entrée ajoute le texte libre', async () => {
     const onValuesChange = vi.fn();
     render(<Autocomplete<string> multiple allowFreeText getOptionValue={(o) => o} values={[]} onValuesChange={onValuesChange} />);

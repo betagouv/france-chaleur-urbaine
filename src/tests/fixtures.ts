@@ -99,6 +99,7 @@ export async function cleanDatabase() {
 
     // User-related tables
     kdb.deleteFrom('demand_emails').execute(),
+    kdb.deleteFrom('demands_chaleur_renouvelable').execute(),
     kdb.deleteFrom('events').execute(),
     kdb.deleteFrom('pro_eligibility_tests_addresses').execute(),
     kdb.deleteFrom('jobs').execute(),

@@ -1,242 +1,130 @@
-import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 
-import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import { EligibilityFormContact } from '@/components/EligibilityForm';
 import CallOut from '@/components/ui/CallOut';
+import Dialog from '@/components/ui/Dialog';
 import Link from '@/components/ui/Link';
-import Modal, { createModal } from '@/components/ui/Modal';
-import useContactFormFCU from '@/hooks/useContactFormFCU';
 import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
-import type { BANAddressFeature } from '@/modules/ban/types';
-import AdemeHelp from '@/modules/chaleur-renouvelable/client/AdemeHelp';
-import FranceRenovHelp from '@/modules/chaleur-renouvelable/client/FranceRenovHelp';
-import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
-import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
-import { useRemoveHashOnScroll } from '@/modules/chaleur-renouvelable/client/hooks/useRemoveHashOnScroll';
-import {
-  type ModeDeChauffageEnriched,
-  modeDeChauffageParTypeLogement,
-  type Situation,
-} from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import type { DPE } from '@/modules/chaleur-renouvelable/constants';
+import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
+import DemandeFCRForm, { type ContactRecipientId } from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
+import { useChoixChauffageResults } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageResults';
+import { HeatNetworkContactSteps } from '@/modules/chaleur-renouvelable/client/results/ui/HeatNetworkContactSteps';
+import { IncompatibleSolutionsSection } from '@/modules/chaleur-renouvelable/client/results/ui/IncompatibleSolutionsSection';
+import { NoResultSection } from '@/modules/chaleur-renouvelable/client/results/ui/NoResultSection';
+import { RecommendedSolutionCard } from '@/modules/chaleur-renouvelable/client/results/ui/RecommendedSolutionCard';
+import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui/ResultsSection';
 import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
 
 import { ParamsForm } from './ParamsForm';
-import { ResultRowAccordion, ScrollToHelpButton } from './ResultRowAccordion';
-
-type ResultsSectionProps = {
-  title: string;
-  items: ModeDeChauffageEnriched[];
-  variant: 'recommended' | 'other';
-  dpeFrom: DPE;
-  openAccordionId: string | null;
-  coutParAnGaz: number;
-  onHelpButtonClick?: () => void;
-  onOpenChange: (id: string, expanded: boolean) => void;
-};
-
-const heatNetworkContactModal = createModal({
-  id: 'heat-network-contact-modal',
-  isOpenedByDefault: false,
-});
 
 export default function ChoixChauffageResults() {
-  const engine = useSimulatorEngine();
   const isMobile = useIsMobile();
-  const urlParams = useChoixChauffageQueryParams();
-  useRemoveHashOnScroll('#help-ademe');
+  const [selectedContactRecipientId, setSelectedContactRecipientId] = useState<ContactRecipientId>('network-manager');
   const {
+    batEnrBatiments,
+    contactForm,
+    coutParAnGaz,
+    coutParAnGazHotWaterOnly,
+    effectiveTypeLogement,
     geoAddress,
+    handleAccordionOpenChange,
+    handleEditHotWaterParamsClick,
+    handleSelectBatEnrBatiment,
+    handleSelectGeoAddress,
+    incompatibleSolutionRows,
+    isEligibilityLoading,
+    isParamsOpen,
+    modesEnriched,
+    openAccordionId,
+    otherModes,
+    recommended,
     setGeoAddress,
-    batEnr,
-    codeDepartement,
-    eligibiliteReseauChaleur,
-    temperatureRef,
-    onSelectGeoAddress,
-    resetEligibility,
-  } = useAddressEligibility(urlParams.adresse ?? null);
+    setIsParamsOpen,
+    selectedBatEnrBatiment,
+    shouldSelectBatEnrBatiment,
+    situation,
+    urlParams,
+  } = useChoixChauffageResults();
+  const params = urlParams.params;
+  const shouldPreselectPublicAdvisor = Boolean(situation.eligibiliteReseauChaleur);
+  const isHeatNetworkRecommended = recommended?.label === 'Réseau de chaleur' && Boolean(situation.eligibiliteReseauChaleur);
 
-  const [isParamsOpen, setIsParamsOpen] = useState(false);
-  const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
-  const {
-    addressData,
-    contactReady,
-    messageReceived,
-    loadingStatus,
-    handleOnSubmitContact,
-    handleOnSuccessAddress,
-    handleResetFormContact,
-  } = useContactFormFCU();
-
-  const situation: Situation = useMemo(
-    () => ({
-      adresse: urlParams.adresse ?? null,
-      dpe: urlParams.dpe,
-      eligibiliteReseauChaleur,
-      espaceExterieur: urlParams.espaceExterieur ?? 'none',
-      geothermiePossible: batEnr.geothermiePossible,
-      habitantsMoyen: Number.parseFloat(urlParams.habitantsMoyen || '2'),
-      nbLogements: urlParams.nbLogements ?? 25,
-      planProtectionAtmosphere: batEnr.planProtectionAtmosphere,
-      surfaceMoyenne: urlParams.surfaceMoyenne ?? 70,
-    }),
-    [
-      urlParams.adresse,
-      urlParams.dpe,
-      urlParams.espaceExterieur,
-      urlParams.habitantsMoyen,
-      urlParams.nbLogements,
-      urlParams.surfaceMoyenne,
-      batEnr.geothermiePossible,
-      batEnr.planProtectionAtmosphere,
-      eligibiliteReseauChaleur,
-    ]
-  );
-
-  // Pousse la situation dans Publicodes dès qu’elle change
-  useEffect(() => {
-    if (!codeDepartement) return;
-
-    engine.setSituation({
-      'code département': `'${codeDepartement}'`,
-      DPE: `'${situation.dpe}'`,
-      'Inclure la climatisation': 'non',
-      "Nombre d'habitants moyen par appartement": `${situation.habitantsMoyen}`,
-      "nombre de logements dans l'immeuble concerné": situation.nbLogements,
-      'Production eau chaude sanitaire': 'oui',
-      'surface logement type tertiaire': `${situation.surfaceMoyenne}`,
-      'température de référence chaud commune': temperatureRef,
-      'type de production ECS': "'Avec équipement chauffage'",
+  const handleSelectContactRecipient = (recipientId: ContactRecipientId) => {
+    setSelectedContactRecipientId(recipientId);
+    requestAnimationFrame(() => {
+      document.getElementById('help-ademe')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
-  }, [situation, codeDepartement, temperatureRef]);
+  };
 
-  const effectiveTypeLogement = urlParams.typeLogement ?? 'immeuble_chauffage_collectif';
-
-  const modesDeChauffage = useMemo(() => {
-    return modeDeChauffageParTypeLogement[effectiveTypeLogement].filter((m) => m.estPossible(situation));
-  }, [effectiveTypeLogement, situation]);
-
-  const modesWithCout = useMemo(() => {
-    return modesDeChauffage.map((it) => {
-      const coutParAn = it.coutParAnPublicodeKey
-        ? engine.getFieldAsNumber(`Bilan x ${it.coutParAnPublicodeKey} . total sans installation` as RuleName)
-        : 0;
-      const coutInstallation =
-        typeof it.coutInstallation === 'function' ? it.coutInstallation(situation) : String(it.coutInstallation ?? '0');
-      const contraintesTechniques =
-        typeof it.contraintesTechniques === 'function' ? it.contraintesTechniques(situation) : it.contraintesTechniques;
-
-      return { ...it, contraintesTechniques, coutInstallation, coutParAn };
-    });
-  }, [modesDeChauffage, engine]);
-  const coutParAnGaz = engine.getFieldAsNumber(`Bilan x Gaz coll sans cond . total avec aides` as RuleName);
-  const [recommended, ...others] = modesWithCout;
-
-  const handleAccordionOpenChange = useCallback((id: string, expanded: boolean) => {
-    setOpenAccordionId(expanded ? id : null);
-    trackPostHogEvent('chaleur-renouvelable:accordeon', { name: id });
-    trackPostHogEvent('fcr_simulator:accordion_opened', { chauffage_mode: id });
-  }, []);
-  const openHeatNetworkContactModal = useCallback(() => {
-    if (!geoAddress || !urlParams.adresse || !eligibiliteReseauChaleur) {
-      return;
-    }
-
-    trackPostHogEvent('simu_multi_enr:methodo_clicked', { chauffage_mode: 'Réseau de chaleur' });
-
-    const [lon, lat] = geoAddress.geometry.coordinates;
-    handleOnSuccessAddress(
-      {
-        address: urlParams.adresse,
-        coords: { lat, lon },
-        eligibility: eligibiliteReseauChaleur,
-        geoAddress,
-        heatingType: 'collectif',
-      },
-      'chaleur-renouvelable'
-    );
-  }, [eligibiliteReseauChaleur, geoAddress, handleOnSuccessAddress, urlParams.adresse]);
-  const handleSelectGeoAddress = useCallback(
-    (geoAddress?: BANAddressFeature) => {
-      if (!geoAddress) {
-        resetEligibility();
-        return;
-      }
-      onSelectGeoAddress(geoAddress);
-    },
-    [onSelectGeoAddress, resetEligibility]
-  );
-  const helpButtonClick = recommended?.helpAction === 'open-heat-network-contact' ? openHeatNetworkContactModal : undefined;
-
-  // pendant l’hydration, on évite de rendre conditionnellement (isMobile null)
-  if (isMobile === null) return null;
+  if (isMobile === null) {
+    return null;
+  }
 
   return (
     <>
-      {!isMobile && (
-        <div className="fr-mb-2w">
-          <SettingsTopFields
-            withLabel={false}
-            className="grid grid-cols-1 gap-4 md:grid-cols-3"
-            adresse={urlParams.adresse ?? null}
-            setAdresse={urlParams.setAdresse}
-            geoAddress={geoAddress}
-            setGeoAddress={setGeoAddress}
-            onSelectGeoAddress={handleSelectGeoAddress}
-            onAddressError={() => {}}
-            typeLogement={urlParams.typeLogement ?? null}
-            setTypeLogement={urlParams.setTypeLogement}
-            espaceExterieur={urlParams.espaceExterieur ?? null}
-            setEspaceExterieur={urlParams.setEspaceExterieur}
-          />
-        </div>
-      )}
       <ParamsForm
-        showTopFields={isMobile}
+        batiments={batEnrBatiments}
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
-        adresse={urlParams.adresse ?? null}
-        setAdresse={urlParams.setAdresse}
+        values={urlParams.simulationParams}
+        onSave={urlParams.setParams}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
         onSelectGeoAddress={handleSelectGeoAddress}
+        onSelectBatiment={handleSelectBatEnrBatiment}
         onAddressError={() => {}}
-        typeLogement={urlParams.typeLogement ?? null}
-        setTypeLogement={urlParams.setTypeLogement}
-        espaceExterieur={urlParams.espaceExterieur ?? null}
-        setEspaceExterieur={urlParams.setEspaceExterieur}
-        dpe={urlParams.dpe}
-        setDpe={urlParams.setDpe}
-        nbLogements={urlParams.nbLogements}
-        setNbLogements={urlParams.setNbLogements}
-        surfaceMoyenne={urlParams.surfaceMoyenne}
-        setSurfaceMoyenne={urlParams.setSurfaceMoyenne}
-        habitantsMoyen={urlParams.habitantsMoyen}
-        setHabitantsMoyen={urlParams.setHabitantsMoyen}
+        selectedBatiment={selectedBatEnrBatiment}
       />
-      {modesWithCout.length > 0 ? (
+      <Dialog title="" open={shouldSelectBatEnrBatiment} size="lg">
+        <BatEnrBatimentSelection
+          batiments={batEnrBatiments}
+          initialCenter={geoAddress?.geometry.coordinates}
+          onSelect={handleSelectBatEnrBatiment}
+          selectedBatiment={selectedBatEnrBatiment}
+        />
+      </Dialog>
+      {isEligibilityLoading ? (
+        <div className="mt-6 border border-gray-200 bg-white px-5 py-6 md:px-10">Chargement des résultats...</div>
+      ) : modesEnriched.length > 0 && recommended ? (
         <>
-          <ResultsSection
-            title="Solution recommandée"
-            items={[recommended]}
-            variant="recommended"
+          <RecommendedSolutionCard
+            item={recommended}
             coutParAnGaz={coutParAnGaz}
-            dpeFrom={urlParams.dpe}
-            onHelpButtonClick={helpButtonClick}
-            openAccordionId={openAccordionId}
-            onOpenChange={handleAccordionOpenChange}
+            coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
+            dpeFrom={params.dpe}
+            geoAddress={geoAddress}
+            isOpen={openAccordionId === undefined || openAccordionId === recommended.label}
+            onOpenChange={(expanded) => {
+              if (expanded) {
+                trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: recommended.label });
+              }
+              handleAccordionOpenChange(recommended.label, expanded);
+            }}
+            situation={situation}
           />
+          {isHeatNetworkRecommended && <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />}
           <ResultsSection
-            title="Autres solutions possibles"
-            items={others}
+            items={otherModes}
             coutParAnGaz={coutParAnGaz}
-            variant="other"
-            dpeFrom={urlParams.dpe}
-            openAccordionId={openAccordionId}
+            coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
+            dpeFrom={params.dpe}
+            openAccordionId={openAccordionId ?? null}
+            situation={situation}
+            typeLogement={effectiveTypeLogement}
+            onEditParamsClick={handleEditHotWaterParamsClick}
             onOpenChange={handleAccordionOpenChange}
+            onCtaClick={() => {
+              if (shouldPreselectPublicAdvisor) {
+                setSelectedContactRecipientId('public-advisor');
+              }
+            }}
+          />
+          <IncompatibleSolutionsSection rows={incompatibleSolutionRows} />
+          <DemandeFCRForm
+            selectedRecipientId={selectedContactRecipientId}
+            setSelectedRecipientId={setSelectedContactRecipientId}
+            topSolution={recommended.label}
           />
           <CallOut
             title={
@@ -247,110 +135,42 @@ export default function ChoixChauffageResults() {
             }
             size="lg"
             colorVariant="blue-ecume"
+            className="mt-6"
           >
             Nos recommandations sont calculées à partir des informations que vous avez fournies : mode de chauffage, surface moyenne, classe
             DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer les coûts
             et contraintes techniques propres à votre situation.
             <div className="fr-mt-3w">
-              <Link
-                postHogEventKey="link:click"
-                postHogEventProps={{ link_name: 'cta_comment_calculer_resultat', source: 'chaleur_renouvelable' }}
-                href="/chaleur-renouvelable/methodologie"
-              >
+              <Link href="/chaleur-renouvelable/methodologie" postHogEventKey="fcr_results:methodology_link_clicked">
                 En savoir plus
               </Link>
             </div>
           </CallOut>
-          <AdemeHelp />
-          <Modal
-            modal={heatNetworkContactModal}
+          <Dialog
             title=""
-            open={contactReady}
-            size="custom"
-            loading={loadingStatus === 'loading'}
-            onClose={() => {
-              handleResetFormContact();
+            open={contactForm.contactReady}
+            size="lg"
+            onOpenChange={(open) => {
+              if (!open) {
+                contactForm.handleResetFormContact();
+              }
             }}
           >
             <div>
-              {contactReady && !messageReceived && (
+              {contactForm.contactReady && !contactForm.messageReceived && (
                 <EligibilityFormContact
-                  addressData={addressData}
+                  addressData={contactForm.addressData}
                   className="p-0"
-                  onSubmit={(data) => handleOnSubmitContact(data, 'choix-chauffage')}
+                  onSubmit={(data) => contactForm.handleOnSubmitContact(data, 'choix-chauffage')}
                 />
               )}
-              {messageReceived && <DemandSondageForm addressData={addressData} cardMode />}
+              {contactForm.messageReceived && <DemandSondageForm addressData={contactForm.addressData} cardMode />}
             </div>
-          </Modal>
+          </Dialog>
         </>
       ) : (
         <NoResultSection codeInsee={geoAddress?.properties.citycode} />
       )}
-    </>
-  );
-}
-
-function ResultsSection({
-  title,
-  items,
-  coutParAnGaz,
-  variant,
-  dpeFrom,
-  openAccordionId,
-  onHelpButtonClick,
-  onOpenChange,
-}: ResultsSectionProps) {
-  return (
-    <>
-      <h3 className="fr-mt-6w">{title}</h3>
-      <div className="border border-gray-200 bg-white rounded shadow-lg fr-my-3w fr-px-3w fr-pb-3w">
-        {items.map((it, i) => {
-          const id = it.label;
-          return (
-            <ResultRowAccordion
-              key={id}
-              item={it}
-              index={i}
-              variant={variant}
-              coutParAnGaz={coutParAnGaz}
-              dpeFrom={dpeFrom}
-              isOpen={openAccordionId === id}
-              onOpenChange={(expanded) => onOpenChange(id, expanded)}
-            />
-          );
-        })}
-        {variant === 'recommended' && <ScrollToHelpButton chauffageMode={items[0].label} onClick={onHelpButtonClick} />}
-      </div>
-    </>
-  );
-}
-
-function NoResultSection({ codeInsee }: { codeInsee?: string }) {
-  return (
-    <>
-      <h3>Aucune solution de chauffage alternative n'est adaptée à votre situation actuelle</h3>
-      <p>
-        Pas d'inquiétude, d'autres actions permettent de réduire vos consommations d'énergie, vos factures et votre impact environnemental :
-      </p>
-      <ul>
-        <li>
-          <strong>Isoler votre logement</strong> : toiture, murs, fenêtres, planchers — c'est souvent le geste le plus efficace
-        </li>
-        <li>
-          <strong>Améliorer votre système de ventilation</strong> : une VMC performante améliore la qualité de l'air et limite les pertes de
-          chaleur
-        </li>
-        <li>
-          <strong>Optimiser votre chauffage actuel</strong> : entretien de la chaudière, désembouage des radiateurs, installation de
-          robinets thermostatiques
-        </li>
-        <li>
-          <strong>Réduire vos consommations d'eau chaude</strong> : mousseurs, pommeaux économes, calorifugeage des tuyaux
-        </li>
-      </ul>
-      <p>Ces travaux peuvent être éligibles à des aides financières (MaPrimeRénov', CEE, éco-prêt à taux zéro).</p>
-      <FranceRenovHelp codeInsee={codeInsee} />
     </>
   );
 }

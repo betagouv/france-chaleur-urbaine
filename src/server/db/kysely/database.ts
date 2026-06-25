@@ -5,6 +5,17 @@
 
 import type { ColumnType, JSONColumnType } from 'kysely';
 
+import type {
+  DemandConcern,
+  DPE,
+  EspaceExterieur,
+  HeatingEnergy,
+  ModeEauChaudeSanitaire,
+  OccupantStatus,
+  ProjectStatus,
+  TypeLogement,
+  TypeRadiateur,
+} from '@/modules/chaleur-renouvelable/constants';
 import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
@@ -56,6 +67,8 @@ export interface BdnbBatenr {
   adresse: string | null;
   batiment_construction_id: string | null;
   batiment_groupe_id: string | null;
+  categorie_majoritaire: string | null;
+  classe_bilan_dpe: DPE | null;
   etat_ppa: string | null;
   geom: string | null;
   gis_geo_profonde: boolean | null;
@@ -64,6 +77,14 @@ export interface BdnbBatenr {
   liste_ppa: string | null;
   place_nappe: boolean | null;
   pot_nappe: number | null;
+  couv_st_ecs_2025: number | null;
+  couv_sondes_200_2025: number | null;
+  prod_st_mwh_an: number | null;
+  propri_uni: string | null;
+  type_energie_chauffage: string | null;
+  type_energie_ecs: string | null;
+  type_installation_chauffage: string | null;
+  type_installation_ecs: string | null;
 }
 
 export interface BdnbBatiments {
@@ -81,8 +102,8 @@ export interface BdnbBatiments {
   dle_reseaux_multimillesime_conso_pro: Numeric | null;
   dle_reseaux_multimillesime_conso_res: Numeric | null;
   dle_reseaux_multimillesime_conso_tot: Numeric | null;
-  dpe_representatif_logement_classe_bilan_dpe: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
-  dpe_representatif_logement_classe_emission_ges: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
+  dpe_representatif_logement_classe_bilan_dpe: DPE | null;
+  dpe_representatif_logement_classe_emission_ges: DPE | null;
   dpe_representatif_logement_surface_habitable_immeuble: number | null;
   dpe_representatif_logement_type_batiment_dpe: 'appartement' | 'immeuble' | 'maison' | null;
   dpe_representatif_logement_type_dpe:
@@ -202,6 +223,39 @@ export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
   x: Int8;
   y: Int8;
   z: Int8;
+}
+
+export interface DemandsChaleurRenouvelable {
+  address: string;
+  assigned_to: string | null;
+  average_area: number;
+  average_residents: number;
+  batiment_construction_id: string | null;
+  comments: string | null;
+  created_at: Generated<Timestamp>;
+  demand_concern: DemandConcern | null;
+  dpe: DPE;
+  email: string;
+  first_name: string;
+  heating_energy: HeatingEnergy;
+  hot_water_system_type: ModeEauChaudeSanitaire | null;
+  housing_count: number;
+  housing_type: TypeLogement;
+  id: Generated<string>;
+  is_public_advisor_selected: Generated<boolean>;
+  last_name: string;
+  occupant_status: OccupantStatus;
+  outdoor_space: EspaceExterieur;
+  organization_name: string | null;
+  phone: Generated<string>;
+  project_status: ProjectStatus[];
+  radiator_type: TypeRadiateur | null;
+  refusal_period: string | null;
+  refusal_reason: string | null;
+  simulation_url: string;
+  status: Generated<string>;
+  surface_area: number | null;
+  updated_at: Generated<Timestamp>;
 }
 
 export interface DemandEmails {
@@ -936,6 +990,7 @@ export interface DB {
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
+  demands_chaleur_renouvelable: DemandsChaleurRenouvelable;
   demand_emails: DemandEmails;
   demands: Demands;
   departements: Departements;
