@@ -93,7 +93,7 @@ export function BatEnrBatimentSelector({ batiments, value, onSelect }: BatEnrBat
   onSelectRef.current = onSelect;
 
   const featureCollection = useMemo(() => getBatEnrBatimentsFeatureCollection(batiments), [batiments]);
-  const sources = useMemo(() => [{ data: featureCollection, id: SOURCE_ID }], [featureCollection]);
+  const sources = useMemo(() => [{ data: featureCollection, id: SOURCE_ID, promoteId: 'batimentConstructionId' }], [featureCollection]);
 
   useMapLayers({ layers: BAT_ENR_SELECTOR_LAYERS, sources });
   useMapClickCapture(featureCollection.features.length > 0);
