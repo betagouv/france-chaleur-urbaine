@@ -174,7 +174,7 @@ export function ParamsForm({
           </Button>
         </div>
       )}
-      <p className="my-3">
+      <p className="my-3 hidden md:block">
         Ajustez les détails de votre simulation (DPE, nombre de logements, mode de production d’eau chaude...) pour obtenir un calcul plus
         précis des coûts et économies d’énergie.
       </p>
@@ -353,7 +353,7 @@ export function ParamsForm({
           full
           priority="secondary"
           iconId="fr-icon-pencil-line"
-          className="mb-6 md:hidden"
+          className="my-3 md:hidden"
           iconPosition="left"
           aria-expanded={isOpen}
           aria-controls="params-form"

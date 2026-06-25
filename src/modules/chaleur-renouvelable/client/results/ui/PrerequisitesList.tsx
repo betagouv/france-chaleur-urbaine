@@ -13,7 +13,7 @@ function PrerequisiteRowItem({ row }: { row: PrerequisiteRow }) {
         row.status === 'favorable' ? 'bg-gray-100' : 'bg-[#FFF8E5]'
       )}
     >
-      <span className="flex flex-col md:flex-row items-center gap-3">
+      <span className="flex flex-col md:flex-row items-start md:items-center gap-3">
         <PrerequisiteStatusBadge status={row.status} />
         <span>{row.label}</span>
       </span>
@@ -31,8 +31,8 @@ function PrerequisiteRowItem({ row }: { row: PrerequisiteRow }) {
 
 function InstallationCostPrerequisite({ coutInstallation, solutionType }: { coutInstallation: string; solutionType: string }) {
   return (
-    <li className="flex flex-col gap-3 bg-[#FFF8E5] px-3 py-2 md:flex-row md:items-center md:justify-between">
-      <span className="flex items-start gap-3">
+    <li className="flex flex-col gap-3 px-3 py-2 md:flex-row md:items-center md:justify-between bg-[#FFF8E5] ">
+      <span className="flex flex-col md:flex-row items-start md:items-center gap-3">
         <PrerequisiteStatusBadge status="averifier" />
         <span>
           <strong>Coûts d’installation : {coutInstallation}</strong>. Vérifiez votre éligibilité aux aides
@@ -41,7 +41,7 @@ function InstallationCostPrerequisite({ coutInstallation, solutionType }: { cout
       <Link
         href="https://france-renov.gouv.fr/"
         isExternal
-        className="text-blue"
+        className="flex shrink-0 items-center gap-3 self-end md:self-auto text-blue"
         onClick={() =>
           trackPostHogEvent('fcr_results:prerequisite_detail_clicked', {
             prerequisite_label: 'Coûts d’installation',

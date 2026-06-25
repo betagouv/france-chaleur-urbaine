@@ -255,7 +255,7 @@ function OtherSolutionRow({
         />
       }
     >
-      <div className="grid grid-cols-1 gap-5 px-5 md:grid-cols-5">
+      <div className="grid grid-cols-1 gap-5 px-3 md:px-5 md:grid-cols-5">
         <div className="md:col-span-2">
           <h4 className="text-lg uppercase">Description</h4>
           <p className="mb-0">{item.description}</p>
@@ -263,7 +263,7 @@ function OtherSolutionRow({
         <div className="md:col-span-2">
           <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
         </div>
-        <div className="flex justify-center">
+        <div className="hidden md:flex justify-center">
           <Image src={`/${item.icone}`} alt="" width={216} height={162} className="justify-self-center object-contain" />
         </div>
       </div>
@@ -305,20 +305,27 @@ function OtherSolutionLabel({
   dpeTo,
 }: OtherSolutionLabelProps) {
   return (
-    <span className="grid w-full gap-5 p-5 text-left md:grid-cols-[2fr_1fr_auto_auto] md:items-center">
-      <span>
-        <span className="mb-3 block text-blue text-lg">{item.label}</span>
+    <span className="grid w-full gap-5 p-3 text-left md:grid-cols-[2fr_1fr_auto_auto] md:items-center md:p-5">
+      <span className="flex items-center gap-2 md:flex-col md:items-start">
+        <span className="text-blue text-lg">{item.label}</span>
         <Stars value={item.pertinence} />
       </span>
-      <span className="text-center">
+      <span className="md:text-center">
         <span className="text-blue text-lg">
           {lowerBoundString} à {upperBoundString}
         </span>
-        <br />
-        <span className="text-(--text-default-grey)">par an par logement</span>
+        <span className="hidden md:block" />
+        <span className="text-(--text-default-grey) text-sm"> par an par logement</span>
       </span>
-      <GainVsGazBadge item={item} coutParAnGaz={coutParAnGaz} coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly} />
-      <DpeProgression from={dpeFrom} to={dpeTo} />
+      <span className="grid grid-cols-2 items-center gap-4 md:block">
+        <GainVsGazBadge item={item} coutParAnGaz={coutParAnGaz} coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly} />
+        <span className="flex justify-center md:hidden">
+          <DpeProgression from={dpeFrom} to={dpeTo} />
+        </span>
+      </span>
+      <span className="hidden md:block">
+        <DpeProgression from={dpeFrom} to={dpeTo} />
+      </span>
     </span>
   );
 }
