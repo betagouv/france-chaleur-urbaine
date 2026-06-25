@@ -16,6 +16,9 @@ import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
+import { getDemandOrigin } from '@/modules/conversion-tracking/client/trackingContext';
+import { useRecordConversionEvent } from '@/modules/conversion-tracking/client/useRecordConversionEvent';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 import type { ContactFormInfos, ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import { AddressField } from '@/modules/form/AddressField';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
@@ -40,6 +43,8 @@ const eligibilityTestModal = createModal({
  */
 const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   const trpcUtils = trpc.useUtils();
+  const recordConversionEvent = useRecordConversionEvent();
+  useTrackPageView();
   const [addressInUrl, setAddressInUrl] = useQueryState('address');
   const [selectedGeoAddress, setSelectedGeoAddress] = useState<BANAddressFeature>();
   const [eligibilityStatus, setEligibilityStatus] = useState<NetworkEligibilityStatus>();
@@ -72,6 +77,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         source: 'fiche-reseau',
       });
       trackPostHogEvent('network_page:address_test_cta_clicked', { network_id: networkId });
+      recordConversionEvent('address_test', { eligible: !!eligibilityStatus?.isEligible });
     } catch (_err) {
       setFormState('eligibilitySubmissionError');
     }
@@ -119,12 +125,14 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         heatingType: userInfo.heatingType,
 
         networkId,
+        ...getDemandOrigin(),
         postcode: selectedGeoAddress.properties.postcode,
         region: (addressContext[2] || '').trim(),
       };
       setFormState('sendingDemand');
       await trpcUtils.client.demands.user.create.mutate(demandCreation);
       setFormState('demandCreated');
+      recordConversionEvent('demand', { eligible: !!eligibilityStatus?.isEligible });
       trackEvent(
         `Eligibilité|Formulaire de contact ${eligibilityStatus?.isEligible ? 'é' : 'iné'}ligible - Fiche réseau - Envoi`,
         selectedGeoAddress?.properties.label

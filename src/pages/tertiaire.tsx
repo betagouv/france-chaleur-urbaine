@@ -1,7 +1,9 @@
 import SimplePage from '@/components/shared/page/SimplePage';
 import Tertiaire from '@/components/Tertiaire';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 function TertiairePage() {
+  useTrackPageView();
   return (
     <SimplePage
       title="Chauffage urbain pour le secteur tertiaire"

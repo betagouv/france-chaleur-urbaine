@@ -50,7 +50,7 @@ export default handleRouteErrors(async (req, res) => {
 - Fenêtre : 15 minutes
 - Maximum : 20 requêtes par IP
 - Headers standard : `RateLimit-*`
-- Identification : IP (avec support x-forwarded-for)
+- Identification : IP cliente via `getClientIp` (`@/server/helpers/request-ip`)
 
 ### Pour tRPC
 
@@ -91,10 +91,11 @@ const schema = z.object({
 
 ### Identificateurs
 
-Le rate limiting utilise l'IP client avec support de :
-- `x-forwarded-for` (proxies/load balancers)
-- `x-real-ip` (certains proxies)
-- `socket.remoteAddress` (fallback)
+Le rate limiting (et l'anti-abus en général) résout l'IP cliente via le helper partagé
+`getClientIp` (`@/server/helpers/request-ip`), par ordre de priorité :
+- `x-real-ip` (posé par le routeur Scalingo — **fiable**, non spoofable)
+- `x-forwarded-for` (première valeur — falsifiable côté client, fallback)
+- `socket.remoteAddress` (dernier recours)
 
 ### Messages d'Erreur
 

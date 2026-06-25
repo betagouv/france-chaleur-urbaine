@@ -3,8 +3,10 @@ import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'ne
 import { getRessource, ressourceKeys } from '@/components/Ressources/config';
 import Ressource from '@/components/Ressources/Ressource';
 import SimplePage from '@/components/shared/page/SimplePage';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 const RessourcePage = ({ ressource, ressourceName }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  useTrackPageView();
   return (
     <SimplePage currentPage="/ressources" title={ressource.seoTitle || ressource.title} description={ressource.seoDescription}>
       <Ressource ressourceKey={ressourceName} />

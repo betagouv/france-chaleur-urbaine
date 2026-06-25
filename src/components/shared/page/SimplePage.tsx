@@ -8,6 +8,7 @@ import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 
+import { adminPageGroups, adminPages } from '@/components/Admin/adminPages';
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
@@ -381,100 +382,52 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
     text: "Test d'adresses",
   },
   {
-    menuLinks: [
-      {
-        linkProps: {
-          href: '/admin/events',
-        },
-        text: 'Activité du site',
-      },
-      {
-        linkProps: {
-          href: '/admin/users',
-        },
-        text: 'Gestion des utilisateurs',
-      },
-      {
-        linkProps: {
-          href: '/admin/demandes',
-        },
-        text: 'Gestion des demandes',
-      },
-      {
-        linkProps: {
-          href: '/admin/reseaux',
-        },
-        text: 'Gestion des réseaux',
-      },
-      {
-        linkProps: {
-          href: '/admin/reseaux/stats',
-        },
-        text: 'Statistiques par réseau',
-      },
-      {
-        linkProps: {
-          href: '/admin/iframes',
-        },
-        text: "Générateur d'iframes",
-      },
-      {
-        linkProps: {
-          href: '/admin/jobs',
-        },
-        text: 'Suivi des tâches',
-      },
-      {
-        linkProps: {
-          href: '/admin/emails',
-        },
-        text: "Modèles d'emails",
-      },
-      {
-        linkProps: {
-          href: '/admin/tests-adresses',
-        },
-        text: "Tests d'adresses",
-      },
-      {
-        linkProps: {
-          href: '/admin/impostures',
-        },
-        text: 'Impostures',
-      },
-      {
-        linkProps: {
-          href: '/admin/diagnostic',
-        },
-        text: 'Diagnostic',
-      },
-      {
-        linkProps: {
-          href: '/admin/data-diagnostic',
-        },
-        text: 'Diagnostic des données',
-      },
-    ],
+    megaMenu: {
+      categories: adminPageGroups.map(({ id, label }) => ({
+        categoryMainText: label,
+        links: adminPages
+          .filter((page) => page.group === id)
+          .map((page) => ({
+            linkProps: {
+              href: page.href,
+            },
+            text: page.label,
+          })),
+      })),
+    },
     text: 'Administration',
   },
 ];
 
 function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl: string): MainNavigationProps.Item[] {
   return menuItems.map((item) => {
-    const subMenu = markCurrentPageActive(item.menuLinks ?? [], currentUrl) as MainNavigationProps.Item.Link[];
-
-    const subMenuItemActive = subMenu.some((child) => child.isActive);
-
-    if (item.menuLinks) {
+    if (item.megaMenu) {
+      const categories = item.megaMenu.categories.map((category) => ({
+        ...category,
+        links: category.links.map((link) => ({
+          ...link,
+          isActive: link.linkProps.href === currentUrl,
+        })),
+      }));
       return {
         ...item,
-        isActive: subMenuItemActive,
+        isActive: categories.some((category) => category.links.some((link) => link.isActive)),
+        megaMenu: { ...item.megaMenu, categories },
+      };
+    }
+
+    if (item.menuLinks) {
+      const subMenu = markCurrentPageActive(item.menuLinks, currentUrl) as MainNavigationProps.Item.Link[];
+      return {
+        ...item,
+        isActive: subMenu.some((child) => child.isActive),
         menuLinks: subMenu,
       };
     }
+
     return {
       ...item,
-      isActive: item.linkProps?.href === currentUrl || subMenuItemActive,
+      isActive: item.linkProps?.href === currentUrl,
     };
   });
 }

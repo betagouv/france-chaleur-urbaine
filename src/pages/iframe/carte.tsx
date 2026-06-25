@@ -18,6 +18,7 @@
 import { useQueryStates } from 'nuqs';
 
 import useRouterReady from '@/hooks/useRouterReady';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { FcuLogo } from '@/modules/map/client/controls/FcuLogo';
 import { carteIframeParams, carteIframeUrlKeys } from '@/modules/map/client/iframeCarteParams';
@@ -32,6 +33,9 @@ const CarteIframePage = () => {
       urlKeys: carteIframeUrlKeys,
     }
   );
+
+  // Beacon d'affichage : le `?source=` de l'URL de l'iframe est lu directement par le hook.
+  useTrackPageView();
 
   // `<Map config>` is mount-only — wait for the router so it mounts with the final params.
   const isRouterReady = useRouterReady();

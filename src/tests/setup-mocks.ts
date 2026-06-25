@@ -15,13 +15,6 @@ process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_
 vi.mock('@/server/config', () => ({
   clientConfig: {
     banApiBaseUrl: 'https://data.geopf.fr/geocodage/',
-    destinationEmails: {
-      carto: 'test@example.com',
-      comparateur: 'test@example.com',
-      contact: 'test@example.com',
-      contribution: 'test@example.com',
-      pro: 'test@example.com',
-    },
     flags: {
       enableComparateurWidget: false,
     },
@@ -98,6 +91,9 @@ vi.mock('@/modules/trpc/client', () => ({
     // Provide utils with a minimal client shape used in components
     useUtils: () => ({
       client: {
+        conversionTracking: {
+          recordEvent: { mutate: vi.fn().mockResolvedValue({}) },
+        },
         reseaux: {
           cityNetwork: { query: vi.fn().mockResolvedValue({}) },
           eligibilityStatus: { query: vi.fn().mockResolvedValue({}) },

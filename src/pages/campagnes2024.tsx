@@ -10,8 +10,10 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import WrappedBlock from '@/components/WrappedBlock';
 import WrappedText from '@/components/WrappedText';
 import { comparatifRcu } from '@/data/coproprietaire';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 function Campagnes2024Page() {
+  useTrackPageView();
   return (
     <SimplePage
       title="France Chaleur Urbaine : Une solution numérique qui facilite le raccordement à un chauffage économique et écologique"

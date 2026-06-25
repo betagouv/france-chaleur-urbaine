@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs';
 import { CronJob } from 'cron';
 
+import { purgeOldConversionEventIps } from '@/modules/conversion-tracking/server/service';
 import { notifyGestionnairesOfNewDemands, notifyGestionnairesOfUnhandledDemands } from '@/modules/demands/server/manager-notifications';
 import { sendRelanceToDemandeurs } from '@/modules/demands/server/relances';
 import { parentLogger } from '@/server/helpers/logger';
@@ -41,6 +42,12 @@ const crons: CronDefinition[] = [
     handler: aggregateMonthlyStats,
     name: 'aggregateMonthlyStats',
     schedule: '15 08 1 * *', // 1er du mois 08:15 Paris
+  },
+  {
+    // Purge les IP/UA des événements de conversion de plus de 90 jours (anti-abus, rétention courte ; `host` conservé).
+    handler: () => purgeOldConversionEventIps(),
+    name: 'purgeOldConversionEventIps',
+    schedule: '30 03 * * *', // tous les jours 03:30 Paris
   },
 ];
 

@@ -16,6 +16,7 @@ import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
@@ -165,6 +166,13 @@ function DemandesAdmin(): React.ReactElement {
 
   const { data: demandsData, isLoading } = trpc.demands.admin.list.useQuery();
   const demands = demandsData?.items ?? [];
+
+  // `origin_source` stocke l'id (uuid) de l'intégration — on résout son label pour l'affichage.
+  const { data: integrations = [] } = trpc.conversionTracking.sources.list.useQuery({ includeArchived: true });
+  const integrationLabelById = useMemo<Record<string, string>>(
+    () => Object.fromEntries(integrations.map((integration) => [integration.id, integration.label])),
+    [integrations]
+  );
 
   // Réinitialise la sélection quand l'ensemble des demandes affichées change (filtres/recherche),
   // mais pas lors d'une simple édition de ligne, d'un tri ou d'un changement de sélection.
@@ -466,6 +474,33 @@ function DemandesAdmin(): React.ReactElement {
         width: '94px',
       },
       {
+        accessorFn: (row) => (row.origin_source ? (integrationLabelById[row.origin_source] ?? row.origin_source) : undefined),
+        cell: ({ row }) =>
+          row.original.origin_source && (
+            <Link href={`/admin/conversion?source=${encodeURIComponent(row.original.origin_source)}`}>
+              {integrationLabelById[row.original.origin_source] ?? row.original.origin_source}
+            </Link>
+          ),
+        filterType: 'Facets',
+        header: 'Source',
+        id: 'origin_source',
+        width: '150px',
+      },
+      {
+        accessorKey: 'origin_page',
+        enableGlobalFilter: false,
+        enableSorting: false,
+        header: 'Page source',
+        width: '220px',
+      },
+      {
+        accessorKey: 'origin_host',
+        enableGlobalFilter: false,
+        enableSorting: false,
+        header: 'Site hôte',
+        width: '200px',
+      },
+      {
         accessorKey: 'testAddress.eligibility.id_sncu',
         filterType: 'Facets',
         header: 'Réseau le plus proche',
@@ -553,7 +588,7 @@ function DemandesAdmin(): React.ReactElement {
         width: '50px',
       },
     ],
-    [updateDemand, changeNetwork, validateDemand, deleteDemand, handleEmailClick]
+    [updateDemand, changeNetwork, validateDemand, deleteDemand, handleEmailClick, integrationLabelById]
   );
 
   const onMarkerSelect = useCallback((demandId: string) => {

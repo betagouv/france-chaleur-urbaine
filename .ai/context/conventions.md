@@ -81,6 +81,7 @@
 - Prefer `type` over `interface` (unless extending is needed).
 - Prefer const objects over enums.
 - Use Zod schemas as single source of truth; derive types with `z.infer<>`.
+- **Derive types from the values; never keep a hand-written union or shape beside the data.** Enum-like sets: array `as const` + `type T = (typeof arr)[number]` (e.g. `userRoles` in `src/types/enum/UserRole.ts`). Config object arrays: `as const satisfies readonly Shape[]` then `type Item = (typeof items)[number]` — `satisfies` validates each entry without re-annotating.
 - Use `Promise.all()` for independent parallel async operations.
 - Prefer discriminated unions over optional fields:
   ```ts

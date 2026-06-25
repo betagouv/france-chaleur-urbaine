@@ -3,19 +3,6 @@
 // exemple: ENABLE_INSCRIPTIONS: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS),
 export const clientConfig = {
   banApiBaseUrl: process.env.NEXT_PUBLIC_BAN_API_BASE_URL ?? 'https://data.geopf.fr/geocodage/',
-  destinationEmails: Object.entries({
-    carto: 'lea.landrieu@beta.gouv.fr',
-    comparateur: 'rbeaulieu@amorce.asso.fr,dponcet@elcimai.com',
-    contact: 'erwan.gravez@beta.gouv.fr,lea.landrieu@beta.gouv.fr',
-    contribution: 'lea.landrieu@beta.gouv.fr',
-    pro: 'erwan.gravez@beta.gouv.fr',
-  }).reduce(
-    (acc, [key, value]) => ({
-      ...acc,
-      [key]: `${value},france.chaleur.urbaine@ademe.fr`,
-    }),
-    {} as Record<string, string>
-  ),
   feedbackUrl:
     'https://voxusagers.numerique.gouv.fr/Demarches/3067?&view-mode=formulaire-avis&nd_mode=en-ligne-enti%C3%A8rement&nd_source=button&key=d72603000c07b99a66da0a230c832f7e',
   linkedInUrl: 'https://fr.linkedin.com/company/france-chaleur-urbaine',

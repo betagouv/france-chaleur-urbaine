@@ -7,8 +7,10 @@ import Slice from '@/components/Slice';
 import StickyForm from '@/components/StickyForm/StickyForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 const ChauffageUrbain = () => {
+  useTrackPageView();
   const chauffageUrbainRef = useRef<null | HTMLHeadingElement>(null);
   const avantagesRef = useRef<null | HTMLHeadingElement>(null);
   const chargeRef = useRef<null | HTMLHeadingElement>(null);

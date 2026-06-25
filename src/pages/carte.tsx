@@ -4,6 +4,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import useInitialSearchParam from '@/hooks/useInitialSearchParam';
 import useRouterReady from '@/hooks/useRouterReady';
 import { useAuthentication } from '@/modules/auth/client/hooks';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 import type { MapConfiguration, MapConfigurationProperty } from '@/modules/map/client/config/map-configuration';
 import { FileDropHandler } from '@/modules/map/client/interactions/FileDropHandler';
 import { MapViewUrlSync } from '@/modules/map/client/interactions/MapViewUrlSync';
@@ -81,6 +82,7 @@ const parseBBox = (value: string, asJson: boolean): BBox | null => {
 const Carte = () => {
   const isRouterReady = useRouterReady();
   const { hasRole } = useAuthentication();
+  useTrackPageView();
 
   const coordParam = useInitialSearchParam('coord');
   const zoomParam = useInitialSearchParam('zoom');

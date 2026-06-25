@@ -8,8 +8,10 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import WrappedBlock from '@/components/WrappedBlock';
 import WrappedText from '@/components/WrappedText';
 import { comparatifRcu } from '@/data/coproprietaire';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 function InfosCoproPage() {
+  useTrackPageView();
   return (
     <SimplePage
       title="Le chauffage urbain pour les coprpriétaires"

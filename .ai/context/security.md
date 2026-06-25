@@ -123,7 +123,7 @@ Legacy `src/pages/api/` routes not yet migrated: wrap with `handleRouteErrors` f
 
 ## Environment variables
 
-- Server-only: no prefix (`DATABASE_URL`, `NEXTAUTH_SECRET`, `PIPEDRIVE_API_KEY`). Client-exposed: `NEXT_PUBLIC_` prefix.
+- Server-only: no prefix (`DATABASE_URL`, `NEXTAUTH_SECRET`). Client-exposed: `NEXT_PUBLIC_` prefix.
 - **Never put secrets in `NEXT_PUBLIC_` variables.** Validate required env vars at startup.
 - `.env.example` committed (placeholders) ; `.env.local` gitignored (real dev values).
 

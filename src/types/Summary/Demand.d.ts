@@ -75,6 +75,10 @@ export type FormDemandCreation = ContactFormInfos & {
   mtm_campaign?: string;
   mtm_kwd?: string;
   mtm_source?: string;
+
+  origin_host?: string;
+  origin_page?: string;
+  origin_source?: string;
 };
 
 export type AirtableDemandCreation = {

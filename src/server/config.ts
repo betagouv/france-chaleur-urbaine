@@ -32,8 +32,6 @@ const serverConfigSchema = {
   MATOMO_TOKEN: z.string(),
   METRICS_AUTH_TOKEN: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  PIPEDRIVE_API_KEY: z.string().optional(),
-  PIPEDRIVE_BASE_URL: z.string().default('https://api.pipedrive.com/v1'),
   PRINT_TIPPECANOE_OUTPUT_TO_LOGS: z.boolean().default(false),
   USE_DOCKER_GEO_COMMANDS: z.boolean().default(false),
 };

@@ -5,6 +5,7 @@
 
 import type { ColumnType, JSONColumnType } from 'kysely';
 
+import type { ConversionEventType, ConversionSourceConfig } from '@/modules/conversion-tracking/constants';
 import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
@@ -204,6 +205,28 @@ export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
   z: Int8;
 }
 
+export interface ConversionEvents {
+  created_at: Generated<Timestamp>;
+  eligible: boolean | null;
+  host: string | null;
+  id: Generated<Int8>;
+  ip: string | null;
+  page: string;
+  route: string;
+  source: string | null;
+  type: ConversionEventType;
+  user_agent: string | null;
+}
+
+export interface ConversionSources {
+  archived_at: Timestamp | null;
+  config: JSONColumnType<ConversionSourceConfig> | null;
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  label: string;
+  updated_at: Generated<Timestamp>;
+}
+
 export interface DemandEmails {
   airtable_id: string | null;
   body: string;
@@ -233,7 +256,9 @@ export interface Demands {
   epci_code: string | null;
   ept_code: string | null;
   id: Generated<string>;
-  iframe_source: string | null;
+  origin_host: string | null;
+  origin_page: string | null;
+  origin_source: string | null;
   legacy_values: JSONColumnType<AirtableLegacyRecord>;
   network_id: number | null;
   network_type: NetworkType | null;
@@ -936,6 +961,8 @@ export interface DB {
   besoins_en_chaleur_tiles: BesoinsEnChaleurTiles;
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
+  conversion_events: ConversionEvents;
+  conversion_sources: ConversionSources;
   demand_emails: DemandEmails;
   demands: Demands;
   departements: Departements;

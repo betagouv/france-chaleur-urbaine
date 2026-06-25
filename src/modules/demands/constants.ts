@@ -143,6 +143,10 @@ export const zCreateDemandInput = z.object({
   mtm_source: z.string().optional(),
   nbLogements: z.number().optional(),
   networkId: z.string().optional(),
+  // Tracking de conversion (module conversion-tracking) : source (niveau 1) + page + host embarquant (iframes)
+  origin_host: z.string().optional(),
+  origin_page: z.string().optional(),
+  origin_source: z.string().optional(),
   phone: z.string().optional().default(''),
   postcode: z.string(),
   region: z.string(),

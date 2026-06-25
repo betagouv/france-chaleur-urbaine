@@ -4,12 +4,14 @@ import City from '@/components/Cities/City';
 import { GlobalStyle } from '@/components/shared/layout/Global.style';
 import SimplePage from '@/components/shared/page/SimplePage';
 import citiesData from '@/data/villes/villes';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 import { getNetwork } from '@/modules/reseaux/server/service';
 import { deepCloneJSON } from '@/utils/objects';
 
 type ComponentProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 const PageVille: React.FC<ComponentProps> = ({ cityData, network }) => {
+  useTrackPageView();
   return (
     <SimplePage
       title={`Chauffage urbain à ${cityData.name}`}

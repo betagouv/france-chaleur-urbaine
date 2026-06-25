@@ -1,16 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { clientConfig } from '@/client-config';
 import type { SubmitSurveyInput } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
-import { parentLogger } from '@/server/helpers/logger';
 
 import { enrichDemandForAdmin, getDemandById } from './helpers';
 import { mergeLegacyValues } from './legacy-values';
-
-const logger = parentLogger.child({ module: 'demands/relances' });
 
 const getAllDemandsToRelance = async () => {
   const records = await kdb
@@ -162,16 +158,6 @@ export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfa
 
   const enriched = enrichDemandForAdmin({ demand, testAddress: testAddress || null });
 
-  // Automation import from https://airtable.com/app9opX8gRAtBqkan/wfl3jPABYXeIrGeUr/wtrWn0m6O5tXFFdiP
-  if (enriched.Structure === 'Bailleur social' || enriched.Structure === 'Tertiaire') {
-    await sendEmailTemplate(
-      'demands.equipe-fcu.demande-haut-potentiel',
-      { email: clientConfig.destinationEmails.pro },
-      { demand: enriched }
-    ).catch((error: unknown) => {
-      logger.error('Failed to send gestionnaire contact email:', error);
-    });
-  }
   return enriched;
 };
 

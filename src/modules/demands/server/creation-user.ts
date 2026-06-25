@@ -1,6 +1,5 @@
 import type { Selectable } from 'kysely';
 
-import { clientConfig } from '@/client-config';
 import { type CreateDemandInput, formatDataToLegacyAirtable } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
@@ -49,6 +48,9 @@ export const createDemand = async (
         'Relance à activer': values.eligibility.isEligible && values.heatingType === 'collectif',
         Status: values.eligibility.isEligible ? undefined : DEMANDE_STATUS.UNREALISABLE,
       })}::jsonb`,
+      origin_host: values.origin_host ?? null,
+      origin_page: values.origin_page ?? null,
+      origin_source: values.origin_source ?? null,
       updated_at: new Date(),
       user_id: userId ?? null,
     })
@@ -115,12 +117,6 @@ export const createDemand = async (
           'Type de chauffage': legacyValues['Type de chauffage'] as 'Collectif' | 'Autre / Je ne sais pas' | 'Individuel',
         },
       }
-    ),
-    // Automation import from https://airtable.com/app9opX8gRAtBqkan/wflvqEW0CLeXZ2pO0
-    sendEmailTemplate(
-      'demands.equipe-fcu.nouvelle-demande',
-      { email: clientConfig.destinationEmails.contact },
-      { demand: demandForEmail as any }
     ),
   ]);
 

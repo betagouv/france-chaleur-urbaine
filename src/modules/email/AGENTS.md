@@ -22,7 +22,6 @@ src/modules/email/
 │   │       └── reinitialisation-mot-de-passe.tsx
 │   └── demands/
 │       ├── demandeur/
-│       ├── equipe-fcu/
 │       └── gestionnaire/
 ├── server/
 │   └── trpc-routes.ts         # Router admin (`email.list`, `email.preview`)
@@ -40,9 +39,9 @@ Clés des templates dans `email.config.tsx` :
 ```
 
 - **module** : `auth` ou `demands`.
-- **destinataire** : `utilisateur`, `gestionnaire`, `demandeur`, `equipe-fcu`.
+- **destinataire** : `utilisateur`, `gestionnaire`, `demandeur`.
 - **intention** : verbe ou expression courte en kebab-case français
-  (ex: `confirmation-inscription`, `nouvelle-demande`, `enquete-satisfaction`).
+  (ex: `confirmation-inscription`, `message-gestionnaire`, `enquete-satisfaction`).
 
 L'arborescence des fichiers `templates/` reflète cette convention.
 
@@ -116,9 +115,7 @@ Champs obligatoires :
 - `scenarios` : export nommé `scenarios` du fichier — **renommer à l'import**
   pour éviter les collisions (`scenarios as monEmailScenarios`).
 - `label` : titre humain affiché dans la sidebar de l'admin.
-- `description` : phrase descriptive. Peut référencer
-  `` `clientConfig.destinationEmails.<key>` `` — la valeur réelle est
-  substituée dans l'UI admin par `listEmailTypes()`.
+- `description` : phrase descriptive.
 - `subject` : sujet par défaut envoyé au destinataire.
 - `preview` : ligne de preview affichée par certains clients mail.
 
