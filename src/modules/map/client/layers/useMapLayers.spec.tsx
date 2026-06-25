@@ -80,6 +80,16 @@ describe('useMapLayers', () => {
     expect(userResources.layers.has('territories-fill')).toBe(true);
   });
 
+  it('transmet promoteId aux sources géojson créées', () => {
+    const data = { ...emptyFc };
+
+    const { map } = setup({
+      sources: [{ data, id: 'territories', promoteId: 'territoryId' }],
+    });
+
+    expect(map.addSource).toHaveBeenCalledWith('territories', { data, promoteId: 'territoryId', type: 'geojson' });
+  });
+
   it('ne recrée pas une source déjà présente (spec statique) mais y pousse la donnée', () => {
     const map = createFakeMap();
     map._seedSource('adressesEligibles', 'geojson');

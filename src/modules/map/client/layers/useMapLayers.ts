@@ -1,4 +1,4 @@
-import type { GeoJSONSource, LayerSpecification } from 'maplibre-gl';
+import type { GeoJSONSource, GeoJSONSourceSpecification, LayerSpecification } from 'maplibre-gl';
 import { useEffect, useRef } from 'react';
 
 import { useMapInstance, useMapReady, useUserResources } from '../core/MapCanvasContext';
@@ -8,6 +8,7 @@ import { useMapInstance, useMapReady, useUserResources } from '../core/MapCanvas
 export type MapDynamicSource = {
   id: string;
   data: GeoJSON.GeoJSON;
+  promoteId?: GeoJSONSourceSpecification['promoteId'];
 };
 
 /** A layer added on top of the base layers. `source` references either one of this
@@ -54,7 +55,7 @@ export function useMapLayers({ sources, layers }: MapLayersProps) {
       if (map.getSource(source.id)) {
         continue;
       }
-      map.addSource(source.id, { data: source.data, type: 'geojson' });
+      map.addSource(source.id, { data: source.data, ...(source.promoteId ? { promoteId: source.promoteId } : {}), type: 'geojson' });
       userResources.sources.add(source.id);
       lastDataRef.current.set(source.id, source.data);
       createdSourceIds.push(source.id);
