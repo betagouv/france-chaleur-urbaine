@@ -224,7 +224,10 @@ function RichSelectOptionList<T extends string>({ activeOptionIndex, onSelect, o
         return (
           <li
             key={option.value}
-            className={cx('cursor-pointer select-none px-4 py-3 whitespace-nowrap outline-none', isActive && 'bg-blue-50')}
+            className={cx(
+              'cursor-pointer select-none px-4 py-3 whitespace-nowrap outline-none hover:bg-gray-100',
+              isActive && 'bg-blue-50'
+            )}
             aria-selected={isSelected}
             role="option"
             tabIndex={-1}
