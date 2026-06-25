@@ -26,7 +26,7 @@ export function GainVsGazBadge({
   return (
     <span
       className={cx(
-        'inline-flex items-center gap-2 whitespace-nowrap bg-[#E3FDEB] px-3 py-2 font-bold',
+        'inline-flex items-center gap-2 whitespace-nowrap bg-[#E3FDEB] px-1 md:px-3 py-2 font-bold',
         isSaving ? 'text-success' : 'bg-[#FFE9E6] text-error'
       )}
     >
@@ -38,7 +38,7 @@ export function GainVsGazBadge({
         aria-hidden="true"
       />
       {isSaving ? '-' : '+'}
-      {Math.abs(gainPercentVsGaz)} % d’économies vs gaz
+      {Math.abs(gainPercentVsGaz)} % <span className="hidden md:inline">d’économies</span> vs gaz
     </span>
   );
 }

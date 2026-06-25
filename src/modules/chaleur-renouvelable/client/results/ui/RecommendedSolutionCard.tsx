@@ -54,7 +54,7 @@ export function RecommendedSolutionCard({
   const prerequisiteRows = item.prerequis(situation);
 
   return (
-    <section className="fr-mt-6w border border-gray-200 border-l-4 border-l-green-600 bg-white px-10 py-8">
+    <section className="fr-mt-6w border border-gray-200 border-l-4 border-l-green-600 bg-white px-3 md:px-10 py-8">
       <div className="flex items-center justify-between">
         <div>
           <p className="mb-2 text-lg font-semibold uppercase">Solution recommandée</p>
@@ -66,7 +66,7 @@ export function RecommendedSolutionCard({
           </div>
         </div>
         <div>
-          <Image src={`/${item.icone}`} alt="" width={120} height={72} className="object-contain" />
+          <Image src={`/${item.icone}`} alt="" width={120} height={72} className="hidden md:block object-contain" />
         </div>
       </div>
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
