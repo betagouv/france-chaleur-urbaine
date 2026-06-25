@@ -21,6 +21,7 @@ import { NotesCell } from '@/modules/reseaux/client/admin/NotesCell';
 import { RemindersCell } from '@/modules/reseaux/client/admin/RemindersCell';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import trpc from '@/modules/trpc/client';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 import { objectToURLSearchParams } from '@/utils/network';
@@ -433,12 +434,7 @@ const buildDemandFilters = (
   pendingOnly: boolean
 ): ColumnFiltersState => [
   { id: 'network_id', value: { [`${networkType}:${networkId}`]: true } },
-  ...(pendingOnly
-    ? [
-        { id: 'Status', value: { 'En attente de prise en charge': true } },
-        { id: 'Prise de contact', value: { false: true, true: false } },
-      ]
-    : []),
+  ...(pendingOnly ? [{ id: 'Status', value: { [DEMANDE_STATUS.TO_PROCESS]: true } }] : []),
   ...(isDefined(periodMonths)
     ? [{ id: 'Date de la demande', value: [dayjs().subtract(periodMonths, 'month').format('YYYY-MM-DD'), null, false] }]
     : []),

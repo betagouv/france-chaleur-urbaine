@@ -223,14 +223,14 @@ describe('creation-user', () => {
 
     const eligibilityCases: EligibilityCase[] = [
       {
-        expectedOutput: { 'Relance à activer': true, Status: undefined },
+        expectedOutput: { 'Relance à activer': true, Status: 'À traiter' },
         input: { heatingType: 'collectif', isEligible: true },
-        label: 'éligible + collectif → pas de Status, relance active',
+        label: 'éligible + collectif → Status "À traiter", relance active',
       },
       {
-        expectedOutput: { 'Relance à activer': false, Status: undefined },
+        expectedOutput: { 'Relance à activer': false, Status: 'À traiter' },
         input: { heatingType: 'individuel', isEligible: true },
-        label: 'éligible + individuel → pas de Status, pas de relance',
+        label: 'éligible + individuel → Status "À traiter", pas de relance',
       },
       {
         expectedOutput: { 'Relance à activer': false, Status: 'Non réalisable' },

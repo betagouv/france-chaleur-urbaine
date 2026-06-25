@@ -13,7 +13,7 @@ const RappelDemandesEnAttente = () => {
         ».
       </Text>
       <Text>
-        Pour rappel, le statut par défaut est « En attente de prise en charge ».{' '}
+        Pour rappel, le statut par défaut est À traiter.{' '}
         <b>Nous vous invitons à renseigner le statut des demandes dès lors qu’elles sont prises en charge.</b> Cette information a
         uniquement pour but de nous permettre d’évaluer l’impact de notre service à l’échelle nationale.
       </Text>

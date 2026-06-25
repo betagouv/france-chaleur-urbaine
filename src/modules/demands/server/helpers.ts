@@ -211,7 +211,6 @@ export const enrichDemandForGestionnaire = <T extends Selectable<Demands>>({
 
   const lastEligibility = augmentedHistory?.[augmentedHistory.length - 1];
   legacy_values['en PDP'] = lastEligibility?.eligibility?.type.includes('dans_pdp') ? 'Oui' : 'Non';
-  legacy_values['Prise de contact'] ??= false;
   legacy_values.Status ??= demandStatusDefault;
 
   const rawHeatingEnergy = legacy_values['Mode de chauffage'];

@@ -140,9 +140,9 @@ describe('manager-notifications', () => {
       expect(sentMail).not.toHaveBeenCalled();
     });
 
-    it('ignore les demandes avec un statut autre que vide / EMPTY', async () => {
+    it('ignore les demandes avec un statut autre que vide / À traiter', async () => {
       await Promise.all([
-        seedDemand({ legacy: { 'Notification envoyé': daysAgo(10), Status: DEMANDE_STATUS.IN_PROGRESS } }),
+        seedDemand({ legacy: { 'Notification envoyé': daysAgo(10), Status: DEMANDE_STATUS.RECONTACTED } }),
         seedDemand({ legacy: { 'Notification envoyé': daysAgo(10), Status: DEMANDE_STATUS.UNREALISABLE } }),
       ]);
 

@@ -19,6 +19,8 @@ type ComboBoxBaseProps = {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  /** En multi-select, nombre de tags affichés avant de replier le reste en « +N » (défaut 2). */
+  maxVisibleTags?: number;
 };
 
 export type ComboBoxProps =
@@ -38,7 +40,7 @@ export type ComboBoxProps =
  */
 const ComboBox = (rawProps: ComboBoxProps) => {
   const props = { multiple: false, placeholder: 'Sélectionner…', ...rawProps } satisfies ComboBoxProps;
-  const { options, value, label, placeholder, disabled, className } = props;
+  const { options, value, label, placeholder, disabled, className, maxVisibleTags = 2 } = props;
 
   const comboboxId = useId();
   const listboxId = useId();
@@ -96,13 +98,25 @@ const ComboBox = (rawProps: ComboBoxProps) => {
     }
   };
 
+  const selectAll = () => {
+    if (!props.multiple) return;
+    props.onChange(options.filter((option) => !option.disabled).map((option) => option.key));
+  };
+
   const isSelected = (key: string) => valueArray.includes(key);
+
+  const allSelected = props.multiple && options.length > 0 && options.every((option) => option.disabled || isSelected(option.key));
 
   const displayedText = useMemo(() => {
     if (props.multiple) return valueArray.map((key) => options.find((option) => option.key === key)?.label || key).join(', ');
     if (!valueArray[0]) return '';
     return options.find((option) => option.key === valueArray[0])?.label || valueArray[0];
   }, [props.multiple, valueArray, options]);
+
+  const hiddenTagsTitle = valueArray
+    .slice(maxVisibleTags)
+    .map((key) => options.find((option) => option.key === key)?.label || key)
+    .join(', ');
 
   const activeOptionId = filteredOptions[highlighted] ? `${listboxId}-option-${filteredOptions[highlighted].key}` : undefined;
 
@@ -157,25 +171,32 @@ const ComboBox = (rawProps: ComboBoxProps) => {
             <div className="flex flex-wrap items-center gap-1 flex-1 min-w-0">
               {props.multiple ? (
                 valueArray.length > 0 ? (
-                  valueArray.map((key) => {
-                    const optionLabel = options.find((option) => option.key === key)?.label || key;
-                    return (
-                      <Tag
-                        key={key}
-                        dismissible
-                        small
-                        nativeButtonProps={{
-                          onClick: (event: React.MouseEvent<HTMLButtonElement>) => {
-                            event.stopPropagation();
-                            unselectOne(key);
-                          },
-                          title: optionLabel,
-                        }}
-                      >
-                        {optionLabel}
+                  <>
+                    {valueArray.slice(0, maxVisibleTags).map((key) => {
+                      const optionLabel = options.find((option) => option.key === key)?.label || key;
+                      return (
+                        <Tag
+                          key={key}
+                          dismissible
+                          small
+                          nativeButtonProps={{
+                            onClick: (event: React.MouseEvent<HTMLButtonElement>) => {
+                              event.stopPropagation();
+                              unselectOne(key);
+                            },
+                            title: optionLabel,
+                          }}
+                        >
+                          {optionLabel}
+                        </Tag>
+                      );
+                    })}
+                    {valueArray.length > maxVisibleTags && (
+                      <Tag small title={hiddenTagsTitle}>
+                        +{valueArray.length - maxVisibleTags}
                       </Tag>
-                    );
-                  })
+                    )}
+                  </>
                 ) : (
                   <span className="text-gray-500">{placeholder}</span>
                 )
@@ -195,7 +216,20 @@ const ComboBox = (rawProps: ComboBoxProps) => {
           className="border border-solid border-gray-300 shadow-lg"
         >
           {props.multiple && (
-            <div className="p-2 border-b border-solid border-gray-200">
+            <div className="flex items-center gap-2 p-2 border-b border-solid border-gray-200">
+              <Button
+                priority="tertiary"
+                size="small"
+                iconId="fr-icon-checkbox-circle-line"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  selectAll();
+                }}
+                disabled={allSelected}
+              >
+                Tout sélectionner
+              </Button>
               <Button
                 priority="tertiary"
                 size="small"

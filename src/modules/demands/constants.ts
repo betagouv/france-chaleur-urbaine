@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import type { EligibilityType } from '@/server/services/addresseInformation';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { ExtractKeys } from '@/utils/typescript';
 
 export const zAddRelanceCommentInput = z.object({
@@ -42,20 +43,22 @@ const zSubmitSurveyValues = z
 
 export type SubmitSurveyInput = z.infer<typeof zSubmitSurveyValues>;
 
+// Source unique des statuts : l'enum DEMANDE_STATUS porte les libellés ; cette liste ne fait
+// qu'ajouter l'ordre d'affichage et le picto (⚠️ uniquement dans la liste déroulante).
 export const demandStatuses = [
-  { label: 'En attente de prise en charge', value: 'empty' },
-  { label: 'Non réalisable', value: 'unrealisable' },
-  { label: 'En attente d’éléments du prospect', value: 'waiting' },
-  { label: 'Étude en cours', value: 'in_progress' },
-  { label: 'Voté en AG', value: 'voted' },
-  { label: 'Travaux en cours', value: 'work_in_progress' },
-  { label: 'Réalisé', value: 'done' },
-  { label: 'Projet abandonné par le prospect', value: 'abandoned' },
+  { icon: '⚠️', label: DEMANDE_STATUS.TO_PROCESS },
+  { label: DEMANDE_STATUS.UNREALISABLE },
+  { label: DEMANDE_STATUS.RECONTACTED },
+  { label: DEMANDE_STATUS.COMMERCIAL_PROPOSAL },
+  { label: DEMANDE_STATUS.VOTED },
+  { label: DEMANDE_STATUS.WORK_IN_PROGRESS },
+  { label: DEMANDE_STATUS.DONE },
+  { label: DEMANDE_STATUS.ABANDONNED },
 ] as const;
 
 export const demandStatusDefault = demandStatuses[0].label;
 
-export type DemandStatus = (typeof demandStatuses)[number]['label'];
+export type DemandStatus = DEMANDE_STATUS;
 
 // Zod schema for demand update values - only fields actually used in updateDemand calls
 // Analysis based on all updateDemand usage across the codebase
@@ -67,7 +70,6 @@ const zGestionnaireDemandUpdateValues = z
 
     // Status & Contact
     Status: z.enum([...demandStatuses.map((s) => s.label), '']),
-    'Prise de contact': z.boolean(),
 
     // Communication
     comment_gestionnaire: z.string().nullable(),
@@ -88,7 +90,6 @@ export const zAdminDemandUpdateValues = z
     'Relance à activer': z.boolean(),
     'Relance ID': z.string().nullable(),
     'Notification envoyé': z.string().nullable(),
-    'Prise de contact': z.boolean(),
     'Recontacté par le gestionnaire': z.enum(['Oui', 'Non', '']),
 
     // Communication

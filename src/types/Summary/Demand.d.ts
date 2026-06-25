@@ -13,7 +13,6 @@ export type DemandSummary = {
 };
 
 export type EditableDemandSummary = {
-  'Prise de contact': boolean;
   Commentaire: string;
   Status: DemandStatus | '';
 };

@@ -77,7 +77,7 @@ const getDemandesEnCoursStats = async () => {
   const totalDemandes = demandes.length;
 
   const demandesEnCours = demandes.filter((record) =>
-    [DEMANDE_STATUS.IN_PROGRESS, DEMANDE_STATUS.WORK_IN_PROGRESS, DEMANDE_STATUS.DONE].includes(record.fields.Status as DEMANDE_STATUS)
+    [DEMANDE_STATUS.RECONTACTED, DEMANDE_STATUS.WORK_IN_PROGRESS, DEMANDE_STATUS.DONE].includes(record.fields.Status as DEMANDE_STATUS)
   );
 
   const totalLogements = demandesEnCours.reduce((acc, record) => acc + Number(record.fields.Logement || 1), 0);

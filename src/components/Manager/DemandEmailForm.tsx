@@ -153,12 +153,11 @@ function DemandEmailForm(props: Props) {
       alreadySent.push(emailContent.object);
       const updatedFields: any = {
         'Emails envoyés': alreadySent.join('\n'),
-        'Prise de contact': true, //Prospect recontacté
       };
       if (emailKey === 'koFarFromNetwok' || emailKey === 'koIndividualHeat' || emailKey === 'koOther') {
         updatedFields.Status = DEMANDE_STATUS.UNREALISABLE;
       } else if (emailKey === 'askForPieces') {
-        updatedFields.Status = DEMANDE_STATUS.WAITING;
+        updatedFields.Status = DEMANDE_STATUS.RECONTACTED;
       }
       await props.updateDemand(props.currentDemand.id, updatedFields);
 

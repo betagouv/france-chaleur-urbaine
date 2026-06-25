@@ -2,6 +2,7 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 
 import type { DemandStatus } from '@/modules/demands/constants';
 import { demandStatusDefault } from '@/modules/demands/constants';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { upperCaseFirstChar } from '@/utils/strings';
 
 const statusConfig: Record<
@@ -10,29 +11,29 @@ const statusConfig: Record<
     className: string;
   }
 > = {
-  'En attente de prise en charge': {
-    className: 'bg-gray-500! text-white!',
+  [DEMANDE_STATUS.TO_PROCESS]: {
+    className: 'bg-red-600! text-white!',
   },
-  'En attente d’éléments du prospect': {
-    className: 'bg-yellow-300! text-black!',
-  },
-  'Non réalisable': {
+  [DEMANDE_STATUS.UNREALISABLE]: {
     className: 'bg-destructive! text-white!',
   },
-  'Projet abandonné par le prospect': {
-    className: 'bg-red-700! text-white!',
+  [DEMANDE_STATUS.RECONTACTED]: {
+    className: 'bg-[#0d49fb]! text-white!',
   },
-  Réalisé: {
-    className: 'bg-[#2ca892]! text-white!',
+  [DEMANDE_STATUS.COMMERCIAL_PROPOSAL]: {
+    className: 'bg-yellow-300! text-black!',
   },
-  'Travaux en cours': {
-    className: 'bg-indigo-500! text-white!',
-  },
-  'Voté en AG': {
+  [DEMANDE_STATUS.VOTED]: {
     className: 'bg-purple-700! text-white!',
   },
-  'Étude en cours': {
-    className: 'bg-[#0d49fb]! text-white!',
+  [DEMANDE_STATUS.WORK_IN_PROGRESS]: {
+    className: 'bg-indigo-500! text-white!',
+  },
+  [DEMANDE_STATUS.DONE]: {
+    className: 'bg-[#2ca892]! text-white!',
+  },
+  [DEMANDE_STATUS.ABANDONNED]: {
+    className: 'bg-red-700! text-white!',
   },
 };
 

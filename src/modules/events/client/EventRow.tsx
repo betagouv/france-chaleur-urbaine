@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import Button from '@/components/ui/Button';
@@ -154,6 +154,30 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),
+  demand_updated_by_system: (event, updateFilters) => {
+    // Format générique : data.changes = { <champ>: { from, to } } pour n'importe quel champ.
+    const changes = (event.data as { changes?: Record<string, { from?: unknown; to?: unknown }> } | null)?.changes;
+    const entries = changes ? Object.entries(changes) : [];
+    return (
+      <>
+        <span>La </span>
+        <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+        <span> a été mise à jour automatiquement</span>
+        {entries.length > 0 ? (
+          <span>
+            {' ('}
+            {entries.map(([field, { from, to }], index) => (
+              <Fragment key={field}>
+                {index > 0 ? ', ' : ''}
+                {field} : <strong>{from == null || from === '' ? 'vide' : String(from)}</strong> → <strong>{String(to)}</strong>
+              </Fragment>
+            ))}
+            {')'}
+          </span>
+        ) : null}
+      </>
+    );
+  },
   demand_validated: (event, updateFilters) => (
     <>
       <span>a validé une </span>
