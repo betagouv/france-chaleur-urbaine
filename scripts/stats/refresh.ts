@@ -1,7 +1,5 @@
 import { writeFile } from 'node:fs/promises';
 
-import { getDealsCountByStage } from '@cli/stats/pipedrive';
-
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
@@ -14,7 +12,7 @@ export async function refreshStatistics() {
     getDemandesEnCoursStats(),
     getTotalReseaux(),
     getPourcentageLivraisonsChaleur(),
-    getDealsCountByStage('Intégré'),
+    getIframesIntegrationsCount(),
   ]);
   const lastActu = new Intl.DateTimeFormat('fr-FR', {
     day: 'numeric',
@@ -30,7 +28,7 @@ export async function refreshStatistics() {
   connection: '${prettyFormatNumber(totalRaccordements)}', // nombre de demandes pour lesquelles le statut est étude en cours, réalisé, travaux en cours ou voté en ag.
   connectionPercent: '${Math.round((totalRaccordements / totalDemandes) * 100)}', // ratio connection/total des demandes de mise en contact avec un gestionnaire
   heatPercent: '${pourcentageLivraisonsChaleur}', // se base uniquement sur les réseaux de chaleur, et est calculé en prenant les livraisons totales pour les réseaux où has_trace est coché / livraisons totales pourr tous les réseaux
-  iFrameIntegration: '${nbIframes}', // prendre le chiffre indiqué sur Pipedrive dans affaires Iframe / intégrés
+  iFrameIntegration: '${nbIframes}', // historique pipedrive (affaires Iframe / intégrés) + nombre de sources de conversion
   lastActu: '${lastActu}',
   logements: '${prettyFormatNumber(totalLogements)}', // logements concernés par les raccordements
   networks: '${prettyFormatNumber(totalReseaux)}', // somme des réseaux de chaleur et de froid pour lesquels has_trace est coché.
@@ -42,6 +40,17 @@ export default statistics;
 
   logger.info(`Le fichier ${statisticsFilePath} a été mis à jour`);
 }
+
+const oldPipeDriveIframesCount = 69; // as of 01/06/2026
+
+const getIframesIntegrationsCount = async () => {
+  const nbIframes = await kdb
+    .selectFrom('conversion_sources')
+    .select(({ fn }) => [fn.countAll().as('count')])
+    .where('archived_at', 'is', null)
+    .executeTakeFirstOrThrow();
+  return Number(nbIframes.count) + oldPipeDriveIframesCount;
+};
 
 const getTotalReseaux = async () => {
   const reseauxDeChaleur = await kdb

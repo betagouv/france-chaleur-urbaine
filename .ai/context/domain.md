@@ -100,7 +100,6 @@ Permissions are managed in `user_permissions` table (not string tags). See `secu
 | BDNB (Base de Données Nationale des Bâtiments) | Building energy data | `src/modules/bdnb/` |
 | data.gouv.fr | Open data publishing (API registration) | `src/modules/opendata/` |
 | Airtable | Legacy CRM data sync (demands, networks) | `src/server/db/airtable.ts` |
-| Pipedrive | Sales/deal tracking (iframe stats) | `src/server/services/` |
 | Matomo | Web analytics | `src/modules/analytics/` |
 | PostHog | Product analytics | PostHog JS SDK |
 | Sentry | Error tracking | Sentry SDK |

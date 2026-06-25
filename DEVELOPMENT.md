@@ -9,7 +9,6 @@ Pour ce faire, il faut récupérer les tables à jour en local puis lancer un sc
 ```sh
 pnpm db:pull:prod --data-only --no-constraints reseaux_de_chaleur reseaux_de_froid zone_de_developpement_prioritaire zones_et_reseaux_en_construction demands
 ```
-- Vérifier dans `.env.local` que la clé d'API Pipedrive est bien configurée.
 - Lancer le script pour mettre à jour le fichier `src/data/statistics.ts`.
 ```sh
 pnpm cli stats:refresh
@@ -58,13 +57,6 @@ pnpm cli users:add professionnel@fcu.local 'MON MDP SECURE' professionnel
 pnpm cli users:add particulier@fcu.local 'MON MDP SECURE' particulier
 pnpm cli users:add gestionnaire@fcu.local 'MON MDP SECURE' gestionnaire ENGIE_2407C,ENGIE_2305C,ENGIE_7615C,ENGIE_6105C
 ```
-
-
-## Pipedrive
-
-La connexion est utilisée pour le moment pour récupérer les nombres d'iframes qui est utilisé dans les statistiques.
-
-Un token a été généré sur https://francechaleururbaine.pipedrive.com/settings/api et doit être défini par la variable d'environnement `PIPEDRIVE_API_KEY`.
 
 
 ## Configuration des notifications de déploiement Scalingo dans Mattermost
