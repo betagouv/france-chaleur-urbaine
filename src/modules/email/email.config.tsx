@@ -1,6 +1,5 @@
 import { render } from '@react-email/components';
 
-import { clientConfig } from '@/client-config';
 import type { EmailScenarios } from '@/modules/email/scenarios';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
@@ -14,9 +13,6 @@ import ReinitialisationMotDePasse, {
 import ConfirmationDemande, { scenarios as confirmationDemandeScenarios } from './templates/demands/demandeur/confirmation-demande';
 import EnqueteSatisfaction, { scenarios as enqueteSatisfactionScenarios } from './templates/demands/demandeur/enquete-satisfaction';
 import MessageGestionnaire, { scenarios as messageGestionnaireScenarios } from './templates/demands/demandeur/message-gestionnaire';
-import DemandeHautPotentiel, { scenarios as demandeHautPotentielScenarios } from './templates/demands/equipe-fcu/demande-haut-potentiel';
-import DemandeReaffectation, { scenarios as demandeReaffectationScenarios } from './templates/demands/equipe-fcu/demande-reaffectation';
-import NouvelleDemande, { scenarios as nouvelleDemandeScenarios } from './templates/demands/equipe-fcu/nouvelle-demande';
 import NouvellesDemandesATraiter, {
   scenarios as nouvellesDemandesATraiterScenarios,
 } from './templates/demands/gestionnaire/nouvelles-demandes-a-traiter';
@@ -63,10 +59,6 @@ function defineEmails<const T extends EmailRegistry<T>>(emails: T): T {
  * - le composant React qui produit le rendu HTML/texte ;
  * - les `scenarios` (props pré-remplies pour la prévisualisation admin) ;
  * - les métadonnées affichées dans l'admin (`label`, `description`, `subject`, `preview`).
- *
- * Note : les références `\`clientConfig.destinationEmails.X\`` dans `description`
- * sont résolues à la volée par `listEmailTypes()` pour afficher la liste réelle
- * des destinataires courants.
  */
 export const emails = defineEmails({
   'auth.gestionnaire.ouverture-espace': {
@@ -121,33 +113,6 @@ export const emails = defineEmails({
     scenarios: messageGestionnaireScenarios,
     subject: '',
   },
-  'demands.equipe-fcu.demande-haut-potentiel': {
-    Component: DemandeHautPotentiel,
-    description:
-      "Alerte envoyée à l'équipe FCU (`clientConfig.destinationEmails.pro`) quand une demande provient d'un Bailleur social ou d'un Tertiaire — cibles à fort enjeu de raccordement.",
-    label: 'Demande haut potentiel (Bailleur/Tertiaire)',
-    preview: 'Nouveau message HP à traiter',
-    scenarios: demandeHautPotentielScenarios,
-    subject: '[France Chaleur Urbaine] Nouveau message HP à traiter',
-  },
-  'demands.equipe-fcu.demande-reaffectation': {
-    Component: DemandeReaffectation,
-    description:
-      "Envoyé à l'équipe FCU (`clientConfig.destinationEmails.pro`) quand un gestionnaire demande qu'une demande soit réaffectée à un autre réseau.",
-    label: 'Demande de réaffectation',
-    preview: 'Demande de réaffectation',
-    scenarios: demandeReaffectationScenarios,
-    subject: '[France Chaleur Urbaine] Demande de réaffectation',
-  },
-  'demands.equipe-fcu.nouvelle-demande': {
-    Component: NouvelleDemande,
-    description:
-      "Notification interne envoyée à l'équipe FCU (`clientConfig.destinationEmails.contact`) à chaque nouvelle demande publique reçue.",
-    label: 'Nouvelle demande reçue',
-    preview: 'Une nouvelle demande de contact a été créée',
-    scenarios: nouvelleDemandeScenarios,
-    subject: '[France Chaleur Urbaine] Nouvelle demande de contact',
-  },
   'demands.gestionnaire.nouvelles-demandes-a-traiter': {
     Component: NouvellesDemandesATraiter,
     description: 'Envoyé périodiquement aux gestionnaires de réseau ayant une ou plusieurs nouvelles demandes dans leur espace.',
@@ -172,19 +137,6 @@ export type EmailType = keyof EmailTemplates;
 type TemplateProps<T extends EmailType> = React.ComponentProps<EmailTemplates[T]['Component']> & { preview?: string };
 
 /**
- * Remplace les références `\`clientConfig.destinationEmails.<key>\`` dans une
- * description par la valeur réelle (séparateurs CSV → liste lisible).
- * Les valeurs proviennent de `clientConfig`, donc reflètent la configuration
- * de l'environnement courant (dev/staging/prod).
- */
-function resolveDestinationRefs(description: string): string {
-  return description.replace(/`clientConfig\.destinationEmails\.(\w+)`/g, (match, key: string) => {
-    const value = (clientConfig.destinationEmails as Record<string, string | undefined>)[key];
-    return value ? value.split(',').join(', ') : match;
-  });
-}
-
-/**
  * Retourne la liste des modèles d'emails enregistrés avec leurs métadonnées,
  * destinée à l'admin (sidebar + panneau d'aperçu). Le HTML rendu n'est pas
  * inclus ici — il est récupéré à la demande via `renderEmailScenario`.
@@ -197,7 +149,7 @@ export function listEmailTypes(): Array<{
   scenarios: Array<{ key: string; label: string }>;
 }> {
   return ObjectKeys(emails).map((type) => ({
-    description: resolveDestinationRefs(emails[type].description),
+    description: emails[type].description,
     label: emails[type].label,
     scenarios: ObjectEntries(emails[type].scenarios).map(([key, { label }]) => ({ key, label })),
     subject: emails[type].subject,

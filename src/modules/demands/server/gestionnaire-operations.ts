@@ -1,9 +1,7 @@
 import { TRPCError } from '@trpc/server';
 
-import { clientConfig } from '@/client-config';
 import type { Context } from '@/modules/config/server/context-builder';
 import type { UpdateGestionnaireDemandInput } from '@/modules/demands/constants';
-import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { buildDemandAccessFilter, isUserResponsibleForDemand } from '@/modules/permissions/server/service';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -208,20 +206,6 @@ export const requestDemandAssignmentChange = async (
       },
     },
     type: 'demand_assignment_change_requested',
-  });
-
-  const requester = await kdb.selectFrom('users').select('email').where('id', '=', userId).executeTakeFirst();
-  await sendEmailTemplate(
-    'demands.equipe-fcu.demande-reaffectation',
-    { email: clientConfig.destinationEmails.pro },
-    {
-      comment,
-      demandId,
-      requestedSncuId: isUnassignment ? 'désaffectation' : (newInfo.network_sncu_id ?? String(networkIdFcu)),
-      requesterEmail: requester?.email ?? userId,
-    }
-  ).catch((error: unknown) => {
-    logger.error('Failed to send assignment change request email:', error);
   });
 };
 
