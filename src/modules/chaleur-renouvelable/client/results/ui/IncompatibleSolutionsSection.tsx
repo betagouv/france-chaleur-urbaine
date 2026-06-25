@@ -14,12 +14,14 @@ export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolut
           <table className="w-full border-collapse">
             <tbody>
               {rows.map((row) => (
-                <tr key={row.label} className="align-top">
-                  <td className="py-3">
+                <tr key={row.label} className="block border-b border-gray-200 py-3 md:table-row md:border-0 md:py-0">
+                  <td className="block py-1 md:table-cell md:py-3">
                     <PrerequisiteStatusBadge status="defavorable" />
                   </td>
-                  <td className="p-3 max-w-62.5 text-error text-lg">{row.label}</td>
-                  <td className="py-3">
+
+                  <td className="block py-1 text-error text-lg md:table-cell md:max-w-62.5 md:p-1">{row.label}</td>
+
+                  <td className="block py-2 md:table-cell md:py-3">
                     <div className="space-y-2">
                       {row.reasons.map(({ reason, source }) => (
                         <div
@@ -27,6 +29,7 @@ export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolut
                           className="flex flex-col gap-1 md:flex-row md:items-start md:justify-between md:gap-4"
                         >
                           <span>{reason}</span>
+
                           <span className="w-fit shrink-0 whitespace-nowrap text-blue">
                             <span className="fr-icon-stack-line mr-1 font-bold" aria-hidden="true" />
                             source : {source}
