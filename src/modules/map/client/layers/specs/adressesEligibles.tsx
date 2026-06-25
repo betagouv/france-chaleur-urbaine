@@ -10,7 +10,6 @@ export type AdresseEligible = {
   longitude: number;
   latitude: number;
   isEligible?: boolean; // TODO essayer de voir si on peut avoir des couleurs différentes selon les statuts des demandes
-  selected?: boolean;
   modeDeChauffage?: string;
   typeDeLogement?: string;
 };
@@ -41,7 +40,7 @@ export const adressesEligiblesLayersSpec = [
     layers: [
       // 3 couches séparées pour afficher les adresses éligibles au dessus des autres
       {
-        filter: () => ['all', ['!has', 'isEligible'], ['!=', 'selected', true]],
+        filter: () => ['!has', 'isEligible'],
         id: 'adressesEligibles-default',
         isVisible: () => true,
         layout: {
@@ -59,7 +58,7 @@ export const adressesEligiblesLayersSpec = [
         type: 'symbol',
       },
       {
-        filter: () => ['any', ['==', 'isEligible', false], ['==', 'selected', true]],
+        filter: () => ['==', 'isEligible', false],
         id: 'adressesEligibles-non-eligible',
         isVisible: () => true,
         layout: {
@@ -103,7 +102,7 @@ export const adressesEligiblesLayersSpec = [
             'case',
             ['==', ['get', 'isEligible'], true],
             'marker-green',
-            ['any', ['==', ['get', 'isEligible'], false], ['==', ['get', 'selected'], true]],
+            ['==', ['get', 'isEligible'], false],
             'marker-red',
             'marker-blue',
           ] as any,
@@ -125,5 +124,28 @@ export const adressesEligiblesLayersSpec = [
       type: 'geojson',
     },
     sourceId: 'adressesEligibles',
+  },
+  {
+    // Source dédiée au point sélectionné (0 ou 1 feature)
+    layers: [
+      {
+        id: 'adressesEligibles-selected',
+        isVisible: () => true,
+        layout: {
+          'icon-anchor': 'bottom',
+          'icon-image': 'marker-red',
+          'icon-offset': [0, 5],
+          'icon-overlap': 'always',
+        },
+        type: 'symbol',
+        unselectable: true,
+      },
+    ],
+    source: {
+      data: { features: [], type: 'FeatureCollection' },
+      promoteId: 'id',
+      type: 'geojson',
+    },
+    sourceId: 'adressesEligiblesSelected',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];
