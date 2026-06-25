@@ -22,7 +22,7 @@ import cx from '@/utils/cx';
 
 const resultsTabs = [
   { label: 'Chauffage + Eau chaude', value: 'heatingAndHotWater' },
-  { label: 'Eau chaude uniquement', value: 'hotWaterOnly' },
+  { label: 'Eau chaude seulement', value: 'hotWaterOnly' },
 ] satisfies Array<{ label: string; value: ModeDeChauffageUsage }>;
 
 type ResultsSectionProps = {
@@ -83,7 +83,7 @@ export function ResultsSection({
 
   return (
     <>
-      <h3 className="fr-mt-6w mb-5">Autres solutions possibles</h3>
+      <h3 className="my-5">Autres solutions possibles</h3>
       <div className="flex flex-wrap items-end">
         {resultsTabs.map((tab) => {
           const count = itemsByUsage[tab.value].length;
@@ -94,7 +94,7 @@ export function ResultsSection({
               key={tab.value}
               type="button"
               className={cx(
-                'border border-b-0 px-5 py-3 font-bold',
+                'border border-b-0 p-2 md:px-5 md:py-3 md:font-bold text-xs md:text-base',
                 isActive ? 'border-blue border-t-4 bg-white text-blue' : 'border-transparent bg-[#EEEEFF]'
               )}
               onClick={() => {

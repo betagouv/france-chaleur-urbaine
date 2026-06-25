@@ -141,7 +141,7 @@ export default function ChoixChauffageResults() {
             DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer les coûts
             et contraintes techniques propres à votre situation.
             <div className="fr-mt-3w">
-              <Link href="/chaleur-renouvelable/methodologie" postHogEventKey="fcr_results:methodology_link_clicked">
+              <Link href="/chaleur-renouvelable/methodologie" postHogEventKey="fcr_results:methodology_link_clicked" isExternal>
                 En savoir plus
               </Link>
             </div>
