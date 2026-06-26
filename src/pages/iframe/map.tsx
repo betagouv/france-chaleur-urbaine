@@ -5,9 +5,11 @@
  *   - `legend` accepte l'ancien booléen (`true`→auto, `false`→off) en plus de l'enum actuel.
  *   - `displayLegend` (`reseau_chaleur,reseau_froid,futur_reseau,pdp`) est un alias legacy de `layers`
  *     (utilisé si `layers` n'est pas fourni).
+ *   - `coord` (`lng,lat`) définit le centre initial (param historique de l'ancien formulaire
+ *     d'intégration, présent dans les liens partenaires déjà embarqués).
  * Le titre de légende n'est plus paramétrable (`legendTitle` ignoré, titre figé « Légende »).
  *
- * Paramètres : center, zoom, min-zoom, max-zoom, max-bounds, gestionnaire, reseaux, layers, legend, mode
+ * Paramètres : coord, zoom, min-zoom, max-zoom, max-bounds, gestionnaire, reseaux, layers, legend, mode
  * (+ alias legacy `displayLegend`).
  */
 
@@ -27,6 +29,7 @@ import {
 import { IframeLegend } from '@/modules/map/client/legend/IframeLegend';
 import { Map } from '@/modules/map/client/Map';
 import type { BBox } from '@/modules/map/shared/types';
+import { parseAsLngLat } from '@/utils/nuqs-parsers';
 
 // Tolère l'ancien `legend` booléen des URLs partenaires en plus de l'enum actuel.
 const parseAsLegacyLegend = createParser<LegendMode>({
@@ -60,6 +63,8 @@ const parseAsDisplayLegend = createParser<LayerKey[]>({
 
 const mapIframeParams = {
   ...carteIframeParams,
+  // Centre initial legacy (ancien formulaire d'intégration : `?coord=lng,lat&zoom=12`).
+  coord: parseAsLngLat,
   displayLegend: parseAsDisplayLegend,
   // Sans défaut : `null` quand absent, pour pouvoir retomber sur l'alias legacy `displayLegend`.
   layers: parseAsArrayOf(parseAsStringLiteral(layerKeys)),
@@ -67,7 +72,7 @@ const mapIframeParams = {
 };
 
 const MapPage = () => {
-  const [{ center, zoom, minZoom, maxZoom, maxBounds, gestionnaire, reseaux, layers, displayLegend, legend, mode }] = useQueryStates(
+  const [{ coord, zoom, minZoom, maxZoom, maxBounds, gestionnaire, reseaux, layers, displayLegend, legend, mode }] = useQueryStates(
     mapIframeParams,
     { urlKeys: carteIframeUrlKeys }
   );
@@ -96,7 +101,7 @@ const MapPage = () => {
     <div className="h-dvh w-screen">
       <Map
         config={config}
-        initialView={center ? { center, zoom: zoom ?? undefined } : undefined}
+        initialView={coord ? { center: coord, zoom: zoom ?? 13 } : undefined}
         maxBounds={validMaxBounds}
         minZoom={minZoom ?? undefined}
         maxZoom={maxZoom ?? undefined}
