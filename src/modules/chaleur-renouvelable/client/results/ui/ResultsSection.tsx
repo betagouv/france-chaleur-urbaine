@@ -16,6 +16,7 @@ import { DpeProgression } from '@/modules/chaleur-renouvelable/client/results/ui
 import { GainVsGazBadge } from '@/modules/chaleur-renouvelable/client/results/ui/GainVsGazBadge';
 import { PrerequisitesList } from '@/modules/chaleur-renouvelable/client/results/ui/PrerequisitesList';
 import { ProsConsLists } from '@/modules/chaleur-renouvelable/client/results/ui/ProsConsLists';
+import { SolutionConsumptionPanel } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionConsumptionPanel';
 import { Stars } from '@/modules/chaleur-renouvelable/client/results/ui/Stars';
 import type { DPE, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
@@ -260,6 +261,14 @@ function OtherSolutionRow({
           <h4 className="text-lg uppercase">Description</h4>
           <p className="mb-0">{item.description}</p>
         </div>
+        <div className="md:hidden">
+          <SolutionConsumptionPanel
+            dpeFrom={dpeFrom}
+            item={item}
+            coutParAnGaz={coutParAnGaz}
+            coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
+          />
+        </div>
         <div className="md:col-span-2">
           <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
         </div>
@@ -306,18 +315,18 @@ function OtherSolutionLabel({
 }: OtherSolutionLabelProps) {
   return (
     <span className="grid w-full gap-5 p-3 text-left md:grid-cols-[2fr_1fr_auto_auto] md:items-center md:p-5">
-      <span className="flex items-center gap-2 md:flex-col md:items-start">
+      <span className="items-center gap-2 md:items-start">
         <span className="text-blue text-lg">{item.label}</span>
         <Stars value={item.pertinence} />
       </span>
-      <span className="md:text-center">
+      <span className="hidden md:block md:text-center">
         <span className="text-blue text-lg">
           {lowerBoundString} à {upperBoundString}
         </span>
         <span className="hidden md:block" />
         <span className="text-(--text-default-grey) text-sm"> par an par logement</span>
       </span>
-      <span className="grid grid-cols-2 items-center gap-4 md:block">
+      <span className="grid grid-cols-2 items-center gap-4 hidden md:block">
         <GainVsGazBadge item={item} coutParAnGaz={coutParAnGaz} coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly} />
         <span className="flex justify-center md:hidden">
           <DpeProgression from={dpeFrom} to={dpeTo} />
