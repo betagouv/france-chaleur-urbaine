@@ -10,7 +10,7 @@ function PrerequisiteRowItem({ row }: { row: PrerequisiteRow }) {
     <li
       className={cx(
         'flex flex-col gap-3 px-3 py-2 md:flex-row md:items-center md:justify-between',
-        row.status === 'favorable' ? 'bg-gray-100' : 'bg-[#FFF8E5]'
+        row.status === 'favorable' ? 'bg-gray-100' : row.status === 'contraignant' ? 'bg-[#fef4f2]' : 'bg-[#FFF8E5]'
       )}
     >
       <span className="flex flex-col md:flex-row items-start md:items-center gap-3">
@@ -58,9 +58,16 @@ function InstallationCostPrerequisite({ coutInstallation, solutionType }: { cout
 function PrerequisitesLegend({ className }: { className?: string }) {
   return (
     <p className={cx('text-sm', className)}>
-      <strong>STATUT :</strong> <strong className="text-success">FAVORABLE</strong> : vérifié, aucun obstacle{' '}
-      <strong className="text-error ml-3">CONTRAIGNANT</strong> : vérifié, contraintes supplémentaires{' '}
-      <strong className="text-[#716043] ml-3">À VÉRIFIER</strong> : à vérifier par vous
+      <strong className="block md:inline">STATUTS : </strong>
+      <span className="block md:inline">
+        <strong className="text-success">FAVORABLE</strong> : vérifié, aucun obstacle
+      </span>
+      <span className="block md:ml-3 md:inline">
+        <strong className="text-error">CONTRAIGNANT</strong> : vérifié, contraintes supplémentaires
+      </span>
+      <span className="block md:ml-3 md:inline">
+        <strong className="text-[#716043] ">À VÉRIFIER</strong> : à vérifier par vous
+      </span>
     </p>
   );
 }

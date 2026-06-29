@@ -547,7 +547,7 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
           <Field.Input name="lastName" label="Nom" />
           <Field.Input name="firstName" label="Prénom" />
           <Field.EmailInput name="email" label="Email" />
-          <Field.PhoneInput name="phone" label={isAlternativeAdvisorForm ? 'Téléphone (optionnel)' : 'Téléphone'} />
+          <Field.PhoneInput name="phone" label="Téléphone" />
           {!isAlternativeAdvisorForm && (
             <form.Field
               name="heatingEnergy"
