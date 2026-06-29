@@ -125,9 +125,9 @@ export function ResultsSection({
                   <p className="mb-1 font-bold text-blue">Mode actuel : {currentHotWaterModeLabel}</p>
                   <p className="mb-0 text-sm">
                     Si ce n’est pas correct, vous pouvez le{' '}
-                    <button type="button" className="font-bold text-blue underline" onClick={onEditParamsClick}>
+                    <span className="font-bold text-blue underline" onClick={onEditParamsClick}>
                       modifier dans les paramètres
-                    </button>
+                    </span>
                     .
                   </p>
                 </div>

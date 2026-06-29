@@ -18,9 +18,7 @@ export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolut
                   <td className="block py-1 md:table-cell md:py-3">
                     <PrerequisiteStatusBadge status="defavorable" />
                   </td>
-
                   <td className="block py-1 text-error text-lg md:table-cell md:max-w-62.5 md:p-1">{row.label}</td>
-
                   <td className="block py-2 md:table-cell md:py-3">
                     <div className="space-y-2">
                       {row.reasons.map(({ reason, source }) => (
@@ -29,8 +27,7 @@ export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolut
                           className="flex flex-col gap-1 md:flex-row md:items-start md:justify-between md:gap-4"
                         >
                           <span>{reason}</span>
-
-                          <span className="w-fit shrink-0 whitespace-nowrap text-blue">
+                          <span className="w-fit shrink-0 whitespace-nowrap text-blue self-end md:self-auto">
                             <span className="fr-icon-stack-line mr-1 font-bold" aria-hidden="true" />
                             source : {source}
                           </span>
