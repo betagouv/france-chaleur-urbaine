@@ -9,7 +9,11 @@ export async function up(db: Kysely<any>): Promise<void> {
       ADD COLUMN IF NOT EXISTS is_public_advisor_selected boolean NOT NULL DEFAULT false,
       ADD COLUMN IF NOT EXISTS radiator_type text,
       ADD COLUMN IF NOT EXISTS refusal_period text,
-      ADD COLUMN IF NOT EXISTS refusal_reason text;
+      ADD COLUMN IF NOT EXISTS refusal_reason text,
+      ADD COLUMN IF NOT EXISTS comments text,
+      ADD COLUMN IF NOT EXISTS demand_concern text,
+      ADD COLUMN IF NOT EXISTS organization_name text,
+      ADD COLUMN IF NOT EXISTS surface_area integer;
   `.execute(db);
 }
 
@@ -21,6 +25,10 @@ export async function down(db: Kysely<any>): Promise<void> {
       DROP COLUMN IF EXISTS radiator_type,
       DROP COLUMN IF EXISTS is_public_advisor_selected,
       DROP COLUMN IF EXISTS hot_water_system_type,
-      DROP COLUMN IF EXISTS batiment_construction_id;
+      DROP COLUMN IF EXISTS batiment_construction_id,
+      DROP COLUMN IF EXISTS comments,
+      DROP COLUMN IF EXISTS surface_area,
+      DROP COLUMN IF EXISTS organization_name,
+      DROP COLUMN IF EXISTS demand_concern;
   `.execute(db);
 }
