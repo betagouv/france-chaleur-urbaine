@@ -75,23 +75,19 @@ export function getIncomeOptions(input: IncomeOptionsInput): IncomeOption[] {
 
   return [
     {
-      help: 'Catégorie Très modeste',
-      label: `Inférieur ou égal à ${formatCurrency(veryLowThreshold)}.`,
+      label: `inférieur à ${formatCurrency(veryLowThreshold + 1)}`,
       value: 'Très modeste',
     },
     {
-      help: 'Catégorie Modeste',
-      label: `De ${formatCurrency(veryLowThreshold + 1)} à ${formatCurrency(lowThreshold)}.`,
+      label: `de ${formatCurrency(veryLowThreshold + 1)} à ${formatCurrency(lowThreshold)}`,
       value: 'Modeste',
     },
     {
-      help: 'Catégorie Intermédiaire',
-      label: `De ${formatCurrency(lowThreshold + 1)} à ${formatCurrency(middleThreshold)}.`,
+      label: `de ${formatCurrency(lowThreshold + 1)} à ${formatCurrency(middleThreshold)}`,
       value: 'Intermédiaire',
     },
     {
-      help: 'Catégorie Supérieur',
-      label: `Supérieur à ${formatCurrency(middleThreshold)}.`,
+      label: `supérieur à ${formatCurrency(middleThreshold)}`,
       value: 'Supérieur',
     },
   ];

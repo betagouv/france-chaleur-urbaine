@@ -23,7 +23,6 @@ export const zIncomeOptionsInput = z.object({
 export type IncomeOptionsInput = z.infer<typeof zIncomeOptionsInput>;
 
 export type IncomeOption = {
-  help: string;
   label: string;
   value: (typeof INCOME_CATEGORY_VALUES)[number];
 };
