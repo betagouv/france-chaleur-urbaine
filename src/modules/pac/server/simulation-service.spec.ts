@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { TestCase } from '@/tests/trpc-helpers';
 
 import type { HeatingSimulationInput } from '../constants';
-import { getHeatingSimulation } from './simulation-service';
+import { getHeatingSimulation, getIncomeOptions } from './simulation-service';
 
 const baseInput = {
   departmentCode: '75',
@@ -20,24 +20,21 @@ describe('getHeatingSimulation', () => {
 
     expect(result).toStrictEqual({
       gasBoilerAnnualBill: 2365.08,
-      heatingCostBreakdowns: [
+      heatingModeComparisons: [
         {
+          co2: 1092.69,
           label: 'PAC air/eau',
           p1: 1410.46,
-          p2: 238.8,
-          p4: 1281.26,
         },
         {
+          co2: 4658.5,
           label: 'Chaudière gaz condensation',
           p1: 2193.48,
-          p2: 171.6,
-          p4: 257.86,
         },
         {
+          co2: 6882.42,
           label: 'Chaudière fioul',
           p1: 2382.23,
-          p2: 171.6,
-          p4: 229.62,
         },
       ],
       heatPumpAnnualBill: 1649.26,
@@ -58,5 +55,33 @@ describe('getHeatingSimulation', () => {
 
   it.each(incomeCases)('$label', (testCase) => {
     expect(getHeatingSimulation({ ...baseInput, incomeCategory: testCase.input }).heatPumpNetPrice).toStrictEqual(testCase.expectedOutput);
+  }, 15_000);
+});
+
+describe('getIncomeOptions', () => {
+  it('returns income ranges for the requested department and household size', () => {
+    const result = getIncomeOptions({
+      departmentCode: '75',
+      occupants: 3,
+    });
+
+    expect(result).toStrictEqual([
+      {
+        label: 'inférieur à 42 358 €',
+        value: 'Très modeste',
+      },
+      {
+        label: 'de 42 358 € à 51 564 €',
+        value: 'Modeste',
+      },
+      {
+        label: 'de 51 565 € à 71 846 €',
+        value: 'Intermédiaire',
+      },
+      {
+        label: 'supérieur à 71 846 €',
+        value: 'Supérieur',
+      },
+    ]);
   });
 });

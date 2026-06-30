@@ -27,18 +27,17 @@ export type IncomeOption = {
   value: (typeof INCOME_CATEGORY_VALUES)[number];
 };
 
-export type HeatingCostBreakdown = {
+export type HeatingModeComparison = {
+  co2: number;
   label: string;
   p1: number;
-  p2: number;
-  p4: number;
 };
 
 export type HeatingSimulationResult = {
   oilBoilerAnnualBill: number;
   gasBoilerAnnualBill: number;
   heatPumpAnnualBill: number;
-  heatingCostBreakdowns: HeatingCostBreakdown[];
+  heatingModeComparisons: HeatingModeComparison[];
   heatPumpBoilerReplacementBonus: number;
   heatPumpGrossPrice: number;
   heatPumpMaprimerenovAid: number;
