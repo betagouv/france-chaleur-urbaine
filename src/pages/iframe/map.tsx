@@ -8,8 +8,9 @@
  *   - `coord` (`lng,lat`) définit le centre initial (param historique de l'ancien formulaire
  *     d'intégration, présent dans les liens partenaires déjà embarqués).
  * Le titre de légende n'est plus paramétrable (`legendTitle` ignoré, titre figé « Légende »).
+ * Le mode de recherche est figé sur `eligibility` (test d'adresse, fonction historique de l'iframe legacy).
  *
- * Paramètres : coord, zoom, min-zoom, max-zoom, max-bounds, gestionnaire, reseaux, layers, legend, mode
+ * Paramètres : coord, zoom, min-zoom, max-zoom, max-bounds, gestionnaire, reseaux, layers, legend
  * (+ alias legacy `displayLegend`).
  */
 
@@ -72,7 +73,7 @@ const mapIframeParams = {
 };
 
 const MapPage = () => {
-  const [{ coord, zoom, minZoom, maxZoom, maxBounds, gestionnaire, reseaux, layers, displayLegend, legend, mode }] = useQueryStates(
+  const [{ coord, zoom, minZoom, maxZoom, maxBounds, gestionnaire, reseaux, layers, displayLegend, legend }] = useQueryStates(
     mapIframeParams,
     { urlKeys: carteIframeUrlKeys }
   );
@@ -107,7 +108,7 @@ const MapPage = () => {
         maxZoom={maxZoom ?? undefined}
         legend={legend === 'off' ? false : legend}
         legendContent={<IframeLegend layers={resolvedLayers} />}
-        search={mode}
+        search="eligibility"
       >
         <FcuLogo />
       </Map>
