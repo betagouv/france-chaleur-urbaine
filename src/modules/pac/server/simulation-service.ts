@@ -11,6 +11,30 @@ const publicodesRules = require('@betagouv/france-chaleur-urbaine-publicodes/pub
 const HEATING_BILL_PARTS = ['P1abo', 'P1conso', 'P1prime', 'P1ECS', 'P2'] as const;
 const HEATING_P1_PARTS = ['P1abo', 'P1conso', 'P1prime', 'P1ECS', 'P1Consofroid'] as const;
 
+type HeatingBillPrefix = 'Bilan x PAC air-eau indiv' | 'Bilan x Gaz indiv avec cond' | 'Bilan x Fioul indiv';
+
+const HEATING_MODES = [
+  {
+    billPrefix: 'Bilan x PAC air-eau indiv',
+    co2RuleName: 'env . Installation x PAC air-eau x Individuel . Total',
+    label: 'PAC air/eau',
+  },
+  {
+    billPrefix: 'Bilan x Gaz indiv avec cond',
+    co2RuleName: 'env . Installation x Gaz indiv avec cond x Individuel . Total',
+    label: 'Chaudière gaz condensation',
+  },
+  {
+    billPrefix: 'Bilan x Fioul indiv',
+    co2RuleName: 'env . Installation x Fioul indiv x Individuel . Total',
+    label: 'Chaudière fioul',
+  },
+] as const satisfies {
+  billPrefix: HeatingBillPrefix;
+  co2RuleName: RuleName;
+  label: string;
+}[];
+
 const INCOME_PUBLICODES_THRESHOLDS = {
   Intermédiaire: 'ménage . revenu . plafond intermédiaire',
   Modeste: 'ménage . revenu . plafond modeste',
@@ -18,27 +42,7 @@ const INCOME_PUBLICODES_THRESHOLDS = {
 } as const satisfies Record<Exclude<HeatingSimulationInput['incomeCategory'], 'Supérieur'>, string>;
 
 export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimulationResult {
-  const engine = new Engine<RuleName>(publicodesRules);
-
-  engine.setSituation({
-    'code département': `'${input.departmentCode}'`,
-    DPE: `'${input.dpe}'`,
-    'Inclure la climatisation': 'non',
-    'méthode résidentiel': "'DPE'",
-    "Nombre d'habitants moyen par appartement": input.occupants,
-    "nombre de logements dans l'immeuble concerné": 1,
-    "Paramètres économiques . Aides . Éligibilité x Je dispose actuellement d'une chaudière gaz ou fioul": 'oui',
-    'Paramètres économiques . Aides . Éligibilité x Je suis un particulier': 'oui',
-    'Paramètres économiques . Aides . Éligibilité x Prise en compte des aides': 'oui',
-    'Paramètres économiques . Aides . Éligibilité x Ressources du ménage': `'${input.incomeCategory}'`,
-    'Production eau chaude sanitaire': 'oui',
-    'ratios . GNRL Appartement ou maison': "'Maison'",
-    'surface logement type tertiaire': input.surface,
-    'température de référence chaud commune': input.temperatureReference,
-    'type de bâtiment': "'résidentiel'",
-    'type de production ECS': "'Avec équipement chauffage'",
-  });
-
+  const engine = createEngineForSimulation(input);
   const heatPumpGrossPrice = getRuleValue(engine, 'Calcul Eco . PAC air-eau indiv . Investissement équipement Total');
   const heatPumpMaprimerenovAid = getRuleValue(
     engine,
@@ -52,11 +56,7 @@ export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimu
 
   return {
     gasBoilerAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x Gaz indiv avec cond')),
-    heatingCostBreakdowns: [
-      getHeatingCostBreakdown(engine, 'PAC air/eau', 'Bilan x PAC air-eau indiv'),
-      getHeatingCostBreakdown(engine, 'Chaudière gaz condensation', 'Bilan x Gaz indiv avec cond'),
-      getHeatingCostBreakdown(engine, 'Chaudière fioul', 'Bilan x Fioul indiv'),
-    ],
+    heatingModeComparisons: HEATING_MODES.map((heatingMode) => getHeatingModeComparison(engine, heatingMode)),
     heatPumpAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x PAC air-eau indiv')),
     heatPumpBoilerReplacementBonus: roundNumber(heatPumpBoilerReplacementBonus),
     heatPumpGrossPrice: roundNumber(heatPumpGrossPrice),
@@ -93,8 +93,33 @@ export function getIncomeOptions(input: IncomeOptionsInput): IncomeOption[] {
   ];
 }
 
+function createEngineForSimulation(input: HeatingSimulationInput) {
+  const engine = createPublicodesEngine();
+
+  engine.setSituation({
+    'code département': `'${input.departmentCode}'`,
+    DPE: `'${input.dpe}'`,
+    'Inclure la climatisation': 'non',
+    'méthode résidentiel': "'DPE'",
+    "Nombre d'habitants moyen par appartement": input.occupants,
+    "nombre de logements dans l'immeuble concerné": 1,
+    "Paramètres économiques . Aides . Éligibilité x Je dispose actuellement d'une chaudière gaz ou fioul": 'oui',
+    'Paramètres économiques . Aides . Éligibilité x Je suis un particulier': 'oui',
+    'Paramètres économiques . Aides . Éligibilité x Prise en compte des aides': 'oui',
+    'Paramètres économiques . Aides . Éligibilité x Ressources du ménage': `'${input.incomeCategory}'`,
+    'Production eau chaude sanitaire': 'oui',
+    'ratios . GNRL Appartement ou maison': "'Maison'",
+    'surface logement type tertiaire': input.surface,
+    'température de référence chaud commune': input.temperatureReference,
+    'type de bâtiment': "'résidentiel'",
+    'type de production ECS': "'Avec équipement chauffage'",
+  });
+
+  return engine;
+}
+
 function createEngineForIncome(input: IncomeOptionsInput) {
-  const engine = new Engine<RuleName>(publicodesRules);
+  const engine = createPublicodesEngine();
 
   engine.setSituation({
     'code département': `'${input.departmentCode}'`,
@@ -104,23 +129,27 @@ function createEngineForIncome(input: IncomeOptionsInput) {
   return engine;
 }
 
-function getAnnualBill(
-  engine: Engine<RuleName>,
-  prefix: 'Bilan x PAC air-eau indiv' | 'Bilan x Gaz indiv avec cond' | 'Bilan x Fioul indiv'
-) {
+function createPublicodesEngine() {
+  return new Engine<RuleName>(publicodesRules, {
+    logger: {
+      error: () => undefined,
+      log: () => undefined,
+      warn: () => undefined,
+    },
+  });
+}
+
+function getAnnualBill(engine: Engine<RuleName>, prefix: HeatingBillPrefix) {
   return HEATING_BILL_PARTS.reduce((total, billPart) => total + getRuleValue(engine, `${prefix} . ${billPart}` as RuleName), 0);
 }
 
-function getHeatingCostBreakdown(
-  engine: Engine<RuleName>,
-  label: string,
-  prefix: 'Bilan x PAC air-eau indiv' | 'Bilan x Gaz indiv avec cond' | 'Bilan x Fioul indiv'
-) {
+function getHeatingModeComparison(engine: Engine<RuleName>, heatingMode: (typeof HEATING_MODES)[number]) {
   return {
-    label,
-    p1: roundNumber(HEATING_P1_PARTS.reduce((total, billPart) => total + getRuleValue(engine, `${prefix} . ${billPart}` as RuleName), 0)),
-    p2: roundNumber(getRuleValue(engine, `${prefix} . P2` as RuleName)),
-    p4: roundNumber(getRuleValue(engine, `${prefix} . P4` as RuleName)),
+    co2: roundNumber(getRuleValue(engine, heatingMode.co2RuleName)),
+    label: heatingMode.label,
+    p1: roundNumber(
+      HEATING_P1_PARTS.reduce((total, billPart) => total + getRuleValue(engine, `${heatingMode.billPrefix} . ${billPart}` as RuleName), 0)
+    ),
   };
 }
 
