@@ -26,6 +26,7 @@ import type { User } from '@/modules/users/server/service';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
 import type { UserRole } from '@/types/enum/UserRole';
+import { saveImpostureReturnPath } from '@/utils/imposture';
 import { postFetchJSON } from '@/utils/network';
 import { compareFrenchStrings } from '@/utils/strings';
 
@@ -121,6 +122,7 @@ const startImpersonation = toastErrors(
       role: impersonateConfig.role,
       ...(impersonateConfig.permissions?.length ? { permissions: impersonateConfig.permissions } : {}),
     });
+    saveImpostureReturnPath();
     location.href = '/pro/tableau-de-bord';
   }
 );
