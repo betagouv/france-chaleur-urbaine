@@ -38,19 +38,19 @@ describe('getHeatingSimulation', () => {
         },
       ],
       heatPumpAnnualBill: 1649.26,
-      heatPumpBoilerReplacementBonus: 0,
+      heatPumpBoilerReplacementBonus: 5267.81,
       heatPumpGrossPrice: 21781.5,
       heatPumpMaprimerenovAid: 4000,
-      heatPumpNetPrice: 17781.5,
+      heatPumpNetPrice: 11460.13,
       heatPumpProposedPower: 10.64,
       oilBoilerAnnualBill: 2553.83,
     });
   });
 
   const incomeCases: TestCase<HeatingSimulationInput['incomeCategory'], number>[] = [
-    { expectedOutput: 16781.5, input: 'Très modeste', label: 'very low income gets the highest MaPrimeRénov aid' },
-    { expectedOutput: 18781.5, input: 'Intermédiaire', label: 'middle income gets a lower MaPrimeRénov aid' },
-    { expectedOutput: 21781.5, input: 'Supérieur', label: 'high income gets no aid in the default heat pump case' },
+    { expectedOutput: 10365.78, input: 'Très modeste', label: 'very low income gets the highest total aid' },
+    { expectedOutput: 12460.13, input: 'Intermédiaire', label: 'middle income gets a lower total aid' },
+    { expectedOutput: 15460.13, input: 'Supérieur', label: 'high income still gets CEE aid in the default heat pump case' },
   ];
 
   it.each(incomeCases)('$label', (testCase) => {
