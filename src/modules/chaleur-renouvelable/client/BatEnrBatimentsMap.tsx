@@ -21,10 +21,15 @@ export function BatEnrBatimentsMap({ batiments, className, initialCenter, onSele
   const selectableBatiments = useMemo(() => batiments.filter(isSelectableBatEnrBatiment), [batiments]);
   const selectedBatimentConstructionId = selectedBatiment?.batiment_construction_id ?? null;
   const batimentsBounds = useMemo(() => getBatimentsBounds(selectableBatiments), [selectableBatiments]);
+  const selectedBatimentBounds = useMemo(
+    () => getBatimentsBounds(selectedBatiment && isSelectableBatEnrBatiment(selectedBatiment) ? [selectedBatiment] : []),
+    [selectedBatiment]
+  );
+  const cameraBounds = selectedBatimentBounds ?? batimentsBounds;
   const initialView = useMemo(
     (): InitialView | undefined =>
-      batimentsBounds ? { bbox: batimentsBounds } : initialCenter ? { center: initialCenter, zoom: 18 } : undefined,
-    [batimentsBounds, initialCenter]
+      cameraBounds ? { bbox: cameraBounds } : initialCenter ? { center: initialCenter, zoom: 18 } : undefined,
+    [cameraBounds, initialCenter]
   );
 
   const handleSelectBatiment = useCallback(
@@ -49,7 +54,7 @@ export function BatEnrBatimentsMap({ batiments, className, initialCenter, onSele
   return (
     <div className={className}>
       <Map config={{}} initialView={initialView} legend={false} search="none">
-        <MapFitBounds bbox={batimentsBounds} maxZoom={18} />
+        <MapFitBounds bbox={cameraBounds} maxZoom={18} />
         <BatEnrBatimentSelector batiments={selectableBatiments} value={selectedBatimentConstructionId} onSelect={handleSelectBatiment} />
       </Map>
     </div>

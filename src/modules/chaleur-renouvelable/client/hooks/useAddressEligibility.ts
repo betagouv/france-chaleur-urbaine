@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
-import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/constants';
+import type { BatEnrBatiment, BatEnrBatimentsSelectionContext } from '@/modules/chaleur-renouvelable/constants';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
@@ -94,7 +94,36 @@ const getBatEnrLookupResult = async ({
 }): Promise<BatEnrLookupResult> => {
   const [lon, lat] = geoAddress.geometry.coordinates;
   const banId = geoAddress.properties.id;
-  const batEnrBatiments = await trpcUtils.client.batEnr.getBatEnrBatimentsByBanId.query({ banId }).catch(() => []);
+  const selectionContext = await trpcUtils.client.batEnr.getBatEnrBatimentsSelectionContextByBanId
+    .query({ banId })
+    .catch((): BatEnrBatimentsSelectionContext => ({ batiments: [], preselectedBatimentConstructionId: null }));
+  const batEnrBatiments = selectionContext.batiments;
+
+  if (selectedBatimentConstructionId) {
+    const selectedBatEnrBatiment = batEnrBatiments.find((batiment) => batiment.batiment_construction_id === selectedBatimentConstructionId);
+
+    if (selectedBatEnrBatiment) {
+      return {
+        batEnr: getBatEnrInfoFromBatiment(selectedBatEnrBatiment),
+        batEnrBatiments,
+        selectedBatEnrBatiment,
+        shouldSelectBatEnrBatiment: false,
+      };
+    }
+  }
+
+  const preselectedBatEnrBatiment = selectionContext.preselectedBatimentConstructionId
+    ? batEnrBatiments.find((batiment) => batiment.batiment_construction_id === selectionContext.preselectedBatimentConstructionId)
+    : undefined;
+
+  if (preselectedBatEnrBatiment) {
+    return {
+      batEnr: getBatEnrInfoFromBatiment(preselectedBatEnrBatiment),
+      batEnrBatiments,
+      selectedBatEnrBatiment: preselectedBatEnrBatiment,
+      shouldSelectBatEnrBatiment: batEnrBatiments.length > 1,
+    };
+  }
 
   if (batEnrBatiments.length === 1) {
     return {
@@ -106,19 +135,6 @@ const getBatEnrLookupResult = async ({
   }
 
   if (batEnrBatiments.length > 1) {
-    const selectedBatEnrBatiment = selectedBatimentConstructionId
-      ? batEnrBatiments.find((batiment) => batiment.batiment_construction_id === selectedBatimentConstructionId)
-      : undefined;
-
-    if (selectedBatEnrBatiment) {
-      return {
-        batEnr: getBatEnrInfoFromBatiment(selectedBatEnrBatiment),
-        batEnrBatiments,
-        selectedBatEnrBatiment,
-        shouldSelectBatEnrBatiment: false,
-      };
-    }
-
     return {
       batEnr: getBatEnrInfoFromBatiment(null),
       batEnrBatiments,

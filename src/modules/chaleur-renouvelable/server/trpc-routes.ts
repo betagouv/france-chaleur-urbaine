@@ -8,6 +8,7 @@ import {
   createDemandeChaleurRenouvelable,
   getBatEnrBatimentDetails,
   getBatEnrBatimentsByBanId,
+  getBatEnrBatimentsSelectionContextByBanId,
   getLocationInfos,
   listDemandesChaleurRenouvelableAdmin,
   updateDemandeChaleurRenouvelableAdmin,
@@ -27,5 +28,8 @@ export const batEnrRouter = router({
     .mutation(async ({ input }) => await createDemandeChaleurRenouvelable({ input })),
   getBatEnrBatimentDetails: route.input(zGetBdnbConstructionInput).query(async ({ input }) => await getBatEnrBatimentDetails(input)),
   getBatEnrBatimentsByBanId: route.input(zBatEnrByBanIdInput).query(async ({ input }) => await getBatEnrBatimentsByBanId(input)),
+  getBatEnrBatimentsSelectionContextByBanId: route
+    .input(zBatEnrByBanIdInput)
+    .query(async ({ input }) => await getBatEnrBatimentsSelectionContextByBanId(input)),
   getLocationInfos: route.input(zLocationInfos).query(async ({ input }) => await getLocationInfos(input)),
 });
