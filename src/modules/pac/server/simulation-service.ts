@@ -48,10 +48,7 @@ export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimu
     engine,
     "Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Ma prime renov'"
   );
-  const heatPumpBoilerReplacementBonus = getRuleValue(
-    engine,
-    'Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Coup de pouce'
-  );
+  const heatPumpBoilerReplacementBonus = getRuleValue(engine, 'ratios économiques x aides . Coup de pouce x PAC air-eau');
   const heatPumpAidAmount = getRuleValue(engine, 'Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Total');
 
   return {
@@ -109,6 +106,7 @@ function createEngineForSimulation(input: HeatingSimulationInput) {
     'Paramètres économiques . Aides . Éligibilité x Ressources du ménage': `'${input.incomeCategory}'`,
     'Production eau chaude sanitaire': 'oui',
     'ratios . GNRL Appartement ou maison': "'Maison'",
+    'ratios économiques x aides . CEE x PAC air-eau indiv x BAR-TH-171 . efficacité énergétique saisonnière': '150%',
     'surface logement type tertiaire': input.surface,
     'température de référence chaud commune': input.temperatureReference,
     'type de bâtiment': "'résidentiel'",
