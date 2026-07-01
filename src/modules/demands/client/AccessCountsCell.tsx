@@ -64,13 +64,13 @@ export default function AccessCountsCell({ demandId, accessCounts }: AccessCount
         >
           <span className="flex flex-col items-start gap-0.5">
             {accessCounts.gestionnaire > 0 && (
-              <span className={cx(roleBadgeBase, roleBadgeClasses.gestionnaire)}>Gestionnaire ({accessCounts.gestionnaire})</span>
+              <span className={cx(roleBadgeBase, roleBadgeClasses.gestionnaire)}>Gestionnaire&nbsp;({accessCounts.gestionnaire})</span>
             )}
             {accessCounts.collectivite > 0 && (
-              <span className={cx(roleBadgeBase, roleBadgeClasses.collectivite)}>Collectivité ({accessCounts.collectivite})</span>
+              <span className={cx(roleBadgeBase, roleBadgeClasses.collectivite)}>Collectivité&nbsp;({accessCounts.collectivite})</span>
             )}
-            {accessCounts.alec > 0 && <span className={cx(roleBadgeBase, roleBadgeClasses.alec)}>ALEC ({accessCounts.alec})</span>}
-            {accessCounts.ccrt > 0 && <span className={cx(roleBadgeBase, roleBadgeClasses.ccrt)}>CCRT ({accessCounts.ccrt})</span>}
+            {accessCounts.alec > 0 && <span className={cx(roleBadgeBase, roleBadgeClasses.alec)}>ALEC&nbsp;({accessCounts.alec})</span>}
+            {accessCounts.ccrt > 0 && <span className={cx(roleBadgeBase, roleBadgeClasses.ccrt)}>CCRT&nbsp;({accessCounts.ccrt})</span>}
           </span>
         </Button>
       </Tooltip>
