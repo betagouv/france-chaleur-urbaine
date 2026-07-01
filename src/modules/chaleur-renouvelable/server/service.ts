@@ -1,6 +1,7 @@
 import type {
   AdminUpdateDemandeChaleurRenouvelableInput,
   BatEnrBatiment,
+  BatEnrBatimentsSelectionContext,
   BatEnrByBanIdInput,
   DemandeChaleurRenouvelable,
   DemandeChaleurRenouvelableStatus,
@@ -44,6 +45,7 @@ const batEnrBatimentColumns = [
 ] as const;
 
 const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = 'france.chaleur.urbaine@gmail.com';
+const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = 200;
 
 const singleConstructionHousingCount = sql<number | null>`
   (
@@ -119,6 +121,54 @@ export const getBatEnrBatimentsByConstructionIds = async (batimentConstructionId
   return await selectBatEnrBatimentDetails().where('batiment_construction_id', 'in', uniqueBatimentConstructionIds).execute();
 };
 
+export const getBatEnrBatimentsSelectionContextByBanId = async ({
+  banId,
+}: BatEnrByBanIdInput): Promise<BatEnrBatimentsSelectionContext> => {
+  const preselectedBatimentConstructionId = await getPreselectedBatimentConstructionIdFromRnb(banId).catch(() => null);
+
+  if (!preselectedBatimentConstructionId) {
+    return {
+      batiments: await getBatEnrBatimentsByBanId({ banId }),
+      preselectedBatimentConstructionId: null,
+    };
+  }
+
+  const batiments = await getBatEnrBatimentsWithinDistanceFromConstructionId(
+    preselectedBatimentConstructionId,
+    BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS
+  );
+
+  if (batiments.length === 0) {
+    return {
+      batiments: await getBatEnrBatimentsByBanId({ banId }),
+      preselectedBatimentConstructionId: null,
+    };
+  }
+
+  return {
+    batiments,
+    preselectedBatimentConstructionId,
+  };
+};
+
+const getBatEnrBatimentsWithinDistanceFromConstructionId = async (batimentConstructionId: string, distanceMeters: number) => {
+  const referenceGeometry = sql`
+    (
+      SELECT reference.geom
+      FROM bdnb_batenr AS reference
+      WHERE reference.batiment_construction_id = ${batimentConstructionId}
+        AND reference.geom IS NOT NULL
+      LIMIT 1
+    )
+  `;
+
+  return await selectBatEnrBatimentDetails()
+    .where('geom', 'is not', null)
+    .where(sql<boolean>`ST_DWithin(geom, ${referenceGeometry}, ${distanceMeters})`)
+    .orderBy(sql`geom <-> ${referenceGeometry}`)
+    .execute();
+};
+
 export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => {
   const communeInfo = await kdb
     .selectFrom('communes')
@@ -151,6 +201,27 @@ export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) =
     .filter((batimentConstructionId): batimentConstructionId is string => batimentConstructionId !== null);
 
   return await getBatEnrBatimentsByConstructionIds(batimentConstructionIds);
+};
+
+type RnbAddressBuildingsResponse = {
+  results: {
+    ext_ids: {
+      id: string;
+      source: string;
+    }[];
+  }[];
+};
+
+const getPreselectedBatimentConstructionIdFromRnb = async (banId: string) => {
+  const data = await fetchJSON<RnbAddressBuildingsResponse>(`${serverConfig.RNB_API_BASE_URL}/buildings/address/`, {
+    params: {
+      cle_interop_ban: banId,
+    },
+  });
+
+  const bdnbExternalId = data.results.flatMap((building) => building.ext_ids).find((externalId) => externalId.source === 'bdnb');
+
+  return bdnbExternalId?.id ?? null;
 };
 
 export const createDemandeChaleurRenouvelable = async ({ input }: { input: DemandeChaleurRenouvelable }) => {

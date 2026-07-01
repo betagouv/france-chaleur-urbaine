@@ -35,6 +35,11 @@ export type BatEnrBatiment = {
   type_installation_ecs: string | null;
 };
 
+export type BatEnrBatimentsSelectionContext = {
+  batiments: BatEnrBatiment[];
+  preselectedBatimentConstructionId: string | null;
+};
+
 export type Situation = {
   architecturalProtectionAc1: boolean;
   architecturalProtectionAc2: boolean;
