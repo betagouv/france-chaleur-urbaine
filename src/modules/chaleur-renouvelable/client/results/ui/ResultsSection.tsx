@@ -17,7 +17,6 @@ import { GainVsGazBadge } from '@/modules/chaleur-renouvelable/client/results/ui
 import { PrerequisitesList } from '@/modules/chaleur-renouvelable/client/results/ui/PrerequisitesList';
 import { ProsConsLists } from '@/modules/chaleur-renouvelable/client/results/ui/ProsConsLists';
 import { SolutionConsumptionPanel } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionConsumptionPanel';
-import { Stars } from '@/modules/chaleur-renouvelable/client/results/ui/Stars';
 import type { DPE, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
 
@@ -29,7 +28,9 @@ const resultsTabs = [
 type ResultsSectionProps = {
   items: ModeDeChauffageEnriched[];
   dpeFrom: DPE;
-  openAccordionId: string | null;
+  openAccordionId: string | null | undefined;
+  shouldOpenFirstItemByDefault?: boolean;
+  title?: string;
   coutParAnGaz: number;
   coutParAnGazHotWaterOnly: number;
   situation: Situation;
@@ -45,7 +46,9 @@ export function ResultsSection({
   coutParAnGazHotWaterOnly,
   dpeFrom,
   openAccordionId,
+  shouldOpenFirstItemByDefault = false,
   situation,
+  title = 'Autres solutions possibles',
   typeLogement,
   onEditParamsClick,
   onOpenChange,
@@ -84,7 +87,7 @@ export function ResultsSection({
 
   return (
     <>
-      <h3 className="my-5">Autres solutions possibles</h3>
+      <h3 className="my-5">{title}</h3>
       <div className="flex flex-wrap items-end">
         {resultsTabs.map((tab) => {
           const count = itemsByUsage[tab.value].length;
@@ -181,6 +184,7 @@ export function ResultsSection({
         )}
         {activeItems.map((item, index) => {
           const id = item.label;
+          const isOpen = openAccordionId === id || (shouldOpenFirstItemByDefault && openAccordionId === undefined && index === 0);
 
           return (
             <OtherSolutionRow
@@ -190,7 +194,7 @@ export function ResultsSection({
               coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
               dpeFrom={dpeFrom}
               situation={situation}
-              isOpen={openAccordionId === id}
+              isOpen={isOpen}
               position={index + 1}
               onOpenChange={(expanded) => onOpenChange(id, expanded)}
               onCtaClick={onCtaClick}
@@ -317,7 +321,6 @@ function OtherSolutionLabel({
     <span className="grid w-full gap-5 p-3 text-left md:grid-cols-[2fr_1fr_auto_auto] md:items-center md:p-5">
       <span className="items-center gap-2 md:items-start">
         <span className="text-blue text-lg">{item.label}</span>
-        <Stars value={item.pertinence} />
       </span>
       <span className="hidden md:block md:text-center">
         <span className="text-blue text-lg">

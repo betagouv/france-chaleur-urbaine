@@ -1,8 +1,16 @@
-import type { ChoixChauffageSimulationParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
+import type {
+  ChoixChauffageParams,
+  ChoixChauffageSimulationParams,
+} from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import type { DPE } from '@/modules/chaleur-renouvelable/constants';
+
+type ParamsFormValues = ChoixChauffageSimulationParams & {
+  constructionId?: string | null;
+};
 
 export type ParamsFormDraft = {
   adresse: NonNullable<ChoixChauffageSimulationParams['adresse']>;
+  constructionId: string | null;
   dpe: DPE;
   espaceExterieur: ChoixChauffageSimulationParams['espaceExterieur'];
   habitantsMoyen: NonNullable<ChoixChauffageSimulationParams['habitantsMoyen']>;
@@ -33,9 +41,10 @@ export function normalizeDecimalString(value: string) {
   return Number.isFinite(parsedValue) && parsedValue >= 0 ? String(parsedValue) : '';
 }
 
-export function toParamsFormDraft(values: ChoixChauffageSimulationParams): ParamsFormDraft {
+export function toParamsFormDraft(values: ParamsFormValues): ParamsFormDraft {
   return {
     adresse: values.adresse ?? '',
+    constructionId: values.constructionId ?? null,
     dpe: values.dpe,
     espaceExterieur: values.espaceExterieur,
     habitantsMoyen: values.habitantsMoyen ?? '',
@@ -47,13 +56,14 @@ export function toParamsFormDraft(values: ChoixChauffageSimulationParams): Param
   };
 }
 
-export function toChoixChauffageParams(draft: ParamsFormDraft): ChoixChauffageSimulationParams {
+export function toChoixChauffageParams(draft: ParamsFormDraft): ChoixChauffageParams {
   const normalizedHabitantsMoyen = normalizeDecimalString(draft.habitantsMoyen);
   const normalizedNbLogements = parseIntegerOrNull(draft.nbLogements);
   const normalizedSurfaceMoyenne = parseIntegerOrNull(draft.surfaceMoyenne);
 
   return {
     adresse: draft.adresse || null,
+    constructionId: draft.constructionId,
     dpe: draft.dpe,
     espaceExterieur: draft.espaceExterieur,
     habitantsMoyen: normalizedHabitantsMoyen || null,
@@ -81,6 +91,7 @@ export function normalizeDraftNumbers(draft: ParamsFormDraft): ParamsFormDraft {
 export function areParamsFormDraftsEqual(left: ParamsFormDraft, right: ParamsFormDraft) {
   return (
     left.adresse === right.adresse &&
+    left.constructionId === right.constructionId &&
     left.dpe === right.dpe &&
     left.espaceExterieur === right.espaceExterieur &&
     left.habitantsMoyen === right.habitantsMoyen &&

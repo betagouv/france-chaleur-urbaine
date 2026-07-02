@@ -6,7 +6,10 @@ import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { BatEnrBatimentsMap } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentsMap';
-import type { ChoixChauffageSimulationParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
+import type {
+  ChoixChauffageParams,
+  SetChoixChauffageParams,
+} from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   areParamsFormDraftsEqual,
   normalizeDecimalString,
@@ -38,12 +41,11 @@ type ParamsFormProps = {
   batiments: BatEnrBatiment[];
   isOpen: boolean;
   setIsOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
-  values: ChoixChauffageSimulationParams;
-  onSave: (values: ChoixChauffageSimulationParams) => Promise<unknown> | undefined;
+  values: ChoixChauffageParams;
+  onSave: SetChoixChauffageParams;
   geoAddress?: BANAddressFeature;
   setGeoAddress: (val: BANAddressFeature | undefined) => void;
   onSelectGeoAddress?: (val?: BANAddressFeature) => void;
-  onSelectBatiment: (batiment: BatEnrBatiment) => void;
   onAddressError?: () => void;
   selectedBatiment?: BatEnrBatiment | null;
 };
@@ -61,17 +63,21 @@ export function ParamsForm({
   geoAddress,
   setGeoAddress,
   onSelectGeoAddress,
-  onSelectBatiment,
   onAddressError: _onAddressError,
   selectedBatiment,
 }: ParamsFormProps) {
   const currentValues = toParamsFormDraft(values);
   const [draft, setDraft] = useState(currentValues);
+  const draftSelectedBatiment =
+    draft.constructionId === null
+      ? null
+      : (batiments.find((batiment) => batiment.batiment_construction_id === draft.constructionId) ?? selectedBatiment);
 
   useEffect(() => {
     setDraft(currentValues);
   }, [
     currentValues.adresse,
+    currentValues.constructionId,
     currentValues.dpe,
     currentValues.espaceExterieur,
     currentValues.habitantsMoyen,
@@ -119,6 +125,13 @@ export function ParamsForm({
     setIsOpen(false);
   };
 
+  const handleSelectBatiment = (batiment: BatEnrBatiment) => {
+    setDraft((previousDraft) => ({
+      ...previousDraft,
+      constructionId: batiment.batiment_construction_id,
+    }));
+  };
+
   return (
     <form id="params-form" className="border border-gray-200 bg-white p-4 shadow-sm" onSubmit={handleSubmit}>
       {isOpen ? (
@@ -130,7 +143,7 @@ export function ParamsForm({
             nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
             onlyAddress
             onClear={() => {
-              setDraft((previousDraft) => ({ ...previousDraft, adresse: '' }));
+              setDraft((previousDraft) => ({ ...previousDraft, adresse: '', constructionId: null }));
               setGeoAddress(undefined);
               onSelectGeoAddress?.(undefined);
             }}
@@ -147,6 +160,7 @@ export function ParamsForm({
               setDraft((previousDraft) => ({
                 ...previousDraft,
                 adresse: nextAddressLabel,
+                constructionId: null,
               }));
               setGeoAddress(nextAddress);
               onSelectGeoAddress?.(nextAddress);
@@ -190,8 +204,8 @@ export function ParamsForm({
                 <BatEnrBatimentsMap
                   batiments={batiments}
                   initialCenter={geoAddress?.geometry.coordinates}
-                  onSelect={onSelectBatiment}
-                  selectedBatiment={selectedBatiment}
+                  onSelect={handleSelectBatiment}
+                  selectedBatiment={draftSelectedBatiment}
                   className="h-full"
                 />
                 <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 content-start">

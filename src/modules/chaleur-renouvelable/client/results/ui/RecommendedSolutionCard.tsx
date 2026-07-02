@@ -1,3 +1,4 @@
+import { center } from '@turf/center';
 import dynamic from 'next/dynamic';
 import { useEffect, useMemo } from 'react';
 
@@ -10,12 +11,12 @@ import { ProsConsLists } from '@/modules/chaleur-renouvelable/client/results/ui/
 import { SolutionConsumptionPanel } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionConsumptionPanel';
 import { SolutionCta } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionCta';
 import { UsageTags } from '@/modules/chaleur-renouvelable/client/results/ui/UsageTags';
-import type { DPE } from '@/modules/chaleur-renouvelable/constants';
+import type { BatEnrBatiment, DPE } from '@/modules/chaleur-renouvelable/constants';
 import { Map } from '@/modules/map/client/Map';
 
 const MapMarker = dynamic(() => import('@/modules/map/client/interactions/MapMarker').then((mod) => mod.MapMarker), { ssr: false });
 
-export type RecommendedSolutionCardProps = {
+export type HeatNetworkRecommendedSolutionCardProps = {
   item: ModeDeChauffageEnriched;
   dpeFrom: DPE;
   geoAddress?: BANAddressFeature;
@@ -23,10 +24,11 @@ export type RecommendedSolutionCardProps = {
   coutParAnGazHotWaterOnly: number;
   isOpen: boolean;
   onOpenChange: (expanded: boolean) => void;
+  selectedBatiment?: BatEnrBatiment;
   situation: Situation;
 };
 
-export function RecommendedSolutionCard({
+export function HeatNetworkRecommendedSolutionCard({
   item,
   dpeFrom,
   geoAddress,
@@ -34,89 +36,9 @@ export function RecommendedSolutionCard({
   coutParAnGazHotWaterOnly,
   isOpen,
   onOpenChange,
+  selectedBatiment,
   situation,
-}: RecommendedSolutionCardProps) {
-  if (item.label === 'Réseau de chaleur' && situation.eligibiliteReseauChaleur) {
-    return (
-      <HeatNetworkRecommendedSolutionCard
-        item={item}
-        dpeFrom={dpeFrom}
-        geoAddress={geoAddress}
-        coutParAnGaz={coutParAnGaz}
-        coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        situation={situation}
-      />
-    );
-  }
-
-  const prerequisiteRows = item.prerequis(situation);
-
-  return (
-    <section className="fr-mt-6w border border-gray-200 border-l-4 border-l-green-600 bg-white px-3 md:px-10 py-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="mb-2 text-lg font-semibold uppercase">Solution recommandée</p>
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <h3 className="mb-3 text-3xl font-bold text-blue">{item.label}</h3>
-              <UsageTags usage={item.usage} />
-            </div>
-          </div>
-        </div>
-        <div>
-          <Image src={`/${item.icone}`} alt="" width={120} height={72} className="hidden md:block object-contain" />
-        </div>
-      </div>
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div>
-          <h4 className="text-lg font-bold uppercase text-grey">Description</h4>
-          <p>{item.description}</p>
-        </div>
-        <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
-        <SolutionConsumptionPanel
-          dpeFrom={dpeFrom}
-          item={item}
-          coutParAnGaz={coutParAnGaz}
-          coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
-        />
-      </div>
-      <div className="mt-8 flex flex-col items-start gap-4 md:flex-row md:items-center">
-        <SolutionCta item={item} />
-        <button
-          type="button"
-          className="bg-transparent p-0 text-blue underline"
-          onClick={() => onOpenChange(!isOpen)}
-          aria-expanded={isOpen}
-        >
-          {isOpen ? 'Afficher moins −' : 'Afficher plus +'}
-        </button>
-      </div>
-      {isOpen && (
-        <div className="mt-10">
-          <PrerequisitesList
-            rows={prerequisiteRows}
-            coutInstallation={item.coutInstallation}
-            solutionType={item.label}
-            variant="recommended"
-          />
-        </div>
-      )}
-    </section>
-  );
-}
-
-function HeatNetworkRecommendedSolutionCard({
-  item,
-  dpeFrom,
-  geoAddress,
-  coutParAnGaz,
-  coutParAnGazHotWaterOnly,
-  isOpen,
-  onOpenChange,
-  situation,
-}: RecommendedSolutionCardProps) {
+}: HeatNetworkRecommendedSolutionCardProps) {
   const heatNetwork = situation.eligibiliteReseauChaleur;
   const prerequisiteRows = item.prerequis(situation);
   const mapConfiguration = useMemo(
@@ -128,6 +50,10 @@ function HeatNetworkRecommendedSolutionCard({
       zonesDeDeveloppementPrioritaire: true,
     }),
     [heatNetwork?.id]
+  );
+  const mapMarkerCoordinates = useMemo(
+    () => getMapMarkerCoordinates(selectedBatiment?.geometry, geoAddress),
+    [geoAddress, selectedBatiment?.geometry]
   );
 
   const networkName = heatNetwork?.name ? ` de ${heatNetwork.name}` : '';
@@ -157,9 +83,15 @@ function HeatNetworkRecommendedSolutionCard({
         <strong>TVA réduite à 5,5 %</strong>, le tout garanti par un service public.
       </p>
       <div className="grid-1 grid gap-6 md:grid-cols-3">
-        {geoAddress && (
-          <Map config={mapConfiguration} initialView={{ center: geoAddress.geometry.coordinates, zoom: 15 }} legend={false} search="none">
-            <MapMarker longitude={geoAddress.geometry.coordinates[0]} latitude={geoAddress.geometry.coordinates[1]} />
+        {mapMarkerCoordinates && (
+          <Map
+            key={mapMarkerCoordinates.join(',')}
+            config={mapConfiguration}
+            initialView={{ center: mapMarkerCoordinates, zoom: 15 }}
+            legend={false}
+            search="none"
+          >
+            <MapMarker longitude={mapMarkerCoordinates[0]} latitude={mapMarkerCoordinates[1]} />
           </Map>
         )}
         <SolutionConsumptionPanel
@@ -194,4 +126,21 @@ function HeatNetworkRecommendedSolutionCard({
       )}
     </section>
   );
+}
+
+function getMapMarkerCoordinates(
+  geometry: GeoJSON.Geometry | null | undefined,
+  geoAddress?: BANAddressFeature
+): [number, number] | undefined {
+  if (geometry) {
+    const centerFeature = center(geometry);
+    const longitude = centerFeature.geometry.coordinates[0];
+    const latitude = centerFeature.geometry.coordinates[1];
+
+    if (typeof longitude === 'number' && typeof latitude === 'number') {
+      return [longitude, latitude];
+    }
+  }
+
+  return geoAddress?.geometry.coordinates;
 }
