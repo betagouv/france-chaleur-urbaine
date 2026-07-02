@@ -30,6 +30,7 @@ Migration workflow: add `src/server/db/migrations/YYYYMMDDHHMMSS_description.ts`
 pnpm cli                                                 # List CLI commands
 pnpm cli users:add <email> <password> <role> [networks]  # role: admin|professionnel|particulier|gestionnaire; networks = CSV ids for gestionnaire
 pnpm start:clock                                         # Job processor (crons + jobs)
+pnpm openapi:generate                                    # Regenerate public/openapi-schema.yaml from zod (partner-api). Run after editing the contract.
 ```
 
 ## Email

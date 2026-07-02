@@ -41,6 +41,9 @@ Stored in the `user_permissions` table (**not** in session/JWT). Each row links 
 | `departement` | collectivite, alec | Department code | `demands.departement_code` |
 | `region` | collectivite, alec | Region code | `demands.region_code` |
 | `national` | collectivite, alec | NULL | No filter (all validated) |
+| `organization` | gestionnaire (national/pilote) | Organization id (uuid) | Demands whose network's `organization_id` matches (derived via subquery, not a `demands` column) |
+
+`buildDemandAccessFilter` partitions permissions in **3 buckets** (network / organization / territory): an `organization` perm grants access to all demands of the org's networks (1 perm instead of N). In-memory matchers compare `demand.network_organization_id` (resolved by join). Deleting an org must call `removeOrganizationPermissionFromAllUsers` (no FK on `user_permissions.resource_id`).
 
 Access check flow:
 1. `getUserPermissions(userId)` loads from DB — or `ctx.getPermissions()` for impersonation-aware access.

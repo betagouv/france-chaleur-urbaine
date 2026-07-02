@@ -24,6 +24,7 @@ const PermissionsEditor = ({ userId }: PermissionsEditorProps) => {
   const utils = trpc.useUtils();
   const queryClient = useQueryClient();
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [confirmingClear, setConfirmingClear] = useState(false);
   const { data: permissions } = trpc.permissions.admin.getForUser.useQuery({ userId });
 
   const setPermissions = trpc.permissions.admin.setForUser.useMutation({
@@ -55,6 +56,11 @@ const PermissionsEditor = ({ userId }: PermissionsEditorProps) => {
     setPermissions.mutate({ permissions: updated, userId });
   };
 
+  const handleClearAll = () => {
+    setPermissions.mutate({ permissions: [], userId });
+    setConfirmingClear(false);
+  };
+
   return (
     <div className="space-y-3">
       <label className="fr-label">Permissions</label>
@@ -82,7 +88,26 @@ const PermissionsEditor = ({ userId }: PermissionsEditorProps) => {
 
       <PermissionAutocomplete availableTypes={permissionTypes} onAdd={handleAdd} />
 
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-2">
+        {permissions && permissions.length > 0 ? (
+          confirmingClear ? (
+            <div className="flex items-center gap-2">
+              <span className="text-sm">Supprimer les {permissions.length} permissions ?</span>
+              <Button type="button" priority="tertiary" size="small" onClick={handleClearAll}>
+                Confirmer
+              </Button>
+              <Button type="button" priority="tertiary" size="small" onClick={() => setConfirmingClear(false)}>
+                Annuler
+              </Button>
+            </div>
+          ) : (
+            <Button type="button" priority="tertiary" size="small" iconId="fr-icon-delete-line" onClick={() => setConfirmingClear(true)}>
+              Tout supprimer
+            </Button>
+          )
+        ) : (
+          <span />
+        )}
         <Button type="button" priority="tertiary" size="small" iconId="fr-icon-add-line" onClick={() => setBulkOpen(true)}>
           Ajout en masse par ID SNCU
         </Button>

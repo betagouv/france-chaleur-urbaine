@@ -215,6 +215,7 @@
     "lint-staged": "^16.4.0",
     "node-mocks-http": "^1.17.2",
     "node-talisman": "^1.29.22",
+    "openapi3-ts": "^4.6.0",
     "postcss": "^8.5.9",
     "postcss-import": "^16.1.1",
     "raw-loader": "^4.0.2",

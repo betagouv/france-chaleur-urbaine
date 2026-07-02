@@ -41,6 +41,23 @@ export interface ApiAccounts {
   token: string;
 }
 
+export interface Organizations {
+  created_at: Generated<Timestamp>;
+  gestionnaire_patterns: Generated<string[]>;
+  id: Generated<string>;
+  name: string;
+}
+
+export interface OrganizationApiCredentials {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  last_used_at: Timestamp | null;
+  name: string | null;
+  organization_id: string;
+  revoked_at: Timestamp | null;
+  token_hash: string;
+}
+
 export interface BatimentsRaccordesReseauxChaleurFroidTiles {
   tile: Buffer;
   x: Int8;
@@ -622,6 +639,7 @@ export interface ReseauxDeChaleur {
   'Moyenne-annee-DPE': string | null;
   nb_pdl: number | null;
   nom_reseau: string | null;
+  organization_id: string | null;
   ouvert_aux_raccordements: boolean;
   'PF%': number | null;
   PM: number | null;
@@ -714,6 +732,7 @@ export interface ReseauxDeFroid {
   nb_pdl: number | null;
   nom_reseau: string | null;
   notes: string | null;
+  organization_id: string | null;
   production_totale_MWh: number | null;
   puissance_totale_MW: number | null;
   region: string | null;
@@ -770,6 +789,7 @@ export interface Users {
   entreprise: JSONColumnType<Entreprise> | null;
   first_name: string | null;
   from_api: string | null;
+  from_organization_id: string | null;
   id: Generated<string>;
   last_connection: Date | null;
   last_name: string | null;
@@ -914,6 +934,7 @@ export interface ZoneDeDeveloppementPrioritaire {
   id_fcu: number;
   'Identifiant reseau': string | null;
   notes: string | null;
+  organization_id: string | null;
   region: string | null;
   reseau_de_chaleur_ids: number[];
   reseau_en_construction_ids: number[];
@@ -939,6 +960,7 @@ export interface ZonesEtReseauxEnConstruction {
   mise_en_service: string | null;
   nom_reseau: string | null;
   notes: string | null;
+  organization_id: string | null;
   ouvert_aux_raccordements: boolean;
   region: string | null;
 }
@@ -988,6 +1010,8 @@ export interface DB {
   jobs: Jobs;
   matomo_stats: MatomoStats;
   network_reminders: NetworkReminders;
+  organization_api_credentials: OrganizationApiCredentials;
+  organizations: Organizations;
   ouvrages_geothermie_surface_echangeurs_fermes_tiles: OuvragesGeothermieSurfaceEchangeursFermesTiles;
   ouvrages_geothermie_surface_echangeurs_ouverts_tiles: OuvragesGeothermieSurfaceEchangeursOuvertsTiles;
   perimetres_geothermie_profonde_tiles: PerimetresGeothermieProfondeTiles;

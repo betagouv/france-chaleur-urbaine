@@ -514,7 +514,7 @@ function DemandesNew(): React.ReactElement {
         filterType: 'Range',
         header: 'Accès',
         id: 'access',
-        width: '130px',
+        width: '135px',
       },
       // obligatoire afin d'être utilisables dans les presets
       {

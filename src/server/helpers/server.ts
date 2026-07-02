@@ -8,6 +8,7 @@ import { rateLimitError } from '@/modules/security/server/rate-limit';
 import { getServerSession } from '@/server/authentication';
 import type { UserRole } from '@/types/enum/UserRole';
 
+import { isUniqueViolation, UNIQUE_VIOLATION_MESSAGE } from './db-errors';
 import { parentLogger } from './logger';
 import { getClientIp } from './request-ip';
 
@@ -149,8 +150,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
         }
 
         if ((error as any).routine) {
-          // Check for unique constraint violation (error code 23505)
-          if ((error as any).code === '23505') {
+          if (isUniqueViolation(error)) {
             logger.error('unique constraint violation', {
               error,
               query: error.message,
@@ -158,7 +158,7 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
             return res.status(400).json({
               code: 'unique_constraint_violation',
               error: error.message,
-              message: 'Cette entrée existe déjà',
+              message: UNIQUE_VIOLATION_MESSAGE,
             });
           }
 

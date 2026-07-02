@@ -51,6 +51,9 @@ export const eventTypes = [
   'conversion_source_created',
   'conversion_source_updated',
   'conversion_source_archived',
+  'organization_created',
+  'organization_updated',
+  'organization_deleted',
 ] as const;
 
 export type EventType = (typeof eventTypes)[number];
@@ -84,6 +87,9 @@ export const eventTypeLabels: Record<EventType, string> = {
   network_reminder_created: 'Création relance réseau',
   network_reminder_deleted: 'Suppression relance réseau',
   network_reminder_updated: 'Mise à jour relance réseau',
+  organization_created: 'Création organisation',
+  organization_deleted: 'Suppression organisation',
+  organization_updated: 'Mise à jour organisation',
   pdp_updated: 'Mise à jour périmètre de développement',
   pro_eligibility_test_created: 'Création test éligibilité',
   pro_eligibility_test_deleted: 'Suppression test éligibilité',
@@ -190,6 +196,9 @@ export type EventDataMap = {
     note: string | null;
     created_at: string;
   };
+  organization_created: { organization_id: string; name: string };
+  organization_updated: { organization_id: string; name: string };
+  organization_deleted: { organization_id: string; name: string };
   user_activated: null;
   user_created_by_admin: { user_email: string; role: UserRole };
   user_created_by_api: { user_email: string; role: UserRole; api_name: string };

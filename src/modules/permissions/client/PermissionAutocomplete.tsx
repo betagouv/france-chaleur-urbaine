@@ -17,7 +17,7 @@ type PermissionAutocompleteProps = {
 };
 
 /**
- * Unified autocomplete for searching networks or territories.
+ * Unified autocomplete for searching networks, territories or organizations.
  * Searches by name/id and displays results with type badges.
  */
 const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocompleteProps) => {
@@ -38,6 +38,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
 
   const isNetworkMode = availableTypes.some((t) => networkPermissionSet.has(t));
   const isTerritoryMode = availableTypes.some((t) => territoryPermissionSet.has(t));
+  const isOrganizationMode = availableTypes.includes('organization' as PermissionType);
   const showNationalOption = isTerritoryMode && availableTypes.includes('national' as PermissionType);
 
   const networkResults = trpc.permissions.searchNetworks.useQuery(
@@ -49,6 +50,13 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     { query: debouncedQuery, types: availableTypes.filter((t) => territoryPermissionSet.has(t)) },
     { enabled: isTerritoryMode && debouncedQuery.length >= 2 }
   );
+
+  const organizationResults = trpc.permissions.searchOrganizations.useQuery(
+    { search: debouncedQuery },
+    { enabled: isOrganizationMode && debouncedQuery.length >= 2 }
+  );
+
+  const isFetching = networkResults.isFetching || territoryResults.isFetching || organizationResults.isFetching;
 
   type ResultItem = {
     label: string;
@@ -79,6 +87,16 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     }
   }
 
+  if (isOrganizationMode && organizationResults.data) {
+    for (const o of organizationResults.data) {
+      results.push({
+        label: o.name,
+        permission: { resource_id: o.id, type: 'organization' },
+        sublabel: `${permissionTypeLabels.organization} · tous ses réseaux`,
+      });
+    }
+  }
+
   if (showNationalOption) {
     results.unshift({
       label: 'National (tout le territoire)',
@@ -86,6 +104,16 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
       sublabel: 'Accès à toutes les demandes',
     });
   }
+
+  const searchTargets = [
+    isNetworkMode ? 'un réseau' : null,
+    isTerritoryMode ? 'un territoire' : null,
+    isOrganizationMode ? 'une organisation' : null,
+  ].filter(Boolean) as string[];
+  const placeholder =
+    isNetworkMode && searchTargets.length === 1
+      ? 'Rechercher par nom, ID FCU ou ID SNCU...'
+      : `Rechercher ${searchTargets.join(' ou ')}...`;
 
   const handleSelect = (item: ResultItem) => {
     onAdd(item.permission);
@@ -110,10 +138,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     }
   };
 
-  const showPopover =
-    isOpen &&
-    ((query.length === 0 && showNationalOption) ||
-      (query.length >= 2 && (results.length > 0 || networkResults.isFetching || territoryResults.isFetching)));
+  const showPopover = isOpen && ((query.length === 0 && showNationalOption) || (query.length >= 2 && (results.length > 0 || isFetching)));
 
   return (
     <Popover open={showPopover} onOpenChange={setIsOpen}>
@@ -122,13 +147,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
           ref={inputRef}
           type="text"
           className="fr-input"
-          placeholder={
-            isNetworkMode && isTerritoryMode
-              ? 'Rechercher un réseau ou un territoire...'
-              : isNetworkMode
-                ? 'Rechercher par nom, ID FCU ou ID SNCU...'
-                : 'Rechercher par nom ou code...'
-          }
+          placeholder={placeholder}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -148,10 +167,8 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
         }}
       >
         <ul className="max-h-64 overflow-auto p-0 list-none">
-          {(networkResults.isFetching || territoryResults.isFetching) && results.length === 0 && (
-            <li className="px-3 py-2 text-sm text-faded">Recherche...</li>
-          )}
-          {!networkResults.isFetching && !territoryResults.isFetching && results.length === 0 && debouncedQuery.length >= 2 && (
+          {isFetching && results.length === 0 && <li className="px-3 py-2 text-sm text-faded">Recherche...</li>}
+          {!isFetching && results.length === 0 && debouncedQuery.length >= 2 && (
             <li className="px-3 py-2 text-sm text-faded">Aucun résultat</li>
           )}
           {results.map((item, index) => (
