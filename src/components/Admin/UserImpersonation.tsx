@@ -8,6 +8,7 @@ import type { Permission } from '@/modules/permissions/types';
 import { permissionTypes } from '@/modules/permissions/types';
 import type { UserRole } from '@/types/enum/UserRole';
 import { userRolesWithPermissions } from '@/types/enum/UserRole';
+import { saveImpostureReturnPath } from '@/utils/imposture';
 import { postFetchJSON } from '@/utils/network';
 
 const roles = [
@@ -37,6 +38,7 @@ const UserImpersonation = () => {
         ...(roleNeedsPermissions(selectedRole) && permissions.length > 0 ? { permissions } : {}),
         ...(anonymize ? { anonymize: true } : {}),
       });
+      saveImpostureReturnPath();
       // trigger a full reload to update the session
       location.href = '/pro/tableau-de-bord';
     } catch (err) {

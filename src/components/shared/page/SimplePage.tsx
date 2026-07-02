@@ -19,6 +19,7 @@ import useRouterReady from '@/hooks/useRouterReady';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import cx from '@/utils/cx';
+import { popImpostureReturnPath } from '@/utils/imposture';
 import { deleteFetchJSON } from '@/utils/network';
 
 import { StyledHeader } from './SimplePage.styles';
@@ -488,7 +489,7 @@ const PageHeader = (props: PageHeaderProps) => {
                   buttonProps: {
                     onClick: async () => {
                       await deleteFetchJSON('/api/admin/impersonate');
-                      location.href = '/admin/impostures';
+                      location.href = popImpostureReturnPath();
                     },
                     style: {
                       backgroundColor: 'var(--background-flat-error)',
