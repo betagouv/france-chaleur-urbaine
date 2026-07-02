@@ -287,6 +287,7 @@ export const listReseauxEnConstruction = async () => {
       'nom_reseau',
       'communes',
       'gestionnaire',
+      'MO',
       eb
         .selectFrom('organizations')
         .select('name')
@@ -960,12 +961,13 @@ export const searchNetworksForMap = async (search: string): Promise<NetworkMapSe
 
 /**
  * Distinct operator names (gestionnaire / maître d'ouvrage) matching `search`, for the
- * iframe generator autocomplete. Gestionnaire spans chaleur + froid + construction; MO
- * spans chaleur + froid (construction has no MO column). Public, map-level data.
+ * iframe generator autocomplete. Both fields span chaleur + froid + construction.
+ * Public, map-level data.
  */
 export const searchNetworkOperators = async (field: 'gestionnaire' | 'maitreOuvrage', search: string): Promise<string[]> => {
   const pattern = `%${search}%`;
   const column = field === 'gestionnaire' ? ('Gestionnaire' as const) : ('MO' as const);
+  const constructionColumn = field === 'gestionnaire' ? ('gestionnaire' as const) : ('MO' as const);
 
   const chaleur = kdb
     .selectFrom('reseaux_de_chaleur')
@@ -975,16 +977,12 @@ export const searchNetworkOperators = async (field: 'gestionnaire' | 'maitreOuvr
     .selectFrom('reseaux_de_froid')
     .select((eb) => eb.ref(column).as('value'))
     .where(column, 'ilike', pattern);
+  const construction = kdb
+    .selectFrom('zones_et_reseaux_en_construction')
+    .select((eb) => eb.ref(constructionColumn).as('value'))
+    .where(constructionColumn, 'ilike', pattern);
 
-  const operators =
-    field === 'gestionnaire'
-      ? chaleur.union(froid).union(
-          kdb
-            .selectFrom('zones_et_reseaux_en_construction')
-            .select((eb) => eb.ref('gestionnaire').as('value'))
-            .where('gestionnaire', 'ilike', pattern)
-        )
-      : chaleur.union(froid);
+  const operators = chaleur.union(froid).union(construction);
 
   const rows = await kdb
     .selectFrom(operators.as('operators'))

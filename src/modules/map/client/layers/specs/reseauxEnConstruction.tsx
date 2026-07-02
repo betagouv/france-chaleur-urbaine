@@ -2,7 +2,7 @@ import Accordion from '@/components/ui/Accordion';
 import Icon from '@/components/ui/Icon';
 import { DownloadNetworkGeometryButton } from '@/modules/map/client/components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from '@/modules/map/client/core/common';
-import { buildFiltreGestionnaire } from '@/modules/map/client/layers/filters';
+import { buildFiltreGestionnaire, buildFiltreMaitreOuvrage } from '@/modules/map/client/layers/filters';
 import type { ReseauxEnConstructionTile } from '@/modules/tiles/server/tiles.config';
 
 const Popup = defineLayerPopup<ReseauxEnConstructionTile>((reseauEnConstruction, { Property, Title, TwoColumns }) => {
@@ -11,6 +11,7 @@ const Popup = defineLayerPopup<ReseauxEnConstructionTile>((reseauEnConstruction,
       <Title title={`ID FCU: ${reseauEnConstruction.id_fcu}`}>{reseauEnConstruction.nom_reseau ?? 'Réseau en construction'}</Title>
       <TwoColumns>
         <Property label="Gestionnaire" value={reseauEnConstruction.gestionnaire} />
+        <Property label="Maître d'ouvrage" value={reseauEnConstruction.MO} />
         <Property label="Mise en service" value={reseauEnConstruction.mise_en_service} />
       </TwoColumns>
       {!reseauEnConstruction.ouvert_aux_raccordements && (
@@ -43,7 +44,12 @@ export const reseauxEnConstructionLayersSpec = [
   {
     layers: [
       {
-        filter: (config) => ['all', ['==', ['get', 'is_zone'], true], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
+        filter: (config) => [
+          'all',
+          ['==', ['get', 'is_zone'], true],
+          ...buildFiltreGestionnaire(config.filtreGestionnaire),
+          ...buildFiltreMaitreOuvrage(config.filtreMaitreOuvrage),
+        ],
         id: 'reseauxEnConstruction-zone',
         isVisible: (config) => config.reseauxEnConstruction,
         paint: {
@@ -59,7 +65,12 @@ export const reseauxEnConstructionLayersSpec = [
         type: 'fill',
       },
       {
-        filter: (config) => ['all', ['==', ['get', 'is_zone'], false], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
+        filter: (config) => [
+          'all',
+          ['==', ['get', 'is_zone'], false],
+          ...buildFiltreGestionnaire(config.filtreGestionnaire),
+          ...buildFiltreMaitreOuvrage(config.filtreMaitreOuvrage),
+        ],
         id: 'reseauxEnConstruction-trace',
         isVisible: (config) => config.reseauxEnConstruction,
         layout: {

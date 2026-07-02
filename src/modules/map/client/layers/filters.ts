@@ -131,7 +131,10 @@ export function buildFiltreGestionnaire(filtreGestionnaire: MapConfiguration['fi
     : [];
 }
 
-/** Free-text substring match on the `MO` (maître d'ouvrage) field. Case-insensitive; multiple values are OR-ed. */
+/**
+ * Free-text substring match on the `MO` (maître d'ouvrage) field. Case-insensitive; multiple values are OR-ed.
+ * The union type param ensures `MO` exists on every filtered tile source (chaleur, froid, construction).
+ */
 export function buildFiltreMaitreOuvrage(filtreMaitreOuvrage: MapConfiguration['filtreMaitreOuvrage']): ExpressionSpecification[] {
   const values = (filtreMaitreOuvrage ?? []).map((value) => value.trim().toLowerCase()).filter(Boolean);
   return values.length > 0
@@ -140,7 +143,11 @@ export function buildFiltreMaitreOuvrage(filtreMaitreOuvrage: MapConfiguration['
           'any',
           ...values.map(
             (filtre) =>
-              ['in', filtre, ['downcase', ['coalesce', getProp<ReseauxDeChaleurTile>('MO'), '']]] satisfies ExpressionSpecification
+              [
+                'in',
+                filtre,
+                ['downcase', ['coalesce', getProp<ReseauxDeChaleurTile | ReseauxEnConstructionTile>('MO'), '']],
+              ] satisfies ExpressionSpecification
           ),
         ],
       ]

@@ -786,6 +786,15 @@ const GestionDesReseaux = () => {
         width: '180px',
       },
       {
+        accessorKey: 'MO',
+        filterProps: {
+          placeholder: "Filtrer par maître d'ouvrage",
+        },
+        filterType: 'Text',
+        header: "Maître d'ouvrage",
+        width: '150px',
+      },
+      {
         accessorFn: (row) => row.communes?.join(', '),
         filterProps: {
           placeholder: 'Filtrer par commune',

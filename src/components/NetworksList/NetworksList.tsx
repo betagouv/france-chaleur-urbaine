@@ -42,6 +42,7 @@ const NetworksListContainer = styled.div`
 export const GeneralFieldsList = [
   'communes',
   'Gestionnaire',
+  'MO',
   'Taux EnR&R',
   'contenu CO2 ACV',
   'contenu CO2',
@@ -83,6 +84,10 @@ const exportColumns = [
   {
     accessorKey: 'Gestionnaire',
     name: 'Gestionnaire',
+  },
+  {
+    accessorKey: 'MO',
+    name: "Maître d'ouvrage",
   },
   {
     accessorKey: 'Taux EnR&R',
@@ -258,6 +263,7 @@ const NetworksList = () => {
         (network: NetworkToCompare) =>
           network.nom_reseau?.toLocaleLowerCase().includes(searchValueLowerCase) ||
           network.Gestionnaire?.toLocaleLowerCase().includes(searchValueLowerCase) ||
+          network.MO?.toLocaleLowerCase().includes(searchValueLowerCase) ||
           network.region?.toLocaleLowerCase().includes(searchValueLowerCase) ||
           network.communes?.join(', ').toLocaleLowerCase().includes(searchValueLowerCase) ||
           network['Identifiant reseau']?.toLocaleLowerCase().includes(searchValueLowerCase)
@@ -328,6 +334,11 @@ const NetworksList = () => {
       {
         accessorKey: 'Gestionnaire',
         header: 'Gestionnaire',
+        width: '250px',
+      },
+      {
+        accessorKey: 'MO',
+        header: "Maître d'ouvrage",
         width: '250px',
       },
       {

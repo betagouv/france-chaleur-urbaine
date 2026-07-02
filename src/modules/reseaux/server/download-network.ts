@@ -141,6 +141,7 @@ const conversionConfigReseauxDeFroid = {
 
 const conversionConfigReseauxEnConstruction = {
   gestionnaire: TypeString,
+  MO: TypeString,
   mise_en_service: TypeString,
   nom_reseau: TypeString,
   ouvert_aux_raccordements: TypeBool,
