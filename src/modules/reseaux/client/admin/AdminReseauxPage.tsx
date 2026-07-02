@@ -496,6 +496,12 @@ const GestionDesReseaux = () => {
         width: '200px',
       },
       {
+        accessorKey: 'organization_name',
+        filterType: 'Facets',
+        header: 'Organisation',
+        width: '180px',
+      },
+      {
         accessorKey: `date_actualisation_trace`,
         cellType: 'Date',
         filterType: 'Range',
@@ -772,6 +778,12 @@ const GestionDesReseaux = () => {
         filterType: 'Text',
         header: 'Gestionnaire',
         width: '150px',
+      },
+      {
+        accessorKey: 'organization_name',
+        filterType: 'Facets',
+        header: 'Organisation',
+        width: '180px',
       },
       {
         accessorFn: (row) => row.communes?.join(', '),

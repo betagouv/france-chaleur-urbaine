@@ -248,6 +248,11 @@ export const listReseauxDeChaleur = async () => {
       'communes',
       'Gestionnaire',
       'MO',
+      eb
+        .selectFrom('organizations')
+        .select('name')
+        .whereRef('organizations.id', '=', 'reseaux_de_chaleur.organization_id')
+        .as('organization_name'),
       sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),
@@ -282,6 +287,11 @@ export const listReseauxEnConstruction = async () => {
       'nom_reseau',
       'communes',
       'gestionnaire',
+      eb
+        .selectFrom('organizations')
+        .select('name')
+        .whereRef('organizations.id', '=', 'zones_et_reseaux_en_construction.organization_id')
+        .as('organization_name'),
       sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),
