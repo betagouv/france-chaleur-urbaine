@@ -5,6 +5,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import CallOut from '@/components/ui/CallOut';
 import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
 import TableBasic from '@/components/ui/TableBasic';
 import Text from '@/components/ui/Text';
 import { type DemandDTO, demandeStatuts, zDemande } from '@/modules/partner-api/schema';
@@ -162,13 +163,20 @@ const ApiGestionnairesPage = () => (
       </Heading>
       <Text mb="4w">
         France Chaleur Urbaine met à disposition une API REST pour <strong>piloter vos demandes de raccordement depuis votre CRM</strong> :
-        une route pour les récupérer, une autre pour mettre à jour leur statut. Pour activer un accès, contactez l'équipe FCU.
+        une route pour les récupérer, une autre pour mettre à jour leur statut. Pour activer un accès,{' '}
+        <Link href="/contact">contactez l'équipe FCU</Link>.
       </Text>
 
       <CallOut variant="blue" iconId="fr-icon-refresh-line" title="Une API dans les deux sens">
-        Elle relie votre CRM à France Chaleur Urbaine dans les deux sens : une route pour <strong>récupérer</strong> les demandes de vos
-        réseaux, une autre pour <strong>mettre à jour leur statut</strong> (et commentaire). Vous suivez l'avancement dans votre outil, FCU
-        reste à jour.
+        <p>
+          Elle relie votre CRM à France Chaleur Urbaine dans les deux sens : une route pour <strong>récupérer</strong> les demandes de vos
+          réseaux, une autre pour <strong>mettre à jour leur statut</strong> (et commentaire). Vous suivez l'avancement dans votre outil,
+          FCU reste à jour.
+        </p>
+        <p>
+          L’utilisation de l’API dans un sens est conditionnée à la remontée d’information dans l’autre sens. France Chaleur Urbaine se
+          réserve le droit de couper l’accès à l’API en cas de non respect de ce système.
+        </p>
       </CallOut>
 
       <Heading as="h2" color="blue-france" mt="6w" mb="1w">
