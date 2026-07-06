@@ -74,11 +74,11 @@ const demandFieldGroups: FieldGroup[] = (() => {
 })();
 
 const SAMPLE_VALUES: FlattenValues<DemandDTO> = {
-  'batiment.energie_chauffage': 'gaz',
+  'batiment.energie_chauffage': 'Gaz',
   'batiment.etablissement': null,
   'batiment.nombre_logements': 48,
   'batiment.surface_m2': 3200,
-  'batiment.type_chauffage': 'collectif',
+  'batiment.type_chauffage': 'Collectif',
   'batiment.type_structure': 'Copropriété',
   commentaire: 'RDV technique planifié le 12/06',
   'contact.email': 'c.martin@example.com',

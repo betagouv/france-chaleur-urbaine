@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { demandStatusDefault } from '@/modules/demands/constants';
+import { availableStructures, demandStatusDefault, modesDeChauffageLabels, typesDeChauffageLabels } from '@/modules/demands/constants';
 import { networkTypes } from '@/modules/reseaux/constants';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
@@ -68,12 +68,21 @@ const zLocalisation = z
 
 const zBatiment = z
   .object({
-    energie_chauffage: z.string().nullable().describe('Énergie de chauffage actuelle : Électricité, Gaz, Fioul, Autre.'),
+    energie_chauffage: z
+      .enum(modesDeChauffageLabels)
+      .nullable()
+      .describe(`Énergie de chauffage actuelle : ${modesDeChauffageLabels.join(', ')}.`),
     etablissement: z.string().nullable().describe("Nom de l'établissement ou de la structure."),
     nombre_logements: z.number().int().nullable().describe('Nombre de logements (valeur corrigée par le gestionnaire si renseignée).'),
     surface_m2: z.number().nullable().describe('Surface chauffée (m²).'),
-    type_chauffage: z.string().nullable().describe('Type de chauffage : Collectif, Individuel.'),
-    type_structure: z.string().nullable().describe('Copropriété, Maison individuelle, Tertiaire, Bailleur social, Autre.'),
+    type_chauffage: z
+      .enum(typesDeChauffageLabels)
+      .nullable()
+      .describe(`Type de chauffage : ${typesDeChauffageLabels.join(', ')}.`),
+    type_structure: z
+      .enum(availableStructures)
+      .nullable()
+      .describe(`Type de structure : ${availableStructures.join(', ')}.`),
   })
   .describe('Caractéristiques du bâtiment.');
 

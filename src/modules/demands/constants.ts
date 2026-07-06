@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type { EligibilityType } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import type { ExtractKeys } from '@/utils/typescript';
+import { type ExtractKeys, nonEmptyArray } from '@/utils/typescript';
 
 export const zAddRelanceCommentInput = z.object({
   comment: z.string().min(1, 'Le commentaire est requis'),
@@ -160,14 +160,25 @@ export const modesDeChauffage = [
   { id: 'gaz', label: 'Gaz', value: 'gaz' },
   { id: 'fioul', label: 'Fioul', value: 'fioul' },
   { id: 'autre', label: 'Autre / Je ne sais pas', value: 'autre' },
-];
+] as const;
 export type ModeDeChauffage = (typeof modesDeChauffage)[number]['value'];
 
 export const typesDeChauffage = [
   { id: 'individuel', label: 'Individuel', value: 'individuel' },
   { id: 'collectif', label: 'Collectif', value: 'collectif' },
-];
+] as const;
 export type TypeDeChauffage = (typeof typesDeChauffage)[number]['value'];
+
+/** Canonical labels stored in legacy_values "Mode de chauffage" (DB + partner API). */
+export const modesDeChauffageLabels = nonEmptyArray(modesDeChauffage.map(({ label }) => label));
+export type ModeDeChauffageLabel = (typeof modesDeChauffageLabels)[number];
+
+/** Canonical labels stored in legacy_values "Type de chauffage" (DB + partner API) — includes the fallback label. */
+export const typesDeChauffageLabels = nonEmptyArray([...typesDeChauffage.map(({ label }) => label), 'Autre / Je ne sais pas' as const]);
+export type TypeDeChauffageLabel = (typeof typesDeChauffageLabels)[number];
+
+/** Canonical values stored in legacy_values "Structure" (see formatStructureToAirtable). */
+export const availableStructures = ['Tertiaire', 'Copropriété', 'Bailleur social', 'Maison individuelle', 'Autre'] as const;
 
 export const fieldLabelInformation = {
   company: 'Nom de votre structure',
@@ -179,7 +190,7 @@ export const fieldLabelInformation = {
       { id: 'gestionnaire', label: 'Gestionnaire de parc tertiaire', value: 'Gestionnaire de parc tertiaire' },
       { id: 'bureau', label: "Bureau d'études ou AMO", value: "Bureau d'études ou AMO" },
       { id: 'mandataire', label: 'Mandataire / délégataire CEE', value: 'Mandataire / délégataire CEE' },
-    ],
+    ] as const,
     label: 'Type de structure',
   },
   contactDetailsTitle: 'Vos coordonnées',
@@ -213,10 +224,13 @@ export const fieldLabelInformation = {
         value: 'Maison individuelle',
       },
       { id: 'tertiaire', label: 'Professionnel', value: 'Tertiaire' },
-    ],
+    ] satisfies { id: string; label: string; value: (typeof availableStructures)[number] }[],
     label: 'Vous êtes...',
   },
 };
+
+/** companyType values offered when structure = Tertiaire, source of truth for the union type. */
+export type DemandCompanyType = (typeof fieldLabelInformation.companyType.inputs)[number]['value'];
 
 const demandContactShape = {
   company: z.string().optional().default(''),
@@ -307,7 +321,7 @@ export const zAirtableFCUTeamContact = z.object({
   Adresse: z.string().min(1),
   Date: z.iso.datetime(),
   Email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
-  'Mode de chauffage': z.enum(modesDeChauffage.map(({ value }) => value) as [ModeDeChauffage, ...ModeDeChauffage[]]),
+  'Mode de chauffage': z.enum(nonEmptyArray(modesDeChauffage.map(({ value }) => value))),
   Nom: z.string().min(1),
   'Nom de la structure': z.string(),
   'Nombre de logement': z.number().optional(),
@@ -353,8 +367,12 @@ export type BatchDemandStep1Data = z.infer<typeof zBatchDemandStep1Schema>;
 
 export const zBatchDemandAddressSchema = z.object({
   addressId: z.string().min(1),
-  heatingEnergy: z.enum(['électricité', 'gaz', 'fioul', 'autre'], { message: 'Veuillez sélectionner une énergie de chauffage' }),
-  heatingType: z.enum(['collectif', 'individuel'], { message: 'Veuillez sélectionner un type de chauffage' }),
+  heatingEnergy: z.enum(nonEmptyArray(modesDeChauffage.map(({ value }) => value)), {
+    message: 'Veuillez sélectionner une énergie de chauffage',
+  }),
+  heatingType: z.enum(nonEmptyArray(typesDeChauffage.map(({ value }) => value)), {
+    message: 'Veuillez sélectionner un type de chauffage',
+  }),
 });
 
 export type BatchDemandAddressData = z.infer<typeof zBatchDemandAddressSchema>;
@@ -390,7 +408,7 @@ export type Referrer = (typeof referrers)[number]['label'];
  * Normalise une valeur de mode de chauffage (heatingEnergy) vers le label standard.
  * Gère les inconsistances : casse, accents, espaces, valeurs legacy.
  */
-export const normalizeHeatingEnergy = (value: string | null | undefined): string | null => {
+export const normalizeHeatingEnergy = (value: string | null | undefined): ModeDeChauffageLabel | null => {
   if (!value) return null;
 
   const normalized = value.toLowerCase().trim();
@@ -415,7 +433,7 @@ export const normalizeHeatingEnergy = (value: string | null | undefined): string
  * Normalise une valeur de type de chauffage (heatingType) vers le label standard.
  * Gère les inconsistances : casse, valeurs legacy.
  */
-export const normalizeHeatingType = (value: string | null | undefined): string | null => {
+export const normalizeHeatingType = (value: string | null | undefined): TypeDeChauffageLabel | null => {
   if (!value) return null;
 
   const normalized = value.toLowerCase().trim();
@@ -440,7 +458,7 @@ export const normalizeHeatingType = (value: string | null | undefined): string |
 
 /************* Airtable Legacy *************/
 
-const formatHeatingEnergyToAirtable = (heatingEnergy: string) => {
+const formatHeatingEnergyToAirtable = (heatingEnergy: string): ModeDeChauffageLabel => {
   switch (heatingEnergy) {
     case 'électricité':
       return 'Électricité';
@@ -452,7 +470,7 @@ const formatHeatingEnergyToAirtable = (heatingEnergy: string) => {
       return 'Autre / Je ne sais pas';
   }
 };
-export const formatHeatingTypeToAirtable = (heatingType?: string) => {
+export const formatHeatingTypeToAirtable = (heatingType?: string): TypeDeChauffageLabel => {
   switch (heatingType) {
     case 'individuel':
       return 'Individuel';

@@ -10,8 +10,13 @@ components:
             energie_chauffage:
               anyOf:
                 - type: string
+                  enum:
+                    - "Électricité"
+                    - Gaz
+                    - Fioul
+                    - Autre / Je ne sais pas
                 - type: "null"
-              description: "Énergie de chauffage actuelle : Électricité, Gaz, Fioul, Autre."
+              description: "Énergie de chauffage actuelle : Électricité, Gaz, Fioul, Autre / Je ne sais pas."
             etablissement:
               anyOf:
                 - type: string
@@ -30,13 +35,23 @@ components:
             type_chauffage:
               anyOf:
                 - type: string
+                  enum:
+                    - Individuel
+                    - Collectif
+                    - Autre / Je ne sais pas
                 - type: "null"
-              description: "Type de chauffage : Collectif, Individuel."
+              description: "Type de chauffage : Individuel, Collectif, Autre / Je ne sais pas."
             type_structure:
               anyOf:
                 - type: string
+                  enum:
+                    - Tertiaire
+                    - "Copropriété"
+                    - Bailleur social
+                    - Maison individuelle
+                    - Autre
                 - type: "null"
-              description: "Copropriété, Maison individuelle, Tertiaire, Bailleur social, Autre."
+              description: "Type de structure : Tertiaire, Copropriété, Bailleur social, Maison individuelle, Autre."
           required:
             - energie_chauffage
             - etablissement

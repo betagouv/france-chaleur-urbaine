@@ -1,9 +1,10 @@
 import type { AvailableHeating } from '@/modules/app/types';
 import type { BANAddressFeature } from '@/modules/ban/types';
+import type { availableStructures } from '@/modules/demands/constants';
 
 import type { HeatNetworksResponse } from './HeatNetworksResponse';
 
-export type AvailableStructure = 'Tertiaire' | 'Copropriété' | 'Bailleur social' | 'Maison individuelle' | 'Autre' | undefined;
+export type AvailableStructure = (typeof availableStructures)[number] | undefined;
 export type AddressDataType = {
   address?: string;
   coords?: { lat: number; lon: number };

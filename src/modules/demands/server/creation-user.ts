@@ -7,6 +7,7 @@ import { createEligibilityTestAddress } from '@/modules/pro-eligibility-tests/se
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import { kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import { omitEmptyStringValues } from '@/utils/objects';
 
 import {
   autoAssignNetworkFromEligibility,
@@ -15,6 +16,7 @@ import {
   getConsommationGazAdresse,
 } from './eligibility';
 import { enrichDemandForAdmin, getDemandById } from './helpers';
+import type { LegacyValuesPatch } from './legacy-values';
 
 /**
  * Crée une demande côté utilisateur : enrichit avec la conso gaz / bâtiment BNB,
@@ -34,20 +36,23 @@ export const createDemand = async (
     values.nbLogements ? { batiment_groupe_id: undefined, nb_logements: values.nbLogements } : getBatimentInfoAtCoords(lat, lon),
   ]);
 
+  // Les chaînes vides ne sont pas stockées : clé absente = null côté API/UI
+  const legacyRecord = omitEmptyStringValues({
+    ...legacyValues,
+    Conso: conso ? conso.conso_nb : undefined,
+    'Date de la demande': new Date().toISOString(),
+    'ID BNB': nbLogement?.batiment_groupe_id ? `${nbLogement.batiment_groupe_id}` : undefined,
+    'ID réseau le plus proche': null,
+    Logement: nbLogement?.nb_logements ? nbLogement.nb_logements : undefined,
+    'Relance à activer': values.eligibility.isEligible && values.heatingType === 'collectif',
+    Status: values.eligibility.isEligible ? DEMANDE_STATUS.TO_PROCESS : DEMANDE_STATUS.UNREALISABLE,
+  } satisfies LegacyValuesPatch);
+
   const [createdDemand] = await kdb
     .insertInto('demands')
     .values({
       created_at: new Date(),
-      legacy_values: sql<string>`${JSON.stringify({
-        ...legacyValues,
-        Conso: conso ? conso.conso_nb : undefined,
-        'Date de la demande': new Date().toISOString(),
-        'ID BNB': nbLogement?.batiment_groupe_id ? `${nbLogement.batiment_groupe_id}` : undefined,
-        'ID réseau le plus proche': null,
-        Logement: nbLogement?.nb_logements ? nbLogement.nb_logements : undefined,
-        'Relance à activer': values.eligibility.isEligible && values.heatingType === 'collectif',
-        Status: values.eligibility.isEligible ? DEMANDE_STATUS.TO_PROCESS : DEMANDE_STATUS.UNREALISABLE,
-      })}::jsonb`,
+      legacy_values: sql<string>`${JSON.stringify(legacyRecord)}::jsonb`,
       origin_host: values.origin_host ?? null,
       origin_page: values.origin_page ?? null,
       origin_source: values.origin_source ?? null,
@@ -114,7 +119,7 @@ export const createDemand = async (
         demand: {
           ...demandForEmail,
           Structure: legacyValues.Structure as any,
-          'Type de chauffage': legacyValues['Type de chauffage'] as 'Collectif' | 'Autre / Je ne sais pas' | 'Individuel',
+          'Type de chauffage': legacyValues['Type de chauffage'],
         },
       }
     ),

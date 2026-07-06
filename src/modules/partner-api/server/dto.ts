@@ -1,3 +1,4 @@
+import { availableStructures, normalizeHeatingEnergy, normalizeHeatingType } from '@/modules/demands/constants';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
 
@@ -42,12 +43,13 @@ export const toDemandDTO = (row: DemandRow): DemandDTO => {
   const lv = row.legacy_values;
   return {
     batiment: {
-      energie_chauffage: lv['Mode de chauffage'] ?? null,
+      // la BDD est canonique depuis le nettoyage 2026-07 ; la normalisation reste en garde-fou (inconnu ⇒ null)
+      energie_chauffage: normalizeHeatingEnergy(lv['Mode de chauffage']),
       etablissement: lv.Établissement ?? null,
       nombre_logements: num(lv['Gestionnaire Logement']) ?? num(lv.Logement),
       surface_m2: num(lv['Surface en m2']),
-      type_chauffage: lv['Type de chauffage'] ?? null,
-      type_structure: lv.Structure ?? null,
+      type_chauffage: normalizeHeatingType(lv['Type de chauffage']),
+      type_structure: availableStructures.find((structure) => structure === lv.Structure) ?? null,
     },
     commentaire: row.comment_gestionnaire,
     contact: {

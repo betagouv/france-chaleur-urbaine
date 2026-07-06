@@ -90,6 +90,20 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: readonly
   return Object.fromEntries(entries) as Pick<T, K>;
 }
 
+/** Les clés pouvant valoir '' deviennent optionnelles (sans ''), les autres sont conservées telles quelles. */
+export type OmitEmptyStringValues<T> = { [K in keyof T as '' extends T[K] ? K : never]?: Exclude<T[K], ''> } & {
+  [K in keyof T as '' extends T[K] ? never : K]: T[K];
+};
+
+/**
+ * omitEmptyStringValues(obj) - Crée un nouvel objet en excluant les propriétés dont la valeur est une chaîne vide.
+ * @param obj - L'objet source
+ * @returns Un nouvel objet sans les propriétés à valeur ''
+ */
+export function omitEmptyStringValues<T extends object>(obj: T): OmitEmptyStringValues<T> {
+  return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== '')) as OmitEmptyStringValues<T>;
+}
+
 export const sortKeys = (obj: Record<string, any>) => {
   return Object.keys(obj)
     .sort()
