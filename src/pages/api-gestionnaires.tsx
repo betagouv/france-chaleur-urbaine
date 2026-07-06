@@ -2,12 +2,10 @@ import { Fragment } from 'react';
 import { z } from 'zod';
 
 import SimplePage from '@/components/shared/page/SimplePage';
-import Box from '@/components/ui/Box';
 import CallOut from '@/components/ui/CallOut';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import TableBasic from '@/components/ui/TableBasic';
-import Text from '@/components/ui/Text';
 import { type DemandDTO, demandeStatuts, zDemande } from '@/modules/partner-api/schema';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type FlattenValues, hasProperty } from '@/utils/typescript';
@@ -109,6 +107,24 @@ const SAMPLE_VALUES: FlattenValues<DemandDTO> = {
   statut: DEMANDE_STATUS.RECONTACTED,
 };
 
+/** Vue d'ensemble des routes ; chaque `anchor` pointe vers la section de détail correspondante. */
+const API_ROUTES = [
+  {
+    anchor: 'recuperer-les-demandes',
+    method: 'GET',
+    path: '/api/v2/demands',
+    usage: 'Récupérer les demandes de raccordement de vos réseaux (synchronisation complète ou incrémentale)',
+  },
+  {
+    anchor: 'mettre-a-jour-une-demande',
+    method: 'PATCH',
+    path: '/api/v2/demands/{id}',
+    usage: "Mettre à jour le statut et le commentaire d'une demande",
+  },
+] as const;
+
+const [ROUTE_GET_DEMANDS, ROUTE_PATCH_DEMAND] = API_ROUTES;
+
 type ExampleLine = { id: string; text: string; comment: string };
 
 /** Exemple de demande annoté : clés + descriptions dérivées de `zDemande`, valeurs issues de `SAMPLE_VALUES`. */
@@ -156,164 +172,198 @@ const ApiGestionnairesPage = () => (
     title="API gestionnaires — synchronisez votre CRM avec France Chaleur Urbaine"
     description="Pilotez vos demandes de raccordement depuis votre CRM : récupération et mise à jour du statut."
     noIndex
+    layout="center"
   >
-    <Box py="4w" className="fr-container">
-      <Heading as="h1" color="blue-france">
-        Piloter vos demandes depuis votre CRM
-      </Heading>
-      <Text mb="4w">
-        France Chaleur Urbaine met à disposition une API REST pour <strong>piloter vos demandes de raccordement depuis votre CRM</strong> :
-        une route pour les récupérer, une autre pour mettre à jour leur statut. Pour activer un accès,{' '}
-        <Link href="/contact">contactez l'équipe FCU</Link>.
-      </Text>
+    <Heading as="h1" color="blue-france">
+      Piloter vos demandes depuis votre CRM
+    </Heading>
+    <p className="mb-4w">
+      France Chaleur Urbaine met à disposition une API REST pour <strong>piloter vos demandes de raccordement depuis votre CRM</strong>.
+      Pour activer un accès, <Link href="/contact">contactez l'équipe FCU</Link>.
+    </p>
 
-      <CallOut variant="blue" iconId="fr-icon-refresh-line" title="Une API dans les deux sens">
-        <p>
-          Elle relie votre CRM à France Chaleur Urbaine dans les deux sens : une route pour <strong>récupérer</strong> les demandes de vos
-          réseaux, une autre pour <strong>mettre à jour leur statut</strong> (et commentaire). Vous suivez l'avancement dans votre outil,
-          FCU reste à jour.
-        </p>
-        <p>
-          L’utilisation de l’API dans un sens est conditionnée à la remontée d’information dans l’autre sens. France Chaleur Urbaine se
-          réserve le droit de couper l’accès à l’API en cas de non respect de ce système.
-        </p>
-      </CallOut>
+    <CallOut variant="blue" iconId="fr-icon-refresh-line" title="Une API dans les deux sens">
+      <p>
+        L’utilisation de l’API dans un sens est conditionnée à la remontée d’information dans l’autre sens. France Chaleur Urbaine se
+        réserve le droit de couper l’accès à l’API en cas de non-respect de cette condition.
+      </p>
+    </CallOut>
 
-      <Heading as="h2" color="blue-france" mt="6w" mb="1w">
-        Authentification
-      </Heading>
-      <Text>
-        Chaque organisation dispose d'un <strong>token</strong> propre, fourni par l'équipe FCU. Il s'envoie dans l'en-tête{' '}
-        <code>Authorization</code> et porte le périmètre de l'organisation : vous n'accédez qu'aux demandes des réseaux que vous gérez.
-      </Text>
-      <Box className="my-2w overflow-x-auto rounded bg-grey-975 p-3">
-        <code>Authorization: Bearer &lt;votre-token&gt;</code>
-      </Box>
-
-      <Heading as="h2" color="blue-france" mt="6w" mb="1w">
-        Récupérer les demandes
-      </Heading>
-      <Text>
-        <code>GET /api/v2/demands?updated_since=2026-06-01T00:00:00Z</code> — renvoie un <strong>tableau JSON</strong> de toutes les
-        demandes créées ou modifiées depuis la date fournie, triées par <code>date_modification</code> croissant. Sans{' '}
-        <code>updated_since</code>, tout l'historique est renvoyé. Pour une synchro incrémentale, conservez la plus grande{' '}
-        <code>date_modification</code> reçue et repassez-la en <code>updated_since</code> au prochain appel. Vous n'accédez qu'aux demandes
-        des réseaux rattachés à votre organisation.
-      </Text>
-      <Box className="my-2w overflow-x-auto rounded bg-grey-975 p-3">
-        <code>{`curl -H "Authorization: Bearer <token>" "https://france-chaleur-urbaine.beta.gouv.fr/api/v2/demands?updated_since=2026-06-01T00:00:00Z"`}</code>
-      </Box>
-
-      <Heading as="h3" color="blue-france" mt="4w" mb="1w">
-        Champs d'une demande
-      </Heading>
-      <Text mb="2w">
-        Chaque demande est renvoyée sous une forme stable et versionnée (indépendante de notre stockage interne), regroupée par thème. Les
-        groupes <strong>contact</strong> et <strong>localisation</strong> relèvent du RGPD ; seuls <code>statut</code> et{' '}
-        <code>commentaire</code> sont modifiables (voir plus bas).
-      </Text>
-      <TableBasic bordered>
-        <thead>
-          <tr>
-            <th>Champ</th>
-            <th>Type</th>
-            <th>Description</th>
+    <Heading as="h2" color="blue-france" mt="6w" mb="1w">
+      Routes disponibles
+    </Heading>
+    <p className="mb-2w">L'API expose deux routes, dont l'accès requiert une authentification par token :</p>
+    <TableBasic bordered>
+      <thead>
+        <tr>
+          <th>Route</th>
+          <th>Usage</th>
+          <th />
+        </tr>
+      </thead>
+      <tbody>
+        {API_ROUTES.map((route) => (
+          <tr key={route.anchor}>
+            <td>
+              <code className="whitespace-nowrap">
+                <strong>{route.method}</strong> {route.path}
+              </code>
+            </td>
+            <td>{route.usage}</td>
+            <td>
+              <a href={`#${route.anchor}`}>Détail</a>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {demandFieldGroups.map((group) => (
-            <Fragment key={group.category}>
-              <tr>
-                <th colSpan={3} scope="colgroup" className="bg-grey-975">
-                  {group.category}
-                </th>
-              </tr>
-              {group.fields.map((field) => (
-                <tr key={field.name}>
-                  <td>
-                    <code>{field.name}</code>
-                  </td>
-                  <td>
-                    <span className="whitespace-nowrap">{field.type}</span>
-                  </td>
-                  <td>{field.description}</td>
-                </tr>
-              ))}
-            </Fragment>
-          ))}
-        </tbody>
-      </TableBasic>
+        ))}
+      </tbody>
+    </TableBasic>
 
-      <Heading as="h3" color="blue-france" mt="4w" mb="1w">
-        Exemple de réponse
-      </Heading>
-      <Text mb="2w">
-        <code>GET /api/v2/demands</code> renvoie un <strong>tableau JSON</strong> de demandes. Exemple commenté pour une demande (les
-        annotations <code>{'//'}</code> ne font pas partie de la réponse) :
-      </Text>
-      <pre className="my-2w overflow-x-auto rounded bg-grey-975 p-4 text-sm leading-relaxed">
-        {'[\n  {\n'}
-        {demandExampleLines.map((line) => (
-          <Fragment key={line.id}>
-            {line.text}
-            {line.comment ? <span className="text-gray-500">{`  // ${line.comment}`}</span> : null}
-            {'\n'}
+    <Heading as="h2" color="blue-france" mt="6w" mb="1w">
+      Authentification
+    </Heading>
+    <p className="mb-0">
+      Chaque organisation dispose d'un <strong>token</strong> propre, fourni par l'équipe FCU. Il se transmet dans l'en-tête{' '}
+      <code>Authorization</code> et porte le périmètre de l'organisation : vous n'accédez qu'aux demandes des réseaux que vous gérez.
+    </p>
+    <div className="my-2w overflow-x-auto rounded bg-grey-975 p-3">
+      <code>Authorization: Bearer &lt;votre-token&gt;</code>
+    </div>
+
+    <Heading as="h2" color="blue-france" mt="6w" mb="1w" id="recuperer-les-demandes" anchorLink>
+      Récupérer les demandes —{' '}
+      <code className="text-[0.65em] font-normal">
+        {ROUTE_GET_DEMANDS.method} {ROUTE_GET_DEMANDS.path}
+      </code>
+    </Heading>
+    <p className="mb-0">
+      Renvoie un <strong>tableau JSON</strong> de toutes les demandes créées ou modifiées depuis la date passée en paramètre{' '}
+      <code>updated_since</code> (ISO 8601), triées par <code>date_modification</code> croissant. Sans <code>updated_since</code>, tout
+      l'historique est renvoyé. Pour une synchronisation incrémentale, conservez la plus grande <code>date_modification</code> reçue et
+      repassez-la en <code>updated_since</code> au prochain appel.
+    </p>
+    <div className="my-2w overflow-x-auto rounded bg-grey-975 p-3">
+      <code>{`curl -H "Authorization: Bearer <token>" "https://france-chaleur-urbaine.beta.gouv.fr/api/v2/demands?updated_since=2026-06-01T00:00:00Z"`}</code>
+    </div>
+
+    <Heading as="h3" color="blue-france" mt="4w" mb="1w">
+      Champs d'une demande
+    </Heading>
+    <p className="mb-2w">
+      Chaque demande est renvoyée sous une forme stable et versionnée (indépendante du stockage interne), regroupée par thème. Les groupes{' '}
+      <strong>contact</strong> et <strong>localisation</strong> relèvent du RGPD ; seuls <code>statut</code> et <code>commentaire</code>{' '}
+      sont modifiables (voir <a href="#mettre-a-jour-une-demande">Mettre à jour une demande</a>).
+    </p>
+    <TableBasic bordered>
+      <thead>
+        <tr>
+          <th>Champ</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {demandFieldGroups.map((group) => (
+          <Fragment key={group.category}>
+            <tr>
+              <th colSpan={3} scope="colgroup" className="bg-grey-975">
+                {group.category}
+              </th>
+            </tr>
+            {group.fields.map((field) => (
+              <tr key={field.name}>
+                <td>
+                  <code>{field.name}</code>
+                </td>
+                <td>
+                  <span className="whitespace-nowrap">{field.type}</span>
+                </td>
+                <td>{field.description}</td>
+              </tr>
+            ))}
           </Fragment>
         ))}
-        {'  }\n]'}
-      </pre>
+      </tbody>
+    </TableBasic>
 
-      <Heading as="h3" color="blue-france" mt="4w" mb="1w">
-        Valeurs du statut
-      </Heading>
-      <Text mb="2w">
-        Le champ <code>statut</code> prend l'une des valeurs suivantes (libellé métier, tel qu'affiché dans France Chaleur Urbaine) :
-      </Text>
-      <TableBasic bordered>
-        <thead>
-          <tr>
-            <th>Valeur</th>
+    <Heading as="h3" color="blue-france" mt="4w" mb="1w">
+      Exemple de réponse
+    </Heading>
+    <p className="mb-2w">
+      Exemple commenté pour une demande (les annotations <code>{'//'}</code> ne font pas partie de la réponse) :
+    </p>
+    <pre className="my-2w overflow-x-auto rounded bg-grey-975 p-4 text-sm leading-relaxed">
+      {'[\n  {\n'}
+      {demandExampleLines.map((line) => (
+        <Fragment key={line.id}>
+          {line.text}
+          {line.comment ? <span className="text-gray-500">{`  // ${line.comment}`}</span> : null}
+          {'\n'}
+        </Fragment>
+      ))}
+      {'  }\n]'}
+    </pre>
+
+    <Heading as="h3" color="blue-france" mt="4w" mb="1w">
+      Valeurs du statut
+    </Heading>
+    <p className="mb-2w">
+      Le champ <code>statut</code> prend l'une des valeurs suivantes (libellé métier, tel qu'affiché dans France Chaleur Urbaine) :
+    </p>
+    <TableBasic bordered>
+      <thead>
+        <tr>
+          <th>Valeur</th>
+        </tr>
+      </thead>
+      <tbody>
+        {demandeStatuts.map((statut) => (
+          <tr key={statut}>
+            <td>
+              <code>{statut}</code>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {demandeStatuts.map((statut) => (
-            <tr key={statut}>
-              <td>
-                <code>{statut}</code>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </TableBasic>
+        ))}
+      </tbody>
+    </TableBasic>
 
-      <Heading as="h2" color="blue-france" mt="6w" mb="1w">
-        Mettre à jour une demande
-      </Heading>
-      <Text>
-        <code>PATCH /api/v2/demands/&#123;id&#125;</code> — seuls deux champs sont modifiables : <code>statut</code> (l'une des valeurs
-        ci-dessus) et <code>commentaire</code>. Tous les autres champs (contact, adresse, affectation du réseau) restent gérés par FCU et
-        sont ignorés s'ils sont envoyés.
-      </Text>
-      <Box className="my-2w overflow-x-auto rounded bg-grey-975 p-3">
-        <code>{`curl -X PATCH -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"statut":"Recontacté pour étude","commentaire":"RDV technique planifié"}' "https://france-chaleur-urbaine.beta.gouv.fr/api/v2/demands/<id>"`}</code>
-      </Box>
+    <Heading as="h2" color="blue-france" mt="6w" mb="1w" id="mettre-a-jour-une-demande" anchorLink>
+      Mettre à jour une demande —{' '}
+      <code className="text-[0.65em] font-normal">
+        {ROUTE_PATCH_DEMAND.method} {ROUTE_PATCH_DEMAND.path}
+      </code>
+    </Heading>
+    <p className="mb-0">
+      Seuls deux champs sont modifiables : <code>statut</code> (l'une des valeurs ci-dessus) et <code>commentaire</code>. Tous les autres
+      champs (contact, adresse, affectation du réseau) restent gérés par FCU et sont ignorés s'ils sont envoyés.
+    </p>
+    <div className="my-2w overflow-x-auto rounded bg-grey-975 p-3">
+      <code>{`curl -X PATCH -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"statut":"Recontacté pour étude","commentaire":"RDV technique planifié"}' "https://france-chaleur-urbaine.beta.gouv.fr/api/v2/demands/<id>"`}</code>
+    </div>
 
-      <Heading as="h2" color="blue-france" mt="6w" mb="1w">
-        Données personnelles
-      </Heading>
-      <Text mb="4w">
-        Les demandes contiennent des données personnelles (nom, e-mail, téléphone du prospect). Leur traitement via l'API est soumis au RGPD
-        : limitez la conservation à l'usage de raccordement et sécurisez les accès à votre CRM.
-      </Text>
+    <Heading as="h2" color="blue-france" mt="6w" mb="1w">
+      Limites d'usage
+    </Heading>
+    <p className="mb-4w">
+      L'API applique une limitation de débit globale de l'ordre de <strong>60 requêtes par minute et par adresse IP</strong>. Cette limite
+      est largement suffisante pour une synchronisation régulière ; il est toutefois recommandé de privilégier la synchronisation
+      incrémentale (paramètre <code>updated_since</code>) plutôt que des récupérations complètes répétées. En cas de dépassement, l'API
+      répond <code>429 Too Many Requests</code> ; les en-têtes standards <code>RateLimit-*</code> indiquent le quota restant.
+    </p>
 
-      <Box className="rounded border border-blue-300 bg-blue-50/30 p-4">
-        <Text>
-          <strong>Spécification complète.</strong> La référence OpenAPI (endpoints, schémas, codes d'erreur) est disponible sur{' '}
-          <a href="/openapi-schema.yaml">/openapi-schema.yaml</a>. Pour obtenir un accès, contactez l'équipe via la{' '}
-          <a href="/contact">page contact</a>.
-        </Text>
-      </Box>
-    </Box>
+    <Heading as="h2" color="blue-france" mt="6w" mb="1w">
+      Données personnelles
+    </Heading>
+    <p className="mb-4w">
+      Les demandes contiennent des données personnelles (nom, e-mail, téléphone du prospect). Leur traitement via l'API est soumis au RGPD :
+      limitez la conservation à l'usage de raccordement et sécurisez les accès à votre CRM.
+    </p>
+
+    <div className="rounded border border-blue-300 bg-blue-50/30 p-4">
+      <p className="mb-0">
+        <strong>Spécification complète.</strong> La référence OpenAPI (routes, schémas, codes d'erreur) est disponible sur{' '}
+        <a href="/openapi-schema.yaml">/openapi-schema.yaml</a>.
+      </p>
+    </div>
   </SimplePage>
 );
 
