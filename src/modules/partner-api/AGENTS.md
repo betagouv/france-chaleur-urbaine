@@ -10,6 +10,7 @@ demands with FCU. Read (polling) + restricted write (`statut`, `commentaire`). O
 
 ```
 schema.ts                 # SINGLE SOURCE of the contract (pure zod, client-safe — imported by the public page)
+client/ApiGestionnairesPage.tsx  # public doc page (re-exported by src/pages/api-gestionnaires.tsx)
 server/authentication.ts  # withPartnerApi: rate-limit → Bearer auth → org context → method dispatch
 server/dto.ts             # toDemandDTO (internal row + legacy_values → DemandDTO)
 server/handlers.ts        # listDemands, patchDemand
