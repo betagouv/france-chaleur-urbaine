@@ -313,7 +313,7 @@ function DemandesAdmin(): React.ReactElement {
           const demand = row.original;
           return (
             <div>
-              <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={true} className="mb-0!" />
+              <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} className="mb-0!" />
               <div className="" onClick={stopPropagation} onDoubleClick={stopPropagation}>
                 <EligibilityHelpDialog detailedEligibilityStatus={demand.testAddress.eligibility}>
                   <Button
