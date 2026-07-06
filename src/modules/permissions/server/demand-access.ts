@@ -5,7 +5,7 @@ import { kdb } from '@/server/db/kysely';
 import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
 
 import { type NetworkPermission, type Permission, type TerritoryPermissionType, territoryPermissionToColumn } from '../types';
-import { isNetworkPermissionType, isRoleWithPermissions } from './helpers';
+import { isNetworkPermissionType, isOrganizationPermissionType, isRoleWithPermissions } from './helpers';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -17,7 +17,10 @@ type UserWithRole = {
 export type DemandForAccess = Pick<
   Selectable<Demands>,
   'network_id' | 'network_type' | 'validated' | 'commune_code' | 'epci_code' | 'ept_code' | 'departement_code' | 'region_code'
->;
+> & {
+  /** `organization_id` du réseau affecté (dérivé par jointure, esprit Piste 1). Null si pas de réseau ou réseau sans org. */
+  network_organization_id: string | null;
+};
 
 // ─── Access filters (Kysely query builders) ──────────────────────────────────
 
@@ -44,14 +47,41 @@ export const buildDemandAccessFilter = (
       return qb.where(sql.lit(false));
     }
 
+    // Partition à 3 : réseau / organisation / territoire. Sans le 3e bucket, une perm `organization`
+    // tomberait dans `territoryPerms` et serait silencieusement ignorée (cf. garde-fou plan §6.1).
     const networkPerms = permissions.filter((p): p is NetworkPermission => isNetworkPermissionType(p.type));
-    const territoryPerms = permissions.filter((p) => !isNetworkPermissionType(p.type));
+    const organizationPerms = permissions.filter((p) => isOrganizationPermissionType(p.type));
+    const territoryPerms = permissions.filter((p) => !isNetworkPermissionType(p.type) && !isOrganizationPermissionType(p.type));
 
     return qb.where((eb) => {
       const conditions: Expression<SqlBool>[] = [];
 
       for (const p of networkPerms) {
         conditions.push(eb.and([eb('demands.network_id', '=', Number(p.resource_id)), eb('demands.network_type', '=', p.type)]));
+      }
+
+      // Org scope : la demande est affectée à un réseau (chaleur ou en construction) rattaché à l'organisation.
+      for (const p of organizationPerms) {
+        conditions.push(
+          eb.or([
+            eb.and([
+              eb('demands.network_type', '=', 'reseau_de_chaleur'),
+              eb(
+                'demands.network_id',
+                'in',
+                eb.selectFrom('reseaux_de_chaleur').select('id_fcu').where('organization_id', '=', p.resource_id)
+              ),
+            ]),
+            eb.and([
+              eb('demands.network_type', '=', 'reseau_en_construction'),
+              eb(
+                'demands.network_id',
+                'in',
+                eb.selectFrom('zones_et_reseaux_en_construction').select('id_fcu').where('organization_id', '=', p.resource_id)
+              ),
+            ]),
+          ])
+        );
       }
 
       if (territoryPerms.some((p) => p.type === 'national')) {
@@ -92,6 +122,12 @@ const matchesTerritory =
     return false;
   };
 
+/** Une perm organisation matche ssi la demande est affectée à un réseau rattaché à cette organisation. */
+const matchesOrganization =
+  (demand: DemandForAccess) =>
+  (p: Permission): boolean =>
+    isOrganizationPermissionType(p.type) && demand.network_organization_id !== null && demand.network_organization_id === p.resource_id;
+
 /**
  * Vrai ssi l'utilisateur peut **consulter** cette demande (tableau, export, historique mail, etc.).
  * - admin : toujours
@@ -102,7 +138,7 @@ export const canUserAccessDemand = (user: UserWithRole, permissions: Permission[
   if (user.role === 'admin') return true;
   if (!isRoleWithPermissions(user.role) || !demand.validated) return false;
 
-  return permissions.some((p) => matchesNetworkAffectation(demand)(p) || matchesTerritory(demand)(p));
+  return permissions.some((p) => matchesNetworkAffectation(demand)(p) || matchesOrganization(demand)(p) || matchesTerritory(demand)(p));
 };
 
 /**
@@ -114,7 +150,11 @@ export const canUserAccessDemand = (user: UserWithRole, permissions: Permission[
 export const isUserResponsibleForDemand = (user: UserWithRole, permissions: Permission[], demand: DemandForAccess): boolean => {
   if (user.role === 'admin' || !isRoleWithPermissions(user.role) || !demand.validated) return false;
 
-  const matches = isAffectedToNetwork(demand) ? matchesNetworkAffectation(demand) : matchesTerritory(demand);
+  // Demande affectée à un réseau : une perm réseau matchante OU une perm org couvrant ce réseau donne la responsabilité.
+  // Demande sans réseau : org ne s'applique pas (scope opérateur = réseaux), seul le territoire (triage) suffit.
+  const matches = isAffectedToNetwork(demand)
+    ? (p: Permission) => matchesNetworkAffectation(demand)(p) || matchesOrganization(demand)(p)
+    : matchesTerritory(demand);
   return permissions.some(matches);
 };
 
@@ -134,6 +174,10 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
 
       if (demand.network_id && demand.network_type) {
         conditions.push(eb.and([eb('up.type', '=', demand.network_type), eb('up.resource_id', '=', String(demand.network_id))]));
+      }
+
+      if (demand.network_organization_id) {
+        conditions.push(eb.and([eb('up.type', '=', 'organization'), eb('up.resource_id', '=', demand.network_organization_id)]));
       }
 
       conditions.push(eb('up.type', '=', 'national'));
@@ -163,9 +207,25 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
 export const getDemandForAccessCheck = async (demandId: string): Promise<DemandForAccess | null> => {
   const result = await kdb
     .selectFrom('demands')
-    .select(['network_id', 'network_type', 'validated', 'commune_code', 'epci_code', 'ept_code', 'departement_code', 'region_code'])
-    .where('id', '=', demandId)
-    .where('deleted_at', 'is', null)
+    .leftJoin('reseaux_de_chaleur as rdc', (j) =>
+      j.onRef('rdc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'reseau_de_chaleur')
+    )
+    .leftJoin('zones_et_reseaux_en_construction as zrc', (j) =>
+      j.onRef('zrc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'reseau_en_construction')
+    )
+    .select([
+      'demands.network_id',
+      'demands.network_type',
+      'demands.validated',
+      'demands.commune_code',
+      'demands.epci_code',
+      'demands.ept_code',
+      'demands.departement_code',
+      'demands.region_code',
+    ])
+    .select((eb) => eb.fn.coalesce('rdc.organization_id', 'zrc.organization_id').as('network_organization_id'))
+    .where('demands.id', '=', demandId)
+    .where('demands.deleted_at', 'is', null)
     .executeTakeFirst();
   return result ?? null;
 };

@@ -4,15 +4,12 @@ import cliConfig from '@/cli-config';
 import { createEvent } from '@/modules/events/server/service';
 import type { NetworkPermission } from '@/modules/permissions/types';
 import { create } from '@/modules/users/server/service';
-import { type ApiAccounts, kdb } from '@/server/db/kysely';
+import { kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
-const logger = parentLogger.child({
-  dry_run: cliConfig.dryRun,
-  module: 'engie',
-});
+const logger = parentLogger.child({ dry_run: cliConfig.dryRun, module: 'engie' });
 
-export const validation = z.array(
+const validation = z.array(
   z.object({
     contacts: z.array(z.email().toLowerCase().trim()),
     full_url: z.string(),
@@ -21,9 +18,17 @@ export const validation = z.array(
   })
 );
 
-export type EngieApiNetworks = z.infer<typeof validation>;
-
-export const handleData = async (account: ApiAccounts, data: unknown) => {
+/**
+ * Synchro déclarative des comptes gestionnaires ENGIE : crée/réactive les utilisateurs présents dans le flux
+ * (permissions réseau additives par SNCU), désactive ceux qui en sont absents. Format du flux : voir `validation`.
+ *
+ * Appelée par ENGIE chaque vendredi ~12h. Contacts ENGIE :
+ *  - Julien — développeur (julien@clic-droit.fr)
+ *  - Clément Neyrand — Responsable Digital Opérationnel chez ENGIE (clement.neyrand@engie.com)
+ *
+ * Partagée par la route `PUT /api/v1/users/{key}` et la commande CLI `debug:upsert-users-from-api`.
+ */
+export const syncEngieUsers = async (org: { id: string; name: string }, data: unknown) => {
   const { data: validatedNetworks, success, error } = validation.safeParse(data);
   if (!success) {
     throw new Error('Invalid data', { cause: error });
@@ -46,13 +51,7 @@ export const handleData = async (account: ApiAccounts, data: unknown) => {
           .where('Identifiant reseau', 'in', allSncuIds)
           .execute()
       : Promise.resolve([]),
-    kdb
-      .selectFrom('users')
-      .innerJoin('api_accounts', 'users.from_api', 'api_accounts.key')
-      .select(['users.id', 'users.email'])
-      .where('api_accounts.name', '=', account.name)
-      .where('users.active', '=', true)
-      .execute(),
+    kdb.selectFrom('users').select(['id', 'email']).where('from_organization_id', '=', org.id).where('active', '=', true).execute(),
   ]);
 
   const sncuToFcu = new Map(
@@ -80,12 +79,12 @@ export const handleData = async (account: ApiAccounts, data: unknown) => {
           {
             active: true,
             email,
-            from_api: account.key,
+            from_organization_id: org.id,
             optin_at: null,
             receive_new_demands: true,
             receive_old_demands: true,
             role: 'gestionnaire',
-            structure_name: account.name,
+            structure_name: org.name,
           },
           {} as any
         );
@@ -93,7 +92,7 @@ export const handleData = async (account: ApiAccounts, data: unknown) => {
         await createEvent({
           context_id: userId,
           context_type: 'user',
-          data: { api_name: account.name ?? '', role: 'gestionnaire', user_email: email },
+          data: { api_name: org.name, role: 'gestionnaire', user_email: email },
           type: 'user_created_by_api',
         });
       } else {
@@ -105,7 +104,7 @@ export const handleData = async (account: ApiAccounts, data: unknown) => {
         await kdb.updateTable('users').set({ active: true }).where('id', '=', user.id).execute();
       }
 
-      await syncPermissionsForUser(userId, email, sncuIds, sncuToFcu, account.name ?? '');
+      await syncPermissionsForUser(userId, email, sncuIds, sncuToFcu, org.name);
     })
   );
 
@@ -119,7 +118,7 @@ export const handleData = async (account: ApiAccounts, data: unknown) => {
         await createEvent({
           context_id: id,
           context_type: 'user',
-          data: { api_name: account.name ?? '', user_email: email },
+          data: { api_name: org.name, user_email: email },
           type: 'user_deactivated_by_api',
         });
       }

@@ -22,9 +22,9 @@ import { logger } from '@/server/helpers/logger';
 import { isOneOf } from '@/utils/array';
 import { fetchJSON } from '@/utils/network';
 
-/** Champs validés par le formulaire admin + champs internes acceptés (ex. `from_api` posé par les sync API). */
+/** Champs validés par le formulaire admin + champs internes acceptés (ex. provenance posée par les sync API). */
 type CreateUserInput = z.infer<typeof createUserAdminSchema> & {
-  from_api?: string | null;
+  from_organization_id?: string | null;
 };
 type UpdateUserInput = z.infer<typeof updateUserAdminSchema>;
 
@@ -52,9 +52,9 @@ export const list = async () => {
         'optin_at',
         'created_at',
         'last_connection',
+        'from_organization_id',
         sql<boolean>`coalesce(receive_new_demands, false)`.as('receive_new_demands'),
         sql<boolean>`coalesce(receive_old_demands, false)`.as('receive_old_demands'),
-        sql<boolean>`from_api IS NOT NULL`.as('from_api'),
       ])
       .orderBy('id')
       .execute(),

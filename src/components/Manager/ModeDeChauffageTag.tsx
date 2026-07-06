@@ -1,10 +1,10 @@
-import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
+import type { ModeDeChauffageLabel, TypeDeChauffageLabel } from '@/modules/demands/constants';
 
 import Tag from './Tag';
 
 type ModeDeChauffageProps = {
-  modeDeChauffage?: ModeDeChauffage | null;
-  typeDeChauffage?: TypeDeChauffage | null;
+  modeDeChauffage?: ModeDeChauffageLabel | null;
+  typeDeChauffage?: TypeDeChauffageLabel | null;
 };
 
 /**

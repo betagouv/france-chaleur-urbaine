@@ -50,6 +50,15 @@ export const findReseauxDeChaleurBySncuIds = async (sncuIds: string[]): Promise<
   });
 };
 
+export type OrganizationSearchResult = { id: string; name: string };
+
+/** Recherche d'organisations par nom (pour l'autocomplete de permission `organization`). */
+export const searchOrganizations = async (query: string): Promise<OrganizationSearchResult[]> => {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  return kdb.selectFrom('organizations').select(['id', 'name']).where('name', 'ilike', `%${q}%`).orderBy('name').limit(20).execute();
+};
+
 type TerritorySearchResult = {
   code: string;
   label: string;
@@ -150,6 +159,7 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
   const eptCodes = permissions.filter((p) => p.type === 'ept').map((p) => p.resource_id!);
   const deptCodes = permissions.filter((p) => p.type === 'departement').map((p) => p.resource_id!);
   const regionCodes = permissions.filter((p) => p.type === 'region').map((p) => p.resource_id!);
+  const organizationIds = permissions.filter((p) => p.type === 'organization').map((p) => p.resource_id!);
 
   const lookups = [];
 
@@ -265,6 +275,22 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
           const map = new Map(rows.map((r) => [r.code, r.label]));
           for (const code of regionCodes) {
             result.push({ label: map.get(code) ?? code, resource_id: code, type: 'region' });
+          }
+        })
+    );
+  }
+
+  if (organizationIds.length > 0) {
+    lookups.push(
+      kdb
+        .selectFrom('organizations')
+        .select(['id', 'name'])
+        .where('id', 'in', organizationIds)
+        .execute()
+        .then((rows) => {
+          const map = new Map(rows.map((r) => [r.id, r.name]));
+          for (const id of organizationIds) {
+            result.push({ label: map.get(id) ?? 'Organisation inconnue', resource_id: id, type: 'organization' });
           }
         })
     );

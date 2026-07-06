@@ -1,4 +1,4 @@
-import type { ContactFormInfos } from '@/modules/demands/constants';
+import type { ContactFormInfos, ModeDeChauffageLabel, TypeDeChauffageLabel } from '@/modules/demands/constants';
 import type { Coords } from '@/modules/geo/types';
 import type { DemandStatus } from '@/types/enum/DemandSatus';
 
@@ -7,8 +7,8 @@ export type DemandSummary = {
   Nom: string;
   Prénom?: string;
   Adresse: string;
-  'Mode de chauffage': string;
-  'Type de chauffage': string;
+  'Mode de chauffage': ModeDeChauffageLabel;
+  'Type de chauffage': TypeDeChauffageLabel;
   Structure: string;
 };
 
@@ -31,7 +31,7 @@ export type Demand = DemandSummary &
     'Date demandes': string;
     'Date de la demande': string;
     Établissement: string;
-    'Structure accompagnante'?: string[];
+    'Structure accompagnante'?: string;
     'Nom de la structure accompagnante'?: string;
     Ville: string;
     Departement: string;

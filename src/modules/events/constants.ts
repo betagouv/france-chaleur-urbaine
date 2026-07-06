@@ -30,6 +30,8 @@ export const eventTypes = [
   'demand_assignment_change_request_rejected',
   'demand_relance_sent',
   'demand_validated',
+  'api_demands_listed',
+  'api_demand_updated',
   'pro_eligibility_test_created',
   'pro_eligibility_test_renamed',
   'pro_eligibility_test_updated',
@@ -51,11 +53,16 @@ export const eventTypes = [
   'conversion_source_created',
   'conversion_source_updated',
   'conversion_source_archived',
+  'organization_created',
+  'organization_updated',
+  'organization_deleted',
 ] as const;
 
 export type EventType = (typeof eventTypes)[number];
 
 export const eventTypeLabels: Record<EventType, string> = {
+  api_demand_updated: 'Mise à jour demande (API)',
+  api_demands_listed: 'Récupération demandes (API)',
   build_tiles: 'Reconstruction tuiles',
   conversion_source_archived: "Archivage d'intégration iframe",
   conversion_source_created: "Création d'intégration iframe",
@@ -84,6 +91,9 @@ export const eventTypeLabels: Record<EventType, string> = {
   network_reminder_created: 'Création relance réseau',
   network_reminder_deleted: 'Suppression relance réseau',
   network_reminder_updated: 'Mise à jour relance réseau',
+  organization_created: 'Création organisation',
+  organization_deleted: 'Suppression organisation',
+  organization_updated: 'Mise à jour organisation',
   pdp_updated: 'Mise à jour périmètre de développement',
   pro_eligibility_test_created: 'Création test éligibilité',
   pro_eligibility_test_deleted: 'Suppression test éligibilité',
@@ -140,6 +150,21 @@ export type EventDataMap = {
   demand_updated: Record<string, unknown> | null;
   demand_updated_by_system: Record<string, unknown> | null;
   demand_validated: { relance_a_activer: boolean };
+  api_demands_listed: {
+    organization_id: string;
+    organization_name: string;
+    credential_id: string;
+    version: string;
+    count: number;
+    updated_since: string | null;
+  };
+  api_demand_updated: {
+    organization_id: string;
+    organization_name: string;
+    credential_id: string;
+    statut?: string;
+    commentaire?: string | null;
+  };
   pro_eligibility_test_created: Record<string, unknown> | null;
   pro_eligibility_test_deleted: Record<string, unknown> | null;
   pro_eligibility_test_renamed: Record<string, unknown> | null;
@@ -190,6 +215,9 @@ export type EventDataMap = {
     note: string | null;
     created_at: string;
   };
+  organization_created: { organization_id: string; name: string };
+  organization_updated: { organization_id: string; name: string };
+  organization_deleted: { organization_id: string; name: string };
   user_activated: null;
   user_created_by_admin: { user_email: string; role: UserRole };
   user_created_by_api: { user_email: string; role: UserRole; api_name: string };

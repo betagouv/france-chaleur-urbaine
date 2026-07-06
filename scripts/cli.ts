@@ -1,6 +1,6 @@
 import '@/load-env';
 
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 
 import { allDatabaseTables } from '@cli/bootstrap/tables';
 import { refreshStatistics } from '@cli/stats/refresh';
@@ -15,6 +15,8 @@ import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
+import { syncEngieUsers } from '@/modules/partner-api/server/legacy/engie-users-sync';
+import { renderOpenApiYaml } from '@/modules/partner-api/server/openapi';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { registerEcoreseauCommand } from '@/modules/reseaux/commands/ecoreseau';
@@ -23,7 +25,6 @@ import { downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
-import { getApiHandler } from '@/server/api/users';
 import { aggregateMonthlyStats } from '@/server/cron/aggregateMonthlyStats';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
@@ -78,6 +79,14 @@ registerNetworkCommands(program);
 registerOpendataCommands(program);
 registerTilesCommands(program);
 registerTestCommands(program);
+
+program
+  .command('openapi:generate')
+  .description('Génère public/openapi-schema.yaml depuis le schéma zod du partner-api')
+  .action(async () => {
+    await writeFile('public/openapi-schema.yaml', renderOpenApiYaml());
+    logger.info('OpenAPI spec written to public/openapi-schema.yaml');
+  });
 
 program
   .command('create-modifications-reseau')
@@ -253,13 +262,13 @@ program
 program
   .command('debug:upsert-users-from-api')
   .description('Update Gestionnaires and Gestionnaires API airtables from file.')
-  .argument('<accountName>', 'Name of the account in api_accounts')
+  .argument('<organizationName>', "Nom de l'organisation")
   .argument('<file>', 'File with data')
-  .action(async (accountName, file) => {
-    const account = await kdb.selectFrom('api_accounts').where('name', '=', accountName).selectAll().executeTakeFirst();
+  .action(async (organizationName, file) => {
+    const org = await kdb.selectFrom('organizations').select(['id', 'name']).where('name', '=', organizationName).executeTakeFirst();
 
-    if (!account) {
-      logger.error(`Account ${accountName} not found`);
+    if (!org) {
+      logger.error(`Organisation ${organizationName} introuvable`);
       process.exit(1);
     }
 
@@ -272,8 +281,7 @@ program
       process.exit(1);
     }
 
-    const apiHandler = getApiHandler(account);
-    await apiHandler.handleData(data);
+    await syncEngieUsers(org, data);
   });
 
 program

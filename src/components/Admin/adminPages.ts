@@ -33,6 +33,12 @@ export const adminPages = [
     label: 'Gestion des réseaux',
   },
   {
+    desc: 'Gérez les organisations gestionnaires, leurs réseaux et accès API',
+    group: 'management',
+    href: '/admin/organizations',
+    label: 'Gestion des organisations',
+  },
+  {
     desc: "Consultez l'activité des utilisateurs sur le site",
     group: 'analytics',
     href: '/admin/events',

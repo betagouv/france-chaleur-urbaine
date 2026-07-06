@@ -13,6 +13,7 @@ const zListEventsInput = z.object({
   dateFrom: z.coerce.date().optional(),
   dateTo: z.coerce.date().optional(),
   limit: z.number().int().min(1).max(200).default(50),
+  organizationId: z.string().optional(),
   types: z.array(z.enum(eventTypes)).optional(),
 });
 
@@ -23,6 +24,7 @@ const zGetStatsInput = z.object({
   dateFrom: z.coerce.date(),
   dateTo: z.coerce.date(),
   granularity: z.enum(eventGranularities),
+  organizationId: z.string().optional(),
   types: z.array(z.enum(eventTypes)).optional(),
 });
 
@@ -42,6 +44,7 @@ export const eventsRouter = router({
         dateFrom: input.dateFrom,
         dateTo: input.dateTo,
         granularity: input.granularity,
+        organizationId: input.organizationId,
         types: input.types,
       })
     ),
@@ -53,6 +56,7 @@ export const eventsRouter = router({
         dateTo: input.dateTo,
         limit: input.limit,
         offset: input.cursor,
+        organizationId: input.organizationId,
         types: input.types,
       })
     ),

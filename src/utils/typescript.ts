@@ -22,6 +22,22 @@ type InternalFlattenKeys<Obj, ValueType> =
       }[keyof Obj]
     : never;
 
+/**
+ * Flat record mirroring {@link FlattenKeys}: each dotted leaf path of `Type` (scalar leaves) mapped to its value type.
+ * Lets a flattened lookup table be strongly typed against its nested source type.
+ */
+export type FlattenValues<Type, ValueType = string | number | boolean | null> = {
+  [Key in FlattenKeys<Type, ValueType> & string]: FlattenLeaf<Type, Key>;
+};
+
+type FlattenLeaf<Obj, Path extends string> = Path extends `${infer Head}.${infer Rest}`
+  ? Head extends keyof Obj
+    ? FlattenLeaf<NonNullable<Obj[Head]>, Rest>
+    : never
+  : Path extends keyof Obj
+    ? Obj[Path]
+    : never;
+
 export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
 };

@@ -45,6 +45,7 @@ export default function AdminEventsPage() {
           }),
         ...(partial.contextId !== undefined && { contextId: partial.contextId }),
         ...(partial.contextType !== undefined && { contextType: partial.contextType }),
+        ...(partial.organizationId !== undefined && { organizationId: partial.organizationId }),
       }));
     },
     [setFilters]
@@ -145,9 +146,11 @@ export default function AdminEventsPage() {
                 authorIds={filters.authorIds}
                 contextId={filters.contextId}
                 contextType={filters.contextType}
+                organizationId={filters.organizationId}
                 types={filters.types}
                 onAuthorsChange={handleAuthorsChange}
                 onClearContext={() => void setFilters({ contextId: null, contextType: null })}
+                onClearOrganization={() => void setFilters({ organizationId: null })}
                 onTypesChange={(types) => void setFilters({ types })}
               />
             </div>

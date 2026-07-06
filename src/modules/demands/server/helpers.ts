@@ -25,8 +25,24 @@ type DemandTestAddress = Pick<
 const loadDemandForAccessOrThrow = async (demandId: string): Promise<DemandForAccess> =>
   kdb
     .selectFrom('demands')
-    .select(['network_id', 'network_type', 'validated', 'commune_code', 'epci_code', 'ept_code', 'departement_code', 'region_code'])
-    .where('id', '=', demandId)
+    .leftJoin('reseaux_de_chaleur as rdc', (j) =>
+      j.onRef('rdc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'reseau_de_chaleur')
+    )
+    .leftJoin('zones_et_reseaux_en_construction as zrc', (j) =>
+      j.onRef('zrc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'reseau_en_construction')
+    )
+    .select([
+      'demands.network_id',
+      'demands.network_type',
+      'demands.validated',
+      'demands.commune_code',
+      'demands.epci_code',
+      'demands.ept_code',
+      'demands.departement_code',
+      'demands.region_code',
+    ])
+    .select((eb) => eb.fn.coalesce('rdc.organization_id', 'zrc.organization_id').as('network_organization_id'))
+    .where('demands.id', '=', demandId)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
 
 /**
@@ -77,6 +93,12 @@ export const buildDemandQuery = () => {
     .with('access_counts_by_demand', (eb) =>
       eb
         .selectFrom('demands as d')
+        .leftJoin('reseaux_de_chaleur as acc_rdc', (j) =>
+          j.onRef('acc_rdc.id_fcu', '=', 'd.network_id').on('d.network_type', '=', 'reseau_de_chaleur')
+        )
+        .leftJoin('zones_et_reseaux_en_construction as acc_zrc', (j) =>
+          j.onRef('acc_zrc.id_fcu', '=', 'd.network_id').on('d.network_type', '=', 'reseau_en_construction')
+        )
         .innerJoin('user_permissions as up', (j) =>
           j.on((eb) =>
             eb.or([
@@ -90,6 +112,15 @@ export const buildDemandQuery = () => {
                 eb('up.type', '=', 'reseau_en_construction'),
                 eb('d.network_type', '=', 'reseau_en_construction'),
                 eb('up.resource_id', '=', sql<string>`${eb.ref('d.network_id')}::text`),
+              ]),
+              // Org scope : la demande est affectée à un réseau rattaché à l'organisation détenue par la perm.
+              eb.and([
+                eb('up.type', '=', 'organization'),
+                eb(
+                  'up.resource_id',
+                  '=',
+                  sql<string>`coalesce(${eb.ref('acc_rdc.organization_id')}, ${eb.ref('acc_zrc.organization_id')})::text`
+                ),
               ]),
               eb.and([eb('up.type', '=', 'commune'), eb('up.resource_id', '=', eb.ref('d.commune_code'))]),
               eb.and([eb('up.type', '=', 'epci'), eb('up.resource_id', '=', eb.ref('d.epci_code'))]),
@@ -132,6 +163,7 @@ export const buildDemandQuery = () => {
     .selectAll('demands')
     .select((eb) => [
       eb.fn.coalesce('rdc.nom_reseau', 'zrc.nom_reseau').as('network_name'),
+      eb.fn.coalesce('rdc.organization_id', 'zrc.organization_id').as('network_organization_id'),
       eb.ref('rdc.Identifiant reseau').as('network_sncu_id'),
       eb.fn.coalesce('pending_rdc.nom_reseau', 'pending_zrc.nom_reseau').as('pending_assignment_name'),
       eb.ref('pending_rdc.Identifiant reseau').as('pending_assignment_sncu_id'),

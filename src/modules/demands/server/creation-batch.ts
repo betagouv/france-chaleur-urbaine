@@ -1,8 +1,10 @@
 import type { User } from 'next-auth';
 
-import type { BatchDemandContactInfo, CreateBatchDemandInput } from '@/modules/demands/constants';
+import type { BatchDemandContactInfo, CreateBatchDemandInput, DemandCompanyType } from '@/modules/demands/constants';
+import type { StructureType } from '@/modules/users/constants';
 import { kdb, sql } from '@/server/db/kysely';
 import { getDetailedEligibilityStatus } from '@/server/services/addresseInformation';
+import type { AvailableStructure } from '@/types/AddressData';
 
 import { createDemand } from './creation-user';
 
@@ -14,6 +16,25 @@ type BatchDemandResolvedContact = BatchDemandContactInfo & {
   structure: string;
 };
 
+/**
+ * users.structure_type (id technique) → valeurs du formulaire demande (structure + type de structure),
+ * que formatDataToLegacyAirtable convertit ensuite en label canonique
+ * (Copropriété, Maison individuelle, Tertiaire, Bailleur social, Autre).
+ */
+const structureTypeToDemandContact: Record<StructureType, { structure: NonNullable<AvailableStructure>; companyType?: DemandCompanyType }> =
+  {
+    alec: { structure: 'Autre' },
+    autre: { structure: 'Autre' },
+    bailleur_social: { companyType: 'Bailleur social', structure: 'Tertiaire' },
+    bureau_etudes: { companyType: "Bureau d'études ou AMO", structure: 'Tertiaire' },
+    ccrt: { structure: 'Autre' },
+    collectivite: { structure: 'Tertiaire' },
+    gestionnaire_parc_tertiaire: { companyType: 'Gestionnaire de parc tertiaire', structure: 'Tertiaire' },
+    gestionnaire_reseaux: { structure: 'Autre' },
+    mandataire_cee: { companyType: 'Mandataire / délégataire CEE', structure: 'Tertiaire' },
+    syndic_copropriete: { companyType: 'Syndic de copropriété', structure: 'Tertiaire' },
+  };
+
 const getBatchDemandContactFromUser = async (userId: string): Promise<BatchDemandResolvedContact> => {
   const userContact = await kdb
     .selectFrom('users')
@@ -21,9 +42,11 @@ const getBatchDemandContactFromUser = async (userId: string): Promise<BatchDeman
     .where('id', '=', userId)
     .executeTakeFirstOrThrow();
 
+  const { structure, companyType } = structureTypeToDemandContact[userContact.structure_type ?? 'autre'];
+
   return {
     company: userContact.structure_name || '',
-    companyType: userContact.structure_type || '',
+    companyType: companyType ?? '',
     demandArea: undefined,
     demandCompanyName: '',
     demandCompanyType: '',
@@ -32,7 +55,7 @@ const getBatchDemandContactFromUser = async (userId: string): Promise<BatchDeman
     lastName: userContact.last_name || '',
     nbLogements: undefined,
     phone: userContact.phone || '',
-    structure: userContact.structure_type || '',
+    structure,
   };
 };
 
@@ -92,7 +115,8 @@ export const createBatchDemands = async (
           lastName: contact.lastName,
           nbLogements: contact.nbLogements,
           phone: contact.phone,
-          postcode: '',
+          // le libellé BAN se termine par "<code postal> <ville>"
+          postcode: testAddress?.ban_address?.match(/\b\d{5}\b/g)?.at(-1) ?? '',
           region: eligibility.region.nom as string,
           structure: contact.structure,
           termOfUse: true,
