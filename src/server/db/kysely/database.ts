@@ -958,6 +958,7 @@ export interface ZonesEtReseauxEnConstruction {
   id_fcu: number;
   is_zone: Generated<boolean>;
   mise_en_service: string | null;
+  MO: string | null;
   nom_reseau: string | null;
   notes: string | null;
   organization_id: string | null;

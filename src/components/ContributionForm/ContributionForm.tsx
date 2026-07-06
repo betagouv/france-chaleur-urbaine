@@ -227,6 +227,11 @@ const typeDemandeFields = {
       schema: stringSchema,
     },
     {
+      label: "Maître d'ouvrage :",
+      name: 'maitreOuvrage',
+      schema: stringSchema,
+    },
+    {
       label: 'Date de mise en service prévisionnelle :',
       name: 'dateMiseEnServicePrevisionnelle',
       schema: stringSchema,
@@ -272,6 +277,11 @@ const typeDemandeFields = {
     {
       label: 'Gestionnaire :',
       name: 'gestionnaire',
+      schema: stringSchema,
+    },
+    {
+      label: "Maître d'ouvrage :",
+      name: 'maitreOuvrage',
       schema: stringSchema,
     },
     {

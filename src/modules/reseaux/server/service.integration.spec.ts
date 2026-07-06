@@ -97,7 +97,7 @@ describe('searchNetworkOperators()', () => {
   beforeAll(async () => {
     await cleanDatabase();
 
-    // Dalkia appears in chaleur + froid (distinct test); IDEX only in construction (gestionnaire-only table).
+    // Dalkia appears in chaleur + froid (distinct test); IDEX only in construction.
     await Promise.all([
       seedReseauDeChaleur({
         Gestionnaire: 'Dalkia',
@@ -118,6 +118,7 @@ describe('searchNetworkOperators()', () => {
         gestionnaire: 'IDEX',
         id_fcu: 3004,
         is_zone: false,
+        MO: 'Commune de Nantes',
         nom_reseau: 'ZC',
         ouvert_aux_raccordements: false,
       }),
@@ -136,6 +137,7 @@ describe('searchNetworkOperators()', () => {
     { expected: [], field: 'gestionnaire', label: 'gestionnaire : aucun match', search: 'zzz' },
     { expected: ['Métropole de Lyon'], field: 'maitreOuvrage', label: 'MO : match chaleur', search: 'métropole' },
     { expected: ['Région Sud'], field: 'maitreOuvrage', label: 'MO : inclut les réseaux de froid', search: 'région' },
+    { expected: ['Commune de Nantes'], field: 'maitreOuvrage', label: 'MO : inclut les réseaux en construction', search: 'nantes' },
     { expected: [], field: 'maitreOuvrage', label: 'MO : ne cherche pas dans le champ gestionnaire', search: 'idex' },
   ] as const;
 

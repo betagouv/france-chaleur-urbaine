@@ -94,6 +94,7 @@ const reseauxEnConstructionFields = [
   'nom_reseau',
   'mise_en_service',
   'gestionnaire',
+  'MO',
   'is_zone',
   'ouvert_aux_raccordements',
 ] as const satisfies (keyof ZonesEtReseauxEnConstruction)[];
