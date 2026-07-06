@@ -73,10 +73,6 @@ export const allDatabaseTables: TableInfo[] = [
 
   // données de référence FCU
   {
-    description: "Comptes API pour l'accès aux services (Engie uniquement)",
-    name: 'api_accounts',
-  },
-  {
     description: 'Statistiques mensuelles générales et principalement en provenance de Matomo',
     name: 'matomo_stats',
   },
