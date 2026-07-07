@@ -35,12 +35,6 @@ export type Numeric = ColumnType<number, number | string, number | string>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-export interface ApiAccounts {
-  key: string;
-  name: string | null;
-  token: string;
-}
-
 export interface Organizations {
   created_at: Generated<Timestamp>;
   gestionnaire_patterns: Generated<string[]>;
@@ -788,7 +782,6 @@ export interface Users {
   email: string;
   entreprise: JSONColumnType<Entreprise> | null;
   first_name: string | null;
-  from_api: string | null;
   from_organization_id: string | null;
   id: Generated<string>;
   last_connection: Date | null;
@@ -974,7 +967,6 @@ export interface ZonesEtReseauxEnConstructionTiles {
 }
 
 export interface DB {
-  api_accounts: ApiAccounts;
   batiments_raccordes_reseaux_chaleur_froid_tiles: BatimentsRaccordesReseauxChaleurFroidTiles;
   bdnb_batenr: BdnbBatenr;
   bdnb_batiments: BdnbBatiments;

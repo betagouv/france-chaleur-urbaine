@@ -5,11 +5,30 @@ type TableInfo = {
   description: string;
 };
 
+// L'ordre des tables détermine l'ordre des DELETE lors de l'import (--data-only) :
+// une table référençant une autre sans ON DELETE CASCADE / SET NULL doit précéder la table référencée
 export const allDatabaseTables: TableInfo[] = [
   // données utilisateur FCU
   {
+    description: 'Organisations gestionnaires',
+    name: 'organizations',
+  },
+  {
+    description: "Clés d'API des organisations",
+    name: 'organization_api_credentials',
+  },
+  {
+    // avant users : FK author_id sans ON DELETE CASCADE
+    description: 'Relances liées aux réseaux',
+    name: 'network_reminders',
+  },
+  {
     description: 'Utilisateurs de la plateforme',
     name: 'users',
+  },
+  {
+    description: 'Permissions des utilisateurs',
+    name: 'user_permissions',
   },
   {
     description: "Templates d'emails",
@@ -32,6 +51,10 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'demands',
   },
   {
+    description: 'Emails envoyés pour les demandes',
+    name: 'demand_emails',
+  },
+  {
     description: "Adresses des tests d'éligibilité professionnels",
     name: 'pro_eligibility_tests_addresses',
   },
@@ -39,12 +62,16 @@ export const allDatabaseTables: TableInfo[] = [
     description: "Événements pour le suivi de l'activité des utilisateurs",
     name: 'events',
   },
+  {
+    description: 'Sources de suivi des conversions',
+    name: 'conversion_sources',
+  },
+  {
+    description: 'Événements de conversion',
+    name: 'conversion_events',
+  },
 
   // données de référence FCU
-  {
-    description: "Comptes API pour l'accès aux services (Engie uniquement)",
-    name: 'api_accounts',
-  },
   {
     description: 'Statistiques mensuelles générales et principalement en provenance de Matomo',
     name: 'matomo_stats',
@@ -84,13 +111,14 @@ export const allDatabaseTables: TableInfo[] = [
 
   // données de référence / tuiles seules
   {
-    description: 'Liste des départements français',
-    name: 'departements',
-  },
-  {
+    // avant departements : FK departement_id sans ON DELETE CASCADE
     description: 'Liste des communes françaises (utilisées pour le comparateur des modes de chauffage)',
     name: 'communes',
     // différent de ign_communes qui elle est plus à jour, mais ne contient pas les altitudes moyennes ni les températures de référence
+  },
+  {
+    description: 'Liste des départements français',
+    name: 'departements',
   },
   {
     description: 'EPCI français',
@@ -197,6 +225,10 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'enrr_mobilisables_zones_geothermie_profonde_tiles',
   },
   {
+    description: 'Études en cours',
+    name: 'etudes_en_cours',
+  },
+  {
     description: 'Tuiles vectorielles des études en cours',
     name: 'etudes_en_cours_tiles',
   },
@@ -205,12 +237,20 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'pro_eligibility_tests_addresses_tiles',
   },
   {
+    description: 'Quartiers prioritaires de la politique de la ville (QPV)',
+    name: 'quartiers_prioritaires_politique_ville',
+  },
+  {
     description: "Tuiles des QPV 2015 de l'ANRU",
     name: 'quartiers_prioritaires_politique_ville_2015_anru_tiles',
   },
   {
     description: 'Tuiles des QPV 2024',
     name: 'quartiers_prioritaires_politique_ville_2024_tiles',
+  },
+  {
+    description: 'Tuiles vectorielles des zones à urbaniser',
+    name: 'zone_a_urbaniser_tiles',
   },
   {
     description: 'Tuiles des installations de géothermie profonde',
@@ -239,6 +279,10 @@ export const allDatabaseTables: TableInfo[] = [
   {
     description: 'Tuiles des ressources géothermales en nappes',
     name: 'ressources_geothermales_nappes_tiles',
+  },
+  {
+    description: 'Dates de dernière modification des sources de tuiles',
+    name: 'tiles_metadata',
   },
 
   // données BDNB (Base de données nationale des bâtiments)

@@ -60,6 +60,8 @@ export const demandStatusDefault = demandStatuses[0].label;
 
 export type DemandStatus = DEMANDE_STATUS;
 
+const zDemandStatus = z.enum([...demandStatuses.map((s) => s.label), '']);
+
 // Zod schema for demand update values - only fields actually used in updateDemand calls
 // Analysis based on all updateDemand usage across the codebase
 const zGestionnaireDemandUpdateValues = z
@@ -69,7 +71,7 @@ const zGestionnaireDemandUpdateValues = z
     'Gestionnaire Distance au réseau': z.number().nullable(),
 
     // Status & Contact
-    Status: z.enum([...demandStatuses.map((s) => s.label), '']),
+    Status: zDemandStatus,
 
     // Communication
     comment_gestionnaire: z.string().nullable(),
@@ -87,6 +89,7 @@ export const zAdminDemandUpdateValues = z
   // biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
   .object({
     // Status & Contact
+    Status: zDemandStatus,
     'Relance à activer': z.boolean(),
     'Relance ID': z.string().nullable(),
     'Notification envoyé': z.string().nullable(),

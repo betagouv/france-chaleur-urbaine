@@ -103,7 +103,7 @@ export function RemindersCell({ reminders, onCreateReminder, onUpdateReminder, o
 
   return (
     <div className="flex flex-col gap-1 w-full">
-      {latest && renderReminderItem(latest, { withActions: false })}
+      {latest && renderReminderItem(latest, { withActions: true })}
       {extraCount > 0 && (
         <Button priority="tertiary no outline" size="small" onClick={() => setHistoryOpen(true)}>
           Voir l'historique ({reminders.length})
