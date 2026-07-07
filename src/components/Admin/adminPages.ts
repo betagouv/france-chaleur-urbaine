@@ -51,6 +51,12 @@ export const adminPages = [
     label: 'Conversion par source',
   },
   {
+    desc: 'Détecter et bannir les IP polluant les stats de conversion',
+    group: 'analytics',
+    href: '/admin/conversion/abus',
+    label: 'Conversion — contrôle des abus',
+  },
+  {
     desc: 'Consultez les statistiques des demandes par réseau',
     group: 'analytics',
     href: '/admin/reseaux/stats',

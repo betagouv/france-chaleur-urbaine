@@ -53,6 +53,41 @@ export const zListConversionSourcesInput = z
   })
   .default({ includeArchived: false });
 
+/** Rétention (jours) des données d'anti-abus (IP / user-agent) des `conversion_events` avant purge RGPD par cron. */
+export const CONVERSION_IP_RETENTION_DAYS = 90;
+
+/** Disposition d'une règle IP : retirée des stats (`exclude`) ou IP légitime connue à conserver (`keep`). */
+export const conversionIpDispositions = ['exclude', 'keep'] as const;
+export type ConversionIpDisposition = (typeof conversionIpDispositions)[number];
+
+/** Détection anti-abus : IP suspectes sur une période, filtrables par source / route / site hôte. */
+export const zGetSuspiciousIpsInput = z.object({
+  dateFrom: z.coerce.date(),
+  dateTo: z.coerce.date(),
+  /** Filtre : site embarquant (drill iframe). */
+  host: z.string().trim().min(1).max(2000).optional(),
+  /** Nombre max d'IP renvoyées (tri par tests décroissant). */
+  limit: z.number().int().min(1).max(500).default(50),
+  /** Seuil de tests (`address_test`) au-delà duquel une IP est listée. `0` (source ciblée) = toutes les IP. */
+  minTests: z.number().int().min(0).default(50),
+  /** Filtre : pattern de route Next (ex. `/villes/[ville]`). */
+  route: z.string().trim().min(1).max(2000).optional(),
+  /** Filtre : intégration iframe (`?source=`) — pour identifier les IP derrière une source pourrie. */
+  source: z.string().trim().min(1).max(100).optional(),
+});
+export type GetSuspiciousIpsInput = z.infer<typeof zGetSuspiciousIpsInput>;
+
+/** Crée / met à jour une règle sur une IP ou plage CIDR (IPv4/IPv6). Le format `inet` est validé côté serveur. */
+export const zUpsertIpRuleInput = z.object({
+  disposition: z.enum(conversionIpDispositions),
+  ip: z.string().trim().min(1).max(50),
+  reason: z.string().trim().min(1).max(500),
+});
+
+export const zRemoveIpRuleInput = z.object({
+  ip: z.string().trim().min(1).max(50),
+});
+
 export const zGetConversionStatsInput = z.object({
   /** Filtre iframe / pages internes (dérivé de l'event, pas du registre). */
   channel: z.enum(conversionChannels).optional(),

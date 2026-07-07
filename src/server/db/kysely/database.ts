@@ -5,7 +5,7 @@
 
 import type { ColumnType, JSONColumnType } from 'kysely';
 
-import type { ConversionEventType, ConversionSourceConfig } from '@/modules/conversion-tracking/constants';
+import type { ConversionEventType, ConversionIpDisposition, ConversionSourceConfig } from '@/modules/conversion-tracking/constants';
 import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
@@ -219,6 +219,7 @@ export interface CommunesFortPotentielPourCreationReseauxChaleurTiles {
 export interface ConversionEvents {
   created_at: Generated<Timestamp>;
   eligible: boolean | null;
+  excluded: Generated<boolean>;
   host: string | null;
   id: Generated<Int8>;
   ip: string | null;
@@ -227,6 +228,14 @@ export interface ConversionEvents {
   source: string | null;
   type: ConversionEventType;
   user_agent: string | null;
+}
+
+export interface ConversionIpRules {
+  created_at: Generated<Timestamp>;
+  created_by: string | null;
+  disposition: ConversionIpDisposition;
+  ip: string;
+  reason: string;
 }
 
 export interface ConversionSources {
@@ -977,6 +986,7 @@ export interface DB {
   communes: Communes;
   communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles: CommunesFortPotentielPourCreationReseauxChaleurTiles;
   conversion_events: ConversionEvents;
+  conversion_ip_rules: ConversionIpRules;
   conversion_sources: ConversionSources;
   demand_emails: DemandEmails;
   demands: Demands;

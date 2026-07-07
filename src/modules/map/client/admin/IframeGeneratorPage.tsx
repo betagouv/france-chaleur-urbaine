@@ -172,305 +172,305 @@ const IframeGeneratorPage = () => {
       title="Générateur d'iframes"
       description="Génère l'URL et le code d'intégration d'une carte ou d'un formulaire de test d'adresse à embarquer"
       mode="authenticated"
+      layout="center"
+      className="flex flex-col gap-8"
     >
-      <div className="fr-container fr-py-4w flex flex-col gap-8">
-        <div>
-          <Heading as="h1" color="blue-france">
-            Générateur d'iframes
-          </Heading>
-          <p className="mb-0 text-sm text-(--text-mention-grey)">
-            Configurez la carte, ajustez la vue dans l'aperçu, puis copiez le code à intégrer sur un site partenaire. Le formulaire de test
-            d'adresse (variante légère) est en bas de page.
-          </p>
+      <div>
+        <Heading as="h1" color="blue-france">
+          Générateur d'iframes
+        </Heading>
+        <p className="mb-0 text-sm text-(--text-mention-grey)">
+          Configurez la carte, ajustez la vue dans l'aperçu, puis copiez le code à intégrer sur un site partenaire. Le formulaire de test
+          d'adresse (variante légère) est en bas de page.
+        </p>
+      </div>
+
+      <Section title="Intégration">
+        <p className="mb-0 text-sm text-(--text-mention-grey)">
+          Chaque intégration = une iframe déployée chez un partenaire. Sa source identifie le tracking de conversion (affichages, tests,
+          demandes).
+        </p>
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-end">
+            <Checkbox
+              label="Voir les archivées"
+              nativeInputProps={{
+                checked: showArchived,
+                name: 'showArchived',
+                onChange: (event) => setShowArchived(event.target.checked),
+              }}
+            />
+          </div>
+          {iframeSources.length === 0 ? (
+            <p className="mb-0 text-sm text-(--text-mention-grey)">Aucune intégration enregistrée.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="border-b-2 border-(--border-default-grey) text-left">
+                    <th className="p-2">Nom</th>
+                    <th className="p-2 whitespace-nowrap">Créée le</th>
+                    {showArchived && <th className="p-2">Statut</th>}
+                    <th className="p-2" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {iframeSources.map((row) => (
+                    <tr
+                      key={row.id}
+                      aria-current={row.id === integrationId ? true : undefined}
+                      className={`border-b border-(--border-default-grey)${row.id === integrationId ? ' bg-(--background-open-blue-france)' : ''}`}
+                    >
+                      <td className="p-2">
+                        <button
+                          type="button"
+                          onClick={() => loadIntegration(row.id)}
+                          className="cursor-pointer text-left font-medium text-(--text-action-high-blue-france) hover:underline"
+                        >
+                          {row.label}
+                        </button>
+                      </td>
+                      <td className="p-2 whitespace-nowrap" title={formatFrenchDateTime(new Date(row.created_at))}>
+                        {formatFrenchDate(new Date(row.created_at))}
+                      </td>
+                      {showArchived && (
+                        <td className="p-2">
+                          {row.archived_at ? (
+                            <Badge small noIcon>
+                              Archivée
+                            </Badge>
+                          ) : (
+                            <span className="text-(--text-mention-grey)">Active</span>
+                          )}
+                        </td>
+                      )}
+                      <td className="p-2 text-right whitespace-nowrap">
+                        <Button
+                          priority="tertiary"
+                          size="small"
+                          iconId="fr-icon-bar-chart-box-line"
+                          title={`Voir la conversion de l'intégration « ${row.label} »`}
+                          linkProps={{ href: `/admin/conversion?source=${encodeURIComponent(row.id)}` }}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+        <Input
+          label="Nom de l'intégration"
+          className="mb-0 max-w-md"
+          hintText="Ex : Engie — site corporate"
+          nativeInputProps={{
+            onChange: (event) => setLabel(event.target.value),
+            required: true,
+            value: label,
+          }}
+        />
+        <div className="flex flex-wrap items-center gap-2">
+          <Button type="button" size="small" onClick={saveIntegration} disabled={!label || isSaving}>
+            {integrationId ? "Enregistrer l'intégration" : "Créer l'intégration"}
+          </Button>
+          {integrationId && (
+            <>
+              <Button type="button" size="small" priority="tertiary" onClick={resetIntegration}>
+                Nouvelle
+              </Button>
+              <Button type="button" size="small" priority="tertiary" iconId="fr-icon-archive-line" onClick={archiveIntegration}>
+                Archiver
+              </Button>
+            </>
+          )}
+        </div>
+        {saveError && <p className="mb-0 text-sm text-(--text-default-error)">{saveError}</p>}
+      </Section>
+
+      <Section title="Données affichées">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+          <fieldset className="flex flex-col gap-1 border-0 p-0 m-0">
+            <legend className="text-sm mb-1">Couches</legend>
+            {layerKeys.map((key) => (
+              <Checkbox
+                key={key}
+                label={layerLabels[key]}
+                nativeInputProps={{ checked: config.layers.includes(key), name: key, onChange: () => toggleLayer(key) }}
+              />
+            ))}
+          </fieldset>
+
+          <div className="flex flex-col gap-4">
+            <MultiAutocompleteField
+              label="Filtrer par gestionnaire"
+              hintText={scopeHint(
+                ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction'],
+                'Saisie ou suggestions — Entrée pour ajouter.'
+              )}
+              placeholder="Ex : dalkia"
+              values={config.gestionnaire}
+              onChange={(gestionnaire) => update({ gestionnaire: [...new Set(gestionnaire.map((value) => value.toLowerCase()))] })}
+              suggestions={gestionnaireSuggestions}
+              fetchFn={fetchGestionnaires}
+            />
+
+            <MultiAutocompleteField
+              label="Filtrer par maître d'ouvrage"
+              hintText={scopeHint(['reseaux-de-chaleur', 'reseaux-de-froid'], 'Saisie ou suggestions — Entrée pour ajouter.')}
+              placeholder="Ex : Métropole de Lyon"
+              values={config.maitreOuvrage}
+              onChange={(maitreOuvrage) => update({ maitreOuvrage })}
+              fetchFn={fetchMaitresOuvrage}
+            />
+
+            <MultiAutocompleteField
+              label="Filtrer par identifiants SNCU"
+              hintText={scopeHint(
+                ['reseaux-de-chaleur', 'reseaux-de-froid'],
+                'Isole ces réseaux. Limité aux identifiants SNCU pour le moment. Entrée pour ajouter.'
+              )}
+              placeholder="Ex : 7412C"
+              values={config.reseaux}
+              onChange={(reseaux) => update({ reseaux })}
+            />
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Affichage de la carte">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+          <Select
+            label="Légende"
+            nativeSelectProps={{
+              onChange: (event) => update({ legend: event.target.value as IframeConfig['legend'] }),
+              value: config.legend,
+            }}
+            options={[
+              { label: 'Masquée', value: 'off' },
+              { label: 'Repliée', value: 'hidden' },
+              { label: 'Ouverte (auto)', value: 'auto' },
+            ]}
+          />
+          <Select
+            label="Mode de la carte"
+            nativeSelectProps={{
+              onChange: (event) => update({ mode: event.target.value as IframeConfig['mode'] }),
+              value: config.mode,
+            }}
+            options={[
+              { label: 'Aucun', value: 'none' },
+              { label: 'Recherche commune / réseau', value: 'network' },
+              { label: "Éligibilité (test d'adresse)", value: 'eligibility' },
+            ]}
+          />
+          <div className="flex gap-4">
+            <Input
+              label="Zoom min"
+              className="mb-0 flex-1"
+              nativeInputProps={{
+                onChange: (event) => update({ minZoom: event.target.value === '' ? undefined : Number(event.target.value) }),
+                placeholder: String(defaultMinZoom),
+                type: 'number',
+                value: config.minZoom ?? '',
+              }}
+            />
+            <Input
+              label="Zoom max"
+              className="mb-0 flex-1"
+              nativeInputProps={{
+                onChange: (event) => update({ maxZoom: event.target.value === '' ? undefined : Number(event.target.value) }),
+                placeholder: String(defaultMaxZoom),
+                type: 'number',
+                value: config.maxZoom ?? '',
+              }}
+            />
+          </div>
+          <div className="flex gap-4">
+            <Input
+              label="Largeur de l'iframe"
+              className="mb-0 flex-1"
+              nativeInputProps={{
+                onChange: (event) => update({ width: event.target.value }),
+                placeholder: DEFAULT_IFRAME_WIDTH,
+                value: config.width,
+              }}
+            />
+            <Input
+              label="Hauteur de l'iframe"
+              className="mb-0 flex-1"
+              nativeInputProps={{
+                onChange: (event) => update({ height: event.target.value }),
+                placeholder: DEFAULT_IFRAME_HEIGHT,
+                value: config.height,
+              }}
+            />
+          </div>
         </div>
 
-        <Section title="Intégration">
+        <div className="flex flex-col gap-2">
+          <h3 className="text-sm font-bold mb-0">Centrage et limites</h3>
           <p className="mb-0 text-sm text-(--text-mention-grey)">
-            Chaque intégration = une iframe déployée chez un partenaire. Sa source identifie le tracking de conversion (affichages, tests,
-            demandes).
+            Réglez la position et le zoom de l'aperçu plus bas, puis capturez-les : «&nbsp;Utiliser le centrage de l'aperçu&nbsp;» fixe la
+            vue d'ouverture de l'iframe ; «&nbsp;Limiter le déplacement à l'aperçu&nbsp;» empêche l'utilisateur de sortir de la zone
+            visible.
           </p>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-end">
-              <Checkbox
-                label="Voir les archivées"
-                nativeInputProps={{
-                  checked: showArchived,
-                  name: 'showArchived',
-                  onChange: (event) => setShowArchived(event.target.checked),
-                }}
-              />
-            </div>
-            {iframeSources.length === 0 ? (
-              <p className="mb-0 text-sm text-(--text-mention-grey)">Aucune intégration enregistrée.</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-sm">
-                  <thead>
-                    <tr className="border-b-2 border-(--border-default-grey) text-left">
-                      <th className="p-2">Nom</th>
-                      <th className="p-2 whitespace-nowrap">Créée le</th>
-                      {showArchived && <th className="p-2">Statut</th>}
-                      <th className="p-2" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {iframeSources.map((row) => (
-                      <tr
-                        key={row.id}
-                        aria-current={row.id === integrationId ? true : undefined}
-                        className={`border-b border-(--border-default-grey)${row.id === integrationId ? ' bg-(--background-open-blue-france)' : ''}`}
-                      >
-                        <td className="p-2">
-                          <button
-                            type="button"
-                            onClick={() => loadIntegration(row.id)}
-                            className="cursor-pointer text-left font-medium text-(--text-action-high-blue-france) hover:underline"
-                          >
-                            {row.label}
-                          </button>
-                        </td>
-                        <td className="p-2 whitespace-nowrap" title={formatFrenchDateTime(new Date(row.created_at))}>
-                          {formatFrenchDate(new Date(row.created_at))}
-                        </td>
-                        {showArchived && (
-                          <td className="p-2">
-                            {row.archived_at ? (
-                              <Badge small noIcon>
-                                Archivée
-                              </Badge>
-                            ) : (
-                              <span className="text-(--text-mention-grey)">Active</span>
-                            )}
-                          </td>
-                        )}
-                        <td className="p-2 text-right whitespace-nowrap">
-                          <Button
-                            priority="tertiary"
-                            size="small"
-                            iconId="fr-icon-bar-chart-box-line"
-                            title={`Voir la conversion de l'intégration « ${row.label} »`}
-                            linkProps={{ href: `/admin/conversion?source=${encodeURIComponent(row.id)}` }}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-          <Input
-            label="Nom de l'intégration"
-            className="mb-0 max-w-md"
-            hintText="Ex : Engie — site corporate"
-            nativeInputProps={{
-              onChange: (event) => setLabel(event.target.value),
-              required: true,
-              value: label,
-            }}
-          />
           <div className="flex flex-wrap items-center gap-2">
-            <Button type="button" size="small" onClick={saveIntegration} disabled={!label || isSaving}>
-              {integrationId ? "Enregistrer l'intégration" : "Créer l'intégration"}
+            <Button type="button" size="small" priority="secondary" iconId="fr-icon-focus-3-line" onClick={captureView}>
+              Utiliser le centrage de l'aperçu
             </Button>
-            {integrationId && (
-              <>
-                <Button type="button" size="small" priority="tertiary" onClick={resetIntegration}>
-                  Nouvelle
-                </Button>
-                <Button type="button" size="small" priority="tertiary" iconId="fr-icon-archive-line" onClick={archiveIntegration}>
-                  Archiver
-                </Button>
-              </>
+            <Button type="button" size="small" priority="secondary" iconId="fr-icon-crop-line" onClick={captureBounds}>
+              Limiter le déplacement à l'aperçu
+            </Button>
+            {(config.center || config.maxBounds) && (
+              <Button
+                type="button"
+                size="small"
+                priority="tertiary"
+                iconId="fr-icon-close-line"
+                onClick={() => update({ center: undefined, maxBounds: undefined, zoom: undefined })}
+              >
+                Réinitialiser
+              </Button>
             )}
           </div>
-          {saveError && <p className="mb-0 text-sm text-(--text-default-error)">{saveError}</p>}
-        </Section>
+          <span className="text-xs text-(--text-mention-grey)">
+            {config.center
+              ? `Centrage : ${config.center[0]}, ${config.center[1]} · zoom ${config.zoom}`
+              : 'Centrage : France entière (défaut)'}
+            {config.maxBounds ? ' · déplacement limité' : ''}
+          </span>
+        </div>
+      </Section>
 
-        <Section title="Données affichées">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-            <fieldset className="flex flex-col gap-1 border-0 p-0 m-0">
-              <legend className="text-sm mb-1">Couches</legend>
-              {layerKeys.map((key) => (
-                <Checkbox
-                  key={key}
-                  label={layerLabels[key]}
-                  nativeInputProps={{ checked: config.layers.includes(key), name: key, onChange: () => toggleLayer(key) }}
-                />
-              ))}
-            </fieldset>
+      {/* Remonte la carte au changement d'intégration : `initialView` est mount-only. */}
+      <MapPreview key={integrationId ?? 'new'} config={config} mapRef={mapRef} />
 
-            <div className="flex flex-col gap-4">
-              <MultiAutocompleteField
-                label="Filtrer par gestionnaire"
-                hintText={scopeHint(
-                  ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction'],
-                  'Saisie ou suggestions — Entrée pour ajouter.'
-                )}
-                placeholder="Ex : dalkia"
-                values={config.gestionnaire}
-                onChange={(gestionnaire) => update({ gestionnaire: [...new Set(gestionnaire.map((value) => value.toLowerCase()))] })}
-                suggestions={gestionnaireSuggestions}
-                fetchFn={fetchGestionnaires}
-              />
+      <Section title="Code à intégrer (carte)">
+        {integrationId ? (
+          <>
+            <Output label="URL" value={iframeUrl} openHref={iframeUrl} />
+            <Output label="Code iframe" value={iframeCode} />
+          </>
+        ) : (
+          <RequireIntegrationNotice />
+        )}
+      </Section>
 
-              <MultiAutocompleteField
-                label="Filtrer par maître d'ouvrage"
-                hintText={scopeHint(['reseaux-de-chaleur', 'reseaux-de-froid'], 'Saisie ou suggestions — Entrée pour ajouter.')}
-                placeholder="Ex : Métropole de Lyon"
-                values={config.maitreOuvrage}
-                onChange={(maitreOuvrage) => update({ maitreOuvrage })}
-                fetchFn={fetchMaitresOuvrage}
-              />
-
-              <MultiAutocompleteField
-                label="Filtrer par identifiants SNCU"
-                hintText={scopeHint(
-                  ['reseaux-de-chaleur', 'reseaux-de-froid'],
-                  'Isole ces réseaux. Limité aux identifiants SNCU pour le moment. Entrée pour ajouter.'
-                )}
-                placeholder="Ex : 7412C"
-                values={config.reseaux}
-                onChange={(reseaux) => update({ reseaux })}
-              />
-            </div>
-          </div>
-        </Section>
-
-        <Section title="Affichage de la carte">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-            <Select
-              label="Légende"
-              nativeSelectProps={{
-                onChange: (event) => update({ legend: event.target.value as IframeConfig['legend'] }),
-                value: config.legend,
-              }}
-              options={[
-                { label: 'Masquée', value: 'off' },
-                { label: 'Repliée', value: 'hidden' },
-                { label: 'Ouverte (auto)', value: 'auto' },
-              ]}
-            />
-            <Select
-              label="Mode de la carte"
-              nativeSelectProps={{
-                onChange: (event) => update({ mode: event.target.value as IframeConfig['mode'] }),
-                value: config.mode,
-              }}
-              options={[
-                { label: 'Aucun', value: 'none' },
-                { label: 'Recherche commune / réseau', value: 'network' },
-                { label: "Éligibilité (test d'adresse)", value: 'eligibility' },
-              ]}
-            />
-            <div className="flex gap-4">
-              <Input
-                label="Zoom min"
-                className="mb-0 flex-1"
-                nativeInputProps={{
-                  onChange: (event) => update({ minZoom: event.target.value === '' ? undefined : Number(event.target.value) }),
-                  placeholder: String(defaultMinZoom),
-                  type: 'number',
-                  value: config.minZoom ?? '',
-                }}
-              />
-              <Input
-                label="Zoom max"
-                className="mb-0 flex-1"
-                nativeInputProps={{
-                  onChange: (event) => update({ maxZoom: event.target.value === '' ? undefined : Number(event.target.value) }),
-                  placeholder: String(defaultMaxZoom),
-                  type: 'number',
-                  value: config.maxZoom ?? '',
-                }}
-              />
-            </div>
-            <div className="flex gap-4">
-              <Input
-                label="Largeur de l'iframe"
-                className="mb-0 flex-1"
-                nativeInputProps={{
-                  onChange: (event) => update({ width: event.target.value }),
-                  placeholder: DEFAULT_IFRAME_WIDTH,
-                  value: config.width,
-                }}
-              />
-              <Input
-                label="Hauteur de l'iframe"
-                className="mb-0 flex-1"
-                nativeInputProps={{
-                  onChange: (event) => update({ height: event.target.value }),
-                  placeholder: DEFAULT_IFRAME_HEIGHT,
-                  value: config.height,
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <h3 className="text-sm font-bold mb-0">Centrage et limites</h3>
-            <p className="mb-0 text-sm text-(--text-mention-grey)">
-              Réglez la position et le zoom de l'aperçu plus bas, puis capturez-les : «&nbsp;Utiliser le centrage de l'aperçu&nbsp;» fixe la
-              vue d'ouverture de l'iframe ; «&nbsp;Limiter le déplacement à l'aperçu&nbsp;» empêche l'utilisateur de sortir de la zone
-              visible.
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button type="button" size="small" priority="secondary" iconId="fr-icon-focus-3-line" onClick={captureView}>
-                Utiliser le centrage de l'aperçu
-              </Button>
-              <Button type="button" size="small" priority="secondary" iconId="fr-icon-crop-line" onClick={captureBounds}>
-                Limiter le déplacement à l'aperçu
-              </Button>
-              {(config.center || config.maxBounds) && (
-                <Button
-                  type="button"
-                  size="small"
-                  priority="tertiary"
-                  iconId="fr-icon-close-line"
-                  onClick={() => update({ center: undefined, maxBounds: undefined, zoom: undefined })}
-                >
-                  Réinitialiser
-                </Button>
-              )}
-            </div>
-            <span className="text-xs text-(--text-mention-grey)">
-              {config.center
-                ? `Centrage : ${config.center[0]}, ${config.center[1]} · zoom ${config.zoom}`
-                : 'Centrage : France entière (défaut)'}
-              {config.maxBounds ? ' · déplacement limité' : ''}
-            </span>
-          </div>
-        </Section>
-
-        {/* Remonte la carte au changement d'intégration : `initialView` est mount-only. */}
-        <MapPreview key={integrationId ?? 'new'} config={config} mapRef={mapRef} />
-
-        <Section title="Code à intégrer (carte)">
-          {integrationId ? (
-            <>
-              <Output label="URL" value={iframeUrl} openHref={iframeUrl} />
-              <Output label="Code iframe" value={iframeCode} />
-            </>
-          ) : (
-            <RequireIntegrationNotice />
-          )}
-        </Section>
-
-        <Section title="Code à intégrer (formulaire de test d'adresse)">
-          <p className="mb-0 text-sm text-(--text-mention-grey)">
-            Variante légère sans carte : un mini-formulaire (adresse + chauffage) qui redirige vers le site FCU pour réaliser le test. Le
-            test et la demande restent attribués à la source de l'intégration sélectionnée ci-dessus.
-          </p>
-          {integrationId ? (
-            <>
-              <Output label="URL" value={formIframeUrl} openHref={formIframeUrl} />
-              <Output label="Code iframe" value={formIframeCode} />
-            </>
-          ) : (
-            <RequireIntegrationNotice />
-          )}
-        </Section>
-      </div>
+      <Section title="Code à intégrer (formulaire de test d'adresse)">
+        <p className="mb-0 text-sm text-(--text-mention-grey)">
+          Variante légère sans carte : un mini-formulaire (adresse + chauffage) qui redirige vers le site FCU pour réaliser le test. Le test
+          et la demande restent attribués à la source de l'intégration sélectionnée ci-dessus.
+        </p>
+        {integrationId ? (
+          <>
+            <Output label="URL" value={formIframeUrl} openHref={formIframeUrl} />
+            <Output label="Code iframe" value={formIframeCode} />
+          </>
+        ) : (
+          <RequireIntegrationNotice />
+        )}
+      </Section>
     </SimplePage>
   );
 };

@@ -10,22 +10,38 @@ import {
   zArchiveConversionSourceInput,
   zCreateConversionSourceInput,
   zGetConversionStatsInput,
+  zGetSuspiciousIpsInput,
   zListConversionSourcesInput,
   zRecordConversionEventInput,
+  zRemoveIpRuleInput,
   zUpdateConversionSourceInput,
+  zUpsertIpRuleInput,
 } from '../constants';
 import {
   archiveConversionSource,
   createConversionSource,
   getConversionStats,
+  getSuspiciousIps,
   listConversionSources,
+  listIpRules,
   recordConversionEvent,
+  removeIpRule,
   updateConversionSource,
+  upsertIpRule,
 } from './service';
 
 export const conversionTrackingRouter = router({
   /** Funnel de conversion par source × période (admin). */
   getStats: adminRoute.input(zGetConversionStatsInput).query(({ input }) => getConversionStats(input)),
+  /** Détection anti-abus : IP suspectes sur la période, filtrables par source/route/host (admin). */
+  getSuspiciousIps: adminRoute.input(zGetSuspiciousIpsInput).query(({ input }) => getSuspiciousIps(input)),
+
+  /** Règles IP/CIDR (bannir `exclude` / conserver `keep`). Toute modif réconcilie le flag `excluded`. */
+  ipRules: {
+    list: adminRoute.query(() => listIpRules()),
+    remove: adminRoute.input(zRemoveIpRuleInput).mutation(({ input }) => removeIpRule(input.ip)),
+    upsert: adminRoute.input(zUpsertIpRuleInput).mutation(({ ctx, input }) => upsertIpRule({ ...input, createdBy: ctx.user.id })),
+  },
   /** Enregistre un événement de conversion. Public (appelé depuis les iframes / pages) + rate-limité. */
   recordEvent: route
     .meta({ rateLimit: { limit: 60, windowMs: 60 * 1000 } })

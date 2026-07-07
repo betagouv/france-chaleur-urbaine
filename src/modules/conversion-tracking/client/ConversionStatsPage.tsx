@@ -8,6 +8,7 @@ import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import {
   type ConversionChannel,
@@ -28,6 +29,15 @@ const pctExport = (value: number | null) => (value === null ? '' : `${Math.round
 const channelLabel: Record<ConversionChannel, string> = { iframe: 'Iframe', internal: 'Interne' };
 
 type StatRow = RouterOutput['conversionTracking']['getStats'][number];
+
+/** Lien vers l'écran anti-abus filtré sur le canal de la ligne (source d'intégration, sinon route interne). */
+const abusePageHref = (row: StatRow) => {
+  const params = new URLSearchParams();
+  if (row.source) params.set('source', row.source);
+  else if (row.route) params.set('route', row.route);
+  if (row.host) params.set('host', row.host);
+  return `/admin/conversion/abus?${params.toString()}`;
+};
 
 const filtersParsers = {
   channel: parseAsStringLiteral(conversionChannels),
@@ -168,7 +178,14 @@ const ConversionStatsPage = () => {
       {
         accessorFn: (row) => row.distinctIp,
         align: 'right',
-        cell: ({ row }) => <span className="text-(--text-mention-grey)">{row.original.distinctIp}</span>,
+        cell: ({ row }) =>
+          row.original.distinctIp > 0 ? (
+            <Link href={abusePageHref(row.original)} className="fr-link fr-link--sm" title="Voir les IP de ce canal (contrôle des abus)">
+              {row.original.distinctIp}
+            </Link>
+          ) : (
+            <span className="text-(--text-mention-grey)">0</span>
+          ),
         header: 'IP uniques',
         id: 'distinctIp',
         width: '100px',
@@ -198,91 +215,100 @@ const ConversionStatsPage = () => {
   );
 
   return (
-    <SimplePage title="Conversion par source" description="Funnel affichages → tests → demandes, toutes sources" mode="authenticated">
-      <div className="fr-container fr-py-4w flex flex-col gap-6">
+    <SimplePage
+      title="Conversion par source"
+      description="Funnel affichages → tests → demandes, toutes sources"
+      mode="authenticated"
+      layout="center"
+      className="flex flex-col gap-6"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <Heading as="h1" color="blue-france" className="mb-0">
           Conversion par source
         </Heading>
+        <Link href="/admin/conversion/abus" className="fr-link fr-link--icon-right fr-icon-arrow-right-line">
+          Contrôle des abus
+        </Link>
+      </div>
 
-        <div className="flex flex-wrap items-end gap-4">
-          <Input
-            label="Du"
-            className="mb-0"
-            nativeInputProps={{ onChange: (event) => setFilters({ dateFrom: event.target.value }), type: 'date', value: dateFrom }}
-          />
-          <Input
-            label="Au"
-            className="mb-0"
-            nativeInputProps={{ onChange: (event) => setFilters({ dateTo: event.target.value }), type: 'date', value: dateTo }}
-          />
-          <Select
-            label="Granularité"
-            className="mb-0"
-            nativeSelectProps={{
-              onChange: (event) => setFilters({ granularity: event.target.value as ConversionStatsGranularity }),
-              value: granularity,
-            }}
-            options={[
-              { label: 'Mensuel', value: 'month' },
-              { label: 'Journalier', value: 'day' },
-            ]}
-          />
-          <Select
-            label="Canal"
-            className="mb-0"
-            nativeSelectProps={{
-              onChange: (event) => setFilters({ channel: (event.target.value || null) as ConversionChannel | null }),
-              value: channel ?? '',
-            }}
-            options={[
-              { label: 'Toutes', value: '' },
-              { label: 'Pages internes', value: 'internal' },
-              { label: 'Iframes', value: 'iframe' },
-            ]}
-          />
-          <Select
-            label="Source"
-            className="mb-0"
-            nativeSelectProps={{ onChange: (event) => setFilters({ source: event.target.value || null }), value: source ?? '' }}
-            options={sourceOptions}
-          />
-          <Checkbox
-            label="Détailler par page FCU"
-            nativeInputProps={{
-              checked: groupByPage,
-              name: 'groupByPage',
-              onChange: (event) => setFilters({ groupByPage: event.target.checked }),
-            }}
-          />
-          <Checkbox
-            label="Détailler par site hôte"
-            nativeInputProps={{
-              checked: groupByHost,
-              name: 'groupByHost',
-              onChange: (event) => setFilters({ groupByHost: event.target.checked }),
-            }}
-          />
-          <Checkbox
-            label="Afficher la date de création"
-            nativeInputProps={{
-              checked: showCreatedAt,
-              name: 'showCreatedAt',
-              onChange: (event) => setFilters({ showCreatedAt: event.target.checked }),
-            }}
-          />
-        </div>
-
-        <TableSimple
-          columns={columns}
-          data={rows}
-          controlsLayout="block"
-          loading={isLoading}
-          loadingEmptyMessage="Aucune donnée sur cette période."
-          padding="sm"
-          export={{ fileName: `conversion_${dateFrom}_${dateTo}.xlsx`, sheetName: 'Conversion' }}
-          urlSyncKey="conversion"
+      <div className="flex flex-wrap items-end gap-4">
+        <Input
+          label="Du"
+          className="mb-0"
+          nativeInputProps={{ onChange: (event) => setFilters({ dateFrom: event.target.value }), type: 'date', value: dateFrom }}
+        />
+        <Input
+          label="Au"
+          className="mb-0"
+          nativeInputProps={{ onChange: (event) => setFilters({ dateTo: event.target.value }), type: 'date', value: dateTo }}
+        />
+        <Select
+          label="Granularité"
+          className="mb-0"
+          nativeSelectProps={{
+            onChange: (event) => setFilters({ granularity: event.target.value as ConversionStatsGranularity }),
+            value: granularity,
+          }}
+          options={[
+            { label: 'Mensuel', value: 'month' },
+            { label: 'Journalier', value: 'day' },
+          ]}
+        />
+        <Select
+          label="Canal"
+          className="mb-0"
+          nativeSelectProps={{
+            onChange: (event) => setFilters({ channel: (event.target.value || null) as ConversionChannel | null }),
+            value: channel ?? '',
+          }}
+          options={[
+            { label: 'Toutes', value: '' },
+            { label: 'Pages internes', value: 'internal' },
+            { label: 'Iframes', value: 'iframe' },
+          ]}
+        />
+        <Select
+          label="Source"
+          className="mb-0"
+          nativeSelectProps={{ onChange: (event) => setFilters({ source: event.target.value || null }), value: source ?? '' }}
+          options={sourceOptions}
+        />
+        <Checkbox
+          label="Détailler par page FCU"
+          nativeInputProps={{
+            checked: groupByPage,
+            name: 'groupByPage',
+            onChange: (event) => setFilters({ groupByPage: event.target.checked }),
+          }}
+        />
+        <Checkbox
+          label="Détailler par site hôte"
+          nativeInputProps={{
+            checked: groupByHost,
+            name: 'groupByHost',
+            onChange: (event) => setFilters({ groupByHost: event.target.checked }),
+          }}
+        />
+        <Checkbox
+          label="Afficher la date de création"
+          nativeInputProps={{
+            checked: showCreatedAt,
+            name: 'showCreatedAt',
+            onChange: (event) => setFilters({ showCreatedAt: event.target.checked }),
+          }}
         />
       </div>
+
+      <TableSimple
+        columns={columns}
+        data={rows}
+        controlsLayout="block"
+        loading={isLoading}
+        loadingEmptyMessage="Aucune donnée sur cette période."
+        padding="sm"
+        export={{ fileName: `conversion_${dateFrom}_${dateTo}.xlsx`, sheetName: 'Conversion' }}
+        urlSyncKey="conversion"
+      />
     </SimplePage>
   );
 };

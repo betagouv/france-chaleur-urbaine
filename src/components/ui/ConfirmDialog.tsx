@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
 import AsyncButton from '@/components/ui/AsyncButton';
 import Button from '@/components/ui/Button';
@@ -16,6 +16,8 @@ type ConfirmDialogProps<T> = {
   cancelLabel?: string;
   /** Style destructif (bouton rouge + icône corbeille). */
   danger?: boolean;
+  /** Icône du bouton Confirmer (défaut : corbeille quand `danger`). */
+  confirmIconId?: ComponentProps<typeof AsyncButton>['iconId'];
   /** Désactive « Confirmer » (ex. pendant un chargement de contexte). */
   confirmDisabled?: boolean;
   /** Action confirmée. Le dialog se ferme uniquement en cas de succès ; en cas d'erreur il reste ouvert. */
@@ -31,6 +33,7 @@ const ConfirmDialog = <T,>({
   confirmLabel = 'Confirmer',
   cancelLabel = 'Annuler',
   danger,
+  confirmIconId,
   confirmDisabled,
   onConfirm,
 }: ConfirmDialogProps<T>) => {
@@ -51,7 +54,7 @@ const ConfirmDialog = <T,>({
           <AsyncButton
             priority="primary"
             variant={danger ? 'destructive' : undefined}
-            iconId={danger ? 'fr-icon-delete-line' : undefined}
+            iconId={confirmIconId ?? (danger ? 'fr-icon-delete-line' : undefined)}
             disabled={confirmDisabled}
             onClick={handleConfirm}
           >
