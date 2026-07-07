@@ -1,6 +1,7 @@
 import XLSX from 'xlsx';
 
 import { clientConfig } from '@/client-config';
+import { businessRules } from '@/modules/app/business-rules';
 import { dataSourcesVersions } from '@/modules/app/constants';
 import { kdb, sql, type ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
@@ -402,7 +403,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     }
 
     // Réseau existant entre 200 et 1000m
-    if (reseauDeChaleur && reseauDeChaleur.distance <= 1000) {
+    if (reseauDeChaleur && reseauDeChaleur.distance <= businessRules.eligibilityMaxDisplayDistance.value) {
       return {
         co2: reseauDeChaleur['contenu CO2 ACV'] ?? null,
         communes: reseauDeChaleur.communes ?? [],
@@ -419,7 +420,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
     }
 
     // Réseau futur entre 200 et 1000m
-    if (reseauEnConstruction && reseauEnConstruction.distance <= 1000) {
+    if (reseauEnConstruction && reseauEnConstruction.distance <= businessRules.eligibilityMaxDisplayDistance.value) {
       return {
         co2: null,
         communes: reseauEnConstruction.communes ?? [],

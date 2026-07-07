@@ -62,6 +62,8 @@ Permissions are managed in `user_permissions` table (not string tags). See `secu
 
 ## Key workflows
 
+> Detailed product documentation of these workflows (French, admin-facing, maintained with the code) lives in `src/modules/doc/content/*.mdx`, rendered at `/admin/doc`. The summaries below are AI-context shortcuts.
+
 **Eligibility test (citizen):**
 1. Citizen enters address on `/carte` or homepage.
 2. System geocodes via BAN API.

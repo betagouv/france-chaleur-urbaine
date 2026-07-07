@@ -1,0 +1,50 @@
+# Comparateur de coûts et CO2
+
+Le « Comparateur de coûts et d'émissions de CO2 » permet de comparer, pour un bâtiment donné, le **coût annuel** et les **émissions de CO2** de plusieurs modes de chauffage — dont le raccordement à un réseau de chaleur. Il repose sur un moteur de calcul **Publicodes** développé avec l'association AMORCE (plus de 2 500 règles) ; les données portent sur l'année **2024** (sources FEDENE/AMORCE).
+
+## Deux modes selon le profil
+
+<Mermaid
+  chart={`flowchart LR
+    public["Mode grand public (/comparateur-couts-performances)"] --> pubDesc["Sans compte · paramètres pré-remplis · bâtiments collectifs uniquement · réseau vs énergies fossiles"]
+    avance["Mode avancé (/pro/comparateur-couts-performances)"] --> avDesc["Sur connexion · tous les paramètres modifiables · ajoute PAC, biomasse, électrique et le froid · sauvegarde de configurations"]
+    classDef none fill:#eee,stroke:#999,color:#161616`}
+/>
+
+| | Grand public | Avancé |
+| --- | --- | --- |
+| Accès | Public, sans compte | Sur connexion (tous rôles) |
+| Bâtiments | Collectifs uniquement (une maison individuelle renvoie au mode avancé) | Collectif et individuel |
+| Modes comparés | Réseau de chaleur + énergies fossiles (gaz, fioul) | + pompes à chaleur, granulés, radiateur électrique, et modes de froid |
+| Paramètres | Pré-remplis, interface simple | Tous modifiables (économiques, techniques, aides) |
+| En plus | — | Vues détaillées, fourchettes de précision (±10 % coûts, ±5 % CO2), sauvegarde/partage de configurations, export Excel |
+
+## Ce que l'utilisateur saisit
+
+- **Une adresse** (obligatoire). Attention à une subtilité affichée à l'utilisateur : l'adresse sert **uniquement** à évaluer la proximité d'un réseau (dans un rayon de <Rule id="comparateurNetworkSearchRadiusMeters" />) et la zone climatique — **pas** à récupérer les caractéristiques du bâtiment.
+- **Le bâtiment** : type (résidentiel / tertiaire), performance (DPE ou normes thermiques et âge), surface, nombre de logements, eau chaude sanitaire, climatisation. Le mode avancé expose beaucoup plus de paramètres techniques.
+
+## Ce qui est comparé
+
+Pour chaque mode de chauffage, un **coût global annuel** (abonnement, consommation, maintenance, investissement, aides déduites) et des **émissions de CO2** en trois périmètres (directes, indirectes liées à l'énergie, indirectes liées au matériel), exprimés par logement ou par bâtiment.
+
+Modes visibles en **grand public** : réseau de chaleur, gaz à condensation (collectif/individuel), gaz sans condensation, fioul. Le mode **avancé** ajoute notamment les pompes à chaleur (air/air, air/eau, eau/eau), la chaudière et le poêle à granulés, le radiateur électrique. Si aucun réseau de chaleur n'est à proximité, le mode « Réseau de chaleur » est masqué.
+
+## Hypothèses importantes
+
+Ces valeurs viennent du modèle Publicodes (données 2024), **pas** du registre de règles de cette application — elles ne sont donc pas reliées au reste de la documentation :
+
+- **Aides** modélisées : Coup de pouce chauffage, MaPrimeRénov', CEE — selon le statut (particulier), l'équipement actuel (chaudière gaz/fioul) et les ressources du ménage.
+- Le **bouclier tarifaire n'est pas** pris en compte pour les réseaux de chaleur.
+- En l'absence de données tarifaires pour un réseau, le calcul utilise **le prix moyen des réseaux français**.
+- Les notions de **réseau classé** et de **PDP** ne sont **pas** dans le moteur de calcul : elles proviennent du statut du réseau de l'adresse et sont affichées séparément (voir ci-dessous).
+- Une **note méthodologique** est téléchargeable depuis l'outil. Avertissement affiché : l'outil ne peut pas servir à justifier une dérogation à l'obligation de raccordement (critère du « coût manifestement disproportionné »).
+
+## Liens avec le reste du service
+
+- **Éligibilité** : à la saisie de l'adresse, le comparateur récupère le réseau le plus proche et son éligibilité (voir [Test d'éligibilité](/admin/doc/eligibilite)).
+- **Demande** : on peut **déposer une demande directement depuis le comparateur** (« Être mis en relation avec le gestionnaire »), via le même formulaire que le reste du site (voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande)).
+- **Obligation de raccordement** : si l'adresse est dans un PDP ou près d'un réseau classé, un avertissement le signale (voir [Test d'éligibilité](/admin/doc/eligibilite)).
+- **Suivi** : l'usage du comparateur alimente l'[entonnoir de conversion](/admin/doc/carte-iframes) (un test d'adresse, éventuellement une demande).
+
+Le comparateur **n'envoie aucun email** : les éventuelles demandes déposées suivent le parcours normal des demandes.

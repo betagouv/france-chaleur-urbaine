@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/nextjs';
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
+import { businessRules } from '@/modules/app/business-rules';
 import { kdb, sql } from '@/server/db/kysely';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 
@@ -12,7 +13,7 @@ const zLocationInfos = {
   lon: z.number().optional(),
 };
 
-const maxDistanceThreshold = 1000;
+const maxDistanceThreshold = businessRules.comparateurNetworkSearchRadiusMeters.value;
 
 export interface LocationInfoResponse {
   nearestReseauDeChaleur: NearestReseauDeChaleur;

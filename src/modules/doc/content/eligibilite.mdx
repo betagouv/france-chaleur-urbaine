@@ -1,0 +1,63 @@
+import { businessRules } from '@/modules/app/business-rules';
+
+# Test d'éligibilité
+
+L'éligibilité répond à la question : « cette adresse peut-elle être raccordée à un réseau de chaleur ? ». Le même moteur de calcul est utilisé partout : bandeau d'accueil, [carte](/carte), fiches réseaux, comparateur, formulaire de demande et [tests en masse](/admin/doc/tests-adresses-pro).
+
+## Le calcul
+
+1. **Géocodage** : l'adresse saisie est convertie en coordonnées par la Base Adresse Nationale (BAN), avec un indice de fiabilité.
+2. **Distance** : distance au tracé du réseau le plus proche, calculée en base géographique (précision métrique). Seuls les réseaux **avec tracé** et **ouverts aux raccordements** sont considérés.
+3. **Classement** du résultat selon les seuils et les périmètres réglementaires.
+
+Les seuils de distance (survolez une valeur pour son détail) :
+
+| Contexte | « Très proche » | « Proche » (= éligible) |
+| --- | --- | --- |
+| Cas général | <Rule id="veryEligibleDistanceDefault" /> | <Rule id="eligibleDistanceDefault" /> |
+| Paris (réseaux CPCU) | <Rule id="veryEligibleDistanceParis" /> | <Rule id="eligibleDistanceParis" /> |
+
+Au-delà de <Rule id="eligibilityMaxDisplayDistance" />, la distance n'est plus affichée : l'adresse est « trop éloignée ». Le message utilisateur retient le seuil « proche » : moins de <Rule id="eligibleDistanceDefault" /> d'un réseau existant, sauf sur Paris où ce seuil est réduit à <Rule id="eligibleDistanceParis" />.
+
+## Les résultats possibles
+
+Le classement suit un ordre de priorité — le premier cas qui correspond l'emporte :
+
+<Mermaid
+  chart={`flowchart TD
+    adresse["Adresse géocodée"] --> pdp{"Dans un périmètre de développement prioritaire ?"}
+    pdp -- "Oui" --> casPdp["Dans un PDP : obligation de raccordement possible, amende jusqu'à 300 000 €"]:::db
+    pdp -- "Non" --> tresProche{"Réseau à moins de ${businessRules.veryEligibleDistanceDefault.display} (${businessRules.veryEligibleDistanceParis.display} à Paris) ?"}
+    tresProche -- "Oui" --> casTresProche["Très proche d'un réseau existant ou futur : cas le plus favorable"]:::db
+    tresProche -- "Non" --> proche{"Réseau à moins de ${businessRules.eligibleDistanceDefault.display} (${businessRules.eligibleDistanceParis.display} à Paris) ?"}
+    proche -- "Oui" --> casProche["Proche : éligible"]:::db
+    proche -- "Non" --> loin{"Réseau à moins de ${businessRules.eligibilityMaxDisplayDistance.display} ?"}
+    loin -- "Oui" --> casLoin["Réseau pas très loin, mais non éligible"]
+    loin -- "Non" --> sansTrace{"Un réseau existe sur la commune, sans tracé connu ?"}
+    sansTrace -- "Oui" --> casSansTrace["Réseau non localisé : « à confirmer »"]
+    sansTrace -- "Non" --> casTropLoin["Trop éloigné"]
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
+/>
+
+Chaque branche existe en deux variantes — réseau **existant** ou réseau **futur** (prévu ou en construction) — soit 11 résultats techniques. Sont **éligibles** : les adresses en PDP, très proches ou proches d'un réseau existant ou futur, et celles situées dans une zone de réseau en construction.
+
+Les seuils réduits de Paris ne s'appliquent qu'aux **réseaux existants** (CPCU) : pour un réseau **futur**, ce sont toujours les seuils du cas général (<Rule id="veryEligibleDistanceDefault" /> / <Rule id="eligibleDistanceDefault" />), même à Paris.
+
+Ce résultat pilote ensuite :
+
+- le **message affiché** à l'utilisateur (variantes selon chauffage collectif/individuel, copropriété/tertiaire/maison…) ;
+- le contenu de l'email [« Confirmation de demande »](/admin/emails?type=demands.demandeur.confirmation-demande) (24 scénarios prévisualisables, selon structure × chauffage × distance) ;
+- le **statut initial** et l'affectation automatique de la demande (voir [Cycle de vie](/admin/doc/cycle-de-vie-demande)) ;
+- l'activation des [relances](/admin/doc/relances-notifications) (éligible + collectif).
+
+## Réseaux classés et PDP
+
+Un **réseau classé** impose des obligations de raccordement dans son **périmètre de développement prioritaire (PDP)**. Une adresse dans un PDP est signalée comme telle (avec la mention de l'amende possible de 300 000 €) et la demande est marquée « en PDP » dans [Gestion des demandes](/admin/demandes). Les résultats mentionnent aussi le caractère « classé » du réseau le plus proche.
+
+Cas particulier : quand un réseau existe sur la commune mais que son tracé est inconnu, le résultat est « à confirmer » — impossible de calculer une distance.
+
+## Ce qui est tracé
+
+- Chaque test alimente l'**entonnoir de conversion** (affichages → tests → tests éligibles → demandes), visible dans [Conversion par source](/admin/conversion). Les adresses IP servant à la déduplication sont purgées après <Rule id="conversionIpRetentionDays" /> (cron quotidien).
+- Il n'existe **plus de table des tests unitaires** : un test d'adresse isolé n'est pas conservé individuellement. En revanche, chaque **demande** conserve son historique d'éligibilité complet au moment du dépôt.
+- Les tests des utilisateurs connectés en masse sont consultables dans [Tests d'adresses](/admin/tests-adresses).

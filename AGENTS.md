@@ -9,6 +9,7 @@
 - Code changes: minor (typo, rename, one-liner) → do it directly; significant (feature, refactor, multi-file) → plan → confirm → implement.
 - Before delivering any code change: run `pnpm lint`, `pnpm ts`, `pnpm test` (if relevant), and check IDE Tailwind diagnostics on touched files — fix everything first.
 - Update the relevant `AGENTS.md` / `.ai/context/*.md` when a change alters a module's high-level behavior or integration points (high-level only).
+- Any change to business behavior (emails sent, demand statuses, crons, permissions, eligibility rules…) MUST update the product documentation in `src/modules/doc/content/*.mdx` (French, rendered at `/admin/doc`) in the same PR — see `src/modules/doc/AGENTS.md`.
 - Deliver with a 4-5 sentence overview, then one line per file changed.
 - Before proposing: is it the minimal solution? Does it duplicate or reintroduce something? Would a senior reviewer object?
 

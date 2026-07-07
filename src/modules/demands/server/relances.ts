@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
+import { businessRules } from '@/modules/app/business-rules';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
@@ -16,7 +17,11 @@ const getAllDemandsToRelance = async () => {
     .where((eb) =>
       eb.or([
         eb.and([
-          eb(sql`(legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '1 month'`),
+          eb(
+            sql`(legacy_values->>'Date de la demande')::date`,
+            '<',
+            sql`NOW() - ${sql.lit(`${businessRules.firstRelanceDelayMonths.value} month`)}::interval`
+          ),
           eb(sql`legacy_values->>'Relance à activer'`, '=', true),
           eb.or([
             eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
@@ -25,7 +30,11 @@ const getAllDemandsToRelance = async () => {
           eb.or([eb(sql`legacy_values->>'Relance envoyée'`, '=', ''), eb(sql`legacy_values->>'Relance envoyée'`, 'is', null)]),
         ]),
         eb.and([
-          eb(sql`(legacy_values->>'Date de la demande')::date`, '<', sql`NOW() - INTERVAL '45 days'`),
+          eb(
+            sql`(legacy_values->>'Date de la demande')::date`,
+            '<',
+            sql`NOW() - ${sql.lit(`${businessRules.secondRelanceDelayDays.value} days`)}::interval`
+          ),
           eb.or([
             eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, '=', ''),
             eb(sql`legacy_values->>'Recontacté par le gestionnaire'`, 'is', null),

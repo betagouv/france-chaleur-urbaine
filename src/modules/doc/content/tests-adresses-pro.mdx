@@ -1,0 +1,48 @@
+import { businessRules } from '@/modules/app/business-rules';
+
+# Tests d'adresses en masse
+
+Depuis « Test d'adresses » dans l'espace connecté, **tout utilisateur connecté** (quel que soit son rôle) peut tester l'éligibilité d'un parc d'adresses en une fois, suivre l'évolution des résultats dans le temps, et transformer les adresses favorables en demandes groupées.
+
+<Mermaid
+  chart={`flowchart TD
+    upload["Import d'un fichier CSV (max ${businessRules.fileUploadMaxSizeMB.display}) : colonne adresse OU latitude+longitude"] --> job["Traitement asynchrone (file de tâches)"]:::db
+    job --> geocode["Géocodage BAN par lots de 1000"]
+    geocode --> calc["Calcul d'éligibilité pour chaque adresse"]:::db
+    calc --> resultats["Résultats disponibles, badge « Nouveaux résultats »"]:::db
+    resultats --> export["Export Excel détaillé"]
+    resultats --> batch["Sélection d'adresses → demandes groupées"]
+    maj["L'équipe FCU met à jour des tracés de réseaux"] -.-> recalc["Recalcul automatique des adresses dans la zone (${businessRules.eligibilityRecomputeBufferMeters.display})"]:::db
+    recalc --> badge["Badge « Mises à jour » + détail par adresse (nouveau réseau, rapprochement…)"]:::evt
+    classDef evt fill:#cfe3fd,stroke:#3b74c7,color:#161616
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
+/>
+
+## Import et traitement
+
+- Fichier `.csv` ou `.txt` de <Rule id="fileUploadMaxSizeMB" /> maximum ; séparateur et en-têtes détectés automatiquement.
+- Deux modes exclusifs : une colonne **adresse**, ou deux colonnes **latitude + longitude**.
+- Le traitement est **asynchrone** (visible dans [Suivi des tâches](/admin/jobs)) : géocodage BAN par lots de 1 000, puis calcul d'[éligibilité](/admin/doc/eligibilite) pour chaque adresse. Les tuiles de la carte sont régénérées à la fin.
+- On peut **ajouter des adresses** à un test existant : seules les nouvelles sont traitées.
+
+## Les résultats
+
+Pour chaque adresse : fiabilité du géocodage (les adresses invalides sont signalées), proximité réseau (« Existant » / « À venir » / « Non »), distance, PDP, taux EnR&R, contenu CO2, identifiant du réseau. Filtres rapides : « potentiellement raccordables », « dans un périmètre de développement prioritaire », « à moins de <Rule id="nearNetworkFilterDistanceMeters" /> d'un réseau à plus de <Rule id="highEnrrFilterPercent" /> d'ENR&R ».
+
+L'**export Excel** (« Télécharger les résultats détaillés ») contient une feuille de résultats (11 colonnes) et une feuille de légende. Le raccordable y est exprimé en « Oui / À confirmer / Non » — « À confirmer » couvrant les réseaux sans tracé connu.
+
+## Alertes de changement d'éligibilité
+
+Quand l'équipe FCU applique des mises à jour de tracés (nouveaux réseaux, extensions, PDP), toutes les adresses de tests situées dans les zones modifiées (moins de <Rule id="eligibilityRecomputeBufferMeters" />, géocodage fiable uniquement) sont **recalculées automatiquement**. Les changements détectés (18 types : nouveau réseau, réseau futur devenu existant, entrée/sortie de PDP, rapprochement/éloignement de plus de <Rule id="eligibilityTransitionThresholdMeters" />…) sont ajoutés à l'historique de chaque adresse.
+
+**Aucun email n'est envoyé** : l'utilisateur voit un badge « Mises à jour » sur son test, des indicateurs par adresse (nouveau, disparu, ± distance) et l'historique détaillé au survol. Les badges s'effacent à l'ouverture du test.
+
+## Demandes groupées
+
+Depuis un test, sélectionner des adresses et « Être mis en relation » crée des demandes de raccordement — au maximum <Rule id="batchDemandMaxAddresses" /> par envoi. Le contact est repris du profil de l'utilisateur ; un admin peut fournir un contact dédié. Une adresse ayant déjà une demande est retirée de la sélection (message explicite) et sa ligne pointe vers la demande existante. Voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande).
+
+## Côté admin
+
+[Tests d'adresses](/admin/tests-adresses) liste tous les tests de tous les utilisateurs (filtrables par email), en lecture seule. Action possible : **corriger l'adresse** d'une ligne mal géocodée et recalculer son éligibilité — si la ligne est liée à une demande, l'adresse et le réseau de la demande sont mis à jour en conséquence.
+
+Événements tracés : [création](/admin/events?types=pro_eligibility_test_created), [mise à jour](/admin/events?types=pro_eligibility_test_updated), [renommage](/admin/events?types=pro_eligibility_test_renamed), [suppression](/admin/events?types=pro_eligibility_test_deleted) de test.

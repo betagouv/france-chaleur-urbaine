@@ -1,3 +1,4 @@
+import { businessRules } from '@/modules/app/business-rules';
 import { getBANAddressFromAddress, getBANAddressFromCoordinates } from '@/modules/ban/server/service';
 import { mergeLegacyValues } from '@/modules/demands/server/legacy-values';
 import { createUserEvent } from '@/modules/events/server/service';
@@ -106,11 +107,11 @@ export const getTransition = (
     return 'changement_reseau';
   }
 
-  // Changement de distance significatif (>50m) avec même type
+  // Changement de distance significatif avec même type
   // Ne s'applique que si les deux distances sont définies (non null)
   if (oldType === newType && oldEligibility.distance !== null && newEligibility.distance !== null) {
     const distanceChange = newEligibility.distance - oldEligibility.distance;
-    if (Math.abs(distanceChange) >= 50) {
+    if (Math.abs(distanceChange) >= businessRules.eligibilityTransitionThresholdMeters.value) {
       if (distanceChange > 0) {
         return 'eloignement';
       }

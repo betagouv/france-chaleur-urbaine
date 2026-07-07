@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { businessRules } from '@/modules/app/business-rules';
+
 /**
  * Constantes + schémas Zod du module `conversion-tracking`.
  * Cf. `AGENTS.md`.
@@ -54,7 +56,7 @@ export const zListConversionSourcesInput = z
   .default({ includeArchived: false });
 
 /** Rétention (jours) des données d'anti-abus (IP / user-agent) des `conversion_events` avant purge RGPD par cron. */
-export const CONVERSION_IP_RETENTION_DAYS = 90;
+export const CONVERSION_IP_RETENTION_DAYS = businessRules.conversionIpRetentionDays.value;
 
 /** Disposition d'une règle IP : retirée des stats (`exclude`) ou IP légitime connue à conserver (`keep`). */
 export const conversionIpDispositions = ['exclude', 'keep'] as const;
