@@ -148,6 +148,10 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   filtersDialogLabel?: React.ReactNode;
   filtersDialogDescription?: React.ReactNode;
   showInFiltersDialog?: boolean;
+  /** Libellé de la colonne dans le dialog de tri (`enableSortDialog`) ; défaut = `header` s'il est une string. */
+  sortDialogLabel?: string;
+  /** Exclut la colonne du dialog de tri. Par défaut toute colonne triable (`enableSorting !== false`) y figure. */
+  showInSortDialog?: boolean;
   visible?: boolean;
   exportHeader?: string;
   exportFn?: (row: T) => string | number | boolean;
@@ -474,6 +478,11 @@ export type TableSimpleProps<T> = {
    * Affiche le bouton Filtres pour ouvrir la dialog. Par défaut, non affiché.
    */
   enableFiltersDialog?: boolean;
+  /**
+   * Affiche un bouton « Trier » (dialog) listant les colonnes triables — y compris masquées (`visible: false`)
+   * ou sans en-tête cliquable (cellule custom). Tri géré en interne par la table (déclaratif, aucun state externe).
+   */
+  enableSortDialog?: boolean;
 };
 
 const TableSimple = <T extends RowData>({
@@ -508,8 +517,10 @@ const TableSimple = <T extends RowData>({
   export: exportConfig,
   urlSyncKey,
   enableFiltersDialog = false,
+  enableSortDialog = false,
 }: TableSimpleProps<T>) => {
   const [isFiltersDialogOpen, setFiltersDialogOpen] = React.useState(false);
+  const [isSortDialogOpen, setSortDialogOpen] = React.useState(false);
   const {
     columnFilters,
     globalFilter,
@@ -654,6 +665,21 @@ const TableSimple = <T extends RowData>({
   const filterableColumnIds = React.useMemo(() => new Set(filterableColumns.map((column) => column.id)), [filterableColumns]);
   const activeFiltersCount = table.getState().columnFilters.filter((filter) => filterableColumnIds.has(filter.id as string)).length;
   const hasFiltersDialog = enableFiltersDialog !== undefined ? enableFiltersDialog : filterableColumns.length > 0;
+
+  const sortableColumns = React.useMemo(
+    () =>
+      table
+        .getAllColumns()
+        .filter((column) => !!column.id && column.getCanSort() && (column.columnDef as ColumnDef<T>).showInSortDialog !== false),
+    [table]
+  );
+  const hasSortDialog = enableSortDialog && sortableColumns.length > 0;
+  const sorting = table.getState().sorting;
+  const activeSort = sorting[0];
+  const columnSortLabel = (column: (typeof sortableColumns)[number]): string => {
+    const def = column.columnDef as ColumnDef<T>;
+    return def.sortDialogLabel ?? (typeof def.header === 'string' ? def.header : (column.id ?? ''));
+  };
 
   React.useEffect(() => {
     if (onSelectionChange) {
@@ -852,6 +878,73 @@ const TableSimple = <T extends RowData>({
                       Réinitialiser tout
                     </Button>
                     <Button priority="primary" size="small" iconId="ri-check-line" onClick={() => setFiltersDialogOpen(false)}>
+                      Fermer
+                    </Button>
+                  </div>
+                </div>
+              </Dialog>
+            )}
+            {hasSortDialog && (
+              <Dialog
+                title="Trier"
+                size="md"
+                open={isSortDialogOpen}
+                onOpenChange={setSortDialogOpen}
+                trigger={
+                  <Button size="small" priority={activeSort ? 'secondary' : 'tertiary'} iconId="fr-icon-sort-desc">
+                    {sorting.length > 0 ? `Trier (${sorting.length})` : 'Trier'}
+                  </Button>
+                }
+              >
+                <div className="flex flex-col gap-2">
+                  <p className="fr-hint-text mb-1">
+                    Cliquez sur ↑ / ↓ pour trier. Ajoutez plusieurs colonnes pour un tri combiné : le numéro indique l'ordre de priorité.
+                    Astuce : Maj + clic sur un en-tête du tableau ajoute aussi un critère.
+                  </p>
+                  {sortableColumns.map((column) => {
+                    const sorted = column.getIsSorted();
+                    const priority = sorting.findIndex((entry) => entry.id === column.id);
+                    const label = columnSortLabel(column);
+                    // Multi-tri : on ajoute/met à jour ce critère (2e arg = multi), et un clic sur le sens déjà actif le retire.
+                    const applySort = (desc: boolean) =>
+                      (desc ? sorted === 'desc' : sorted === 'asc') ? column.clearSorting() : column.toggleSorting(desc, true);
+                    return (
+                      <section
+                        key={column.id}
+                        className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-2 px-3"
+                      >
+                        <span className={cx('flex items-center gap-2 leading-tight', sorted && 'font-semibold')}>
+                          {priority >= 0 && (
+                            <span className="inline-flex size-5 items-center justify-center rounded-full bg-(--background-action-high-blue-france) text-xs text-white">
+                              {priority + 1}
+                            </span>
+                          )}
+                          {label}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="small"
+                            priority={sorted === 'asc' ? 'primary' : 'tertiary'}
+                            iconId="fr-icon-sort-asc"
+                            title={`${label} croissant`}
+                            onClick={() => applySort(false)}
+                          />
+                          <Button
+                            size="small"
+                            priority={sorted === 'desc' ? 'primary' : 'tertiary'}
+                            iconId="fr-icon-sort-desc"
+                            title={`${label} décroissant`}
+                            onClick={() => applySort(true)}
+                          />
+                        </div>
+                      </section>
+                    );
+                  })}
+                  <div className="flex flex-wrap justify-between gap-2 pt-2">
+                    <Button priority="tertiary" iconId="ri-refresh-line" size="small" onClick={() => table.resetSorting()}>
+                      Réinitialiser
+                    </Button>
+                    <Button priority="primary" iconId="ri-check-line" size="small" onClick={() => setSortDialogOpen(false)}>
                       Fermer
                     </Button>
                   </div>

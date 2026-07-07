@@ -357,6 +357,7 @@ const ConversionStatsPage = () => {
         columns={columns}
         data={rows}
         controlsLayout="block"
+        enableSortDialog
         loading={isLoading}
         loadingEmptyMessage="Aucune donnée sur cette période."
         padding="sm"
