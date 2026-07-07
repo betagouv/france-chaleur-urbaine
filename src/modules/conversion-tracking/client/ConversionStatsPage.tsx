@@ -17,15 +17,17 @@ import {
   conversionStatsGranularities,
 } from '@/modules/conversion-tracking/constants';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
-import { formatFrenchDate } from '@/utils/date';
+import cx from '@/utils/cx';
+import { formatAsISODate, formatFrenchDate } from '@/utils/date';
 
-const isoDay = (date: Date) => date.toISOString().slice(0, 10);
 const today = new Date();
-const defaultTo = isoDay(today);
-const defaultFrom = isoDay(new Date(today.getFullYear(), today.getMonth() - 11, 1));
+const defaultTo = formatAsISODate(today);
+const defaultFrom = formatAsISODate(new Date(today.getFullYear(), today.getMonth() - 11, 1));
 
-const pct = (value: number | null) => (value === null ? '—' : `${Math.round(value * 100)}%`);
-const pctExport = (value: number | null) => (value === null ? '' : `${Math.round(value * 100)}%`);
+/** Formate un taux de conversion (0–1) en pourcentage pour l'affichage ; `—` si non calculable. */
+const formatRate = (rate: number | null) => (rate === null ? '—' : `${Math.round(rate * 100)}%`);
+/** Idem `formatRate` mais vide (au lieu de `—`) pour l'export CSV. */
+const formatRateForExport = (rate: number | null) => (rate === null ? '' : `${Math.round(rate * 100)}%`);
 const channelLabel: Record<ConversionChannel, string> = { iframe: 'Iframe', internal: 'Interne' };
 
 type StatRow = RouterOutput['conversionTracking']['getStats'][number];
@@ -38,6 +40,40 @@ const abusePageHref = (row: StatRow) => {
   if (row.host) params.set('host', row.host);
   return `/admin/conversion/abus?${params.toString()}`;
 };
+
+/** Segment de flèche du funnel : barre horizontale avec le taux à l'intérieur `──{taux}──▶`. */
+const funnelArrow = (rate: number | null) => (
+  <span className="flex flex-col items-center px-1.5 leading-tight text-(--text-mention-grey)">
+    <span className="text-xs">
+      ──<span className="mx-0.5 inline-block w-[4.5ch] text-center tabular-nums">{formatRate(rate)}</span>──▶
+    </span>
+    {/* espaceur invisible : réserve la hauteur de la ligne « ✓ » pour aligner tous les segments */}
+    <span className="invisible text-xs">✓</span>
+  </span>
+);
+
+/** Étape du funnel : compteur + `(✓ nb éligibles)` en dessous (espaceur invisible si pas d'éligibles). */
+const funnelStage = (value: number, eligible: number | null) => (
+  <span className="flex w-14 flex-col items-center tabular-nums leading-tight">
+    <span>{value}</span>
+    <span className={cx('text-xs text-(--text-mention-grey)', (eligible === null || value === 0) && 'invisible')}>(✓ {eligible ?? 0})</span>
+  </span>
+);
+
+/** Cellule funnel : Affichages ─%▶ Tests (✓ élig.) ─%▶ Demandes (✓ élig.), centrée verticalement. */
+const funnelCell = (row: StatRow) => (
+  <div className="flex items-center whitespace-nowrap">
+    {funnelStage(row.displays, null)}
+    {funnelArrow(row.testRate)}
+    {funnelStage(row.tests, row.testsEligible)}
+    {funnelArrow(row.demandRate)}
+    {funnelStage(row.demands, row.demandsEligible)}
+  </div>
+);
+
+/** Représentation texte du funnel pour l'export. */
+const funnelExport = (row: StatRow) =>
+  `${row.displays} →${formatRateForExport(row.testRate)}→ ${row.tests} (${row.testsEligible} élig.) →${formatRateForExport(row.demandRate)}→ ${row.demands} (${row.demandsEligible} élig.)`;
 
 const filtersParsers = {
   channel: parseAsStringLiteral(conversionChannels),
@@ -94,52 +130,32 @@ const ConversionStatsPage = () => {
       },
       {
         accessorFn: (row) => row.label,
-        cell: ({ row }) => (
-          <span className="break-all">
-            {row.original.label}
-            {row.original.unregistered && (
-              <span title="Intégration reçue mais absente du registre des intégrations">
-                <Badge severity="warning" small noIcon className="fr-ml-1w">
-                  hors registre
-                </Badge>
+        // Contexte : label + drills (page / hôte / créée) fusionnés en sous-lignes plutôt qu'en colonnes séparées.
+        cell: ({ row }) => {
+          const r = row.original;
+          return (
+            <div className="flex flex-col gap-0.5 break-all">
+              <span>
+                {r.label}
+                {r.unregistered && (
+                  <span title="Intégration reçue mais absente du registre des intégrations">
+                    <Badge severity="warning" small noIcon className="fr-ml-1w">
+                      hors registre
+                    </Badge>
+                  </span>
+                )}
               </span>
-            )}
-          </span>
-        ),
+              {groupByPage && r.page && <span className="text-xs text-(--text-mention-grey)">Page : {r.page}</span>}
+              {groupByHost && r.host && <span className="text-xs text-(--text-mention-grey)">Hôte : {r.host}</span>}
+              {showCreatedAt && r.sourceCreatedAt && (
+                <span className="text-xs text-(--text-mention-grey)">Créée le {formatFrenchDate(new Date(r.sourceCreatedAt))}</span>
+              )}
+            </div>
+          );
+        },
         flex: 2,
         header: 'Intégration / route',
         id: 'label',
-      },
-      {
-        accessorFn: (row) => (row.sourceCreatedAt ? formatFrenchDate(new Date(row.sourceCreatedAt)) : undefined),
-        cell: ({ row }) => (
-          <span className="whitespace-nowrap text-(--text-mention-grey)">
-            {row.original.sourceCreatedAt ? formatFrenchDate(new Date(row.original.sourceCreatedAt)) : '—'}
-          </span>
-        ),
-        header: 'Créée le',
-        id: 'sourceCreatedAt',
-        sortUndefined: 'last',
-        visible: showCreatedAt,
-        width: '110px',
-      },
-      {
-        accessorFn: (row) => row.page ?? undefined,
-        cell: ({ row }) => <span className="break-all text-(--text-mention-grey)">{row.original.page ?? '—'}</span>,
-        flex: 2,
-        header: 'Page FCU',
-        id: 'page',
-        sortUndefined: 'last',
-        visible: groupByPage,
-      },
-      {
-        accessorFn: (row) => row.host ?? undefined,
-        cell: ({ row }) => <span className="break-all text-(--text-mention-grey)">{row.original.host ?? '—'}</span>,
-        flex: 2,
-        header: 'Site hôte',
-        id: 'host',
-        sortUndefined: 'last',
-        visible: groupByHost,
       },
       {
         accessorFn: (row) => row.period ?? undefined,
@@ -149,31 +165,14 @@ const ConversionStatsPage = () => {
         sortUndefined: 'last',
         width: '110px',
       },
-      { accessorFn: (row) => row.displays, align: 'right', header: 'Affichages', id: 'displays', width: '100px' },
-      { accessorFn: (row) => row.tests, align: 'right', header: 'Tests', id: 'tests', width: '80px' },
       {
-        accessorFn: (row) => row.testsEligible,
-        align: 'right',
-        exportHeader: 'Tests éligibles',
-        header: 'dont éligibles',
-        id: 'testsEligible',
-        width: '120px',
-      },
-      {
-        accessorFn: (row) => row.demands,
-        align: 'right',
-        cell: ({ row }) => <span className="font-bold">{row.original.demands}</span>,
-        header: 'Demandes',
-        id: 'demands',
-        width: '100px',
-      },
-      {
-        accessorFn: (row) => row.demandsEligible,
-        align: 'right',
-        exportHeader: 'Demandes éligibles',
-        header: 'dont éligibles',
-        id: 'demandsEligible',
-        width: '130px',
+        cell: ({ row }) => funnelCell(row.original),
+        enableSorting: false,
+        exportFn: (row) => funnelExport(row),
+        exportHeader: 'Funnel',
+        header: 'Affichages → Tests → Demandes',
+        id: 'funnel',
+        width: '380px',
       },
       {
         accessorFn: (row) => row.distinctIp,
@@ -190,25 +189,80 @@ const ConversionStatsPage = () => {
         id: 'distinctIp',
         width: '100px',
       },
+      // Colonnes masquées : compteurs/taux/drills du funnel, gardés comme colonnes pour rester triables
+      // génériquement (piste C : tri externe via le SortingState) et exportés à plat (exportOnly).
+      {
+        accessorFn: (row) => row.displays,
+        exportHeader: 'Affichages',
+        exportOnly: true,
+        header: 'Affichages',
+        id: 'displays',
+        visible: false,
+      },
+      { accessorFn: (row) => row.tests, exportHeader: 'Tests', exportOnly: true, header: 'Tests', id: 'tests', visible: false },
+      { accessorFn: (row) => row.demands, exportHeader: 'Demandes', exportOnly: true, header: 'Demandes', id: 'demands', visible: false },
+      {
+        accessorFn: (row) => row.testsEligible,
+        exportHeader: 'Tests éligibles',
+        exportOnly: true,
+        header: 'Tests éligibles',
+        id: 'testsEligible',
+        visible: false,
+      },
       {
         accessorFn: (row) => row.testRate ?? undefined,
-        align: 'right',
-        cell: ({ row }) => pct(row.original.testRate),
-        exportFn: (row) => pctExport(row.testRate),
+        exportFn: (row) => formatRateForExport(row.testRate),
+        exportHeader: 'Aff.→Test',
+        exportOnly: true,
         header: 'Aff.→Test',
         id: 'testRate',
         sortUndefined: 'last',
-        width: '100px',
+        visible: false,
+      },
+      {
+        accessorFn: (row) => row.demandsEligible,
+        exportHeader: 'Demandes éligibles',
+        exportOnly: true,
+        header: 'Demandes éligibles',
+        id: 'demandsEligible',
+        visible: false,
       },
       {
         accessorFn: (row) => row.demandRate ?? undefined,
-        align: 'right',
-        cell: ({ row }) => pct(row.original.demandRate),
-        exportFn: (row) => pctExport(row.demandRate),
+        exportFn: (row) => formatRateForExport(row.demandRate),
+        exportHeader: 'Test→Dem.',
+        exportOnly: true,
         header: 'Test→Dem.',
         id: 'demandRate',
         sortUndefined: 'last',
-        width: '100px',
+        visible: false,
+      },
+      {
+        accessorFn: (row) => row.page ?? undefined,
+        exportHeader: 'Page FCU',
+        exportOnly: groupByPage,
+        header: 'Page FCU',
+        id: 'page',
+        sortUndefined: 'last',
+        visible: false,
+      },
+      {
+        accessorFn: (row) => row.host ?? undefined,
+        exportHeader: 'Site hôte',
+        exportOnly: groupByHost,
+        header: 'Site hôte',
+        id: 'host',
+        sortUndefined: 'last',
+        visible: false,
+      },
+      {
+        accessorFn: (row) => (row.sourceCreatedAt ? formatFrenchDate(new Date(row.sourceCreatedAt)) : undefined),
+        exportHeader: 'Créée le',
+        exportOnly: showCreatedAt,
+        header: 'Créée le',
+        id: 'sourceCreatedAt',
+        sortUndefined: 'last',
+        visible: false,
       },
     ],
     [groupByPage, groupByHost, showCreatedAt]
