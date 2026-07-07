@@ -172,10 +172,12 @@ providers: [
 1. **User fills form** → Zod validation
 2. **`register()`** → Email uniqueness check
 3. **Create user** → Status `pending_email_confirmation`
-4. **Send email** → `activation` template with token
-5. **Click link** → Route `/api/auth/activate?token=...`
+4. **Send email** → `auth.utilisateur.confirmation-inscription` template with token
+5. **Click link** → `/connexion?activationToken=...` (handled in the page's `getServerSideProps`)
 6. **`activateUser()`** → Status → `valid`
 7. **Redirect** → Login page
+
+Side effects: `user_registered` / `user_activated` / `user_login` events, ADEME Connect contact sync, and `linkDemandsByEmail` on every login. Full business description (French, product-team audience): `/admin/doc/inscription-comptes` (`src/modules/doc/content/inscription-comptes.mdx`).
 
 ## Login Flow
 
@@ -198,8 +200,8 @@ Managed by `useRedirectionAfterLogin()` hook.
 
 ## Email Templates
 
-Sent via `/src/modules/email`:
+Sent via `/src/modules/email` (registry keys in `email.config.tsx`):
 
-- `activation` - Email confirmation with activation link
-- `password_reset` - Password reset link
-- `password_changed` - Change confirmation
+- `auth.utilisateur.confirmation-inscription` - Email confirmation with activation link
+- `auth.utilisateur.reinitialisation-mot-de-passe` - Password reset link (3h validity)
+- `auth.gestionnaire.ouverture-espace` - Sent by users module when an admin creates an active gestionnaire account

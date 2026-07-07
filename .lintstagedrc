@@ -1,3 +1,0 @@
-{
-  "*.{mjs,js,jsx,ts,tsx}": ["pnpm lint:fix:file", "git add -A"]
-}

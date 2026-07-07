@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { businessRules } from '@/modules/app/business-rules';
 import { networkTypes } from '@/modules/reseaux/constants';
 
 // Permission resource types — `networkTypes` (depuis reseaux/constants) sert directement de sous-ensemble réseau.
@@ -39,7 +40,7 @@ export const zPermission = z.discriminatedUnion('type', [
   z.object({ resource_id: z.null(), type: z.literal('national') }),
 ]);
 
-export const MAX_PERMISSIONS_PER_USER = 400;
+export const MAX_PERMISSIONS_PER_USER = businessRules.maxPermissionsPerUser.value;
 
 export const zPermissionInput = z
   .array(zPermission)

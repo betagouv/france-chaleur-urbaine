@@ -1,3 +1,4 @@
+import { businessRules } from '@/modules/app/business-rules';
 import type { formatHeatingTypeToAirtable } from '@/modules/demands/constants';
 import { Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
@@ -13,8 +14,10 @@ type ConfirmationDemandeProps = {
 };
 
 const ConfirmationDemande = ({ demand }: ConfirmationDemandeProps) => {
-  const distanceThreshold = demand.Departement === 'Paris' ? 60 : 100;
-  const intermediateDistanceThreshold = demand.Departement === 'Paris' ? 100 : 200;
+  const distanceThreshold =
+    demand.Departement === 'Paris' ? businessRules.veryEligibleDistanceParis.value : businessRules.veryEligibleDistanceDefault.value;
+  const intermediateDistanceThreshold =
+    demand.Departement === 'Paris' ? businessRules.eligibleDistanceParis.value : businessRules.eligibleDistanceDefault.value;
   return (
     <Layout>
       <Text>Bonjour,</Text>

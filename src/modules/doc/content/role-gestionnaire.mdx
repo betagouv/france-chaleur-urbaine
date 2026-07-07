@@ -1,0 +1,79 @@
+import { businessRules } from '@/modules/app/business-rules';
+
+# Rôle : gestionnaire
+
+Ce qu'un gestionnaire voit, reçoit et peut faire, et ce que France Chaleur Urbaine automatise autour de lui. Un gestionnaire est un exploitant de réseau de chaleur (ENGIE, Dalkia, Coriance…) chargé de traiter les demandes de raccordement.
+
+## Son compte
+
+- Créé **par un admin** ou **par l'API partenaire** (ENGIE) — jamais par inscription publique. Voir [Inscription et comptes](/admin/doc/inscription-comptes).
+- Son périmètre est défini par des **permissions par réseau** attribuées par un admin : il voit uniquement les demandes affectées à ces réseaux. **Sans permission, son espace est vide.**
+- Deux options sur sa fiche, choisies par l'admin, pilotent les emails automatiques qu'il reçoit : « recevoir les nouvelles demandes » et « recevoir les rappels de demandes en attente ».
+
+## Son espace
+
+Menu après connexion : **Demandes**, **Comparateur de coûts et CO2**, **Test d'adresses**, **Aide**.
+
+La page Demandes (`/pro/demandes`) liste les demandes de son périmètre, **uniquement après validation par l'équipe FCU** — une demande fraîchement déposée n'y apparaît pas tant qu'un admin ne l'a pas validée. Des compteurs mettent en avant : les demandes à traiter en priorité, celles dont le statut a évolué, celles sans réseau affecté, les non réalisables et celles situées dans un périmètre de développement prioritaire (PDP).
+
+## Ce qu'il peut faire
+
+| Action | Effet |
+| --- | --- |
+| Mettre à jour le suivi d'une demande | Statut (« À traiter », « Recontacté pour étude », « Réalisé »…), prise de contact, son commentaire |
+| Contacter le demandeur depuis la plateforme | Email [« Message du gestionnaire »](/admin/emails?type=demands.demandeur.message-gestionnaire) envoyé au demandeur, **archivé et consultable** ensuite |
+| Demander la réaffectation d'une demande | La demande reste chez lui tant que l'équipe FCU n'a pas accepté ou refusé ; il peut annuler sa demande de réaffectation |
+| Exporter ses demandes | Fichier Excel de la liste affichée |
+| Tester des adresses | Test d'éligibilité d'une adresse ou d'un fichier d'adresses, comme un professionnel |
+
+La réaffectation n'est **jamais directe** : le gestionnaire propose, l'équipe FCU dispose (via [Gestion des demandes](/admin/demandes)).
+
+## Ce que FCU automatise pour lui
+
+<Mermaid
+  chart={`flowchart TD
+    depot["Une demande validée est affectée à l'un de ses réseaux"]:::db --> notif["Lundi à vendredi, 10h : email « Nouvelles demandes à traiter »"]:::email
+    notif --> traite{"Le gestionnaire traite ?"}
+    traite -- "Oui" --> statut["Suivi mis à jour, demandeur recontacté"]:::db
+    traite -- "Non, demande « À traiter » depuis plus de ${businessRules.unhandledDemandReminderDays.display}" --> rappel["Mardi, 9h55 : email de rappel (si option activée)"]:::email
+    statut -.-> relance["${businessRules.firstRelanceDelayMonths.display} puis ${businessRules.secondRelanceDelayDays.display} : FCU demande au demandeur s'il a été recontacté"]:::email
+    rappel -.-> relance
+    relance --> satisfaction["La réponse du demandeur (recontacté ou non, commentaire) est enregistrée et visible de l'équipe FCU"]:::evt
+    click notif "/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter" "Voir le modèle d'email"
+    click rappel "/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente" "Voir le modèle d'email"
+    click relance "/admin/emails?type=demands.demandeur.enquete-satisfaction" "Voir le modèle d'email"
+    classDef email fill:#feecc2,stroke:#b28a00,color:#161616
+    classDef evt fill:#cfe3fd,stroke:#3b74c7,color:#161616
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
+/>
+
+Détail des trois automatismes :
+
+- **Notification des nouvelles demandes** (lundi à vendredi, 10h) : envoyée si l'option « recevoir les nouvelles demandes » est activée. Ne concerne que les demandes validées, affectées à un réseau de son périmètre, non encore notifiées et dont le statut n'est pas « Non réalisable ». Si aucun gestionnaire n'a de permission sur le réseau, la demande n'est **pas** marquée comme notifiée — elle sera signalée dès qu'une permission sera ajoutée.
+- **Rappel des demandes en attente** (mardi, 9h55) : envoyé si l'option « recevoir les rappels » est activée, pour les demandes restées « À traiter » (ou sans statut) plus de <Rule id="unhandledDemandReminderDays" /> après leur notification.
+- **Relance des demandeurs** (lundi, 10h05) : à <Rule id="firstRelanceDelayMonths" /> puis <Rule id="secondRelanceDelayDays" /> après la demande, FCU demande directement au demandeur s'il a été recontacté — uniquement pour les demandes éligibles en chauffage collectif. **La réponse du demandeur est visible de l'équipe FCU** : l'inaction d'un gestionnaire finit donc par se voir.
+
+## Déroulé type
+
+1. Lundi 10h, il reçoit « 3 nouvelles demandes à traiter » et ouvre son espace.
+2. Il consulte les demandes (adresse, chauffage, distance au réseau), met le statut à jour et recontacte le demandeur — par téléphone, ou via l'email intégré qui garde une trace.
+3. S'il ne fait rien : rappel le mardi suivant ; après <Rule id="firstRelanceDelayMonths" /> le demandeur est interrogé par FCU, et sa réponse (« je n'ai pas été recontacté ») remonte à l'équipe.
+4. Si la demande ne relève pas de lui (mauvais réseau, hors périmètre), il demande une réaffectation que l'équipe FCU arbitre.
+
+## Ce qu'il ne peut pas faire
+
+- Voir des demandes hors de ses permissions, ou non validées par l'équipe FCU.
+- Valider, supprimer ou réaffecter directement une demande.
+- Modifier les informations du demandeur ou les données d'éligibilité.
+- Gérer d'autres utilisateurs.
+
+## Emails et traçabilité
+
+| Email | Sens | Quand |
+| --- | --- | --- |
+| [Ouverture de l'espace gestionnaire](/admin/emails?type=auth.gestionnaire.ouverture-espace) | Reçu | À la création de son compte par un admin (si compte actif) |
+| [Nouvelles demandes à traiter](/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter) | Reçu | Lundi à vendredi 10h, selon option et conditions ci-dessus |
+| [Rappel des demandes en attente](/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente) | Reçu | Mardi 9h55, selon option |
+| [Message du gestionnaire](/admin/emails?type=demands.demandeur.message-gestionnaire) | Envoyé par lui | Quand il contacte un demandeur depuis la plateforme |
+
+Ses actions émettent des événements consultables dans [Activité du site](/admin/events) : mise à jour de demande, [email envoyé au demandeur](/admin/events?types=demand_email_sent), [demande de réaffectation](/admin/events?types=demand_assignment_change_requested), ainsi que les automatismes ([notification envoyée](/admin/events?types=demand_notification_sent), [relance envoyée](/admin/events?types=demand_relance_sent), [réponse du demandeur](/admin/events?types=demand_satisfaction_submitted)).
