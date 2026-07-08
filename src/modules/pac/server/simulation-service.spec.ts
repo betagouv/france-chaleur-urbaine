@@ -19,38 +19,38 @@ describe('getHeatingSimulation', () => {
     const result = getHeatingSimulation(baseInput);
 
     expect(result).toStrictEqual({
-      gasBoilerAnnualBill: 2001.49,
+      gasBoilerAnnualBill: 2001.4857088235294,
       heatingModeComparisons: [
         {
-          co2: 1060.28,
+          co2: 1060.281017289593,
           label: 'PAC air/eau',
-          p1: 1331.43,
+          p1: 1331.4315384615388,
         },
         {
-          co2: 4203.71,
+          co2: 4203.709354500001,
           label: 'Chaudière gaz',
-          p1: 2001.49,
+          p1: 2001.4857088235294,
         },
         {
-          co2: 6372.62,
+          co2: 6372.62122664612,
           label: 'Chaudière fioul',
-          p1: 2199.71,
+          p1: 2199.7088535616444,
         },
       ],
-      heatPumpAnnualBill: 1331.43,
-      heatPumpCoupDePouce: 5267.81,
-      heatPumpGrossPrice: 13999.85,
+      heatPumpAnnualBill: 1331.4315384615388,
+      heatPumpCoupDePouce: 5267.808,
+      heatPumpGrossPrice: 13999.849999999999,
       heatPumpMaprimerenovAid: 4000,
-      heatPumpNetPrice: 4732.04,
-      heatPumpProposedPower: 10.55,
-      oilBoilerAnnualBill: 2199.71,
+      heatPumpNetPrice: 4732.041999999999,
+      heatPumpProposedPower: 10.545897435897436,
+      oilBoilerAnnualBill: 2199.7088535616444,
     });
   });
 
   const incomeCases: TestCase<HeatingSimulationInput['incomeCategory'], number>[] = [
-    { expectedOutput: 3653.42, input: 'Très modeste', label: 'very low income gets the highest total aid' },
-    { expectedOutput: 5732.04, input: 'Intermédiaire', label: 'middle income gets a lower total aid' },
-    { expectedOutput: 8732.04, input: 'Supérieur', label: 'high income still gets CEE aid in the default heat pump case' },
+    { expectedOutput: 3653.417999999998, input: 'Très modeste', label: 'very low income gets the highest total aid' },
+    { expectedOutput: 5732.041999999999, input: 'Intermédiaire', label: 'middle income gets a lower total aid' },
+    { expectedOutput: 8732.041999999998, input: 'Supérieur', label: 'high income still gets CEE aid in the default heat pump case' },
   ];
 
   it.each(incomeCases)('$label', (testCase) => {

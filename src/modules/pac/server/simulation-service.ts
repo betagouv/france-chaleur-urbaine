@@ -39,22 +39,22 @@ const INCOME_PUBLICODES_THRESHOLDS = {
 export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimulationResult {
   const engine = createEngineForSimulation(input);
   const heatPumpGrossPrice = getRuleValue(engine, 'Calcul Eco . PAC air-eau indiv . Investissement équipement Total');
-  const heatPumpMaprimerenovAid = getRuleValue(
+  const heatPumpMaprimerenovAid = getOptionalRuleValue(
     engine,
     "Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Ma prime renov'"
   );
-  const heatPumpCoupDePouce = getRuleValue(engine, 'ratios économiques x aides . Coup de pouce x PAC air-eau');
+  const heatPumpCoupDePouce = getOptionalRuleValue(engine, 'ratios économiques x aides . Coup de pouce x PAC air-eau');
 
   return {
-    gasBoilerAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x Gaz indiv avec cond')),
+    gasBoilerAnnualBill: getAnnualBill(engine, 'Bilan x Gaz indiv avec cond'),
     heatingModeComparisons: HEATING_MODES.map((heatingMode) => getHeatingModeComparison(engine, heatingMode)),
-    heatPumpAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x PAC air-eau indiv')),
-    heatPumpCoupDePouce: roundNumber(heatPumpCoupDePouce),
-    heatPumpGrossPrice: roundNumber(heatPumpGrossPrice),
-    heatPumpMaprimerenovAid: roundNumber(heatPumpMaprimerenovAid),
-    heatPumpNetPrice: roundNumber(Math.max(0, heatPumpGrossPrice - heatPumpMaprimerenovAid - heatPumpCoupDePouce)),
-    heatPumpProposedPower: roundNumber(getRuleValue(engine, 'Installation x PAC air-eau x Individuel . puissance équipement')),
-    oilBoilerAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x Fioul indiv')),
+    heatPumpAnnualBill: getAnnualBill(engine, 'Bilan x PAC air-eau indiv'),
+    heatPumpCoupDePouce,
+    heatPumpGrossPrice,
+    heatPumpMaprimerenovAid,
+    heatPumpNetPrice: Math.max(0, heatPumpGrossPrice - heatPumpMaprimerenovAid - heatPumpCoupDePouce),
+    heatPumpProposedPower: getRuleValue(engine, 'Installation x PAC air-eau x Individuel . puissance équipement'),
+    oilBoilerAnnualBill: getAnnualBill(engine, 'Bilan x Fioul indiv'),
   };
 }
 
@@ -142,9 +142,9 @@ function getAnnualBill(engine: Engine<RuleName>, prefix: HeatingBillPrefix) {
 
 function getHeatingModeComparison(engine: Engine<RuleName>, heatingMode: (typeof HEATING_MODES)[number]) {
   return {
-    co2: roundNumber(getRuleValue(engine, heatingMode.co2RuleName)),
+    co2: getRuleValue(engine, heatingMode.co2RuleName),
     label: heatingMode.label,
-    p1: roundNumber(getAnnualBill(engine, heatingMode.billPrefix)),
+    p1: getAnnualBill(engine, heatingMode.billPrefix),
   };
 }
 
@@ -158,6 +158,16 @@ function getRuleValue(engine: Engine<RuleName>, ruleName: RuleName) {
   return ruleValue;
 }
 
-function roundNumber(value: number) {
-  return Math.round(value * 100) / 100;
+function getOptionalRuleValue(engine: Engine<RuleName>, ruleName: RuleName) {
+  const ruleValue = engine.evaluate(ruleName).nodeValue;
+
+  if (ruleValue === null || ruleValue === undefined) {
+    return 0;
+  }
+
+  if (typeof ruleValue !== 'number') {
+    throw new Error(`Publicodes rule "${ruleName}" did not resolve to a number`);
+  }
+
+  return ruleValue;
 }
