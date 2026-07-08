@@ -23,7 +23,8 @@ export const zIncomeOptionsInput = z.object({
 export type IncomeOptionsInput = z.infer<typeof zIncomeOptionsInput>;
 
 export type IncomeOption = {
-  label: string;
+  max: number | null;
+  min: number | null;
   value: (typeof INCOME_CATEGORY_VALUES)[number];
 };
 
@@ -38,7 +39,7 @@ export type HeatingSimulationResult = {
   gasBoilerAnnualBill: number;
   heatPumpAnnualBill: number;
   heatingModeComparisons: HeatingModeComparison[];
-  heatPumpBoilerReplacementBonus: number;
+  heatPumpCoupDePouce: number;
   heatPumpGrossPrice: number;
   heatPumpMaprimerenovAid: number;
   heatPumpNetPrice: number;

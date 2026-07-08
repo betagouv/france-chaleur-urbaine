@@ -1,12 +1,8 @@
-import { createRequire } from 'node:module';
-
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import publicodesRules from '@betagouv/france-chaleur-urbaine-publicodes/publicodes-build/france-chaleur-urbaine-publicodes.model.json';
 import Engine from 'publicodes';
 
 import type { HeatingSimulationInput, HeatingSimulationResult, IncomeOption, IncomeOptionsInput } from '../constants';
-
-const require = createRequire(import.meta.url);
-const publicodesRules = require('@betagouv/france-chaleur-urbaine-publicodes/publicodes-build/france-chaleur-urbaine-publicodes.model.json');
 
 const HEATING_P1_PARTS = ['P1abo', 'P1conso'] as const;
 
@@ -43,21 +39,20 @@ const INCOME_PUBLICODES_THRESHOLDS = {
 export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimulationResult {
   const engine = createEngineForSimulation(input);
   const heatPumpGrossPrice = getRuleValue(engine, 'Calcul Eco . PAC air-eau indiv . Investissement équipement Total');
-  const heatPumpMaprimerenovAid = getRuleValue(
+  const heatPumpMaprimerenovAid = getOptionalRuleValue(
     engine,
     "Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Ma prime renov'"
   );
-  const heatPumpBoilerReplacementBonus = getRuleValue(engine, 'ratios économiques x aides . Coup de pouce x PAC air-eau');
-  const heatPumpAidAmount = getRuleValue(engine, 'Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Total');
+  const heatPumpCoupDePouce = getOptionalRuleValue(engine, 'ratios économiques x aides . Coup de pouce x PAC air-eau');
 
   return {
     gasBoilerAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x Gaz indiv avec cond')),
     heatingModeComparisons: HEATING_MODES.map((heatingMode) => getHeatingModeComparison(engine, heatingMode)),
     heatPumpAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x PAC air-eau indiv')),
-    heatPumpBoilerReplacementBonus: roundNumber(heatPumpBoilerReplacementBonus),
+    heatPumpCoupDePouce: roundNumber(heatPumpCoupDePouce),
     heatPumpGrossPrice: roundNumber(heatPumpGrossPrice),
     heatPumpMaprimerenovAid: roundNumber(heatPumpMaprimerenovAid),
-    heatPumpNetPrice: roundNumber(Math.max(0, heatPumpGrossPrice - heatPumpAidAmount)),
+    heatPumpNetPrice: roundNumber(Math.max(0, heatPumpGrossPrice - heatPumpMaprimerenovAid - heatPumpCoupDePouce)),
     heatPumpProposedPower: roundNumber(getRuleValue(engine, 'Installation x PAC air-eau x Individuel . puissance équipement')),
     oilBoilerAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x Fioul indiv')),
   };
@@ -71,19 +66,23 @@ export function getIncomeOptions(input: IncomeOptionsInput): IncomeOption[] {
 
   return [
     {
-      label: `inférieur à ${formatCurrency(veryLowThreshold + 1)}`,
+      max: veryLowThreshold,
+      min: null,
       value: 'Très modeste',
     },
     {
-      label: `de ${formatCurrency(veryLowThreshold + 1)} à ${formatCurrency(lowThreshold)}`,
+      max: lowThreshold,
+      min: veryLowThreshold + 1,
       value: 'Modeste',
     },
     {
-      label: `de ${formatCurrency(lowThreshold + 1)} à ${formatCurrency(middleThreshold)}`,
+      max: middleThreshold,
+      min: lowThreshold + 1,
       value: 'Intermédiaire',
     },
     {
-      label: `supérieur à ${formatCurrency(middleThreshold)}`,
+      max: null,
+      min: middleThreshold + 1,
       value: 'Supérieur',
     },
   ];
@@ -144,24 +143,34 @@ function getHeatingModeComparison(engine: Engine<RuleName>, heatingMode: (typeof
   return {
     co2: roundNumber(getRuleValue(engine, heatingMode.co2RuleName)),
     label: heatingMode.label,
-    p1: roundNumber(
-      HEATING_P1_PARTS.reduce((total, billPart) => total + getRuleValue(engine, `${heatingMode.billPrefix} . ${billPart}` as RuleName), 0)
-    ),
+    p1: roundNumber(getAnnualBill(engine, heatingMode.billPrefix)),
   };
 }
 
 function getRuleValue(engine: Engine<RuleName>, ruleName: RuleName) {
-  return Number(engine.evaluate(ruleName).nodeValue ?? 0);
+  const ruleValue = engine.evaluate(ruleName).nodeValue;
+
+  if (typeof ruleValue !== 'number') {
+    throw new Error(`Publicodes rule "${ruleName}" did not resolve to a number`);
+  }
+
+  return ruleValue;
+}
+
+function getOptionalRuleValue(engine: Engine<RuleName>, ruleName: RuleName) {
+  const ruleValue = engine.evaluate(ruleName).nodeValue;
+
+  if (ruleValue === null || ruleValue === undefined) {
+    return 0;
+  }
+
+  if (typeof ruleValue !== 'number') {
+    throw new Error(`Publicodes rule "${ruleName}" did not resolve to a number`);
+  }
+
+  return ruleValue;
 }
 
 function roundNumber(value: number) {
   return Math.round(value * 100) / 100;
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('fr-FR', {
-    currency: 'EUR',
-    maximumFractionDigits: 0,
-    style: 'currency',
-  }).format(value);
 }

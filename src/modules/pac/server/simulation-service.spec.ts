@@ -38,19 +38,19 @@ describe('getHeatingSimulation', () => {
         },
       ],
       heatPumpAnnualBill: 1331.43,
-      heatPumpBoilerReplacementBonus: 5267.81,
+      heatPumpCoupDePouce: 5267.81,
       heatPumpGrossPrice: 13999.85,
       heatPumpMaprimerenovAid: 4000,
-      heatPumpNetPrice: 3678.48,
+      heatPumpNetPrice: 4732.04,
       heatPumpProposedPower: 10.55,
       oilBoilerAnnualBill: 2199.71,
     });
   });
 
   const incomeCases: TestCase<HeatingSimulationInput['incomeCategory'], number>[] = [
-    { expectedOutput: 2584.13, input: 'Très modeste', label: 'very low income gets the highest total aid' },
-    { expectedOutput: 4678.48, input: 'Intermédiaire', label: 'middle income gets a lower total aid' },
-    { expectedOutput: 7678.48, input: 'Supérieur', label: 'high income still gets CEE aid in the default heat pump case' },
+    { expectedOutput: 3653.42, input: 'Très modeste', label: 'very low income gets the highest total aid' },
+    { expectedOutput: 5732.04, input: 'Intermédiaire', label: 'middle income gets a lower total aid' },
+    { expectedOutput: 8732.04, input: 'Supérieur', label: 'high income still gets CEE aid in the default heat pump case' },
   ];
 
   it.each(incomeCases)('$label', (testCase) => {
@@ -67,19 +67,23 @@ describe('getIncomeOptions', () => {
 
     expect(result).toStrictEqual([
       {
-        label: 'inférieur à 42 358 €',
+        max: 42_357,
+        min: null,
         value: 'Très modeste',
       },
       {
-        label: 'de 42 358 € à 51 564 €',
+        max: 51_564,
+        min: 42_358,
         value: 'Modeste',
       },
       {
-        label: 'de 51 565 € à 71 846 €',
+        max: 71_846,
+        min: 51_565,
         value: 'Intermédiaire',
       },
       {
-        label: 'supérieur à 71 846 €',
+        max: null,
+        min: 71_847,
         value: 'Supérieur',
       },
     ]);

@@ -19,4 +19,10 @@ Small public API integration for the `france-chaleur-urbaine-pac` frontend proto
 
 Input: address metadata, DPE, household size, MaPrimeRénov income category, surface.
 
-Output: PAC air/water proposed power, gross/net PAC price, annual energy bills, and heating mode comparisons with P1 and CO2 values.
+Output: PAC air/water proposed power, gross/net PAC price, MaPrimeRénov' and Coup de pouce aid amounts, annual energy bills, and heating mode comparisons with P1 and CO2 values.
+
+`POST /api/pac/income-options`
+
+Input: department code and household size.
+
+Output: MaPrimeRénov' income categories with numeric min/max bounds. The frontend owns user-facing label formatting.
