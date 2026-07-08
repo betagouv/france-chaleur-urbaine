@@ -8,8 +8,7 @@ import type { HeatingSimulationInput, HeatingSimulationResult, IncomeOption, Inc
 const require = createRequire(import.meta.url);
 const publicodesRules = require('@betagouv/france-chaleur-urbaine-publicodes/publicodes-build/france-chaleur-urbaine-publicodes.model.json');
 
-const HEATING_BILL_PARTS = ['P1abo', 'P1conso', 'P1prime', 'P1ECS', 'P2'] as const;
-const HEATING_P1_PARTS = ['P1abo', 'P1conso', 'P1prime', 'P1ECS', 'P1Consofroid'] as const;
+const HEATING_P1_PARTS = ['P1abo', 'P1conso'] as const;
 
 type HeatingBillPrefix = 'Bilan x PAC air-eau indiv' | 'Bilan x Gaz indiv avec cond' | 'Bilan x Fioul indiv';
 
@@ -138,7 +137,7 @@ function createPublicodesEngine() {
 }
 
 function getAnnualBill(engine: Engine<RuleName>, prefix: HeatingBillPrefix) {
-  return HEATING_BILL_PARTS.reduce((total, billPart) => total + getRuleValue(engine, `${prefix} . ${billPart}` as RuleName), 0);
+  return HEATING_P1_PARTS.reduce((total, billPart) => total + getRuleValue(engine, `${prefix} . ${billPart}` as RuleName), 0);
 }
 
 function getHeatingModeComparison(engine: Engine<RuleName>, heatingMode: (typeof HEATING_MODES)[number]) {
