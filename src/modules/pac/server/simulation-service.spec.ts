@@ -28,7 +28,7 @@ describe('getHeatingSimulation', () => {
         },
         {
           co2: 4203.71,
-          label: 'Chaudière gaz condensation',
+          label: 'Chaudière gaz',
           p1: 2004.78,
         },
         {

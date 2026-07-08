@@ -22,7 +22,7 @@ const HEATING_MODES = [
   {
     billPrefix: 'Bilan x Gaz indiv avec cond',
     co2RuleName: 'env . Installation x Gaz indiv avec cond x Individuel . Total',
-    label: 'Chaudière gaz condensation',
+    label: 'Chaudière gaz',
   },
   {
     billPrefix: 'Bilan x Fioul indiv',
