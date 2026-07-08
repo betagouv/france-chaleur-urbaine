@@ -186,6 +186,12 @@ type TableRowProps<T> = {
   onRowDoubleClick?: (rowId: any) => void;
   measureElement?: (element: Element | null) => void;
   columnClassName: (columnDef: ColumnDef<T>) => string;
+  /**
+   * Column definitions, passed to invalidate the row's memoization when a cell renderer changes
+   * (e.g. a `cell` closing over external toggle state) without the row data itself changing.
+   * Not read directly: `row.getVisibleCells()` already resolves the current column defs.
+   */
+  columns: ColumnDef<T>[];
 };
 
 // Memoized: with stable, primitive props (no `rowSelection` object), a selection change only
@@ -1062,6 +1068,7 @@ const TableSimple = <T extends RowData>({
                       onRowDoubleClick={onRowDoubleClick}
                       measureElement={measureRow}
                       columnClassName={columnClassName}
+                      columns={tableColumns}
                     />
                   );
                 })

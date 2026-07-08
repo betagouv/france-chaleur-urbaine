@@ -141,6 +141,12 @@ const TableCell = <T,>({ value, children: defaultValue, data, type, cellProps = 
 };
 
 export default memo(TableCell, (prevProps, nextProps) => {
+  // Les cellules à rendu personnalisé (forceCellRender) rendent `children`, recalculé à chaque
+  // render de la ligne et pouvant capturer un état externe (ex. un toggle). Les mémoïser sur
+  // value/data seuls masquerait tout changement de rendu à data constante : on ne les mémoïse pas.
+  if (prevProps.forceCellRender || nextProps.forceCellRender) {
+    return false;
+  }
   // Éviter la sérialisation JSON qui peut causer des erreurs de structure circulaire
   // Comparer directement les types et les valeurs
   return prevProps.type === nextProps.type && isEqual(prevProps.value, nextProps.value) && isEqual(prevProps.data, nextProps.data);
