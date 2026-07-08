@@ -311,6 +311,10 @@ export type SuspiciousIpRow = {
   /** Disposition de la règle la plus spécifique couvrant l'IP (`null` = non statuée). */
   ruleDisposition: ConversionIpDisposition | null;
   ruleReason: string | null;
+  /** CIDR de cette règle couvrante (`null` = aucune). Peut être plus large que l'IP → règle héritée. */
+  ruleIp: string | null;
+  /** Vrai si une règle porte exactement sur cette IP (≠ héritée d'une plage). Conditionne le retrait ici. */
+  hasExactRule: boolean;
 };
 
 /**
@@ -341,7 +345,8 @@ export async function getSuspiciousIps(params: {
     .groupBy('ce.ip')
     .having((eb) => eb.fn.countAll().filterWhere('ce.type', '=', 'address_test'), '>=', minTests)
     .select((eb) => [
-      sql<string>`${eb.ref('ce.ip')}::text`.as('ip'),
+      // Sélection directe de l'inet hôte → rendu nu (1.2.3.4) ; seul un ::text ajouterait un /32.
+      sql<string>`${eb.ref('ce.ip')}`.as('ip'),
       eb.fn.countAll<number>().as('events'),
       eb.fn.countAll<number>().filterWhere('ce.type', '=', 'display').as('displays'),
       eb.fn.countAll<number>().filterWhere('ce.type', '=', 'address_test').as('tests'),
@@ -367,6 +372,15 @@ export async function getSuspiciousIps(params: {
         .orderBy((eb) => sql`masklen(${eb.ref('r.ip')}) desc`)
         .limit(1)
         .as('rule_reason'),
+      eb
+        .selectFrom('conversion_ip_rules as r')
+        .select((sub) => sql<string>`${sub.ref('r.ip')}::text`.as('ip'))
+        .where((sub) => sql<SqlBool>`${sub.ref('ce.ip')} <<= ${sub.ref('r.ip')}`)
+        .orderBy((eb) => sql`masklen(${eb.ref('r.ip')}) desc`)
+        .limit(1)
+        .as('rule_ip'),
+      // Règle portant exactement sur l'IP : égalité `inet` (adresse + masklen), insensible au format texte.
+      eb.exists(eb.selectFrom('conversion_ip_rules as r').select('r.ip').whereRef('r.ip', '=', 'ce.ip')).as('has_exact_rule'),
     ])
     .orderBy((eb) => eb.fn.countAll().filterWhere('ce.type', '=', 'address_test'), 'desc')
     .limit(limit)
@@ -380,9 +394,11 @@ export async function getSuspiciousIps(params: {
     events: r.events,
     // min/max sur un groupe non vide (>= 1 event par IP) → jamais null.
     firstSeen: new Date(r.first_seen ?? 0).toISOString(),
+    hasExactRule: Boolean(r.has_exact_rule),
     ip: r.ip,
     lastSeen: new Date(r.last_seen ?? 0).toISOString(),
     ruleDisposition: r.rule_disposition,
+    ruleIp: r.rule_ip,
     ruleReason: r.rule_reason,
     testPerDisplay: r.displays > 0 ? r.tests / r.displays : null,
     tests: r.tests,

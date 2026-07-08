@@ -33,6 +33,13 @@ const dispositionBadge: Record<ConversionIpDisposition, { label: string; severit
   keep: { label: 'conservée', severity: 'info' },
 };
 
+const dispositionOptions: { label: string; value: ConversionIpDisposition }[] = [
+  { label: 'Bannir (exclure des stats)', value: 'exclude' },
+  { label: 'Conserver (IP légitime connue)', value: 'keep' },
+];
+
+const emptyRuleForm = { disposition: 'exclude' as ConversionIpDisposition, ip: '', reason: '' };
+
 /** Bouton-icône (globe) vers ipinfo.io (pays, ASN / hébergeur) — ouvre un onglet, à côté de l'IP. */
 const IpLink = ({ ip }: { ip: string }) => (
   <Button
@@ -57,9 +64,9 @@ const ConversionAbusePage = () => {
   const utils = trpc.useUtils();
   const [{ dateFrom, dateTo, host, minTests, route, source }, setFilters] = useQueryStates(filtersParsers);
 
-  const ruleDialog = useDialogState<{ ip: string; disposition: ConversionIpDisposition }>();
+  const ruleDialog = useDialogState();
   const removeDialog = useDialogState<{ ip: string }>();
-  const [reason, setReason] = useState('');
+  const [ruleForm, setRuleForm] = useState(emptyRuleForm);
 
   const scopeActive = Boolean(source || route || host);
   const { data: rows = [], isLoading } = trpc.conversionTracking.getSuspiciousIps.useQuery(
@@ -101,14 +108,21 @@ const ConversionAbusePage = () => {
   const removeMutation = trpc.conversionTracking.ipRules.remove.useMutation({ onSuccess: invalidate });
 
   const openRule = (ip: string, disposition: ConversionIpDisposition) => {
-    setReason('');
-    ruleDialog.open({ disposition, ip });
+    setRuleForm({ disposition, ip, reason: '' });
+    ruleDialog.open();
   };
-  // ConfirmDialog ne ferme que sur succès ; les erreurs tRPC sont notifiées globalement (errorHandlerLink).
+  const openAddRule = () => {
+    setRuleForm(emptyRuleForm);
+    ruleDialog.open();
+  };
+  // ConfirmDialog ne ferme que sur succès ; sur IP/CIDR invalide (validée serveur), l'erreur tRPC est notifiée
+  // globalement et le dialog reste ouvert.
   const confirmRule = async () => {
-    const data = ruleDialog.data;
-    if (!data) return;
-    const result = await upsertMutation.mutateAsync({ ...data, reason: reason.trim() });
+    const result = await upsertMutation.mutateAsync({
+      disposition: ruleForm.disposition,
+      ip: ruleForm.ip.trim(),
+      reason: ruleForm.reason.trim(),
+    });
     notify('success', `Règle « ${result.disposition} » enregistrée pour ${result.ip} — ${result.changedEvents} événement(s) recomptés.`);
   };
   const confirmRemove = async () => {
@@ -166,24 +180,29 @@ const ConversionAbusePage = () => {
       {
         accessorFn: (row) => row.ruleDisposition ?? '',
         cell: ({ row }) => {
-          const { ruleDisposition, ruleReason } = row.original;
+          const { ruleDisposition, ruleReason, ruleIp, hasExactRule } = row.original;
           if (!ruleDisposition) return <span className="text-(--text-mention-grey)">—</span>;
           const badge = dispositionBadge[ruleDisposition];
+          const inherited = !hasExactRule;
           return (
-            <span title={ruleReason ?? undefined}>
+            <span
+              className="flex flex-col items-start gap-0.5"
+              title={inherited ? `Héritée de la règle ${ruleIp}${ruleReason ? ` : ${ruleReason}` : ''}` : (ruleReason ?? undefined)}
+            >
               <Badge severity={badge.severity} small noIcon>
                 {badge.label}
               </Badge>
+              {inherited && <span className="break-all text-xs text-(--text-mention-grey)">via {ruleIp}</span>}
             </span>
           );
         },
         header: 'Statut',
         id: 'status',
-        width: '92px',
+        width: '130px',
       },
       {
         cell: ({ row }) => {
-          const { ip, ruleDisposition } = row.original;
+          const { ip, ruleDisposition, hasExactRule } = row.original;
           return (
             <div className="flex flex-wrap gap-1">
               {ruleDisposition !== 'exclude' && (
@@ -208,7 +227,8 @@ const ConversionAbusePage = () => {
                   Conserver
                 </Button>
               )}
-              {ruleDisposition && (
+              {/* Pas pour une disposition héritée d'une plage : elle se retire via la règle parente (tableau Règles). */}
+              {hasExactRule && (
                 <Button size="small" priority="tertiary" iconId="fr-icon-delete-line" onClick={() => removeDialog.open({ ip })}>
                   Retirer
                 </Button>
@@ -294,8 +314,7 @@ const ConversionAbusePage = () => {
     []
   );
 
-  const dialogData = ruleDialog.data;
-  const isExclude = dialogData?.disposition === 'exclude';
+  const isExclude = ruleForm.disposition === 'exclude';
 
   return (
     <SimplePage
@@ -389,9 +408,14 @@ const ConversionAbusePage = () => {
       </div>
 
       <div className="flex flex-col gap-3">
-        <Heading as="h2" className="mb-0">
-          Règles ({rules.length})
-        </Heading>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Heading as="h2" className="mb-0">
+            Règles ({rules.length})
+          </Heading>
+          <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={openAddRule}>
+            Ajouter une règle
+          </Button>
+        </div>
         <TableSimple
           columns={ruleColumns}
           data={rules}
@@ -406,17 +430,43 @@ const ConversionAbusePage = () => {
       <ConfirmDialog
         control={ruleDialog}
         size="md"
-        title={isExclude ? `Bannir ${dialogData?.ip}` : `Conserver ${dialogData?.ip}`}
+        title="Règle IP / CIDR"
         confirmLabel={isExclude ? 'Bannir' : 'Conserver'}
         confirmIconId={isExclude ? 'fr-icon-close-circle-line' : 'fr-icon-checkbox-circle-line'}
         danger={isExclude}
-        confirmDisabled={!reason.trim()}
+        confirmDisabled={!ruleForm.ip.trim() || !ruleForm.reason.trim()}
         onConfirm={confirmRule}
       >
-        <Input
-          label="Motif"
-          nativeInputProps={{ autoFocus: true, onChange: (event) => setReason(event.target.value), required: true, value: reason }}
-        />
+        <div className="flex flex-col gap-4">
+          <Input
+            label="IP ou plage CIDR"
+            className="mb-0"
+            hintText="Une IP (102.18.34.5) ou une plage (102.18.0.0/16 couvre tout 102.18.x.x). IPv4 et IPv6 acceptés."
+            nativeInputProps={{
+              onChange: (event) => setRuleForm((rule) => ({ ...rule, ip: event.target.value })),
+              placeholder: '102.18.0.0/16',
+              value: ruleForm.ip,
+            }}
+          />
+          <Select
+            label="Disposition"
+            className="mb-0"
+            nativeSelectProps={{
+              onChange: (event) => setRuleForm((rule) => ({ ...rule, disposition: event.target.value as ConversionIpDisposition })),
+              value: ruleForm.disposition,
+            }}
+            options={dispositionOptions}
+          />
+          <Input
+            label="Motif"
+            className="mb-0"
+            nativeInputProps={{
+              onChange: (event) => setRuleForm((rule) => ({ ...rule, reason: event.target.value })),
+              required: true,
+              value: ruleForm.reason,
+            }}
+          />
+        </div>
       </ConfirmDialog>
 
       <ConfirmDialog

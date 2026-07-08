@@ -73,8 +73,10 @@ const suspiciousRow = (row: Partial<SuspiciousIpRow> & Pick<SuspiciousIpRow, 'ip
   distinctRoutes: 1,
   events: 0,
   firstSeen: expect.any(String),
+  hasExactRule: false,
   lastSeen: expect.any(String),
   ruleDisposition: null,
+  ruleIp: null,
   ruleReason: null,
   testPerDisplay: null,
   tests: 0,
@@ -436,7 +438,7 @@ describe('conversionTrackingRouter', () => {
 
       const result = await createTestCaller(testUsers.admin).conversionTracking.getSuspiciousIps(suspiciousInput);
 
-      expect(result).toStrictEqual([suspiciousRow({ displays: 1, events: 4, ip: '1.1.1.1/32', testPerDisplay: 3, tests: 3 })]);
+      expect(result).toStrictEqual([suspiciousRow({ displays: 1, events: 4, ip: '1.1.1.1', testPerDisplay: 3, tests: 3 })]);
     });
 
     it('bannir (exclude) retire les events de l’IP des stats et renvoie le nombre recompté', async () => {
@@ -468,8 +470,16 @@ describe('conversionTrackingRouter', () => {
       ]);
       // …mais la détection montre toujours 1.1.1.1 avec sa disposition.
       expect(suspects).toStrictEqual([
-        suspiciousRow({ events: 2, ip: '1.1.1.1/32', ruleDisposition: 'exclude', ruleReason: 'bot', tests: 2 }),
-        suspiciousRow({ events: 1, ip: '2.2.2.2/32', tests: 1 }),
+        suspiciousRow({
+          events: 2,
+          hasExactRule: true,
+          ip: '1.1.1.1',
+          ruleDisposition: 'exclude',
+          ruleIp: '1.1.1.1/32',
+          ruleReason: 'bot',
+          tests: 2,
+        }),
+        suspiciousRow({ events: 1, ip: '2.2.2.2', tests: 1 }),
       ]);
     });
 
@@ -485,6 +495,47 @@ describe('conversionTrackingRouter', () => {
 
       await caller.conversionTracking.ipRules.upsert({ disposition: 'keep', ip: '10.0.0.5', reason: 'interne' });
       expect(await excludedEventIps()).toStrictEqual(['10.0.0.99/32']);
+
+      // Détection : règle exacte (keep sur 10.0.0.5) vs héritée de la plage (exclude sur 10.0.0.99 via /24).
+      const suspects = await caller.conversionTracking.getSuspiciousIps({ ...suspiciousInput, minTests: 1 });
+      expect(suspects.sort((a, b) => a.ip.localeCompare(b.ip))).toStrictEqual([
+        suspiciousRow({
+          events: 1,
+          hasExactRule: true,
+          ip: '10.0.0.5',
+          ruleDisposition: 'keep',
+          ruleIp: '10.0.0.5/32',
+          ruleReason: 'interne',
+          tests: 1,
+        }),
+        suspiciousRow({
+          events: 1,
+          hasExactRule: false,
+          ip: '10.0.0.99',
+          ruleDisposition: 'exclude',
+          ruleIp: '10.0.0.0/24',
+          ruleReason: 'plage',
+          tests: 1,
+        }),
+      ]);
+    });
+
+    it('une plage /24 exclut les IP comprises dedans sans toucher aux externes, et un keep /32 en réintègre une', async () => {
+      const caller = createTestCaller(testUsers.admin);
+      await seedEvents([
+        { created_at: daysAgo(2), ip: '172.16.5.10', type: 'address_test' }, // dans 172.16.5.0/24
+        { created_at: daysAgo(2), ip: '172.16.5.250', type: 'address_test' }, // dans 172.16.5.0/24
+        { created_at: daysAgo(2), ip: '172.16.6.10', type: 'address_test' }, // hors : /24 voisin
+        { created_at: daysAgo(2), ip: '8.8.8.8', type: 'address_test' }, // hors : autre bloc
+      ]);
+
+      const banned = await caller.conversionTracking.ipRules.upsert({ disposition: 'exclude', ip: '172.16.5.0/24', reason: 'plage' });
+      expect(banned.changedEvents).toBe(2);
+      expect(await excludedEventIps()).toStrictEqual(['172.16.5.10/32', '172.16.5.250/32']);
+
+      const kept = await caller.conversionTracking.ipRules.upsert({ disposition: 'keep', ip: '172.16.5.10', reason: 'interne' });
+      expect(kept.changedEvents).toBe(1);
+      expect(await excludedEventIps()).toStrictEqual(['172.16.5.250/32']);
     });
 
     it('réintégrer (remove) recompte les events et vide le registre', async () => {
