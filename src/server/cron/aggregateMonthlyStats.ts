@@ -4,6 +4,7 @@ import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
 import type { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
 import { Airtable } from '@/types/enum/Airtable';
 import { STAT_COMMUNES_SANS_RESEAU, STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
+import { formatAsISODate } from '@/utils/date';
 
 const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE,
@@ -47,8 +48,8 @@ const getFullMonthsBetweenDates = (startDate: string, endDate: string): { startD
     // Only include the month if it's fully within the range
     if (lastDay <= end && currentMonth >= start) {
       months.push({
-        endDate: lastDay.toISOString().slice(0, 10),
-        startDate: currentMonth.toISOString().slice(0, 10),
+        endDate: formatAsISODate(lastDay),
+        startDate: formatAsISODate(currentMonth),
       });
     }
 
@@ -538,17 +539,17 @@ export const aggregateMonthlyStats = async (start?: string, end?: string) => {
     startDate.setMonth(startDate.getMonth() - 1);
     startDate.setDate(1);
   }
-  const stringStartDate = startDate.toISOString().slice(0, 10);
+  const stringStartDate = formatAsISODate(startDate);
   const endDate = end ? new Date(end) : new Date();
   if (!end) {
     endDate.setDate(0);
   }
-  const stringEndDate = endDate.toISOString().slice(0, 10);
+  const stringEndDate = formatAsISODate(endDate);
   console.info(`From ${stringStartDate} to ${stringEndDate}`);
 
   const endAirtableDate = endDate;
   endAirtableDate.setDate(endAirtableDate.getDate() + 1);
-  const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
+  const stringEndAirtableDate = formatAsISODate(endAirtableDate);
 
   await Promise.all([
     saveDemandsStats(stringStartDate, stringEndAirtableDate),

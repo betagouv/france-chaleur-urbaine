@@ -6,6 +6,7 @@ import { type ConversionEvents, type Insertable, kdb, sql } from '@/server/db/ky
 import { cleanDatabase, seedTableUser } from '@/tests/fixtures';
 import type { TestCaseBoolean } from '@/tests/trpc-helpers';
 import { createMockContext, createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
+import { formatAsISODate } from '@/utils/date';
 
 import type { ConversionStatRow, SuspiciousIpRow } from './service';
 
@@ -42,8 +43,6 @@ const seedEvents = (events: ConversionEventSeed[]) =>
     .insertInto('conversion_events')
     .values(events.map((event) => ({ page: '/page', route: '/page', ...event })))
     .execute();
-
-const isoDay = (date: Date) => date.toISOString().slice(0, 10);
 
 /** Ligne de stats attendue, complète (défauts à zéro) — à utiliser avec `toStrictEqual`. */
 const statRow = (row: Partial<ConversionStatRow> & Pick<ConversionStatRow, 'channel' | 'label'>): ConversionStatRow => ({
@@ -254,7 +253,7 @@ describe('conversionTrackingRouter', () => {
           displays: 3,
           distinctIp: 2,
           label: 'Iframe A',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/page',
           source: source.id,
           sourceCreatedAt: new Date(source.created_at).toISOString(),
@@ -282,7 +281,7 @@ describe('conversionTrackingRouter', () => {
           demandRate: 0,
           displays: 2,
           label: '/villes/[ville]',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/villes/[ville]',
           testRate: 1 / 2,
           tests: 1,
@@ -297,7 +296,7 @@ describe('conversionTrackingRouter', () => {
           displays: 1,
           label: '/villes/[ville]',
           page: '/villes/charleville',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/villes/[ville]',
           testRate: 1,
           tests: 1,
@@ -307,7 +306,7 @@ describe('conversionTrackingRouter', () => {
           displays: 1,
           label: '/villes/[ville]',
           page: '/villes/reims',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/villes/[ville]',
           testRate: 0,
         }),
@@ -330,7 +329,7 @@ describe('conversionTrackingRouter', () => {
           displays: 1,
           host: 'engie.fr/a',
           label: '/iframe/carte',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/iframe/carte',
           testRate: 1,
           tests: 1,
@@ -340,7 +339,7 @@ describe('conversionTrackingRouter', () => {
           displays: 1,
           host: 'engie.fr/b',
           label: '/iframe/carte',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/iframe/carte',
           testRate: 0,
         }),
@@ -370,7 +369,7 @@ describe('conversionTrackingRouter', () => {
           channel: 'internal',
           demandRate: 0,
           label: '/villes/[ville]',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/villes/[ville]',
           tests: 1,
         }),
@@ -462,7 +461,7 @@ describe('conversionTrackingRouter', () => {
           demandRate: 0,
           distinctIp: 1,
           label: '/page',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/page',
           tests: 1,
         }),
