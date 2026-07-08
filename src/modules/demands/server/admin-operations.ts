@@ -3,7 +3,7 @@ import { TRPCError } from '@trpc/server';
 import type { UpdateAdminDemandInput } from '@/modules/demands/constants';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
 import type { NetworkType } from '@/modules/reseaux/constants';
-import { kdb, sql } from '@/server/db/kysely';
+import { type JsonObject, kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
 import { computeNetworkDistance } from './eligibility';
@@ -14,8 +14,10 @@ const logger = parentLogger.child({ module: 'demands/admin-operations' });
 
 /**
  * Soft-delete d'une demande (remplit `deleted_at`) et trace l'événement.
+ *
+ * `options.eventData` est fusionné dans le `data` de l'event `demand_deleted` (ex. `{ reason, kept_demand_id }`).
  */
-export const removeDemand = async (demandId: string, userId?: string) => {
+export const removeDemand = async (demandId: string, userId?: string, options?: { eventData?: JsonObject }) => {
   await kdb
     .updateTable('demands')
     .set({ deleted_at: new Date(), updated_at: new Date() })
@@ -23,18 +25,21 @@ export const removeDemand = async (demandId: string, userId?: string) => {
     .where('deleted_at', 'is', null)
     .execute();
 
+  const data = options?.eventData;
   if (userId) {
     await createUserEvent({
       author_id: userId,
       context_id: demandId,
       context_type: 'demand',
       type: 'demand_deleted',
+      ...(data ? { data } : {}),
     });
   } else {
     await createEvent({
       context_id: demandId,
       context_type: 'demand',
       type: 'demand_deleted',
+      ...(data ? { data } : {}),
     });
   }
 };
