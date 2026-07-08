@@ -125,6 +125,7 @@ function createEngineForIncome(input: IncomeOptionsInput) {
   return engine;
 }
 
+// Si surcharge serveur, faire un singleton
 function createPublicodesEngine() {
   return new Engine<RuleName>(publicodesRules, {
     logger: {
