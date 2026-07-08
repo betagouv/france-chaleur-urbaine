@@ -39,11 +39,11 @@ const INCOME_PUBLICODES_THRESHOLDS = {
 export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimulationResult {
   const engine = createEngineForSimulation(input);
   const heatPumpGrossPrice = getRuleValue(engine, 'Calcul Eco . PAC air-eau indiv . Investissement équipement Total');
-  const heatPumpMaprimerenovAid = getOptionalRuleValue(
+  const heatPumpMaprimerenovAid = getRuleValue(
     engine,
     "Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Ma prime renov'"
   );
-  const heatPumpCoupDePouce = getOptionalRuleValue(engine, 'ratios économiques x aides . Coup de pouce x PAC air-eau');
+  const heatPumpCoupDePouce = getRuleValue(engine, 'ratios économiques x aides . Coup de pouce x PAC air-eau');
 
   return {
     gasBoilerAnnualBill: roundNumber(getAnnualBill(engine, 'Bilan x Gaz indiv avec cond')),
@@ -150,20 +150,6 @@ function getHeatingModeComparison(engine: Engine<RuleName>, heatingMode: (typeof
 
 function getRuleValue(engine: Engine<RuleName>, ruleName: RuleName) {
   const ruleValue = engine.evaluate(ruleName).nodeValue;
-
-  if (typeof ruleValue !== 'number') {
-    throw new Error(`Publicodes rule "${ruleName}" did not resolve to a number`);
-  }
-
-  return ruleValue;
-}
-
-function getOptionalRuleValue(engine: Engine<RuleName>, ruleName: RuleName) {
-  const ruleValue = engine.evaluate(ruleName).nodeValue;
-
-  if (ruleValue === null || ruleValue === undefined) {
-    return 0;
-  }
 
   if (typeof ruleValue !== 'number') {
     throw new Error(`Publicodes rule "${ruleName}" did not resolve to a number`);
