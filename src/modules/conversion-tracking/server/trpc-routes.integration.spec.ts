@@ -2,12 +2,13 @@ import type { User } from 'next-auth';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { appRouter } from '@/modules/trpc/trpc.config';
-import { type ConversionEvents, type Insertable, kdb } from '@/server/db/kysely';
+import { type ConversionEvents, type Insertable, kdb, sql } from '@/server/db/kysely';
 import { cleanDatabase, seedTableUser } from '@/tests/fixtures';
 import type { TestCaseBoolean } from '@/tests/trpc-helpers';
 import { createMockContext, createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
+import { formatAsISODate } from '@/utils/date';
 
-import type { ConversionStatRow } from './service';
+import type { ConversionStatRow, SuspiciousIpRow } from './service';
 
 const adminOnlyPermissions: TestCaseBoolean<Partial<User> | null>[] = [
   { expectedOutput: false, input: null },
@@ -43,8 +44,6 @@ const seedEvents = (events: ConversionEventSeed[]) =>
     .values(events.map((event) => ({ page: '/page', route: '/page', ...event })))
     .execute();
 
-const isoDay = (date: Date) => date.toISOString().slice(0, 10);
-
 /** Ligne de stats attendue, complète (défauts à zéro) — à utiliser avec `toStrictEqual`. */
 const statRow = (row: Partial<ConversionStatRow> & Pick<ConversionStatRow, 'channel' | 'label'>): ConversionStatRow => ({
   demandRate: null,
@@ -66,6 +65,32 @@ const statRow = (row: Partial<ConversionStatRow> & Pick<ConversionStatRow, 'chan
   ...row,
 });
 
+/** Ligne de suspect attendue, complète (défauts) — `firstSeen`/`lastSeen` = échos du seed, non asservis. */
+const suspiciousRow = (row: Partial<SuspiciousIpRow> & Pick<SuspiciousIpRow, 'ip'>): SuspiciousIpRow => ({
+  demands: 0,
+  displays: 0,
+  distinctDays: 1,
+  distinctRoutes: 1,
+  events: 0,
+  firstSeen: expect.any(String),
+  lastSeen: expect.any(String),
+  ruleDisposition: null,
+  ruleReason: null,
+  testPerDisplay: null,
+  tests: 0,
+  ...row,
+});
+
+/** Les `ip::text` des events actuellement exclus (triées), pour vérifier la réconciliation du flag. */
+const excludedEventIps = () =>
+  kdb
+    .selectFrom('conversion_events')
+    .select((eb) => sql<string>`${eb.ref('ip')}::text`.as('ip'))
+    .where('excluded', '=', true)
+    .orderBy('ip')
+    .execute()
+    .then((rows) => rows.map((r) => r.ip));
+
 describe('conversionTrackingRouter', () => {
   beforeAll(async () => {
     await cleanDatabase();
@@ -75,6 +100,7 @@ describe('conversionTrackingRouter', () => {
   beforeEach(async () => {
     await Promise.all([
       kdb.deleteFrom('conversion_events').execute(),
+      kdb.deleteFrom('conversion_ip_rules').execute(),
       kdb.deleteFrom('conversion_sources').execute(),
       kdb.deleteFrom('demands').execute(),
       kdb.deleteFrom('events').execute(),
@@ -227,7 +253,7 @@ describe('conversionTrackingRouter', () => {
           displays: 3,
           distinctIp: 2,
           label: 'Iframe A',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/page',
           source: source.id,
           sourceCreatedAt: new Date(source.created_at).toISOString(),
@@ -255,7 +281,7 @@ describe('conversionTrackingRouter', () => {
           demandRate: 0,
           displays: 2,
           label: '/villes/[ville]',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/villes/[ville]',
           testRate: 1 / 2,
           tests: 1,
@@ -270,7 +296,7 @@ describe('conversionTrackingRouter', () => {
           displays: 1,
           label: '/villes/[ville]',
           page: '/villes/charleville',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/villes/[ville]',
           testRate: 1,
           tests: 1,
@@ -280,7 +306,7 @@ describe('conversionTrackingRouter', () => {
           displays: 1,
           label: '/villes/[ville]',
           page: '/villes/reims',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/villes/[ville]',
           testRate: 0,
         }),
@@ -303,7 +329,7 @@ describe('conversionTrackingRouter', () => {
           displays: 1,
           host: 'engie.fr/a',
           label: '/iframe/carte',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/iframe/carte',
           testRate: 1,
           tests: 1,
@@ -313,7 +339,7 @@ describe('conversionTrackingRouter', () => {
           displays: 1,
           host: 'engie.fr/b',
           label: '/iframe/carte',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/iframe/carte',
           testRate: 0,
         }),
@@ -343,7 +369,7 @@ describe('conversionTrackingRouter', () => {
           channel: 'internal',
           demandRate: 0,
           label: '/villes/[ville]',
-          period: isoDay(daysAgo(2)),
+          period: formatAsISODate(daysAgo(2)),
           route: '/villes/[ville]',
           tests: 1,
         }),
@@ -382,6 +408,127 @@ describe('conversionTrackingRouter', () => {
         statRow({ channel: 'iframe', label: 'Iframe muette', source: muette.id, sourceCreatedAt: expect.any(String) }),
         statRow({ channel: 'internal', label: '/villes/[ville]', route: '/villes/[ville]' }),
       ]);
+    });
+  });
+
+  describe('contrôle des abus / IP (admin)', () => {
+    const statsInput = { dateFrom: daysAgo(30), dateTo: now, granularity: 'day' as const };
+    const suspiciousInput = { dateFrom: daysAgo(30), dateTo: now, minTests: 2 };
+
+    describe('permissions', () => {
+      testPermissions(adminOnlyPermissions, (user) => () => createTestCaller(user).conversionTracking.getSuspiciousIps(suspiciousInput));
+      testPermissions(adminOnlyPermissions, (user) => () => createTestCaller(user).conversionTracking.ipRules.list());
+      testPermissions(
+        adminOnlyPermissions,
+        (user) => () => createTestCaller(user).conversionTracking.ipRules.upsert({ disposition: 'exclude', ip: '1.1.1.1', reason: 'x' })
+      );
+      testPermissions(adminOnlyPermissions, (user) => () => createTestCaller(user).conversionTracking.ipRules.remove({ ip: '1.1.1.1' }));
+    });
+
+    it('liste les IP suspectes au-dessus du seuil, triées par nb de tests, avec les signaux et sans règle', async () => {
+      await seedEvents([
+        { created_at: daysAgo(2), ip: '1.1.1.1', type: 'display' },
+        { created_at: daysAgo(2), ip: '1.1.1.1', type: 'address_test' },
+        { created_at: daysAgo(2), ip: '1.1.1.1', type: 'address_test' },
+        { created_at: daysAgo(2), ip: '1.1.1.1', type: 'address_test' },
+        { created_at: daysAgo(2), ip: '9.9.9.9', type: 'address_test' }, // 1 test < seuil (2)
+      ]);
+
+      const result = await createTestCaller(testUsers.admin).conversionTracking.getSuspiciousIps(suspiciousInput);
+
+      expect(result).toStrictEqual([suspiciousRow({ displays: 1, events: 4, ip: '1.1.1.1/32', testPerDisplay: 3, tests: 3 })]);
+    });
+
+    it('bannir (exclude) retire les events de l’IP des stats et renvoie le nombre recompté', async () => {
+      const caller = createTestCaller(testUsers.admin);
+      await seedEvents([
+        { created_at: daysAgo(2), ip: '1.1.1.1', type: 'address_test' },
+        { created_at: daysAgo(2), ip: '1.1.1.1', type: 'address_test' },
+        { created_at: daysAgo(2), ip: '2.2.2.2', type: 'address_test' },
+      ]);
+
+      const rule = await caller.conversionTracking.ipRules.upsert({ disposition: 'exclude', ip: '1.1.1.1', reason: 'bot' });
+      expect(rule).toStrictEqual({ changedEvents: 2, disposition: 'exclude', ip: '1.1.1.1/32', reason: 'bot' });
+
+      const [stats, suspects] = await Promise.all([
+        caller.conversionTracking.getStats(statsInput),
+        caller.conversionTracking.getSuspiciousIps({ ...suspiciousInput, minTests: 1 }),
+      ]);
+      // Seul le test de 2.2.2.2 reste compté dans les stats…
+      expect(stats).toStrictEqual([
+        statRow({
+          channel: 'internal',
+          demandRate: 0,
+          distinctIp: 1,
+          label: '/page',
+          period: formatAsISODate(daysAgo(2)),
+          route: '/page',
+          tests: 1,
+        }),
+      ]);
+      // …mais la détection montre toujours 1.1.1.1 avec sa disposition.
+      expect(suspects).toStrictEqual([
+        suspiciousRow({ events: 2, ip: '1.1.1.1/32', ruleDisposition: 'exclude', ruleReason: 'bot', tests: 2 }),
+        suspiciousRow({ events: 1, ip: '2.2.2.2/32', tests: 1 }),
+      ]);
+    });
+
+    it('bannit une plage CIDR, et un keep plus spécifique l’emporte sur l’exclude', async () => {
+      const caller = createTestCaller(testUsers.admin);
+      await seedEvents([
+        { created_at: daysAgo(2), ip: '10.0.0.5', type: 'address_test' },
+        { created_at: daysAgo(2), ip: '10.0.0.99', type: 'address_test' },
+      ]);
+
+      await caller.conversionTracking.ipRules.upsert({ disposition: 'exclude', ip: '10.0.0.0/24', reason: 'plage' });
+      expect(await excludedEventIps()).toStrictEqual(['10.0.0.5/32', '10.0.0.99/32']);
+
+      await caller.conversionTracking.ipRules.upsert({ disposition: 'keep', ip: '10.0.0.5', reason: 'interne' });
+      expect(await excludedEventIps()).toStrictEqual(['10.0.0.99/32']);
+    });
+
+    it('réintégrer (remove) recompte les events et vide le registre', async () => {
+      const caller = createTestCaller(testUsers.admin);
+      await seedEvents([{ created_at: daysAgo(2), ip: '1.1.1.1', type: 'address_test' }]);
+      await caller.conversionTracking.ipRules.upsert({ disposition: 'exclude', ip: '1.1.1.1', reason: 'bot' });
+
+      const removed = await caller.conversionTracking.ipRules.remove({ ip: '1.1.1.1' });
+      expect(removed).toStrictEqual({ changedEvents: 1, ip: '1.1.1.1/32' });
+
+      const [rules, excluded] = await Promise.all([caller.conversionTracking.ipRules.list(), excludedEventIps()]);
+      expect(rules).toStrictEqual([]);
+      expect(excluded).toStrictEqual([]);
+    });
+
+    it('conserver (keep) enregistre la règle sans exclure les events', async () => {
+      const caller = createTestCaller(testUsers.admin);
+      await seedEvents([{ created_at: daysAgo(2), ip: '1.1.1.1', type: 'address_test' }]);
+
+      const rule = await caller.conversionTracking.ipRules.upsert({ disposition: 'keep', ip: '1.1.1.1', reason: 'partenaire' });
+      expect(rule).toStrictEqual({ changedEvents: 0, disposition: 'keep', ip: '1.1.1.1/32', reason: 'partenaire' });
+      expect(await excludedEventIps()).toStrictEqual([]);
+    });
+
+    it('règle collante : un nouvel event d’une IP déjà bannie entre exclu (hors stats)', async () => {
+      const admin = createTestCaller(testUsers.admin);
+      // L’IP du contexte de test vaut 127.0.0.1 → on la bannit avant l’event.
+      await admin.conversionTracking.ipRules.upsert({ disposition: 'exclude', ip: '127.0.0.1', reason: 'bot' });
+
+      await createTestCaller(null).conversionTracking.recordEvent({
+        page: '/villes/paris',
+        route: '/villes/[ville]',
+        type: 'address_test',
+      });
+
+      const event = await kdb.selectFrom('conversion_events').select('excluded').executeTakeFirstOrThrow();
+      expect(event.excluded).toStrictEqual(true);
+      expect(await admin.conversionTracking.getStats(statsInput)).toStrictEqual([]);
+    });
+
+    it('rejette une IP invalide (BAD_REQUEST)', async () => {
+      await expect(
+        createTestCaller(testUsers.admin).conversionTracking.ipRules.upsert({ disposition: 'exclude', ip: 'pas-une-ip', reason: 'x' })
+      ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
     });
   });
 });

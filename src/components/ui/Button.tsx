@@ -61,6 +61,12 @@ export const variantClassNames = {
     tertiary: 'text-info!',
     'tertiary no outline': '',
   },
+  success: {
+    primary: 'bg-success/90! text-white! hover:bg-success! active:bg-success/80!',
+    secondary: 'border-success! text-success! shadow-success',
+    tertiary: 'text-success!',
+    'tertiary no outline': '',
+  },
   warning: {
     primary: 'bg-warning/90! text-white! hover:bg-warning! active:bg-warning/80!',
     secondary: 'border-warning! text-warning! shadow-warning',

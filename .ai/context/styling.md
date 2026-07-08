@@ -7,6 +7,10 @@
 - **Never**: new CSS-in-JS, global CSS for component styles, the legacy `Box` and `Text` components (use `div`/`p` + Tailwind), emojis (use icons).
 - **Inline `style={}`**: allowed only for genuinely dynamic/computed values (a JS-derived color, width, transform), and only for that property — everything static stays in Tailwind.**
 
+## Dialogs & confirmations
+- **Never** `window.confirm` / `window.prompt` / `alert`. Use `ConfirmDialog` (`@/components/ui/ConfirmDialog`) driven by `useDialogState` (`@/hooks/useDialogState`). Put any input (e.g. a required reason) in its `children`, gate the confirm button with `confirmDisabled`; `danger` renders the destructive (red) confirm. The dialog closes only on success (errors keep it open and are notified globally). For a full form use `Dialog` directly.
+- Coloured buttons via the `Button` `variant` prop (`destructive` red, `success` green, `info`, `warning`) + `iconId`, never ad-hoc colour classes.
+
 ## Tailwind rules
 - `cx()` (`@/utils/cx`) **only** for conditional classes; write unconditional class lists as plain strings.
 - Don't wrap literal DSFR utility classes in `fr.cx(...)` — write them inline (`'fr-text--xs font-bold'`); keep `fr.cx()` only for variable/typed values.
