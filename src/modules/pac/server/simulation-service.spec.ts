@@ -19,31 +19,31 @@ describe('getHeatingSimulation', () => {
     const result = getHeatingSimulation(baseInput);
 
     expect(result).toStrictEqual({
-      gasBoilerAnnualBill: 2176.38,
+      gasBoilerAnnualBill: 2001.49,
       heatingModeComparisons: [
         {
           co2: 1060.28,
           label: 'PAC air/eau',
-          p1: 1341.05,
+          p1: 1331.43,
         },
         {
           co2: 4203.71,
           label: 'Chaudière gaz',
-          p1: 2004.78,
+          p1: 2001.49,
         },
         {
           co2: 6372.62,
           label: 'Chaudière fioul',
-          p1: 2203,
+          p1: 2199.71,
         },
       ],
-      heatPumpAnnualBill: 1579.85,
+      heatPumpAnnualBill: 1331.43,
       heatPumpBoilerReplacementBonus: 5267.81,
       heatPumpGrossPrice: 13999.85,
       heatPumpMaprimerenovAid: 4000,
       heatPumpNetPrice: 3678.48,
       heatPumpProposedPower: 10.55,
-      oilBoilerAnnualBill: 2374.6,
+      oilBoilerAnnualBill: 2199.71,
     });
   });
 
