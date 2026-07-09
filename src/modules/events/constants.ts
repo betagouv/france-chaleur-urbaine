@@ -21,6 +21,7 @@ export const eventTypes = [
   'demand_satisfaction_comment_submitted',
   'demand_survey_submitted',
   'demand_deleted',
+  'demand_deleted_by_system',
   'demand_email_sent',
   'demand_notification_sent',
   'demand_linked_to_user',
@@ -73,6 +74,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   demand_assignment_changed: 'Réaffectation (demande)',
   demand_created: 'Création demande',
   demand_deleted: 'Suppression demande',
+  demand_deleted_by_system: 'Suppression demande (automatique)',
   demand_email_sent: 'Email envoyé (demande)',
   demand_linked_to_user: 'Liaison demandes → compte',
   demand_notification_sent: 'Notification gestionnaires',
@@ -136,6 +138,7 @@ export type EventDataMap = {
   conversion_source_updated: { key: string; label: string };
   demand_created: Record<string, unknown> | null;
   demand_deleted: Record<string, unknown> | null;
+  demand_deleted_by_system: { reason?: string; kept_demand_id?: string } | null;
   demand_email_sent: { key: string; object: string; to: string };
   demand_linked_to_user: { count: number; email: string };
   demand_notification_sent: null;

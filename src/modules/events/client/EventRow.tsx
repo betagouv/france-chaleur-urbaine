@@ -133,6 +133,13 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),
+  demand_deleted_by_system: (event, updateFilters) => (
+    <>
+      <span>La </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+      <span> a été supprimée automatiquement{event.data?.reason === 'duplicate' ? ' (doublon)' : ''}</span>
+    </>
+  ),
   demand_email_sent: (event, updateFilters) => (
     <>
       <span>a envoyé un email à {event.data.to} pour une </span>

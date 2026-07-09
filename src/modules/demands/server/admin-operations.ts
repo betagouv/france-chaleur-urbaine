@@ -14,6 +14,9 @@ const logger = parentLogger.child({ module: 'demands/admin-operations' });
 
 /**
  * Soft-delete d'une demande (remplit `deleted_at`) et trace l'événement.
+ *
+ * Avec `userId` : suppression manuelle → `demand_deleted` attribuée à l'utilisateur.
+ * Sans `userId` : suppression automatique (batch/système) → `demand_deleted_by_system`, sans auteur.
  */
 export const removeDemand = async (demandId: string, userId?: string) => {
   await kdb
@@ -34,7 +37,7 @@ export const removeDemand = async (demandId: string, userId?: string) => {
     await createEvent({
       context_id: demandId,
       context_type: 'demand',
-      type: 'demand_deleted',
+      type: 'demand_deleted_by_system',
     });
   }
 };
