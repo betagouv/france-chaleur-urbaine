@@ -1,7 +1,7 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 
 import type { DemandStatus } from '@/modules/demands/constants';
-import { demandStatusDefault } from '@/modules/demands/constants';
+import { demandStatusDefault, getDemandeurStatusLabel } from '@/modules/demands/constants';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { upperCaseFirstChar } from '@/utils/strings';
 
@@ -39,9 +39,19 @@ const statusConfig: Record<
 
 type DemandStatusBadgeProps = {
   status: DemandStatus;
+  /** `demandeur` neutralise les statuts internes destinés aux gestionnaires (« À traiter » → « En cours de traitement ») en badge info. */
+  audience?: 'gestionnaire' | 'demandeur';
 };
 
-const DemandStatusBadge = ({ status }: DemandStatusBadgeProps) => {
+const DemandStatusBadge = ({ status, audience = 'gestionnaire' }: DemandStatusBadgeProps) => {
+  // Vue demandeur : couleur métier des gestionnaires masquée, badge info neutre pour tous les statuts.
+  if (audience === 'demandeur') {
+    return (
+      <Badge small severity="info" noIcon>
+        {upperCaseFirstChar(getDemandeurStatusLabel(status || demandStatusDefault))}
+      </Badge>
+    );
+  }
   const config = statusConfig[status] ?? statusConfig[demandStatusDefault];
   return (
     <Badge small className={config.className}>

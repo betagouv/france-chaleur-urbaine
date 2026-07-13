@@ -5,7 +5,7 @@ import { EligibilityFormAddress, EligibilityFormContact } from '@/components/Eli
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import useContactFormFCU, { type ContactFormContext } from '@/hooks/useContactFormFCU';
-import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
+import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
 import { ContactFormWrapper, EligibilityContactFormStyle } from './EligibilityContactForm.style';
 
@@ -72,7 +72,7 @@ const EligibilityContactForm: React.FC<EligibilityContactFormProps> = ({ fullAdd
         </ContactFormWrapper>
 
         <ContactFormWrapper active={messageReceived}>
-          <DemandSondageForm addressData={addressData} cardMode />
+          {addressData.submissionResult && <DemandSubmittedPanel submissionResult={addressData.submissionResult} />}
         </ContactFormWrapper>
       </div>
     </>

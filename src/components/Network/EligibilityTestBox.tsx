@@ -19,7 +19,8 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import { getDemandOrigin } from '@/modules/conversion-tracking/client/trackingContext';
 import { useRecordConversionEvent } from '@/modules/conversion-tracking/client/useRecordConversionEvent';
 import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
-import type { ContactFormInfos, ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
+import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
+import type { ContactFormInfos, DemandSubmissionResult, ModeDeChauffage } from '@/modules/demands/constants';
 import { AddressField } from '@/modules/form/AddressField';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
@@ -50,6 +51,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   const [eligibilityStatus, setEligibilityStatus] = useState<NetworkEligibilityStatus>();
   const { userInfo, setUserInfo } = useUserInfo();
   const [formState, setFormState] = useState<FormState>('idle');
+  const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
 
   // appelé au clic sur Tester l'adresse, pour récupérer l'éligibilité et les informations du réseau
   const testAddressEligibility = async (geoAddress: BANAddressFeature) => {
@@ -130,25 +132,29 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         region: (addressContext[2] || '').trim(),
       };
       setFormState('sendingDemand');
-      await trpcUtils.client.demands.user.create.mutate(demandCreation);
+      const submissionResult = await trpcUtils.client.demands.user.create.mutate(demandCreation);
+      setSubmissionResult(submissionResult);
       setFormState('demandCreated');
-      recordConversionEvent('demand', { eligible: !!eligibilityStatus?.isEligible });
-      trackEvent(
-        `Eligibilité|Formulaire de contact ${eligibilityStatus?.isEligible ? 'é' : 'iné'}ligible - Fiche réseau - Envoi`,
-        selectedGeoAddress?.properties.label
-      );
-      trackPostHogEvent('address_test:contact_form_submitted', {
-        address: selectedGeoAddress.properties.label,
-        company_type: contactFormInfos.companyType || undefined,
-        demand_area_m2: contactFormInfos.demandArea,
-        has_phone: Boolean(contactFormInfos.phone),
-        heating_energy: contactFormInfos.heatingEnergy as ModeDeChauffage,
-        heating_type: userInfo.heatingType as TypeDeChauffage | undefined,
-        is_eligible: !!eligibilityStatus?.isEligible,
-        nb_logements: contactFormInfos.nbLogements,
-        source: 'fiche-reseau',
-        structure_type: contactFormInfos.structure || '',
-      });
+      // La déduplication renvoie une demande existante sans rien créer : on n'émet les événements que pour une création réelle.
+      if (!submissionResult.isExisting) {
+        recordConversionEvent('demand', { eligible: !!eligibilityStatus?.isEligible });
+        trackEvent(
+          `Eligibilité|Formulaire de contact ${eligibilityStatus?.isEligible ? 'é' : 'iné'}ligible - Fiche réseau - Envoi`,
+          selectedGeoAddress?.properties.label
+        );
+        trackPostHogEvent('address_test:contact_form_submitted', {
+          address: selectedGeoAddress.properties.label,
+          company_type: contactFormInfos.companyType || undefined,
+          demand_area_m2: contactFormInfos.demandArea,
+          has_phone: Boolean(contactFormInfos.phone),
+          heating_energy: contactFormInfos.heatingEnergy as ModeDeChauffage,
+          heating_type: userInfo.heatingType,
+          is_eligible: !!eligibilityStatus?.isEligible,
+          nb_logements: contactFormInfos.nbLogements,
+          source: 'fiche-reseau',
+          structure_type: contactFormInfos.structure || '',
+        });
+      }
     } catch (_err) {
       setFormState('demandSubmissionError');
     }
@@ -250,28 +256,9 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
               )}
             </Box>
 
-            {formState === 'demandCreated' ? (
-              <Box boxShadow="inset 16px 0 0 0 var(--border-default-blue-france)" pl="4w" py="1w" mt="2w">
-                <Text size="lg" fontWeight="bold">
-                  Votre demande de contact est bien prise en compte.
-                </Text>
-
-                {eligibilityStatus.isEligible && userInfo.heatingType === 'collectif' && (
-                  <Box mt="1w">
-                    Seul le gestionnaire du réseau pourra vous confirmer la faisabilité technique et les délais du raccordement. Sans
-                    attendre,{' '}
-                    <Link
-                      href="/documentation/guide-france-chaleur-urbaine.pdf"
-                      eventKey="Téléchargement|Guide FCU|Confirmation éligibilité"
-                      postHogEventKey="link:click"
-                      postHogEventProps={{ link_name: 'guide_fcu', source: 'fiche-reseau' }}
-                      isExternal
-                    >
-                      téléchargez notre guide pratique
-                    </Link>{' '}
-                    afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.
-                  </Box>
-                )}
+            {formState === 'demandCreated' && submissionResult ? (
+              <Box mt="2w">
+                <DemandSubmittedPanel submissionResult={submissionResult} />
               </Box>
             ) : (
               <>

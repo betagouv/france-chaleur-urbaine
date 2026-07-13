@@ -3,11 +3,11 @@
 // exemple: ENABLE_INSCRIPTIONS: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS),
 export const clientConfig = {
   banApiBaseUrl: process.env.NEXT_PUBLIC_BAN_API_BASE_URL ?? 'https://data.geopf.fr/geocodage/',
-  feedbackUrl:
-    'https://voxusagers.numerique.gouv.fr/Demarches/3067?&view-mode=formulaire-avis&nd_mode=en-ligne-enti%C3%A8rement&nd_source=button&key=d72603000c07b99a66da0a230c832f7e',
   linkedInUrl: 'https://fr.linkedin.com/company/france-chaleur-urbaine',
   networkInfoFieldMaxCharacters: 700,
   networkSearchMinimumCharactersThreshold: 3,
+  // Adresse d'expédition des emails FCU (source unique, réutilisée par MAIL_FROM côté serveur et l'UI de confirmation)
+  noReplyEmail: 'no-reply@france-chaleur-urbaine.beta.gouv.fr',
   publicodesDocumentationURL:
     process.env.NEXT_PUBLIC_PUBLICODES_DOCUMENTATION_URL ?? 'https://betagouv.github.io/france-chaleur-urbaine-publicodes',
   rechercheEntreprisesApiUrl: process.env.NEXT_PUBLIC_RECHERCHE_ENTREPRISES_API_URL ?? 'https://recherche-entreprises.api.gouv.fr',

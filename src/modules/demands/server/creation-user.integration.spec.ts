@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { sendEmailTemplate } from '@/modules/email';
 import { kdb } from '@/server/db/kysely';
 import { buildDemandInput, cleanDatabase, seedProEligibilityTestsAddress, seedTableUser } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
@@ -57,6 +58,7 @@ vi.mock('@/modules/ban/server/service', () => ({
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 
 import { createDemand } from './creation-user';
+import { enrichDemandForGestionnaire, getDemandById } from './helpers';
 
 const testUserId = uuid(100);
 
@@ -188,8 +190,9 @@ describe('creation-user', () => {
 
       const result = await createDemand(input, { userId: testUserId });
 
-      // The result is augmented with haut_potentiel
-      expect(result.haut_potentiel).toBe(true);
+      // haut_potentiel est calculé à l'enrichissement (plus dans le retour de createDemand)
+      const enriched = enrichDemandForGestionnaire({ demand: await getDemandById(result.id), testAddress: null });
+      expect(enriched.haut_potentiel).toBe(true);
     });
 
     it('retourne haut_potentiel=true pour une demande Collectif + Tertiaire', async () => {
@@ -200,7 +203,8 @@ describe('creation-user', () => {
 
       const result = await createDemand(input, { userId: testUserId });
 
-      expect(result.haut_potentiel).toBe(true);
+      const enriched = enrichDemandForGestionnaire({ demand: await getDemandById(result.id), testAddress: null });
+      expect(enriched.haut_potentiel).toBe(true);
     });
 
     it('utilise nbLogements fourni au lieu de le récupérer', async () => {
@@ -256,6 +260,61 @@ describe('creation-user', () => {
       const legacyValues = demandInDb?.legacy_values as Record<string, unknown>;
       expect(legacyValues.Status).toBe(expectedOutput.Status);
       expect(legacyValues['Relance à activer']).toBe(expectedOutput['Relance à activer']);
+    });
+
+    describe('déduplication (deduplicate: true)', () => {
+      it("renvoie la demande existante sans en créer une nouvelle ni envoyer d'email si même email + adresse < 30 jours", async () => {
+        const input = buildDemandInput();
+
+        const created = await createDemand(input, { deduplicate: true, userId: testUserId });
+        vi.mocked(sendEmailTemplate).mockClear();
+
+        const duplicate = await createDemand(input, { deduplicate: true, userId: testUserId });
+
+        expect(duplicate).toMatchObject({ id: created.id, isExisting: true });
+
+        const demands = await kdb.selectFrom('demands').selectAll().execute();
+        expect(demands.length).toBe(1);
+        expect(sendEmailTemplate).not.toHaveBeenCalled();
+      });
+
+      it("crée une nouvelle demande si l'adresse diffère", async () => {
+        await createDemand(buildDemandInput(), { deduplicate: true, userId: testUserId });
+        const newDemand = await createDemand(buildDemandInput({ address: '5 Avenue des Champs-Élysées 75008 Paris' }), {
+          deduplicate: true,
+          userId: testUserId,
+        });
+
+        expect(newDemand.isExisting).toBe(false);
+        const demands = await kdb.selectFrom('demands').selectAll().execute();
+        expect(demands.length).toBe(2);
+      });
+
+      it('ne déduplique pas quand deduplicate est absent (parcours batch)', async () => {
+        await createDemand(buildDemandInput(), { userId: testUserId });
+        const newDemand = await createDemand(buildDemandInput(), { userId: testUserId });
+
+        expect(newDemand.isExisting).toBe(false);
+        const demands = await kdb.selectFrom('demands').selectAll().execute();
+        expect(demands.length).toBe(2);
+      });
+
+      it('projette le résultat de soumission attendu', async () => {
+        const input = buildDemandInput();
+        const submissionResult = await createDemand(input, { deduplicate: true, userId: testUserId });
+
+        expect(submissionResult).toEqual({
+          address: input.address,
+          createdAt: expect.any(String),
+          distance: 45,
+          email: input.email,
+          id: expect.any(String),
+          isEligible: true,
+          isExisting: false,
+          networkName: null,
+          status: 'À traiter',
+        });
+      });
     });
   });
 });

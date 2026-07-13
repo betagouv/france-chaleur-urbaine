@@ -4,13 +4,11 @@ import type { ColumnFiltersState } from '@tanstack/react-table';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
 import Input from '@/components/form/dsfr/Input';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
 import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
 import FCUBadge from '@/components/ui/Badge';
-import Button from '@/components/ui/Button';
 import Loader from '@/components/ui/Loader';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
@@ -18,9 +16,6 @@ import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import AffectedNetwork from '@/modules/demands/client/AffectedNetwork';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
-import Status from '@/modules/demands/client/Status';
-import { eligibilityTitleByType } from '@/modules/demands/constants';
-import type { Demand } from '@/modules/demands/types';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
 import type { AdresseEligible } from '@/modules/map/client/layers/specs/adressesEligibles';
@@ -32,7 +27,6 @@ import type { DemandStatus } from '@/types/enum/DemandSatus';
 import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
-import { stopPropagation } from '@/utils/events';
 import { formatMWh } from '@/utils/strings';
 
 type DemandsList = RouterOutput['demands']['user']['list'];
@@ -105,9 +99,6 @@ function MesDemandesPage(): React.ReactElement {
       );
   }, [demands]);
 
-  // Status est en lecture seule sur cette page (disabled=true) — noop suffit
-  const updateDemand = useCallback(async () => {}, []);
-
   const tableColumns: ColumnDef<DemandsListItem>[] = useMemo(
     () => [
       {
@@ -144,28 +135,11 @@ function MesDemandesPage(): React.ReactElement {
         accessorKey: 'Status',
         cell: ({ row }) => {
           const demand = row.original;
-          return (
-            <div>
-              <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={true} className="mb-0!" />
-              <div className="" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-                <EligibilityHelpDialog detailedEligibilityStatus={demand.testAddress.eligibility}>
-                  <Button
-                    className="text-gray-700! font-normal! italic"
-                    title="Voir le détail de l'éligibilité"
-                    priority="tertiary no outline"
-                    size="small"
-                    iconId="fr-icon-info-line"
-                  >
-                    {demand.testAddress.eligibility?.type ? eligibilityTitleByType[demand.testAddress.eligibility?.type] : 'Non connu'}
-                  </Button>
-                </EligibilityHelpDialog>
-              </div>
-            </div>
-          );
+          return <DemandStatusBadge status={demand.Status as DemandStatus} audience="demandeur" />;
         },
         enableGlobalFilter: false,
         filterProps: {
-          Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
+          Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} audience="demandeur" />,
         },
         filterType: 'Facets',
         header: 'Statut',
@@ -246,7 +220,7 @@ function MesDemandesPage(): React.ReactElement {
         visible: false,
       },
     ],
-    [updateDemand]
+    []
   );
 
   const onTableRowClick = useCallback(

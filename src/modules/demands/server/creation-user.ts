@@ -1,11 +1,9 @@
-import type { Selectable } from 'kysely';
-
-import { type CreateDemandInput, formatDataToLegacyAirtable } from '@/modules/demands/constants';
+import { type CreateDemandInput, type DemandSubmissionResult, formatDataToLegacyAirtable } from '@/modules/demands/constants';
+import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import { createEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
-import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
-import { kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { omitEmptyStringValues } from '@/utils/objects';
 
@@ -15,8 +13,11 @@ import {
   getBatimentInfoAtCoords,
   getConsommationGazAdresse,
 } from './eligibility';
-import { enrichDemandForAdmin, getDemandById } from './helpers';
+import { getDemandById } from './helpers';
 import type { LegacyValuesPatch } from './legacy-values';
+
+/** Fenêtre de dédoublonnage : une demande identique (email + adresse) dans les 30 derniers jours bloque une nouvelle création. */
+const DEMAND_DEDUP_WINDOW_DAYS = 30;
 
 /**
  * Crée une demande côté utilisateur : enrichit avec la conso gaz / bâtiment BNB,
@@ -24,9 +25,22 @@ import type { LegacyValuesPatch } from './legacy-values';
  */
 export const createDemand = async (
   values: CreateDemandInput,
-  { userId, pro_eligibility_tests_addresse_id }: { userId?: string; pro_eligibility_tests_addresse_id?: string } = {}
-) => {
-  let testAddressFromDB: Omit<Selectable<ProEligibilityTestsAddresses>, 'eligibility_history'> | null = null;
+  {
+    userId,
+    pro_eligibility_tests_addresse_id,
+    deduplicate,
+  }: { userId?: string; pro_eligibility_tests_addresse_id?: string; deduplicate?: boolean } = {}
+): Promise<DemandSubmissionResult> => {
+  // Normalisation avant toute comparaison (dédup) ou insertion : email + adresse sans espaces superflus,
+  // pour tous les appelants (route user comme batch pro). Les données historiques sont nettoyées par migration.
+  values = { ...values, address: values.address.trim(), email: values.email.trim() };
+
+  if (deduplicate) {
+    const existingDemand = await findRecentDemandByEmailAndAddress(values.email, values.address);
+    if (existingDemand) {
+      return toDemandSubmissionResult(existingDemand, true);
+    }
+  }
 
   const { lat, lon } = values.coords;
   const legacyValues = formatDataToLegacyAirtable(values);
@@ -67,30 +81,19 @@ export const createDemand = async (
   }
 
   if (pro_eligibility_tests_addresse_id) {
-    const updatedTestAddress = await kdb
+    await kdb
       .updateTable('pro_eligibility_tests_addresses')
       .set({ demand_id: createdDemand.id })
-      .returningAll()
       .where('id', '=', pro_eligibility_tests_addresse_id)
-      .executeTakeFirst();
-    if (updatedTestAddress) {
-      testAddressFromDB = updatedTestAddress;
-    }
+      .execute();
   } else if (lat && lon) {
-    const createdTestAddress = await createEligibilityTestAddress({
+    await createEligibilityTestAddress({
       address: values.address,
       demand_id: createdDemand.id,
       latitude: lat,
       longitude: lon,
     });
-    if (createdTestAddress) {
-      testAddressFromDB = createdTestAddress;
-    }
   }
-
-  const testAddress = testAddressFromDB as Selectable<ProEligibilityTestsAddresses> & {
-    eligibility_history: ProEligibilityTestHistoryEntry[];
-  };
 
   await autoAssignNetworkFromEligibility(createdDemand.id);
 
@@ -127,5 +130,38 @@ export const createDemand = async (
 
   const demand = await getDemandById(createdDemand.id);
 
-  return enrichDemandForAdmin({ demand, testAddress });
+  return toDemandSubmissionResult(demand, false);
 };
+
+/**
+ * Cherche une demande non supprimée avec le même email + la même adresse dans la fenêtre de dédoublonnage.
+ * `email`/`address` sont déjà trimés par `createDemand` ; les valeurs stockées le sont aussi (trim à l'écriture + migration),
+ * donc la comparaison n'a besoin que d'insensibilité à la casse (`lower`).
+ */
+const findRecentDemandByEmailAndAddress = (email: string, address: string) =>
+  kdb
+    .selectFrom('demands')
+    .select(['id', 'legacy_values'])
+    .where('deleted_at', 'is', null)
+    .where(sql`lower(legacy_values->>'Mail')`, '=', email.toLowerCase())
+    .where(sql`lower(legacy_values->>'Adresse')`, '=', address.toLowerCase())
+    .where('created_at', '>', sql<Date>`now() - make_interval(days => ${DEMAND_DEDUP_WINDOW_DAYS})`)
+    .orderBy('created_at', 'desc')
+    .limit(1)
+    .executeTakeFirst();
+
+/** Projette une demande (créée ou existante) sur le payload minimal attendu par la dialog de confirmation. */
+const toDemandSubmissionResult = (
+  demand: { id: string; legacy_values: AirtableLegacyRecord },
+  isExisting: boolean
+): DemandSubmissionResult => ({
+  address: demand.legacy_values.Adresse,
+  createdAt: demand.legacy_values['Date de la demande'],
+  distance: demand.legacy_values['Distance au réseau'] ?? null,
+  email: demand.legacy_values.Mail,
+  id: demand.id,
+  isEligible: !!demand.legacy_values.Éligibilité,
+  isExisting,
+  networkName: demand.legacy_values['Nom réseau'] ?? null,
+  status: demand.legacy_values.Status || DEMANDE_STATUS.TO_PROCESS,
+});

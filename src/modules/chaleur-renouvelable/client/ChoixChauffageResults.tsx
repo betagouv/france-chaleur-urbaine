@@ -22,7 +22,7 @@ import {
 } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
 import type { DPE } from '@/modules/chaleur-renouvelable/constants';
-import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
+import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
 import { ParamsForm } from './ParamsForm';
 import { ResultRowAccordion, ScrollToHelpButton } from './ResultRowAccordion';
@@ -280,7 +280,7 @@ export default function ChoixChauffageResults() {
                   onSubmit={(data) => handleOnSubmitContact(data, 'choix-chauffage')}
                 />
               )}
-              {messageReceived && <DemandSondageForm addressData={addressData} cardMode />}
+              {messageReceived && addressData.submissionResult && <DemandSubmittedPanel submissionResult={addressData.submissionResult} />}
             </div>
           </Modal>
         </>

@@ -5,7 +5,7 @@ import Box from '@/components/ui/Box';
 import Loader from '@/components/ui/Loader';
 import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
-import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
+import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
 import { Container, FormWarningMessage, SliceContactFormStyle } from './SliceForm.style';
 
@@ -56,7 +56,7 @@ const SliceForm = ({ title, colored }: { title?: string; colored?: boolean }) =>
       >
         <Box position="relative" width="100%">
           {contactReady && !messageReceived && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
-          {messageReceived && <DemandSondageForm addressData={addressData} />}
+          {messageReceived && addressData.submissionResult && <DemandSubmittedPanel submissionResult={addressData.submissionResult} />}
         </Box>
       </Modal>
     </>
