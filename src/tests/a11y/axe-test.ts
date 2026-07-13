@@ -9,7 +9,8 @@ export function createAxeBuilder(page: Page) {
   return new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
     .exclude('[class^="PostHogSurvey"]') // PostHog survey widget (third-party)
-    .exclude('#fr-consent-banner'); // DSFR cookie consent banner
+    .exclude('#fr-consent-banner') // DSFR cookie consent banner
+    .exclude('iframe[src*="youtube"]'); // YouTube player: third-party markup we don't control, and not consent-gated
 }
 
 type AxeResults = Awaited<ReturnType<AxeBuilder['analyze']>>;
