@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "args": ["-y", "@playwright/mcp@0.0.78", "--browser", "chrome", "--headless"],
+      "command": "pnpx"
+    },
+    "postgres": {
+      "args": [
+        "-y",
+        "@henkey/postgres-mcp-server@1.0.7",
+        "--connection-string",
+        "postgres://postgres:postgres_fcu@localhost:5432/postgres"
+      ],
+      "command": "pnpx"
+    }
+  }
+}
