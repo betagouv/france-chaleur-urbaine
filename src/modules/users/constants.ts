@@ -130,7 +130,7 @@ export const updateUserAdminSchema = z
     status: z.enum(['pending_email_confirmation', 'valid']),
     structure_name: z.string().optional(),
     structure_other: z.string().optional(),
-    structure_type: z.enum(ObjectKeys(structureTypesLabels)).optional(),
+    structure_type: z.enum(ObjectKeys(structureTypesLabels)).nullable(),
   })
   .partial();
 
