@@ -4,6 +4,19 @@
 
 Ce module est actuellement en cours de migration depuis l'architecture legacy vers la nouvelle architecture modulaire.
 
+## User tags
+
+Cross-cutting metadata an admin can attach to any user (flags: attended a webinar, roadmap priority…).
+
+- **Tables**: `user_tags` (catalog: `id`, `name` unique — case- and accent-insensitive via `immutable_unaccent(lower(name))`, `color` hex) + `user_tag_assignments` (join `user_id`/`tag_id`, `ON DELETE CASCADE`). Renaming/recoloring = one catalog update (stable ids); deleting a tag detaches it from every user.
+- **Color**: free hex string stored in `color` (no fixed palette). Text color (black/white) is derived from the background luminance via `getContrastTextColor` (`utils/color.ts`); `DEFAULT_TAG_COLOR` (grey) is applied to a tag created on the fly.
+- **Service** (`server/tags-service.ts`): `listTags`, `createTag`, `updateTag`, `deleteTag`, `getUserTags`, `getAllUserTags`, `setUserTags` (transactional replace-all + `user_updated_by_admin` event carrying the added/removed-names diff).
+- **Audit**: catalog mutations emit `user_tag_created` / `user_tag_updated` (name/color from→to diff) / `user_tag_deleted` events (context `user_tag`, id = tag id); assignments are audited via `user_updated_by_admin` on the target user.
+- **tRPC** (admin only): `usersRouter.adminTags.*` — `list`, `create`, `update`, `delete`, `getForUser`, `setForUser`.
+- **UI** (`client/admin/`, Trello-style): `TagsCombobox` (controlled multi-tag field — chips inside the field, catalog shown on focus, inline search by name + a keyboard-reachable create row, portaled dropdown, focus kept on pick via mousedown `preventDefault`, optimistic catalog cache), `TagChip` (clickable chip → small form: "Retirer de cet utilisateur" on top, then a name+color draft with Enregistrer / Supprimer; ArrowDown opens it), `TagColorPicker` (`@uiw/react-color-colorful` picker), `UserTagBadge` (display), `TagsEditor` (edit-mode wrapper, optimistic assign/remove). Wired into `UserForm` (wrapped in `fr-input-group`) + a filterable (`ComboBox` → `arrayIncludesAny`, by name) / sortable / exportable column in `pages/admin/users.tsx`.
+- **Admin list**: `service.list()` joins tags per user (`getAllUserTags`, like permissions) → each user carries `tags: {id,name,color}[]`.
+- **⚠️ Focus/remount gotcha**: `UserForm` is wrapped in `React.memo` (compare `user`/`loading` only) because `useForm` rebuilds its Field/Form components on every render — any re-render of `UserForm` remounts the whole form and steals focus from the live tags field. For the same reason, tag mutations must **not** invalidate the `['/api/admin/users']` list query while the dialog is open (it rebuilds `editingUser` → re-render → remount); the list is refetched once on dialog close instead. The dropdown adds `onWheel` `stopPropagation` so it can scroll despite the dialog's `react-remove-scroll` lock.
+
 ## État Actuel
 
 ### ✅ Ce qui existe dans le module

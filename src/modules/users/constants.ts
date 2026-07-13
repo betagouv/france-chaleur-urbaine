@@ -176,3 +176,35 @@ export const updateProfileDefaultValues: UpdateProfileSchema = {
   structure_other: '',
   structure_type: undefined,
 };
+
+// ─── User tags ──────────────────────────────────────────────────────────────
+
+/** Tag background color, stored as a hex string `#rrggbb`. */
+export type UserTagColor = string;
+
+/** Neutral grey applied to a tag created on the fly (before any color is picked). */
+export const DEFAULT_TAG_COLOR = '#e5e5e5';
+
+const zHexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Couleur invalide');
+const zUserTagName = z.string().trim().min(1, "Le nom de l'étiquette est obligatoire").max(50, 'Le nom ne peut pas dépasser 50 caractères');
+
+export const zCreateUserTag = z.object({
+  color: zHexColor,
+  name: zUserTagName,
+});
+export type CreateUserTag = z.infer<typeof zCreateUserTag>;
+
+export const zUpdateUserTag = z.object({
+  color: zHexColor,
+  id: z.uuidv4(),
+  name: zUserTagName,
+});
+export type UpdateUserTag = z.infer<typeof zUpdateUserTag>;
+
+export const MAX_TAGS_PER_USER = 50;
+
+export const zSetUserTags = z.object({
+  tagIds: z.array(z.uuidv4()).max(MAX_TAGS_PER_USER, `Maximum ${MAX_TAGS_PER_USER} étiquettes par utilisateur`),
+  userId: z.uuidv4(),
+});
+export type SetUserTags = z.infer<typeof zSetUserTags>;

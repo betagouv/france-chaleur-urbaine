@@ -14,6 +14,7 @@ import {
   type UpdateProfileSchema,
   updateUserAdminSchema,
 } from '@/modules/users/constants';
+import { getAllUserTags } from '@/modules/users/server/tags-service';
 import type { Context } from '@/server/api/crud';
 import { serverConfig } from '@/server/config';
 import { type DB, kdb, sql } from '@/server/db/kysely';
@@ -33,7 +34,7 @@ export const tableName = 'users';
 const baseModel = createBaseModel(tableName);
 
 export const list = async () => {
-  const [records, permissionsByUser] = await Promise.all([
+  const [records, permissionsByUser, tagsByUser] = await Promise.all([
     kdb
       .selectFrom('users')
       .select([
@@ -59,11 +60,13 @@ export const list = async () => {
       .orderBy('id')
       .execute(),
     getAllPermissionsWithLabels(),
+    getAllUserTags(),
   ]);
 
   const items = records.map((record) => ({
     ...record,
     permissions: permissionsByUser[record.id] ?? [],
+    tags: tagsByUser[record.id] ?? [],
   }));
 
   return {

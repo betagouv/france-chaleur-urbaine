@@ -31,6 +31,14 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'user_permissions',
   },
   {
+    description: 'Catalogue des étiquettes utilisateurs',
+    name: 'user_tags',
+  },
+  {
+    description: 'Affectations des étiquettes aux utilisateurs',
+    name: 'user_tag_assignments',
+  },
+  {
     description: "Templates d'emails",
     name: 'email_templates',
   },

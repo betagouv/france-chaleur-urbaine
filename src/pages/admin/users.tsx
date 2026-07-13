@@ -21,6 +21,7 @@ import useCrud from '@/hooks/useCrud';
 import { notify, toastErrors } from '@/modules/notification';
 import type { Permission, PermissionType, PermissionWithLabel } from '@/modules/permissions/types';
 import trpc from '@/modules/trpc/client';
+import UserTagBadge from '@/modules/users/client/admin/UserTagBadge';
 import { structureTypesLabels } from '@/modules/users/constants';
 import type { User } from '@/modules/users/server/service';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
@@ -148,6 +149,10 @@ export default function ManageUsers() {
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
 
+  const { data: tagCatalog } = trpc.users.adminTags.list.useQuery();
+  // key = name (not id) so the column filter and the table's global search both match the visible tag name.
+  const tagOptions = useMemo(() => (tagCatalog ?? []).map((tag) => ({ key: tag.name, label: tag.name })), [tagCatalog]);
+
   const {
     items: users,
     isLoading,
@@ -166,6 +171,12 @@ export default function ManageUsers() {
     },
   });
 
+  const setUserTags = trpc.users.adminTags.setForUser.useMutation({
+    onSuccess: () => {
+      void refetchUsers();
+    },
+  });
+
   const handleUpdateUser = (userId: string) =>
     toastErrors(async (userUpdate: UsersResponse['updateInput']) => {
       await updateUser(userId, userUpdate);
@@ -175,13 +186,14 @@ export default function ManageUsers() {
       notify('success', 'Utilisateur mis à jour');
     });
 
-  const handleCreateUser = toastErrors(async (userCreate: UsersResponse['createInput'], permissions?: Permission[]) => {
+  const handleCreateUser = toastErrors(async (userCreate: UsersResponse['createInput'], permissions?: Permission[], tagIds?: string[]) => {
     const result = await createUser(userCreate);
-    if (permissions && permissions.length > 0 && result?.item?.id) {
-      await setPermissions.mutateAsync({
-        permissions,
-        userId: result.item.id,
-      });
+    const newUserId = result?.item?.id;
+    if (newUserId && permissions && permissions.length > 0) {
+      await setPermissions.mutateAsync({ permissions, userId: newUserId });
+    }
+    if (newUserId && tagIds && tagIds.length > 0) {
+      await setUserTags.mutateAsync({ tagIds, userId: newUserId });
     }
     void setUserId(null);
     notify('success', 'Utilisateur créé');
@@ -245,6 +257,25 @@ export default function ManageUsers() {
         flex: 1.4,
         header: 'Type de structure',
         id: 'structure_type',
+      },
+      {
+        accessorFn: (row) => row.tags.map((tag) => tag.name),
+        cell: (info) =>
+          info.row.original.tags.length > 0 ? (
+            <div className="flex flex-wrap gap-1 justify-center">
+              {info.row.original.tags.map((tag) => (
+                <UserTagBadge key={tag.id} name={tag.name} color={tag.color} />
+              ))}
+            </div>
+          ) : null,
+        exportFn: (row) => row.tags.map((tag) => tag.name).join(', '),
+        filterProps: { options: tagOptions, placeholder: 'Filtrer par étiquette' },
+        filterType: 'ComboBox',
+        flex: 1.5,
+        header: 'Étiquettes',
+        id: 'tags',
+        sortingFn: (rowA, rowB) =>
+          compareFrenchStrings(rowA.original.tags.map((tag) => tag.name).join(', '), rowB.original.tags.map((tag) => tag.name).join(', ')),
       },
       {
         accessorKey: 'receive_new_demands',
@@ -356,7 +387,7 @@ export default function ManageUsers() {
         width: '50px',
       },
     ],
-    []
+    [tagOptions]
   );
 
   const editingUser = useMemo(() => users?.find((u) => u.id === (userId as string)), [users, userId]);
@@ -373,7 +404,12 @@ export default function ManageUsers() {
       <Dialog
         open={!!userId}
         onOpenChange={(open) => {
-          if (!open) setUserId(null);
+          if (!open) {
+            void setUserId(null);
+            // Tag edits happen live (outside the form submit) without touching the users list
+            // query — refresh it once here so the table reflects any tag changes made in the dialog.
+            void refetchUsers();
+          }
         }}
         title={editingUser ? 'Modifier un utilisateur' : 'Créer un utilisateur'}
       >
