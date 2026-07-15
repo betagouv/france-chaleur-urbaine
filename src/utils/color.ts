@@ -16,3 +16,24 @@ export function darken(hexColor: string, darkness: number): string {
 
   return `#${[r.length === 1 ? `0${r}` : r, g.length === 1 ? `0${g}` : g, b.length === 1 ? `0${b}` : b].join('')}`;
 }
+
+/**
+ * Picks black or white text for the best contrast over a given hex background,
+ * using the perceived-luminance (YIQ) formula.
+ *
+ * @param hexColor - A hexadecimal color string (e.g., "#RRGGBB").
+ * @returns DSFR near-black for light backgrounds, white for dark ones.
+ *
+ * @example
+ * getContrastTextColor("#ffe599"); // "#161616"
+ * getContrastTextColor("#1f7a8c"); // "#ffffff"
+ */
+export function getContrastTextColor(hexColor: string): '#161616' | '#ffffff' {
+  const intValue = Number.parseInt(hexColor.slice(1), 16);
+  const r = (intValue >> 16) & 0xff;
+  const g = (intValue >> 8) & 0xff;
+  const b = intValue & 0xff;
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+  return luminance > 0.6 ? '#161616' : '#ffffff';
+}

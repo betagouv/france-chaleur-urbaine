@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 
 import useForm from '@/components/form/react-form/useForm';
 import Badge from '@/components/ui/Badge';
@@ -9,6 +9,8 @@ import PermissionsEditor from '@/modules/permissions/client/PermissionsEditor';
 import PermissionsInput from '@/modules/permissions/client/PermissionsInput';
 import type { Permission } from '@/modules/permissions/types';
 import { permissionTypes } from '@/modules/permissions/types';
+import TagsCombobox from '@/modules/users/client/admin/TagsCombobox';
+import TagsEditor from '@/modules/users/client/admin/TagsEditor';
 import {
   createUserAdminSchema,
   roles as roleLabels,
@@ -22,7 +24,7 @@ import { type UserRole, userRoles, userRolesWithPermissions } from '@/types/enum
 import cx from '@/utils/cx';
 import { ObjectEntries } from '@/utils/typescript';
 
-export type OnCreate = (data: UsersResponse['createInput'], permissions?: Permission[]) => Promise<void> | void;
+export type OnCreate = (data: UsersResponse['createInput'], permissions?: Permission[], tagIds?: string[]) => Promise<void> | void;
 export type OnUpdate = (data: UsersResponse['updateInput']) => Promise<void> | void;
 
 const roleOptions = userRoles.map((role) => ({
@@ -51,6 +53,7 @@ type UserFormProps = {
 const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
   const isNew = !user?.id;
   const [newPermissions, setNewPermissions] = useState<Permission[]>([]);
+  const [newTagIds, setNewTagIds] = useState<string[]>([]);
 
   const { Form, Field, Submit, FieldWrapper, useValue, form } = useForm({
     defaultValues: {
@@ -71,7 +74,11 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
     },
     onSubmit: async ({ value }) => {
       if (isNew) {
-        await (onSubmit as OnCreate)(value as any, newPermissions.length > 0 ? newPermissions : undefined);
+        await (onSubmit as OnCreate)(
+          value as any,
+          newPermissions.length > 0 ? newPermissions : undefined,
+          newTagIds.length > 0 ? newTagIds : undefined
+        );
       } else {
         await (onSubmit as OnUpdate)(value as any);
       }
@@ -236,6 +243,14 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
           </FieldWrapper>
         </div>
 
+        {/* Étiquettes (métadonnées transverses, tous rôles) */}
+        <FieldWrapper>
+          <div className="fr-input-group">
+            <label className="fr-label">Étiquettes</label>
+            {isNew ? <TagsCombobox value={newTagIds} onChange={setNewTagIds} /> : <TagsEditor userId={user!.id} />}
+          </div>
+        </FieldWrapper>
+
         <div className="flex justify-end">
           <Submit loading={loading}>{isNew ? 'Créer' : 'Mettre à jour'} l'utilisateur</Submit>
         </div>
@@ -256,4 +271,12 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
   );
 };
 
-export default UserForm;
+/**
+ * HACK: memoized on `user`/`loading` only (not `onSubmit`) to work around a `useForm` limitation —
+ * it rebuilds its Field/Form components on every render, so any re-render of this component remounts
+ * the whole form and steals focus from live-editing fields (e.g. the tags combobox) whenever the
+ * parent page re-renders (it shares the tag catalog query). `onSubmit` is ignored: its closures
+ * (mutations, stable userId) are submit-time only and safe to keep from the initial render.
+ * Remove this memo once `useForm` returns stable Field/Form component identities.
+ */
+export default memo(UserForm, (prev, next) => prev.user === next.user && prev.loading === next.loading);

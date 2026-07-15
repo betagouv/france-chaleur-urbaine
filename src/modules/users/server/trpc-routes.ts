@@ -1,15 +1,48 @@
 import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
+import { z } from 'zod';
 
 import { ALL_FCU_RUBRIQUES, buildRubriques } from '@/modules/ademe-connect/constants';
 import { updateContact } from '@/modules/ademe-connect/server/client';
 import { createUserEvent } from '@/modules/events/server/service';
+import { adminRoute } from '@/modules/trpc/server';
 import { routeAuthenticated, router } from '@/modules/trpc/server/connection';
-import { zUpdateNewsletterSchema, zUpdateProfileSchema } from '@/modules/users/constants';
+import {
+  zBulkAddUserTags,
+  zCreateUserTag,
+  zSetUserTags,
+  zUpdateNewsletterSchema,
+  zUpdateProfileSchema,
+  zUpdateUserTag,
+} from '@/modules/users/constants';
 import * as usersService from '@/modules/users/server/service';
+import * as tagsService from '@/modules/users/server/tags-service';
 import { logger } from '@/server/helpers/logger';
 
 export const usersRouter = router({
+  // Gestion admin des étiquettes utilisateurs (catalogue + affectations).
+  adminTags: {
+    addToUsers: adminRoute
+      .input(zBulkAddUserTags)
+      .mutation(({ ctx, input }) => tagsService.addTagsToUsersByEmail(input.tagIds, input.emails, ctx.user.id)),
+
+    create: adminRoute.input(zCreateUserTag).mutation(({ ctx, input }) => tagsService.createTag(input.name, input.color, ctx.user.id)),
+
+    delete: adminRoute.input(z.object({ id: z.uuidv4() })).mutation(({ ctx, input }) => tagsService.deleteTag(input.id, ctx.user.id)),
+
+    getForUser: adminRoute.input(z.object({ userId: z.uuidv4() })).query(({ input }) => tagsService.getUserTags(input.userId)),
+
+    list: adminRoute.query(() => tagsService.listTags()),
+
+    setForUser: adminRoute
+      .input(zSetUserTags)
+      .mutation(({ ctx, input }) => tagsService.setUserTags(input.userId, input.tagIds, ctx.user.id)),
+
+    update: adminRoute
+      .input(zUpdateUserTag)
+      .mutation(({ ctx, input }) => tagsService.updateTag(input.id, { color: input.color, name: input.name }, ctx.user.id)),
+  },
+
   getProfile: routeAuthenticated.query(async ({ ctx }) => {
     const user = await usersService.getProfile(ctx.user.id);
 

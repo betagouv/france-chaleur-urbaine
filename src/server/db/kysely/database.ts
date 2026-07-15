@@ -11,7 +11,7 @@ import type { EventType } from '@/modules/events/constants';
 import type { Permission } from '@/modules/permissions/types';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { EcoreseauLabel } from '@/modules/reseaux/types';
-import type { Entreprise, StructureType } from '@/modules/users/constants';
+import type { Entreprise, StructureType, UserTagColor } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export type Generated<T> =
@@ -782,6 +782,20 @@ export type UserPermissions = {
   user_id: string;
 } & Permission;
 
+export interface UserTagAssignments {
+  created_at: Generated<Timestamp>;
+  tag_id: string;
+  user_id: string;
+}
+
+export interface UserTags {
+  color: UserTagColor;
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  updated_at: Generated<Timestamp>;
+}
+
 export interface Users {
   accepted_cgu_at: Date | null;
   activated_at: Date | null;
@@ -1034,6 +1048,8 @@ export interface DB {
   tests_adresses_tiles_features: TestsAdressesTilesFeatures;
   tiles_metadata: TilesMetadata;
   user_permissions: UserPermissions;
+  user_tag_assignments: UserTagAssignments;
+  user_tags: UserTags;
   users: Users;
   zone_a_potentiel_chaud: ZoneAPotentielChaud;
   zone_a_potentiel_chaud_tiles: ZoneAPotentielChaudTiles;

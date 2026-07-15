@@ -14,6 +14,9 @@ export const eventTypes = [
   'user_deactivated_by_api',
   'user_updated_by_admin',
   'user_deleted_by_admin',
+  'user_tag_created',
+  'user_tag_updated',
+  'user_tag_deleted',
   'demand_created',
   'demand_updated',
   'demand_updated_by_system',
@@ -116,6 +119,9 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_permissions_updated: 'Modification permissions',
   user_profile_updated: 'Mise à jour profil',
   user_registered: 'Inscription utilisateur',
+  user_tag_created: "Création d'étiquette utilisateur",
+  user_tag_deleted: "Suppression d'étiquette utilisateur",
+  user_tag_updated: "Modification d'étiquette utilisateur",
   user_updated_by_admin: 'Mise à jour utilisateur (admin)',
 };
 
@@ -241,6 +247,13 @@ export type EventDataMap = {
   };
   user_profile_updated: { changes: Record<string, unknown> };
   user_updated_by_admin: { user_email: string; changes: Record<string, unknown> };
+  user_tag_created: { tag_id: string; name: string; color: string };
+  user_tag_updated: {
+    tag_id: string;
+    name: string;
+    changes: Partial<{ name: { from: string; to: string }; color: { from: string; to: string } }>;
+  };
+  user_tag_deleted: { tag_id: string; name: string; color: string };
   user_newsletter_subscribed: null;
   user_newsletter_unsubscribed: null;
 };

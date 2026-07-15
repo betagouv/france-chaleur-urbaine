@@ -5,6 +5,7 @@ import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import Button from '@/components/ui/Button';
 import type { EventType } from '@/modules/events/constants';
 import type { AdminEvent } from '@/modules/events/server/service';
+import { ObjectKeys } from '@/utils/typescript';
 
 import type { EventFilters } from './types';
 
@@ -14,6 +15,8 @@ const networkTypeLabels = {
   reseau_de_froid: 'réseau de froid',
   reseau_en_construction: 'réseau en construction',
 } as const;
+
+const tagChangeLabels: Record<string, string> = { color: 'couleur', name: 'nom' };
 
 const formatNetworkLabel = (data: {
   network_type: keyof typeof networkTypeLabels;
@@ -411,6 +414,32 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   ),
   user_profile_updated: () => <span>a mis à jour son profil</span>,
   user_registered: () => 'a créé un compte',
+  user_tag_created: (event, updateFilters) => (
+    <>
+      <span>a créé l'étiquette </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user_tag' })}>{event.data.name}</FilterButton>
+    </>
+  ),
+  user_tag_deleted: (event, updateFilters) => (
+    <>
+      <span>a supprimé l'étiquette </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user_tag' })}>{event.data.name}</FilterButton>
+    </>
+  ),
+  user_tag_updated: (event, updateFilters) => (
+    <>
+      <span>a modifié l'étiquette </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user_tag' })}>{event.data.name}</FilterButton>
+      <span>
+        {' '}
+        (
+        {ObjectKeys(event.data.changes ?? {})
+          .map((field) => tagChangeLabels[field] ?? field)
+          .join(', ')}
+        )
+      </span>
+    </>
+  ),
   user_updated_by_admin: (event, updateFilters) => (
     <>
       <span>a mis à jour le compte </span>
