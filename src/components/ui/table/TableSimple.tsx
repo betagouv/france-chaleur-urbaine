@@ -636,6 +636,12 @@ const TableSimple = <T extends RowData>({
     data,
     debugTable: isDevModeEnabled(),
     enableRowSelection,
+    // TanStack's default only globally-filters string/number columns; also allow array-valued
+    // columns (e.g. tags) so the global search matches their stringified contents.
+    getColumnCanGlobalFilter: (column) => {
+      const value = data.length > 0 ? column.accessorFn?.(data[0], 0) : undefined;
+      return typeof value === 'string' || typeof value === 'number' || Array.isArray(value);
+    },
     getCoreRowModel: getCoreRowModel(),
     getFacetedMinMaxValues: getFCUFacetedMinMaxValues() as any, //if you need min/max values. any to handle [string, string]
     getFacetedRowModel: getFacetedRowModel(), //if you need a list of values for a column (other faceted row models depend on this one)
