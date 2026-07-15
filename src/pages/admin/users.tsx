@@ -18,9 +18,11 @@ import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
+import { useDialogState } from '@/hooks/useDialogState';
 import { notify, toastErrors } from '@/modules/notification';
 import type { Permission, PermissionType, PermissionWithLabel } from '@/modules/permissions/types';
 import trpc from '@/modules/trpc/client';
+import BulkTagDialog from '@/modules/users/client/admin/BulkTagDialog';
 import UserTagBadge from '@/modules/users/client/admin/UserTagBadge';
 import { structureTypesLabels } from '@/modules/users/constants';
 import type { User } from '@/modules/users/server/service';
@@ -146,6 +148,7 @@ const initialColumnFilters: ColumnFiltersState = [
 export default function ManageUsers() {
   const [userId, setUserId] = useQueryState('userId');
   const [nbUsersFilter, setNbUsersFilter] = useState<number>(0);
+  const bulkTag = useDialogState();
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
 
@@ -423,6 +426,7 @@ export default function ManageUsers() {
           <span>Utilisateur non trouvé</span>
         )}
       </Dialog>
+      <BulkTagDialog control={bulkTag} onSuccess={() => void refetchUsers()} />
       <Box py="4w" className="fr-container">
         <Heading as="h1" color="blue-france">
           Gestion des utilisateurs
@@ -447,9 +451,14 @@ export default function ManageUsers() {
               {nbUsersFilter} / {users?.length}
             </small>
           </Heading>
-          <Button size="small" priority="secondary" iconId="ri-add-line" title="Ajouter un utilisateur" onClick={() => setUserId('new')}>
-            <span>Ajouter un utilisateur</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button size="small" priority="tertiary" iconId="ri-price-tag-3-line" onClick={() => bulkTag.open()}>
+              <span>Étiqueter en masse</span>
+            </Button>
+            <Button size="small" priority="secondary" iconId="ri-add-line" title="Ajouter un utilisateur" onClick={() => setUserId('new')}>
+              <span>Ajouter un utilisateur</span>
+            </Button>
+          </div>
         </header>
         <TableSimple
           columns={columns}

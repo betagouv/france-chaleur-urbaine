@@ -163,3 +163,77 @@ export const setUserTags = async (userId: string, tagIds: string[], authorId: st
     });
   }
 };
+
+export type BulkAddTagsResult = {
+  /** Number of users matched by email. */
+  matchedUserCount: number;
+  /** Normalized emails with no matching user (nothing was created for them). */
+  notFoundEmails: string[];
+  /** Number of (user, tag) rows actually inserted (excludes already-assigned pairs). */
+  assignmentsAdded: number;
+};
+
+/**
+ * Adds catalog tags to every user matched by email (case-insensitive), leaving their existing
+ * tags untouched. Already-assigned pairs are skipped via ON CONFLICT DO NOTHING, so the returned
+ * rows are exactly the new assignments. Emits one `user_updated_by_admin` event per user that
+ * gained at least one tag.
+ */
+export const addTagsToUsersByEmail = async (tagIds: string[], emails: string[], authorId: string): Promise<BulkAddTagsResult> => {
+  const uniqueTagIds = [...new Set(tagIds)];
+
+  const catalog = await listTags();
+  const catalogById = new Map(catalog.map((tag) => [tag.id, tag]));
+  const unknownIds = uniqueTagIds.filter((tagId) => !catalogById.has(tagId));
+  if (unknownIds.length > 0) {
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Étiquette inconnue' });
+  }
+
+  const normalizedEmails = [...new Set(emails.map((email) => email.trim().toLowerCase()).filter(Boolean))];
+  if (normalizedEmails.length === 0 || uniqueTagIds.length === 0) {
+    return { assignmentsAdded: 0, matchedUserCount: 0, notFoundEmails: normalizedEmails };
+  }
+
+  const users = await kdb
+    .selectFrom('users')
+    .select(['id', 'email'])
+    .where((eb) => eb(eb.fn<string>('lower', ['email']), 'in', normalizedEmails))
+    .execute();
+
+  const matchedEmails = new Set(users.map((user) => user.email.toLowerCase()));
+  const notFoundEmails = normalizedEmails.filter((email) => !matchedEmails.has(email));
+  if (users.length === 0) {
+    return { assignmentsAdded: 0, matchedUserCount: 0, notFoundEmails };
+  }
+
+  const pairs = users.flatMap((user) => uniqueTagIds.map((tagId) => ({ tag_id: tagId, user_id: user.id })));
+  const inserted = await kdb
+    .insertInto('user_tag_assignments')
+    .values(pairs)
+    .onConflict((oc) => oc.doNothing())
+    .returning(['user_id', 'tag_id'])
+    .execute();
+
+  // Group the freshly inserted pairs by user to emit a per-user audit event with the added names.
+  const addedNamesByUser: Record<string, string[]> = {};
+  for (const row of inserted) {
+    const tag = catalogById.get(row.tag_id);
+    if (!tag) continue;
+    (addedNamesByUser[row.user_id] ??= []).push(tag.name);
+  }
+
+  const userById = new Map(users.map((user) => [user.id, user]));
+  for (const [userId, addedNames] of Object.entries(addedNamesByUser)) {
+    const user = userById.get(userId);
+    if (!user) continue;
+    await createUserEvent({
+      author_id: authorId,
+      context_id: userId,
+      context_type: 'user',
+      data: { changes: { tags: { added: addedNames } }, user_email: user.email },
+      type: 'user_updated_by_admin',
+    });
+  }
+
+  return { assignmentsAdded: inserted.length, matchedUserCount: users.length, notFoundEmails };
+};

@@ -208,3 +208,11 @@ export const zSetUserTags = z.object({
   userId: z.uuidv4(),
 });
 export type SetUserTags = z.infer<typeof zSetUserTags>;
+
+// Emails are accepted as raw strings (not `z.email()`) so a single typo doesn't reject the whole batch;
+// unmatched entries are reported back in `notFoundEmails` instead.
+export const zBulkAddUserTags = z.object({
+  emails: z.array(z.string()).min(1, 'Ajoutez au moins un email'),
+  tagIds: z.array(z.uuidv4()).min(1, 'Sélectionnez au moins une étiquette').max(MAX_TAGS_PER_USER),
+});
+export type BulkAddUserTags = z.infer<typeof zBulkAddUserTags>;

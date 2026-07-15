@@ -82,7 +82,7 @@ const TagChip = ({ tag, onRemove, onSave, onDelete }: TagChipProps) => {
               setOpen(false);
             }}
           >
-            Retirer de cet utilisateur
+            Retirer l'étiquette
           </Button>
 
           <div className="fr-input-group mb-3">

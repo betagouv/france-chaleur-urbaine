@@ -7,7 +7,14 @@ import { updateContact } from '@/modules/ademe-connect/server/client';
 import { createUserEvent } from '@/modules/events/server/service';
 import { adminRoute } from '@/modules/trpc/server';
 import { routeAuthenticated, router } from '@/modules/trpc/server/connection';
-import { zCreateUserTag, zSetUserTags, zUpdateNewsletterSchema, zUpdateProfileSchema, zUpdateUserTag } from '@/modules/users/constants';
+import {
+  zBulkAddUserTags,
+  zCreateUserTag,
+  zSetUserTags,
+  zUpdateNewsletterSchema,
+  zUpdateProfileSchema,
+  zUpdateUserTag,
+} from '@/modules/users/constants';
 import * as usersService from '@/modules/users/server/service';
 import * as tagsService from '@/modules/users/server/tags-service';
 import { logger } from '@/server/helpers/logger';
@@ -15,6 +22,10 @@ import { logger } from '@/server/helpers/logger';
 export const usersRouter = router({
   // Gestion admin des étiquettes utilisateurs (catalogue + affectations).
   adminTags: {
+    addToUsers: adminRoute
+      .input(zBulkAddUserTags)
+      .mutation(({ ctx, input }) => tagsService.addTagsToUsersByEmail(input.tagIds, input.emails, ctx.user.id)),
+
     create: adminRoute.input(zCreateUserTag).mutation(({ ctx, input }) => tagsService.createTag(input.name, input.color, ctx.user.id)),
 
     delete: adminRoute.input(z.object({ id: z.uuidv4() })).mutation(({ ctx, input }) => tagsService.deleteTag(input.id, ctx.user.id)),
