@@ -5,6 +5,8 @@ import type {
   BatEnrByBanIdInput,
   DemandeChaleurRenouvelable,
   DemandeChaleurRenouvelableStatus,
+  FranceRenovSpace,
+  FranceRenovSpaceInput,
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
 import {
@@ -46,6 +48,26 @@ const batEnrBatimentColumns = [
 
 const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = 'france.chaleur.urbaine@gmail.com';
 const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = 200;
+const FRANCE_RENOV_SPACES_RESOURCE_ID = 'bc99b9d4-1b70-48e1-9958-98cceacd0c93';
+
+type BanAddressSearchResponse = {
+  features: {
+    properties: {
+      citycode: string;
+    };
+  }[];
+};
+
+type FranceRenovSpaceRow = {
+  'Adresse Structure': string;
+  'Code Postal Structure': string;
+  'Commune Structure': string;
+  'Email Structure': string;
+  'Nom Structure': string;
+  'Site Internet Structure': string | null;
+  'Telephone Structure': string;
+  'Telephone 2 Structure': string | null;
+};
 
 const singleConstructionHousingCount = sql<number | null>`
   (
@@ -202,6 +224,82 @@ export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) =
 
   return await getBatEnrBatimentsByConstructionIds(batimentConstructionIds);
 };
+
+export const getFranceRenovSpace = async (input: FranceRenovSpaceInput): Promise<FranceRenovSpace | null> => {
+  const cityCode = await getFranceRenovCityCode(input);
+
+  if (!cityCode) {
+    return null;
+  }
+
+  const result = await fetchJSON<{ data: FranceRenovSpaceRow[] }>(
+    `https://tabular-api.data.gouv.fr/api/resources/${FRANCE_RENOV_SPACES_RESOURCE_ID}/data/`,
+    {
+      params: {
+        'Code Insee Commune__exact': cityCode,
+        page_size: '1',
+      },
+    }
+  );
+
+  return result.data[0] ? toFranceRenovSpace(result.data[0]) : null;
+};
+
+const getFranceRenovCityCode = async ({ address, batimentConstructionId }: FranceRenovSpaceInput) => {
+  const cityCodeFromConstruction = batimentConstructionId ? await getCityCodeFromBatimentConstructionId(batimentConstructionId) : null;
+
+  if (cityCodeFromConstruction) {
+    return cityCodeFromConstruction;
+  }
+
+  return address ? await getCityCodeFromAddress(address) : null;
+};
+
+const getCityCodeFromBatimentConstructionId = async (batimentConstructionId: string) => {
+  const result = await kdb
+    .selectFrom('bdnb_batenr')
+    .leftJoin('bdnb_batiments', 'bdnb_batiments.batiment_groupe_id', 'bdnb_batenr.batiment_groupe_id')
+    .select(
+      sql<string | null>`
+        COALESCE(
+          bdnb_batiments.code_commune_insee,
+          (
+            SELECT ign_communes.insee_com
+            FROM ign_communes
+            WHERE bdnb_batenr.geom IS NOT NULL
+              AND ST_Intersects(ign_communes.geom, bdnb_batenr.geom)
+            LIMIT 1
+          )
+        )
+      `.as('cityCode')
+    )
+    .where('bdnb_batenr.batiment_construction_id', '=', batimentConstructionId)
+    .executeTakeFirst();
+
+  return result?.cityCode ?? null;
+};
+
+const getCityCodeFromAddress = async (address: string) => {
+  const result = await fetchJSON<BanAddressSearchResponse>(`${serverConfig.banApiBaseUrl}search`, {
+    params: {
+      limit: 1,
+      q: address,
+    },
+  });
+
+  return result.features[0]?.properties.citycode ?? null;
+};
+
+const toFranceRenovSpace = (row: FranceRenovSpaceRow): FranceRenovSpace => ({
+  address: row['Adresse Structure'].trim(),
+  city: row['Commune Structure'],
+  email: row['Email Structure'],
+  name: row['Nom Structure'],
+  phone: row['Telephone Structure'],
+  secondaryPhone: row['Telephone 2 Structure'],
+  website: row['Site Internet Structure'],
+  zipcode: row['Code Postal Structure'],
+});
 
 type RnbAddressBuildingsResponse = {
   results: {

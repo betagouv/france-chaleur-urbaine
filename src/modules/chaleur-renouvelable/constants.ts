@@ -40,6 +40,17 @@ export type BatEnrBatimentsSelectionContext = {
   preselectedBatimentConstructionId: string | null;
 };
 
+export type FranceRenovSpace = {
+  address: string;
+  city: string;
+  email: string;
+  name: string;
+  phone: string;
+  secondaryPhone: string | null;
+  website: string | null;
+  zipcode: string;
+};
+
 export type Situation = {
   architecturalProtectionAc1: boolean;
   architecturalProtectionAc2: boolean;
@@ -324,6 +335,12 @@ export const zDemandeChaleurRenouvelable = z.object({
   surfaceArea: z.number().nullable().default(null),
 });
 export type DemandeChaleurRenouvelable = z.infer<typeof zDemandeChaleurRenouvelable>;
+
+export const zFranceRenovSpaceInput = z.object({
+  address: z.string().nullable().default(null),
+  batimentConstructionId: z.string().nullable().default(null),
+});
+export type FranceRenovSpaceInput = z.infer<typeof zFranceRenovSpaceInput>;
 
 export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
   demandId: z.string(),

@@ -2,6 +2,7 @@ import {
   zAdminUpdateDemandeChaleurRenouvelableInput,
   zBatEnrByBanIdInput,
   zDemandeChaleurRenouvelable,
+  zFranceRenovSpaceInput,
   zLocationInfos,
 } from '@/modules/chaleur-renouvelable/constants';
 import {
@@ -9,6 +10,7 @@ import {
   getBatEnrBatimentDetails,
   getBatEnrBatimentsByBanId,
   getBatEnrBatimentsSelectionContextByBanId,
+  getFranceRenovSpace,
   getLocationInfos,
   listDemandesChaleurRenouvelableAdmin,
   updateDemandeChaleurRenouvelableAdmin,
@@ -31,5 +33,6 @@ export const batEnrRouter = router({
   getBatEnrBatimentsSelectionContextByBanId: route
     .input(zBatEnrByBanIdInput)
     .query(async ({ input }) => await getBatEnrBatimentsSelectionContextByBanId(input)),
+  getFranceRenovSpace: route.input(zFranceRenovSpaceInput).query(async ({ input }) => await getFranceRenovSpace(input)),
   getLocationInfos: route.input(zLocationInfos).query(async ({ input }) => await getLocationInfos(input)),
 });
