@@ -820,8 +820,10 @@ describe('modesDeChauffage', () => {
 
   it.each(incompatibilityCases)('$typeLogement / $label / $usage returns the expected incompatibility for $reason', (testCase) => {
     const rows = getIncompatibleSolutionRows(createSituation(testCase.overrides), testCase.typeLogement);
+    const heatingMode = getMode(testCase.typeLogement, testCase.label, testCase.usage);
 
     expect(rows).toContainEqual({
+      id: heatingMode.id,
       label: testCase.label,
       reasons: [{ reason: testCase.reason, source: testCase.source }],
     });
@@ -834,6 +836,7 @@ describe('modesDeChauffage', () => {
     );
 
     expect(rows).not.toContainEqual({
+      id: getMode('immeuble_chauffage_collectif', 'Solaire thermique', 'hotWaterOnly').id,
       label: 'Solaire thermique',
       reasons: [
         {

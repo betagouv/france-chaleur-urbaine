@@ -1,4 +1,6 @@
+import { EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
 import type {
+  AddressEligibilityContextInput,
   AdminUpdateDemandeChaleurRenouvelableInput,
   BatEnrBatiment,
   BatEnrBatimentsSelectionContext,
@@ -17,6 +19,7 @@ import { sendEmailTemplate } from '@/modules/email';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
+import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { fetchJSON } from '@/utils/network';
 
 const batEnrBatimentColumns = [
@@ -223,6 +226,89 @@ export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) =
     .filter((batimentConstructionId): batimentConstructionId is string => batimentConstructionId !== null);
 
   return await getBatEnrBatimentsByConstructionIds(batimentConstructionIds);
+};
+
+const getBatEnrLookupResult = async ({
+  banId,
+  lat,
+  lon,
+  selectedBatimentConstructionId,
+}: Pick<AddressEligibilityContextInput, 'banId' | 'lat' | 'lon' | 'selectedBatimentConstructionId'>) => {
+  const selectionContext = await getBatEnrBatimentsSelectionContextByBanId({ banId }).catch(
+    (): BatEnrBatimentsSelectionContext => ({ batiments: [], preselectedBatimentConstructionId: null })
+  );
+  const batEnrBatiments = selectionContext.batiments;
+
+  if (selectedBatimentConstructionId) {
+    const selectedBatEnrBatiment = batEnrBatiments.find((batiment) => batiment.batiment_construction_id === selectedBatimentConstructionId);
+
+    if (selectedBatEnrBatiment) {
+      return {
+        batEnr: getBatEnrInfoFromBatiment(selectedBatEnrBatiment),
+        batEnrBatiments,
+        selectedBatEnrBatiment,
+        shouldSelectBatEnrBatiment: false,
+      };
+    }
+  }
+
+  const preselectedBatEnrBatiment = selectionContext.preselectedBatimentConstructionId
+    ? batEnrBatiments.find((batiment) => batiment.batiment_construction_id === selectionContext.preselectedBatimentConstructionId)
+    : undefined;
+
+  if (preselectedBatEnrBatiment) {
+    return {
+      batEnr: getBatEnrInfoFromBatiment(preselectedBatEnrBatiment),
+      batEnrBatiments,
+      selectedBatEnrBatiment: preselectedBatEnrBatiment,
+      shouldSelectBatEnrBatiment: batEnrBatiments.length > 1,
+    };
+  }
+
+  if (batEnrBatiments.length === 1) {
+    return {
+      batEnr: getBatEnrInfoFromBatiment(batEnrBatiments[0]),
+      batEnrBatiments,
+      selectedBatEnrBatiment: batEnrBatiments[0],
+      shouldSelectBatEnrBatiment: false,
+    };
+  }
+
+  if (batEnrBatiments.length > 1) {
+    return {
+      batEnr: EMPTY_BAT_ENR_INFO,
+      batEnrBatiments,
+      selectedBatEnrBatiment: undefined,
+      shouldSelectBatEnrBatiment: true,
+    };
+  }
+
+  const batEnrDetails = await getBatEnrBatimentDetails({ lat, lon }).catch(() => null);
+
+  return {
+    batEnr: getBatEnrInfoFromBatiment(batEnrDetails),
+    batEnrBatiments: batEnrDetails ? [batEnrDetails] : [],
+    selectedBatEnrBatiment: batEnrDetails ?? undefined,
+    shouldSelectBatEnrBatiment: false,
+  };
+};
+
+export const getAddressEligibilityContext = async (input: AddressEligibilityContextInput) => {
+  const [batEnrLookup, infos, eligibiliteReseauChaleur] = await Promise.all([
+    getBatEnrLookupResult(input),
+    getLocationInfos({ city: input.city, cityCode: input.cityCode }),
+    getEligilityStatus(input.lat, input.lon),
+  ]);
+
+  return {
+    batEnr: batEnrLookup.batEnr,
+    batEnrBatiments: batEnrLookup.batEnrBatiments,
+    codeDepartement: infos?.departement_id ?? '',
+    eligibiliteReseauChaleur,
+    selectedBatEnrBatiment: batEnrLookup.selectedBatEnrBatiment,
+    shouldSelectBatEnrBatiment: batEnrLookup.shouldSelectBatEnrBatiment,
+    temperatureRef: infos?.temperature_ref_altitude_moyenne != null ? Number(infos.temperature_ref_altitude_moyenne) : null,
+  };
 };
 
 export const getFranceRenovSpace = async (input: FranceRenovSpaceInput): Promise<FranceRenovSpace | null> => {

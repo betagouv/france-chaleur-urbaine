@@ -1,4 +1,5 @@
 import {
+  collectiveHotWaterPrerequisite,
   getArchitecturalProtectionPrerequisites,
   getGeothermalPrerequisites,
   getPdpPrerequisite,
@@ -12,11 +13,13 @@ import {
   hasEspaceShared,
   hasInsufficientSolarThermalCoverage,
   hasSufficientSolarThermalCoverage,
+  hotWaterStoragePrerequisite,
   isNearHeatNetwork,
   outdoorPacPrerequisites,
+  outdoorSinglePacPrerequisites,
+  roofSolarCollectorsPrerequisite,
 } from '@/modules/chaleur-renouvelable/client/heating-mode-rules';
-import type { IncompatibleSolutionRow, ModeDeChauffage, Situation } from '@/modules/chaleur-renouvelable/constants';
-import { type DPE, DPE_VALUES, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import type { ModeDeChauffage, Situation, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import { getCoutRaccordementResidentiel, prettyPrintCout } from '@/modules/simulator/client/SimulateurCoutRaccordement';
 
 export type {
@@ -28,12 +31,6 @@ export type {
   PrerequisiteStatus,
   Situation,
 } from '@/modules/chaleur-renouvelable/constants';
-
-export function improveDpe(dpe: DPE, gainClasse: number): DPE {
-  const currentIndex = DPE_VALUES.indexOf(dpe);
-  const nextIndex = Math.max(0, currentIndex - Math.max(0, gainClasse));
-  return DPE_VALUES[nextIndex];
-}
 
 export const modesDeChauffage = {
   immeuble_chauffage_collectif: [
@@ -60,6 +57,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 1,
       icone: 'img/icon-rcu.webp',
+      id: 'collective-heat-network',
       incompatibilites: [
         {
           isIncompatible: (situation) =>
@@ -112,6 +110,7 @@ export const modesDeChauffage = {
         hasCompatibleGeothermalPotential(situation),
       gainClasse: 2,
       icone: 'img/icon-pac.webp',
+      id: 'collective-geothermal-heat-pump',
       incompatibilites: [
         {
           isIncompatible: (situation) => !hasEspaceShared(situation),
@@ -177,6 +176,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-biomasse.webp',
+      id: 'collective-biomass-boiler',
       incompatibilites: [
         {
           isIncompatible: (situation) => !hasEspaceShared(situation),
@@ -198,15 +198,7 @@ export const modesDeChauffage = {
           source: 'Formulaire',
           status: 'favorable',
         },
-        ...(situation.planProtectionAtmosphere
-          ? [
-              {
-                label: 'Votre bâtiment est situé dans une zone de protection de l’atmosphère',
-                source: 'CEREMA',
-                status: 'contraignant' as const,
-              },
-            ]
-          : []),
+        ...getPpaPrerequisite(situation),
         ...getArchitecturalProtectionPrerequisites(situation),
         {
           label: 'Espace requis en local technique pour la chaudière et le stockage de combustible',
@@ -242,6 +234,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-pac.webp',
+      id: 'collective-air-water-heat-pump',
       incompatibilites: [
         {
           isIncompatible: (situation) => !hasEspaceShared(situation),
@@ -292,6 +285,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
+      id: 'collective-hybrid-air-water-heat-pump-gas',
       incompatibilites: [
         {
           isIncompatible: (situation) => !hasEspaceShared(situation),
@@ -337,6 +331,7 @@ export const modesDeChauffage = {
       gainClasse: 1,
       gainVsGaz: -50,
       icone: 'img/icon-solaire.webp',
+      id: 'collective-solar-thermal-hot-water',
       incompatibilites: [
         {
           isIncompatible: hasInsufficientSolarThermalCoverage,
@@ -354,8 +349,8 @@ export const modesDeChauffage = {
       prerequis: (situation) => [
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
-        { label: 'Espace requis en local technique pour les ballons de stockage', status: 'averifier' },
-        { label: 'Espace requis sur la toiture pour les capteurs', status: 'averifier' },
+        hotWaterStoragePrerequisite,
+        roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -374,14 +369,15 @@ export const modesDeChauffage = {
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
       gainClasse: 1,
       icone: 'img/icon-solaire.webp',
+      id: 'collective-solar-atmospheric-heat-pump-hot-water',
       inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment', 'Nécessite une toiture adaptée'],
       label: 'PAC sur capteurs solaires atmosphériques',
       pertinence: 2,
       prerequis: (situation) => [
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
-        { label: 'Espace requis en local technique pour les ballons de stockage', status: 'averifier' },
-        { label: 'Espace requis sur la toiture pour les capteurs', status: 'averifier' },
+        hotWaterStoragePrerequisite,
+        roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -399,18 +395,15 @@ export const modesDeChauffage = {
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
+      id: 'collective-air-water-heat-pump-hot-water',
       inconvenients: ['Nuisances sonores', 'Étude acoustique nécessaire', "Impact esthétique de l'unité extérieure"],
       label: 'PAC air-eau collective',
       pertinence: 2,
       prerequis: (situation) => [
-        { label: "Système d'eau chaude sanitaire collectif", source: 'Formulaire', status: 'favorable' },
+        collectiveHotWaterPrerequisite,
         ...getArchitecturalProtectionPrerequisites(situation),
-        { label: 'Espace requis pour les modules extérieurs', status: 'averifier' },
-        { label: 'Espace requis en local technique pour les ballons de stockage', status: 'averifier' },
-        {
-          label: 'Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique',
-          status: 'averifier',
-        },
+        ...outdoorPacPrerequisites,
+        hotWaterStoragePrerequisite,
         {
           label: "Raccordement électrique du bâtiment adapté à la puissance de l'équipement",
           status: 'averifier',
@@ -436,6 +429,7 @@ export const modesDeChauffage = {
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Individuel']) && hasEspacePrivate(situation),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
+      id: 'collective-thermodynamic-water-heater',
       inconvenients: [
         'Nuisance sonore à prendre en compte',
         "Impact esthétique de l'unité extérieure",
@@ -443,14 +437,7 @@ export const modesDeChauffage = {
       ],
       label: 'Chauffe-eau thermodynamique',
       pertinence: 2,
-      prerequis: (situation) => [
-        ...getArchitecturalProtectionPrerequisites(situation),
-        { label: 'Espace requis pour le module extérieur', status: 'averifier' },
-        {
-          label: 'Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique',
-          status: 'averifier',
-        },
-      ],
+      prerequis: (situation) => [...getArchitecturalProtectionPrerequisites(situation), ...outdoorSinglePacPrerequisites],
       usage: 'hotWaterOnly',
     },
   ],
@@ -475,6 +462,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
+      id: 'individual-apartment-air-water-heat-pump',
       incompatibilites: [
         {
           isIncompatible: (situation) => !hasEspacePrivate(situation),
@@ -522,6 +510,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-electrique', 'none']),
       gainClasse: 2,
       icone: 'img/icon-pac.webp',
+      id: 'individual-apartment-air-air-heat-pump',
       incompatibilites: [
         {
           isIncompatible: (situation) => !hasEspacePrivate(situation),
@@ -576,6 +565,7 @@ export const modesDeChauffage = {
       gainClasse: 1,
       gainVsGaz: -50,
       icone: 'img/icon-solaire.webp',
+      id: 'individual-apartment-solar-thermal-hot-water',
       incompatibilites: [
         {
           isIncompatible: hasInsufficientSolarThermalCoverage,
@@ -593,8 +583,8 @@ export const modesDeChauffage = {
       prerequis: (situation) => [
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
-        { label: 'Espace requis en local technique pour les ballons de stockage', status: 'averifier' },
-        { label: 'Espace requis sur la toiture pour les capteurs', status: 'averifier' },
+        hotWaterStoragePrerequisite,
+        roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -613,14 +603,15 @@ export const modesDeChauffage = {
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
       gainClasse: 1,
       icone: 'img/icon-solaire.webp',
+      id: 'individual-apartment-solar-atmospheric-heat-pump-hot-water',
       inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment', 'Nécessite une toiture adaptée'],
       label: 'PAC sur capteurs solaires atmosphériques',
       pertinence: 2,
       prerequis: (situation) => [
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
-        { label: 'Espace requis en local technique pour les ballons de stockage', status: 'averifier' },
-        { label: 'Espace requis sur la toiture pour les capteurs', status: 'averifier' },
+        hotWaterStoragePrerequisite,
+        roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -642,6 +633,7 @@ export const modesDeChauffage = {
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Individuel']) && hasEspacePrivate(situation),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
+      id: 'individual-apartment-thermodynamic-water-heater',
       inconvenients: [
         'Nuisance sonore à prendre en compte',
         "Impact esthétique de l'unité extérieure",
@@ -649,14 +641,7 @@ export const modesDeChauffage = {
       ],
       label: 'Chauffe-eau thermodynamique',
       pertinence: 2,
-      prerequis: (situation) => [
-        ...getArchitecturalProtectionPrerequisites(situation),
-        { label: 'Espace requis pour le module extérieur', status: 'averifier' },
-        {
-          label: 'Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique',
-          status: 'averifier',
-        },
-      ],
+      prerequis: (situation) => [...getArchitecturalProtectionPrerequisites(situation), ...outdoorSinglePacPrerequisites],
       usage: 'hotWaterOnly',
     },
     {
@@ -673,18 +658,15 @@ export const modesDeChauffage = {
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
+      id: 'individual-apartment-collective-air-water-heat-pump-hot-water',
       inconvenients: ['Nuisances sonores', 'Étude acoustique nécessaire', "Impact esthétique de l'unité extérieure"],
       label: 'PAC air-eau collective',
       pertinence: 2,
       prerequis: (situation) => [
-        { label: "Système d'eau chaude sanitaire collectif", source: 'Formulaire', status: 'favorable' },
+        collectiveHotWaterPrerequisite,
         ...getArchitecturalProtectionPrerequisites(situation),
-        { label: 'Espace requis pour les modules extérieurs', status: 'averifier' },
-        { label: 'Espace requis en local technique pour les ballons de stockage', status: 'averifier' },
-        {
-          label: 'Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique',
-          status: 'averifier',
-        },
+        ...outdoorPacPrerequisites,
+        hotWaterStoragePrerequisite,
         {
           label: "Raccordement électrique du bâtiment adapté à la puissance de l'équipement",
           status: 'averifier',
@@ -717,6 +699,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-geothermie.webp',
+      id: 'house-geothermal-heat-pump',
       incompatibilites: [
         {
           isIncompatible: (situation) => !hasEspaceForHouseEquipment(situation),
@@ -779,6 +762,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-biomasse.webp',
+      id: 'house-biomass-boiler',
       incompatibilites: [
         {
           isIncompatible: (situation) => !hasEspaceForHouseEquipment(situation),
@@ -829,6 +813,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-pac.webp',
+      id: 'house-air-water-heat-pump',
       incompatibilites: [
         {
           isIncompatible: (situation) => situation.espaceExterieur === 'none',
@@ -878,6 +863,7 @@ export const modesDeChauffage = {
       estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Individuel']),
       gainClasse: 1,
       icone: 'img/icon-biomasse.webp',
+      id: 'house-wood-stove',
       incompatibilites: [
         {
           isIncompatible: (situation) => situation.espaceExterieur === 'none',
@@ -918,6 +904,7 @@ export const modesDeChauffage = {
       estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Individuel']),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
+      id: 'house-air-air-heat-pump',
       incompatibilites: [
         {
           isIncompatible: (situation) => situation.espaceExterieur === 'none',
@@ -971,6 +958,7 @@ export const modesDeChauffage = {
       gainClasse: 2,
       gainVsGaz: -50,
       icone: 'img/icon-solaire.webp',
+      id: 'house-combined-solar-system',
       inconvenients: ['Investissement initial important', "Nécessite un système d'appoint (gaz, bois ou électricité)"],
       label: 'Système solaire combiné ',
       pertinence: 3,
@@ -981,8 +969,8 @@ export const modesDeChauffage = {
           status: 'favorable',
         },
         ...getArchitecturalProtectionPrerequisites(situation),
-        { label: 'Espace requis en local technique pour les ballons de stockage', status: 'averifier' },
-        { label: 'Espace requis sur la toiture pour les capteurs', status: 'averifier' },
+        hotWaterStoragePrerequisite,
+        roofSolarCollectorsPrerequisite,
       ],
       usage: 'heatingAndHotWater',
     },
@@ -1004,6 +992,7 @@ export const modesDeChauffage = {
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Individuel']) && hasEspacePrivate(situation),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
+      id: 'house-thermodynamic-water-heater',
       inconvenients: [
         'Nuisance sonore à prendre en compte',
         "Impact esthétique de l'unité extérieure",
@@ -1011,43 +1000,8 @@ export const modesDeChauffage = {
       ],
       label: 'Chauffe-eau thermodynamique',
       pertinence: 2,
-      prerequis: (situation) => [
-        ...getArchitecturalProtectionPrerequisites(situation),
-        { label: 'Espace requis pour le module extérieur', status: 'averifier' },
-        {
-          label: 'Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique',
-          status: 'averifier',
-        },
-      ],
+      prerequis: (situation) => [...getArchitecturalProtectionPrerequisites(situation), ...outdoorSinglePacPrerequisites],
       usage: 'hotWaterOnly',
     },
   ],
 } satisfies Record<TypeLogement, ModeDeChauffage[]>;
-
-export function getModesDeChauffage(typeLogement: TypeLogement, situation: Situation) {
-  return modesDeChauffage[typeLogement].filter((heatingMode) => heatingMode.estPossible(situation));
-}
-
-export function getIncompatibleSolutionRows(situation: Situation, typeLogement: TypeLogement): IncompatibleSolutionRow[] {
-  const rowsByLabel = new Map<string, IncompatibleSolutionRow>();
-
-  modesDeChauffage[typeLogement].forEach((heatingMode) => {
-    (heatingMode.incompatibilites ?? [])
-      .filter((incompatibilite) => incompatibilite.isIncompatible(situation))
-      .forEach(({ reason, source }) => {
-        const existingRow = rowsByLabel.get(heatingMode.label);
-
-        if (existingRow) {
-          existingRow.reasons.push({ reason, source });
-          return;
-        }
-
-        rowsByLabel.set(heatingMode.label, {
-          label: heatingMode.label,
-          reasons: [{ reason, source }],
-        });
-      });
-  });
-
-  return [...rowsByLabel.values()];
-}

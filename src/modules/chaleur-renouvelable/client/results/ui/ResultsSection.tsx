@@ -183,7 +183,7 @@ export function ResultsSection({
           </div>
         )}
         {activeItems.map((item, index) => {
-          const id = item.label;
+          const id = item.id;
           const isOpen = openAccordionId === id || (shouldOpenFirstItemByDefault && openAccordionId === undefined && index === 0);
 
           return (

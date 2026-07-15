@@ -47,10 +47,10 @@ export default function ChoixChauffageResults() {
   const params = urlParams.params;
   const shouldPreselectPublicAdvisor = Boolean(situation.eligibiliteReseauChaleur);
   const heatNetworkSolution = situation.eligibiliteReseauChaleur
-    ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.label === 'Réseau de chaleur')
+    ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network')
     : undefined;
   const displayedSolutions = heatNetworkSolution
-    ? modesEnriched.filter((modeDeChauffage) => modeDeChauffage.label !== heatNetworkSolution.label)
+    ? modesEnriched.filter((modeDeChauffage) => modeDeChauffage.id !== heatNetworkSolution.id)
     : modesEnriched;
 
   const handleSelectContactRecipient = (recipientId: ContactRecipientId) => {
@@ -98,12 +98,12 @@ export default function ChoixChauffageResults() {
                 coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
                 dpeFrom={params.dpe}
                 geoAddress={geoAddress}
-                isOpen={openAccordionId === undefined || openAccordionId === heatNetworkSolution.label}
+                isOpen={openAccordionId === undefined || openAccordionId === heatNetworkSolution.id}
                 onOpenChange={(expanded) => {
                   if (expanded) {
                     trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: heatNetworkSolution.label });
                   }
-                  handleAccordionOpenChange(heatNetworkSolution.label, expanded);
+                  handleAccordionOpenChange(heatNetworkSolution.id, expanded);
                 }}
                 selectedBatiment={selectedBatEnrBatiment}
                 situation={situation}

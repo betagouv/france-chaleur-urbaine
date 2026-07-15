@@ -1,4 +1,5 @@
 import {
+  zAddressEligibilityContextInput,
   zAdminUpdateDemandeChaleurRenouvelableInput,
   zBatEnrByBanIdInput,
   zDemandeChaleurRenouvelable,
@@ -7,6 +8,7 @@ import {
 } from '@/modules/chaleur-renouvelable/constants';
 import {
   createDemandeChaleurRenouvelable,
+  getAddressEligibilityContext,
   getBatEnrBatimentDetails,
   getBatEnrBatimentsByBanId,
   getBatEnrBatimentsSelectionContextByBanId,
@@ -28,6 +30,9 @@ export const batEnrRouter = router({
   createDemandeChaleurRenouvelable: route
     .input(zDemandeChaleurRenouvelable)
     .mutation(async ({ input }) => await createDemandeChaleurRenouvelable({ input })),
+  getAddressEligibilityContext: route
+    .input(zAddressEligibilityContextInput)
+    .query(async ({ input }) => await getAddressEligibilityContext(input)),
   getBatEnrBatimentDetails: route.input(zGetBdnbConstructionInput).query(async ({ input }) => await getBatEnrBatimentDetails(input)),
   getBatEnrBatimentsByBanId: route.input(zBatEnrByBanIdInput).query(async ({ input }) => await getBatEnrBatimentsByBanId(input)),
   getBatEnrBatimentsSelectionContextByBanId: route

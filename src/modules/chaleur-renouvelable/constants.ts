@@ -5,6 +5,29 @@ import { z } from 'zod';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 export type ModeDeChauffageUsage = 'heatingAndHotWater' | 'hotWaterOnly';
+export type ModeDeChauffageId =
+  | 'collective-heat-network'
+  | 'collective-geothermal-heat-pump'
+  | 'collective-biomass-boiler'
+  | 'collective-air-water-heat-pump'
+  | 'collective-hybrid-air-water-heat-pump-gas'
+  | 'collective-solar-thermal-hot-water'
+  | 'collective-solar-atmospheric-heat-pump-hot-water'
+  | 'collective-air-water-heat-pump-hot-water'
+  | 'collective-thermodynamic-water-heater'
+  | 'individual-apartment-air-water-heat-pump'
+  | 'individual-apartment-air-air-heat-pump'
+  | 'individual-apartment-solar-thermal-hot-water'
+  | 'individual-apartment-solar-atmospheric-heat-pump-hot-water'
+  | 'individual-apartment-thermodynamic-water-heater'
+  | 'individual-apartment-collective-air-water-heat-pump-hot-water'
+  | 'house-geothermal-heat-pump'
+  | 'house-biomass-boiler'
+  | 'house-air-water-heat-pump'
+  | 'house-wood-stove'
+  | 'house-air-air-heat-pump'
+  | 'house-combined-solar-system'
+  | 'house-thermodynamic-water-heater';
 export type BatEnrBatiment = {
   ac1: boolean | null;
   ac2: boolean | null;
@@ -39,6 +62,16 @@ export type BatEnrBatimentsSelectionContext = {
   batiments: BatEnrBatiment[];
   preselectedBatimentConstructionId: string | null;
 };
+
+export const zAddressEligibilityContextInput = z.object({
+  banId: z.string(),
+  city: z.string(),
+  cityCode: z.string(),
+  lat: z.number(),
+  lon: z.number(),
+  selectedBatimentConstructionId: z.string().nullish(),
+});
+export type AddressEligibilityContextInput = z.infer<typeof zAddressEligibilityContextInput>;
 
 export type FranceRenovSpace = {
   address: string;
@@ -76,6 +109,7 @@ export type Situation = {
 };
 
 export type IncompatibleSolutionRow = {
+  id: ModeDeChauffageId;
   label: string;
   reasons: { reason: string; source: string }[];
 };
@@ -95,6 +129,7 @@ type IncompatibleSolutionRule = {
 };
 
 export type ModeDeChauffage = {
+  id: ModeDeChauffageId;
   label: string;
   usage: ModeDeChauffageUsage;
   icone: string;

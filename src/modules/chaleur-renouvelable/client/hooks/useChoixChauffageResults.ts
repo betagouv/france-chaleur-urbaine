@@ -10,6 +10,7 @@ import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/cli
 import { useRemoveHashOnScroll } from '@/modules/chaleur-renouvelable/client/hooks/useRemoveHashOnScroll';
 import { getIncompatibleSolutionRows, getModesDeChauffage } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { HOT_WATER_PARAMS_SECTION_ID } from '@/modules/chaleur-renouvelable/client/ParamsForm';
+import { buildSimulationSituation } from '@/modules/chaleur-renouvelable/client/simulation-situation';
 import { DEFAULT_SIMULATION_PARAMS } from '@/modules/chaleur-renouvelable/constants';
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 
@@ -42,52 +43,8 @@ export function useChoixChauffageResults() {
   const contactForm = useContactFormFCU();
 
   const situation = useMemo(
-    () => ({
-      adresse: params.adresse,
-      architecturalProtectionAc1: batEnr.architecturalProtectionAc1,
-      architecturalProtectionAc2: batEnr.architecturalProtectionAc2,
-      architecturalProtectionAc3: batEnr.architecturalProtectionAc3,
-      architecturalProtectionAc4: batEnr.architecturalProtectionAc4,
-      architecturalProtectionAc4bis: batEnr.architecturalProtectionAc4bis,
-      dpe: params.dpe,
-      eligibiliteReseauChaleur,
-      espaceExterieur: params.espaceExterieur ?? DEFAULT_SIMULATION_PARAMS.espaceExterieur,
-      geothermalNappeGmi: batEnr.geothermalNappeGmi,
-      geothermalNappePotential: batEnr.geothermalNappePotential,
-      geothermalSondeGmi: batEnr.geothermalSondeGmi,
-      geothermiePossible: batEnr.geothermiePossible,
-      habitantsMoyen: Number.parseFloat(params.habitantsMoyen || String(DEFAULT_SIMULATION_PARAMS.habitantsMoyen)),
-      hasGeothermalProbeSpace: batEnr.hasGeothermalProbeSpace,
-      modeEauChaudeSanitaire: params.modeEauChaudeSanitaire,
-      nbLogements: params.nbLogements ?? DEFAULT_SIMULATION_PARAMS.nbLogements,
-      planProtectionAtmosphere: batEnr.planProtectionAtmosphere,
-      solarThermalCoverage: batEnr.solarThermalCoverage,
-      surfaceMoyenne: params.surfaceMoyenne ?? DEFAULT_SIMULATION_PARAMS.surfaceMoyenne,
-      typeRadiateur: params.typeRadiateur,
-    }),
-    [
-      params.adresse,
-      params.dpe,
-      params.espaceExterieur,
-      params.habitantsMoyen,
-      params.modeEauChaudeSanitaire,
-      params.nbLogements,
-      params.surfaceMoyenne,
-      params.typeRadiateur,
-      batEnr.architecturalProtectionAc1,
-      batEnr.architecturalProtectionAc2,
-      batEnr.architecturalProtectionAc3,
-      batEnr.architecturalProtectionAc4,
-      batEnr.architecturalProtectionAc4bis,
-      batEnr.geothermalNappeGmi,
-      batEnr.geothermalNappePotential,
-      batEnr.geothermalSondeGmi,
-      batEnr.geothermiePossible,
-      batEnr.hasGeothermalProbeSpace,
-      batEnr.planProtectionAtmosphere,
-      batEnr.solarThermalCoverage,
-      eligibiliteReseauChaleur,
-    ]
+    () => buildSimulationSituation({ batEnr, eligibiliteReseauChaleur, params }),
+    [batEnr, eligibiliteReseauChaleur, params]
   );
 
   useEffect(() => {

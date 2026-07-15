@@ -145,3 +145,27 @@ export const outdoorPacPrerequisites = [
     status: 'averifier',
   },
 ] satisfies PrerequisiteRow[];
+
+export const outdoorSinglePacPrerequisites = [
+  { label: 'Espace requis pour le module extérieur', status: 'averifier' },
+  {
+    label: 'Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique',
+    status: 'averifier',
+  },
+] satisfies PrerequisiteRow[];
+
+export const collectiveHotWaterPrerequisite = {
+  label: "Système d'eau chaude sanitaire collectif",
+  source: 'Formulaire',
+  status: 'favorable',
+} satisfies PrerequisiteRow;
+
+export const hotWaterStoragePrerequisite = {
+  label: 'Espace requis en local technique pour les ballons de stockage',
+  status: 'averifier',
+} satisfies PrerequisiteRow;
+
+export const roofSolarCollectorsPrerequisite = {
+  label: 'Espace requis sur la toiture pour les capteurs',
+  status: 'averifier',
+} satisfies PrerequisiteRow;
