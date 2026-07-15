@@ -83,7 +83,7 @@ export const modesDeChauffage = {
           source: 'France Chaleur Urbaine',
           status: 'favorable',
         },
-        ...getPdpPrerequisite(situation),
+        ...getPdpPrerequisite(situation, 'favorable'),
       ],
       usage: 'heatingAndHotWater',
     },

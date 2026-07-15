@@ -41,6 +41,9 @@ type IncompatibilityCase = {
   overrides: SituationOverrides;
 };
 
+const PDP_PREREQUISITE_LABEL =
+  'Votre bâtiment est situé dans un périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau de chaleur.';
+
 const createHeatNetwork = (overrides: Partial<HeatNetwork> = {}): HeatNetwork => ({
   co2: null,
   distance: 100,
@@ -839,5 +842,33 @@ describe('modesDeChauffage', () => {
         },
       ],
     });
+  });
+
+  it('marks PDP prerequisite favorable for heat network and restrictive for alternative solutions', () => {
+    const situation = createSituation({
+      eligibiliteReseauChaleur: createHeatNetwork({ inPDP: true }),
+      modeEauChaudeSanitaire: 'Collectif',
+    });
+    const heatNetworkRows = getMode('immeuble_chauffage_collectif', 'Réseau de chaleur', 'heatingAndHotWater')
+      .prerequis(situation)
+      .filter((row) => row.label === PDP_PREREQUISITE_LABEL);
+    const geothermalRows = getMode('immeuble_chauffage_collectif', 'PAC géothermique', 'heatingAndHotWater')
+      .prerequis(situation)
+      .filter((row) => row.label === PDP_PREREQUISITE_LABEL);
+
+    expect(heatNetworkRows).toStrictEqual([
+      {
+        label: PDP_PREREQUISITE_LABEL,
+        source: 'France Chaleur Urbaine',
+        status: 'favorable',
+      },
+    ]);
+    expect(geothermalRows).toStrictEqual([
+      {
+        label: PDP_PREREQUISITE_LABEL,
+        source: 'France Chaleur Urbaine',
+        status: 'contraignant',
+      },
+    ]);
   });
 });

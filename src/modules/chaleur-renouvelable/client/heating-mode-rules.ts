@@ -1,4 +1,10 @@
-import type { ModeEauChaudeSanitaire, PrerequisiteRow, Situation, TypeRadiateur } from '@/modules/chaleur-renouvelable/constants';
+import type {
+  ModeEauChaudeSanitaire,
+  PrerequisiteRow,
+  PrerequisiteStatus,
+  Situation,
+  TypeRadiateur,
+} from '@/modules/chaleur-renouvelable/constants';
 
 export const HEAT_NETWORK_MAX_DISTANCE = 200;
 export const SOLAR_THERMAL_MIN_COVERAGE = 80;
@@ -39,14 +45,14 @@ export const hasCompatibleGeothermalPotential = (situation: Situation) =>
   (hasUnknownGeothermalResource(situation) || hasSufficientGeothermalResource(situation)) &&
   situation.hasGeothermalProbeSpace !== false;
 
-export const getPdpPrerequisite = (situation: Situation): PrerequisiteRow[] =>
+export const getPdpPrerequisite = (situation: Situation, status: PrerequisiteStatus = 'contraignant'): PrerequisiteRow[] =>
   situation.eligibiliteReseauChaleur?.inPDP
     ? [
         {
           label:
             'Votre bâtiment est situé dans un périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau de chaleur.',
           source: 'France Chaleur Urbaine',
-          status: 'contraignant',
+          status,
         },
       ]
     : [];
