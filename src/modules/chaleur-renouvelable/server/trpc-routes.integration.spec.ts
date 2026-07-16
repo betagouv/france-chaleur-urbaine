@@ -7,14 +7,20 @@ import {
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
 } from '@/modules/chaleur-renouvelable/constants';
+import { getBatEnrBatimentsSelectionContextByBanId } from '@/modules/chaleur-renouvelable/server/service';
 import { sendEmailTemplate } from '@/modules/email';
-import { kdb } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
 import { cleanDatabase } from '@/tests/fixtures';
 import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
+import { fetchJSON } from '@/utils/network';
 
 vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('@/utils/network', () => ({
+  fetchJSON: vi.fn(),
 }));
 
 type PermissionTestCase = {
@@ -23,9 +29,29 @@ type PermissionTestCase = {
   allowed: boolean;
 };
 
+type BatEnrInsertParams = {
+  address: string;
+  constructionId: string;
+  coordinateX: number;
+  coordinateY: number;
+};
+
 type DemandChaleurRenouvelableInsert = Insertable<DB['demands_chaleur_renouvelable']>;
 const ADMIN_UPDATED_STATUS = 'Étude technico-financière réalisée';
 const sentEmailTemplate = vi.mocked(sendEmailTemplate);
+const mockedFetchJSON = vi.mocked(fetchJSON);
+
+async function insertBatEnrRow({ address, constructionId, coordinateX, coordinateY }: BatEnrInsertParams) {
+  await sql`
+    INSERT INTO bdnb_batenr (adresse, batiment_construction_id, batiment_groupe_id, geom)
+    VALUES (
+      ${address},
+      ${constructionId},
+      ${constructionId},
+      ST_Multi(ST_Buffer(ST_SetSRID(ST_MakePoint(${coordinateX}, ${coordinateY}), 2154), 5))
+    )
+  `.execute(kdb);
+}
 
 function toDemandDatabaseFields(input: DemandeChaleurRenouvelable) {
   return {
@@ -218,6 +244,35 @@ describe('batEnrRouter', () => {
         .executeTakeFirstOrThrow();
 
       expect(demand).toStrictEqual({ status: expectedStatus });
+    });
+  });
+
+  describe('batEnr.getBatEnrBatimentsSelectionContextByBanId', () => {
+    it('préselectionne le premier bâtiment BDNB et charge ses voisins à 200 m sans référence RNB', async () => {
+      const constructionIds = ['CONSTRUCTION-REFERENCE', 'CONSTRUCTION-NEAR', 'CONSTRUCTION-FAR'];
+      await kdb.deleteFrom('bdnb_batenr').where('batiment_construction_id', 'in', constructionIds).execute();
+      await Promise.all([
+        insertBatEnrRow({ address: '10 rue du test', constructionId: 'CONSTRUCTION-REFERENCE', coordinateX: 1_000, coordinateY: 1_000 }),
+        insertBatEnrRow({ address: '12 rue du test', constructionId: 'CONSTRUCTION-NEAR', coordinateX: 1_100, coordinateY: 1_000 }),
+        insertBatEnrRow({ address: '14 rue du test', constructionId: 'CONSTRUCTION-FAR', coordinateX: 1_300, coordinateY: 1_000 }),
+      ]);
+      mockedFetchJSON.mockImplementation(async (url) => {
+        if (String(url).includes('/buildings/address/')) {
+          return { results: [] };
+        }
+
+        return [{ batiment_construction_id: 'CONSTRUCTION-REFERENCE' }];
+      });
+
+      const result = await getBatEnrBatimentsSelectionContextByBanId({ banId: 'BAN-ADDRESS-ID' });
+
+      expect({
+        batimentConstructionIds: result.batiments.map((batiment) => batiment.batiment_construction_id),
+        preselectedBatimentConstructionId: result.preselectedBatimentConstructionId,
+      }).toStrictEqual({
+        batimentConstructionIds: ['CONSTRUCTION-REFERENCE', 'CONSTRUCTION-NEAR'],
+        preselectedBatimentConstructionId: 'CONSTRUCTION-REFERENCE',
+      });
     });
   });
 

@@ -112,13 +112,13 @@ export function useChoixChauffageResults() {
 
   const handleSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {
-      urlParams.setParams({ constructionId: null });
-
       if (!geoAddress) {
+        urlParams.setParams({ adresse: null, constructionId: null });
         resetEligibility();
         return;
       }
 
+      urlParams.setParams({ adresse: geoAddress.properties.label, constructionId: null });
       onSelectGeoAddress(geoAddress);
     },
     [onSelectGeoAddress, resetEligibility, urlParams]

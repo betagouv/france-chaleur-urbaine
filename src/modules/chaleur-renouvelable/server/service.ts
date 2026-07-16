@@ -149,30 +149,34 @@ export const getBatEnrBatimentsByConstructionIds = async (batimentConstructionId
 export const getBatEnrBatimentsSelectionContextByBanId = async ({
   banId,
 }: BatEnrByBanIdInput): Promise<BatEnrBatimentsSelectionContext> => {
-  const preselectedBatimentConstructionId = await getPreselectedBatimentConstructionIdFromRnb(banId).catch(() => null);
+  const [preselectedBatimentConstructionId, addressBatimentConstructionIds] = await Promise.all([
+    getPreselectedBatimentConstructionIdFromRnb(banId).catch(() => null),
+    getBatEnrBatimentConstructionIdsByBanId({ banId }),
+  ]);
+  const referenceBatimentConstructionId = preselectedBatimentConstructionId ?? addressBatimentConstructionIds[0] ?? null;
 
-  if (!preselectedBatimentConstructionId) {
+  if (!referenceBatimentConstructionId) {
     return {
-      batiments: await getBatEnrBatimentsByBanId({ banId }),
+      batiments: [],
       preselectedBatimentConstructionId: null,
     };
   }
 
   const batiments = await getBatEnrBatimentsWithinDistanceFromConstructionId(
-    preselectedBatimentConstructionId,
+    referenceBatimentConstructionId,
     BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS
   );
 
   if (batiments.length === 0) {
     return {
-      batiments: await getBatEnrBatimentsByBanId({ banId }),
-      preselectedBatimentConstructionId: null,
+      batiments: await getBatEnrBatimentsByConstructionIds(addressBatimentConstructionIds),
+      preselectedBatimentConstructionId: referenceBatimentConstructionId,
     };
   }
 
   return {
     batiments,
-    preselectedBatimentConstructionId,
+    preselectedBatimentConstructionId: referenceBatimentConstructionId,
   };
 };
 
@@ -213,6 +217,10 @@ export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => 
 };
 
 export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) => {
+  return await getBatEnrBatimentsByConstructionIds(await getBatEnrBatimentConstructionIdsByBanId({ banId }));
+};
+
+const getBatEnrBatimentConstructionIdsByBanId = async ({ banId }: BatEnrByBanIdInput) => {
   const url = `${serverConfig.BDNB_API_BASE_URL}/rel_batiment_construction_adresse?select=batiment_construction_id&cle_interop_adr=eq.${encodeURIComponent(
     banId
   )}`;
@@ -225,7 +233,7 @@ export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) =
     .map((relation) => relation.batiment_construction_id)
     .filter((batimentConstructionId): batimentConstructionId is string => batimentConstructionId !== null);
 
-  return await getBatEnrBatimentsByConstructionIds(batimentConstructionIds);
+  return batimentConstructionIds;
 };
 
 const getBatEnrLookupResult = async ({
