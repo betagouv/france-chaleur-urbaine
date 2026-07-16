@@ -1,13 +1,10 @@
 import { TRPCError } from '@trpc/server';
 
-import { type CreateFCUTeamContactInput, zAirtableFCUTeamContact } from '@/modules/demands/constants';
 import { updateEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
-import { AirtableDB } from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
 import type { EligibilityType } from '@/server/services/addresseInformation';
-import { Airtable } from '@/types/enum/Airtable';
 
 import { mergeLegacyValues } from './legacy-values';
 
@@ -202,23 +199,4 @@ export const recalculateEligibility = async (demandId: string) => {
     .executeTakeFirstOrThrow();
 
   return updateEligibilityTestAddress(testAddress.id, testAddress.source_address);
-};
-
-export const createFCUTeamContact = async (values: CreateFCUTeamContactInput) => {
-  await AirtableDB(Airtable.CONTACT_ENTRETIEN_UTILISATEUR).create(
-    zAirtableFCUTeamContact.parse({
-      Adresse: values.address,
-      Date: new Date().toISOString(),
-      Email: values.email,
-      'Mode de chauffage': values.heatingEnergy,
-      Nom: values.lastName,
-      'Nom de la structure': values.company,
-      'Nombre de logement': values.nbLogements,
-      Prenom: values.firstName,
-      Structure: values.structure,
-      Surface: values.demandArea,
-      'Type de structure': values.companyType,
-      Téléphone: values.phone,
-    })
-  );
 };

@@ -26,7 +26,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
   const trpcUtils = trpc.useUtils();
   const [contactFormState, setContactFormState] = useState('');
 
-  const { title, body, computedEligibility, display, text } = useMemo(() => {
+  const { title, body, computedEligibility, text } = useMemo(() => {
     if (!addressData.eligibility) {
       return {};
     }
@@ -35,7 +35,6 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
       title,
       body,
       eligibility: computedEligibility,
-      display,
       text,
     } = getEligibilityResult(addressData.address || '', addressData.heatingType, addressData.eligibility);
 
@@ -56,7 +55,6 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
     return {
       body: computedBody,
       computedEligibility,
-      display,
       text,
       title: computedTitle,
     };
@@ -80,17 +78,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
           sendedValues.region = (context[2] || '').trim();
         }
 
-        const shouldCreateDemand = display !== 'collectContact' || values.acceptGestionnaire;
-
-        if (display === 'collectContact') {
-          await trpcUtils.client.demands.user.createFCUTeamContact.mutate({
-            ...values,
-            address: sendedValues.address,
-          });
-          setContactFormState(!shouldCreateDemand ? 'success' : '');
-        }
-
-        if (onSubmit && shouldCreateDemand) {
+        if (onSubmit) {
           await onSubmit(sendedValues).finally(() => {
             setContactFormState('');
           });
@@ -100,7 +88,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
         setContactFormState('error');
       }
     },
-    [addressData, computedEligibility, display, onSubmit, trpcUtils]
+    [addressData, computedEligibility, onSubmit]
   );
 
   const addressCoordinates = addressData.geoAddress?.geometry.coordinates;
@@ -161,7 +149,6 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
               </>
             )}
             <ContactForm
-              display={display}
               city={addressData.geoAddress?.properties.city}
               onSubmit={handleSubmitForm}
               isLoading={contactFormState === 'loading'}

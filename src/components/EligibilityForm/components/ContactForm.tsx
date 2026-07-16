@@ -15,10 +15,9 @@ type ContactFormProps = {
   cardMode?: boolean;
   city?: string;
   heatingTypeInput?: ReactNode; // gets inserted after the building type (structure), used in the network page
-  display?: 'collectContact';
 };
 
-export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeInput, display }: ContactFormProps) => {
+export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeInput }: ContactFormProps) => {
   const router = useRouter();
   const { userInfo, setUserInfo } = useUserInfo();
 
@@ -35,7 +34,6 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
 
   const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
     defaultValues: {
-      acceptGestionnaire: false,
       company: userInfo.company ?? '',
       companyType: userInfo.companyType ?? '',
       demandArea: undefined as unknown as number,
@@ -85,7 +83,6 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
         heatingTypeInput={heatingTypeInput}
         showHeatingEnergy
         showHouseWarning
-        display={display}
       />
       <FieldWrapper>
         <Field.Checkbox name="termOfUse" label="J’accepte les conditions générales d’utilisation du service." />
