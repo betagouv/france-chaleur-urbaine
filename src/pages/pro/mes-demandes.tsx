@@ -9,6 +9,7 @@ import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Mana
 import Tag from '@/components/Manager/Tag';
 import SimplePage from '@/components/shared/page/SimplePage';
 import FCUBadge from '@/components/ui/Badge';
+import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
@@ -296,6 +297,9 @@ function MesDemandesPage(): React.ReactElement {
           columnFilters={columnFilters}
           onFiltersChange={setColumnFilters}
         />
+        <div className="flex-1 text-right p-4">
+          Vous avez une question ou une réclamation à faire&nbsp;? <Link href="/contact">Contactez-nous&nbsp;!</Link>
+        </div>
       </div>
       <ResizablePanelGroup orientation="horizontal" className="gap-4">
         <ResizablePanel defaultSize="66%">
