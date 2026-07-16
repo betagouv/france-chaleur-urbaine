@@ -7,8 +7,6 @@ import { getNetworkEligibilityDistances } from '@/services/eligibility';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
 import type { CityNetwork, HeatNetwork } from '@/types/HeatNetworksResponse';
 
-import isInPDP from './pdp';
-
 const hasNetworkInCity = async (city: string): Promise<boolean> => {
   const result = await kdb
     .selectFrom('reseaux_de_chaleur')
@@ -24,35 +22,6 @@ const hasFuturNetworkInCity = async (city: string): Promise<boolean> => {
     .where(sql<boolean>`${sql.ref('communes')} @> ARRAY[${city}]`)
     .executeTakeFirst();
   return !!result;
-};
-
-type NetworkInfos = {
-  distance: number;
-  'Identifiant reseau': string;
-  'Taux EnR&R': number;
-  'contenu CO2 ACV': number;
-  Gestionnaire: string;
-  nom_reseau: string;
-  'reseaux classes': boolean;
-  has_PDP: boolean;
-};
-
-const getDistanceToNetwork = async (networkId: string, lat: number, lon: number) => {
-  const network = await kdb
-    .selectFrom('reseaux_de_chaleur')
-    .select([
-      'Identifiant reseau',
-      'Taux EnR&R',
-      'contenu CO2 ACV',
-      'Gestionnaire',
-      'nom_reseau',
-      sql<number>`round(geom <-> ST_Transform(ST_GeomFromText('POINT(${sql.lit(lon)} ${sql.lit(lat)})', 4326), 2154))`.as('distance'),
-    ])
-    .where('has_trace', '=', true)
-    .where('Identifiant reseau', '=', networkId)
-    .executeTakeFirstOrThrow(() => new Error(`Le réseau ${networkId} n'existe pas ou n'a pas de tracé`));
-
-  return network as NetworkInfos;
 };
 
 const headers = [
@@ -135,37 +104,12 @@ export const getCityEligilityStatus = async (city: string): Promise<CityNetwork>
   return { basedOnCity: true, cityHasFuturNetwork, cityHasNetwork };
 };
 
-export type NetworkEligibilityStatus = {
-  distance: number;
-  isEligible: boolean;
-  isVeryEligible: boolean;
-  eligibleDistance: number;
-  veryEligibleDistance: number;
-  inPDP: boolean;
-};
-
-/**
- * Permet d'obtenir l'éligibilité d'un point géographique sur un réseau précis.
- */
-export const getNetworkEligilityStatus = async (networkId: string, lat: number, lon: number): Promise<NetworkEligibilityStatus> => {
-  const [networkInfos, inPDP] = await Promise.all([getDistanceToNetwork(networkId, lat, lon), isInPDP(lat, lon)]);
-  const eligibilityDistances = getNetworkEligibilityDistances(networkId);
-
-  return {
-    distance: networkInfos.distance,
-    inPDP,
-    isEligible: networkInfos.distance <= eligibilityDistances.eligibleDistance,
-    isVeryEligible: networkInfos.distance <= eligibilityDistances.veryEligibleDistance,
-    ...eligibilityDistances,
-  };
-};
-
 /**
  * Convertit le résultat détaillé de getDetailedEligibilityStatus vers le format legacy HeatNetwork
  * Utilise directement les champs du résultat d'éligibilité qui contient déjà toutes les informations nécessaires
  */
 const mapDetailedEligibilityToHeatNetwork = (detailed: DetailedEligibilityStatus): HeatNetwork => {
-  const { eligible, distance, type, id_sncu, nom, pdp, gestionnaire, co2, tauxENRR, isClasse, hasPDP } = detailed;
+  const { eligible, distance, type, id_sncu, nom, gestionnaire, co2, tauxENRR, isClasse, hasPDP } = detailed;
 
   // Détermine si c'est un réseau futur
   const isFuturNetwork =
@@ -216,7 +160,6 @@ export const getEligilityStatus = async (lat: number, lon: number): Promise<Heat
 
 /**
  * Permet d'obtenir l'éligibilité d'un point géographique, avec plus d'informations sur les réseaux les plus proches.
- * Également plus efficace niveau requêtage que getNetworkEligilityStatus.
  */
 export const getDetailedEligibilityStatus = async (lat: number, lon: number) => {
   const [commune, reseauDeChaleur, reseauDeChaleurSansTrace, reseauEnConstruction, zoneEnConstruction, pdp] = await Promise.all([

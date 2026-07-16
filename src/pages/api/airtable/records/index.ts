@@ -9,8 +9,7 @@ import { Airtable } from '@/types/enum/Airtable';
 export default handleRouteErrors(async function PostRecords(req: NextApiRequest) {
   requirePostMethod(req);
 
-  // networkId est présent si test depuis fiche réseau
-  const { type, networkId, ...values } = req.body;
+  const { type, ...values } = req.body;
 
   switch (type) {
     case Airtable.NEWSLETTER: {
