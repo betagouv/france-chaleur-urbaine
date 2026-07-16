@@ -130,7 +130,10 @@ export function useChoixChauffageResults() {
         return;
       }
 
-      urlParams.setParams({ constructionId: batEnrBatiment.batiment_construction_id });
+      urlParams.setParams({
+        ...getSimulationPrefillFromBatEnrBatiment(batEnrBatiment),
+        constructionId: batEnrBatiment.batiment_construction_id,
+      });
       selectBatEnrBatiment(batEnrBatiment);
     },
     [selectBatEnrBatiment, urlParams]

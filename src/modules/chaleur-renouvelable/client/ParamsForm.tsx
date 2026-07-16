@@ -31,6 +31,7 @@ import {
   typeLogementOptions,
   typeRadiateurOptions,
 } from '@/modules/chaleur-renouvelable/constants';
+import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 import { AddressField } from '@/modules/form/AddressField';
 
 import { OutdoorSpaceSelect } from './OutdoorSpaceSelect';
@@ -68,6 +69,7 @@ export function ParamsForm({
 }: ParamsFormProps) {
   const currentValues = toParamsFormDraft(values);
   const [draft, setDraft] = useState(currentValues);
+  const [hasPendingLocalChange, setHasPendingLocalChange] = useState(false);
   const draftSelectedBatiment =
     draft.constructionId === null
       ? null
@@ -88,7 +90,7 @@ export function ParamsForm({
     currentValues.typeRadiateur,
   ]);
 
-  const isModified = !areParamsFormDraftsEqual(draft, currentValues);
+  const isModified = hasPendingLocalChange || !areParamsFormDraftsEqual(draft, currentValues);
 
   const handleOpen = () => {
     trackPostHogEvent('fcr_simulator:params_panel_opened');
@@ -97,6 +99,7 @@ export function ParamsForm({
 
   const handleClose = () => {
     setDraft(currentValues);
+    setHasPendingLocalChange(false);
     setIsOpen(false);
   };
 
@@ -122,13 +125,26 @@ export function ParamsForm({
     onSave(nextValues);
 
     setDraft(normalizeDraftNumbers(draft));
+    setHasPendingLocalChange(false);
     setIsOpen(false);
   };
 
   const handleSelectBatiment = (batiment: BatEnrBatiment) => {
+    const prefillParams = getSimulationPrefillFromBatEnrBatiment(batiment);
+
+    setHasPendingLocalChange(true);
     setDraft((previousDraft) => ({
       ...previousDraft,
       constructionId: batiment.batiment_construction_id,
+      dpe: prefillParams.dpe ?? previousDraft.dpe,
+      espaceExterieur:
+        prefillParams.typeLogement && !isEspaceExterieurCompatible(prefillParams.typeLogement, previousDraft.espaceExterieur)
+          ? null
+          : previousDraft.espaceExterieur,
+      modeEauChaudeSanitaire: prefillParams.modeEauChaudeSanitaire ?? previousDraft.modeEauChaudeSanitaire,
+      nbLogements: prefillParams.nbLogements === undefined ? previousDraft.nbLogements : String(prefillParams.nbLogements),
+      surfaceMoyenne: prefillParams.surfaceMoyenne === undefined ? previousDraft.surfaceMoyenne : String(prefillParams.surfaceMoyenne),
+      typeLogement: prefillParams.typeLogement ?? previousDraft.typeLogement,
     }));
   };
 
@@ -143,6 +159,7 @@ export function ParamsForm({
             nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
             onlyAddress
             onClear={() => {
+              setHasPendingLocalChange(true);
               setDraft((previousDraft) => ({ ...previousDraft, adresse: '', constructionId: null }));
               setGeoAddress(undefined);
               onSelectGeoAddress?.(undefined);
@@ -157,6 +174,7 @@ export function ParamsForm({
                   source: 'result',
                 });
               }
+              setHasPendingLocalChange(true);
               setDraft((previousDraft) => ({
                 ...previousDraft,
                 adresse: nextAddressLabel,
