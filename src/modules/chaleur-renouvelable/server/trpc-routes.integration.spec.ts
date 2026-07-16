@@ -274,6 +274,48 @@ describe('batEnrRouter', () => {
         preselectedBatimentConstructionId: 'CONSTRUCTION-REFERENCE',
       });
     });
+
+    it('charge les voisins depuis la référence RNB sans appeler l’API BDNB externe', async () => {
+      const constructionIds = [
+        'RNB-REFERENCE',
+        'RNB-NEAR',
+        'RNB-FAR',
+        'CONSTRUCTION-RNB-REFERENCE',
+        'CONSTRUCTION-RNB-NEAR',
+        'CONSTRUCTION-RNB-FAR',
+      ];
+      await kdb.deleteFrom('bdnb_batenr').where('batiment_construction_id', 'in', constructionIds).execute();
+      await Promise.all([
+        insertBatEnrRow({ address: '20 rue du test', constructionId: 'RNB-REFERENCE', coordinateX: 2_000, coordinateY: 2_000 }),
+        insertBatEnrRow({ address: '22 rue du test', constructionId: 'RNB-NEAR', coordinateX: 2_100, coordinateY: 2_000 }),
+        insertBatEnrRow({ address: '24 rue du test', constructionId: 'RNB-FAR', coordinateX: 2_300, coordinateY: 2_000 }),
+      ]);
+      mockedFetchJSON.mockImplementation(async (url) => {
+        if (String(url).includes('/buildings/address/')) {
+          return {
+            results: [
+              {
+                ext_ids: [{ id: 'RNB-REFERENCE', source: 'bdnb' }],
+              },
+            ],
+          };
+        }
+
+        throw new Error('BDNB quota exceeded');
+      });
+
+      const result = await getBatEnrBatimentsSelectionContextByBanId({ banId: 'BAN-ADDRESS-ID' });
+
+      expect({
+        batimentConstructionIds: result.batiments.map((batiment) => batiment.batiment_construction_id),
+        externalApiCallCount: mockedFetchJSON.mock.calls.length,
+        preselectedBatimentConstructionId: result.preselectedBatimentConstructionId,
+      }).toStrictEqual({
+        batimentConstructionIds: ['RNB-REFERENCE', 'RNB-NEAR'],
+        externalApiCallCount: 1,
+        preselectedBatimentConstructionId: 'RNB-REFERENCE',
+      });
+    });
   });
 
   describe('batEnr.admin.listDemandesChaleurRenouvelable', () => {

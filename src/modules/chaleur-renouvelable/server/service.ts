@@ -149,11 +149,14 @@ export const getBatEnrBatimentsByConstructionIds = async (batimentConstructionId
 export const getBatEnrBatimentsSelectionContextByBanId = async ({
   banId,
 }: BatEnrByBanIdInput): Promise<BatEnrBatimentsSelectionContext> => {
-  const [preselectedBatimentConstructionId, addressBatimentConstructionIds] = await Promise.all([
-    getPreselectedBatimentConstructionIdFromRnb(banId).catch(() => null),
-    getBatEnrBatimentConstructionIdsByBanId({ banId }),
-  ]);
-  const referenceBatimentConstructionId = preselectedBatimentConstructionId ?? addressBatimentConstructionIds[0] ?? null;
+  const preselectedBatimentConstructionId = await getPreselectedBatimentConstructionIdFromRnb(banId).catch(() => null);
+  let addressBatimentConstructionIds: string[] | null = null;
+  const getAddressBatimentConstructionIds = async () => {
+    addressBatimentConstructionIds ??= await getBatEnrBatimentConstructionIdsByBanId({ banId });
+
+    return addressBatimentConstructionIds;
+  };
+  const referenceBatimentConstructionId = preselectedBatimentConstructionId ?? (await getAddressBatimentConstructionIds())[0] ?? null;
 
   if (!referenceBatimentConstructionId) {
     return {
@@ -169,7 +172,7 @@ export const getBatEnrBatimentsSelectionContextByBanId = async ({
 
   if (batiments.length === 0) {
     return {
-      batiments: await getBatEnrBatimentsByConstructionIds(addressBatimentConstructionIds),
+      batiments: await getBatEnrBatimentsByConstructionIds(await getAddressBatimentConstructionIds()),
       preselectedBatimentConstructionId: referenceBatimentConstructionId,
     };
   }
