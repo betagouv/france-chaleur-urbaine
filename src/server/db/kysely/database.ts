@@ -360,7 +360,6 @@ export interface EtudesEnCours {
   id: number;
   launched_at: Timestamp;
   maitre_ouvrage: string;
-  status: string;
 }
 
 export interface EnrrMobilisablesZonesGeothermieProfondeTiles {

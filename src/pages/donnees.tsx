@@ -274,9 +274,9 @@ const DonneesPage = () => {
               </td>
             </tr>
             <tr>
-              <td className="font-semibold">Études en cours</td>
+              <td className="font-semibold">Communes couvertes par une étude pour la création de réseaux de chaleur</td>
               <td>
-                ADEME, information actuellement limitée à l'Île-de-France
+                ADEME, information actuellement majoritairement disponible pour l'Île-de-France
                 <p className="text-sm text-gray-600 mt-1">
                   Contenu : communes couvertes par une étude pour la création de réseaux de chaleur
                 </p>
