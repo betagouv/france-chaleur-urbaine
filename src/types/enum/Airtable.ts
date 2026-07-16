@@ -8,5 +8,4 @@ export enum Airtable {
   FUTUR_NETWORKS = 'FCU - Futurs réseaux de chaleur',
   MODIFICATIONS_RESEAU = 'FCU - Modifications réseau',
   CONTACT_CHALEUR_RENOUVELABLE = 'FCU - Contact Chaleur Renouvelable',
-  CONTACT_ENTRETIEN_UTILISATEUR = 'FCU - Contact Entretien Utilisateur',
 }

@@ -7,7 +7,6 @@ import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
 type EligibilityResult = {
   eligibility?: boolean;
-  display?: 'collectContact';
   title?: (params: { distance: string }) => string;
   body: (body: {
     distance: string;
@@ -537,30 +536,6 @@ export const getEligibilityResult = (
     ),
   };
 
-  const collectContactNonRaccordable: EligibilityResult = {
-    body: () => (
-      <>
-        <AutreSolutionsChauffageItem collectif showCTA={false} />
-        {FranceRenovItem}
-      </>
-    ),
-    display: 'collectContact',
-    text: (
-      <>
-        <p>
-          France Chaleur Urbaine est un <strong>service gratuit proposé par l'ADEME, l'Agence de la transition écologique</strong>, qui
-          oriente les bâtiments vers les solutions de chauffage écologique les plus adaptées.
-        </p>
-        <p>
-          Votre bâtiment n'est pas situé à proximité d'un réseau de chaleur mais d'autres solutions existent.{' '}
-          <strong>Aidez-nous à construire un service capable de vous orienter vers ces solutions</strong> en participant à un entretien
-          d’une trentaine de minutes en visioconférence avec notre équipe.
-        </p>
-      </>
-    ),
-    title: () => 'Il n’existe pas de réseau de chaleur ouvert au raccordement à proximité de votre adresse pour le moment.',
-  };
-
   switch (state) {
     case 'closeFuturCollectif': {
       return closeFuturCollectif;
@@ -587,9 +562,7 @@ export const getEligibilityResult = (
       return farCollectifInPDP;
     }
     case 'farCollectifOutPDP': {
-      return Math.floor(Math.random() * 2) === 0 // On veut collecter du contact non raccordable une fois sur 4 (simili AB test)
-        ? collectContactNonRaccordable
-        : farCollectifOutPDP;
+      return farCollectifOutPDP;
     }
     case 'unknown': {
       return {} as any;

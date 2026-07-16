@@ -8,7 +8,6 @@ import {
   zAdminUpdateDemandInput,
   zCreateBatchDemandInput,
   zCreateDemandInput,
-  zCreateFCUTeamContactInput,
   zDeleteDemandInput,
   zGestionnaireUpdateDemandInput,
   zListEmailsInput,
@@ -25,7 +24,7 @@ import {
 } from './admin-operations';
 import { createBatchDemands } from './creation-batch';
 import { createDemand } from './creation-user';
-import { computeNetworkDistance, createFCUTeamContact, recalculateEligibility } from './eligibility';
+import { computeNetworkDistance, recalculateEligibility } from './eligibility';
 import { listDemandEmails, sendDemandEmail } from './email-communication';
 import {
   cancelDemandAssignmentChangeRequest,
@@ -134,10 +133,6 @@ export const demandsRouter = router({
     }),
     createBatch: authRoute.input(zCreateBatchDemandInput).mutation(async ({ input, ctx }) => {
       return await createBatchDemands(input, ctx.user);
-    }),
-
-    createFCUTeamContact: route.input(zCreateFCUTeamContactInput).mutation(async ({ input }) => {
-      await await createFCUTeamContact(input);
     }),
     list: authRoute.query(async ({ ctx }) => {
       return await listByUser(ctx.user.id);
