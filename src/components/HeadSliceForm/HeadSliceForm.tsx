@@ -17,7 +17,7 @@ import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
 import type { AvailableHeating } from '@/modules/app/types';
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
-import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
+import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 import { AddressField } from '@/modules/form/AddressField';
 import trpc from '@/modules/trpc/client';
 import cx from '@/utils/cx';
@@ -284,7 +284,7 @@ const HeadSliceForm = ({
           {contactReady && !messageReceived && (
             <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} className="p-0" />
           )}
-          {messageReceived && <DemandSondageForm addressData={addressData} cardMode />}
+          {messageReceived && addressData.submissionResult && <DemandSubmittedPanel submissionResult={addressData.submissionResult} />}
         </div>
       </Modal>
     </>

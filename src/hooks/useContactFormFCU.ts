@@ -177,28 +177,32 @@ const useContactFormFCU = () => {
 
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
-      // Tracking de conversion : la demande = niveau final du funnel (IP/UA captés par la route).
-      recordConversionEvent('demand', { eligible: !!eligibility?.isEligible });
-      // On ne track pas Matomo pour chaleur-renouvelable car ce parcours est tracké via PostHog.
-      const prefix = getContactMatomoContextPrefix(context);
-      if (prefix !== null) {
-        trackEvent(`Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${prefix} - Envoi`, address);
+      // La déduplication (même email + adresse < 30 jours) renvoie la demande existante sans rien créer :
+      // on n'émet les événements de conversion/analytics que pour une demande réellement créée.
+      if (!result.isExisting) {
+        // Tracking de conversion : la demande = niveau final du funnel (IP/UA captés par la route).
+        recordConversionEvent('demand', { eligible: !!eligibility?.isEligible });
+        // On ne track pas Matomo pour chaleur-renouvelable car ce parcours est tracké via PostHog.
+        const prefix = getContactMatomoContextPrefix(context);
+        if (prefix !== null) {
+          trackEvent(`Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${prefix} - Envoi`, address);
+        }
+        trackPostHogEvent('address_test:contact_form_submitted', {
+          address,
+          company_type: data?.companyType || undefined,
+          demand_area_m2: data?.demandArea,
+          heating_energy: (data as unknown as { heatingEnergy?: string })?.heatingEnergy as ModeDeChauffage,
+          heating_type: data?.heatingType as TypeDeChauffage | undefined,
+          is_eligible: !!eligibility?.isEligible,
+          nb_logements: data?.nbLogements,
+          source: context || 'homepage',
+          structure_type: data?.structure || '',
+        });
       }
-      trackPostHogEvent('address_test:contact_form_submitted', {
-        address,
-        company_type: data?.companyType || undefined,
-        demand_area_m2: data?.demandArea,
-        heating_energy: (data as unknown as { heatingEnergy?: string })?.heatingEnergy as ModeDeChauffage,
-        heating_type: data?.heatingType as TypeDeChauffage | undefined,
-        is_eligible: !!eligibility?.isEligible,
-        nb_logements: data?.nbLogements,
-        source: context || 'homepage',
-        structure_type: data?.structure || '',
-      });
       setAddressData({
         ...addressData,
         ...data,
-        demandId: result.id,
+        submissionResult: result,
       });
       setMessageReceived(true);
     },

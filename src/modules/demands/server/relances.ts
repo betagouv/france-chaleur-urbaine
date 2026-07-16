@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import type { SubmitSurveyInput } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
@@ -159,38 +158,4 @@ export const updateSatisfactionFromRelanceId = async (relanceId: string, satisfa
   const enriched = enrichDemandForAdmin({ demand, testAddress: testAddress || null });
 
   return enriched;
-};
-
-/**
- * User: répond au sondage post-soumission de demande ("Comment avez-vous connu FCU ?").
- * Pas d'auth nécessaire — appelé depuis DemandSondageForm sur la page de confirmation.
- */
-export const submitSurvey = async (demandId: string, values: SubmitSurveyInput) => {
-  const [updatedDemand] = await kdb
-    .updateTable('demands')
-    .set({
-      legacy_values: mergeLegacyValues(values),
-      updated_at: new Date(),
-    })
-    .where('id', '=', demandId)
-    .returningAll()
-    .execute();
-
-  const testAddress = await kdb
-    .selectFrom('pro_eligibility_tests_addresses')
-    .selectAll()
-    .where('demand_id', '=', updatedDemand.id)
-    .executeTakeFirst();
-
-  if (values.Sondage) {
-    await createEvent({
-      context_id: demandId,
-      context_type: 'demand',
-      data: { sondage: values.Sondage },
-      type: 'demand_survey_submitted',
-    });
-  }
-
-  const demand = await getDemandById(updatedDemand.id);
-  return enrichDemandForAdmin({ demand, testAddress: testAddress || null });
 };

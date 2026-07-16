@@ -1,6 +1,6 @@
 import type { AvailableHeating } from '@/modules/app/types';
 import type { BANAddressFeature } from '@/modules/ban/types';
-import type { availableStructures } from '@/modules/demands/constants';
+import type { availableStructures, DemandSubmissionResult } from '@/modules/demands/constants';
 
 import type { HeatNetworksResponse } from './HeatNetworksResponse';
 
@@ -15,7 +15,7 @@ export type AddressDataType = {
   heatingType?: AvailableHeating;
   structure?: AvailableStructure;
   eligibility?: HeatNetworksResponse;
-  demandId?: string;
+  submissionResult?: DemandSubmissionResult;
   nbLogements?: number;
   demandCompanyType?: string;
   demandCompanyName?: string;

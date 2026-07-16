@@ -24,7 +24,7 @@ const serverConfigSchema = {
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   LOG_SQL_QUERIES: z.boolean().default(false),
   LOG_SQL_QUERIES_PRETTY: z.boolean().default(false),
-  MAIL_FROM: z.string().default('France Chaleur Urbaine <no-reply@france-chaleur-urbaine.beta.gouv.fr>'),
+  MAIL_FROM: z.string().default(`France Chaleur Urbaine <${clientConfig.noReplyEmail}>`),
   MAIL_HOST: z.string(),
   MAIL_PASS: z.string(),
   MAIL_PORT: z.number().default(587),

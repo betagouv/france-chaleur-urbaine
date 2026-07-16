@@ -12,7 +12,6 @@ import {
   zGestionnaireUpdateDemandInput,
   zListEmailsInput,
   zSendEmailInput,
-  zSubmitSurveyInput,
 } from '../constants';
 import {
   changeDemandAssignment,
@@ -32,7 +31,7 @@ import {
   requestDemandAssignmentChange,
   updateDemandByGestionnaire,
 } from './gestionnaire-operations';
-import { submitSurvey, updateCommentFromRelanceId } from './relances';
+import { updateCommentFromRelanceId } from './relances';
 import { getReseauxStats } from './stats';
 import { listByUser } from './user-tracking';
 
@@ -129,17 +128,13 @@ export const demandsRouter = router({
       return await updateCommentFromRelanceId(relanceId, comment);
     }),
     create: route.input(zCreateDemandInput).mutation(async ({ input, ctx }) => {
-      return await createDemand(input, { userId: ctx.user?.id });
+      return await createDemand(input, { deduplicate: true, userId: ctx.user?.id });
     }),
     createBatch: authRoute.input(zCreateBatchDemandInput).mutation(async ({ input, ctx }) => {
       return await createBatchDemands(input, ctx.user);
     }),
     list: authRoute.query(async ({ ctx }) => {
       return await listByUser(ctx.user.id);
-    }),
-    submitSurvey: route.input(zSubmitSurveyInput).mutation(async ({ input }) => {
-      const { demandId, values } = input;
-      return await submitSurvey(demandId, values);
     }),
   },
 });

@@ -26,7 +26,7 @@ export default defineConfig({
       reportsDirectory: './coverage',
     },
     environment: 'happy-dom',
-    exclude: ['**/{.git,node_modules,dist,.next}/**', 'src/tests/a11y/**'],
+    exclude: ['**/{.git,node_modules,dist,.next}/**', 'src/tests/a11y/**', 'src/**/*.e2e.spec.{ts,tsx}'],
     onConsoleLog: (log) => {
       // Suppress specific React warnings
       if (log.includes('React does not recognize')) {
@@ -38,7 +38,7 @@ export default defineConfig({
       {
         extends: true,
         test: {
-          exclude: ['src/**/*.integration.spec.{ts,tsx}'],
+          exclude: ['src/**/*.integration.spec.{ts,tsx}', 'src/**/*.e2e.spec.{ts,tsx}'],
           fileParallelism: true,
           include: ['src/**/*.{test,spec}.{ts,tsx}'],
           name: 'unit',

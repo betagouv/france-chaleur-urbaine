@@ -6,7 +6,7 @@ import Box from '@/components/ui/Box';
 import Loader from '@/components/ui/Loader';
 import Modal, { createModal } from '@/components/ui/Modal';
 import useContactFormFCU, { type ContactFormContext } from '@/hooks/useContactFormFCU';
-import DemandSondageForm from '@/modules/demands/client/DemandSondageForm';
+import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 import type { AddressDataType } from '@/types/AddressData';
 
 import { Container, Title } from './StickyForm.styles';
@@ -66,7 +66,7 @@ const StickyForm = ({ context, title }: { title?: string; context?: ContactFormC
           {contactReady && !messageReceived && (
             <EligibilityFormContact addressData={addressData} onSubmit={(data) => handleOnSubmitContact(data, context)} />
           )}
-          {messageReceived && <DemandSondageForm addressData={addressData} />}
+          {messageReceived && addressData.submissionResult && <DemandSubmittedPanel submissionResult={addressData.submissionResult} />}
         </Box>
       </Modal>
     </>

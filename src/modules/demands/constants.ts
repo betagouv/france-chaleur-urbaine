@@ -35,14 +35,6 @@ export const zSendEmailInput = z.object({
   key: z.string(),
 });
 
-const zSubmitSurveyValues = z
-  .object({
-    Sondage: z.array(z.string()).nullable(),
-  })
-  .partial();
-
-export type SubmitSurveyInput = z.infer<typeof zSubmitSurveyValues>;
-
 // Source unique des statuts : l'enum DEMANDE_STATUS porte les libellés ; cette liste ne fait
 // qu'ajouter l'ordre d'affichage et le picto (⚠️ uniquement dans la liste déroulante).
 export const demandStatuses = [
@@ -59,6 +51,13 @@ export const demandStatuses = [
 export const demandStatusDefault = demandStatuses[0].label;
 
 export type DemandStatus = DEMANDE_STATUS;
+
+/**
+ * Libellé de statut présenté au demandeur. « À traiter » relève de la file de traitement interne des gestionnaires :
+ * on le neutralise en « En cours de traitement ». Les autres statuts restent inchangés.
+ */
+export const getDemandeurStatusLabel = (status: DemandStatus): string =>
+  status === DEMANDE_STATUS.TO_PROCESS ? 'En cours de traitement' : status;
 
 const zDemandStatus = z.enum([...demandStatuses.map((s) => s.label), '']);
 
@@ -102,12 +101,7 @@ export const zAdminDemandUpdateValues = z
 
 export type UpdateAdminDemandInput = z.infer<typeof zAdminDemandUpdateValues>;
 
-export type UpdateDemandInput = UpdateGestionnaireDemandInput & UpdateAdminDemandInput & SubmitSurveyInput;
-
-export const zSubmitSurveyInput = z.object({
-  demandId: z.string(),
-  values: zSubmitSurveyValues,
-});
+export type UpdateDemandInput = UpdateGestionnaireDemandInput & UpdateAdminDemandInput;
 
 export const zGestionnaireUpdateDemandInput = z.object({
   demandId: z.string(),
@@ -120,7 +114,7 @@ export const zAdminUpdateDemandInput = z.object({
 });
 
 export const zCreateDemandInput = z.object({
-  address: z.string(),
+  address: z.string().trim(),
   city: z.string(),
   company: z.string().optional().default(''),
   companyType: z.string().optional().default(''),
@@ -137,7 +131,7 @@ export const zCreateDemandInput = z.object({
     inPDP: z.boolean(),
     isEligible: z.boolean(),
   }),
-  email: z.string(),
+  email: z.string().trim(),
   firstName: z.string(),
   heatingEnergy: z.string(),
   heatingType: z.string().optional(),
@@ -324,6 +318,23 @@ export type BatchDemandContactInfo = z.infer<typeof zBatchDemandContactSchema>;
 
 export type CreateDemandInput = z.infer<typeof zCreateDemandInput>;
 
+/**
+ * Résultat renvoyé au front après tentative de dépôt d'une demande (affiché par DemandSubmittedPanel).
+ * `isExisting` = true quand une demande identique (même email + adresse) existait déjà dans
+ * les 30 derniers jours : aucune nouvelle demande n'a été créée, on renvoie l'existante.
+ */
+export type DemandSubmissionResult = {
+  id: string;
+  isExisting: boolean;
+  address: string;
+  createdAt: string;
+  status: DemandStatus;
+  isEligible: boolean;
+  networkName: string | null;
+  distance: number | null;
+  email: string;
+};
+
 // Batch demand creation schemas
 export const zBatchDemandStep1Schema = z
   .object({
@@ -356,20 +367,6 @@ export const zCreateBatchDemandInput = z.object({
 });
 
 export type CreateBatchDemandInput = z.infer<typeof zCreateBatchDemandInput>;
-export const referrers = [
-  { label: 'Moteur de recherche' },
-  { label: 'Pub web' },
-  { label: 'Article' },
-  { label: 'Pub télé' },
-  { label: "Bureau d'étude" },
-  { label: 'Espace France Rénov’' },
-  { label: 'Bouche à oreille' },
-  { label: 'Services municipaux' },
-  { label: 'Webinaire' },
-  { label: 'Autre' },
-] as const;
-
-export type Referrer = (typeof referrers)[number]['label'];
 
 /************* Normalisation des valeurs legacy *************/
 
