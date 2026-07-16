@@ -146,6 +146,7 @@ Parcours classique : landing → simulateur → résultats → contact.
 | `fcr_results:methodology_link_clicked` | _(aucune)_ | Clic sur le lien méthodologie |
 | `fcr_results:share_button_clicked` | _(aucune)_ | Clic sur le bouton partager |
 | `fcr_results:agir_link_clicked` | _(aucune)_ | Clic sur le lien Agir dans l'état sans solution |
+| `fcr_results:france_renov_coordinates_toggled` | `is_open` | Ouverture ou fermeture des coordonnées France Rénov' |
 | `fcr_results:france_renov_cta_clicked` | _(aucune)_ | Clic sur le CTA France Rénov' |
 | `fcr_results:no_ecs_solution_displayed` | `heating_mode?` | Affichage de l'état sans solution ECS |
 | `fcr_results:ecs_to_full_tab_clicked` | _(aucune)_ | Clic depuis l'état ECS vide vers l'onglet chauffage + ECS |

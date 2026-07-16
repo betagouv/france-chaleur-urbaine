@@ -34,7 +34,8 @@ const contactRecipients = [
     label: 'Je n’ai pas encore contacté le gestionnaire',
   },
   {
-    description: 'Votre demande sera transmise à un conseiller du service public pour explorer les alternatives',
+    description:
+      'Un conseiller du service public vous aider à identifier la meilleure alternative parmi les solutions compatibles ci-dessus',
     id: 'public-advisor',
     label: 'J’ai déjà reçu un refus ou une réponse négative',
   },
@@ -332,6 +333,16 @@ type DemandFCRFormProps = {
  * Displays the contact block matching the recommended heating solution.
  */
 export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipientId, topSolution }: DemandFCRFormProps) {
+  if (selectedRecipientId === 'public-advisor') {
+    return (
+      <HeatNetworkDemandForm
+        selectedRecipientId={selectedRecipientId}
+        setSelectedRecipientId={setSelectedRecipientId}
+        topSolution={topSolution}
+      />
+    );
+  }
+
   const shouldShowFranceRenovAdvisorCallout = topSolution !== HEAT_NETWORK_LABEL; // TODO: Re-enable the legacy alternative advisor form from this condition when needed.
 
   return shouldShowFranceRenovAdvisorCallout ? (
@@ -475,6 +486,7 @@ function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, to
   const selectedOccupantStatus = useValue<OccupantStatus>('occupantStatus') ?? CONTACT_FORM_DEFAULT_VALUES.occupantStatus;
   const occupantStatusDetailField = getOccupantStatusDetailField(selectedOccupantStatus);
   const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
+  const shouldShowPublicAdvisorCalloutOnly = selectedRecipientId === 'public-advisor';
 
   return (
     <section id="help-ademe" className="mt-6 scroll-mt-4 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">
@@ -491,194 +503,195 @@ function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, to
           }}
         />
       )}
-      <div className="mb-4 flex items-start gap-3 border-l-4 border-[#F6C23E] bg-[#FFEBA3] px-4 py-3 font-bold">
-        <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
-        <span>
-          {isPublicAdvisorSelected
-            ? 'Votre demande sera transmise à un conseiller du service public. L’accompagnement est gratuit.'
-            : 'Votre demande sera transmise au gestionnaire du réseau de chaleur.'}
-        </span>
-      </div>
-      <Form>
-        {isPublicAdvisorSelected && !isAlternativeAdvisorForm && (
-          <p className="mb-4 text-lg font-bold">Pour aider le conseiller du service public à prendre le relais</p>
-        )}
-        <div className="mb-6 grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 [&_.fr-error-text]:text-error [&_.fr-input]:bg-white [&_.fr-label]:text-(--text-title-grey) [&_.fr-select]:bg-white">
+      {!isPublicAdvisorSelected && (
+        <div className="mb-4 flex items-start gap-3 border-l-4 border-[#F6C23E] bg-[#FFEBA3] px-4 py-3 font-bold">
+          <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
+          <span>Votre demande sera transmise au gestionnaire du réseau de chaleur.</span>
+        </div>
+      )}
+      {isPublicAdvisorSelected && <FranceRenovAdvisorCallout variant="inline" />}
+      {!shouldShowPublicAdvisorCalloutOnly && (
+        <Form>
           {isPublicAdvisorSelected && !isAlternativeAdvisorForm && (
-            <>
-              <RichSelect
-                label="Motif communiqué par le gestionnaire de réseau"
-                options={refusalReasonOptions}
-                placeholder="Sélectionner le motif"
-                value={refusalReason || undefined}
-                onChange={(reason) => {
-                  trackPostHogEvent('fcr_contact:non_raccordable_reason_selected', { reason });
-                  setRefusalReason(reason);
-                }}
-              />
-              <RichSelect
-                label="Quand avez-vous reçu le refus du gestionnaire ? (optionnel)"
-                options={refusalPeriodOptions}
-                placeholder="Sélectionner..."
-                value={refusalPeriod || undefined}
-                onChange={setRefusalPeriod}
-              />
-            </>
+            <p className="mb-4 text-lg font-bold">Pour aider le conseiller du service public à prendre le relais</p>
           )}
-          <div className={cx(!shouldShowOrganizationName && !isAlternativeAdvisorForm && 'md:col-span-2 mb-5')}>
-            <form.Field
-              name="occupantStatus"
-              children={(field) => (
-                <RichSelect<OccupantStatus>
-                  label="Vous êtes"
-                  value={field.state.value}
-                  onChange={field.handleChange}
-                  options={occupantStatusOptions}
-                  postHogEventKey="fcr_contact:profile_selected"
-                  postHogEventProps={(profile) => ({
-                    is_raccordable: !isPublicAdvisorSelected,
-                    profile,
-                  })}
+          <div className="mb-6 grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 [&_.fr-error-text]:text-error [&_.fr-input]:bg-white [&_.fr-label]:text-(--text-title-grey) [&_.fr-select]:bg-white">
+            {isPublicAdvisorSelected && !isAlternativeAdvisorForm && (
+              <>
+                <RichSelect
+                  label="Motif communiqué par le gestionnaire de réseau"
+                  options={refusalReasonOptions}
+                  placeholder="Sélectionner le motif"
+                  value={refusalReason || undefined}
+                  onChange={(reason) => {
+                    trackPostHogEvent('fcr_contact:non_raccordable_reason_selected', { reason });
+                    setRefusalReason(reason);
+                  }}
                 />
-              )}
-            />
-          </div>
-          {isAlternativeAdvisorForm && (
-            <form.Field
-              name="heatingEnergy"
-              children={(field) => (
-                <RichSelect<HeatingEnergy>
-                  label="Énergie de chauffage"
-                  value={field.state.value}
-                  onChange={field.handleChange}
-                  options={heatingEnergyOptions}
-                  postHogEventKey="fcr_contact:energy_selected"
-                  postHogEventProps={(energy) => ({
-                    energy,
-                    is_raccordable: !isPublicAdvisorSelected,
-                  })}
+                <RichSelect
+                  label="Quand avez-vous reçu le refus du gestionnaire ? (optionnel)"
+                  options={refusalPeriodOptions}
+                  placeholder="Sélectionner..."
+                  value={refusalPeriod || undefined}
+                  onChange={setRefusalPeriod}
                 />
-              )}
-            />
-          )}
-          {shouldShowOrganizationName && !isAlternativeAdvisorForm && (
-            <Field.Input name="organizationName" label="Nom de votre structure" />
-          )}
-          <Field.Input name="lastName" label="Nom" />
-          <Field.Input name="firstName" label="Prénom" />
-          <Field.EmailInput name="email" label="Email" />
-          <Field.PhoneInput name="phone" label="Téléphone" />
-          {!isAlternativeAdvisorForm && (
-            <form.Field
-              name="heatingEnergy"
-              children={(field) => (
-                <RichSelect<HeatingEnergy>
-                  label="Énergie de chauffage"
-                  value={field.state.value}
-                  onChange={field.handleChange}
-                  options={heatingEnergyOptions}
-                  postHogEventKey="fcr_contact:energy_selected"
-                  postHogEventProps={(energy) => ({
-                    energy,
-                    is_raccordable: !isPublicAdvisorSelected,
-                  })}
-                />
-              )}
-            />
-          )}
-          {occupantStatusDetailField === 'housingCount' && !isAlternativeAdvisorForm && (
-            <Field.Input
-              name="housingCount"
-              label="Nombre de logements"
-              nativeInputProps={{
-                inputMode: 'numeric',
-                min: 1,
-                type: 'number',
-              }}
-            />
-          )}
-          {occupantStatusDetailField === 'surfaceArea' && !isAlternativeAdvisorForm && (
-            <Field.Input
-              name="surfaceArea"
-              label="Surface en m²"
-              nativeInputProps={{
-                inputMode: 'numeric',
-                min: 1,
-                type: 'number',
-              }}
-            />
-          )}
-          {occupantStatusDetailField === 'demandConcern' && !isAlternativeAdvisorForm && (
-            <form.Field
-              name="demandConcern"
-              children={(field) => (
-                <RichSelect<DemandConcern>
-                  label="Votre demande concerne"
-                  value={field.state.value || undefined}
-                  onChange={field.handleChange}
-                  options={demandConcernOptions}
-                  placeholder="Sélectionner une option"
-                />
-              )}
-            />
-          )}
-          <div>
-            <form.Field
-              name="projectStatus"
-              children={(field) => (
-                <>
-                  <ProjectStatusSelect
+              </>
+            )}
+            <div className={cx(!shouldShowOrganizationName && !isAlternativeAdvisorForm && 'md:col-span-2 mb-5')}>
+              <form.Field
+                name="occupantStatus"
+                children={(field) => (
+                  <RichSelect<OccupantStatus>
+                    label="Vous êtes"
                     value={field.state.value}
                     onChange={field.handleChange}
-                    isPublicAdvisorSelected={isPublicAdvisorSelected}
-                    placeholder={isAlternativeAdvisorForm ? 'Sélectionner une ou plusieurs option(s)' : undefined}
+                    options={occupantStatusOptions}
+                    postHogEventKey="fcr_contact:profile_selected"
+                    postHogEventProps={(profile) => ({
+                      is_raccordable: !isPublicAdvisorSelected,
+                      profile,
+                    })}
                   />
+                )}
+              />
+            </div>
+            {isAlternativeAdvisorForm && (
+              <form.Field
+                name="heatingEnergy"
+                children={(field) => (
+                  <RichSelect<HeatingEnergy>
+                    label="Énergie de chauffage"
+                    value={field.state.value}
+                    onChange={field.handleChange}
+                    options={heatingEnergyOptions}
+                    postHogEventKey="fcr_contact:energy_selected"
+                    postHogEventProps={(energy) => ({
+                      energy,
+                      is_raccordable: !isPublicAdvisorSelected,
+                    })}
+                  />
+                )}
+              />
+            )}
+            {shouldShowOrganizationName && !isAlternativeAdvisorForm && (
+              <Field.Input name="organizationName" label="Nom de votre structure" />
+            )}
+            <Field.Input name="lastName" label="Nom" />
+            <Field.Input name="firstName" label="Prénom" />
+            <Field.EmailInput name="email" label="Email" />
+            <Field.PhoneInput name="phone" label="Téléphone" />
+            {!isAlternativeAdvisorForm && (
+              <form.Field
+                name="heatingEnergy"
+                children={(field) => (
+                  <RichSelect<HeatingEnergy>
+                    label="Énergie de chauffage"
+                    value={field.state.value}
+                    onChange={field.handleChange}
+                    options={heatingEnergyOptions}
+                    postHogEventKey="fcr_contact:energy_selected"
+                    postHogEventProps={(energy) => ({
+                      energy,
+                      is_raccordable: !isPublicAdvisorSelected,
+                    })}
+                  />
+                )}
+              />
+            )}
+            {occupantStatusDetailField === 'housingCount' && !isAlternativeAdvisorForm && (
+              <Field.Input
+                name="housingCount"
+                label="Nombre de logements"
+                nativeInputProps={{
+                  inputMode: 'numeric',
+                  min: 1,
+                  type: 'number',
+                }}
+              />
+            )}
+            {occupantStatusDetailField === 'surfaceArea' && !isAlternativeAdvisorForm && (
+              <Field.Input
+                name="surfaceArea"
+                label="Surface en m²"
+                nativeInputProps={{
+                  inputMode: 'numeric',
+                  min: 1,
+                  type: 'number',
+                }}
+              />
+            )}
+            {occupantStatusDetailField === 'demandConcern' && !isAlternativeAdvisorForm && (
+              <form.Field
+                name="demandConcern"
+                children={(field) => (
+                  <RichSelect<DemandConcern>
+                    label="Votre demande concerne"
+                    value={field.state.value || undefined}
+                    onChange={field.handleChange}
+                    options={demandConcernOptions}
+                    placeholder="Sélectionner une option"
+                  />
+                )}
+              />
+            )}
+            <div>
+              <form.Field
+                name="projectStatus"
+                children={(field) => (
+                  <>
+                    <ProjectStatusSelect
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      isPublicAdvisorSelected={isPublicAdvisorSelected}
+                      placeholder={isAlternativeAdvisorForm ? 'Sélectionner une ou plusieurs option(s)' : undefined}
+                    />
 
-                  {field.state.value.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {field.state.value.map((status) => (
-                        <span key={status} className="rounded-full bg-[#E3E3FD] px-3 py-1 text-xs font-medium text-blue">
-                          {status}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-            />
+                    {field.state.value.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {field.state.value.map((status) => (
+                          <span key={status} className="rounded-full bg-[#E3E3FD] px-3 py-1 text-xs font-medium text-blue">
+                            {status}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              />
+            </div>
+            {!isAlternativeAdvisorForm && (
+              <Field.Textarea
+                name="comments"
+                label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
+                className="w-full md:col-span-2 mt-5"
+                nativeTextAreaProps={{
+                  rows: 3,
+                }}
+              />
+            )}
           </div>
-          {!isAlternativeAdvisorForm && (
-            <Field.Textarea
-              name="comments"
-              label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
-              className="w-full md:col-span-2 mt-5"
-              nativeTextAreaProps={{
-                rows: 3,
-              }}
-            />
+          <Field.Checkbox
+            name="termOfUse"
+            postHogEventKey="fcr_contact:cgu_accepted"
+            postHogEventProps={{ is_raccordable: !isPublicAdvisorSelected }}
+            label={
+              <>
+                J’accepte les&nbsp;
+                <Link href="/cgu">conditions générales d’utilisation</Link>
+                &nbsp;du service.
+              </>
+            }
+          />
+          <Submit loading={isLoading} disabled={isSent} iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-4">
+            Envoyer
+          </Submit>
+          {isSent && (
+            <Alert className="fr-mt-3w" variant="success" title="Merci pour votre attention">
+              Nous reviendrons rapidement vers vous.
+            </Alert>
           )}
-        </div>
-        <Field.Checkbox
-          name="termOfUse"
-          postHogEventKey="fcr_contact:cgu_accepted"
-          postHogEventProps={{ is_raccordable: !isPublicAdvisorSelected }}
-          label={
-            <>
-              J’accepte les&nbsp;
-              <Link href="/cgu">conditions générales d’utilisation</Link>
-              &nbsp;du service.
-            </>
-          }
-        />
-        <Submit loading={isLoading} disabled={isSent} iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-4">
-          Envoyer
-        </Submit>
-        {isSent && (
-          <Alert className="fr-mt-3w" variant="success" title="Merci pour votre attention">
-            Nous reviendrons rapidement vers vous.
-          </Alert>
-        )}
-      </Form>
+        </Form>
+      )}
     </section>
   );
 }

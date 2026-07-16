@@ -289,6 +289,9 @@ export type PostHogEventMap = {
   'fcr_results:methodology_link_clicked': never;
   'fcr_results:share_button_clicked': never;
   'fcr_results:agir_link_clicked': never;
+  'fcr_results:france_renov_coordinates_toggled': {
+    is_open: boolean;
+  };
   'fcr_results:france_renov_cta_clicked': never;
   'fcr_results:no_ecs_solution_displayed': {
     heating_mode?: TypeLogement | null;

@@ -1,7 +1,7 @@
 import Link from '@/components/ui/Link';
-import FranceRenovHelp from '@/modules/chaleur-renouvelable/client/FranceRenovHelp';
+import { FranceRenovAdvisorCallout } from '@/modules/chaleur-renouvelable/client/FranceRenovAdvisorCallout';
 
-export function NoResultSection({ codeInsee }: { codeInsee?: string }) {
+export function NoResultSection() {
   const renovationActions = [
     {
       description: 'toiture, murs, fenêtres, planchers, c’est souvent le geste le plus efficace',
@@ -56,7 +56,7 @@ export function NoResultSection({ codeInsee }: { codeInsee?: string }) {
           </Link>
         </p>
       </section>
-      <FranceRenovHelp codeInsee={codeInsee} />
+      <FranceRenovAdvisorCallout />
     </>
   );
 }

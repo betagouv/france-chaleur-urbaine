@@ -180,7 +180,7 @@ export default function ChoixChauffageResults() {
           </Dialog>
         </>
       ) : (
-        <NoResultSection codeInsee={geoAddress?.properties.citycode} />
+        <NoResultSection />
       )}
     </>
   );
