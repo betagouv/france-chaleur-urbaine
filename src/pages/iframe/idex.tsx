@@ -14,6 +14,7 @@ const IdexMap = () => {
           },
         })}
         legend="auto"
+        search="eligibility"
         legendContent={
           <IframeLegend
             layers={['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire']}

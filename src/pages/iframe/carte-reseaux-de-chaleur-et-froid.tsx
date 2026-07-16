@@ -22,6 +22,7 @@ const CeremaMap = () => {
             zonesDeDeveloppementPrioritaire: true,
           })}
           legend="auto"
+          search="eligibility"
           legendContent={
             <IframeLegend layers={['reseaux-de-chaleur', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire']} />
           }

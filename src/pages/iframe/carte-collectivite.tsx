@@ -14,6 +14,7 @@ const CollectivityMap = () => {
           zonesDeDeveloppementPrioritaire: true,
         })}
         legend="auto"
+        search="eligibility"
         legendContent={<IframeLegend layers={['reseaux-de-chaleur', 'perimetres-de-developpement-prioritaire']} />}
       >
         <FcuLogo />
