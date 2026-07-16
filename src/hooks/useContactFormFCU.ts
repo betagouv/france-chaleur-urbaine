@@ -22,6 +22,8 @@ function getEligibilityMatomoContextPrefix(context?: ContactFormContext) {
       return ' - Carte';
     case 'comparateur':
       return ' - Comparateur';
+    case 'fiche-reseau':
+      return ' - Fiche réseau';
     default:
       return null;
   }
@@ -37,6 +39,8 @@ function getContactMatomoContextPrefix(context?: ContactFormContext) {
       return ' - Choix chauffage';
     case 'comparateur':
       return ' - Comparateur';
+    case 'fiche-reseau':
+      return ' - Fiche réseau';
     default:
       return null;
   }

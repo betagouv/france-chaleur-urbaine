@@ -140,7 +140,6 @@ export const zCreateDemandInput = z.object({
   mtm_kwd: z.string().optional(),
   mtm_source: z.string().optional(),
   nbLogements: z.number().optional(),
-  networkId: z.string().optional(),
   // Tracking de conversion (module conversion-tracking) : source (niveau 1) + page + host embarquant (iframes)
   origin_host: z.string().optional(),
   origin_page: z.string().optional(),
@@ -528,7 +527,6 @@ export const formatDataToLegacyAirtable = (values: CreateDemandInput) => {
     mtm_campaign,
     mtm_kwd,
     mtm_source,
-    networkId,
     demandArea,
     nbLogements,
   } = values;
@@ -549,7 +547,6 @@ export const formatDataToLegacyAirtable = (values: CreateDemandInput) => {
     'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
     Nom: lastName,
     'Nom de la structure accompagnante': formatNomStructureAccompagnanteToAirtable(structure, company, companyType),
-    // networkId,
     Prénom: firstName,
     Region: region,
     Structure: formatStructureToAirtable(structure, companyType, demandCompanyType),

@@ -1,5 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { type ComponentType, type HTMLAttributes, type ReactNode, useEffect } from 'react';
+import { type ComponentType, type HTMLAttributes, useEffect } from 'react';
 
 import Alert from '@/components/ui/Alert';
 import { fieldLabelInformation } from '@/modules/demands/constants';
@@ -31,7 +31,6 @@ type DemandContactFieldsProps<TFormUi extends FormUi = FormUi> = {
   city?: string;
   contactState: ContactState;
   formUi: TFormUi;
-  heatingTypeInput?: ReactNode;
   namePrefix?: '' | 'contact.';
   showHeatingEnergy?: boolean;
   showHouseWarning?: boolean;
@@ -43,7 +42,6 @@ export const DemandContactFields = <TFormUi extends FormUi>({
   city,
   contactState,
   formUi,
-  heatingTypeInput,
   namePrefix = '',
   showHeatingEnergy = false,
   showHouseWarning = false,
@@ -146,18 +144,15 @@ export const DemandContactFields = <TFormUi extends FormUi>({
         </Fieldset>
       )}
       {showHeatingEnergy && (
-        <>
-          <FieldWrapper>{heatingTypeInput}</FieldWrapper>
-          <Field.Select
-            label={heatingTypeInput ? 'Énergie de chauffage :' : fieldLabelInformation.heatingEnergy.label}
-            name={fieldName('heatingEnergy')}
-            className="heatingEnergyContactInformations"
-            options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
-              label,
-              value,
-            }))}
-          />
-        </>
+        <Field.Select
+          label={fieldLabelInformation.heatingEnergy.label}
+          name={fieldName('heatingEnergy')}
+          className="heatingEnergyContactInformations"
+          options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
+            label,
+            value,
+          }))}
+        />
       )}
     </>
   );

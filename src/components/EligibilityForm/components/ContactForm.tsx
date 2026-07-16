@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import type { ReactNode } from 'react';
 
 import useForm from '@/components/form/react-form/useForm';
 import { AnalyticsFormId } from '@/modules/analytics/client';
@@ -14,10 +13,9 @@ type ContactFormProps = {
   isLoading?: boolean;
   cardMode?: boolean;
   city?: string;
-  heatingTypeInput?: ReactNode; // gets inserted after the building type (structure), used in the network page
 };
 
-export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeInput }: ContactFormProps) => {
+export const ContactForm = ({ onSubmit, isLoading, cardMode, city }: ContactFormProps) => {
   const router = useRouter();
   const { userInfo, setUserInfo } = useUserInfo();
 
@@ -75,15 +73,7 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeIn
 
   return (
     <Form id={AnalyticsFormId.form_contact}>
-      <DemandContactFields
-        cardMode={cardMode}
-        city={city}
-        contactState={contactState}
-        formUi={formUi}
-        heatingTypeInput={heatingTypeInput}
-        showHeatingEnergy
-        showHouseWarning
-      />
+      <DemandContactFields cardMode={cardMode} city={city} contactState={contactState} formUi={formUi} showHeatingEnergy showHouseWarning />
       <FieldWrapper>
         <Field.Checkbox name="termOfUse" label="J’accepte les conditions générales d’utilisation du service." />
       </FieldWrapper>

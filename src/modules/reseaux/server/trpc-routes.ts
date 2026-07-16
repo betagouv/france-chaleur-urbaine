@@ -14,13 +14,12 @@ import {
   zDeleteGeomUpdateInput,
   zDeleteNetworkInput,
   zDownloadNetworkGeometryInput,
-  zGetNetworkEligibilityStatusInput,
   zUpdateGeomUpdateInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
 } from '@/modules/reseaux/constants';
 import { adminRoute, demandAccessRoute, route, router } from '@/modules/trpc/server';
 import { kdb, sql } from '@/server/db/kysely';
-import { getCityEligilityStatus, getEligilityStatus, getNetworkEligilityStatus } from '@/server/services/addresseInformation';
+import { getCityEligilityStatus, getEligilityStatus } from '@/server/services/addresseInformation';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
 type Interval = [number, number];
@@ -195,10 +194,6 @@ export const reseauxRouter = router({
   }),
   eligibilityStatus: route.input(z.object({ lat: z.number(), lon: z.number() })).query(async ({ input }) => {
     return (await getEligilityStatus(input.lat, input.lon)) as HeatNetworksResponse; // legacy type for compatibility
-  }),
-  // Routes publiques pour l'éligibilité et la recherche de réseaux
-  getNetworkEligibilityStatus: route.input(zGetNetworkEligibilityStatusInput).query(async ({ input }) => {
-    return await getNetworkEligilityStatus(input.networkId, input.lat, input.lon);
   }),
   getNetworkGeometry: route.input(zDownloadNetworkGeometryInput).query(async ({ input }) => {
     return await reseauxService.getNetworkGeometry(input.type, input.id);

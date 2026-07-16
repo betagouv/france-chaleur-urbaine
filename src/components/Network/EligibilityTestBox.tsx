@@ -1,34 +1,25 @@
-import { fr } from '@codegouvfr/react-dsfr';
-import { useQueryState } from 'nuqs';
-import { useState } from 'react';
-import { Oval } from 'react-loader-spinner';
+import { useCallback, useEffect, useState } from 'react';
 
-import { ContactForm, SelectEnergy } from '@/components/EligibilityForm/components';
+import { EligibilityFormContact } from '@/components/EligibilityForm';
+import { SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
-import Alert from '@/components/ui/Alert';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
-import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
-import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
+import useContactFormFCU from '@/hooks/useContactFormFCU';
+import useInitialSearchParam from '@/hooks/useInitialSearchParam';
+import { AnalyticsFormId, trackPostHogEvent } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
+import type { AvailableHeating } from '@/modules/app/types';
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
-import { getDemandOrigin } from '@/modules/conversion-tracking/client/trackingContext';
-import { useRecordConversionEvent } from '@/modules/conversion-tracking/client/useRecordConversionEvent';
 import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
-import type { ContactFormInfos, DemandSubmissionResult, ModeDeChauffage } from '@/modules/demands/constants';
 import { AddressField } from '@/modules/form/AddressField';
-import { getReadableDistance } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
-import type { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
-import type { FormDemandCreation } from '@/types/Summary/Demand';
-import { runWithMinimumDelay } from '@/utils/time';
-
-type FormState = 'idle' | 'loadingEligibility' | 'eligibilitySubmissionError' | 'sendingDemand' | 'demandCreated' | 'demandSubmissionError';
+import cx from '@/utils/cx';
 
 interface EligibilityTestBoxProps {
   networkId: string;
@@ -40,266 +31,161 @@ const eligibilityTestModal = createModal({
 });
 
 /**
- * Formulaire simplifié de test d'adresse + création d'une demande pour un réseau de chaleur.
+ * Formulaire de test d'adresse sur une fiche réseau. Réutilise le parcours principal :
+ * éligibilité tous réseaux confondus + formulaire de contact + panneau de confirmation.
  */
 const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   const trpcUtils = trpc.useUtils();
-  const recordConversionEvent = useRecordConversionEvent();
   useTrackPageView();
-  const [addressInUrl, setAddressInUrl] = useQueryState('address');
-  const [selectedGeoAddress, setSelectedGeoAddress] = useState<BANAddressFeature>();
-  const [eligibilityStatus, setEligibilityStatus] = useState<NetworkEligibilityStatus>();
+  const {
+    addressData,
+    contactReady,
+    messageReceived,
+    loadingStatus,
+    warningMessage,
+    setLoadingStatus,
+    handleOnFetchAddress,
+    handleOnSuccessAddress,
+    handleOnSubmitContact,
+    handleResetFormContact,
+  } = useContactFormFCU();
+
+  const urlAddress = useInitialSearchParam('address');
   const { userInfo, setUserInfo } = useUserInfo();
-  const [formState, setFormState] = useState<FormState>('idle');
-  const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
+  const [geoAddress, setGeoAddress] = useState<BANAddressFeature>();
+  const [eligibilityError, setEligibilityError] = useState(false);
 
-  // appelé au clic sur Tester l'adresse, pour récupérer l'éligibilité et les informations du réseau
-  const testAddressEligibility = async (geoAddress: BANAddressFeature) => {
-    try {
-      trackEvent(`Eligibilité|Formulaire de test - Fiche réseau - Envoi`, geoAddress.properties.label);
-
-      setFormState('loadingEligibility');
-      const [lon, lat] = geoAddress.geometry.coordinates;
-      const eligibilityStatus = await runWithMinimumDelay(
-        () => trpcUtils.client.reseaux.getNetworkEligibilityStatus.query({ lat, lon, networkId }),
-        500
-      );
-      setFormState('idle');
-      setEligibilityStatus(eligibilityStatus);
-
-      trackEvent(
-        `Eligibilité|Formulaire de test - Fiche réseau - Adresse ${eligibilityStatus?.isEligible ? 'É' : 'Iné'}ligible`,
-        geoAddress.properties.label
-      );
-      trackPostHogEvent('address_test:submitted', {
-        address: geoAddress.properties.label,
-        chauffage_type: userInfo.heatingType,
-        distance_reseau_m: eligibilityStatus.distance,
-        is_eligible: !!eligibilityStatus?.isEligible,
-        source: 'fiche-reseau',
-      });
-      trackPostHogEvent('network_page:address_test_cta_clicked', { network_id: networkId });
-      recordConversionEvent('address_test', { eligible: !!eligibilityStatus?.isEligible });
-    } catch (_err) {
-      setFormState('eligibilitySubmissionError');
+  // Restaure la geoAddress depuis la BAN quand l'adresse est préremplie (param URL ou localStorage) sans objet feature.
+  useEffect(() => {
+    const address = urlAddress ?? userInfo.address;
+    if (!address || geoAddress) {
+      return;
     }
-  };
+    const controller = new AbortController();
+    searchBANAddresses({ query: address, signal: controller.signal })
+      .then((features) => {
+        const match = features.find((f) => f.properties.label === address) ?? features[0];
+        if (match) {
+          setGeoAddress(match);
+        }
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [urlAddress, userInfo.address, geoAddress]);
 
-  const onAddressSelected = (geoAddress?: BANAddressFeature) => {
-    void setAddressInUrl(null);
-    // beware, this function gets called every time the address changes
-    // and we only need the result when the address is complete
+  const testAddress = useCallback(async () => {
+    setEligibilityError(false);
     if (!geoAddress) {
       return;
     }
-    setUserInfo({ address: geoAddress.properties.label });
-    setSelectedGeoAddress(geoAddress);
-    setEligibilityStatus(undefined);
 
-    trackPostHogEvent('address_test:started', { chauffage_type: userInfo.heatingType, source: 'fiche-reseau' });
+    handleOnFetchAddress({ address: userInfo.address }, 'fiche-reseau');
+    const [lon, lat] = geoAddress.geometry.coordinates;
 
-    void testAddressEligibility(geoAddress);
-  };
-
-  // appelé quand on soumet le formulaire de contact (dernière étape), on crée la demande côté airtable
-  const submitContactForm = async (contactFormInfos: ContactFormInfos) => {
-    if (!selectedGeoAddress) {
-      return;
-    }
     try {
-      const addressContext = selectedGeoAddress.properties.context.split(',');
-      const demandCreation: FormDemandCreation = {
-        // contact
-        ...contactFormInfos,
-
-        // adresse
-        address: selectedGeoAddress.properties.label,
-        city: selectedGeoAddress.properties.city,
-        company: contactFormInfos.structure === 'Tertiaire' ? contactFormInfos.company : '',
-        coords: {
-          lat: selectedGeoAddress.geometry.coordinates[1],
-          lon: selectedGeoAddress.geometry.coordinates[0],
+      const isCity = geoAddress.properties.label === geoAddress.properties.city;
+      const networkData = isCity
+        ? await trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
+        : await trpcUtils.client.reseaux.eligibilityStatus.query({ lat, lon });
+      trackPostHogEvent('network_page:address_test_cta_clicked', { network_id: networkId });
+      handleOnSuccessAddress(
+        {
+          address: userInfo.address,
+          coords: { lat, lon },
+          eligibility: networkData,
+          geoAddress,
+          heatingType: userInfo.heatingType as AvailableHeating,
         },
-        department: (addressContext[1] || '').trim(),
-
-        eligibility: eligibilityStatus,
-
-        heatingType: userInfo.heatingType,
-
-        networkId,
-        ...getDemandOrigin(),
-        postcode: selectedGeoAddress.properties.postcode,
-        region: (addressContext[2] || '').trim(),
-      };
-      setFormState('sendingDemand');
-      const submissionResult = await trpcUtils.client.demands.user.create.mutate(demandCreation);
-      setSubmissionResult(submissionResult);
-      setFormState('demandCreated');
-      // La déduplication renvoie une demande existante sans rien créer : on n'émet les événements que pour une création réelle.
-      if (!submissionResult.isExisting) {
-        recordConversionEvent('demand', { eligible: !!eligibilityStatus?.isEligible });
-        trackEvent(
-          `Eligibilité|Formulaire de contact ${eligibilityStatus?.isEligible ? 'é' : 'iné'}ligible - Fiche réseau - Envoi`,
-          selectedGeoAddress?.properties.label
-        );
-        trackPostHogEvent('address_test:contact_form_submitted', {
-          address: selectedGeoAddress.properties.label,
-          company_type: contactFormInfos.companyType || undefined,
-          demand_area_m2: contactFormInfos.demandArea,
-          has_phone: Boolean(contactFormInfos.phone),
-          heating_energy: contactFormInfos.heatingEnergy as ModeDeChauffage,
-          heating_type: userInfo.heatingType,
-          is_eligible: !!eligibilityStatus?.isEligible,
-          nb_logements: contactFormInfos.nbLogements,
-          source: 'fiche-reseau',
-          structure_type: contactFormInfos.structure || '',
-        });
-      }
+        'fiche-reseau'
+      );
     } catch (_err) {
-      setFormState('demandSubmissionError');
+      setEligibilityError(true);
     }
-  };
-  const defaultAddress = addressInUrl || userInfo.address || '';
-  const [addressDefaultValue, setAddressDefaultValue] = useState<string>();
-  const [addressResetKey, setAddressResetKey] = useState(0);
-  const [defaultAddressButtonVisible, setDefaultAddressButtonVisible] = useState<boolean>(true);
+    setLoadingStatus('idle');
+  }, [
+    userInfo.address,
+    userInfo.heatingType,
+    geoAddress,
+    networkId,
+    trpcUtils,
+    handleOnFetchAddress,
+    handleOnSuccessAddress,
+    setLoadingStatus,
+  ]);
 
   return (
     <>
       <Box p="4w" backgroundColor="blue-france-925-125">
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb="2w">
-          <Text size="xl" legacyColor="black">
-            Testez l'éligibilité d'une adresse pour ce réseau.
-          </Text>
-          {formState === 'loadingEligibility' && <Oval height={20} width={20} />}
-        </Box>
-        <AddressField
-          key={addressResetKey}
-          label=""
-          nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
-          defaultValue={addressDefaultValue}
-          onClear={() => {
-            setUserInfo({ address: '' });
-            setSelectedGeoAddress(undefined);
-          }}
-          onSelect={(geoAddress) => {
-            onAddressSelected(geoAddress);
-            setDefaultAddressButtonVisible(false);
-          }}
-          excludeCities
-        />
-        {formState === 'eligibilitySubmissionError' && (
-          <div className={fr.cx('fr-text--sm', 'fr-message--error')}>
-            Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
-          </div>
-        )}
-        {defaultAddress && defaultAddressButtonVisible ? (
-          <Button
-            onClick={async () => {
-              setDefaultAddressButtonVisible(false);
-              setAddressDefaultValue(defaultAddress);
-              setAddressResetKey((k) => k + 1);
-              const features = await searchBANAddresses({ excludeCities: true, query: defaultAddress }).catch(() => []);
-              const feature = features.find((f) => f.properties.label === defaultAddress) ?? features[0];
-              if (feature) onAddressSelected(feature);
+        <Text size="xl" legacyColor="black" mb="2w">
+          Testez l'éligibilité de votre adresse
+        </Text>
+        <form id={AnalyticsFormId.form_test_adresse}>
+          <SelectEnergy
+            label="Mode de chauffage actuel :"
+            name="heatingType"
+            selectOptions={energyInputsDefaultLabels}
+            onChange={(heatingType) => setUserInfo({ heatingType })}
+            value={userInfo.heatingType ?? ''}
+          />
+          <AddressField
+            className="mb-2!"
+            label=""
+            defaultValue={urlAddress ?? userInfo.address}
+            nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
+            onClear={() => {
+              setUserInfo({ address: '' });
+              setGeoAddress(undefined);
             }}
+            onSelect={(selectedGeoAddress?: BANAddressFeature) => {
+              setUserInfo({ address: selectedGeoAddress?.properties?.label ?? '' });
+              setGeoAddress(selectedGeoAddress);
+              trackPostHogEvent('address_test:started', { chauffage_type: userInfo.heatingType, source: 'fiche-reseau' });
+            }}
+          />
+          <div
+            className={cx(
+              'fr-mb-2w font-bold pl-4 py-1 border-l-4 border-error bg-white/40',
+              userInfo.address && geoAddress && !userInfo.heatingType ? 'block' : 'hidden'
+            )}
           >
-            Tester {defaultAddress}
+            {warningMessage}
+          </div>
+          {eligibilityError && (
+            <div className="fr-text--sm fr-message--error fr-mb-2w">
+              Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
+            </div>
+          )}
+          <Button
+            size="medium"
+            loading={loadingStatus === 'loading'}
+            disabled={!userInfo.address || !geoAddress || !userInfo.heatingType || (loadingStatus === 'loading' && !eligibilityError)}
+            onClick={testAddress}
+          >
+            Tester cette adresse
           </Button>
-        ) : null}
+        </form>
       </Box>
 
       <Modal
         modal={eligibilityTestModal}
         title=""
-        open={!!selectedGeoAddress && !!eligibilityStatus}
+        open={contactReady}
         size="custom"
         onClose={() => {
-          setSelectedGeoAddress(undefined);
-          setEligibilityStatus(undefined);
+          handleResetFormContact();
         }}
-        loading={formState === 'loadingEligibility'}
+        loading={loadingStatus === 'loading'}
       >
-        {!!selectedGeoAddress && !!eligibilityStatus && (
-          <>
-            <Box boxShadow={`inset 16px 0 0 0 ${eligibilityStatus.isEligible ? '#3AB54A' : '#FF5655'}`} pl="4w" pt="2w" pb="1w">
-              <Box display="flex" gap="16px">
-                <img
-                  src={eligibilityStatus.isEligible ? '/img/reponses_tests_pouce_haut.webp' : '/img/reponses_tests_pouce_bas.webp'}
-                  alt=""
-                  className="fr-col--top"
-                />
-                <Box backgroundColor="#C1C1C1" width="1px" />
-                <Text>
-                  {!eligibilityStatus.isEligible ? (
-                    "Votre adresse n'est pas située à proximité de ce réseau."
-                  ) : eligibilityStatus.isVeryEligible ? (
-                    <>
-                      Votre adresse est <strong>à proximité immédiate</strong> de ce réseau (
-                      {getReadableDistance(eligibilityStatus.distance)}
-                      ).
-                    </>
-                  ) : (
-                    <>
-                      Votre adresse n’est pas à proximité immédiate de ce réseau de chaleur, toutefois le réseau n’est pas très loin (
-                      {getReadableDistance(eligibilityStatus.distance)}).
-                    </>
-                  )}{' '}
-                </Text>
-              </Box>
-
-              {/* cas spécifique pour le réseau de Paris */}
-              {networkId === '7501C' && (
-                <Text size="sm" mt="2w">
-                  A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au moins {eligibilityStatus.eligibleDistance}&nbsp;kW.
-                </Text>
-              )}
-            </Box>
-
-            {formState === 'demandCreated' && submissionResult ? (
-              <Box mt="2w">
-                <DemandSubmittedPanel submissionResult={submissionResult} />
-              </Box>
-            ) : (
-              <>
-                <Heading size="h4" legacyColor="darkerblue" mt="2w">
-                  {eligibilityStatus.isEligible
-                    ? 'Recevez des informations adaptées à votre bâtiment de la part du gestionnaire du réseau'
-                    : 'Contribuez au développement du réseau de chaleur en faisant connaître votre souhait de vous raccorder'}
-                </Heading>
-
-                <ContactForm
-                  city={selectedGeoAddress?.properties.city}
-                  onSubmit={submitContactForm}
-                  isLoading={formState === 'sendingDemand'}
-                  heatingTypeInput={
-                    <>
-                      <SelectEnergy
-                        label="Mode de chauffage actuel :"
-                        name="heatingType"
-                        className="fr-my-2w"
-                        selectOptions={energyInputsDefaultLabels}
-                        onChange={(heatingType) => setUserInfo({ heatingType })}
-                        value={userInfo.heatingType || ''}
-                      />
-                      {userInfo.heatingType === 'individuel' && (
-                        <Alert className="fr-mt-2w" variant="warning" size="sm">
-                          Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents
-                          et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble
-                        </Alert>
-                      )}
-                    </>
-                  }
-                />
-                {formState === 'demandSubmissionError' && (
-                  <Box textColor="#c00" mt="1w">
-                    Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
-                  </Box>
-                )}
-              </>
-            )}
-          </>
-        )}
+        <div>
+          {contactReady && !messageReceived && (
+            <EligibilityFormContact
+              addressData={addressData}
+              onSubmit={(data) => handleOnSubmitContact(data, 'fiche-reseau')}
+              className="p-0"
+            />
+          )}
+          {messageReceived && addressData.submissionResult && <DemandSubmittedPanel submissionResult={addressData.submissionResult} />}
+        </div>
       </Modal>
     </>
   );

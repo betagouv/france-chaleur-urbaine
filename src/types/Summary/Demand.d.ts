@@ -1,5 +1,4 @@
-import type { ContactFormInfos, ModeDeChauffageLabel, TypeDeChauffageLabel } from '@/modules/demands/constants';
-import type { Coords } from '@/modules/geo/types';
+import type { ModeDeChauffageLabel, TypeDeChauffageLabel } from '@/modules/demands/constants';
 import type { DemandStatus } from '@/types/enum/DemandSatus';
 
 export type DemandSummary = {
@@ -55,52 +54,4 @@ export type Demand = DemandSummary &
 export type AdminDemand = Demand & {
   // airtable fields
   'Relance à activer'?: boolean;
-};
-
-export type FormDemandCreation = ContactFormInfos & {
-  address: string;
-  coords: Coords;
-  eligibility: any;
-  heatingType: AvailableHeating;
-  city: string;
-  postcode: string;
-  department: string;
-  region: string;
-
-  // if the user is on a network page
-  networkId?: string;
-
-  // if the user is coming from a campaign or ads
-  mtm_campaign?: string;
-  mtm_kwd?: string;
-  mtm_source?: string;
-
-  origin_host?: string;
-  origin_page?: string;
-  origin_source?: string;
-};
-
-export type AirtableDemandCreation = {
-  Nom: string;
-  Prénom: string;
-  Structure: string;
-  Établissement: string;
-  'Structure accompagnante'?: string;
-  Éligibilité: boolean;
-  Adresse: string;
-  Latitude: number;
-  Longitude: number;
-  Mail: string;
-  Téléphone: string;
-  'Mode de chauffage': string;
-  'Type de chauffage': string;
-  'Distance au réseau': number;
-  'en PDP': string; // 'Oui' : 'Non',
-  Ville: string;
-  'Code Postal': string;
-  Departement: string;
-  Region: string;
-  'Nom de la structure accompagnante': string;
-  'Surface en m2'?: number;
-  Logement?: number;
 };

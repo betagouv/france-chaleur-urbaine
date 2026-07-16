@@ -469,7 +469,7 @@ const NetworkPanel = ({
             gap="16px"
             className={hasFirstColumn(isCold, displayBlocks) ? 'fr-col-12 fr-col-lg-6' : 'fr-col-12'}
           >
-            {(!displayBlocks || displayBlocks.includes('formulaire_eligibilite')) && !isCold && network.has_trace && (
+            {(!displayBlocks || displayBlocks.includes('formulaire_eligibilite')) && !isCold && (
               <EligibilityTestBox networkId={network['Identifiant reseau']} />
             )}
 
