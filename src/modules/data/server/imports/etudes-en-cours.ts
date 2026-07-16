@@ -1,143 +1,120 @@
+import { z } from 'zod';
+
 import { kdb, sql } from '@/server/db/kysely';
+import { fetchJSON } from '@/utils/network';
 
-import { defineFileImportFunc } from '../import';
-import { loadDataFromFile } from '../import-utils';
+import { defineImportFunc } from '../import';
 
-// Types pour les études en cours
-export interface CSVEtudeEnCours {
-  'Code INSEE': number;
-  EtudeId: number;
-  Commune: string;
-  "Maître d'ouvrage  "?: string;
-  'Ne Pas Afficher'?: string;
-  "Présence d'un RCU ": string;
-  'Etudes réalisées': string;
-  'Type de date': string;
-  'Date (mois / année)': string;
-  "Etude à l'échelle d'une seule commune ?": string;
-  "Liste des communes de l'étude"?: string;
-  'Etude en cours / étude réalisée (pour FCU)': string;
-  'Date lancement du projet / étude pour FCU (mois / année)': string;
-  'N° contrat ADEME'?: string;
-  'Autres réseaux'?: string;
-  'Export zones à fort potentiel sans RCU pour des villes de 5 000 à 25 000 habitants (source : EnRezo, établi par FCU)': string;
-  'Commentaires / précision de la date'?: string;
-  'Date de dernière actualisation'?: string;
-  'Auteur '?: string;
-  'Code postal': number;
-}
+// Source (read-only) https://grist.numerique.gouv.fr/o/fcu/g2f9JTfpSUSu/Communes-couvertes-par-une-etude
 
-export interface PreformattedEtudeEnCours {
-  maitre_ouvrage: string;
-  code_insee: number;
-  status: string;
-  launched_at: Date;
-}
+const gristEtudesEnCoursRecordsURL =
+  'https://grist.numerique.gouv.fr/api/docs/g2f9JTfpSUSu/tables/Listes_des_etudes_de_creation_de_RC/records';
 
-// Fonction d'import pour les études en cours
-export const importEtudesEnCours = defineFileImportFunc(async ({ filepath, logger }) => {
-  const data: CSVEtudeEnCours[] = await loadDataFromFile(filepath);
+type GristEtudeEnCoursRecord = {
+  id: number;
+  fields: {
+    Etude_ID: number;
+    Codes_INSEE: string | null;
+    Commune_s_: string;
+    Maitre_d_ouvrage: string;
+    Statut: string;
+    Region: string;
+    Date_de_debut_lancement: number | null; // unix timestamp in seconds
+    Date_de_mise_a_jour_de_la_donnee: number | null;
+  };
+};
 
-  const etudesEnCours = data.reduce(
-    (acc, row) => {
-      if (row['Ne Pas Afficher'] === 'X') {
-        logger.info(`💤 Skipping ${row.EtudeId}`, { row });
-        return acc;
-      }
-      if (!acc[row.EtudeId]) {
-        acc[row.EtudeId] = [];
-      }
-      const statusString = row['Etude en cours / étude réalisée (pour FCU)'];
-      const status = statusString === 'Etude en cours' ? 'ongoing' : statusString === 'Etude réalisée' ? 'done' : null;
-      if (!status) {
-        logger.error('⚠️ status not found', { row });
-        return acc;
-      }
+const inseeCodeRegex = /^(\d{2}|2[AB])\d{3}$/;
 
-      const launchedAt = row['Date lancement du projet / étude pour FCU (mois / année)'];
-      if (!launchedAt) {
-        logger.error('⚠️ launchedAt not found', { row });
-        return acc;
-      }
-      const [day, month, year] = launchedAt?.split('/') || [];
-      const formattedDate = new Date(`${month}/${day}/${year} 12:00:00`);
+const zEtudeEnCours = z
+  .object({
+    Codes_INSEE: z
+      .string()
+      .transform((codes) =>
+        codes
+          .split(',')
+          .map((code) => code.trim())
+          .filter(Boolean)
+      )
+      .pipe(z.array(z.string().regex(inseeCodeRegex, 'invalid INSEE code')).min(1)),
+    Date_de_debut_lancement: z.number().transform((timestamp) => new Date(timestamp * 1000)),
+    Etude_ID: z.number(),
+    Maitre_d_ouvrage: z.string(),
+  })
+  .transform((fields) => ({
+    codesInsee: fields.Codes_INSEE,
+    id: fields.Etude_ID,
+    launchedAt: fields.Date_de_debut_lancement,
+    maitreOuvrage: fields.Maitre_d_ouvrage,
+  }));
 
-      logger.info(`🚀 Handling ${row.EtudeId}`, { row });
-      acc[row.EtudeId].push({
-        code_insee: row['Code INSEE'],
-        launched_at: formattedDate,
-        maitre_ouvrage: row["Maître d'ouvrage  "] || '',
-        status,
-      });
-      return acc;
-    },
-    {} as { [key: number]: PreformattedEtudeEnCours[] }
-  );
+// Fonction d'import pour les études en cours, depuis le Grist FCU "Communes couvertes par une étude"
+export const importEtudesEnCours = defineImportFunc(async ({ logger }) => {
+  const { records } = await fetchJSON<{ records: GristEtudeEnCoursRecord[] }>(gristEtudesEnCoursRecordsURL);
 
-  const entries = Object.entries(etudesEnCours);
+  const isEmptyRecord = (record: GristEtudeEnCoursRecord) => !record.fields.Codes_INSEE?.trim();
+  const emptyRecordsCount = records.filter(isEmptyRecord).length;
+  if (emptyRecordsCount > 0) {
+    logger.info(`💤 Skipping ${emptyRecordsCount} empty rows`);
+  }
 
-  logger.info('Deleting old collection');
+  const parsedRecords = records
+    .filter((record) => !isEmptyRecord(record))
+    .map((record) => ({ parseResult: zEtudeEnCours.safeParse(record.fields), record }));
+
+  parsedRecords.forEach((parsedRecord) => {
+    if (!parsedRecord.parseResult.success) {
+      const issues = parsedRecord.parseResult.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join(', ');
+      logger.error(`⚠️ Invalid Etude_ID ${parsedRecord.record.fields.Etude_ID} (${issues}), fix it in Grist`);
+    }
+  });
+
+  const etudes = parsedRecords.flatMap((parsedRecord) => (parsedRecord.parseResult.success ? [parsedRecord.parseResult.data] : []));
+
+  const duplicateEtudes = etudes.filter((etude, index) => etudes.findIndex((other) => other.id === etude.id) !== index);
+  duplicateEtudes.forEach((etude) => logger.error(`⚠️ Duplicate Etude_ID ${etude.id}, fix it in Grist`));
+
+  const uniqueEtudes = etudes.filter((etude) => !duplicateEtudes.includes(etude));
+
+  logger.info(`Importing ${uniqueEtudes.length}/${records.length} études`);
+
   await kdb.deleteFrom('etudes_en_cours').execute();
 
-  await Promise.all(
-    entries.map(async (entry, index) => {
-      const [etudeId, communes] = entry;
-      const maitres_ouvrage = [...new Set(communes.map(({ maitre_ouvrage }) => maitre_ouvrage))].join(', ');
-      const commune_ids = communes.map(({ code_insee }) => `${code_insee}`);
-
-      const launched_at = communes.reduce(
-        (acc, commune) => {
-          if (acc && acc.toISOString() !== commune.launched_at.toISOString()) {
-            logger.error(entry);
-            logger.error(`L'étude ${etudeId} a plusieurs dates de lancement ${commune.launched_at.toISOString()} ${acc.toISOString()}`);
-          }
-          return commune.launched_at;
-        },
-        undefined as Date | undefined
-      );
-      const status = communes.reduce(
-        (acc, commune) => {
-          if (acc && acc !== commune.status) {
-            logger.error(entry);
-            logger.error(`L'étude ${etudeId} a plusieurs status`);
-          }
-          return commune.status;
-        },
-        undefined as string | undefined
-      );
-      logger.info(`${index}/${entries.length} Inserting ${etudeId}`);
-
-      if (commune_ids.length === 0) {
-        logger.error(`⚠️ No commune ids found for ${etudeId}`);
-        logger.error(entry);
-        return;
-      }
-
-      const communeNames = await kdb.selectFrom('ign_communes').select(sql`nom`.as('nom')).where('insee_com', 'in', commune_ids).execute();
-
-      const result = await kdb
+  const insertions = await Promise.all(
+    uniqueEtudes.map(async (etude) => {
+      const communes = await kdb
         .selectFrom('ign_communes')
-        .select([sql`ST_AsGeoJSON(ST_Union(geom))`.as('geom')])
-        .where('insee_com', 'in', commune_ids)
+        .select([sql<string[]>`array_agg(nom order by nom)`.as('noms'), sql<string>`ST_AsGeoJSON(ST_Union(geom))`.as('geom')])
+        .where('insee_com', 'in', etude.codesInsee)
         .executeTakeFirst();
+
+      if (!communes?.geom) {
+        logger.error(`⚠️ No commune found for Etude_ID ${etude.id}, fix the INSEE codes in Grist`);
+        return false;
+      }
+      if (communes.noms.length !== etude.codesInsee.length) {
+        logger.error(`⚠️ Some INSEE codes of Etude_ID ${etude.id} do not match a commune, fix them in Grist`);
+      }
 
       try {
         await kdb
           .insertInto('etudes_en_cours')
           .values({
-            commune_ids,
-            communes: communeNames.map(({ nom }) => nom).join(', '),
-            geom: result?.geom as string,
-            id: +etudeId,
-            launched_at: launched_at ? launched_at.toISOString() : '',
-            maitre_ouvrage: maitres_ouvrage,
-            status: status || '',
+            commune_ids: etude.codesInsee,
+            communes: communes.noms.join(', '),
+            geom: communes.geom,
+            id: etude.id,
+            launched_at: etude.launchedAt.toISOString(),
+            maitre_ouvrage: etude.maitreOuvrage,
           })
           .execute();
-        logger.info(`✅ Inserted successfully ${etudeId}`);
+        return true;
       } catch (err) {
-        logger.error(`Could not insert ${etudeId}`, { err });
+        logger.error(`Could not insert ${etude.id}`, { err });
+        return false;
       }
     })
   );
+
+  logger.info(`✅ Inserted ${insertions.filter(Boolean).length}/${uniqueEtudes.length} études`);
 });
