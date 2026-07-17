@@ -3,7 +3,7 @@ import type { z } from 'zod';
 
 import FieldWrapper from '@/components/form/dsfr/FieldWrapper';
 import useForm from '@/components/form/react-form/useForm';
-import Alert from '@/components/ui/Alert';
+import Dialog from '@/components/ui/Dialog';
 import Link from '@/components/ui/Link';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
@@ -16,14 +16,18 @@ import {
   ESPACE_EXTERIEUR_VALUES,
   type HeatingEnergy,
   heatingEnergyOptions,
+  MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type OccupantStatus,
   occupantStatusOptions,
   type ProjectStatus,
   projectStatusOptions,
   zContactFormChaleuRenouvelable,
 } from '@/modules/chaleur-renouvelable/constants';
+import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
+import type { DemandSubmissionResult } from '@/modules/demands/constants';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 
@@ -363,7 +367,8 @@ type HeatNetworkDemandFormProps = DemandFCRFormProps;
  */
 function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, topSolution }: HeatNetworkDemandFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [isSent, setIsSent] = useState(false);
+  const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
   const [refusalPeriod, setRefusalPeriod] = useState('');
   const [refusalReason, setRefusalReason] = useState('');
 
@@ -429,7 +434,7 @@ function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, to
         top_solution: submitContext.topSolution,
       });
 
-      await submitContext.createDemandeChaleurRenouvelable.mutateAsync({
+      const result = await submitContext.createDemandeChaleurRenouvelable.mutateAsync({
         address: submitParams.adresse ?? '',
         averageArea,
         averageResidents: Number(submitParams.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
@@ -440,7 +445,8 @@ function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, to
         email: value.email,
         firstName: value.firstName,
         heatingEnergy: value.heatingEnergy,
-        hotWaterSystemType: submitParams.modeEauChaudeSanitaire,
+        hotWaterSystemType:
+          submitParams.modeEauChaudeSanitaire === MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE ? null : submitParams.modeEauChaudeSanitaire,
         housingCount,
         housingType: typeLogement,
         isPublicAdvisorSelected: submitContext.isPublicAdvisorSelected,
@@ -457,7 +463,18 @@ function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, to
         surfaceArea,
       });
 
-      setIsSent(true);
+      setSubmissionResult({
+        address: submitParams.adresse ?? '',
+        createdAt: new Date().toISOString(),
+        distance: null,
+        email: value.email,
+        id: result.id,
+        isEligible: !submitContext.isPublicAdvisorSelected,
+        isExisting: false,
+        networkName: null,
+        status: DEMANDE_STATUS.TO_PROCESS,
+      });
+      setIsSubmissionDialogOpen(true);
     } finally {
       setIsLoading(false);
     }
@@ -682,16 +699,20 @@ function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, to
               </>
             }
           />
-          <Submit loading={isLoading} disabled={isSent} iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-4">
+          <Submit
+            loading={isLoading}
+            disabled={submissionResult !== null}
+            iconId="fr-icon-arrow-right-line"
+            iconPosition="right"
+            className="mt-4"
+          >
             Envoyer
           </Submit>
-          {isSent && (
-            <Alert className="fr-mt-3w" variant="success" title="Merci pour votre attention">
-              Nous reviendrons rapidement vers vous.
-            </Alert>
-          )}
         </Form>
       )}
+      <Dialog title="" open={isSubmissionDialogOpen && submissionResult !== null} size="lg" onOpenChange={setIsSubmissionDialogOpen}>
+        {submissionResult && <DemandSubmittedPanel submissionResult={submissionResult} />}
+      </Dialog>
     </section>
   );
 }

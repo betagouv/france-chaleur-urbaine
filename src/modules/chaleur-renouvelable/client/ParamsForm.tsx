@@ -24,7 +24,8 @@ import {
   type DPE,
   DPE_VALUES,
   isEspaceExterieurCompatible,
-  type ModeEauChaudeSanitaire,
+  MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
+  type ModeEauChaudeSanitaireQueryParam,
   modeEauChaudeSanitaireOptions,
   type TypeLogement,
   type TypeRadiateur,
@@ -353,10 +354,10 @@ export function ParamsForm({
                 />
                 <Select
                   label="Mode d’eau chaude sanitaire"
-                  options={[{ label: 'Non renseigné', value: '' }, ...modeEauChaudeSanitaireOptions]}
+                  options={[{ label: 'Non renseigné', value: MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE }, ...modeEauChaudeSanitaireOptions]}
                   nativeSelectProps={{
                     onChange: (event) => {
-                      const nextModeEauChaudeSanitaire = (event.target.value || null) as ModeEauChaudeSanitaire | null;
+                      const nextModeEauChaudeSanitaire = event.target.value as ModeEauChaudeSanitaireQueryParam;
                       if (nextModeEauChaudeSanitaire) {
                         trackPostHogEvent('fcr_simulator:ecs_mode_changed', { ecs_mode: nextModeEauChaudeSanitaire });
                       }

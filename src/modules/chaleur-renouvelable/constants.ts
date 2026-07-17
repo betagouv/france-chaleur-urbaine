@@ -103,7 +103,7 @@ export type Situation = {
   geothermalNappePotential: number | null;
   geothermalSondeGmi: number | null;
   hasGeothermalProbeSpace: boolean | null;
-  modeEauChaudeSanitaire: ModeEauChaudeSanitaire | null;
+  modeEauChaudeSanitaire: ModeEauChaudeSanitaireQueryParam | null;
   solarThermalCoverage: number | null;
   typeRadiateur: TypeRadiateur | null;
 };
@@ -223,6 +223,12 @@ export function isEspaceExterieurCompatible(
 
 export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['Individuel', 'Collectif'] as const;
 export type ModeEauChaudeSanitaire = (typeof MODE_EAU_CHAUDE_SANITAIRE_VALUES)[number];
+export const MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE = 'nonRenseigne';
+export const MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES = [
+  ...MODE_EAU_CHAUDE_SANITAIRE_VALUES,
+  MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
+] as const;
+export type ModeEauChaudeSanitaireQueryParam = (typeof MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES)[number];
 export const modeEauChaudeSanitaireOptions = [
   { label: 'Individuel', value: 'Individuel' },
   { label: 'Collectif', value: 'Collectif' },
@@ -230,6 +236,12 @@ export const modeEauChaudeSanitaireOptions = [
   label: string;
   value: ModeEauChaudeSanitaire;
 }[];
+
+export function getModeEauChaudeSanitaireLabel(modeEauChaudeSanitaire: ModeEauChaudeSanitaireQueryParam | null | undefined) {
+  return modeEauChaudeSanitaire && modeEauChaudeSanitaire !== MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE
+    ? modeEauChaudeSanitaire
+    : 'Non renseigné';
+}
 
 export const TYPE_RADIATEUR_VALUES = ['radiateur-eau', 'radiateur-electrique', 'none'] as const;
 export type TypeRadiateur = (typeof TYPE_RADIATEUR_VALUES)[number];

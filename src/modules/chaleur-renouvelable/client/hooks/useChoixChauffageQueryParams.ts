@@ -5,7 +5,7 @@ import {
   DPE_VALUES,
   ESPACE_EXTERIEUR_VALUES,
   isEspaceExterieurCompatible,
-  MODE_EAU_CHAUDE_SANITAIRE_VALUES,
+  MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES,
   TYPE_LOGEMENT_VALUES,
   TYPE_RADIATEUR_VALUES,
 } from '@/modules/chaleur-renouvelable/constants';
@@ -21,7 +21,7 @@ const simulationQueryParsers = {
   dpe: parseAsStringLiteral(DPE_VALUES).withDefault('E').withOptions(queryOptions),
   espaceExterieur: parseAsStringLiteral(ESPACE_EXTERIEUR_VALUES).withOptions(queryOptions),
   habitantsMoyen: parseAsString.withOptions(queryOptions),
-  modeEauChaudeSanitaire: parseAsStringLiteral(MODE_EAU_CHAUDE_SANITAIRE_VALUES).withOptions(queryOptions),
+  modeEauChaudeSanitaire: parseAsStringLiteral(MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES).withOptions(queryOptions),
   nbLogements: parseAsInteger.withOptions(queryOptions),
   surfaceMoyenne: parseAsInteger.withOptions(queryOptions),
   typeLogement: parseAsStringLiteral(TYPE_LOGEMENT_VALUES).withOptions(queryOptions),
@@ -41,6 +41,24 @@ export type SetChoixChauffageParams = (params: Partial<ChoixChauffageParams>) =>
 
 const getNullableQueryString = (value: string | null | undefined) => (value === '' ? null : (value ?? null));
 const hasQueryParam = (paramName: string) => new URLSearchParams(window.location.search).has(paramName);
+
+export function getNextEspaceExterieurQueryValue({
+  currentEspaceExterieur,
+  effectiveEspaceExterieur,
+  nextParams,
+}: {
+  currentEspaceExterieur: ChoixChauffageParams['espaceExterieur'];
+  effectiveEspaceExterieur: ChoixChauffageParams['espaceExterieur'];
+  nextParams: Partial<ChoixChauffageParams>;
+}) {
+  if (nextParams.typeLogement === undefined) {
+    return nextParams.espaceExterieur;
+  }
+
+  const candidateEspaceExterieur = nextParams.espaceExterieur ?? currentEspaceExterieur ?? effectiveEspaceExterieur;
+
+  return isEspaceExterieurCompatible(nextParams.typeLogement, candidateEspaceExterieur) ? candidateEspaceExterieur : null;
+}
 
 export function useChoixChauffageQueryParams() {
   const [queryParams, setQueryParams] = useQueryStates(choixChauffageQueryParsers);
@@ -88,12 +106,11 @@ export function useChoixChauffageQueryParams() {
         adresse: nextParams.adresse,
         construction_id: nextParams.constructionId,
         dpe: nextParams.dpe,
-        espaceExterieur:
-          nextParams.typeLogement !== undefined
-            ? isEspaceExterieurCompatible(nextParams.typeLogement, nextParams.espaceExterieur ?? espaceExterieur)
-              ? (nextParams.espaceExterieur ?? espaceExterieur)
-              : null
-            : nextParams.espaceExterieur,
+        espaceExterieur: getNextEspaceExterieurQueryValue({
+          currentEspaceExterieur: queryParams.espaceExterieur,
+          effectiveEspaceExterieur: espaceExterieur,
+          nextParams,
+        }),
         habitantsMoyen: getNullableQueryString(nextParams.habitantsMoyen),
         modeEauChaudeSanitaire: nextParams.modeEauChaudeSanitaire,
         nbLogements: nextParams.nbLogements,
@@ -101,7 +118,7 @@ export function useChoixChauffageQueryParams() {
         typeLogement: nextParams.typeLogement,
         typeRadiateur: nextParams.typeRadiateur,
       }),
-    [espaceExterieur, setQueryParams]
+    [espaceExterieur, queryParams.espaceExterieur, setQueryParams]
   );
 
   const setPrefillParams = useCallback(

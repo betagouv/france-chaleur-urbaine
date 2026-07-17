@@ -17,7 +17,7 @@ import { GainVsGazBadge } from '@/modules/chaleur-renouvelable/client/results/ui
 import { PrerequisitesList } from '@/modules/chaleur-renouvelable/client/results/ui/PrerequisitesList';
 import { ProsConsLists } from '@/modules/chaleur-renouvelable/client/results/ui/ProsConsLists';
 import { SolutionConsumptionPanel } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionConsumptionPanel';
-import type { DPE, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import { type DPE, getModeEauChaudeSanitaireLabel, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
 
 const resultsTabs = [
@@ -83,7 +83,7 @@ export function ResultsSection({
     return null;
   }
 
-  const currentHotWaterModeLabel = situation.modeEauChaudeSanitaire ?? 'Non renseigné';
+  const currentHotWaterModeLabel = getModeEauChaudeSanitaireLabel(situation.modeEauChaudeSanitaire);
 
   return (
     <>

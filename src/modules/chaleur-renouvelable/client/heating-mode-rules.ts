@@ -18,7 +18,9 @@ export const hasEspaceForHouseEquipment = (situation: Situation) =>
   ['shared', 'both', 'jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
 
 export const hasCompatibleHotWaterMode = (situation: Situation, modes: ModeEauChaudeSanitaire[]) =>
-  !situation.modeEauChaudeSanitaire || modes.includes(situation.modeEauChaudeSanitaire);
+  !situation.modeEauChaudeSanitaire ||
+  situation.modeEauChaudeSanitaire === 'nonRenseigne' ||
+  modes.some((modeEauChaudeSanitaire) => modeEauChaudeSanitaire === situation.modeEauChaudeSanitaire);
 
 export const hasCompatibleRadiator = (situation: Situation, radiators: TypeRadiateur[]) =>
   situation.typeRadiateur ? radiators.includes(situation.typeRadiateur) : false;

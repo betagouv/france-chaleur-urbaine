@@ -5,7 +5,7 @@ import type {
   DPE,
   EspaceExterieur,
   HeatingEnergy,
-  ModeEauChaudeSanitaire,
+  ModeEauChaudeSanitaireQueryParam,
   OccupantStatus,
   ProjectStatus,
   TypeLogement,
@@ -239,10 +239,10 @@ export type PostHogEventMap = {
   'fcr_simulator:surface_changed': { surface_m2: number };
   'fcr_simulator:habitants_changed': { habitants: number };
   'fcr_simulator:dpe_changed': { dpe: DPE };
-  'fcr_simulator:ecs_mode_changed': { ecs_mode: ModeEauChaudeSanitaire };
+  'fcr_simulator:ecs_mode_changed': { ecs_mode: ModeEauChaudeSanitaireQueryParam };
   'fcr_simulator:parameters_saved': {
     dpe: DPE;
-    ecs_mode?: ModeEauChaudeSanitaire | null;
+    ecs_mode?: ModeEauChaudeSanitaireQueryParam | null;
     emitter_type?: TypeRadiateur | null;
     habitants?: number;
     heating_mode?: TypeLogement | null;

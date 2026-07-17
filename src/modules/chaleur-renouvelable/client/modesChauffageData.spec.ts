@@ -10,6 +10,7 @@ import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 import { TYPE_LOGEMENT_VALUES, type TypeLogement } from '../constants';
 import {
   getIncompatibleSolutionRows,
+  getModesDeChauffage,
   type ModeDeChauffage,
   type ModeDeChauffageUsage,
   modesDeChauffage,
@@ -845,6 +846,15 @@ describe('modesDeChauffage', () => {
         },
       ],
     });
+  });
+
+  it('does not return hot water only solutions when the hot water mode is explicitly unknown', () => {
+    const hotWaterOnlyModes = getModesDeChauffage(
+      'immeuble_chauffage_collectif',
+      createSituation({ modeEauChaudeSanitaire: 'nonRenseigne' })
+    ).filter((modeDeChauffage) => modeDeChauffage.usage === 'hotWaterOnly');
+
+    expect(hotWaterOnlyModes).toStrictEqual([]);
   });
 
   it('marks PDP prerequisite favorable for heat network and restrictive for alternative solutions', () => {
