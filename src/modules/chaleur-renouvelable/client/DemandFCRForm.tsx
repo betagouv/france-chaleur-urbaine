@@ -7,6 +7,7 @@ import Dialog from '@/components/ui/Dialog';
 import Link from '@/components/ui/Link';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import type { BANAddressFeature } from '@/modules/ban/types';
 import { FranceRenovAdvisorCallout } from '@/modules/chaleur-renouvelable/client/FranceRenovAdvisorCallout';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
@@ -28,6 +29,7 @@ import type { DemandSubmissionResult } from '@/modules/demands/constants';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 
@@ -328,6 +330,8 @@ function getOccupantStatusDetailField(occupantStatus: OccupantStatus): OccupantS
 }
 
 type DemandFCRFormProps = {
+  eligibiliteReseauChaleur: HeatNetwork | null;
+  geoAddress?: BANAddressFeature;
   selectedRecipientId: ContactRecipientId;
   setSelectedRecipientId: (recipientId: ContactRecipientId) => void;
   topSolution: string;
@@ -336,10 +340,18 @@ type DemandFCRFormProps = {
 /**
  * Displays the contact block matching the recommended heating solution.
  */
-export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipientId, topSolution }: DemandFCRFormProps) {
+export default function DemandFCRForm({
+  eligibiliteReseauChaleur,
+  geoAddress,
+  selectedRecipientId,
+  setSelectedRecipientId,
+  topSolution,
+}: DemandFCRFormProps) {
   if (selectedRecipientId === 'public-advisor') {
     return (
       <HeatNetworkDemandForm
+        eligibiliteReseauChaleur={eligibiliteReseauChaleur}
+        geoAddress={geoAddress}
         selectedRecipientId={selectedRecipientId}
         setSelectedRecipientId={setSelectedRecipientId}
         topSolution={topSolution}
@@ -353,6 +365,8 @@ export default function DemandFCRForm({ selectedRecipientId, setSelectedRecipien
     <FranceRenovAdvisorCallout />
   ) : (
     <HeatNetworkDemandForm
+      eligibiliteReseauChaleur={eligibiliteReseauChaleur}
+      geoAddress={geoAddress}
       selectedRecipientId={selectedRecipientId}
       setSelectedRecipientId={setSelectedRecipientId}
       topSolution={topSolution}
@@ -365,7 +379,13 @@ type HeatNetworkDemandFormProps = DemandFCRFormProps;
 /**
  * Renders the existing demand form for heat-network contact flows.
  */
-function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, topSolution }: HeatNetworkDemandFormProps) {
+function HeatNetworkDemandForm({
+  eligibiliteReseauChaleur,
+  geoAddress,
+  selectedRecipientId,
+  setSelectedRecipientId,
+  topSolution,
+}: HeatNetworkDemandFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
@@ -381,6 +401,8 @@ function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, to
 
   const submitContextRef = useRef({
     createDemandeChaleurRenouvelable,
+    eligibiliteReseauChaleur,
+    geoAddress,
     isPublicAdvisorSelected,
     params,
     refusalPeriod,
@@ -389,6 +411,8 @@ function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, to
   });
   submitContextRef.current = {
     createDemandeChaleurRenouvelable,
+    eligibiliteReseauChaleur,
+    geoAddress,
     isPublicAdvisorSelected,
     params,
     refusalPeriod,
@@ -444,7 +468,22 @@ function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, to
         dpe: submitParams.dpe,
         email: value.email,
         firstName: value.firstName,
+        geoAddress: submitContext.geoAddress
+          ? {
+              city: submitContext.geoAddress.properties.city,
+              context: submitContext.geoAddress.properties.context,
+              coordinates: submitContext.geoAddress.geometry.coordinates,
+              postcode: submitContext.geoAddress.properties.postcode,
+            }
+          : undefined,
         heatingEnergy: value.heatingEnergy,
+        heatNetworkEligibility: submitContext.eligibiliteReseauChaleur
+          ? {
+              distance: submitContext.eligibiliteReseauChaleur.distance,
+              inPDP: submitContext.eligibiliteReseauChaleur.inPDP,
+              isEligible: submitContext.eligibiliteReseauChaleur.isEligible,
+            }
+          : undefined,
         hotWaterSystemType:
           submitParams.modeEauChaudeSanitaire === MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE ? null : submitParams.modeEauChaudeSanitaire,
         housingCount,
@@ -463,17 +502,19 @@ function HeatNetworkDemandForm({ selectedRecipientId, setSelectedRecipientId, to
         surfaceArea,
       });
 
-      setSubmissionResult({
-        address: submitParams.adresse ?? '',
-        createdAt: new Date().toISOString(),
-        distance: null,
-        email: value.email,
-        id: result.id,
-        isEligible: !submitContext.isPublicAdvisorSelected,
-        isExisting: false,
-        networkName: null,
-        status: DEMANDE_STATUS.TO_PROCESS,
-      });
+      setSubmissionResult(
+        result.demandSubmissionResult ?? {
+          address: submitParams.adresse ?? '',
+          createdAt: new Date().toISOString(),
+          distance: null,
+          email: value.email,
+          id: result.id,
+          isEligible: !submitContext.isPublicAdvisorSelected,
+          isExisting: false,
+          networkName: null,
+          status: DEMANDE_STATUS.TO_PROCESS,
+        }
+      );
       setIsSubmissionDialogOpen(true);
     } finally {
       setIsLoading(false);

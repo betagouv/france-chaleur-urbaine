@@ -350,6 +350,19 @@ export const zContactFormChaleuRenouvelable = z.object({
   }),
 });
 
+const zDemandeChaleurRenouvelableGeoAddress = z.object({
+  city: z.string(),
+  context: z.string(),
+  coordinates: z.tuple([z.number(), z.number()]),
+  postcode: z.string(),
+});
+
+const zDemandeChaleurRenouvelableHeatNetworkEligibility = z.object({
+  distance: z.number().nullable(),
+  inPDP: z.boolean(),
+  isEligible: z.boolean(),
+});
+
 export const zDemandeChaleurRenouvelable = z.object({
   address: z.string(),
   averageArea: z.number(),
@@ -360,7 +373,9 @@ export const zDemandeChaleurRenouvelable = z.object({
   dpe: z.enum(DPE_VALUES),
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   firstName: z.string(),
+  geoAddress: zDemandeChaleurRenouvelableGeoAddress.optional(),
   heatingEnergy: z.enum(HEATING_ENERGY_VALUES),
+  heatNetworkEligibility: zDemandeChaleurRenouvelableHeatNetworkEligibility.optional(),
   hotWaterSystemType: z.enum(MODE_EAU_CHAUDE_SANITAIRE_VALUES).nullable().default(null),
   housingCount: z.number(),
   housingType: z.enum(TYPE_LOGEMENT_VALUES),

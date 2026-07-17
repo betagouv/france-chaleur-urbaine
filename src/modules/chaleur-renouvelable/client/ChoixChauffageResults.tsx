@@ -131,6 +131,8 @@ export default function ChoixChauffageResults() {
           />
           <IncompatibleSolutionsSection rows={incompatibleSolutionRows} />
           <DemandeFCRForm
+            eligibiliteReseauChaleur={situation.eligibiliteReseauChaleur}
+            geoAddress={geoAddress}
             selectedRecipientId={selectedContactRecipientId}
             setSelectedRecipientId={setSelectedContactRecipientId}
             topSolution={heatNetworkSolution?.label ?? modesEnriched[0]?.label ?? ''}

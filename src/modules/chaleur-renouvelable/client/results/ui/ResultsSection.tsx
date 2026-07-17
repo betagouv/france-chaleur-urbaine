@@ -17,7 +17,12 @@ import { GainVsGazBadge } from '@/modules/chaleur-renouvelable/client/results/ui
 import { PrerequisitesList } from '@/modules/chaleur-renouvelable/client/results/ui/PrerequisitesList';
 import { ProsConsLists } from '@/modules/chaleur-renouvelable/client/results/ui/ProsConsLists';
 import { SolutionConsumptionPanel } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionConsumptionPanel';
-import { type DPE, getModeEauChaudeSanitaireLabel, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import {
+  type DPE,
+  getModeEauChaudeSanitaireLabel,
+  MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
+  type TypeLogement,
+} from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
 
 const resultsTabs = [
@@ -84,6 +89,50 @@ export function ResultsSection({
   }
 
   const currentHotWaterModeLabel = getModeEauChaudeSanitaireLabel(situation.modeEauChaudeSanitaire);
+  const isHotWaterModeMissing =
+    !situation.modeEauChaudeSanitaire || situation.modeEauChaudeSanitaire === MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE;
+  const hotWaterModeNotice = (
+    <div className="mb-6 border-l-4 border-blue bg-gray-100 px-4 py-3">
+      <div className="flex items-start gap-3">
+        <span
+          className="fr-icon-information-fill mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue text-sm text-white"
+          aria-hidden="true"
+        />
+        <div>
+          <p className="mb-1 font-bold text-blue">
+            {isHotWaterModeMissing
+              ? `Mode d’eau chaude sanitaire actuel : ${currentHotWaterModeLabel}`
+              : `Mode actuel : ${currentHotWaterModeLabel}`}
+          </p>
+          {isHotWaterModeMissing ? (
+            <p className="mb-0 text-sm">
+              Vous pouvez le{' '}
+              <button
+                type="button"
+                className="appearance-none border-0 bg-transparent p-0 font-bold text-blue underline"
+                onClick={onEditParamsClick}
+              >
+                modifier dans les paramètres
+              </button>{' '}
+              pour affiner les solutions possibles.
+            </p>
+          ) : (
+            <p className="mb-0 text-sm">
+              Si ce n’est pas correct, vous pouvez le{' '}
+              <button
+                type="button"
+                className="appearance-none border-0 bg-transparent p-0 font-bold text-blue underline"
+                onClick={onEditParamsClick}
+              >
+                modifier dans les paramètres
+              </button>
+              .
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -117,26 +166,12 @@ export function ResultsSection({
         })}
       </div>
       <div className="border border-gray-200 bg-white py-6 pr-3">
+        {activeTab === 'hotWaterOnly' && activeItems.length === 0 && isHotWaterModeMissing && (
+          <div className="px-5">{hotWaterModeNotice}</div>
+        )}
         {activeTab === 'hotWaterOnly' && activeItems.length > 0 && (
           <div className="px-5">
-            <div className="mb-6 border-l-4 border-blue bg-gray-100 px-4 py-3">
-              <div className="flex items-start gap-3">
-                <span
-                  className="fr-icon-information-fill mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue text-sm text-white"
-                  aria-hidden="true"
-                />
-                <div>
-                  <p className="mb-1 font-bold text-blue">Mode actuel : {currentHotWaterModeLabel}</p>
-                  <p className="mb-0 text-sm">
-                    Si ce n’est pas correct, vous pouvez le{' '}
-                    <span className="font-bold text-blue underline" onClick={onEditParamsClick}>
-                      modifier dans les paramètres
-                    </span>
-                    .
-                  </p>
-                </div>
-              </div>
-            </div>
+            {hotWaterModeNotice}
             <p>Voici des solutions qui produisent uniquement de l’eau chaude, en complément d’un système de chauffage existant :</p>
           </div>
         )}

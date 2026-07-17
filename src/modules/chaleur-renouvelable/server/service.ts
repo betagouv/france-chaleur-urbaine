@@ -15,6 +15,8 @@ import {
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
 } from '@/modules/chaleur-renouvelable/constants';
+import type { CreateDemandInput, DemandSubmissionResult } from '@/modules/demands/constants';
+import { createDemand } from '@/modules/demands/server/creation-user';
 import { sendEmailTemplate } from '@/modules/email';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
@@ -106,6 +108,115 @@ const getInitialDemandeChaleurRenouvelableStatus = (input: DemandeChaleurRenouve
     input.demandConcern === 'Une maison individuelle'
     ? DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC
     : DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR;
+};
+
+const getDemandAddressTerritory = (context: string) => {
+  const [department = '', , region = ''] = context.split(',').map((contextPart) => contextPart.trim());
+
+  return { department, region };
+};
+
+const getDemandHeatingEnergy = (heatingEnergy: DemandeChaleurRenouvelable['heatingEnergy']): CreateDemandInput['heatingEnergy'] => {
+  switch (heatingEnergy) {
+    case 'Électricité':
+      return 'électricité';
+    case 'Gaz':
+      return 'gaz';
+    case 'Fioul':
+      return 'fioul';
+    default:
+      return 'autre';
+  }
+};
+
+const getDemandHeatingType = (housingType: DemandeChaleurRenouvelable['housingType']): CreateDemandInput['heatingType'] =>
+  housingType === 'immeuble_chauffage_collectif' ? 'collectif' : 'individuel';
+
+const getDemandStructure = (
+  input: DemandeChaleurRenouvelable
+): Pick<CreateDemandInput, 'companyType' | 'demandCompanyType' | 'structure'> => {
+  if (input.demandConcern === 'Une maison individuelle' || input.occupantStatus === 'Propriétaire de maison individuelle') {
+    return { companyType: '', demandCompanyType: '', structure: 'Maison individuelle' };
+  }
+
+  if (input.occupantStatus === 'Bailleur social') {
+    return { companyType: '', demandCompanyType: '', structure: 'Bailleur social' };
+  }
+
+  if (input.occupantStatus === 'Copropriétaire' || input.occupantStatus === 'Syndicat de copropriété') {
+    return { companyType: 'Syndic de copropriété', demandCompanyType: '', structure: 'Copropriété' };
+  }
+
+  if (input.occupantStatus === "Bureau d'étude ou AMO") {
+    return {
+      companyType: "Bureau d'études ou AMO",
+      demandCompanyType: getDemandCompanyType(input.demandConcern),
+      structure: 'Tertiaire',
+    };
+  }
+
+  if (input.occupantStatus === 'Mandataire ou Délégataire CEE') {
+    return {
+      companyType: 'Mandataire / délégataire CEE',
+      demandCompanyType: getDemandCompanyType(input.demandConcern),
+      structure: 'Tertiaire',
+    };
+  }
+
+  return { companyType: input.occupantStatus, demandCompanyType: '', structure: 'Tertiaire' };
+};
+
+const getDemandCompanyType = (demandConcern: DemandeChaleurRenouvelable['demandConcern']) => {
+  switch (demandConcern) {
+    case 'Une copropriété':
+      return 'Copropriété';
+    case 'Une maison individuelle':
+      return 'Maison individuelle';
+    case 'Un bâtiment tertiaire':
+      return 'Bâtiment tertiaire';
+    case 'Plusieurs bâtiments':
+      return 'Autre';
+    default:
+      return '';
+  }
+};
+
+const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promise<DemandSubmissionResult | null> => {
+  if (input.isPublicAdvisorSelected || !input.geoAddress || !input.heatNetworkEligibility) {
+    return null;
+  }
+
+  const [lon, lat] = input.geoAddress.coordinates;
+  const { department, region } = getDemandAddressTerritory(input.geoAddress.context);
+  const demandStructure = getDemandStructure(input);
+  const organizationName = input.organizationName ?? '';
+
+  return await createDemand(
+    {
+      address: input.address,
+      city: input.geoAddress.city,
+      company: organizationName,
+      companyType: demandStructure.companyType,
+      coords: { lat, lon },
+      demandArea: input.surfaceArea ?? input.averageArea * input.housingCount,
+      demandCompanyName: organizationName,
+      demandCompanyType: demandStructure.demandCompanyType,
+      department,
+      eligibility: input.heatNetworkEligibility,
+      email: input.email,
+      firstName: input.firstName,
+      heatingEnergy: getDemandHeatingEnergy(input.heatingEnergy),
+      heatingType: getDemandHeatingType(input.housingType),
+      lastName: input.lastName,
+      nbLogements: input.housingCount,
+      phone: input.phone,
+      postcode: input.geoAddress.postcode,
+      region,
+      structure: demandStructure.structure,
+      termOfUse: true,
+    },
+    { deduplicate: true }
+  );
 };
 
 const selectBatEnrBatimentDetails = () =>
@@ -467,7 +578,12 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
     }
   );
 
-  return createdDemand;
+  const demandSubmissionResult = await createRaccordableDemand(input);
+
+  return {
+    demandSubmissionResult,
+    id: createdDemand.id,
+  };
 };
 
 export const listDemandesChaleurRenouvelableAdmin = async () => {
