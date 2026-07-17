@@ -115,10 +115,10 @@ function FranceRenovAdvisorDetails({ franceRenovSpace }: { franceRenovSpace: Fra
     );
   }
 
-  const advisorUrl = franceRenovSpace.website
-    ? getExternalUrl(franceRenovSpace.website)
-    : franceRenovSpace.email
-      ? `mailto:${franceRenovSpace.email}`
+  const advisorUrl = franceRenovSpace.email
+    ? `mailto:${franceRenovSpace.email}`
+    : franceRenovSpace.website
+      ? getExternalUrl(franceRenovSpace.website)
       : 'https://france-renov.gouv.fr/preparer-projet/trouver-conseiller';
 
   return (
