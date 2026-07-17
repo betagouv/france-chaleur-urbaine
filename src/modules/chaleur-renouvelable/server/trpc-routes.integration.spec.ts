@@ -13,11 +13,27 @@ import { kdb, sql } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
 import { cleanDatabase } from '@/tests/fixtures';
 import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
 
 vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
 }));
+
+vi.mock('@/modules/pro-eligibility-tests/server/service', async () => {
+  const { seedProEligibilityTestsAddress } = await import('@/tests/fixtures');
+
+  return {
+    createEligibilityTestAddress: vi.fn(
+      async ({ address, demand_id }: { address: string; demand_id: string; latitude: number; longitude: number }) => {
+        await seedProEligibilityTestsAddress({
+          demand_id,
+          source_address: address,
+        });
+      }
+    ),
+  };
+});
 
 vi.mock('@/utils/network', () => ({
   fetchJSON: vi.fn(),
@@ -168,6 +184,100 @@ describe('batEnrRouter', () => {
           status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
         }
       );
+    });
+
+    it('crée aussi une demande de raccordement quand le bâtiment est raccordable à un réseau de chaleur', async () => {
+      const input = {
+        address: '10 rue du test',
+        averageArea: 72,
+        averageResidents: 2,
+        batimentConstructionId: 'CONSTRUCTION-123',
+        comments: 'Besoin de préciser le calendrier du projet.',
+        demandConcern: 'Une copropriété',
+        dpe: 'C',
+        email: 'contact@example.com',
+        firstName: 'Claire',
+        geoAddress: {
+          city: 'Paris',
+          context: '75, Paris, Île-de-France',
+          coordinates: [2.3522, 48.8566],
+          postcode: '75001',
+        },
+        heatingEnergy: 'Gaz',
+        heatNetworkEligibility: {
+          distance: 120,
+          inPDP: true,
+          isEligible: true,
+        },
+        hotWaterSystemType: 'Collectif',
+        housingCount: 18,
+        housingType: 'immeuble_chauffage_collectif',
+        isPublicAdvisorSelected: false,
+        lastName: 'Test',
+        occupantStatus: 'Syndicat de copropriété',
+        organizationName: 'Syndicat test',
+        outdoorSpace: 'shared',
+        phone: '0605040302',
+        projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],
+        radiatorType: 'radiateur-eau',
+        refusalPeriod: null,
+        refusalReason: null,
+        simulationUrl: 'https://example.com/simulation',
+        surfaceArea: null,
+      } satisfies DemandeChaleurRenouvelable;
+
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
+
+      const createdDemand = await kdb
+        .selectFrom('demands')
+        .select(['id', 'legacy_values'])
+        .where('id', '=', result.demandSubmissionResult?.id ?? '')
+        .executeTakeFirstOrThrow();
+
+      expect(result.demandSubmissionResult).toStrictEqual({
+        address: '10 rue du test',
+        createdAt: createdDemand.legacy_values['Date de la demande'],
+        distance: 45,
+        email: 'contact@example.com',
+        id: createdDemand.id,
+        isEligible: true,
+        isExisting: false,
+        networkName: 'CPCU',
+        status: DEMANDE_STATUS.TO_PROCESS,
+      });
+      expect({
+        Adresse: createdDemand.legacy_values.Adresse,
+        'Code Postal': createdDemand.legacy_values['Code Postal'],
+        Departement: createdDemand.legacy_values.Departement,
+        'Distance au réseau': createdDemand.legacy_values['Distance au réseau'],
+        Latitude: createdDemand.legacy_values.Latitude,
+        Longitude: createdDemand.legacy_values.Longitude,
+        Mail: createdDemand.legacy_values.Mail,
+        'Mode de chauffage': createdDemand.legacy_values['Mode de chauffage'],
+        Nom: createdDemand.legacy_values.Nom,
+        Prénom: createdDemand.legacy_values.Prénom,
+        Region: createdDemand.legacy_values.Region,
+        Structure: createdDemand.legacy_values.Structure,
+        'Type de chauffage': createdDemand.legacy_values['Type de chauffage'],
+        Ville: createdDemand.legacy_values.Ville,
+        Éligibilité: createdDemand.legacy_values.Éligibilité,
+      }).toStrictEqual({
+        Adresse: '10 rue du test',
+        'Code Postal': '75001',
+        Departement: '75',
+        'Distance au réseau': 45,
+        Latitude: 48.8566,
+        Longitude: 2.3522,
+        Mail: 'contact@example.com',
+        'Mode de chauffage': 'Gaz',
+        Nom: 'Test',
+        Prénom: 'Claire',
+        Region: 'Île-de-France',
+        Structure: 'Copropriété',
+        'Type de chauffage': 'Collectif',
+        Ville: 'Paris',
+        Éligibilité: true,
+      });
     });
 
     const statusTestCases = [
