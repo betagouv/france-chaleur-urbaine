@@ -1,16 +1,43 @@
-import { zAirtableAdemeHelp, zLocationInfos, zRnbByBanIdInput } from '@/modules/chaleur-renouvelable/constants';
 import {
-  addContactToAirtable,
+  zAddressEligibilityContextInput,
+  zAdminUpdateDemandeChaleurRenouvelableInput,
+  zBatEnrByBanIdInput,
+  zDemandeChaleurRenouvelable,
+  zFranceRenovSpaceInput,
+  zLocationInfos,
+} from '@/modules/chaleur-renouvelable/constants';
+import {
+  createDemandeChaleurRenouvelable,
+  getAddressEligibilityContext,
   getBatEnrBatimentDetails,
+  getBatEnrBatimentsByBanId,
+  getBatEnrBatimentsSelectionContextByBanId,
+  getFranceRenovSpace,
   getLocationInfos,
-  getRnbByBanId,
+  listDemandesChaleurRenouvelableAdmin,
+  updateDemandeChaleurRenouvelableAdmin,
 } from '@/modules/chaleur-renouvelable/server/service';
 import { zGetBdnbConstructionInput } from '@/modules/tiles/constants';
-import { route, router } from '@/modules/trpc/server';
+import { route, routeRole, router } from '@/modules/trpc/server';
 
 export const batEnrRouter = router({
-  addContactToAirtable: route.input(zAirtableAdemeHelp).query(async ({ input }) => await addContactToAirtable({ input })),
+  admin: {
+    listDemandesChaleurRenouvelable: routeRole(['admin']).query(async () => await listDemandesChaleurRenouvelableAdmin()),
+    updateDemandeChaleurRenouvelable: routeRole(['admin'])
+      .input(zAdminUpdateDemandeChaleurRenouvelableInput)
+      .mutation(async ({ input }) => await updateDemandeChaleurRenouvelableAdmin(input)),
+  },
+  createDemandeChaleurRenouvelable: route
+    .input(zDemandeChaleurRenouvelable)
+    .mutation(async ({ input }) => await createDemandeChaleurRenouvelable({ input })),
+  getAddressEligibilityContext: route
+    .input(zAddressEligibilityContextInput)
+    .query(async ({ input }) => await getAddressEligibilityContext(input)),
   getBatEnrBatimentDetails: route.input(zGetBdnbConstructionInput).query(async ({ input }) => await getBatEnrBatimentDetails(input)),
+  getBatEnrBatimentsByBanId: route.input(zBatEnrByBanIdInput).query(async ({ input }) => await getBatEnrBatimentsByBanId(input)),
+  getBatEnrBatimentsSelectionContextByBanId: route
+    .input(zBatEnrByBanIdInput)
+    .query(async ({ input }) => await getBatEnrBatimentsSelectionContextByBanId(input)),
+  getFranceRenovSpace: route.input(zFranceRenovSpaceInput).query(async ({ input }) => await getFranceRenovSpace(input)),
   getLocationInfos: route.input(zLocationInfos).query(async ({ input }) => await getLocationInfos(input)),
-  getRnbByBanId: route.input(zRnbByBanIdInput).query(async ({ input }) => await getRnbByBanId(input)),
 });

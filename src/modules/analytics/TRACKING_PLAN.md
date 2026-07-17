@@ -93,6 +93,78 @@ Tracking unifié de la consultation de contenu.
 - Lecture d'une vidéo : `{ content_type: 'video', content_name: 'Présentation FCU', source: 'supports' }`
 - Clic sur un guide : `{ content_type: 'guide', content_name: 'Guide Copropriétés', source: 'ressources' }`
 
+### 7. Chaleur renouvelable (FCR)
+
+Parcours classique : landing → simulateur → résultats → contact.
+
+#### Landing page
+
+| Événement | Propriétés | Description |
+|---|---|---|
+| `fcr_landing:hero_cta_clicked` | _(aucune)_ | Clic sur le CTA principal "Comparer les solutions" |
+| `fcr_landing:address_typed` | _(aucune)_ | Première saisie dans le champ adresse |
+| `fcr_landing:heating_mode_selected` | `heating_mode` | Sélection du mode de chauffage |
+| `fcr_landing:emitter_type_selected` | `emitter_type` | Sélection du type de radiateurs |
+| `fcr_landing:outdoor_space_selected` | `outdoor_space` | Sélection des espaces extérieurs disponibles |
+| `fcr_landing:simulation_started` | `heating_mode?`, `emitter_type?`, `outdoor_space?`, `address_filled` | Lancement de la simulation depuis la landing |
+| `fcr_landing:scroll_depth_reached` | `depth_percent` | Seuil de scroll atteint (`25`, `50`, `75`, `100`) |
+| `fcr_landing:bottom_cta_clicked` | _(aucune)_ | Clic sur un CTA secondaire en bas de page |
+| `fcr_landing:article_clicked` | `article_title?`, `article_position?`, `element_name` | Clic sur une carte article pédagogique |
+| `fcr_landing:testimonial_clicked` | `testimonial_title?`, `element_name` | Clic sur une carte témoignage |
+| `fcr_landing:faq_item_opened` | `faq_question` | Ouverture d'une question FAQ |
+
+#### Simulateur
+
+| Événement | Propriétés | Description |
+|---|---|---|
+| `fcr_simulator:address_selected` | `address`, `city?`, `postcode?`, `source` | Sélection d'une adresse dans l'autocomplétion |
+| `fcr_simulator:heating_mode_selected` | `heating_mode` | Sélection du mode de chauffage |
+| `fcr_simulator:emitter_type_selected` | `emitter_type` | Sélection du type de radiateurs |
+| `fcr_simulator:outdoor_space_selected` | `outdoor_space` | Sélection des espaces extérieurs |
+| `fcr_simulator:params_panel_opened` | _(aucune)_ | Ouverture du panneau d'ajustement des paramètres |
+| `fcr_simulator:nb_logements_changed` | `nb_logements` | Modification du nombre de logements |
+| `fcr_simulator:surface_changed` | `surface_m2` | Modification de la surface habitable moyenne |
+| `fcr_simulator:habitants_changed` | `habitants` | Modification du nombre moyen d'habitants |
+| `fcr_simulator:dpe_changed` | `dpe` | Modification du DPE |
+| `fcr_simulator:ecs_mode_changed` | `ecs_mode` | Modification du mode d'eau chaude sanitaire |
+| `fcr_simulator:parameters_saved` | `nb_logements?`, `surface_m2?`, `habitants?`, `dpe`, `heating_mode?`, `emitter_type?`, `ecs_mode?` | Sauvegarde des paramètres et recalcul |
+| `fcr_simulator:parameters_cancelled` | _(aucune)_ | Annulation des modifications de paramètres |
+
+#### Résultats
+
+| Événement | Propriétés | Description |
+|---|---|---|
+| `fcr_results:no_solution_displayed` | `heating_mode?`, `outdoor_space?` | Affichage de l'état sans solution ENR compatible |
+| `fcr_results:recommended_solution_displayed` | `solution_type` | Affichage de la solution recommandée |
+| `fcr_results:recommended_solution_expanded` | `solution_type` | Dépliage du détail de la solution recommandée |
+| `fcr_results:recommended_solution_cta_clicked` | `solution_type` | Clic sur "Passer à l'étape suivante" depuis la solution recommandée |
+| `fcr_results:tab_switched` | `tab_value` | Changement d'onglet résultats (`chauffage_ecs`, `ecs_uniquement`) |
+| `fcr_results:alternative_solution_opened` | `solution_type`, `position` | Ouverture d'une solution alternative |
+| `fcr_results:alternative_solution_closed` | `solution_type`, `position` | Fermeture d'une solution alternative |
+| `fcr_results:prerequisite_detail_clicked` | `solution_type`, `prerequisite_label` | Clic sur un lien de détail de prérequis |
+| `fcr_results:alternative_solution_cta_clicked` | `solution_type` | Clic sur "Passer à l'étape suivante" depuis une solution alternative |
+| `fcr_results:methodology_link_clicked` | _(aucune)_ | Clic sur le lien méthodologie |
+| `fcr_results:share_button_clicked` | _(aucune)_ | Clic sur le bouton partager |
+| `fcr_results:agir_link_clicked` | _(aucune)_ | Clic sur le lien Agir dans l'état sans solution |
+| `fcr_results:france_renov_coordinates_toggled` | `is_open` | Ouverture ou fermeture des coordonnées France Rénov' |
+| `fcr_results:france_renov_cta_clicked` | _(aucune)_ | Clic sur le CTA France Rénov' |
+| `fcr_results:no_ecs_solution_displayed` | `heating_mode?` | Affichage de l'état sans solution ECS |
+| `fcr_results:ecs_to_full_tab_clicked` | _(aucune)_ | Clic depuis l'état ECS vide vers l'onglet chauffage + ECS |
+
+#### Contact
+
+| Événement | Propriétés | Description |
+|---|---|---|
+| `fcr_contact:profile_selected` | `profile`, `is_raccordable` | Sélection du profil |
+| `fcr_contact:energy_selected` | `energy`, `is_raccordable` | Sélection de l'énergie actuelle |
+| `fcr_contact:nb_logements_filled` | `nb_logements`, `is_raccordable` | Nombre de logements disponible dans le contexte du formulaire |
+| `fcr_contact:project_stage_selected` | `stages`, `is_raccordable` | Sélection d'une ou plusieurs étapes de projet |
+| `fcr_contact:non_raccordable_checked` | _(aucune)_ | Sélection du parcours non raccordable |
+| `fcr_contact:non_raccordable_reason_selected` | `reason` | Sélection du motif de non-raccordabilité |
+| `fcr_contact:map_viewed` | _(aucune)_ | Consultation de la carte réseau de chaleur avant contact |
+| `fcr_contact:cgu_accepted` | `is_raccordable` | Acceptation des CGU |
+| `fcr_contact:form_submitted` | `profile`, `energy`, `nb_logements?`, `top_solution?`, `project_stages`, `phone_filled`, `is_raccordable`, `non_raccordable_reason?` | Soumission du formulaire de contact |
+
 ---
 
 ## Récapitulatif
@@ -114,7 +186,11 @@ Tracking unifié de la consultation de contenu.
 | 13 | `link:click` | Navigation |
 | 14 | `content:click` | Contenu |
 
-**Total : 14 événements custom** + `$pageview` natif PostHog.
+### Événements FCR
+
+Les événements du parcours chaleur renouvelable sont listés dans la section dédiée ci-dessus. Ils ajoutent **47 événements custom** au plan de tracking PostHog.
+
+**Total documenté : 61 événements custom** + `$pageview` natif PostHog.
 
 ---
 

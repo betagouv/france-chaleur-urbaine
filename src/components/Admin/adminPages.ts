@@ -21,6 +21,12 @@ export const adminPages = [
     label: 'Gestion des demandes',
   },
   {
+    desc: 'Gérez les demandes chaleur renouvelable',
+    group: 'management',
+    href: '/admin/demandes-chaleur-renouvelable',
+    label: 'Gestion des demandes chaleur renouvelable',
+  },
+  {
     desc: "Gérez les utilisateurs de l'application",
     group: 'management',
     href: '/admin/users',

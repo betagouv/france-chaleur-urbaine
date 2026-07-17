@@ -14,6 +14,7 @@ import { createPortal } from 'react-dom';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import { isDefined } from '@/utils/core';
+import cx from '@/utils/cx';
 
 import { buildPopupStyleHelpers, type MapLayerSpecification, type MapSourceLayersSpecification, type PopupContext } from '../core/common';
 import { useMapInstance } from '../core/MapCanvasContext';
@@ -32,6 +33,9 @@ type PopupState = {
   latitude: number;
   content: React.ReactNode;
   offset?: [number, number];
+  maxWidth: number;
+  maxHeight: number;
+  compact: boolean;
 };
 
 type HoveredFeatureRef = {
@@ -186,10 +190,31 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
       });
       const close = () => setPopup(null);
       const helpers = buildPopupStyleHelpers(close);
+      const mapContainer = map.getContainer();
+
+      const popupMargin = 24;
+      const arrowAndOffset = 20;
+
+      // Position du clic dans la map, en pixels.
+      const point = map.project([snapPoint[0], snapPoint[1]]);
+
+      // La popup s'ouvre principalement au-dessus du point.
+      // On réserve une marge pour éviter qu'elle touche les bords.
+      const availableHeightAbove = point.y - popupMargin - arrowAndOffset;
+
+      // Si le point est très haut dans la map, on laisse quand même une hauteur
+      // minimale et MapLibre choisira une autre direction si nécessaire.
+      const maxHeight = Math.min(500, Math.max(120, availableHeightAbove));
+
+      const maxWidth = Math.min(500, Math.max(220, mapContainer.clientWidth - popupMargin * 2));
+      const compact = maxHeight < 260 || maxWidth < 320;
       setPopup({
+        compact,
         content: selected.spec.popup(feature.properties ?? {}, helpers, popupContextRef.current),
         latitude: snapPoint[1],
         longitude: snapPoint[0],
+        maxHeight,
+        maxWidth,
         offset: selected.spec.popupOffset,
       });
     };
@@ -239,21 +264,28 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
     if (!popup || !popupContainerRef.current) {
       return;
     }
+
+    const container = popupContainerRef.current;
+
+    container.className = 'map-popup-container';
+    container.style.setProperty('--popup-max-height', `${popup.maxHeight}px`);
+    container.style.setProperty('--popup-max-width', `${popup.maxWidth}px`);
+
     const instance = new maplibregl.Popup({
       closeButton: false,
-      // Closing is owned by `onClick` (empty-space click → setPopup(null)). With `closeOnClick: true`,
-      // clicking a new feature races: our open and maplibre's close hit the same click and the close wins,
-      // forcing a second click. Keeping it false lets a single click replace the popup.
       closeOnClick: false,
-      maxWidth: '500px',
+      maxWidth: `${popup.maxWidth}px`,
       offset: popup.offset,
-      padding: map.getPadding(), // keeps the anchor clear of the legend drawer
+      padding: map.getPadding(),
     })
       .setLngLat([popup.longitude, popup.latitude])
-      .setDOMContent(popupContainerRef.current)
+      .setDOMContent(container)
       .addTo(map);
+
     const onClose = () => setPopup(null);
+
     instance.on('close', onClose);
+
     return () => {
       instance.off('close', onClose);
       instance.remove();
@@ -263,7 +295,33 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
   if (!popup || !popupContainerRef.current) {
     return null;
   }
-  return createPortal(popup.content, popupContainerRef.current);
+  return createPortal(
+    <div
+      className={cx(
+        'h-fit overflow-auto',
+        popup.compact && [
+          'text-xs',
+          '[&_.fr-h6]:text-xs!',
+          '[&_.fr-h6]:leading-tight!',
+          '[&_.fr-accordion__btn]:text-xs',
+          '[&_.fr-btn]:text-xs',
+          '[&_.fr-btn]:min-h-8',
+          '[&_.fr-btn]:py-1',
+          '[&_.fr-btn]:px-1',
+          '[&_.fr-accordion__title]:text-xs',
+          '[&_.grid]:gap-x-1',
+          '[&_.grid]:gap-y-0.5',
+        ]
+      )}
+      style={{
+        maxHeight: `${popup.maxHeight}px`,
+        maxWidth: `${popup.maxWidth}px`,
+      }}
+    >
+      {popup.content}
+    </div>,
+    popupContainerRef.current
+  );
 }
 
 function findHoveredFeature(

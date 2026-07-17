@@ -1,68 +1,44 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
+import { type BatEnrInfo, EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
+import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/constants';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
-import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
-
-type BatEnrInfo = {
-  geothermiePossible: boolean;
-  planProtectionAtmosphere: boolean;
-};
+import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 type EligibilityState = {
   geoAddress?: BANAddressFeature;
   batEnr: BatEnrInfo;
+  batEnrBatiments: BatEnrBatiment[];
+  selectedBatEnrBatiment?: BatEnrBatiment;
   codeDepartement: string;
   temperatureRef: number | null;
-  eligibiliteReseauChaleur: HeatNetworksResponse | null;
+  eligibiliteReseauChaleur: HeatNetwork | null;
+  shouldSelectBatEnrBatiment: boolean;
 };
-
-type RnbExtId = {
-  id: string;
-  source: string;
-  created_at?: string;
-  source_version?: string;
-};
-
-type TrpcUtils = ReturnType<typeof trpc.useUtils>;
 
 const emptyState: EligibilityState = {
-  batEnr: {
-    geothermiePossible: false,
-    planProtectionAtmosphere: false,
-  },
+  batEnr: EMPTY_BAT_ENR_INFO,
+  batEnrBatiments: [],
   codeDepartement: '',
   eligibiliteReseauChaleur: null,
   geoAddress: undefined,
+  selectedBatEnrBatiment: undefined,
+  shouldSelectBatEnrBatiment: false,
   temperatureRef: null,
 };
 
-const getBatEnrInfo = async ({ geoAddress, trpcUtils }: { geoAddress: BANAddressFeature; trpcUtils: TrpcUtils }): Promise<BatEnrInfo> => {
-  const [lon, lat] = geoAddress.geometry.coordinates;
-  const banId = geoAddress.properties.id;
-  const rnb = await trpcUtils.client.batEnr.getRnbByBanId.query({ banId });
-  const bdnbId = rnb?.ext_ids?.find((e: RnbExtId) => e.source === 'bdnb')?.id;
-
-  let batEnrDetails = bdnbId
-    ? await trpcUtils.client.batEnr.getBatEnrBatimentDetails.query({ batiment_construction_id: bdnbId }).catch(() => null)
-    : null;
-
-  if (!batEnrDetails) {
-    // Si l'appel au rnb ou à batenr est infructueux, on prend le bâtiment le plus proche
-    batEnrDetails = await trpcUtils.client.batEnr.getBatEnrBatimentDetails.query({ lat, lon }).catch(() => null);
-  }
-
-  return {
-    geothermiePossible: Number(batEnrDetails?.gmi_nappe_200) === 1 || Number(batEnrDetails?.gmi_sonde_200) === 1,
-    planProtectionAtmosphere: batEnrDetails?.etat_ppa === 'PPA Validés',
-  };
-};
-
-export function useAddressEligibility(adresse: string | null) {
+export function useAddressEligibility(adresse: string | null, selectedBatimentConstructionId?: string | null) {
   const trpcUtils = trpc.useUtils();
   const [state, setState] = useState<EligibilityState>(emptyState);
+  const [isEligibilityLoading, setIsEligibilityLoading] = useState(false);
+  const selectedBatimentConstructionIdRef = useRef(selectedBatimentConstructionId);
+
+  useEffect(() => {
+    selectedBatimentConstructionIdRef.current = selectedBatimentConstructionId;
+  }, [selectedBatimentConstructionId]);
 
   const resetEligibility = useCallback(() => {
     setState(emptyState);
@@ -70,28 +46,34 @@ export function useAddressEligibility(adresse: string | null) {
 
   const computeEligibilityFromSuggestion = useCallback(
     toastErrors(async (geoAddress: BANAddressFeature) => {
-      const [lon, lat] = geoAddress.geometry.coordinates;
-      const { city, citycode } = geoAddress.properties;
+      setIsEligibilityLoading(true);
 
-      const [batEnr, infos, eligibiliteReseauChaleur] = await Promise.all([
-        getBatEnrInfo({ geoAddress, trpcUtils }),
-        trpcUtils.client.batEnr.getLocationInfos.query({
+      try {
+        const [lon, lat] = geoAddress.geometry.coordinates;
+        const { city, citycode } = geoAddress.properties;
+
+        const addressEligibilityContext = await trpcUtils.client.batEnr.getAddressEligibilityContext.query({
+          banId: geoAddress.properties.id,
           city,
           cityCode: citycode,
-        }),
-        trpcUtils.client.reseaux.eligibilityStatus.query({
           lat,
           lon,
-        }),
-      ]);
+          selectedBatimentConstructionId: selectedBatimentConstructionIdRef.current,
+        });
 
-      setState({
-        batEnr,
-        codeDepartement: infos?.departement_id ?? '',
-        eligibiliteReseauChaleur,
-        geoAddress,
-        temperatureRef: infos?.temperature_ref_altitude_moyenne != null ? Number(infos.temperature_ref_altitude_moyenne) : null,
-      });
+        setState({
+          batEnr: addressEligibilityContext.batEnr,
+          batEnrBatiments: addressEligibilityContext.batEnrBatiments,
+          codeDepartement: addressEligibilityContext.codeDepartement,
+          eligibiliteReseauChaleur: addressEligibilityContext.eligibiliteReseauChaleur,
+          geoAddress,
+          selectedBatEnrBatiment: addressEligibilityContext.selectedBatEnrBatiment,
+          shouldSelectBatEnrBatiment: addressEligibilityContext.shouldSelectBatEnrBatiment,
+          temperatureRef: addressEligibilityContext.temperatureRef,
+        });
+      } finally {
+        setIsEligibilityLoading(false);
+      }
     }),
     [trpcUtils]
   );
@@ -121,9 +103,13 @@ export function useAddressEligibility(adresse: string | null) {
   );
 
   useEffect(() => {
-    if (!adresse) return;
+    if (!adresse) {
+      resetEligibility();
+      return;
+    }
+
     void triggerEligibilityFromString(adresse);
-  }, [adresse, triggerEligibilityFromString]);
+  }, [adresse, resetEligibility, triggerEligibilityFromString]);
 
   const onSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {
@@ -137,10 +123,21 @@ export function useAddressEligibility(adresse: string | null) {
     setState((current) => ({ ...current, geoAddress }));
   }, []);
 
+  const selectBatEnrBatiment = useCallback((batEnrBatiment: BatEnrBatiment) => {
+    setState((current) => ({
+      ...current,
+      batEnr: getBatEnrInfoFromBatiment(batEnrBatiment),
+      selectedBatEnrBatiment: batEnrBatiment,
+      shouldSelectBatEnrBatiment: false,
+    }));
+  }, []);
+
   return {
     ...state,
+    isEligibilityLoading,
     onSelectGeoAddress,
     resetEligibility,
+    selectBatEnrBatiment,
     setGeoAddress,
   };
 }

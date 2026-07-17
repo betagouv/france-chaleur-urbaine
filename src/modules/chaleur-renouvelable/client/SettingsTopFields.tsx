@@ -2,99 +2,98 @@ import Select from '@/components/form/dsfr/Select';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
-import { type EspaceExterieur, espaceExterieurOptions, type TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import type { SetChoixChauffageParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
+import {
+  type EspaceExterieur,
+  type TypeLogement,
+  type TypeRadiateur,
+  typeLogementOptions,
+  typeRadiateurOptions,
+} from '@/modules/chaleur-renouvelable/constants';
 import { AddressField } from '@/modules/form/AddressField';
 
+import { OutdoorSpaceSelect } from './OutdoorSpaceSelect';
+
 type SettingsTopFieldsProps = {
-  withLabel: boolean;
   adresse: string | null;
-  setAdresse: (val: string | null) => void;
   geoAddress?: BANAddressFeature;
   setGeoAddress: (val: BANAddressFeature | undefined) => void;
   onAddressError?: () => void;
   onSelectGeoAddress?: (val?: BANAddressFeature) => void;
   typeLogement: TypeLogement | null;
-  setTypeLogement: (val: TypeLogement | null) => void;
   espaceExterieur: EspaceExterieur | null;
-  setEspaceExterieur: (val: EspaceExterieur | null) => void;
-  className?: string;
+  typeRadiateur?: TypeRadiateur | null;
+  setParams: SetChoixChauffageParams;
 };
 
 export function SettingsTopFields({
-  withLabel,
   adresse,
-  setAdresse,
   geoAddress,
   setGeoAddress,
   onSelectGeoAddress,
   typeLogement,
-  setTypeLogement,
   espaceExterieur,
-  setEspaceExterieur,
-  className,
+  typeRadiateur,
+  setParams,
 }: SettingsTopFieldsProps) {
   return (
-    <div className={className}>
+    <div className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-4 bg-[#fbf6ed]">
       <AddressField
-        label={withLabel ? 'Adresse' : ''}
+        label="Adresse"
         className="fr-mb-0"
         value={adresse ?? ''}
         nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
         onlyAddress
         onClear={() => {
-          if (adresse !== null) void setAdresse(null);
+          if (adresse !== null) void setParams({ adresse: null });
           if (geoAddress !== undefined) setGeoAddress(undefined);
           onSelectGeoAddress?.(undefined);
         }}
         onSelect={(next?: BANAddressFeature) => {
           const nextLabel = next?.properties?.label ?? '';
           if ((adresse ?? '') === nextLabel) return;
-          trackPostHogEvent('fcr_simulator:address_selected', {
-            address: nextLabel,
-            source: withLabel ? 'landing' : 'result',
-          });
-          trackPostHogEvent('fcr_simulator:started', {
-            address: nextLabel,
-            source: withLabel ? 'landing' : 'result',
-          });
-          setAdresse(nextLabel);
+          trackPostHogEvent('fcr_landing:address_typed');
+          setParams({ adresse: nextLabel });
           setGeoAddress(next);
           onSelectGeoAddress?.(next);
         }}
       />
       <Select
-        label={withLabel ? 'Mode de chauffage' : ''}
+        label="Mode de chauffage"
         className="fr-mb-0"
-        options={[
-          { label: 'Immeuble en chauffage collectif', value: 'immeuble_chauffage_collectif' satisfies TypeLogement },
-          { label: 'Immeuble en chauffage individuel', value: 'immeuble_chauffage_individuel' satisfies TypeLogement },
-          { label: 'Maison individuelle', value: 'maison_individuelle' satisfies TypeLogement },
-        ]}
+        options={[...typeLogementOptions]}
         nativeSelectProps={{
           onChange: (e) => {
-            trackPostHogEvent('fcr_simulator:started', {
-              source: withLabel ? 'landing' : 'result',
-              typeLogement: e.target.value,
-            });
-            trackPostHogEvent('fcr_simulator:heating_mode_selected', { typeLogement: e.target.value as TypeLogement });
-            void setTypeLogement(e.target.value as TypeLogement);
+            const nextTypeLogement = (e.target.value || null) as TypeLogement | null;
+            if (nextTypeLogement) {
+              trackPostHogEvent('fcr_landing:heating_mode_selected', { heating_mode: nextTypeLogement });
+            }
+            setParams({ typeLogement: nextTypeLogement });
           },
-          value: typeLogement ?? '',
+          value: typeLogement ?? undefined,
         }}
       />
-      <RichSelect<EspaceExterieur>
-        value={espaceExterieur ?? undefined}
-        onChange={(val) => {
-          trackPostHogEvent('fcr_simulator:started', {
-            espaceExterieur: val,
-            source: withLabel ? 'landing' : 'result',
-          });
-          trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoorSpace: val as EspaceExterieur });
-          void setEspaceExterieur(val);
+      <RichSelect<TypeRadiateur>
+        value={typeRadiateur ?? undefined}
+        onChange={(value) => {
+          if (value) {
+            trackPostHogEvent('fcr_landing:emitter_type_selected', { emitter_type: value });
+          }
+          setParams({ typeRadiateur: value ?? null });
         }}
-        options={[...espaceExterieurOptions]}
-        placeholder="Sélectionner vos espaces disponibles"
-        label={withLabel ? 'Espaces extérieurs disponibles' : ''}
+        options={[...typeRadiateurOptions]}
+        placeholder="Indiquez votre type de radiateur"
+        label="Type de radiateurs"
+      />
+      <OutdoorSpaceSelect
+        value={espaceExterieur}
+        onChange={(value) => {
+          if (value) {
+            trackPostHogEvent('fcr_landing:outdoor_space_selected', { outdoor_space: value });
+          }
+          setParams({ espaceExterieur: value });
+        }}
+        typeLogement={typeLogement}
       />
     </div>
   );
