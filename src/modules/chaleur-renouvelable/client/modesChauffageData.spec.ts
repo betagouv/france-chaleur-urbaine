@@ -848,13 +848,20 @@ describe('modesDeChauffage', () => {
     });
   });
 
-  it('does not return hot water only solutions when the hot water mode is explicitly unknown', () => {
-    const hotWaterOnlyModes = getModesDeChauffage(
+  it('returns hot water only solutions when the hot water mode is explicitly unknown', () => {
+    const hotWaterOnlyModeIds = getModesDeChauffage(
       'immeuble_chauffage_collectif',
       createSituation({ modeEauChaudeSanitaire: 'nonRenseigne' })
-    ).filter((modeDeChauffage) => modeDeChauffage.usage === 'hotWaterOnly');
+    )
+      .filter((modeDeChauffage) => modeDeChauffage.usage === 'hotWaterOnly')
+      .map((modeDeChauffage) => modeDeChauffage.id);
 
-    expect(hotWaterOnlyModes).toStrictEqual([]);
+    expect(hotWaterOnlyModeIds).toStrictEqual([
+      'collective-solar-thermal-hot-water',
+      'collective-solar-atmospheric-heat-pump-hot-water',
+      'collective-air-water-heat-pump-hot-water',
+      'collective-thermodynamic-water-heater',
+    ]);
   });
 
   it('marks PDP prerequisite favorable for heat network and restrictive for alternative solutions', () => {
