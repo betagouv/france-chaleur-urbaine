@@ -78,7 +78,7 @@ PopoverTrigger.displayName = 'PopoverTrigger';
 const StyledPopoverContent = styled(PopoverPrimitive.Content)<{
   $width?: number;
 }>`
-  z-index: 2001; /* to be above the NetworksFilters */
+  z-index: 2004; /* above the NetworksFilters (2001) and Dialog content (2003) */
   border-radius: 0.375rem;
   pointer-events: all;
   background-color: white;

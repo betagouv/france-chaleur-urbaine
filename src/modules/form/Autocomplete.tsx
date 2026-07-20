@@ -444,7 +444,7 @@ export function Autocomplete<Option>(props: AutocompleteProps<Option>) {
             onInteractOutside={handleInteractOutside}
             avoidCollisions
             sideOffset={4}
-            className="z-1751"
+            className="z-2004" // above Dialog content (z-2003) so the dropdown stays visible inside dialogs
             style={{ width: anchorWidth ? `${anchorWidth}px` : undefined }}
           >
             <div role="status" aria-live="polite" className="sr-only">
