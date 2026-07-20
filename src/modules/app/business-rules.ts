@@ -44,6 +44,12 @@ export const businessRules = {
     label: 'Rétention des IP de conversion',
     value: 90,
   },
+  demandDedupWindowDays: {
+    description: 'Fenêtre pendant laquelle une demande identique (même email et même adresse) ne recrée pas de demande.',
+    display: '30 jours',
+    label: 'Déduplication des demandes',
+    value: 30,
+  },
   eligibilityMaxDisplayDistance: {
     description: "Au-delà, la distance n'est plus affichée et l'adresse est considérée « trop éloignée ».",
     display: '1 000 m',
@@ -74,6 +80,20 @@ export const businessRules = {
     display: '100 m',
     label: "Distance d'éligibilité (Paris)",
     value: 100,
+  },
+  fcrHeatNetworkMaxDistanceMeters: {
+    description:
+      'Distance maximale au réseau pour que le raccordement soit proposé comme solution dans le simulateur chaleur renouvelable.',
+    display: '200 m',
+    label: 'Chaleur renouvelable : distance réseau maximale',
+    value: 200,
+  },
+  fcrSolarThermalMinCoveragePercent: {
+    description:
+      "Taux de couverture des besoins d'eau chaude sanitaire à partir duquel le solaire thermique est jugé suffisant dans le simulateur chaleur renouvelable.",
+    display: '80 %',
+    label: 'Chaleur renouvelable : couverture solaire minimale',
+    value: 80,
   },
   fileUploadMaxSizeMB: {
     description: "Taille maximale d'un fichier importé pour un test d'adresses en masse.",

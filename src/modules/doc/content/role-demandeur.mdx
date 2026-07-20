@@ -9,8 +9,8 @@ Menu : **Tableau de bord**, **Mes demandes**, **Comparateur de coûts et CO2**, 
 ## Déposer et suivre une demande
 
 - Le dépôt peut se faire **sans compte** (formulaire public). À la première connexion avec le même email, les demandes anonymes sont **automatiquement rattachées** au compte — c'est ce qui permet de retrouver dans « Mes demandes » une demande faite avant l'inscription.
-- Au dépôt : email [« Confirmation de demande »](/admin/emails?type=demands.demandeur.confirmation-demande) avec analyse d'éligibilité personnalisée, et sondage « Comment avez-vous connu France Chaleur Urbaine ? ».
-- **« Mes demandes » est en lecture seule** : statut, réseau affecté, mises à jour d'éligibilité, date. Le demandeur n'y voit **pas** les coordonnées du gestionnaire et ne peut rien y modifier.
+- Au dépôt : email [« Confirmation de demande »](/admin/emails?type=demands.demandeur.confirmation-demande) avec analyse d'éligibilité personnalisée. Redéposer une demande pour la même adresse avec le même email sous <Rule id="demandDedupWindowDays" /> n'en crée **pas** une nouvelle : l'écran de confirmation réaffiche la demande existante (voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande)).
+- **« Mes demandes » est en lecture seule** : statut (« À traiter » y est affiché « En cours de traitement »), réseau affecté, mises à jour d'éligibilité, date. Le demandeur n'y voit **pas** les coordonnées du gestionnaire et ne peut rien y modifier.
 
 ## La boucle de satisfaction — son seul canal de retour
 

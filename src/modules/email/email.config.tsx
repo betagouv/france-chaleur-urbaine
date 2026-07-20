@@ -150,6 +150,10 @@ export const emails = defineEmails({
     preview: 'Une nouvelle demande chaleur renouvelable est à traiter',
     scenarios: nouvelleDemandeChaleurRenouvelableScenarios,
     subject: '[France Chaleur Urbaine] Nouvelle demande chaleur renouvelable à traiter',
+    trigger: {
+      description: "Au dépôt d'une demande sur le parcours chaleur renouvelable, envoyé à l'équipe FCU.",
+      type: 'action',
+    },
   },
   'demands.gestionnaire.nouvelles-demandes-a-traiter': {
     Component: NouvellesDemandesATraiter,
