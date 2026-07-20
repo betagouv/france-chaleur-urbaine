@@ -24,7 +24,6 @@ export type InternalSourceId =
   | 'linear-heat-density-labels'
   | 'buildings-data-extraction-polygons'
   | 'adressesEligibles'
-  | 'adressesEligiblesSelected'
   | 'customGeojson'
   | 'geomUpdate';
 
