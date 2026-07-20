@@ -1,6 +1,7 @@
 import type { User } from 'next-auth';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
+import { cleanDatabase } from '@/tests/fixtures';
 import { createTestCaller, testUsers, unauthorizedError } from '@/tests/trpc-helpers';
 
 type PermissionTestCase = {
@@ -10,6 +11,10 @@ type PermissionTestCase = {
 };
 
 describe('usersRouter', () => {
+  beforeAll(async () => {
+    await cleanDatabase();
+  });
+
   describe('users.getProfile', () => {
     const permissionTests: PermissionTestCase[] = [
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
