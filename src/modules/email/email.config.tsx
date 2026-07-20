@@ -1,5 +1,6 @@
 import { render } from '@react-email/components';
 
+import { clientConfig } from '@/client-config';
 import { businessRules } from '@/modules/app/business-rules';
 import type { EmailTrigger } from '@/modules/email/constants';
 import type { EmailScenarios } from '@/modules/email/scenarios';
@@ -145,7 +146,7 @@ export const emails = defineEmails({
   },
   'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable': {
     Component: NouvelleDemandeChaleurRenouvelable,
-    description: 'Notification interne envoyée à france.chaleur.urbaine@gmail.com à chaque nouvelle demande chaleur renouvelable reçue.',
+    description: `Notification interne envoyée à ${clientConfig.contactEmail} à chaque nouvelle demande chaleur renouvelable reçue.`,
     label: 'Nouvelle demande chaleur renouvelable',
     preview: 'Une nouvelle demande chaleur renouvelable est à traiter',
     scenarios: nouvelleDemandeChaleurRenouvelableScenarios,
