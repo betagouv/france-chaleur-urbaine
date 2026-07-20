@@ -1,3 +1,4 @@
+import { businessRules } from '@/modules/app/business-rules';
 import { EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
 import type {
   AddressEligibilityContextInput,
@@ -52,7 +53,7 @@ const batEnrBatimentColumns = [
 ] as const;
 
 const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = serverConfig.contactEmail;
-const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = 200;
+const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = businessRules.fcrBuildingCandidatesRadiusMeters.value;
 const FRANCE_RENOV_SPACES_RESOURCE_ID = 'bc99b9d4-1b70-48e1-9958-98cceacd0c93';
 
 type BanAddressSearchResponse = {
