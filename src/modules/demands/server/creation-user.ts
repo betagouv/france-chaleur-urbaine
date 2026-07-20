@@ -1,3 +1,4 @@
+import { businessRules } from '@/modules/app/business-rules';
 import { type CreateDemandInput, type DemandSubmissionResult, formatDataToLegacyAirtable } from '@/modules/demands/constants';
 import type { AirtableLegacyRecord } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
@@ -16,8 +17,8 @@ import {
 import { getDemandById } from './helpers';
 import type { LegacyValuesPatch } from './legacy-values';
 
-/** Fenêtre de dédoublonnage : une demande identique (email + adresse) dans les 30 derniers jours bloque une nouvelle création. */
-const DEMAND_DEDUP_WINDOW_DAYS = 30;
+/** Fenêtre de dédoublonnage : une demande identique (email + adresse) dans cette fenêtre bloque une nouvelle création. */
+const DEMAND_DEDUP_WINDOW_DAYS = businessRules.demandDedupWindowDays.value;
 
 /**
  * Crée une demande côté utilisateur : enrichit avec la conso gaz / bâtiment BNB,

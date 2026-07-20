@@ -6,7 +6,9 @@ Une « demande » est une demande de mise en relation pour un raccordement, dép
 
 <Mermaid
   chart={`flowchart TD
-    depot["Dépôt de la demande (formulaire public, connecté ou anonyme)"] --> enrich["Enrichissements automatiques : conso gaz, nb logements, territoire"]:::db
+    depot["Dépôt de la demande (formulaire public, connecté ou anonyme)"] --> dedup{"Demande identique (email + adresse) depuis moins de ${businessRules.demandDedupWindowDays.display} ?"}
+    dedup -- "Oui" --> existante["Rien n'est créé : la demande existante est réaffichée"]
+    dedup -- "Non" --> enrich["Enrichissements automatiques : conso gaz, nb logements, territoire"]:::db
     enrich --> assign{"Éligible ou réseau à moins de ${businessRules.autoAssignMaxDistance.display} ?"}
     assign -- "Oui" --> reseau["Affectation automatique au réseau le plus proche"]:::db
     assign -- "Non" --> sansReseau["Pas de réseau affecté"]
@@ -33,7 +35,9 @@ Trois canaux créent des demandes :
 
 - **Formulaire public** (carte, accueil, fiche réseau) : accessible sans compte. Si la personne est connectée, la demande est rattachée à son compte ; sinon elle le sera automatiquement à la première connexion avec le même email (voir [Inscription et comptes](/admin/doc/inscription-comptes)).
 - **Demandes groupées** depuis un [test d'adresses en masse](/admin/doc/tests-adresses-pro) : au maximum <Rule id="batchDemandMaxAddresses" /> à la fois, coordonnées de contact reprises du profil de l'utilisateur (un admin peut fournir un contact dédié). Une adresse ayant déjà une demande n'en recrée pas une seconde.
-- **Contact équipe FCU** : certains parcours du formulaire d'éligibilité collectent un simple contact pour l'équipe (enregistré dans Airtable) — ce n'est **pas** une demande.
+- **Parcours [chaleur renouvelable](/admin/doc/chaleur-renouvelable)** : quand le simulateur conclut qu'un raccordement est possible et que la personne choisit de contacter le gestionnaire, une demande classique est créée **en parallèle** de sa demande chaleur renouvelable — même service de création que le formulaire public, donc mêmes enrichissements, emails et déduplication.
+
+**Déduplication** : une soumission du formulaire public avec le même email **et** la même adresse qu'une demande non supprimée de moins de <Rule id="demandDedupWindowDays" /> ne crée **rien** — ni demande, ni événement, ni email, ni conversion dans l'entonnoir : le formulaire affiche « Demande déjà enregistrée » avec le récapitulatif (adresse, date, statut) de la demande existante.
 
 À la création, la demande est **enrichie automatiquement** :
 
@@ -49,7 +53,7 @@ Trois canaux créent des demandes :
 
 **Statut initial** : « À traiter » si l'adresse est éligible, « Non réalisable » sinon. Le marqueur « Relance à activer » (qui conditionne les [relances automatiques](/admin/doc/relances-notifications)) est posé uniquement si la demande est **éligible ET en chauffage collectif**, et uniquement à la création.
 
-Enfin : email [« Confirmation de demande »](/admin/emails?type=demands.demandeur.confirmation-demande) au demandeur (avec analyse d'éligibilité personnalisée), événement [« Création demande »](/admin/events?types=demand_created), et proposition d'un sondage « Comment avez-vous connu France Chaleur Urbaine ? » sur la page de confirmation (réponses visibles dans la colonne Sondage de [Gestion des demandes](/admin/demandes)).
+Enfin : email [« Confirmation de demande »](/admin/emails?type=demands.demandeur.confirmation-demande) au demandeur (avec analyse d'éligibilité personnalisée) et événement [« Création demande »](/admin/events?types=demand_created).
 
 ## La validation par l'équipe FCU
 
@@ -60,7 +64,8 @@ Une demande naît **non validée** : elle est invisible des gestionnaires et col
 Huit statuts, du dépôt à la clôture — liste et descriptions dans [Références](/admin/doc/references). Règles importantes :
 
 - **Aucun ordre n'est imposé** : le statut se change librement dans la liste, il n'y a pas de transitions contrôlées.
-- Le statut est modifié par le **responsable** de la demande (gestionnaire, ou collectivité pour une demande non affectée — voir [Rôles et permissions](/admin/doc/roles-permissions)). **L'admin ne modifie pas le statut** depuis sa page (champ affiché mais désactivé) : il agit par la validation, l'affectation et le recalcul d'éligibilité.
+- Le statut est modifié par le **responsable** de la demande (gestionnaire, ou collectivité pour une demande non affectée — voir [Rôles et permissions](/admin/doc/roles-permissions)). Un **admin** peut aussi changer le statut de n'importe quelle demande depuis sa page, en plus de la validation, de l'affectation et du recalcul d'éligibilité.
+- Côté demandeur, le statut « À traiter » est affiché **« En cours de traitement »** (dans son suivi et sur l'écran de confirmation) ; les autres statuts sont affichés tels quels.
 - L'**API partenaire** peut aussi modifier le statut et le commentaire gestionnaire — rien d'autre ([événement « Mise à jour demande (API) »](/admin/events?types=api_demand_updated)).
 
 ## Qui modifie quoi
@@ -68,7 +73,7 @@ Huit statuts, du dépôt à la clôture — liste et descriptions dans [Référe
 | Acteur | Peut modifier |
 | --- | --- |
 | Responsable (gestionnaire…) | Statut, nb logements, surface, conso gaz, son commentaire ; contacter le demandeur par email ; proposer une réaffectation |
-| Admin | Validation, affectation, recalcul d'éligibilité, marqueurs de relance, « Recontacté par le gestionnaire », commentaires internes FCU, suppression |
+| Admin | Validation, affectation, statut, recalcul d'éligibilité, marqueurs de relance, « Recontacté par le gestionnaire », commentaires internes FCU, suppression |
 | Demandeur | Rien directement : son suivi est en lecture seule ; il répond via la boucle de satisfaction (recontacté oui/non + commentaire) |
 | API partenaire | Statut et commentaire gestionnaire uniquement, sur les demandes de ses réseaux |
 

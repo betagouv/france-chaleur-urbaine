@@ -48,3 +48,10 @@ Ces valeurs viennent du modèle Publicodes (données 2024), **pas** du registre 
 - **Suivi** : l'usage du comparateur alimente l'[entonnoir de conversion](/admin/doc/carte-iframes) (un test d'adresse, éventuellement une demande).
 
 Le comparateur **n'envoie aucun email** : les éventuelles demandes déposées suivent le parcours normal des demandes.
+
+## Réutilisations du moteur de calcul
+
+Le moteur Publicodes sert aussi en dehors du comparateur :
+
+- Le simulateur du [parcours chaleur renouvelable](/admin/doc/chaleur-renouvelable) l'utilise pour estimer les coûts annuels des solutions comparées.
+- Une **API publique de simulation PAC** (`/api/pac/simulation`, `/api/pac/income-options`) l'expose pour un prototype externe de simulateur de pompe à chaleur air/eau : dimensionnement, aides MaPrimeRénov' et Coup de pouce selon les revenus du ménage, factures annuelles et CO2 comparés PAC / gaz / fioul. Sans authentification, sans écriture en base.

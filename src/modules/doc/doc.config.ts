@@ -2,6 +2,7 @@ import type { MDXComponents } from 'mdx/types';
 import type { ComponentType } from 'react';
 
 import CarteIframes from './content/carte-iframes.mdx';
+import ChaleurRenouvelable from './content/chaleur-renouvelable.mdx';
 import Comparateur from './content/comparateur.mdx';
 import CycleDeVieDemande from './content/cycle-de-vie-demande.mdx';
 import Eligibilite from './content/eligibilite.mdx';
@@ -127,6 +128,14 @@ export const docPages = [
     slug: 'comparateur',
     theme: 'parcours',
     title: 'Comparateur de coûts et CO2',
+  },
+  {
+    Content: ChaleurRenouvelable,
+    description:
+      'Le simulateur de solutions de chauffage renouvelable : données bâtimentaires mobilisées, règles de hiérarchisation, demandes dédiées et passerelle vers les demandes classiques.',
+    slug: 'chaleur-renouvelable',
+    theme: 'parcours',
+    title: 'Parcours chaleur renouvelable',
   },
   {
     Content: CarteIframes,

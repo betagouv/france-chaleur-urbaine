@@ -1,0 +1,61 @@
+# Parcours chaleur renouvelable
+
+Le parcours « chaleur renouvelable » ([/chaleur-renouvelable](/chaleur-renouvelable)) aide un résident ou un professionnel à identifier la solution de chauffage renouvelable adaptée à son bâtiment — dont le raccordement à un réseau de chaleur quand il est possible. Il reprend la logique de hiérarchisation « ENR Choix » de l'ADEME (méthodologie publiée sur [/chaleur-renouvelable/methodologie](/chaleur-renouvelable/methodologie)) et intègre l'ancien service Pacoupa.
+
+## Le parcours
+
+<Mermaid
+  chart={`flowchart TD
+    landing["Saisie : adresse, type de logement, espace extérieur, radiateurs"] --> bat{"Plusieurs bâtiments candidats autour de l'adresse ?"}
+    bat -- "Oui" --> selection["Sélection du bâtiment sur une carte"]
+    bat -- "Non" --> simu
+    selection --> simu["Simulation : les caractéristiques connues du bâtiment préremplissent les paramètres"]
+    simu --> resultats["Résultats hiérarchisés : solutions possibles, prérequis, incompatibilités, coûts annuels"]
+    resultats --> rc{"Raccordement possible ?"}
+    rc -- "Oui" --> reco["Réseau de chaleur en solution recommandée + formulaire de mise en relation"]
+    rc -- "Non" --> franceRenov["Orientation vers l'Espace Conseil France Rénov' de la commune"]
+    reco --> demande["Demande chaleur renouvelable enregistrée"]:::db
+    demande --> mailEquipe["Email interne « Nouvelle demande chaleur renouvelable » à l'équipe FCU"]:::email
+    demande --> classique["Création d'une demande classique en parallèle"]:::db
+    click mailEquipe "/admin/emails?type=demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable" "Voir le modèle d'email"
+    classDef email fill:#feecc2,stroke:#b28a00,color:#161616
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
+/>
+
+Tous les paramètres de la simulation sont portés par l'**URL de la page de résultats** : elle se partage telle quelle et se rejoue à l'identique.
+
+## Les données mobilisées
+
+| Source | Usage |
+| --- | --- |
+| BAN | Géocodage de l'adresse saisie |
+| RNB, puis BDNB | Identification du bâtiment : le RNB est interrogé en premier (l'API BDNB est soumise à un quota), la BDNB en secours |
+| BatEnR 2025 (CEREMA) | Copie locale du jeu de données : contraintes architecturales et patrimoniales, DPE, installations de chauffage et d'ECS, potentiel géothermique (données BRGM), couverture solaire thermique |
+| Moteur d'éligibilité FCU | Réseau le plus proche, distance, PDP — le même calcul que partout ailleurs (voir [Test d'éligibilité](/admin/doc/eligibilite)) |
+| France Rénov' | Coordonnées de l'Espace Conseil France Rénov' de la commune |
+| Publicodes | Coûts annuels par solution, comparés au gaz (même moteur que le [comparateur](/admin/doc/comparateur)) |
+
+## Les règles de hiérarchisation
+
+- **Réseau de chaleur** : proposé si l'adresse est éligible, avec un réseau à moins de <Rule id="fcrHeatNetworkMaxDistanceMeters" /> et des radiateurs à eau. C'est alors la **solution recommandée**, affichée en tête, avec une orientation en deux étapes : contacter le gestionnaire du réseau, puis un conseiller du service public en cas de refus.
+- **PDP** : dans un périmètre de développement prioritaire, l'obligation d'étude de raccordement est affichée **favorable** pour le réseau de chaleur et **contraignante** pour les autres solutions collectives.
+- **ECS non renseignée** : un mode d'eau chaude sanitaire absent ne filtre aucune solution — un bandeau invite simplement à le renseigner dans les paramètres.
+- **Géothermie** : proposée si la zone est favorable au forage et que la ressource est suffisante — ou inconnue, auquel cas le prérequis est « à vérifier ».
+- **Solaire thermique** : jugé suffisant au-delà de <Rule id="fcrSolarThermalMinCoveragePercent" /> de couverture des besoins d'eau chaude sanitaire.
+- Chaque prérequis est affiché avec sa **source** (CEREMA, BRGM, France Chaleur Urbaine, ou déclaré dans le formulaire) et un statut : favorable, défavorable, contraignant ou à vérifier.
+
+Quand le raccordement n'est **pas** possible, il n'y a pas de formulaire : le parcours oriente vers l'**Espace Conseil France Rénov'** de la commune (contact par email de préférence, sinon le site web de l'espace, sinon la page nationale france-renov.gouv.fr). C'est aussi le cas du choix « j'ai déjà essuyé un refus du gestionnaire » : des champs de motif de refus existent en base mais ne sont pas atteignables depuis le parcours actuel.
+
+## La demande chaleur renouvelable
+
+Une demande déposée sur ce parcours est enregistrée **à part** des demandes classiques. Elle conserve le profil du demandeur (copropriétaire, syndic, bailleur social, bureau d'études…), son projet (type de logement, énergie actuelle, étapes déjà réalisées) et l'URL complète de sa simulation.
+
+- **Statut initial** : « à traiter ALEC » pour une maison individuelle ou un immeuble en chauffage individuel, « à traiter CCR » sinon. Onze statuts de suivi au total, jusqu'à « Travaux réalisés » ou « Demande non pertinente ».
+- **Traitement** : réservé aux admins, dans [Gestion des demandes chaleur renouvelable](/admin/demandes-chaleur-renouvelable) — changement de statut et affectation à un membre de l'équipe.
+- **À chaque création** : email interne [« Nouvelle demande chaleur renouvelable »](/admin/emails?type=demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable) à l'équipe FCU. **Aucun email n'est envoyé au demandeur** sur ce chemin, et aucune relance automatique n'existe.
+
+## La passerelle vers les demandes classiques
+
+Si l'adresse est raccordable et que la personne choisit de contacter le gestionnaire, une **demande classique** est créée en parallèle, par le même service que le formulaire public : mêmes enrichissements, même déduplication (<Rule id="demandDedupWindowDays" />), même statut initial, affectation automatique au réseau, email « Confirmation de demande » au demandeur et notification des gestionnaires par le cron habituel — voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande).
+
+Les deux demandes vivent ensuite **indépendamment** : la demande chaleur renouvelable est suivie par l'équipe FCU, la demande classique par le gestionnaire du réseau.
