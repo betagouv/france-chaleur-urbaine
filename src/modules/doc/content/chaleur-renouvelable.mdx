@@ -1,3 +1,5 @@
+import { businessRules } from '@/modules/app/business-rules';
+
 # Parcours chaleur renouvelable
 
 Le parcours « chaleur renouvelable » ([/chaleur-renouvelable](/chaleur-renouvelable)) aide un résident ou un professionnel à identifier la solution de chauffage renouvelable adaptée à son bâtiment — dont le raccordement à un réseau de chaleur quand il est possible. Il reprend la logique de hiérarchisation « ENR Choix » de l'ADEME (méthodologie publiée sur [/chaleur-renouvelable/methodologie](/chaleur-renouvelable/methodologie)) et intègre l'ancien service Pacoupa.
@@ -6,8 +8,8 @@ Le parcours « chaleur renouvelable » ([/chaleur-renouvelable](/chaleur-renouve
 
 <Mermaid
   chart={`flowchart TD
-    landing["Saisie : adresse, type de logement, espace extérieur, radiateurs"] --> bat{"Plusieurs bâtiments candidats autour de l'adresse ?"}
-    bat -- "Oui" --> selection["Sélection du bâtiment sur une carte"]
+    landing["Saisie : adresse, type de logement, espace extérieur, radiateurs"] --> bat{"Plusieurs bâtiments candidats à moins de ${businessRules.fcrBuildingCandidatesRadiusMeters.display} ?"}
+    bat -- "Oui" --> selection["Confirmation du bâtiment sur une carte (présélection mise en avant)"]
     bat -- "Non" --> simu
     selection --> simu["Simulation : les caractéristiques connues du bâtiment préremplissent les paramètres"]
     simu --> resultats["Résultats hiérarchisés : solutions possibles, prérequis, incompatibilités, coûts annuels"]
@@ -24,6 +26,17 @@ Le parcours « chaleur renouvelable » ([/chaleur-renouvelable](/chaleur-renouve
 
 Tous les paramètres de la simulation sont portés par l'**URL de la page de résultats** : elle se partage telle quelle et se rejoue à l'identique.
 
+À l'étape de saisie, seuls l'adresse, le type de logement et l'espace extérieur sont obligatoires — le type de radiateurs peut être renseigné plus tard, mais sans réponse « radiateurs à eau », le réseau de chaleur ne sera pas proposé (voir plus bas).
+
+## La sélection du bâtiment
+
+Le bâtiment de référence est identifié depuis l'adresse (RNB, puis BDNB en secours), et tous les bâtiments BatEnR dans un rayon de <Rule id="fcrBuildingCandidatesRadiusMeters" /> autour de lui deviennent **candidats**. Les règles d'affichage :
+
+- La modale de confirmation s'ouvre dès qu'il y a **plusieurs candidats** — y compris quand un bâtiment a été présélectionné automatiquement (il est alors mis en avant sur la carte, mais l'utilisateur doit confirmer).
+- Elle ne s'ouvre pas pour zéro ou un seul candidat, ni quand l'URL contient déjà un bâtiment choisi (lien partagé ou simulation rejouée).
+- Si l'adresse ne permet d'identifier aucun bâtiment, le bâtiment BatEnR **le plus proche des coordonnées** est utilisé, sans sélection.
+- Indépendamment de la modale, le bâtiment reste **modifiable à tout moment** depuis la carte de la section « Bâtiment » du panneau Paramètres ; en changer réapplique le préremplissage (DPE, nombre de logements, surface, type de logement, mode d'ECS).
+
 ## Les données mobilisées
 
 | Source | Usage |
@@ -37,14 +50,16 @@ Tous les paramètres de la simulation sont portés par l'**URL de la page de ré
 
 ## Les règles de hiérarchisation
 
-- **Réseau de chaleur** : proposé si l'adresse est éligible, avec un réseau à moins de <Rule id="fcrHeatNetworkMaxDistanceMeters" /> et des radiateurs à eau. C'est alors la **solution recommandée**, affichée en tête, avec une orientation en deux étapes : contacter le gestionnaire du réseau, puis un conseiller du service public en cas de refus.
+Le catalogue de solutions dépend du **type de logement** (immeuble en chauffage collectif, immeuble en chauffage individuel, maison individuelle) ; chaque solution est ensuite filtrée selon la situation :
+
+- **Réseau de chaleur** : proposé uniquement pour un **immeuble en chauffage collectif**, si l'adresse est éligible, avec un réseau à moins de <Rule id="fcrHeatNetworkMaxDistanceMeters" /> et des **radiateurs à eau** (pas de réponse sur les radiateurs = pas de réseau de chaleur proposé). C'est alors la **solution recommandée**, affichée en tête, avec une orientation en deux étapes : contacter le gestionnaire du réseau, puis un conseiller du service public en cas de refus.
 - **PDP** : dans un périmètre de développement prioritaire, l'obligation d'étude de raccordement est affichée **favorable** pour le réseau de chaleur et **contraignante** pour les autres solutions collectives.
 - **ECS non renseignée** : un mode d'eau chaude sanitaire absent ne filtre aucune solution — un bandeau invite simplement à le renseigner dans les paramètres.
 - **Géothermie** : proposée si la zone est favorable au forage et que la ressource est suffisante — ou inconnue, auquel cas le prérequis est « à vérifier ».
 - **Solaire thermique** : jugé suffisant au-delà de <Rule id="fcrSolarThermalMinCoveragePercent" /> de couverture des besoins d'eau chaude sanitaire.
 - Chaque prérequis est affiché avec sa **source** (CEREMA, BRGM, France Chaleur Urbaine, ou déclaré dans le formulaire) et un statut : favorable, défavorable, contraignant ou à vérifier.
 
-Quand le raccordement n'est **pas** possible, il n'y a pas de formulaire : le parcours oriente vers l'**Espace Conseil France Rénov'** de la commune (contact par email de préférence, sinon le site web de l'espace, sinon la page nationale france-renov.gouv.fr). C'est aussi le cas du choix « j'ai déjà essuyé un refus du gestionnaire » : des champs de motif de refus existent en base mais ne sont pas atteignables depuis le parcours actuel.
+Quand le raccordement n'est **pas** possible, il n'y a pas de formulaire : le parcours oriente vers l'**Espace Conseil France Rénov'** de la commune (contact par email de préférence, sinon le site web de l'espace, sinon la page nationale france-renov.gouv.fr). C'est aussi le cas du choix « J'ai déjà reçu un refus ou une réponse négative » : il masque le formulaire au profit de cette même orientation — des champs de motif et de période du refus existent en base mais ne sont pas atteignables depuis le parcours actuel.
 
 ## La demande chaleur renouvelable
 

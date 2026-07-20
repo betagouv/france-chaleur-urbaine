@@ -81,6 +81,13 @@ export const businessRules = {
     label: "Distance d'éligibilité (Paris)",
     value: 100,
   },
+  fcrBuildingCandidatesRadiusMeters: {
+    description:
+      'Rayon autour du bâtiment de référence dans lequel les bâtiments BatEnR sont proposés comme candidats dans le simulateur chaleur renouvelable.',
+    display: '200 m',
+    label: 'Chaleur renouvelable : rayon des bâtiments candidats',
+    value: 200,
+  },
   fcrHeatNetworkMaxDistanceMeters: {
     description:
       'Distance maximale au réseau pour que le raccordement soit proposé comme solution dans le simulateur chaleur renouvelable.',
