@@ -84,6 +84,7 @@ export function SettingsTopFields({
         options={[...typeRadiateurOptions]}
         placeholder="Indiquez votre type de radiateur"
         label="Type de radiateurs"
+        required
       />
       <OutdoorSpaceSelect
         value={espaceExterieur}
