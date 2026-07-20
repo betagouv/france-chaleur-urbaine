@@ -1,8 +1,23 @@
+import type { DataDrivenPropertyValueSpecification, ExpressionSpecification } from 'maplibre-gl';
+
 import Tag from '@/components/Manager/Tag';
-import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from '@/modules/map/client/core/common';
+import { defineLayerPopup, type MapSourceLayersSpecification } from '@/modules/map/client/core/common';
 import { isDefined } from '@/utils/core';
 
 const popupOffset = [0, -22] as [number, number];
+
+// `icon-image` is a layout property and layout can't read feature-states, so each visual state
+// (base / hover / selected / hover+selected) gets its own layer, toggled via `icon-opacity` (paint).
+// This keeps hover AND selection as pure feature-states: no source data rebuild, no layer rebuild.
+const hovered: ExpressionSpecification = ['boolean', ['feature-state', 'hover'], false];
+const selected: ExpressionSpecification = ['boolean', ['feature-state', 'selected'], false];
+const not = (expression: ExpressionSpecification): ExpressionSpecification => ['!', expression];
+const visibleWhen = (...conditions: ExpressionSpecification[]): DataDrivenPropertyValueSpecification<number> => [
+  'case',
+  ['all', ...conditions],
+  1,
+  0,
+];
 
 export type AdresseEligible = {
   id: string;
@@ -50,8 +65,8 @@ export const adressesEligiblesLayersSpec = [
           'icon-overlap': 'always',
         },
         paint: {
-          // display all features except the hovered one
-          'icon-opacity': ifHoverElse(0, 1),
+          // display all features except the hovered / selected ones
+          'icon-opacity': visibleWhen(not(hovered), not(selected)),
         },
         popup: Popup,
         popupOffset,
@@ -68,8 +83,8 @@ export const adressesEligiblesLayersSpec = [
           'icon-overlap': 'always',
         },
         paint: {
-          // display all features except the hovered one
-          'icon-opacity': ifHoverElse(0, 1),
+          // display all features except the hovered / selected ones
+          'icon-opacity': visibleWhen(not(hovered), not(selected)),
         },
         popup: Popup,
         popupOffset,
@@ -86,8 +101,8 @@ export const adressesEligiblesLayersSpec = [
           'icon-overlap': 'always',
         },
         paint: {
-          // display all features except the hovered one
-          'icon-opacity': ifHoverElse(0, 1),
+          // display all features except the hovered / selected ones
+          'icon-opacity': visibleWhen(not(hovered), not(selected)),
         },
         popup: Popup,
         popupOffset,
@@ -111,8 +126,41 @@ export const adressesEligiblesLayersSpec = [
           'icon-size': 1.2,
         },
         paint: {
-          // only display the hovered feature
-          'icon-opacity': ifHoverElse(1, 0),
+          // only display the hovered feature, unless it is the selected one (red layers below)
+          'icon-opacity': visibleWhen(hovered, not(selected)),
+        },
+        type: 'symbol',
+        unselectable: true,
+      },
+      {
+        id: 'adressesEligibles-selected',
+        isVisible: () => true,
+        layout: {
+          'icon-anchor': 'bottom',
+          'icon-image': 'marker-red',
+          'icon-offset': [0, 5],
+          'icon-overlap': 'always',
+        },
+        paint: {
+          // only display the selected feature when not hovered
+          'icon-opacity': visibleWhen(selected, not(hovered)),
+        },
+        type: 'symbol',
+        unselectable: true,
+      },
+      {
+        id: 'adressesEligibles-selected-hover',
+        isVisible: () => true,
+        layout: {
+          'icon-anchor': 'bottom',
+          'icon-image': 'marker-red',
+          'icon-offset': [0, 5],
+          'icon-overlap': 'always',
+          'icon-size': 1.2,
+        },
+        paint: {
+          // only display the selected feature while hovered
+          'icon-opacity': visibleWhen(selected, hovered),
         },
         type: 'symbol',
         unselectable: true,
@@ -124,28 +172,5 @@ export const adressesEligiblesLayersSpec = [
       type: 'geojson',
     },
     sourceId: 'adressesEligibles',
-  },
-  {
-    // Source dédiée au point sélectionné (0 ou 1 feature)
-    layers: [
-      {
-        id: 'adressesEligibles-selected',
-        isVisible: () => true,
-        layout: {
-          'icon-anchor': 'bottom',
-          'icon-image': 'marker-red',
-          'icon-offset': [0, 5],
-          'icon-overlap': 'always',
-        },
-        type: 'symbol',
-        unselectable: true,
-      },
-    ],
-    source: {
-      data: { features: [], type: 'FeatureCollection' },
-      promoteId: 'id',
-      type: 'geojson',
-    },
-    sourceId: 'adressesEligiblesSelected',
   },
 ] as const satisfies readonly MapSourceLayersSpecification[];

@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
+import { useMapInstance, useMapReady } from '@/modules/map/client/core/MapCanvasContext';
 import { useMapFeatureClick } from '@/modules/map/client/interactions/clickHandlers';
 import { MapFitBounds } from '@/modules/map/client/interactions/MapFitBounds';
 import { MapFlyTo } from '@/modules/map/client/interactions/MapFlyTo';
@@ -13,7 +14,7 @@ type AdressesEligiblesLayerProps = {
   autoFit?: boolean;
   /** Fly to this location when it changes. */
   flyToLocation?: { center: [number, number]; zoom: number };
-  /** Id of the selected address, highlighted via the dedicated single-feature source. */
+  /** Id of the selected address, highlighted via the `selected` feature-state. */
   selectedId?: string | null;
   /** Called with the demand id when a marker is clicked. */
   onSelect?: (id: string) => void;
@@ -28,35 +29,35 @@ const toFeature = (adresse: AdresseEligible): GeoJSON.Feature => ({
 
 /**
  * Drives the built-in `adressesEligibles` source from a list of addresses, plus optional
- * auto-fit / fly-to / click-selection. The selected address is pushed into its own
- * `adressesEligiblesSelected` source so selecting a row only updates one feature instead of
- * rebuilding the whole collection.
+ * auto-fit / fly-to / click-selection. The selected address is flagged via the `selected`
+ * feature-state (same mechanism as hover), so selecting a row only toggles paint properties —
+ * no source data nor layer rebuild.
  */
 export function AdressesEligiblesLayer({ adresses, autoFit = false, flyToLocation, selectedId, onSelect }: AdressesEligiblesLayerProps) {
-  // Each source's `data` is memoized independently so `useMapLayers` only calls `setData` on the
-  // source that actually changed (selecting a row leaves the big collection's reference intact).
+  const map = useMapInstance();
+  const mapReady = useMapReady();
+
   const adressesData = useMemo<GeoJSON.FeatureCollection>(
     () => ({ features: adresses.map(toFeature), type: 'FeatureCollection' }),
     [adresses]
   );
 
-  const selectedAdresse = useMemo(
-    () => (selectedId ? adresses.find((adresse) => adresse.id === selectedId) : undefined),
-    [adresses, selectedId]
-  );
-  const selectedData = useMemo<GeoJSON.FeatureCollection>(
-    () => ({ features: selectedAdresse ? [toFeature(selectedAdresse)] : [], type: 'FeatureCollection' }),
-    [selectedAdresse]
-  );
-
-  const sources = useMemo<MapDynamicSource[]>(
-    () => [
-      { data: adressesData, id: 'adressesEligibles' },
-      { data: selectedData, id: 'adressesEligiblesSelected' },
-    ],
-    [adressesData, selectedData]
-  );
+  const sources = useMemo<MapDynamicSource[]>(() => [{ data: adressesData, id: 'adressesEligibles' }], [adressesData]);
   useMapLayers({ sources });
+
+  // Feature-states survive `setData`, so this effect only depends on the selection itself.
+  useEffect(() => {
+    if (!mapReady || !selectedId) {
+      return;
+    }
+    map.setFeatureState({ id: selectedId, source: 'adressesEligibles' }, { selected: true });
+    return () => {
+      // the source may already be gone when the whole map is tearing down
+      if (map.getSource('adressesEligibles')) {
+        map.removeFeatureState({ id: selectedId, source: 'adressesEligibles' }, 'selected');
+      }
+    };
+  }, [map, mapReady, selectedId]);
 
   // Selection on marker click — routed through the single MapInteractions handler (same feature as
   // the popup it opens). The base layer keeps its popup; this just adds the side-effect.
