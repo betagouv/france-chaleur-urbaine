@@ -107,13 +107,6 @@ export type PostHogEventMap = {
     rows_non_eligible: number;
     rows_total: number;
   };
-
-  'fcr_simulator:started': {
-    address?: string;
-    typeLogement?: string;
-    espaceExterieur?: string;
-    source: 'landing' | 'result';
-  };
   'fcr_landing:hero_cta_clicked': never;
   'fcr_landing:address_typed': never;
   'fcr_landing:heating_mode_selected': {
@@ -138,19 +131,6 @@ export type PostHogEventMap = {
   'fcr_landing:faq_item_opened': {
     faq_question: string;
   };
-  'simu_multi_enr:params_updated': {
-    dpe?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
-    surface?: number;
-    nb_logements?: number;
-    nb_habitants?: number;
-  };
-  'fcr_simulator:accordion_opened': {
-    chauffage_mode: string;
-  };
-  'simu_multi_enr:methodo_clicked': {
-    chauffage_mode: string;
-  };
-  'fcr_simulator:contact_form_submitted': never;
   'simu_cee:started': never;
   'simu_cee:field_filled': {
     field_name: string;
@@ -224,7 +204,6 @@ export type PostHogEventMap = {
   'fcr_landing:testimonial_clicked': ElementType & {
     testimonial_title?: string;
   };
-  'fcr_landing:faq_clicked': ElementType;
   'fcr_simulator:address_selected': {
     address: string;
     city?: string;
@@ -250,11 +229,6 @@ export type PostHogEventMap = {
     surface_m2?: number;
   };
   'fcr_simulator:parameters_cancelled': never;
-  'fcr_landing:compare_cta_clicked': {
-    address: string;
-    typeLogement: string;
-    espaceExterieur: string;
-  };
   'fcr_results:no_solution_displayed': {
     heating_mode?: TypeLogement | null;
     outdoor_space?: EspaceExterieur | null;
