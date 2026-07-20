@@ -5,6 +5,7 @@ import { CronsInventory } from './inventories/CronsInventory';
 import { DemandStatuses } from './inventories/DemandStatuses';
 import { EmailsInventory } from './inventories/EmailsInventory';
 import { EventsInventory } from './inventories/EventsInventory';
+import { FcrDemandStatuses } from './inventories/FcrDemandStatuses';
 import { tableClasses } from './inventories/table-classes';
 import { Mermaid } from './Mermaid';
 import { Rule } from './Rule';
@@ -26,6 +27,7 @@ const mdxComponents: MDXComponents = {
   DemandStatuses,
   EmailsInventory,
   EventsInventory,
+  FcrDemandStatuses,
   Mermaid,
   Rule,
   table: (props) => (
