@@ -17,6 +17,7 @@ export type FormUi = {
     NumberInput: ComponentType<any>;
     PhoneInput: ComponentType<any>;
     Select: ComponentType<any>;
+    Textarea: ComponentType<any>;
   };
   FieldWrapper: ComponentType<HTMLAttributes<HTMLDivElement>>;
   Fieldset: ComponentType<HTMLAttributes<HTMLFieldSetElement>>;
@@ -154,6 +155,13 @@ export const DemandContactFields = <TFormUi extends FormUi>({
           }))}
         />
       )}
+      <Field.Textarea
+        label={fieldLabelInformation.commentUser}
+        name={fieldName('commentUser')}
+        nativeTextAreaProps={{
+          rows: 4,
+        }}
+      />
     </>
   );
 };

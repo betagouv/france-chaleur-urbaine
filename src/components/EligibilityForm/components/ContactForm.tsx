@@ -32,6 +32,7 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city }: ContactForm
 
   const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
     defaultValues: {
+      commentUser: '',
       company: userInfo.company ?? '',
       companyType: userInfo.companyType ?? '',
       demandArea: undefined as unknown as number,

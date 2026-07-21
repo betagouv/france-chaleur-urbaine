@@ -13,6 +13,7 @@ import trpc from '@/modules/trpc/client';
 
 const MAX_BATCH_DEMAND_ADDRESSES = 50;
 const emptyDedicatedContact: BatchDemandContactInfo = {
+  commentUser: '',
   company: '',
   companyType: '',
   demandArea: undefined,
@@ -58,6 +59,7 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
         heatingEnergy: undefined as unknown as 'électricité' | 'gaz' | 'fioul' | 'autre',
         heatingType: undefined as unknown as 'collectif' | 'individuel',
       })),
+      commentUser: '',
       contact: undefined as BatchDemandContactInfo | undefined,
       termOfUse: false,
       useDedicatedContact: false,
@@ -72,6 +74,7 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
     }: {
       value: {
         addresses: BatchDemandAddressData[];
+        commentUser: string;
         contact?: BatchDemandContactInfo;
         termOfUse: boolean;
         useDedicatedContact: boolean;
@@ -85,6 +88,7 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
       });
       await mutateAsync({
         addresses: value.addresses,
+        commentUser: value.commentUser,
         contact: isAdmin && value.useDedicatedContact ? value.contact : undefined,
         termOfUse: value.termOfUse,
       });
@@ -183,6 +187,13 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
             </div>
           </Alert>
         )}
+        <Field.Textarea
+          label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
+          name="commentUser"
+          nativeTextAreaProps={{
+            rows: 4,
+          }}
+        />
         <Field.Checkbox
           name="termOfUse"
           label={

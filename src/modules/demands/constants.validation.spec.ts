@@ -65,6 +65,26 @@ describe('zContactFormCreateDemandInput', () => {
       const result = zContactFormCreateDemandInput.safeParse(input);
       expect(result.success).toBe(expectedOutput);
     });
+
+    it('accepte un commentaire utilisateur optionnel et le trim', () => {
+      const result = zContactFormCreateDemandInput.safeParse({
+        ...validBaseInput,
+        commentUser: '  Projet déjà audité.  ',
+      });
+
+      expect(result).toStrictEqual({
+        data: {
+          ...validBaseInput,
+          commentUser: 'Projet déjà audité.',
+          company: '',
+          companyType: '',
+          demandCompanyName: '',
+          demandCompanyType: '',
+          phone: '',
+        },
+        success: true,
+      });
+    });
   });
 
   describe('validation du téléphone', () => {

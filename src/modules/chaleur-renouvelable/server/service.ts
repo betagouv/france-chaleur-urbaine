@@ -195,6 +195,7 @@ const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promi
     {
       address: input.address,
       city: input.geoAddress.city,
+      commentUser: input.comments ?? '',
       company: organizationName,
       companyType: demandStructure.companyType,
       coords: { lat, lon },
