@@ -1,14 +1,16 @@
-import { useEffect, useMemo } from 'react';
+import { useStore } from '@tanstack/react-form';
+import { useMemo } from 'react';
 import { z } from 'zod';
 
 import DemandContactFields from '@/components/EligibilityForm/components/DemandContactFields';
-import useForm from '@/components/form/react-form/useForm';
 import Alert from '@/components/ui/Alert';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
-import { type BatchDemandAddressData, type BatchDemandContactInfo, zCreateBatchDemandInput } from '@/modules/demands/constants';
+import { type BatchDemandContactInfo, zCreateBatchDemandInput } from '@/modules/demands/constants';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import trpc from '@/modules/trpc/client';
 
 const MAX_BATCH_DEMAND_ADDRESSES = 50;
@@ -36,12 +38,16 @@ type AddressData = {
   demand_id?: string | null;
 };
 
-interface BatchDemandFormProps {
+type BatchDemandFormProps = {
   testId: string;
   addresses: AddressData[];
   onSuccess: () => void;
-}
+};
 
+/**
+ * Batch demand creation form from a pro eligibility test: heating type/energy per
+ * address, optional dedicated contact (admin only) and terms of use.
+ */
 export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: BatchDemandFormProps) => {
   const { hasRole } = useAuthentication();
   const isAdmin = hasRole('admin');
@@ -50,9 +56,9 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
   const activeAddresses = useMemo(() => filteredAddresses.slice(0, MAX_BATCH_DEMAND_ADDRESSES), [filteredAddresses]);
   const limitReached = filteredAddresses.length > MAX_BATCH_DEMAND_ADDRESSES;
 
-  const { mutateAsync, isPending, isError } = trpc.demands.user.createBatch.useMutation({});
+  const { mutateAsync, isError } = trpc.demands.user.createBatch.useMutation({});
 
-  const defaultValues = useMemo(
+  const defaultValues = useMemo<z.input<typeof batchDemandFormSchema>>(
     () => ({
       addresses: activeAddresses.map((addr) => ({
         addressId: addr.id,
@@ -60,26 +66,17 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
         heatingType: undefined as unknown as 'collectif' | 'individuel',
       })),
       commentUser: '',
-      contact: undefined as BatchDemandContactInfo | undefined,
+      contact: undefined,
       termOfUse: false,
       useDedicatedContact: false,
     }),
     [activeAddresses]
   );
 
-  const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
+  const form = useAppForm({
+    ...schemaValidation(batchDemandFormSchema),
     defaultValues,
-    onSubmit: async ({
-      value,
-    }: {
-      value: {
-        addresses: BatchDemandAddressData[];
-        commentUser: string;
-        contact?: BatchDemandContactInfo;
-        termOfUse: boolean;
-        useDedicatedContact: boolean;
-      };
-    }) => {
+    onSubmit: async ({ value }) => {
       trackPostHogEvent('bulk_test:contact_request_submitted', {
         bulk_test_id: testId,
         has_phone: value.contact?.phone !== '',
@@ -94,37 +91,11 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
       });
       onSuccess();
     },
-    schema: batchDemandFormSchema,
   });
-  const companyType = useValue<string | undefined>('contact.companyType');
-  const demandCompanyType = useValue<string | undefined>('contact.demandCompanyType');
-  const structure = useValue<string | undefined>('contact.structure');
-  const useDedicatedContact = useValue<boolean>('useDedicatedContact');
-  const contactState = {
-    companyType,
-    demandCompanyType,
-    structure,
-  };
-  const formUi = { Field, Fieldset, FieldsetLegend, FieldWrapper, form };
-
-  useEffect(() => {
-    if (!isAdmin) {
-      return;
-    }
-
-    if (!useDedicatedContact) {
-      form.setFieldValue('contact', undefined);
-      return;
-    }
-
-    const currentContact = form.getFieldValue('contact');
-    if (!currentContact) {
-      form.setFieldValue('contact', emptyDedicatedContact);
-    }
-  }, [form, isAdmin, useDedicatedContact]);
+  const useDedicatedContact = useStore(form.store, (state) => state.values.useDedicatedContact);
 
   return (
-    <Form>
+    <Form form={form}>
       <div className="flex flex-col gap-4">
         {addressesWithExistingDemand.length > 0 && (
           <CallOut variant="info">
@@ -149,30 +120,36 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
                 {index + 1}. {addr.ban_address}
               </span>
               <div className="flex items-center gap-6">
-                <Field.Radio
-                  name={`addresses[${index}].heatingType`}
-                  label="Type"
-                  orientation="horizontal"
-                  small
-                  className="mb-0!"
-                  options={[
-                    { label: 'Collectif', nativeInputProps: { value: 'collectif' } },
-                    { label: 'Individuel', nativeInputProps: { value: 'individuel' } },
-                  ]}
-                />
-                <Field.Radio
-                  name={`addresses[${index}].heatingEnergy`}
-                  label="Énergie"
-                  orientation="horizontal"
-                  small
-                  className="mb-0!"
-                  options={[
-                    { label: 'Gaz', nativeInputProps: { value: 'gaz' } },
-                    { label: 'Fioul', nativeInputProps: { value: 'fioul' } },
-                    { label: 'Électricité', nativeInputProps: { value: 'électricité' } },
-                    { label: 'Autre', nativeInputProps: { value: 'autre' } },
-                  ]}
-                />
+                <form.AppField name={`addresses[${index}].heatingType`}>
+                  {(field) => (
+                    <field.RadioField
+                      label="Type"
+                      orientation="horizontal"
+                      small
+                      className="mb-0!"
+                      options={[
+                        { label: 'Collectif', nativeInputProps: { value: 'collectif' } },
+                        { label: 'Individuel', nativeInputProps: { value: 'individuel' } },
+                      ]}
+                    />
+                  )}
+                </form.AppField>
+                <form.AppField name={`addresses[${index}].heatingEnergy`}>
+                  {(field) => (
+                    <field.RadioField
+                      label="Énergie"
+                      orientation="horizontal"
+                      small
+                      className="mb-0!"
+                      options={[
+                        { label: 'Gaz', nativeInputProps: { value: 'gaz' } },
+                        { label: 'Fioul', nativeInputProps: { value: 'fioul' } },
+                        { label: 'Électricité', nativeInputProps: { value: 'électricité' } },
+                        { label: 'Autre', nativeInputProps: { value: 'autre' } },
+                      ]}
+                    />
+                  )}
+                </form.AppField>
               </div>
             </div>
           ))}
@@ -180,33 +157,46 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
         {isAdmin && (
           <Alert className="fr-mb-0" variant="info">
             <div className="flex flex-col gap-3">
-              <Field.Checkbox name="useDedicatedContact" label="Créer les demandes pour un contact dédié" />
-              {useDedicatedContact && (
-                <DemandContactFields contactState={contactState} formUi={formUi} namePrefix="contact." structureClassName="fr-mt-0" />
-              )}
+              <form.AppField
+                name="useDedicatedContact"
+                listeners={{
+                  // the contact subtree only exists (and gets validated) when the option is enabled;
+                  // set synchronously so the field group never mounts on an undefined subtree
+                  onChange: ({ value }) => {
+                    form.setFieldValue('contact', value ? (form.getFieldValue('contact') ?? emptyDedicatedContact) : undefined);
+                  },
+                }}
+              >
+                {(field) => <field.CheckboxField label="Créer les demandes pour un contact dédié" />}
+              </form.AppField>
+              {useDedicatedContact && <DemandContactFields form={form} fields="contact" structureClassName="fr-mt-0" />}
             </div>
           </Alert>
         )}
-        <Field.Textarea
-          label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
-          name="commentUser"
-          nativeTextAreaProps={{
-            rows: 4,
-          }}
-        />
-        <Field.Checkbox
-          name="termOfUse"
-          label={
-            <>
-              J'accepte d'être contacté dans le cadre de ma demande et j'accepte que mes informations soient conservées et traitées par
-              France Chaleur Urbaine, conformément à{' '}
-              <Link href="/politique-de-confidentialite" isExternal>
-                notre politique de protection des données personnelles
-              </Link>
-              .
-            </>
-          }
-        />
+        <form.AppField name="commentUser">
+          {(field) => (
+            <field.TextareaField
+              label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
+              nativeTextAreaProps={{ rows: 4 }}
+            />
+          )}
+        </form.AppField>
+        <form.AppField name="termOfUse">
+          {(field) => (
+            <field.CheckboxField
+              label={
+                <>
+                  J'accepte d'être contacté dans le cadre de ma demande et j'accepte que mes informations soient conservées et traitées par
+                  France Chaleur Urbaine, conformément à{' '}
+                  <Link href="/politique-de-confidentialite" isExternal>
+                    notre politique de protection des données personnelles
+                  </Link>
+                  .
+                </>
+              }
+            />
+          )}
+        </form.AppField>
 
         {isError && (
           <div className="text-error">
@@ -215,9 +205,7 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
         )}
 
         <div className="flex gap-4">
-          <Submit className="fr-btn" disabled={isPending}>
-            {isPending ? 'Création en cours...' : `Être mis en relation pour ${activeAddresses.length} adresses`}
-          </Submit>
+          <form.SubmitButton className="fr-btn">Être mis en relation pour {activeAddresses.length} adresses</form.SubmitButton>
         </div>
       </div>
     </Form>

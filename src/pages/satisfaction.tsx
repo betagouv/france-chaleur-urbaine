@@ -2,11 +2,12 @@ import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useState } from 'react';
 
-import useForm from '@/components/form/react-form/useForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { default as Section, SectionContent, SectionTitle } from '@/components/ui/Section';
 import { zAddRelanceCommentInput } from '@/modules/demands/constants';
 import { updateSatisfactionFromRelanceId } from '@/modules/demands/server/relances';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
@@ -19,7 +20,8 @@ function Satisfaction({ relanceId, satisfaction }: InferGetServerSidePropsType<t
     },
   });
 
-  const { Form, Textarea, Submit, HiddenInput } = useForm({
+  const form = useAppForm({
+    ...schemaValidation(zAddRelanceCommentInput),
     defaultValues: {
       comment: '',
       relanceId,
@@ -28,7 +30,6 @@ function Satisfaction({ relanceId, satisfaction }: InferGetServerSidePropsType<t
       await addRelanceComment({ comment: value.comment, relanceId });
       setSent(true);
     }),
-    schema: zAddRelanceCommentInput,
   });
 
   return (
@@ -53,10 +54,9 @@ function Satisfaction({ relanceId, satisfaction }: InferGetServerSidePropsType<t
         {sent ? (
           <Alert severity="success" title="Merci pour votre retour." />
         ) : (
-          <Form className="flex flex-col gap-4">
-            <HiddenInput name="relanceId" label="" />
-            <Textarea name="comment" label="Commentaire" />
-            <Submit>Envoyer</Submit>
+          <Form form={form} className="flex flex-col gap-4">
+            <form.AppField name="comment">{(field) => <field.TextareaField label="Commentaire" />}</form.AppField>
+            <form.SubmitButton>Envoyer</form.SubmitButton>
           </Form>
         )}
       </Section>

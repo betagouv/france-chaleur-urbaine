@@ -1,28 +1,33 @@
 import Link from 'next/link';
-import React from 'react';
+import { useState } from 'react';
 import { z } from 'zod';
 
-import useForm from '@/components/form/react-form/useForm';
 import CenterLayout from '@/components/shared/page/CenterLayout';
 import Alert from '@/components/ui/Alert';
 import Heading from '@/components/ui/Heading';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
-const resetPasswordSchema = z.object({
+const zResetPasswordForm = z.object({
   email: z.email('Veuillez entrer une adresse email valide'),
 });
 
+/**
+ * Password reset request form: sends a reset link to the given email address.
+ */
 const ResetPasswordForm = () => {
   const { mutateAsync: requestPassword } = trpc.auth.resetPassword.useMutation();
-  const [success, setSuccess] = React.useState(false);
+  const [success, setSuccess] = useState(false);
 
-  const { Form, EmailInput, Submit } = useForm({
+  const form = useAppForm({
+    ...schemaValidation(zResetPasswordForm),
+    defaultValues: { email: '' },
     onSubmit: toastErrors(async ({ value }) => {
       await requestPassword({ email: value.email });
       setSuccess(true);
     }),
-    schema: resetPasswordSchema,
   });
 
   if (success) {
@@ -36,12 +41,12 @@ const ResetPasswordForm = () => {
 
   return (
     <CenterLayout maxWidth="500px">
-      <Heading as="h1" size="h2">
+      <Heading as="h1" size="h2" color="blue-france">
         Réinitialisation du mot de passe
       </Heading>
-      <Form>
-        <EmailInput name="email" label="Votre email :" />
-        <Submit>Réinitialiser</Submit>
+      <Form form={form}>
+        <form.AppField name="email">{(field) => <field.EmailField label="Votre email :" />}</form.AppField>
+        <form.SubmitButton>Réinitialiser</form.SubmitButton>
       </Form>
     </CenterLayout>
   );

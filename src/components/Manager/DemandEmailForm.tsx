@@ -1,10 +1,10 @@
+import { useStore } from '@tanstack/react-form';
 import dayjs from 'dayjs';
-import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { z } from 'zod';
 
 import Input from '@/components/form/dsfr/Input';
-import TextArea from '@/components/form/dsfr/TextArea';
 import Alert from '@/components/ui/Alert';
-import Button from '@/components/ui/Button';
 import { copyToClipboard } from '@/components/ui/ButtonCopy';
 import CrudDropdown from '@/components/ui/CrudDropdown';
 import Icon from '@/components/ui/Icon';
@@ -13,10 +13,13 @@ import { useFetch } from '@/hooks/useApi';
 import { useUserPreferences } from '@/modules/auth/client/hooks';
 import EmailHistory from '@/modules/demands/client/EmailHistory';
 import type { Demand } from '@/modules/demands/types';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import trpc from '@/modules/trpc/client';
 import type { EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { isUUID } from '@/utils/core';
+import { ObjectKeys } from '@/utils/typescript';
 
 type Props = {
   currentDemand: Demand;
@@ -24,14 +27,21 @@ type Props = {
   /** Notifie le parent quand le contenu diffère des valeurs pré-remplies (pour confirmer avant fermeture). */
   onDirtyChange?: (isDirty: boolean) => void;
 };
-type EmailContent = {
-  object: string;
-  to: string;
-  body: string;
-  signature: string;
-  cc: string;
-  replyTo: string;
-};
+
+const zDemandEmail = z.object({
+  body: z.string().min(1, 'Ce champ est obligatoire'),
+  cc: z
+    .string()
+    .optional()
+    .refine((value) => !value || value.split(',').every((email) => z.email().safeParse(email.trim()).success), {
+      message: 'Les adresses email doivent être valides et séparées par des virgules',
+    }),
+  object: z.string().min(1, 'Ce champ est obligatoire'),
+  replyTo: z.email("L'adresse email n'est pas valide"),
+  signature: z.string().min(1, 'Ce champ est obligatoire'),
+});
+
+type EmailContent = z.input<typeof zDemandEmail>;
 
 /**
  * Processes a string value by replacing placeholders with values from the current demand
@@ -64,23 +74,20 @@ function processPlaceholders(value: string, demand: Demand): string {
 function DemandEmailForm(props: Props) {
   const { userPreferences, updateUserPreferences } = useUserPreferences();
 
-  const getDefaultEmailContent = () => {
+  const getDefaultEmailContent = (): EmailContent => {
     return {
       body: '',
       cc: userPreferences?.email || '',
       object: '',
       replyTo: userPreferences?.email || '',
       signature: userPreferences?.signature || '',
-      to: props.currentDemand.Mail,
     };
   };
 
   const [alreadySent, setAlreadySent] = useState<string[]>([]);
   const [emailKey, setEmailKey] = useState('');
-  const [emailContent, setEmailContent] = useState<EmailContent>(getDefaultEmailContent());
-  const initialContentRef = useRef(emailContent);
+  const initialContentRef = useRef(getDefaultEmailContent());
   const [sent, setSent] = useState(false);
-  const [isSending, setIsSending] = useState(false);
   const [sentError, setSentError] = useState(false);
 
   const {
@@ -91,18 +98,63 @@ function DemandEmailForm(props: Props) {
 
   const sendEmailMutation = trpc.demands.gestionnaire.sendEmail.useMutation();
 
+  const form = useAppForm({
+    ...schemaValidation(zDemandEmail),
+    defaultValues: initialContentRef.current,
+    onSubmit: async ({ value }) => {
+      //Save content in DB
+      try {
+        await sendEmailMutation.mutateAsync({
+          demand_id: props.currentDemand.id,
+          emailContent: {
+            ...value,
+            body: processPlaceholders(value.body, props.currentDemand),
+            cc: value.cc ?? '',
+            object: processPlaceholders(value.object, props.currentDemand),
+            to: props.currentDemand.Mail,
+          },
+          key: emailKey,
+        });
+
+        void refetch();
+
+        //Add email in Airtable demands list
+        alreadySent.push(value.object);
+        const updatedFields: any = {
+          'Emails envoyés': alreadySent.join('\n'),
+        };
+        if (emailKey === 'koFarFromNetwok' || emailKey === 'koIndividualHeat' || emailKey === 'koOther') {
+          updatedFields.Status = DEMANDE_STATUS.UNREALISABLE;
+        } else if (emailKey === 'askForPieces') {
+          updatedFields.Status = DEMANDE_STATUS.RECONTACTED;
+        }
+        await props.updateDemand(props.currentDemand.id, updatedFields);
+
+        //Update the current user signature
+        if (userPreferences && userPreferences.signature !== value.signature) {
+          void updateUserPreferences({ signature: value.signature });
+        }
+
+        setSent(true);
+      } catch (_err: any) {
+        setSentError(true);
+      }
+    },
+  });
+
+  const bodyValue = useStore(form.store, (state) => state.values.body);
+  const objectValue = useStore(form.store, (state) => state.values.object);
+  const formValues = useStore(form.store, (state) => state.values);
+
   useEffect(() => {
     if (userPreferences) {
       const defaultContent = getDefaultEmailContent();
-      setEmailContent(defaultContent);
       initialContentRef.current = defaultContent;
+      form.reset(defaultContent);
     }
   }, [userPreferences]);
 
-  const isDirty =
-    !sent &&
-    !sentError &&
-    (Object.keys(emailContent) as Array<keyof EmailContent>).some((key) => emailContent[key] !== initialContentRef.current[key]);
+  const isDirty = !sent && !sentError && ObjectKeys(formValues).some((key) => formValues[key] !== initialContentRef.current[key]);
 
   useEffect(() => {
     props.onDirtyChange?.(isDirty);
@@ -118,60 +170,11 @@ function DemandEmailForm(props: Props) {
     }
   }, [props.currentDemand]);
 
-  function setEmailContentValue<Key extends keyof EmailContent>(key: Key, value: EmailContent[Key]) {
-    setEmailContent((oldEmailContent) => ({
-      ...oldEmailContent,
-      [key]: value,
-    }));
-  }
-
   const onSelectedEmailChanged = (emailKey: string) => {
     const emailTemplate = emailTemplates.find((emailTemplate) => emailTemplate.id === emailKey);
     setEmailKey(emailKey);
-    setEmailContentValue('object', emailTemplate?.subject || '');
-    setEmailContentValue('body', emailTemplate?.body || '');
-  };
-
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSending(true);
-    //Save content in DB
-    try {
-      await sendEmailMutation.mutateAsync({
-        demand_id: props.currentDemand.id,
-        emailContent: {
-          ...emailContent,
-          body: processPlaceholders(emailContent.body, props.currentDemand),
-          object: processPlaceholders(emailContent.object, props.currentDemand),
-        },
-        key: emailKey,
-      });
-
-      void refetch();
-
-      //Add email in Airtable demands list
-      alreadySent.push(emailContent.object);
-      const updatedFields: any = {
-        'Emails envoyés': alreadySent.join('\n'),
-      };
-      if (emailKey === 'koFarFromNetwok' || emailKey === 'koIndividualHeat' || emailKey === 'koOther') {
-        updatedFields.Status = DEMANDE_STATUS.UNREALISABLE;
-      } else if (emailKey === 'askForPieces') {
-        updatedFields.Status = DEMANDE_STATUS.RECONTACTED;
-      }
-      await props.updateDemand(props.currentDemand.id, updatedFields);
-
-      //Update the current user signature
-      if (userPreferences && userPreferences.signature !== emailContent.signature) {
-        void updateUserPreferences({ signature: emailContent.signature });
-      }
-
-      setSent(true);
-    } catch (_err: any) {
-      setSentError(true);
-    } finally {
-      setIsSending(false);
-    }
+    form.setFieldValue('object', emailTemplate?.subject || '', { dontUpdateMeta: true });
+    form.setFieldValue('body', emailTemplate?.body || '', { dontUpdateMeta: true });
   };
 
   const authorizedReplaceableKeys = Object.keys(props.currentDemand).filter((key) =>
@@ -198,140 +201,116 @@ function DemandEmailForm(props: Props) {
           <div className="w-full border border-solid border-gray-200" />
           <EmailHistory emails={sentHistory ?? null} isLoading={isLoadingSentHistory} onEmailClick={onSelectedEmailChanged} />
           <div className="fr-mb-3w w-full border border-solid border-gray-200" />
-          <form onSubmit={submit}>
+          <Form form={form}>
             <Input
               label="À"
               disabled
               nativeInputProps={{
-                defaultValue: emailContent.to,
-                required: true,
+                defaultValue: props.currentDemand.Mail,
                 type: 'email',
               }}
             />
-            <Input
-              label="Répondre à"
-              nativeInputProps={{
-                onChange: (e) => setEmailContentValue('replyTo', e.target.value),
-                required: true,
-                type: 'email',
-                value: emailContent.replyTo,
-              }}
-            />
-            <Input
-              label="Copie à"
-              hintText="Les adresses emails doivent être séparées par des virgules"
-              nativeInputProps={{
-                onChange: (e) => setEmailContentValue('cc', e.target.value),
-                type: 'email',
-                value: emailContent.cc,
-              }}
-            />
-            <Input
-              label={
-                <div className="flex items-center justify-between gap-2">
-                  <span>Objet</span>
-                  <div className="flex items-center gap-1">
-                    <Tooltip
-                      className="max-w-xl min-w-[300px]"
-                      title={
-                        <div className="max-h-96 overflow-y-auto">
-                          <p className="text-sm">
-                            Vous pouvez utiliser des variables dans l'objet et le corps du courriel.
-                            <br />
-                            Si vous sauvegardez votre modèle de message pour traiter de futures demandes, ces variables reprendront
-                            automatiquement les informations des demandes concernées.
-                          </p>
-                          <p className="font-bold text-sm">
-                            Cliquez sur une variable pour l'insérer dans le corps de votre message et le copier dans votre presse-papiers.
-                          </p>
-                          <ul>
-                            {authorizedReplaceableKeys.map((authorizedTemplateKey) => {
-                              const templateKey = `{{${authorizedTemplateKey}}}`;
-                              return (
-                                <li key={authorizedTemplateKey}>
-                                  <strong
-                                    onClick={() => {
-                                      setEmailContentValue('body', `${emailContent.body} ${templateKey}`);
-                                      copyToClipboard(templateKey);
-                                    }}
-                                    className="cursor-pointer hover:bg-gray-200 rounded-xs p-1"
-                                  >
-                                    &#123;&#123;{authorizedTemplateKey}&#125;&#125;
-                                  </strong>
-                                  : {processPlaceholders(templateKey, props.currentDemand)}
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </div>
-                      }
-                    >
-                      <span className="flex items-center gap-1 cursor-help">
-                        <Icon name="ri-question-line" />
-                        <span className="text-faded underline text-xs">Utiliser des variables</span>
-                      </span>
-                    </Tooltip>
-                    <CrudDropdown<EmailTemplatesResponse>
-                      url="/api/user/email-templates"
-                      valueKey="id"
-                      nameKey="name"
-                      loadLabel="Modèles de réponse"
-                      saveLabel="Sauvegarder mon modèle"
-                      addLabel="Ajouter un modèle"
-                      addPlaceholderLabel="Nom de mon modèle"
-                      data={{
-                        body: emailContent.body,
-                        subject: emailContent.object,
-                      }}
-                      onSelect={(item) => onSelectedEmailChanged(item.id)}
-                      preprocessItem={(item) => ({
-                        ...item,
-                        disabled: !!(
-                          sentHistory &&
-                          Array.isArray(sentHistory) &&
-                          sentHistory.some((email: any) => email.email_key === item.id)
-                        ),
-                        editable: isUUID(item.id),
-                      })}
-                    />
-                  </div>
-                </div>
-              }
-              nativeInputProps={{
-                onChange: (e) => setEmailContentValue('object', e.target.value),
-                required: true,
-                type: 'text',
-                value: emailContent.object,
-              }}
-            />
-            <TextArea
-              label="Corps"
-              nativeTextAreaProps={{
-                onChange: (e) => setEmailContentValue('body', e.target.value),
-                required: true,
-                rows: 10,
-                value: emailContent.body,
-              }}
-            />
-            {emailContent.body && !emailContent.body.includes('{{Adresse}}') && (
+            <form.AppField name="replyTo">{(field) => <field.EmailField label="Répondre à" />}</form.AppField>
+            <form.AppField name="cc">
+              {(field) => (
+                <field.EmailField
+                  label="Copie à"
+                  hintText="Les adresses emails doivent être séparées par des virgules"
+                  nativeInputProps={{ multiple: true }}
+                />
+              )}
+            </form.AppField>
+            <form.AppField name="object">
+              {(field) => (
+                <field.TextField
+                  label={
+                    <div className="flex items-center justify-between gap-2">
+                      <span>Objet</span>
+                      <div className="flex items-center gap-1">
+                        <Tooltip
+                          className="max-w-xl min-w-[300px]"
+                          title={
+                            <div className="max-h-96 overflow-y-auto">
+                              <p className="text-sm">
+                                Vous pouvez utiliser des variables dans l'objet et le corps du courriel.
+                                <br />
+                                Si vous sauvegardez votre modèle de message pour traiter de futures demandes, ces variables reprendront
+                                automatiquement les informations des demandes concernées.
+                              </p>
+                              <p className="font-bold text-sm">
+                                Cliquez sur une variable pour l'insérer dans le corps de votre message et le copier dans votre
+                                presse-papiers.
+                              </p>
+                              <ul>
+                                {authorizedReplaceableKeys.map((authorizedTemplateKey) => {
+                                  const templateKey = `{{${authorizedTemplateKey}}}`;
+                                  return (
+                                    <li key={authorizedTemplateKey}>
+                                      <strong
+                                        onClick={() => {
+                                          form.setFieldValue('body', `${form.getFieldValue('body')} ${templateKey}`, {
+                                            dontUpdateMeta: true,
+                                          });
+                                          copyToClipboard(templateKey);
+                                        }}
+                                        className="cursor-pointer hover:bg-gray-200 rounded-xs p-1"
+                                      >
+                                        &#123;&#123;{authorizedTemplateKey}&#125;&#125;
+                                      </strong>
+                                      : {processPlaceholders(templateKey, props.currentDemand)}
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          }
+                        >
+                          <span className="flex items-center gap-1 cursor-help">
+                            <Icon name="ri-question-line" />
+                            <span className="text-faded underline text-xs">Utiliser des variables</span>
+                          </span>
+                        </Tooltip>
+                        <CrudDropdown<EmailTemplatesResponse>
+                          url="/api/user/email-templates"
+                          valueKey="id"
+                          nameKey="name"
+                          loadLabel="Modèles de réponse"
+                          saveLabel="Sauvegarder mon modèle"
+                          addLabel="Ajouter un modèle"
+                          addPlaceholderLabel="Nom de mon modèle"
+                          data={{
+                            body: bodyValue,
+                            subject: objectValue,
+                          }}
+                          onSelect={(item) => onSelectedEmailChanged(item.id)}
+                          preprocessItem={(item) => ({
+                            ...item,
+                            disabled: !!(
+                              sentHistory &&
+                              Array.isArray(sentHistory) &&
+                              sentHistory.some((email: any) => email.email_key === item.id)
+                            ),
+                            editable: isUUID(item.id),
+                          })}
+                        />
+                      </div>
+                    </div>
+                  }
+                />
+              )}
+            </form.AppField>
+            <form.AppField name="body">{(field) => <field.TextareaField label="Corps" nativeTextAreaProps={{ rows: 10 }} />}</form.AppField>
+            {bodyValue && !bodyValue.includes('{{Adresse}}') && (
               <Alert variant="warning" size="sm" className="fr-mb-2w">
                 Votre message ne contient pas la variable <code>{'{{Adresse}}'}</code>. Sans cette information, l'usager ne pourra pas
                 identifier de quelle adresse il s'agit.
               </Alert>
             )}
-            <Input
-              label="Signature"
-              hintText="La signature sera sauvegardée pour le prochain envoi"
-              nativeInputProps={{
-                onChange: (e) => setEmailContentValue('signature', e.target.value),
-                required: true,
-                value: emailContent.signature,
-              }}
-            />
+            <form.AppField name="signature">
+              {(field) => <field.TextField label="Signature" hintText="La signature sera sauvegardée pour le prochain envoi" />}
+            </form.AppField>
             <div className="flex items-center gap-2 fr-mt-2w">
-              <Button type="submit" loading={isSending}>
-                Envoyer
-              </Button>
+              <form.SubmitButton>Envoyer</form.SubmitButton>
               <Tooltip
                 className="max-w-xl min-w-[300px]"
                 title={
@@ -339,10 +318,10 @@ function DemandEmailForm(props: Props) {
                     <div className="text-sm italic mb-1">Prévisualisation du courriel</div>
                     <div className="p-2 border border-dashed border-gray-200 bg-gray-50">
                       <h4 className="font-mono text-sm">
-                        {emailContent.object ? processPlaceholders(emailContent.object, props.currentDemand) : "Remplissez l'objet"}
+                        {objectValue ? processPlaceholders(objectValue, props.currentDemand) : "Remplissez l'objet"}
                       </h4>
                       <p className="whitespace-pre-line font-mono text-sm">
-                        {emailContent.body ? processPlaceholders(emailContent.body, props.currentDemand) : 'Remplissez le corps'}
+                        {bodyValue ? processPlaceholders(bodyValue, props.currentDemand) : 'Remplissez le corps'}
                       </p>
                     </div>
                   </div>
@@ -353,7 +332,7 @@ function DemandEmailForm(props: Props) {
                 </span>
               </Tooltip>
             </div>
-          </form>
+          </Form>
         </>
       ) : sentError ? (
         <span>

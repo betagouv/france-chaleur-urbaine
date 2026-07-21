@@ -1,12 +1,13 @@
+import { useStore } from '@tanstack/react-form';
 import type React from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { EligibilityFormContact } from '@/components/EligibilityForm';
-import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
-import { type EnergyInputsLabelsType, energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
+import { CheckEligibilityFormLabel } from '@/components/EligibilityForm/components';
+import type { EnergyInputsLabelsType } from '@/components/EligibilityForm/EligibilityFormAddress';
+import { type EligibilityTestValues, heatingTypeOptions, zEligibilityTest } from '@/components/EligibilityForm/eligibilityTestValidation';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
 import Slice from '@/components/Slice';
-import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
@@ -18,9 +19,9 @@ import type { AvailableHeating } from '@/modules/app/types';
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
-import { AddressField } from '@/modules/form/AddressField';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import trpc from '@/modules/trpc/client';
-import cx from '@/utils/cx';
 
 import { Container, FormLabel, HeadSliceContainer, PageBody, PageTitle, SliceContactFormStyle } from './HeadSliceForm.style';
 
@@ -61,10 +62,8 @@ const HeadSliceForm = ({
   const {
     addressData,
     contactReady,
-    showWarning,
     messageReceived,
     loadingStatus,
-    warningMessage,
     setLoadingStatus,
     handleOnFetchAddress,
     handleOnSuccessAddress,
@@ -77,10 +76,43 @@ const HeadSliceForm = ({
   const urlHeating = useInitialSearchParam('heating');
   const urlAddress = useInitialSearchParam('address');
 
-  const [geoAddress, setGeoAddress] = useState<BANAddressFeature>();
   const { userInfo, setUserInfo } = useUserInfo();
   const [autoValidate, setAutoValidate] = useState(false);
   const [eligibilityError, setEligibilityError] = useState(false);
+
+  const form = useAppForm({
+    ...schemaValidation(zEligibilityTest),
+    defaultValues: {
+      geoAddress: undefined as unknown as BANAddressFeature,
+      heatingType: userInfo.heatingType ?? '',
+    } as EligibilityTestValues,
+    onSubmit: async ({ value }) => {
+      setEligibilityError(false);
+      const address = value.geoAddress.properties.label;
+      handleOnFetchAddress({ address });
+      const [lon, lat] = value.geoAddress.geometry.coordinates;
+
+      try {
+        const isCity = value.geoAddress.properties.label === value.geoAddress.properties.city;
+        const networkData = isCity
+          ? await trpcUtils.client.reseaux.cityNetwork.query({ city: value.geoAddress.properties.city })
+          : await trpcUtils.client.reseaux.eligibilityStatus.query({ lat, lon });
+        handleOnSuccessAddress({
+          address,
+          coords: { lat, lon },
+          eligibility: networkData,
+          geoAddress: value.geoAddress,
+          heatingType: value.heatingType as AvailableHeating,
+        });
+      } catch (_err) {
+        setEligibilityError(true);
+      }
+      setLoadingStatus('idle');
+    },
+  });
+
+  const geoAddress = useStore(form.store, (state) => state.values.geoAddress);
+  const heatingType = useStore(form.store, (state) => state.values.heatingType);
 
   const child = useMemo(
     () =>
@@ -97,39 +129,6 @@ const HeadSliceForm = ({
       ),
     [children, pageBody, pageTitle]
   );
-
-  const testAddress = useCallback(async () => {
-    setEligibilityError(false);
-    if (!geoAddress) {
-      return;
-    }
-
-    if (handleOnFetchAddress) {
-      handleOnFetchAddress({ address: userInfo.address });
-    }
-    const [lon, lat] = geoAddress.geometry.coordinates;
-    const coords = { lat, lon };
-
-    try {
-      const isCity = geoAddress.properties.label === geoAddress.properties.city;
-      const networkData = isCity
-        ? await trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
-        : await trpcUtils.client.reseaux.eligibilityStatus.query({
-            lat,
-            lon,
-          });
-      handleOnSuccessAddress({
-        address: userInfo.address,
-        coords,
-        eligibility: networkData,
-        geoAddress,
-        heatingType: userInfo.heatingType as AvailableHeating,
-      });
-    } catch (_err: any) {
-      setEligibilityError(true);
-    }
-    setLoadingStatus('idle');
-  }, [userInfo.address, userInfo.heatingType, geoAddress, trpcUtils, handleOnFetchAddress, handleOnSuccessAddress]);
 
   // Sync URL params to localStorage (one-shot — URL params are stable)
   useEffect(() => {
@@ -151,122 +150,105 @@ const HeadSliceForm = ({
     searchBANAddresses({ query: userInfo.address, signal: controller.signal })
       .then((features) => {
         const match = features.find((f) => f.properties.label === userInfo.address);
-        if (match) setGeoAddress(match);
+        if (match) {
+          form.setFieldValue('geoAddress', match, { dontUpdateMeta: true });
+        }
       })
       .catch(() => {});
     return () => controller.abort();
   }, [userInfo.address, geoAddress]);
 
+  // le mode de chauffage mémorisé (localStorage ou param URL) peut arriver après le montage du formulaire
   useEffect(() => {
-    if (autoValidate && userInfo.heatingType && userInfo.address && geoAddress) {
-      setAutoValidate(false);
-      void testAddress();
+    if (userInfo.heatingType) {
+      form.setFieldValue('heatingType', userInfo.heatingType, { dontUpdateMeta: true });
     }
-  }, [userInfo.heatingType, userInfo.address, geoAddress, autoValidate, testAddress]);
+  }, [userInfo.heatingType]);
 
-  const WrappedChild = useMemo(
-    () =>
-      checkEligibility ? (
-        <>
-          {child}
-          <form id={AnalyticsFormId.form_test_adresse}>
-            {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
-            <CheckEligibilityFormLabel>
-              <SelectEnergy
-                label="Mode de chauffage actuel :"
-                name="heatingType"
-                selectOptions={energyInputsDefaultLabels}
-                onChange={(val) => setUserInfo({ heatingType: val })}
-                value={userInfo.heatingType ?? ''}
-              />
-            </CheckEligibilityFormLabel>
-            <AddressField
+  useEffect(() => {
+    if (autoValidate && heatingType && geoAddress) {
+      setAutoValidate(false);
+      void form.handleSubmit();
+    }
+  }, [autoValidate, heatingType, geoAddress]);
+
+  const wrappedChild = checkEligibility ? (
+    <>
+      {child}
+      <Form form={form} id={AnalyticsFormId.form_test_adresse}>
+        {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
+        <CheckEligibilityFormLabel>
+          <form.AppField
+            name="heatingType"
+            listeners={{
+              onChange: ({ value }) => {
+                setUserInfo({ heatingType: value as AvailableHeating });
+              },
+            }}
+          >
+            {(field) => <field.RadioField label="Mode de chauffage actuel :" orientation="horizontal" options={heatingTypeOptions} />}
+          </form.AppField>
+        </CheckEligibilityFormLabel>
+        <form.AppField name="geoAddress">
+          {(field) => (
+            <field.AddressSelectField
               className="mb-2!"
               defaultValue={urlAddress ?? userInfo.address}
               nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
               onClear={() => {
                 setUserInfo({ address: '' });
-                setGeoAddress(undefined);
               }}
-              onSelect={(geoAddress?: BANAddressFeature) => {
-                const address = geoAddress?.properties?.label;
-                setUserInfo({ address: address ?? '' });
-                setGeoAddress(geoAddress);
+              onSelect={(selectedGeoAddress) => {
+                setUserInfo({ address: selectedGeoAddress?.properties?.label ?? '' });
                 trackPostHogEvent('address_test:started', { chauffage_type: userInfo.heatingType, source: 'homepage' });
               }}
             />
-            <div
-              className={cx(
-                'fr-mb-2w font-bold pl-4 py-1 border-l-4 border-error bg-white/40',
-                userInfo.address && geoAddress && !userInfo.heatingType ? 'block' : 'hidden'
-              )}
-            >
-              {warningMessage}
-            </div>
-            <div className="mb-1">
-              {eligibilityError ? (
-                <span className="text-error">
-                  Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
-                </span>
-              ) : (
-                <>&nbsp;</>
-              )}
-            </div>
-            <div className="flex justify-between gap-2 items-center">
-              <Button
-                size="medium"
-                loading={loadingStatus === 'loading'}
-                disabled={!userInfo.address || !geoAddress || !userInfo.heatingType || (loadingStatus === 'loading' && !eligibilityError)}
-                onClick={testAddress}
-              >
-                Tester cette adresse
-              </Button>
-              {withBulkEligibility && (
-                <>
-                  <span>ou</span>
-                  <span className="text-green-700! flex items-center gap-0.5">
-                    <Icon name="ri-file-excel-2-line" />
-                    <Link
-                      postHogEventKey="home:bulk_test_cta_clicked"
-                      href="/pro/tests-adresses"
-                      className="text-green-700! hover:bg-transparent! hover:opacity-80 shadow-none! pr-0! pl-0!"
-                    >
-                      Tester une liste d’adresses
-                    </Link>
-                  </span>
-                </>
-              )}
-            </div>
-          </form>
-        </>
-      ) : (
-        child
-      ),
-    [
-      userInfo.address,
-      userInfo.heatingType,
-      eligibilityError,
-      geoAddress,
-      testAddress,
-      checkEligibility,
-      child,
-      formLabel,
-      loadingStatus,
-      showWarning,
-      warningMessage,
-      withBulkEligibility,
-    ]
+          )}
+        </form.AppField>
+        <div className="mb-1">
+          {eligibilityError ? (
+            <span className="text-error">
+              Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
+            </span>
+          ) : (
+            <>&nbsp;</>
+          )}
+        </div>
+        <div className="flex justify-between gap-2 items-center">
+          <form.SubmitButton size="medium" loading={loadingStatus === 'loading'}>
+            Tester cette adresse
+          </form.SubmitButton>
+          {withBulkEligibility && (
+            <>
+              <span>ou</span>
+              <span className="text-green-700! flex items-center gap-0.5">
+                <Icon name="ri-file-excel-2-line" />
+                <Link
+                  postHogEventKey="home:bulk_test_cta_clicked"
+                  href="/pro/tests-adresses"
+                  className="text-green-700! hover:bg-transparent! hover:opacity-80 shadow-none! pr-0! pl-0!"
+                >
+                  Tester une liste d’adresses
+                </Link>
+              </span>
+            </>
+          )}
+        </div>
+      </Form>
+    </>
+  ) : (
+    child
   );
 
   return (
     <>
       <SliceContactFormStyle />
       {withWrapper ? (
-        withWrapper(WrappedChild as any)
+        withWrapper(wrappedChild as any)
       ) : (
         <Slice theme="grey" bg={bg} bgPos={bgPos} bgColor="#CDE3F0" padding={8}>
           <HeadSliceContainer needGradient={needGradient}>
-            <Container>{WrappedChild}</Container>
+            <Container>{wrappedChild}</Container>
           </HeadSliceContainer>
         </Slice>
       )}

@@ -1,29 +1,49 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';
-import Input from '@/components/form/dsfr/Input';
-import Radio from '@/components/form/dsfr/Radio';
-import TextArea from '@/components/form/dsfr/TextArea';
 import NetworkSearchInput from '@/components/Network/NetworkSearchInput';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
-import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
-import Icon from '@/components/ui/Icon';
 import Text from '@/components/ui/Text';
-import type { ModificationReseau } from '@/pages/api/modification-reseau';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
+import { toastErrors } from '@/modules/notification';
 import type { NetworkSearchResult } from '@/pages/api/networks/search';
-import { postFetchJSON } from '@/utils/network';
-import { sleep } from '@/utils/time';
+import { postFetchJSON, postFormDataFetchJSON } from '@/utils/network';
 
-type FormState = Omit<ModificationReseau, 'fichiers'> & {
-  fichiers: File[];
-};
+const maxFileSize = 5 * 1024 * 1024;
 
-const initialFormState: FormState = {
+const zModificationReseauForm = z.object({
+  email: z.email("L'adresse email n'est pas valide"),
+  fichiers: z
+    .array(z.instanceof(File))
+    .max(3, 'Vous ne pouvez déposer que 3 fichiers maximum.')
+    .refine((files) => files.every((file) => file.type === 'application/pdf'), { error: 'Seuls les fichiers PDF sont autorisés.' })
+    .refine((files) => files.every((file) => file.size <= maxFileSize), {
+      error: 'Chaque fichier doit être inférieur à la taille maximale autorisée (5 Mo).',
+    })
+    .optional(),
+  fonction: z.string().min(1, 'Ce champ est obligatoire'),
+  gestionnaire: z.string().min(1, 'Ce champ est obligatoire'),
+  idReseau: z.string().min(1, 'Ce champ est obligatoire'),
+  informationsComplementaires: z.string().max(clientConfig.networkInfoFieldMaxCharacters).optional(),
+  maitreOuvrage: z.string().min(1, 'Ce champ est obligatoire'),
+  nom: z.string().min(1, 'Ce champ est obligatoire'),
+  prenom: z.string().min(1, 'Ce champ est obligatoire'),
+  reseauClasse: z.boolean({ error: 'Ce choix est obligatoire' }),
+  siteInternet: z.string().optional(),
+  structure: z.string().min(1, 'Ce champ est obligatoire'),
+  type: z.enum(['collectivite', 'exploitant'], { error: 'Ce choix est obligatoire' }),
+});
+
+type ModificationReseauFormValues = z.input<typeof zModificationReseauForm>;
+
+const defaultValues: ModificationReseauFormValues = {
   email: '',
   fichiers: [],
   fonction: '',
@@ -31,126 +51,80 @@ const initialFormState: FormState = {
   idReseau: '',
   informationsComplementaires: '',
   maitreOuvrage: '',
-
   nom: '',
   prenom: '',
-
-  reseauClasse: undefined as any,
+  // required choices without a preselected option (see the module AGENTS.md pattern)
+  reseauClasse: undefined as unknown as boolean,
   siteInternet: '',
   structure: '',
-  type: undefined as any,
+  type: undefined as unknown as 'collectivite' | 'exploitant',
 };
-
-type FichiersError = 'file_size_exceeded' | 'files_count_exceeded' | 'invalid_file_type';
 
 function ModifierReseauxPage() {
   const router = useRouter();
-  const fileUploadInputRef = useRef<HTMLInputElement>(null);
   const [formSent, setFormSent] = useState(false);
-  const [apiError, setAPIError] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkSearchResult | null>(null);
-  const [formState, setFormState] = useState<FormState>(initialFormState);
 
-  const fichiersError = useMemo<FichiersError | null>(() => {
-    return formState.fichiers.length > 3
-      ? 'files_count_exceeded'
-      : formState.fichiers.some((fichier) => fichier.size > 5 * 1024 * 1024)
-        ? 'file_size_exceeded'
-        : formState.fichiers.some((fichier) => fichier.type !== 'application/pdf')
-          ? 'invalid_file_type'
-          : null;
-  }, [formState.fichiers]);
+  const form = useAppForm({
+    ...schemaValidation(zModificationReseauForm),
+    defaultValues,
+    onSubmit: toastErrors(
+      async ({ value }) => {
+        await postFormDataFetchJSON('/api/modification-reseau', value);
+        setFormSent(true);
+      },
+      () => (
+        <span>
+          Une erreur est survenue. Veuillez <Link href="/contact">nous contacter</Link>.
+        </span>
+      )
+    ),
+  });
 
-  async function setFormValue<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
-    setFormState((formState) => ({
-      ...formState,
-      [key]: value,
-    }));
-  }
-
-  // automatically fill the network when coming from another link
-  useEffect(() => {
-    const reseau = router.query.reseau;
-    if (router.isReady && typeof reseau === 'string') {
-      void setFormValue('idReseau', reseau);
-      void (async () => {
-        const [network] = await postFetchJSON<NetworkSearchResult[]>('/api/networks/search', {
-          search: reseau,
-        });
-        if (network) {
-          void onNetworkSelect(network);
-          // download existing files as if they were uploaded by the user
-          if (Array.isArray(network.fichiers)) {
-            const existingFiles = (
-              await Promise.all(
-                network.fichiers.map(
-                  async (fichier) =>
-                    await createFileFromURL(`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`, fichier.filename)
-                )
-              )
-            ).filter((v): v is File => v !== null);
-
-            void setFormValue('fichiers', existingFiles);
-          }
-        }
-      })();
-    }
-  }, [router.isReady, router.query.reseau]);
-
-  async function submitForm(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    const formData = new FormData();
-    for (const [key, value] of Object.entries(formState)) {
-      if (Array.isArray(value)) {
-        for (const part of Array.from(value)) {
-          formData.append(key, part);
-        }
-      } else {
-        formData.set(key, value as string);
-      }
-    }
-
-    try {
-      const res = await fetch('/api/modification-reseau', {
-        body: formData,
-        method: 'POST',
-      });
-      if (res.status !== 200) {
-        throw new Error(`invalid status ${res.status}`);
-      }
-      setFormSent(true);
-    } catch (_err: any) {
-      setAPIError(true);
-    } finally {
-      await sleep(300); // improve UX by not showing an instant loading
-      setIsSubmitting(false);
-    }
-  }
-
-  async function onNetworkSelect(network: NetworkSearchResult | null) {
+  const onNetworkSelect = (network: NetworkSearchResult | null) => {
     setSelectedNetwork(network);
     if (!network) {
       return;
     }
 
-    void setFormValue('idReseau', `${network['Identifiant reseau']} - ${network.nom_reseau}`);
-    void setFormValue('reseauClasse', network['reseaux classes'] ?? false);
-    void setFormValue('maitreOuvrage', network.MO ?? '');
-    void setFormValue('gestionnaire', network.Gestionnaire ?? '');
-    void setFormValue('siteInternet', network.website_gestionnaire ?? '');
-    void setFormValue('informationsComplementaires', network.informationsComplementaires ?? '');
-  }
+    form.setFieldValue('idReseau', `${network['Identifiant reseau']} - ${network.nom_reseau}`, { dontUpdateMeta: true });
+    form.setFieldValue('reseauClasse', network['reseaux classes'] ?? false, { dontUpdateMeta: true });
+    form.setFieldValue('maitreOuvrage', network.MO ?? '', { dontUpdateMeta: true });
+    form.setFieldValue('gestionnaire', network.Gestionnaire ?? '', { dontUpdateMeta: true });
+    form.setFieldValue('siteInternet', network.website_gestionnaire ?? '', { dontUpdateMeta: true });
+    form.setFieldValue('informationsComplementaires', network.informationsComplementaires ?? '', { dontUpdateMeta: true });
+  };
 
-  async function handleFileUpload(event: ChangeEvent<HTMLInputElement>) {
-    const files = event.target.files;
-    if (!files || files.length === 0) {
+  // automatically fill the network when coming from another link
+  useEffect(() => {
+    const reseau = router.query.reseau;
+    if (!router.isReady || typeof reseau !== 'string') {
       return;
     }
-    void setFormValue('fichiers', [...formState.fichiers, ...files]);
-  }
+    form.setFieldValue('idReseau', reseau, { dontUpdateMeta: true });
+    void (async () => {
+      const [network] = await postFetchJSON<NetworkSearchResult[]>('/api/networks/search', {
+        search: reseau,
+      });
+      if (!network) {
+        return;
+      }
+      onNetworkSelect(network);
+      // download existing files as if they were uploaded by the user
+      if (Array.isArray(network.fichiers)) {
+        const existingFiles = (
+          await Promise.all(
+            network.fichiers.map(
+              async (fichier) =>
+                await createFileFromURL(`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`, fichier.filename)
+            )
+          )
+        ).filter((file): file is File => file !== null);
+
+        form.setFieldValue('fichiers', existingFiles, { dontUpdateMeta: true });
+      }
+    })();
+  }, [router.isReady, router.query.reseau]);
 
   return (
     <SimplePage
@@ -190,220 +164,89 @@ function ModifierReseauxPage() {
             description="Nous reviendrons rapidement vers vous pour vous confirmer la bonne prise en compte des éléments transmis."
           />
         ) : (
-          <form onSubmit={submitForm} className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6">
-            <NetworkSearchInput
-              label="Identifiant SNCU - nom du réseau"
-              value={formState.idReseau}
-              onChange={(value) => {
-                void setFormValue('idReseau', value);
-                setSelectedNetwork(null); // hide the link
-              }}
-              selectedNetwork={selectedNetwork}
-              onNetworkSelect={onNetworkSelect}
-            />
+          <Form form={form} className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6">
+            <form.AppField name="idReseau">
+              {(field) => (
+                <field.CustomField
+                  Component={NetworkSearchInput}
+                  label="Identifiant SNCU - nom du réseau"
+                  selectedNetwork={selectedNetwork}
+                  onNetworkSelect={onNetworkSelect}
+                />
+              )}
+            </form.AppField>
             {selectedNetwork && (
               <Link href={`/reseaux/${selectedNetwork['Identifiant reseau']}`} target="_blank">
                 Voir la fiche actuelle du réseau
               </Link>
             )}
-            <Radio
-              label=""
-              name="type"
-              options={[
-                {
-                  label: 'Collectivité',
-                  nativeInputProps: {
-                    checked: formState.type === 'collectivite',
-                    onChange: () => void setFormValue('type', 'collectivite'),
-                    required: true,
-                    value: 'collectivite',
-                  },
-                },
-                {
-                  label: 'Exploitant',
-                  nativeInputProps: {
-                    checked: formState.type === 'exploitant',
-                    onChange: () => void setFormValue('type', 'exploitant'),
-                    required: true,
-                    value: 'exploitant',
-                  },
-                },
-              ]}
-              orientation="horizontal"
-              className="fr-mt-4w"
-            />
-            <Input
-              label="Votre nom"
-              nativeInputProps={{
-                onChange: (e) => void setFormValue('nom', e.target.value),
-                required: true,
-                value: formState.nom,
-              }}
-            />
-            <Input
-              label="Votre prénom"
-              nativeInputProps={{
-                onChange: (e) => void setFormValue('prenom', e.target.value),
-                required: true,
-                value: formState.prenom,
-              }}
-            />
-            <Input
-              label="Votre structure"
-              nativeInputProps={{
-                onChange: (e) => void setFormValue('structure', e.target.value),
-                required: true,
-                value: formState.structure,
-              }}
-            />
-            <Input
-              label="Votre fonction"
-              nativeInputProps={{
-                onChange: (e) => void setFormValue('fonction', e.target.value),
-                required: true,
-                value: formState.fonction,
-              }}
-            />
-            <Input
-              label="Votre email"
-              nativeInputProps={{
-                onChange: (e) => void setFormValue('email', e.target.value),
-                required: true,
-                type: 'email',
-                value: formState.email,
-              }}
-            />
+            <form.AppField name="type">
+              {(field) => (
+                <field.RadioField
+                  label=""
+                  orientation="horizontal"
+                  className="fr-mt-4w"
+                  options={[
+                    { label: 'Collectivité', nativeInputProps: { value: 'collectivite' } },
+                    { label: 'Exploitant', nativeInputProps: { value: 'exploitant' } },
+                  ]}
+                />
+              )}
+            </form.AppField>
+            <form.AppField name="nom">{(field) => <field.TextField label="Votre nom" />}</form.AppField>
+            <form.AppField name="prenom">{(field) => <field.TextField label="Votre prénom" />}</form.AppField>
+            <form.AppField name="structure">{(field) => <field.TextField label="Votre structure" />}</form.AppField>
+            <form.AppField name="fonction">{(field) => <field.TextField label="Votre fonction" />}</form.AppField>
+            <form.AppField name="email">{(field) => <field.EmailField label="Votre email" />}</form.AppField>
 
             <Text mt="4w" mb="2w" fontWeight="bold">
               Modifier des informations erronées ou incomplètes sur la fiche
             </Text>
-            <Radio
-              label=""
-              orientation="horizontal"
-              name="reseauClasse"
-              options={[
-                {
-                  label: 'Réseau classé',
-                  nativeInputProps: {
-                    checked: formState.reseauClasse === true,
-                    onChange: () => void setFormValue('reseauClasse', true),
-                    value: 'classe',
-                  },
-                },
-                {
-                  label: 'Réseau non classé',
-                  nativeInputProps: {
-                    checked: formState.reseauClasse === false,
-                    onChange: () => void setFormValue('reseauClasse', false),
-                    value: 'nonClasse',
-                  },
-                },
-              ]}
-            />
-            <Input
-              label="Maître d’ouvrage"
-              nativeInputProps={{
-                onChange: (e) => void setFormValue('maitreOuvrage', e.target.value),
-                required: true,
-                value: formState.maitreOuvrage,
-              }}
-            />
-            <Input
-              label="Gestionnaire"
-              nativeInputProps={{
-                onChange: (e) => void setFormValue('gestionnaire', e.target.value),
-                required: true,
-                value: formState.gestionnaire,
-              }}
-            />
-            <Input
-              label="Site internet du réseau"
-              nativeInputProps={{
-                onChange: (e) => void setFormValue('siteInternet', e.target.value),
-                placeholder: 'https://www.monreseau.fr',
-                // type: 'url', uncomment when all data has been cleaned from airtable
-                value: formState.siteInternet,
-              }}
-            />
+            <form.AppField name="reseauClasse">
+              {(field) => (
+                <field.BooleanRadioField label="" orientation="horizontal" yesLabel="Réseau classé" noLabel="Réseau non classé" />
+              )}
+            </form.AppField>
+            <form.AppField name="maitreOuvrage">{(field) => <field.TextField label="Maître d’ouvrage" />}</form.AppField>
+            <form.AppField name="gestionnaire">{(field) => <field.TextField label="Gestionnaire" />}</form.AppField>
+            <form.AppField name="siteInternet">
+              {(field) => (
+                <field.TextField
+                  label="Site internet du réseau"
+                  // type: 'url', uncomment when all data has been cleaned from airtable
+                  nativeInputProps={{ placeholder: 'https://www.monreseau.fr' }}
+                />
+              )}
+            </form.AppField>
 
             <Text mt="4w" mb="1w" fontWeight="bold">
               Renseigner des informations complémentaires à faire apparaître sur la fiche du réseau (
               {clientConfig.networkInfoFieldMaxCharacters} caractères maximum) (Optionnel)
             </Text>
-            <TextArea
-              label=""
-              nativeTextAreaProps={{
-                maxLength: clientConfig.networkInfoFieldMaxCharacters,
-                onChange: (e) => void setFormValue('informationsComplementaires', e.target.value),
-                placeholder:
-                  'Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)',
-                rows: 5,
-                value: formState.informationsComplementaires,
-              }}
-            />
+            <form.AppField name="informationsComplementaires">
+              {(field) => (
+                <field.TextareaField
+                  label=""
+                  nativeTextAreaProps={{
+                    maxLength: clientConfig.networkInfoFieldMaxCharacters,
+                    placeholder:
+                      'Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)',
+                    rows: 5,
+                  }}
+                />
+              )}
+            </form.AppField>
             <Text mt="4w" mb="1w" fontWeight="bold">
               Télécharger des documents à mettre à disposition depuis la fiche du réseau (schéma directeur, ...) - 3 documents PDF maximum
               (&lt;5 Mo par fichier) (Optionnel)
             </Text>
-            <input
-              className="fr-hidden"
-              ref={fileUploadInputRef}
-              type="file"
-              onChange={handleFileUpload}
-              multiple
-              accept="application/pdf"
-              aria-hidden
-            />
-            <div className="fr-grid-row fr-grid-row--top">
-              <Button onClick={() => fileUploadInputRef.current?.click()} priority="secondary">
-                Choisir un fichier
-              </Button>
-              <Box ml="2w">
-                {formState.fichiers?.map((fichier, index) => (
-                  <Text key={index} mr="1w">
-                    - {fichier.name} - {Math.round(fichier.size / 1024)} ko{' '}
-                    <Button
-                      size="small"
-                      className="fr-btn--tertiary-no-outline"
-                      title="Supprimer le fichier"
-                      onClick={() => {
-                        formState.fichiers.splice(index, 1);
-                        void setFormValue('fichiers', [...formState.fichiers]);
-                      }}
-                    >
-                      <Icon name="ri-delete-bin-2-line" color="var(--text-default-error)" size="lg" />
-                    </Button>
-                    {fichier.size > 5 * 1024 * 1024 && (
-                      <Text as="div" color="error">
-                        Ce fichier excède la taille maximale autorisée (5 Mo).
-                      </Text>
-                    )}
-                    {fichier.type !== 'application/pdf' && (
-                      <Text as="div" color="error">
-                        Seuls les fichiers PDF sont autorisés.
-                      </Text>
-                    )}
-                  </Text>
-                ))}
-              </Box>
-            </div>
-            {fichiersError === 'files_count_exceeded' && (
-              <Text color="error" mt="1w">
-                Vous ne pouvez déposer que 3 fichiers maximum.
-              </Text>
-            )}
-            <Text mt="6w">Les informations transmises seront validées manuellement par France Chaleur Urbaine avant mise en ligne.</Text>
+            <form.AppField name="fichiers">
+              {(field) => <field.UploadField label="" append removable multiple nativeInputProps={{ accept: 'application/pdf' }} />}
+            </form.AppField>
+            <Text mt="4w">Les informations transmises seront validées manuellement par France Chaleur Urbaine avant mise en ligne.</Text>
 
-            <Button className="fr-mt-2w" type="submit" loading={isSubmitting} disabled={fichiersError !== null}>
-              Soumettre la demande de modification
-            </Button>
-
-            {apiError && (
-              <Text color="error" mt="2w">
-                Une erreur est survenue. Veuillez <Link href="/contact">nous contacter</Link>.
-              </Text>
-            )}
-          </form>
+            <form.SubmitButton className="fr-mt-2w">Soumettre la demande de modification</form.SubmitButton>
+          </Form>
         )}
       </Box>
     </SimplePage>

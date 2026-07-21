@@ -1,19 +1,16 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
-import { useForm } from '@tanstack/react-form';
+import { useStore } from '@tanstack/react-form';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { type ZodSchema, z } from 'zod';
+import { useState } from 'react';
+import { z } from 'zod';
 
-import Input from '@/components/form/dsfr/Input';
-import Radio from '@/components/form/dsfr/Radio';
-import Upload from '@/components/form/dsfr/Upload';
-import { getInputErrorStates } from '@/components/form/react-form/useForm';
-import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 import { postFormDataFetchJSON } from '@/utils/network';
 import { formatFileSize } from '@/utils/strings';
-import { nonEmptyArray, ObjectKeys } from '@/utils/typescript';
+import { nonEmptyArray } from '@/utils/typescript';
 
 const typesUtilisateur = [
   {
@@ -56,25 +53,6 @@ const typesDemande = [
 ] as const;
 
 type TypeDemande = (typeof typesDemande)[number]['key'];
-
-type FieldConfig = {
-  name: string;
-  label: string;
-  optional?: boolean;
-  schema: ZodSchema;
-} & (
-  | {
-      type?: 'string';
-    }
-  | {
-      type: 'file';
-      hint: string;
-      allowedExtensions: string[];
-    }
-  | {
-      type: 'boolean';
-    }
-);
 
 export const filesLimits = {
   maxFileSize: 50 * 1024 * 1024,
@@ -128,6 +106,8 @@ const validateFileNames = (fileNames: string[], allowedExtensions: string[]): st
   return null;
 };
 
+// sync checks only — the async zip inspection is validated separately (field level on the
+// form, extra superRefine on the API schema) because a form-level async validator flickers
 const createFilesSchema = (allowedExtensions: string[]) =>
   z
     .array(z.instanceof(File), { error: 'Veuillez choisir un ou plusieurs fichiers' })
@@ -140,8 +120,7 @@ const createFilesSchema = (allowedExtensions: string[]) =>
     .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
       error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
     })
-    .superRefine(async (files, ctx) => {
-      // Validate direct uploads
+    .superRefine((files, ctx) => {
       const directError = validateFileNames(
         files.map((f) => f.name),
         allowedExtensions
@@ -150,276 +129,222 @@ const createFilesSchema = (allowedExtensions: string[]) =>
         ctx.addIssue({ code: 'custom', fatal: true, message: directError });
         return z.NEVER;
       }
+    });
 
-      // Validate ZIP contents
-      for (const file of files) {
-        if (!file.name.toLowerCase().endsWith('.zip')) {
-          continue;
-        }
+/**
+ * Async inspection of uploaded .zip archives: their inner file names must match the
+ * allowed extensions. Returns an error message, or null when everything is valid.
+ * Revalidation re-runs on every change: the inspection is cached per File.
+ */
+const createZipInspector = (allowedExtensions: string[]) => {
+  const zipInspectionCache = new WeakMap<File, string | null>();
+
+  return async (files: File[]): Promise<string | null> => {
+    for (const file of files) {
+      if (!file.name.toLowerCase().endsWith('.zip')) {
+        continue;
+      }
+      let zipError = zipInspectionCache.get(file);
+      if (zipError === undefined) {
         const JSZip = (await import('jszip')).default;
         const zip = await JSZip.loadAsync(await file.arrayBuffer());
         const zipFileNames = Object.values(zip.files)
           .filter((entry) => !entry.dir)
           .map((entry) => entry.name.split('/').pop()!);
-        const zipError = validateFileNames(
+        zipError = validateFileNames(
           zipFileNames,
           allowedExtensions.filter((e) => e !== '.zip')
         );
-        if (zipError) {
-          ctx.addIssue({ code: 'custom', fatal: true, message: `Dans "${file.name}" : ${zipError}` });
-          return z.NEVER;
-        }
+        zipInspectionCache.set(file, zipError);
       }
-    });
+      if (zipError) {
+        return `Dans "${file.name}" : ${zipError}`;
+      }
+    }
+    return null;
+  };
+};
+
+// full validation for the API schema: sync checks + zip inspection in one schema
+const createFilesSchemaWithZipInspection = (allowedExtensions: string[]) => {
+  const inspectZips = createZipInspector(allowedExtensions);
+  return createFilesSchema(allowedExtensions).superRefine(async (files, ctx) => {
+    const zipError = await inspectZips(files);
+    if (zipError) {
+      ctx.addIssue({ code: 'custom', fatal: true, message: zipError });
+      return z.NEVER;
+    }
+  });
+};
 
 const stringSchema = z.string({ error: 'Ce champ est obligatoire' });
-
-const typeDemandeFields = {
-  'ajout périmètre développement prioritaire': [
-    {
-      label: 'Nom du réseau :',
-      name: 'nomReseau',
-      schema: stringSchema,
-    },
-    {
-      label: 'Localisation :',
-      name: 'localisation',
-      schema: stringSchema,
-    },
-    {
-      allowedExtensions: geoAllowedExtensions,
-      hint: 'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.',
-      label: 'Téléverser vos fichiers :',
-      name: 'fichiers',
-      schema: createFilesSchema(geoAllowedExtensions),
-      type: 'file',
-    },
-  ],
-  'ajout schéma directeur': [
-    {
-      label: 'Nom du réseau ou du territoire concerné :',
-      name: 'nomReseau',
-      schema: stringSchema,
-    },
-    {
-      allowedExtensions: docAllowedExtensions,
-      hint: 'Formats préférentiels : PDF, Word.',
-      label: 'Téléverser vos fichiers :',
-      name: 'fichiers',
-      schema: createFilesSchema(docAllowedExtensions),
-      type: 'file',
-    },
-  ],
-  'ajout tracé réseau en construction': [
-    {
-      label: 'Nom du réseau :',
-      name: 'nomReseau',
-      schema: stringSchema,
-    },
-    {
-      label: 'Localisation :',
-      name: 'localisation',
-      schema: stringSchema,
-    },
-    {
-      label: 'Gestionnaire :',
-      name: 'gestionnaire',
-      schema: stringSchema,
-    },
-    {
-      label: "Maître d'ouvrage :",
-      name: 'maitreOuvrage',
-      schema: stringSchema,
-    },
-    {
-      label: 'Date de mise en service prévisionnelle :',
-      name: 'dateMiseEnServicePrevisionnelle',
-      schema: stringSchema,
-    },
-    {
-      label: 'Le réseau est-il ouvert aux raccordements ?',
-      name: 'ouvertAuxRaccordements',
-      schema: z.boolean({ error: 'Ce choix est obligatoire' }),
-      type: 'boolean',
-    },
-    {
-      label: 'Référent commercial à qui transmettre les demandes de raccordement',
-      name: 'emailReferentCommercial',
-      optional: true, // conditionally required based on ouvertAuxRaccordements
-      schema: z.string().optional(),
-    },
-    {
-      label: 'Commentaire :',
-      name: 'commentaire',
-      optional: true,
-      schema: z.string().optional(),
-    },
-    {
-      allowedExtensions: geoAllowedExtensions,
-      hint: 'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.',
-      label: 'Téléverser vos fichiers :',
-      name: 'fichiers',
-      schema: createFilesSchema(geoAllowedExtensions),
-      type: 'file',
-    },
-  ],
-  'ajout tracé réseau existant': [
-    {
-      label: 'Nom du réseau :',
-      name: 'nomReseau',
-      schema: stringSchema,
-    },
-    {
-      label: 'Localisation :',
-      name: 'localisation',
-      schema: stringSchema,
-    },
-    {
-      label: 'Gestionnaire :',
-      name: 'gestionnaire',
-      schema: stringSchema,
-    },
-    {
-      label: "Maître d'ouvrage :",
-      name: 'maitreOuvrage',
-      schema: stringSchema,
-    },
-    {
-      label: 'Le réseau est-il ouvert aux raccordements ?',
-      name: 'ouvertAuxRaccordements',
-      schema: z.boolean({ error: 'Ce choix est obligatoire' }),
-      type: 'boolean',
-    },
-    {
-      label: 'Référent commercial à qui transmettre les demandes de raccordement',
-      name: 'emailReferentCommercial',
-      optional: true, // conditionally required based on ouvertAuxRaccordements
-      schema: z.string().optional(),
-    },
-    {
-      label: 'Commentaire :',
-      name: 'commentaire',
-      optional: true,
-      schema: z.string().optional(),
-    },
-    {
-      allowedExtensions: geoAllowedExtensions,
-      hint: 'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.',
-      label: 'Téléverser vos fichiers :',
-      name: 'fichiers',
-      schema: createFilesSchema(geoAllowedExtensions),
-      type: 'file',
-    },
-  ],
-  autre: [
-    {
-      label: 'Précisez :',
-      name: 'precisions',
-      schema: stringSchema,
-    },
-  ],
-} as const satisfies Record<TypeDemande, FieldConfig[]>;
 
 export const zCommonFormData = z.object({
   dansCadreDemandeADEME: z.boolean({ error: 'Ce choix est obligatoire' }),
   email: z.email("L'adresse email n'est pas valide"),
-  nom: z.string({ error: 'Ce champ est obligatoire' }),
-  prenom: z.string({ error: 'Ce champ est obligatoire' }),
+  nom: z.string({ error: 'Ce champ est obligatoire' }).min(1, 'Ce champ est obligatoire'),
+  prenom: z.string({ error: 'Ce champ est obligatoire' }).min(1, 'Ce champ est obligatoire'),
   typeUtilisateur: z.enum(nonEmptyArray(typesUtilisateur.map((w) => w.key)), { error: 'Ce choix est obligatoire' }),
-  typeUtilisateurAutre: stringSchema,
+  typeUtilisateurAutre: z.string().optional(),
 });
 
-const zodSchemasByTypeDemande = ObjectKeys(typeDemandeFields).reduce(
-  (acc, key) => {
-    (acc[key] as any) = typeDemandeFields[key].reduce(
-      (acc2, field) => {
-        acc2[field.name] = field.schema;
-        return acc2;
-      },
-      {} as Record<string, any>
-    );
-    return acc;
-  },
-  {} as {
-    [TypeDemande in keyof typeof typeDemandeFields]: {
-      [Name in (typeof typeDemandeFields)[TypeDemande][number]['name']]: Extract<
-        (typeof typeDemandeFields)[TypeDemande][number],
-        { name: Name }
-      >['schema'];
-    };
-  }
-);
+// typeUtilisateurAutre is only required when typeUtilisateur is "Autre".
+// when: () => true because zod skips the checks of a schema whose base parse has an
+// aborting issue (e.g. a missing required sub-field) — the conditional requirement
+// must still be reported alongside the other field errors.
+const isTypeUtilisateurAutreValid = (data: { typeUtilisateur?: string; typeUtilisateurAutre?: string }) =>
+  data.typeUtilisateur !== 'Autre' || !!data.typeUtilisateurAutre;
+const typeUtilisateurAutreRefineParams = { message: 'Ce champ est obligatoire', path: ['typeUtilisateurAutre'], when: () => true };
+
+// emailReferentCommercial is only required when the network is open to connections
+// (typeDemande, present in every union branch, keeps the structural type compatible)
+const isEmailReferentCommercialValid = (data: {
+  typeDemande?: string;
+  ouvertAuxRaccordements?: boolean;
+  emailReferentCommercial?: string;
+}) => !data.ouvertAuxRaccordements || !!data.emailReferentCommercial;
+const emailReferentCommercialRefineParams = {
+  message: 'Le référent commercial est obligatoire si le réseau est ouvert aux raccordements',
+  path: ['emailReferentCommercial'],
+  when: () => true, // see typeUtilisateurAutreRefineParams
+};
+
+// branches are built twice: with the full files schema (API) and with the sync-only one (form)
+const createContributionBranches = (filesSchema: typeof createFilesSchema) => {
+  // fields shared by the two "tracé de réseau" variants
+  const reseauFieldsShape = {
+    commentaire: z.string().optional(),
+    emailReferentCommercial: z.string().optional(), // conditionally required based on ouvertAuxRaccordements (see refine below)
+    fichiers: filesSchema(geoAllowedExtensions),
+    gestionnaire: stringSchema,
+    localisation: stringSchema,
+    maitreOuvrage: stringSchema,
+    nomReseau: stringSchema,
+    ouvertAuxRaccordements: z.boolean({ error: 'Ce choix est obligatoire' }),
+  };
+
+  return [
+    zCommonFormData.extend({
+      typeDemande: z.literal('ajout tracé réseau existant'),
+      ...reseauFieldsShape,
+    }),
+    zCommonFormData.extend({
+      typeDemande: z.literal('ajout tracé réseau en construction'),
+      ...reseauFieldsShape,
+      dateMiseEnServicePrevisionnelle: stringSchema,
+    }),
+    zCommonFormData.extend({
+      fichiers: filesSchema(geoAllowedExtensions),
+      localisation: stringSchema,
+      nomReseau: stringSchema,
+      typeDemande: z.literal('ajout périmètre développement prioritaire'),
+    }),
+    zCommonFormData.extend({
+      fichiers: filesSchema(docAllowedExtensions),
+      nomReseau: stringSchema,
+      typeDemande: z.literal('ajout schéma directeur'),
+    }),
+    zCommonFormData.extend({
+      precisions: stringSchema,
+      typeDemande: z.literal('autre'),
+    }),
+  ] as const;
+};
 
 export const zContributionFormDataBase = z.discriminatedUnion(
   'typeDemande',
-  // définition statique plutôt qu'avec un map sinon on perd le typage
-  [
-    zCommonFormData.merge(
-      z.object({
-        typeDemande: z.literal('ajout tracé réseau existant'),
-        ...zodSchemasByTypeDemande['ajout tracé réseau existant'],
-      })
-    ),
-    zCommonFormData.merge(
-      z.object({
-        typeDemande: z.literal('ajout tracé réseau en construction'),
-        ...zodSchemasByTypeDemande['ajout tracé réseau en construction'],
-      })
-    ),
-    zCommonFormData.merge(
-      z.object({
-        typeDemande: z.literal('ajout périmètre développement prioritaire'),
-        ...zodSchemasByTypeDemande['ajout périmètre développement prioritaire'],
-      })
-    ),
-    zCommonFormData.merge(
-      z.object({
-        typeDemande: z.literal('ajout schéma directeur'),
-        ...zodSchemasByTypeDemande['ajout schéma directeur'],
-      })
-    ),
-    zCommonFormData.merge(
-      z.object({
-        typeDemande: z.literal('autre'),
-        ...zodSchemasByTypeDemande.autre,
-      })
-    ),
-  ]
+  createContributionBranches(createFilesSchemaWithZipInspection),
+  // message when no branch matches (invalid typeDemande)
+  { error: 'Ce choix est obligatoire' }
 );
 
-// Validation conditionnelle : emailReferentCommercial requis si ouvertAuxRaccordements
-export const zContributionFormData = zContributionFormDataBase.refine(
-  (data: Record<string, unknown>) => {
-    if (!data.ouvertAuxRaccordements) return true;
-    return typeof data.emailReferentCommercial === 'string' && data.emailReferentCommercial.length > 0;
-  },
-  {
-    message: 'Le référent commercial est obligatoire si le réseau est ouvert aux raccordements',
-    path: ['emailReferentCommercial'],
-  }
-);
+export const zContributionFormData = zContributionFormDataBase
+  .refine(isEmailReferentCommercialValid, emailReferentCommercialRefineParams)
+  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams);
 
-type AddEmptyValues<T> = T extends string ? T | '' : T extends object ? { [K in keyof T]: AddEmptyValues<T[K]> } : T;
+// flat superset of all branches: the form holds every possible field, the union validates the selected branch
+type ContributionFormValues = Omit<z.input<typeof zCommonFormData>, 'dansCadreDemandeADEME' | 'typeUtilisateur'> & {
+  dansCadreDemandeADEME?: boolean;
+  typeUtilisateur: TypeUtilisateur | '';
+  typeDemande: TypeDemande | '';
+  commentaire?: string;
+  dateMiseEnServicePrevisionnelle?: string;
+  emailReferentCommercial?: string;
+  fichiers?: File[];
+  gestionnaire?: string;
+  localisation?: string;
+  maitreOuvrage?: string;
+  nomReseau?: string;
+  ouvertAuxRaccordements?: boolean;
+  precisions?: string;
+};
 
-// besoin de valeurs vides juste pour le formulaire et non zod
-type FormData = AddEmptyValues<z.infer<typeof zContributionFormDataBase>>;
+const contributionDefaultValues: ContributionFormValues = {
+  dansCadreDemandeADEME: undefined,
+  email: '',
+  nom: '',
+  prenom: '',
+  typeDemande: '',
+  typeUtilisateur: '',
+  typeUtilisateurAutre: '',
+};
 
+// form-side union: sync-only files schemas (the zip inspection runs at the field level),
+// plus a branch matching the unselected state (''), so an empty typeDemande still reports
+// the common-field errors instead of stopping at the discriminator
+const zContributionForm = z
+  .discriminatedUnion('typeDemande', [
+    ...createContributionBranches(createFilesSchema),
+    zCommonFormData.extend({ typeDemande: z.literal('').refine(() => false, { message: 'Ce choix est obligatoire' }) }),
+  ])
+  .refine(isEmailReferentCommercialValid, emailReferentCommercialRefineParams)
+  // the union validates the mode-consistent runtime values; unify its type for TanStack
+  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams) as unknown as z.ZodType<
+  ContributionFormValues,
+  ContributionFormValues
+>;
+
+// the async zip inspection runs as a field-level validator: it only concerns the
+// fichiers field, and a form-level async validator would flicker (an aborted debounced
+// run clears every form-level error until the next run rewrites them). It runs the FULL
+// files schema (sync checks + zip inspection), not just the async part: sync and async
+// results share the same error-map slot, so returning undefined would erase the sync
+// error written by the form schema (e.g. a wrong extension) right after each submit.
+const createFichiersFieldValidator = (allowedExtensions: string[]) => {
+  const schema = createFilesSchemaWithZipInspection(allowedExtensions);
+  return async ({ value }: { value: File[] | undefined }) => {
+    const result = await schema.safeParseAsync(value);
+    return result.success ? undefined : result.error.issues[0]?.message;
+  };
+};
+const geoFichiersValidator = createFichiersFieldValidator(geoAllowedExtensions);
+const docFichiersValidator = createFichiersFieldValidator(docAllowedExtensions);
+
+const typeUtilisateurOptions = typesUtilisateur.map((option) => ({
+  label: option.label,
+  nativeInputProps: { value: option.key },
+}));
+
+const typeDemandeOptions = typesDemande.map((option) => ({
+  label: option.label,
+  nativeInputProps: { value: option.key },
+}));
+
+/**
+ * Public contribution form: network managers/collectivités submit geo data
+ * (network traces, priority perimeters, master plans) with file uploads.
+ * The fields depend on the selected demand type (discriminated union schema).
+ */
 const ContributionForm = () => {
-  const [formSuccess, setFormSuccess] = useState<boolean>(false);
+  const [formSuccess, setFormSuccess] = useState(false);
 
-  const form = useForm({
-    defaultValues: {
-      dansCadreDemandeADEME: '',
-      email: '',
-      nom: '',
-      prenom: '',
-      typeDemande: '',
-      typeUtilisateur: '',
-      typeUtilisateurAutre: '',
-    } satisfies Record<keyof FormData, ''> as unknown as FormData,
+  const form = useAppForm({
+    ...schemaValidation(zContributionForm),
+    defaultValues: contributionDefaultValues,
     onSubmit: toastErrors(
-      async ({ value }: { value: FormData }) => {
+      async ({ value }) => {
         trackPostHogEvent('map:manager_contact_form_submitted');
+        // re-parse through the union: strips the fields of unselected branches and types the output
         await postFormDataFetchJSON('/api/contribution', await zContributionFormData.parseAsync(value));
         setFormSuccess(true);
       },
@@ -430,15 +355,72 @@ const ContributionForm = () => {
         </span>
       )
     ),
-    validators: {
-      onChangeAsync: zContributionFormData,
-    },
   });
 
-  // ensure the state is invalid when loaded
-  useEffect(() => {
-    void form.validate('submit');
-  }, []);
+  const typeUtilisateur = useStore(form.store, (state) => state.values.typeUtilisateur);
+  const typeDemande = useStore(form.store, (state) => state.values.typeDemande);
+  const dansCadreDemandeADEME = useStore(form.store, (state) => state.values.dansCadreDemandeADEME);
+  const ouvertAuxRaccordements = useStore(form.store, (state) => state.values.ouvertAuxRaccordements);
+
+  // plain render helpers (not components) shared by the demand type branches
+  const renderNomReseauField = (label: string) => (
+    <form.AppField name="nomReseau">{(field) => <field.TextField label={label} />}</form.AppField>
+  );
+
+  const renderLocalisationField = () => (
+    <form.AppField name="localisation">{(field) => <field.TextField label="Localisation :" />}</form.AppField>
+  );
+
+  const renderFichiersField = (allowedExtensions: string[], fichiersValidator: typeof geoFichiersValidator, formatsHint: string) => (
+    <form.AppField name="fichiers" validators={{ onDynamicAsync: fichiersValidator }}>
+      {(field) => (
+        <field.UploadField
+          className="fr-mb-2w"
+          label="Téléverser vos fichiers :"
+          hint={
+            <>
+              Taille maximale : {formatFileSize(filesLimits.maxFileSize)}. Maximum {filesLimits.maxFiles} fichiers. {formatsHint}
+              <br />
+              Pour téléverser plusieurs fichiers, merci de les sélectionner simultanément et non l'un après l'autre.
+            </>
+          }
+          multiple
+          nativeInputProps={{ accept: allowedExtensions.join(',') }}
+        />
+      )}
+    </form.AppField>
+  );
+
+  const renderReseauFields = (withDateMiseEnService: boolean) => (
+    <>
+      {renderNomReseauField('Nom du réseau :')}
+      {renderLocalisationField()}
+      <form.AppField name="gestionnaire">{(field) => <field.TextField label="Gestionnaire :" />}</form.AppField>
+      <form.AppField name="maitreOuvrage">{(field) => <field.TextField label="Maître d'ouvrage :" />}</form.AppField>
+      {withDateMiseEnService && (
+        <form.AppField name="dateMiseEnServicePrevisionnelle">
+          {(field) => <field.TextField label="Date de mise en service prévisionnelle :" />}
+        </form.AppField>
+      )}
+      <form.AppField name="ouvertAuxRaccordements">
+        {(field) => <field.BooleanRadioField label="Le réseau est-il ouvert aux raccordements ?" />}
+      </form.AppField>
+      <form.AppField name="emailReferentCommercial">
+        {(field) => (
+          <field.TextField
+            label="Référent commercial à qui transmettre les demandes de raccordement"
+            nativeInputProps={{ required: ouvertAuxRaccordements === true }}
+          />
+        )}
+      </form.AppField>
+      <form.AppField name="commentaire">{(field) => <field.TextField label="Commentaire :" />}</form.AppField>
+      {renderFichiersField(
+        geoAllowedExtensions,
+        geoFichiersValidator,
+        'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.'
+      )}
+    </>
+  );
 
   return formSuccess ? (
     <Alert
@@ -454,297 +436,77 @@ const ContributionForm = () => {
       }
     />
   ) : (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        void form.handleSubmit();
-      }}
-    >
-      <form.Field
+    <Form form={form}>
+      <form.AppField
         name="typeUtilisateur"
         listeners={{
-          onChange: ({ value }: { value: TypeUtilisateur }) => {
+          onChange: ({ value }) => {
             if (value !== 'Autre') {
-              form.setFieldValue('typeUtilisateurAutre', '');
+              form.setFieldValue('typeUtilisateurAutre', '', { dontUpdateMeta: true });
             }
           },
         }}
-        children={(field) => (
-          <Radio
-            label="Vous êtes :"
-            name={field.name}
-            options={typesUtilisateur.map((option) => ({
-              label: option.label,
-              nativeInputProps: {
-                checked: field.state.value === option.key,
-                onBlur: field.handleBlur,
-                onChange: (e) => field.handleChange(e.target.value as TypeUtilisateur),
-                required: true,
-                value: option.key,
-              },
-            }))}
-            {...getInputErrorStates(field)}
-          />
-        )}
-      />
-      <form.Subscribe
-        selector={(state) => state.values.typeUtilisateur}
-        children={(typeUtilisateur) =>
-          typeUtilisateur === 'Autre' && (
-            <form.Field
-              name="typeUtilisateurAutre"
-              children={(field) => (
-                <Input
-                  label="Précisez :"
-                  nativeInputProps={{
-                    id: field.name,
-                    name: field.name,
-                    onBlur: field.handleBlur,
-                    onChange: (e) => field.handleChange(e.target.value),
-                    required: true,
-                    value: field.state.value,
-                  }}
-                  {...getInputErrorStates(field)}
-                />
-              )}
-            />
-          )
-        }
-      />
+      >
+        {(field) => <field.RadioField label="Vous êtes :" options={typeUtilisateurOptions} />}
+      </form.AppField>
+      {typeUtilisateur === 'Autre' && (
+        <form.AppField name="typeUtilisateurAutre">
+          {/* only rendered when "autre" is selected, where it is expected to be filled */}
+          {(field) => <field.TextField label="Précisez :" nativeInputProps={{ required: true }} />}
+        </form.AppField>
+      )}
 
-      <form.Field
-        name="nom"
-        children={(field) => (
-          <Input
-            label="Votre nom :"
-            nativeInputProps={{
-              autoComplete: 'nom',
-              id: field.name,
-              name: field.name,
-              onBlur: field.handleBlur,
-              onChange: (e) => field.handleChange(e.target.value),
-              placeholder: 'Saisir votre nom',
-              required: true,
-              value: field.state.value,
-            }}
-            {...getInputErrorStates(field)}
-          />
+      <form.AppField name="nom">
+        {(field) => <field.TextField label="Votre nom :" nativeInputProps={{ autoComplete: 'nom', placeholder: 'Saisir votre nom' }} />}
+      </form.AppField>
+      <form.AppField name="prenom">
+        {(field) => (
+          <field.TextField label="Votre prénom :" nativeInputProps={{ autoComplete: 'prenom', placeholder: 'Saisir votre prénom' }} />
         )}
-      />
+      </form.AppField>
+      <form.AppField name="email">
+        {(field) => <field.EmailField label="Votre adresse email :" nativeInputProps={{ placeholder: 'Saisir votre email' }} />}
+      </form.AppField>
 
-      <form.Field
-        name="prenom"
-        children={(field) => (
-          <Input
-            label="Votre prénom :"
-            nativeInputProps={{
-              autoComplete: 'prenom',
-              id: field.name,
-              name: field.name,
-              onBlur: field.handleBlur,
-              onChange: (e) => field.handleChange(e.target.value),
-              placeholder: 'Saisir votre prénom',
-              required: true,
-              value: field.state.value,
-            }}
-            {...getInputErrorStates(field)}
-          />
-        )}
-      />
+      <form.AppField name="dansCadreDemandeADEME">
+        {(field) => <field.BooleanRadioField label="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :" />}
+      </form.AppField>
+      {dansCadreDemandeADEME && (
+        <Alert
+          description="L'attestation vous sera envoyée par mail sous quelques jours, après vérification des fichiers transmis."
+          severity="info"
+          className="fr-mt-n2w fr-mb-3w"
+          small
+        />
+      )}
 
-      <form.Field
-        name="email"
-        children={(field) => (
-          <Input
-            label="Votre adresse email :"
-            nativeInputProps={{
-              autoComplete: 'email',
-              id: field.name,
-              name: field.name,
-              onBlur: field.handleBlur,
-              onChange: (e) => field.handleChange(e.target.value),
-              placeholder: 'Saisir votre email',
-              required: true,
-              value: field.state.value,
-            }}
-            {...getInputErrorStates(field)}
-          />
-        )}
-      />
+      <form.AppField name="typeDemande">
+        {(field) => <field.RadioField label="Vous souhaitez :" options={typeDemandeOptions} />}
+      </form.AppField>
 
-      <form.Field
-        name="dansCadreDemandeADEME"
-        children={(field) => (
-          <>
-            <Radio
-              label="Votre contribution s’inscrit dans le cadre d’une demande de subvention ADEME :"
-              name={field.name}
-              options={[
-                {
-                  label: 'oui',
-                  nativeInputProps: {
-                    checked: field.state.value === true,
-                    onBlur: field.handleBlur,
-                    onChange: () => field.handleChange(true),
-                  },
-                },
-                {
-                  label: 'non',
-                  nativeInputProps: {
-                    checked: field.state.value === false,
-                    onBlur: field.handleBlur,
-                    onChange: () => field.handleChange(false),
-                  },
-                },
-              ]}
-              {...getInputErrorStates(field)}
-            />
-            {field.state.value && (
-              <Alert
-                description="L'attestation vous sera envoyée par mail sous quelques jours, après vérification des fichiers transmis."
-                severity="info"
-                className="fr-mt-n2w fr-mb-3w"
-                small
-              />
-            )}
-          </>
-        )}
-      />
+      {typeDemande === 'ajout tracé réseau existant' && renderReseauFields(false)}
+      {typeDemande === 'ajout tracé réseau en construction' && renderReseauFields(true)}
+      {typeDemande === 'ajout périmètre développement prioritaire' && (
+        <>
+          {renderNomReseauField('Nom du réseau :')}
+          {renderLocalisationField()}
+          {renderFichiersField(
+            geoAllowedExtensions,
+            geoFichiersValidator,
+            'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.'
+          )}
+        </>
+      )}
+      {typeDemande === 'ajout schéma directeur' && (
+        <>
+          {renderNomReseauField('Nom du réseau ou du territoire concerné :')}
+          {renderFichiersField(docAllowedExtensions, docFichiersValidator, 'Formats préférentiels : PDF, Word.')}
+        </>
+      )}
+      {typeDemande === 'autre' && <form.AppField name="precisions">{(field) => <field.TextField label="Précisez :" />}</form.AppField>}
 
-      <form.Field
-        name="typeDemande"
-        listeners={{
-          onChange: ({ value }: { value: TypeDemande | '' }) => {
-            if (value === '') {
-              return;
-            }
-            // when changing typeDemande, the form remembers its old fields so we must remove them manually
-            const fieldsToDelete = new Set(ObjectKeys(form.state.fieldMeta))
-              .difference(new Set([...ObjectKeys(zCommonFormData.shape), 'typeDemande']))
-              .difference(new Set(typeDemandeFields[value].map((f) => f.name)));
-            fieldsToDelete.forEach((field) => {
-              form.deleteField(field);
-            });
-          },
-        }}
-        children={(field) => (
-          <Radio
-            label="Vous souhaitez :"
-            name={field.name}
-            options={typesDemande.map((option) => ({
-              label: option.label,
-              nativeInputProps: {
-                checked: field.state.value === option.key,
-                onBlur: field.handleBlur,
-                onChange: (e) => field.handleChange(e.target.value as TypeDemande),
-                required: true,
-                value: option.key,
-              },
-            }))}
-            {...getInputErrorStates(field)}
-          />
-        )}
-      />
-
-      <form.Subscribe
-        selector={(state) => state.values.typeDemande}
-        children={(typeDemande) =>
-          typeDemande !== '' &&
-          typeDemandeFields[typeDemande].map((option) => (
-            <form.Field
-              name={option.name}
-              key={option.name}
-              children={(field) =>
-                'type' in option && option.type === 'file' ? (
-                  <>
-                    <Upload
-                      className="fr-mb-2w"
-                      label={option.label}
-                      hint={
-                        <>
-                          Taille maximale : {formatFileSize(filesLimits.maxFileSize)}. Maximum {filesLimits.maxFiles} fichiers.{' '}
-                          {option.hint}
-                          <br />
-                          Pour téléverser plusieurs fichiers, merci de les sélectionner simultanément et non l'un après l'autre.
-                        </>
-                      }
-                      multiple
-                      nativeInputProps={{
-                        accept: option.allowedExtensions.join(','),
-                        onBlur: field.handleBlur,
-                        onChange: (e) => {
-                          const files = e.target.files;
-                          if (!files || files.length === 0) {
-                            return;
-                          }
-                          field.handleChange([...files]);
-                        },
-                      }}
-                      {...getInputErrorStates(field)}
-                    />
-                    {((field.state.value as File[]) ?? []).length > 0 && (
-                      <div className="fr-mb-2w">
-                        Fichier(s) sélectionné(s) :{' '}
-                        {((field.state.value as File[]) ?? []).map((file) => (
-                          <div key={file.name}>- {file.name}</div>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : 'type' in option && option.type === 'boolean' ? (
-                  <Radio
-                    label={option.label}
-                    name={field.name}
-                    options={[
-                      {
-                        label: 'oui',
-                        nativeInputProps: {
-                          checked: field.state.value === true,
-                          onBlur: field.handleBlur,
-                          onChange: () => field.handleChange(true),
-                        },
-                      },
-                      {
-                        label: 'non',
-                        nativeInputProps: {
-                          checked: field.state.value === false,
-                          onBlur: field.handleBlur,
-                          onChange: () => field.handleChange(false),
-                        },
-                      },
-                    ]}
-                    {...getInputErrorStates(field)}
-                  />
-                ) : (
-                  <Input
-                    label={option.label}
-                    nativeInputProps={{
-                      id: field.name,
-                      name: field.name,
-                      onBlur: field.handleBlur,
-                      onChange: (e) => field.handleChange(e.target.value),
-                      required: !(option as FieldConfig).optional,
-                      value: field.state.value as string,
-                    }}
-                    {...getInputErrorStates(field)}
-                  />
-                )
-              }
-            />
-          ))
-        }
-      />
-
-      <form.Subscribe
-        selector={(state) => [state.isValid, state.canSubmit, state.isSubmitting]}
-        children={([isValid, canSubmit, isSubmitting]) => (
-          <Button type="submit" loading={isSubmitting} disabled={!isValid || !canSubmit || isSubmitting}>
-            Envoyer
-          </Button>
-        )}
-      />
-    </form>
+      <form.SubmitButton>Envoyer</form.SubmitButton>
+    </Form>
   );
 };
 

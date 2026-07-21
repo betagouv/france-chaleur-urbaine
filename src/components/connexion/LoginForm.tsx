@@ -1,71 +1,55 @@
 import Link from 'next/link';
-import { type FormEvent, useState } from 'react';
+import { z } from 'zod';
 
-import Input from '@/components/form/dsfr/Input';
-import PasswordInput from '@/components/form/dsfr/PasswordInput';
 import Button from '@/components/ui/Button';
 import { useAuthentication, useRedirectionAfterLogin } from '@/modules/auth/client/hooks';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 
-export interface LoginFormProps {
+const zLoginForm = z.object({
+  email: z.email('Veuillez entrer une adresse email valide'),
+  password: z.string().min(1, 'Veuillez saisir votre mot de passe'),
+});
+
+export type LoginFormProps = {
   callbackUrl: string;
-}
-export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
+};
+
+/**
+ * Credentials login form (email + password), redirects after a successful sign-in.
+ */
+export function LoginForm({ callbackUrl }: LoginFormProps) {
   const { signIn, session } = useAuthentication();
   useRedirectionAfterLogin(session);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const connect = toastErrors(async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
+  const form = useAppForm({
+    ...schemaValidation(zLoginForm),
+    defaultValues: { email: '', password: '' },
+    onSubmit: toastErrors(async ({ value }) => {
       await signIn('credentials', {
         callbackUrl,
-        email,
-        password,
+        email: value.email,
+        password: value.password,
       });
-    } finally {
-      setLoading(false);
-    }
+    }),
   });
 
   return (
-    <form onSubmit={connect}>
-      <Input
-        label="Email"
-        nativeInputProps={{
-          autoComplete: 'email',
-          onChange: (e) => setEmail(e.target.value),
-          placeholder: 'Saisir votre email',
-          required: true,
-          value: email,
-        }}
-      />
-      <PasswordInput
-        label="Mot de passe"
-        nativeInputProps={{
-          autoComplete: 'password',
-          onChange: (e) => setPassword(e.target.value),
-          required: true,
-          value: password,
-        }}
-      />
+    <Form form={form}>
+      <form.AppField name="email">
+        {(field) => <field.EmailField label="Email" nativeInputProps={{ placeholder: 'Saisir votre email' }} />}
+      </form.AppField>
+      <form.AppField name="password">{(field) => <field.PasswordField label="Mot de passe" />}</form.AppField>
       <div className="flex justify-between flex-row-reverse text-sm mb-8">
-        <Link key="reset-password" href="/reset-password">
-          Mot de passe oublié ?
-        </Link>
+        <Link href="/reset-password">Mot de passe oublié ?</Link>
       </div>
       <div className="flex justify-between text-sm mb-8 items-center">
-        <Button key="create-account" priority="tertiary" href={`/inscription`}>
+        <Button priority="tertiary" href="/inscription">
           Créer un compte
         </Button>
-        <Button type="submit" loading={loading}>
-          Me connecter
-        </Button>
+        <form.SubmitButton>Me connecter</form.SubmitButton>
       </div>
-    </form>
+    </Form>
   );
-};
+}

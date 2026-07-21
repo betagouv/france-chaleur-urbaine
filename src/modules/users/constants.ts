@@ -79,17 +79,23 @@ export const zIdentitySchema = z
     structure_other: z.string().optional(),
     structure_type: z.enum(ObjectKeys(structureTypesLabels)).optional(),
   })
+  // when: () => true because zod skips the checks of a schema whose base parse has an
+  // aborting issue (e.g. the role enum still undefined) — these conditional requirements
+  // must still be reported alongside the other field errors
   .refine((data) => !(data.structure_type === 'autre' && !data.structure_other), {
     message: "Le type de structure 'Autre' doit être précisé",
     path: ['structure_other'],
+    when: () => true,
   })
   .refine((data) => data.role === 'particulier' || !!data.structure_name, {
     message: 'La structure est obligatoire',
     path: ['structure_name'],
+    when: () => true,
   })
   .refine((data) => data.role === 'particulier' || !!data.structure_type, {
     message: 'Le type de structure est obligatoire',
     path: ['structure_type'],
+    when: () => true,
   });
 
 export type IdentitySchema = z.infer<typeof zIdentitySchema>;
@@ -153,6 +159,7 @@ export const zUpdateProfileSchema = z
   .refine((data) => !(data.structure_type === 'autre' && !data.structure_other), {
     message: "Le type de structure 'Autre' doit être précisé",
     path: ['structure_other'],
+    when: () => true, // see zIdentitySchema
   })
   .transform((data) => ({
     ...data,

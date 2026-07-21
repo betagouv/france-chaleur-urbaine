@@ -15,7 +15,7 @@
 
 ## Rules
 - **Don't override React Query per-query options** (`staleTime`, `gcTime`, `refetchOnWindowFocus`…) — rely on the `_app.tsx` defaults (stale 5 min, retry 1× after 3 s) unless there's a concrete reason.
-- Forms: **TanStack React Form** (`@/components/form/react-form/useForm`) + Zod schema from `src/modules/<domain>/constants.ts` (shared client/server). Debug with `Ctrl+Shift+D` (dev). React Hook Form is legacy — don't add new RHF forms.
+- Forms: **TanStack React Form** via the `useAppForm` layer (`@/modules/form/useAppForm` — see `src/modules/form/AGENTS.md`) + Zod schema from `src/modules/<domain>/constants.ts` (shared client/server).
 - Jotai: keep minimal (map state, UI toggles, theme).
 
 ## Anti-patterns

@@ -1,10 +1,13 @@
+import { useStore } from '@tanstack/react-form';
 import { useCallback, useEffect, useState } from 'react';
+import type { z } from 'zod';
 
 import DSFRSelect from '@/components/form/dsfr/Select';
 import Upload from '@/components/form/dsfr/Upload';
-import useForm from '@/components/form/react-form/useForm';
 import Notice, { type NoticeProps } from '@/components/ui/Notice';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { parseUnknownCharsetText } from '@/utils/strings';
@@ -19,11 +22,36 @@ import {
 import { analyzeCSV, type ColumnMapping } from '../utils/csvColumnDetection';
 import CSVImportTable from './CSVImportTable';
 
+// create + update inputs merged; the runtime values stay mode-consistent (name only when
+// creating, id only when updating) so each mode's strict schema validates its own shape
+type UpsertEligibilityTestFormValues = Omit<z.input<typeof zCreateEligibilityTestInput>, 'name'> & {
+  name?: string;
+  id?: string;
+};
+
+const separatorOptions = [
+  { label: ',', value: ',' },
+  { label: ';', value: ';' },
+  { label: 'Tab', value: '\t' },
+  { label: '|', value: '|' },
+  { label: 'Espace', value: ' ' },
+  { label: 'Aucun', value: NO_SEPARATOR_VALUE },
+];
+
+const dataTypeOptions = [
+  { label: 'Adresses textuelles', nativeInputProps: { value: 'address' } },
+  { label: 'Coordonnées géographiques (latitude/longitude)', nativeInputProps: { value: 'coordinates' } },
+];
+
 type UpsertEligibilityTestFormProps = {
   testId?: string;
   onComplete?: () => void;
 };
 
+/**
+ * CSV upload form to create or complete a pro eligibility test: analyzes the file,
+ * lets the user adjust separator/headers/column mapping, then submits the content.
+ */
 const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTestFormProps) => {
   const isUpdate = !!testId;
 
@@ -33,22 +61,31 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
 
   const [analysis, setAnalysis] = useState<ReturnType<typeof analyzeCSV> | null>(null);
 
-  const { form, Form, Field, Radio, Submit, FieldWrapper, Checkbox, useValue, Select } = useForm({
-    defaultValues: {
-      ...(isUpdate ? { id: testId } : { name: '' }),
-      columnMapping: undefined as ColumnMapping | undefined,
-      content: '',
-      dataType: 'address',
-      hasHeaders: true,
-      separator: ',',
-    },
+  const defaultValues: UpsertEligibilityTestFormValues = {
+    ...(isUpdate ? { id: testId } : { name: '' }),
+    columnMapping: undefined,
+    content: '',
+    dataType: 'address',
+    hasHeaders: true,
+    separator: ',',
+  };
+
+  // both mode schemas validate the mode-consistent runtime values; unify their type for TanStack
+  const schema = (isUpdate ? zUpdateEligibilityTestInput : zCreateEligibilityTestInput) as unknown as z.ZodType<
+    UpsertEligibilityTestFormValues,
+    UpsertEligibilityTestFormValues
+  >;
+
+  const form = useAppForm({
+    ...schemaValidation(schema),
+    defaultValues,
     onSubmit: toastErrors(async ({ value }) => {
       let bulkTest = null;
       if (isUpdate) {
         bulkTest = await updateTest({ ...value, id: testId });
         void utils.proEligibilityTests.get.invalidate({ id: testId });
       } else {
-        bulkTest = await createTest(value);
+        bulkTest = await createTest({ ...value, name: value.name ?? '' });
       }
 
       trackPostHogEvent('bulk_test:processing_started', {
@@ -58,7 +95,6 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
       void utils.proEligibilityTests.list.invalidate();
       onComplete?.();
     }, FormErrorMessage),
-    schema: isUpdate ? zUpdateEligibilityTestInput : zCreateEligibilityTestInput,
   });
 
   const processContent = useCallback(
@@ -114,10 +150,10 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
     [form, isUpdate]
   );
 
-  const hasHeaders = useValue<boolean>('hasHeaders');
-  const columnMapping = useValue<ColumnMapping>('columnMapping') ?? {};
-  const dataType = useValue<'address' | 'coordinates'>('dataType');
-  const content = useValue<string>('content');
+  const hasHeaders = useStore(form.store, (state) => state.values.hasHeaders);
+  const columnMapping: ColumnMapping = useStore(form.store, (state) => state.values.columnMapping) ?? {};
+  const dataType = useStore(form.store, (state) => state.values.dataType);
+  const content = useStore(form.store, (state) => state.values.content);
   const canHaveHeaders = (analysis?.nbRows ?? 0) > 1;
 
   // évite que l'utilisateur choisisse un fichier d'une ligne + entête de colonne
@@ -169,46 +205,34 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
   const { description, variant } = getNoticeProps();
 
   return (
-    <Form>
+    <Form form={form}>
       <div className="flex flex-col gap-4">
-        {isUpdate && <Field.Input name="id" nativeInputProps={{ type: 'hidden' }} label="" />}
-        <FieldWrapper>
-          <Upload
-            label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
-            hint="Si le fichier est un .csv, les colonnes seront découpées pour déduire l'adresse ou les coordonnées géographiques."
-            nativeInputProps={{
-              accept: allowedExtensions.join(','),
-              onChange: async (e) => {
-                const file = e.target.files?.[0];
-                await handleFileChange(file);
-              },
-              required: true,
-            }}
-          />
-        </FieldWrapper>
+        <Upload
+          label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
+          hint="Si le fichier est un .csv, les colonnes seront découpées pour déduire l'adresse ou les coordonnées géographiques."
+          nativeInputProps={{
+            accept: allowedExtensions.join(','),
+            onChange: async (e) => {
+              const file = e.target.files?.[0];
+              await handleFileChange(file);
+            },
+            required: true,
+          }}
+        />
         {analysis && (
-          <FieldWrapper>
+          <div>
             <div className="space-y-4">
               <hr />
               <div className="flex items-center gap-4 text-xs text-gray-600">
                 <span>
-                  <Select
+                  <form.AppField
                     name="separator"
-                    label="Séparateur"
-                    options={[
-                      { label: ',', value: ',' },
-                      { label: ';', value: ';' },
-                      { label: 'Tab', value: '\t' },
-                      { label: '|', value: '|' },
-                      { label: 'Espace', value: ' ' },
-                      { label: 'Aucun', value: NO_SEPARATOR_VALUE },
-                    ]}
-                    fieldInputProps={{
-                      listeners: {
-                        onChange: ({ value }) => processContent(content as string, value as string),
-                      },
+                    listeners={{
+                      onChange: ({ value }) => processContent(content, value ?? undefined),
                     }}
-                  />
+                  >
+                    {(field) => <field.SelectField label="Séparateur" options={separatorOptions} />}
+                  </form.AppField>
                 </span>
                 <div>
                   <label className="fr-label">Colonnes</label>
@@ -222,18 +246,22 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
                 </div>
               </div>
               <CSVImportTable analysis={analysis} hasHeaders={hasHeaders} mapping={columnMapping} dataType={dataType} />
-              {canHaveHeaders && <Checkbox small name="hasHeaders" label="Le fichier a des entêtes de colonnes" />}
+              {canHaveHeaders && (
+                <form.AppField name="hasHeaders">
+                  {(field) => <field.CheckboxField label="Le fichier a des entêtes de colonnes" />}
+                </form.AppField>
+              )}
               <hr />
-              <Radio
-                name="dataType"
-                small
-                label="Quel type de données contient votre fichier ?"
-                orientation="horizontal"
-                options={[
-                  { label: 'Adresses textuelles', nativeInputProps: { value: 'address' } },
-                  { label: 'Coordonnées géographiques (latitude/longitude)', nativeInputProps: { value: 'coordinates' } },
-                ]}
-              />
+              <form.AppField name="dataType">
+                {(field) => (
+                  <field.RadioField
+                    small
+                    label="Quel type de données contient votre fichier ?"
+                    orientation="horizontal"
+                    options={dataTypeOptions}
+                  />
+                )}
+              </form.AppField>
             </div>
             <div className="flex gap-4">
               {dataType === 'address' ? (
@@ -300,24 +328,25 @@ const UpsertEligibilityTestForm = ({ testId, onComplete }: UpsertEligibilityTest
               )}
             </div>
             <Notice variant={variant} title={description} />
-          </FieldWrapper>
+          </div>
         )}
 
         {!isUpdate && (
-          <FieldWrapper>
-            <Field.Input
-              name="name"
-              label="Nom du test"
-              hintText="Le nom du test sera utilisé pour identifier le test dans l'historique"
-              nativeInputProps={{
-                placeholder: 'Nom du test',
-              }}
-            />
-          </FieldWrapper>
+          <form.AppField name="name">
+            {(field) => (
+              <field.TextField
+                label="Nom du test"
+                hintText="Le nom du test sera utilisé pour identifier le test dans l'historique"
+                nativeInputProps={{
+                  placeholder: 'Nom du test',
+                }}
+              />
+            )}
+          </form.AppField>
         )}
 
         <div className="flex justify-end gap-2 mt-4">
-          <Submit disabled={!analysis}>{isUpdate ? 'Compléter le test' : 'Créer le test'}</Submit>
+          <form.SubmitButton disabled={!analysis}>{isUpdate ? 'Compléter le test' : 'Créer le test'}</form.SubmitButton>
         </div>
       </div>
     </Form>

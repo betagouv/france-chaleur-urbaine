@@ -1,5 +1,6 @@
-import useForm from '@/components/form/react-form/useForm';
 import Loader from '@/components/ui/Loader';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { notify } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { zUpdateNewsletterSchema } from '@/modules/users/constants';
@@ -22,14 +23,14 @@ function ProfileNewsletterForm() {
     },
   });
 
-  const { Checkbox, Submit, Form } = useForm({
+  const form = useAppForm({
+    ...schemaValidation(zUpdateNewsletterSchema),
     defaultValues: {
       optin_newsletter: profile?.optin_at !== null && profile?.optin_at !== undefined,
     },
     onSubmit: async ({ value }) => {
       await updateNewsletter.mutateAsync(value);
     },
-    schema: zUpdateNewsletterSchema,
   });
 
   if (isLoading) {
@@ -37,11 +38,13 @@ function ProfileNewsletterForm() {
   }
 
   return (
-    <Form>
+    <Form form={form}>
       <div className="flex flex-col gap-4">
-        <Checkbox name="optin_newsletter" label="Je souhaite recevoir la newsletter France Chaleur Urbaine" />
+        <form.AppField name="optin_newsletter">
+          {(field) => <field.CheckboxField label="Je souhaite recevoir la newsletter France Chaleur Urbaine" />}
+        </form.AppField>
         <div className="flex justify-end mt-4">
-          <Submit disabled={updateNewsletter.isPending}>{updateNewsletter.isPending ? 'Enregistrement...' : 'Enregistrer'}</Submit>
+          <form.SubmitButton>Enregistrer</form.SubmitButton>
         </div>
       </div>
     </Form>
