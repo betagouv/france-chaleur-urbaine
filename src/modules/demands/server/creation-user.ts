@@ -65,6 +65,7 @@ export const createDemand = async (
   const [createdDemand] = await kdb
     .insertInto('demands')
     .values({
+      comment_user: values.commentUser || null,
       created_at: new Date(),
       legacy_values: sql<string>`${JSON.stringify(legacyRecord)}::jsonb`,
       origin_host: values.origin_host ?? null,

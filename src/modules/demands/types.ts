@@ -53,6 +53,7 @@ export type Demand = AirtableLegacyRecord & {
   user_id: string | null;
   comment_gestionnaire?: string | null;
   comment_fcu?: string | null;
+  comment_user?: string | null;
   created_at: string;
   updated_at: string;
 };

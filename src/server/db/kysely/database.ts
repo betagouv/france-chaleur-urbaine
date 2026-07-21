@@ -323,6 +323,7 @@ export interface Demands {
   airtable_id: string | null;
   comment_fcu: string | null;
   comment_gestionnaire: string | null;
+  comment_user: string | null;
   commune_code: string | null;
   created_at: Generated<Timestamp>;
   deleted_at: Timestamp | null;

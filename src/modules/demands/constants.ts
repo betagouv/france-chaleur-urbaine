@@ -116,6 +116,7 @@ export const zAdminUpdateDemandInput = z.object({
 export const zCreateDemandInput = z.object({
   address: z.string().trim(),
   city: z.string(),
+  commentUser: z.string().trim().optional(),
   company: z.string().optional().default(''),
   companyType: z.string().optional().default(''),
   coords: z.object({
@@ -177,6 +178,7 @@ export type TypeDeChauffageLabel = (typeof typesDeChauffageLabels)[number];
 export const availableStructures = ['Tertiaire', 'Copropriété', 'Bailleur social', 'Maison individuelle', 'Autre'] as const;
 
 export const fieldLabelInformation = {
+  commentUser: 'Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet',
   company: 'Nom de votre structure',
   companyTitle: 'Votre structure',
   companyType: {
@@ -229,6 +231,7 @@ export const fieldLabelInformation = {
 export type DemandCompanyType = (typeof fieldLabelInformation.companyType.inputs)[number]['value'];
 
 const demandContactShape = {
+  commentUser: z.string().trim().optional().default(''),
   company: z.string().optional().default(''),
   companyType: z.string().optional().default(''),
   demandArea: z.number().optional(),
@@ -361,6 +364,7 @@ export const zCreateBatchDemandInput = z.object({
     .array(zBatchDemandAddressSchema)
     .min(1, 'Au moins une adresse doit être sélectionnée')
     .max(50, 'Maximum 50 adresses par demande'),
+  commentUser: z.string().trim().optional().default(''),
   contact: zBatchDemandContactSchema.optional(),
   termOfUse: z.boolean().refine((val) => val, 'Vous devez accepter les conditions'),
 });

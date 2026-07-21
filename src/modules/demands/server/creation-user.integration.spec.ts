@@ -153,6 +153,20 @@ describe('creation-user', () => {
       expect(demandInDb?.user_id).toBeNull();
     });
 
+    it('stocke le commentaire utilisateur dans une colonne dédiée', async () => {
+      const input = buildDemandInput({
+        commentUser: 'Projet voté en assemblée générale.',
+      });
+
+      const result = await createDemand(input, { userId: testUserId });
+
+      const demandInDb = await kdb.selectFrom('demands').select(['comment_user']).where('id', '=', result.id).executeTakeFirst();
+
+      expect(demandInDb).toStrictEqual({
+        comment_user: 'Projet voté en assemblée générale.',
+      });
+    });
+
     it('associe une demande à une adresse de test existante', async () => {
       const input = buildDemandInput();
 
