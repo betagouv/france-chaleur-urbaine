@@ -267,7 +267,7 @@ function MesDemandesPage(): React.ReactElement {
     const width = Math.max(1, (mapElement?.clientWidth ?? window.innerWidth ?? 1200) - padding * 2);
     const height = Math.max(1, (mapElement?.clientHeight ?? window.innerHeight ?? 800) - padding * 2);
 
-    const { center, zoom } = geoViewport.viewport(bounds, [width, height], 5, 20, 512, true);
+    const { center, zoom } = geoViewport.viewport(bounds, [width, height], 1, 20, 512, true);
     setMapCenterLocation({ center: [center[0], center[1]], flyTo: true, zoom });
   }, [mapCenterLocation, router.query.demand_id, demandsMapData]);
 
@@ -325,6 +325,7 @@ function MesDemandesPage(): React.ReactElement {
           <div ref={mapContainerRef} className={cx('max-md:h-[600px] md:h-[calc(100dvh-140px)] bg-[#F8F4F0]')}>
             {isDefined(mapCenterLocation) ? (
               <Map
+                minZoom={1}
                 initialView={{ center: mapCenterLocation.center, zoom: mapCenterLocation.zoom }}
                 config={createMapConfiguration({
                   reseauxDeChaleur: {
