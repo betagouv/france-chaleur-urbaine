@@ -22,7 +22,7 @@ export default function TestsAdressesPage(): JSX.Element {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data, isLoading } = trpc.proEligibilityTests.list.useQuery(undefined, {
-    refetchInterval: hasPendingJobs ? 5000 : false,
+    refetchInterval: hasPendingJobs ? 15_000 : false,
   });
   const { data: profile } = trpc.users.getProfile.useQuery();
 
