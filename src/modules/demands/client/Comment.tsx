@@ -12,7 +12,7 @@ const Comment = <T extends Demand>({
   disabled = false,
 }: {
   demand: T;
-  field: 'comment_gestionnaire' | 'comment_fcu';
+  field: 'comment_gestionnaire' | 'comment_fcu' | 'comment_user';
   updateDemand: (demandId: string, demand: Partial<T>) => Promise<void>;
   disabled?: boolean;
 }) => {
