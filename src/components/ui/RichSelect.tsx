@@ -34,6 +34,7 @@ type RichSelectProps<T extends string = string, Event extends PostHogEvent = Pos
   className?: string;
   label?: string;
   disabled?: boolean;
+  required?: boolean;
 } & ValuePostHogTrackingProps<T, Event>;
 
 export default function RichSelect<T extends string, Event extends PostHogEvent = PostHogEvent>({
@@ -44,6 +45,7 @@ export default function RichSelect<T extends string, Event extends PostHogEvent 
   className,
   label,
   disabled = false,
+  required = false,
   postHogEventKey,
   postHogEventProps,
 }: RichSelectProps<T, Event>) {
@@ -187,6 +189,7 @@ export default function RichSelect<T extends string, Event extends PostHogEvent 
             className="fr-select w-full cursor-pointer text-left disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
             aria-expanded={isOpen}
             aria-haspopup="listbox"
+            aria-required={required}
             disabled={disabled}
             role="combobox"
             onClick={handleTriggerClick}

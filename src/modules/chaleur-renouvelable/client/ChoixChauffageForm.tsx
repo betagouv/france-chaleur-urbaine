@@ -16,7 +16,7 @@ export default function ChoixChauffageForm() {
   const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility, selectedBatEnrBatiment } = useAddressEligibility(
     params.adresse ?? null
   );
-  const isFormDisabled = !params.adresse || !geoAddress || !params.typeLogement || !params.espaceExterieur;
+  const isFormDisabled = !params.adresse || !geoAddress || !params.typeLogement || !params.typeRadiateur || !params.espaceExterieur;
 
   useEffect(() => {
     if (!selectedBatEnrBatiment) {
