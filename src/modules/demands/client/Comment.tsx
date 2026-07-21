@@ -13,30 +13,32 @@ const Comment = <T extends Demand>({
 }: {
   demand: T;
   field: 'comment_gestionnaire' | 'comment_fcu' | 'comment_user';
-  updateDemand: (demandId: string, demand: Partial<T>) => Promise<void>;
+  updateDemand?: (demandId: string, demand: Partial<T>) => Promise<void>;
   disabled?: boolean;
 }) => {
   const [value, setValue] = useState(demand[field]);
 
   const debouncedUpdateDemand = useMemo(
     () =>
-      debounce(
-        (value: string) =>
-          updateDemand(demand.id, {
-            [field]: value,
-          } as Partial<T>),
-        500
-      ),
-    [demand.id, updateDemand]
+      updateDemand
+        ? debounce(
+            (value: string) =>
+              updateDemand(demand.id, {
+                [field]: value,
+              } as Partial<T>),
+            500
+          )
+        : undefined,
+    [demand.id, field, updateDemand]
   );
 
-  useEffect(() => () => debouncedUpdateDemand.cancel(), [debouncedUpdateDemand]);
+  useEffect(() => () => debouncedUpdateDemand?.cancel(), [debouncedUpdateDemand]);
 
   const onChangeHandler = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
       const value = e.target.value;
       setValue(value);
-      debouncedUpdateDemand(value);
+      debouncedUpdateDemand?.(value);
     },
     [debouncedUpdateDemand]
   );
