@@ -15,7 +15,6 @@ import trpc from '@/modules/trpc/client';
 
 const MAX_BATCH_DEMAND_ADDRESSES = 50;
 const emptyDedicatedContact: BatchDemandContactInfo = {
-  commentUser: '',
   company: '',
   companyType: '',
   demandArea: undefined,

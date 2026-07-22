@@ -11,7 +11,6 @@ import cx from '@/utils/cx';
 export type DemandContactFieldsValues = z.input<typeof zBatchDemandContactSchema>;
 
 const demandContactDefaultValues: DemandContactFieldsValues = {
-  commentUser: '',
   company: '',
   companyType: '',
   demandArea: undefined,
@@ -27,7 +26,6 @@ const demandContactDefaultValues: DemandContactFieldsValues = {
 
 /** Identity mapping for forms holding the contact fields at the root of their values (see `ContactForm`). */
 export const demandContactRootFields = {
-  commentUser: 'commentUser',
   company: 'company',
   companyType: 'companyType',
   demandArea: 'demandArea',
@@ -187,9 +185,6 @@ export const DemandContactFields = withFieldGroup<DemandContactFieldsValues, unk
             )}
           </Fieldset>
         )}
-        <group.AppField name="commentUser">
-          {(field) => <field.TextareaField label={fieldLabelInformation.commentUser} nativeTextAreaProps={{ rows: 4 }} />}
-        </group.AppField>
       </>
     );
   },

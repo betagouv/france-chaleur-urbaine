@@ -231,7 +231,6 @@ export const fieldLabelInformation = {
 export type DemandCompanyType = (typeof fieldLabelInformation.companyType.inputs)[number]['value'];
 
 const demandContactShape = {
-  commentUser: z.string().trim().optional().default(''),
   company: z.string().optional().default(''),
   companyType: z.string().optional().default(''),
   demandArea: z.number().optional(),
@@ -302,6 +301,8 @@ export const zBatchDemandContactSchema = z.object(demandContactShape).superRefin
 export const zContactFormCreateDemandInput = z
   .object({
     ...demandContactShape,
+    // demand-level info (not part of the shared contact shape)
+    commentUser: z.string().trim().optional().default(''),
     heatingEnergy: z
       .string()
       .refine(

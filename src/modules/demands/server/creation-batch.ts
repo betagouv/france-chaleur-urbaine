@@ -45,7 +45,6 @@ const getBatchDemandContactFromUser = async (userId: string): Promise<BatchDeman
   const { structure, companyType } = structureTypeToDemandContact[userContact.structure_type ?? 'autre'];
 
   return {
-    commentUser: '',
     company: userContact.structure_name || '',
     companyType: companyType ?? '',
     demandArea: undefined,
@@ -97,7 +96,7 @@ export const createBatchDemands = async (
         {
           address: testAddress?.ban_address || '',
           city: eligibility.commune.nom || '',
-          commentUser: contact.commentUser || input.commentUser,
+          commentUser: input.commentUser,
           company: contact.company,
           companyType: contact.companyType,
           coords,

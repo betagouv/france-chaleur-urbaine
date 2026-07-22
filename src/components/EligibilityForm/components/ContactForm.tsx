@@ -92,6 +92,9 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city }: ContactForm
           />
         )}
       </form.AppField>
+      <form.AppField name="commentUser">
+        {(field) => <field.TextareaField label={fieldLabelInformation.commentUser} nativeTextAreaProps={{ rows: 4 }} />}
+      </form.AppField>
       <div className="fr-fieldset__element">
         <form.AppField name="termOfUse">
           {(field) => <field.CheckboxField label="J’accepte les conditions générales d’utilisation du service." />}
