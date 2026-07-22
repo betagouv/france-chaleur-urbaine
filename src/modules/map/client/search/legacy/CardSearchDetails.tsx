@@ -197,7 +197,7 @@ const CardSearchDetails = memo(
                               Il existe d'autres solutions de chauffage écologiques et économiques adaptées à votre bâtiment :
                             </div>
                             <Link
-                              href={`/chaleur-renouvelable?adresse=${encodeURI(storedAddress.address)}`}
+                              href={`/chaleur-renouvelable?adresse=${encodeURIComponent(storedAddress.addressDetails.geoAddress?.properties.label ?? storedAddress.address)}`}
                               variant="secondary"
                               className="mx-auto fr-btn--sm fr-btn--icon-right fr-icon-arrow-right-line px-4 py-2"
                               postHogEventKey="address_test:discover_more_clicked"
