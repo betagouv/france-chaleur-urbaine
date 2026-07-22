@@ -5,6 +5,7 @@ import { memo, useCallback, useMemo } from 'react';
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
 import Image from '@/components/ui/Image';
+import Link from '@/components/ui/Link';
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import type { Point } from '@/types/Point';
@@ -183,11 +184,30 @@ const CardSearchDetails = memo(
                       </header>
                     )}
                     {!storedAddress.contacted && (
-                      <ContactFormButtonWrapper>
-                        <Button onClick={displayContactForm}>
-                          {isEligible ? 'Être mis en relation avec le gestionnaire du réseau' : 'Laissez vos coordonnées'}
-                        </Button>
-                      </ContactFormButtonWrapper>
+                      <>
+                        <ContactFormButtonWrapper>
+                          <Button onClick={displayContactForm}>
+                            {isEligible ? 'Être mis en relation avec le gestionnaire du réseau' : 'Laissez vos coordonnées'}
+                          </Button>
+                        </ContactFormButtonWrapper>
+                        {!isEligible && (
+                          <>
+                            <div className="mt-8v mb-3v">
+                              <span aria-hidden="true" className="fr-icon-arrow-right-circle-fill shrink-0 text-blue mr-1v" />
+                              Il existe d'autres solutions de chauffage écologiques et économiques adaptées à votre bâtiment :
+                            </div>
+                            <Link
+                              href={`/chaleur-renouvelable?adresse=${encodeURI(storedAddress.address)}`}
+                              variant="secondary"
+                              className="mx-auto fr-btn--sm fr-btn--icon-right fr-icon-arrow-right-line px-4 py-2"
+                              postHogEventKey="address_test:discover_more_clicked"
+                              postHogEventProps={{ result_type: 'non eligible', source: 'carte' }}
+                            >
+                              Découvrir les autres solutions
+                            </Link>
+                          </>
+                        )}
+                      </>
                     )}
                   </ContactFormWrapper>
                 )}
