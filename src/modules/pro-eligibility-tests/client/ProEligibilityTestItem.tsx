@@ -14,6 +14,7 @@ import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { businessRules } from '@/modules/app/business-rules';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
 import type { AdresseEligible } from '@/modules/map/client/layers/specs/adressesEligibles';
@@ -195,7 +196,12 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
           iconProps={{
             className: 'fr-ml-1v',
           }}
-          title={<>Distance au réseau le plus proche, fournie uniquement si elle est de moins de 1000m.</>}
+          title={
+            <>
+              Distance au réseau le plus proche, fournie uniquement si elle est de moins de{' '}
+              {businessRules.eligibilityMaxDisplayDistance.value}m.
+            </>
+          }
         />
       </>
     ),
@@ -376,18 +382,18 @@ const quickFilterPresets = {
   },
   adressesMoins100mPlus50ENRR: {
     filters: [
-      { id: 'eligibility_distance', value: [0, 100] },
-      { id: 'eligibility_taux_enrr', value: [50, 100] },
+      { id: 'eligibility_distance', value: [0, businessRules.nearNetworkFilterDistanceMeters.value] },
+      { id: 'eligibility_taux_enrr', value: [businessRules.highEnrrFilterPercent.value, 100] },
     ],
     getStat: (addresses) =>
       addresses.filter(
         (address) =>
           address.eligibility?.distance &&
-          address.eligibility.distance <= 100 &&
+          address.eligibility.distance <= businessRules.nearNetworkFilterDistanceMeters.value &&
           address.eligibility.taux_enrr &&
-          address.eligibility.taux_enrr >= 50
+          address.eligibility.taux_enrr >= businessRules.highEnrrFilterPercent.value
       ).length,
-    label: "à moins de 100m d'un réseau à plus de 50% d'ENR&R",
+    label: `à moins de ${businessRules.nearNetworkFilterDistanceMeters.value}m d'un réseau à plus de ${businessRules.highEnrrFilterPercent.value}% d'ENR&R`,
   },
   all: {
     filters: [],
@@ -530,7 +536,11 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
         bulk_test_id: test.id,
         rows_eligible: filteredAddresses.map((a) => a.eligibility.eligible).length,
         rows_error: filteredAddresses.map((a) => !a.ban_valid || !a.geom).length,
-        rows_near_network: filteredAddresses.map((a) => (a.eligibility.distance || 1000) < 100).length,
+        rows_near_network: filteredAddresses.map(
+          (a) =>
+            (a.eligibility.distance || businessRules.eligibilityMaxDisplayDistance.value) <
+            businessRules.nearNetworkFilterDistanceMeters.value
+        ).length,
         rows_non_eligible: filteredAddresses.map((a) => !a.eligibility.eligible).length,
         rows_total: filteredAddresses.length,
       });

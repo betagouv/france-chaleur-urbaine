@@ -1,0 +1,64 @@
+# Rôles et permissions
+
+Qui voit quoi, et qui peut agir sur quoi. C'est le socle de tous les autres parcours — et la source la plus fréquente de surprises dans les specs.
+
+## Les rôles
+
+Sept rôles (détail dans [Inscription et comptes](/admin/doc/inscription-comptes)) : **admin**, quatre rôles « territoriaux » à permissions (**gestionnaire**, **collectivité**, **ALEC**, **CCRT**) et deux rôles « demandeurs » (**particulier**, **professionnel** — les seuls ouverts à l'inscription publique).
+
+## Les permissions
+
+Les rôles territoriaux ne voient rien par défaut : leur périmètre est défini par des **permissions** attribuées par un admin dans [Gestion des utilisateurs](/admin/users) (au maximum <Rule id="maxPermissionsPerUser" /> par compte, [événement « Modification permissions »](/admin/events?types=user_permissions_updated)). Trois familles :
+
+| Famille | Types | Donne accès à |
+| --- | --- | --- |
+| Réseau | Réseau de chaleur, réseau en construction | Les demandes affectées à ce réseau |
+| Territoire | Commune, EPCI, EPT, département, région, national | Les demandes situées sur ce territoire |
+| Organisation | Organisation | Les demandes de **tous** les réseaux de l'organisation |
+
+## La règle d'or : consulter n'est pas traiter
+
+Deux niveaux d'accès distincts, source du malentendu le plus courant :
+
+<Mermaid
+  chart={`flowchart TD
+    demande["Demande validée"] --> voir{"Consulter ?"}
+    voir -- "Au moins une permission correspond (réseau, territoire ou organisation)" --> ok["Visible dans l'espace"]
+    ok --> traiter{"Traiter (statut, contact, commentaire) ?"}
+    traiter -- "Demande affectée à un réseau" --> reseau{"Permission sur CE réseau, ou sur son organisation ?"}
+    reseau -- "Oui" --> resp["Responsable : peut traiter"]:::db
+    reseau -- "Non, seulement une permission territoire" --> lecture["Lecture seule"]
+    traiter -- "Demande sans réseau affecté" --> territoire{"Une permission territoire correspond ?"}
+    territoire -- "Oui" --> triage["Rôle de tri : peut traiter et proposer une affectation"]:::db
+    territoire -- "Non" --> lecture
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
+/>
+
+À retenir :
+
+- **Consulter** : une demande validée est visible dès qu'une permission correspond (réseau, territoire ou organisation).
+- **Traiter** une demande **affectée à un réseau** : uniquement avec une permission sur **ce réseau** ou sur son **organisation**. Une permission territoire ne donne **jamais** le droit de traiter une demande affectée — une collectivité voit les demandes de sa commune mais ne les modifie pas.
+- **Traiter** une demande **sans réseau** : uniquement avec une permission **territoire** (rôle de tri, typiquement les collectivités).
+- Les demandes **non validées** ne sont visibles de personne (hors admins et demandeur).
+- L'admin voit tout sans être « responsable » d'aucune demande : il peut agir sur toutes (validation, affectation, changement de statut — voir [Cycle de vie](/admin/doc/cycle-de-vie-demande)).
+
+**Piège fréquent** : les [emails automatiques aux gestionnaires](/admin/doc/relances-notifications) ne se déclenchent que sur les permissions **réseau** — jamais territoire ni organisation, quel que soit le rôle.
+
+## Les organisations
+
+Une **organisation** représente un exploitant (ENGIE, Dalkia, Idex…) : ses réseaux y sont rattachés (manuellement ou par motifs sur le nom du gestionnaire), et elle porte les **accès API**. Gérées dans [Gestion des organisations](/admin/organizations). Une permission « organisation » sur un compte équivaut à une permission sur chacun des réseaux de l'organisation, y compris ceux rattachés plus tard.
+
+## L'API partenaire
+
+Un partenaire authentifié par le jeton de son organisation peut, sur **les demandes de ses réseaux uniquement** :
+
+- **lire** l'ensemble des demandes validées (synchronisation CRM, [événement](/admin/events?types=api_demands_listed)) ;
+- **modifier** deux champs : le statut et le commentaire gestionnaire — rien d'autre ([événement](/admin/events?types=api_demand_updated)).
+
+Le flux historique ENGIE synchronise aussi les **comptes gestionnaires** (créations, désactivations, permissions réseau) — voir [Inscription et comptes](/admin/doc/inscription-comptes).
+
+## Les impostures
+
+Depuis [Impostures](/admin/impostures), un admin peut endosser n'importe quel rôle non-admin avec des **permissions simulées**, pour voir l'application exactement comme l'utilisateur ciblé. Un bandeau rouge « Imposture en cours » reste affiché.
+
+L'option **« Anonymiser les données personnelles »** (pour les démonstrations) masque nom, email et téléphone des demandeurs dans les listes (email → `utilisateur…@exemple.fr`, nom → première lettre + `***`, téléphone → `06 ** ** ** **`).

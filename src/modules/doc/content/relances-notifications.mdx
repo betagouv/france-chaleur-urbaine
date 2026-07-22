@@ -1,0 +1,56 @@
+import { businessRules } from '@/modules/app/business-rules';
+
+# Relances et notifications
+
+Trois automatismes quotidiens ou hebdomadaires entourent les demandes. Ils partagent un objectif : qu'aucune demande validée ne reste sans suite, et que l'inaction soit visible. Leur état d'exécution est consultable dans [Suivi des tâches](/admin/jobs), leur inventaire complet dans [Références](/admin/doc/references).
+
+<Mermaid
+  chart={`flowchart TD
+    validee["Demande validée, affectée à un réseau"]:::db --> notif["Lundi à vendredi, 10h : « Nouvelles demandes à traiter » aux gestionnaires"]:::email
+    notif --> marque["Demande marquée comme notifiée"]:::db
+    marque --> attente{"Toujours « À traiter » après ${businessRules.unhandledDemandReminderDays.display} ?"}
+    attente -- "Oui" --> rappel["Mardi, 9h55 : « Rappel demandes en attente »"]:::email
+    relanceCheck{"Éligible + chauffage collectif + pas recontacté ?"} -- "Oui, ${businessRules.firstRelanceDelayMonths.display} après le dépôt" --> relance1["Lundi, 10h05 : « Enquête de satisfaction » (1re relance)"]:::email
+    relance1 -- "Toujours rien à ${businessRules.secondRelanceDelayDays.display} du dépôt" --> relance2["Seconde relance"]:::email
+    relance1 --> reponse["Le demandeur répond : recontacté oui/non + commentaire"]
+    relance2 --> reponse
+    reponse --> trace["Réponse enregistrée, visible de l'équipe FCU"]:::evt
+    click notif "/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter" "Voir le modèle d'email"
+    click rappel "/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente" "Voir le modèle d'email"
+    click relance1 "/admin/emails?type=demands.demandeur.enquete-satisfaction" "Voir le modèle d'email"
+    click trace "/admin/events?types=demand_satisfaction_submitted" "Voir dans l'activité du site"
+    classDef email fill:#feecc2,stroke:#b28a00,color:#161616
+    classDef evt fill:#cfe3fd,stroke:#3b74c7,color:#161616
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
+/>
+
+## 1. Notification des nouvelles demandes — lundi à vendredi, 10h
+
+Email [« Nouvelles demandes à traiter »](/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter). Conditions précises :
+
+- Demande **validée**, non supprimée, **affectée à un réseau**, pas encore notifiée, et dont le statut n'est pas « Non réalisable ».
+- Destinataires : tout compte **actif** ayant une **permission sur le réseau** de la demande et l'option « recevoir les nouvelles demandes » activée. Le rôle n'est pas filtré : une collectivité avec une permission réseau les recevrait aussi. À l'inverse, **les permissions territoire ou organisation ne déclenchent jamais ces emails**.
+- La demande n'est marquée comme notifiée **que si au moins un destinataire existe** : une demande sur un réseau sans gestionnaire sera signalée dès qu'une permission sera ajoutée ([événement « Notification gestionnaires »](/admin/events?types=demand_notification_sent)).
+
+## 2. Rappel des demandes en attente — mardi, 9h55
+
+Email [« Rappel demandes en attente »](/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente) : pour les demandes restées « À traiter » (ou sans statut) plus de <Rule id="unhandledDemandReminderDays" /> **après leur notification**. Nécessite l'option « recevoir les rappels » sur le compte.
+
+## 3. Relance des demandeurs — lundi, 10h05
+
+Email [« Enquête de satisfaction »](/admin/emails?type=demands.demandeur.enquete-satisfaction), envoyé directement au demandeur. Conditions :
+
+- Demande validée avec le marqueur « Relance à activer » — posé **uniquement à la création**, si la demande était éligible **et** en chauffage collectif.
+- Demandeur pas encore marqué « Recontacté par le gestionnaire ».
+- Première relance <Rule id="firstRelanceDelayMonths" /> après le dépôt, seconde à <Rule id="secondRelanceDelayDays" /> du dépôt si toujours rien.
+
+L'email contient deux boutons « Oui, j'ai été contacté(e) / Non, pas encore » qui mènent à la page publique `/satisfaction` (le lien contient un jeton propre à la demande, aucune connexion requise). La réponse écrit « Recontacté par le gestionnaire » = Oui/Non ([événement](/admin/events?types=demand_satisfaction_submitted)) et le demandeur peut ajouter un commentaire ([« Commentaire relance »](/admin/events?types=demand_satisfaction_comment_submitted)), visible dans [Gestion des demandes](/admin/demandes).
+
+**C'est la boucle qui rend l'inaction visible** : si un gestionnaire ne traite pas, le demandeur le dit, et l'équipe FCU le voit.
+
+## Ce qui n'envoie pas d'email
+
+Deux cas fréquents à ne pas confondre avec les relances :
+
+- Les **mises à jour d'éligibilité** des tests d'adresses en masse (réseau qui s'étend, nouveau réseau…) ne génèrent **pas d'email** : uniquement des badges dans l'espace de l'utilisateur (voir [Tests d'adresses en masse](/admin/doc/tests-adresses-pro)).
+- Les demandes de **réaffectation** ne notifient personne par email : elles apparaissent dans le filtre dédié de [Gestion des demandes](/admin/demandes) (voir [Réaffectation](/admin/doc/reaffectation-demandes)).

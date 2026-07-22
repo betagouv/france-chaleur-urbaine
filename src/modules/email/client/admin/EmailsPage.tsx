@@ -6,6 +6,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
+import { emailTriggerTypeBadgeClasses, emailTriggerTypeLabels } from '@/modules/email/constants';
 import trpc from '@/modules/trpc/client';
 import cx from '@/utils/cx';
 
@@ -94,6 +95,12 @@ const EmailsPage = () => {
                       <code className="text-xs text-faded">{selectedEmail.type}</code>
                     </div>
                     <p className="text-sm mt-2 mb-0 text-faded">{selectedEmail.description}</p>
+                    <p className="text-sm mt-2 mb-0">
+                      <span className={cx('fr-badge fr-badge--sm mr-2', emailTriggerTypeBadgeClasses[selectedEmail.trigger.type])}>
+                        {emailTriggerTypeLabels[selectedEmail.trigger.type]}
+                      </span>
+                      <span className="text-faded">{selectedEmail.trigger.description}</span>
+                    </p>
                   </div>
 
                   {selectedEmail.scenarios.length > 1 && (

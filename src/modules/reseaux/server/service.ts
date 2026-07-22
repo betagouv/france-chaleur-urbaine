@@ -1,5 +1,6 @@
 import type { ExpressionBuilder, RawBuilder } from 'kysely';
 
+import { businessRules } from '@/modules/app/business-rules';
 import { createUserEvent } from '@/modules/events/server/service';
 import { parseBbox } from '@/modules/geo/client/helpers';
 import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
@@ -606,19 +607,19 @@ type TableConfig = {
 
 /**
  * Extrait les bounding boxes des géométries mises à jour avec un buffer
- * Optimisé avec ST_Expand qui est plus rapide que ST_Buffer pour les bbox
+ * (rayon de recalcul d'éligibilité). Optimisé avec ST_Expand qui est plus
+ * rapide que ST_Buffer pour les bbox.
  * @param config Configuration de la table
- * @param bufferMeters Buffer en mètres (défaut: 1000m = 1km)
  * @returns Array de bounding boxes avec buffer appliqué
  */
-async function getUpdatedNetworkBboxes(config: TableConfig, bufferMeters = 1000): Promise<BoundingBox[]> {
+async function getUpdatedNetworkBboxes(config: TableConfig): Promise<BoundingBox[]> {
   const bboxes = await kdb
     .selectFrom(config.tableName)
     .select([
       sql<BoundingBox>`ST_Transform(
         ST_Expand(
           ST_Envelope(geom_update),
-          ${bufferMeters}
+          ${businessRules.eligibilityRecomputeBufferMeters.value}
         ),
         4326
       )::box2d`.as('bbox'),
@@ -788,7 +789,7 @@ export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInp
 
   // Récupérer les bboxes des géométries modifiées AVANT le traitement
   // Ces bboxes incluent un buffer de 1km pour détecter les adresses affectées
-  const affectedBboxes = await getUpdatedNetworkBboxes(networkTableConfig, 1000);
+  const affectedBboxes = await getUpdatedNetworkBboxes(networkTableConfig);
   logger.info(`Detected ${affectedBboxes.length} geometry updates with 1km buffer for eligibility checks`);
 
   const updateResults = await processTableGeometryUpdates(networkTableConfig);

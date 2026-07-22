@@ -1,5 +1,8 @@
 import { render } from '@react-email/components';
 
+import { clientConfig } from '@/client-config';
+import { businessRules } from '@/modules/app/business-rules';
+import type { EmailTrigger } from '@/modules/email/constants';
 import type { EmailScenarios } from '@/modules/email/scenarios';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
@@ -35,6 +38,7 @@ type EmailDefinition<C extends React.ComponentType<any>> = {
   description: string;
   subject: string;
   preview: string;
+  trigger: EmailTrigger;
 };
 
 /**
@@ -72,6 +76,10 @@ export const emails = defineEmails({
     preview: 'Votre espace gestionnaire est prêt - Accédez à vos demandes dès maintenant',
     scenarios: ouvertureEspaceScenarios,
     subject: '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire',
+    trigger: {
+      description: "À la création par un admin d'un compte gestionnaire actif — les autres rôles ne reçoivent aucun email.",
+      type: 'action',
+    },
   },
   'auth.utilisateur.confirmation-inscription': {
     Component: ConfirmationInscription,
@@ -81,6 +89,10 @@ export const emails = defineEmails({
     preview: 'Finalisez votre inscription en confirmant votre adresse email',
     scenarios: confirmationInscriptionScenarios,
     subject: '[France Chaleur Urbaine] Confirmez votre email',
+    trigger: {
+      description: "À l'inscription publique sur /inscription (particulier ou professionnel).",
+      type: 'action',
+    },
   },
   'auth.utilisateur.reinitialisation-mot-de-passe': {
     Component: ReinitialisationMotDePasse,
@@ -89,6 +101,10 @@ export const emails = defineEmails({
     preview: 'Sécurisez votre compte en réinitialisant votre mot de passe',
     scenarios: reinitialisationMotDePasseScenarios,
     subject: '[France Chaleur Urbaine] Réinitialisation de votre mot de passe',
+    trigger: {
+      description: 'Au clic sur « Mot de passe oublié », uniquement si le compte existe et est actif.',
+      type: 'action',
+    },
   },
   'demands.demandeur.confirmation-demande': {
     Component: ConfirmationDemande,
@@ -98,6 +114,10 @@ export const emails = defineEmails({
     preview: 'Votre demande de contact',
     scenarios: confirmationDemandeScenarios,
     subject: '[France Chaleur Urbaine] Votre demande de contact',
+    trigger: {
+      description: "Au dépôt d'une demande de raccordement (formulaire public ou espace connecté).",
+      type: 'action',
+    },
   },
   'demands.demandeur.enquete-satisfaction': {
     Component: EnqueteSatisfaction,
@@ -106,6 +126,10 @@ export const emails = defineEmails({
     preview: 'Mise à jour importante concernant votre demande de raccordement',
     scenarios: enqueteSatisfactionScenarios,
     subject: '[France Chaleur Urbaine] Votre demande',
+    trigger: {
+      description: `Cron du lundi 10h05 — à ${businessRules.firstRelanceDelayMonths.display} puis ${businessRules.secondRelanceDelayDays.display} après le dépôt, si le demandeur n'est pas marqué comme recontacté (demandes éligibles en chauffage collectif uniquement).`,
+      type: 'cron',
+    },
   },
   'demands.demandeur.message-gestionnaire': {
     Component: MessageGestionnaire,
@@ -115,14 +139,22 @@ export const emails = defineEmails({
     preview: 'Message important concernant votre demande de raccordement',
     scenarios: messageGestionnaireScenarios,
     subject: '',
+    trigger: {
+      description: "À l'envoi manuel par un gestionnaire depuis sa liste de demandes.",
+      type: 'action',
+    },
   },
   'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable': {
     Component: NouvelleDemandeChaleurRenouvelable,
-    description: 'Notification interne envoyée à france.chaleur.urbaine@gmail.com à chaque nouvelle demande chaleur renouvelable reçue.',
+    description: `Notification interne envoyée à ${clientConfig.contactEmail} à chaque nouvelle demande chaleur renouvelable reçue.`,
     label: 'Nouvelle demande chaleur renouvelable',
     preview: 'Une nouvelle demande chaleur renouvelable est à traiter',
     scenarios: nouvelleDemandeChaleurRenouvelableScenarios,
     subject: '[France Chaleur Urbaine] Nouvelle demande chaleur renouvelable à traiter',
+    trigger: {
+      description: "Au dépôt d'une demande sur le parcours chaleur renouvelable, envoyé à l'équipe FCU.",
+      type: 'action',
+    },
   },
   'demands.gestionnaire.nouvelles-demandes-a-traiter': {
     Component: NouvellesDemandesATraiter,
@@ -131,6 +163,11 @@ export const emails = defineEmails({
     preview: 'Nouvelles demandes de raccordement à traiter dans votre espace',
     scenarios: nouvellesDemandesATraiterScenarios,
     subject: '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire',
+    trigger: {
+      description:
+        "Cron du lundi au vendredi 10h — demandes validées, affectées à un réseau du gestionnaire et non encore notifiées ; nécessite l'option « recevoir les nouvelles demandes ».",
+      type: 'cron',
+    },
   },
   'demands.gestionnaire.rappel-demandes-en-attente': {
     Component: RappelDemandesEnAttente,
@@ -139,6 +176,10 @@ export const emails = defineEmails({
     preview: 'Action requise : Des demandes nécessitent votre attention',
     scenarios: rappelDemandesEnAttenteScenarios,
     subject: '[France Chaleur Urbaine] Vous avez des demandes en attente de prise en charge',
+    trigger: {
+      description: `Cron du mardi 9h55 — demandes « À traiter » notifiées depuis plus de ${businessRules.unhandledDemandReminderDays.display} ; nécessite l'option « recevoir les rappels ».`,
+      type: 'cron',
+    },
   },
 });
 
@@ -158,12 +199,14 @@ export function listEmailTypes(): Array<{
   description: string;
   subject: string;
   scenarios: Array<{ key: string; label: string }>;
+  trigger: EmailTrigger;
 }> {
   return ObjectKeys(emails).map((type) => ({
     description: emails[type].description,
     label: emails[type].label,
     scenarios: ObjectEntries(emails[type].scenarios).map(([key, { label }]) => ({ key, label })),
     subject: emails[type].subject,
+    trigger: emails[type].trigger,
     type,
   }));
 }

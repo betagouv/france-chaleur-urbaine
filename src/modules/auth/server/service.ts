@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
 import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
+import { businessRules } from '@/modules/app/business-rules';
 import { linkDemandsByEmail } from '@/modules/demands/server/account-linking';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
@@ -180,7 +181,7 @@ export const requestPassword = async (email: string) => {
   const resetToken = generateRandomToken();
   const payload = {
     email: lowerCaseEmail,
-    exp: Math.round(Date.now() / 1000) + 60 * 60 * 3, // 3 hour expiration
+    exp: Math.round(Date.now() / 1000) + 60 * 60 * businessRules.passwordResetTokenValidityHours.value,
     resetToken,
   } as const;
 

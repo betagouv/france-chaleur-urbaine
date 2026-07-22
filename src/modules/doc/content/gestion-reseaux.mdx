@@ -1,0 +1,95 @@
+import { businessRules } from '@/modules/app/business-rules';
+
+# Gestion des réseaux et PDP
+
+Côté administration, [Gestion des réseaux](/admin/reseaux) permet de maintenir les données géographiques des réseaux. C'est une zone à part : une partie des données y est éditable, l'autre vient d'Airtable et n'est modifiable qu'là-bas.
+
+## Les quatre entités
+
+| Entité | Ce que c'est |
+| --- | --- |
+| Réseaux de chaleur | Les réseaux existants distribuant de la chaleur |
+| Réseaux de froid | Les réseaux existants distribuant du froid |
+| Réseaux en construction | Zones et réseaux prévus ou en travaux |
+| Périmètres de développement prioritaire (PDP) | Les zones d'obligation de raccordement des réseaux classés |
+
+Il n'y a **pas de « réseaux classés » séparés** : le classement est un simple indicateur (oui/non) porté par chaque réseau de chaleur ou de froid.
+
+## Ce qui est modifiable, ce qui vient d'Airtable
+
+| Donnée | Modifiable dans l'admin ? |
+| --- | --- |
+| Tracé (géométrie) | **Oui**, par glisser-déposer d'un fichier GeoJSON sur la carte |
+| Notes internes | **Oui** |
+| Relances réseau | **Oui** (voir plus bas) |
+| Liens réseau ↔ PDP (onglet PDP) | **Oui** |
+| « Ouvert aux raccordements » | **Non** — géré dans Airtable |
+| « Classé » | **Non** — géré dans Airtable |
+| « A un tracé », « A un PDP » | **Non** — calculés automatiquement |
+| Métadonnées (gestionnaire, tarifs, mix énergétique, EnR&R, CO2…) | **Non** — gérées dans Airtable |
+
+Deux règles à retenir, car elles ont un effet direct sur ce que voit le public :
+
+- Un réseau **non « ouvert aux raccordements »** disparaît des résultats d'[éligibilité](/admin/doc/eligibilite). Or ce champ se pilote **dans Airtable**, pas dans l'admin.
+- Le fait qu'un réseau soit **classé** (donc soumis à obligation dans son PDP) vient aussi d'Airtable.
+
+## La modification d'un tracé se fait en deux temps
+
+C'est le point le plus important — et le plus contre-intuitif. Modifier un tracé n'a **aucun effet immédiat** : la modification est mise en attente (« brouillon »), et rien ne change tant qu'un admin n'a pas cliqué sur **« Sync »** pour l'appliquer.
+
+<Mermaid
+  chart={`flowchart TD
+    edit["L'admin dépose / modifie / supprime un tracé"] --> draft["Modification en attente (brouillon)"]:::db
+    draft --> apply{"Clic sur « Sync »"}
+    apply --> geom["Le tracé validé remplace l'ancien ; « A un tracé », communes, PDP recalculés"]:::db
+    geom --> airtable["Jobs de synchronisation Airtable (sauf pour les PDP)"]:::crm
+    geom --> tiles["Tâche de régénération des tuiles de la carte"]:::db
+    geom --> recompute["Recalcul de l'éligibilité des adresses testées à moins de ${businessRules.eligibilityRecomputeBufferMeters.display}"]:::db
+    recompute --> notify["Les tests d'adresses concernés sont marqués « Mises à jour »"]:::evt
+    geom --> evt["Événement « Application des modifications géométriques »"]:::evt
+    click evt "/admin/events?types=network_geometries_applied" "Voir dans l'activité du site"
+    classDef crm fill:#e3d9fd,stroke:#7c5cd9,color:#161616
+    classDef evt fill:#cfe3fd,stroke:#3b74c7,color:#161616
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
+/>
+
+Au clic sur « Sync », en chaîne :
+
+1. Le tracé en attente devient le tracé officiel ; « A un tracé », les communes/département/région, et les liens PDP sont recalculés.
+2. Des **synchronisations Airtable** sont lancées (sauf pour les PDP) : d'abord les données dérivées de la géométrie vers Airtable, puis les métadonnées d'Airtable vers la base.
+3. Les **tuiles de la carte** sont régénérées pour refléter le nouveau tracé.
+4. **Effet de bord majeur** : toutes les adresses des [tests en masse](/admin/doc/tests-adresses-pro) situées à moins de <Rule id="eligibilityRecomputeBufferMeters" /> du tracé modifié sont recalculées ; celles dont l'éligibilité change voient leur test marqué « Mises à jour ». Modifier un tracé peut donc **signaler un changement à des utilisateurs professionnels**.
+5. L'événement [« Application des modifications géométriques »](/admin/events?types=network_geometries_applied) est enregistré.
+
+## Périmètres de développement prioritaire (PDP)
+
+Un PDP est la zone d'un réseau **classé** où le raccordement peut être **obligatoire** (amende jusqu'à 300 000 € prévue par le code de l'énergie). Dans l'admin, on édite le tracé du PDP et les identifiants des réseaux qu'il couvre ([événement « Mise à jour périmètre de développement »](/admin/events?types=pdp_updated)) ; lier un PDP à un réseau marque ce réseau « A un PDP ». Les PDP ne sont **pas** synchronisés avec Airtable. Voir [Test d'éligibilité](/admin/doc/eligibilite) pour ce que le PDP change côté demandeur.
+
+## Relances réseau
+
+À ne pas confondre avec les [relances automatiques des demandeurs](/admin/doc/relances-notifications) : ici, une « relance réseau » est une **note de suivi datée, posée manuellement par un admin** sur un réseau. Elle n'envoie aucun email — c'est un pense-bête interne, visible des seuls admins. Deux usages :
+
+- **Suivi du tracé/des données** — depuis [Gestion des réseaux](/admin/reseaux).
+- **Relance d'un gestionnaire qui ne traite pas ses demandes** — depuis [Statistiques par réseau](/admin/reseaux/stats).
+
+Événements : [création](/admin/events?types=network_reminder_created), [mise à jour](/admin/events?types=network_reminder_updated), [suppression](/admin/events?types=network_reminder_deleted) de relance réseau.
+
+## Organisations et accès API
+
+Une **organisation** représente un exploitant (ENGIE, Dalkia, Idex…). Gérée dans [Gestion des organisations](/admin/organizations), elle porte deux choses :
+
+- **Le rattachement de ses réseaux**, possible automatiquement par **motifs** sur le nom du gestionnaire (par ex. `%engie%`). Attention, règle implicite importante : ce rattachement est **« ajout seulement »** — déclarer ou retirer un motif **ne détache jamais** un réseau déjà rattaché. Un indicateur « Écart » signale les réseaux qui matchent un motif sans être rattachés, ou rattachés hors de tout motif : c'est là qu'on repère les incohérences.
+- **Les accès API** (jetons `fcu_…`) : le jeton en clair n'est affiché **qu'une seule fois** à sa création (seule son empreinte est stockée) et peut être révoqué. Un jeton = une organisation. Voir [Rôles et permissions](/admin/doc/roles-permissions) pour ce que l'API partenaire peut faire.
+
+Le **rattachement d'un utilisateur** à une organisation ne se fait pas ici mais via la permission « Organisation » sur sa fiche (voir [Rôles et permissions](/admin/doc/roles-permissions)).
+
+## Tuiles de la carte
+
+La carte publique est servie à partir de **tuiles** pré-calculées. Elles sont régénérées (tâche visible dans [Suivi des tâches](/admin/jobs)) après l'application d'une modification de tracé, après un test d'adresses en masse, ou manuellement. **Aucun cron** ne les régénère : une donnée réseau modifiée dans Airtable n'apparaît sur la carte qu'après une régénération.
+
+## Statistiques
+
+Deux choses distinctes portent le mot « statistiques » :
+
+- [Statistiques par réseau](/admin/reseaux/stats) : par réseau, le nombre de demandes (total et « À traiter »), sur plusieurs fenêtres de temps, avec les gestionnaires ayant accès et leur dernière connexion. But : **repérer les réseaux dont les demandes ne sont pas traitées** (alerte si toutes les demandes récentes restent en attente). Exportable en Excel.
+- La tâche mensuelle `aggregateMonthlyStats` (voir [Références](/admin/doc/references)) : agrège les stats du mois écoulé (fréquentation, actions…) qui alimentent la **page de statistiques publique**, sans rapport avec la page par réseau.

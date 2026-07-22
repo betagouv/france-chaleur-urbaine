@@ -1,3 +1,4 @@
+import { businessRules } from '@/modules/app/business-rules';
 import type {
   ModeEauChaudeSanitaire,
   PrerequisiteRow,
@@ -6,8 +7,8 @@ import type {
   TypeRadiateur,
 } from '@/modules/chaleur-renouvelable/constants';
 
-export const HEAT_NETWORK_MAX_DISTANCE = 200;
-export const SOLAR_THERMAL_MIN_COVERAGE = 80;
+export const HEAT_NETWORK_MAX_DISTANCE = businessRules.fcrHeatNetworkMaxDistanceMeters.value;
+export const SOLAR_THERMAL_MIN_COVERAGE = businessRules.fcrSolarThermalMinCoveragePercent.value;
 
 export const hasEspaceShared = (situation: Situation) => ['shared', 'both'].includes(situation.espaceExterieur);
 

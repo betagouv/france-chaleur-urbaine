@@ -41,6 +41,10 @@ Définis dans `constants.ts` :
 3. **Traitement asynchrone** : Processeur indépendant qui tourne en continu
 4. **Gestion d'erreurs** : Capture et stockage des erreurs sans arrêter le processeur
 
+## Crons
+
+Les définitions des crons (nom, planification, description FR) vivent dans `cron.config.ts` (sans import de handler, donc importable côté client — utilisé par la documentation admin `/admin/doc/references`). Les handlers y sont liés par nom dans `src/server/cron/cron.ts`, exécuté par le process clock. Ajouter un cron = une entrée dans `cron.config.ts` + son handler dans `cron.ts`.
+
 ## Configuration des Handlers
 
 Les handlers sont configurés dans `jobs.config.ts` :

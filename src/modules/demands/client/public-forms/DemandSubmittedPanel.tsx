@@ -3,6 +3,7 @@ import { type ReactNode, useEffect, useRef } from 'react';
 import { clientConfig } from '@/client-config';
 import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
+import { businessRules } from '@/modules/app/business-rules';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import type { DemandSubmissionResult } from '@/modules/demands/constants';
@@ -113,7 +114,9 @@ function ExistingDemandPanel({ submissionResult }: DemandSubmittedPanelProps) {
       <PanelHeader iconClassName="fr-icon-info-fill text-(--text-action-high-blue-france)" title="Demande déjà enregistrée" />
 
       <div className="flex flex-col gap-1">
-        <p className="font-bold mb-0">Vous avez déjà déposé une demande pour cette adresse au cours des 30 derniers jours.</p>
+        <p className="font-bold mb-0">
+          Vous avez déjà déposé une demande pour cette adresse au cours des {businessRules.demandDedupWindowDays.value} derniers jours.
+        </p>
         <p className="mb-0">
           Cette nouvelle demande n'a donc pas été prise en compte : inutile de la renvoyer, votre demande a déjà été enregistrée. Veuillez
           consulter son statut ci-dessous.

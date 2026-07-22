@@ -51,7 +51,7 @@ export const adminPages = [
     label: 'Activité du site',
   },
   {
-    desc: 'Funnel affichages → tests → demandes, toutes sources',
+    desc: 'Entonnoir affichages → tests → demandes, toutes sources',
     group: 'analytics',
     href: '/admin/conversion',
     label: 'Conversion par source',
@@ -91,6 +91,12 @@ export const adminPages = [
     group: 'tools',
     href: '/admin/emails',
     label: "Modèles d'emails",
+  },
+  {
+    desc: "Comprenez les parcours métier de l'application et leurs règles de gestion",
+    group: 'tools',
+    href: '/admin/doc',
+    label: 'Documentation des workflows',
   },
   {
     desc: "Suivez l'état des tâches asynchrones et des crons",

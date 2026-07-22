@@ -9,6 +9,7 @@ import {
 } from '@/modules/chaleur-renouvelable/constants';
 import { getBatEnrBatimentsSelectionContextByBanId } from '@/modules/chaleur-renouvelable/server/service';
 import { sendEmailTemplate } from '@/modules/email';
+import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
 import { cleanDatabase } from '@/tests/fixtures';
@@ -177,7 +178,7 @@ describe('batEnrRouter', () => {
       expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
       expect(sentEmailTemplate).toHaveBeenCalledWith(
         'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable',
-        { email: 'france.chaleur.urbaine@gmail.com' },
+        { email: serverConfig.contactEmail },
         {
           demand: input,
           demandId: result.id,
