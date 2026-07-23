@@ -24,7 +24,7 @@ export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status'>> 
   'ID réseau le plus proche'?: string | null;
   'ID BNB'?: string;
   'Notification envoyé'?: string;
-  'Recontacté par le gestionnaire'?: string;
+  'Recontacté par le gestionnaire'?: 'Oui' | 'Non' | '';
   'Relance ID'?: string;
   'Relance envoyée'?: string;
   'Seconde relance envoyée'?: string;

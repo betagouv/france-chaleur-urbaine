@@ -354,7 +354,7 @@ function DemandesAdmin(): React.ReactElement {
               'aria-label': 'Recontacté par le gestionnaire',
               onChange: (e) =>
                 updateDemand(row.original.id, {
-                  'Recontacté par le gestionnaire': e.target.value,
+                  'Recontacté par le gestionnaire': e.target.value as Demand['Recontacté par le gestionnaire'],
                 }),
               value: row.original['Recontacté par le gestionnaire'] || '',
             }}
