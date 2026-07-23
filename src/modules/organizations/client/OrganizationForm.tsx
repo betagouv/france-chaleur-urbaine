@@ -1,4 +1,5 @@
-import useForm from '@/components/form/react-form/useForm';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { zCreateOrganization } from '@/modules/organizations/constants';
 import type { Organization } from '@/modules/organizations/types';
 
@@ -11,24 +12,24 @@ type OrganizationFormProps = {
 const OrganizationForm = ({ organization, onSubmit, loading }: OrganizationFormProps) => {
   const isNew = !organization?.id;
 
-  const { Form, Field, Submit, FieldWrapper } = useForm({
+  const form = useAppForm({
+    ...schemaValidation(zCreateOrganization),
     defaultValues: {
       name: organization?.name ?? '',
     },
     onSubmit: async ({ value }) => {
       await onSubmit({ name: value.name });
     },
-    schema: zCreateOrganization,
   });
 
   return (
-    <Form>
+    <Form form={form}>
       <div className="space-y-6">
-        <FieldWrapper>
-          <Field.Input name="name" label="Nom de l'organisation" nativeInputProps={{ placeholder: 'ENGIE, Dalkia, régie…' }} />
-        </FieldWrapper>
+        <form.AppField name="name">
+          {(field) => <field.TextField label="Nom de l'organisation" nativeInputProps={{ placeholder: 'ENGIE, Dalkia, régie…' }} />}
+        </form.AppField>
         <div className="flex justify-end">
-          <Submit loading={loading}>{isNew ? "Créer l'organisation" : 'Enregistrer'}</Submit>
+          <form.SubmitButton loading={loading}>{isNew ? "Créer l'organisation" : 'Enregistrer'}</form.SubmitButton>
         </div>
       </div>
     </Form>

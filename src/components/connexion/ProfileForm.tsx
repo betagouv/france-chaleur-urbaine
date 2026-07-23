@@ -1,14 +1,23 @@
-import useForm from '@/components/form/react-form/useForm';
+import { useStore } from '@tanstack/react-form';
+import type { z } from 'zod';
+
 import Loader from '@/components/ui/Loader';
 import Notice from '@/components/ui/Notice';
 import { EntrepriseField } from '@/modules/form/EntrepriseField';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { notify } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { roles, structureTypesFormLabels, updateProfileDefaultValues, zUpdateProfileSchema } from '@/modules/users/constants';
 import { ObjectEntries } from '@/utils/typescript';
 
+const structureTypeOptions = ObjectEntries(structureTypesFormLabels).map(([key, label]) => ({ label, value: key }));
+
+/**
+ * Profile edition form for the authenticated user (identity, structure, entreprise).
+ */
 function ProfileForm() {
-  const { data: profile, isLoading } = trpc.users.getProfile.useQuery();
+  const { data: profile } = trpc.users.getProfile.useQuery();
   const utils = trpc.useUtils();
 
   const updateProfile = trpc.users.updateProfile.useMutation({
@@ -21,24 +30,26 @@ function ProfileForm() {
     },
   });
 
-  const { Input, Submit, Form, Select, PhoneInput, Field, useValue } = useForm({
-    defaultValues: {
-      ...updateProfileDefaultValues,
-      entreprise: profile?.entreprise ?? null,
-      first_name: profile?.first_name ?? '',
-      last_name: profile?.last_name ?? '',
-      phone: profile?.phone ?? '',
-      structure_name: profile?.structure_name ?? '',
-      structure_other: profile?.structure_other ?? '',
-      structure_type: profile?.structure_type ?? undefined,
-    },
+  const defaultValues: z.input<typeof zUpdateProfileSchema> = {
+    ...updateProfileDefaultValues,
+    entreprise: profile?.entreprise ?? null,
+    first_name: profile?.first_name ?? '',
+    last_name: profile?.last_name ?? '',
+    phone: profile?.phone ?? '',
+    structure_name: profile?.structure_name ?? '',
+    structure_other: profile?.structure_other ?? '',
+    structure_type: profile?.structure_type ?? undefined,
+  };
+
+  const form = useAppForm({
+    ...schemaValidation(zUpdateProfileSchema),
+    defaultValues,
     onSubmit: async ({ value }) => {
       await updateProfile.mutateAsync(value);
     },
-    schema: zUpdateProfileSchema,
   });
 
-  const structureType = useValue('structure_type');
+  const structureType = useStore(form.store, (state) => state.values.structure_type);
   const showStructureFields = profile?.role !== 'particulier';
   const showEntrepriseField = profile?.role !== 'particulier' && profile?.role !== 'admin';
 
@@ -47,7 +58,7 @@ function ProfileForm() {
   }
 
   return (
-    <Form>
+    <Form form={form}>
       <div className="flex flex-col gap-4">
         <Notice variant="info" className="mb-4">
           <strong>Email :</strong> {profile.email}
@@ -55,28 +66,31 @@ function ProfileForm() {
           <strong>Rôle :</strong> {roles[profile.role]}
         </Notice>
 
-        <Input name="first_name" label="Prénom" />
-        <Input name="last_name" label="Nom de famille" />
-        <PhoneInput name="phone" label="Téléphone" />
+        <form.AppField name="first_name">{(field) => <field.TextField label="Prénom" />}</form.AppField>
+        <form.AppField name="last_name">{(field) => <field.TextField label="Nom de famille" />}</form.AppField>
+        <form.AppField name="phone">{(field) => <field.PhoneField label="Téléphone" />}</form.AppField>
 
         {showStructureFields && (
           <>
-            <Select
-              name="structure_type"
-              label="Type de structure"
-              options={ObjectEntries(structureTypesFormLabels).map(([key, label]) => ({ label, value: key }))}
-            />
-            <Input name="structure_name" label="Nom de la structure" />
-            {structureType === 'autre' && <Input name="structure_other" label="Renseignez le type de structure" />}
+            <form.AppField name="structure_type">
+              {(field) => <field.SelectField label="Type de structure" options={structureTypeOptions} />}
+            </form.AppField>
+            {structureType === 'autre' && (
+              <form.AppField name="structure_other">
+                {/* only rendered when "autre" is selected, where the schema refine makes it required */}
+                {(field) => <field.TextField label="Renseignez le type de structure" nativeInputProps={{ required: true }} />}
+              </form.AppField>
+            )}
+            <form.AppField name="structure_name">{(field) => <field.TextField label="Nom de la structure" />}</form.AppField>
           </>
         )}
 
-        {showEntrepriseField && <Field.Custom name="entreprise" label="Entreprise" Component={EntrepriseField} />}
+        {showEntrepriseField && (
+          <form.AppField name="entreprise">{(field) => <field.CustomField Component={EntrepriseField} label="Entreprise" />}</form.AppField>
+        )}
 
         <div className="flex justify-end mt-4">
-          <Submit disabled={updateProfile.isPending}>
-            {updateProfile.isPending ? 'Enregistrement...' : 'Enregistrer les modifications'}
-          </Submit>
+          <form.SubmitButton>Enregistrer les modifications</form.SubmitButton>
         </div>
       </div>
     </Form>

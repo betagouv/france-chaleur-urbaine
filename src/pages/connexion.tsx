@@ -12,7 +12,7 @@ import { stripDomainFromURL } from '@/utils/url';
 function ConnectionPage(props: LoginFormProps): JSX.Element {
   return (
     <SimplePage title="Espace connecté" description="Connectez-vous à votre compte France Chaleur Urbaine.">
-      <CenterLayout maxWidth="600px">
+      <CenterLayout maxWidth="500px">
         <Heading as="h1" size="h2" color="blue-france">
           Connectez-vous
         </Heading>

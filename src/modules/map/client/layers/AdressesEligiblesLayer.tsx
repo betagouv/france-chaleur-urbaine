@@ -67,9 +67,18 @@ export function AdressesEligiblesLayer({ adresses, autoFit = false, flyToLocatio
     if (!autoFit || adresses.length === 0) {
       return undefined;
     }
-    const longitudes = adresses.map((adresse) => adresse.longitude);
-    const latitudes = adresses.map((adresse) => adresse.latitude);
-    return [Math.min(...longitudes), Math.min(...latitudes), Math.max(...longitudes), Math.max(...latitudes)];
+    // single pass, no spread: Math.min(...array) overflows the call stack beyond ~65k elements
+    let west = Infinity;
+    let south = Infinity;
+    let east = -Infinity;
+    let north = -Infinity;
+    for (const adresse of adresses) {
+      west = Math.min(west, adresse.longitude);
+      south = Math.min(south, adresse.latitude);
+      east = Math.max(east, adresse.longitude);
+      north = Math.max(north, adresse.latitude);
+    }
+    return [west, south, east, north];
   }, [adresses, autoFit]);
 
   return (

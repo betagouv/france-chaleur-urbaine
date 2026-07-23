@@ -2,7 +2,7 @@ import type { GeoJSONSourceSpecification, LayerSpecification, SourceSpecificatio
 import { useEffect, useRef } from 'react';
 
 import { clientConfig } from '@/client-config';
-import { tileSourcesMaxZoom } from '@/modules/tiles/constants';
+import { tileSourcesMaxZoom, tileSourcesMinZoom } from '@/modules/tiles/constants';
 
 import type { MapConfiguration } from '../config/map-configuration';
 import type { MapSourceLayersSpecification } from '../core/common';
@@ -45,6 +45,7 @@ export function useConfiguredLayers(layers: readonly MapSourceLayersSpecificatio
           : {
               ...(spec.source ?? {}),
               maxzoom: spec.source?.maxzoom ?? tileSourcesMaxZoom,
+              minzoom: spec.source?.minzoom ?? tileSourcesMinZoom,
               tiles: [`${clientConfig.websiteUrl}/api/map/${spec.sourceId}/{z}/{x}/{y}`],
               type: 'vector',
             };

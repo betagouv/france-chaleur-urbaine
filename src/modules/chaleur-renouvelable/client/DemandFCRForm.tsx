@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useStore } from '@tanstack/react-form';
+import { useEffect, useRef, useState } from 'react';
 import type { z } from 'zod';
 
 import FieldWrapper from '@/components/form/dsfr/FieldWrapper';
-import useForm from '@/components/form/react-form/useForm';
 import Dialog from '@/components/ui/Dialog';
 import Link from '@/components/ui/Link';
 import RichSelect from '@/components/ui/RichSelect';
@@ -26,6 +26,8 @@ import {
 } from '@/modules/chaleur-renouvelable/constants';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 import type { DemandSubmissionResult } from '@/modules/demands/constants';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
@@ -68,7 +70,7 @@ type OccupantStatusDetailField = 'demandConcern' | 'housingCount' | 'surfaceArea
 
 const HEAT_NETWORK_LABEL = 'Réseau de chaleur';
 
-const CONTACT_FORM_DEFAULT_VALUES = {
+const CONTACT_FORM_DEFAULT_VALUES: z.input<typeof zContactFormChaleuRenouvelable> = {
   comments: '',
   demandConcern: '',
   email: '',
@@ -82,7 +84,7 @@ const CONTACT_FORM_DEFAULT_VALUES = {
   projectStatus: [] as ProjectStatus[],
   surfaceArea: undefined,
   termOfUse: false,
-} satisfies ContactFormChaleurRenouvelable;
+};
 
 const ORGANIZATION_NAME_OCCUPANT_STATUSES = [
   'Bailleur social',
@@ -386,7 +388,6 @@ function HeatNetworkDemandForm({
   setSelectedRecipientId,
   topSolution,
 }: HeatNetworkDemandFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
   const [refusalPeriod, setRefusalPeriod] = useState('');
@@ -399,149 +400,108 @@ function HeatNetworkDemandForm({
   const chauffageQuery = useChoixChauffageQueryParams();
   const params = chauffageQuery.params;
 
-  const submitContextRef = useRef({
-    createDemandeChaleurRenouvelable,
-    eligibiliteReseauChaleur,
-    geoAddress,
-    isPublicAdvisorSelected,
-    params,
-    refusalPeriod,
-    refusalReason,
-    topSolution,
-  });
-  submitContextRef.current = {
-    createDemandeChaleurRenouvelable,
-    eligibiliteReseauChaleur,
-    geoAddress,
-    isPublicAdvisorSelected,
-    params,
-    refusalPeriod,
-    refusalReason,
-    topSolution,
+  const handleSubmit = async (value: ContactFormChaleurRenouvelable) => {
+    const espaceExterieur =
+      isDefined(params.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(params.espaceExterieur)
+        ? params.espaceExterieur
+        : DEFAULT_SIMULATION_PARAMS.espaceExterieur;
+
+    const typeLogement = params.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
+    const occupantStatusDetailField = getOccupantStatusDetailField(value.occupantStatus);
+    const housingCount =
+      occupantStatusDetailField === 'housingCount' && value.housingCount !== undefined
+        ? value.housingCount
+        : Number(params.nbLogements || DEFAULT_SIMULATION_PARAMS.nbLogements);
+    const averageArea =
+      occupantStatusDetailField === 'surfaceArea' && value.surfaceArea !== undefined
+        ? value.surfaceArea
+        : Number(params.surfaceMoyenne || DEFAULT_SIMULATION_PARAMS.surfaceMoyenne);
+    const demandConcern = occupantStatusDetailField === 'demandConcern' && value.demandConcern ? value.demandConcern : null;
+    const organizationName =
+      hasOrganizationNameField(value.occupantStatus) && value.organizationName.trim().length > 0 ? value.organizationName.trim() : null;
+    const surfaceArea = occupantStatusDetailField === 'surfaceArea' ? (value.surfaceArea ?? null) : null;
+
+    trackPostHogEvent('fcr_contact:form_submitted', {
+      energy: value.heatingEnergy,
+      is_raccordable: !isPublicAdvisorSelected,
+      nb_logements: housingCount,
+      non_raccordable_reason: isPublicAdvisorSelected ? refusalReason || undefined : undefined,
+      phone_filled: value.phone.trim().length > 0,
+      profile: value.occupantStatus,
+      project_stages: value.projectStatus,
+      top_solution: topSolution,
+    });
+
+    const result = await createDemandeChaleurRenouvelable.mutateAsync({
+      address: params.adresse ?? '',
+      averageArea,
+      averageResidents: Number(params.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
+      batimentConstructionId: params.constructionId,
+      comments: value.comments.trim() || null,
+      demandConcern,
+      dpe: params.dpe,
+      email: value.email,
+      firstName: value.firstName,
+      geoAddress: geoAddress
+        ? {
+            city: geoAddress.properties.city,
+            context: geoAddress.properties.context,
+            coordinates: geoAddress.geometry.coordinates,
+            postcode: geoAddress.properties.postcode,
+          }
+        : undefined,
+      heatingEnergy: value.heatingEnergy,
+      heatNetworkEligibility: eligibiliteReseauChaleur
+        ? {
+            distance: eligibiliteReseauChaleur.distance,
+            inPDP: eligibiliteReseauChaleur.inPDP,
+            isEligible: eligibiliteReseauChaleur.isEligible,
+          }
+        : undefined,
+      hotWaterSystemType: params.modeEauChaudeSanitaire === MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE ? null : params.modeEauChaudeSanitaire,
+      housingCount,
+      housingType: typeLogement,
+      isPublicAdvisorSelected,
+      lastName: value.lastName,
+      occupantStatus: value.occupantStatus,
+      organizationName,
+      outdoorSpace: espaceExterieur,
+      phone: value.phone,
+      projectStatus: value.projectStatus,
+      radiatorType: params.typeRadiateur,
+      refusalPeriod: isPublicAdvisorSelected ? refusalPeriod || null : null,
+      refusalReason: isPublicAdvisorSelected ? refusalReason || null : null,
+      simulationUrl: window.location.href,
+      surfaceArea,
+    });
+
+    setSubmissionResult(
+      result.demandSubmissionResult ?? {
+        address: params.adresse ?? '',
+        createdAt: new Date().toISOString(),
+        distance: null,
+        email: value.email,
+        id: result.id,
+        isEligible: !isPublicAdvisorSelected,
+        isExisting: false,
+        networkName: null,
+        status: DEMANDE_STATUS.TO_PROCESS,
+      }
+    );
+    setIsSubmissionDialogOpen(true);
   };
 
-  const handleSubmit = useCallback(async ({ value }: { value: ContactFormChaleurRenouvelable }) => {
-    const submitContext = submitContextRef.current;
-    const submitParams = submitContext.params;
+  const form = useAppForm({
+    ...schemaValidation(zContactFormChaleuRenouvelable),
+    defaultValues: CONTACT_FORM_DEFAULT_VALUES,
+    onSubmit: toastErrors(
+      // re-parse to apply the schema defaults and get the output type
+      async ({ value }) => handleSubmit(zContactFormChaleuRenouvelable.parse(value)),
+      () => 'Une erreur est survenue pendant l’envoi de votre demande. Veuillez réessayer dans quelques instants.'
+    ),
+  });
 
-    setIsLoading(true);
-
-    try {
-      const espaceExterieur =
-        isDefined(submitParams.espaceExterieur) && ESPACE_EXTERIEUR_VALUES.includes(submitParams.espaceExterieur)
-          ? submitParams.espaceExterieur
-          : DEFAULT_SIMULATION_PARAMS.espaceExterieur;
-
-      const typeLogement = submitParams.typeLogement ?? DEFAULT_SIMULATION_PARAMS.typeLogement;
-      const occupantStatusDetailField = getOccupantStatusDetailField(value.occupantStatus);
-      const housingCount =
-        occupantStatusDetailField === 'housingCount' && value.housingCount !== undefined
-          ? value.housingCount
-          : Number(submitParams.nbLogements || DEFAULT_SIMULATION_PARAMS.nbLogements);
-      const averageArea =
-        occupantStatusDetailField === 'surfaceArea' && value.surfaceArea !== undefined
-          ? value.surfaceArea
-          : Number(submitParams.surfaceMoyenne || DEFAULT_SIMULATION_PARAMS.surfaceMoyenne);
-      const demandConcern = occupantStatusDetailField === 'demandConcern' && value.demandConcern ? value.demandConcern : null;
-      const organizationName =
-        hasOrganizationNameField(value.occupantStatus) && value.organizationName.trim().length > 0 ? value.organizationName.trim() : null;
-      const surfaceArea = occupantStatusDetailField === 'surfaceArea' ? (value.surfaceArea ?? null) : null;
-
-      trackPostHogEvent('fcr_contact:form_submitted', {
-        energy: value.heatingEnergy,
-        is_raccordable: !submitContext.isPublicAdvisorSelected,
-        nb_logements: housingCount,
-        non_raccordable_reason: submitContext.isPublicAdvisorSelected ? submitContext.refusalReason || undefined : undefined,
-        phone_filled: value.phone.trim().length > 0,
-        profile: value.occupantStatus,
-        project_stages: value.projectStatus,
-        top_solution: submitContext.topSolution,
-      });
-
-      const result = await submitContext.createDemandeChaleurRenouvelable.mutateAsync({
-        address: submitParams.adresse ?? '',
-        averageArea,
-        averageResidents: Number(submitParams.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
-        batimentConstructionId: submitParams.constructionId,
-        comments: value.comments.trim() || null,
-        demandConcern,
-        dpe: submitParams.dpe,
-        email: value.email,
-        firstName: value.firstName,
-        geoAddress: submitContext.geoAddress
-          ? {
-              city: submitContext.geoAddress.properties.city,
-              context: submitContext.geoAddress.properties.context,
-              coordinates: submitContext.geoAddress.geometry.coordinates,
-              postcode: submitContext.geoAddress.properties.postcode,
-            }
-          : undefined,
-        heatingEnergy: value.heatingEnergy,
-        heatNetworkEligibility: submitContext.eligibiliteReseauChaleur
-          ? {
-              distance: submitContext.eligibiliteReseauChaleur.distance,
-              inPDP: submitContext.eligibiliteReseauChaleur.inPDP,
-              isEligible: submitContext.eligibiliteReseauChaleur.isEligible,
-            }
-          : undefined,
-        hotWaterSystemType:
-          submitParams.modeEauChaudeSanitaire === MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE ? null : submitParams.modeEauChaudeSanitaire,
-        housingCount,
-        housingType: typeLogement,
-        isPublicAdvisorSelected: submitContext.isPublicAdvisorSelected,
-        lastName: value.lastName,
-        occupantStatus: value.occupantStatus,
-        organizationName,
-        outdoorSpace: espaceExterieur,
-        phone: value.phone,
-        projectStatus: value.projectStatus,
-        radiatorType: submitParams.typeRadiateur,
-        refusalPeriod: submitContext.isPublicAdvisorSelected ? submitContext.refusalPeriod || null : null,
-        refusalReason: submitContext.isPublicAdvisorSelected ? submitContext.refusalReason || null : null,
-        simulationUrl: window.location.href,
-        surfaceArea,
-      });
-
-      setSubmissionResult(
-        result.demandSubmissionResult ?? {
-          address: submitParams.adresse ?? '',
-          createdAt: new Date().toISOString(),
-          distance: null,
-          email: value.email,
-          id: result.id,
-          isEligible: !submitContext.isPublicAdvisorSelected,
-          isExisting: false,
-          networkName: null,
-          status: DEMANDE_STATUS.TO_PROCESS,
-        }
-      );
-      setIsSubmissionDialogOpen(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const handleSubmitWithErrors = useMemo(
-    () =>
-      toastErrors(
-        handleSubmit,
-        () => 'Une erreur est survenue pendant l’envoi de votre demande. Veuillez réessayer dans quelques instants.'
-      ),
-    [handleSubmit]
-  );
-
-  const formOptions = useMemo(
-    () => ({
-      defaultValues: CONTACT_FORM_DEFAULT_VALUES,
-      onSubmit: handleSubmitWithErrors,
-      schema: zContactFormChaleuRenouvelable,
-    }),
-    [handleSubmitWithErrors]
-  );
-
-  const { Field, Form, Submit, form, useValue } = useForm<typeof zContactFormChaleuRenouvelable>(formOptions);
-
-  const selectedOccupantStatus = useValue<OccupantStatus>('occupantStatus') ?? CONTACT_FORM_DEFAULT_VALUES.occupantStatus;
+  const selectedOccupantStatus = useStore(form.store, (state) => state.values.occupantStatus);
   const occupantStatusDetailField = getOccupantStatusDetailField(selectedOccupantStatus);
   const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
   const shouldShowPublicAdvisorCalloutOnly = selectedRecipientId === 'public-advisor';
@@ -569,7 +529,7 @@ function HeatNetworkDemandForm({
       )}
       {isPublicAdvisorSelected && <FranceRenovAdvisorCallout variant="inline" />}
       {!shouldShowPublicAdvisorCalloutOnly && (
-        <Form>
+        <Form form={form}>
           {isPublicAdvisorSelected && !isAlternativeAdvisorForm && (
             <p className="mb-4 text-lg font-bold">Pour aider le conseiller du service public à prendre le relais</p>
           )}
@@ -596,9 +556,8 @@ function HeatNetworkDemandForm({
               </>
             )}
             <div className={cx(!shouldShowOrganizationName && !isAlternativeAdvisorForm && 'md:col-span-2 mb-5')}>
-              <form.Field
-                name="occupantStatus"
-                children={(field) => (
+              <form.AppField name="occupantStatus">
+                {(field) => (
                   <RichSelect<OccupantStatus>
                     label="Vous êtes"
                     value={field.state.value}
@@ -611,12 +570,11 @@ function HeatNetworkDemandForm({
                     })}
                   />
                 )}
-              />
+              </form.AppField>
             </div>
             {isAlternativeAdvisorForm && (
-              <form.Field
-                name="heatingEnergy"
-                children={(field) => (
+              <form.AppField name="heatingEnergy">
+                {(field) => (
                   <RichSelect<HeatingEnergy>
                     label="Énergie de chauffage"
                     value={field.state.value}
@@ -629,19 +587,18 @@ function HeatNetworkDemandForm({
                     })}
                   />
                 )}
-              />
+              </form.AppField>
             )}
             {shouldShowOrganizationName && !isAlternativeAdvisorForm && (
-              <Field.Input name="organizationName" label="Nom de votre structure" />
+              <form.AppField name="organizationName">{(field) => <field.TextField label="Nom de votre structure" />}</form.AppField>
             )}
-            <Field.Input name="lastName" label="Nom" />
-            <Field.Input name="firstName" label="Prénom" />
-            <Field.EmailInput name="email" label="Email" />
-            <Field.PhoneInput name="phone" label="Téléphone" />
+            <form.AppField name="lastName">{(field) => <field.TextField label="Nom" />}</form.AppField>
+            <form.AppField name="firstName">{(field) => <field.TextField label="Prénom" />}</form.AppField>
+            <form.AppField name="email">{(field) => <field.EmailField label="Email" />}</form.AppField>
+            <form.AppField name="phone">{(field) => <field.PhoneField label="Téléphone" />}</form.AppField>
             {!isAlternativeAdvisorForm && (
-              <form.Field
-                name="heatingEnergy"
-                children={(field) => (
+              <form.AppField name="heatingEnergy">
+                {(field) => (
                   <RichSelect<HeatingEnergy>
                     label="Énergie de chauffage"
                     value={field.state.value}
@@ -654,34 +611,21 @@ function HeatNetworkDemandForm({
                     })}
                   />
                 )}
-              />
+              </form.AppField>
             )}
             {occupantStatusDetailField === 'housingCount' && !isAlternativeAdvisorForm && (
-              <Field.Input
-                name="housingCount"
-                label="Nombre de logements"
-                nativeInputProps={{
-                  inputMode: 'numeric',
-                  min: 1,
-                  type: 'number',
-                }}
-              />
+              <form.AppField name="housingCount">
+                {(field) => <field.NumberField label="Nombre de logements" nativeInputProps={{ inputMode: 'numeric', min: 1 }} />}
+              </form.AppField>
             )}
             {occupantStatusDetailField === 'surfaceArea' && !isAlternativeAdvisorForm && (
-              <Field.Input
-                name="surfaceArea"
-                label="Surface en m²"
-                nativeInputProps={{
-                  inputMode: 'numeric',
-                  min: 1,
-                  type: 'number',
-                }}
-              />
+              <form.AppField name="surfaceArea">
+                {(field) => <field.NumberField label="Surface en m²" nativeInputProps={{ inputMode: 'numeric', min: 1 }} />}
+              </form.AppField>
             )}
             {occupantStatusDetailField === 'demandConcern' && !isAlternativeAdvisorForm && (
-              <form.Field
-                name="demandConcern"
-                children={(field) => (
+              <form.AppField name="demandConcern">
+                {(field) => (
                   <RichSelect<DemandConcern>
                     label="Votre demande concerne"
                     value={field.state.value || undefined}
@@ -690,65 +634,72 @@ function HeatNetworkDemandForm({
                     placeholder="Sélectionner une option"
                   />
                 )}
-              />
+              </form.AppField>
             )}
             <div>
-              <form.Field
-                name="projectStatus"
-                children={(field) => (
-                  <>
-                    <ProjectStatusSelect
-                      value={field.state.value}
-                      onChange={field.handleChange}
-                      isPublicAdvisorSelected={isPublicAdvisorSelected}
-                      placeholder={isAlternativeAdvisorForm ? 'Sélectionner une ou plusieurs option(s)' : undefined}
-                    />
+              <form.AppField name="projectStatus">
+                {(field) => {
+                  const projectStatus = field.state.value ?? [];
+                  return (
+                    <>
+                      <ProjectStatusSelect
+                        value={projectStatus}
+                        onChange={field.handleChange}
+                        isPublicAdvisorSelected={isPublicAdvisorSelected}
+                        placeholder={isAlternativeAdvisorForm ? 'Sélectionner une ou plusieurs option(s)' : undefined}
+                      />
 
-                    {field.state.value.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {field.state.value.map((status) => (
-                          <span key={status} className="rounded-full bg-[#E3E3FD] px-3 py-1 text-xs font-medium text-blue">
-                            {status}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
-              />
+                      {projectStatus.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {projectStatus.map((status) => (
+                            <span key={status} className="rounded-full bg-[#E3E3FD] px-3 py-1 text-xs font-medium text-blue">
+                              {status}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  );
+                }}
+              </form.AppField>
             </div>
             {!isAlternativeAdvisorForm && (
-              <Field.Textarea
-                name="comments"
-                label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
-                className="w-full md:col-span-2 mt-5"
-                nativeTextAreaProps={{
-                  rows: 3,
-                }}
-              />
+              <form.AppField name="comments">
+                {(field) => (
+                  <field.TextareaField
+                    label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
+                    className="w-full md:col-span-2 mt-5"
+                    nativeTextAreaProps={{ rows: 3 }}
+                  />
+                )}
+              </form.AppField>
             )}
           </div>
-          <Field.Checkbox
+          <form.AppField
             name="termOfUse"
-            postHogEventKey="fcr_contact:cgu_accepted"
-            postHogEventProps={{ is_raccordable: !isPublicAdvisorSelected }}
-            label={
-              <>
-                J’accepte les&nbsp;
-                <Link href="/cgu">conditions générales d’utilisation</Link>
-                &nbsp;du service.
-              </>
-            }
-          />
-          <Submit
-            loading={isLoading}
-            disabled={submissionResult !== null}
-            iconId="fr-icon-arrow-right-line"
-            iconPosition="right"
-            className="mt-4"
+            listeners={{
+              onChange: ({ value }) => {
+                if (value) {
+                  trackPostHogEvent('fcr_contact:cgu_accepted', { is_raccordable: !isPublicAdvisorSelected });
+                }
+              },
+            }}
           >
+            {(field) => (
+              <field.CheckboxField
+                label={
+                  <>
+                    J’accepte les&nbsp;
+                    <Link href="/cgu">conditions générales d’utilisation</Link>
+                    &nbsp;du service.
+                  </>
+                }
+              />
+            )}
+          </form.AppField>
+          <form.SubmitButton disabled={submissionResult !== null} iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-4">
             Envoyer
-          </Submit>
+          </form.SubmitButton>
         </Form>
       )}
       <Dialog title="" open={isSubmissionDialogOpen && submissionResult !== null} size="lg" onOpenChange={setIsSubmissionDialogOpen}>

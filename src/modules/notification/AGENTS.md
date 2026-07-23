@@ -82,12 +82,14 @@ router.push('/login?notify=error:Invalid credentials');
 ### Integration with Forms
 
 ```typescript
-import { useForm } from '@/components/form/react-form/useForm';
-import { toastErrors } from '@/modules/notification';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
+import { notify, toastErrors } from '@/modules/notification';
 
 const MyForm = () => {
-  const { Form, Input, Submit } = useForm({
-    schema: mySchema,
+  const form = useAppForm({
+    ...schemaValidation(mySchema),
+    defaultValues: { name: '' },
     onSubmit: toastErrors(async ({ value }) => {
       await api.create(value);
       notify('success', 'Item created successfully');
@@ -95,9 +97,9 @@ const MyForm = () => {
   });
 
   return (
-    <Form>
-      <Input name="name" label="Name" />
-      <Submit>Create</Submit>
+    <Form form={form}>
+      <form.AppField name="name">{(field) => <field.TextField label="Name" />}</form.AppField>
+      <form.SubmitButton>Create</form.SubmitButton>
     </Form>
   );
 };

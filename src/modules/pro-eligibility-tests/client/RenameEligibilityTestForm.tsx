@@ -1,10 +1,11 @@
-import useForm from '@/components/form/react-form/useForm';
 import Button from '@/components/ui/Button';
 import { useModal } from '@/components/ui/ModalSimple';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { notify, toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
-import { type RenameProEligibilityTestRequest, zRenameProEligibilityTestRequest } from '../constants';
+import { zRenameProEligibilityTestRequest } from '../constants';
 
 type RenameEligibilityTestFormProps = {
   testId: string;
@@ -40,12 +41,13 @@ const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTes
     },
   });
 
-  const { Form, Input, Submit } = useForm({
+  const form = useAppForm({
+    ...schemaValidation(zRenameProEligibilityTestRequest),
     defaultValues: {
       name: currentName,
     },
     onSubmit: toastErrors(
-      async ({ value }: { value: RenameProEligibilityTestRequest }) => {
+      async ({ value }) => {
         await renameTest({
           id: testId,
           name: value.name,
@@ -54,19 +56,18 @@ const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTes
       },
       (err) => `Une erreur est survenue lors du renommage du test: ${err.message}`
     ),
-    schema: zRenameProEligibilityTestRequest,
   });
 
   return (
-    <Form>
+    <Form form={form}>
       <div className="flex flex-col gap-4">
-        <Input name="name" label="Nom du test" />
+        <form.AppField name="name">{(field) => <field.TextField label="Nom du test" />}</form.AppField>
 
         <div className="flex justify-end gap-2 mt-4">
           <Button priority="secondary" onClick={closeModal}>
             Annuler
           </Button>
-          <Submit>Renommer</Submit>
+          <form.SubmitButton>Renommer</form.SubmitButton>
         </div>
       </div>
     </Form>

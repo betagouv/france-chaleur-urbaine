@@ -1,8 +1,58 @@
 import { describe, expect, it } from 'vitest';
+import { type ZodType, z } from 'zod';
 
 import type { TestCase } from '@/tests/trpc-helpers';
 
-import { emailSchema, envBooleanSchema, sanitizeEmail, zAirtableRecordId, zGeometry, zPassword } from './validation';
+import { emailSchema, envBooleanSchema, getSchemaField, sanitizeEmail, zAirtableRecordId, zGeometry, zPassword } from './validation';
+
+describe('getSchemaField()', () => {
+  const zBase = z.object({
+    optionalField: z.string().optional(),
+    requiredField: z.string().min(1),
+  });
+  // the shape of zUpdateProfileSchema, which originally broke the required detection
+  const zPiped = zBase.refine(() => true).transform((value) => value);
+  const zIntersection = z.intersection(z.object({ left: z.string() }), z.object({ right: z.string().optional() }));
+  const zNested = z.object({
+    items: z.array(z.object({ inner: z.string() })),
+    nested: z.object({ inner: z.string() }).optional(),
+  });
+
+  // expectedOutput = required-ness of the resolved field (undefined = field not resolved)
+  const testCases: TestCase<{ schema: ZodType; fieldPath: string }, boolean | undefined>[] = [
+    { expectedOutput: true, input: { fieldPath: 'requiredField', schema: zBase }, label: 'objet simple, champ requis' },
+    { expectedOutput: false, input: { fieldPath: 'optionalField', schema: zBase }, label: 'objet simple, champ optionnel' },
+    { expectedOutput: undefined, input: { fieldPath: 'missing', schema: zBase }, label: 'objet simple, champ inconnu' },
+    { expectedOutput: true, input: { fieldPath: 'requiredField', schema: zPiped }, label: 'refine + transform (ZodPipe), champ requis' },
+    {
+      expectedOutput: false,
+      input: { fieldPath: 'optionalField', schema: zPiped },
+      label: 'refine + transform (ZodPipe), champ optionnel',
+    },
+    { expectedOutput: true, input: { fieldPath: 'left', schema: zIntersection }, label: 'intersection, champ du côté gauche' },
+    { expectedOutput: false, input: { fieldPath: 'right', schema: zIntersection }, label: 'intersection, champ du côté droit' },
+    {
+      expectedOutput: true,
+      input: {
+        fieldPath: 'perBranchField',
+        schema: z.discriminatedUnion('kind', [
+          z.object({ kind: z.literal('a'), perBranchField: z.string() }),
+          z.object({ kind: z.literal('b'), shared: z.string().optional() }),
+        ]),
+      },
+      label: 'union discriminée, champ requis dans sa branche',
+    },
+    { expectedOutput: true, input: { fieldPath: 'nested.inner', schema: zNested }, label: 'chemin imbriqué via un objet optionnel' },
+    { expectedOutput: true, input: { fieldPath: 'items[0].inner', schema: zNested }, label: "chemin via un élément d'array" },
+    { expectedOutput: undefined, input: { fieldPath: '', schema: zBase }, label: 'chemin vide' },
+  ];
+
+  it.each(testCases)('$label', ({ input, expectedOutput }) => {
+    const fieldSchema = getSchemaField(input.schema, input.fieldPath);
+    const isRequired = fieldSchema ? !fieldSchema.safeParse(undefined).success : undefined;
+    expect(isRequired).toBe(expectedOutput);
+  });
+});
 
 describe('zPassword', () => {
   describe('mots de passe valides', () => {

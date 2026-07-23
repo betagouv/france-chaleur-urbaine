@@ -22,6 +22,7 @@ export const zGetBdnbBatimentInput = z.strictObject({
 export type GetBdnbBatimentInput = z.infer<typeof zGetBdnbBatimentInput>;
 
 export const intermediateTileLayersMinZoom = 12;
+export const tileSourcesMinZoom = 5; // tiles are only generated from z5: prevents useless requests when the map allows lower zooms
 export const tileSourcesMaxZoom = 17;
 
 export const zGetBdnbConstructionInput = z.union([

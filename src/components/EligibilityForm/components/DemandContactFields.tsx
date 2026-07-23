@@ -1,169 +1,223 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { type ComponentType, type HTMLAttributes, useEffect } from 'react';
+import { useStore } from '@tanstack/react-form';
+import type { HTMLAttributes } from 'react';
+import type { z } from 'zod';
 
 import Alert from '@/components/ui/Alert';
-import { fieldLabelInformation } from '@/modules/demands/constants';
+import { fieldLabelInformation, type zBatchDemandContactSchema } from '@/modules/demands/constants';
+import { withFieldGroup } from '@/modules/form/useAppForm';
+import cx from '@/utils/cx';
 
-export type ContactState = {
-  companyType?: string;
-  demandCompanyType?: string;
-  structure?: string;
+export type DemandContactFieldsValues = z.input<typeof zBatchDemandContactSchema>;
+
+const demandContactDefaultValues: DemandContactFieldsValues = {
+  company: '',
+  companyType: '',
+  demandArea: undefined,
+  demandCompanyName: '',
+  demandCompanyType: '',
+  email: '',
+  firstName: '',
+  lastName: '',
+  nbLogements: undefined,
+  phone: '',
+  structure: '',
 };
 
-export type FormUi = {
-  Field: {
-    EmailInput: ComponentType<any>;
-    Input: ComponentType<any>;
-    NumberInput: ComponentType<any>;
-    PhoneInput: ComponentType<any>;
-    Select: ComponentType<any>;
-    Textarea: ComponentType<any>;
-  };
-  FieldWrapper: ComponentType<HTMLAttributes<HTMLDivElement>>;
-  Fieldset: ComponentType<HTMLAttributes<HTMLFieldSetElement>>;
-  FieldsetLegend: ComponentType<HTMLAttributes<HTMLLegendElement>>;
-  form: {
-    setFieldValue: (...args: any[]) => void;
-  };
-};
+/** Identity mapping for forms holding the contact fields at the root of their values (see `ContactForm`). */
+export const demandContactRootFields = {
+  company: 'company',
+  companyType: 'companyType',
+  demandArea: 'demandArea',
+  demandCompanyName: 'demandCompanyName',
+  demandCompanyType: 'demandCompanyType',
+  email: 'email',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  nbLogements: 'nbLogements',
+  phone: 'phone',
+  structure: 'structure',
+} as const;
 
-type DemandContactFieldsProps<TFormUi extends FormUi = FormUi> = {
+type DemandContactFieldsProps = {
   cardMode?: boolean;
   city?: string;
-  contactState: ContactState;
-  formUi: TFormUi;
-  namePrefix?: '' | 'contact.';
-  showHeatingEnergy?: boolean;
   showHouseWarning?: boolean;
   structureClassName?: string;
 };
 
-export const DemandContactFields = <TFormUi extends FormUi>({
-  cardMode,
-  city,
-  contactState,
-  formUi,
-  namePrefix = '',
-  showHeatingEnergy = false,
-  showHouseWarning = false,
-  structureClassName,
-}: DemandContactFieldsProps<TFormUi>) => {
-  const { companyType, demandCompanyType, structure } = contactState;
-  const { Field, Fieldset, FieldsetLegend, FieldWrapper, form } = formUi;
-  const fieldName = (name: string) => `${namePrefix}${name}`;
+/**
+ * Shared demand contact fields (structure, company, identity, demand details) as a
+ * TanStack Form field group. Mount with `form` + `fields` (a subtree prefix like
+ * `"contact"`, or `demandContactRootFields` for root-level values); conditional
+ * sub-fields react to the group's own values.
+ */
+export const DemandContactFields = withFieldGroup<DemandContactFieldsValues, unknown, DemandContactFieldsProps>({
+  defaultValues: demandContactDefaultValues,
+  // biome-ignore lint: a named PascalCase function is required for the hooks rules (an inline `render()` method is not seen as a component)
+  render: function DemandContactFieldsRender({ group, cardMode, city, showHouseWarning, structureClassName }) {
+    // despite the type, `values` is undefined while a group mounted on an optional subtree initializes
+    const structure = useStore(group.store, (state) => state.values?.structure);
+    const companyType = useStore(group.store, (state) => state.values?.companyType);
+    const demandCompanyType = useStore(group.store, (state) => state.values?.demandCompanyType);
 
-  useEffect(() => {
-    if (structure !== 'Tertiaire' && companyType) {
-      form.setFieldValue(fieldName('companyType'), '');
-      form.setFieldValue(fieldName('company'), '');
-    }
-  }, [companyType, form, structure]);
+    // Tertiaire-only fields must not survive a structure change (mount covers stale persisted values)
+    const clearStaleTertiaireFields = (structureValue: string | undefined) => {
+      if (structureValue !== 'Tertiaire' && group.getFieldValue('companyType')) {
+        // dontUpdateMeta: a programmatic clear must not mark the fields as touched,
+        // so they come back pristine (no instant error) if Tertiaire is re-selected
+        group.setFieldValue('companyType', '', { dontUpdateMeta: true });
+        group.setFieldValue('company', '', { dontUpdateMeta: true });
+      }
+    };
 
-  return (
-    <>
-      <Field.Select
-        label={fieldLabelInformation.structure.label}
-        name={fieldName('structure')}
-        className={structureClassName ?? fr.cx(`fr-mt-${cardMode ? '1' : '3'}w`)}
-        options={fieldLabelInformation.structure.inputs.map(({ value, label }) => ({
-          label,
-          value,
-        }))}
-      />
-      {showHouseWarning && structure === 'Maison individuelle' && city !== 'Charleville-Mézières' && (
-        <Alert className="mb-2w" variant="warning" size="sm">
-          Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable
-          que le gestionnaire du réseau ne donne pas suite à votre demande.
-        </Alert>
-      )}
-      {structure === 'Tertiaire' && (
-        <Fieldset>
-          <FieldsetLegend>{fieldLabelInformation.companyTitle}</FieldsetLegend>
-          <FieldWrapper>
-            <Field.Select
-              name={fieldName('companyType')}
-              label={fieldLabelInformation.companyType.label}
-              options={fieldLabelInformation.companyType.inputs}
-              nativeSelectProps={{
-                required: true,
-              }}
+    return (
+      <>
+        <group.AppField
+          name="structure"
+          listeners={{
+            onChange: ({ value }) => clearStaleTertiaireFields(value),
+            onMount: ({ value }) => clearStaleTertiaireFields(value),
+          }}
+        >
+          {(field) => (
+            <field.SelectField
+              label={fieldLabelInformation.structure.label}
+              className={structureClassName ?? fr.cx(`fr-mt-${cardMode ? '1' : '3'}w`)}
+              options={fieldLabelInformation.structure.inputs.map(({ value, label }) => ({
+                label,
+                value,
+              }))}
             />
+          )}
+        </group.AppField>
+        {showHouseWarning && structure === 'Maison individuelle' && city !== 'Charleville-Mézières' && (
+          <Alert className="mb-2w" variant="warning" size="sm">
+            Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable
+            que le gestionnaire du réseau ne donne pas suite à votre demande.
+          </Alert>
+        )}
+        {structure === 'Tertiaire' && (
+          <Fieldset>
+            <FieldsetLegend>{fieldLabelInformation.companyTitle}</FieldsetLegend>
+            <FieldWrapper>
+              <group.AppField name="companyType">
+                {(field) => (
+                  <field.SelectField
+                    label={fieldLabelInformation.companyType.label}
+                    options={[...fieldLabelInformation.companyType.inputs]}
+                    nativeSelectProps={{
+                      required: true,
+                    }}
+                  />
+                )}
+              </group.AppField>
+            </FieldWrapper>
+            <FieldWrapper>
+              <group.AppField name="company">
+                {/* only rendered for Tertiaire, where the schema superRefine makes it required */}
+                {(field) => <field.TextField label={fieldLabelInformation.company} nativeInputProps={{ required: true }} />}
+              </group.AppField>
+            </FieldWrapper>
+          </Fieldset>
+        )}
+        <Fieldset>
+          <FieldsetLegend>{fieldLabelInformation.contactDetailsTitle}</FieldsetLegend>
+          <FieldWrapper>
+            <group.AppField name="lastName">{(field) => <field.TextField label={fieldLabelInformation.lastName} />}</group.AppField>
           </FieldWrapper>
           <FieldWrapper>
-            <Field.Input name={fieldName('company')} hideOptionalLabel label={fieldLabelInformation.company} />
+            <group.AppField name="firstName">{(field) => <field.TextField label={fieldLabelInformation.firstName} />}</group.AppField>
+          </FieldWrapper>
+          <FieldWrapper>
+            <group.AppField name="email">{(field) => <field.EmailField label={fieldLabelInformation.email} />}</group.AppField>
+          </FieldWrapper>
+          <FieldWrapper>
+            <group.AppField name="phone">{(field) => <field.PhoneField label={fieldLabelInformation.phone} />}</group.AppField>
           </FieldWrapper>
         </Fieldset>
-      )}
-      <Fieldset>
-        <FieldsetLegend>{fieldLabelInformation.contactDetailsTitle}</FieldsetLegend>
-        <FieldWrapper>
-          <Field.Input name={fieldName('lastName')} label={fieldLabelInformation.lastName} />
-        </FieldWrapper>
-        <FieldWrapper>
-          <Field.Input name={fieldName('firstName')} label={fieldLabelInformation.firstName} />
-        </FieldWrapper>
-        <FieldWrapper>
-          <Field.EmailInput name={fieldName('email')} label={fieldLabelInformation.email} />
-        </FieldWrapper>
-        <FieldWrapper>
-          <Field.PhoneInput name={fieldName('phone')} label={fieldLabelInformation.phone} />
-        </FieldWrapper>
-      </Fieldset>
-      {(structure === 'Copropriété' || (structure === 'Tertiaire' && companyType !== 'Autre')) && (
-        <Fieldset>
-          {structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') && (
-            <>
-              <FieldWrapper>
-                <Field.Select
-                  name={fieldName('demandCompanyType')}
-                  label={fieldLabelInformation.demandCompanyType.label}
-                  options={fieldLabelInformation.demandCompanyType.inputs}
-                />
-              </FieldWrapper>
-              {(demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre') && (
+        {(structure === 'Copropriété' || (structure === 'Tertiaire' && companyType !== 'Autre')) && (
+          <Fieldset>
+            {structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') && (
+              <>
                 <FieldWrapper>
-                  <Field.Input name={fieldName('demandCompanyName')} hideOptionalLabel label={fieldLabelInformation.demandCompanyName} />
+                  <group.AppField name="demandCompanyType">
+                    {/* only rendered for companyTypes where the schema superRefine makes it required */}
+                    {(field) => (
+                      <field.SelectField
+                        label={fieldLabelInformation.demandCompanyType.label}
+                        options={[...fieldLabelInformation.demandCompanyType.inputs]}
+                        nativeSelectProps={{ required: true }}
+                      />
+                    )}
+                  </group.AppField>
+                </FieldWrapper>
+                {(demandCompanyType === 'Bâtiment tertiaire' ||
+                  demandCompanyType === 'Bailleur social' ||
+                  demandCompanyType === 'Autre') && (
+                  <FieldWrapper>
+                    <group.AppField name="demandCompanyName">
+                      {/* only rendered for demandCompanyTypes where the schema superRefine makes it required */}
+                      {(field) => <field.TextField label={fieldLabelInformation.demandCompanyName} nativeInputProps={{ required: true }} />}
+                    </group.AppField>
+                  </FieldWrapper>
+                )}
+              </>
+            )}
+            {structure === 'Tertiaire' &&
+              (companyType === 'Gestionnaire de parc tertiaire' || demandCompanyType === 'Bâtiment tertiaire') && (
+                <FieldWrapper>
+                  <group.AppField name="demandArea">
+                    {(field) => <field.NumberField label={fieldLabelInformation.demandArea} />}
+                  </group.AppField>
                 </FieldWrapper>
               )}
-            </>
-          )}
-          {structure === 'Tertiaire' &&
-            (companyType === 'Gestionnaire de parc tertiaire' || demandCompanyType === 'Bâtiment tertiaire') && (
+            {(structure === 'Copropriété' ||
+              (structure === 'Tertiaire' &&
+                (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
+                (demandCompanyType === 'Copropriété' || demandCompanyType === 'Bailleur social')) ||
+              (structure === 'Tertiaire' && (companyType === 'Syndic de copropriété' || companyType === 'Bailleur social'))) && (
               <FieldWrapper>
-                <Field.NumberInput name={fieldName('demandArea')} label={fieldLabelInformation.demandArea} />
+                <group.AppField name="nbLogements">
+                  {(field) => <field.NumberField label={fieldLabelInformation.nbLogements} />}
+                </group.AppField>
               </FieldWrapper>
             )}
-          {(structure === 'Copropriété' ||
-            (structure === 'Tertiaire' &&
-              (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
-              (demandCompanyType === 'Copropriété' || demandCompanyType === 'Bailleur social')) ||
-            (structure === 'Tertiaire' && (companyType === 'Syndic de copropriété' || companyType === 'Bailleur social'))) && (
-            <FieldWrapper>
-              <Field.NumberInput name={fieldName('nbLogements')} label={fieldLabelInformation.nbLogements} />
-            </FieldWrapper>
-          )}
-        </Fieldset>
-      )}
-      {showHeatingEnergy && (
-        <Field.Select
-          label={fieldLabelInformation.heatingEnergy.label}
-          name={fieldName('heatingEnergy')}
-          className="heatingEnergyContactInformations"
-          options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
-            label,
-            value,
-          }))}
-        />
-      )}
-      <Field.Textarea
-        label={fieldLabelInformation.commentUser}
-        name={fieldName('commentUser')}
-        nativeTextAreaProps={{
-          rows: 4,
-        }}
-      />
-    </>
-  );
-};
+          </Fieldset>
+        )}
+      </>
+    );
+  },
+});
 
 export default DemandContactFields;
+
+type FieldsetProps = HTMLAttributes<HTMLFieldSetElement>;
+
+function Fieldset({ children, className, ...props }: FieldsetProps) {
+  return (
+    <fieldset className={cx('fr-fieldset', className)} {...props}>
+      {children}
+    </fieldset>
+  );
+}
+
+type FieldsetLegendProps = HTMLAttributes<HTMLLegendElement>;
+
+function FieldsetLegend({ children, className, ...props }: FieldsetLegendProps) {
+  return (
+    <legend className={cx('ml-2 mb-1w text-sm font-bold uppercase', className)} {...props}>
+      {children}
+    </legend>
+  );
+}
+
+type FieldWrapperProps = HTMLAttributes<HTMLDivElement>;
+
+function FieldWrapper({ children, className, ...props }: FieldWrapperProps) {
+  return (
+    <div className={cx('fr-fieldset__element', className)} {...props}>
+      {children}
+    </div>
+  );
+}

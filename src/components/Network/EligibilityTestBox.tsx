@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useStore } from '@tanstack/react-form';
+import { useEffect, useState } from 'react';
 
 import { EligibilityFormContact } from '@/components/EligibilityForm';
-import { SelectEnergy } from '@/components/EligibilityForm/components';
-import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
+import { type EligibilityTestValues, heatingTypeOptions, zEligibilityTest } from '@/components/EligibilityForm/eligibilityTestValidation';
 import Box from '@/components/ui/Box';
-import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import Modal, { createModal } from '@/components/ui/Modal';
 import Text from '@/components/ui/Text';
@@ -17,9 +16,9 @@ import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
-import { AddressField } from '@/modules/form/AddressField';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import trpc from '@/modules/trpc/client';
-import cx from '@/utils/cx';
 
 interface EligibilityTestBoxProps {
   networkId: string;
@@ -42,7 +41,6 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     contactReady,
     messageReceived,
     loadingStatus,
-    warningMessage,
     setLoadingStatus,
     handleOnFetchAddress,
     handleOnSuccessAddress,
@@ -52,8 +50,44 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
 
   const urlAddress = useInitialSearchParam('address');
   const { userInfo, setUserInfo } = useUserInfo();
-  const [geoAddress, setGeoAddress] = useState<BANAddressFeature>();
   const [eligibilityError, setEligibilityError] = useState(false);
+
+  const form = useAppForm({
+    ...schemaValidation(zEligibilityTest),
+    defaultValues: {
+      geoAddress: undefined as unknown as BANAddressFeature,
+      heatingType: userInfo.heatingType ?? '',
+    } as EligibilityTestValues,
+    onSubmit: async ({ value }) => {
+      setEligibilityError(false);
+      const address = value.geoAddress.properties.label;
+      handleOnFetchAddress({ address }, 'fiche-reseau');
+      const [lon, lat] = value.geoAddress.geometry.coordinates;
+
+      try {
+        const isCity = value.geoAddress.properties.label === value.geoAddress.properties.city;
+        const networkData = isCity
+          ? await trpcUtils.client.reseaux.cityNetwork.query({ city: value.geoAddress.properties.city })
+          : await trpcUtils.client.reseaux.eligibilityStatus.query({ lat, lon });
+        trackPostHogEvent('network_page:address_test_cta_clicked', { network_id: networkId });
+        handleOnSuccessAddress(
+          {
+            address,
+            coords: { lat, lon },
+            eligibility: networkData,
+            geoAddress: value.geoAddress,
+            heatingType: value.heatingType as AvailableHeating,
+          },
+          'fiche-reseau'
+        );
+      } catch (_err) {
+        setEligibilityError(true);
+      }
+      setLoadingStatus('idle');
+    },
+  });
+
+  const geoAddress = useStore(form.store, (state) => state.values.geoAddress);
 
   // Restaure la geoAddress depuis la BAN quand l'adresse est préremplie (param URL ou localStorage) sans objet feature.
   useEffect(() => {
@@ -66,52 +100,19 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       .then((features) => {
         const match = features.find((f) => f.properties.label === address) ?? features[0];
         if (match) {
-          setGeoAddress(match);
+          form.setFieldValue('geoAddress', match, { dontUpdateMeta: true });
         }
       })
       .catch(() => {});
     return () => controller.abort();
   }, [urlAddress, userInfo.address, geoAddress]);
 
-  const testAddress = useCallback(async () => {
-    setEligibilityError(false);
-    if (!geoAddress) {
-      return;
+  // le mode de chauffage mémorisé (localStorage) peut arriver après le montage du formulaire
+  useEffect(() => {
+    if (userInfo.heatingType) {
+      form.setFieldValue('heatingType', userInfo.heatingType, { dontUpdateMeta: true });
     }
-
-    handleOnFetchAddress({ address: userInfo.address }, 'fiche-reseau');
-    const [lon, lat] = geoAddress.geometry.coordinates;
-
-    try {
-      const isCity = geoAddress.properties.label === geoAddress.properties.city;
-      const networkData = isCity
-        ? await trpcUtils.client.reseaux.cityNetwork.query({ city: geoAddress.properties.city })
-        : await trpcUtils.client.reseaux.eligibilityStatus.query({ lat, lon });
-      trackPostHogEvent('network_page:address_test_cta_clicked', { network_id: networkId });
-      handleOnSuccessAddress(
-        {
-          address: userInfo.address,
-          coords: { lat, lon },
-          eligibility: networkData,
-          geoAddress,
-          heatingType: userInfo.heatingType as AvailableHeating,
-        },
-        'fiche-reseau'
-      );
-    } catch (_err) {
-      setEligibilityError(true);
-    }
-    setLoadingStatus('idle');
-  }, [
-    userInfo.address,
-    userInfo.heatingType,
-    geoAddress,
-    networkId,
-    trpcUtils,
-    handleOnFetchAddress,
-    handleOnSuccessAddress,
-    setLoadingStatus,
-  ]);
+  }, [userInfo.heatingType]);
 
   return (
     <>
@@ -119,51 +120,43 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         <Text size="xl" legacyColor="black" mb="2w">
           Testez l'éligibilité de votre adresse
         </Text>
-        <form id={AnalyticsFormId.form_test_adresse}>
-          <SelectEnergy
-            label="Mode de chauffage actuel :"
+        <Form form={form} id={AnalyticsFormId.form_test_adresse}>
+          <form.AppField
             name="heatingType"
-            selectOptions={energyInputsDefaultLabels}
-            onChange={(heatingType) => setUserInfo({ heatingType })}
-            value={userInfo.heatingType ?? ''}
-          />
-          <AddressField
-            className="mb-2!"
-            label=""
-            defaultValue={urlAddress ?? userInfo.address}
-            nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
-            onClear={() => {
-              setUserInfo({ address: '' });
-              setGeoAddress(undefined);
+            listeners={{
+              onChange: ({ value }) => {
+                setUserInfo({ heatingType: value as AvailableHeating });
+              },
             }}
-            onSelect={(selectedGeoAddress?: BANAddressFeature) => {
-              setUserInfo({ address: selectedGeoAddress?.properties?.label ?? '' });
-              setGeoAddress(selectedGeoAddress);
-              trackPostHogEvent('address_test:started', { chauffage_type: userInfo.heatingType, source: 'fiche-reseau' });
-            }}
-          />
-          <div
-            className={cx(
-              'fr-mb-2w font-bold pl-4 py-1 border-l-4 border-error bg-white/40',
-              userInfo.address && geoAddress && !userInfo.heatingType ? 'block' : 'hidden'
-            )}
           >
-            {warningMessage}
-          </div>
+            {(field) => <field.RadioField label="Mode de chauffage actuel :" orientation="horizontal" options={heatingTypeOptions} />}
+          </form.AppField>
+          <form.AppField name="geoAddress">
+            {(field) => (
+              <field.AddressSelectField
+                className="mb-2!"
+                label=""
+                defaultValue={urlAddress ?? userInfo.address}
+                nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
+                onClear={() => {
+                  setUserInfo({ address: '' });
+                }}
+                onSelect={(selectedGeoAddress) => {
+                  setUserInfo({ address: selectedGeoAddress?.properties?.label ?? '' });
+                  trackPostHogEvent('address_test:started', { chauffage_type: userInfo.heatingType, source: 'fiche-reseau' });
+                }}
+              />
+            )}
+          </form.AppField>
           {eligibilityError && (
             <div className="fr-text--sm fr-message--error fr-mb-2w">
               Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
             </div>
           )}
-          <Button
-            size="medium"
-            loading={loadingStatus === 'loading'}
-            disabled={!userInfo.address || !geoAddress || !userInfo.heatingType || (loadingStatus === 'loading' && !eligibilityError)}
-            onClick={testAddress}
-          >
+          <form.SubmitButton size="medium" loading={loadingStatus === 'loading'}>
             Tester cette adresse
-          </Button>
-        </form>
+          </form.SubmitButton>
+        </Form>
       </Box>
 
       <Modal

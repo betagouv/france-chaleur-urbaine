@@ -14,9 +14,21 @@ type NetworkSearchInputProps = {
   onChange?: (searchTerm: string) => void;
   selectedNetwork: NetworkSearchResult | null;
   className?: string;
+  // DSFR error props, injected by the form layer's CustomField
+  state?: 'error' | 'default';
+  stateRelatedMessage?: string;
 };
 
-function NetworkSearchInput({ label, value, onNetworkSelect, onChange, selectedNetwork, className }: NetworkSearchInputProps) {
+function NetworkSearchInput({
+  label,
+  value,
+  onNetworkSelect,
+  onChange,
+  selectedNetwork,
+  className,
+  state,
+  stateRelatedMessage,
+}: NetworkSearchInputProps) {
   const id = useId();
 
   const fetchFn = useCallback(async (query: string, signal: AbortSignal) => {
@@ -35,8 +47,10 @@ function NetworkSearchInput({ label, value, onNetworkSelect, onChange, selectedN
     [getOptionValue]
   );
 
+  const hasError = state === 'error';
+
   return (
-    <div className={`fr-input-group ${className ?? ''}`}>
+    <div className={`fr-input-group ${hasError ? 'fr-input-group--error' : ''} ${className ?? ''}`}>
       <label className="fr-label" htmlFor={id}>
         {label}
       </label>
@@ -67,12 +81,13 @@ function NetworkSearchInput({ label, value, onNetworkSelect, onChange, selectedN
           }}
           minCharThreshold={clientConfig.networkSearchMinimumCharactersThreshold}
           nativeInputProps={{
-            className: 'fr-input',
+            className: `fr-input ${hasError ? 'fr-input--error' : ''}`,
             placeholder: 'recherche par identifiant ou nom de réseau',
             required: true,
           }}
         />
       )}
+      {hasError && stateRelatedMessage && <p className="fr-error-text">{stateRelatedMessage}</p>}
     </div>
   );
 }

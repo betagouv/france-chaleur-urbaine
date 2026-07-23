@@ -21,19 +21,8 @@ export type AddressFieldProps = Omit<AddressSearchProps, 'id'> & FieldProps;
 
 /**
  * Champ d'adresse tout-en-un pour les formulaires DSFR : label, aide, état d'erreur
- * et autocompletion BAN. Compatible TanStack Form via useForm.Field.Custom.
- *
- * ```tsx
- * <form.Field.Custom
- *   name="address"
- *   Component={AddressField}
- *   label="Adresse"
- *   onSelect={(address) => {
- *     form.setFieldValue('latitude', address.geometry.coordinates[1]);
- *     form.setFieldValue('longitude', address.geometry.coordinates[0]);
- *   }}
- * />
- * ```
+ * et autocompletion BAN. Dans un formulaire `useAppForm`, utiliser `AddressSelectField`,
+ * qui lie ce composant au champ TanStack (valeur = BANAddressFeature sélectionnée).
  */
 export function AddressField({
   fieldId,

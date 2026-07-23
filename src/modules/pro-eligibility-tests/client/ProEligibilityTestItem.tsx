@@ -624,6 +624,7 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
       content: (
         <div className="min-h-[50vh] aspect-4/3">
           <Map
+            minZoom={1}
             config={createMapConfiguration({
               reseauxDeChaleur: {
                 show: true,

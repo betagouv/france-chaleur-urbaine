@@ -1,12 +1,14 @@
 import { useRouter } from 'next/router';
+import type { z } from 'zod';
 
-import useForm from '@/components/form/react-form/useForm';
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
-import { type ContactFormInfos, zContactFormCreateDemandInput } from '@/modules/demands/constants';
+import { type ContactFormInfos, fieldLabelInformation, zContactFormCreateDemandInput } from '@/modules/demands/constants';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { pick } from '@/utils/objects';
 
-import DemandContactFields from './DemandContactFields';
+import DemandContactFields, { demandContactRootFields } from './DemandContactFields';
 
 type ContactFormProps = {
   onSubmit: (values: ContactFormInfos) => void;
@@ -15,6 +17,10 @@ type ContactFormProps = {
   city?: string;
 };
 
+/**
+ * Demand creation contact form (eligibility funnel): shared contact fields,
+ * heating energy and terms of use. Persists the contact info in the user info store.
+ */
 export const ContactForm = ({ onSubmit, isLoading, cardMode, city }: ContactFormProps) => {
   const router = useRouter();
   const { userInfo, setUserInfo } = useUserInfo();
@@ -30,26 +36,31 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city }: ContactForm
     }
   };
 
-  const { form, Form, Field, Fieldset, FieldsetLegend, FieldWrapper, Submit, useValue } = useForm({
-    defaultValues: {
-      commentUser: '',
-      company: userInfo.company ?? '',
-      companyType: userInfo.companyType ?? '',
-      demandArea: undefined as unknown as number,
-      demandCompanyName: userInfo.demandCompanyName ?? '',
-      demandCompanyType: userInfo.demandCompanyType ?? '',
-      email: userInfo.email ?? '',
-      firstName: userInfo.firstName ?? '',
-      heatingEnergy: userInfo.heatingEnergy ?? '',
-      lastName: userInfo.lastName ?? '',
-      nbLogements: undefined as unknown as number,
-      phone: userInfo.phone ?? '',
-      structure: userInfo.structure ?? getDefaultStructure(),
-      termOfUse: false,
-    },
+  const defaultValues: z.input<typeof zContactFormCreateDemandInput> = {
+    commentUser: '',
+    company: userInfo.company ?? '',
+    companyType: userInfo.companyType ?? '',
+    demandArea: undefined,
+    demandCompanyName: userInfo.demandCompanyName ?? '',
+    demandCompanyType: userInfo.demandCompanyType ?? '',
+    email: userInfo.email ?? '',
+    firstName: userInfo.firstName ?? '',
+    heatingEnergy: userInfo.heatingEnergy ?? '',
+    lastName: userInfo.lastName ?? '',
+    nbLogements: undefined,
+    phone: userInfo.phone ?? '',
+    structure: userInfo.structure ?? getDefaultStructure(),
+    termOfUse: false,
+  };
+
+  const form = useAppForm({
+    ...schemaValidation(zContactFormCreateDemandInput),
+    defaultValues,
     onSubmit: async ({ value }) => {
+      // re-parse to apply the schema defaults and get the output type
+      const contactInfos = zContactFormCreateDemandInput.parse(value);
       setUserInfo(
-        pick(value, [
+        pick(contactInfos, [
           'company',
           'companyType',
           'demandCompanyName',
@@ -62,25 +73,34 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city }: ContactForm
           'structure',
         ])
       );
-      onSubmit(value);
+      onSubmit(contactInfos);
     },
-    schema: zContactFormCreateDemandInput,
   });
-  const structure = useValue<string>('structure');
-  const companyType = useValue<string>('companyType');
-  const demandCompanyType = useValue<string>('demandCompanyType');
-  const contactState = { companyType, demandCompanyType, structure };
-  const formUi = { Field, Fieldset, FieldsetLegend, FieldWrapper, form };
 
   return (
-    <Form id={AnalyticsFormId.form_contact}>
-      <DemandContactFields cardMode={cardMode} city={city} contactState={contactState} formUi={formUi} showHeatingEnergy showHouseWarning />
-      <FieldWrapper>
-        <Field.Checkbox name="termOfUse" label="J’accepte les conditions générales d’utilisation du service." />
-      </FieldWrapper>
-      <Submit disabled={false} loading={isLoading}>
-        Envoyer
-      </Submit>
+    <Form form={form} id={AnalyticsFormId.form_contact}>
+      <DemandContactFields form={form} fields={demandContactRootFields} cardMode={cardMode} city={city} showHouseWarning />
+      <form.AppField name="heatingEnergy">
+        {(field) => (
+          <field.SelectField
+            label={fieldLabelInformation.heatingEnergy.label}
+            className="heatingEnergyContactInformations"
+            options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
+              label,
+              value,
+            }))}
+          />
+        )}
+      </form.AppField>
+      <form.AppField name="commentUser">
+        {(field) => <field.TextareaField label={fieldLabelInformation.commentUser} nativeTextAreaProps={{ rows: 4 }} />}
+      </form.AppField>
+      <div className="fr-fieldset__element">
+        <form.AppField name="termOfUse">
+          {(field) => <field.CheckboxField label="J’accepte les conditions générales d’utilisation du service." />}
+        </form.AppField>
+      </div>
+      <form.SubmitButton loading={isLoading}>Envoyer</form.SubmitButton>
     </Form>
   );
 };

@@ -1,75 +1,73 @@
-import { ZodArray, ZodObject, type ZodRawShape, type ZodTypeAny, z } from 'zod';
+import { ZodArray, ZodIntersection, ZodObject, ZodPipe, type ZodRawShape, type ZodType, ZodUnion, z } from 'zod';
 
 /**
- * Recursively unwraps ZodEffects to get the base schema.
+ * Recursively unwraps zod v4 wrapper schemas — pipes/transforms (input side),
+ * optional, nullable, default, catch… — down to the underlying schema.
  */
-const unwrapSchema = (schema: ZodTypeAny): ZodTypeAny => {
-  while ((schema._def as any).typeName === 'ZodEffects') {
-    schema = (schema as any)._def.schema;
-  }
-  return schema;
-};
-
-/**
- * Extracts the shape from a ZodObject schema, even if it's wrapped in effects.
- */
-export const getSchemaShape = (schema: ZodTypeAny): ZodRawShape => {
-  if (!schema) return {} as ZodRawShape;
-
-  // Unwrap schema from ZodEffects layers
-  const unwrappedSchema = unwrapSchema(schema);
-
-  // If it's a ZodObject, return its shape
-  if (unwrappedSchema instanceof ZodObject) {
-    return unwrappedSchema.shape;
-  }
-
-  return {} as ZodRawShape;
-};
-
-const unwrapContainerSchema = (schema: ZodTypeAny): ZodTypeAny => {
-  let currentSchema = unwrapSchema(schema);
-
+const unwrapSchema = (schema: ZodType): ZodType => {
+  let currentSchema = schema;
   while (true) {
-    const unwrap = (currentSchema as unknown as { unwrap?: () => unknown }).unwrap;
-
-    if (typeof unwrap !== 'function') {
+    if (currentSchema instanceof ZodPipe) {
+      currentSchema = currentSchema.in as ZodType; // forms validate the input side of a .transform()/.pipe()
+      continue;
+    }
+    if (currentSchema instanceof ZodObject || currentSchema instanceof ZodArray) {
       return currentSchema;
     }
-
-    if (currentSchema instanceof ZodArray || currentSchema instanceof ZodObject) {
+    const wrapper = currentSchema as ZodType & { unwrap?: () => ZodType };
+    if (typeof wrapper.unwrap !== 'function') {
       return currentSchema;
     }
-
-    currentSchema = unwrapSchema(unwrap() as ZodTypeAny);
+    currentSchema = wrapper.unwrap();
   }
 };
 
-export const getSchemaField = (schema: ZodTypeAny, fieldPath: string): ZodTypeAny | undefined => {
+/**
+ * Shape of an object-like schema: plain object, intersection of object-likes
+ * (shapes merged), or (discriminated) union of object-likes (branch shapes
+ * merged — a field is looked up in whichever branch defines it).
+ */
+const getObjectShape = (schema: ZodType): ZodRawShape | undefined => {
+  const unwrapped = unwrapSchema(schema);
+  if (unwrapped instanceof ZodObject) {
+    return unwrapped.shape;
+  }
+  if (unwrapped instanceof ZodIntersection) {
+    const leftShape = getObjectShape(unwrapped.def.left as ZodType);
+    const rightShape = getObjectShape(unwrapped.def.right as ZodType);
+    return leftShape || rightShape ? { ...leftShape, ...rightShape } : undefined;
+  }
+  if (unwrapped instanceof ZodUnion) {
+    const optionShapes = (unwrapped.options as ZodType[]).map(getObjectShape).filter(isDefinedShape);
+    return optionShapes.length > 0 ? Object.assign({}, ...optionShapes) : undefined;
+  }
+  return undefined;
+};
+
+const isDefinedShape = (shape: ZodRawShape | undefined): shape is ZodRawShape => shape !== undefined;
+
+/**
+ * Resolves the sub-schema of a (possibly nested) field path, traversing objects,
+ * arrays, intersections and wrappers (refine/transform/optional/nullable…).
+ */
+export const getSchemaField = (schema: ZodType, fieldPath: string): ZodType | undefined => {
   if (!schema || !fieldPath) return undefined;
 
   const normalizedPath = fieldPath
     .replace(/\[\d+\]/g, '')
     .split('.')
     .filter(Boolean);
-  let currentSchema = unwrapContainerSchema(schema);
+
+  let currentSchema: ZodType = schema;
 
   for (const pathSegment of normalizedPath) {
-    currentSchema = unwrapContainerSchema(currentSchema);
-
-    if (currentSchema instanceof ZodArray) {
-      currentSchema = unwrapContainerSchema(currentSchema.element as ZodTypeAny);
-    }
-
-    if (!(currentSchema instanceof ZodObject)) {
+    const unwrapped = unwrapSchema(currentSchema);
+    const containerSchema = unwrapped instanceof ZodArray ? unwrapSchema(unwrapped.element as ZodType) : unwrapped;
+    const fieldSchema = getObjectShape(containerSchema)?.[pathSegment];
+    if (!fieldSchema) {
       return undefined;
     }
-
-    currentSchema = currentSchema.shape[pathSegment];
-
-    if (!currentSchema) {
-      return undefined;
-    }
+    currentSchema = fieldSchema as ZodType;
   }
 
   return currentSchema;
