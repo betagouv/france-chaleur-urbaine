@@ -35,7 +35,7 @@
 
 - **Code**: always English (variables, functions, types, comments, docs). When extending an existing block of comments/docs, match the surrounding language — never mix French and English in the same comment, docstring, or paragraph (the English code rule means surrounding context will already be English).
 - **AI docs** (markdown files: `AGENTS.md`, `.ai/context/*.md`): always English.
-- **UI text**: always French (labels, messages, placeholders, errors shown to users).
+- **UI text**: always French (labels, messages, placeholders, errors shown to users). No English jargon mixed into French text: write `événement` not `event`, `historique` not `legacy`, etc.
 - **Zod error messages**: French when user-facing, English when developer-facing.
 - **UTF-8**: always use real characters (`é`, `è`, `ê`, `à`, `ç`, `ù`), never unicode escapes (`\u00e9`).
 - **Accents**: when writing in French (UI text, docs, responses), use correct accents. Don't translate code/scripts that are in English — respect the existing language of each file.

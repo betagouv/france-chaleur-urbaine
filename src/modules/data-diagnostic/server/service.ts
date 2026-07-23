@@ -1,7 +1,8 @@
-import { sql } from 'kysely';
+import { type ExpressionBuilder, sql } from 'kysely';
 
 import { findAttachedNetworksNotMatchingPatterns, findUnattachedNetworksMatchingPatterns } from '@/modules/organizations/server/service';
-import { kdb } from '@/server/db/kysely';
+import { type DB, kdb } from '@/server/db/kysely';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
 import { MAX_ITEMS_PER_ISSUE } from '../constants';
 import type { DataDiagnosticResult, Issue, IssueItem } from '../types';
@@ -19,6 +20,9 @@ const demandHref = (address: string | null) => {
   }
   return `/admin/demandes?${params.toString()}`;
 };
+
+// Page des événements filtrée sur la demande, période custom démarrant avant toute donnée = tout l'historique.
+const demandEventsHref = (demandId: string) => `/admin/events?contextType=demand&contextId=${demandId}&preset=custom&dateFrom=2025-01-01`;
 
 const fullName = (firstName: string | null, lastName: string | null) => [firstName, lastName].filter(Boolean).join(' ') || null;
 
@@ -532,6 +536,139 @@ const checkDemandPendingAssignmentStale: IssueBuilder = async () => {
 };
 
 /**
+ * Statuts qui impliquent que le demandeur a été contacté par le gestionnaire.
+ * Exclut « Non réalisable » et « Projet abandonné par le prospect », qui peuvent être posés sans contact.
+ */
+const CONTACT_IMPLYING_STATUSES = [
+  DEMANDE_STATUS.RECONTACTED,
+  DEMANDE_STATUS.COMMERCIAL_PROPOSAL,
+  DEMANDE_STATUS.VOTED,
+  DEMANDE_STATUS.WORK_IN_PROGRESS,
+  DEMANDE_STATUS.DONE,
+];
+
+type DemandsEb = ExpressionBuilder<DB, 'demands'>;
+
+// Date de la dernière réponse du demandeur à l'enquête de satisfaction (null si aucune réponse tracée par event).
+const lastSatisfactionAt = (eb: DemandsEb) =>
+  eb
+    .selectFrom('events as e')
+    .select((seb) => seb.fn.max('e.created_at').as('last_satisfaction_at'))
+    .where('e.context_type', '=', 'demand')
+    .where('e.context_id', '=', sql<string>`${eb.ref('demands.id')}::text`)
+    .where('e.type', '=', 'demand_satisfaction_submitted');
+
+// Date du dernier vrai changement de statut, tous canaux confondus (UI, système, API partenaire).
+// Les events de la migration fusion_statuts sont exclus : ce sont des renommages de données,
+// pas des actions gestionnaire — les dater fausserait la chronologie.
+const lastStatusChangeAt = (eb: DemandsEb) =>
+  eb
+    .selectFrom('events as e')
+    .select((seb) => seb.fn.max('e.created_at').as('last_status_change_at'))
+    .where('e.context_type', '=', 'demand')
+    .where('e.context_id', '=', sql<string>`${eb.ref('demands.id')}::text`)
+    .where((seb) =>
+      seb.or([
+        seb.and([seb('e.type', '=', 'demand_updated'), sql<boolean>`${seb.ref('e.data')} ? 'Status'`]),
+        seb.and([
+          seb('e.type', '=', 'demand_updated_by_system'),
+          sql<boolean>`${seb.ref('e.data')} -> 'changes' ? 'Status'`,
+          sql<boolean>`${seb.ref('e.data')} ->> 'reason' IS DISTINCT FROM 'fusion_statuts'`,
+        ]),
+        seb.and([seb('e.type', '=', 'api_demand_updated'), sql<boolean>`${seb.ref('e.data')} ? 'statut'`]),
+      ])
+    );
+
+/**
+ * Demandes prises en charge par le gestionnaire (statut impliquant un contact) alors que le demandeur
+ * a répondu « Non » à l'enquête de satisfaction APRÈS le dernier changement de statut.
+ * La chronologie est reconstituée via les events : `demand_satisfaction_submitted` d'un côté,
+ * events portant un changement de `Status` de l'autre.
+ */
+const checkDemandRecontactMismatch: IssueBuilder = async () => {
+  const rows = await kdb
+    .selectFrom('demands')
+    .select((eb) => [
+      'demands.id',
+      eb.ref('demands.legacy_values', '->>').key('Adresse').as('adresse'),
+      eb.ref('demands.legacy_values', '->>').key('Status').as('status'),
+      lastSatisfactionAt(eb).as('satisfaction_at'),
+    ])
+    .where('demands.deleted_at', 'is', null)
+    .where((eb) => eb(eb.ref('demands.legacy_values', '->>').key('Recontacté par le gestionnaire'), '=', 'Non'))
+    .where((eb) => eb(eb.ref('demands.legacy_values', '->>').key('Status'), 'in', CONTACT_IMPLYING_STATUSES))
+    // '-infinity' si aucun event de changement de statut (statut posé avant le système d'events) :
+    // une réponse « Non » datée est alors forcément postérieure.
+    .where((eb) => eb(lastSatisfactionAt(eb), '>', eb.fn.coalesce(lastStatusChangeAt(eb), sql<Date>`'-infinity'::timestamptz`)))
+    .orderBy((eb) => lastSatisfactionAt(eb), 'desc')
+    .execute();
+
+  if (rows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+    context: `statut « ${row.status} » — « Non » répondu le ${formatDate(row.satisfaction_at)}`,
+    href: demandHref(row.adresse),
+    label: row.adresse ?? '(adresse absente)',
+    links: [{ href: demandEventsHref(row.id), label: 'Voir les événements' }],
+  }));
+
+  return {
+    description:
+      'Le gestionnaire a posé un statut impliquant un contact avec le demandeur (« Recontacté pour étude » ou au-delà), mais le demandeur a répondu ensuite à l’enquête de satisfaction qu’il n’avait pas été recontacté. À vérifier auprès du gestionnaire.',
+    items,
+    severity: 'warning',
+    title: 'Demande prise en charge mais demandeur non recontacté',
+    totalCount,
+    truncated,
+    type: 'demand.recontact_mismatch',
+  };
+};
+
+/**
+ * Variante legacy du check précédent : le demandeur a répondu « Non » mais AVANT la mise en place
+ * des events (aucun event satisfaction daté), et aucun vrai changement de statut n'est tracé non plus.
+ * Impossible de savoir si le « Non » précède ou suit la prise en charge : à trancher manuellement.
+ * Population figée : toute nouvelle réponse crée un event, donc cette liste ne peut que décroître.
+ */
+const checkDemandRecontactMismatchLegacy: IssueBuilder = async () => {
+  const rows = await kdb
+    .selectFrom('demands')
+    .select((eb) => [
+      'demands.id',
+      'demands.created_at',
+      eb.ref('demands.legacy_values', '->>').key('Adresse').as('adresse'),
+      eb.ref('demands.legacy_values', '->>').key('Status').as('status'),
+    ])
+    .where('demands.deleted_at', 'is', null)
+    .where((eb) => eb(eb.ref('demands.legacy_values', '->>').key('Recontacté par le gestionnaire'), '=', 'Non'))
+    .where((eb) => eb(eb.ref('demands.legacy_values', '->>').key('Status'), 'in', CONTACT_IMPLYING_STATUSES))
+    .where((eb) => eb(lastSatisfactionAt(eb), 'is', null))
+    .where((eb) => eb(lastStatusChangeAt(eb), 'is', null))
+    .orderBy('demands.created_at', 'desc')
+    .execute();
+
+  if (rows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+    context: `statut « ${row.status} » — créée le ${formatDate(row.created_at)}`,
+    href: demandHref(row.adresse),
+    label: row.adresse ?? '(adresse absente)',
+    links: [{ href: demandEventsHref(row.id), label: 'Voir les événements' }],
+  }));
+
+  return {
+    description:
+      'Le demandeur a répondu qu’il n’avait pas été recontacté, mais cette réponse date d’avant la mise en place du suivi par événements et aucun vrai changement de statut n’est tracé : impossible de savoir si la prise en charge a eu lieu avant ou après. Données historiques à vérifier manuellement — cette liste ne peut que décroître.',
+    items,
+    severity: 'warning',
+    title: 'Demande prise en charge mais demandeur non recontacté (chronologie inconnue, données historiques)',
+    totalCount,
+    truncated,
+    type: 'demand.recontact_mismatch_legacy',
+  };
+};
+
+/**
  * Organisations sans aucun réseau rattaché (chaleur / froid / en construction).
  * Un token API rattaché donnerait alors accès à zéro demande.
  */
@@ -737,6 +874,8 @@ const checks: IssueBuilder[] = [
   checkPdpOrphanNetwork,
   checkDemandUnvalidatedOld,
   checkDemandPendingAssignmentStale,
+  checkDemandRecontactMismatch,
+  checkDemandRecontactMismatchLegacy,
   checkOrganizationWithoutNetworks,
   checkNationalCandidateUnmigrated,
   checkGestionnaireSplitAcrossOrganizations,

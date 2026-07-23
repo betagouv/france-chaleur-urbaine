@@ -40,7 +40,7 @@ type Issue = {
   description: string;         // FR — explains what's wrong and how to fix
   totalCount: number;          // raw count from SQL
   truncated: boolean;          // true if items were capped at MAX_ITEMS_PER_ISSUE (1000)
-  items: IssueItem[];          // capped list — each item carries an optional drill-down href
+  items: IssueItem[];          // capped list — each item carries an optional drill-down href + optional extra links
 };
 ```
 
@@ -60,6 +60,8 @@ Warnings (suspicious):
 - `demand.missing_coordinates` — `legacy_values.Latitude`/`Longitude` null
 - `demand.unvalidated_old` — `validated=false` for > 30 days
 - `demand.pending_assignment_stale` — `pending_assignment_change` open > 14 days
+- `demand.recontact_mismatch` — status implies contact but demandeur answered "Non" to the satisfaction survey after the last real status change (chronology via events; fusion_statuts migration events excluded)
+- `demand.recontact_mismatch_legacy` — same mismatch but chronology unknown: the "Non" predates the events system and no real status change is traced (frozen legacy population, manual review)
 - `organization.without_networks` — organization with no heat/cold/under-construction network attached
 - `user.national_candidate_unmigrated` — active account with ≥ 50 network permissions and no organization (migrate to org scope)
 - `network.gestionnaire_split_across_organizations` — one `Gestionnaire` value mapped to several organizations

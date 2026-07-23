@@ -4,6 +4,7 @@ export type IssueItem = {
   label: string;
   context?: string;
   href?: string;
+  links?: { label: string; href: string }[];
 };
 
 export type Issue = {

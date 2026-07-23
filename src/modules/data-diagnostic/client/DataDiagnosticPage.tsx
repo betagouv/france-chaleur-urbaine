@@ -196,12 +196,25 @@ const IssueItemContent = ({ item }: IssueItemContentProps) => {
     </>
   );
 
-  return item.href ? (
+  const main = item.href ? (
     <Link href={item.href} className={cx(itemClassName, 'no-underline! text-current! bg-none! hover:bg-(--background-default-grey-hover)')}>
       {content}
     </Link>
   ) : (
     <div className={itemClassName}>{content}</div>
+  );
+
+  return item.links?.length ? (
+    <div className="flex items-center gap-3">
+      <div className="flex-1 min-w-0">{main}</div>
+      {item.links.map((link) => (
+        <Link key={link.href} href={link.href} className="text-sm shrink-0">
+          {link.label}
+        </Link>
+      ))}
+    </div>
+  ) : (
+    main
   );
 };
 
