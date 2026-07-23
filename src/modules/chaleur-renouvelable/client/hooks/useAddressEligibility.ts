@@ -30,7 +30,15 @@ const emptyState: EligibilityState = {
   temperatureRef: null,
 };
 
-export function useAddressEligibility(adresse: string | null, selectedBatimentConstructionId?: string | null) {
+export function getBANAddressFeatureByLabel(features: BANAddressFeature[], addressLabel: string) {
+  return features.find((feature) => feature.properties.type === 'housenumber' && feature.properties.label === addressLabel);
+}
+
+export function useAddressEligibility(
+  adresse: string | null,
+  selectedBatimentConstructionId?: string | null,
+  onAddressNotFound?: () => void
+) {
   const trpcUtils = trpc.useUtils();
   const [state, setState] = useState<EligibilityState>(emptyState);
   const [isEligibilityLoading, setIsEligibilityLoading] = useState(false);
@@ -82,24 +90,23 @@ export function useAddressEligibility(adresse: string | null, selectedBatimentCo
     toastErrors(async (adresseToTest: string) => {
       if (!adresseToTest) return;
 
-      const geoAddress = (
-        await searchBANAddresses({
-          excludeCities: true,
-          limit: 1,
-          onlyAddress: true,
-          onlyCities: false,
-          query: adresseToTest,
-        })
-      )?.[0] as BANAddressFeature | undefined;
+      const features = await searchBANAddresses({
+        excludeCities: true,
+        onlyAddress: true,
+        onlyCities: false,
+        query: adresseToTest,
+      });
+      const geoAddress = getBANAddressFeatureByLabel(features, adresseToTest);
 
       if (!geoAddress) {
         resetEligibility();
+        onAddressNotFound?.();
         return;
       }
 
       await computeEligibilityFromSuggestion(geoAddress);
     }),
-    [computeEligibilityFromSuggestion, resetEligibility]
+    [computeEligibilityFromSuggestion, onAddressNotFound, resetEligibility]
   );
 
   useEffect(() => {

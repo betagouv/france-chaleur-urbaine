@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
@@ -13,8 +13,13 @@ export default function ChoixChauffageForm() {
   const router = useRouter();
   const chauffageQuery = useChoixChauffageQueryParams();
   const params = chauffageQuery.params;
+  const handleAddressNotFound = useCallback(() => {
+    chauffageQuery.setParams({ adresse: null });
+  }, [chauffageQuery]);
   const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility, selectedBatEnrBatiment } = useAddressEligibility(
-    params.adresse ?? null
+    params.adresse ?? null,
+    null,
+    handleAddressNotFound
   );
   const isFormDisabled = !params.adresse || !geoAddress || !params.typeLogement || !params.typeRadiateur || !params.espaceExterieur;
 
