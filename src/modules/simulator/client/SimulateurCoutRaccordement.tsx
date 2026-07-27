@@ -38,7 +38,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
     engine.updateSituation(publicodeSituation);
   }, [engine.internalEngine, publicodeSituation]);
 
-  const currentCeeValueDisplay = (engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE') * 1000).toLocaleString('fr-FR', {
+  const currentCeeValueDisplay = (engine.getFieldAsNumber('aides . valeur CEE') * 1000).toLocaleString('fr-FR', {
     maximumFractionDigits: 2,
     minimumFractionDigits: 2,
   });

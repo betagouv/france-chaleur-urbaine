@@ -22,7 +22,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
   const hasTrackedStarted = useRef(false);
   const [networkName, setNetworkName] = useState<string | null>(null);
   const [isEfficientNetwork, setIsEfficientNetwork] = useState(false);
-  const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE')));
+  const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber('aides . valeur CEE')));
   const trackStarted = () => {
     if (hasTrackedStarted.current) {
       return;
@@ -40,7 +40,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
   const resetSimulatorContext = () => {
     setNetworkName(null);
     setIsEfficientNetwork(false);
-    setCeeValue(formatCeeValue(engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE')));
+    setCeeValue(formatCeeValue(engine.getFieldAsNumber('aides . valeur CEE')));
   };
   const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, resetFormState, updateFormState } =
     useSimulatorFormState({
@@ -85,8 +85,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
   const publicodeSituation = useMemo(
     () => ({
       ...buildPublicodeSituation(formState),
-      'Paramètres économiques . Aides . Valeur CEE':
-        ceeValue.replace(',', '.').trim() === '' ? null : Number(ceeValue.replace(',', '.').trim()) / 1000,
+      'aides . valeur CEE': ceeValue.replace(',', '.').trim() === '' ? null : Number(ceeValue.replace(',', '.').trim()) / 1000,
     }),
     [ceeValue, formState]
   );

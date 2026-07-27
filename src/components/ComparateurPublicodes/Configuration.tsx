@@ -25,8 +25,8 @@ interface ConfigurationProps {
 }
 
 const chainedConfigurations = {
-  'type de production de froid': ['Inclure la climatisation'],
-  'type de production ECS': ['Production eau chaude sanitaire'],
+  'climatisation . type de production': ['climatisation . incluse'],
+  'ecs . type de production': ['ecs . production'],
 };
 
 const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChangeAddress }) => {

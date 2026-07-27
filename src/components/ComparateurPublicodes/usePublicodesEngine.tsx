@@ -104,9 +104,9 @@ const usePublicodesEngine = (rules: Rules, options?: Options) => {
     const defaultValue = getFieldDefaultValue(key);
     // custom case as type de production froid is "Groupe froid" by default even if Inclure la climatisation is false
     if (
-      key === 'type de production de froid' &&
+      key === 'climatisation . type de production' &&
       (value === "'Groupe froid'" || value === 'Groupe froid') &&
-      getField('Inclure la climatisation' as RuleName)
+      getField('climatisation . incluse' as RuleName)
     ) {
       return false;
     }

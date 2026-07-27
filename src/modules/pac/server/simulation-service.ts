@@ -90,22 +90,22 @@ function createEngineForSimulation(input: HeatingSimulationInput) {
 
   engine.setSituation({
     'aides . CEE . BAR-TH-171 PAC air-eau . efficacité énergétique saisonnière': '150%',
-    'code département': `'${input.departmentCode}'`,
-    DPE: `'${input.dpe}'`,
-    'Inclure la climatisation': 'non',
-    'méthode résidentiel': "'DPE'",
-    "Nombre d'habitants moyen par appartement": input.occupants,
-    "nombre de logements dans l'immeuble concerné": 1,
-    "Paramètres économiques . Aides . Éligibilité x Je dispose actuellement d'une chaudière gaz ou fioul": 'oui',
-    'Paramètres économiques . Aides . Éligibilité x Je suis un particulier': 'oui',
-    'Paramètres économiques . Aides . Éligibilité x Prise en compte des aides': 'oui',
-    'Paramètres économiques . Aides . Éligibilité x Ressources du ménage': `'${input.incomeCategory}'`,
-    'Production eau chaude sanitaire': 'oui',
-    'ratios . GNRL Appartement ou maison': "'Maison'",
-    'surface logement type tertiaire': input.surface,
-    'température de référence chaud commune': input.temperatureReference,
-    'type de bâtiment': "'résidentiel'",
-    'type de production ECS': "'Avec équipement chauffage'",
+    'aides . éligibilité . chaudière gaz ou fioul actuelle': 'oui',
+    'aides . éligibilité . particulier': 'oui',
+    'aides . éligibilité . prise en compte des aides': 'oui',
+    'aides . éligibilité . ressources du ménage': `'${input.incomeCategory}'`,
+    'bâtiment . appartement ou maison': "'Maison'",
+    'bâtiment . DPE': `'${input.dpe}'`,
+    'bâtiment . habitants par logement': input.occupants,
+    'bâtiment . méthode résidentiel': "'DPE'",
+    'bâtiment . nombre de logements': 1,
+    'bâtiment . surface tertiaire': input.surface,
+    'bâtiment . type': "'résidentiel'",
+    'climat . code département': `'${input.departmentCode}'`,
+    'climat . température de référence chaud commune': input.temperatureReference,
+    'climatisation . incluse': 'non',
+    'ecs . production': 'oui',
+    'ecs . type de production': "'Avec équipement chauffage'",
   });
 
   return engine;
@@ -115,8 +115,8 @@ function createEngineForIncome(input: IncomeOptionsInput) {
   const engine = createPublicodesEngine();
 
   engine.setSituation({
-    'code département': `'${input.departmentCode}'`,
-    "Nombre d'habitants moyen par appartement": input.occupants,
+    'bâtiment . habitants par logement': input.occupants,
+    'climat . code département': `'${input.departmentCode}'`,
   });
 
   return engine;

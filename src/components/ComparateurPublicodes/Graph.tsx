@@ -248,10 +248,10 @@ const Graph: React.FC<GraphProps> = ({
 
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts-emissions' });
   const [perBuilding, setPerBuilding] = useQueryState('perBuilding', parseAsBoolean.withDefault(false));
-  const inclusClimatisation = engine.getField('Inclure la climatisation');
-  const inclusECS = engine.getField('Production eau chaude sanitaire');
-  const typeDeProductionDeFroid = engine.getField('type de production de froid');
-  const typeDeBatiment = engine.getField('type de bâtiment');
+  const inclusClimatisation = engine.getField('climatisation . incluse');
+  const inclusECS = engine.getField('ecs . production');
+  const typeDeProductionDeFroid = engine.getField('climatisation . type de production');
+  const typeDeBatiment = engine.getField('bâtiment . type');
 
   const getLabel = (typeInstallation: (typeof modesDeChauffage)[number], type: 'price' | 'co2' | 'both') => {
     let suffix = '';
@@ -430,7 +430,7 @@ const Graph: React.FC<GraphProps> = ({
     },
   });
 
-  const nbAppartements = perBuilding ? engine.getFieldAsNumber(`nombre de logements dans l'immeuble concerné`) : 1;
+  const nbAppartements = perBuilding ? engine.getFieldAsNumber(`bâtiment . nombre de logements`) : 1;
 
   let maxEmissionsCO2Value = 5000 * nbAppartements;
 

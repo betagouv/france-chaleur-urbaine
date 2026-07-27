@@ -158,22 +158,21 @@ export const modesDeChauffage = [
 export type ModeDeChauffage = (typeof modesDeChauffage)[number]['label'];
 
 export const addresseToPublicodesRules = {
-  'caractéristique réseau de chaleur . contenu CO2': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2'],
-  'caractéristique réseau de chaleur . contenu CO2 ACV': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2 ACV'],
-  'caractéristique réseau de chaleur . livraisons totales': (infos) => infos.nearestReseauDeChaleur?.livraisons_totale_MWh,
-  'caractéristique réseau de chaleur . part fixe': (infos) => infos.nearestReseauDeChaleur?.['PF%'],
-  'caractéristique réseau de chaleur . part variable': (infos) => infos.nearestReseauDeChaleur?.['PV%'],
-  'caractéristique réseau de chaleur . prix moyen': (infos) => infos.nearestReseauDeChaleur?.PM,
-  'caractéristique réseau de chaleur . production totale': (infos) => infos.nearestReseauDeChaleur?.production_totale_MWh,
-  'caractéristique réseau de chaleur . taux EnRR': (infos) => infos.nearestReseauDeChaleur?.['Taux EnR&R'],
+  'climat . code département': (infos) => `'${infos.infosVille.departement_id}'`,
+  'climat . température de référence chaud commune': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
+  'réseau de chaleur . caractéristiques . contenu CO2': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2'],
+  'réseau de chaleur . caractéristiques . contenu CO2 ACV': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2 ACV'],
+  'réseau de chaleur . caractéristiques . livraisons totales': (infos) => infos.nearestReseauDeChaleur?.livraisons_totale_MWh,
+  'réseau de chaleur . caractéristiques . part fixe': (infos) => infos.nearestReseauDeChaleur?.['PF%'],
+  'réseau de chaleur . caractéristiques . part variable': (infos) => infos.nearestReseauDeChaleur?.['PV%'],
+  'réseau de chaleur . caractéristiques . prix moyen': (infos) => infos.nearestReseauDeChaleur?.PM,
+  'réseau de chaleur . caractéristiques . production totale': (infos) => infos.nearestReseauDeChaleur?.production_totale_MWh,
+  'réseau de chaleur . caractéristiques . taux EnRR': (infos) => infos.nearestReseauDeChaleur?.['Taux EnR&R'],
 
-  'caractéristique réseau de froid . contenu CO2': (infos) => infos.nearestReseauDeFroid?.['contenu CO2'],
-  'caractéristique réseau de froid . contenu CO2 ACV': (infos) => infos.nearestReseauDeFroid?.['contenu CO2 ACV'],
-  'caractéristique réseau de froid . livraisons totales': (infos) => infos.nearestReseauDeFroid?.livraisons_totale_MWh,
-  'caractéristique réseau de froid . production totale': (infos) => infos.nearestReseauDeFroid?.production_totale_MWh,
-
-  'code département': (infos) => `'${infos.infosVille.departement_id}'`,
-  'température de référence chaud commune': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
+  'réseau de froid . caractéristiques . contenu CO2': (infos) => infos.nearestReseauDeFroid?.['contenu CO2'],
+  'réseau de froid . caractéristiques . contenu CO2 ACV': (infos) => infos.nearestReseauDeFroid?.['contenu CO2 ACV'],
+  'réseau de froid . caractéristiques . livraisons totales': (infos) => infos.nearestReseauDeFroid?.livraisons_totale_MWh,
+  'réseau de froid . caractéristiques . production totale': (infos) => infos.nearestReseauDeFroid?.production_totale_MWh,
 } as const satisfies Partial<Record<RuleName, (infos: LocationInfoResponse) => any>>;
 
 export const addresseToPublicodesRulesKeys = Object.keys(addresseToPublicodesRules) as RuleName[];

@@ -86,7 +86,7 @@ export function SimulatorFormFields({
         <>
           <Select
             label={showLabels ? 'Secteur tertiaire' : ''}
-            options={engine.getOptions('méthode tertiaire 2026').map((option) => ({
+            options={engine.getOptions('bâtiment . méthode tertiaire 2026').map((option) => ({
               label: option,
               value: option,
             }))}

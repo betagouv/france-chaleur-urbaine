@@ -21,10 +21,10 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
   engine,
   ...props
 }) => {
-  const typeBatiment = engine.getField('type de bâtiment');
-  const productionECS = engine.getField('Production eau chaude sanitaire');
-  const typeDeProductionECS = engine.getField('type de production ECS');
-  const inclureLaClimatisation = engine.getField('Inclure la climatisation');
+  const typeBatiment = engine.getField('bâtiment . type');
+  const productionECS = engine.getField('ecs . production');
+  const typeDeProductionECS = engine.getField('ecs . type de production');
+  const inclureLaClimatisation = engine.getField('climatisation . incluse');
 
   return (
     <div {...props}>
@@ -32,44 +32,44 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
       <SelectClimatisation />
 
       <Accordion label="Informations générales">
-        <Input name="degré jours unifié spécifique chaud" iconId="fr-icon-temp-cold-fill" />
-        <Input name="degré jours unifié spécifique froid" iconId="fr-icon-temp-cold-fill" />
-        <Input name="température de référence chaud" iconId="fr-icon-temp-cold-fill" />
+        <Input name="climat . degré jours chaud" iconId="fr-icon-temp-cold-fill" />
+        <Input name="climat . degré jours froid" iconId="fr-icon-temp-cold-fill" />
+        <Input name="climat . température de référence chaud" iconId="fr-icon-temp-cold-fill" />
         <Input
-          name="augmenter la température de chauffe"
+          name="bâtiment . augmenter la température de chauffe"
           iconId="fr-icon-temp-cold-fill"
           help={'Augmentation en degré de la consigne de température intérieure, par rapport à 20°.'}
         />
 
-        <Select name="zone climatique" />
-        <Select name="sous zone climatique" />
+        <Select name="climat . zone" />
+        <Select name="climat . sous zone" />
       </Accordion>
 
       <Accordion
         label="Choix du bâtiment"
         help="Les caractéristiques du bâtiment et ses usages sont centraux pour les estimations de consommation énergétique."
       >
-        <RadioInput name="type de bâtiment" small orientation="horizontal" />
+        <RadioInput name="bâtiment . type" small orientation="horizontal" />
         {typeBatiment === 'résidentiel' && (
           <>
             <Select
-              name="méthode résidentiel"
+              name="bâtiment . méthode résidentiel"
               help="Les normes thermiques permettent une estimation des besoins de chaleur plus précise que les DPE. Elles peuvent être estimées par l'année de construction ou de rénovation du logement."
             />
-            {engine.getField('méthode résidentiel') === 'DPE' && <Select name="DPE" />}
-            {engine.getField('méthode résidentiel') === 'Normes thermiques et âge du bâtiment' && (
-              <Select name="normes thermiques et âge du bâtiment" />
+            {engine.getField('bâtiment . méthode résidentiel') === 'DPE' && <Select name="bâtiment . DPE" />}
+            {engine.getField('bâtiment . méthode résidentiel') === 'Normes thermiques et âge du bâtiment' && (
+              <Select name="bâtiment . normes thermiques et âge" />
             )}
           </>
         )}
         {typeBatiment === 'tertiaire' && (
           <>
-            <Select name="méthode tertiaire" />
-            <Select name="normes thermiques tertiaire" />
+            <Select name="bâtiment . méthode tertiaire" />
+            <Select name="bâtiment . normes thermiques tertiaire" />
           </>
         )}
         <Input
-          name="surface logement type tertiaire"
+          name="bâtiment . surface tertiaire"
           nativeInputProps={{
             inputMode: 'numeric',
             maxLength: 6,
@@ -79,7 +79,7 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
         {typeBatiment === 'résidentiel' && (
           <>
             <Input
-              name="Nombre d'habitants moyen par appartement"
+              name="bâtiment . habitants par logement"
               hideUnit
               help="Le nombre d'habitants permet d'estimer la consommation d'eau chaude sanitaire du logement."
               nativeInputProps={{
@@ -89,7 +89,7 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
               }}
             />
             <Input
-              name="nombre de logements dans l'immeuble concerné"
+              name="bâtiment . nombre de logements"
               hideUnit
               help="Par simplification, tous les logements d'un même immeuble sont considérés identiques."
               nativeInputProps={{
@@ -103,7 +103,7 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
         )}
 
         <Input
-          name="Part de la surface à climatiser"
+          name="bâtiment . part de la surface à climatiser"
           help="% de la surface du logement climatisé, par exemple lorsqu'uniquement le salon d'un logement est refroidi."
           nativeInputProps={{
             inputMode: 'numeric',
@@ -115,17 +115,17 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
           }}
         />
         <Select
-          name="Température émetteurs"
+          name="bâtiment . température émetteurs"
           help="Les émetteurs sont les équipements diffusant la chaleur dans une pièce, par exemple les radiateurs. La température des émetteurs influence la performance des pompes à chaleur : plus la température des émetteurs est basse, plus les performances sont élevées."
         />
       </Accordion>
 
       <Accordion label="Besoins calculés">
-        <Input name="consommation spécifique chauffage" />
-        {productionECS && <Input name="consommation spécifique ECS" />}
-        {inclureLaClimatisation && <Input name="consommation spécifique climatisation" />}
+        <Input name="besoins . consommation spécifique chauffage" />
+        {productionECS && <Input name="besoins . consommation spécifique ECS" />}
+        {inclureLaClimatisation && <Input name="besoins . consommation spécifique climatisation" />}
         <Input
-          name="besoins chauffage par appartement"
+          name="besoins . chauffage par logement"
           placeholderPrecision={0}
           help={
             <>
@@ -143,14 +143,14 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
         />
         {productionECS && (
           <Input
-            name="besoins eau chaude sanitaire par appartement"
+            name="besoins . ECS par logement"
             placeholderPrecision={0}
             help={"Si connue, l'utilisateur peut rentrer ici la consommation d'eau chaude sanitaire de son logement (énergie utile)."}
           />
         )}
         {inclureLaClimatisation && (
           <Input
-            name="besoins en climatisation par appartement"
+            name="besoins . climatisation par logement"
             placeholderPrecision={0}
             help="Les besoins en climatisation sont rarement connus et difficiles à estimer, ils sont très variables en fonction de l'usage et des caractéristiques d'implantation du logement (comme l'exposition par exemple)."
           />
@@ -159,20 +159,20 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
 
       <Accordion label="Calcul puissance" help="Le calcul de la puissance permet de dimensionner les installations nécessaires.">
         <Input
-          name="ratios . PUIS Température de non chauffage"
+          name="dimensionnement . ratios . température de non chauffage"
           help="Température en dessous de laquelle le chauffage est déclenché. Elle influence uniquement les puissances de dimensionnement et non les besoins."
         />
         <Input
-          name="ratios . PUIS Facteur de surpuissance"
+          name="dimensionnement . ratios . facteur de surpuissance"
           help="% de surpuissance appliqué en sécurité. Influence uniquement les puissances de dimensionnement."
         />
         <Input
-          name="ratios . PUIS Nombre heure de fonctionnement non climatique ECS"
+          name="dimensionnement . ratios . heures de fonctionnement non climatique ECS"
           help="Nombre d'heures pendant lequel l'eau chaude sanitaire est produite. Influence uniquement la puissance de dimensionnement de l'ECS."
         />
-        <Input name="ratios . PUIS Coefficient de foisonnement ECS" />
+        <Input name="dimensionnement . ratios . coefficient de foisonnement ECS" />
         <Input
-          name="ratios . PUIS Coefficient de foisonnement chauffage collectif"
+          name="dimensionnement . ratios . coefficient de foisonnement chauffage collectif"
           help="Coefficient permettant d'intégrer les décalages temporels de consommation entre les utilisateurs. Influence uniquement la puissance de dimensionnement."
         />
       </Accordion>
