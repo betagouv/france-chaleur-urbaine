@@ -229,7 +229,7 @@ function MapImplInner({
   // they touch but don't overlap. With the drawer open on `@xl`, slide past both
   // the drawer (`--legend-drawer-width`, +35px gap) and its toggle.
   const searchClassName = cx(
-    'absolute top-3 z-10 w-80 transition-[left,max-width] duration-200',
+    'absolute top-3 z-10 w-85 transition-[left,max-width] duration-200',
     legend && !legendOpen ? 'left-[30px] max-w-[calc(100%-2.5rem)]' : 'left-3 max-w-[calc(100%-1.5rem)]',
     legendOpen && '@xl:left-[calc(var(--legend-drawer-width)_+_35px)] @xl:max-w-[calc(100%_-_var(--legend-drawer-width)_-_47px)]'
   );
@@ -293,9 +293,9 @@ function MapImplInner({
         />
       )}
       {search === 'eligibility' && (
-        <div className={cx(searchClassName, 'flex flex-col gap-1 bg-white rounded-lg shadow-md p-3')}>
+        <div className={cx(searchClassName, 'flex flex-col gap-1 bg-white rounded-lg shadow-md p-2')}>
           <h2 className="text-base font-bold mb-0 text-(--text-title-grey)">Testez votre éligibilité</h2>
-          <AddressSearchInput onSelect={handleEligibilitySelect} placeholder={searchPlaceholder} />
+          <AddressSearchInput onSelect={handleEligibilitySelect} placeholder={searchPlaceholder} className="mb-0" />
           <EligibilityResultsPanel
             addresses={addresses}
             visible={resultsVisible}

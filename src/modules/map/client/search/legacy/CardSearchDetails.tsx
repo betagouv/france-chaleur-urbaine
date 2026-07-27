@@ -4,7 +4,6 @@ import { memo, useCallback, useMemo } from 'react';
 
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
-import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import useEligibilityForm from '@/hooks/useEligibilityForm';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
@@ -94,19 +93,14 @@ const CardSearchDetails = memo(
       if (hasNoTraceNetwork) {
         return "Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d'aucune information sur sa localisation.";
       }
-      {
-        const baseMessage = "D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.";
-        return inPDP ? (
+      return (
+        inPDP && (
           <>
-            {baseMessage}
-            <br />
-            Toutefois, votre bâtiment est situé dans le périmètre de développement prioritaire du réseau : le réseau se développe et une
-            obligation de raccordement peut s’appliquer en cas de renouvellement de votre mode de chauffage.
+            Votre bâtiment est situé dans le périmètre de développement prioritaire du réseau : le réseau se développe et une obligation de
+            raccordement peut s’appliquer en cas de renouvellement de votre mode de chauffage.
           </>
-        ) : (
-          baseMessage
-        );
-      }
+        )
+      );
     }, [basedOnCity, cityHasNetwork, cityHasFuturNetwork, distance, isEligible, futurNetwork, inPDP]);
 
     const onClickHandler = useCallback(
@@ -137,18 +131,20 @@ const CardSearchDetails = memo(
           small
           bordered
           label={
-            <Box display="flex" alignItems="flex-start" flexDirection="column" gap={'2px'}>
-              {isReseauClose ? (
-                <Badge small severity="success">
-                  Réseau proche
-                </Badge>
-              ) : (
-                <Badge small severity="error">
-                  Pas de réseau connu
-                </Badge>
-              )}
-              <strong>{storedAddress.address}</strong>
-            </Box>
+            <div className="searched-address-label">
+              <div className="mb-0.5">
+                {isReseauClose ? (
+                  <Badge small severity="success">
+                    Réseau proche
+                  </Badge>
+                ) : (
+                  <Badge small severity="error">
+                    Pas de réseau connu
+                  </Badge>
+                )}
+              </div>
+              <div className="text-base">{storedAddress.address}</div>
+            </div>
           }
         >
           <section>
@@ -156,14 +152,14 @@ const CardSearchDetails = memo(
               eligibilityWording
             ) : (
               <>
-                <div>
+                <div className="fr-mb-2w">
                   {eligibilityWording}
                   {readableDistance && (
-                    <Box className="fr-my-2w" textColor="text-label-blue-france" display="flex" alignItems="center" gap="4px">
-                      <Image src="/icons/grid-line.svg" alt="" height="16" width="16" />
+                    <Box textColor="text-label-blue-france" display="flex" alignItems="center" gap="4px">
                       {readableDistance && (
                         <span>
                           {futurNetwork ? 'passera à' : ''} {readableDistance}
+                          {!isReseauClose && <span className="text-black"> : pas de réseau de chaleur à proximité</span>}
                         </span>
                       )}
                     </Box>
@@ -177,35 +173,40 @@ const CardSearchDetails = memo(
                 ) : (
                   <ContactFormWrapper>
                     {!storedAddress.contacted && (
-                      <header>
-                        {isEligible
-                          ? 'Vous souhaitez en savoir plus ?'
-                          : 'Vous souhaitez faire connaître votre demande au gestionnaire du réseau le plus proche ou à la collectivité ?'}
-                      </header>
-                    )}
-                    {!storedAddress.contacted && (
                       <>
+                        <header className="mb-0">
+                          {isEligible ? (
+                            'Vous souhaitez en savoir plus ?'
+                          ) : (
+                            <>
+                              <strong>Et maintenant ?</strong>
+                              <p className="font-normal my-3v">
+                                Signalez au gestionnaire du réseau le plus proche ou à la collectivité votre souhait de raccordement, et
+                                découvrez d’autres solutions de chauffage écologiques adaptées à votre bâtiment :
+                              </p>
+                            </>
+                          )}
+                        </header>
                         <ContactFormButtonWrapper>
-                          <Button onClick={displayContactForm}>
+                          <Button
+                            iconId="fr-icon-mail-line"
+                            iconPosition="right"
+                            onClick={displayContactForm}
+                            className="w-full justify-center"
+                          >
                             {isEligible ? 'Être mis en relation avec le gestionnaire du réseau' : 'Laissez vos coordonnées'}
                           </Button>
                         </ContactFormButtonWrapper>
                         {!isEligible && (
-                          <>
-                            <div className="mt-8v mb-3v">
-                              <span aria-hidden="true" className="fr-icon-arrow-right-circle-fill shrink-0 text-blue mr-1v" />
-                              Il existe d'autres solutions de chauffage écologiques et économiques adaptées à votre bâtiment :
-                            </div>
-                            <Link
-                              href={`/chaleur-renouvelable?adresse=${encodeURIComponent(storedAddress.addressDetails.geoAddress?.properties.label ?? storedAddress.address)}`}
-                              variant="secondary"
-                              className="mx-auto fr-btn--sm fr-btn--icon-right fr-icon-arrow-right-line px-4 py-2"
-                              postHogEventKey="address_test:discover_more_clicked"
-                              postHogEventProps={{ result_type: 'non eligible', source: 'carte' }}
-                            >
-                              Découvrir les autres solutions
-                            </Link>
-                          </>
+                          <Link
+                            href={`/chaleur-renouvelable?adresse=${encodeURIComponent(storedAddress.addressDetails.geoAddress?.properties.label ?? storedAddress.address)}`}
+                            variant="secondary"
+                            className="w-full mt-3v fr-btn--icon-right fr-icon-arrow-right-line justify-center"
+                            postHogEventKey="address_test:discover_more_clicked"
+                            postHogEventProps={{ result_type: 'non eligible', source: 'carte' }}
+                          >
+                            Découvrir d'autres solutions
+                          </Link>
                         )}
                       </>
                     )}
