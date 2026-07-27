@@ -48,7 +48,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
       return null;
     }
 
-    return engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant');
+    return engine.getFieldAsNumber('réseau de chaleur . aides cumac . total montant');
   }, [engine, engine.loaded, formState.selectedAddress, formState.nbLogements, formState.surface]);
 
   const montantCouts = useMemo(() => {

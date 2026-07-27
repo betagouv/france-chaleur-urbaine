@@ -120,19 +120,19 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
                 { accessorKey: 'totalAvecAides', header: 'Total avec aides' },
               ]}
               data={modesDeChauffage.map((m) => ({
-                aides: roundNumber(`Bilan x ${m.coutPublicodeKey} . aides`),
+                aides: roundNumber(`${m.publicodesKey} . bilan . aides`),
                 installation: m.label,
-                p1Abo: roundNumber(`Bilan x ${m.coutPublicodeKey} . P1abo`),
-                p1ConsoChaud: roundNumber(`Bilan x ${m.coutPublicodeKey} . P1conso`),
-                p1ConsoFroid: roundNumber(`Bilan x ${m.coutPublicodeKey} . P1Consofroid`),
-                p1Ecs: roundNumber(`Bilan x ${m.coutPublicodeKey} . P1ECS`),
-                p1Prime: roundNumber(`Bilan x ${m.coutPublicodeKey} . P1prime`),
-                p2: roundNumber(`Bilan x ${m.coutPublicodeKey} . P2`),
-                p3: roundNumber(`Bilan x ${m.coutPublicodeKey} . P3`),
-                p4: roundNumber(`Bilan x ${m.coutPublicodeKey} . P4`),
-                p4MoinsAides: roundNumber(`Bilan x ${m.coutPublicodeKey} . P4 moins aides`),
-                totalAvecAides: roundNumber(`Bilan x ${m.coutPublicodeKey} . total avec aides`),
-                totalSansAides: roundNumber(`Bilan x ${m.coutPublicodeKey} . total sans aides`),
+                p1Abo: roundNumber(`${m.publicodesKey} . bilan . P1abo`),
+                p1ConsoChaud: roundNumber(`${m.publicodesKey} . bilan . P1conso`),
+                p1ConsoFroid: roundNumber(`${m.publicodesKey} . bilan . P1Consofroid`),
+                p1Ecs: roundNumber(`${m.publicodesKey} . bilan . P1ECS`),
+                p1Prime: roundNumber(`${m.publicodesKey} . bilan . P1prime`),
+                p2: roundNumber(`${m.publicodesKey} . bilan . P2`),
+                p3: roundNumber(`${m.publicodesKey} . bilan . P3`),
+                p4: roundNumber(`${m.publicodesKey} . bilan . P4`),
+                p4MoinsAides: roundNumber(`${m.publicodesKey} . bilan . P4 moins aides`),
+                totalAvecAides: roundNumber(`${m.publicodesKey} . bilan . total avec aides`),
+                totalSansAides: roundNumber(`${m.publicodesKey} . bilan . total sans aides`),
               }))}
             />
 
@@ -150,42 +150,42 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               data={[
                 {
                   parametres: 'Chaleur (RCU)',
-                  partAbonnement: number("Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part abonnement"),
-                  partConsommation: number("Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part consommation"),
+                  partAbonnement: number('combustibles . réseau de chaleur . abonnement'),
+                  partConsommation: number('combustibles . réseau de chaleur . consommation'),
                 },
                 {
                   parametres: 'Froid (RFU)',
-                  partAbonnement: number("Calcul Eco . Coût d'achat du combustible . Froid RFU x Part abonnement"),
-                  partConsommation: number("Calcul Eco . Coût d'achat du combustible . Froid RFU x Part consommation"),
+                  partAbonnement: number('combustibles . réseau de froid . abonnement'),
+                  partConsommation: number('combustibles . réseau de froid . consommation'),
                 },
                 {
-                  heuresCreuses: number("Calcul Eco . Coût d'achat du combustible . Electricité indiv x Part consommation HC"),
+                  heuresCreuses: number('combustibles . électricité . consommation individuel HC'),
                   parametres: 'Electricité indiv',
-                  partAbonnement: number("Calcul Eco . Coût d'achat du combustible . Electricité indiv x Part abonnement"),
-                  partConsommation: number("Calcul Eco . Coût d'achat du combustible . Electricité indiv x Part consommation HP"),
+                  partAbonnement: number('combustibles . électricité . abonnement individuel'),
+                  partConsommation: number('combustibles . électricité . consommation individuel HP'),
                 },
                 {
                   parametres: 'Electricité coll',
-                  partAbonnement: number("Calcul Eco . Coût d'achat du combustible . Electricité coll x Part abonnement"),
-                  partConsommation: number("Calcul Eco . Coût d'achat du combustible . Electricité coll x Part consommation"),
+                  partAbonnement: number('combustibles . électricité . abonnement collectif'),
+                  partConsommation: number('combustibles . électricité . consommation collectif'),
                 },
                 {
                   parametres: 'Gaz individuel',
-                  partAbonnement: number("Calcul Eco . Coût d'achat du combustible . Gaz indiv x Part abonnement"),
-                  partConsommation: number("Calcul Eco . Coût d'achat du combustible . Gaz indiv x Part consommation"),
+                  partAbonnement: number('combustibles . gaz . abonnement individuel'),
+                  partConsommation: number('combustibles . gaz . consommation individuel'),
                 },
                 {
                   parametres: 'Gaz collectif',
-                  partAbonnement: number("Calcul Eco . Coût d'achat du combustible . Gaz coll x Part abonnement"),
-                  partConsommation: number("Calcul Eco . Coût d'achat du combustible . Gaz coll x Part consommation"),
+                  partAbonnement: number('combustibles . gaz . abonnement collectif'),
+                  partConsommation: number('combustibles . gaz . consommation collectif'),
                 },
                 {
                   parametres: 'Granulés',
-                  partConsommation: number("Calcul Eco . Coût d'achat du combustible . Granulés x Part consommation"),
+                  partConsommation: number('combustibles . granulés . consommation'),
                 },
                 {
                   parametres: 'Fioul',
-                  partConsommation: number("Calcul Eco . Coût d'achat du combustible . Fioul x Part consommation"),
+                  partConsommation: number('combustibles . fioul . consommation'),
                 },
               ]}
             />
@@ -204,22 +204,12 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               ]}
               data={modesDeChauffage.map((m) => ({
                 installation: m.label,
-                investissementBallonAccumulation: roundNumber(
-                  `Calcul Eco . ${m.coutPublicodeKey} . Investissement ballon ECS à accumulation`
-                ),
-                investissementBallonSolaire: roundNumber(
-                  `Calcul Eco . ${m.coutPublicodeKey} . Investissement ballon ECS solaire panneau inclus`
-                ),
-                investissementParLogement: roundNumber(
-                  `Calcul Eco . ${m.coutPublicodeKey} . Investissement équipement par logement type tertiaire`
-                ),
-                investissementTotal: roundNumber(`Calcul Eco . ${m.coutPublicodeKey} . Investissement équipement Total`),
-                totalAvecBallonAccumulation: roundNumber(
-                  `Calcul Eco . ${m.coutPublicodeKey} . Total investissement avec ballon ECS à accumulation`
-                ),
-                totalAvecBallonSolaire: roundNumber(
-                  `Calcul Eco . ${m.coutPublicodeKey} . Total investissement ballon ECS solaire panneaux`
-                ),
+                investissementBallonAccumulation: roundNumber(`${m.publicodesKey} . coûts . investissement ballon ECS`),
+                investissementBallonSolaire: roundNumber(`${m.publicodesKey} . coûts . investissement chauffe-eau solaire`),
+                investissementParLogement: roundNumber(`${m.publicodesKey} . coûts . investissement par logement`),
+                investissementTotal: roundNumber(`${m.publicodesKey} . coûts . investissement équipement`),
+                totalAvecBallonAccumulation: roundNumber(`${m.publicodesKey} . coûts . investissement total avec ballon ECS`),
+                totalAvecBallonSolaire: roundNumber(`${m.publicodesKey} . coûts . investissement total avec chauffe-eau solaire`),
               }))}
             />
 
@@ -235,11 +225,11 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
                 { accessorKey: 'coutBallonSolaire', header: 'Coût combustible pour ballon ECS solaire (P1 ECS) €TTC/an' },
               ]}
               data={modesDeChauffage.map((m) => ({
-                coutAbonnement: roundNumber(`Calcul Eco . ${m.coutPublicodeKey} . Coût du combustible abonnement`),
-                coutBallonAccumulation: roundNumber(`Calcul Eco . ${m.coutPublicodeKey} . Coût combustible pour ballon ECS à accumulation`),
-                coutBallonSolaire: roundNumber(`Calcul Eco . ${m.coutPublicodeKey} . Coût combustible pour ballon ECS solaire`),
-                coutConsommation: roundNumber(`Calcul Eco . ${m.coutPublicodeKey} . Coût du combustible consommation`),
-                coutElectriciteAuxiliaire: roundNumber(`Calcul Eco . ${m.coutPublicodeKey} . Coût électricité auxiliaire`),
+                coutAbonnement: roundNumber(`${m.publicodesKey} . coûts . P1 abonnement`),
+                coutBallonAccumulation: roundNumber(`${m.publicodesKey} . coûts . P1 ballon ECS`),
+                coutBallonSolaire: roundNumber(`${m.publicodesKey} . coûts . P1 chauffe-eau solaire`),
+                coutConsommation: roundNumber(`${m.publicodesKey} . coûts . P1 consommation`),
+                coutElectriciteAuxiliaire: roundNumber(`${m.publicodesKey} . coûts . P1 auxiliaires`),
                 installation: m.label,
               }))}
             />
@@ -255,15 +245,11 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
                 { accessorKey: 'grosEntretienParLogement', header: 'Par logement/tertiaire - Gros entretien (P3) €TTC/an' },
               ]}
               data={modesDeChauffage.map((m) => ({
-                grosEntretien: roundNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${m.coutPublicodeKey} . gros entretien P3`),
-                grosEntretienParLogement: roundNumber(
-                  `Calcul Eco . P2 P3 Coût de l'entretien . ${m.coutPublicodeKey} . gros entretien P3 par logement tertiaire`
-                ),
+                grosEntretien: roundNumber(`${m.publicodesKey} . coûts . gros entretien P3`),
+                grosEntretienParLogement: roundNumber(`${m.publicodesKey} . coûts . gros entretien P3 par logement tertiaire`),
                 installation: m.label,
-                petitEntretien: roundNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${m.coutPublicodeKey} . petit entretien P2`),
-                petitEntretienParLogement: roundNumber(
-                  `Calcul Eco . P2 P3 Coût de l'entretien . ${m.coutPublicodeKey} . petit entretien P2 par logement tertiaire`
-                ),
+                petitEntretien: roundNumber(`${m.publicodesKey} . coûts . petit entretien P2`),
+                petitEntretienParLogement: roundNumber(`${m.publicodesKey} . coûts . petit entretien P2 par logement tertiaire`),
               }))}
             />
 
@@ -279,28 +265,18 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               ]}
               data={[
                 ...modesDeChauffage.map((m) => ({
-                  cee: roundNumber(`Calcul Eco . Montant des aides par logement tertiaire . ${m.coutPublicodeKey} . CEE`),
-                  coupDePouce: roundNumber(`Calcul Eco . Montant des aides par logement tertiaire . ${m.coutPublicodeKey} . Coup de pouce`),
+                  cee: roundNumber(`${m.publicodesKey} . aides . CEE`),
+                  coupDePouce: roundNumber(`${m.publicodesKey} . aides . coup de pouce`),
                   installation: m.label,
-                  maPrimeRenov: roundNumber(
-                    `Calcul Eco . Montant des aides par logement tertiaire . ${m.coutPublicodeKey} . Ma prime renov'`
-                  ),
-                  totalAides: roundNumber(`Calcul Eco . Montant des aides par logement tertiaire . ${m.coutPublicodeKey} . Total`),
+                  maPrimeRenov: roundNumber(`${m.publicodesKey} . aides . ma prime rénov`),
+                  totalAides: roundNumber(`${m.publicodesKey} . aides . total`),
                 })),
                 {
-                  cee: roundNumber(
-                    'Calcul Eco . Montant des aides par logement tertiaire . Panneau solaire thermique pour production ECS . CEE'
-                  ),
-                  coupDePouce: roundNumber(
-                    'Calcul Eco . Montant des aides par logement tertiaire . Panneau solaire thermique pour production ECS . Coup de pouce'
-                  ),
+                  cee: roundNumber('ecs additionnelle . aides panneau solaire . CEE'),
+                  coupDePouce: roundNumber('ecs additionnelle . aides panneau solaire . coup de pouce'),
                   installation: 'Panneau solaire thermique pour production ECS',
-                  maPrimeRenov: roundNumber(
-                    "Calcul Eco . Montant des aides par logement tertiaire . Panneau solaire thermique pour production ECS . Ma prime renov'"
-                  ),
-                  totalAides: roundNumber(
-                    'Calcul Eco . Montant des aides par logement tertiaire . Panneau solaire thermique pour production ECS . Total'
-                  ),
+                  maPrimeRenov: roundNumber('ecs additionnelle . aides panneau solaire . ma prime rénov'),
+                  totalAides: roundNumber('ecs additionnelle . aides panneau solaire . total'),
                 },
               ]}
             />
@@ -321,177 +297,139 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               ]}
               data={[
                 {
-                  gammePuissance: roundNumber('Installation x Réseaux de chaleur x Collectif . gamme de puissance existante'),
+                  gammePuissance: roundNumber('réseau de chaleur . installation . puissance retenue'),
                   installation: 'Réseaux de chaleur',
-                  productionEcs: bool('Installation x Réseaux de chaleur x Collectif . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber(
-                    'Installation x Réseaux de chaleur x Collectif . puissance nécessaire équipement chauffage'
-                  ),
-                  puissanceEcs: roundNumber(
-                    'Installation x Réseaux de chaleur x Collectif . puissance nécessaire pour ECS avec équipement'
-                  ),
-                  puissanceEquipement: roundNumber('Installation x Réseaux de chaleur x Collectif . puissance équipement'),
+                  productionEcs: bool('réseau de chaleur . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('réseau de chaleur . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('réseau de chaleur . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('réseau de chaleur . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x Réseaux de froid x Collectif . gamme de puissance existante'),
+                  gammePuissance: roundNumber('réseau de froid . installation . puissance retenue'),
                   installation: 'Réseaux de froid',
-                  productionEcs: bool('Installation x Réseaux de froid x Collectif . production eau chaude sanitaire'),
-                  puissanceEquipement: roundNumber('Installation x Réseaux de froid x Collectif . puissance équipement'),
-                  puissanceRefroidissement: roundNumber(
-                    'Installation x Réseaux de froid x Collectif . puissance nécessaire pour refroidissement équipement'
-                  ),
+                  productionEcs: bool('réseau de froid . installation . production eau chaude sanitaire'),
+                  puissanceEquipement: roundNumber('réseau de froid . installation . puissance équipement'),
+                  puissanceRefroidissement: roundNumber('réseau de froid . installation . puissance refroidissement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x Poêle à granulés indiv x Individuel . gamme de puissance existante'),
+                  gammePuissance: roundNumber('poêle à granulés . installation . puissance retenue'),
                   installation: 'Poêle à granulés indiv',
-                  productionEcs: bool('Installation x Poêle à granulés indiv x Individuel . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber(
-                    'Installation x Poêle à granulés indiv x Individuel . puissance nécessaire équipement chauffage'
-                  ),
-                  puissanceEquipement: roundNumber('Installation x Poêle à granulés indiv x Individuel . puissance équipement'),
+                  productionEcs: bool('poêle à granulés . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('poêle à granulés . installation . puissance chauffage'),
+                  puissanceEquipement: roundNumber('poêle à granulés . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x Chaudière à granulés coll x Collectif . gamme de puissance existante'),
+                  gammePuissance: roundNumber('chaudière à granulés . installation . puissance retenue'),
                   installation: 'Chaudière à granulés coll',
-                  productionEcs: bool('Installation x Chaudière à granulés coll x Collectif . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber(
-                    'Installation x Chaudière à granulés coll x Collectif . puissance nécessaire équipement chauffage'
-                  ),
-                  puissanceEcs: roundNumber(
-                    'Installation x Chaudière à granulés coll x Collectif . puissance nécessaire pour ECS avec équipement'
-                  ),
-                  puissanceEquipement: roundNumber('Installation x Chaudière à granulés coll x Collectif . puissance équipement'),
+                  productionEcs: bool('chaudière à granulés . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('chaudière à granulés . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('chaudière à granulés . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('chaudière à granulés . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x Gaz indiv avec cond x Individuel . gamme de puissance existante'),
+                  gammePuissance: roundNumber('gaz indiv avec cond . installation . puissance retenue'),
                   installation: 'Gaz indiv avec cond',
-                  productionEcs: bool('Installation x Gaz indiv avec cond x Individuel . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber(
-                    'Installation x Gaz indiv avec cond x Individuel . puissance nécessaire équipement chauffage'
-                  ),
-                  puissanceEcs: roundNumber(
-                    'Installation x Gaz indiv avec cond x Individuel . puissance nécessaire pour ECS avec équipement'
-                  ),
-                  puissanceEquipement: roundNumber('Installation x Gaz indiv avec cond x Individuel . puissance équipement'),
+                  productionEcs: bool('gaz indiv avec cond . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('gaz indiv avec cond . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('gaz indiv avec cond . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('gaz indiv avec cond . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x Gaz indiv sans cond x Individuel . gamme de puissance existante'),
+                  gammePuissance: roundNumber('gaz indiv sans cond . installation . puissance retenue'),
                   installation: 'Gaz indiv sans cond',
-                  productionEcs: bool('Installation x Gaz indiv sans cond x Individuel . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber(
-                    'Installation x Gaz indiv sans cond x Individuel . puissance nécessaire équipement chauffage'
-                  ),
-                  puissanceEcs: roundNumber(
-                    'Installation x Gaz indiv sans cond x Individuel . puissance nécessaire pour ECS avec équipement'
-                  ),
-                  puissanceEquipement: roundNumber('Installation x Gaz indiv sans cond x Individuel . puissance équipement'),
+                  productionEcs: bool('gaz indiv sans cond . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('gaz indiv sans cond . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('gaz indiv sans cond . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('gaz indiv sans cond . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x Gaz coll avec cond x Collectif . gamme de puissance existante'),
+                  gammePuissance: roundNumber('gaz coll avec cond . installation . puissance retenue'),
                   installation: 'Gaz coll avec cond',
-                  productionEcs: bool('Installation x Gaz coll avec cond x Collectif . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber(
-                    'Installation x Gaz coll avec cond x Collectif . puissance nécessaire équipement chauffage'
-                  ),
-                  puissanceEcs: roundNumber(
-                    'Installation x Gaz coll avec cond x Collectif . puissance nécessaire pour ECS avec équipement'
-                  ),
-                  puissanceEquipement: roundNumber('Installation x Gaz coll avec cond x Collectif . puissance équipement'),
+                  productionEcs: bool('gaz coll avec cond . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('gaz coll avec cond . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('gaz coll avec cond . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('gaz coll avec cond . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x Gaz coll sans cond x Collectif . gamme de puissance existante'),
+                  gammePuissance: roundNumber('gaz coll sans cond . installation . puissance retenue'),
                   installation: 'Gaz coll sans cond',
-                  productionEcs: bool('Installation x Gaz coll sans cond x Collectif . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber(
-                    'Installation x Gaz coll sans cond x Collectif . puissance nécessaire équipement chauffage'
-                  ),
-                  puissanceEcs: roundNumber(
-                    'Installation x Gaz coll sans cond x Collectif . puissance nécessaire pour ECS avec équipement'
-                  ),
-                  puissanceEquipement: roundNumber('Installation x Gaz coll sans cond x Collectif . puissance équipement'),
+                  productionEcs: bool('gaz coll sans cond . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('gaz coll sans cond . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('gaz coll sans cond . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('gaz coll sans cond . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x Fioul indiv x Individuel . gamme de puissance existante'),
+                  gammePuissance: roundNumber('fioul indiv . installation . puissance retenue'),
                   installation: 'Fioul indiv',
-                  productionEcs: bool('Installation x Fioul indiv x Individuel . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber('Installation x Fioul indiv x Individuel . puissance nécessaire équipement chauffage'),
-                  puissanceEcs: roundNumber('Installation x Fioul indiv x Individuel . puissance nécessaire pour ECS avec équipement'),
-                  puissanceEquipement: roundNumber('Installation x Fioul indiv x Individuel . puissance équipement'),
+                  productionEcs: bool('fioul indiv . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('fioul indiv . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('fioul indiv . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('fioul indiv . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x Fioul coll x Collectif . gamme de puissance existante'),
+                  gammePuissance: roundNumber('fioul coll . installation . puissance retenue'),
                   installation: 'Fioul coll',
-                  productionEcs: bool('Installation x Fioul coll x Collectif . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber('Installation x Fioul coll x Collectif . puissance nécessaire équipement chauffage'),
-                  puissanceEcs: roundNumber('Installation x Fioul coll x Collectif . puissance nécessaire pour ECS avec équipement'),
-                  puissanceEquipement: roundNumber('Installation x Fioul coll x Collectif . puissance équipement'),
+                  productionEcs: bool('fioul coll . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('fioul coll . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('fioul coll . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('fioul coll . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x PAC air-air x Individuel . gamme de puissance existante'),
+                  gammePuissance: roundNumber('PAC air-air indiv . installation . puissance retenue'),
                   installation: 'PAC air/air indiv',
-                  productionEcs: bool('Installation x PAC air-air x Individuel . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber('Installation x PAC air-air x Individuel . puissance nécessaire équipement chauffage'),
-                  puissanceEquipement: roundNumber('Installation x PAC air-air x Individuel . puissance équipement'),
-                  puissanceRefroidissement: roundNumber(
-                    'Installation x PAC air-air x Individuel . puissance nécessaire pour refroidissement équipement'
-                  ),
+                  productionEcs: bool('PAC air-air indiv . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('PAC air-air indiv . installation . puissance chauffage'),
+                  puissanceEquipement: roundNumber('PAC air-air indiv . installation . puissance équipement'),
+                  puissanceRefroidissement: roundNumber('PAC air-air indiv . installation . puissance refroidissement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x PAC air-air x Collectif . gamme de puissance existante'),
+                  gammePuissance: roundNumber('PAC air-air coll . installation . puissance retenue'),
                   installation: 'PAC air/air collectif/tertiaire',
-                  productionEcs: bool('Installation x PAC air-air x Collectif . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber('Installation x PAC air-air x Collectif . puissance nécessaire équipement chauffage'),
-                  puissanceEquipement: roundNumber('Installation x PAC air-air x Collectif . puissance équipement'),
-                  puissanceRefroidissement: roundNumber(
-                    'Installation x PAC air-air x Collectif . puissance nécessaire pour refroidissement équipement'
-                  ),
+                  productionEcs: bool('PAC air-air coll . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('PAC air-air coll . installation . puissance chauffage'),
+                  puissanceEquipement: roundNumber('PAC air-air coll . installation . puissance équipement'),
+                  puissanceRefroidissement: roundNumber('PAC air-air coll . installation . puissance refroidissement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x PAC eau-eau x Individuel . gamme de puissance existante'),
+                  gammePuissance: roundNumber('PAC eau-eau indiv . installation . puissance retenue'),
                   installation: 'PAC eau/eau indiv',
-                  productionEcs: bool('Installation x PAC eau-eau x Individuel . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber('Installation x PAC eau-eau x Individuel . puissance nécessaire équipement chauffage'),
-                  puissanceEcs: roundNumber('Installation x PAC eau-eau x Individuel . puissance nécessaire pour ECS avec équipement'),
-                  puissanceEquipement: roundNumber('Installation x PAC eau-eau x Individuel . puissance équipement'),
+                  productionEcs: bool('PAC eau-eau indiv . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('PAC eau-eau indiv . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('PAC eau-eau indiv . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('PAC eau-eau indiv . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x PAC eau-eau x Collectif . gamme de puissance existante'),
+                  gammePuissance: roundNumber('PAC eau-eau coll . installation . puissance retenue'),
                   installation: 'PAC eau/eau collectif/tertiaire',
-                  productionEcs: bool('Installation x PAC eau-eau x Collectif . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber('Installation x PAC eau-eau x Collectif . puissance nécessaire équipement chauffage'),
-                  puissanceEcs: roundNumber('Installation x PAC eau-eau x Collectif . puissance nécessaire pour ECS avec équipement'),
-                  puissanceEquipement: roundNumber('Installation x PAC eau-eau x Collectif . puissance équipement'),
+                  productionEcs: bool('PAC eau-eau coll . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('PAC eau-eau coll . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('PAC eau-eau coll . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('PAC eau-eau coll . installation . puissance équipement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x PAC air-eau x Individuel . gamme de puissance existante'),
+                  gammePuissance: roundNumber('PAC air-eau indiv . installation . puissance retenue'),
                   installation: 'PAC air/eau indiv',
-                  productionEcs: bool('Installation x PAC air-eau x Individuel . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber('Installation x PAC air-eau x Individuel . puissance nécessaire équipement chauffage'),
-                  puissanceEcs: roundNumber('Installation x PAC air-eau x Individuel . puissance nécessaire pour ECS avec équipement'),
-                  puissanceEquipement: roundNumber('Installation x PAC air-eau x Individuel . puissance équipement'),
-                  puissanceRefroidissement: roundNumber(
-                    'Installation x PAC air-eau x Individuel . puissance nécessaire pour refroidissement équipement'
-                  ),
+                  productionEcs: bool('PAC air-eau indiv . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('PAC air-eau indiv . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('PAC air-eau indiv . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('PAC air-eau indiv . installation . puissance équipement'),
+                  puissanceRefroidissement: roundNumber('PAC air-eau indiv . installation . puissance refroidissement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x PAC air-eau x Collectif . gamme de puissance existante'),
+                  gammePuissance: roundNumber('PAC air-eau coll . installation . puissance retenue'),
                   installation: 'PAC air/eau collectif/tertiaire',
-                  productionEcs: bool('Installation x PAC air-eau x Collectif . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber('Installation x PAC air-eau x Collectif . puissance nécessaire équipement chauffage'),
-                  puissanceEcs: roundNumber('Installation x PAC air-eau x Collectif . puissance nécessaire pour ECS avec équipement'),
-                  puissanceEquipement: roundNumber('Installation x PAC air-eau x Collectif . puissance équipement'),
-                  puissanceRefroidissement: roundNumber(
-                    'Installation x PAC air-eau x Collectif . puissance nécessaire pour refroidissement équipement'
-                  ),
+                  productionEcs: bool('PAC air-eau coll . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('PAC air-eau coll . installation . puissance chauffage'),
+                  puissanceEcs: roundNumber('PAC air-eau coll . installation . puissance ECS'),
+                  puissanceEquipement: roundNumber('PAC air-eau coll . installation . puissance équipement'),
+                  puissanceRefroidissement: roundNumber('PAC air-eau coll . installation . puissance refroidissement'),
                 },
                 {
-                  gammePuissance: roundNumber('Installation x Radiateur électrique x Individuel . gamme de puissance existante'),
+                  gammePuissance: roundNumber('radiateur électrique . installation . puissance retenue'),
                   installation: 'Radiateur électrique',
-                  productionEcs: bool('Installation x Radiateur électrique x Individuel . production eau chaude sanitaire'),
-                  puissanceChauffage: roundNumber(
-                    'Installation x Radiateur électrique x Individuel . puissance nécessaire équipement chauffage'
-                  ),
-                  puissanceEquipement: roundNumber('Installation x Radiateur électrique x Individuel . puissance équipement'),
+                  productionEcs: bool('radiateur électrique . installation . production eau chaude sanitaire'),
+                  puissanceChauffage: roundNumber('radiateur électrique . installation . puissance chauffage'),
+                  puissanceEquipement: roundNumber('radiateur électrique . installation . puissance équipement'),
                 },
               ]}
             />
@@ -507,17 +445,11 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
                 { accessorKey: 'appointElectricite', header: "Appoint d'éléctricité (kWh/an)" },
               ]}
               data={modesDeChauffage.map((m) => ({
-                appointElectricite: roundNumber(
-                  `Installation x ${m.emissionsCO2PublicodesKey} . appoint d'électricité chauffe-eau solaire`
-                ),
-                besoinInstallation: bool(
-                  `Installation x ${m.emissionsCO2PublicodesKey} . besoin d'installation supplémentaire pour produire l'ECS`
-                ),
-                consommationElectricite: roundNumber(
-                  `Installation x ${m.emissionsCO2PublicodesKey} . consommation d'électricité chauffe-eau électrique`
-                ),
+                appointElectricite: roundNumber(`${m.publicodesKey} . installation . appoint chauffe-eau solaire`),
+                besoinInstallation: bool(`${m.publicodesKey} . installation . ECS additionnelle nécessaire`),
+                consommationElectricite: roundNumber(`${m.publicodesKey} . installation . consommation chauffe-eau électrique`),
                 installation: m.label,
-                volumeBallon: roundNumber(`Installation x ${m.emissionsCO2PublicodesKey} . volume du ballon ECS`),
+                volumeBallon: roundNumber(`${m.publicodesKey} . installation . volume du ballon ECS`),
               }))}
             />
 
@@ -531,9 +463,9 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
                 { accessorKey: 'consommationAuxiliaire', header: 'Consommation auxiliaire (kWh elec/an)' },
               ]}
               data={modesDeChauffage.map((m) => ({
-                consommationAuxiliaire: roundNumber(`Installation x ${m.emissionsCO2PublicodesKey} . consommation auxiliaire`),
-                consommationChaleur: roundNumber(`Installation x ${m.emissionsCO2PublicodesKey} . consommation combustible chaleur`),
-                consommationFroid: roundNumber(`Installation x ${m.emissionsCO2PublicodesKey} . consommation combustible froid`),
+                consommationAuxiliaire: roundNumber(`${m.publicodesKey} . installation . consommation auxiliaire`),
+                consommationChaleur: roundNumber(`${m.publicodesKey} . installation . consommation combustible chaleur`),
+                consommationFroid: roundNumber(`${m.publicodesKey} . installation . consommation combustible froid`),
                 installation: m.label,
               }))}
             />
@@ -550,12 +482,8 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
                 },
               ]}
               data={modesDeChauffage.map((m) => ({
-                consommationElectricite: roundNumber(
-                  `Installation x ${m.emissionsCO2PublicodesKey} . consommation d'électricité lié au chauffage-refroidissement et à la production d'ECS`
-                ),
-                consommationHorsElectricite: roundNumber(
-                  `Installation x ${m.emissionsCO2PublicodesKey} . consommation combustible hors électricité`
-                ),
+                consommationElectricite: roundNumber(`${m.publicodesKey} . installation . consommation électricité`),
+                consommationHorsElectricite: roundNumber(`${m.publicodesKey} . installation . consommation hors électricité`),
                 installation: m.label,
               }))}
             />
@@ -577,19 +505,15 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
                 { accessorKey: 'total', header: 'Total des émissions' },
               ]}
               data={modesDeChauffage.map((m) => ({
-                besoinInstallation: bool(
-                  `Installation x ${m.emissionsCO2PublicodesKey} . besoin d'installation supplémentaire pour produire l'ECS`
-                ),
+                besoinInstallation: bool(`${m.publicodesKey} . installation . ECS additionnelle nécessaire`),
                 installation: m.label,
-                scope1: roundNumber(`env . Installation x ${m.emissionsCO2PublicodesKey} . besoins de chauffage et ECS si même équipement`),
-                scope2Auxiliaires: roundNumber(
-                  `env . Installation x ${m.emissionsCO2PublicodesKey} . auxiliaires et combustible électrique`
-                ),
-                scope2EcsBallon: roundNumber(`env . Installation x ${m.emissionsCO2PublicodesKey} . ECS avec ballon électrique`),
-                scope2EcsSolaire: roundNumber(`env . Installation x ${m.emissionsCO2PublicodesKey} . ECS solaire thermique`),
-                scope2Total: roundNumber(`env . Installation x ${m.emissionsCO2PublicodesKey} . Scope 2`),
-                scope3: roundNumber(`env . Installation x ${m.emissionsCO2PublicodesKey} . Scope 3`),
-                total: roundNumber(`env . Installation x ${m.emissionsCO2PublicodesKey} . Total`),
+                scope1: roundNumber(`${m.publicodesKey} . environnement . besoins de chauffage et ECS si même équipement`),
+                scope2Auxiliaires: roundNumber(`${m.publicodesKey} . environnement . auxiliaires et combustible électrique`),
+                scope2EcsBallon: roundNumber(`${m.publicodesKey} . environnement . ECS avec ballon électrique`),
+                scope2EcsSolaire: roundNumber(`${m.publicodesKey} . environnement . ECS solaire thermique`),
+                scope2Total: roundNumber(`${m.publicodesKey} . environnement . scope 2`),
+                scope3: roundNumber(`${m.publicodesKey} . environnement . scope 3`),
+                total: roundNumber(`${m.publicodesKey} . environnement . total`),
               }))}
             />
           </Box>

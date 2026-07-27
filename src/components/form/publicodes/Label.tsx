@@ -3,7 +3,7 @@ import type React from 'react';
 import Tooltip from '@/components/ui/Tooltip';
 import { upperCaseFirstChar } from '@/utils/strings';
 
-import labels from './labels';
+import { getRuleLabel } from './labels';
 
 type LabelProps = React.HTMLAttributes<HTMLSpanElement> & {
   label?: React.ReactNode;
@@ -12,7 +12,7 @@ type LabelProps = React.HTMLAttributes<HTMLSpanElement> & {
 };
 
 const Label: React.FC<LabelProps> = ({ label, unit, help }) => {
-  const displayLabel = typeof label === 'string' ? labels[label] || label : label;
+  const displayLabel = typeof label === 'string' ? getRuleLabel(label) || label : label;
 
   return (
     <span style={{ alignItems: 'start', display: 'flex', gap: '2px', justifyContent: 'space-between' }}>

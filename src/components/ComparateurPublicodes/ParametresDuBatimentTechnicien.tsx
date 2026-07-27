@@ -181,19 +181,25 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
         <Accordion label="Calcul ECS">
           <Title>Chauffe-eau électrique à accumulation</Title>
           <Input
-            name="ratios . CHAUF EAU ELEC Rendement stockage ballon"
+            name="ecs additionnelle . rendement stockage ballon électrique"
             help="Une partie de l'énergie stockée dans les ballons est perdue."
           />
-          <Input name="ratios . CHAUF EAU ELEC Durée de vie" help="Durée de vie estimée des équipements de production de chaleur." />
+          <Input
+            name="ecs additionnelle . durée de vie chauffe-eau électrique"
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
           {typeDeProductionECS === 'Solaire thermique' && (
             <>
               <Title>Chauffe-eau solaire avec appoint électrique</Title>
               <Input
-                name="ratios . CHAUF EAU SOLAIRE Rendement stockage ballon"
+                name="ecs additionnelle . rendement stockage ballon solaire"
                 help="Une partie de l'énergie stockée dans les ballons est perdue."
               />
-              <Input name="ratios . CHAUF EAU SOLAIRE Durée de vie" help="Durée de vie estimée des équipements de production de chaleur." />
-              <Input name="ratios . CHAUF EAU SOLAIRE Part du solaire dans la production d'ECS" />
+              <Input
+                name="ecs additionnelle . durée de vie chauffe-eau solaire"
+                help="Durée de vie estimée des équipements de production de chaleur."
+              />
+              <Input name="ecs additionnelle . part du solaire dans la production" />
             </>
           )}
         </Accordion>
@@ -201,13 +207,8 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
 
       {productionECS && (
         <Accordion label="Puissance totale des installations">
-          <Input name="Puissance installation x Capacité chauffe eau électrique à accumulation" />
-          {typeDeProductionECS === 'Solaire thermique' && (
-            <>
-              <Input name="Puissance installation x Capacité chauffe eau solaire" />
-              <Input name="surface de panneau nécessaire" />
-            </>
-          )}
+          <Input name="ecs additionnelle . capacité du ballon électrique" />
+          {typeDeProductionECS === 'Solaire thermique' && <Input name="ecs additionnelle . surface de panneaux" />}
         </Accordion>
       )}
     </div>
