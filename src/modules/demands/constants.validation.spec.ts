@@ -66,7 +66,7 @@ describe('zContactFormCreateDemandInput', () => {
       expect(result.success).toBe(expectedOutput);
     });
 
-    it('accepte un commentaire utilisateur optionnel et le trim', () => {
+    it('accepte un commentaire demandeur optionnel et le trim', () => {
       const result = zContactFormCreateDemandInput.safeParse({
         ...validBaseInput,
         commentUser: '  Projet déjà audité.  ',
