@@ -25,7 +25,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
   const hasFioul = hasModeDeChauffage('Fioul individuel') || hasModeDeChauffage('Fioul collectif');
   const hasGranules = hasModeDeChauffage('Chaudière à granulés collective') || hasModeDeChauffage('Poêle à granulés individuel');
   const utiliseReseauDeFroid =
-    engine.getField('type de production de froid') === 'Réseau de froid' && engine.getField('Inclure la climatisation');
+    engine.getField('climatisation . type de production') === 'Réseau de froid' && engine.getField('climatisation . incluse');
 
   return (
     <div {...props}>
@@ -111,7 +111,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       </Accordion>
 
       <Accordion label="Petit entretien (P2)">
-        <Input name="Paramètres économiques . Petit entretien P2 . TVA" />
+        <Input name="investissement . TVA petit entretien P2" />
         <Input name="réseau de chaleur . ratios . petit entretien P2" placeholderPrecision={3} />
         <Input name="réseau de froid . ratios . petit entretien P2" placeholderPrecision={3} />
         <Input name="poêle à granulés . ratios . petit entretien P2" placeholderPrecision={1} />
@@ -134,7 +134,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       </Accordion>
 
       <Accordion label="Gros entretien (P3)">
-        <Input name="Paramètres économiques . Gros entretien P3 . TVA" />
+        <Input name="investissement . TVA gros entretien P3" />
         <Input name="réseau de chaleur . ratios . gros entretien P3" placeholderPrecision={3} />
         <Input name="réseau de froid . ratios . gros entretien P3" placeholderPrecision={3} />
         <Input name="poêle à granulés . ratios . gros entretien P3" placeholderPrecision={3} />
@@ -161,40 +161,34 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       </Accordion>
 
       <Accordion label="Aides">
-        <RadioInput name="Paramètres économiques . Aides . Éligibilité x Prise en compte des aides" small orientation="horizontal" />
+        <RadioInput name="aides . éligibilité . prise en compte des aides" small orientation="horizontal" />
         <RadioInput
-          name="Paramètres économiques . Aides . Éligibilité x Je suis un particulier"
+          name="aides . éligibilité . particulier"
           small
           orientation="horizontal"
-          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
+          disabled={!engine.getField('aides . éligibilité . prise en compte des aides')}
         />
         <Select
-          name="Paramètres économiques . Aides . Éligibilité x Ressources du ménage"
+          name="aides . éligibilité . ressources du ménage"
           withDefaultOption={false}
-          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
+          disabled={!engine.getField('aides . éligibilité . prise en compte des aides')}
         />
         <RadioInput
-          name="Paramètres économiques . Aides . Éligibilité x Je dispose actuellement d'une chaudière gaz ou fioul"
+          name="aides . éligibilité . chaudière gaz ou fioul actuelle"
           small
           orientation="horizontal"
-          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
+          disabled={!engine.getField('aides . éligibilité . prise en compte des aides')}
         />
         <Select
-          name="Paramètres économiques . Aides . Aides x Éligible Ma prime renov'"
-          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
+          name="aides . éligibilité . éligible ma prime rénov"
+          disabled={!engine.getField('aides . éligibilité . prise en compte des aides')}
         />
         <Select
-          name="Paramètres économiques . Aides . Aides x Éligible Coup de pouce chauffage"
-          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
+          name="aides . éligibilité . éligible coup de pouce"
+          disabled={!engine.getField('aides . éligibilité . prise en compte des aides')}
         />
-        <Select
-          name="Paramètres économiques . Aides . Aides x Éligible CEE"
-          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
-        />
-        <Input
-          name="Paramètres économiques . Aides . Valeur CEE"
-          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
-        />
+        <Select name="aides . éligibilité . éligible CEE" disabled={!engine.getField('aides . éligibilité . prise en compte des aides')} />
+        <Input name="aides . valeur CEE" disabled={!engine.getField('aides . éligibilité . prise en compte des aides')} />
       </Accordion>
 
       <Title mt="4w">Paramètres techniques par mode de chauffage et de refroidissement</Title>

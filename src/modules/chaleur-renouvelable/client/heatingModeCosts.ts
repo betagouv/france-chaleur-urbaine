@@ -56,17 +56,17 @@ export function setPublicodesSituation(
   }
 ) {
   engine.setSituation({
-    'code département': `'${codeDepartement}'`,
-    DPE: `'${situation.dpe}'`,
-    'Inclure la climatisation': 'non',
-    "Nombre d'habitants moyen par appartement": `${situation.habitantsMoyen}`,
-    "nombre de logements dans l'immeuble concerné": situation.nbLogements,
-    'Production eau chaude sanitaire': 'oui',
-    'surface logement type tertiaire': `${situation.surfaceMoyenne}`,
-    'température de référence chaud commune': temperatureRef,
+    'bâtiment . DPE': `'${situation.dpe}'`,
+    'bâtiment . habitants par logement': `${situation.habitantsMoyen}`,
+    'bâtiment . nombre de logements': situation.nbLogements,
+    'bâtiment . surface tertiaire': `${situation.surfaceMoyenne}`,
+    'climat . code département': `'${codeDepartement}'`,
+    'climat . température de référence chaud commune': temperatureRef,
+    'climatisation . incluse': 'non',
+    'ecs . production': 'oui',
   });
 
-  engine.resetField('type de production ECS');
+  engine.resetField('ecs . type de production');
 }
 
 export function getHeatingModeCosts(engine: SimulatorEngine, modes: ModeDeChauffage[], situation: Situation) {
@@ -75,12 +75,12 @@ export function getHeatingModeCosts(engine: SimulatorEngine, modes: ModeDeChauff
   const coutParAnGazHotWaterOnly = Math.max(
     0,
     getGasCostWithoutInstallation(engine, {
-      'Production eau chaude sanitaire': 'oui',
-      'type de production ECS': "'Avec équipement chauffage'",
+      'ecs . production': 'oui',
+      'ecs . type de production': "'Avec équipement chauffage'",
     }) -
       getGasCostWithoutInstallation(engine, {
-        'Production eau chaude sanitaire': 'non',
-        'type de production ECS': "'Avec équipement chauffage'",
+        'ecs . production': 'non',
+        'ecs . type de production': "'Avec équipement chauffage'",
       })
   );
 

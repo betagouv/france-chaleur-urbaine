@@ -8,8 +8,8 @@ export type SelectProductionECS = Omit<React.ComponentProps<typeof Select>, 'lab
 
 const SelectProductionECS = ({ ...props }: SelectProductionECS) => {
   const { engine } = usePublicodesFormContext();
-  const inclureProdECS = engine.getField('Production eau chaude sanitaire');
-  const typeDeProductionECS = engine.getField('type de production ECS');
+  const inclureProdECS = engine.getField('ecs . production');
+  const typeDeProductionECS = engine.getField('ecs . type de production');
   return (
     <Select
       label={
@@ -55,17 +55,17 @@ const SelectProductionECS = ({ ...props }: SelectProductionECS) => {
           const newValue = e.target.value;
 
           if (newValue === 'non') {
-            engine.setField('Production eau chaude sanitaire', 'non');
-            engine.resetField('type de production ECS');
+            engine.setField('ecs . production', 'non');
+            engine.resetField('ecs . type de production');
             return;
           }
 
-          engine.resetField('Production eau chaude sanitaire');
+          engine.resetField('ecs . production');
           if (newValue === 'equipement-chauffage') {
-            engine.resetField('type de production ECS');
+            engine.resetField('ecs . type de production');
           } else {
             engine.setStringField(
-              'type de production ECS',
+              'ecs . type de production',
               newValue === 'chauffe-eau-electrique' ? 'Chauffe-eau électrique' : 'Solaire thermique'
             );
           }

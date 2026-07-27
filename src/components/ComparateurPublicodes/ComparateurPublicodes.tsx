@@ -70,7 +70,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const [addressError, setAddressError] = React.useState<boolean>(false);
   const [addressLoading, setAddressLoading] = React.useState<boolean>(false);
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
-  const inclureLaClimatisation = engine.getField('Inclure la climatisation');
+  const inclureLaClimatisation = engine.getField('climatisation . incluse');
   const trpcUtils = trpc.useUtils();
   const recordConversionEvent = useRecordConversionEvent();
   const [selectedTabId, setSelectedTabId] = useQueryState(
@@ -82,7 +82,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   // when loading a saved configuration with a different address
   const [addressResetKey, setAddressResetKey] = useState(0);
 
-  const isAddressSelected = engine.getField('code département') !== undefined;
+  const isAddressSelected = engine.getField('climat . code département') !== undefined;
 
   const handleAddressSelect = async (selectedAddress: BANAddressFeature, trackAnalytics = true) => {
     try {
@@ -194,9 +194,9 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const displayGraph = isAddressSelected && (!advancedMode || (advancedMode && !!modesDeChauffageQueryParam));
 
   React.useEffect(() => {
-    engine.setField('Inclure la climatisation', 'non');
-    engine.setField('Production eau chaude sanitaire', 'oui');
-    engine.setStringField('type de production ECS', 'Avec équipement chauffage');
+    engine.setField('climatisation . incluse', 'non');
+    engine.setField('ecs . production', 'oui');
+    engine.setStringField('ecs . type de production', 'Avec équipement chauffage');
   }, [advancedMode]);
 
   const { open: displayContactForm, EligibilityFormModal } = useEligibilityForm({

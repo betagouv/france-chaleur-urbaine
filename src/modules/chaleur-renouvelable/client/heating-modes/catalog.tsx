@@ -358,7 +358,7 @@ export const modesDeChauffage = {
       avantages: ['Très faibles émissions de CO₂', 'Aucune nuisance sonore', 'Solution mature et fiable'],
       coutInstallation: '3 000 à 4 000 €',
       coutParAnPublicodeKey: 'PAC capteurs solaires atmosphériques',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Solaire thermique'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Solaire thermique'" },
       description: (
         <>
           Votre toiture pourrait accueillir des capteurs solaires atmosphériques qui alimentent une pompe à chaleur dédiée à l'eau chaude
@@ -385,7 +385,7 @@ export const modesDeChauffage = {
       avantages: ['Faibles émissions de CO₂', 'Solution compacte et éprouvée', 'Permet de conserver le système de chauffage existant'],
       coutInstallation: '2 000 à 3 000 €',
       coutParAnPublicodeKey: 'PAC air-eau collective ECS',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Avec équipement chauffage'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre bâtiment semble disposer d’un espace extérieur pour accueillir une pompe à chaleur air/eau collective destinée à l’eau
@@ -419,7 +419,7 @@ export const modesDeChauffage = {
       ],
       coutInstallation: '2 000 à 3 000 €',
       coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Avec équipement chauffage'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à
@@ -592,7 +592,7 @@ export const modesDeChauffage = {
       avantages: ['Très faibles émissions de CO₂', 'Aucune nuisance sonore', 'Solution mature et fiable'],
       coutInstallation: '3 000 à 4 000 €',
       coutParAnPublicodeKey: 'PAC capteurs solaires atmosphériques',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Solaire thermique'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Solaire thermique'" },
       description: (
         <>
           Votre toiture pourrait accueillir des capteurs solaires atmosphériques qui alimentent une pompe à chaleur dédiée à l'eau chaude
@@ -623,7 +623,7 @@ export const modesDeChauffage = {
       ],
       coutInstallation: '2 000 à 3 000 €',
       coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Avec équipement chauffage'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à
@@ -648,7 +648,7 @@ export const modesDeChauffage = {
       avantages: ['Faibles émissions de CO₂', 'Solution compacte et éprouvée', 'Permet de conserver le système de chauffage existant'],
       coutInstallation: '2 000 à 3 000 €',
       coutParAnPublicodeKey: 'PAC air-eau collective ECS',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Chauffe-eau électrique'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Chauffe-eau électrique'" },
       description: (
         <>
           Votre bâtiment semble disposer d’un espace extérieur pour accueillir une pompe à chaleur air/eau collective destinée à l’eau
@@ -982,7 +982,7 @@ export const modesDeChauffage = {
       ],
       coutInstallation: '2 000 à 3 000 €',
       coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Avec équipement chauffage'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à

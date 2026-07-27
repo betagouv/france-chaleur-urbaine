@@ -32,11 +32,10 @@ export function buildPublicodeSituation({
   typeBatiment,
 }: PublicodeSituationInput): SimulatorSituation {
   return {
-    'méthode tertiaire 2026': typeBatiment === 'tertiaire' ? `'${tertiarySector}'` : null,
-    "nombre de logements dans l'immeuble concerné":
-      typeBatiment === 'résidentiel' && nbLogements != null && nbLogements > 0 ? nbLogements : null,
-    'Production eau chaude sanitaire': typeBatiment === 'tertiaire' ? producesHotWater : 'oui',
-    'surface logement type tertiaire': typeBatiment === 'tertiaire' && surface != null && surface > 0 ? surface : null,
-    'type de bâtiment': `'${typeBatiment}'`,
+    'bâtiment . méthode tertiaire 2026': typeBatiment === 'tertiaire' ? `'${tertiarySector}'` : null,
+    'bâtiment . nombre de logements': typeBatiment === 'résidentiel' && nbLogements != null && nbLogements > 0 ? nbLogements : null,
+    'bâtiment . surface tertiaire': typeBatiment === 'tertiaire' && surface != null && surface > 0 ? surface : null,
+    'bâtiment . type': `'${typeBatiment}'`,
+    'ecs . production': typeBatiment === 'tertiaire' ? producesHotWater : 'oui',
   };
 }
