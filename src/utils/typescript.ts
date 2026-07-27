@@ -51,10 +51,14 @@ export function ObjectKeys<Obj extends object>(obj: Obj): (keyof Obj)[] {
 
 /**
  * Preserve keys of object instead of returning string[].
+ *
+ * `-?` retire l'optionalité : sans lui, un objet `Partial<…>` produirait des
+ * entrées `[K, V] | undefined` (l'optionalité se propage au tuple), ce qui rend
+ * le résultat inutilisable en destructuration.
  */
 export function ObjectEntries<Obj extends object>(obj: Obj) {
   return Object.entries(obj) as {
-    [K in keyof Obj]: [K, Obj[K]];
+    [K in keyof Obj]-?: [K, Obj[K]];
   }[keyof Obj][];
 }
 

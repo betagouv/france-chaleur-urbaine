@@ -1,6 +1,7 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
+import { ObjectKeys } from '@/utils/typescript';
 
 export type ModeDeChauffageType = ('individuel' | 'collectif')[];
 
@@ -175,4 +176,4 @@ export const addresseToPublicodesRules = {
   'réseau de froid . caractéristiques . production totale': (infos) => infos.nearestReseauDeFroid?.production_totale_MWh,
 } as const satisfies Partial<Record<RuleName, (infos: LocationInfoResponse) => any>>;
 
-export const addresseToPublicodesRulesKeys = Object.keys(addresseToPublicodesRules) as RuleName[];
+export const addresseToPublicodesRulesKeys = ObjectKeys(addresseToPublicodesRules);

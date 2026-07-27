@@ -57,9 +57,9 @@ export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimu
 
 export function getIncomeOptions(input: IncomeOptionsInput): IncomeOption[] {
   const engine = createEngineForIncome(input);
-  const veryLowThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS['Très modeste'] as RuleName);
-  const lowThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS.Modeste as RuleName);
-  const middleThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS.Intermédiaire as RuleName);
+  const veryLowThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS['Très modeste']);
+  const lowThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS.Modeste);
+  const middleThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS.Intermédiaire);
 
   return [
     {
@@ -134,7 +134,7 @@ function createPublicodesEngine() {
 }
 
 function getAnnualBill(engine: Engine<RuleName>, prefix: HeatingBillPrefix) {
-  return HEATING_P1_PARTS.reduce((total, billPart) => total + getRuleValue(engine, `${prefix} . ${billPart}` as RuleName), 0);
+  return HEATING_P1_PARTS.reduce((total, billPart) => total + getRuleValue(engine, `${prefix} . ${billPart}`), 0);
 }
 
 function getHeatingModeComparison(engine: Engine<RuleName>, heatingMode: (typeof HEATING_MODES)[number]) {

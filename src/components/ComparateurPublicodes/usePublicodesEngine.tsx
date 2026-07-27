@@ -106,7 +106,7 @@ const usePublicodesEngine = (rules: Rules, options?: Options) => {
     if (
       key === 'climatisation . type de production' &&
       (value === "'Groupe froid'" || value === 'Groupe froid') &&
-      getField('climatisation . incluse' as RuleName)
+      getField('climatisation . incluse')
     ) {
       return false;
     }

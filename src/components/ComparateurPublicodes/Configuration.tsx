@@ -3,7 +3,7 @@ import { fr } from '@codegouvfr/react-dsfr';
 import { motion } from 'motion/react';
 import type React from 'react';
 
-import { addresseToPublicodesRulesKeys } from '@/components/ComparateurPublicodes/mappings';
+import { addresseToPublicodesRules, addresseToPublicodesRulesKeys } from '@/components/ComparateurPublicodes/mappings';
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import { getRuleLabel } from '@/components/form/publicodes/labels';
 import Button from '@/components/ui/Button';
@@ -16,7 +16,7 @@ import { pick } from '@/utils/core';
 import cx from '@/utils/cx';
 import { sortKeys } from '@/utils/objects';
 import { upperCaseFirstChar } from '@/utils/strings';
-import { hasProperty } from '@/utils/typescript';
+import { hasProperty, ObjectEntries } from '@/utils/typescript';
 
 interface ConfigurationProps {
   engine: SimulatorEngine;
@@ -27,7 +27,7 @@ interface ConfigurationProps {
 const chainedConfigurations = {
   'climatisation . type de production': ['climatisation . incluse'],
   'ecs . type de production': ['ecs . production'],
-};
+} satisfies Partial<Record<RuleName, RuleName[]>>;
 
 const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChangeAddress }) => {
   const situation = engine.getSituation();
@@ -52,7 +52,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
     engine.resetField(key);
     if (hasProperty(chainedConfigurations, key)) {
       chainedConfigurations[key].forEach((chainedKey) => {
-        engine.resetField(chainedKey as RuleName);
+        engine.resetField(chainedKey);
       });
     }
   };
@@ -61,31 +61,31 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
     return null;
   }
 
-  const customSituation = Object.entries(situation).reduce(
+  const customSituation = ObjectEntries(situation).reduce(
     (acc, [key, value]) => {
-      if (engine.isDefaultValue(key as RuleName, value)) {
+      if (engine.isDefaultValue(key, value)) {
         return acc;
       }
 
       acc[key] = value;
       return acc;
     },
-    {} as Record<string, any>
+    {} as Partial<Record<RuleName, any>>
   );
 
-  const toBeDisplayedSituation = Object.entries(customSituation).reduce(
+  const toBeDisplayedSituation = ObjectEntries(customSituation).reduce(
     (acc, [key, situationValue]) => {
       const label = getRuleLabel(key);
       const value = situationValue;
 
-      if (!label || addresseToPublicodesRulesKeys.includes(key as RuleName)) {
+      if (!label || hasProperty(addresseToPublicodesRules, key)) {
         return acc;
       }
 
       acc[key] = value;
       return acc;
     },
-    {} as Record<string, any>
+    {} as Partial<Record<RuleName, any>>
   );
 
   const hasToBeDisplayedSituation = Object.keys(toBeDisplayedSituation).length > 0;
@@ -113,11 +113,14 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
             )
           }
           onSelect={({ situation: newSituation, address: newAddress, id }) => {
-            const situationToLoad = { ...pick(situation, addresseToPublicodesRulesKeys), ...(newSituation as Record<string, any>) };
-            Object.entries(chainedConfigurations).forEach(([configKey, chainedKeys]) => {
+            const situationToLoad: Partial<Record<RuleName, any>> = {
+              ...pick(situation, addresseToPublicodesRulesKeys),
+              ...(newSituation as Record<string, any>),
+            };
+            ObjectEntries(chainedConfigurations).forEach(([configKey, chainedKeys]) => {
               if (configKey in situationToLoad) {
                 chainedKeys.forEach((chainedKey) => {
-                  situationToLoad[chainedKey as RuleName] = 'oui';
+                  situationToLoad[chainedKey] = 'oui';
                 });
               }
             });
@@ -161,7 +164,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
       </div>
       {hasToBeDisplayedSituation && (
         <div className="flex flex-wrap gap-2 mt-2">
-          {Object.entries(toBeDisplayedSituation).map(([key, value]) => {
+          {ObjectEntries(toBeDisplayedSituation).map(([key, value]) => {
             const label = getRuleLabel(key);
             return (
               <motion.div
@@ -174,7 +177,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
               >
                 <span>
                   <span className="text-faded">{upperCaseFirstChar(label || '')}</span>:{' '}
-                  <strong className="text-bold">{formatValue(key as RuleName, value)}</strong>
+                  <strong className="text-bold">{formatValue(key, value)}</strong>
                 </span>
                 <Button
                   iconId="fr-icon-close-line"
@@ -182,7 +185,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
                   priority="tertiary"
                   size="small"
                   title={`Supprimer ${key}`}
-                  onClick={() => deleteSituationConfig(key as RuleName)}
+                  onClick={() => deleteSituationConfig(key)}
                   className="min-h-2!"
                 />
               </motion.div>
