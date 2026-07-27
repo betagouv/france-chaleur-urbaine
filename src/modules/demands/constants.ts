@@ -4,6 +4,9 @@ import type { EligibilityType } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { type ExtractKeys, nonEmptyArray } from '@/utils/typescript';
 
+export const COMMENT_USER_MAX_LENGTH = 500;
+const COMMENT_USER_MAX_LENGTH_ERROR_MESSAGE = `Votre commentaire ne doit pas dépasser ${COMMENT_USER_MAX_LENGTH} caractères`;
+
 export const zAddRelanceCommentInput = z.object({
   comment: z.string().min(1, 'Le commentaire est requis'),
   relanceId: z.string(),
@@ -116,7 +119,7 @@ export const zAdminUpdateDemandInput = z.object({
 export const zCreateDemandInput = z.object({
   address: z.string().trim(),
   city: z.string(),
-  commentUser: z.string().trim().optional(),
+  commentUser: z.string().trim().max(COMMENT_USER_MAX_LENGTH, COMMENT_USER_MAX_LENGTH_ERROR_MESSAGE).optional(),
   company: z.string().optional().default(''),
   companyType: z.string().optional().default(''),
   coords: z.object({
@@ -178,7 +181,7 @@ export type TypeDeChauffageLabel = (typeof typesDeChauffageLabels)[number];
 export const availableStructures = ['Tertiaire', 'Copropriété', 'Bailleur social', 'Maison individuelle', 'Autre'] as const;
 
 export const fieldLabelInformation = {
-  commentUser: 'Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet',
+  commentUser: `Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet (${COMMENT_USER_MAX_LENGTH} caractères maximum)`,
   company: 'Nom de votre structure',
   companyTitle: 'Votre structure',
   companyType: {
@@ -302,7 +305,7 @@ export const zContactFormCreateDemandInput = z
   .object({
     ...demandContactShape,
     // demand-level info (not part of the shared contact shape)
-    commentUser: z.string().trim().optional().default(''),
+    commentUser: z.string().trim().max(COMMENT_USER_MAX_LENGTH, COMMENT_USER_MAX_LENGTH_ERROR_MESSAGE).optional().default(''),
     heatingEnergy: z
       .string()
       .refine(
@@ -365,7 +368,7 @@ export const zCreateBatchDemandInput = z.object({
     .array(zBatchDemandAddressSchema)
     .min(1, 'Au moins une adresse doit être sélectionnée')
     .max(50, 'Maximum 50 adresses par demande'),
-  commentUser: z.string().trim().optional().default(''),
+  commentUser: z.string().trim().max(COMMENT_USER_MAX_LENGTH, COMMENT_USER_MAX_LENGTH_ERROR_MESSAGE).optional().default(''),
   contact: zBatchDemandContactSchema.optional(),
   termOfUse: z.boolean().refine((val) => val, 'Vous devez accepter les conditions'),
 });

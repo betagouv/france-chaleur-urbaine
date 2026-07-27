@@ -3,7 +3,12 @@ import type { z } from 'zod';
 
 import { AnalyticsFormId } from '@/modules/analytics/client';
 import useUserInfo from '@/modules/app/client/hooks/useUserInfo';
-import { type ContactFormInfos, fieldLabelInformation, zContactFormCreateDemandInput } from '@/modules/demands/constants';
+import {
+  COMMENT_USER_MAX_LENGTH,
+  type ContactFormInfos,
+  fieldLabelInformation,
+  zContactFormCreateDemandInput,
+} from '@/modules/demands/constants';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { pick } from '@/utils/objects';
@@ -93,7 +98,15 @@ export const ContactForm = ({ onSubmit, isLoading, cardMode, city }: ContactForm
         )}
       </form.AppField>
       <form.AppField name="commentUser">
-        {(field) => <field.TextareaField label={fieldLabelInformation.commentUser} nativeTextAreaProps={{ rows: 4 }} />}
+        {(field) => (
+          <field.TextareaField
+            label={fieldLabelInformation.commentUser}
+            nativeTextAreaProps={{
+              maxLength: COMMENT_USER_MAX_LENGTH,
+              rows: 4,
+            }}
+          />
+        )}
       </form.AppField>
       <div className="fr-fieldset__element">
         <form.AppField name="termOfUse">

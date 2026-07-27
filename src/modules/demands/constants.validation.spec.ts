@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import type { TestCase, TestCaseBoolean } from '@/tests/trpc-helpers';
 
-import { zBatchDemandAddressSchema, zBatchDemandStep1Schema, zContactFormCreateDemandInput, zCreateBatchDemandInput } from './constants';
+import {
+  COMMENT_USER_MAX_LENGTH,
+  zBatchDemandAddressSchema,
+  zBatchDemandStep1Schema,
+  zContactFormCreateDemandInput,
+  zCreateBatchDemandInput,
+} from './constants';
 
 describe('zContactFormCreateDemandInput', () => {
   const validBaseInput = {
@@ -84,6 +90,15 @@ describe('zContactFormCreateDemandInput', () => {
         },
         success: true,
       });
+    });
+
+    it('rejette un commentaire demandeur de plus de 500 caractères', () => {
+      const result = zContactFormCreateDemandInput.safeParse({
+        ...validBaseInput,
+        commentUser: 'a'.repeat(COMMENT_USER_MAX_LENGTH + 1),
+      });
+
+      expect(result.success).toStrictEqual(false);
     });
   });
 
@@ -322,6 +337,15 @@ describe('zCreateBatchDemandInput', () => {
         termOfUse: true,
       },
       label: 'accepte exactement 50 adresses',
+    },
+    {
+      expectedOutput: false,
+      input: {
+        addresses: [validAddress],
+        commentUser: 'a'.repeat(COMMENT_USER_MAX_LENGTH + 1),
+        termOfUse: true,
+      },
+      label: 'rejette un commentaire demandeur de plus de 500 caractères',
     },
     {
       expectedOutput: false,

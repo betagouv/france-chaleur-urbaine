@@ -8,7 +8,12 @@ import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
-import { type BatchDemandContactInfo, zCreateBatchDemandInput } from '@/modules/demands/constants';
+import {
+  type BatchDemandContactInfo,
+  COMMENT_USER_MAX_LENGTH,
+  fieldLabelInformation,
+  zCreateBatchDemandInput,
+} from '@/modules/demands/constants';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import trpc from '@/modules/trpc/client';
@@ -175,8 +180,11 @@ export const BatchDemandMultiStepForm = ({ testId, addresses, onSuccess }: Batch
         <form.AppField name="commentUser">
           {(field) => (
             <field.TextareaField
-              label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
-              nativeTextAreaProps={{ rows: 4 }}
+              label={fieldLabelInformation.commentUser}
+              nativeTextAreaProps={{
+                maxLength: COMMENT_USER_MAX_LENGTH,
+                rows: 4,
+              }}
             />
           )}
         </form.AppField>
