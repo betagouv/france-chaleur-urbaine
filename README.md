@@ -82,17 +82,29 @@ Celui-ci doit être généré à partir de la base de données à chaque fois qu
 
 ## Développement avec Publicodes
 
-La commande ci-dessous est à réaliser une fois pour lier la dépendance [@betagouv/france-chaleur-urbaine-publicodes](https://github.com/betagouv/france-chaleur-urbaine-publicodes) directement au répertoire local `france-chaleur-urbaine-publicodes` pour faciliter le développement sans avoir besoin de publier une version sur le registre NPM.
+La procédure ci-dessous permet de travailler avec le dépôt local [@betagouv/france-chaleur-urbaine-publicodes](https://github.com/betagouv/france-chaleur-urbaine-publicodes) sans avoir besoin de publier une version sur le registre NPM.
+
+Le package est installé depuis une archive générée localement, et **non** via un lien — voir [Pourquoi une archive et pas un lien ?](#pourquoi-une-archive-et-pas-un-lien-) plus bas.
 
 ```sh
-cd france-chaleur-urbaine
-pnpm add @betagouv/france-chaleur-urbaine-publicodes@link:../france-chaleur-urbaine-publicodes
+# recompile publicodes, génère l'archive et l'installe — à relancer après chaque modification des règles
+pnpm publicodes:local
 # attention, il faut garder cette modification en local, ne pas commit les changements du package.json et pnpm-lock.yaml
 
 # pour revenir à la version d'origine
-git checkout package.json pnpm-lock.yaml
-pnpm install
+pnpm publicodes:reset
 ```
+
+Le dépôt publicodes doit être cloné à côté de celui-ci, dans `../france-chaleur-urbaine-publicodes` : ce chemin est codé en dur dans les deux commandes.
+
+### Pourquoi une archive et pas un lien ?
+
+Le package ne doit pas être installé via un lien (`pnpm link`, ou `@link:../france-chaleur-urbaine-publicodes`) : Turbopack refuse de résoudre un module dont le chemin réel est en dehors du projet.
+
+- au build, la résolution échoue avec `Module not found` sur les deux imports de valeur du package ;
+- élargir la racine de Turbopack au répertoire parent (`turbopack.root`) corrige le build, mais rend le serveur de dev inutilisable : la mémoire grimpe de plusieurs Go en quelques secondes et la page n'est jamais rendue. En dev, Turbopack surveille toute sa racine, qui contient alors les dépôts voisins.
+
+L'archive est extraite dans `node_modules`, donc à l'intérieur du projet, et la racine par défaut suffit.
 
 
 ## Lint
