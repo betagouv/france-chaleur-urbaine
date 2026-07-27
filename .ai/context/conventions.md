@@ -40,6 +40,11 @@
 - **UTF-8**: always use real characters (`é`, `è`, `ê`, `à`, `ç`, `ù`), never unicode escapes (`\u00e9`).
 - **Accents**: when writing in French (UI text, docs, responses), use correct accents. Don't translate code/scripts that are in English — respect the existing language of each file.
 
+## Markdown formatting
+
+- **Never hard-wrap prose.** One paragraph is one line, however long it gets — line breaks are reserved for new paragraphs and list items, soft-wrapping is the editor's job. Applies to every markdown file: `README.md`, `AGENTS.md`, `.ai/context/*.md`.
+- Same inside fenced code blocks: one comment line per idea, never an idea split across two `#` lines to keep lines short.
+
 ## Export patterns
 
 - Named exports everywhere.
