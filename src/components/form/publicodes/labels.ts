@@ -1,5 +1,7 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
+import { hasProperty } from '@/utils/typescript';
+
 const labels: Partial<Record<RuleName, string>> = {
   'aides . valeur CEE': 'Valeur CEE',
   'aides . éligibilité . chaudière gaz ou fioul actuelle': "Je dispose actuellement d'une chaudière gaz ou fioul",
@@ -242,6 +244,6 @@ const labels: Partial<Record<RuleName, string>> = {
  * Libellé d'affichage d'une règle, ou undefined si elle n'en a pas.
  * Point d'entrée pour les clés issues d'une situation runtime, non typées.
  */
-export const getRuleLabel = (ruleName: string) => labels[ruleName as RuleName];
+export const getRuleLabel = (ruleName: string) => (hasProperty(labels, ruleName) ? labels[ruleName] : undefined);
 
 export default labels;
