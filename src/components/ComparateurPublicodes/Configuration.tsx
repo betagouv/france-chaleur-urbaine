@@ -5,7 +5,7 @@ import type React from 'react';
 
 import { addresseToPublicodesRulesKeys } from '@/components/ComparateurPublicodes/mappings';
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
-import labels from '@/components/form/publicodes/labels';
+import { getRuleLabel } from '@/components/form/publicodes/labels';
 import Button from '@/components/ui/Button';
 import { copyToClipboard } from '@/components/ui/ButtonCopy';
 import CrudDropdown from '@/components/ui/CrudDropdown';
@@ -75,7 +75,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
 
   const toBeDisplayedSituation = Object.entries(customSituation).reduce(
     (acc, [key, situationValue]) => {
-      const label = labels[key];
+      const label = getRuleLabel(key);
       const value = situationValue;
 
       if (!label || addresseToPublicodesRulesKeys.includes(key as RuleName)) {
@@ -162,7 +162,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ engine, address, onChange
       {hasToBeDisplayedSituation && (
         <div className="flex flex-wrap gap-2 mt-2">
           {Object.entries(toBeDisplayedSituation).map(([key, value]) => {
-            const label = labels[key];
+            const label = getRuleLabel(key);
             return (
               <motion.div
                 key={key}

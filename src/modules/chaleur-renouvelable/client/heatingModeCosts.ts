@@ -20,7 +20,7 @@ function getPublicodesFieldAsNumber(
 }
 
 function enrichHeatingMode(mode: ModeDeChauffage, engine: SimulatorEngine, situation: Situation): ModeDeChauffageEnriched {
-  const coutParAnPublicodeRule = `Bilan x ${mode.coutParAnPublicodeKey} . total sans installation` as RuleName;
+  const coutParAnPublicodeRule = `${mode.coutParAnPublicodeKey} . bilan . total sans installation` satisfies RuleName;
   const coutParAn = mode.coutParAnPublicodeKey
     ? getPublicodesFieldAsNumber(engine, coutParAnPublicodeRule, mode.coutParAnPublicodesSituation)
     : 0;
@@ -32,12 +32,12 @@ function enrichHeatingMode(mode: ModeDeChauffage, engine: SimulatorEngine, situa
 
 function getGasCostWithoutInstallation(engine: SimulatorEngine, situationOverride: Partial<Record<RuleName, string | number>>) {
   const costRules = [
-    'Bilan x Gaz coll sans cond . P1abo',
-    'Bilan x Gaz coll sans cond . P1conso',
-    'Bilan x Gaz coll sans cond . P1prime',
-    'Bilan x Gaz coll sans cond . P1ECS',
-    'Bilan x Gaz coll sans cond . P2',
-    'Bilan x Gaz coll sans cond . P3',
+    'gaz coll sans cond . bilan . P1abo',
+    'gaz coll sans cond . bilan . P1conso',
+    'gaz coll sans cond . bilan . P1prime',
+    'gaz coll sans cond . bilan . P1ECS',
+    'gaz coll sans cond . bilan . P2',
+    'gaz coll sans cond . bilan . P3',
   ] satisfies RuleName[];
 
   return costRules.reduce((totalCost, costRule) => totalCost + getPublicodesFieldAsNumber(engine, costRule, situationOverride), 0);
@@ -71,7 +71,7 @@ export function setPublicodesSituation(
 
 export function getHeatingModeCosts(engine: SimulatorEngine, modes: ModeDeChauffage[], situation: Situation) {
   const modesEnriched = modes.map((modeDeChauffage) => enrichHeatingMode(modeDeChauffage, engine, situation));
-  const coutParAnGaz = engine.getFieldAsNumber(`Bilan x Gaz coll sans cond . total avec aides` as RuleName);
+  const coutParAnGaz = engine.getFieldAsNumber('gaz coll sans cond . bilan . total avec aides');
   const coutParAnGazHotWaterOnly = Math.max(
     0,
     getGasCostWithoutInstallation(engine, {

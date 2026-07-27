@@ -6,22 +6,22 @@ import type { HeatingSimulationInput, HeatingSimulationResult, IncomeOption, Inc
 
 const HEATING_P1_PARTS = ['P1abo', 'P1conso'] as const;
 
-type HeatingBillPrefix = 'Bilan x PAC air-eau indiv' | 'Bilan x Gaz indiv avec cond' | 'Bilan x Fioul indiv';
+type HeatingBillPrefix = 'PAC air-eau indiv . bilan' | 'gaz indiv avec cond . bilan' | 'fioul indiv . bilan';
 
 const HEATING_MODES = [
   {
-    billPrefix: 'Bilan x PAC air-eau indiv',
-    co2RuleName: 'env . Installation x PAC air-eau x Individuel . Total',
+    billPrefix: 'PAC air-eau indiv . bilan',
+    co2RuleName: 'PAC air-eau indiv . environnement . total',
     label: 'PAC air/eau',
   },
   {
-    billPrefix: 'Bilan x Gaz indiv avec cond',
-    co2RuleName: 'env . Installation x Gaz indiv avec cond x Individuel . Total',
+    billPrefix: 'gaz indiv avec cond . bilan',
+    co2RuleName: 'gaz indiv avec cond . environnement . total',
     label: 'Chaudière gaz',
   },
   {
-    billPrefix: 'Bilan x Fioul indiv',
-    co2RuleName: 'env . Installation x Fioul indiv x Individuel . Total',
+    billPrefix: 'fioul indiv . bilan',
+    co2RuleName: 'fioul indiv . environnement . total',
     label: 'Chaudière fioul',
   },
 ] as const satisfies {
@@ -38,23 +38,20 @@ const INCOME_PUBLICODES_THRESHOLDS = {
 
 export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimulationResult {
   const engine = createEngineForSimulation(input);
-  const heatPumpGrossPrice = getRuleValue(engine, 'Calcul Eco . PAC air-eau indiv . Investissement équipement Total');
-  const heatPumpMaprimerenovAid = getOptionalRuleValue(
-    engine,
-    "Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Ma prime renov'"
-  );
-  const heatPumpCoupDePouce = getOptionalRuleValue(engine, 'ratios économiques x aides . Coup de pouce x PAC air-eau');
+  const heatPumpGrossPrice = getRuleValue(engine, 'PAC air-eau indiv . coûts . investissement équipement');
+  const heatPumpMaprimerenovAid = getOptionalRuleValue(engine, 'PAC air-eau indiv . aides . ma prime rénov');
+  const heatPumpCoupDePouce = getOptionalRuleValue(engine, 'aides . coup de pouce PAC air-eau');
 
   return {
-    gasBoilerAnnualBill: getAnnualBill(engine, 'Bilan x Gaz indiv avec cond'),
+    gasBoilerAnnualBill: getAnnualBill(engine, 'gaz indiv avec cond . bilan'),
     heatingModeComparisons: HEATING_MODES.map((heatingMode) => getHeatingModeComparison(engine, heatingMode)),
-    heatPumpAnnualBill: getAnnualBill(engine, 'Bilan x PAC air-eau indiv'),
+    heatPumpAnnualBill: getAnnualBill(engine, 'PAC air-eau indiv . bilan'),
     heatPumpCoupDePouce,
     heatPumpGrossPrice,
     heatPumpMaprimerenovAid,
     heatPumpNetPrice: Math.max(0, heatPumpGrossPrice - heatPumpMaprimerenovAid - heatPumpCoupDePouce),
-    heatPumpProposedPower: getRuleValue(engine, 'Installation x PAC air-eau x Individuel . puissance équipement'),
-    oilBoilerAnnualBill: getAnnualBill(engine, 'Bilan x Fioul indiv'),
+    heatPumpProposedPower: getRuleValue(engine, 'PAC air-eau indiv . installation . puissance équipement'),
+    oilBoilerAnnualBill: getAnnualBill(engine, 'fioul indiv . bilan'),
   };
 }
 
@@ -92,6 +89,7 @@ function createEngineForSimulation(input: HeatingSimulationInput) {
   const engine = createPublicodesEngine();
 
   engine.setSituation({
+    'aides . CEE . BAR-TH-171 PAC air-eau . efficacité énergétique saisonnière': '150%',
     'code département': `'${input.departmentCode}'`,
     DPE: `'${input.dpe}'`,
     'Inclure la climatisation': 'non',
@@ -104,7 +102,6 @@ function createEngineForSimulation(input: HeatingSimulationInput) {
     'Paramètres économiques . Aides . Éligibilité x Ressources du ménage': `'${input.incomeCategory}'`,
     'Production eau chaude sanitaire': 'oui',
     'ratios . GNRL Appartement ou maison': "'Maison'",
-    'ratios économiques x aides . CEE x PAC air-eau indiv x BAR-TH-171 . efficacité énergétique saisonnière': '150%',
     'surface logement type tertiaire': input.surface,
     'température de référence chaud commune': input.temperatureReference,
     'type de bâtiment': "'résidentiel'",
