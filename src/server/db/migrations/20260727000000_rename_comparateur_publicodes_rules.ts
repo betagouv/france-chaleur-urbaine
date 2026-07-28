@@ -149,9 +149,9 @@ const renamedRules: Record<string, RuleName> = {
   'ratios . PAC AIR AIR Durée de vie coll': 'PAC air-air coll . ratios . durée de vie',
   'ratios . PAC AIR EAU Durée de vie coll': 'PAC air-eau coll . ratios . durée de vie',
   'ratios . PAC AIR EAU SCOP coll': 'PAC air-eau coll . ratios . SCOP',
-  'ratios . PAC GNRL Conso auxiliaire chauffage climatisation hors PAC air-air': 'pac . ratios . conso auxiliaire chauffage climatisation',
-  'ratios . PAC GNRL Conso auxiliaire ECS hors PAC air-air': 'pac . ratios . conso auxiliaire ECS',
-  'ratios . PAC GNRL SCOP mini': 'pac . ratios . SCOP mini',
+  'ratios . PAC GNRL Conso auxiliaire chauffage climatisation hors PAC air-air': 'pac . conso auxiliaire chauffage climatisation',
+  'ratios . PAC GNRL Conso auxiliaire ECS hors PAC air-air': 'pac . conso auxiliaire ECS',
+  'ratios . PAC GNRL SCOP mini': 'pac . SCOP mini',
   'ratios . PUIS Coefficient de foisonnement chauffage collectif':
     'dimensionnement . ratios . coefficient de foisonnement chauffage collectif',
   'ratios . PUIS Coefficient de foisonnement ECS': 'dimensionnement . ratios . coefficient de foisonnement ECS',
