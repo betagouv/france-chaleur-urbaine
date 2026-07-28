@@ -57,7 +57,7 @@
     "publicodes:local": "pnpm -C ../france-chaleur-urbaine-publicodes run pack:local && pnpm add file:../france-chaleur-urbaine-publicodes/publicodes-local.tgz",
     "publicodes:reset": "pnpm add @betagouv/france-chaleur-urbaine-publicodes@$(git show HEAD:package.json | node -pe \"JSON.parse(require('fs').readFileSync(0,'utf8')).dependencies['@betagouv/france-chaleur-urbaine-publicodes']\")",
     "postinstall": "node scripts/postinstall.mjs",
-    "scalingo-postbuild": "./scripts/migrate.sh && pnpm build && next-sitemap",
+    "scalingo-postbuild": "./scripts/fetch-publicodes-branch.sh && ./scripts/migrate.sh && pnpm build && next-sitemap",
     "predev": "only-include-used-icons --silent",
     "prebuild": "only-include-used-icons",
     "talisman:add-exception": "node-talisman -i -g pre-commit",

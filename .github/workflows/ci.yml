@@ -50,6 +50,9 @@ jobs:
       - name: Install Dependencies 💾
         run: pnpm install --frozen-lockfile
 
+      - name: Use matching publicodes branch if any 🔀
+        run: ./scripts/fetch-publicodes-branch.sh
+
       - name: Audit 🛡️
         run: pnpm audit
         continue-on-error: true
