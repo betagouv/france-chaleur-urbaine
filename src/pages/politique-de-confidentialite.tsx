@@ -1,4 +1,4 @@
-import PrivacyPolicyComponent from '@incubateur-ademe/legal-pages-react/PrivacyPolicy';
+import PrivacyPolicyComponent from '@incubateur-ademe/legal-pages-react/PrivacyPolicyClient';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 

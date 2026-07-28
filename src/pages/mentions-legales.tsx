@@ -1,4 +1,4 @@
-import LegalNoticeComponent from '@incubateur-ademe/legal-pages-react/LegalNotice';
+import LegalNoticeComponent from '@incubateur-ademe/legal-pages-react/LegalNoticeWithBetaClient';
 
 import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -12,7 +12,6 @@ function MentionsLegalesPage() {
     >
       <h1 className="fr-sr-only">Mentions légales</h1>
       <LegalNoticeComponent
-        includeBetaGouv
         siteName="France Chaleur Urbaine"
         siteUrl={clientConfig.websiteUrl}
         licenceUrl="https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
