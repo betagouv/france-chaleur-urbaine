@@ -252,6 +252,9 @@ export const reseauxRouter = router({
   reseauDeChaleur: reseauDeChaleurRouter,
   reseauDeFroid: reseauDeFroidRouter,
   reseauEnConstruction: reseauEnConstructionRouter,
+  searchForContribution: route.input(z.object({ search: z.string().min(2).max(10) })).query(async ({ input }) => {
+    return await reseauxService.searchHeatNetworksForContribution(input.search);
+  }),
   /**
    * Recherche publique de réseaux (de chaleur existants + en construction) par
    * nom, identifiant SNCU ou id_fcu. Renvoie la bbox PostGIS de chaque réseau

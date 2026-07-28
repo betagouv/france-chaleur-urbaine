@@ -3,7 +3,13 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { cleanDatabase, seedReseauDeChaleur, seedReseauDeFroid, seedZoneEtReseauEnConstruction } from '@/tests/fixtures';
 import type { TestCase } from '@/tests/trpc-helpers';
 
-import { type NetworkSearchResult, searchNetworkOperators, searchNetworks } from './service';
+import {
+  type ContributionNetworkSearchResult,
+  type NetworkSearchResult,
+  searchHeatNetworksForContribution,
+  searchNetworkOperators,
+  searchNetworks,
+} from './service';
 
 const chaleurNord: NetworkSearchResult = {
   gestionnaire: 'Dalkia',
@@ -143,5 +149,57 @@ describe('searchNetworkOperators()', () => {
 
   it.each(cases)('$label', async ({ field, search, expected }) => {
     expect(await searchNetworkOperators(field, search)).toStrictEqual(expected);
+  });
+});
+
+describe('searchHeatNetworksForContribution()', () => {
+  beforeAll(async () => {
+    await cleanDatabase();
+
+    await Promise.all([
+      seedReseauDeChaleur({
+        communes: ['Paris', 'Ivry-sur-Seine'],
+        Gestionnaire: 'Société chaleur',
+        'Identifiant reseau': '9901C',
+        id_fcu: 4001,
+        MO: 'Métropole exemple',
+        nom_reseau: 'Réseau contribution',
+        ouvert_aux_raccordements: true,
+        'reseaux classes': true,
+      }),
+      seedReseauDeFroid({
+        Gestionnaire: 'Société froid',
+        'Identifiant reseau': '9901F',
+        id_fcu: 4002,
+        MO: 'Collectivité froid',
+        nom_reseau: 'Réseau froid contribution',
+      }),
+      seedZoneEtReseauEnConstruction({
+        gestionnaire: 'Société futur',
+        id_fcu: 4003,
+        is_zone: false,
+        nom_reseau: 'Réseau futur contribution',
+        ouvert_aux_raccordements: false,
+      }),
+    ]);
+  });
+
+  const expectedNetwork: ContributionNetworkSearchResult = {
+    gestionnaire: 'Société chaleur',
+    id_fcu: 4001,
+    identifiant_reseau: '9901C',
+    is_classe: true,
+    localisation: 'Paris, Ivry-sur-Seine',
+    maitre_ouvrage: 'Métropole exemple',
+    nom_reseau: 'Réseau contribution',
+  };
+
+  const cases: TestCase<string, ContributionNetworkSearchResult[]>[] = [
+    { expectedOutput: [expectedNetwork], input: '9901', label: 'renvoie les métadonnées du réseau de chaleur par ID SNCU' },
+    { expectedOutput: [], input: 'contribution', label: 'ne cherche pas par nom de réseau' },
+  ];
+
+  it.each(cases)('$label', async ({ input, expectedOutput }) => {
+    expect(await searchHeatNetworksForContribution(input)).toStrictEqual(expectedOutput);
   });
 });

@@ -6,12 +6,18 @@ import { z } from 'zod';
 
 import {
   docAllowedExtensions,
+  emailReferentCommercialRefineParams,
   filesLimits,
   geoAllowedExtensions,
+  isEmailReferentCommercialValid,
+  isSncuIdentificationValid,
+  isTypeUtilisateurAutreValid,
+  sncuIdentificationRefineParams,
+  typeUtilisateurAutreRefineParams,
   zContributionFormDataBase,
 } from '@/components/ContributionForm/ContributionForm';
 import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit/next-pages';
-import { AirtableDB } from '@/server/db/airtable';
+import { AirtableDB, type FieldSet } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { uploadTempFile } from '@/server/services/upload';
@@ -31,8 +37,8 @@ const createServerFilesSchema = (allowedExtensions: string[]) =>
       // formidable.File
       z.object({
         filepath: z.string(),
-        mimetype: z.string(),
-        originalFilename: z.string(),
+        mimetype: z.string().nullable(),
+        originalFilename: z.string().nullable(),
         size: z.number(),
       })
     )
@@ -47,12 +53,13 @@ const createServerFilesSchema = (allowedExtensions: string[]) =>
     })
     .superRefine((files, ctx) => {
       for (const file of files) {
-        const ext = `.${file.originalFilename.split('.').pop()?.toLowerCase()}`;
+        const fileName = file.originalFilename ?? '';
+        const ext = `.${fileName.split('.').pop()?.toLowerCase()}`;
         if (!allowedExtensions.includes(ext)) {
           ctx.addIssue({
             code: 'custom',
             fatal: true,
-            message: `L'extension "${ext}" du fichier "${file.originalFilename}" n'est pas autorisée. Extensions acceptées : ${allowedExtensions.join(', ')}.`,
+            message: `L'extension "${ext}" du fichier "${fileName}" n'est pas autorisée. Extensions acceptées : ${allowedExtensions.join(', ')}.`,
           });
           return z.NEVER;
         }
@@ -60,7 +67,8 @@ const createServerFilesSchema = (allowedExtensions: string[]) =>
     })
     .superRefine(async (files, ctx) => {
       for (const file of files) {
-        if (file.originalFilename.toLowerCase().endsWith('.zip')) {
+        const fileName = file.originalFilename ?? '';
+        if (fileName.toLowerCase().endsWith('.zip')) {
           const buffer = await readFile(file.filepath);
           const zip = await JSZip.loadAsync(buffer);
           const zipFileNames = Object.keys(zip.files);
@@ -70,7 +78,7 @@ const createServerFilesSchema = (allowedExtensions: string[]) =>
             ctx.addIssue({
               code: 'custom',
               fatal: true,
-              message: `Le fichier ZIP "${file.originalFilename}" ne contient aucun fichier avec une extension autorisée (${allowedInZip.join(', ')}).`,
+              message: `Le fichier ZIP "${fileName}" ne contient aucun fichier avec une extension autorisée (${allowedInZip.join(', ')}).`,
             });
             return z.NEVER;
           }
@@ -78,6 +86,24 @@ const createServerFilesSchema = (allowedExtensions: string[]) =>
       }
     })
     .optional();
+
+const parseMultipartNumber = (value: unknown) => {
+  if (typeof value !== 'string') {
+    return value;
+  }
+  const trimmedValue = value.trim();
+  return trimmedValue === '' ? undefined : Number(trimmedValue.replace(',', '.'));
+};
+
+const positiveMultipartNumberSchema = z.preprocess(
+  parseMultipartNumber,
+  z.number({ error: 'Ce champ est obligatoire' }).positive('La puissance doit être supérieure à 0')
+);
+
+const optionalPositiveMultipartNumberSchema = z.preprocess(
+  parseMultipartNumber,
+  z.number().positive('La puissance doit être supérieure à 0').optional()
+);
 
 // mapping from typeDemande discriminator values to their allowed extensions
 const allowedExtensionsByTypeDemande: Record<string, string[]> = {
@@ -98,22 +124,66 @@ const zServerContributionFormData = z
         const extensions = allowedExtensionsByTypeDemande[typeDemande] ?? geoAllowedExtensions;
         return schema.extend({
           fichiers: createServerFilesSchema(extensions),
+          fichiersPDP: createServerFilesSchema(geoAllowedExtensions),
+          puissanceTotalePrevisionnelleMW:
+            typeDemande === 'ajout tracé réseau en construction' ? positiveMultipartNumberSchema : optionalPositiveMultipartNumberSchema,
         });
       })
     )
   )
-  .refine(
-    (data: Record<string, unknown>) => {
-      if (!data.ouvertAuxRaccordements) return true;
-      return typeof data.emailReferentCommercial === 'string' && data.emailReferentCommercial.length > 0;
-    },
-    {
-      message: 'Le référent commercial est obligatoire si le réseau est ouvert aux raccordements',
-      path: ['emailReferentCommercial'],
-    }
-  );
+  .refine(isEmailReferentCommercialValid, emailReferentCommercialRefineParams)
+  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams)
+  .refine(isSncuIdentificationValid, sncuIdentificationRefineParams);
 
 const contributionRateLimiter = createNextApiRateLimiter({ path: '/api/contribution' });
+
+type ServerContributionFormData = z.infer<typeof zServerContributionFormData>;
+type UploadedContributionFile = {
+  filepath: string;
+  originalFilename: string | null;
+};
+type AirtableUploadAttachment = {
+  filename: string;
+  url: string;
+};
+
+const uploadAirtableFiles = async (files: UploadedContributionFile[] | undefined, label: string): Promise<AirtableUploadAttachment[]> => {
+  return await Promise.all(
+    (files ?? []).map(async (file, index) => {
+      const originalFilename = file.originalFilename ?? `Fichier ${index + 1}`;
+      const externalURL = await uploadTempFile(file.filepath, originalFilename);
+      return {
+        filename: `${label} - ${originalFilename}`,
+        url: externalURL,
+      };
+    })
+  );
+};
+
+const buildAirtablePrecisions = (formValues: ServerContributionFormData): string | undefined => {
+  const userText = 'precisions' in formValues ? formValues.precisions : 'commentaire' in formValues ? formValues.commentaire : undefined;
+
+  const collectedDetails = [
+    'identifiantReseau' in formValues
+      ? formValues.identifiantReseau
+        ? `Identifiant SNCU : ${formValues.identifiantReseau}`
+        : formValues.reseauSansIdentifiantSNCU === true
+          ? 'Identifiant SNCU : aucun'
+          : undefined
+      : undefined,
+    'reseauDeclasse' in formValues && formValues.reseauDeclasse === true ? 'Réseau déclaré déclassé par arrêté : oui' : undefined,
+    'puissanceTotalePrevisionnelleMW' in formValues && formValues.puissanceTotalePrevisionnelleMW !== undefined
+      ? `Puissance totale prévisionnelle : ${formValues.puissanceTotalePrevisionnelleMW} MW`
+      : undefined,
+  ].filter(isNonEmptyString);
+
+  const collectedText =
+    collectedDetails.length > 0 ? ['Informations collectées par le formulaire :', ...collectedDetails].join('\n') : undefined;
+
+  return [userText, collectedText].filter(isNonEmptyString).join('\n\n') || undefined;
+};
+
+const isNonEmptyString = (value: string | undefined): value is string => Boolean(value);
 
 export default handleRouteErrors(async (req, res) => {
   requirePostMethod(req);
@@ -121,33 +191,31 @@ export default handleRouteErrors(async (req, res) => {
 
   const [arrayFields, files] = await formidable(filesLimits).parse(req);
   const fields = flattenMultipartData(arrayFields);
-  const formValues = await zServerContributionFormData.parseAsync({ ...fields, fichiers: files.fichiers });
+  const formValues = await zServerContributionFormData.parseAsync({ ...fields, fichiers: files.fichiers, fichiersPDP: files.fichiersPDP });
+  const [traceAttachments, pdpAttachments] = await Promise.all([
+    uploadAirtableFiles(files.fichiers, 'Tracé'),
+    uploadAirtableFiles(files.fichiersPDP, 'PDP'),
+  ]);
 
-  const record = await AirtableDB('FCU - Contribution').create({
+  const airtableRecord: FieldSet = {
     'Cadre subvention ADEME': formValues.dansCadreDemandeADEME,
-    'Date mise en service': (formValues as any).dateMiseEnServicePrevisionnelle,
+    'Date mise en service': 'dateMiseEnServicePrevisionnelle' in formValues ? formValues.dateMiseEnServicePrevisionnelle : undefined,
     Email: formValues.email,
-    Fichiers: await Promise.all(
-      (files.fichiers ?? []).map(async (fichier, index) => {
-        const externalURL = await uploadTempFile(fichier.filepath, fichier.originalFilename ?? `Fichier ${index + 1}`);
-        return {
-          filename: fichier.originalFilename ?? `Fichier ${index + 1}`,
-          url: externalURL,
-        } as any; // bypass wrong typing
-      })
-    ),
-    Localisation: (formValues as any).localisation,
-    "Maître d'ouvrage": (formValues as any).maitreOuvrage,
+    Fichiers: [...traceAttachments, ...pdpAttachments] as unknown as FieldSet[string],
+    Localisation: 'localisation' in formValues ? formValues.localisation : undefined,
+    "Maître d'ouvrage": 'maitreOuvrage' in formValues ? formValues.maitreOuvrage : undefined,
     Nom: formValues.nom,
-    'Nom gestionnaire': (formValues as any).gestionnaire,
-    ouvert_aux_raccordements: (formValues as any).ouvertAuxRaccordements,
-    Précisions: (formValues as any).precisions ?? (formValues as any).commentaire,
+    'Nom gestionnaire': 'gestionnaire' in formValues ? formValues.gestionnaire : undefined,
+    ouvert_aux_raccordements: 'ouvertAuxRaccordements' in formValues ? formValues.ouvertAuxRaccordements : undefined,
+    Précisions: buildAirtablePrecisions(formValues),
     Prénom: formValues.prenom,
-    'Référent commercial': (formValues as any).emailReferentCommercial,
-    'Réseau(x)': (formValues as any).nomReseau,
+    'Référent commercial': 'emailReferentCommercial' in formValues ? formValues.emailReferentCommercial : undefined,
+    'Réseau(x)': 'nomReseau' in formValues ? formValues.nomReseau : undefined,
     Souhait: formValues.typeDemande,
     Utilisateur: formValues.typeUtilisateur === 'Autre' ? formValues.typeUtilisateurAutre : formValues.typeUtilisateur,
-  });
+  };
+
+  const record = await AirtableDB('FCU - Contribution').create(airtableRecord);
 
   logger.info('create airtable record contribution', {
     id: record.id,

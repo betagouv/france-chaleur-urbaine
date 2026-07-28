@@ -12,6 +12,8 @@ import { postFormDataFetchJSON } from '@/utils/network';
 import { formatFileSize } from '@/utils/strings';
 import { nonEmptyArray } from '@/utils/typescript';
 
+import { type ContributionNetworkSearchResult, ContributionNetworkSncuField } from './ContributionNetworkSncuField';
+
 const typesUtilisateur = [
   {
     key: 'Collectivité',
@@ -53,6 +55,12 @@ const typesDemande = [
 ] as const;
 
 type TypeDemande = (typeof typesDemande)[number]['key'];
+
+const typesDemandeWithSncuIdentification = [
+  'ajout tracé réseau existant',
+  'ajout tracé réseau en construction',
+  'ajout périmètre développement prioritaire',
+] as const satisfies readonly TypeDemande[];
 
 export const filesLimits = {
   maxFileSize: 50 * 1024 * 1024,
@@ -179,6 +187,11 @@ const createFilesSchemaWithZipInspection = (allowedExtensions: string[]) => {
 
 const stringSchema = z.string({ error: 'Ce champ est obligatoire' });
 
+const sncuIdentificationFieldsShape = {
+  identifiantReseau: z.string().optional(),
+  reseauSansIdentifiantSNCU: z.boolean().optional(),
+};
+
 export const zCommonFormData = z.object({
   dansCadreDemandeADEME: z.boolean({ error: 'Ce choix est obligatoire' }),
   email: z.email("L'adresse email n'est pas valide"),
@@ -192,21 +205,36 @@ export const zCommonFormData = z.object({
 // when: () => true because zod skips the checks of a schema whose base parse has an
 // aborting issue (e.g. a missing required sub-field) — the conditional requirement
 // must still be reported alongside the other field errors.
-const isTypeUtilisateurAutreValid = (data: { typeUtilisateur?: string; typeUtilisateurAutre?: string }) =>
+export const isTypeUtilisateurAutreValid = (data: { typeUtilisateur?: string; typeUtilisateurAutre?: string }) =>
   data.typeUtilisateur !== 'Autre' || !!data.typeUtilisateurAutre;
-const typeUtilisateurAutreRefineParams = { message: 'Ce champ est obligatoire', path: ['typeUtilisateurAutre'], when: () => true };
+export const typeUtilisateurAutreRefineParams = { message: 'Ce champ est obligatoire', path: ['typeUtilisateurAutre'], when: () => true };
 
 // emailReferentCommercial is only required when the network is open to connections
 // (typeDemande, present in every union branch, keeps the structural type compatible)
-const isEmailReferentCommercialValid = (data: {
+export const isEmailReferentCommercialValid = (data: {
   typeDemande?: string;
   ouvertAuxRaccordements?: boolean;
   emailReferentCommercial?: string;
 }) => !data.ouvertAuxRaccordements || !!data.emailReferentCommercial;
-const emailReferentCommercialRefineParams = {
+export const emailReferentCommercialRefineParams = {
   message: 'Le référent commercial est obligatoire si le réseau est ouvert aux raccordements',
   path: ['emailReferentCommercial'],
   when: () => true, // see typeUtilisateurAutreRefineParams
+};
+
+const isSncuIdentificationRequired = (typeDemande?: string) =>
+  typesDemandeWithSncuIdentification.some((sncuTypeDemande) => sncuTypeDemande === typeDemande);
+
+export const isSncuIdentificationValid = (data: {
+  identifiantReseau?: string;
+  reseauSansIdentifiantSNCU?: boolean;
+  typeDemande?: string;
+}) => !isSncuIdentificationRequired(data.typeDemande) || !!data.identifiantReseau || data.reseauSansIdentifiantSNCU === true;
+
+export const sncuIdentificationRefineParams = {
+  message: "Sélectionnez un identifiant SNCU ou cochez l'absence d'identifiant SNCU",
+  path: ['identifiantReseau'],
+  when: () => true,
 };
 
 // branches are built twice: with the full files schema (API) and with the sync-only one (form)
@@ -216,11 +244,14 @@ const createContributionBranches = (filesSchema: typeof createFilesSchema) => {
     commentaire: z.string().optional(),
     emailReferentCommercial: z.string().optional(), // conditionally required based on ouvertAuxRaccordements (see refine below)
     fichiers: filesSchema(geoAllowedExtensions),
+    fichiersPDP: filesSchema(geoAllowedExtensions).optional(),
     gestionnaire: stringSchema,
+    ...sncuIdentificationFieldsShape,
     localisation: stringSchema,
     maitreOuvrage: stringSchema,
     nomReseau: stringSchema,
     ouvertAuxRaccordements: z.boolean({ error: 'Ce choix est obligatoire' }),
+    reseauDeclasse: z.boolean().optional(),
   };
 
   return [
@@ -232,9 +263,11 @@ const createContributionBranches = (filesSchema: typeof createFilesSchema) => {
       typeDemande: z.literal('ajout tracé réseau en construction'),
       ...reseauFieldsShape,
       dateMiseEnServicePrevisionnelle: stringSchema,
+      puissanceTotalePrevisionnelleMW: z.number({ error: 'Ce champ est obligatoire' }).positive('La puissance doit être supérieure à 0'),
     }),
     zCommonFormData.extend({
       fichiers: filesSchema(geoAllowedExtensions),
+      ...sncuIdentificationFieldsShape,
       localisation: stringSchema,
       nomReseau: stringSchema,
       typeDemande: z.literal('ajout périmètre développement prioritaire'),
@@ -260,7 +293,8 @@ export const zContributionFormDataBase = z.discriminatedUnion(
 
 export const zContributionFormData = zContributionFormDataBase
   .refine(isEmailReferentCommercialValid, emailReferentCommercialRefineParams)
-  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams);
+  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams)
+  .refine(isSncuIdentificationValid, sncuIdentificationRefineParams);
 
 // flat superset of all branches: the form holds every possible field, the union validates the selected branch
 type ContributionFormValues = Omit<z.input<typeof zCommonFormData>, 'dansCadreDemandeADEME' | 'typeUtilisateur'> & {
@@ -271,19 +305,27 @@ type ContributionFormValues = Omit<z.input<typeof zCommonFormData>, 'dansCadreDe
   dateMiseEnServicePrevisionnelle?: string;
   emailReferentCommercial?: string;
   fichiers?: File[];
+  fichiersPDP?: File[];
   gestionnaire?: string;
+  identifiantReseau?: string;
   localisation?: string;
   maitreOuvrage?: string;
   nomReseau?: string;
   ouvertAuxRaccordements?: boolean;
   precisions?: string;
+  puissanceTotalePrevisionnelleMW?: number;
+  reseauDeclasse?: boolean;
+  reseauSansIdentifiantSNCU?: boolean;
 };
 
 const contributionDefaultValues: ContributionFormValues = {
   dansCadreDemandeADEME: undefined,
   email: '',
+  identifiantReseau: '',
   nom: '',
   prenom: '',
+  reseauDeclasse: false,
+  reseauSansIdentifiantSNCU: false,
   typeDemande: '',
   typeUtilisateur: '',
   typeUtilisateurAutre: '',
@@ -299,7 +341,8 @@ const zContributionForm = z
   ])
   .refine(isEmailReferentCommercialValid, emailReferentCommercialRefineParams)
   // the union validates the mode-consistent runtime values; unify its type for TanStack
-  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams) as unknown as z.ZodType<
+  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams)
+  .refine(isSncuIdentificationValid, sncuIdentificationRefineParams) as unknown as z.ZodType<
   ContributionFormValues,
   ContributionFormValues
 >;
@@ -310,14 +353,18 @@ const zContributionForm = z
 // files schema (sync checks + zip inspection), not just the async part: sync and async
 // results share the same error-map slot, so returning undefined would erase the sync
 // error written by the form schema (e.g. a wrong extension) right after each submit.
-const createFichiersFieldValidator = (allowedExtensions: string[]) => {
-  const schema = createFilesSchemaWithZipInspection(allowedExtensions);
+const createFichiersFieldValidator = (allowedExtensions: string[], options: { required?: boolean } = {}) => {
+  const schema =
+    options.required === false
+      ? createFilesSchemaWithZipInspection(allowedExtensions).optional()
+      : createFilesSchemaWithZipInspection(allowedExtensions);
   return async ({ value }: { value: File[] | undefined }) => {
     const result = await schema.safeParseAsync(value);
     return result.success ? undefined : result.error.issues[0]?.message;
   };
 };
 const geoFichiersValidator = createFichiersFieldValidator(geoAllowedExtensions);
+const optionalGeoFichiersValidator = createFichiersFieldValidator(geoAllowedExtensions, { required: false });
 const docFichiersValidator = createFichiersFieldValidator(docAllowedExtensions);
 
 const typeUtilisateurOptions = typesUtilisateur.map((option) => ({
@@ -337,6 +384,7 @@ const typeDemandeOptions = typesDemande.map((option) => ({
  */
 const ContributionForm = () => {
   const [formSuccess, setFormSuccess] = useState(false);
+  const [selectedContributionNetwork, setSelectedContributionNetwork] = useState<ContributionNetworkSearchResult | null>(null);
 
   const form = useAppForm({
     ...schemaValidation(zContributionForm),
@@ -361,6 +409,35 @@ const ContributionForm = () => {
   const typeDemande = useStore(form.store, (state) => state.values.typeDemande);
   const dansCadreDemandeADEME = useStore(form.store, (state) => state.values.dansCadreDemandeADEME);
   const ouvertAuxRaccordements = useStore(form.store, (state) => state.values.ouvertAuxRaccordements);
+  const reseauSansIdentifiantSNCU = useStore(form.store, (state) => state.values.reseauSansIdentifiantSNCU);
+  const reseauDeclasse = useStore(form.store, (state) => state.values.reseauDeclasse);
+  const isSelectedContributionNetworkClassed = selectedContributionNetwork?.is_classe === true;
+
+  const resetClassedNetworkFields = () => {
+    form.setFieldValue('reseauDeclasse', false, { dontUpdateMeta: true });
+    form.setFieldValue('fichiersPDP', undefined, { dontUpdateMeta: true });
+  };
+
+  const handleContributionNetworkClear = () => {
+    setSelectedContributionNetwork(null);
+    form.setFieldValue('identifiantReseau', '');
+    resetClassedNetworkFields();
+  };
+
+  const handleContributionNetworkSelect = (network: ContributionNetworkSearchResult, shouldPrefillNetworkFields: boolean) => {
+    setSelectedContributionNetwork(network);
+    form.setFieldValue('reseauSansIdentifiantSNCU', false, { dontUpdateMeta: true });
+    resetClassedNetworkFields();
+
+    if (!shouldPrefillNetworkFields) {
+      return;
+    }
+
+    form.setFieldValue('nomReseau', network.nom_reseau ?? '');
+    form.setFieldValue('localisation', network.localisation ?? '');
+    form.setFieldValue('gestionnaire', network.gestionnaire ?? '');
+    form.setFieldValue('maitreOuvrage', network.maitre_ouvrage ?? '');
+  };
 
   // plain render helpers (not components) shared by the demand type branches
   const renderNomReseauField = (label: string) => (
@@ -371,12 +448,18 @@ const ContributionForm = () => {
     <form.AppField name="localisation">{(field) => <field.TextField label="Localisation :" />}</form.AppField>
   );
 
-  const renderFichiersField = (allowedExtensions: string[], fichiersValidator: typeof geoFichiersValidator, formatsHint: string) => (
-    <form.AppField name="fichiers" validators={{ onDynamicAsync: fichiersValidator }}>
+  const renderFichiersField = (
+    name: 'fichiers' | 'fichiersPDP',
+    label: string,
+    allowedExtensions: string[],
+    fichiersValidator: typeof geoFichiersValidator,
+    formatsHint: string
+  ) => (
+    <form.AppField name={name} validators={{ onDynamicAsync: fichiersValidator }}>
       {(field) => (
         <field.UploadField
           className="fr-mb-2w"
-          label="Téléverser vos fichiers :"
+          label={label}
           hint={
             <>
               Taille maximale : {formatFileSize(filesLimits.maxFileSize)}. Maximum {filesLimits.maxFiles} fichiers. {formatsHint}
@@ -391,16 +474,98 @@ const ContributionForm = () => {
     </form.AppField>
   );
 
+  const renderSncuIdentificationFields = (shouldPrefillNetworkFields: boolean) => (
+    <>
+      <form.AppField name="identifiantReseau">
+        {(field) => (
+          <field.CustomField
+            Component={ContributionNetworkSncuField}
+            label="Identifiant SNCU du réseau :"
+            hintText="Sélectionnez un identifiant dans la liste de suggestions."
+            nativeInputProps={{
+              disabled: reseauSansIdentifiantSNCU === true,
+              required: reseauSansIdentifiantSNCU !== true,
+            }}
+            onNetworkClear={handleContributionNetworkClear}
+            onNetworkSelect={(network) => handleContributionNetworkSelect(network, shouldPrefillNetworkFields)}
+            selectedNetwork={selectedContributionNetwork}
+          />
+        )}
+      </form.AppField>
+      <form.AppField
+        name="reseauSansIdentifiantSNCU"
+        listeners={{
+          onChange: ({ value }) => {
+            if (value === true) {
+              handleContributionNetworkClear();
+            }
+          },
+        }}
+      >
+        {(field) => <field.CheckboxField label="Le réseau n’a pas d’identifiant SNCU" small={false} className="fr-mb-3w" />}
+      </form.AppField>
+    </>
+  );
+
+  const renderClassedNetworkFields = () => (
+    <>
+      {isSelectedContributionNetworkClassed && (
+        <>
+          <Alert
+            severity="info"
+            title="Votre réseau est classé."
+            description="Nous vous invitons à déposer le périmètre de développement prioritaire ci-dessous pour informer les bâtiments concernés de l’obligation d’étude du raccordement."
+            className="fr-mb-3w"
+            small
+          />
+          <form.AppField
+            name="reseauDeclasse"
+            listeners={{
+              onChange: ({ value }) => {
+                if (value === true) {
+                  form.setFieldValue('fichiersPDP', undefined, { dontUpdateMeta: true });
+                }
+              },
+            }}
+          >
+            {(field) => (
+              <field.CheckboxField
+                label="Le réseau a été déclassé par arrêté (si celui-ci n’est pas dans la liste des réseaux déclassés et/ou que vous n’avez pas encore transmis votre délibération, merci de l’envoyer à l’adresse Laurent.Cadiou@developpement-durable.gouv.fr)"
+                small={false}
+                className="fr-mb-3w"
+              />
+            )}
+          </form.AppField>
+        </>
+      )}
+      {isSelectedContributionNetworkClassed &&
+        reseauDeclasse !== true &&
+        renderFichiersField(
+          'fichiersPDP',
+          'Téléverser le périmètre de développement prioritaire :',
+          geoAllowedExtensions,
+          optionalGeoFichiersValidator,
+          'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.'
+        )}
+    </>
+  );
+
   const renderReseauFields = (withDateMiseEnService: boolean) => (
     <>
+      {renderSncuIdentificationFields(true)}
       {renderNomReseauField('Nom du réseau :')}
       {renderLocalisationField()}
       <form.AppField name="gestionnaire">{(field) => <field.TextField label="Gestionnaire :" />}</form.AppField>
       <form.AppField name="maitreOuvrage">{(field) => <field.TextField label="Maître d'ouvrage :" />}</form.AppField>
       {withDateMiseEnService && (
-        <form.AppField name="dateMiseEnServicePrevisionnelle">
-          {(field) => <field.TextField label="Date de mise en service prévisionnelle :" />}
-        </form.AppField>
+        <>
+          <form.AppField name="dateMiseEnServicePrevisionnelle">
+            {(field) => <field.TextField label="Date de mise en service prévisionnelle :" />}
+          </form.AppField>
+          <form.AppField name="puissanceTotalePrevisionnelleMW">
+            {(field) => <field.NumberField label="Puissance totale prévisionnelle (MW) :" nativeInputProps={{ min: 0, step: 'any' }} />}
+          </form.AppField>
+        </>
       )}
       <form.AppField name="ouvertAuxRaccordements">
         {(field) => <field.BooleanRadioField label="Le réseau est-il ouvert aux raccordements ?" />}
@@ -414,7 +579,10 @@ const ContributionForm = () => {
         )}
       </form.AppField>
       <form.AppField name="commentaire">{(field) => <field.TextField label="Commentaire :" />}</form.AppField>
+      {renderClassedNetworkFields()}
       {renderFichiersField(
+        'fichiers',
+        isSelectedContributionNetworkClassed && reseauDeclasse !== true ? 'Téléverser le tracé du réseau :' : 'Téléverser vos fichiers :',
         geoAllowedExtensions,
         geoFichiersValidator,
         'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.'
@@ -488,9 +656,12 @@ const ContributionForm = () => {
       {typeDemande === 'ajout tracé réseau en construction' && renderReseauFields(true)}
       {typeDemande === 'ajout périmètre développement prioritaire' && (
         <>
+          {renderSncuIdentificationFields(false)}
           {renderNomReseauField('Nom du réseau :')}
           {renderLocalisationField()}
           {renderFichiersField(
+            'fichiers',
+            'Téléverser vos fichiers :',
             geoAllowedExtensions,
             geoFichiersValidator,
             'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.'
@@ -500,7 +671,13 @@ const ContributionForm = () => {
       {typeDemande === 'ajout schéma directeur' && (
         <>
           {renderNomReseauField('Nom du réseau ou du territoire concerné :')}
-          {renderFichiersField(docAllowedExtensions, docFichiersValidator, 'Formats préférentiels : PDF, Word.')}
+          {renderFichiersField(
+            'fichiers',
+            'Téléverser vos fichiers :',
+            docAllowedExtensions,
+            docFichiersValidator,
+            'Formats préférentiels : PDF, Word.'
+          )}
         </>
       )}
       {typeDemande === 'autre' && <form.AppField name="precisions">{(field) => <field.TextField label="Précisez :" />}</form.AppField>}
