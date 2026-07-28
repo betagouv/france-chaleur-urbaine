@@ -42,19 +42,29 @@ export function ContributionNetworkSncuField({
   className,
   nativeInputProps,
 }: ContributionNetworkSncuFieldProps) {
-  const id = useId();
-  const utils = trpc.useUtils();
+  const inputId = useId();
+  const trpcUtils = trpc.useUtils();
   const isRequired = nativeInputProps?.required === true;
   const isDisabled = nativeInputProps?.disabled === true;
 
   const fetchFn = useCallback(
-    async (query: string) => {
-      return await utils.reseaux.searchForContribution.fetch({ search: query });
-    },
-    [utils]
+    (query: string) => trpcUtils.reseaux.searchForContribution.fetch({ search: query }),
+    [trpcUtils.reseaux.searchForContribution]
   );
 
-  const handleSelect = useCallback(
+  const getOptionValue = useCallback((network: ContributionNetworkSearchResult) => network.identifiant_reseau, []);
+
+  const getOptionLabel = useCallback(
+    (network: ContributionNetworkSearchResult, query: string) => (
+      <span>
+        {highlightMatch(network.identifiant_reseau, query)}
+        {formatNetworkDetails(network)}
+      </span>
+    ),
+    []
+  );
+
+  const handleNetworkSelect = useCallback(
     (network: ContributionNetworkSearchResult) => {
       onChange?.(network.identifiant_reseau);
       onNetworkSelect(network);
@@ -62,63 +72,55 @@ export function ContributionNetworkSncuField({
     [onChange, onNetworkSelect]
   );
 
-  const handleClear = useCallback(() => {
+  const handleNetworkClear = useCallback(() => {
     onChange?.('');
     onNetworkClear();
   }, [onChange, onNetworkClear]);
 
-  const decoratedLabel = (
-    <>
-      {label}
-      {!isRequired && <small> (Optionnel)</small>}
-    </>
-  );
-
   return (
     <FieldWrapper
-      fieldId={id}
-      label={decoratedLabel}
+      className={className}
+      fieldId={inputId}
+      label={
+        isRequired ? (
+          label
+        ) : (
+          <>
+            {label} <span className="font-normal">(Optionnel)</span>
+          </>
+        )
+      }
       hintText={hintText}
-      disabled={isDisabled}
       state={state}
       stateRelatedMessage={stateRelatedMessage}
-      className={className}
+      disabled={isDisabled}
     >
       {selectedNetwork ? (
         <button
           type="button"
           className={fr.cx('fr-tag', 'fr-tag--sm', 'fr-tag--dismiss', 'fr-mt-2w')}
           title="Supprimer la sélection du réseau"
-          onClick={handleClear}
+          onClick={handleNetworkClear}
         >
           {formatSelectedNetwork(selectedNetwork)}
         </button>
       ) : (
         <Autocomplete<ContributionNetworkSearchResult>
-          id={id}
+          id={inputId}
           fetchFn={fetchFn}
-          getOptionValue={(network) => network.identifiant_reseau}
-          getOptionLabel={(network, query) => (
-            <div className="flex flex-col">
-              <span className="font-medium">{highlightMatch(network.identifiant_reseau, query)}</span>
-              <span className="text-xs text-gray-500">{formatNetworkDetails(network)}</span>
-            </div>
-          )}
+          getOptionValue={getOptionValue}
+          getOptionLabel={getOptionLabel}
           value={value ?? ''}
-          onSelect={handleSelect}
-          onClear={handleClear}
+          onSelect={handleNetworkSelect}
+          onClear={handleNetworkClear}
           minCharThreshold={2}
           emptyMessage="Aucun identifiant SNCU trouvé"
           nativeInputProps={{
-            className: cx(
-              fr.cx('fr-input', {
-                'fr-input--error': state === 'error',
-              })
-            ),
+            ...nativeInputProps,
+            className: cx(fr.cx('fr-input', { 'fr-input--error': state === 'error' }), nativeInputProps?.className),
             disabled: isDisabled,
             placeholder: 'Ex. 7501C',
             required: isRequired,
-            ...nativeInputProps,
           }}
         />
       )}
@@ -126,10 +128,12 @@ export function ContributionNetworkSncuField({
   );
 }
 
-const formatSelectedNetwork = (network: ContributionNetworkSearchResult): string =>
-  [network.identifiant_reseau, network.nom_reseau].filter(isNonEmptyString).join(' - ');
+const formatSelectedNetwork = (network: ContributionNetworkSearchResult) =>
+  [network.identifiant_reseau, network.nom_reseau, network.localisation].filter(isNonEmptyString).join(' - ');
 
-const formatNetworkDetails = (network: ContributionNetworkSearchResult): string =>
-  [network.nom_reseau, network.localisation].filter(isNonEmptyString).join(' · ');
+const formatNetworkDetails = (network: ContributionNetworkSearchResult) => {
+  const details = [network.nom_reseau, network.localisation].filter(isNonEmptyString).join(' · ');
+  return details ? <span className="text-(--text-mention-grey)"> - {details}</span> : null;
+};
 
-const isNonEmptyString = (value: string | null | undefined): value is string => Boolean(value);
+const isNonEmptyString = (value: string | null | undefined): value is string => typeof value === 'string' && value.length > 0;

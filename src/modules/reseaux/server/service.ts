@@ -853,8 +853,8 @@ export type NetworkSearchResult = {
 
 export type ContributionNetworkSearchResult = {
   id_fcu: number;
-  identifiant_reseau: string;
   nom_reseau: string | null;
+  identifiant_reseau: string;
   localisation: string | null;
   gestionnaire: string | null;
   maitre_ouvrage: string | null;
@@ -862,39 +862,44 @@ export type ContributionNetworkSearchResult = {
 };
 
 /**
- * Récupère les informations d'un réseau pour alimenter les suggestions du formulaire de contribution
+ * Public contribution-form search by SNCU identifier.
+ * Only heat networks are suggested: cold networks are intentionally excluded.
  */
 export const searchHeatNetworksForContribution = async (search: string): Promise<ContributionNetworkSearchResult[]> => {
   const pattern = `%${search}%`;
 
   const rows = await kdb
     .selectFrom('reseaux_de_chaleur')
-    .select((eb) => [
+    .select((expressionBuilder) => [
       'id_fcu',
       'nom_reseau',
       'communes',
-      eb.ref('Identifiant reseau').as('identifiant_reseau'),
-      eb.ref('Gestionnaire').as('gestionnaire'),
-      eb.ref('MO').as('maitre_ouvrage'),
-      eb.ref('reseaux classes').as('is_classe'),
+      expressionBuilder.ref('Identifiant reseau').as('identifiant_reseau'),
+      expressionBuilder.ref('Gestionnaire').as('gestionnaire'),
+      expressionBuilder.ref('MO').as('maitre_ouvrage'),
+      expressionBuilder.ref('reseaux classes').as('is_classe'),
     ])
     .where('Identifiant reseau', 'is not', null)
-    .where((eb) => eb(eb.ref('Identifiant reseau'), 'ilike', pattern))
+    .where((expressionBuilder) => expressionBuilder(expressionBuilder.ref('Identifiant reseau'), 'ilike', pattern))
     .orderBy(sql<string>`"Identifiant reseau"`, 'asc')
     .limit(10)
     .execute();
 
   return rows
-    .filter((row): row is typeof row & { identifiant_reseau: string } => row.identifiant_reseau !== null)
-    .map((row) => ({
-      gestionnaire: row.gestionnaire,
-      id_fcu: row.id_fcu,
-      identifiant_reseau: row.identifiant_reseau,
-      is_classe: row.is_classe === true,
-      localisation: row.communes?.join(', ') ?? null,
-      maitre_ouvrage: row.maitre_ouvrage,
-      nom_reseau: row.nom_reseau,
-    }));
+    .map((network) =>
+      network.identifiant_reseau
+        ? {
+            gestionnaire: network.gestionnaire,
+            id_fcu: network.id_fcu,
+            identifiant_reseau: network.identifiant_reseau,
+            is_classe: network.is_classe === true,
+            localisation: network.communes?.join(', ') ?? null,
+            maitre_ouvrage: network.maitre_ouvrage,
+            nom_reseau: network.nom_reseau,
+          }
+        : undefined
+    )
+    .filter(isDefined);
 };
 
 /**
