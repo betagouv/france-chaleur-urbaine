@@ -153,7 +153,7 @@ describe('creation-user', () => {
       expect(demandInDb?.user_id).toBeNull();
     });
 
-    it('stocke le commentaire utilisateur dans une colonne dédiée', async () => {
+    it('stocke le commentaire demandeur dans une colonne dédiée', async () => {
       const input = buildDemandInput({
         commentUser: 'Projet voté en assemblée générale.',
       });

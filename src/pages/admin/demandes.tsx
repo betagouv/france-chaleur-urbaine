@@ -515,7 +515,7 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'comment_user',
         cell: ({ row }) => <Comment demand={row.original} field="comment_user" updateDemand={updateDemand} />,
         enableSorting: false,
-        header: 'Commentaire utilisateur',
+        header: 'Commentaire demandeur',
         width: '280px',
       },
       {
