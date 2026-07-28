@@ -1,27 +1,25 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Button from '@codegouvfr/react-dsfr/Button';
-import { utils } from 'publicodes';
 import { useState } from 'react';
 import styled from 'styled-components';
 
-import { clientConfig } from '@/client-config';
-import { formatUnit } from '@/components/ComparateurPublicodes/usePublicodesEngine';
 import Box from '@/components/ui/Box';
 import Drawer from '@/components/ui/Drawer';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
-import Link from '@/components/ui/Link';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple from '@/components/ui/table/TableSimple';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { RuleExplanationDialog } from '@/modules/publicodes/client/RuleExplanationDialog';
+import { formatUnit } from '@/modules/publicodes/format';
 
 import { modesDeChauffage } from './mappings';
 import type { SimulatorEngine } from './useSimulatorEngine';
 
 const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const serializedSituation = encodeURIComponent(JSON.stringify(engine.getSituation()));
+  // Une seule dialog partagée pour toutes les valeurs du tableau (pas une par cellule)
+  const [explainedRule, setExplainedRule] = useState<RuleName | null>(null);
 
   const roundNumber = (key: RuleName) => {
     const node = engine.getNode(key);
@@ -31,14 +29,14 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
       <Tooltip title={key}>
         <div className="flex items-center gap-1">
           <strong>{value}</strong> <small className="text-faded leading-none">{unit}</small>{' '}
-          <Link
-            variant="tertiaryNoOutline"
-            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
-            isExternal
-            className="reset-external px-0.5! ml-auto"
+          <button
+            type="button"
+            onClick={() => setExplainedRule(key)}
+            title={`Comprendre le calcul de « ${key} »`}
+            className="ml-auto cursor-pointer px-0.5 text-blue-600 transition-colors hover:text-blue-800"
           >
             <Icon name="fr-icon-article-line" />
-          </Link>
+          </button>
         </div>
       </Tooltip>
     );
@@ -52,14 +50,14 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
       <Tooltip title={key}>
         <div className="flex items-center gap-1">
           <strong>{value}</strong> <small className="text-faded leading-none">{unit}</small>{' '}
-          <Link
-            variant="tertiaryNoOutline"
-            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
-            isExternal
-            className="reset-external px-0.5! ml-auto"
+          <button
+            type="button"
+            onClick={() => setExplainedRule(key)}
+            title={`Comprendre le calcul de « ${key} »`}
+            className="ml-auto cursor-pointer px-0.5 text-blue-600 transition-colors hover:text-blue-800"
           >
             <Icon name="fr-icon-article-line" />
-          </Link>
+          </button>
         </div>
       </Tooltip>
     );
@@ -70,14 +68,14 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
       <Tooltip title={key}>
         <div className="flex items-center gap-1">
           {engine.getField(key) ? 'oui' : 'non'}{' '}
-          <Link
-            variant="tertiaryNoOutline"
-            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
-            isExternal
-            className="reset-external px-0.5! ml-auto"
+          <button
+            type="button"
+            onClick={() => setExplainedRule(key)}
+            title={`Comprendre le calcul de « ${key} »`}
+            className="ml-auto cursor-pointer px-0.5 text-blue-600 transition-colors hover:text-blue-800"
           >
             <Icon name="fr-icon-article-line" />
-          </Link>
+          </button>
         </div>
       </Tooltip>
     );
@@ -95,6 +93,15 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
       >
         Détails
       </FloatingButton>
+
+      {explainedRule && (
+        <RuleExplanationDialog
+          engine={engine.internalEngine}
+          dottedName={explainedRule}
+          open
+          onOpenChange={(dialogOpen) => !dialogOpen && setExplainedRule(null)}
+        />
+      )}
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} direction="right" full>
         {drawerOpen && (
