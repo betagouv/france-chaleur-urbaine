@@ -182,7 +182,7 @@ const CardSearchDetails = memo(
                               <strong>Et maintenant ?</strong>
                               <p className="font-normal my-3v">
                                 Signalez au gestionnaire du réseau le plus proche ou à la collectivité votre souhait de raccordement, et
-                                découvrez d’autres solutions de chauffage écologiques adaptées à votre bâtiment :
+                                découvrez d’autres solutions de chauffage écologiques adaptées à votre bâtiment&nbsp;:
                               </p>
                             </>
                           )}
