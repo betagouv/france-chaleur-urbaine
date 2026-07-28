@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
+import AirtableError from 'airtable/lib/airtable_error';
 import { errors as formidableErrors } from 'formidable';
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import type { User } from 'next-auth';
@@ -47,6 +48,7 @@ type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'OPTIONS';
  *  - validation Zod => retourne un statut 400
  *  - erreur de route (invalidRouteError) => retourne un statut 404
  *  - postgres => retourne un statut 500
+ *  - airtable => log dédié "airtable error" + retourne un statut 500
  */
 export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestMethod, NextApiHandler>>>(
   handlerOrHandlers: NextApiHandler | HandlersConfig,
@@ -92,6 +94,20 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
         logger.info('request completed', { duration: Date.now() - startTime });
       }
     } catch (error: any) {
+      // AirtableError does not extend Error and would otherwise be logged as an unhelpful "unknown error"
+      if (error instanceof AirtableError) {
+        logger.error('airtable error', {
+          message: error.message,
+          statusCode: error.statusCode,
+          type: error.error,
+        });
+        Sentry.captureException(new Error(`Airtable ${error.error}: ${error.message}`), {
+          tags: { airtable_error: error.error },
+        });
+        return res.status(500).json({
+          message: 'Une erreur inconnue est survenue',
+        });
+      }
       Sentry.captureException(error);
       if (error instanceof FormidableError) {
         logger.error('formidable error', {
