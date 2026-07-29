@@ -1,0 +1,51 @@
+# Rôle : admin
+
+L'équipe France Chaleur Urbaine. Un admin voit tout et pilote l'ensemble — utilisateurs, réseaux, demandes, organisations, tâches — et son accès ne dépend d'aucune permission.
+
+## Son périmètre
+
+- Il voit **toutes** les demandes, tous les réseaux et tous les tests, sans filtre de permission (contrairement aux [rôles territoriaux](/admin/doc/roles-permissions)).
+- Mais il n'est **jamais « responsable »** d'une demande au sens du traitement : le suivi courant appartient au gestionnaire. Il peut néanmoins **changer le statut de n'importe quelle demande** depuis sa page, en plus de ses opérations propres (validation, affectation, recalcul, suppression), décrites plus bas.
+
+## Ce qu'il gère
+
+| Domaine | Où | Ce qu'il y fait |
+| --- | --- | --- |
+| Demandes | [Gestion des demandes](/admin/demandes) | Valider, affecter, arbitrer les réaffectations, changer le statut, recalculer l'éligibilité, supprimer |
+| Demandes chaleur renouvelable | [Gestion des demandes chaleur renouvelable](/admin/demandes-chaleur-renouvelable) | Changer le statut, affecter à un membre de l'équipe (voir [Parcours chaleur renouvelable](/admin/doc/chaleur-renouvelable)) |
+| Utilisateurs | [Gestion des utilisateurs](/admin/users) | Créer un compte de **n'importe quel rôle**, attribuer les permissions, poser des étiquettes, activer/désactiver |
+| Réseaux | [Gestion des réseaux](/admin/reseaux) | Gérer les réseaux de chaleur et de froid |
+| Organisations | [Gestion des organisations](/admin/organizations) | Rattacher les réseaux à un exploitant, gérer les accès API |
+| Pilotage | [Activité du site](/admin/events), [Conversion](/admin/conversion) (et son [contrôle des abus](/admin/conversion/abus)), [Tests d'adresses](/admin/tests-adresses) | Suivre l'activité, l'entonnoir de conversion et les tests |
+| Système | [Suivi des tâches](/admin/jobs), [Diagnostic système](/admin/diagnostic), [Diagnostic des données](/admin/data-diagnostic) | Surveiller les tâches et crons, repérer les incohérences |
+
+## Ses actions sur une demande
+
+<Mermaid
+  chart={`flowchart TD
+    depot["Une demande arrive, non validée"] --> valide["Valider : la rend visible des gestionnaires du périmètre"]:::db
+    valide --> affecte["Affecter ou réaffecter directement à un réseau"]:::db
+    depot --> arbitre["Arbitrer une réaffectation proposée : accepter ou rejeter"]:::db
+    depot --> recalc["Recalculer l'éligibilité (re-géocodage)"]:::db
+    depot --> edite["Changer le statut, éditer marqueurs de relance, « Recontacté », commentaires internes FCU"]:::db
+    depot --> suppr["Supprimer (suppression logique)"]:::db
+    click valide "/admin/events?types=demand_validated" "Voir dans l'activité du site"
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
+/>
+
+Points à retenir :
+
+- **La validation est le geste clé de l'admin** : une demande reste invisible des gestionnaires tant qu'il ne l'a pas validée (voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande)).
+- Il peut **changer le statut** de n'importe quelle demande directement, mais le suivi courant reste au gestionnaire responsable : ce pouvoir sert à corriger ou clôturer, pas à traiter.
+- Créer un **compte gestionnaire actif** déclenche le seul email lié à une action admin ([« Ouverture d'espace gestionnaire »](/admin/emails?type=auth.gestionnaire.ouverture-espace)) ; créer un compte d'un autre rôle n'envoie **aucun** email — c'est à l'admin de prévenir la personne (voir [Inscription et comptes](/admin/doc/inscription-comptes)).
+
+## Outils spécifiques
+
+- **Impostures** : endosser n'importe quel rôle avec des permissions simulées pour voir l'application comme l'utilisateur ciblé, avec une option d'anonymisation des données personnelles pour les démonstrations. Voir [Rôles et permissions](/admin/doc/roles-permissions).
+- **Étiquettes utilisateurs** : marquage libre des comptes (nom + couleur), posé depuis la fiche d'un utilisateur ou en masse (collage d'une liste d'emails), filtrable et exportable dans [Gestion des utilisateurs](/admin/users). Purement informatif : aucun effet sur les permissions, et invisible des utilisateurs eux-mêmes. Opérations tracées ([création](/admin/events?types=user_tag_created), [modification](/admin/events?types=user_tag_updated), [suppression](/admin/events?types=user_tag_deleted) d'étiquette).
+- **Diagnostic des données** : repère les incohérences entre utilisateurs, permissions et demandes.
+- **Suivi des tâches** : état des tâches asynchrones et des crons (voir [Références](/admin/doc/references)).
+
+## Traçabilité
+
+Toutes les actions d'un admin sont tracées dans [Activité du site](/admin/events) avec leur auteur : [validation](/admin/events?types=demand_validated) et [suppression](/admin/events?types=demand_deleted) de demande, [réaffectation](/admin/events?types=demand_assignment_changed), [création](/admin/events?types=user_created_by_admin), [mise à jour](/admin/events?types=user_updated_by_admin) et [suppression](/admin/events?types=user_deleted_by_admin) d'utilisateur, [modification des permissions](/admin/events?types=user_permissions_updated), création et mise à jour d'organisations.

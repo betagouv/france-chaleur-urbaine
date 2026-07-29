@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { z } from 'zod';
 
+import { businessRules } from '@/modules/app/business-rules';
 import { formatFileSize } from '@/utils/strings';
 
 const filesLimits = {
-  maxFileSize: 50 * 1024 * 1024,
+  maxFileSize: businessRules.fileUploadMaxSizeMB.value * 1024 * 1024,
 };
 
 export const allowedExtensions = ['.csv', '.txt'] as const;

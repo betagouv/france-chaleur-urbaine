@@ -1,0 +1,33 @@
+# Références
+
+La **liste** des éléments de cette page — emails, tâches planifiées, statuts, événements — et leurs **libellés** sont extraits directement du code : aucun ne peut manquer ni porter un nom erroné. Les **descriptions**, en revanche, sont rédigées à la main et maintenues avec le code, comme le reste de cette documentation. Chaque élément renvoie vers la page d'administration correspondante.
+
+## Emails transactionnels
+
+Tous les emails que l'application peut envoyer, avec leur déclencheur exact. Cliquer sur un email ouvre sa prévisualisation dans [Modèles d'emails](/admin/emails).
+
+<EmailsInventory />
+
+## Tâches planifiées (crons)
+
+Les traitements automatiques récurrents, exécutés à heure fixe (heure de Paris) — selon la tâche, chaque jour, chaque semaine ou chaque mois. Leur état d'exécution est visible dans [Suivi des tâches](/admin/jobs).
+
+<CronsInventory />
+
+## Statuts d'une demande
+
+Les statuts de suivi d'une demande de raccordement, dans leur ordre d'affichage (voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande)). Aucun ordre n'est imposé techniquement : le gestionnaire choisit librement le statut dans la liste.
+
+<DemandStatuses />
+
+## Statuts d'une demande chaleur renouvelable
+
+Les statuts de suivi des demandes du [parcours chaleur renouvelable](/admin/doc/chaleur-renouvelable), dans leur ordre d'affichage. Comme pour les demandes classiques, aucun ordre n'est imposé techniquement.
+
+<FcrDemandStatuses />
+
+## Événements de traçabilité
+
+Toutes les actions tracées par l'application, consultables et filtrables dans [Activité du site](/admin/events). Cliquer sur un événement ouvre l'activité filtrée sur celui-ci.
+
+<EventsInventory />

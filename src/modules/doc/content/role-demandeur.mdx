@@ -1,0 +1,33 @@
+# Rôle : particulier et professionnel
+
+Les deux rôles « demandeurs » — les seuls ouverts à l'[inscription publique](/admin/doc/inscription-comptes). Un **particulier** teste son adresse et suit sa demande ; un **professionnel** (bureau d'études, bailleur, syndic…) travaille sur des parcs d'adresses. Leurs espaces sont **identiques** : mêmes menus, mêmes fonctionnalités — la seule différence tient à l'inscription (structure obligatoire pour le professionnel).
+
+## Son espace
+
+Menu : **Tableau de bord**, **Mes demandes**, **Comparateur de coûts et CO2**, **Test d'adresses**.
+
+## Déposer et suivre une demande
+
+- Le dépôt peut se faire **sans compte** (formulaire public). À la première connexion avec le même email, les demandes anonymes sont **automatiquement rattachées** au compte — c'est ce qui permet de retrouver dans « Mes demandes » une demande faite avant l'inscription.
+- Au dépôt : email [« Confirmation de demande »](/admin/emails?type=demands.demandeur.confirmation-demande) avec analyse d'éligibilité personnalisée. Redéposer une demande pour la même adresse avec le même email sous <Rule id="demandDedupWindowDays" /> n'en crée **pas** une nouvelle : l'écran de confirmation réaffiche la demande existante (voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande)).
+- **« Mes demandes » est en lecture seule** : statut (« À traiter » y est affiché « En cours de traitement »), réseau affecté, mises à jour d'éligibilité, date. Le demandeur n'y voit **pas** les coordonnées du gestionnaire et ne peut rien y modifier.
+
+## La boucle de satisfaction — son seul canal de retour
+
+Si sa demande est éligible en chauffage collectif et qu'il n'a pas été recontacté, il reçoit l'[enquête de satisfaction](/admin/emails?type=demands.demandeur.enquete-satisfaction) <Rule id="firstRelanceDelayMonths" /> après le dépôt (puis à <Rule id="secondRelanceDelayDays" /> si toujours rien). Les boutons « Oui / Non, pas encore » et le champ commentaire de la page publique `/satisfaction` sont **son seul moyen d'agir** sur le suivi — sa réponse remonte directement à l'équipe FCU (voir [Relances et notifications](/admin/doc/relances-notifications)).
+
+À l'inverse, le gestionnaire peut lui écrire depuis la plateforme (email [« Message libre du gestionnaire »](/admin/emails?type=demands.demandeur.message-gestionnaire)), avec l'adresse de réponse du gestionnaire.
+
+## Tests d'adresses en masse
+
+Accessibles aux **deux rôles** (l'interface est la même) : import CSV, résultats détaillés, export Excel, alertes de changement d'éligibilité, et création de **demandes groupées** (au maximum <Rule id="batchDemandMaxAddresses" />, contact repris du profil). Voir [Tests d'adresses en masse](/admin/doc/tests-adresses-pro).
+
+## Mon compte
+
+Modifiable : prénom, nom, téléphone, et pour les non-particuliers la structure et l'entreprise (SIRET vérifié). **Non modifiables** : l'email et le rôle. Le mot de passe se change uniquement par « Mot de passe oublié » (voir [Inscription et comptes](/admin/doc/inscription-comptes)). Événement tracé : [« Mise à jour profil »](/admin/events?types=user_profile_updated).
+
+## Ce qu'il ne peut pas faire
+
+- Modifier ou annuler une demande déposée (il faut passer par l'équipe FCU).
+- Voir les demandes d'autres personnes, ou contacter directement le gestionnaire depuis la plateforme.
+- Changer son email ou son rôle (action admin).

@@ -7,6 +7,7 @@ import Alert from '@/components/ui/Alert';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { businessRules } from '@/modules/app/business-rules';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import {
   type BatchDemandContactInfo,
@@ -18,7 +19,7 @@ import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import trpc from '@/modules/trpc/client';
 
-const MAX_BATCH_DEMAND_ADDRESSES = 50;
+const MAX_BATCH_DEMAND_ADDRESSES = businessRules.batchDemandMaxAddresses.value;
 const emptyDedicatedContact: BatchDemandContactInfo = {
   company: '',
   companyType: '',

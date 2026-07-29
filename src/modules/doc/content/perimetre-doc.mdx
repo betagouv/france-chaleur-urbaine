@@ -1,0 +1,35 @@
+# Périmètre et limites
+
+Pour qu'un « non documenté » soit toujours un **choix visible** et jamais un trou silencieux, voici l'état de couverture de cette documentation et le niveau de confiance qu'on peut lui accorder.
+
+## Où on en est
+
+| Sujet | Statut |
+| --- | --- |
+| [Inscription et comptes](/admin/doc/inscription-comptes) | Documenté |
+| [Test d'éligibilité](/admin/doc/eligibilite) | Documenté |
+| [Cycle de vie des demandes](/admin/doc/cycle-de-vie-demande) | Documenté |
+| [Relances et notifications](/admin/doc/relances-notifications) | Documenté |
+| [Réaffectation des demandes](/admin/doc/reaffectation-demandes) | Documenté |
+| [Tests d'adresses en masse](/admin/doc/tests-adresses-pro) | Documenté |
+| [Rôles et permissions](/admin/doc/roles-permissions) | Documenté |
+| [Gestion des réseaux et PDP](/admin/doc/gestion-reseaux) | Documenté |
+| [Comparateur de coûts et CO2](/admin/doc/comparateur) | Documenté |
+| [Parcours chaleur renouvelable](/admin/doc/chaleur-renouvelable) | Documenté |
+| [Carte, iframes et conversions](/admin/doc/carte-iframes) | Documenté |
+| Rôles (gestionnaire, collectivité, particulier/professionnel, admin) | Documenté |
+| Newsletter (abonnement / désabonnement) | Partiel — l'abonnement est mentionné à l'inscription, sa gestion n'est pas détaillée |
+| Diagnostics admin (système et données) | Partiel — cités dans le rôle admin, non détaillés |
+| Import des données (bâtiments, adresses, consommations) | Hors périmètre — technique, sans règle de gestion métier |
+| Rendu de la carte (couches, styles) | Hors périmètre — technique |
+| Monitoring technique | Hors périmètre |
+
+Si vous cherchez une règle sur un sujet « Hors périmètre », c'est qu'elle n'existe pas côté métier ; sur un sujet « Partiel », qu'elle n'est pas encore écrite — pas qu'elle n'existe pas.
+
+## Quel niveau de confiance
+
+Tout n'a pas la même garantie de fraîcheur :
+
+- **Les inventaires de la page [Références](/admin/doc/references)** (emails, tâches, statuts, événements) sont **extraits du code** : leur liste et leurs libellés ne peuvent pas être faux ni incomplets.
+- **Les valeurs chiffrées soulignées en pointillés** (distances, délais, plafonds) sont lues dans la **même constante que celle utilisée par l'application** : la doc et le code ne peuvent pas afficher deux valeurs différentes. Quelques seuils restent encore rédigés à la main (notamment côté comparateur, dont les hypothèses viennent d'un modèle externe) — ils sont signalés comme tels dans les pages concernées.
+- **Le reste est de la prose rédigée**, tenue à jour avec le code par convention d'équipe, et protégée par un test automatique qui bloque la publication si un email, un événement ou une valeur chiffrée n'est plus correctement rattaché. Ce n'est pas une garantie absolue : en cas de doute sur un enchaînement, la source de vérité reste le code.

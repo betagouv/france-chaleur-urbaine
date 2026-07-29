@@ -1,0 +1,43 @@
+# Rôle : collectivité, ALEC, CCRT
+
+Les trois rôles de suivi territorial : **collectivité** (commune, EPCI), **ALEC** (agence locale de l'énergie et du climat) et **CCRT** (chargé de mission compétent sur un territoire). Ils partagent le même espace et les mêmes règles ; seuls leurs filtres par défaut diffèrent.
+
+## Son compte
+
+- Créé **par un admin** uniquement — pas d'inscription publique, pas d'email automatique à la création (voir [Inscription et comptes](/admin/doc/inscription-comptes)) : c'est à l'admin de prévenir la personne.
+- Périmètre défini par des **permissions territoire** (commune, EPCI, EPT, département, région, national) attribuées par un admin. Sans permission, l'espace est vide.
+
+## Son espace
+
+Même menu que le gestionnaire : **Demandes**, **Comparateur de coûts et CO2**, **Test d'adresses**, **Aide**. La liste des demandes montre celles de son territoire, **validées uniquement**. Filtres proposés : toutes, **non affectées**, en PDP (et « non réalisables » pour ALEC et CCRT).
+
+## Ce qu'il peut faire — la nuance clé
+
+C'est le rôle où la règle [« consulter n'est pas traiter »](/admin/doc/roles-permissions) joue à plein :
+
+| Sur une demande… | Il peut |
+| --- | --- |
+| **Affectée à un réseau** de son territoire | **Consulter seulement** : statut, historique, export — les champs d'édition sont désactivés |
+| **Non affectée** (ni éligible, ni réseau à moins de <Rule id="autoAssignMaxDistance" /> à la création) | **Traiter** : statut, commentaire, contact du demandeur, et surtout **proposer une affectation** |
+
+C'est le **rôle de tri** : les demandes que l'affectation automatique n'a pas su placer arrivent chez lui, et il connaît son territoire mieux que personne. Sa proposition d'affectation est ensuite arbitrée par l'équipe FCU (voir [Réaffectation](/admin/doc/reaffectation-demandes)).
+
+Il peut aussi : exporter ses demandes en Excel, [tester des adresses en masse](/admin/doc/tests-adresses-pro), utiliser le comparateur.
+
+## Ce qu'il ne reçoit pas
+
+Les [emails automatiques](/admin/doc/relances-notifications) (nouvelles demandes, rappels) ne se déclenchent que sur les permissions **réseau** : avec ses permissions territoire, une collectivité **ne reçoit aucun email automatique**. Son suivi passe par la consultation de son espace. (Si un admin lui attribuait une permission réseau, elle recevrait alors ces emails comme un gestionnaire.)
+
+## Déroulé type
+
+1. Une demande est déposée sur sa commune, trop loin de tout réseau : non affectée, statut « À traiter » ou « Non réalisable ».
+2. Une fois validée par l'équipe FCU, elle apparaît dans son filtre « non affectées ».
+3. La collectivité la trie : elle connaît le projet de réseau local, propose une affectation au réseau en construction avec un commentaire.
+4. L'équipe FCU accepte — la demande bascule chez le gestionnaire du réseau, qui est notifié au prochain cron.
+
+## Ce qu'il ne peut pas faire
+
+- Modifier une demande affectée à un réseau (même sur son territoire).
+- Valider, supprimer ou réaffecter directement une demande.
+- Voir les demandes non validées ou hors de son territoire.
+- Gérer des utilisateurs ou des permissions.

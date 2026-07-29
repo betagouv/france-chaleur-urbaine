@@ -1,0 +1,51 @@
+# Réaffectation des demandes
+
+Une demande est affectée automatiquement au réseau le plus proche à sa création (voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande)). Quand cette affectation est incorrecte — mauvais réseau, demande hors périmètre — elle peut être corrigée, mais **jamais directement par un gestionnaire** : il propose, l'équipe FCU arbitre.
+
+<Mermaid
+  chart={`flowchart TD
+    constat["Le gestionnaire ou la collectivité constate une mauvaise affectation"] --> propose["Propose un réseau cible, ou une désaffectation, avec un commentaire"]:::db
+    propose --> evtReq["Événement « Demande de réaffectation »"]:::evt
+    propose --> pending["La demande porte une réaffectation en attente"]:::db
+    pending --> annule["L'auteur peut annuler sa proposition"]
+    pending --> arbitrage{"Arbitrage équipe FCU"}
+    arbitrage -- "Accepte (ou modifie)" --> applique["Nouvelle affectation appliquée, réaffectation en attente effacée"]:::db
+    arbitrage -- "Rejette" --> rejet["Affectation actuelle conservée"]:::db
+    applique --> evtChanged["Événement « Réaffectation (demande) »"]:::evt
+    rejet --> evtRejected["Événement « Rejet de demande de réaffectation »"]:::evt
+    click evtReq "/admin/events?types=demand_assignment_change_requested" "Voir dans l'activité du site"
+    click evtChanged "/admin/events?types=demand_assignment_changed" "Voir dans l'activité du site"
+    click evtRejected "/admin/events?types=demand_assignment_change_request_rejected" "Voir dans l'activité du site"
+    classDef evt fill:#cfe3fd,stroke:#3b74c7,color:#161616
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
+/>
+
+## La proposition
+
+Qui : les quatre rôles territoriaux (gestionnaire, collectivité, ALEC, CCRT), sur les demandes de leur périmètre. Ce qu'ils peuvent proposer :
+
+- un **réseau cible** (réseau de chaleur ou réseau en construction), ou
+- une **désaffectation** (retirer le réseau) — il n'est pas possible de proposer une ville.
+
+La proposition enregistre l'auteur, un commentaire, et la distance de l'adresse au réseau cible (calculée au moment de la proposition). Garde-fous :
+
+- **Une seule réaffectation en attente** par demande : impossible d'en poser une seconde tant que la première n'est pas arbitrée.
+- Une proposition identique à l'affectation actuelle est refusée.
+- Seul **l'auteur** de la proposition peut l'annuler ([événement « Annulation de demande de réaffectation »](/admin/events?types=demand_assignment_change_request_cancelled)).
+
+Tant que la proposition est en attente, **la demande reste chez son responsable actuel** — rien ne change dans les périmètres.
+
+## L'arbitrage
+
+Dans [Gestion des demandes](/admin/demandes), le filtre « réaffectations en attente » liste les propositions. L'admin :
+
+- **accepte** (ou applique une affectation différente de celle proposée) : l'affectation change, la distance et le nom du réseau sont mis à jour, la proposition est effacée ;
+- **rejette** : l'affectation actuelle est conservée, la proposition est effacée.
+
+Aucun email n'est envoyé à l'auteur dans les deux cas — le résultat se constate dans son espace.
+
+L'admin peut aussi **réaffecter directement** n'importe quelle demande à tout moment, sans proposition préalable ; toute réaffectation en attente est alors effacée.
+
+## Effet de bord à connaître
+
+Changer l'affectation change le **périmètre de visibilité** : la demande disparaît de l'espace des gestionnaires de l'ancien réseau et apparaît chez ceux du nouveau, qui seront notifiés par le [cron des nouvelles demandes](/admin/doc/relances-notifications) si elle n'avait pas déjà été notifiée.

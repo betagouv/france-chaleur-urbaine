@@ -1,0 +1,54 @@
+# Carte et intégrations (iframes)
+
+La carte interactive est le point d'entrée grand public. Elle peut aussi être **embarquée sur des sites partenaires** via des iframes, dont chaque usage est **attribué à une source** pour mesurer les conversions.
+
+## La carte interactive
+
+Accessible sur [/carte](/carte), elle sert à explorer les réseaux et à **tester l'éligibilité d'une adresse**. Les couches affichables sont organisées en quatre onglets :
+
+| Onglet | Ce qu'on y affiche |
+| --- | --- |
+| Réseaux | Réseaux de chaleur et de froid, réseaux en construction, PDP, bâtiments raccordés — avec des filtres (dont « réseaux classés ») |
+| Potentiel | Demandes d'éligibilité, consommations gaz/fioul, besoins en chaleur/froid, DPE, zones à potentiel par territoire |
+| EnR&R | Ressources mobilisables (chaleur fatale, géothermie, solaire thermique…) et installations existantes |
+| Outils | Mesure de distances, densité thermique, extraction de données bâtiments |
+
+Tester une adresse sur la carte (recherche avec autocomplétion, ou clic droit pour les admins) pose un **marqueur vert si éligible, gris sinon**, et affiche le résultat — c'est le même calcul que partout ailleurs (voir [Test d'éligibilité](/admin/doc/eligibilite)).
+
+La carte est servie à partir de **tuiles** pré-calculées : une modification de réseau n'y apparaît qu'après régénération des tuiles (voir [Gestion des réseaux et PDP](/admin/doc/gestion-reseaux)).
+
+## Les iframes
+
+Depuis [Générateur d'iframes](/admin/iframes), un admin produit une **URL** et un **code d'intégration** `<iframe>` à coller sur un site partenaire. Deux types :
+
+- **Carte** : la carte embarquée, paramétrable (couches, filtres, centrage, légende, mode recherche ou test d'adresse).
+- **Formulaire de test d'adresse** : une variante légère sans carte — un mini-formulaire (adresse + chauffage) qui **redirige vers le site FCU** pour réaliser le test.
+
+Règle importante : le code d'intégration n'est généré **qu'après avoir créé une « intégration »**, car chaque iframe porte un identifiant de **source** (`?source=…`) qui permet d'attribuer les conversions. Les partenaires historiques (ENGIE, Dalkia, Idex, ViaSéva…) ont en plus des pages iframe figées, distinctes du générateur.
+
+## L'attribution des conversions
+
+France Chaleur Urbaine mesure son **entonnoir de conversion** côté serveur (fiable, non bloqué par les bloqueurs de publicité ni le refus de cookies en iframe) : **affichages → tests d'adresse → demandes**, ventilés par source.
+
+<Mermaid
+  chart={`flowchart LR
+    display["Affichage (page ou iframe)"]:::evt --> test["Test d'adresse (éligible ou non)"]:::evt --> demande["Demande"]:::evt
+    display -.-> src["Attribué à une source : l'intégration iframe (?source=…) ou, à défaut, la page interne"]
+    classDef evt fill:#cfe3fd,stroke:#3b74c7,color:#161616`}
+/>
+
+- Une **source** est l'identifiant d'une intégration iframe. À défaut de source (navigation interne), l'attribution se fait par **page**. Le **site hôte** (le domaine qui embarque l'iframe) est aussi conservé.
+- [Conversion par source](/admin/conversion) affiche cet entonnoir : par source, les affichages, les tests (dont éligibles), les demandes, les taux de passage (affichage → test, test → demande), filtrables par période, canal (pages internes / iframes), page et site hôte.
+- **Vie privée** : l'IP et le navigateur ne servent qu'à l'anti-abus. Ils ne sont **jamais visibles dans les statistiques** ni exposés au public — seuls les admins peuvent les consulter, et uniquement dans l'écran de contrôle des abus ci-dessous. Ils sont **effacés après <Rule id="conversionIpRetentionDays" />** (tâche automatique, voir [Références](/admin/doc/references)). Les robots sont ignorés.
+
+Les intégrations se gèrent depuis [Générateur d'iframes](/admin/iframes) : création, modification, archivage (qui **conserve les statistiques**). Chaque opération émet un événement — [création](/admin/events?types=conversion_source_created), [mise à jour](/admin/events?types=conversion_source_updated), [archivage](/admin/events?types=conversion_source_archived) — visible dans [Activité du site](/admin/events).
+
+## Contrôle des abus
+
+Un même visiteur peut fausser l'entonnoir en répétant des tests d'adresse, ce qui gonfle artificiellement le nombre de tests et les taux de passage. L'écran [Conversion — contrôle des abus](/admin/conversion/abus) aide à repérer et neutraliser ces cas.
+
+- **Détection** : la page classe les IP les plus actives de la période avec leurs signaux d'abus — nombre de tests, ratio tests/affichages, nombre de routes et de jours distincts. Un lien d'investigation externe (ipinfo.io) aide à qualifier une IP ; le serveur n'appelle lui-même aucun service tiers.
+- **Décision** : l'admin pose une règle sur une IP ou une plage d'adresses — **bannir** (la retirer des statistiques) ou **conserver** (marquer une IP légitime connue) — avec un **motif obligatoire**. Si plusieurs règles se recouvrent, la **plus précise** l'emporte.
+- **Effet** : les événements des IP bannies sont **exclus des statistiques** (l'entonnoir de [Conversion par source](/admin/conversion) cesse de les compter) sans être supprimés, et l'exclusion est réévaluée à chaque changement de règle. Depuis la page de statistiques, un raccourci permet d'isoler les IP derrière une source douteuse.
+
+La détection ne porte que sur la fenêtre de rétention des IP (<Rule id="conversionIpRetentionDays" />), au-delà de laquelle elles sont effacées.

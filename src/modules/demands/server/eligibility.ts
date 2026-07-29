@@ -1,5 +1,6 @@
 import { TRPCError } from '@trpc/server';
 
+import { businessRules } from '@/modules/app/business-rules';
 import { updateEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -108,7 +109,7 @@ export const computeNetworkDistance = async (demandId: string, networkIdFcu: num
 };
 
 /** Max distance (m) to auto-assign a network for the non-eligible "réseau loin" cases. */
-const networkAssignmentDistanceThreshold = 500;
+const networkAssignmentDistanceThreshold = businessRules.autoAssignMaxDistance.value;
 
 /**
  * Auto-assigns network_id and network_type on a demand based on its eligibility case.

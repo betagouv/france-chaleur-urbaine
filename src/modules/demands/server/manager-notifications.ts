@@ -1,3 +1,4 @@
+import { businessRules } from '@/modules/app/business-rules';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
@@ -36,7 +37,11 @@ export const notifyGestionnairesOfUnhandledDemands = async () => {
     .select(['u.id', 'u.email'])
     .distinct()
     .where('u.receive_old_demands', '=', true)
-    .where(sql`(d.legacy_values->>'Notification envoyé')::date`, '<', sql`NOW() - INTERVAL '7 days'`)
+    .where(
+      sql`(d.legacy_values->>'Notification envoyé')::date`,
+      '<',
+      sql`NOW() - ${sql.lit(`${businessRules.unhandledDemandReminderDays.value} days`)}::interval`
+    )
     .where((eb) =>
       eb.or([
         eb(sql`d.legacy_values->>'Status'`, '=', ''),

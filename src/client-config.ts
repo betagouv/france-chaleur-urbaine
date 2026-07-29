@@ -3,6 +3,8 @@
 // exemple: ENABLE_INSCRIPTIONS: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS),
 export const clientConfig = {
   banApiBaseUrl: process.env.NEXT_PUBLIC_BAN_API_BASE_URL ?? 'https://data.geopf.fr/geocodage/',
+  // Adresse de contact de l'équipe FCU (affichée publiquement et destinataire des notifications internes)
+  contactEmail: 'france.chaleur.urbaine@ademe.fr',
   linkedInUrl: 'https://fr.linkedin.com/company/france-chaleur-urbaine',
   networkInfoFieldMaxCharacters: 700,
   networkSearchMinimumCharactersThreshold: 3,

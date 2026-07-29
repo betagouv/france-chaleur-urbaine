@@ -8,7 +8,11 @@ const isGithubCI = process.env.NODE_ENV === 'production' && process.env.GITHUB_C
 
 const configFunctions = [
   createMDX({
-    // Add markdown plugins here, as desired
+    options: {
+      // GFM enables markdown tables, used by the admin workflow documentation (src/modules/doc).
+      // Plugin referenced by name: Turbopack requires serializable options.
+      remarkPlugins: [['remark-gfm']],
+    },
   }),
   withSentry({
     // Uncomment to route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
