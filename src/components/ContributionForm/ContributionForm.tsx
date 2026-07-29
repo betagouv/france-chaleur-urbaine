@@ -247,7 +247,7 @@ function ContributionForm() {
       )}
       {isSelectedContributionNetworkClassed &&
         reseauDeclasse !== true &&
-        renderUploadField('fichiersPDP', 'Téléverser le périmètre de développement prioritaire :', optionalPdpUploadConfig)}
+        renderUploadField('fichiersPDP', 'Téléverser le tracé du périmètre de développement prioritaire :', optionalPdpUploadConfig)}
     </>
   );
 
