@@ -10,6 +10,7 @@
 /test-results
 /playwright-report
 /playwright/.auth
+/.playwright-mcp/
 
 # next.js
 /.next/
