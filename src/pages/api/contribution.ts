@@ -23,11 +23,11 @@ import { handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { uploadTempFile } from '@/server/services/upload';
 import { flattenMultipartData } from '@/utils/form-utils';
 import { formatFileSize } from '@/utils/strings';
-import { nonEmptyArray } from '@/utils/typescript';
+import { isNonEmptyString, nonEmptyArray } from '@/utils/typescript';
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false, // disable because formidable handles all the parsing
   },
 };
 
@@ -50,7 +50,7 @@ const createServerFilesSchema = (allowedExtensions: string[], options: { require
     .refine((files) => files.every((file) => file.size <= filesLimits.maxFileSize), {
       error: `Chaque fichier doit être inférieur à ${formatFileSize(filesLimits.maxFileSize)}.`,
     })
-    .refine((files) => files.reduce((totalFileSize, file) => totalFileSize + file.size, 0) <= filesLimits.maxTotalFileSize, {
+    .refine((files) => files.reduce((acc, file) => acc + file.size, 0) <= filesLimits.maxTotalFileSize, {
       error: `Le total des fichier doit être inférieur à ${formatFileSize(filesLimits.maxTotalFileSize)}.`,
     })
     .superRefine((files, context) => {
@@ -206,5 +206,3 @@ const getContributionPrecisions = (formValues: ServerContributionFormData) =>
     .join('\n');
 
 const getServerFileName = (file: ServerFile) => file.originalFilename ?? '';
-
-const isNonEmptyString = (value: string | null | undefined): value is string => typeof value === 'string' && value.length > 0;

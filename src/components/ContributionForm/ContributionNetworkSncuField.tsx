@@ -7,6 +7,7 @@ import { highlightMatch } from '@/modules/form/AddressSearch';
 import { Autocomplete } from '@/modules/form/Autocomplete';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import cx from '@/utils/cx';
+import { isNonEmptyString } from '@/utils/typescript';
 
 export type ContributionNetworkSearchResult = RouterOutput['reseaux']['searchForContribution'][number];
 
@@ -125,5 +126,3 @@ const formatSelectedNetwork = (network: ContributionNetworkSearchResult) =>
 
 const formatNetworkDetails = (network: ContributionNetworkSearchResult) =>
   isNonEmptyString(network.nom_reseau) ? <span className="text-(--text-mention-grey)"> - {network.nom_reseau}</span> : null;
-
-const isNonEmptyString = (value: string | null | undefined): value is string => typeof value === 'string' && value.length > 0;

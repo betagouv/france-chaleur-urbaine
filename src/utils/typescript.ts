@@ -74,6 +74,11 @@ export function nonEmptyArray<T>(array: T[]) {
   return array as NonEmptyArray<T>;
 }
 
+/**
+ * Check if a nullable string is present and non-empty.
+ */
+export const isNonEmptyString = (value: string | null | undefined): value is string => typeof value === 'string' && value.length > 0;
+
 export type RequiredFields<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
 /**
