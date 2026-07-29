@@ -251,14 +251,14 @@ function ContributionForm() {
     </>
   );
 
-  const renderNetworkFields = (withConstructionFields: boolean) => (
+  const renderReseauFields = (withDateMiseEnService: boolean) => (
     <>
       {renderSncuIdentificationFields(true)}
       <form.AppField name="nomReseau">{(field) => <field.TextField label="Nom du réseau :" />}</form.AppField>
       <form.AppField name="localisation">{(field) => <field.TextField label="Localisation :" />}</form.AppField>
       <form.AppField name="gestionnaire">{(field) => <field.TextField label="Gestionnaire :" />}</form.AppField>
       <form.AppField name="maitreOuvrage">{(field) => <field.TextField label="Maître d'ouvrage :" />}</form.AppField>
-      {withConstructionFields && (
+      {withDateMiseEnService && (
         <>
           <form.AppField name="dateMiseEnServicePrevisionnelle">
             {(field) => <field.TextField label="Date de mise en service prévisionnelle :" />}
@@ -355,8 +355,8 @@ function ContributionForm() {
         {(field) => <field.RadioField label="Vous souhaitez :" options={typeDemandeOptions} />}
       </form.AppField>
 
-      {typeDemande === 'ajout tracé réseau existant' && renderNetworkFields(false)}
-      {typeDemande === 'ajout tracé réseau en construction' && renderNetworkFields(true)}
+      {typeDemande === 'ajout tracé réseau existant' && renderReseauFields(false)}
+      {typeDemande === 'ajout tracé réseau en construction' && renderReseauFields(true)}
       {typeDemande === 'ajout périmètre développement prioritaire' && (
         <>
           {renderSncuIdentificationFields(false)}
