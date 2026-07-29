@@ -167,7 +167,7 @@ const createFilesSchemaWithZipInspection = (allowedExtensions: string[]) => {
 };
 
 const stringSchema = z.string({ error: 'Ce champ est obligatoire' });
-const positiveNumberSchema = z.number({ error: 'Ce champ est obligatoire' }).positive('La puissance doit être supérieure à 0');
+const optionalPositiveNumberSchema = z.number().positive('La puissance doit être supérieure à 0').optional();
 
 const sncuIdentificationFieldsShape = {
   identifiantReseau: z.string().optional(),
@@ -223,7 +223,7 @@ const createContributionBranches = (filesSchema: typeof createFilesSchema) => {
       typeDemande: z.literal('ajout tracé réseau en construction'),
       ...reseauFieldsShape,
       dateMiseEnServicePrevisionnelle: stringSchema,
-      puissanceTotalePrevisionnelleMW: positiveNumberSchema,
+      puissanceTotalePrevisionnelleMW: optionalPositiveNumberSchema,
     }),
     zCommonFormData.extend({
       fichiers: filesSchema(geoAllowedExtensions),

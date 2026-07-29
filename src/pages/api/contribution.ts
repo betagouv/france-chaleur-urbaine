@@ -142,7 +142,7 @@ function createServerContributionBranch(schema: ContributionFormBranch) {
       return schema.extend({
         fichiers: createServerFilesSchema(geoAllowedExtensions),
         fichiersPDP: createServerFilesSchema(geoAllowedExtensions, { required: false }),
-        puissanceTotalePrevisionnelleMW: z.string().nullable(),
+        puissanceTotalePrevisionnelleMW: z.string().optional(),
       });
     case 'ajout périmètre développement prioritaire':
       return schema.extend({
