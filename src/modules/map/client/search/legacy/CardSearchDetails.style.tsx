@@ -140,6 +140,23 @@ export const MessageConfirmBox = styled.div`
 export const SearchedAddress = styled(Accordion)`
   button.fr-accordion__btn {
     align-items: flex-start;
+    position: relative;
+
+    &:after {
+      margin-left: 0;
+      position: absolute;
+      right: 0.5rem;
+      top: 0.5rem;
+    }
+  }
+  .searched-address-label {
+    width: 100%;
+  }
+  .searched-address-label + span {
+    margin-left: 0;
+    position: absolute;
+    right: 2.25rem;
+    top: 0.5rem;
   }
   section {
     line-height: 1.5rem;
