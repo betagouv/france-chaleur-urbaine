@@ -10,7 +10,7 @@ export type DialogProps = PropsWithChildren<{
   trigger?: React.ReactNode;
   title: string;
   description?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   /** Masque la croix de fermeture (Échap et clic extérieur restent actifs). */
@@ -82,7 +82,8 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
               'z-2003',
               size === 'sm' && 'max-w-sm',
               size === 'md' && 'max-w-lg',
-              size === 'lg' && 'max-w-4xl'
+              size === 'lg' && 'max-w-4xl',
+              size === 'xl' && 'max-w-6xl'
             )}
             initial={{ opacity: 0, translateY: '-50%', x: '-50%', y: -10 }}
             animate={{ opacity: 1, translateY: '-50%', x: '-50%', y: 0 }}

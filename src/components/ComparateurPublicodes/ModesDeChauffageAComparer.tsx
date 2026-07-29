@@ -31,8 +31,8 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   ...props
 }) => {
   const searchParams = useSearchParams();
-  const inclusClimatisation = engine.getField('Inclure la climatisation');
-  const typeDeBatiment = engine.getField('type de bâtiment');
+  const inclusClimatisation = engine.getField('climatisation . incluse');
+  const typeDeBatiment = engine.getField('bâtiment . type');
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
 
   const modesDeChauffageAComparer = modesDeChauffage.filter((mode) => (advancedMode ? true : mode.grandPublicMode));

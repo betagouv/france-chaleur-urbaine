@@ -38,7 +38,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
     engine.updateSituation(publicodeSituation);
   }, [engine.internalEngine, publicodeSituation]);
 
-  const currentCeeValueDisplay = (engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE') * 1000).toLocaleString('fr-FR', {
+  const currentCeeValueDisplay = (engine.getFieldAsNumber('aides . valeur CEE') * 1000).toLocaleString('fr-FR', {
     maximumFractionDigits: 2,
     minimumFractionDigits: 2,
   });
@@ -48,7 +48,7 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
       return null;
     }
 
-    return engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant');
+    return engine.getFieldAsNumber('réseau de chaleur . aides cumac . total montant');
   }, [engine, engine.loaded, formState.selectedAddress, formState.nbLogements, formState.surface]);
 
   const montantCouts = useMemo(() => {

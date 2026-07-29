@@ -18,34 +18,34 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
   engine,
   ...props
 }) => {
-  const typeBatiment = engine.getField('type de bâtiment');
-  const nbLogements = engine.getFieldAsNumber("nombre de logements dans l'immeuble concerné");
+  const typeBatiment = engine.getField('bâtiment . type');
+  const nbLogements = engine.getFieldAsNumber('bâtiment . nombre de logements');
 
   const searchParams = useSearchParams();
   return (
     <div {...props}>
-      <RadioInput name="type de bâtiment" small orientation="horizontal" />
+      <RadioInput name="bâtiment . type" small orientation="horizontal" />
       {typeBatiment === 'résidentiel' && (
         <>
           <Select
-            name="méthode résidentiel"
+            name="bâtiment . méthode résidentiel"
             label="Méthode de calcul pour les besoins en chauffage et refroidissement"
             help="Les normes thermiques permettent une estimation des besoins de chaleur plus précise que les DPE. Elles peuvent être estimées par l'année de construction ou de rénovation du logement."
           />
-          {engine.getField('méthode résidentiel') === 'DPE' && <Select name="DPE" label="DPE" />}
-          {engine.getField('méthode résidentiel') === 'Normes thermiques et âge du bâtiment' && (
-            <Select name="normes thermiques et âge du bâtiment" label="Normes thermiques et âge du bâtiment" />
+          {engine.getField('bâtiment . méthode résidentiel') === 'DPE' && <Select name="bâtiment . DPE" label="DPE" />}
+          {engine.getField('bâtiment . méthode résidentiel') === 'Normes thermiques et âge du bâtiment' && (
+            <Select name="bâtiment . normes thermiques et âge" label="Normes thermiques et âge du bâtiment" />
           )}
         </>
       )}
       {typeBatiment === 'tertiaire' && (
         <>
-          <Select name="méthode tertiaire" label="Méthode de calcul pour les besoins en chauffage et refroidissement" />
-          <Select name="normes thermiques tertiaire" label="Normes thermiques tertiaire" />
+          <Select name="bâtiment . méthode tertiaire" label="Méthode de calcul pour les besoins en chauffage et refroidissement" />
+          <Select name="bâtiment . normes thermiques tertiaire" label="Normes thermiques tertiaire" />
         </>
       )}
       <Input
-        name="surface logement type tertiaire"
+        name="bâtiment . surface tertiaire"
         label={typeBatiment === 'tertiaire' ? 'Surface moyenne' : "Surface moyenne d'un appartement"}
         nativeInputProps={{
           inputMode: 'numeric',
@@ -56,8 +56,8 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
       {typeBatiment === 'résidentiel' && (
         <>
           <Input
-            name="Nombre d'habitants moyen par appartement"
-            label="Nombre d'habitants moyen par appartement"
+            name="bâtiment . habitants par logement"
+            label="bâtiment . habitants par logement"
             help="Le nombre d'habitants permet d'estimer la consommation d'eau chaude sanitaire du logement."
             nativeInputProps={{
               inputMode: 'numeric',
@@ -66,7 +66,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
             }}
           />
           <Input
-            name="nombre de logements dans l'immeuble concerné"
+            name="bâtiment . nombre de logements"
             label="Nombre de logements dans l'immeuble concerné"
             help="Par simplification, tous les logements d'un même immeuble sont considérés identiques."
             nativeInputProps={{

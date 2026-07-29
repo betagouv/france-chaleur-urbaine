@@ -44,7 +44,7 @@ export const modesDeChauffage = {
         }
         return 'Inconnu';
       },
-      coutParAnPublicodeKey: 'Réseaux de chaleur',
+      coutParAnPublicodeKey: 'réseau de chaleur',
       description: (
         <>
           Votre bâtiment est à proximité d'un réseau de chaleur : c'est la solution à privilégier pour un chauffage collectif. Une énergie
@@ -161,7 +161,7 @@ export const modesDeChauffage = {
     {
       avantages: ['Faibles émissions de CO₂', 'Longévité des équipements', 'Coût de la chaleur compétitif', 'Énergie locale (bois)'],
       coutInstallation: '6 000 à 8 000 €',
-      coutParAnPublicodeKey: 'Chaudière à granulés coll',
+      coutParAnPublicodeKey: 'chaudière à granulés',
       description: (
         <>
           Votre bâtiment pourrait être adapté à l’installation d’une chaudière biomasse.
@@ -316,7 +316,7 @@ export const modesDeChauffage = {
     {
       avantages: ['Aucune émission CO₂', 'Technologie mature', "Coût de la chaleur compétitif une fois l'installation amortie"],
       coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'Solaire thermique',
+      coutParAnPublicodeKey: 'solaire thermique',
       description: (
         <>
           L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir
@@ -358,7 +358,7 @@ export const modesDeChauffage = {
       avantages: ['Très faibles émissions de CO₂', 'Aucune nuisance sonore', 'Solution mature et fiable'],
       coutInstallation: '3 000 à 4 000 €',
       coutParAnPublicodeKey: 'PAC capteurs solaires atmosphériques',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Solaire thermique'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Solaire thermique'" },
       description: (
         <>
           Votre toiture pourrait accueillir des capteurs solaires atmosphériques qui alimentent une pompe à chaleur dédiée à l'eau chaude
@@ -385,7 +385,7 @@ export const modesDeChauffage = {
       avantages: ['Faibles émissions de CO₂', 'Solution compacte et éprouvée', 'Permet de conserver le système de chauffage existant'],
       coutInstallation: '2 000 à 3 000 €',
       coutParAnPublicodeKey: 'PAC air-eau collective ECS',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Avec équipement chauffage'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre bâtiment semble disposer d’un espace extérieur pour accueillir une pompe à chaleur air/eau collective destinée à l’eau
@@ -418,8 +418,8 @@ export const modesDeChauffage = {
         'Solution simple à installer',
       ],
       coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'Chauffe-eau thermodynamique',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Avec équipement chauffage'" },
+      coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à
@@ -550,7 +550,7 @@ export const modesDeChauffage = {
     {
       avantages: ['Aucune émission CO₂', 'Technologie mature', "Coût de la chaleur compétitif une fois l'installation amortie"],
       coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'Solaire thermique',
+      coutParAnPublicodeKey: 'solaire thermique',
       description: (
         <>
           L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir
@@ -592,7 +592,7 @@ export const modesDeChauffage = {
       avantages: ['Très faibles émissions de CO₂', 'Aucune nuisance sonore', 'Solution mature et fiable'],
       coutInstallation: '3 000 à 4 000 €',
       coutParAnPublicodeKey: 'PAC capteurs solaires atmosphériques',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Solaire thermique'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Solaire thermique'" },
       description: (
         <>
           Votre toiture pourrait accueillir des capteurs solaires atmosphériques qui alimentent une pompe à chaleur dédiée à l'eau chaude
@@ -622,8 +622,8 @@ export const modesDeChauffage = {
         'Solution simple à installer',
       ],
       coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'Chauffe-eau thermodynamique',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Avec équipement chauffage'" },
+      coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à
@@ -648,7 +648,7 @@ export const modesDeChauffage = {
       avantages: ['Faibles émissions de CO₂', 'Solution compacte et éprouvée', 'Permet de conserver le système de chauffage existant'],
       coutInstallation: '2 000 à 3 000 €',
       coutParAnPublicodeKey: 'PAC air-eau collective ECS',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Chauffe-eau électrique'" },
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Chauffe-eau électrique'" },
       description: (
         <>
           Votre bâtiment semble disposer d’un espace extérieur pour accueillir une pompe à chaleur air/eau collective destinée à l’eau
@@ -852,7 +852,7 @@ export const modesDeChauffage = {
         'Énergie renouvelable et locale',
       ],
       coutInstallation: '4 000 à 6 000 €',
-      coutParAnPublicodeKey: 'Poêle à granulés indiv',
+      coutParAnPublicodeKey: 'poêle à granulés',
       description: (
         <>
           Votre maison pourrait accueillir un poêle à bûches ou à granulés, en appoint ou en chauffage principal d'une pièce de vie. Cette
@@ -943,7 +943,7 @@ export const modesDeChauffage = {
         'Couvre à la fois chauffage et ECS',
       ],
       coutInstallation: '20 000 à 25 000 €',
-      coutParAnPublicodeKey: 'Système solaire combiné',
+      coutParAnPublicodeKey: 'système solaire combiné',
       description: (
         <>
           L’exposition et la surface de votre toiture pourraient être propices à l’installation d’un système solaire combiné. Les panneaux
@@ -981,8 +981,8 @@ export const modesDeChauffage = {
         'Solution simple à installer',
       ],
       coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'Chauffe-eau thermodynamique',
-      coutParAnPublicodesSituation: { 'type de production ECS': "'Avec équipement chauffage'" },
+      coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à

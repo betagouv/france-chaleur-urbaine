@@ -128,6 +128,14 @@ type IncompatibleSolutionRule = {
   isIncompatible: (situation: Situation) => boolean;
 };
 
+// Passe par un paramètre générique nu : sans ça la conditionnelle ne distribue pas sur l'union et donne never.
+type ExtractModeRoot<Rule> = Rule extends `${infer Root} . bilan . total sans installation` ? Root : never;
+
+/**
+ * Racines des modes publicodes exposant un bilan annuel, dérivées des noms de règles du modèle.
+ */
+export type PublicodesModeKey = ExtractModeRoot<RuleName>;
+
 export type ModeDeChauffage = {
   id: ModeDeChauffageId;
   label: string;
@@ -137,7 +145,7 @@ export type ModeDeChauffage = {
   description: React.ReactNode;
   avantages: string[];
   inconvenients: string[];
-  coutParAnPublicodeKey: string;
+  coutParAnPublicodeKey: PublicodesModeKey;
   coutParAnPublicodesSituation?: Partial<Record<RuleName, string | number>>;
   coutInstallation?: string | ((situation: Situation) => string);
   gainClasse: number;

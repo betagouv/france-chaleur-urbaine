@@ -22,7 +22,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
   const hasTrackedStarted = useRef(false);
   const [networkName, setNetworkName] = useState<string | null>(null);
   const [isEfficientNetwork, setIsEfficientNetwork] = useState(false);
-  const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE')));
+  const [ceeValue, setCeeValue] = useState(() => formatCeeValue(engine.getFieldAsNumber('aides . valeur CEE')));
   const trackStarted = () => {
     if (hasTrackedStarted.current) {
       return;
@@ -40,7 +40,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
   const resetSimulatorContext = () => {
     setNetworkName(null);
     setIsEfficientNetwork(false);
-    setCeeValue(formatCeeValue(engine.getFieldAsNumber('Paramètres économiques . Aides . Valeur CEE')));
+    setCeeValue(formatCeeValue(engine.getFieldAsNumber('aides . valeur CEE')));
   };
   const { addressErrorMessage, formState, handleAddressChange, handleTypeBatimentChange, resetFormState, updateFormState } =
     useSimulatorFormState({
@@ -85,8 +85,7 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
   const publicodeSituation = useMemo(
     () => ({
       ...buildPublicodeSituation(formState),
-      'Paramètres économiques . Aides . Valeur CEE':
-        ceeValue.replace(',', '.').trim() === '' ? null : Number(ceeValue.replace(',', '.').trim()) / 1000,
+      'aides . valeur CEE': ceeValue.replace(',', '.').trim() === '' ? null : Number(ceeValue.replace(',', '.').trim()) / 1000,
     }),
     [ceeValue, formState]
   );
@@ -99,8 +98,8 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
     ((formState.selectedAddress !== null && (formState.typeBatiment === 'résidentiel' ? formState.nbLogements : formState.surface)) || 0) >
     0;
 
-  const helpCumac = hasAmountInputs ? engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total') : 0;
-  const helpAmount = hasAmountInputs ? engine.getFieldAsNumber('Calcul Eco . Montant des aides . Réseaux de chaleur . Total montant') : 0;
+  const helpCumac = hasAmountInputs ? engine.getFieldAsNumber('réseau de chaleur . aides cumac . total') : 0;
+  const helpAmount = hasAmountInputs ? engine.getFieldAsNumber('réseau de chaleur . aides cumac . total montant') : 0;
   const networkInformation = networkName
     ? `Le réseau de chaleur "${networkName}" est situé à proximité de votre adresse.${
         isEfficientNetwork
@@ -116,15 +115,15 @@ function Simulator({ children, withTitle }: { children?: ReactNode; withTitle?: 
     (helpCumac > 0 && isEfficientNetwork) || addressErrorMessage
       ? {
           label: 'Coup de pouce "Chauffage des bâtiments résidentiels collectifs et tertiaires"',
-          noteUrl: getRuleNoteUrl('Calcul Eco . Montant des aides . Réseaux de chaleur . Coup de pouce'),
+          noteUrl: getRuleNoteUrl('réseau de chaleur . aides cumac . coup de pouce'),
         }
       : helpCumac > 0
         ? {
             label: formState.typeBatiment === 'résidentiel' ? 'BAR-TH-137' : 'BAT-TH-127',
             noteUrl: getRuleNoteUrl(
               formState.typeBatiment === 'résidentiel'
-                ? 'Calcul Eco . Montant des aides . Réseaux de chaleur . BAR-TH-137'
-                : 'Calcul Eco . Montant des aides . Réseaux de chaleur . BAT-TH-127'
+                ? 'réseau de chaleur . aides cumac . BAR-TH-137'
+                : 'réseau de chaleur . aides cumac . BAT-TH-127'
             ),
           }
         : null;

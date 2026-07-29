@@ -248,10 +248,10 @@ const Graph: React.FC<GraphProps> = ({
 
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts-emissions' });
   const [perBuilding, setPerBuilding] = useQueryState('perBuilding', parseAsBoolean.withDefault(false));
-  const inclusClimatisation = engine.getField('Inclure la climatisation');
-  const inclusECS = engine.getField('Production eau chaude sanitaire');
-  const typeDeProductionDeFroid = engine.getField('type de production de froid');
-  const typeDeBatiment = engine.getField('type de bâtiment');
+  const inclusClimatisation = engine.getField('climatisation . incluse');
+  const inclusECS = engine.getField('ecs . production');
+  const typeDeProductionDeFroid = engine.getField('climatisation . type de production');
+  const typeDeBatiment = engine.getField('bâtiment . type');
 
   const getLabel = (typeInstallation: (typeof modesDeChauffage)[number], type: 'price' | 'co2' | 'both') => {
     let suffix = '';
@@ -301,15 +301,15 @@ const Graph: React.FC<GraphProps> = ({
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
     ...modesDeChauffageFiltres.flatMap((typeInstallation, index) => {
-      const amountP1Abo = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1abo`);
-      const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
-      const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
-      const amountP1prime = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1prime`);
-      const amountP1Consofroid = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1Consofroid`);
-      const amountP2 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P2`);
-      const amountP3 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P3`);
-      const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
-      const amountAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`);
+      const amountP1Abo = engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . bilan . P1abo`);
+      const amountP1Conso = engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . bilan . P1conso`);
+      const amountP1ECS = engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . bilan . P1ECS`);
+      const amountP1prime = engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . bilan . P1prime`);
+      const amountP1Consofroid = engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . bilan . P1Consofroid`);
+      const amountP2 = engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . bilan . P2`);
+      const amountP3 = engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . bilan . P3`);
+      const amountP4SansAides = engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . bilan . P4 moins aides`);
+      const amountAides = engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . bilan . aides`);
 
       const valueFormatter = advancedMode ? formatCostPrecisionRange : () => '';
 
@@ -430,7 +430,7 @@ const Graph: React.FC<GraphProps> = ({
     },
   });
 
-  const nbAppartements = perBuilding ? engine.getFieldAsNumber(`nombre de logements dans l'immeuble concerné`) : 1;
+  const nbAppartements = perBuilding ? engine.getFieldAsNumber(`bâtiment . nombre de logements`) : 1;
 
   let maxEmissionsCO2Value = 5000 * nbAppartements;
 
@@ -440,20 +440,20 @@ const Graph: React.FC<GraphProps> = ({
     ...modesDeChauffageFiltres.flatMap((typeInstallation, index) => {
       const amounts = [
         ...getRow({
-          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`) * nbAppartements,
+          amount: engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . environnement . scope 1`) * nbAppartements,
           color: colorScope1,
           title:
             "Émissions liées aux combustibles utilisés pour la production d'énergie, et réalisées directement sur le lieu de la consommation (scope 1)",
           valueFormatter: formatEmissionsCO2,
         }),
         ...getRow({
-          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`) * nbAppartements,
+          amount: engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . environnement . scope 2`) * nbAppartements,
           color: colorScope2,
           title: "Émissions liées à l'utilisation d'énergie non produite sur le site de consommation (scope 2)",
           valueFormatter: formatEmissionsCO2,
         }),
         ...getRow({
-          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`) * nbAppartements,
+          amount: engine.getFieldAsNumber(`${typeInstallation.publicodesKey} . environnement . scope 3`) * nbAppartements,
           color: colorScope3,
           title: "Émissions liées à la fabrication des équipements, et non directement à la production d'énergie (scope 3)",
           valueFormatter: formatEmissionsCO2,

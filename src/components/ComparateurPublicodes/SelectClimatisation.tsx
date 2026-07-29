@@ -7,12 +7,12 @@ export type SelectClimatisation = Omit<React.ComponentProps<typeof Select>, 'lab
 
 const SelectClimatisation = ({ ...props }: SelectClimatisation) => {
   const { engine } = usePublicodesFormContext();
-  const inclureLaClimatisation = engine.getField('Inclure la climatisation');
-  const typeDeProductionDeFroid = engine.getField('type de production de froid');
+  const inclureLaClimatisation = engine.getField('climatisation . incluse');
+  const typeDeProductionDeFroid = engine.getField('climatisation . type de production');
 
   return (
     <Select
-      label="Inclure la climatisation"
+      label="climatisation . incluse"
       options={[
         {
           label: 'Non',
@@ -31,13 +31,13 @@ const SelectClimatisation = ({ ...props }: SelectClimatisation) => {
         onChange: (e) => {
           const newValue = e.target.value;
           if (newValue === 'non') {
-            engine.resetField('Inclure la climatisation');
-            engine.resetField('type de production de froid');
+            engine.resetField('climatisation . incluse');
+            engine.resetField('climatisation . type de production');
             return;
           }
 
-          engine.setField('Inclure la climatisation', 'oui');
-          engine.setStringField('type de production de froid', newValue === 'groupe-froid' ? 'Groupe froid' : 'Réseau de froid');
+          engine.setField('climatisation . incluse', 'oui');
+          engine.setStringField('climatisation . type de production', newValue === 'groupe-froid' ? 'Groupe froid' : 'Réseau de froid');
         },
         value: !inclureLaClimatisation ? 'non' : typeDeProductionDeFroid === 'Groupe froid' ? 'groupe-froid' : 'reseau-de-froid',
       }}

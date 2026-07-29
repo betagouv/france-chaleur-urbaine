@@ -10,6 +10,7 @@
 /test-results
 /playwright-report
 /playwright/.auth
+/.playwright-mcp/
 
 # next.js
 /.next/
@@ -108,3 +109,6 @@ scripts/simulateur/codes-insee.json
 
 # Version check cache
 .ai/.version-check
+
+# Publicodes branch fetched at Scalingo build time (scripts/fetch-publicodes-branch.sh)
+/france-chaleur-urbaine-publicodes

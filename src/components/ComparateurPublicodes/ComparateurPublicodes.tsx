@@ -70,7 +70,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const [addressError, setAddressError] = React.useState<boolean>(false);
   const [addressLoading, setAddressLoading] = React.useState<boolean>(false);
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
-  const inclureLaClimatisation = engine.getField('Inclure la climatisation');
+  const inclureLaClimatisation = engine.getField('climatisation . incluse');
   const trpcUtils = trpc.useUtils();
   const recordConversionEvent = useRecordConversionEvent();
   const [selectedTabId, setSelectedTabId] = useQueryState(
@@ -82,7 +82,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   // when loading a saved configuration with a different address
   const [addressResetKey, setAddressResetKey] = useState(0);
 
-  const isAddressSelected = engine.getField('code département') !== undefined;
+  const isAddressSelected = engine.getField('climat . code département') !== undefined;
 
   const handleAddressSelect = async (selectedAddress: BANAddressFeature, trackAnalytics = true) => {
     try {
@@ -194,9 +194,9 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const displayGraph = isAddressSelected && (!advancedMode || (advancedMode && !!modesDeChauffageQueryParam));
 
   React.useEffect(() => {
-    engine.setField('Inclure la climatisation', 'non');
-    engine.setField('Production eau chaude sanitaire', 'oui');
-    engine.setStringField('type de production ECS', 'Avec équipement chauffage');
+    engine.setField('climatisation . incluse', 'non');
+    engine.setField('ecs . production', 'oui');
+    engine.setStringField('ecs . type de production', 'Avec équipement chauffage');
   }, [advancedMode]);
 
   const { open: displayContactForm, EligibilityFormModal } = useEligibilityForm({
@@ -406,62 +406,62 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                     columns: [
                       {
                         accessorKey: 'installation',
-                        name: `Installation (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P1abo`)})`,
+                        name: `Installation (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . P1abo`)})`,
                       },
                       {
                         accessorKey: 'p1Abo',
-                        name: `P1 abo (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P1conso`)})`,
+                        name: `P1 abo (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . P1conso`)})`,
                       },
                       {
                         accessorKey: 'p1ConsoChaud',
-                        name: `P1 conso chaud (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P1prime`)})`,
+                        name: `P1 conso chaud (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . P1prime`)})`,
                       },
                       {
                         accessorKey: 'p1Prime',
-                        name: `P1' (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P1prime`)})`,
+                        name: `P1' (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . P1prime`)})`,
                       },
                       {
                         accessorKey: 'p1Ecs',
-                        name: `P1 ECS (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P1ECS`)})`,
+                        name: `P1 ECS (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . P1ECS`)})`,
                       },
                       {
                         accessorKey: 'p1ConsoFroid',
-                        name: `P1 conso froid (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P1Consofroid`)})`,
+                        name: `P1 conso froid (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . P1Consofroid`)})`,
                       },
-                      { accessorKey: 'p2', name: `P2 (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P2`)})` },
-                      { accessorKey: 'p3', name: `P3 (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P3`)})` },
-                      { accessorKey: 'p4', name: `P4 (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P4`)})` },
+                      { accessorKey: 'p2', name: `P2 (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . P2`)})` },
+                      { accessorKey: 'p3', name: `P3 (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . P3`)})` },
+                      { accessorKey: 'p4', name: `P4 (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . P4`)})` },
                       {
                         accessorKey: 'p4MoinsAides',
-                        name: `P4 moins aides (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . P4 moins aides`)})`,
+                        name: `P4 moins aides (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . P4 moins aides`)})`,
                       },
                       {
                         accessorKey: 'aides',
-                        name: `Aides (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . aides`)})`,
+                        name: `Aides (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . aides`)})`,
                       },
                       {
                         accessorKey: 'totalSansAides',
-                        name: `Total sans aides (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . total sans aides`)})`,
+                        name: `Total sans aides (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . total sans aides`)})`,
                       },
                       {
                         accessorKey: 'totalAvecAides',
-                        name: `Total avec aides (${engine.getUnit(`Bilan x ${modesDeChauffage[0].coutPublicodeKey} . total avec aides`)})`,
+                        name: `Total avec aides (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . bilan . total avec aides`)})`,
                       },
                     ],
                     data: modesDeChauffage.map((m) => ({
-                      aides: engine.getField(`Bilan x ${m.coutPublicodeKey} . aides`),
+                      aides: engine.getField(`${m.publicodesKey} . bilan . aides`),
                       installation: m.label,
-                      p1Abo: engine.getField(`Bilan x ${m.coutPublicodeKey} . P1abo`),
-                      p1ConsoChaud: engine.getField(`Bilan x ${m.coutPublicodeKey} . P1conso`),
-                      p1ConsoFroid: engine.getField(`Bilan x ${m.coutPublicodeKey} . P1Consofroid`),
-                      p1Ecs: engine.getField(`Bilan x ${m.coutPublicodeKey} . P1ECS`),
-                      p1Prime: engine.getField(`Bilan x ${m.coutPublicodeKey} . P1prime`),
-                      p2: engine.getField(`Bilan x ${m.coutPublicodeKey} . P2`),
-                      p3: engine.getField(`Bilan x ${m.coutPublicodeKey} . P3`),
-                      p4: engine.getField(`Bilan x ${m.coutPublicodeKey} . P4`),
-                      p4MoinsAides: engine.getField(`Bilan x ${m.coutPublicodeKey} . P4 moins aides`),
-                      totalAvecAides: engine.getField(`Bilan x ${m.coutPublicodeKey} . total avec aides`),
-                      totalSansAides: engine.getField(`Bilan x ${m.coutPublicodeKey} . total sans aides`),
+                      p1Abo: engine.getField(`${m.publicodesKey} . bilan . P1abo`),
+                      p1ConsoChaud: engine.getField(`${m.publicodesKey} . bilan . P1conso`),
+                      p1ConsoFroid: engine.getField(`${m.publicodesKey} . bilan . P1Consofroid`),
+                      p1Ecs: engine.getField(`${m.publicodesKey} . bilan . P1ECS`),
+                      p1Prime: engine.getField(`${m.publicodesKey} . bilan . P1prime`),
+                      p2: engine.getField(`${m.publicodesKey} . bilan . P2`),
+                      p3: engine.getField(`${m.publicodesKey} . bilan . P3`),
+                      p4: engine.getField(`${m.publicodesKey} . bilan . P4`),
+                      p4MoinsAides: engine.getField(`${m.publicodesKey} . bilan . P4 moins aides`),
+                      totalAvecAides: engine.getField(`${m.publicodesKey} . bilan . total avec aides`),
+                      totalSansAides: engine.getField(`${m.publicodesKey} . bilan . total sans aides`),
                     })),
                     name: 'Coûts par logement - tertiaire',
                   },
@@ -469,7 +469,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                     columns: [
                       {
                         accessorKey: 'installation',
-                        name: `Installation (${engine.getUnit(`Installation x ${modesDeChauffage[0].emissionsCO2PublicodesKey} . besoin d'installation supplémentaire pour produire l'ECS`)})`,
+                        name: `Installation (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . installation . ECS additionnelle nécessaire`)})`,
                       },
                       {
                         accessorKey: 'besoinInstallation',
@@ -477,49 +477,43 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                       },
                       {
                         accessorKey: 'scope1',
-                        name: `Scope 1 - Besoin de chauffage et ECS si même équipement (kgCO2 équ.) (${engine.getUnit(`env . Installation x ${modesDeChauffage[0].emissionsCO2PublicodesKey} . besoins de chauffage et ECS si même équipement`)})`,
+                        name: `Scope 1 - Besoin de chauffage et ECS si même équipement (kgCO2 équ.) (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . environnement . besoins de chauffage et ECS si même équipement`)})`,
                       },
                       {
                         accessorKey: 'scope2Auxiliaires',
-                        name: `Scope 2 - Auxiliaires et combustible électrique (kgCO2 équ.) (${engine.getUnit(`env . Installation x ${modesDeChauffage[0].emissionsCO2PublicodesKey} . auxiliaires et combustible électrique`)})`,
+                        name: `Scope 2 - Auxiliaires et combustible électrique (kgCO2 équ.) (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . environnement . auxiliaires et combustible électrique`)})`,
                       },
                       {
                         accessorKey: 'scope2EcsSolaire',
-                        name: `Scope 2 - Ecs solaire thermique (${engine.getUnit(`env . Installation x ${modesDeChauffage[0].emissionsCO2PublicodesKey} . ECS solaire thermique`)})`,
+                        name: `Scope 2 - Ecs solaire thermique (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . environnement . ECS solaire thermique`)})`,
                       },
                       {
                         accessorKey: 'scope2EcsBallon',
-                        name: `Scope 2 - Eau chaude sanitaire avec ballon électrique (${engine.getUnit(`env . Installation x ${modesDeChauffage[0].emissionsCO2PublicodesKey} . ECS avec ballon électrique`)})`,
+                        name: `Scope 2 - Eau chaude sanitaire avec ballon électrique (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . environnement . ECS avec ballon électrique`)})`,
                       },
                       {
                         accessorKey: 'scope2Total',
-                        name: `Scope 2 - Total (${engine.getUnit(`env . Installation x ${modesDeChauffage[0].emissionsCO2PublicodesKey} . Scope 2`)})`,
+                        name: `Scope 2 - Total (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . environnement . scope 2`)})`,
                       },
                       {
                         accessorKey: 'scope3',
-                        name: `Scope 3 (${engine.getUnit(`env . Installation x ${modesDeChauffage[0].emissionsCO2PublicodesKey} . Scope 3`)})`,
+                        name: `Scope 3 (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . environnement . scope 3`)})`,
                       },
                       {
                         accessorKey: 'total',
-                        name: `Total des émissions (${engine.getUnit(`env . Installation x ${modesDeChauffage[0].emissionsCO2PublicodesKey} . Total`)})`,
+                        name: `Total des émissions (${engine.getUnit(`${modesDeChauffage[0].publicodesKey} . environnement . total`)})`,
                       },
                     ],
                     data: modesDeChauffage.map((m) => ({
-                      besoinInstallation: engine.getField(
-                        `Installation x ${m.emissionsCO2PublicodesKey} . besoin d'installation supplémentaire pour produire l'ECS`
-                      ),
+                      besoinInstallation: engine.getField(`${m.publicodesKey} . installation . ECS additionnelle nécessaire`),
                       installation: m.label,
-                      scope1: engine.getField(
-                        `env . Installation x ${m.emissionsCO2PublicodesKey} . besoins de chauffage et ECS si même équipement`
-                      ),
-                      scope2Auxiliaires: engine.getField(
-                        `env . Installation x ${m.emissionsCO2PublicodesKey} . auxiliaires et combustible électrique`
-                      ),
-                      scope2EcsBallon: engine.getField(`env . Installation x ${m.emissionsCO2PublicodesKey} . ECS avec ballon électrique`),
-                      scope2EcsSolaire: engine.getField(`env . Installation x ${m.emissionsCO2PublicodesKey} . ECS solaire thermique`),
-                      scope2Total: engine.getField(`env . Installation x ${m.emissionsCO2PublicodesKey} . Scope 2`),
-                      scope3: engine.getField(`env . Installation x ${m.emissionsCO2PublicodesKey} . Scope 3`),
-                      total: engine.getField(`env . Installation x ${m.emissionsCO2PublicodesKey} . Total`),
+                      scope1: engine.getField(`${m.publicodesKey} . environnement . scope 1`),
+                      scope2Auxiliaires: engine.getField(`${m.publicodesKey} . environnement . auxiliaires et combustible électrique`),
+                      scope2EcsBallon: engine.getField(`${m.publicodesKey} . environnement . ECS avec ballon électrique`),
+                      scope2EcsSolaire: engine.getField(`${m.publicodesKey} . environnement . ECS solaire thermique`),
+                      scope2Total: engine.getField(`${m.publicodesKey} . environnement . scope 2`),
+                      scope3: engine.getField(`${m.publicodesKey} . environnement . scope 3`),
+                      total: engine.getField(`${m.publicodesKey} . environnement . total`),
                     })),
                     name: 'Emissions de CO2',
                   },
