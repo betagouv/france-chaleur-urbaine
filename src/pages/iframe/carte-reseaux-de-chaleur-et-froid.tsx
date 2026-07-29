@@ -1,10 +1,13 @@
 import SEO from '@/components/SEO';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { FcuLogo } from '@/modules/map/client/controls/FcuLogo';
 import { IframeLegend } from '@/modules/map/client/legend/IframeLegend';
 import { Map } from '@/modules/map/client/Map';
 
 const CeremaMap = () => {
+  useTrackPageView();
+
   return (
     <>
       <SEO

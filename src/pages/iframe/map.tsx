@@ -17,6 +17,7 @@
 import { createParser, parseAsArrayOf, parseAsStringLiteral, useQueryStates } from 'nuqs';
 
 import useRouterReady from '@/hooks/useRouterReady';
+import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { FcuLogo } from '@/modules/map/client/controls/FcuLogo';
 import {
@@ -77,6 +78,8 @@ const MapPage = () => {
     mapIframeParams,
     { urlKeys: carteIframeUrlKeys }
   );
+
+  useTrackPageView();
 
   // `<Map config>` is mount-only — wait for the router so it mounts with the final params.
   const isRouterReady = useRouterReady();

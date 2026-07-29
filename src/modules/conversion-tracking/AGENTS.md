@@ -46,7 +46,10 @@ conversion-tracking/
   `useRecordConversionEvent` → `getStats` lit la seule table `conversion_events`. Les colonnes
   `demands.origin_source` / `origin_page` / `origin_host` sont **du bonus** (posées via `getDemandOrigin()`
   dans les payloads de création), pas la source du funnel.
-- **Câblage** : `display` via `useTrackPageView()` (sans argument) sur `/iframe/carte`, `/iframe/form` et
+- **Câblage** : `display` via `useTrackPageView()` (sans argument) sur `/iframe/carte`, `/iframe/form`,
+  les iframes carte historiques figées (`/iframe/map`, `/iframe/engie`, `/iframe/dalkia`, `/iframe/idex`,
+  `/iframe/viaseva`, `/iframe/charleville-mezieres`, `/iframe/carte-collectivite`,
+  `/iframe/carte-reseaux-de-chaleur-et-froid` — sans `?source=`, attribuées par route) et
   toutes les pages internes portant un test d'adresse ; `address_test` / `demand` depuis le hub
   `useContactFormFCU`, plus `ComparateurPublicodes` et `EligibilityTestBox` en direct. La preview admin est
   exclue par le guard `/admin` (`isTrackablePage`, dans le hook).
