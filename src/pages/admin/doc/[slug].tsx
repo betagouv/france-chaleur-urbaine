@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Link from '@/components/ui/Link';
 import { DocArticle } from '@/modules/doc/client/DocArticle';
+import { useDocScrollRestoration } from '@/modules/doc/client/useDocScrollRestoration';
 import { docPages, docThemes } from '@/modules/doc/doc.config';
 import { withAuthentication } from '@/server/authentication';
 import cx from '@/utils/cx';
@@ -12,6 +13,7 @@ import cx from '@/utils/cx';
  */
 export default function AdminDocPage() {
   const router = useRouter();
+  useDocScrollRestoration();
   const currentDoc = docPages.find((docPage) => docPage.slug === router.query.slug);
   if (!currentDoc) {
     return null; // unknown slugs are redirected server-side

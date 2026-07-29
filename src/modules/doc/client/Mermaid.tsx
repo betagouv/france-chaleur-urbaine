@@ -5,6 +5,45 @@ type MermaidProps = {
   chart: string;
 };
 
+// Rendered SVGs are cached (memory + sessionStorage) so an already-seen diagram remounts at
+// its final height synchronously. Without this, diagrams render long after `load` (dynamic
+// import + mermaid.render), the page height keeps growing and the browser abandons its native
+// scroll restoration on back navigation, landing the user at the top of the page.
+const svgMemoryCache = new Map<string, string>();
+
+/**
+ * djb2 string hash (Bernstein — http://www.cse.yorku.ca/~oz/hash.html): `hash = hash * 33 ^ char`
+ * seeded with 5381. Non-cryptographic; only used to derive a compact stable cache key from a
+ * chart's content, where a collision would at worst display a wrong diagram until re-render.
+ */
+const djb2Hash = (input: string): string => {
+  let hash = 5381;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash * 33) ^ input.charCodeAt(i);
+  }
+  // >>> 0 reinterprets as unsigned 32 bits, so the base-36 form is short and has no minus sign
+  return (hash >>> 0).toString(36);
+};
+
+const svgCacheKey = (chart: string, isDark: boolean) => `mermaid-svg:${isDark ? 'dark' : 'neutral'}:${djb2Hash(chart)}`;
+
+const readSvgCache = (key: string): string | undefined => {
+  try {
+    return svgMemoryCache.get(key) ?? window.sessionStorage.getItem(key) ?? undefined;
+  } catch {
+    return svgMemoryCache.get(key);
+  }
+};
+
+const writeSvgCache = (key: string, svg: string) => {
+  svgMemoryCache.set(key, svg);
+  try {
+    window.sessionStorage.setItem(key, svg);
+  } catch {
+    // sessionStorage full or unavailable: the memory cache still covers SPA navigations
+  }
+};
+
 /**
  * Renders a Mermaid diagram client-side, following the DSFR dark mode.
  * The mermaid library is imported lazily so it only loads on documentation pages.
@@ -20,6 +59,12 @@ export function Mermaid({ chart }: MermaidProps) {
 
   // re-render when the chart or the theme changes; mermaid.render() needs a document-unique id
   useEffect(() => {
+    const cacheKey = svgCacheKey(chart, isDark);
+    const cached = readSvgCache(cacheKey);
+    if (cached) {
+      setSvg(cached);
+      return;
+    }
     let isCancelled = false;
     void (async () => {
       try {
@@ -32,6 +77,7 @@ export function Mermaid({ chart }: MermaidProps) {
           theme: isDark ? 'dark' : 'neutral',
         });
         const renderResult = await mermaid.render(`mermaid-${diagramId}`, chart);
+        writeSvgCache(cacheKey, renderResult.svg);
         if (!isCancelled) {
           setSvg(renderResult.svg);
         }
@@ -80,7 +126,7 @@ export function Mermaid({ chart }: MermaidProps) {
   return svg ? (
     <div
       ref={containerRef}
-      className="my-6 overflow-x-auto [&_svg]:max-w-full [&_svg_a]:cursor-pointer [&_svg_a:hover_rect]:[filter:brightness(0.93)] [&_svg_a:hover_.nodeLabel]:underline"
+      className="my-6 overflow-x-auto [&_svg]:max-w-full [&_svg_a]:cursor-pointer [&_svg_a:hover_rect]:filter-[brightness(0.93)] [&_svg_a:hover_.nodeLabel]:underline"
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   ) : (
