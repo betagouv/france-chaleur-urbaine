@@ -119,6 +119,7 @@ export default handleRouteErrors(async (req, res) => {
       formValues.typeDemande === 'ajout tracé réseau en construction' ? formValues.dateMiseEnServicePrevisionnelle : undefined,
     Email: formValues.email,
     Fichiers: [...traceAttachments, ...pdpAttachments] as unknown as FieldSet[string],
+    'ID SNCU': 'identifiantReseau' in formValues ? formValues.identifiantReseau : undefined,
     Localisation: 'localisation' in formValues ? formValues.localisation : undefined,
     "Maître d'ouvrage": 'maitreOuvrage' in formValues ? formValues.maitreOuvrage : undefined,
     Nom: formValues.nom,
@@ -126,7 +127,10 @@ export default handleRouteErrors(async (req, res) => {
     ouvert_aux_raccordements: 'ouvertAuxRaccordements' in formValues ? formValues.ouvertAuxRaccordements : undefined,
     Précisions: getContributionPrecisions(formValues),
     Prénom: formValues.prenom,
+    'Puissance totale prévisionnelle (MW)':
+      formValues.typeDemande === 'ajout tracé réseau en construction' ? formValues.puissanceTotalePrevisionnelleMW : undefined,
     'Référent commercial': 'emailReferentCommercial' in formValues ? formValues.emailReferentCommercial : undefined,
+    'Réseau déclassé': 'reseauDeclasse' in formValues ? formValues.reseauDeclasse === true : undefined,
     'Réseau(x)': 'nomReseau' in formValues ? formValues.nomReseau : undefined,
     Souhait: formValues.typeDemande,
     Utilisateur: formValues.typeUtilisateur === 'Autre' ? formValues.typeUtilisateurAutre : formValues.typeUtilisateur,
@@ -197,24 +201,9 @@ const inspectServerZipFile = async (file: ServerFile, allowedExtensions: string[
 };
 
 const getContributionPrecisions = (formValues: ServerContributionFormData) =>
-  [
-    formValues.typeDemande === 'autre' ? formValues.precisions : undefined,
-    'commentaire' in formValues ? formValues.commentaire : undefined,
-    getSncuPrecision(formValues),
-    'reseauDeclasse' in formValues && formValues.reseauDeclasse === true ? 'Réseau déclaré déclassé par arrêté : oui' : undefined,
-    formValues.typeDemande === 'ajout tracé réseau en construction'
-      ? `Puissance totale prévisionnelle : ${formValues.puissanceTotalePrevisionnelleMW} MW`
-      : undefined,
-  ]
+  [formValues.typeDemande === 'autre' ? formValues.precisions : undefined, 'commentaire' in formValues ? formValues.commentaire : undefined]
     .filter(isNonEmptyString)
     .join('\n');
-
-const getSncuPrecision = (formValues: ServerContributionFormData) => {
-  if (!('identifiantReseau' in formValues)) {
-    return undefined;
-  }
-  return formValues.identifiantReseau ? `Identifiant SNCU : ${formValues.identifiantReseau}` : 'Identifiant SNCU : aucun';
-};
 
 const getServerFileName = (file: ServerFile) => file.originalFilename ?? '';
 

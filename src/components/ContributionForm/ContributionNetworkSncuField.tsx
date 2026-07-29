@@ -17,7 +17,6 @@ type ContributionNetworkSncuFieldProps = {
   onNetworkClear: () => void;
   value?: string;
   onChange?: (value: string) => void;
-  hintText?: React.ReactNode;
   state?: 'error' | 'default';
   stateRelatedMessage?: string;
   className?: string;
@@ -31,7 +30,6 @@ export function ContributionNetworkSncuField({
   onNetworkClear,
   value,
   onChange,
-  hintText,
   state = 'default',
   stateRelatedMessage,
   className,
@@ -85,7 +83,6 @@ export function ContributionNetworkSncuField({
           </>
         )
       }
-      hintText={hintText}
       state={state}
       stateRelatedMessage={stateRelatedMessage}
       disabled={isDisabled}

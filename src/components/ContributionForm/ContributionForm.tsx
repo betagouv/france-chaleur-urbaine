@@ -7,13 +7,14 @@ import Checkbox from '@/components/form/dsfr/Checkbox';
 import CallOut from '@/components/ui/CallOut';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { Form } from '@/modules/form/Form';
-import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
+import { schemaValidation, useAppForm, withFieldGroup } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 import { postFormDataFetchJSON } from '@/utils/network';
 import { formatFileSize } from '@/utils/strings';
 
 import { type ContributionNetworkSearchResult, ContributionNetworkSncuField } from './ContributionNetworkSncuField';
 import {
+  type ContributionFormValues,
   contributionDefaultValues,
   docAllowedExtensions,
   docFichiersValidator,
@@ -36,6 +37,65 @@ const typeDemandeOptions = typesDemande.map((option) => ({
   label: option.label,
   nativeInputProps: { value: option.key },
 }));
+
+const contributionFormRootFields = {
+  commentaire: 'commentaire',
+  dansCadreDemandeADEME: 'dansCadreDemandeADEME',
+  dateMiseEnServicePrevisionnelle: 'dateMiseEnServicePrevisionnelle',
+  email: 'email',
+  emailReferentCommercial: 'emailReferentCommercial',
+  fichiers: 'fichiers',
+  fichiersPDP: 'fichiersPDP',
+  gestionnaire: 'gestionnaire',
+  identifiantReseau: 'identifiantReseau',
+  localisation: 'localisation',
+  maitreOuvrage: 'maitreOuvrage',
+  nom: 'nom',
+  nomReseau: 'nomReseau',
+  ouvertAuxRaccordements: 'ouvertAuxRaccordements',
+  precisions: 'precisions',
+  prenom: 'prenom',
+  puissanceTotalePrevisionnelleMW: 'puissanceTotalePrevisionnelleMW',
+  reseauDeclasse: 'reseauDeclasse',
+  typeDemande: 'typeDemande',
+  typeUtilisateur: 'typeUtilisateur',
+  typeUtilisateurAutre: 'typeUtilisateurAutre',
+} as const;
+
+const typeDemandeStringResetFieldNames = [
+  'commentaire',
+  'dateMiseEnServicePrevisionnelle',
+  'emailReferentCommercial',
+  'gestionnaire',
+  'localisation',
+  'maitreOuvrage',
+  'nomReseau',
+  'precisions',
+] as const;
+const typeDemandeUndefinedResetFieldNames = ['fichiers', 'ouvertAuxRaccordements', 'puissanceTotalePrevisionnelleMW'] as const;
+
+type ContributionUploadConfig = {
+  allowedExtensions: string[];
+  formatsHint: string;
+  fichiersValidator: typeof geoFichiersValidator;
+};
+
+const geoUploadConfig = {
+  allowedExtensions: geoAllowedExtensions,
+  fichiersValidator: geoFichiersValidator,
+  formatsHint: 'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.',
+} satisfies ContributionUploadConfig;
+
+const optionalPdpUploadConfig = {
+  ...geoUploadConfig,
+  fichiersValidator: optionalGeoFichiersValidator,
+} satisfies ContributionUploadConfig;
+
+const docUploadConfig = {
+  allowedExtensions: docAllowedExtensions,
+  fichiersValidator: docFichiersValidator,
+  formatsHint: 'Formats préférentiels : PDF, Word.',
+} satisfies ContributionUploadConfig;
 
 /**
  * Public contribution form: network managers/collectivités submit geo data
@@ -69,8 +129,6 @@ function ContributionForm() {
   const typeUtilisateur = useStore(form.store, (state) => state.values.typeUtilisateur);
   const typeDemande = useStore(form.store, (state) => state.values.typeDemande);
   const dansCadreDemandeADEME = useStore(form.store, (state) => state.values.dansCadreDemandeADEME);
-  const ouvertAuxRaccordements = useStore(form.store, (state) => state.values.ouvertAuxRaccordements);
-  const reseauDeclasse = useStore(form.store, (state) => state.values.reseauDeclasse);
   const isSelectedContributionNetworkClassed = selectedContributionNetwork?.is_classe === true;
 
   const resetClassedNetworkFields = () => {
@@ -87,17 +145,8 @@ function ContributionForm() {
 
   const resetTypeDemandeDependentFields = () => {
     resetSncuIdentificationFields();
-    form.setFieldValue('commentaire', '', { dontUpdateMeta: true });
-    form.setFieldValue('dateMiseEnServicePrevisionnelle', '', { dontUpdateMeta: true });
-    form.setFieldValue('emailReferentCommercial', '', { dontUpdateMeta: true });
-    form.setFieldValue('fichiers', undefined, { dontUpdateMeta: true });
-    form.setFieldValue('gestionnaire', '', { dontUpdateMeta: true });
-    form.setFieldValue('localisation', '', { dontUpdateMeta: true });
-    form.setFieldValue('maitreOuvrage', '', { dontUpdateMeta: true });
-    form.setFieldValue('nomReseau', '', { dontUpdateMeta: true });
-    form.setFieldValue('ouvertAuxRaccordements', undefined, { dontUpdateMeta: true });
-    form.setFieldValue('precisions', '', { dontUpdateMeta: true });
-    form.setFieldValue('puissanceTotalePrevisionnelleMW', undefined, { dontUpdateMeta: true });
+    typeDemandeStringResetFieldNames.forEach((fieldName) => form.setFieldValue(fieldName, '', { dontUpdateMeta: true }));
+    typeDemandeUndefinedResetFieldNames.forEach((fieldName) => form.setFieldValue(fieldName, undefined, { dontUpdateMeta: true }));
   };
 
   const handleContributionNetworkClear = () => {
@@ -127,163 +176,6 @@ function ContributionForm() {
       handleContributionNetworkClear();
     }
   };
-
-  const renderNomReseauField = (label: string) => (
-    <form.AppField name="nomReseau">{(field) => <field.TextField label={label} />}</form.AppField>
-  );
-
-  const renderLocalisationField = () => (
-    <form.AppField name="localisation">{(field) => <field.TextField label="Localisation :" />}</form.AppField>
-  );
-
-  const renderFichiersField = (
-    name: 'fichiers' | 'fichiersPDP',
-    label: string,
-    allowedExtensions: string[],
-    fichiersValidator: typeof geoFichiersValidator,
-    formatsHint: string
-  ) => (
-    <form.AppField name={name} validators={{ onDynamicAsync: fichiersValidator }}>
-      {(field) => (
-        <field.UploadField
-          className="fr-mb-2w"
-          label={label}
-          hint={
-            <>
-              Taille maximale : {formatFileSize(filesLimits.maxFileSize)}. Maximum {filesLimits.maxFiles} fichiers. {formatsHint}
-              <br />
-              Pour téléverser plusieurs fichiers, merci de les sélectionner simultanément et non l'un après l'autre.
-            </>
-          }
-          multiple
-          nativeInputProps={{ accept: allowedExtensions.join(',') }}
-        />
-      )}
-    </form.AppField>
-  );
-
-  const renderSncuIdentificationFields = (shouldPrefillNetworkFields: boolean) => (
-    <>
-      <form.AppField name="identifiantReseau">
-        {(field) => (
-          <field.CustomField
-            Component={ContributionNetworkSncuField}
-            label="Identifiant SNCU du réseau :"
-            hintText="Sélectionnez un identifiant dans la liste de suggestions."
-            nativeInputProps={{
-              disabled: hasNoSncuIdentifier,
-            }}
-            onNetworkClear={handleContributionNetworkClear}
-            onNetworkSelect={(network) => handleContributionNetworkSelect(network, shouldPrefillNetworkFields)}
-            selectedNetwork={selectedContributionNetwork}
-          />
-        )}
-      </form.AppField>
-      <Checkbox
-        label="Le réseau n’a pas d’identifiant SNCU"
-        className="fr-mb-3w"
-        nativeInputProps={{
-          checked: hasNoSncuIdentifier,
-          name: 'hasNoSncuIdentifier',
-          onChange: (event) => handleNoSncuIdentifierChange(event.target.checked),
-        }}
-        small={false}
-      />
-    </>
-  );
-
-  const renderClassedNetworkFields = () => (
-    <>
-      {isSelectedContributionNetworkClassed && (
-        <>
-          <CallOut title="Votre réseau est classé" className="fr-mb-3w">
-            Nous vous invitons à déposer le périmètre de développement prioritaire ci-dessous pour informer les bâtiments concernés de
-            l’obligation d’étude du raccordement.
-          </CallOut>
-          <form.AppField
-            name="reseauDeclasse"
-            listeners={{
-              onChange: ({ value }) => {
-                if (value === true) {
-                  form.setFieldValue('fichiersPDP', undefined, { dontUpdateMeta: true });
-                }
-              },
-            }}
-          >
-            {(field) => (
-              <field.CheckboxField
-                label={
-                  <span>
-                    Le réseau a été déclassé par arrêté (si celui-ci n’est pas dans la{' '}
-                    <Link
-                      href="https://www.ecologie.gouv.fr/politiques-publiques/reseaux-chaleur"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      liste des réseaux déclassés
-                    </Link>{' '}
-                    et/ou que vous n’avez pas encore transmis votre délibération, merci de l’envoyer à l’adresse
-                    Laurent.Cadiou@developpement-durable.gouv.fr)
-                  </span>
-                }
-                small={false}
-                className="fr-mb-3w"
-              />
-            )}
-          </form.AppField>
-        </>
-      )}
-      {isSelectedContributionNetworkClassed &&
-        reseauDeclasse !== true &&
-        renderFichiersField(
-          'fichiersPDP',
-          'Téléverser le périmètre de développement prioritaire :',
-          geoAllowedExtensions,
-          optionalGeoFichiersValidator,
-          'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.'
-        )}
-    </>
-  );
-
-  const renderReseauFields = (withDateMiseEnService: boolean) => (
-    <>
-      {renderSncuIdentificationFields(true)}
-      {renderNomReseauField('Nom du réseau :')}
-      {renderLocalisationField()}
-      <form.AppField name="gestionnaire">{(field) => <field.TextField label="Gestionnaire :" />}</form.AppField>
-      <form.AppField name="maitreOuvrage">{(field) => <field.TextField label="Maître d'ouvrage :" />}</form.AppField>
-      {withDateMiseEnService && (
-        <>
-          <form.AppField name="dateMiseEnServicePrevisionnelle">
-            {(field) => <field.TextField label="Date de mise en service prévisionnelle :" />}
-          </form.AppField>
-          <form.AppField name="puissanceTotalePrevisionnelleMW">
-            {(field) => <field.NumberField label="Puissance totale prévisionnelle (MW) :" nativeInputProps={{ min: 0, step: 'any' }} />}
-          </form.AppField>
-        </>
-      )}
-      <form.AppField name="ouvertAuxRaccordements">
-        {(field) => <field.BooleanRadioField label="Le réseau est-il ouvert aux raccordements ?" />}
-      </form.AppField>
-      <form.AppField name="emailReferentCommercial">
-        {(field) => (
-          <field.TextField
-            label="Référent commercial à qui transmettre les demandes de raccordement"
-            nativeInputProps={{ required: ouvertAuxRaccordements === true }}
-          />
-        )}
-      </form.AppField>
-      <form.AppField name="commentaire">{(field) => <field.TextField label="Commentaire :" />}</form.AppField>
-      {renderClassedNetworkFields()}
-      {renderFichiersField(
-        'fichiers',
-        isSelectedContributionNetworkClassed && reseauDeclasse !== true ? 'Téléverser le tracé du réseau :' : 'Téléverser vos fichiers :',
-        geoAllowedExtensions,
-        geoFichiersValidator,
-        'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.'
-      )}
-    </>
-  );
 
   return formSuccess ? (
     <Alert
@@ -351,39 +243,314 @@ function ContributionForm() {
         {(field) => <field.RadioField label="Vous souhaitez :" options={typeDemandeOptions} />}
       </form.AppField>
 
-      {typeDemande === 'ajout tracé réseau existant' && renderReseauFields(false)}
-      {typeDemande === 'ajout tracé réseau en construction' && renderReseauFields(true)}
+      {typeDemande === 'ajout tracé réseau existant' && (
+        <ContributionNetworkFields
+          form={form}
+          fields={contributionFormRootFields}
+          hasNoSncuIdentifier={hasNoSncuIdentifier}
+          isSelectedContributionNetworkClassed={isSelectedContributionNetworkClassed}
+          onNoSncuIdentifierChange={handleNoSncuIdentifierChange}
+          onNetworkClear={handleContributionNetworkClear}
+          onNetworkSelect={handleContributionNetworkSelect}
+          selectedContributionNetwork={selectedContributionNetwork}
+        />
+      )}
+      {typeDemande === 'ajout tracé réseau en construction' && (
+        <ContributionNetworkFields
+          form={form}
+          fields={contributionFormRootFields}
+          hasNoSncuIdentifier={hasNoSncuIdentifier}
+          isSelectedContributionNetworkClassed={isSelectedContributionNetworkClassed}
+          onNoSncuIdentifierChange={handleNoSncuIdentifierChange}
+          onNetworkClear={handleContributionNetworkClear}
+          onNetworkSelect={handleContributionNetworkSelect}
+          selectedContributionNetwork={selectedContributionNetwork}
+          withConstructionFields
+        />
+      )}
       {typeDemande === 'ajout périmètre développement prioritaire' && (
-        <>
-          {renderSncuIdentificationFields(false)}
-          {renderNomReseauField('Nom du réseau :')}
-          {renderLocalisationField()}
-          {renderFichiersField(
-            'fichiers',
-            'Téléverser vos fichiers :',
-            geoAllowedExtensions,
-            geoFichiersValidator,
-            'Formats préférentiels : GeoJSON, Shapefile (au moins shp + prj), KML, GeoPackage.'
-          )}
-        </>
+        <ContributionPriorityPerimeterFields
+          form={form}
+          fields={contributionFormRootFields}
+          hasNoSncuIdentifier={hasNoSncuIdentifier}
+          onNoSncuIdentifierChange={handleNoSncuIdentifierChange}
+          onNetworkClear={handleContributionNetworkClear}
+          onNetworkSelect={handleContributionNetworkSelect}
+          selectedContributionNetwork={selectedContributionNetwork}
+        />
       )}
-      {typeDemande === 'ajout schéma directeur' && (
-        <>
-          {renderNomReseauField('Nom du réseau ou du territoire concerné :')}
-          {renderFichiersField(
-            'fichiers',
-            'Téléverser vos fichiers :',
-            docAllowedExtensions,
-            docFichiersValidator,
-            'Formats préférentiels : PDF, Word.'
-          )}
-        </>
-      )}
+      {typeDemande === 'ajout schéma directeur' && <ContributionMasterPlanFields form={form} fields={contributionFormRootFields} />}
       {typeDemande === 'autre' && <form.AppField name="precisions">{(field) => <field.TextField label="Précisez :" />}</form.AppField>}
 
       <form.SubmitButton>Envoyer</form.SubmitButton>
     </Form>
   );
 }
+
+type ContributionNetworkSelectHandler = (network: ContributionNetworkSearchResult, shouldPrefillNetworkFields: boolean) => void;
+
+type ContributionSncuIdentificationFieldsProps = {
+  hasNoSncuIdentifier: boolean;
+  onNetworkClear: () => void;
+  onNetworkSelect: ContributionNetworkSelectHandler;
+  onNoSncuIdentifierChange: (checked: boolean) => void;
+  selectedContributionNetwork: ContributionNetworkSearchResult | null;
+  shouldPrefillNetworkFields: boolean;
+};
+
+const ContributionSncuIdentificationFields = withFieldGroup<ContributionFormValues, unknown, ContributionSncuIdentificationFieldsProps>({
+  defaultValues: contributionDefaultValues,
+  // biome-ignore lint: a named PascalCase function is required for the hooks rules.
+  render: function ContributionSncuIdentificationFieldsRender({
+    group,
+    hasNoSncuIdentifier,
+    onNetworkClear,
+    onNetworkSelect,
+    onNoSncuIdentifierChange,
+    selectedContributionNetwork,
+    shouldPrefillNetworkFields,
+  }) {
+    return (
+      <>
+        <group.AppField name="identifiantReseau">
+          {(field) => (
+            <field.CustomField
+              Component={ContributionNetworkSncuField}
+              label="Identifiant SNCU du réseau :"
+              nativeInputProps={{
+                disabled: hasNoSncuIdentifier,
+              }}
+              onNetworkClear={onNetworkClear}
+              onNetworkSelect={(network) => onNetworkSelect(network, shouldPrefillNetworkFields)}
+              selectedNetwork={selectedContributionNetwork}
+            />
+          )}
+        </group.AppField>
+        <Checkbox
+          label="Le réseau n’a pas d’identifiant SNCU"
+          className="fr-mb-3w"
+          nativeInputProps={{
+            checked: hasNoSncuIdentifier,
+            name: 'hasNoSncuIdentifier',
+            onChange: (event) => onNoSncuIdentifierChange(event.target.checked),
+          }}
+          small={false}
+        />
+      </>
+    );
+  },
+});
+
+type ContributionUploadFieldProps = {
+  label: string;
+  name: 'fichiers' | 'fichiersPDP';
+  uploadConfig: ContributionUploadConfig;
+};
+
+const ContributionUploadField = withFieldGroup<ContributionFormValues, unknown, ContributionUploadFieldProps>({
+  defaultValues: contributionDefaultValues,
+  // biome-ignore lint: a named PascalCase function is required for the hooks rules.
+  render: function ContributionUploadFieldRender({ group, label, name, uploadConfig }) {
+    return (
+      <group.AppField name={name} validators={{ onDynamicAsync: uploadConfig.fichiersValidator }}>
+        {(field) => (
+          <field.UploadField
+            className="fr-mb-2w"
+            label={label}
+            hint={
+              <>
+                Taille maximale : {formatFileSize(filesLimits.maxFileSize)}. Maximum {filesLimits.maxFiles} fichiers.{' '}
+                {uploadConfig.formatsHint}
+                <br />
+                Pour téléverser plusieurs fichiers, merci de les sélectionner simultanément et non l'un après l'autre.
+              </>
+            }
+            multiple
+            nativeInputProps={{ accept: uploadConfig.allowedExtensions.join(',') }}
+          />
+        )}
+      </group.AppField>
+    );
+  },
+});
+
+type ContributionNetworkFieldsProps = Omit<ContributionSncuIdentificationFieldsProps, 'shouldPrefillNetworkFields'> & {
+  isSelectedContributionNetworkClassed: boolean;
+  withConstructionFields?: boolean;
+};
+
+const ContributionNetworkFields = withFieldGroup<ContributionFormValues, unknown, ContributionNetworkFieldsProps>({
+  defaultValues: contributionDefaultValues,
+  // biome-ignore lint: a named PascalCase function is required for the hooks rules.
+  render: function ContributionNetworkFieldsRender({
+    group,
+    hasNoSncuIdentifier,
+    isSelectedContributionNetworkClassed,
+    onNetworkClear,
+    onNetworkSelect,
+    onNoSncuIdentifierChange,
+    selectedContributionNetwork,
+    withConstructionFields = false,
+  }) {
+    const ouvertAuxRaccordements = useStore(group.store, (state) => state.values.ouvertAuxRaccordements);
+    const reseauDeclasse = useStore(group.store, (state) => state.values.reseauDeclasse);
+    const traceUploadLabel =
+      isSelectedContributionNetworkClassed && reseauDeclasse !== true ? 'Téléverser le tracé du réseau :' : 'Téléverser vos fichiers :';
+
+    return (
+      <>
+        <ContributionSncuIdentificationFields
+          form={group}
+          fields={contributionFormRootFields}
+          hasNoSncuIdentifier={hasNoSncuIdentifier}
+          onNetworkClear={onNetworkClear}
+          onNetworkSelect={onNetworkSelect}
+          onNoSncuIdentifierChange={onNoSncuIdentifierChange}
+          selectedContributionNetwork={selectedContributionNetwork}
+          shouldPrefillNetworkFields
+        />
+        <group.AppField name="nomReseau">{(field) => <field.TextField label="Nom du réseau :" />}</group.AppField>
+        <group.AppField name="localisation">{(field) => <field.TextField label="Localisation :" />}</group.AppField>
+        <group.AppField name="gestionnaire">{(field) => <field.TextField label="Gestionnaire :" />}</group.AppField>
+        <group.AppField name="maitreOuvrage">{(field) => <field.TextField label="Maître d'ouvrage :" />}</group.AppField>
+        {withConstructionFields && (
+          <>
+            <group.AppField name="dateMiseEnServicePrevisionnelle">
+              {(field) => <field.TextField label="Date de mise en service prévisionnelle :" />}
+            </group.AppField>
+            <group.AppField name="puissanceTotalePrevisionnelleMW">
+              {(field) => <field.NumberField label="Puissance totale prévisionnelle (MW) :" nativeInputProps={{ min: 0, step: 'any' }} />}
+            </group.AppField>
+          </>
+        )}
+        <group.AppField name="ouvertAuxRaccordements">
+          {(field) => <field.BooleanRadioField label="Le réseau est-il ouvert aux raccordements ?" />}
+        </group.AppField>
+        <group.AppField name="emailReferentCommercial">
+          {(field) => (
+            <field.TextField
+              label="Référent commercial à qui transmettre les demandes de raccordement"
+              nativeInputProps={{ required: ouvertAuxRaccordements === true }}
+            />
+          )}
+        </group.AppField>
+        <group.AppField name="commentaire">{(field) => <field.TextField label="Commentaire :" />}</group.AppField>
+        {isSelectedContributionNetworkClassed && (
+          <>
+            <CallOut title="Votre réseau est classé" className="fr-mb-3w">
+              Nous vous invitons à déposer le périmètre de développement prioritaire ci-dessous pour informer les bâtiments concernés de
+              l’obligation d’étude du raccordement.
+            </CallOut>
+            <group.AppField
+              name="reseauDeclasse"
+              listeners={{
+                onChange: ({ value }) => {
+                  if (value === true) {
+                    group.setFieldValue('fichiersPDP', undefined, { dontUpdateMeta: true });
+                  }
+                },
+              }}
+            >
+              {(field) => (
+                <field.CheckboxField
+                  label={
+                    <span>
+                      Le réseau a été déclassé par arrêté (si celui-ci n’est pas dans la{' '}
+                      <Link
+                        href="https://www.ecologie.gouv.fr/politiques-publiques/reseaux-chaleur"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        liste des réseaux déclassés
+                      </Link>{' '}
+                      et/ou que vous n’avez pas encore transmis votre délibération, merci de l’envoyer à l’adresse
+                      Laurent.Cadiou@developpement-durable.gouv.fr)
+                    </span>
+                  }
+                  small={false}
+                  className="fr-mb-3w"
+                />
+              )}
+            </group.AppField>
+          </>
+        )}
+        {isSelectedContributionNetworkClassed && reseauDeclasse !== true && (
+          <ContributionUploadField
+            form={group}
+            fields={contributionFormRootFields}
+            name="fichiersPDP"
+            label="Téléverser le périmètre de développement prioritaire :"
+            uploadConfig={optionalPdpUploadConfig}
+          />
+        )}
+        <ContributionUploadField
+          form={group}
+          fields={contributionFormRootFields}
+          name="fichiers"
+          label={traceUploadLabel}
+          uploadConfig={geoUploadConfig}
+        />
+      </>
+    );
+  },
+});
+
+type ContributionPriorityPerimeterFieldsProps = Omit<ContributionSncuIdentificationFieldsProps, 'shouldPrefillNetworkFields'>;
+
+const ContributionPriorityPerimeterFields = withFieldGroup<ContributionFormValues, unknown, ContributionPriorityPerimeterFieldsProps>({
+  defaultValues: contributionDefaultValues,
+  // biome-ignore lint: a named PascalCase function is required for the hooks rules.
+  render: function ContributionPriorityPerimeterFieldsRender({
+    group,
+    hasNoSncuIdentifier,
+    onNetworkClear,
+    onNetworkSelect,
+    onNoSncuIdentifierChange,
+    selectedContributionNetwork,
+  }) {
+    return (
+      <>
+        <ContributionSncuIdentificationFields
+          form={group}
+          fields={contributionFormRootFields}
+          hasNoSncuIdentifier={hasNoSncuIdentifier}
+          onNetworkClear={onNetworkClear}
+          onNetworkSelect={onNetworkSelect}
+          onNoSncuIdentifierChange={onNoSncuIdentifierChange}
+          selectedContributionNetwork={selectedContributionNetwork}
+          shouldPrefillNetworkFields={false}
+        />
+        <group.AppField name="nomReseau">{(field) => <field.TextField label="Nom du réseau :" />}</group.AppField>
+        <group.AppField name="localisation">{(field) => <field.TextField label="Localisation :" />}</group.AppField>
+        <ContributionUploadField
+          form={group}
+          fields={contributionFormRootFields}
+          name="fichiers"
+          label="Téléverser vos fichiers :"
+          uploadConfig={geoUploadConfig}
+        />
+      </>
+    );
+  },
+});
+
+const ContributionMasterPlanFields = withFieldGroup<ContributionFormValues, unknown, Record<never, never>>({
+  defaultValues: contributionDefaultValues,
+  // biome-ignore lint: a named PascalCase function is required for the hooks rules.
+  render: function ContributionMasterPlanFieldsRender({ group }) {
+    return (
+      <>
+        <group.AppField name="nomReseau">{(field) => <field.TextField label="Nom du réseau ou du territoire concerné :" />}</group.AppField>
+        <ContributionUploadField
+          form={group}
+          fields={contributionFormRootFields}
+          name="fichiers"
+          label="Téléverser vos fichiers :"
+          uploadConfig={docUploadConfig}
+        />
+      </>
+    );
+  },
+});
 
 export default ContributionForm;
