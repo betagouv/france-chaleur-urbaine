@@ -72,19 +72,6 @@ const createServerFilesSchema = (allowedExtensions: string[], options: { require
   return options.required === false ? schema.optional() : schema;
 };
 
-const parseMultipartNumber = (value: unknown) => {
-  if (typeof value !== 'string') {
-    return value;
-  }
-  const trimmedValue = value.trim();
-  return trimmedValue === '' ? undefined : Number(trimmedValue.replace(',', '.'));
-};
-
-const positiveMultipartNumberSchema = z.preprocess(
-  parseMultipartNumber,
-  z.number({ error: 'Ce champ est obligatoire' }).positive('La puissance doit être supérieure à 0')
-);
-
 type ContributionFormBranch = (typeof zContributionFormDataBase.options)[number];
 
 const zServerContributionFormData = z
@@ -155,7 +142,7 @@ function createServerContributionBranch(schema: ContributionFormBranch) {
       return schema.extend({
         fichiers: createServerFilesSchema(geoAllowedExtensions),
         fichiersPDP: createServerFilesSchema(geoAllowedExtensions, { required: false }),
-        puissanceTotalePrevisionnelleMW: positiveMultipartNumberSchema,
+        puissanceTotalePrevisionnelleMW: z.string().nullable(),
       });
     case 'ajout périmètre développement prioritaire':
       return schema.extend({
