@@ -45,12 +45,6 @@ export const typesDemande = [
 
 export type TypeDemande = (typeof typesDemande)[number]['key'];
 
-const typesDemandeWithSncuIdentification = [
-  'ajout tracé réseau existant',
-  'ajout tracé réseau en construction',
-  'ajout périmètre développement prioritaire',
-] as const satisfies readonly TypeDemande[];
-
 export const filesLimits = {
   maxFileSize: 50 * 1024 * 1024,
   maxFiles: 10,
@@ -177,7 +171,6 @@ const positiveNumberSchema = z.number({ error: 'Ce champ est obligatoire' }).pos
 
 const sncuIdentificationFieldsShape = {
   identifiantReseau: z.string().optional(),
-  reseauSansIdentifiantSNCU: z.boolean().optional(),
 };
 
 export const zCommonFormData = z.object({
@@ -203,21 +196,6 @@ export const isEmailReferentCommercialValid = (data: {
 export const emailReferentCommercialRefineParams = {
   message: 'Le référent commercial est obligatoire si le réseau est ouvert aux raccordements',
   path: ['emailReferentCommercial'],
-  when: () => true,
-};
-
-const isSncuIdentificationRequired = (typeDemande?: string) =>
-  typesDemandeWithSncuIdentification.some((sncuTypeDemande) => sncuTypeDemande === typeDemande);
-
-export const isSncuIdentificationValid = (data: {
-  identifiantReseau?: string;
-  reseauSansIdentifiantSNCU?: boolean;
-  typeDemande?: string;
-}) => !isSncuIdentificationRequired(data.typeDemande) || !!data.identifiantReseau || data.reseauSansIdentifiantSNCU === true;
-
-export const sncuIdentificationRefineParams = {
-  message: "Sélectionnez un identifiant SNCU ou cochez l'absence d'identifiant SNCU",
-  path: ['identifiantReseau'],
   when: () => true,
 };
 
@@ -274,8 +252,7 @@ export const zContributionFormDataBase = z.discriminatedUnion(
 
 export const zContributionFormData = zContributionFormDataBase
   .refine(isEmailReferentCommercialValid, emailReferentCommercialRefineParams)
-  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams)
-  .refine(isSncuIdentificationValid, sncuIdentificationRefineParams);
+  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams);
 
 export type ContributionFormValues = Omit<z.input<typeof zCommonFormData>, 'dansCadreDemandeADEME' | 'typeUtilisateur'> & {
   dansCadreDemandeADEME?: boolean;
@@ -295,7 +272,6 @@ export type ContributionFormValues = Omit<z.input<typeof zCommonFormData>, 'dans
   precisions?: string;
   puissanceTotalePrevisionnelleMW?: number;
   reseauDeclasse?: boolean;
-  reseauSansIdentifiantSNCU?: boolean;
 };
 
 export const contributionDefaultValues: ContributionFormValues = {
@@ -305,7 +281,6 @@ export const contributionDefaultValues: ContributionFormValues = {
   nom: '',
   prenom: '',
   reseauDeclasse: false,
-  reseauSansIdentifiantSNCU: false,
   typeDemande: '',
   typeUtilisateur: '',
   typeUtilisateurAutre: '',
@@ -317,8 +292,7 @@ export const zContributionForm = z
     zCommonFormData.extend({ typeDemande: z.literal('').refine(() => false, { message: 'Ce choix est obligatoire' }) }),
   ])
   .refine(isEmailReferentCommercialValid, emailReferentCommercialRefineParams)
-  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams)
-  .refine(isSncuIdentificationValid, sncuIdentificationRefineParams) as unknown as z.ZodType<
+  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams) as unknown as z.ZodType<
   ContributionFormValues,
   ContributionFormValues
 >;

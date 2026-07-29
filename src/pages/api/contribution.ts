@@ -10,9 +10,7 @@ import {
   filesLimits,
   geoAllowedExtensions,
   isEmailReferentCommercialValid,
-  isSncuIdentificationValid,
   isTypeUtilisateurAutreValid,
-  sncuIdentificationRefineParams,
   type TypeDemande,
   typeUtilisateurAutreRefineParams,
   validateFileNames,
@@ -92,8 +90,7 @@ type ContributionFormBranch = (typeof zContributionFormDataBase.options)[number]
 const zServerContributionFormData = z
   .discriminatedUnion('typeDemande', nonEmptyArray(zContributionFormDataBase.options.map(createServerContributionBranch)))
   .refine(isEmailReferentCommercialValid, emailReferentCommercialRefineParams)
-  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams)
-  .refine(isSncuIdentificationValid, sncuIdentificationRefineParams);
+  .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams);
 
 type ServerContributionFormData = z.infer<typeof zServerContributionFormData>;
 
@@ -216,11 +213,7 @@ const getSncuPrecision = (formValues: ServerContributionFormData) => {
   if (!('identifiantReseau' in formValues)) {
     return undefined;
   }
-  return formValues.identifiantReseau
-    ? `Identifiant SNCU : ${formValues.identifiantReseau}`
-    : formValues.reseauSansIdentifiantSNCU === true
-      ? 'Identifiant SNCU : aucun'
-      : undefined;
+  return formValues.identifiantReseau ? `Identifiant SNCU : ${formValues.identifiantReseau}` : 'Identifiant SNCU : aucun';
 };
 
 const getServerFileName = (file: ServerFile) => file.originalFilename ?? '';

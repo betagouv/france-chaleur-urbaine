@@ -3,6 +3,7 @@ import { useStore } from '@tanstack/react-form';
 import Link from 'next/link';
 import { useState } from 'react';
 
+import Checkbox from '@/components/form/dsfr/Checkbox';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
@@ -43,6 +44,7 @@ const typeDemandeOptions = typesDemande.map((option) => ({
 function ContributionForm() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [selectedContributionNetwork, setSelectedContributionNetwork] = useState<ContributionNetworkSearchResult | null>(null);
+  const [hasNoSncuIdentifier, setHasNoSncuIdentifier] = useState(false);
 
   const form = useAppForm({
     ...schemaValidation(zContributionForm),
@@ -67,7 +69,6 @@ function ContributionForm() {
   const typeDemande = useStore(form.store, (state) => state.values.typeDemande);
   const dansCadreDemandeADEME = useStore(form.store, (state) => state.values.dansCadreDemandeADEME);
   const ouvertAuxRaccordements = useStore(form.store, (state) => state.values.ouvertAuxRaccordements);
-  const reseauSansIdentifiantSNCU = useStore(form.store, (state) => state.values.reseauSansIdentifiantSNCU);
   const reseauDeclasse = useStore(form.store, (state) => state.values.reseauDeclasse);
   const isSelectedContributionNetworkClassed = selectedContributionNetwork?.is_classe === true;
 
@@ -78,8 +79,8 @@ function ContributionForm() {
 
   const resetSncuIdentificationFields = () => {
     setSelectedContributionNetwork(null);
+    setHasNoSncuIdentifier(false);
     form.setFieldValue('identifiantReseau', '', { dontUpdateMeta: true });
-    form.setFieldValue('reseauSansIdentifiantSNCU', false, { dontUpdateMeta: true });
     resetClassedNetworkFields();
   };
 
@@ -106,7 +107,7 @@ function ContributionForm() {
 
   const handleContributionNetworkSelect = (network: ContributionNetworkSearchResult, shouldPrefillNetworkFields: boolean) => {
     setSelectedContributionNetwork(network);
-    form.setFieldValue('reseauSansIdentifiantSNCU', false, { dontUpdateMeta: true });
+    setHasNoSncuIdentifier(false);
     resetClassedNetworkFields();
 
     if (!shouldPrefillNetworkFields) {
@@ -117,6 +118,13 @@ function ContributionForm() {
     form.setFieldValue('localisation', network.localisation ?? '');
     form.setFieldValue('gestionnaire', network.gestionnaire ?? '');
     form.setFieldValue('maitreOuvrage', network.maitre_ouvrage ?? '');
+  };
+
+  const handleNoSncuIdentifierChange = (checked: boolean) => {
+    setHasNoSncuIdentifier(checked);
+    if (checked) {
+      handleContributionNetworkClear();
+    }
   };
 
   const renderNomReseauField = (label: string) => (
@@ -162,8 +170,7 @@ function ContributionForm() {
             label="Identifiant SNCU du réseau :"
             hintText="Sélectionnez un identifiant dans la liste de suggestions."
             nativeInputProps={{
-              disabled: reseauSansIdentifiantSNCU === true,
-              required: reseauSansIdentifiantSNCU !== true,
+              disabled: hasNoSncuIdentifier,
             }}
             onNetworkClear={handleContributionNetworkClear}
             onNetworkSelect={(network) => handleContributionNetworkSelect(network, shouldPrefillNetworkFields)}
@@ -171,18 +178,16 @@ function ContributionForm() {
           />
         )}
       </form.AppField>
-      <form.AppField
-        name="reseauSansIdentifiantSNCU"
-        listeners={{
-          onChange: ({ value }) => {
-            if (value === true) {
-              handleContributionNetworkClear();
-            }
-          },
+      <Checkbox
+        label="Le réseau n’a pas d’identifiant SNCU"
+        className="fr-mb-3w"
+        nativeInputProps={{
+          checked: hasNoSncuIdentifier,
+          name: 'hasNoSncuIdentifier',
+          onChange: (event) => handleNoSncuIdentifierChange(event.target.checked),
         }}
-      >
-        {(field) => <field.CheckboxField label="Le réseau n’a pas d’identifiant SNCU" small={false} className="fr-mb-3w" />}
-      </form.AppField>
+        small={false}
+      />
     </>
   );
 
