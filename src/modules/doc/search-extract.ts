@@ -14,6 +14,7 @@ export function extractPlainText(rawMdx: string): string {
     .replace(/<Mermaid[\s\S]*?\/>/g, ' ') // Mermaid diagram blocks
     .replace(/<(?:EmailsInventory|CronsInventory|DemandStatuses|EventsInventory)\s*\/>/g, ' ') // generated inventories
     .replace(/<Rule\s+id="([^"]+)"\s*\/>/g, (_match, id: string) => businessRules[id as BusinessRuleId]?.display ?? '') // Rule → its value
+    .replace(/&nbsp;/g, ' ') // non-breaking space entities (typographic spacing inside « ») → plain space
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // markdown links → text
     .replace(/^\s*-{3,}\s*$/gm, ' ') // horizontal rules / table separators
     .replace(/[#*`>|]/g, ' ') // heading / bold / code / blockquote / table markers
