@@ -861,10 +861,6 @@ export type ContributionNetworkSearchResult = {
   is_classe: boolean;
 };
 
-/**
- * Public contribution-form search by SNCU identifier.
- * Only heat networks are suggested: cold networks are intentionally excluded.
- */
 export const searchHeatNetworksForContribution = async (search: string): Promise<ContributionNetworkSearchResult[]> => {
   const pattern = `%${search}%`;
 
