@@ -92,8 +92,6 @@ const zServerContributionFormData = z
   .refine(isEmailReferentCommercialValid, emailReferentCommercialRefineParams)
   .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams);
 
-type ServerContributionFormData = z.infer<typeof zServerContributionFormData>;
-
 const contributionRateLimiter = createNextApiRateLimiter({ path: '/api/contribution' });
 
 export default handleRouteErrors(async (req, res) => {
@@ -125,7 +123,8 @@ export default handleRouteErrors(async (req, res) => {
     Nom: formValues.nom,
     'Nom gestionnaire': 'gestionnaire' in formValues ? formValues.gestionnaire : undefined,
     ouvert_aux_raccordements: 'ouvertAuxRaccordements' in formValues ? formValues.ouvertAuxRaccordements : undefined,
-    Précisions: getContributionPrecisions(formValues),
+    Précisions:
+      formValues.typeDemande === 'autre' ? formValues.precisions : 'commentaire' in formValues ? formValues.commentaire : undefined,
     Prénom: formValues.prenom,
     'Puissance totale prévisionnelle (MW)':
       formValues.typeDemande === 'ajout tracé réseau en construction' ? formValues.puissanceTotalePrevisionnelleMW : undefined,
@@ -199,10 +198,5 @@ const inspectServerZipFile = async (file: ServerFile, allowedExtensions: string[
 
   return zipError ? `Dans "${filename}" : ${zipError}` : null;
 };
-
-const getContributionPrecisions = (formValues: ServerContributionFormData) =>
-  [formValues.typeDemande === 'autre' ? formValues.precisions : undefined, 'commentaire' in formValues ? formValues.commentaire : undefined]
-    .filter(isNonEmptyString)
-    .join('\n');
 
 const getServerFileName = (file: ServerFile) => file.originalFilename ?? '';
