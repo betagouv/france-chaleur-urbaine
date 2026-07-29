@@ -98,7 +98,7 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
 
     return Object.entries(filterValue)
       .filter(([, isSelected]) => isSelected)
-      .some(([key]) => key !== '' && key !== 'undefined' && value.includes(key));
+      .some(([key]) => key !== '' && key !== 'undefined' && (Array.isArray(value) ? value.includes(key) : String(value) === key));
   },
   inDateRangeNotNull: (row, columnId, filterValue: [string | null, string | null, boolean?]) => {
     const [minDate, maxDate, includeNull] = filterValue;
