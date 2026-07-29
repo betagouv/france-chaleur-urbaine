@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
+import CallOut from '@/components/ui/CallOut';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
@@ -195,13 +196,10 @@ function ContributionForm() {
     <>
       {isSelectedContributionNetworkClassed && (
         <>
-          <Alert
-            severity="info"
-            title="Votre réseau est classé."
-            description="Nous vous invitons à déposer le périmètre de développement prioritaire ci-dessous pour informer les bâtiments concernés de l’obligation d’étude du raccordement."
-            className="fr-mb-3w"
-            small
-          />
+          <CallOut title="Votre réseau est classé" className="fr-mb-3w">
+            Nous vous invitons à déposer le périmètre de développement prioritaire ci-dessous pour informer les bâtiments concernés de
+            l’obligation d’étude du raccordement.
+          </CallOut>
           <form.AppField
             name="reseauDeclasse"
             listeners={{
@@ -214,7 +212,20 @@ function ContributionForm() {
           >
             {(field) => (
               <field.CheckboxField
-                label="Le réseau a été déclassé par arrêté (si celui-ci n’est pas dans la liste des réseaux déclassés et/ou que vous n’avez pas encore transmis votre délibération, merci de l’envoyer à l’adresse Laurent.Cadiou@developpement-durable.gouv.fr)"
+                label={
+                  <span>
+                    Le réseau a été déclassé par arrêté (si celui-ci n’est pas dans la{' '}
+                    <Link
+                      href="https://www.ecologie.gouv.fr/politiques-publiques/reseaux-chaleur"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      liste des réseaux déclassés
+                    </Link>{' '}
+                    et/ou que vous n’avez pas encore transmis votre délibération, merci de l’envoyer à l’adresse
+                    Laurent.Cadiou@developpement-durable.gouv.fr)
+                  </span>
+                }
                 small={false}
                 className="fr-mb-3w"
               />

@@ -24,11 +24,6 @@ type ContributionNetworkSncuFieldProps = {
   nativeInputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'>;
 };
 
-/**
- * SNCU identifier autocomplete for the public contribution form.
- * The stored form value is updated only after selecting a suggestion, so free
- * text never satisfies validation by itself.
- */
 export function ContributionNetworkSncuField({
   label,
   selectedNetwork,
@@ -129,11 +124,9 @@ export function ContributionNetworkSncuField({
 }
 
 const formatSelectedNetwork = (network: ContributionNetworkSearchResult) =>
-  [network.identifiant_reseau, network.nom_reseau, network.localisation].filter(isNonEmptyString).join(' - ');
+  [network.identifiant_reseau, network.nom_reseau].filter(isNonEmptyString).join(' - ');
 
-const formatNetworkDetails = (network: ContributionNetworkSearchResult) => {
-  const details = [network.nom_reseau, network.localisation].filter(isNonEmptyString).join(' · ');
-  return details ? <span className="text-(--text-mention-grey)"> - {details}</span> : null;
-};
+const formatNetworkDetails = (network: ContributionNetworkSearchResult) =>
+  isNonEmptyString(network.nom_reseau) ? <span className="text-(--text-mention-grey)"> - {network.nom_reseau}</span> : null;
 
 const isNonEmptyString = (value: string | null | undefined): value is string => typeof value === 'string' && value.length > 0;
