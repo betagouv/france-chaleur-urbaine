@@ -84,14 +84,43 @@ export const zUpdateGeomUpdateInput = z.object({
 
 export type UpdateGeomUpdateInput = z.infer<typeof zUpdateGeomUpdateInput>;
 
+// Le SNCU du PDP n'est pas éditable : il est recopié depuis le RC lié par la synchronisation
 export const zUpdatePerimetreDeDeveloppementPrioritaireInput = z.object({
-  'Identifiant reseau': z.string().optional(),
+  Gestionnaire: z.string().nullable().optional(),
   id: z.number(),
+  MO: z.string().nullable().optional(),
   reseau_de_chaleur_ids: z.array(z.number()).optional(),
   reseau_en_construction_ids: z.array(z.number()).optional(),
 });
 
 export type UpdatePerimetreDeDeveloppementPrioritaireInput = z.infer<typeof zUpdatePerimetreDeDeveloppementPrioritaireInput>;
+
+// Le SNCU du réseau en construction n'est pas éditable : il est recopié depuis le RC parent par la synchronisation
+export const zUpdateReseauEnConstructionInput = z.object({
+  gestionnaire: z.string().nullable().optional(),
+  id: z.number(),
+  MO: z.string().nullable().optional(),
+  mise_en_service: z.string().nullable().optional(),
+  nom_reseau: z.string().min(1).optional(),
+  ouvert_aux_raccordements: z.boolean().optional(),
+  reseau_de_chaleur_id: z.number().nullable().optional(),
+});
+
+export type UpdateReseauEnConstructionInput = z.infer<typeof zUpdateReseauEnConstructionInput>;
+
+export const zUpdateReseauDeChaleurInput = z.object({
+  Gestionnaire: z.string().nullable().optional(),
+  'Identifiant reseau': z.string().nullable().optional(),
+  id: z.number(),
+  MO: z.string().nullable().optional(),
+  nom_reseau: z.string().min(1).optional(),
+});
+
+export type UpdateReseauDeChaleurInput = z.infer<typeof zUpdateReseauDeChaleurInput>;
+
+export const zUpdateReseauDeFroidInput = zUpdateReseauDeChaleurInput;
+
+export type UpdateReseauDeFroidInput = z.infer<typeof zUpdateReseauDeFroidInput>;
 
 export const zDeleteGeomUpdateInput = z.object({
   id: z.number(),
@@ -107,9 +136,12 @@ export const zDeleteNetworkInput = z.object({
 
 export type DeleteNetworkInput = z.infer<typeof zDeleteNetworkInput>;
 
+// Pas de métadonnées à la création : la fenêtre de modification s'ouvre juste après pour les saisir
 export const zCreateNetworkInput = z.object({
   geometry: zGeometry,
-  id: z.string(), // String pour supporter à la fois les ID numériques et les identifiants réseau
+  // Requis pour chaleur/froid (doit matcher la ligne Airtable : id_fcu numérique ou identifiant SNCU) ;
+  // absent pour construction et PDP, dont l'id_fcu est attribué automatiquement (max + 1)
+  id: z.string().optional(),
   type: z.enum(tableNames),
 });
 
@@ -133,6 +165,8 @@ export const gestionnairesFilters = [
   { label: 'Autre', value: 'autre' },
 ];
 
+// Tables whose metadata is still imported from Airtable. Les réseaux en construction n'en font
+// plus partie : toutes leurs métadonnées sont gérées dans l'admin FCU (Airtable = miroir en lecture).
 export const airtableSynchronizableNetworkTableConfig = defineSubsetConfig<
   DatabaseTileSourceId,
   { airtable: Airtable; table: DBTableName }
@@ -144,10 +178,6 @@ export const airtableSynchronizableNetworkTableConfig = defineSubsetConfig<
   'reseaux-de-froid': {
     airtable: Airtable.COLD_NETWORKS,
     table: 'reseaux_de_froid',
-  },
-  'reseaux-en-construction': {
-    airtable: Airtable.FUTUR_NETWORKS,
-    table: 'zones_et_reseaux_en_construction',
   },
 });
 

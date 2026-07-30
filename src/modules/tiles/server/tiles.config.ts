@@ -98,6 +98,7 @@ const reseauxEnConstructionFields = [
   'MO',
   'is_zone',
   'ouvert_aux_raccordements',
+  'Identifiant reseau',
 ] as const satisfies (keyof ZonesEtReseauxEnConstruction)[];
 export type ReseauxEnConstructionTile = AsTile<Required<Pick<ZonesEtReseauxEnConstruction, (typeof reseauxEnConstructionFields)[number]>>>;
 
@@ -105,6 +106,8 @@ const perimetresDeDeveloppementPrioritaireFields = [
   'id_fcu',
   'geom',
   'Identifiant reseau',
+  'Gestionnaire',
+  'MO',
 ] as const satisfies (keyof ZoneDeDeveloppementPrioritaire)[];
 export type PerimetreDeveloppementPrioritaireTile = AsTile<
   Required<Pick<ZoneDeDeveloppementPrioritaire, (typeof perimetresDeDeveloppementPrioritaireFields)[number]>>

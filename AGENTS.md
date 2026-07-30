@@ -38,6 +38,7 @@ Load before working on the related area.
 | [database.md](.ai/context/database.md) | Anything DB: queries, tables, migrations, Kysely, PostGIS |
 | [deployment.md](.ai/context/deployment.md) | Scalingo, CI/CD, environments, env vars, monitoring |
 | [domain.md](.ai/context/domain.md) | Project purpose, business rules, glossary, roles, workflows |
+| [form module](src/modules/form/AGENTS.md) | Building or editing **any form** (fields, validation, submit), wherever it lives — the `useAppForm` layer is mandatory, never hand-roll form state with `useState` |
 | [git-workflow.md](.ai/context/git-workflow.md) | Commits, branches, PRs, protected files |
 | [maps.md](.ai/context/maps.md) | Vector tiles pipeline (generate/serve/cache), geo data. **Client map rendering → `src/modules/map/AGENTS.md`** |
 | [nextjs-patterns.md](.ai/context/nextjs-patterns.md) | Pages, routing, data fetching, client↔server patterns |

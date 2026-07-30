@@ -2,7 +2,7 @@ import type { Selectable } from 'kysely';
 import type { Logger } from 'winston';
 
 import { createUserEvent } from '@/modules/events/server/service';
-import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
+import type { AirtableSynchronizableNetworkTable, ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
 import { downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import type { BuildTilesInput } from '@/modules/tiles/constants';
@@ -31,7 +31,7 @@ export async function processBuildTilesJob(job: BuildTilesJob, logger: Logger) {
 export type SyncMetadataFromAirtableJob = Omit<Selectable<Jobs>, 'data'> & {
   type: 'sync_metadata_from_airtable';
   data: {
-    name: Exclude<ApplyGeometriesUpdatesInput['name'], 'perimetres-de-developpement-prioritaire'>;
+    name: AirtableSynchronizableNetworkTable;
   };
 };
 

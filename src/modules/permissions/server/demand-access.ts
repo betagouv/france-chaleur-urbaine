@@ -27,12 +27,14 @@ export type DemandForAccess = Pick<
 /**
  * Builds a Kysely WHERE filter for demands accessible by a given user.
  * Executes in DB with indexes — no JS-side filtering.
+ * Generic over the concrete builder so queries with extra joined tables
+ * (e.g. `baseDemandQuery`) keep their own type through the filter.
  */
 export const buildDemandAccessFilter = (
   user: UserWithRole,
   permissions: Permission[]
-): (<O>(qb: SelectQueryBuilder<DB, 'demands', O>) => SelectQueryBuilder<DB, 'demands', O>) => {
-  return (qb) => {
+): (<QB extends SelectQueryBuilder<any, 'demands', any>>(qb: QB) => QB) => {
+  const applyFilter = <O>(qb: SelectQueryBuilder<DB, 'demands', O>): SelectQueryBuilder<DB, 'demands', O> => {
     if (user.role === 'admin') {
       return qb;
     }
@@ -94,6 +96,7 @@ export const buildDemandAccessFilter = (
       return conditions.length > 0 ? eb.or(conditions) : sql.lit(false);
     });
   };
+  return (qb) => applyFilter(qb as SelectQueryBuilder<DB, 'demands', any>) as typeof qb;
 };
 
 // ─── Permission matchers (in-memory) ─────────────────────────────────────────

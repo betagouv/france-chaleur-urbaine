@@ -2,7 +2,7 @@ import Accordion from '@/components/ui/Accordion';
 import Icon from '@/components/ui/Icon';
 import { DownloadNetworkGeometryButton } from '@/modules/map/client/components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from '@/modules/map/client/core/common';
-import { buildFiltreGestionnaire, buildFiltreMaitreOuvrage } from '@/modules/map/client/layers/filters';
+import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau, buildFiltreMaitreOuvrage } from '@/modules/map/client/layers/filters';
 import type { ReseauxEnConstructionTile } from '@/modules/tiles/server/tiles.config';
 
 const Popup = defineLayerPopup<ReseauxEnConstructionTile>((reseauEnConstruction, { Property, Title, TwoColumns }) => {
@@ -13,6 +13,9 @@ const Popup = defineLayerPopup<ReseauxEnConstructionTile>((reseauEnConstruction,
         <Property label="Gestionnaire" value={reseauEnConstruction.gestionnaire} />
         <Property label="Maître d'ouvrage" value={reseauEnConstruction.MO} />
         <Property label="Mise en service" value={reseauEnConstruction.mise_en_service} />
+        {reseauEnConstruction['Identifiant reseau'] && (
+          <Property label="Extension du réseau" value={reseauEnConstruction['Identifiant reseau']} />
+        )}
       </TwoColumns>
       {!reseauEnConstruction.ouvert_aux_raccordements && (
         <div className="text-sm">
@@ -49,6 +52,7 @@ export const reseauxEnConstructionLayersSpec = [
           ['==', ['get', 'is_zone'], true],
           ...buildFiltreGestionnaire(config.filtreGestionnaire),
           ...buildFiltreMaitreOuvrage(config.filtreMaitreOuvrage),
+          ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
         ],
         id: 'reseauxEnConstruction-zone',
         isVisible: (config) => config.reseauxEnConstruction,
@@ -70,6 +74,7 @@ export const reseauxEnConstructionLayersSpec = [
           ['==', ['get', 'is_zone'], false],
           ...buildFiltreGestionnaire(config.filtreGestionnaire),
           ...buildFiltreMaitreOuvrage(config.filtreMaitreOuvrage),
+          ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
         ],
         id: 'reseauxEnConstruction-trace',
         isVisible: (config) => config.reseauxEnConstruction,

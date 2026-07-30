@@ -21,7 +21,7 @@ La carte est servie à partir de **tuiles** pré-calculées : une modification d
 
 Depuis [Générateur d'iframes](/admin/iframes), un admin produit une **URL** et un **code d'intégration** `<iframe>` à coller sur un site partenaire. Deux types :
 
-- **Carte** : la carte embarquée, paramétrable (couches, filtres, centrage, légende, mode recherche ou test d'adresse).
+- **Carte** : la carte embarquée, paramétrable (couches, filtres, centrage, légende, mode recherche ou test d'adresse). Le filtre par **identifiant SNCU** isole les réseaux demandés **ainsi que leurs extensions et PDP** portant le même identifiant — de quoi produire l'iframe d'un réseau avec son extension et son périmètre. Les filtres par **gestionnaire** et **maître d'ouvrage** couvrent les réseaux de chaleur, de froid, en construction et les PDP.
 - **Formulaire de test d'adresse** : une variante légère sans carte — un mini-formulaire (adresse + chauffage) qui **redirige vers le site FCU** pour réaliser le test.
 
 Règle importante : le code d'intégration n'est généré **qu'après avoir créé une « intégration »**, car chaque iframe porte un identifiant de **source** (`?source=…`) qui permet d'attribuer les conversions. Les partenaires historiques (ENGIE, Dalkia, Idex, ViaSéva…) ont en plus des pages iframe figées, distinctes du générateur.

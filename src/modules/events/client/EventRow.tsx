@@ -284,6 +284,14 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
+  network_updated: (event) => (
+    <span>
+      a mis à jour les données (<strong>{Object.keys(event.data.changes ?? {}).join(', ')}</strong>) d'un réseau{' '}
+      <strong>{event.data.type}</strong>
+      {event.data.nom_reseau ? ` "${event.data.nom_reseau}"` : null} (ID: {event.data.id}
+      {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null})
+    </span>
+  ),
   organization_created: (event) => (
     <span>
       a créé l'organisation <strong>{event.data.name}</strong>

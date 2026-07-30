@@ -224,7 +224,9 @@ program
 
 program
   .command('sync-postgres-to-airtable')
-  .description('Synchronise les tables postgres FCU vers Airtable pour les champs has_trace, is_zone, communes')
+  .description(
+    'Synchronise les tables postgres FCU vers Airtable (champs géométrie : has_trace, is_zone, communes + champs admin : nom, gestionnaire, MO, SNCU)'
+  )
   .option('--dry-run', 'Run the command in dry-run mode', false)
   .action(async ({ dryRun }) => {
     await syncPostgresToAirtable(dryRun);

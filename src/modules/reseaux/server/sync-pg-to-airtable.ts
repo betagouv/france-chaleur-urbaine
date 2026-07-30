@@ -9,12 +9,17 @@ import { convertAirtableValue } from './download-network';
 import { type Changement, tableConfigs } from './geometry-updates';
 
 /**
- * Synchronise les tables postgres FCU vers Airtable.
- * Utilisé seulement pour certains champs : has_trace, is_zone, communes.
+ * Synchronise les tables postgres FCU vers Airtable (miroir en lecture côté Airtable).
+ * Champs dérivés de la géométrie (has_trace, is_zone, communes, departement, region)
+ * + champs admin FCU (nom_reseau, gestionnaire, MO, et Identifiant reseau pour chaleur/froid).
+ * Déclenché par le job sync_geometries_to_airtable (après un « Sync » de géométries)
+ * ou par la CLI sync-postgres-to-airtable — pas de cron.
  */
 export const syncPostgresToAirtable = async (dryRun: boolean) => {
   const startTime = Date.now();
   parentLogger.info('start postgres to airtable synchronization');
+  // Une erreur Airtable ne doit pas bloquer le reste du miroir : on continue et on agrège
+  const updateErrors: string[] = [];
 
   for (const tableConfig of tableConfigs) {
     if (!tableConfig.airtable) {
@@ -62,11 +67,26 @@ export const syncPostgresToAirtable = async (dryRun: boolean) => {
           pick(oldAirtableValues, Object.keys(objDiff))
         )})`
       );
-      if (!dryRun) await AirtableDB(tableConfig.airtable.tableName).update(airtableEntity.id, newAirtableValues);
+      if (!dryRun) {
+        try {
+          await AirtableDB(tableConfig.airtable.tableName).update(airtableEntity.id, newAirtableValues);
+        } catch (error) {
+          const message = `${tableConfig.airtable.tableName} — ID FCU ${postgresEntity.id_fcu}: ${error instanceof Error ? error.message : error}`;
+          console.error(`ERROR: échec de la mise à jour ${message}`);
+          updateErrors.push(message);
+        }
+      }
     }
   }
 
   parentLogger.info('end postgres to airtable synchronization', {
     duration: Date.now() - startTime,
+    errors: updateErrors.length,
   });
+  // Relance en fin de run pour que le job apparaisse en erreur, une fois tout le reste poussé
+  if (updateErrors.length > 0) {
+    throw new Error(
+      `${updateErrors.length} mise(s) à jour Airtable en échec : ${updateErrors.slice(0, 5).join(' ; ')}${updateErrors.length > 5 ? ' ; …' : ''}`
+    );
+  }
 };

@@ -2,6 +2,7 @@ import type { Record } from 'airtable';
 import type { FieldSet } from 'airtable/lib/field_set';
 
 import { type AirtableSynchronizableNetworkTable, airtableSynchronizableNetworkTableConfig } from '@/modules/reseaux/constants';
+import { syncLinkedNetworkFields } from '@/modules/reseaux/server/linked-fields-sync';
 import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
@@ -23,6 +24,7 @@ export type Type =
   | typeof TypeString
   | typeof TypeStringToArray;
 
+// Gestionnaire, MO and nom_reseau are FCU-admin owned: never imported, mirrored back to Airtable (read-only there)
 const conversionConfigReseauxDeChaleur = {
   // departement: TypeString,
   // region: TypeString,
@@ -33,7 +35,6 @@ const conversionConfigReseauxDeChaleur = {
   eau_chaude: TypeString,
   eau_surchauffee: TypeString,
   fichiers: TypeJSONArray,
-  Gestionnaire: TypeString,
   has_PDP: TypeBool,
   // id_fcu: TypeNumber,
   // id: TypeNumber,
@@ -47,10 +48,8 @@ const conversionConfigReseauxDeChaleur = {
   livraisons_totale_MWh: TypeNumber,
   longueur_reseau: TypeNumber,
   // communes: TypeStringToArray,
-  MO: TypeString,
   'Moyenne-annee-DPE': TypeString,
   nb_pdl: TypeNumber,
-  nom_reseau: TypeString,
   ouvert_aux_raccordements: TypeBool,
   'PF%': TypeNumber,
   PM: TypeNumber,
@@ -105,13 +104,13 @@ const conversionConfigReseauxDeChaleur = {
   website_gestionnaire: TypeString,
 } as const;
 
+// Same ownership rule as réseaux de chaleur: Gestionnaire, MO and nom_reseau are FCU-admin owned
 const conversionConfigReseauxDeFroid = {
   annee_creation: TypeNumber,
   // communes: TypeStringToArray,
   'contenu CO2': TypeNumber,
   'contenu CO2 ACV': TypeNumber,
   fichiers: TypeJSONArray,
-  Gestionnaire: TypeString,
   // id_fcu: TypeNumber,
   'Identifiant reseau': TypeString,
   informationsComplementaires: TypeString,
@@ -124,10 +123,8 @@ const conversionConfigReseauxDeFroid = {
   longueur_reseau: TypeNumber,
   // departement: TypeString,
   // region: TypeString,
-  MO: TypeString,
   'Moyenne-annee-DPE': TypeString,
   nb_pdl: TypeNumber,
-  nom_reseau: TypeString,
   production_totale_MWh: TypeNumber,
   puissance_totale_MW: TypeNumber,
   'Rend%': TypeNumber,
@@ -137,17 +134,6 @@ const conversionConfigReseauxDeFroid = {
   // date_actualisation_trace: TypeString,
   'Taux EnR&R': TypeNumber,
   website_gestionnaire: TypeString,
-} as const;
-
-const conversionConfigReseauxEnConstruction = {
-  gestionnaire: TypeString,
-  MO: TypeString,
-  mise_en_service: TypeString,
-  nom_reseau: TypeString,
-  ouvert_aux_raccordements: TypeBool,
-  // date_actualisation_trace: TypeString,
-  // communes: TypeStringToArray,
-  // is_zone: TypeBool,
 } as const;
 
 /**
@@ -174,6 +160,9 @@ export const downloadNetwork = async (table: AirtableSynchronizableNetworkTable)
       }
     })
   );
+  // Re-derive the link-dependent fields (extension SNCU mirror, PDP operator auto-fill) after the import
+  await syncLinkedNetworkFields();
+
   logger.info('end network update', {
     duration: Date.now() - startTime,
   });
@@ -184,12 +173,7 @@ export const downloadNetwork = async (table: AirtableSynchronizableNetworkTable)
  * Les noms de colonne sont identiques, seuls les types sont corrigés et nettoyés.
  */
 function convertEntityFromAirtableToPostgres(type: AirtableSynchronizableNetworkTable, airtableNetwork: Record<FieldSet>) {
-  const conversionConfig =
-    type === 'reseaux-de-chaleur'
-      ? conversionConfigReseauxDeChaleur
-      : type === 'reseaux-de-froid'
-        ? conversionConfigReseauxDeFroid
-        : conversionConfigReseauxEnConstruction;
+  const conversionConfig = type === 'reseaux-de-chaleur' ? conversionConfigReseauxDeChaleur : conversionConfigReseauxDeFroid;
 
   return Object.entries(conversionConfig).reduce((acc, [key, type]) => {
     acc[key] = convertAirtableValue(airtableNetwork.get(key), type);

@@ -54,6 +54,7 @@ export const eventTypes = [
   'network_geometry_updated',
   'network_geometries_applied',
   'network_notes_updated',
+  'network_updated',
   'conversion_source_created',
   'conversion_source_updated',
   'conversion_source_archived',
@@ -96,6 +97,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   network_reminder_created: 'Création relance réseau',
   network_reminder_deleted: 'Suppression relance réseau',
   network_reminder_updated: 'Mise à jour relance réseau',
+  network_updated: 'Mise à jour des données du réseau',
   organization_created: 'Création organisation',
   organization_deleted: 'Suppression organisation',
   organization_updated: 'Mise à jour organisation',
@@ -197,8 +199,17 @@ export type EventDataMap = {
     communes_count: number;
     notes: string | null;
   };
+  network_updated: {
+    id: number;
+    identifiant_reseau: string | null;
+    nom_reseau: string | null;
+    type: string;
+    changes: Record<string, unknown>;
+  };
   pdp_updated: {
     'Identifiant reseau'?: string;
+    Gestionnaire?: string | null;
+    MO?: string | null;
     reseau_de_chaleur_ids?: number[];
     reseau_en_construction_ids?: number[];
   };

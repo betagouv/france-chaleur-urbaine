@@ -773,7 +773,8 @@ const TableSimple = <T extends RowData>({
       return;
     }
     scrollToRowRef.current = (rowId) => {
-      const index = table.getRowModel().rows.findIndex((row) => (row.original as any)[rowIdKey] === rowId);
+      // Normalisation en string : les ids peuvent être numériques (id_fcu) ou string (uuid)
+      const index = table.getRowModel().rows.findIndex((row) => String((row.original as any)[rowIdKey]) === String(rowId));
       if (index >= 0) {
         rowVirtualizer.scrollToIndex(index, { align: 'center' });
       }

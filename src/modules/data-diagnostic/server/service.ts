@@ -1,6 +1,7 @@
 import { type ExpressionBuilder, sql } from 'kysely';
 
 import { findAttachedNetworksNotMatchingPatterns, findUnattachedNetworksMatchingPatterns } from '@/modules/organizations/server/service';
+import { linkedGestionnairesSQL, linkedMaitresOuvrageSQL } from '@/modules/reseaux/server/linked-fields-sync';
 import { type DB, kdb } from '@/server/db/kysely';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
@@ -468,6 +469,56 @@ const checkPdpOrphanNetwork: IssueBuilder = async () => {
 };
 
 /**
+ * PDP dont le gestionnaire ou le MO est vide alors que plusieurs réseaux liés portent des valeurs
+ * distinctes : la synchronisation automatique ne peut pas trancher, un admin doit choisir la valeur.
+ */
+const checkPdpAmbiguousOperator: IssueBuilder = async () => {
+  const rows = await kdb
+    .selectFrom('zone_de_developpement_prioritaire as pdp')
+    .select((eb) => [
+      'pdp.id_fcu',
+      eb.ref('pdp.Identifiant reseau').as('sncu'),
+      'pdp.Gestionnaire',
+      'pdp.MO',
+      linkedGestionnairesSQL(eb).as('linked_gestionnaires'),
+      linkedMaitresOuvrageSQL(eb).as('linked_maitres_ouvrage'),
+    ])
+    .where((eb) =>
+      eb.or([eb('pdp.Gestionnaire', 'is', null), eb('pdp.Gestionnaire', '=', ''), eb('pdp.MO', 'is', null), eb('pdp.MO', '=', '')])
+    )
+    .orderBy('pdp.id_fcu')
+    .execute();
+
+  const ambiguousRows = rows.filter(
+    (row) => (!row.Gestionnaire && row.linked_gestionnaires.length > 1) || (!row.MO && row.linked_maitres_ouvrage.length > 1)
+  );
+
+  if (ambiguousRows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(ambiguousRows, (row) => ({
+    context: [
+      !row.Gestionnaire && row.linked_gestionnaires.length > 1 ? `gestionnaires liés : ${row.linked_gestionnaires.join(' / ')}` : null,
+      !row.MO && row.linked_maitres_ouvrage.length > 1 ? `MO liés : ${row.linked_maitres_ouvrage.join(' / ')}` : null,
+    ]
+      .filter(Boolean)
+      .join(' — '),
+    href: '/admin/reseaux?reseauxTab=perimetres-de-developpement-prioritaire',
+    label: `PDP #${row.id_fcu}${row.sncu ? ` (${row.sncu})` : ''}`,
+  }));
+
+  return {
+    description:
+      'Les réseaux liés à ces PDP portent des gestionnaires ou maîtres d’ouvrage différents : le remplissage automatique ne peut pas choisir. Saisir la valeur retenue dans Gestion des réseaux (onglet PDP).',
+    items,
+    severity: 'warning',
+    title: 'PDP avec gestionnaire/MO à trancher',
+    totalCount,
+    truncated,
+    type: 'pdp.ambiguous_operator',
+  };
+};
+
+/**
  * Demandes non validées depuis plus de 30 jours.
  */
 const checkDemandUnvalidatedOld: IssueBuilder = async () => {
@@ -872,6 +923,7 @@ const checks: IssueBuilder[] = [
   checkDemandNetworkMismatch,
   checkDemandOrphanNetwork,
   checkPdpOrphanNetwork,
+  checkPdpAmbiguousOperator,
   checkDemandUnvalidatedOld,
   checkDemandPendingAssignmentStale,
   checkDemandRecontactMismatch,

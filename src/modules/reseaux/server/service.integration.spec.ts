@@ -27,10 +27,11 @@ const chaleurSud: NetworkSearchResult = {
   nom_reseau: 'Chaleur Sud',
 };
 
+// Extension de Chaleur Nord : porte le SNCU de son RC parent (copie maintenue par la sync)
 const futurEst: NetworkSearchResult = {
   gestionnaire: 'IDEX',
   id_fcu: 2001,
-  identifiant_reseau: null,
+  identifiant_reseau: '1101C',
   network_type: 'reseau_en_construction',
   nom_reseau: 'Futur réseau Est',
 };
@@ -66,6 +67,7 @@ describe('searchNetworks()', () => {
       }),
       seedZoneEtReseauEnConstruction({
         gestionnaire: futurEst.gestionnaire,
+        'Identifiant reseau': futurEst.identifiant_reseau,
         id_fcu: futurEst.id_fcu,
         is_zone: false,
         nom_reseau: futurEst.nom_reseau,
@@ -87,6 +89,7 @@ describe('searchNetworks()', () => {
     { expectedOutput: [chaleurNord], input: '1001', label: 'matche un réseau existant par id_fcu' },
     { expectedOutput: [futurEst], input: 'Futur', label: 'matche un réseau en construction par nom_reseau' },
     { expectedOutput: [futurEst], input: '2001', label: 'matche un réseau en construction par id_fcu' },
+    { expectedOutput: [chaleurNord, futurEst], input: '1101C', label: 'matche le RC et son extension par le SNCU partagé' },
     { expectedOutput: [zoneOuest], input: 'Ouest', label: 'inclut les zones (is_zone = true)' },
     { expectedOutput: [chaleurNord, chaleurSud], input: 'Chaleur', label: 'matche sur les deux tables en une seule requête' },
     { expectedOutput: [], input: 'IDEX', label: 'ne cherche pas dans le champ gestionnaire' },

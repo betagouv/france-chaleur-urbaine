@@ -8,7 +8,7 @@
  *   max-bounds  Limite de déplacement, `w,s,e,n`.               ?max-bounds=4.6,49.7,4.9,49.9
  *   gestionnaire Filtre gestionnaire(s), séparés par virgule.   ?gestionnaire=dalkia,idex
  *   maitre-ouvrage Filtre maître(s) d'ouvrage, séparés par virgule. ?maitre-ouvrage=engie
- *   reseaux     Identifiants SNCU à isoler, séparés par virgule.?reseaux=7412C
+ *   reseaux     Identifiants SNCU à isoler (réseaux, extensions et PDP liés), séparés par virgule. ?reseaux=7412C
  *   layers      Couches affichées parmi reseaux-de-chaleur,reseaux-de-froid,reseaux-en-construction,zones-de-developpement-prioritaire.
  *               Exemple : ?layers=reseaux-de-chaleur,reseaux-de-froid
  *   legend      off | hidden | auto (défaut off).               ?legend=auto

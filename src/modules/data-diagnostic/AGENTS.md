@@ -65,6 +65,7 @@ Warnings (suspicious):
 - `organization.without_networks` — organization with no heat/cold/under-construction network attached
 - `user.national_candidate_unmigrated` — active account with ≥ 50 network permissions and no organization (migrate to org scope)
 - `network.gestionnaire_split_across_organizations` — one `Gestionnaire` value mapped to several organizations
+- `pdp.ambiguous_operator` — PDP with empty Gestionnaire/MO while linked networks carry several distinct values (manual choice expected)
 
 ## Adding a new check
 

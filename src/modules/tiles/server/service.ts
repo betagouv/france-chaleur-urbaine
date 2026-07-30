@@ -2,7 +2,7 @@ import geojsonvt from 'geojson-vt';
 import { sql, type Transaction } from 'kysely';
 import vtpbf from 'vt-pbf';
 
-import type { ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
+import type { AirtableSynchronizableNetworkTable, ApplyGeometriesUpdatesInput } from '@/modules/reseaux/constants';
 import type { BuildTilesInput } from '@/modules/tiles/constants';
 import { type CacheTileSourceId, type TileSourceId, tileSourcesConfig } from '@/modules/tiles/server/tiles.config';
 import { type DB, kdb } from '@/server/db/kysely';
@@ -92,7 +92,7 @@ export const createSyncGeometriesToAirtableJob = async ({ name }: ApplyGeometrie
     .executeTakeFirstOrThrow();
 };
 
-export const createSyncMetadataFromAirtableJob = async ({ name }: ApplyGeometriesUpdatesInput, context: ApiContext) => {
+export const createSyncMetadataFromAirtableJob = async ({ name }: { name: AirtableSynchronizableNetworkTable }, context: ApiContext) => {
   return await kdb
     .insertInto('jobs')
     .values({

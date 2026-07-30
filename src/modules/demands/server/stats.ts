@@ -30,7 +30,7 @@ export const getReseauxStats = async () => {
           kdb.selectFrom('zones_et_reseaux_en_construction').select([
             'id_fcu',
             'nom_reseau',
-            sql<string | null>`NULL`.as('Identifiant reseau'),
+            'Identifiant reseau',
             'notes',
             // Les réseaux en construction n'ont pas de puissance renseignée
             sql<number | null>`NULL`.as('puissance_totale_MW'),

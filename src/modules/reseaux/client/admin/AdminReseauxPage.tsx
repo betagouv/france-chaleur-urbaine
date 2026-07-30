@@ -1,8 +1,7 @@
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import TableFieldInput from '@/components/Admin/TableFieldInput';
 import Checkbox from '@/components/form/dsfr/Checkbox';
 import Input from '@/components/form/dsfr/Input';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -28,14 +27,21 @@ import { type MapDynamicSource, useMapLayers } from '@/modules/map/client/layers
 import { Map } from '@/modules/map/client/Map';
 import { notify, toastErrors } from '@/modules/notification';
 import DeleteNetworkDialog, { type NetworkToDelete } from '@/modules/reseaux/client/admin/DeleteNetworkDialog';
+import { type EditableNetwork, type EditableNetworkValues, EditNetworkDialog } from '@/modules/reseaux/client/admin/EditNetworkDialog';
+import { networkLinkLabel } from '@/modules/reseaux/client/admin/NetworkLinksField';
 import { NotesCell } from '@/modules/reseaux/client/admin/NotesCell';
 import { RemindersCell } from '@/modules/reseaux/client/admin/RemindersCell';
 import type { NetworkEntityType } from '@/modules/reseaux/constants';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import { omitUndefinedValues } from '@/utils/objects';
 
 const tabIds = ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
+
+/** Variante de {@link networkLinkLabel} pour une ligne issue de la base (colonne `Identifiant reseau`). */
+const linkedNetworkRowLabel = (reseau: { id_fcu: number; 'Identifiant reseau'?: string | null; nom_reseau?: string | null }) =>
+  networkLinkLabel({ id_fcu: reseau.id_fcu, id_sncu: reseau['Identifiant reseau'], nom_reseau: reseau.nom_reseau });
 
 type ReseauDeChaleur = RouterOutput['reseaux']['reseauDeChaleur']['list'][number];
 type ReseauDeFroid = RouterOutput['reseaux']['reseauDeFroid']['list'][number];
@@ -179,6 +185,20 @@ const GestionDesReseaux = () => {
   );
   const trpcUtils = trpc.useUtils();
 
+  // La synchro serveur propage les modifications aux entités liées (SNCU/nom/gestionnaire/MO des
+  // extensions, remplissages des PDP) : une mise à jour ou suppression invalide donc les 4 listes,
+  // pas seulement celle de l'onglet courant.
+  const invalidateNetworkLists = useCallback(
+    () =>
+      void Promise.all([
+        trpcUtils.reseaux.reseauDeChaleur.list.invalidate(),
+        trpcUtils.reseaux.reseauDeFroid.list.invalidate(),
+        trpcUtils.reseaux.reseauEnConstruction.list.invalidate(),
+        trpcUtils.reseaux.perimetreDeDeveloppementPrioritaire.list.invalidate(),
+      ]),
+    [trpcUtils]
+  );
+
   const tabsInfo: Record<
     typeof selectedTab,
     {
@@ -254,20 +274,76 @@ const GestionDesReseaux = () => {
   });
 
   const { mutateAsync: updatePerimetreDeDeveloppementPrioritaire } = trpc.reseaux.perimetreDeDeveloppementPrioritaire.update.useMutation({
-    onSuccess: () => void tabInfo.refetch(),
+    onSuccess: invalidateNetworkLists,
   });
 
-  const handleUpdatePerimetreDeDeveloppementPrioritaire = useCallback(
-    toastErrors(
-      async (pdpId: number, { 'Identifiant reseau': identifiantReseau, ...rest }: Partial<PerimetreDeDeveloppementPrioritaire>) => {
-        await updatePerimetreDeDeveloppementPrioritaire({
-          id: pdpId,
-          ...rest,
-          'Identifiant reseau': identifiantReseau ?? undefined, // for bypassing typescript error
-        });
+  const { mutateAsync: updateReseauEnConstruction } = trpc.reseaux.reseauEnConstruction.update.useMutation({
+    onSuccess: invalidateNetworkLists,
+  });
+
+  const { mutateAsync: updateReseauDeChaleur } = trpc.reseaux.reseauDeChaleur.update.useMutation({
+    onSuccess: invalidateNetworkLists,
+  });
+
+  const { mutateAsync: updateReseauDeFroid } = trpc.reseaux.reseauDeFroid.update.useMutation({
+    onSuccess: invalidateNetworkLists,
+  });
+
+  const [networkBeingEdited, setNetworkBeingEdited] = useState<EditableNetwork | null>(null);
+
+  // Dispatches the dialog values (only the changed fields, `undefined` = untouched) to the per-type update mutation.
+  const handleSaveNetworkEdit = useCallback(
+    toastErrors(async (network: EditableNetwork, values: EditableNetworkValues) => {
+      switch (network.type) {
+        case 'reseau_de_chaleur':
+          await updateReseauDeChaleur(
+            omitUndefinedValues({
+              Gestionnaire: values.gestionnaire,
+              'Identifiant reseau': values.id_sncu,
+              id: network.id_fcu,
+              MO: values.maitre_ouvrage,
+              nom_reseau: values.nom_reseau,
+            })
+          );
+          break;
+        case 'reseau_de_froid':
+          await updateReseauDeFroid(
+            omitUndefinedValues({
+              Gestionnaire: values.gestionnaire,
+              'Identifiant reseau': values.id_sncu,
+              id: network.id_fcu,
+              MO: values.maitre_ouvrage,
+              nom_reseau: values.nom_reseau,
+            })
+          );
+          break;
+        case 'reseau_en_construction':
+          await updateReseauEnConstruction(
+            omitUndefinedValues({
+              gestionnaire: values.gestionnaire,
+              id: network.id_fcu,
+              MO: values.maitre_ouvrage,
+              mise_en_service: values.mise_en_service,
+              nom_reseau: values.nom_reseau,
+              ouvert_aux_raccordements: values.ouvert_aux_raccordements,
+              reseau_de_chaleur_id: values.reseau_de_chaleur_id,
+            })
+          );
+          break;
+        case 'perimetre_de_developpement_prioritaire':
+          await updatePerimetreDeDeveloppementPrioritaire(
+            omitUndefinedValues({
+              Gestionnaire: values.gestionnaire,
+              id: network.id_fcu,
+              MO: values.maitre_ouvrage,
+              reseau_de_chaleur_ids: values.reseau_de_chaleur_ids,
+              reseau_en_construction_ids: values.reseau_en_construction_ids,
+            })
+          );
+          break;
       }
-    ),
-    [updatePerimetreDeDeveloppementPrioritaire]
+    }),
+    [updateReseauDeChaleur, updateReseauDeFroid, updateReseauEnConstruction, updatePerimetreDeDeveloppementPrioritaire]
   );
 
   const { mutateAsync: updateGeomUpdate, isPending: isUpdatingGeometry } = trpc.reseaux.updateGeomUpdate.useMutation({
@@ -286,31 +362,43 @@ const GestionDesReseaux = () => {
 
   const { mutateAsync: deleteNetwork, isPending: isDeletingNetwork } = trpc.reseaux.deleteNetwork.useMutation({
     onSuccess: () => {
-      void tabInfo.refetch();
+      // La suppression d'un RC délie ses extensions et retire les liens PDP → toutes les listes
+      invalidateNetworkLists();
       handleCancelEdit();
     },
   });
 
   const { mutateAsync: createNetwork, isPending: isCreatingNetwork } = trpc.reseaux.createNetwork.useMutation({
-    onSuccess: () => {
+    onSuccess: (createdNetwork) => {
       void tabInfo.refetch();
       handleCancelEdit();
+      openEditDialogForCreatedNetwork(createdNetwork);
     },
   });
 
+  // L'id n'est saisi que pour chaleur/froid (correspondance Airtable) : construction et PDP sont en id auto
+  const creationRequiresId = tabInfo.type === 'reseaux_de_chaleur' || tabInfo.type === 'reseaux_de_froid';
+
   const handleValidateGeometry = useCallback(
     toastErrors(async () => {
-      if (!editingId || !updatedGeom) {
+      if (!updatedGeom) {
         return;
       }
 
       if (!selectedNetwork) {
+        const id = editingId?.toString().trim();
+        if (creationRequiresId && !id) {
+          return;
+        }
         await createNetwork({
           geometry: updatedGeom,
-          id: editingId?.toString() || '',
+          ...(creationRequiresId ? { id } : {}),
           type: tabInfo.type,
         });
       } else {
+        if (!editingId) {
+          return;
+        }
         await updateGeomUpdate({
           geometry: updatedGeom,
           id: typeof editingId === 'number' ? editingId : parseInt(editingId || '0', 10),
@@ -318,7 +406,7 @@ const GestionDesReseaux = () => {
         });
       }
     }),
-    [editingId, updatedGeom, updateGeomUpdate, createNetwork, selectedNetwork, selectedTab]
+    [editingId, updatedGeom, updateGeomUpdate, createNetwork, selectedNetwork, selectedTab, creationRequiresId]
   );
 
   const handleDeleteGeomUpdate = useCallback(
@@ -356,7 +444,85 @@ const GestionDesReseaux = () => {
     setSelectedNetwork(null);
   }, []);
 
+  // Un réseau vient d'être créé (géométrie seule) : ouvre la fenêtre de modification pour saisir nom, gestionnaire, MO et liens.
+  const openEditDialogForCreatedNetwork = useCallback(
+    (createdNetwork: RouterOutput['reseaux']['createNetwork']) => {
+      const gestionnaire = 'Gestionnaire' in createdNetwork ? createdNetwork.Gestionnaire : createdNetwork.gestionnaire;
+      switch (selectedTab) {
+        case 'reseaux-de-chaleur':
+        case 'reseaux-de-froid':
+          setNetworkBeingEdited({
+            gestionnaire,
+            id_fcu: createdNetwork.id_fcu,
+            id_sncu: createdNetwork['Identifiant reseau'],
+            maitre_ouvrage: createdNetwork.MO,
+            nom_reseau: 'nom_reseau' in createdNetwork ? createdNetwork.nom_reseau : null,
+            type: selectedTab === 'reseaux-de-chaleur' ? 'reseau_de_chaleur' : 'reseau_de_froid',
+          });
+          break;
+        case 'reseaux-en-construction':
+          setNetworkBeingEdited({
+            gestionnaire,
+            id_fcu: createdNetwork.id_fcu,
+            id_sncu: null,
+            maitre_ouvrage: createdNetwork.MO,
+            mise_en_service: null,
+            nom_reseau: 'nom_reseau' in createdNetwork ? createdNetwork.nom_reseau : null,
+            ouvert_aux_raccordements: false,
+            parentLabel: null,
+            reseau_de_chaleur_id: null,
+            type: 'reseau_en_construction',
+          });
+          break;
+        case 'perimetres-de-developpement-prioritaire':
+          setNetworkBeingEdited({
+            gestionnaire,
+            id_fcu: createdNetwork.id_fcu,
+            maitre_ouvrage: createdNetwork.MO,
+            reseau_de_chaleur_links: [],
+            reseau_en_construction_links: [],
+            type: 'perimetre_de_developpement_prioritaire',
+          });
+          break;
+      }
+    },
+    [selectedTab]
+  );
+
   const rowSelection = selectedNetwork ? { [selectedNetwork.id_fcu]: true } : {};
+
+  // Navigation croisée depuis les colonnes de liens : bascule d'onglet, sélectionne la ligne cible et scrolle jusqu'à elle.
+  // La cible reste en attente tant que l'onglet n'est pas affiché et ses données chargées.
+  const scrollToRowRef = useRef<((rowId: string) => void) | null>(null);
+  const [pendingNetworkFocus, setPendingNetworkFocus] = useState<{ tab: (typeof tabIds)[number]; idFcu: number } | null>(null);
+
+  const navigateToNetwork = useCallback(
+    (tab: (typeof tabIds)[number], idFcu: number) => {
+      void setSelectedTab(tab);
+      setPendingNetworkFocus({ idFcu, tab });
+    },
+    [setSelectedTab]
+  );
+
+  useEffect(() => {
+    if (!pendingNetworkFocus || selectedTab !== pendingNetworkFocus.tab) {
+      return;
+    }
+    const networks = {
+      'perimetres-de-developpement-prioritaire': perimetresDeDeveloppementPrioritaire,
+      'reseaux-de-chaleur': reseauxDeChaleur,
+      'reseaux-de-froid': reseauxDeFroid,
+      'reseaux-en-construction': reseauxEnConstruction,
+    }[pendingNetworkFocus.tab];
+    if (!networks) {
+      return;
+    }
+    setSelectedNetwork(networks.find((reseau) => reseau.id_fcu === pendingNetworkFocus.idFcu) ?? null);
+    setEditingId(null);
+    setUpdatedGeom(null);
+    scrollToRowRef.current?.(String(pendingNetworkFocus.idFcu));
+    setPendingNetworkFocus(null);
+  }, [pendingNetworkFocus, selectedTab, reseauxDeChaleur, reseauxDeFroid, reseauxEnConstruction, perimetresDeDeveloppementPrioritaire]);
 
   const buildReminderAndNotesColumns = useCallback(
     <T extends { id_fcu: number; notes: string | null; reminders: ReseauDeChaleur['reminders'] }>(
@@ -406,7 +572,24 @@ const GestionDesReseaux = () => {
             <Button
               size="small"
               priority="secondary"
-              iconId="fr-icon-edit-line"
+              iconId="fr-icon-pencil-line"
+              title="Modifier les informations"
+              stopPropagation
+              onClick={() => {
+                setNetworkBeingEdited({
+                  gestionnaire: row.original.Gestionnaire,
+                  id_fcu: row.original.id_fcu,
+                  id_sncu: row.original['Identifiant reseau'],
+                  maitre_ouvrage: row.original.MO,
+                  nom_reseau: row.original.nom_reseau,
+                  type: 'reseau_de_chaleur',
+                });
+              }}
+            />
+            <Button
+              size="small"
+              priority="secondary"
+              iconId="ri-road-map-line"
               title="Modifier la géométrie"
               // For an unknown reason, if we don't prevent the default behavior, the row click event is triggered
               // and editing is not triggered
@@ -433,7 +616,7 @@ const GestionDesReseaux = () => {
           </div>
         ),
         id: 'actions',
-        width: '120px',
+        width: '180px',
       },
       {
         accessorKey: 'id_fcu',
@@ -485,6 +668,35 @@ const GestionDesReseaux = () => {
         filterType: 'Text',
         header: "Maître d'ouvrage",
         width: '150px',
+      },
+      {
+        accessorFn: (row) =>
+          row.extensions.map((extension) => `#${extension.id_fcu}${extension.nom_reseau ? ` ${extension.nom_reseau}` : ''}`).join(', '),
+        cell: ({ row }) => (
+          <div className="flex flex-col items-start">
+            {row.original.extensions.map((extension) => (
+              <button
+                key={extension.id_fcu}
+                type="button"
+                className="fr-link fr-link--sm text-left"
+                title="Voir dans l'onglet réseaux en construction"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  navigateToNetwork('reseaux-en-construction', extension.id_fcu);
+                }}
+              >
+                {`#${extension.id_fcu}${extension.nom_reseau ? ` ${extension.nom_reseau}` : ''}`}
+              </button>
+            ))}
+          </div>
+        ),
+        filterProps: {
+          placeholder: 'Filtrer par extension',
+        },
+        filterType: 'Text',
+        header: 'Extensions',
+        id: 'extensions',
+        width: '220px',
       },
       {
         accessorFn: (row) => row.communes?.join(', '),
@@ -584,7 +796,7 @@ const GestionDesReseaux = () => {
       },
       ...buildReminderAndNotesColumns<ReseauDeChaleur>('reseau_de_chaleur'),
     ],
-    [buildReminderAndNotesColumns]
+    [buildReminderAndNotesColumns, navigateToNetwork]
   );
 
   const reseauxDeFroidColumns = useMemo<ColumnDef<ReseauDeFroid>[]>(
@@ -595,7 +807,24 @@ const GestionDesReseaux = () => {
             <Button
               size="small"
               priority="secondary"
-              iconId="fr-icon-edit-line"
+              iconId="fr-icon-pencil-line"
+              title="Modifier les informations"
+              stopPropagation
+              onClick={() => {
+                setNetworkBeingEdited({
+                  gestionnaire: row.original.Gestionnaire,
+                  id_fcu: row.original.id_fcu,
+                  id_sncu: row.original['Identifiant reseau'],
+                  maitre_ouvrage: row.original.MO,
+                  nom_reseau: row.original.nom_reseau,
+                  type: 'reseau_de_froid',
+                });
+              }}
+            />
+            <Button
+              size="small"
+              priority="secondary"
+              iconId="ri-road-map-line"
               title="Modifier la géométrie"
               stopPropagation
               onClick={() => {
@@ -620,7 +849,7 @@ const GestionDesReseaux = () => {
           </div>
         ),
         id: 'actions',
-        width: '120px',
+        width: '180px',
       },
       {
         accessorKey: 'id_fcu',
@@ -725,7 +954,35 @@ const GestionDesReseaux = () => {
             <Button
               size="small"
               priority="secondary"
-              iconId="fr-icon-edit-line"
+              iconId="fr-icon-pencil-line"
+              title="Modifier les informations"
+              stopPropagation
+              onClick={() => {
+                setNetworkBeingEdited({
+                  gestionnaire: row.original.gestionnaire,
+                  id_fcu: row.original.id_fcu,
+                  id_sncu: row.original['Identifiant reseau'],
+                  maitre_ouvrage: row.original.MO,
+                  mise_en_service: row.original.mise_en_service,
+                  nom_reseau: row.original.nom_reseau,
+                  ouvert_aux_raccordements: row.original.ouvert_aux_raccordements,
+                  parentLabel:
+                    row.original.reseau_de_chaleur_id !== null
+                      ? networkLinkLabel({
+                          id_fcu: row.original.reseau_de_chaleur_id,
+                          id_sncu: row.original['Identifiant reseau'],
+                          nom_reseau: row.original.reseau_de_chaleur_nom,
+                        })
+                      : null,
+                  reseau_de_chaleur_id: row.original.reseau_de_chaleur_id,
+                  type: 'reseau_en_construction',
+                });
+              }}
+            />
+            <Button
+              size="small"
+              priority="secondary"
+              iconId="ri-road-map-line"
               title="Modifier la géométrie"
               stopPropagation
               onClick={() => {
@@ -754,12 +1011,47 @@ const GestionDesReseaux = () => {
           </div>
         ),
         id: 'actions',
-        width: '120px',
+        width: '180px',
       },
       {
         accessorKey: 'id_fcu',
         header: 'id_fcu',
         width: '100px',
+      },
+      {
+        accessorFn: (row) =>
+          row.reseau_de_chaleur_id !== null
+            ? networkLinkLabel({
+                id_fcu: row.reseau_de_chaleur_id,
+                id_sncu: row['Identifiant reseau'],
+                nom_reseau: row.reseau_de_chaleur_nom,
+              })
+            : '',
+        cell: ({ row }) =>
+          row.original.reseau_de_chaleur_id !== null ? (
+            <button
+              type="button"
+              className="fr-link fr-link--sm text-left"
+              title="Voir dans l'onglet réseaux de chaleur"
+              onClick={(event) => {
+                event.stopPropagation();
+                navigateToNetwork('reseaux-de-chaleur', row.original.reseau_de_chaleur_id as number);
+              }}
+            >
+              {networkLinkLabel({
+                id_fcu: row.original.reseau_de_chaleur_id as number,
+                id_sncu: row.original['Identifiant reseau'],
+                nom_reseau: row.original.reseau_de_chaleur_nom,
+              })}
+            </button>
+          ) : null,
+        filterProps: {
+          placeholder: 'Filtrer par réseau étendu',
+        },
+        filterType: 'Text',
+        header: 'Réseau étendu',
+        id: 'reseau_etendu',
+        width: '220px',
       },
       {
         accessorKey: 'nom_reseau',
@@ -804,6 +1096,15 @@ const GestionDesReseaux = () => {
         width: '200px',
       },
       {
+        accessorKey: 'mise_en_service',
+        filterProps: {
+          placeholder: 'Filtrer par mise en service',
+        },
+        filterType: 'Text',
+        header: 'Mise en service',
+        width: '130px',
+      },
+      {
         accessorKey: 'ouvert_aux_raccordements',
         cell: ({ row }) => (
           <Checkbox
@@ -827,9 +1128,16 @@ const GestionDesReseaux = () => {
         header: `Date d'actualisation`,
         width: '150px',
       },
+      {
+        accessorKey: 'created_at',
+        cellType: 'Date',
+        filterType: 'Range',
+        header: 'Créé le',
+        width: '150px',
+      },
       ...buildReminderAndNotesColumns<ReseauEnConstruction>('reseau_en_construction'),
     ],
-    [buildReminderAndNotesColumns]
+    [buildReminderAndNotesColumns, navigateToNetwork]
   );
 
   const perimetresDeDeveloppementPrioritaireColumns = useMemo<ColumnDef<PerimetreDeDeveloppementPrioritaire>[]>(
@@ -840,7 +1148,30 @@ const GestionDesReseaux = () => {
             <Button
               size="small"
               priority="secondary"
-              iconId="fr-icon-edit-line"
+              iconId="fr-icon-pencil-line"
+              title="Modifier les informations"
+              stopPropagation
+              onClick={() => {
+                setNetworkBeingEdited({
+                  gestionnaire: row.original.Gestionnaire,
+                  id_fcu: row.original.id_fcu,
+                  maitre_ouvrage: row.original.MO,
+                  reseau_de_chaleur_links: row.original.linked_reseaux_de_chaleur.map((reseau) => ({
+                    id: reseau.id_fcu,
+                    label: linkedNetworkRowLabel(reseau),
+                  })),
+                  reseau_en_construction_links: row.original.linked_reseaux_en_construction.map((reseau) => ({
+                    id: reseau.id_fcu,
+                    label: linkedNetworkRowLabel(reseau),
+                  })),
+                  type: 'perimetre_de_developpement_prioritaire',
+                });
+              }}
+            />
+            <Button
+              size="small"
+              priority="secondary"
+              iconId="ri-road-map-line"
               title="Modifier la géométrie"
               stopPropagation
               onClick={() => {
@@ -865,7 +1196,7 @@ const GestionDesReseaux = () => {
           </div>
         ),
         id: 'actions',
-        width: '120px',
+        width: '180px',
       },
       {
         accessorKey: 'id_fcu',
@@ -882,65 +1213,82 @@ const GestionDesReseaux = () => {
         width: '300px',
       },
       {
-        accessorKey: 'Identifiant reseau',
-        cell: (info) => {
-          const network = info.row.original;
-          return (
-            <TableFieldInput
-              title="ID SNCU"
-              value={network['Identifiant reseau']}
-              onChange={(value) =>
-                void handleUpdatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
-                  'Identifiant reseau': value ?? undefined,
-                })
-              }
-            />
-          );
+        accessorKey: 'Gestionnaire',
+        filterProps: {
+          placeholder: 'Filtrer par gestionnaire',
         },
-        header: 'ID SNCU',
-        width: '100px',
+        filterType: 'Text',
+        header: 'Gestionnaire',
+        width: '150px',
       },
       {
-        accessorKey: 'reseau_de_chaleur_ids',
-        cell: (info) => {
-          const network = info.row.original;
-          return (
-            <TableFieldInput
-              title="IDs Réseaux de chaleur"
-              value={network.reseau_de_chaleur_ids.join(',')}
-              onChange={(value) =>
-                void handleUpdatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
-                  reseau_de_chaleur_ids: value ? value.split(',').map(Number) : [],
-                })
-              }
-            />
-          );
+        accessorKey: 'MO',
+        filterProps: {
+          placeholder: "Filtrer par maître d'ouvrage",
         },
-        header: 'IDs Réseaux de chaleur',
-        width: '140px',
+        filterType: 'Text',
+        header: "Maître d'ouvrage",
+        width: '150px',
       },
       {
-        accessorKey: 'reseau_en_construction_ids',
-        cell: (info) => {
-          const network = info.row.original;
-          return (
-            <TableFieldInput
-              title="IDs Réseaux en construction"
-              value={network.reseau_en_construction_ids.join(',')}
-              onChange={(value) =>
-                void handleUpdatePerimetreDeDeveloppementPrioritaire(network.id_fcu, {
-                  reseau_en_construction_ids: value ? value.split(',').map(Number) : [],
-                })
-              }
-            />
-          );
+        accessorFn: (row) => row.linked_reseaux_de_chaleur.map(linkedNetworkRowLabel).join(', '),
+        cell: ({ row }) => (
+          <div className="flex flex-col items-start">
+            {row.original.linked_reseaux_de_chaleur.map((reseau) => (
+              <button
+                key={reseau.id_fcu}
+                type="button"
+                className="fr-link fr-link--sm text-left"
+                title="Voir dans l'onglet réseaux de chaleur"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  navigateToNetwork('reseaux-de-chaleur', reseau.id_fcu);
+                }}
+              >
+                {linkedNetworkRowLabel(reseau)}
+              </button>
+            ))}
+          </div>
+        ),
+        filterProps: {
+          placeholder: 'Filtrer par réseau',
         },
-        header: 'IDs Réseaux en construction',
-        width: '140px',
+        filterType: 'Text',
+        header: 'Réseaux de chaleur liés',
+        id: 'reseau_de_chaleur_ids',
+        width: '220px',
+      },
+      {
+        accessorFn: (row) => row.linked_reseaux_en_construction.map(linkedNetworkRowLabel).join(', '),
+        cell: ({ row }) => (
+          <div className="flex flex-col items-start">
+            {row.original.linked_reseaux_en_construction.map((reseau) => (
+              <button
+                key={reseau.id_fcu}
+                type="button"
+                className="fr-link fr-link--sm text-left"
+                title="Voir dans l'onglet réseaux en construction"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  navigateToNetwork('reseaux-en-construction', reseau.id_fcu);
+                }}
+              >
+                {linkedNetworkRowLabel(reseau)}
+              </button>
+            ))}
+          </div>
+        ),
+        filterProps: {
+          placeholder: 'Filtrer par réseau',
+        },
+        filterType: 'Text',
+        header: 'Réseaux en construction liés',
+        id: 'reseau_en_construction_ids',
+        width: '220px',
       },
       ...buildReminderAndNotesColumns<PerimetreDeDeveloppementPrioritaire>('perimetre_de_developpement_prioritaire'),
     ],
-    [handleUpdatePerimetreDeDeveloppementPrioritaire, buildReminderAndNotesColumns]
+    [buildReminderAndNotesColumns, navigateToNetwork]
   );
 
   const reseauxDeChaleurWithGeomUpdate = reseauxDeChaleur?.filter((reseau) => reseau.geom_update);
@@ -1055,6 +1403,7 @@ const GestionDesReseaux = () => {
           rowIdKey="id_fcu"
           enableGlobalFilter
           rowSelection={selectedTab === 'reseaux-de-chaleur' ? rowSelection : {}}
+          scrollToRowRef={scrollToRowRef}
           topRightActions={
             <div className="flex gap-2">
               <Button
@@ -1075,7 +1424,6 @@ const GestionDesReseaux = () => {
           }
         />
       ),
-      isDefault: selectedTab === 'reseaux-de-chaleur',
       label: (
         <>
           Réseaux de chaleur
@@ -1085,6 +1433,7 @@ const GestionDesReseaux = () => {
           </Tag>
         </>
       ),
+      tabId: 'reseaux-de-chaleur',
     },
     {
       content: (
@@ -1101,6 +1450,7 @@ const GestionDesReseaux = () => {
           rowIdKey="id_fcu"
           enableGlobalFilter
           rowSelection={selectedTab === 'reseaux-de-froid' ? rowSelection : {}}
+          scrollToRowRef={scrollToRowRef}
           topRightActions={
             <div className="flex gap-2">
               <Button
@@ -1121,7 +1471,6 @@ const GestionDesReseaux = () => {
           }
         />
       ),
-      isDefault: selectedTab === 'reseaux-de-froid',
       label: (
         <>
           Réseaux de froid
@@ -1131,6 +1480,7 @@ const GestionDesReseaux = () => {
           </Tag>
         </>
       ),
+      tabId: 'reseaux-de-froid',
     },
     {
       content: (
@@ -1147,6 +1497,7 @@ const GestionDesReseaux = () => {
           rowIdKey="id_fcu"
           enableGlobalFilter
           rowSelection={selectedTab === 'reseaux-en-construction' ? rowSelection : {}}
+          scrollToRowRef={scrollToRowRef}
           topRightActions={
             <div className="flex gap-2">
               <Button
@@ -1166,7 +1517,6 @@ const GestionDesReseaux = () => {
           }
         />
       ),
-      isDefault: selectedTab === 'reseaux-en-construction',
       label: (
         <>
           Réseaux en construction
@@ -1176,6 +1526,7 @@ const GestionDesReseaux = () => {
           </Tag>
         </>
       ),
+      tabId: 'reseaux-en-construction',
     },
     {
       content: (
@@ -1192,6 +1543,7 @@ const GestionDesReseaux = () => {
           rowIdKey="id_fcu"
           enableGlobalFilter
           rowSelection={selectedTab === 'perimetres-de-developpement-prioritaire' ? rowSelection : {}}
+          scrollToRowRef={scrollToRowRef}
           topRightActions={
             <div className="flex gap-2">
               <Button
@@ -1211,7 +1563,6 @@ const GestionDesReseaux = () => {
           }
         />
       ),
-      isDefault: selectedTab === 'perimetres-de-developpement-prioritaire',
       label: (
         <>
           Périmètres de développement prioritaire
@@ -1227,6 +1578,7 @@ const GestionDesReseaux = () => {
           </Tag>
         </>
       ),
+      tabId: 'perimetres-de-developpement-prioritaire',
     },
   ];
 
@@ -1274,15 +1626,18 @@ const GestionDesReseaux = () => {
       <div className="my-8">
         <ResizablePanelGroup orientation="horizontal" className="gap-4">
           <ResizablePanel defaultSize="66%">
+            {/* Mode contrôlé : indispensable pour changer d'onglet par programme (navigation croisée des colonnes de liens) */}
             <Tabs
               classes={{ panel: 'p-4' }}
-              tabs={tabs}
-              onTabChange={(event) => {
-                const newTab = tabIds[event.tabIndex];
-                void setSelectedTab(newTab);
+              selectedTabId={selectedTab}
+              tabs={tabs.map(({ label, tabId }) => ({ label, tabId }))}
+              onTabChange={(tabId) => {
+                void setSelectedTab(tabId as (typeof tabIds)[number]);
                 handleCancelEdit();
               }}
-            />
+            >
+              {tabs.find((tab) => tab.tabId === selectedTab)?.content}
+            </Tabs>
           </ResizablePanel>
           <ResizableSeparator />
           <ResizablePanel defaultSize="34%">
@@ -1355,26 +1710,21 @@ const GestionDesReseaux = () => {
                         {!selectedNetwork ? (
                           <>
                             <div className="text-center text-sm mt-2">Création d'un nouveau {tabInfo.title}</div>
-                            <div className="m-2">
-                              <Input
-                                label={
-                                  selectedTab === 'reseaux-de-chaleur' || selectedTab === 'reseaux-de-froid'
-                                    ? 'ID SNCU ou ID FCU du nouveau réseau'
-                                    : 'ID du nouveau réseau'
-                                }
-                                nativeInputProps={{
-                                  onChange: (e) => {
-                                    setEditingId(e.target.value);
-                                  },
-                                  placeholder:
-                                    selectedTab === 'reseaux-de-chaleur' || selectedTab === 'reseaux-de-froid'
-                                      ? 'Ex: 7412A ou 123'
-                                      : 'Ex: 123',
-                                  required: true,
-                                  value: editingId?.toString() || '',
-                                }}
-                              />
-                            </div>
+                            {creationRequiresId && (
+                              <div className="m-2">
+                                <Input
+                                  label="ID SNCU ou ID FCU du nouveau réseau"
+                                  nativeInputProps={{
+                                    onChange: (e) => {
+                                      setEditingId(e.target.value);
+                                    },
+                                    placeholder: 'Ex: 7412A ou 123',
+                                    required: true,
+                                    value: editingId?.toString() || '',
+                                  }}
+                                />
+                              </div>
+                            )}
                           </>
                         ) : (
                           <div className="text-center text-sm mt-2">
@@ -1422,13 +1772,7 @@ const GestionDesReseaux = () => {
                               iconId="fr-icon-check-line"
                               title={!selectedNetwork ? 'Créer le réseau' : 'Valider la modification'}
                               loading={!selectedNetwork ? isCreatingNetwork : isUpdatingGeometry}
-                              disabled={
-                                !updatedGeom ||
-                                (!selectedNetwork && !editingId) ||
-                                (!selectedNetwork &&
-                                  (selectedTab === 'reseaux-de-chaleur' || selectedTab === 'reseaux-de-froid') &&
-                                  !editingId?.toString().trim())
-                              }
+                              disabled={!updatedGeom || (!selectedNetwork && creationRequiresId && !editingId?.toString().trim())}
                               stopPropagation
                               onClick={() => {
                                 void handleValidateGeometry();
@@ -1473,6 +1817,7 @@ const GestionDesReseaux = () => {
         </ResizablePanelGroup>
       </div>
       <DeleteNetworkDialog control={deleteNetworkDialog} onConfirm={handleConfirmDeleteNetwork} />
+      <EditNetworkDialog network={networkBeingEdited} onClose={() => setNetworkBeingEdited(null)} onSave={handleSaveNetworkEdit} />
     </SimplePage>
   );
 };
