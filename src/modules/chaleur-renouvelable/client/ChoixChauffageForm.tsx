@@ -21,7 +21,7 @@ export default function ChoixChauffageForm() {
     null,
     handleAddressNotFound
   );
-  const isFormDisabled = !params.adresse || !geoAddress || !params.typeLogement || !params.typeRadiateur || !params.espaceExterieur;
+  const isFormDisabled = !params.adresse || !geoAddress || !params.typeLogement || !params.typeRadiateur;
 
   useEffect(() => {
     if (!selectedBatEnrBatiment) {
