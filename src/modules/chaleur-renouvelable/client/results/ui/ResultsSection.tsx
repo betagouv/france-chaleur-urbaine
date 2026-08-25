@@ -73,6 +73,9 @@ export function ResultsSection({
     [items]
   );
   const activeItems = itemsByUsage[activeTab];
+  const hasSolarThermalHotWaterSolution = itemsByUsage.hotWaterOnly.some(
+    (item) => item.label.trim() === 'Solaire thermique' && item.usage === 'hotWaterOnly'
+  );
 
   useEffect(() => {
     if (activeItems.length > 0 || activeTab === 'hotWaterOnly') {
@@ -167,6 +170,9 @@ export function ResultsSection({
         })}
       </div>
       <div className="border border-gray-200 bg-white py-6 pr-3">
+        {activeTab === 'heatingAndHotWater' && hasSolarThermalHotWaterSolution && (
+          <SolarThermalHotWaterNotice onClick={() => setActiveTab('hotWaterOnly')} />
+        )}
         {activeTab === 'hotWaterOnly' && activeItems.length === 0 && isHotWaterModeMissing && (
           <div className="px-5">{hotWaterModeNotice}</div>
         )}
@@ -243,6 +249,18 @@ export function ResultsSection({
         </div>
       </div>
     </>
+  );
+}
+
+function SolarThermalHotWaterNotice({ onClick }: { onClick: () => void }) {
+  return (
+    <div className="mb-6 ml-5 border border-dotted border-[#E4794A] bg-[#FEF7DA] px-4 py-3 text-sm text-[#B34000]">
+      <span className="fr-icon-sun-line mr-2" aria-hidden="true" />
+      <strong>Solaire thermique :</strong> à combiner avec votre chauffage pour couvrir une partie des besoins en eau chaude.{' '}
+      <button type="button" className="inline-flex items-center gap-1 border-b border-current text-blue" onClick={onClick}>
+        Voir la solution <span className="fr-icon--sm fr-icon-arrow-right-line" aria-hidden="true" />
+      </button>
+    </div>
   );
 }
 
