@@ -197,20 +197,23 @@ export function ParamsForm({
             full
             priority="secondary"
             iconId="fr-icon-pencil-line"
-            className="hidden w-auto md:inline-flex"
+            className="relative hidden w-auto md:inline-flex"
             iconPosition="left"
             aria-expanded={isOpen}
             aria-controls="params-form"
             onClick={handleOpen}
           >
-            Complétez les paramètres
+            Compléter mes paramètres
+            <ParamsNotificationBadge />
           </Button>
         </div>
       )}
-      <p className="my-3 hidden md:block">
-        Ajustez les détails de votre simulation (DPE, nombre de logements, mode de production d’eau chaude...) pour obtenir un calcul plus
-        précis des coûts et économies d’énergie.
-      </p>
+      {!isOpen && (
+        <p className="my-3 bg-[#FFF6D8] px-4 py-3 font-bold text-[#C74700]">
+          <span className="fr-icon-warning-fill mr-2" aria-hidden="true" />4 informations à compléter ou vérifier{' '}
+          <span className="font-normal">pour affiner vos résultats.</span>
+        </p>
+      )}
       {isOpen ? (
         <>
           <div className="space-y-4">
@@ -386,17 +389,22 @@ export function ParamsForm({
           full
           priority="secondary"
           iconId="fr-icon-pencil-line"
-          className="my-3 md:hidden"
+          className="relative my-3 md:hidden"
           iconPosition="left"
           aria-expanded={isOpen}
           aria-controls="params-form"
           onClick={handleOpen}
         >
-          Complétez les paramètres
+          Compléter mes paramètres
+          <ParamsNotificationBadge />
         </Button>
       )}
     </form>
   );
+}
+
+function ParamsNotificationBadge() {
+  return <span className="ml-1 flex h-6 w-6 items-center justify-center rounded-full bg-error text-xs font-bold text-white">4</span>;
 }
 
 function DpeField({ value, onChange }: { value: DPE; onChange: (value: DPE) => void }) {
