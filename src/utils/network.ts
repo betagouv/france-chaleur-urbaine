@@ -73,6 +73,23 @@ export const fetchJSON = async <Data = any>(
   return await res.json();
 };
 
+export const fetchText = async (
+  url: string,
+  variables: RequestInit & {
+    params?: Record<string, any>;
+  } = {}
+): Promise<string> => {
+  const { params, ...init } = variables;
+
+  const queryString = params ? `?${objectToURLSearchParams(params as Record<string, string>).toString()}` : '';
+
+  const res = await fetch(`${url}${queryString}`, init);
+  if (!res.ok) {
+    await handleError(res, url);
+  }
+  return await res.text();
+};
+
 export const postFetchJSON = fetchMethod('POST');
 export const putFetchJSON = fetchMethod('PUT');
 export const patchFetchJSON = fetchMethod('PATCH');

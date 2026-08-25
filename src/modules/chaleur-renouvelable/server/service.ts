@@ -25,6 +25,8 @@ import { kdb, sql } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { fetchJSON } from '@/utils/network';
 
+import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
+
 const batEnrBatimentColumns = [
   'ac1',
   'ac2',
@@ -54,7 +56,6 @@ const batEnrBatimentColumns = [
 
 const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = serverConfig.contactEmail;
 const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = businessRules.fcrBuildingCandidatesRadiusMeters.value;
-const FRANCE_RENOV_SPACES_RESOURCE_ID = 'bc99b9d4-1b70-48e1-9958-98cceacd0c93';
 
 type BanAddressSearchResponse = {
   features: {
@@ -62,17 +63,6 @@ type BanAddressSearchResponse = {
       citycode: string;
     };
   }[];
-};
-
-type FranceRenovSpaceRow = {
-  'Adresse Structure': string;
-  'Code Postal Structure': string;
-  'Commune Structure': string;
-  'Email Structure': string;
-  'Nom Structure': string;
-  'Site Internet Structure': string | null;
-  'Telephone Structure': string;
-  'Telephone 2 Structure': string | null;
 };
 
 const singleConstructionHousingCount = sql<number | null>`
@@ -442,17 +432,7 @@ export const getFranceRenovSpace = async (input: FranceRenovSpaceInput): Promise
     return null;
   }
 
-  const result = await fetchJSON<{ data: FranceRenovSpaceRow[] }>(
-    `https://tabular-api.data.gouv.fr/api/resources/${FRANCE_RENOV_SPACES_RESOURCE_ID}/data/`,
-    {
-      params: {
-        'Code Insee Commune__exact': cityCode,
-        page_size: '1',
-      },
-    }
-  );
-
-  return result.data[0] ? toFranceRenovSpace(result.data[0]) : null;
+  return getFranceRenovSpaceByCityCode(cityCode);
 };
 
 const getFranceRenovCityCode = async ({ address, batimentConstructionId }: FranceRenovSpaceInput) => {
@@ -499,17 +479,6 @@ const getCityCodeFromAddress = async (address: string) => {
 
   return result.features[0]?.properties.citycode ?? null;
 };
-
-const toFranceRenovSpace = (row: FranceRenovSpaceRow): FranceRenovSpace => ({
-  address: row['Adresse Structure'].trim(),
-  city: row['Commune Structure'],
-  email: row['Email Structure'],
-  name: row['Nom Structure'],
-  phone: row['Telephone Structure'],
-  secondaryPhone: row['Telephone 2 Structure'],
-  website: row['Site Internet Structure'],
-  zipcode: row['Code Postal Structure'],
-});
 
 type RnbAddressBuildingsResponse = {
   results: {
