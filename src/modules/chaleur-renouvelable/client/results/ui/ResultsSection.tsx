@@ -17,6 +17,7 @@ import { GainVsGazBadge } from '@/modules/chaleur-renouvelable/client/results/ui
 import { PrerequisitesList } from '@/modules/chaleur-renouvelable/client/results/ui/PrerequisitesList';
 import { ProsConsLists } from '@/modules/chaleur-renouvelable/client/results/ui/ProsConsLists';
 import { SolutionConsumptionPanel } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionConsumptionPanel';
+import { Stars } from '@/modules/chaleur-renouvelable/client/results/ui/Stars';
 import {
   type DPE,
   getModeEauChaudeSanitaireLabel,
@@ -355,7 +356,8 @@ function OtherSolutionLabel({
   return (
     <span className="grid w-full gap-5 p-3 text-left md:grid-cols-[2fr_1fr_auto_auto] md:items-center md:p-5">
       <span className="items-center gap-2 md:items-start">
-        <span className="text-blue text-lg">{item.label}</span>
+        <span className="block text-lg text-blue">{item.label}</span>
+        <Stars value={item.pertinence} />
       </span>
       <span className="hidden md:block md:text-center">
         <span className="text-blue text-lg">
