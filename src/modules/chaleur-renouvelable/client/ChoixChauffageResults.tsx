@@ -111,6 +111,7 @@ export default function ChoixChauffageResults() {
               <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />
             </>
           )}
+          {!heatNetworkSolution && <EnergySobrietyCallout />}
           <ResultsSection
             items={displayedSolutions}
             coutParAnGaz={coutParAnGaz}
@@ -119,7 +120,7 @@ export default function ChoixChauffageResults() {
             openAccordionId={openAccordionId}
             shouldOpenFirstItemByDefault={!heatNetworkSolution}
             situation={situation}
-            title={heatNetworkSolution ? undefined : 'Solutions possibles'}
+            title={heatNetworkSolution ? undefined : 'Solutions à étudier'}
             typeLogement={effectiveTypeLogement}
             onEditParamsClick={handleEditHotWaterParamsClick}
             onOpenChange={handleAccordionOpenChange}
@@ -185,5 +186,21 @@ export default function ChoixChauffageResults() {
         <NoResultSection />
       )}
     </>
+  );
+}
+
+function EnergySobrietyCallout() {
+  return (
+    <div className="mt-6 border border-dotted border-[#00a95f] bg-[#e3fdeb] px-4 py-4 text-[#161616] md:px-5">
+      <p className="mb-4 flex items-start gap-3 font-bold">
+        <span className="fr-icon-sparkling-2-line mt-0.5 shrink-0" aria-hidden="true" />
+        <span>Le saviez-vous ? Avant de changer votre chauffage, réduisez vos besoins en chaleur</span>
+      </p>
+      <p className="mb-0">
+        Les travaux de sobriété énergétique et d'isolation permettent de réduire durablement les besoins en chauffage d'un bâtiment, avant
+        même de changer l'équipement. <strong>Ils diminuent aussi la puissance à installer, et donc le coût</strong> de consommation
+        ci-dessous.
+      </p>
+    </div>
   );
 }
