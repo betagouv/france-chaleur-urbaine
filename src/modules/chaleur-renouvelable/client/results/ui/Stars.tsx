@@ -8,7 +8,7 @@ export function Stars({ value }: { value: number }) {
         <Image key={index} src="/icons/icon-star.png" alt="" aria-hidden="true" width={20} height={20} />
       ))}
       <Tooltip
-        title="Classement Ademe ENR Choix"
+        title="Classement ENR Choix bâtiments (ADEME)"
         iconProps={{
           className: 'text-blue',
           name: 'fr-icon-information-fill',
