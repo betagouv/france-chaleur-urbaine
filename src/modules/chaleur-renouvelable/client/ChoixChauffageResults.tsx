@@ -131,7 +131,7 @@ export default function ChoixChauffageResults() {
               }
             }}
           />
-          <IncompatibleSolutionsSection rows={incompatibleSolutionRows} />
+          <IncompatibleSolutionsSection rows={incompatibleSolutionRows} typeLogement={effectiveTypeLogement} />
           <DemandeFCRForm
             eligibiliteReseauChaleur={situation.eligibiliteReseauChaleur}
             geoAddress={geoAddress}
