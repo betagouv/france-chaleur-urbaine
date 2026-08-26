@@ -51,7 +51,7 @@ describe('getNextOutdoorSpaceValue', () => {
     ).toStrictEqual('none');
   });
 
-  it('maps the single building checkbox to shared outdoor spaces for collective heating buildings', () => {
+  it('returns a garden/courtyard outdoor space for buildings', () => {
     expect(
       getNextOutdoorSpaceValue({
         checkboxKey: 'garden',
@@ -60,18 +60,30 @@ describe('getNextOutdoorSpaceValue', () => {
         hasTerrace: false,
         typeLogement: 'immeuble_chauffage_collectif',
       })
-    ).toStrictEqual('shared');
+    ).toStrictEqual('jardinCours');
   });
 
-  it('maps the single building checkbox to private outdoor spaces for individual heating buildings', () => {
+  it('returns a terrace/balcony outdoor space for buildings', () => {
     expect(
       getNextOutdoorSpaceValue({
-        checkboxKey: 'garden',
+        checkboxKey: 'terrace',
         checked: true,
         hasGarden: false,
         hasTerrace: false,
         typeLogement: 'immeuble_chauffage_individuel',
       })
-    ).toStrictEqual('private');
+    ).toStrictEqual('terrasseBalcon');
+  });
+
+  it('combines garden/courtyard and terrace/balcony for buildings', () => {
+    expect(
+      getNextOutdoorSpaceValue({
+        checkboxKey: 'terrace',
+        checked: true,
+        hasGarden: true,
+        hasTerrace: false,
+        typeLogement: 'immeuble_chauffage_individuel',
+      })
+    ).toStrictEqual('terrasseBalconEtJardinCours');
   });
 });

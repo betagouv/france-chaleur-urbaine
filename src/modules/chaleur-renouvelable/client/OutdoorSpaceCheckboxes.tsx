@@ -1,20 +1,30 @@
 import { useId } from 'react';
 
-import type { EspaceExterieur, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import {
+  type EspaceExterieur,
+  getEspaceExterieurCheckboxState,
+  getEspaceExterieurFromCheckboxState,
+  type TypeLogement,
+} from '@/modules/chaleur-renouvelable/constants';
+import cx from '@/utils/cx';
 
 type OutdoorSpaceCheckboxesProps = {
+  className?: string;
+  layout?: OutdoorSpaceCheckboxesLayout;
   onChange: (value: EspaceExterieur | null) => void;
   typeLogement: TypeLogement | null;
   value: EspaceExterieur | null;
 };
 
 type OutdoorSpaceCheckboxKey = 'garden' | 'terrace';
+type OutdoorSpaceCheckboxesLayout = 'inline' | 'stacked';
 
-export function OutdoorSpaceCheckboxes({ onChange, typeLogement, value }: OutdoorSpaceCheckboxesProps) {
+export function OutdoorSpaceCheckboxes({ className, layout = 'inline', onChange, typeLogement, value }: OutdoorSpaceCheckboxesProps) {
   const id = useId();
   const isDisabled = !typeLogement;
-  const hasGarden = getOutdoorSpaceCheckboxState({ checkboxKey: 'garden', typeLogement, value });
-  const hasTerrace = getOutdoorSpaceCheckboxState({ checkboxKey: 'terrace', typeLogement, value });
+  const checkboxState = getEspaceExterieurCheckboxState(value);
+  const hasGarden = checkboxState.hasGarden;
+  const hasTerrace = checkboxState.hasTerrace;
 
   const handleCheckboxChange = (checkboxKey: OutdoorSpaceCheckboxKey, checked: boolean) => {
     onChange(
@@ -29,25 +39,23 @@ export function OutdoorSpaceCheckboxes({ onChange, typeLogement, value }: Outdoo
   };
 
   return (
-    <div className="fr-mb-0 md:col-span-3 flex flex-col gap-2 md:flex-row md:items-center">
-      <span>Espaces extérieurs disponibles :</span>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div className={cx('mb-0 flex flex-col gap-2', layout === 'inline' && 'md:col-span-3 md:flex-row md:items-center', className)}>
+      <span className={cx(layout === 'stacked' && 'text-sm mb-2')}>Espaces extérieurs disponibles : </span>
+      <div className={cx('flex flex-col gap-2', layout === 'inline' && 'sm:flex-row sm:items-center sm:gap-3')}>
         <OutdoorSpaceCheckbox
           checked={hasGarden}
           disabled={isDisabled}
           id={`${id}-garden`}
-          label={typeLogement === 'immeuble_chauffage_individuel' ? 'balcon/terrasse' : 'cour et/ou jardin'}
+          label="Cour et/ou jardin"
           onChange={(checked) => handleCheckboxChange('garden', checked)}
         />
-        {typeLogement === 'maison_individuelle' && (
-          <OutdoorSpaceCheckbox
-            checked={hasTerrace}
-            disabled={isDisabled}
-            id={`${id}-terrace`}
-            label="terrasse et/ou balcon"
-            onChange={(checked) => handleCheckboxChange('terrace', checked)}
-          />
-        )}
+        <OutdoorSpaceCheckbox
+          checked={hasTerrace}
+          disabled={isDisabled}
+          id={`${id}-terrace`}
+          label="Terrasse et/ou balcon"
+          onChange={(checked) => handleCheckboxChange('terrace', checked)}
+        />
       </div>
     </div>
   );
@@ -70,42 +78,10 @@ export function getNextOutdoorSpaceValue({
     return null;
   }
 
-  const nextHasGarden = checkboxKey === 'garden' ? checked : hasGarden;
-  const nextHasTerrace = checkboxKey === 'terrace' ? checked : hasTerrace;
-
-  if (typeLogement === 'maison_individuelle') {
-    return getHouseOutdoorSpaceValue({ hasGarden: nextHasGarden, hasTerrace: nextHasTerrace });
-  }
-
-  return nextHasGarden ? getBuildingOutdoorSpaceValue(typeLogement) : 'none';
-}
-
-function getOutdoorSpaceCheckboxState({
-  checkboxKey,
-  typeLogement,
-  value,
-}: {
-  checkboxKey: OutdoorSpaceCheckboxKey;
-  typeLogement: TypeLogement | null;
-  value: EspaceExterieur | null;
-}) {
-  if (!typeLogement || !value) {
-    return false;
-  }
-
-  if (checkboxKey === 'terrace') {
-    return typeLogement === 'maison_individuelle' && ['terrasseBalcon', 'terrasseBalconEtJardinCours'].includes(value);
-  }
-
-  return ['shared', 'both', 'private', 'jardinCours', 'terrasseBalconEtJardinCours'].includes(value);
-}
-
-function getHouseOutdoorSpaceValue({ hasGarden, hasTerrace }: { hasGarden: boolean; hasTerrace: boolean }): EspaceExterieur {
-  return hasGarden && hasTerrace ? 'terrasseBalconEtJardinCours' : hasGarden ? 'jardinCours' : hasTerrace ? 'terrasseBalcon' : 'none';
-}
-
-function getBuildingOutdoorSpaceValue(typeLogement: Exclude<TypeLogement, 'maison_individuelle'>): EspaceExterieur {
-  return typeLogement === 'immeuble_chauffage_collectif' ? 'shared' : 'private';
+  return getEspaceExterieurFromCheckboxState(typeLogement, {
+    hasGarden: checkboxKey === 'garden' ? checked : hasGarden,
+    hasTerrace: checkboxKey === 'terrace' ? checked : hasTerrace,
+  });
 }
 
 type OutdoorSpaceCheckboxProps = {

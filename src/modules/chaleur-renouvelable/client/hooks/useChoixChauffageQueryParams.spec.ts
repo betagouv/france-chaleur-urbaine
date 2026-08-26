@@ -16,7 +16,7 @@ describe('getNextEspaceExterieurQueryValue', () => {
     ).toStrictEqual('jardinCours');
   });
 
-  it('removes the URL outdoor space when a selected building adds an incompatible housing type', () => {
+  it('keeps the garden/courtyard outdoor space when a selected building adds another housing type', () => {
     expect(
       getNextEspaceExterieurQueryValue({
         currentEspaceExterieur: 'jardinCours',
@@ -26,7 +26,7 @@ describe('getNextEspaceExterieurQueryValue', () => {
           typeLogement: 'immeuble_chauffage_collectif',
         },
       })
-    ).toStrictEqual(null);
+    ).toStrictEqual('jardinCours');
   });
 
   it('uses the explicit next outdoor space when the housing type changes', () => {
@@ -35,10 +35,23 @@ describe('getNextEspaceExterieurQueryValue', () => {
         currentEspaceExterieur: 'jardinCours',
         effectiveEspaceExterieur: null,
         nextParams: {
-          espaceExterieur: 'shared',
+          espaceExterieur: 'jardinCours',
           typeLogement: 'immeuble_chauffage_collectif',
         },
       })
-    ).toStrictEqual('shared');
+    ).toStrictEqual('jardinCours');
+  });
+
+  it('keeps the combined outdoor space when the housing type changes', () => {
+    expect(
+      getNextEspaceExterieurQueryValue({
+        currentEspaceExterieur: 'terrasseBalconEtJardinCours',
+        effectiveEspaceExterieur: null,
+        nextParams: {
+          constructionId: 'BATIMENT-1',
+          typeLogement: 'maison_individuelle',
+        },
+      })
+    ).toStrictEqual('terrasseBalconEtJardinCours');
   });
 });

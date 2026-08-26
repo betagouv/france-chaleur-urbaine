@@ -1,4 +1,4 @@
-import { type SubmitEvent, useEffect, useState } from 'react';
+import { type SubmitEvent, useEffect, useId, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
@@ -23,7 +23,7 @@ import {
   type BatEnrBatiment,
   type DPE,
   DPE_VALUES,
-  isEspaceExterieurCompatible,
+  getEspaceExterieurForTypeLogement,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type ModeEauChaudeSanitaireQueryParam,
   modeEauChaudeSanitaireOptions,
@@ -35,7 +35,7 @@ import {
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 import { AddressField } from '@/modules/form/AddressField';
 
-import { OutdoorSpaceSelect } from './OutdoorSpaceSelect';
+import { OutdoorSpaceCheckboxes } from './OutdoorSpaceCheckboxes';
 
 export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
 
@@ -134,57 +134,63 @@ export function ParamsForm({
     const prefillParams = getSimulationPrefillFromBatEnrBatiment(batiment);
 
     setHasPendingLocalChange(true);
-    setDraft((previousDraft) => ({
-      ...previousDraft,
-      constructionId: batiment.batiment_construction_id,
-      dpe: prefillParams.dpe ?? previousDraft.dpe,
-      espaceExterieur:
-        prefillParams.typeLogement && !isEspaceExterieurCompatible(prefillParams.typeLogement, previousDraft.espaceExterieur)
-          ? null
+    setDraft((previousDraft) => {
+      const nextTypeLogement = prefillParams.typeLogement ?? previousDraft.typeLogement;
+
+      return {
+        ...previousDraft,
+        constructionId: batiment.batiment_construction_id,
+        dpe: prefillParams.dpe ?? previousDraft.dpe,
+        espaceExterieur: prefillParams.typeLogement
+          ? getEspaceExterieurForTypeLogement(nextTypeLogement, previousDraft.espaceExterieur)
           : previousDraft.espaceExterieur,
-      modeEauChaudeSanitaire: prefillParams.modeEauChaudeSanitaire ?? previousDraft.modeEauChaudeSanitaire,
-      nbLogements: prefillParams.nbLogements === undefined ? previousDraft.nbLogements : String(prefillParams.nbLogements),
-      surfaceMoyenne: prefillParams.surfaceMoyenne === undefined ? previousDraft.surfaceMoyenne : String(prefillParams.surfaceMoyenne),
-      typeLogement: prefillParams.typeLogement ?? previousDraft.typeLogement,
-    }));
+        modeEauChaudeSanitaire: prefillParams.modeEauChaudeSanitaire ?? previousDraft.modeEauChaudeSanitaire,
+        nbLogements: prefillParams.nbLogements === undefined ? previousDraft.nbLogements : String(prefillParams.nbLogements),
+        surfaceMoyenne: prefillParams.surfaceMoyenne === undefined ? previousDraft.surfaceMoyenne : String(prefillParams.surfaceMoyenne),
+        typeLogement: nextTypeLogement,
+      };
+    });
   };
 
   return (
     <form id="params-form" className="border border-gray-200 bg-white p-4 shadow-sm" onSubmit={handleSubmit}>
       {isOpen ? (
         <div className="flex items-start justify-between gap-4">
-          <AddressField
-            label=""
-            value={draft.adresse}
-            className="max-w-100 flex-1"
-            nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
-            onlyAddress
-            onClear={() => {
-              setHasPendingLocalChange(true);
-              setDraft((previousDraft) => ({ ...previousDraft, adresse: '', constructionId: null }));
-              setGeoAddress(undefined);
-              onSelectGeoAddress?.(undefined);
-            }}
-            onSelect={(nextAddress) => {
-              const nextAddressLabel = nextAddress?.properties?.label ?? '';
-              if (nextAddressLabel) {
-                trackPostHogEvent('fcr_simulator:address_selected', {
-                  address: nextAddressLabel,
-                  city: nextAddress?.properties.city,
-                  postcode: nextAddress?.properties.postcode,
-                  source: 'result',
-                });
-              }
-              setHasPendingLocalChange(true);
-              setDraft((previousDraft) => ({
-                ...previousDraft,
-                adresse: nextAddressLabel,
-                constructionId: null,
-              }));
-              setGeoAddress(nextAddress);
-              onSelectGeoAddress?.(nextAddress);
-            }}
-          />
+          <div className="flex min-w-0 flex-1 items-start gap-2">
+            <span className="fr-icon-map-pin-2-line mt-2 shrink-0 text-sm" aria-hidden="true" />
+            <AddressField
+              label=""
+              value={draft.adresse}
+              className="max-w-100 flex-1"
+              nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
+              onlyAddress
+              onClear={() => {
+                setHasPendingLocalChange(true);
+                setDraft((previousDraft) => ({ ...previousDraft, adresse: '', constructionId: null }));
+                setGeoAddress(undefined);
+                onSelectGeoAddress?.(undefined);
+              }}
+              onSelect={(nextAddress) => {
+                const nextAddressLabel = nextAddress?.properties?.label ?? '';
+                if (nextAddressLabel) {
+                  trackPostHogEvent('fcr_simulator:address_selected', {
+                    address: nextAddressLabel,
+                    city: nextAddress?.properties.city,
+                    postcode: nextAddress?.properties.postcode,
+                    source: 'result',
+                  });
+                }
+                setHasPendingLocalChange(true);
+                setDraft((previousDraft) => ({
+                  ...previousDraft,
+                  adresse: nextAddressLabel,
+                  constructionId: null,
+                }));
+                setGeoAddress(nextAddress);
+                onSelectGeoAddress?.(nextAddress);
+              }}
+            />
+          </div>
           <button type="button" className="fr-icon-close-line mt-1 text-sm" aria-label="Fermer" onClick={handleClose} />
         </div>
       ) : (
@@ -208,116 +214,16 @@ export function ParamsForm({
           </Button>
         </div>
       )}
-      {!isOpen && (
-        <p className="my-3 bg-[#FFF6D8] px-4 py-3 font-bold text-[#C74700]">
-          <span className="fr-icon-warning-fill mr-2" aria-hidden="true" />4 informations à compléter ou vérifier{' '}
-          <span className="font-normal">pour affiner vos résultats.</span>
-        </p>
-      )}
+      <ParamsIncompleteAlert />
       {isOpen ? (
         <>
           <div className="space-y-4">
-            <section>
-              <div className="flex items-center gap-2">
-                <span className="fr-icon-community-fill" aria-hidden="true" />
-                <h3 className="m-0 text-sm font-bold">Bâtiment</h3>
-              </div>
-              <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-[1fr_2fr]">
-                <BatEnrBatimentsMap
-                  batiments={batiments}
-                  initialCenter={geoAddress?.geometry.coordinates}
-                  onSelect={handleSelectBatiment}
-                  selectedBatiment={draftSelectedBatiment}
-                  className="h-full"
-                />
-                <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 content-start">
-                  <InputWithSuffix
-                    label="Surface habitable par logement (moy)"
-                    suffix="m²"
-                    value={draft.surfaceMoyenne}
-                    placeholder="70"
-                    onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
-                    onBlur={() => {
-                      const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
-                      if (surfaceM2 !== null) {
-                        trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
-                      }
-                    }}
-                  />
-                  <Input
-                    hideOptionalLabel
-                    label="Habitants par logement (moy)"
-                    nativeInputProps={{
-                      inputMode: 'decimal',
-                      min: 0,
-                      onBlur: () => {
-                        const normalizedHabitantsMoyen = normalizeDecimalString(draft.habitantsMoyen);
-                        if (normalizedHabitantsMoyen) {
-                          trackPostHogEvent('fcr_simulator:habitants_changed', { habitants: Number(normalizedHabitantsMoyen) });
-                        }
-                        setDraft((previousDraft) => ({
-                          ...previousDraft,
-                          habitantsMoyen: normalizedHabitantsMoyen,
-                        }));
-                      },
-                      onChange: (event) => {
-                        const nextValue = event.target.value;
-                        if (!(nextValue === '' || /^[0-9]+([.,][0-9]*)?$/.test(nextValue))) return;
-
-                        setDraft((previousDraft) => ({ ...previousDraft, habitantsMoyen: nextValue }));
-                      },
-                      placeholder: '2',
-                      step: 0.1,
-                      type: 'number',
-                      value: draft.habitantsMoyen,
-                    }}
-                  />
-                  <OutdoorSpaceSelect
-                    typeLogement={draft.typeLogement}
-                    value={draft.espaceExterieur}
-                    onChange={(value) => {
-                      if (value) {
-                        trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoor_space: value });
-                      }
-                      setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }));
-                    }}
-                  />
-                  <Input
-                    hideOptionalLabel
-                    label="Nombre de logements"
-                    nativeInputProps={{
-                      inputMode: 'numeric',
-                      min: 1,
-                      onBlur: () => {
-                        const nbLogements = parseIntegerOrNull(draft.nbLogements);
-                        if (nbLogements !== null) {
-                          trackPostHogEvent('fcr_simulator:nb_logements_changed', { nb_logements: nbLogements });
-                        }
-                      },
-                      onChange: (event) => setDraft((previousDraft) => ({ ...previousDraft, nbLogements: event.target.value })),
-                      placeholder: '25',
-                      type: 'number',
-                      value: draft.nbLogements,
-                    }}
-                  />
-                  <div className="md:col-span-2">
-                    <DpeField
-                      value={draft.dpe}
-                      onChange={(value) => {
-                        trackPostHogEvent('fcr_simulator:dpe_changed', { dpe: value });
-                        setDraft((previousDraft) => ({ ...previousDraft, dpe: value }));
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section id={HOT_WATER_PARAMS_SECTION_ID} className="scroll-mt-4">
-              <div className="flex items-center gap-2">
+            <section id={HOT_WATER_PARAMS_SECTION_ID} className="mb-5 md:mb-0">
+              <div className="flex items-center gap-x-2">
                 <span className="fr-icon-sensor-fill" aria-hidden="true" />
-                <h3 className="m-0 text-sm font-bold">Chauffage et eau chaude sanitaire</h3>
+                <h3 className="m-0 text-base font-bold">Chauffage et eau chaude sanitaire</h3>
               </div>
-              <div className="mt-3 grid grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-3">
+              <div className="mt-3 grid grid-cols-1 gap-x-5 md:grid-cols-3 [&_.fr-label]:text-sm">
                 <Select
                   label="Mode de chauffage"
                   options={[...typeLogementOptions]}
@@ -329,9 +235,7 @@ export function ParamsForm({
                       }
                       setDraft((previousDraft) => ({
                         ...previousDraft,
-                        espaceExterieur: isEspaceExterieurCompatible(nextTypeLogement, previousDraft.espaceExterieur)
-                          ? previousDraft.espaceExterieur
-                          : null,
+                        espaceExterieur: getEspaceExterieurForTypeLogement(nextTypeLogement, previousDraft.espaceExterieur ?? 'none'),
                         typeLogement: nextTypeLogement,
                       }));
                     },
@@ -374,6 +278,106 @@ export function ParamsForm({
                 />
               </div>
             </section>
+            <section>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="fr-icon-community-fill" aria-hidden="true" />
+                <h3 className="m-0 text-base font-bold">Bâtiment</h3>
+                <span className="text-xs text-gray-500">source : CSTB</span>
+              </div>
+              <div className="mt-0 md:mt-3 grid grid-cols-1 gap-4 md:grid-cols-[minmax(190px,0.9fr)_minmax(0,2fr)]">
+                <BatEnrBatimentsMap
+                  batiments={batiments}
+                  initialCenter={geoAddress?.geometry.coordinates}
+                  onSelect={handleSelectBatiment}
+                  selectedBatiment={draftSelectedBatiment}
+                  className="h-full"
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="[&_.fr-label]:text-sm">
+                    <InputWithSuffix
+                      label="Surface habitable par logement (moy)"
+                      suffix="m²"
+                      value={draft.surfaceMoyenne}
+                      placeholder="70"
+                      inputMode="numeric"
+                      min="0"
+                      step="1"
+                      onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
+                      onBlur={() => {
+                        const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
+                        if (surfaceM2 !== null) {
+                          trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
+                        }
+                      }}
+                    />
+                    <InputWithSuffix
+                      label="Habitants par logement (moy)"
+                      suffix="personnes"
+                      value={draft.habitantsMoyen}
+                      placeholder="2"
+                      step="0.1"
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      onBlur={() => {
+                        const normalizedHabitantsMoyen = normalizeDecimalString(draft.habitantsMoyen);
+                        if (normalizedHabitantsMoyen) {
+                          trackPostHogEvent('fcr_simulator:habitants_changed', { habitants: Number(normalizedHabitantsMoyen) });
+                        }
+                        setDraft((previousDraft) => ({
+                          ...previousDraft,
+                          habitantsMoyen: normalizedHabitantsMoyen,
+                        }));
+                      }}
+                      onChange={(value) => {
+                        if (!(value === '' || /^[0-9]+([.,][0-9]*)?$/.test(value))) return;
+
+                        setDraft((previousDraft) => ({ ...previousDraft, habitantsMoyen: value }));
+                      }}
+                    />
+                    <Input
+                      hideOptionalLabel
+                      label="Nombre de logements"
+                      nativeInputProps={{
+                        inputMode: 'numeric',
+                        min: 1,
+                        onBlur: () => {
+                          const nbLogements = parseIntegerOrNull(draft.nbLogements);
+                          if (nbLogements !== null) {
+                            trackPostHogEvent('fcr_simulator:nb_logements_changed', { nb_logements: nbLogements });
+                          }
+                        },
+                        onChange: (event) => setDraft((previousDraft) => ({ ...previousDraft, nbLogements: event.target.value })),
+                        placeholder: '25',
+                        type: 'number',
+                        value: draft.nbLogements,
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <DpeField
+                      value={draft.dpe}
+                      onChange={(value) => {
+                        trackPostHogEvent('fcr_simulator:dpe_changed', { dpe: value });
+                        setDraft((previousDraft) => ({ ...previousDraft, dpe: value }));
+                      }}
+                    />
+                    <OutdoorSpaceCheckboxes
+                      className="mt-5"
+                      typeLogement={draft.typeLogement}
+                      value={draft.espaceExterieur}
+                      layout="stacked"
+                      onChange={(value) => {
+                        if (value) {
+                          trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoor_space: value });
+                        }
+                        setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }));
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <Button type="submit" iconId="fr-icon-save-line" disabled={!isModified}>
@@ -407,18 +411,40 @@ function ParamsNotificationBadge() {
   return <span className="ml-1 flex h-6 w-6 items-center justify-center rounded-full bg-error text-xs font-bold text-white">4</span>;
 }
 
-function DpeField({ value, onChange }: { value: DPE; onChange: (value: DPE) => void }) {
+function ParamsIncompleteAlert() {
   return (
-    <div>
-      <div className="mb-2">Étiquette DPE</div>
-      <div className="flex flex-wrap gap-1.5">
+    <p className="my-3 bg-[#FFF6D8] px-4 py-3 font-bold text-[#C74700]">
+      <span className="fr-icon-warning-fill mr-2" aria-hidden="true" />4 informations à compléter ou vérifier{' '}
+      <span className="font-normal">pour affiner vos résultats.</span>
+    </p>
+  );
+}
+
+function DpeField({ value, onChange }: { onChange: (value: DPE) => void; value: DPE }) {
+  return (
+    <div className="fr-input-group fr-mb-0">
+      <div className="mb-2 text-sm">Étiquette DPE</div>
+      <div className="flex flex-wrap gap-1">
         {DPE_VALUES.map((dpeValue) => (
-          <DpeTag key={dpeValue} letter={dpeValue} isSelected={value === dpeValue} onClick={() => onChange(dpeValue)} />
+          <DpeTag key={dpeValue} letter={dpeValue} isSelected={value === dpeValue} onClick={() => onChange(dpeValue)} size="md" />
         ))}
       </div>
     </div>
   );
 }
+
+type InputWithSuffixProps = {
+  label: string;
+  onBlur?: () => void;
+  onChange: (value: string) => void;
+  placeholder: string;
+  suffix: string;
+  type?: 'number' | 'text';
+  value: string;
+  inputMode: 'search' | 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | undefined;
+  min: string;
+  step: string;
+};
 
 function InputWithSuffix({
   label,
@@ -426,23 +452,29 @@ function InputWithSuffix({
   onBlur,
   placeholder,
   suffix,
+  type = 'number',
   value,
-}: {
-  label: string;
-  onChange: (value: string) => void;
-  onBlur?: () => void;
-  placeholder: string;
-  suffix: string;
-  value: string;
-}) {
+  inputMode,
+  min,
+  step,
+}: InputWithSuffixProps) {
+  const inputId = useId();
+  const suffixDescriptionId = `${inputId}-suffix`;
+  const suffixAnchorText = value || placeholder;
+
   return (
     <div className="fr-input-group w-full">
-      <label className="fr-label mb-2">{label}</label>
+      <label className="fr-label mb-2" htmlFor={inputId}>
+        {label}
+      </label>
       <div className="relative">
         <input
+          aria-describedby={suffixDescriptionId}
           className="fr-input pr-12"
-          inputMode="numeric"
-          min={1}
+          id={inputId}
+          inputMode={inputMode}
+          min={min}
+          step={step}
           onBlur={onBlur}
           onChange={(event) => onChange(event.target.value)}
           onWheel={(event) => {
@@ -451,10 +483,19 @@ function InputWithSuffix({
             }
           }}
           placeholder={placeholder}
-          type="number"
+          type={type}
           value={value}
         />
-        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">{suffix}</span>
+        <span id={suffixDescriptionId} className="sr-only">
+          Unité : {suffix}
+        </span>
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-4 right-12 flex items-center overflow-hidden whitespace-pre text-base leading-6"
+        >
+          <span className={value ? 'invisible' : 'invisible italic'}>{suffixAnchorText}</span>
+          <span className="ml-1 text-gray-500">{suffix}</span>
+        </span>
       </div>
     </div>
   );

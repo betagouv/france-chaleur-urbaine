@@ -8,7 +8,6 @@ import {
   hasCompatibleGeothermalPotential,
   hasCompatibleHotWaterMode,
   hasCompatibleRadiator,
-  hasEspaceForHouseEquipment,
   hasEspacePrivate,
   hasEspaceShared,
   hasInsufficientSolarThermalCoverage,
@@ -693,7 +692,7 @@ export const modesDeChauffage = {
         </>
       ),
       estPossible: (situation) =>
-        hasEspaceForHouseEquipment(situation) &&
+        hasEspaceShared(situation) &&
         hasCompatibleHotWaterMode(situation, ['Collectif']) &&
         hasCompatibleGeothermalPotential(situation) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
@@ -702,7 +701,7 @@ export const modesDeChauffage = {
       id: 'house-geothermal-heat-pump',
       incompatibilites: [
         {
-          isIncompatible: (situation) => !hasEspaceForHouseEquipment(situation),
+          isIncompatible: (situation) => !hasEspaceShared(situation),
           reason: 'Vous ne disposez pas d’espace extérieur pour disposer les sondes',
           source: 'Formulaire',
         },
@@ -757,7 +756,7 @@ export const modesDeChauffage = {
         </>
       ),
       estPossible: (situation) =>
-        hasEspaceForHouseEquipment(situation) &&
+        hasEspaceShared(situation) &&
         hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
@@ -765,7 +764,7 @@ export const modesDeChauffage = {
       id: 'house-biomass-boiler',
       incompatibilites: [
         {
-          isIncompatible: (situation) => !hasEspaceForHouseEquipment(situation),
+          isIncompatible: (situation) => !hasEspaceShared(situation),
           reason: 'Vous ne disposez pas d’espace extérieur pour le stockage de combustible',
           source: 'Formulaire',
         },

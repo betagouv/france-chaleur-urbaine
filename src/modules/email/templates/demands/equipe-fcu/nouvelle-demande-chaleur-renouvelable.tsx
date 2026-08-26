@@ -146,7 +146,7 @@ export const scenarios = defineEmailScenarios<typeof NouvelleDemandeChaleurRenou
         lastName: 'Test',
         occupantStatus: 'Syndicat de copropriété',
         organizationName: 'Syndicat test',
-        outdoorSpace: 'shared',
+        outdoorSpace: 'jardinCours',
         phone: '0605040302',
         projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],
         radiatorType: 'radiateur-eau',

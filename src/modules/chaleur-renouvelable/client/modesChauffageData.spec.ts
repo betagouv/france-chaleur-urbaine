@@ -71,7 +71,7 @@ const createSituation = (overrides: SituationOverrides = {}): Situation => ({
   architecturalProtectionAc4bis: false,
   dpe: 'D',
   eligibiliteReseauChaleur: createHeatNetwork(),
-  espaceExterieur: 'both',
+  espaceExterieur: 'terrasseBalconEtJardinCours',
   geothermalNappeGmi: 1,
   geothermalNappePotential: 7,
   geothermalSondeGmi: 1,
@@ -133,7 +133,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'sans radiateur à eau',
@@ -165,7 +165,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'sans radiateur à eau',
@@ -181,7 +181,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'sans radiateur à eau',
@@ -197,7 +197,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'sans radiateur à eau',
@@ -213,7 +213,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'avec une eau chaude individuelle',
@@ -241,7 +241,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'avec une eau chaude individuelle',
@@ -257,7 +257,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'avec une eau chaude individuelle',
@@ -273,7 +273,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur privatif',
-        overrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
       },
       {
         description: 'avec une eau chaude collective',
@@ -289,7 +289,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur privatif',
-        overrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
       },
       {
         description: 'avec une eau chaude collective',
@@ -315,7 +315,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur privatif',
-        overrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Individuel', typeRadiateur: 'radiateur-electrique' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel', typeRadiateur: 'radiateur-electrique' },
       },
       {
         description: 'avec des radiateurs à eau',
@@ -331,7 +331,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur privatif',
-        overrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'avec une eau chaude individuelle',
@@ -359,15 +359,15 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'avec une eau chaude individuelle',
-        overrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Individuel' },
       },
     ],
     label: 'PAC sur capteurs solaires atmosphériques',
-    possibleOverrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Collectif' },
+    possibleOverrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Collectif' },
     typeLogement: 'immeuble_chauffage_individuel',
     usage: 'hotWaterOnly',
   },
@@ -375,7 +375,7 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur privatif',
-        overrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
       },
       {
         description: 'avec une eau chaude collective',
@@ -391,15 +391,15 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'avec une eau chaude individuelle',
-        overrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Individuel' },
       },
     ],
     label: 'PAC air-eau collective',
-    possibleOverrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Collectif' },
+    possibleOverrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Collectif' },
     typeLogement: 'immeuble_chauffage_individuel',
     usage: 'hotWaterOnly',
   },
@@ -558,7 +558,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC géothermique',
-    overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
     reason: 'Vous ne disposez pas d’espace extérieur pour disposer les sondes',
     source: 'Formulaire',
     typeLogement: 'immeuble_chauffage_collectif',
@@ -590,7 +590,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'Chaudière biomasse',
-    overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
     reason: 'Vous ne disposez pas d’espace extérieur pour le stockage de combustible',
     source: 'Formulaire',
     typeLogement: 'immeuble_chauffage_collectif',
@@ -598,7 +598,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC air-eau collective',
-    overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
     reason: 'Vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure',
     source: 'Formulaire',
     typeLogement: 'immeuble_chauffage_collectif',
@@ -606,7 +606,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'Hybride : PAC air/eau collective et chaudière gaz',
-    overrides: { espaceExterieur: 'private', modeEauChaudeSanitaire: 'Collectif' },
+    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
     reason: 'Vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure',
     source: 'Formulaire',
     typeLogement: 'immeuble_chauffage_collectif',
@@ -622,7 +622,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC air-eau individuelle',
-    overrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Individuel' },
+    overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
     reason: 'Vous ne disposez pas d’espace extérieur pour installer l’unité extérieure',
     source: 'Formulaire',
     typeLogement: 'immeuble_chauffage_individuel',
@@ -638,7 +638,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC air-air individuelle',
-    overrides: { espaceExterieur: 'shared', modeEauChaudeSanitaire: 'Individuel', typeRadiateur: 'radiateur-electrique' },
+    overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel', typeRadiateur: 'radiateur-electrique' },
     reason: 'Vous ne disposez pas d’espace extérieur pour installer l’unité extérieure',
     source: 'Formulaire',
     typeLogement: 'immeuble_chauffage_individuel',

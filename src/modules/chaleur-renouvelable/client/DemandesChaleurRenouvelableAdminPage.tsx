@@ -10,7 +10,7 @@ import { useFetch } from '@/hooks/useApi';
 import {
   type DemandeChaleurRenouvelableStatus,
   demandeChaleurRenouvelableStatuses,
-  getEspaceExterieurOptionLabel,
+  getEspaceExterieurLabel,
   modeEauChaudeSanitaireOptions,
   PROJECT_STATUS_VALUES,
   typeLogementOptions,
@@ -196,7 +196,7 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         width: '190px',
       },
       {
-        accessorFn: (row) => getEspaceExterieurOptionLabel(row.housing_type, row.outdoor_space),
+        accessorFn: (row) => getEspaceExterieurLabel(row.outdoor_space),
         enableGlobalFilter: false,
         filterType: 'Facets',
         header: 'Espace extérieur',

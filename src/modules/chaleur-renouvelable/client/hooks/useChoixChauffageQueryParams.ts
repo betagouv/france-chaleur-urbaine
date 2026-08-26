@@ -4,7 +4,7 @@ import { useCallback, useMemo } from 'react';
 import {
   DPE_VALUES,
   ESPACE_EXTERIEUR_VALUES,
-  isEspaceExterieurCompatible,
+  getEspaceExterieurForTypeLogement,
   MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES,
   TYPE_LOGEMENT_VALUES,
   TYPE_RADIATEUR_VALUES,
@@ -55,16 +55,15 @@ export function getNextEspaceExterieurQueryValue({
     return nextParams.espaceExterieur;
   }
 
-  const candidateEspaceExterieur = nextParams.espaceExterieur ?? currentEspaceExterieur ?? effectiveEspaceExterieur;
+  const candidateEspaceExterieur =
+    'espaceExterieur' in nextParams ? nextParams.espaceExterieur : (currentEspaceExterieur ?? effectiveEspaceExterieur);
 
-  return isEspaceExterieurCompatible(nextParams.typeLogement, candidateEspaceExterieur) ? candidateEspaceExterieur : null;
+  return getEspaceExterieurForTypeLogement(nextParams.typeLogement, candidateEspaceExterieur);
 }
 
 export function useChoixChauffageQueryParams() {
   const [queryParams, setQueryParams] = useQueryStates(choixChauffageQueryParsers);
-  const espaceExterieur = isEspaceExterieurCompatible(queryParams.typeLogement, queryParams.espaceExterieur)
-    ? queryParams.espaceExterieur
-    : null;
+  const espaceExterieur = getEspaceExterieurForTypeLogement(queryParams.typeLogement, queryParams.espaceExterieur);
   const modeEauChaudeSanitaire =
     queryParams.modeEauChaudeSanitaire ?? (queryParams.typeLogement === 'immeuble_chauffage_collectif' ? 'Collectif' : null);
 
@@ -127,14 +126,16 @@ export function useChoixChauffageQueryParams() {
 
       return setQueryParams({
         dpe: !hasQueryParam('dpe') ? params.dpe : undefined,
-        espaceExterieur: nextTypeLogement && !isEspaceExterieurCompatible(nextTypeLogement, espaceExterieur) ? null : undefined,
+        espaceExterieur: nextTypeLogement
+          ? getEspaceExterieurForTypeLogement(nextTypeLogement, queryParams.espaceExterieur ?? espaceExterieur)
+          : undefined,
         modeEauChaudeSanitaire: !hasQueryParam('modeEauChaudeSanitaire') ? params.modeEauChaudeSanitaire : undefined,
         nbLogements: !hasQueryParam('nbLogements') ? params.nbLogements : undefined,
         surfaceMoyenne: !hasQueryParam('surfaceMoyenne') ? params.surfaceMoyenne : undefined,
         typeLogement: nextTypeLogement,
       });
     },
-    [espaceExterieur, setQueryParams]
+    [espaceExterieur, queryParams.espaceExterieur, setQueryParams]
   );
 
   return useMemo(

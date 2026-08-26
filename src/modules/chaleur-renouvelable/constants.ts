@@ -175,58 +175,60 @@ export const typeLogementOptions = [
   value: TypeLogement;
 }[];
 
-export const ESPACE_EXTERIEUR_VALUES = [
-  'shared',
-  'private',
-  'both',
-  'terrasseBalcon',
-  'jardinCours',
-  'terrasseBalconEtJardinCours',
-  'none',
-] as const;
+export const ESPACE_EXTERIEUR_VALUES = ['terrasseBalcon', 'jardinCours', 'terrasseBalconEtJardinCours', 'none'] as const;
 export type EspaceExterieur = (typeof ESPACE_EXTERIEUR_VALUES)[number];
-export const espaceExterieurOptionsByTypeLogement = {
-  immeuble_chauffage_collectif: [
-    { label: 'Espaces extérieurs communs disponibles (cour, jardin...)', value: 'shared' },
-    { label: 'Aucun espace commun disponible', value: 'none' },
-  ],
-  immeuble_chauffage_individuel: [
-    { label: 'Espaces extérieurs privatifs disponibles (balcons, terrasse...)', value: 'private' },
-    { label: 'Aucun espace privatif disponible', value: 'none' },
-  ],
-  maison_individuelle: [
-    { label: 'Terrasse / Balcon', value: 'terrasseBalcon' },
-    { label: 'Jardin / Cours', value: 'jardinCours' },
-    { label: 'Terrasse / Balcon ET Jardin / Cours', value: 'terrasseBalconEtJardinCours' },
-    { label: 'Aucun espace extérieur disponible', value: 'none' },
-  ],
-} satisfies Record<
-  TypeLogement,
-  readonly {
-    label: string;
-    description?: string;
-    value: EspaceExterieur;
-  }[]
->;
 
-export function getEspaceExterieurOptions(typeLogement: TypeLogement | null | undefined) {
-  return typeLogement ? espaceExterieurOptionsByTypeLogement[typeLogement] : [];
+const espaceExterieurLabels = {
+  jardinCours: 'Cour et/ou jardin disponibles',
+  none: 'Aucun espace extérieur disponible',
+  terrasseBalcon: 'Terrasse et/ou balcon disponibles',
+  terrasseBalconEtJardinCours: 'Cour/jardin et terrasse/balcon disponibles',
+} satisfies Record<EspaceExterieur, string>;
+
+export type EspaceExterieurCheckboxState = {
+  hasGarden: boolean;
+  hasTerrace: boolean;
+};
+
+export function getEspaceExterieurLabel(espaceExterieur: EspaceExterieur) {
+  return espaceExterieurLabels[espaceExterieur];
 }
 
-export function getEspaceExterieurOptionLabel(typeLogement: TypeLogement, espaceExterieur: EspaceExterieur) {
-  return (
-    espaceExterieurOptionsByTypeLogement[typeLogement].find((option) => option.value === espaceExterieur)?.label ??
-    espaceExterieurOptionsByTypeLogement[typeLogement][0].label
-  );
+export function getEspaceExterieurCheckboxState(espaceExterieur: EspaceExterieur | null | undefined): EspaceExterieurCheckboxState {
+  switch (espaceExterieur) {
+    case 'jardinCours':
+      return { hasGarden: true, hasTerrace: false };
+    case 'terrasseBalcon':
+      return { hasGarden: false, hasTerrace: true };
+    case 'terrasseBalconEtJardinCours':
+      return { hasGarden: true, hasTerrace: true };
+    case 'none':
+    case null:
+    case undefined:
+      return { hasGarden: false, hasTerrace: false };
+  }
 }
 
-export function isEspaceExterieurCompatible(
+export function getEspaceExterieurFromCheckboxState(
+  typeLogement: TypeLogement | null | undefined,
+  checkboxState: EspaceExterieurCheckboxState
+): EspaceExterieur | null {
+  return typeLogement
+    ? checkboxState.hasGarden && checkboxState.hasTerrace
+      ? 'terrasseBalconEtJardinCours'
+      : checkboxState.hasGarden
+        ? 'jardinCours'
+        : checkboxState.hasTerrace
+          ? 'terrasseBalcon'
+          : 'none'
+    : null;
+}
+
+export function getEspaceExterieurForTypeLogement(
   typeLogement: TypeLogement | null | undefined,
   espaceExterieur: EspaceExterieur | null | undefined
 ) {
-  if (!typeLogement || !espaceExterieur) return false;
-
-  return getEspaceExterieurOptions(typeLogement).some((option) => option.value === espaceExterieur);
+  return espaceExterieur ? getEspaceExterieurFromCheckboxState(typeLogement, getEspaceExterieurCheckboxState(espaceExterieur)) : null;
 }
 
 export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['Individuel', 'Collectif'] as const;

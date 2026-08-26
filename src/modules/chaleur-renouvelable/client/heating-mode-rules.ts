@@ -10,13 +10,10 @@ import type {
 export const HEAT_NETWORK_MAX_DISTANCE = businessRules.fcrHeatNetworkMaxDistanceMeters.value;
 export const SOLAR_THERMAL_MIN_COVERAGE = businessRules.fcrSolarThermalMinCoveragePercent.value;
 
-export const hasEspaceShared = (situation: Situation) => ['shared', 'both'].includes(situation.espaceExterieur);
+export const hasEspaceShared = (situation: Situation) => ['jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
 
 export const hasEspacePrivate = (situation: Situation) =>
-  ['private', 'both', 'terrasseBalcon', 'jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
-
-export const hasEspaceForHouseEquipment = (situation: Situation) =>
-  ['shared', 'both', 'jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
+  ['terrasseBalcon', 'jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
 
 export const hasCompatibleHotWaterMode = (situation: Situation, modes: ModeEauChaudeSanitaire[]) =>
   !situation.modeEauChaudeSanitaire ||
