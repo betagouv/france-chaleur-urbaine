@@ -1,6 +1,7 @@
+import { createSerializer } from 'nuqs';
 import { describe, expect, it } from 'vitest';
 
-import { getNextEspaceExterieurQueryValue } from './useChoixChauffageQueryParams';
+import { choixChauffageQueryParsers, getNextEspaceExterieurQueryValue } from './useChoixChauffageQueryParams';
 
 describe('getNextEspaceExterieurQueryValue', () => {
   it('keeps the URL outdoor space when a selected building adds a compatible housing type', () => {
@@ -53,5 +54,13 @@ describe('getNextEspaceExterieurQueryValue', () => {
         },
       })
     ).toStrictEqual('terrasseBalconEtJardinCours');
+  });
+});
+
+describe('choixChauffageQueryParsers', () => {
+  it('keeps DPE E in URL when it is explicitly submitted', () => {
+    const serializeChoixChauffageQueryParams = createSerializer(choixChauffageQueryParsers);
+
+    expect(serializeChoixChauffageQueryParams({ dpe: 'E' })).toStrictEqual('?dpe=E');
   });
 });

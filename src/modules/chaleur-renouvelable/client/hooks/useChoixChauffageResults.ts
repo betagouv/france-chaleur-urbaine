@@ -139,16 +139,6 @@ export function useChoixChauffageResults() {
     [selectBatEnrBatiment, urlParams]
   );
 
-  useEffect(() => {
-    const batimentConstructionId = selectedBatEnrBatiment?.batiment_construction_id;
-
-    if (!batimentConstructionId) {
-      return;
-    }
-
-    urlParams.setPrefillParams(getSimulationPrefillFromBatEnrBatiment(selectedBatEnrBatiment));
-  }, [selectedBatEnrBatiment, urlParams]);
-
   return {
     batEnrBatiments,
     contactForm,

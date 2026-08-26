@@ -71,6 +71,7 @@ export default function ChoixChauffageResults() {
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
         values={urlParams.params}
+        paramSources={urlParams.paramSources}
         onSave={urlParams.setParams}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}

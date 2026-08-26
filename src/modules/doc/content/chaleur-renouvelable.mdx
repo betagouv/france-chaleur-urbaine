@@ -11,7 +11,7 @@ Le parcours « chaleur renouvelable » ([/chaleur-renouvelable](/chaleur-renouve
     landing["Saisie : adresse, type de logement, espace extérieur, radiateurs"] --> bat{"Plusieurs bâtiments candidats à moins de ${businessRules.fcrBuildingCandidatesRadiusMeters.display} ?"}
     bat -- "Oui" --> selection["Confirmation du bâtiment sur une carte (présélection mise en avant)"]
     bat -- "Non" --> simu
-    selection --> simu["Simulation : les caractéristiques connues du bâtiment préremplissent les paramètres"]
+    selection --> simu["Simulation : la confirmation du bâtiment préremplit DPE, surface, logements et ECS"]
     simu --> resultats["Résultats hiérarchisés : solutions possibles, prérequis, incompatibilités, coûts annuels"]
     resultats --> rc{"Raccordement possible ?"}
     rc -- "Oui" --> reco["Réseau de chaleur en solution recommandée + formulaire de mise en relation"]
@@ -35,7 +35,7 @@ Le bâtiment de référence est identifié depuis l'adresse (RNB, puis BDNB en s
 - La modale de confirmation s'ouvre dès qu'il y a **plusieurs candidats** — y compris quand un bâtiment a été présélectionné automatiquement (il est alors mis en avant sur la carte, mais l'utilisateur doit confirmer).
 - Elle ne s'ouvre pas pour zéro ou un seul candidat, ni quand l'URL contient déjà un bâtiment choisi (lien partagé ou simulation rejouée).
 - Si l'adresse ne permet d'identifier aucun bâtiment, le bâtiment BatEnR **le plus proche des coordonnées** est utilisé, sans sélection.
-- Indépendamment de la modale, le bâtiment reste **modifiable à tout moment** depuis la carte de la section « Bâtiment » du panneau Paramètres ; en changer réapplique le préremplissage (DPE, nombre de logements, surface, type de logement, mode d'ECS).
+- Indépendamment de la modale, le bâtiment reste **modifiable à tout moment** depuis la carte de la section « Bâtiment » du panneau Paramètres ; en changer réapplique le préremplissage (DPE, nombre de logements, surface, mode d'ECS) sans modifier le mode de chauffage renseigné sur la page de saisie.
 
 ## Les données mobilisées
 
