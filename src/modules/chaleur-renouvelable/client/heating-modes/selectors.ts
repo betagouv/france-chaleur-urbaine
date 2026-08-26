@@ -2,11 +2,13 @@ import {
   type DPE,
   DPE_VALUES,
   type IncompatibleSolutionRow,
+  type ModeDeChauffage,
   type ModeDeChauffageId,
   type Situation,
   type TypeLogement,
 } from '@/modules/chaleur-renouvelable/constants';
 
+import { getHeatingModePertinence } from '../heating-mode-rules';
 import { modesDeChauffage } from './catalog';
 
 export function improveDpe(dpe: DPE, gainClasse: number): DPE {
@@ -16,8 +18,19 @@ export function improveDpe(dpe: DPE, gainClasse: number): DPE {
 }
 
 export function getModesDeChauffage(typeLogement: TypeLogement, situation: Situation) {
-  return modesDeChauffage[typeLogement].filter((heatingMode) => heatingMode.estPossible(situation));
+  return modesDeChauffage[typeLogement]
+    .map((heatingMode, catalogIndex) => ({ catalogIndex, heatingMode }))
+    .filter((catalogHeatingMode) => catalogHeatingMode.heatingMode.estPossible(situation))
+    .map((catalogHeatingMode) => ({
+      ...catalogHeatingMode.heatingMode,
+      classement: getHeatingModeClassement(catalogHeatingMode.heatingMode, situation, catalogHeatingMode.catalogIndex),
+      pertinence: getHeatingModePertinence(catalogHeatingMode.heatingMode.id, situation, catalogHeatingMode.heatingMode.pertinence),
+    }))
+    .sort((leftHeatingMode, rightHeatingMode) => leftHeatingMode.classement - rightHeatingMode.classement);
 }
+
+const getHeatingModeClassement = (heatingMode: ModeDeChauffage, situation: Situation, fallbackClassement: number) =>
+  typeof heatingMode.classement === 'function' ? heatingMode.classement(situation) : (heatingMode.classement ?? fallbackClassement);
 
 export function getIncompatibleSolutionRows(situation: Situation, typeLogement: TypeLogement): IncompatibleSolutionRow[] {
   const rowsById = new Map<ModeDeChauffageId, IncompatibleSolutionRow>();

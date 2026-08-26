@@ -5,13 +5,20 @@ import { DEFAULT_SIMULATION_PARAMS } from '@/modules/chaleur-renouvelable/consta
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 type BuildSimulationSituationParams = {
+  altitude: number | null;
   batEnr: BatEnrInfo;
   eligibiliteReseauChaleur: HeatNetwork | null;
   params: ChoixChauffageParams;
 };
 
-export const buildSimulationSituation = ({ batEnr, eligibiliteReseauChaleur, params }: BuildSimulationSituationParams): Situation => ({
+export const buildSimulationSituation = ({
+  altitude,
+  batEnr,
+  eligibiliteReseauChaleur,
+  params,
+}: BuildSimulationSituationParams): Situation => ({
   adresse: params.adresse,
+  altitude,
   architecturalProtectionAc1: batEnr.architecturalProtectionAc1,
   architecturalProtectionAc2: batEnr.architecturalProtectionAc2,
   architecturalProtectionAc3: batEnr.architecturalProtectionAc3,

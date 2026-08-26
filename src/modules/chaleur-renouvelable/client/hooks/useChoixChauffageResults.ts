@@ -22,6 +22,7 @@ export function useChoixChauffageResults() {
   useRemoveHashOnScroll('#help-ademe');
 
   const {
+    altitude,
     geoAddress,
     setGeoAddress,
     batEnr,
@@ -43,8 +44,8 @@ export function useChoixChauffageResults() {
   const contactForm = useContactFormFCU();
 
   const situation = useMemo(
-    () => buildSimulationSituation({ batEnr, eligibiliteReseauChaleur, params }),
-    [batEnr, eligibiliteReseauChaleur, params]
+    () => buildSimulationSituation({ altitude, batEnr, eligibiliteReseauChaleur, params }),
+    [altitude, batEnr, eligibiliteReseauChaleur, params]
   );
 
   useEffect(() => {

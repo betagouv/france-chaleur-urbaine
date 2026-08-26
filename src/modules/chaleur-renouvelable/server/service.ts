@@ -307,7 +307,7 @@ const getBatEnrBatimentsWithinDistanceFromConstructionId = async (batimentConstr
 export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => {
   const communeInfo = await kdb
     .selectFrom('communes')
-    .select(['departement_id', 'temperature_ref_altitude_moyenne'])
+    .select(['altitude_moyenne', 'departement_id', 'temperature_ref_altitude_moyenne'])
     .where(
       'id',
       '=',
@@ -415,6 +415,7 @@ export const getAddressEligibilityContext = async (input: AddressEligibilityCont
   ]);
 
   return {
+    altitude: infos?.altitude_moyenne ?? null,
     batEnr: batEnrLookup.batEnr,
     batEnrBatiments: batEnrLookup.batEnrBatiments,
     codeDepartement: infos?.departement_id ?? '',

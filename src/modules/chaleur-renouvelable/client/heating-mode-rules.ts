@@ -1,5 +1,6 @@
 import { businessRules } from '@/modules/app/business-rules';
 import type {
+  ModeDeChauffageId,
   ModeEauChaudeSanitaire,
   PrerequisiteRow,
   PrerequisiteStatus,
@@ -9,6 +10,14 @@ import type {
 
 export const HEAT_NETWORK_MAX_DISTANCE = businessRules.fcrHeatNetworkMaxDistanceMeters.value;
 export const SOLAR_THERMAL_MIN_COVERAGE = businessRules.fcrSolarThermalMinCoveragePercent.value;
+export const HEATING_MODE_ALTITUDE_THRESHOLD_METERS = businessRules.fcrHeatingModeAltitudeThresholdMeters.value;
+
+const BIOMASS_BOILER_MODE_IDS: readonly ModeDeChauffageId[] = ['collective-biomass-boiler', 'house-biomass-boiler'];
+const AIR_WATER_HEAT_PUMP_MODE_IDS: readonly ModeDeChauffageId[] = [
+  'collective-air-water-heat-pump',
+  'individual-apartment-air-water-heat-pump',
+  'house-air-water-heat-pump',
+];
 
 export const hasEspaceShared = (situation: Situation) => ['jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
 
@@ -44,6 +53,23 @@ export const hasCompatibleGeothermalPotential = (situation: Situation) =>
   hasFavorableGeothermalArea(situation) &&
   (hasUnknownGeothermalResource(situation) || hasSufficientGeothermalResource(situation)) &&
   situation.hasGeothermalProbeSpace !== false;
+
+export const hasHighAltitudeWithoutAirProtectionPlan = (situation: Situation) =>
+  situation.altitude != null && situation.altitude > HEATING_MODE_ALTITUDE_THRESHOLD_METERS && !situation.planProtectionAtmosphere;
+
+/**
+ * Resolve the final star rating for modes influenced by altitude and air protection plans.
+ */
+export const getHeatingModePertinence = (heatingModeId: ModeDeChauffageId, situation: Situation, fallbackPertinence: number) =>
+  BIOMASS_BOILER_MODE_IDS.includes(heatingModeId)
+    ? hasHighAltitudeWithoutAirProtectionPlan(situation)
+      ? 3
+      : 2
+    : AIR_WATER_HEAT_PUMP_MODE_IDS.includes(heatingModeId)
+      ? situation.planProtectionAtmosphere && situation.altitude != null && situation.altitude < HEATING_MODE_ALTITUDE_THRESHOLD_METERS
+        ? 3
+        : 2
+      : fallbackPertinence;
 
 export const getPdpPrerequisite = (situation: Situation, status: PrerequisiteStatus = 'contraignant'): PrerequisiteRow[] =>
   situation.eligibiliteReseauChaleur?.inPDP

@@ -85,6 +85,7 @@ export type FranceRenovSpace = {
 };
 
 export type Situation = {
+  altitude: number | null;
   architecturalProtectionAc1: boolean;
   architecturalProtectionAc2: boolean;
   architecturalProtectionAc3: boolean;
@@ -142,6 +143,7 @@ export type ModeDeChauffage = {
   usage: ModeDeChauffageUsage;
   icone: string;
   pertinence: number;
+  classement?: number | ((situation: Situation) => number);
   description: React.ReactNode;
   avantages: string[];
   inconvenients: string[];

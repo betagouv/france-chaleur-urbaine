@@ -7,7 +7,7 @@ vi.mock('@/modules/simulator/client/SimulateurCoutRaccordement', () => ({
 
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
-import { TYPE_LOGEMENT_VALUES, type TypeLogement } from '../constants';
+import { type ModeDeChauffageId, TYPE_LOGEMENT_VALUES, type TypeLogement } from '../constants';
 import {
   getIncompatibleSolutionRows,
   getModesDeChauffage,
@@ -42,6 +42,20 @@ type IncompatibilityCase = {
   overrides: SituationOverrides;
 };
 
+type PertinenceCase = {
+  typeLogement: TypeLogement;
+  label: string;
+  usage: ModeDeChauffageUsage;
+  overrides: SituationOverrides;
+  expectedPertinence: number;
+};
+
+type HeatingModeOrderCase = {
+  typeLogement: TypeLogement;
+  overrides: SituationOverrides;
+  expectedAdjacentModeIds: readonly [ModeDeChauffageId, ModeDeChauffageId];
+};
+
 const PDP_PREREQUISITE_LABEL =
   'Votre bâtiment est situé dans un périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau de chaleur.';
 
@@ -64,6 +78,7 @@ const createHeatNetwork = (overrides: Partial<HeatNetwork> = {}): HeatNetwork =>
 
 const createSituation = (overrides: SituationOverrides = {}): Situation => ({
   adresse: '1 rue de la Paix, Paris',
+  altitude: 900,
   architecturalProtectionAc1: false,
   architecturalProtectionAc2: false,
   architecturalProtectionAc3: false,
@@ -89,6 +104,18 @@ const createSituation = (overrides: SituationOverrides = {}): Situation => ({
 
 const getMode = (typeLogement: TypeLogement, label: string, usage: ModeDeChauffageUsage): ModeDeChauffage => {
   const heatingMode = modesDeChauffage[typeLogement].find((modeDeChauffage) => {
+    return modeDeChauffage.label === label && modeDeChauffage.usage === usage;
+  });
+
+  if (!heatingMode) {
+    throw new Error(`Heating mode not found: ${typeLogement} / ${label} / ${usage}`);
+  }
+
+  return heatingMode;
+};
+
+const getResolvedMode = (typeLogement: TypeLogement, label: string, usage: ModeDeChauffageUsage, situation: Situation): ModeDeChauffage => {
+  const heatingMode = getModesDeChauffage(typeLogement, situation).find((modeDeChauffage) => {
     return modeDeChauffage.label === label && modeDeChauffage.usage === usage;
   });
 
@@ -750,6 +777,100 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
 ];
 
+const pertinenceCases: PertinenceCase[] = [
+  {
+    expectedPertinence: 3,
+    label: 'Chaudière biomasse',
+    overrides: { altitude: 1200, planProtectionAtmosphere: false },
+    typeLogement: 'immeuble_chauffage_collectif',
+    usage: 'heatingAndHotWater',
+  },
+  {
+    expectedPertinence: 2,
+    label: 'Chaudière biomasse',
+    overrides: { altitude: 1200, planProtectionAtmosphere: true },
+    typeLogement: 'immeuble_chauffage_collectif',
+    usage: 'heatingAndHotWater',
+  },
+  {
+    expectedPertinence: 3,
+    label: 'Chaudière biomasse',
+    overrides: { altitude: 1200, planProtectionAtmosphere: false },
+    typeLogement: 'maison_individuelle',
+    usage: 'heatingAndHotWater',
+  },
+  {
+    expectedPertinence: 3,
+    label: 'PAC air-eau collective',
+    overrides: { altitude: 900, modeEauChaudeSanitaire: 'Collectif', planProtectionAtmosphere: true },
+    typeLogement: 'immeuble_chauffage_collectif',
+    usage: 'heatingAndHotWater',
+  },
+  {
+    expectedPertinence: 2,
+    label: 'PAC air-eau collective',
+    overrides: { altitude: 900, modeEauChaudeSanitaire: 'Collectif', planProtectionAtmosphere: true },
+    typeLogement: 'immeuble_chauffage_collectif',
+    usage: 'hotWaterOnly',
+  },
+  {
+    expectedPertinence: 3,
+    label: 'PAC air-eau individuelle',
+    overrides: { altitude: 900, modeEauChaudeSanitaire: 'Individuel', planProtectionAtmosphere: true },
+    typeLogement: 'immeuble_chauffage_individuel',
+    usage: 'heatingAndHotWater',
+  },
+  {
+    expectedPertinence: 2,
+    label: 'PAC air-eau individuelle',
+    overrides: { altitude: 900, modeEauChaudeSanitaire: 'Individuel', planProtectionAtmosphere: false },
+    typeLogement: 'immeuble_chauffage_individuel',
+    usage: 'heatingAndHotWater',
+  },
+  {
+    expectedPertinence: 3,
+    label: 'PAC air-eau individuelle',
+    overrides: { altitude: 900, modeEauChaudeSanitaire: 'Individuel', planProtectionAtmosphere: true },
+    typeLogement: 'maison_individuelle',
+    usage: 'heatingAndHotWater',
+  },
+  {
+    expectedPertinence: 2,
+    label: 'PAC air-eau individuelle',
+    overrides: { altitude: 1000, modeEauChaudeSanitaire: 'Individuel', planProtectionAtmosphere: true },
+    typeLogement: 'maison_individuelle',
+    usage: 'heatingAndHotWater',
+  },
+];
+
+const heatingModeOrderCases: HeatingModeOrderCase[] = [
+  {
+    expectedAdjacentModeIds: ['collective-biomass-boiler', 'collective-air-water-heat-pump'],
+    overrides: { altitude: 1200, modeEauChaudeSanitaire: 'Collectif', planProtectionAtmosphere: false },
+    typeLogement: 'immeuble_chauffage_collectif',
+  },
+  {
+    expectedAdjacentModeIds: ['collective-air-water-heat-pump', 'collective-biomass-boiler'],
+    overrides: { altitude: 900, modeEauChaudeSanitaire: 'Collectif', planProtectionAtmosphere: false },
+    typeLogement: 'immeuble_chauffage_collectif',
+  },
+  {
+    expectedAdjacentModeIds: ['collective-air-water-heat-pump', 'collective-biomass-boiler'],
+    overrides: { altitude: 1200, modeEauChaudeSanitaire: 'Collectif', planProtectionAtmosphere: true },
+    typeLogement: 'immeuble_chauffage_collectif',
+  },
+  {
+    expectedAdjacentModeIds: ['house-biomass-boiler', 'house-air-water-heat-pump'],
+    overrides: { altitude: 1200, espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Individuel', planProtectionAtmosphere: false },
+    typeLogement: 'maison_individuelle',
+  },
+  {
+    expectedAdjacentModeIds: ['house-air-water-heat-pump', 'house-biomass-boiler'],
+    overrides: { altitude: 900, espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Individuel', planProtectionAtmosphere: false },
+    typeLogement: 'maison_individuelle',
+  },
+];
+
 describe('modesDeChauffage', () => {
   it('has an estPossible test case for every heating mode', () => {
     const allHeatingModeKeys = TYPE_LOGEMENT_VALUES.flatMap((typeLogement) =>
@@ -862,6 +983,25 @@ describe('modesDeChauffage', () => {
       'collective-air-water-heat-pump-hot-water',
       'collective-thermodynamic-water-heater',
     ]);
+  });
+
+  it.each(pertinenceCases)('$typeLogement / $label / $usage resolves pertinence from altitude and PPA', (testCase) => {
+    const heatingMode = getResolvedMode(testCase.typeLogement, testCase.label, testCase.usage, createSituation(testCase.overrides));
+
+    expect(heatingMode.pertinence).toStrictEqual(testCase.expectedPertinence);
+  });
+
+  it.each(heatingModeOrderCases)('$typeLogement orders biomass boiler around air-water heat pump from altitude and PPA', (testCase) => {
+    const heatingModeIds = getModesDeChauffage(testCase.typeLogement, createSituation(testCase.overrides)).map(
+      (modeDeChauffage) => modeDeChauffage.id
+    );
+    const firstExpectedModeIndex = heatingModeIds.indexOf(testCase.expectedAdjacentModeIds[0]);
+    const adjacentModeIds =
+      firstExpectedModeIndex === -1
+        ? []
+        : heatingModeIds.slice(firstExpectedModeIndex, firstExpectedModeIndex + testCase.expectedAdjacentModeIds.length);
+
+    expect(adjacentModeIds).toStrictEqual(testCase.expectedAdjacentModeIds);
   });
 
   it('marks PDP prerequisite favorable for heat network and restrictive for alternative solutions', () => {

@@ -10,6 +10,7 @@ import {
   hasCompatibleRadiator,
   hasEspacePrivate,
   hasEspaceShared,
+  hasHighAltitudeWithoutAirProtectionPlan,
   hasInsufficientSolarThermalCoverage,
   hasSufficientSolarThermalCoverage,
   hotWaterStoragePrerequisite,
@@ -159,6 +160,7 @@ export const modesDeChauffage = {
     },
     {
       avantages: ['Faibles émissions de CO₂', 'Longévité des équipements', 'Coût de la chaleur compétitif', 'Énergie locale (bois)'],
+      classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 2 : 3),
       coutInstallation: '6 000 à 8 000 €',
       coutParAnPublicodeKey: 'chaudière à granulés',
       description: (
@@ -216,6 +218,7 @@ export const modesDeChauffage = {
         'Suppression des chaudières (gain de place, sécurité)',
         'Rafraîchissement possible si émetteurs compatibles',
       ],
+      classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 3 : 2),
       coutInstallation: '4 000 à 6 000 €',
       coutParAnPublicodeKey: 'PAC air-eau coll',
       description: (
@@ -747,6 +750,7 @@ export const modesDeChauffage = {
         'Coût de la chaleur compétitif',
         'Énergie renouvelable et locale',
       ],
+      classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 1 : 2),
       coutInstallation: '10 000 à 17 000 €',
       coutParAnPublicodeKey: 'PAC eau-eau indiv',
       description: (
@@ -796,6 +800,7 @@ export const modesDeChauffage = {
         'Économique si bien dimensionnée',
         'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
       ],
+      classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 2 : 1),
       coutInstallation: '12 000 à 15 000 €',
       coutParAnPublicodeKey: 'PAC air-eau indiv',
       description: (

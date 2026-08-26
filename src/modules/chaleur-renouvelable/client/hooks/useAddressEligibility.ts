@@ -10,6 +10,7 @@ import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 type EligibilityState = {
   geoAddress?: BANAddressFeature;
+  altitude: number | null;
   batEnr: BatEnrInfo;
   batEnrBatiments: BatEnrBatiment[];
   selectedBatEnrBatiment?: BatEnrBatiment;
@@ -20,6 +21,7 @@ type EligibilityState = {
 };
 
 const emptyState: EligibilityState = {
+  altitude: null,
   batEnr: EMPTY_BAT_ENR_INFO,
   batEnrBatiments: [],
   codeDepartement: '',
@@ -70,6 +72,7 @@ export function useAddressEligibility(
         });
 
         setState({
+          altitude: addressEligibilityContext.altitude,
           batEnr: addressEligibilityContext.batEnr,
           batEnrBatiments: addressEligibilityContext.batEnrBatiments,
           codeDepartement: addressEligibilityContext.codeDepartement,
