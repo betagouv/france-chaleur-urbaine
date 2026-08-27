@@ -1,4 +1,5 @@
 import {
+  COOLING_POSSIBLE_ADVANTAGE,
   type DPE,
   DPE_VALUES,
   type IncompatibleSolutionRow,
@@ -21,16 +22,30 @@ export function getModesDeChauffage(typeLogement: TypeLogement, situation: Situa
   return modesDeChauffage[typeLogement]
     .map((heatingMode, catalogIndex) => ({ catalogIndex, heatingMode }))
     .filter((catalogHeatingMode) => catalogHeatingMode.heatingMode.estPossible(situation))
-    .map((catalogHeatingMode) => ({
-      ...catalogHeatingMode.heatingMode,
-      classement: getHeatingModeClassement(catalogHeatingMode.heatingMode, situation, catalogHeatingMode.catalogIndex),
-      pertinence: getHeatingModePertinence(catalogHeatingMode.heatingMode.id, situation, catalogHeatingMode.heatingMode.pertinence),
-    }))
+    .map((catalogHeatingMode) => {
+      const rafraichissementPossible = getRafraichissementPossible(catalogHeatingMode.heatingMode, situation);
+
+      return {
+        ...catalogHeatingMode.heatingMode,
+        avantages: getHeatingModeAvantages(catalogHeatingMode.heatingMode, rafraichissementPossible),
+        classement: getHeatingModeClassement(catalogHeatingMode.heatingMode, situation, catalogHeatingMode.catalogIndex),
+        pertinence: getHeatingModePertinence(catalogHeatingMode.heatingMode.id, situation, catalogHeatingMode.heatingMode.pertinence),
+        rafraichissementPossible,
+      };
+    })
     .sort((leftHeatingMode, rightHeatingMode) => leftHeatingMode.classement - rightHeatingMode.classement);
 }
 
 const getHeatingModeClassement = (heatingMode: ModeDeChauffage, situation: Situation, fallbackClassement: number) =>
   typeof heatingMode.classement === 'function' ? heatingMode.classement(situation) : (heatingMode.classement ?? fallbackClassement);
+
+const getRafraichissementPossible = (heatingMode: ModeDeChauffage, situation: Situation) =>
+  typeof heatingMode.rafraichissementPossible === 'function'
+    ? heatingMode.rafraichissementPossible(situation)
+    : (heatingMode.rafraichissementPossible ?? false);
+
+const getHeatingModeAvantages = (heatingMode: ModeDeChauffage, rafraichissementPossible: boolean) =>
+  rafraichissementPossible ? [...heatingMode.avantages, COOLING_POSSIBLE_ADVANTAGE] : heatingMode.avantages;
 
 export function getIncompatibleSolutionRows(situation: Situation, typeLogement: TypeLogement): IncompatibleSolutionRow[] {
   const rowsById = new Map<ModeDeChauffageId, IncompatibleSolutionRow>();

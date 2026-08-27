@@ -1,6 +1,7 @@
 import {
   collectiveHotWaterPrerequisite,
   getArchitecturalProtectionPrerequisites,
+  getColdNetworkPrerequisite,
   getGeothermalPrerequisites,
   getPdpPrerequisite,
   getPpaPrerequisite,
@@ -14,6 +15,7 @@ import {
   hasInsufficientSolarThermalCoverage,
   hasSufficientSolarThermalCoverage,
   hotWaterStoragePrerequisite,
+  isNearColdNetwork,
   isNearHeatNetwork,
   outdoorPacPrerequisites,
   outdoorSinglePacPrerequisites,
@@ -81,17 +83,14 @@ export const modesDeChauffage = {
           source: 'France Chaleur Urbaine',
           status: 'favorable',
         },
+        ...getColdNetworkPrerequisite(situation),
         ...getPdpPrerequisite(situation, 'favorable'),
       ],
+      rafraichissementPossible: isNearColdNetwork,
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: [
-        'Faibles émissions de CO₂',
-        'Suppression des chaudières (gain de place, sécurité)',
-        'Possibilité de couvrir les besoins en froid si associé à des ventilo-convecteurs',
-        'Aucune nuisance sonore',
-      ],
+      avantages: ['Faibles émissions de CO₂', 'Suppression des chaudières (gain de place, sécurité)', 'Aucune nuisance sonore'],
       coutInstallation: '8000 à 11 000 €',
       coutParAnPublicodeKey: 'PAC eau-eau coll',
       description: (
@@ -156,6 +155,7 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
@@ -213,11 +213,7 @@ export const modesDeChauffage = {
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: [
-        'Faibles émissions de CO₂',
-        'Suppression des chaudières (gain de place, sécurité)',
-        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
-      ],
+      avantages: ['Faibles émissions de CO₂', 'Suppression des chaudières (gain de place, sécurité)'],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 3 : 2),
       coutInstallation: '4 000 à 6 000 €',
       coutParAnPublicodeKey: 'PAC air-eau coll',
@@ -262,6 +258,7 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
@@ -269,7 +266,6 @@ export const modesDeChauffage = {
         'Faibles émissions de CO₂',
         'Optimisation du fonctionnement de la PAC',
         "Minimise l'investissement initial (PAC moins puissante)",
-        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
       ],
       coutInstallation: '3 000 à 5 000 €',
       coutParAnPublicodeKey: 'PAC air-eau coll hybride',
@@ -313,6 +309,7 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
@@ -445,11 +442,7 @@ export const modesDeChauffage = {
   ],
   immeuble_chauffage_individuel: [
     {
-      avantages: [
-        'Faibles émissions de CO₂',
-        'Suppression de la chaudière individuelle (gain de place, sécurité)',
-        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
-      ],
+      avantages: ['Faibles émissions de CO₂', 'Suppression de la chaudière individuelle (gain de place, sécurité)'],
       coutInstallation: '7 000 à 10 000 €',
       coutParAnPublicodeKey: 'PAC air-eau indiv',
       description: (
@@ -494,14 +487,11 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: [
-        'Faibles émissions de CO₂',
-        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
-        'Installation relativement simple',
-      ],
+      avantages: ['Faibles émissions de CO₂', 'Installation relativement simple'],
       coutInstallation: '3 000 à 5 000 €',
       coutParAnPublicodeKey: 'PAC air-air indiv',
       description: (
@@ -551,6 +541,7 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
@@ -683,12 +674,7 @@ export const modesDeChauffage = {
   ],
   maison_individuelle: [
     {
-      avantages: [
-        'Faibles émissions de CO₂',
-        'Suppression des chaudières (gain de place, sécurité)',
-        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
-        'Aucune nuisance sonore',
-      ],
+      avantages: ['Faibles émissions de CO₂', 'Suppression des chaudières (gain de place, sécurité)', 'Aucune nuisance sonore'],
       coutInstallation: '20 000 à 25 000 €',
       coutParAnPublicodeKey: 'PAC eau-eau indiv',
       description: (
@@ -745,6 +731,7 @@ export const modesDeChauffage = {
         ...getGeothermalPrerequisites(situation),
         { label: 'Accessibilité de la parcelle pour les machines de forage', status: 'averifier' },
       ],
+      rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
@@ -799,11 +786,7 @@ export const modesDeChauffage = {
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: [
-        'Faibles émissions de CO₂',
-        'Économique si bien dimensionnée',
-        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
-      ],
+      avantages: ['Faibles émissions de CO₂', 'Économique si bien dimensionnée'],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 2 : 1),
       coutInstallation: '12 000 à 15 000 €',
       coutParAnPublicodeKey: 'PAC air-eau indiv',
@@ -850,6 +833,7 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
@@ -894,12 +878,7 @@ export const modesDeChauffage = {
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: [
-        'Faibles émissions de CO₂',
-        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
-        'Économique si bien dimensionnée',
-        'Installation relativement simple',
-      ],
+      avantages: ['Faibles émissions de CO₂', 'Économique si bien dimensionnée', 'Installation relativement simple'],
       coutInstallation: '6 000 à 8 000 €',
       coutParAnPublicodeKey: 'PAC air-air indiv',
       description: (
@@ -941,6 +920,7 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {

@@ -8,6 +8,7 @@ type BuildSimulationSituationParams = {
   altitude: number | null;
   batEnr: BatEnrInfo;
   eligibiliteReseauChaleur: HeatNetwork | null;
+  eligibiliteReseauFroid: Situation['eligibiliteReseauFroid'];
   params: ChoixChauffageParams;
 };
 
@@ -15,6 +16,7 @@ export const buildSimulationSituation = ({
   altitude,
   batEnr,
   eligibiliteReseauChaleur,
+  eligibiliteReseauFroid,
   params,
 }: BuildSimulationSituationParams): Situation => ({
   adresse: params.adresse,
@@ -26,6 +28,7 @@ export const buildSimulationSituation = ({
   architecturalProtectionAc4bis: batEnr.architecturalProtectionAc4bis,
   dpe: params.dpe,
   eligibiliteReseauChaleur,
+  eligibiliteReseauFroid,
   espaceExterieur: params.espaceExterieur ?? DEFAULT_SIMULATION_PARAMS.espaceExterieur,
   geothermalNappeGmi: batEnr.geothermalNappeGmi,
   geothermalNappePotential: batEnr.geothermalNappePotential,

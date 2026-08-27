@@ -88,6 +88,13 @@ export const businessRules = {
     label: 'Chaleur renouvelable : rayon des bâtiments candidats',
     value: 200,
   },
+  fcrColdNetworkMaxDistanceMeters: {
+    description:
+      'Distance maximale à un réseau de froid pour indiquer que le rafraîchissement est possible avec le réseau de chaleur dans le simulateur chaleur renouvelable.',
+    display: '50 m',
+    label: 'Chaleur renouvelable : distance réseau de froid maximale',
+    value: 50,
+  },
   fcrHeatingModeAltitudeThresholdMeters: {
     description:
       "Altitude moyenne de commune à partir de laquelle la pertinence et l'ordre des chaudières biomasse et PAC air-eau sont adaptés dans le simulateur chaleur renouvelable.",

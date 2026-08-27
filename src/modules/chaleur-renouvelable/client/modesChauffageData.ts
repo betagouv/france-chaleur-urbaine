@@ -3,6 +3,7 @@ export type {
   ModeDeChauffage,
   ModeDeChauffageEnriched,
   ModeDeChauffageId,
+  ModeDeChauffageResolved,
   ModeDeChauffageUsage,
   PrerequisiteRow,
   PrerequisiteStatus,

@@ -5,13 +5,21 @@ vi.mock('@/modules/simulator/client/SimulateurCoutRaccordement', () => ({
   prettyPrintCout: (value: number) => `${value} €`,
 }));
 
+import { businessRules } from '@/modules/app/business-rules';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
-import { type ModeDeChauffageId, TYPE_LOGEMENT_VALUES, type TypeLogement } from '../constants';
+import {
+  COOLING_POSSIBLE_ADVANTAGE,
+  type ColdNetworkEligibility,
+  type ModeDeChauffageId,
+  TYPE_LOGEMENT_VALUES,
+  type TypeLogement,
+} from '../constants';
 import {
   getIncompatibleSolutionRows,
   getModesDeChauffage,
   type ModeDeChauffage,
+  type ModeDeChauffageResolved,
   type ModeDeChauffageUsage,
   modesDeChauffage,
   type Situation,
@@ -58,6 +66,7 @@ type HeatingModeOrderCase = {
 
 const PDP_PREREQUISITE_LABEL =
   'Votre bâtiment est situé dans un périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau de chaleur.';
+const COLD_NETWORK_PREREQUISITE_LABEL = `Distance au réseau de froid < ${businessRules.fcrColdNetworkMaxDistanceMeters.display}`;
 
 const createHeatNetwork = (overrides: Partial<HeatNetwork> = {}): HeatNetwork => ({
   co2: null,
@@ -76,6 +85,13 @@ const createHeatNetwork = (overrides: Partial<HeatNetwork> = {}): HeatNetwork =>
   ...overrides,
 });
 
+const createColdNetworkEligibility = (overrides: Partial<ColdNetworkEligibility> = {}): ColdNetworkEligibility => ({
+  distance: 49,
+  id: null,
+  name: null,
+  ...overrides,
+});
+
 const createSituation = (overrides: SituationOverrides = {}): Situation => ({
   adresse: '1 rue de la Paix, Paris',
   altitude: 900,
@@ -86,6 +102,7 @@ const createSituation = (overrides: SituationOverrides = {}): Situation => ({
   architecturalProtectionAc4bis: false,
   dpe: 'D',
   eligibiliteReseauChaleur: createHeatNetwork(),
+  eligibiliteReseauFroid: null,
   espaceExterieur: 'terrasseBalconEtJardinCours',
   geothermalNappeGmi: 1,
   geothermalNappePotential: 7,
@@ -114,7 +131,12 @@ const getMode = (typeLogement: TypeLogement, label: string, usage: ModeDeChauffa
   return heatingMode;
 };
 
-const getResolvedMode = (typeLogement: TypeLogement, label: string, usage: ModeDeChauffageUsage, situation: Situation): ModeDeChauffage => {
+const getResolvedMode = (
+  typeLogement: TypeLogement,
+  label: string,
+  usage: ModeDeChauffageUsage,
+  situation: Situation
+): ModeDeChauffageResolved => {
   const heatingMode = getModesDeChauffage(typeLogement, situation).find((modeDeChauffage) => {
     return modeDeChauffage.label === label && modeDeChauffage.usage === usage;
   });
@@ -283,22 +305,6 @@ const heatingModeCases: HeatingModeCase[] = [
   {
     impossibleCases: [
       {
-        description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
-      },
-      {
-        description: 'avec une eau chaude individuelle',
-        overrides: { modeEauChaudeSanitaire: 'Individuel' },
-      },
-    ],
-    label: 'PAC air-eau collective',
-    possibleOverrides: { modeEauChaudeSanitaire: 'Collectif' },
-    typeLogement: 'immeuble_chauffage_collectif',
-    usage: 'hotWaterOnly',
-  },
-  {
-    impossibleCases: [
-      {
         description: 'sans espace extérieur privatif',
         overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
       },
@@ -309,6 +315,22 @@ const heatingModeCases: HeatingModeCase[] = [
     ],
     label: 'Chauffe-eau thermodynamique',
     possibleOverrides: { modeEauChaudeSanitaire: 'Individuel' },
+    typeLogement: 'immeuble_chauffage_collectif',
+    usage: 'hotWaterOnly',
+  },
+  {
+    impossibleCases: [
+      {
+        description: 'sans espace extérieur commun',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+      },
+      {
+        description: 'avec une eau chaude individuelle',
+        overrides: { modeEauChaudeSanitaire: 'Individuel' },
+      },
+    ],
+    label: 'PAC air-eau collective',
+    possibleOverrides: { modeEauChaudeSanitaire: 'Collectif' },
     typeLogement: 'immeuble_chauffage_collectif',
     usage: 'hotWaterOnly',
   },
@@ -980,9 +1002,71 @@ describe('modesDeChauffage', () => {
     expect(hotWaterOnlyModeIds).toStrictEqual([
       'collective-solar-thermal-hot-water',
       'collective-solar-atmospheric-heat-pump-hot-water',
-      'collective-air-water-heat-pump-hot-water',
       'collective-thermodynamic-water-heater',
+      'collective-air-water-heat-pump-hot-water',
     ]);
+  });
+
+  it('keeps cooling advantages out of catalog base advantages', () => {
+    const coolingCatalogAdvantages = TYPE_LOGEMENT_VALUES.flatMap((typeLogement) =>
+      modesDeChauffage[typeLogement].flatMap((modeDeChauffage) =>
+        modeDeChauffage.avantages.filter((avantage) => avantage.includes('besoins en froid'))
+      )
+    );
+
+    expect(coolingCatalogAdvantages).toStrictEqual([]);
+  });
+
+  it('adds cooling advantage when a heating mode enables cooling', () => {
+    const heatingMode = getResolvedMode(
+      'immeuble_chauffage_collectif',
+      'PAC air-eau collective',
+      'heatingAndHotWater',
+      createSituation({ modeEauChaudeSanitaire: 'Collectif' })
+    );
+
+    expect(heatingMode.rafraichissementPossible).toStrictEqual(true);
+    expect(heatingMode.avantages.includes(COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual(true);
+  });
+
+  it('resolves heat network cooling from cold network distance', () => {
+    const nearColdNetworkMode = getResolvedMode(
+      'immeuble_chauffage_collectif',
+      'Réseau de chaleur',
+      'heatingAndHotWater',
+      createSituation({ eligibiliteReseauFroid: createColdNetworkEligibility({ distance: 49 }) })
+    );
+    const thresholdColdNetworkMode = getResolvedMode(
+      'immeuble_chauffage_collectif',
+      'Réseau de chaleur',
+      'heatingAndHotWater',
+      createSituation({ eligibiliteReseauFroid: createColdNetworkEligibility({ distance: 50 }) })
+    );
+
+    expect(nearColdNetworkMode.rafraichissementPossible).toStrictEqual(true);
+    expect(nearColdNetworkMode.avantages.includes(COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual(true);
+    expect(thresholdColdNetworkMode.rafraichissementPossible).toStrictEqual(false);
+    expect(thresholdColdNetworkMode.avantages.includes(COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual(false);
+  });
+
+  it('adds cold network prerequisite to heat network when cooling is possible', () => {
+    const prerequisiteRows = getMode('immeuble_chauffage_collectif', 'Réseau de chaleur', 'heatingAndHotWater').prerequis(
+      createSituation({ eligibiliteReseauFroid: createColdNetworkEligibility() })
+    );
+
+    expect(prerequisiteRows).toContainEqual({
+      label: COLD_NETWORK_PREREQUISITE_LABEL,
+      source: 'France Chaleur Urbaine',
+      status: 'favorable',
+    });
+  });
+
+  it('does not add cold network prerequisite to heat network when cooling is not possible', () => {
+    const prerequisiteRows = getMode('immeuble_chauffage_collectif', 'Réseau de chaleur', 'heatingAndHotWater').prerequis(
+      createSituation({ eligibiliteReseauFroid: createColdNetworkEligibility({ distance: 50 }) })
+    );
+
+    expect(prerequisiteRows.map((row) => row.label)).not.toContain(COLD_NETWORK_PREREQUISITE_LABEL);
   });
 
   it.each(pertinenceCases)('$typeLogement / $label / $usage resolves pertinence from altitude and PPA', (testCase) => {

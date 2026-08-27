@@ -6,6 +6,7 @@ import type {
   BatEnrBatiment,
   BatEnrBatimentsSelectionContext,
   BatEnrByBanIdInput,
+  ColdNetworkEligibility,
   DemandeChaleurRenouvelable,
   DemandeChaleurRenouvelableStatus,
   FranceRenovSpace,
@@ -26,6 +27,7 @@ import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { fetchJSON } from '@/utils/network';
 
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
+import { getNetworkEligibilityCoordinates } from './network-eligibility-coordinates';
 
 const batEnrBatimentColumns = [
   'ac1',
@@ -326,6 +328,31 @@ export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) =
   return await getBatEnrBatimentsByConstructionIds(await getBatEnrBatimentConstructionIdsByBanId({ banId }));
 };
 
+const getColdNetworkEligibility = async (lat: number, lon: number): Promise<ColdNetworkEligibility | null> => {
+  const reseauDeFroid = await kdb
+    .selectFrom('reseaux_de_froid')
+    .select([
+      'Identifiant reseau',
+      'nom_reseau',
+      sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+        'distance'
+      ),
+    ])
+    .where('has_trace', '=', true)
+    .where('geom', 'is not', null)
+    .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+    .limit(1)
+    .executeTakeFirst();
+
+  return reseauDeFroid
+    ? {
+        distance: reseauDeFroid.distance,
+        id: reseauDeFroid['Identifiant reseau'] ?? null,
+        name: reseauDeFroid.nom_reseau ?? null,
+      }
+    : null;
+};
+
 const getBatEnrBatimentConstructionIdsByBanId = async ({ banId }: BatEnrByBanIdInput) => {
   const url = `${serverConfig.BDNB_API_BASE_URL}/rel_batiment_construction_adresse?select=batiment_construction_id&cle_interop_adr=eq.${encodeURIComponent(
     banId
@@ -408,10 +435,17 @@ const getBatEnrLookupResult = async ({
 };
 
 export const getAddressEligibilityContext = async (input: AddressEligibilityContextInput) => {
-  const [batEnrLookup, infos, eligibiliteReseauChaleur] = await Promise.all([
+  const [batEnrLookup, infos] = await Promise.all([
     getBatEnrLookupResult(input),
     getLocationInfos({ city: input.city, cityCode: input.cityCode }),
-    getEligilityStatus(input.lat, input.lon),
+  ]);
+  const networkEligibilityCoordinates = getNetworkEligibilityCoordinates(
+    { lat: input.lat, lon: input.lon },
+    batEnrLookup.selectedBatEnrBatiment
+  );
+  const [eligibiliteReseauChaleur, eligibiliteReseauFroid] = await Promise.all([
+    getEligilityStatus(networkEligibilityCoordinates.lat, networkEligibilityCoordinates.lon),
+    getColdNetworkEligibility(networkEligibilityCoordinates.lat, networkEligibilityCoordinates.lon),
   ]);
 
   return {
@@ -420,6 +454,7 @@ export const getAddressEligibilityContext = async (input: AddressEligibilityCont
     batEnrBatiments: batEnrLookup.batEnrBatiments,
     codeDepartement: infos?.departement_id ?? '',
     eligibiliteReseauChaleur,
+    eligibiliteReseauFroid,
     selectedBatEnrBatiment: batEnrLookup.selectedBatEnrBatiment,
     shouldSelectBatEnrBatiment: batEnrLookup.shouldSelectBatEnrBatiment,
     temperatureRef: infos?.temperature_ref_altitude_moyenne != null ? Number(infos.temperature_ref_altitude_moyenne) : null,

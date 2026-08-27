@@ -16,6 +16,7 @@ describe('buildSimulationSituation', () => {
         geothermiePossible: true,
       },
       eligibiliteReseauChaleur: null,
+      eligibiliteReseauFroid: null,
       params: {
         ...DEFAULT_SIMULATION_PARAMS,
         adresse: '1 rue de la Paix, Paris',
@@ -39,6 +40,7 @@ describe('buildSimulationSituation', () => {
       architecturalProtectionAc4bis: false,
       dpe: 'D',
       eligibiliteReseauChaleur: null,
+      eligibiliteReseauFroid: null,
       espaceExterieur: DEFAULT_SIMULATION_PARAMS.espaceExterieur,
       geothermalNappeGmi: null,
       geothermalNappePotential: 7,

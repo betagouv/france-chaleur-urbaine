@@ -1,7 +1,7 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
-import type { ModeDeChauffage, ModeDeChauffageEnriched, Situation } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+import type { ModeDeChauffageEnriched, ModeDeChauffageResolved, Situation } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 
 function getPublicodesFieldAsNumber(
   engine: SimulatorEngine,
@@ -19,7 +19,7 @@ function getPublicodesFieldAsNumber(
   );
 }
 
-function enrichHeatingMode(mode: ModeDeChauffage, engine: SimulatorEngine, situation: Situation): ModeDeChauffageEnriched {
+function enrichHeatingMode(mode: ModeDeChauffageResolved, engine: SimulatorEngine, situation: Situation): ModeDeChauffageEnriched {
   const coutParAnPublicodeRule = `${mode.coutParAnPublicodeKey} . bilan . total sans installation` satisfies RuleName;
   const coutParAn = mode.coutParAnPublicodeKey
     ? getPublicodesFieldAsNumber(engine, coutParAnPublicodeRule, mode.coutParAnPublicodesSituation)
@@ -69,7 +69,7 @@ export function setPublicodesSituation(
   engine.resetField('ecs . type de production');
 }
 
-export function getHeatingModeCosts(engine: SimulatorEngine, modes: ModeDeChauffage[], situation: Situation) {
+export function getHeatingModeCosts(engine: SimulatorEngine, modes: ModeDeChauffageResolved[], situation: Situation) {
   const modesEnriched = modes.map((modeDeChauffage) => enrichHeatingMode(modeDeChauffage, engine, situation));
   const coutParAnGaz = engine.getFieldAsNumber('gaz coll sans cond . bilan . total avec aides');
   const coutParAnGazHotWaterOnly = Math.max(

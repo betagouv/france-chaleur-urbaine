@@ -9,6 +9,7 @@ import type {
 } from '@/modules/chaleur-renouvelable/constants';
 
 export const HEAT_NETWORK_MAX_DISTANCE = businessRules.fcrHeatNetworkMaxDistanceMeters.value;
+export const COLD_NETWORK_MAX_DISTANCE = businessRules.fcrColdNetworkMaxDistanceMeters.value;
 export const SOLAR_THERMAL_MIN_COVERAGE = businessRules.fcrSolarThermalMinCoveragePercent.value;
 export const HEATING_MODE_ALTITUDE_THRESHOLD_METERS = businessRules.fcrHeatingModeAltitudeThresholdMeters.value;
 
@@ -34,6 +35,9 @@ export const hasCompatibleRadiator = (situation: Situation, radiators: TypeRadia
 
 export const isNearHeatNetwork = (situation: Situation) =>
   (situation.eligibiliteReseauChaleur?.distance ?? Number.POSITIVE_INFINITY) < HEAT_NETWORK_MAX_DISTANCE;
+
+export const isNearColdNetwork = (situation: Situation) =>
+  (situation.eligibiliteReseauFroid?.distance ?? Number.POSITIVE_INFINITY) < COLD_NETWORK_MAX_DISTANCE;
 
 export const hasSufficientSolarThermalCoverage = (situation: Situation) =>
   (situation.solarThermalCoverage ?? Number.NEGATIVE_INFINITY) > SOLAR_THERMAL_MIN_COVERAGE;
@@ -79,6 +83,17 @@ export const getPdpPrerequisite = (situation: Situation, status: PrerequisiteSta
             'Votre bâtiment est situé dans un périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau de chaleur.',
           source: 'France Chaleur Urbaine',
           status,
+        },
+      ]
+    : [];
+
+export const getColdNetworkPrerequisite = (situation: Situation): PrerequisiteRow[] =>
+  isNearColdNetwork(situation)
+    ? [
+        {
+          label: `Distance au réseau de froid < ${businessRules.fcrColdNetworkMaxDistanceMeters.display}`,
+          source: 'France Chaleur Urbaine',
+          status: 'favorable',
         },
       ]
     : [];

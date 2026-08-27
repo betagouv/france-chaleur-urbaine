@@ -14,6 +14,8 @@ import { UsageTags } from '@/modules/chaleur-renouvelable/client/results/ui/Usag
 import type { BatEnrBatiment, DPE } from '@/modules/chaleur-renouvelable/constants';
 import { Map } from '@/modules/map/client/Map';
 
+import { CoolingPossibleTag } from './CoolingPossibleTag';
+
 const MapMarker = dynamic(() => import('@/modules/map/client/interactions/MapMarker').then((mod) => mod.MapMarker), { ssr: false });
 
 export type HeatNetworkRecommendedSolutionCardProps = {
@@ -82,6 +84,7 @@ export function HeatNetworkRecommendedSolutionCard({
         un chauffage collectif. Une énergie majoritairement <strong>renouvelable et locale</strong>, un <strong>prix stable</strong> et une{' '}
         <strong>TVA réduite à 5,5 %</strong>, le tout garanti par un service public.
       </p>
+      {item.rafraichissementPossible && <CoolingPossibleTag />}
       <div className="grid-1 grid gap-6 md:grid-cols-3">
         {mapMarkerCoordinates && (
           <Map

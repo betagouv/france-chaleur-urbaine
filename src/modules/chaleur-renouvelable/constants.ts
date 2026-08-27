@@ -100,6 +100,7 @@ export type Situation = {
   surfaceMoyenne: number;
   habitantsMoyen: number;
   eligibiliteReseauChaleur: HeatNetwork | null;
+  eligibiliteReseauFroid: ColdNetworkEligibility | null;
   geothermalNappeGmi: number | null;
   geothermalNappePotential: number | null;
   geothermalSondeGmi: number | null;
@@ -107,6 +108,12 @@ export type Situation = {
   modeEauChaudeSanitaire: ModeEauChaudeSanitaireQueryParam | null;
   solarThermalCoverage: number | null;
   typeRadiateur: TypeRadiateur | null;
+};
+
+export type ColdNetworkEligibility = {
+  distance: number | null;
+  id: string | null;
+  name: string | null;
 };
 
 export type IncompatibleSolutionRow = {
@@ -137,6 +144,8 @@ type ExtractModeRoot<Rule> = Rule extends `${infer Root} . bilan . total sans in
  */
 export type PublicodesModeKey = ExtractModeRoot<RuleName>;
 
+export const COOLING_POSSIBLE_ADVANTAGE = 'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs';
+
 export type ModeDeChauffage = {
   id: ModeDeChauffageId;
   label: string;
@@ -152,12 +161,18 @@ export type ModeDeChauffage = {
   coutInstallation?: string | ((situation: Situation) => string);
   gainClasse: number;
   gainVsGaz?: number;
+  rafraichissementPossible?: boolean | ((situation: Situation) => boolean);
   estPossible: (situation: Situation) => boolean;
   incompatibilites?: IncompatibleSolutionRule[];
   prerequis: (situation: Situation) => PrerequisiteRow[];
 };
 
-export type ModeDeChauffageEnriched = ModeDeChauffage & {
+export type ModeDeChauffageResolved = Omit<ModeDeChauffage, 'classement' | 'rafraichissementPossible'> & {
+  classement: number;
+  rafraichissementPossible: boolean;
+};
+
+export type ModeDeChauffageEnriched = Omit<ModeDeChauffageResolved, 'coutInstallation'> & {
   coutParAn: number;
   coutInstallation: string;
 };

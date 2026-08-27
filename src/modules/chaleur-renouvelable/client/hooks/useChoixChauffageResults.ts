@@ -29,6 +29,7 @@ export function useChoixChauffageResults() {
     batEnrBatiments,
     codeDepartement,
     eligibiliteReseauChaleur,
+    eligibiliteReseauFroid,
     isEligibilityLoading,
     shouldSelectBatEnrBatiment,
     temperatureRef,
@@ -44,8 +45,8 @@ export function useChoixChauffageResults() {
   const contactForm = useContactFormFCU();
 
   const situation = useMemo(
-    () => buildSimulationSituation({ altitude, batEnr, eligibiliteReseauChaleur, params }),
-    [altitude, batEnr, eligibiliteReseauChaleur, params]
+    () => buildSimulationSituation({ altitude, batEnr, eligibiliteReseauChaleur, eligibiliteReseauFroid, params }),
+    [altitude, batEnr, eligibiliteReseauChaleur, eligibiliteReseauFroid, params]
   );
 
   useEffect(() => {
