@@ -216,7 +216,7 @@ export const modesDeChauffage = {
       avantages: [
         'Faibles émissions de CO₂',
         'Suppression des chaudières (gain de place, sécurité)',
-        'Rafraîchissement possible si émetteurs compatibles',
+        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
       ],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 3 : 2),
       coutInstallation: '4 000 à 6 000 €',
@@ -269,7 +269,7 @@ export const modesDeChauffage = {
         'Faibles émissions de CO₂',
         'Optimisation du fonctionnement de la PAC',
         "Minimise l'investissement initial (PAC moins puissante)",
-        'Rafraîchissement possible si émetteurs compatibles',
+        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
       ],
       coutInstallation: '3 000 à 5 000 €',
       coutParAnPublicodeKey: 'PAC air-eau coll hybride',
@@ -384,6 +384,35 @@ export const modesDeChauffage = {
       usage: 'hotWaterOnly',
     },
     {
+      avantages: [
+        'Faibles émissions de CO₂',
+        "Économique à l'usage par rapport à un ballon électrique classique",
+        'Solution simple à installer',
+      ],
+      coutInstallation: '2 000 à 3 000 €',
+      coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
+      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
+      description: (
+        <>
+          Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à
+          partir de l'air extérieur, avec un gain important sur votre facture par rapport à un ballon électrique classique.
+        </>
+      ),
+      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Individuel']) && hasEspacePrivate(situation),
+      gainClasse: 1,
+      icone: 'img/icon-pac.webp',
+      id: 'collective-thermodynamic-water-heater',
+      inconvenients: [
+        'Nuisance sonore à prendre en compte',
+        "Impact esthétique de l'unité extérieure",
+        "Travaux de changement de système dans l'appartement",
+      ],
+      label: 'Chauffe-eau thermodynamique',
+      pertinence: 2,
+      prerequis: (situation) => [...getArchitecturalProtectionPrerequisites(situation), ...outdoorSinglePacPrerequisites],
+      usage: 'hotWaterOnly',
+    },
+    {
       avantages: ['Faibles émissions de CO₂', 'Solution compacte et éprouvée', 'Permet de conserver le système de chauffage existant'],
       coutInstallation: '2 000 à 3 000 €',
       coutParAnPublicodeKey: 'PAC air-eau collective ECS',
@@ -413,42 +442,13 @@ export const modesDeChauffage = {
       ],
       usage: 'hotWaterOnly',
     },
-    {
-      avantages: [
-        'Faibles émissions de CO₂',
-        "Économique à l'usage par rapport à un ballon électrique classique",
-        'Solution simple à installer',
-      ],
-      coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
-      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
-      description: (
-        <>
-          Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à
-          partir de l'air extérieur, avec un gain important sur votre facture par rapport à un ballon électrique classique.
-        </>
-      ),
-      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Individuel']) && hasEspacePrivate(situation),
-      gainClasse: 1,
-      icone: 'img/icon-pac.webp',
-      id: 'collective-thermodynamic-water-heater',
-      inconvenients: [
-        'Nuisance sonore à prendre en compte',
-        "Impact esthétique de l'unité extérieure",
-        "Travaux de changement de système dans l'appartement",
-      ],
-      label: 'Chauffe-eau thermodynamique',
-      pertinence: 2,
-      prerequis: (situation) => [...getArchitecturalProtectionPrerequisites(situation), ...outdoorSinglePacPrerequisites],
-      usage: 'hotWaterOnly',
-    },
   ],
   immeuble_chauffage_individuel: [
     {
       avantages: [
         'Faibles émissions de CO₂',
         'Suppression de la chaudière individuelle (gain de place, sécurité)',
-        'Rafraîchissement possible si émetteurs compatibles',
+        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
       ],
       coutInstallation: '7 000 à 10 000 €',
       coutParAnPublicodeKey: 'PAC air-eau indiv',
@@ -497,7 +497,11 @@ export const modesDeChauffage = {
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: ['Faibles émissions de CO₂', 'Possibilité de couvrir les besoins en froid', 'Installation relativement simple'],
+      avantages: [
+        'Faibles émissions de CO₂',
+        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
+        'Installation relativement simple',
+      ],
       coutInstallation: '3 000 à 5 000 €',
       coutParAnPublicodeKey: 'PAC air-air indiv',
       description: (
@@ -681,9 +685,9 @@ export const modesDeChauffage = {
     {
       avantages: [
         'Faibles émissions de CO₂',
-        'Coût de la chaleur compétitif',
-        'Rafraîchissement possible si émetteurs compatibles',
-        'Aucune unité extérieure visible',
+        'Suppression des chaudières (gain de place, sécurité)',
+        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
+        'Aucune nuisance sonore',
       ],
       coutInstallation: '20 000 à 25 000 €',
       coutParAnPublicodeKey: 'PAC eau-eau indiv',
@@ -752,7 +756,7 @@ export const modesDeChauffage = {
       ],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 1 : 2),
       coutInstallation: '10 000 à 17 000 €',
-      coutParAnPublicodeKey: 'PAC eau-eau indiv',
+      coutParAnPublicodeKey: 'chaudière à granulés',
       description: (
         <>
           Une chaudière biomasse pourrait équiper votre maison. Sous réserve d’espaces suffisamment importants et d’un approvisionnement
@@ -884,7 +888,7 @@ export const modesDeChauffage = {
           source: 'Formulaire',
           status: 'favorable',
         },
-        ...getPpaPrerequisite(situation),
+        ...getPpaPrerequisite(situation, 'poele'),
         { label: 'Accessibilité de la parcelle pour la livraison du combustible', status: 'averifier' },
       ],
       usage: 'heatingAndHotWater',
@@ -892,7 +896,7 @@ export const modesDeChauffage = {
     {
       avantages: [
         'Faibles émissions de CO₂',
-        'Possibilité de couvrir les besoins en froid',
+        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
         'Économique si bien dimensionnée',
         'Installation relativement simple',
       ],

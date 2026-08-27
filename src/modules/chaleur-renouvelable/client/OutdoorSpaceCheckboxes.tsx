@@ -21,7 +21,6 @@ type OutdoorSpaceCheckboxesLayout = 'inline' | 'stacked';
 
 export function OutdoorSpaceCheckboxes({ className, layout = 'inline', onChange, typeLogement, value }: OutdoorSpaceCheckboxesProps) {
   const id = useId();
-  const isDisabled = !typeLogement;
   const checkboxState = getEspaceExterieurCheckboxState(value);
   const hasGarden = checkboxState.hasGarden;
   const hasTerrace = checkboxState.hasTerrace;
@@ -44,14 +43,12 @@ export function OutdoorSpaceCheckboxes({ className, layout = 'inline', onChange,
       <div className={cx('flex flex-col gap-2', layout === 'inline' && 'sm:flex-row sm:items-center sm:gap-3')}>
         <OutdoorSpaceCheckbox
           checked={hasGarden}
-          disabled={isDisabled}
           id={`${id}-garden`}
           label="Cour et/ou jardin"
           onChange={(checked) => handleCheckboxChange('garden', checked)}
         />
         <OutdoorSpaceCheckbox
           checked={hasTerrace}
-          disabled={isDisabled}
           id={`${id}-terrace`}
           label="Terrasse et/ou balcon"
           onChange={(checked) => handleCheckboxChange('terrace', checked)}
@@ -86,16 +83,15 @@ export function getNextOutdoorSpaceValue({
 
 type OutdoorSpaceCheckboxProps = {
   checked: boolean;
-  disabled: boolean;
   id: string;
   label: string;
   onChange: (checked: boolean) => void;
 };
 
-function OutdoorSpaceCheckbox({ checked, disabled, id, label, onChange }: OutdoorSpaceCheckboxProps) {
+function OutdoorSpaceCheckbox({ checked, id, label, onChange }: OutdoorSpaceCheckboxProps) {
   return (
     <div className="fr-checkbox-group fr-mb-0">
-      <input checked={checked} disabled={disabled} id={id} onChange={(event) => onChange(event.target.checked)} type="checkbox" />
+      <input checked={checked} id={id} onChange={(event) => onChange(event.target.checked)} type="checkbox" />
       <label className="fr-label" htmlFor={id}>
         {label}
       </label>

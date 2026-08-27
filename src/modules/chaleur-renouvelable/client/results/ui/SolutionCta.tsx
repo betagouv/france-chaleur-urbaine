@@ -18,7 +18,7 @@ export function SolutionCta({ item, className }: SolutionCtaProps) {
       iconPosition="right"
       className={className}
     >
-      Passer à l’étape suivante
+      Bénéficier d'un accompagnement (gratuit)
     </Button>
   );
 }

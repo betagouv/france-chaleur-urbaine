@@ -114,11 +114,15 @@ export const getArchitecturalProtectionPrerequisites = (situation: Situation): P
     : [];
 };
 
-export const getPpaPrerequisite = (situation: Situation): PrerequisiteRow[] =>
+export const getPpaPrerequisite = (situation: Situation, modeChauffage?: string): PrerequisiteRow[] =>
   situation.planProtectionAtmosphere
     ? [
         {
-          label: 'Votre bâtiment est situé dans une zone de protection de l’atmosphère',
+          label: `Votre bâtiment est situé dans une zone de protection de l’atmosphère${
+            modeChauffage === 'poele'
+              ? ', l’installation d’un poêle est réservée aux bâtiments déjà chauffés au bois qui souhaiteraient installer un système performant'
+              : ''
+          }`,
           source: 'CEREMA',
           status: 'contraignant',
         },

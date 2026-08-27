@@ -151,8 +151,8 @@ export default function ChoixChauffageResults() {
             className="mt-6"
           >
             Nos recommandations sont calculées à partir des informations que vous avez fournies : mode de chauffage, surface moyenne, classe
-            DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer les coûts
-            et contraintes techniques propres à votre situation.
+            DPE, disponibilité d’espaces extérieurs… Ces critères permettent d’estimer les coûts et contraintes techniques propres à votre
+            situation.
             <div className="fr-mt-3w">
               <Link href="/chaleur-renouvelable/methodologie" postHogEventKey="fcr_results:methodology_link_clicked" isExternal>
                 En savoir plus

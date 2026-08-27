@@ -290,6 +290,7 @@ function OtherSolutionRow({
   const dpeTo = improveDpe(dpeFrom, item.gainClasse);
   const { lowerBoundString, upperBoundString } = getCostPrecisionRange(item.coutParAn);
   const prerequisiteRows = item.prerequis(situation);
+  const hasCoolingPossible = item.avantages.some((avantage) => avantage.startsWith('Possibilité de couvrir les besoins en froid'));
 
   return (
     <Accordion
@@ -318,6 +319,14 @@ function OtherSolutionRow({
         <div className="md:col-span-2">
           <h4 className="text-lg uppercase">Description</h4>
           <p className="mb-0">{item.description}</p>
+          {hasCoolingPossible && (
+            <div className="mt-4">
+              <span className="inline-flex items-center gap-2 bg-[#E5FBFD] px-3 py-2 text-sm text-info">
+                <span className="fr-icon-windy-line" aria-hidden="true" />
+                Rafraîchissement possible
+              </span>
+            </div>
+          )}
         </div>
         <div className="md:hidden">
           <SolutionConsumptionPanel
