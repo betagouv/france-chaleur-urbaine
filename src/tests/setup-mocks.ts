@@ -37,6 +37,7 @@ vi.mock('@/server/config', () => ({
     // Required for tRPC tests that import modules using Airtable
     AIRTABLE_KEY_API: 'test_airtable_key',
     databaseUrl: process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test',
+    GEOPLATEFORME_ALTIMETRY_API_BASE_URL: 'https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest',
   },
 }));
 

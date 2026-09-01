@@ -97,7 +97,7 @@ export const businessRules = {
   },
   fcrHeatingModeAltitudeThresholdMeters: {
     description:
-      "Altitude moyenne de commune à partir de laquelle la pertinence et l'ordre des chaudières biomasse et PAC air-eau sont adaptés dans le simulateur chaleur renouvelable.",
+      "Altitude du bâtiment à partir de laquelle la pertinence et l'ordre des chaudières biomasse et PAC air-eau sont adaptés dans le simulateur chaleur renouvelable.",
     display: '1 000 m',
     label: 'Chaleur renouvelable : seuil altitude',
     value: 1000,

@@ -26,8 +26,9 @@ import { kdb, sql } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { fetchJSON } from '@/utils/network';
 
+import { getAltitudeByCoordinates } from './altimetry';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
-import { getNetworkEligibilityCoordinates } from './network-eligibility-coordinates';
+import { getNetworkEligibilityCoordinates, type NetworkEligibilityCoordinates } from './network-eligibility-coordinates';
 
 const batEnrBatimentColumns = [
   'ac1',
@@ -434,6 +435,27 @@ const getBatEnrLookupResult = async ({
   };
 };
 
+const getBatEnrAltitudeCoordinates = async (
+  batimentConstructionId: string | null | undefined
+): Promise<NetworkEligibilityCoordinates | null> => {
+  if (!batimentConstructionId) {
+    return null;
+  }
+
+  const coordinates = await kdb
+    .selectFrom('bdnb_batenr')
+    .select((eb) => [
+      sql<number>`ST_X(ST_Transform(ST_PointOnSurface(${eb.ref('geom')}), 4326))`.as('lon'),
+      sql<number>`ST_Y(ST_Transform(ST_PointOnSurface(${eb.ref('geom')}), 4326))`.as('lat'),
+    ])
+    .where('batiment_construction_id', '=', batimentConstructionId)
+    .where('geom', 'is not', null)
+    .where((eb) => sql<boolean>`NOT ST_IsEmpty(${eb.ref('geom')})`)
+    .executeTakeFirst();
+
+  return coordinates && Number.isFinite(coordinates.lat) && Number.isFinite(coordinates.lon) ? coordinates : null;
+};
+
 export const getAddressEligibilityContext = async (input: AddressEligibilityContextInput) => {
   const [batEnrLookup, infos] = await Promise.all([
     getBatEnrLookupResult(input),
@@ -443,13 +465,16 @@ export const getAddressEligibilityContext = async (input: AddressEligibilityCont
     { lat: input.lat, lon: input.lon },
     batEnrLookup.selectedBatEnrBatiment
   );
-  const [eligibiliteReseauChaleur, eligibiliteReseauFroid] = await Promise.all([
+  const [eligibiliteReseauChaleur, eligibiliteReseauFroid, batEnrAltitudeCoordinates] = await Promise.all([
     getEligilityStatus(networkEligibilityCoordinates.lat, networkEligibilityCoordinates.lon),
     getColdNetworkEligibility(networkEligibilityCoordinates.lat, networkEligibilityCoordinates.lon),
+    getBatEnrAltitudeCoordinates(batEnrLookup.selectedBatEnrBatiment?.batiment_construction_id),
   ]);
+  const altitudeCoordinates = batEnrAltitudeCoordinates ?? networkEligibilityCoordinates;
+  const altitude = (await getAltitudeByCoordinates(altitudeCoordinates)) ?? infos?.altitude_moyenne ?? null;
 
   return {
-    altitude: infos?.altitude_moyenne ?? null,
+    altitude,
     batEnr: batEnrLookup.batEnr,
     batEnrBatiments: batEnrLookup.batEnrBatiments,
     codeDepartement: infos?.departement_id ?? '',
