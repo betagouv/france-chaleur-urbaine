@@ -5,6 +5,13 @@ import cx from '@/utils/cx';
 
 import { PrerequisiteStatusBadge } from './PrerequisiteStatusBadge';
 
+const PREREQUISITE_STATUS_ORDER = {
+  averifier: 3,
+  contraignant: 2,
+  defavorable: 2,
+  favorable: 1,
+} satisfies Record<PrerequisiteRow['status'], number>;
+
 function PrerequisiteRowItem({ row }: { row: PrerequisiteRow }) {
   return (
     <li
@@ -80,12 +87,16 @@ type PrerequisitesListProps = {
 };
 
 export function PrerequisitesList({ rows, coutInstallation, solutionType, variant }: PrerequisitesListProps) {
+  const sortedRows = [...rows].sort(
+    (firstRow, secondRow) => PREREQUISITE_STATUS_ORDER[firstRow.status] - PREREQUISITE_STATUS_ORDER[secondRow.status]
+  );
+
   return (
     <div>
       <h5 className="fr-h6 mb-3 uppercase text-blue">Prérequis et faisabilité</h5>
       {variant === 'recommended' && <PrerequisitesLegend className="mb-6" />}
       <ul className="space-y-1 p-0">
-        {rows.map((row, index) => (
+        {sortedRows.map((row, index) => (
           <PrerequisiteRowItem key={index} row={row} />
         ))}
         <InstallationCostPrerequisite coutInstallation={coutInstallation} solutionType={solutionType} />
