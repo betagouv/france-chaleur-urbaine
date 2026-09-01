@@ -3,7 +3,13 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { cleanDatabase, seedReseauDeChaleur, seedReseauDeFroid, seedZoneEtReseauEnConstruction } from '@/tests/fixtures';
 import type { TestCase } from '@/tests/trpc-helpers';
 
-import { type NetworkSearchResult, searchNetworkOperators, searchNetworks } from './service';
+import {
+  type ContributionNetworkSearchResult,
+  type NetworkSearchResult,
+  searchHeatNetworksForContribution,
+  searchNetworkOperators,
+  searchNetworks,
+} from './service';
 
 const chaleurNord: NetworkSearchResult = {
   gestionnaire: 'Dalkia',
@@ -143,5 +149,84 @@ describe('searchNetworkOperators()', () => {
 
   it.each(cases)('$label', async ({ field, search, expected }) => {
     expect(await searchNetworkOperators(field, search)).toStrictEqual(expected);
+  });
+});
+
+describe('searchHeatNetworksForContribution()', () => {
+  const classedHeatNetwork: ContributionNetworkSearchResult = {
+    gestionnaire: 'Dalkia',
+    id_fcu: 4001,
+    identifiant_reseau: '3301C',
+    is_classe: true,
+    localisation: 'Bordeaux, Mérignac',
+    maitre_ouvrage: 'Bordeaux Métropole',
+    nom_reseau: 'Contribution chaleur classée',
+  };
+
+  const unclassedHeatNetwork: ContributionNetworkSearchResult = {
+    gestionnaire: 'ENGIE Solutions',
+    id_fcu: 4002,
+    identifiant_reseau: '3302C',
+    is_classe: false,
+    localisation: 'Pessac',
+    maitre_ouvrage: 'Ville de Pessac',
+    nom_reseau: 'Contribution chaleur non classée',
+  };
+
+  beforeAll(async () => {
+    await cleanDatabase();
+
+    await Promise.all([
+      seedReseauDeChaleur({
+        communes: ['Bordeaux', 'Mérignac'],
+        Gestionnaire: classedHeatNetwork.gestionnaire,
+        'Identifiant reseau': classedHeatNetwork.identifiant_reseau,
+        id_fcu: classedHeatNetwork.id_fcu,
+        MO: classedHeatNetwork.maitre_ouvrage,
+        nom_reseau: classedHeatNetwork.nom_reseau,
+        ouvert_aux_raccordements: true,
+        'reseaux classes': true,
+      }),
+      seedReseauDeChaleur({
+        communes: ['Pessac'],
+        Gestionnaire: unclassedHeatNetwork.gestionnaire,
+        'Identifiant reseau': unclassedHeatNetwork.identifiant_reseau,
+        id_fcu: unclassedHeatNetwork.id_fcu,
+        MO: unclassedHeatNetwork.maitre_ouvrage,
+        nom_reseau: unclassedHeatNetwork.nom_reseau,
+        ouvert_aux_raccordements: true,
+        'reseaux classes': false,
+      }),
+      seedReseauDeFroid({
+        communes: ['Bordeaux'],
+        Gestionnaire: 'Dalkia',
+        'Identifiant reseau': '3303F',
+        id_fcu: 4003,
+        MO: 'Bordeaux Métropole',
+        nom_reseau: 'Contribution froid',
+      }),
+      seedZoneEtReseauEnConstruction({
+        gestionnaire: 'IDEX',
+        id_fcu: 4004,
+        is_zone: false,
+        nom_reseau: 'Contribution futur réseau',
+        ouvert_aux_raccordements: false,
+      }),
+    ]);
+  });
+
+  const cases: TestCase<string, ContributionNetworkSearchResult[]>[] = [
+    {
+      expectedOutput: [classedHeatNetwork, unclassedHeatNetwork],
+      input: '330',
+      label: 'matche uniquement les réseaux de chaleur par identifiant SNCU',
+    },
+    { expectedOutput: [classedHeatNetwork], input: '3301c', label: 'matche un identifiant SNCU sans tenir compte de la casse' },
+    { expectedOutput: [], input: 'Contribution', label: 'ne cherche pas dans le nom du réseau' },
+    { expectedOutput: [], input: '4004', label: 'ignore les réseaux en construction' },
+  ];
+
+  it.each(cases)('$label', async ({ input, expectedOutput }) => {
+    expect(await searchHeatNetworksForContribution(input)).toStrictEqual(expectedOutput);
   });
 });

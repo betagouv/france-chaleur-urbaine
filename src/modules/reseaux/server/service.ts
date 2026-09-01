@@ -851,6 +851,53 @@ export type NetworkSearchResult = {
   gestionnaire: string | null;
 };
 
+export type ContributionNetworkSearchResult = {
+  id_fcu: number;
+  nom_reseau: string | null;
+  identifiant_reseau: string;
+  localisation: string | null;
+  gestionnaire: string | null;
+  maitre_ouvrage: string | null;
+  is_classe: boolean;
+};
+
+export const searchHeatNetworksForContribution = async (search: string): Promise<ContributionNetworkSearchResult[]> => {
+  const pattern = `%${search}%`;
+
+  const rows = await kdb
+    .selectFrom('reseaux_de_chaleur')
+    .select((expressionBuilder) => [
+      'id_fcu',
+      'nom_reseau',
+      'communes',
+      expressionBuilder.ref('Identifiant reseau').as('identifiant_reseau'),
+      expressionBuilder.ref('Gestionnaire').as('gestionnaire'),
+      expressionBuilder.ref('MO').as('maitre_ouvrage'),
+      expressionBuilder.ref('reseaux classes').as('is_classe'),
+    ])
+    .where('Identifiant reseau', 'is not', null)
+    .where((expressionBuilder) => expressionBuilder(expressionBuilder.ref('Identifiant reseau'), 'ilike', pattern))
+    .orderBy(sql<string>`"Identifiant reseau"`, 'asc')
+    .limit(10)
+    .execute();
+
+  return rows
+    .map((network) =>
+      network.identifiant_reseau
+        ? {
+            gestionnaire: network.gestionnaire,
+            id_fcu: network.id_fcu,
+            identifiant_reseau: network.identifiant_reseau,
+            is_classe: network.is_classe === true,
+            localisation: network.communes?.join(', ') ?? null,
+            maitre_ouvrage: network.maitre_ouvrage,
+            nom_reseau: network.nom_reseau,
+          }
+        : undefined
+    )
+    .filter(isDefined);
+};
+
 /**
  * Search networks (existing + construction) by name, SNCU identifier or FCU id.
  * Includes zones (`is_zone = true`) since demands can be affected to them.
