@@ -23,7 +23,6 @@ export type HeatNetworkRecommendedSolutionCardProps = {
   dpeFrom: DPE;
   geoAddress?: BANAddressFeature;
   coutParAnGaz: number;
-  coutParAnGazHotWaterOnly: number;
   isOpen: boolean;
   onOpenChange: (expanded: boolean) => void;
   selectedBatiment?: BatEnrBatiment;
@@ -35,7 +34,6 @@ export function HeatNetworkRecommendedSolutionCard({
   dpeFrom,
   geoAddress,
   coutParAnGaz,
-  coutParAnGazHotWaterOnly,
   isOpen,
   onOpenChange,
   selectedBatiment,
@@ -97,13 +95,7 @@ export function HeatNetworkRecommendedSolutionCard({
             <MapMarker longitude={mapMarkerCoordinates[0]} latitude={mapMarkerCoordinates[1]} />
           </Map>
         )}
-        <SolutionConsumptionPanel
-          dpeFrom={dpeFrom}
-          item={item}
-          coutParAnGaz={coutParAnGaz}
-          coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
-          className="text-xl"
-        />
+        <SolutionConsumptionPanel dpeFrom={dpeFrom} item={item} coutParAnGaz={coutParAnGaz} className="text-xl" />
         <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
       </div>
       <div className="mt-6 flex flex-col items-start gap-4 md:flex-row md:items-center">

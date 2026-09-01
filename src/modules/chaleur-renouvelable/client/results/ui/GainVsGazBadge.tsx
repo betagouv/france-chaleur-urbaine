@@ -1,12 +1,12 @@
 import type { ModeDeChauffageEnriched } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import cx from '@/utils/cx';
 
-export function getGainPercentVsGaz(item: ModeDeChauffageEnriched, coutParAnGaz: number, coutParAnGazHotWaterOnly: number) {
+export function getGainPercentVsGaz(item: ModeDeChauffageEnriched, coutParAnGaz: number, coutParAnGazHotWaterOnly: number | undefined) {
   if (item.usage !== 'hotWaterOnly' && item.gainVsGaz !== undefined) {
     return item.gainVsGaz;
   }
 
-  const referenceCost = item.usage === 'hotWaterOnly' ? coutParAnGazHotWaterOnly : coutParAnGaz;
+  const referenceCost = item.usage === 'hotWaterOnly' && coutParAnGazHotWaterOnly ? coutParAnGazHotWaterOnly : coutParAnGaz;
 
   return referenceCost > 0 ? Math.round(((item.coutParAn - referenceCost) / referenceCost) * 100) : 0;
 }

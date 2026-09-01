@@ -96,7 +96,6 @@ export default function ChoixChauffageResults() {
               <HeatNetworkRecommendedSolutionCard
                 item={heatNetworkSolution}
                 coutParAnGaz={coutParAnGaz}
-                coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
                 dpeFrom={params.dpe}
                 geoAddress={geoAddress}
                 isOpen={openAccordionId === undefined || openAccordionId === heatNetworkSolution.id}
