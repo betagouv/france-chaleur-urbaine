@@ -68,8 +68,6 @@ export function useAddressEligibility(
           selectedBatimentConstructionId: batimentConstructionId ?? null,
         });
 
-        logAddressEligibilityContext(addressEligibilityContext);
-
         setState({
           altitude: addressEligibilityContext.altitude,
           batEnr: addressEligibilityContext.batEnr,
@@ -156,20 +154,3 @@ export function useAddressEligibility(
     setGeoAddress,
   };
 }
-
-const logAddressEligibilityContext = (
-  addressEligibilityContext: Pick<EligibilityState, 'altitude' | 'batEnr' | 'eligibiliteReseauChaleur' | 'eligibiliteReseauFroid'>
-) => {
-  console.groupCollapsed(
-    '%c/chaleur-renouvelable%c getAddressEligibilityContext',
-    'color: #000091; font-weight: 700;',
-    'color: #666; font-weight: 400;'
-  );
-  console.log({
-    altitude: addressEligibilityContext.altitude,
-    batEnr: addressEligibilityContext.batEnr,
-    eligibiliteReseauChaleur: addressEligibilityContext.eligibiliteReseauChaleur,
-    eligibiliteReseauFroid: addressEligibilityContext.eligibiliteReseauFroid,
-  });
-  console.groupEnd();
-};
