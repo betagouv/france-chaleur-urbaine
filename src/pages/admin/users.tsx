@@ -42,7 +42,6 @@ const permissionTypePluralLabels: Record<PermissionType, string> = {
   departement: 'Départements',
   epci: 'EPCI',
   ept: 'EPT',
-  national: 'National',
   organization: 'Organisations',
   region: 'Régions',
   reseau_de_chaleur: 'Réseaux existants',
@@ -50,8 +49,6 @@ const permissionTypePluralLabels: Record<PermissionType, string> = {
 };
 
 function formatPermissionSummary(permissions: PermissionWithLabel[]): string {
-  if (permissions.some((p) => p.type === 'national')) return 'National';
-
   const parts: string[] = [];
 
   const networks = permissions.filter((p) => p.type === 'reseau_de_chaleur' || p.type === 'reseau_en_construction');
@@ -59,9 +56,7 @@ function formatPermissionSummary(permissions: PermissionWithLabel[]): string {
     parts.push(`${networks.length} réseau${networks.length > 1 ? 'x' : ''}`);
   }
 
-  const territories = permissions.filter(
-    (p) => p.type !== 'reseau_de_chaleur' && p.type !== 'reseau_en_construction' && p.type !== 'national'
-  );
+  const territories = permissions.filter((p) => p.type !== 'reseau_de_chaleur' && p.type !== 'reseau_en_construction');
   if (territories.length > 0) {
     const byType = new Map<string, PermissionWithLabel[]>();
     for (const p of territories) {
@@ -107,13 +102,11 @@ function PermissionTooltipContent({ permissions }: { permissions: PermissionWith
       {groups.map(([type, perms]) => (
         <div key={type}>
           <div className="font-semibold">{permissionTypePluralLabels[type]}</div>
-          {type !== 'national' && (
-            <ul className="list-none pl-0 m-0">
-              {perms.map((p) => (
-                <li key={p.resource_id}>{p.label}</li>
-              ))}
-            </ul>
-          )}
+          <ul className="list-none pl-0 m-0">
+            {perms.map((p) => (
+              <li key={p.resource_id}>{p.label}</li>
+            ))}
+          </ul>
         </div>
       ))}
     </div>

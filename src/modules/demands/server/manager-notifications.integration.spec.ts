@@ -19,7 +19,7 @@ const NETWORK_ID = 7501;
 const OTHER_NETWORK_ID = 9999;
 
 const userMatching = uuid(101); // perm reseau_de_chaleur:7501, actif, receive_*=true → reçoit tout
-const userTerritoryOnly = uuid(102); // perms territoire (commune + national) → ne reçoit rien
+const userTerritoryOnly = uuid(102); // perm territoire (commune) → ne reçoit rien
 const userWrongNetwork = uuid(103); // perm reseau_de_chaleur:9999 → ne reçoit rien
 const userInactive = uuid(104); // perm matchante mais active=false → ne reçoit rien
 const userOptedOutNew = uuid(105); // perm matchante, receive_new=false, receive_old=true → reçoit unhandled, pas new
@@ -65,7 +65,6 @@ describe('manager-notifications', () => {
     await Promise.all([
       seedPermission({ resource_id: String(NETWORK_ID), type: 'reseau_de_chaleur', user_id: userMatching }),
       seedPermission({ resource_id: '75056', type: 'commune', user_id: userTerritoryOnly }),
-      seedPermission({ resource_id: null, type: 'national', user_id: userTerritoryOnly }),
       seedPermission({ resource_id: String(OTHER_NETWORK_ID), type: 'reseau_de_chaleur', user_id: userWrongNetwork }),
       seedPermission({ resource_id: String(NETWORK_ID), type: 'reseau_de_chaleur', user_id: userInactive }),
       seedPermission({ resource_id: String(NETWORK_ID), type: 'reseau_de_chaleur', user_id: userOptedOutNew }),

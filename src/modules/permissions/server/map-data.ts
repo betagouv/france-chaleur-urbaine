@@ -81,12 +81,11 @@ export const getPermissionsMapData = async (permissions: Permission[]): Promise<
  * Returns territory geometries as a GeoJSON FeatureCollection.
  * Uses a single SQL query with UNION ALL across all territory types.
  * EPCI/EPT geometries are derived via ST_Union of member communes.
- * National permissions are excluded (no geometry).
  */
 const getTerritoryGeometries = async (
   permissions: Permission[]
 ): Promise<GeoJSON.FeatureCollection<GeoJSON.Geometry, TerritoryFeatureProperties>> => {
-  const territoryPerms = permissions.filter((p) => !isNetworkPermissionType(p.type) && p.type !== 'national');
+  const territoryPerms = permissions.filter((p) => !isNetworkPermissionType(p.type));
   if (territoryPerms.length === 0) {
     return { features: [], type: 'FeatureCollection' };
   }
@@ -199,7 +198,7 @@ const getTerritoryGeometries = async (
  * has no ergonomic Kysely equivalent.
  */
 const buildPermissionGeomParts = (permissions: Permission[]): RawBuilder<PermissionGeomRow>[] => {
-  const territoryPerms = permissions.filter((p) => !isNetworkPermissionType(p.type) && p.type !== 'national');
+  const territoryPerms = permissions.filter((p) => !isNetworkPermissionType(p.type));
   const networkPerms = permissions.filter((p): p is NetworkPermission => isNetworkPermissionType(p.type));
 
   const communeCodes = territoryPerms.filter((p) => p.type === 'commune').map((p) => p.resource_id!);

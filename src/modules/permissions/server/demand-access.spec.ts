@@ -50,7 +50,6 @@ const region11: Permission = { resource_id: '11', type: 'region' };
 const eptT1: Permission = { resource_id: 'T1', type: 'ept' };
 const epci200054781: Permission = { resource_id: '200054781', type: 'epci' };
 const epciWrong: Permission = { resource_id: '200000000', type: 'epci' };
-const national: Permission = { resource_id: null, type: 'national' };
 
 const testLabel = ({ user, permissions, demand }: TestInput): string => {
   const parts: string[] = [user.role];
@@ -83,7 +82,6 @@ describe('canUserAccessDemand', () => {
 
     // Gestionnaire with territory permissions (decoupled — any role can have any permission type)
     { expectedOutput: true, input: { demand: baseDemand, permissions: [commune75056], user: gestionnaire } },
-    { expectedOutput: true, input: { demand: baseDemand, permissions: [national], user: gestionnaire } },
     { expectedOutput: false, input: { demand: baseDemand, permissions: [dept13], user: gestionnaire } },
 
     // Collectivité with territory permissions
@@ -93,7 +91,6 @@ describe('canUserAccessDemand', () => {
     { expectedOutput: true, input: { demand: baseDemand, permissions: [eptT1], user: collectivite } },
     { expectedOutput: true, input: { demand: baseDemand, permissions: [epci200054781], user: collectivite } },
     { expectedOutput: false, input: { demand: baseDemand, permissions: [epciWrong], user: collectivite } },
-    { expectedOutput: true, input: { demand: baseDemand, permissions: [national], user: collectivite } },
     { expectedOutput: false, input: { demand: baseDemand, permissions: [dept13], user: collectivite } },
     { expectedOutput: false, input: { demand: unvalidated, permissions: [commune75056], user: collectivite } },
 
@@ -143,7 +140,6 @@ describe('isUserResponsibleForDemand', () => {
   const cases: TestCaseBoolean<TestInput>[] = [
     // Admin — never responsible
     { expectedOutput: false, input: { demand: baseDemand, permissions: [networkExistant], user: admin } },
-    { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [national], user: admin } },
 
     // Particulier — never responsible
     { expectedOutput: false, input: { demand: baseDemand, permissions: [networkExistant], user: particulier } },
@@ -159,7 +155,6 @@ describe('isUserResponsibleForDemand', () => {
     // Territory perm on a demand affected to a network → NOT responsible (visible only)
     { expectedOutput: false, input: { demand: baseDemand, permissions: [commune75056], user: collectivite } },
     { expectedOutput: false, input: { demand: baseDemand, permissions: [dept75], user: collectivite } },
-    { expectedOutput: false, input: { demand: baseDemand, permissions: [national], user: collectivite } },
     // Mix: territory + matching network → responsible (network match wins)
     { expectedOutput: true, input: { demand: baseDemand, permissions: [networkExistant, dept75], user: gestionnaire } },
     // Mix: territory + non-matching network → NOT responsible
@@ -172,7 +167,6 @@ describe('isUserResponsibleForDemand', () => {
     { expectedOutput: true, input: { demand: unaffectedDemand, permissions: [eptT1], user: collectivite } },
     { expectedOutput: true, input: { demand: unaffectedDemand, permissions: [epci200054781], user: collectivite } },
     { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [epciWrong], user: collectivite } },
-    { expectedOutput: true, input: { demand: unaffectedDemand, permissions: [national], user: collectivite } },
     { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [dept13], user: collectivite } },
     // Demand without network + only network perm → NOT responsible (case theoretical, perm route wouldn't grant access)
     { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [networkExistant], user: gestionnaire } },

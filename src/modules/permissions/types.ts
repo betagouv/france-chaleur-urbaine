@@ -5,13 +5,12 @@ import { networkTypes } from '@/modules/reseaux/constants';
 
 // Permission resource types — `networkTypes` (depuis reseaux/constants) sert directement de sous-ensemble réseau.
 export const territoryPermissionResourceTypes = ['commune', 'epci', 'ept', 'departement', 'region'] as const;
-export const territoryPermissionTypes = [...territoryPermissionResourceTypes, 'national'] as const;
 // Scope « organisation » (opérateur national) : 1 permission = toutes les demandes des réseaux de l'org.
 // resource_id = `organizations.id` (uuid). Voir buildDemandAccessFilter (Piste 1, sous-requête).
 export const organizationPermissionType = 'organization' as const;
-export const permissionTypes = [...networkTypes, ...territoryPermissionTypes, organizationPermissionType] as const;
+export const permissionTypes = [...networkTypes, ...territoryPermissionResourceTypes, organizationPermissionType] as const;
 
-export type TerritoryPermissionType = (typeof territoryPermissionTypes)[number];
+export type TerritoryPermissionType = (typeof territoryPermissionResourceTypes)[number];
 export type PermissionType = (typeof permissionTypes)[number];
 
 // Mapping from territory permission type to demands column name
@@ -29,16 +28,9 @@ export const zNetworkPermission = z.object({
   type: z.enum(networkTypes),
 });
 
-export const zTerritoryPermission = z.discriminatedUnion('type', [
-  z.object({ resource_id: z.string(), type: z.enum(territoryPermissionResourceTypes) }),
-  z.object({ resource_id: z.null(), type: z.literal('national') }),
-]);
+export const zTerritoryPermission = z.object({ resource_id: z.string(), type: z.enum(territoryPermissionResourceTypes) });
 
-export const zPermission = z.discriminatedUnion('type', [
-  z.object({ resource_id: z.string(), type: z.enum([...networkTypes, ...territoryPermissionResourceTypes]) }),
-  z.object({ resource_id: z.string(), type: z.literal(organizationPermissionType) }),
-  z.object({ resource_id: z.null(), type: z.literal('national') }),
-]);
+export const zPermission = z.object({ resource_id: z.string(), type: z.enum(permissionTypes) });
 
 export const MAX_PERMISSIONS_PER_USER = businessRules.maxPermissionsPerUser.value;
 
@@ -54,4 +46,4 @@ export type Permission = z.infer<typeof zPermission>;
 export type PermissionWithLabel = Permission & { label: string };
 
 // Stable key for a permission (used as map bounds dictionary key, React list key, etc.)
-export const permissionBoundsKey = (type: PermissionType, resource_id: string | null): string => `${type}:${resource_id ?? ''}`;
+export const permissionBoundsKey = (type: PermissionType, resource_id: string): string => `${type}:${resource_id}`;

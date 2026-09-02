@@ -77,7 +77,7 @@ const checkGestionnaireWithTerritory: IssueBuilder = async () => {
     .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
     .select(['u.id', 'u.email', 'u.first_name', 'u.last_name'])
     .where('u.role', '=', 'gestionnaire')
-    .where('up.type', 'in', ['commune', 'epci', 'ept', 'departement', 'region', 'national'])
+    .where('up.type', 'in', ['commune', 'epci', 'ept', 'departement', 'region'])
     .distinct()
     .orderBy('u.email')
     .execute();
@@ -92,7 +92,7 @@ const checkGestionnaireWithTerritory: IssueBuilder = async () => {
 
   return {
     description:
-      'Un gestionnaire ne doit porter que des permissions sur des réseaux. Les permissions territoriales (commune, EPCI, EPT, département, région, national) sont réservées aux collectivités, ALEC et CCRT.',
+      'Un gestionnaire ne doit porter que des permissions sur des réseaux. Les permissions territoriales (commune, EPCI, EPT, département, région) sont réservées aux collectivités, ALEC et CCRT.',
     items,
     severity: 'error',
     title: 'Gestionnaire avec une permission territoriale',

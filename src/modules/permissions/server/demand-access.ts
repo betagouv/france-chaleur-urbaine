@@ -84,14 +84,10 @@ export const buildDemandAccessFilter = (
         );
       }
 
-      if (territoryPerms.some((p) => p.type === 'national')) {
-        conditions.push(sql.lit(true));
-      } else {
-        for (const p of territoryPerms) {
-          if (p.type in territoryPermissionToColumn) {
-            const column = territoryPermissionToColumn[p.type as keyof typeof territoryPermissionToColumn];
-            conditions.push(eb(`demands.${column}` as any, '=', p.resource_id));
-          }
+      for (const p of territoryPerms) {
+        if (p.type in territoryPermissionToColumn) {
+          const column = territoryPermissionToColumn[p.type as keyof typeof territoryPermissionToColumn];
+          conditions.push(eb(`demands.${column}` as any, '=', p.resource_id));
         }
       }
 
@@ -110,11 +106,10 @@ const matchesNetworkAffectation =
   (p: Permission): boolean =>
     isNetworkPermissionType(p.type) && p.type === demand.network_type && Number(p.resource_id) === demand.network_id;
 
-/** Une perm territoire matche ssi elle couvre la maille géographique de la demande (`national` couvre tout). */
+/** Une perm territoire matche ssi elle couvre la maille géographique de la demande. */
 const matchesTerritory =
   (demand: DemandForAccess) =>
   (p: Permission): boolean => {
-    if (p.type === 'national') return true;
     if (p.type in territoryPermissionToColumn) {
       const column = territoryPermissionToColumn[p.type as keyof typeof territoryPermissionToColumn];
       return demand[column] === p.resource_id;
@@ -180,10 +175,8 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
         conditions.push(eb.and([eb('up.type', '=', 'organization'), eb('up.resource_id', '=', demand.network_organization_id)]));
       }
 
-      conditions.push(eb('up.type', '=', 'national'));
-
       for (const [permType, column] of Object.entries(territoryPermissionToColumn) as [
-        Exclude<TerritoryPermissionType, 'national'>,
+        TerritoryPermissionType,
         (typeof territoryPermissionToColumn)[keyof typeof territoryPermissionToColumn],
       ][]) {
         const value = demand[column];
