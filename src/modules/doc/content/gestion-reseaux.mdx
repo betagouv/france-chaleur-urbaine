@@ -85,7 +85,7 @@ Le **rattachement d'un utilisateur** à une organisation ne se fait pas ici mais
 
 ## Tuiles de la carte
 
-La carte publique est servie à partir de **tuiles** pré-calculées. Elles sont régénérées (tâche visible dans [Suivi des tâches](/admin/jobs)) après l'application d'une modification de tracé, après un test d'adresses en masse, ou manuellement. **Aucun cron** ne les régénère : une donnée réseau modifiée dans Airtable n'apparaît sur la carte qu'après une régénération.
+La carte publique est servie à partir de **tuiles** pré-calculées. Elles sont régénérées (tâche visible dans [Suivi des tâches](/admin/jobs)) après l'application d'une modification de tracé, après un test d'adresses en masse, ou manuellement. **Aucun cron** ne les régénère : une donnée réseau modifiée dans Airtable n'apparaît sur la carte qu'après une régénération. Une fois la régénération terminée, les tuiles des réseaux (chaleur, froid, en construction, PDP) sont visibles dès le rechargement de la page (environ une minute de délai maximum) ; les autres couches, moins fréquemment mises à jour, peuvent rester en cache navigateur jusqu'à 24 h.
 
 ## Statistiques
 

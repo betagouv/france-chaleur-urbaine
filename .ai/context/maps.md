@@ -50,12 +50,12 @@ Cache: the API sets `Cache-Control`, a weak `ETag` and `Last-Modified` per tile 
 
 **Golden rule** — every write to a tile source must call `markTilesUpdated(sourceId)` (`service.ts`). Without the bump, browsers serve the stale version until `max-age` expires. Wired paths: `runTilesGeneration` (end of build), `populateTilesCache` (`demands` rebuild), CLI `pnpm cli tiles bump <source-id> | --all` (dump restore / manual). Any new write path to a `*_tiles` table must call it.
 
-Cache profiles — `cacheProfile` field per source (`'long' | 'short' | 'private'`, default `long`):
+Cache profiles — `cacheProfile` field per source (`'long' | 'revalidate' | 'private'`, default `long`):
 
 | Profile | `Cache-Control` | Sources |
 |---------|-----------------|---------|
 | `long` (default) | `public, max-age=86400` | Rarely-changed data (bdnb, geothermie, zones, besoins, communes, enrr…) |
-| `short` | `public, max-age=7200` | Réseaux + `demands` |
+| `revalidate` | `public, no-cache` | Réseaux + `demands` — browser caches tiles but revalidates on every display (304 if unchanged), so updates are visible immediately after a `markTilesUpdated` bump (bounded by the 60s in-memory metadata TTL) |
 | `private` | `private, max-age=86400, must-revalidate` | `tests-adresses` (admin-only, embedded PII) |
 
 `tests-adresses` is admin-only: auth required on the route, legend checkbox hidden for other roles, no `Access-Control-Allow-Origin: *`.
