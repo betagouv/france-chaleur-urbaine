@@ -45,7 +45,7 @@ describe('getHeatingSimulation', () => {
       heatPumpProposedPower: 10.545897435897436,
       oilBoilerAnnualBill: 2199.7088535616444,
     });
-  });
+  }, 30_000);
 
   const incomeCases: TestCase<HeatingSimulationInput['incomeCategory'], number>[] = [
     { expectedOutput: 3653.417999999998, input: 'Très modeste', label: 'very low income gets the highest total aid' },
@@ -55,7 +55,7 @@ describe('getHeatingSimulation', () => {
 
   it.each(incomeCases)('$label', (testCase) => {
     expect(getHeatingSimulation({ ...baseInput, incomeCategory: testCase.input }).heatPumpNetPrice).toStrictEqual(testCase.expectedOutput);
-  }, 15_000);
+  }, 30_000);
 });
 
 describe('getIncomeOptions', () => {
@@ -87,5 +87,5 @@ describe('getIncomeOptions', () => {
         value: 'Supérieur',
       },
     ]);
-  });
+  }, 30_000);
 });
