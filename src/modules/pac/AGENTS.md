@@ -5,12 +5,13 @@ Small public API integration for the `france-chaleur-urbaine-pac` frontend proto
 ## Structure
 
 - `constants.ts` owns API schemas and shared types.
+- `server/france-renov-space-service.ts` exposes the France Rénov' advisor lookup to the external PAC frontend.
 - `server/simulation-service.ts` maps validated API input to the publicodes engine and returns normalized numbers.
 - `server/tracking-service.ts` relays whitelisted anonymous widget events to PostHog.
 
 ## Boundaries
 
-- This module exposes calculation and anonymous tracking relay logic only. It must not read/write the database.
+- This module exposes calculation, anonymous tracking relay logic and France Rénov' advisor lookup only. It must not read/write the database.
 - Publicodes rule names stay encapsulated in the service; callers use the API schema from `constants.ts`.
 - Public REST routes live in `src/pages/api/pac/` because they are consumed by a separate frontend repository.
 - Tracking accepts only declared `simulateur_pac:*` events and bounded non-PII properties; do not add free-form analytics payloads.
@@ -28,6 +29,12 @@ Output: PAC air/water proposed power, gross/net PAC price, MaPrimeRénov' and Co
 Input: department code and household size.
 
 Output: MaPrimeRénov' income categories with numeric min/max bounds. The frontend owns user-facing label formatting.
+
+`POST /api/pac/france-renov-space`
+
+Input: commune INSEE code.
+
+Output: normalized contact details for the local Espace Conseil France Rénov', or `null` when none is found. The data source and CSV cache stay owned by the chaleur renouvelable module.
 
 `POST /api/pac/events`
 

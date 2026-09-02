@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import type { FranceRenovSpace } from '@/modules/chaleur-renouvelable/constants';
 import { DPE_VALUES } from '@/modules/chaleur-renouvelable/constants';
 
 export const INCOME_CATEGORY_VALUES = ['Très modeste', 'Modeste', 'Intermédiaire', 'Supérieur'] as const;
@@ -53,6 +54,14 @@ export const zSimulateurPacEventInput = z.strictObject({
 });
 
 export type SimulateurPacEventInput = z.infer<typeof zSimulateurPacEventInput>;
+
+export const zFranceRenovSpaceInput = z.object({
+  cityCode: z.string().trim().min(5).max(5),
+});
+
+export type FranceRenovSpaceInput = z.infer<typeof zFranceRenovSpaceInput>;
+
+export type { FranceRenovSpace };
 
 export type IncomeOption = {
   max: number | null;
