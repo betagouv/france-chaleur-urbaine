@@ -39,7 +39,6 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
   const isNetworkMode = availableTypes.some((t) => networkPermissionSet.has(t));
   const isTerritoryMode = availableTypes.some((t) => territoryPermissionSet.has(t));
   const isOrganizationMode = availableTypes.includes('organization' as PermissionType);
-  const showNationalOption = isTerritoryMode && availableTypes.includes('national' as PermissionType);
 
   const networkResults = trpc.permissions.searchNetworks.useQuery(
     { search: debouncedQuery },
@@ -97,14 +96,6 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     }
   }
 
-  if (showNationalOption) {
-    results.unshift({
-      label: 'National (tout le territoire)',
-      permission: { resource_id: null, type: 'national' },
-      sublabel: 'Accès à toutes les demandes',
-    });
-  }
-
   const searchTargets = [
     isNetworkMode ? 'un réseau' : null,
     isTerritoryMode ? 'un territoire' : null,
@@ -138,7 +129,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     }
   };
 
-  const showPopover = isOpen && ((query.length === 0 && showNationalOption) || (query.length >= 2 && (results.length > 0 || isFetching)));
+  const showPopover = isOpen && query.length >= 2 && (results.length > 0 || isFetching);
 
   return (
     <Popover open={showPopover} onOpenChange={setIsOpen}>

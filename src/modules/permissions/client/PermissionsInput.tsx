@@ -46,12 +46,7 @@ const PermissionsInput = ({ value, onChange, availableTypes }: PermissionsInputP
     onChange(value.filter((_, i) => i !== index));
   };
 
-  const getLabel = (p: Permission) => {
-    const resolved = labelMap.get(`${p.type}:${p.resource_id}`);
-    if (resolved) return resolved;
-    if (p.type === 'national') return 'National';
-    return p.resource_id ?? '';
-  };
+  const getLabel = (p: Permission) => labelMap.get(`${p.type}:${p.resource_id}`) ?? p.resource_id;
 
   return (
     <div className="space-y-3">

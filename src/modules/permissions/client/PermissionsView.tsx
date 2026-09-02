@@ -29,7 +29,6 @@ const PermissionsView = () => {
   }
 
   const handleSelect = (p: PermissionWithLabel) => {
-    if (p.type === 'national') return;
     setSelectedKey(permissionBoundsKey(p.type, p.resource_id));
     setExpanded(true);
   };
@@ -65,8 +64,6 @@ const formatPermission = (p: PermissionWithLabel): string => {
       return `dans le département ${p.label}`;
     case 'region':
       return `dans la région ${p.label}`;
-    case 'national':
-      return `sur l'ensemble du territoire national`;
     case 'organization':
       return `sur l'ensemble des réseaux de l'organisation ${p.label}`;
     case 'reseau_de_chaleur':
@@ -90,20 +87,15 @@ const PermissionsList = ({ permissions, selectedKey, onSelect }: PermissionsList
         {permissions.map((p) => {
           const key = permissionBoundsKey(p.type, p.resource_id);
           const isSelected = selectedKey === key;
-          const isClickable = p.type !== 'national';
           return (
             <li key={key}>
-              {isClickable ? (
-                <button
-                  type="button"
-                  onClick={() => onSelect(p)}
-                  className={cx('text-left hover:underline cursor-pointer', isSelected ? 'font-semibold text-info' : 'text-current')}
-                >
-                  {formatPermission(p)}
-                </button>
-              ) : (
-                <span>{formatPermission(p)}</span>
-              )}
+              <button
+                type="button"
+                onClick={() => onSelect(p)}
+                className={cx('text-left hover:underline cursor-pointer', isSelected ? 'font-semibold text-info' : 'text-current')}
+              >
+                {formatPermission(p)}
+              </button>
             </li>
           );
         })}

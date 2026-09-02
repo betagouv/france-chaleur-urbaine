@@ -62,7 +62,7 @@ export const searchOrganizations = async (query: string): Promise<OrganizationSe
 type TerritorySearchResult = {
   code: string;
   label: string;
-  type: Exclude<TerritoryPermissionType, 'national'>;
+  type: TerritoryPermissionType;
 };
 
 /**
@@ -296,10 +296,6 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
     );
   }
 
-  if (permissions.some((p) => p.type === 'national')) {
-    result.push({ label: 'National', resource_id: null, type: 'national' });
-  }
-
   await Promise.all(lookups);
 
   return result;
@@ -315,7 +311,7 @@ export const resolvePermissionsWithLabels = async (permissions: Permission[]): P
   return permissions.map(
     (p): PermissionWithLabel => ({
       ...p,
-      label: labelMap.get(`${p.type}:${p.resource_id}`) ?? (p.type === 'national' ? 'National' : (p.resource_id ?? '')),
+      label: labelMap.get(`${p.type}:${p.resource_id}`) ?? p.resource_id,
     })
   );
 };
@@ -347,9 +343,7 @@ export const getAllPermissionsWithLabels = async (): Promise<Record<string, Perm
 
   const result: Record<string, PermissionWithLabel[]> = {};
   for (const permission of permissions) {
-    const label =
-      labelMap.get(`${permission.type}:${permission.resource_id}`) ??
-      (permission.type === 'national' ? 'National' : (permission.resource_id ?? ''));
+    const label = labelMap.get(`${permission.type}:${permission.resource_id}`) ?? permission.resource_id;
     (result[permission.user_id] ??= []).push({ ...permission, label } as PermissionWithLabel);
   }
 

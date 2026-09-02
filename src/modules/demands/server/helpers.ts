@@ -102,7 +102,6 @@ export const buildDemandQuery = () => {
         .innerJoin('user_permissions as up', (j) =>
           j.on((eb) =>
             eb.or([
-              eb('up.type', '=', 'national'),
               eb.and([
                 eb('up.type', '=', 'reseau_de_chaleur'),
                 eb('d.network_type', '=', 'reseau_de_chaleur'),
