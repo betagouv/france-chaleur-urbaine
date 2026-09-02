@@ -12,6 +12,7 @@ import type {
   TypeRadiateur,
 } from '@/modules/chaleur-renouvelable/constants';
 import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
+import type { SimulateurPacEventProperties } from '@/modules/pac/constants';
 import type { TypeCommune } from '@/server/services/communeAPotentiel';
 
 /**
@@ -143,6 +144,11 @@ export type PostHogEventMap = {
     network_name?: string;
     surface_m2?: number;
   };
+  'simulateur_pac:form_started': SimulateurPacEventProperties;
+  'simulateur_pac:results_requested': SimulateurPacEventProperties;
+  'simulateur_pac:france_renov_coordinates_requested': SimulateurPacEventProperties;
+  'simulateur_pac:france_renov_external_link_clicked': SimulateurPacEventProperties;
+  'simulateur_pac:fcu_outbound_link_clicked': SimulateurPacEventProperties;
 
   // Potentiel création réseau
   'potentiel-creation-reseau:commune_form_submit': {

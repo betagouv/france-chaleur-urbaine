@@ -62,7 +62,21 @@ Outil de comparaison des solutions de chauffage.
 | `comparator:config_load` | `is_shared` | Chargement d'une configuration (partagée ou non) |
 | `comparator:config_share` | _(aucune)_ | Partage d'une configuration |
 
-### 5. Navigation (liens, CTA, boutons)
+### 5. Simulateur PAC embarqué
+
+Tracking anonymisé du bundle `france-chaleur-urbaine-pac`, relayé côté serveur par `POST /api/pac/events` pour mesurer les KPI du widget même lorsqu'il est intégré sur un site tiers.
+
+| Événement | Propriétés | Description |
+|---|---|---|
+| `simulateur_pac:form_started` | `source_host?`, `source_path?`, `current_step?`, `owner_status?`, `housing_type?`, `heating_equipment?`, `dpe?`, `department_code?`, `route_outcome?`, | Premier engagement dans le formulaire |
+| `simulateur_pac:results_requested` | `source_host?`, `source_path?`, `current_step?`, `owner_status?`, `housing_type?`, `heating_equipment?`, `dpe?`, `department_code?`, `route_outcome?`, | Clic sur le CTA de calcul des résultats |
+| `simulateur_pac:france_renov_coordinates_requested` | `source_host?`, `source_path?`, `department_code?` | Clic pour afficher les coordonnées de l'ECFR |
+| `simulateur_pac:france_renov_external_link_clicked` | `source_host?`, `source_path?` | Clic sur le lien externe du bloc ECFR |
+| `simulateur_pac:fcu_outbound_link_clicked` | `source_host?`, `source_path?`, `link_name?` | Clic sortant vers France Chaleur Urbaine ou Chaleur renouvelable |
+
+Ces événements n'utilisent pas `posthog-js` dans le widget : le navigateur appelle l'API FCU en fire-and-forget, puis le serveur envoie l'événement à PostHog avec `$process_person_profile: false`. Ne pas envoyer d'adresse, d'email, de téléphone ni de texte libre utilisateur dans ces propriétés.
+
+### 6. Navigation (liens, CTA, boutons)
 
 Tracking unifié de tous les clics de navigation.
 
@@ -78,7 +92,7 @@ Tracking unifié de tous les clics de navigation.
 - Lien sources données sur la carte : `{ link_name: 'sources_donnees', source: 'carte' }`
 - Popup potentiel densification : `{ link_name: 'popup_potentiel_densification', source: 'carte' }`
 
-### 6. Contenu (documents, vidéos, guides)
+### 7. Contenu (documents, vidéos, guides)
 
 Tracking unifié de la consultation de contenu.
 
@@ -93,7 +107,7 @@ Tracking unifié de la consultation de contenu.
 - Lecture d'une vidéo : `{ content_type: 'video', content_name: 'Présentation FCU', source: 'supports' }`
 - Clic sur un guide : `{ content_type: 'guide', content_name: 'Guide Copropriétés', source: 'ressources' }`
 
-### 7. Chaleur renouvelable (FCR)
+### 8. Chaleur renouvelable (FCR)
 
 Parcours classique : landing → simulateur → résultats → contact.
 
@@ -186,11 +200,15 @@ Parcours classique : landing → simulateur → résultats → contact.
 | 13 | `link:click` | Navigation |
 | 14 | `content:click` | Contenu |
 
+### Événements simulateur PAC
+
+Les événements du simulateur PAC embarqué sont listés dans la section dédiée ci-dessus. Ils ajoutent **5 événements custom** au plan de tracking PostHog.
+
 ### Événements FCR
 
 Les événements du parcours chaleur renouvelable sont listés dans la section dédiée ci-dessus. Ils ajoutent **47 événements custom** au plan de tracking PostHog.
 
-**Total documenté : 61 événements custom** + `$pageview` natif PostHog.
+**Total documenté : 66 événements custom** + `$pageview` natif PostHog.
 
 ---
 
