@@ -32,12 +32,13 @@ export type AsTile<T> = {
  * Profil de cache HTTP appliqué sur les tuiles servies par l'API.
  * Cf. `.ai/context/maps.md` et `.ai/plans/tiles-http-caching.md`.
  */
-export type TilesCacheProfile = 'long' | 'short' | 'private';
+export type TilesCacheProfile = 'long' | 'revalidate' | 'private';
 
 export const TILES_CACHE_PROFILES: Record<TilesCacheProfile, string> = {
   long: 'public, max-age=86400',
   private: 'private, max-age=86400, must-revalidate',
-  short: 'public, max-age=7200',
+  // le navigateur garde les tuiles en cache mais revalide à chaque affichage (304 si inchangées)
+  revalidate: 'public, no-cache',
 };
 
 type CommonTileSourceConfig = {
@@ -164,7 +165,7 @@ export const tileSourcesConfig = {
   },
   demands: {
     cache: buildDemandFeatures,
-    cacheProfile: 'short',
+    cacheProfile: 'revalidate',
     properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage', 'Structure'],
   },
   'enrr-mobilisables': {
@@ -247,7 +248,7 @@ export const tileSourcesConfig = {
   },
   'perimetres-de-developpement-prioritaire': {
     aliases: ['perimetresDeDeveloppementPrioritaire'],
-    cacheProfile: 'short',
+    cacheProfile: 'revalidate',
     generateGeoJSON: extractNDJSONFromDatabaseTable('zone_de_developpement_prioritaire', {
       fields: perimetresDeDeveloppementPrioritaireFields,
       idField: 'id_fcu',
@@ -275,14 +276,14 @@ export const tileSourcesConfig = {
   },
   'reseaux-de-chaleur': {
     aliases: ['reseauxDeChaleur'],
-    cacheProfile: 'short',
+    cacheProfile: 'revalidate',
     generateGeoJSON: reseauxDeChaleurGeoJSONQuery,
     tilesTableName: 'reseaux_de_chaleur_tiles',
     tippeCanoeArgs: '-r1',
   },
   'reseaux-de-froid': {
     aliases: ['reseauxDeFroid'],
-    cacheProfile: 'short',
+    cacheProfile: 'revalidate',
     generateGeoJSON: extractNDJSONFromDatabaseTable('reseaux_de_froid', {
       fields: reseauxDeFroidFields,
       idField: 'id_fcu',
@@ -292,7 +293,7 @@ export const tileSourcesConfig = {
   },
   'reseaux-en-construction': {
     aliases: ['reseauxEnConstruction'],
-    cacheProfile: 'short',
+    cacheProfile: 'revalidate',
     generateGeoJSON: extractNDJSONFromDatabaseTable('zones_et_reseaux_en_construction', {
       fields: reseauxEnConstructionFields,
       idField: 'id_fcu',
