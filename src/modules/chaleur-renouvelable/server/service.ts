@@ -19,7 +19,7 @@ import {
 } from '@/modules/chaleur-renouvelable/constants';
 import type { CreateDemandInput, DemandSubmissionResult } from '@/modules/demands/constants';
 import { createDemand } from '@/modules/demands/server/creation-user';
-import { sendEmailTemplate } from '@/modules/email';
+// import { sendEmailTemplate } from '@/modules/email';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
@@ -57,7 +57,7 @@ const batEnrBatimentColumns = [
   'type_installation_ecs',
 ] as const;
 
-const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = serverConfig.contactEmail;
+// const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = serverConfig.contactEmail;
 const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = businessRules.fcrBuildingCandidatesRadiusMeters.value;
 
 type BanAddressSearchResponse = {
@@ -563,58 +563,62 @@ const getPreselectedBatimentConstructionIdFromRnb = async (banId: string) => {
 };
 
 export const createDemandeChaleurRenouvelable = async ({ input }: { input: DemandeChaleurRenouvelable }) => {
-  const initialStatus = getInitialDemandeChaleurRenouvelableStatus(input);
+  // Pour l'instant, on ne créée pas de demande chaleur renouvelable :
+  // - soit c'est une demande classique RC
+  // - soit on redirige vers un ECFR
 
-  const createdDemand = await kdb
-    .insertInto('demands_chaleur_renouvelable')
-    .values({
-      address: input.address,
-      average_area: input.averageArea,
-      average_residents: input.averageResidents,
-      batiment_construction_id: input.batimentConstructionId,
-      comments: input.comments,
-      created_at: new Date(),
-      demand_concern: input.demandConcern,
-      dpe: input.dpe,
-      email: input.email,
-      first_name: input.firstName,
-      heating_energy: input.heatingEnergy,
-      hot_water_system_type: input.hotWaterSystemType,
-      housing_count: input.housingCount,
-      housing_type: input.housingType,
-      is_public_advisor_selected: input.isPublicAdvisorSelected,
-      last_name: input.lastName,
-      occupant_status: input.occupantStatus,
-      organization_name: input.organizationName,
-      outdoor_space: input.outdoorSpace,
-      phone: input.phone,
-      project_status: input.projectStatus,
-      radiator_type: input.radiatorType,
-      refusal_period: input.refusalPeriod,
-      refusal_reason: input.refusalReason,
-      simulation_url: input.simulationUrl,
-      status: initialStatus,
-      surface_area: input.surfaceArea,
-      updated_at: new Date(),
-    })
-    .returning(['id'])
-    .executeTakeFirstOrThrow();
+  // const initialStatus = getInitialDemandeChaleurRenouvelableStatus(input);
 
-  await sendEmailTemplate(
-    'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable',
-    { email: DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL },
-    {
-      demand: input,
-      demandId: createdDemand.id,
-      status: initialStatus,
-    }
-  );
+  // const createdDemand = await kdb
+  //   .insertInto('demands_chaleur_renouvelable')
+  //   .values({
+  //     address: input.address,
+  //     average_area: input.averageArea,
+  //     average_residents: input.averageResidents,
+  //     batiment_construction_id: input.batimentConstructionId,
+  //     comments: input.comments,
+  //     created_at: new Date(),
+  //     demand_concern: input.demandConcern,
+  //     dpe: input.dpe,
+  //     email: input.email,
+  //     first_name: input.firstName,
+  //     heating_energy: input.heatingEnergy,
+  //     hot_water_system_type: input.hotWaterSystemType,
+  //     housing_count: input.housingCount,
+  //     housing_type: input.housingType,
+  //     is_public_advisor_selected: input.isPublicAdvisorSelected,
+  //     last_name: input.lastName,
+  //     occupant_status: input.occupantStatus,
+  //     organization_name: input.organizationName,
+  //     outdoor_space: input.outdoorSpace,
+  //     phone: input.phone,
+  //     project_status: input.projectStatus,
+  //     radiator_type: input.radiatorType,
+  //     refusal_period: input.refusalPeriod,
+  //     refusal_reason: input.refusalReason,
+  //     simulation_url: input.simulationUrl,
+  //     status: initialStatus,
+  //     surface_area: input.surfaceArea,
+  //     updated_at: new Date(),
+  //   })
+  //   .returning(['id'])
+  //   .executeTakeFirstOrThrow();
+
+  // await sendEmailTemplate(
+  //   'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable',
+  //   { email: DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL },
+  //   {
+  //     demand: input,
+  //     demandId: createdDemand.id,
+  //     status: initialStatus,
+  //   }
+  // );
 
   const demandSubmissionResult = await createRaccordableDemand(input);
 
   return {
     demandSubmissionResult,
-    id: createdDemand.id,
+    id: null, // createdDemand?.id,
   };
 };
 
