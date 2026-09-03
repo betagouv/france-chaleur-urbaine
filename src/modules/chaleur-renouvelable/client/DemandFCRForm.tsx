@@ -481,7 +481,7 @@ function HeatNetworkDemandForm({
         createdAt: new Date().toISOString(),
         distance: null,
         email: value.email,
-        id: result.id,
+        id: result.id ?? '',
         isEligible: !isPublicAdvisorSelected,
         isExisting: false,
         networkName: null,
