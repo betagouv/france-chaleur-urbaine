@@ -1,3 +1,5 @@
+import { TRPCError } from '@trpc/server';
+
 import { businessRules } from '@/modules/app/business-rules';
 import { EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
 import type {
@@ -8,14 +10,13 @@ import type {
   BatEnrByBanIdInput,
   ColdNetworkEligibility,
   DemandeChaleurRenouvelable,
-  DemandeChaleurRenouvelableStatus,
   FranceRenovSpace,
   FranceRenovSpaceInput,
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
 import {
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
+  DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
 } from '@/modules/chaleur-renouvelable/constants';
 import type { CreateDemandInput, DemandSubmissionResult } from '@/modules/demands/constants';
 import { createDemand } from '@/modules/demands/server/creation-user';
@@ -95,14 +96,6 @@ const singleConstructionBuildingArea = sql<number | null>`
     LIMIT 1
   )
 `.as('dpe_representatif_logement_surface_habitable_immeuble');
-
-const getInitialDemandeChaleurRenouvelableStatus = (input: DemandeChaleurRenouvelable): DemandeChaleurRenouvelableStatus => {
-  return input.housingType === 'maison_individuelle' ||
-    input.housingType === 'immeuble_chauffage_individuel' ||
-    input.demandConcern === 'Une maison individuelle'
-    ? DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC
-    : DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR;
-};
 
 const getDemandAddressTerritory = (context: string) => {
   const [department = '', , region = ''] = context.split(',').map((contextPart) => contextPart.trim());
@@ -567,8 +560,6 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
   // - soit c'est une demande classique RC
   // - soit on redirige vers un ECFR
 
-  // const initialStatus = getInitialDemandeChaleurRenouvelableStatus(input);
-
   // const createdDemand = await kdb
   //   .insertInto('demands_chaleur_renouvelable')
   //   .values({
@@ -597,7 +588,6 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
   //     refusal_period: input.refusalPeriod,
   //     refusal_reason: input.refusalReason,
   //     simulation_url: input.simulationUrl,
-  //     status: initialStatus,
   //     surface_area: input.surfaceArea,
   //     updated_at: new Date(),
   //   })
@@ -610,7 +600,6 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
   //   {
   //     demand: input,
   //     demandId: createdDemand.id,
-  //     status: initialStatus,
   //   }
   // );
 
@@ -648,6 +637,7 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
       'outdoor_space',
       'organization_name',
       'phone',
+      'project_state',
       'project_status',
       'radiator_type',
       'refusal_period',
@@ -675,14 +665,38 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
 };
 
 export const updateDemandeChaleurRenouvelableAdmin = async ({ demandId, values }: AdminUpdateDemandeChaleurRenouvelableInput) => {
+  const currentStatus =
+    values.status === undefined && values.projectState !== undefined
+      ? (
+          await kdb
+            .selectFrom('demands_chaleur_renouvelable')
+            .select('status')
+            .where('id', '=', demandId)
+            .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }))
+        ).status
+      : undefined;
+  const updatedStatus = values.status ?? currentStatus;
+
+  if (values.projectState !== undefined && updatedStatus !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: "L'état du projet ne peut être modifié qu'après validation de l'étude de faisabilité en AG.",
+    });
+  }
+
   return await kdb
     .updateTable('demands_chaleur_renouvelable')
     .set({
       ...(values.assignedTo !== undefined && { assigned_to: values.assignedTo }),
+      ...(values.projectState !== undefined && { project_state: values.projectState }),
+      ...(values.status !== undefined &&
+        values.status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION && {
+          project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+        }),
       ...(values.status !== undefined && { status: values.status }),
       updated_at: new Date(),
     })
     .where('id', '=', demandId)
-    .returning(['assigned_to', 'id', 'status', 'updated_at'])
+    .returning(['assigned_to', 'id', 'project_state', 'status', 'updated_at'])
     .executeTakeFirstOrThrow();
 };

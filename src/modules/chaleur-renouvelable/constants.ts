@@ -325,21 +325,28 @@ export const projectStatusOptions = PROJECT_STATUS_VALUES.map((value) => ({
 }));
 
 export const demandeChaleurRenouvelableStatuses = [
-  { label: 'à traiter CCR', value: 'waiting_ccr' },
-  { label: 'à traiter ALEC', value: 'waiting_alec' },
-  { label: 'recontacté pour diagnostic', value: 'waiting_diagnostic' },
-  { label: '[à traiter alec] Réorientation du prospect vers isolation/rénovation globale', value: 'alec_reorientation' },
-  { label: 'Accompagnement ALEC en cours', value: 'alec' },
-  { label: "En attente d'éléments du prospect", value: 'waiting_prospect' },
-  { label: 'Étude technico-financière réalisée', value: 'finance' },
-  { label: "Appel d'offre bureau d'études réalisé", value: 'be' },
-  { label: 'Travaux votés en AG', value: 'voted' },
-  { label: 'Travaux réalisés', value: 'done' },
-  { label: 'Demande non pertinente', value: 'abandoned' },
+  { label: 'A traiter', value: 'to_process' },
+  { label: 'Recontacté pour premier échange', value: 'recontacted_first_exchange' },
+  { label: 'Non pertinent', value: 'irrelevant' },
+  { label: 'Réorienté vers France Rénov’', value: 'redirected_france_renov' },
+  { label: 'Etude d’opportunité en cours', value: 'opportunity_study_in_progress' },
+  { label: 'Etude d’opportunité réalisée', value: 'opportunity_study_done' },
+  { label: '[Validation du projet] Etude de faisabilité votée en AG', value: 'project_validation_feasibility_study_voted' },
+  { label: 'Projet abandonné par le prospect', value: 'abandoned_by_prospect' },
 ] as const;
-export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR = demandeChaleurRenouvelableStatuses[0].label;
-export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC = demandeChaleurRenouvelableStatuses[1].label;
+export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS = demandeChaleurRenouvelableStatuses[0].label;
+export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION = demandeChaleurRenouvelableStatuses[6].label;
 export type DemandeChaleurRenouvelableStatus = (typeof demandeChaleurRenouvelableStatuses)[number]['label'];
+
+export const demandeChaleurRenouvelableProjectStates = [
+  { label: 'En réflexion', value: 'reflection' },
+  { label: 'Etude de faisabilité (BE) réalisée', value: 'feasibility_study_done' },
+  { label: 'Installation ENR votée en AG', value: 'enr_installation_voted' },
+  { label: 'Installation ENR réalisée', value: 'enr_installation_done' },
+  { label: 'Projet abandonné par le prospect', value: 'abandoned_by_prospect' },
+] as const;
+export const DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION = demandeChaleurRenouvelableProjectStates[0].label;
+export type DemandeChaleurRenouvelableProjectState = (typeof demandeChaleurRenouvelableProjectStates)[number]['label'];
 
 export const DEFAULT_SIMULATION_PARAMS = {
   espaceExterieur: 'none',
@@ -436,6 +443,7 @@ export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
   values: z
     .object({
       assignedTo: z.string().nullable(),
+      projectState: z.enum(demandeChaleurRenouvelableProjectStates.map((projectState) => projectState.label)),
       status: z.enum(demandeChaleurRenouvelableStatuses.map((status) => status.label)),
     })
     .partial(),

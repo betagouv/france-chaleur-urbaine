@@ -2,7 +2,12 @@ import type { Insertable } from 'kysely';
 import type { User } from 'next-auth';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { DemandeChaleurRenouvelable } from '@/modules/chaleur-renouvelable/constants';
+import {
+  DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+  type DemandeChaleurRenouvelable,
+} from '@/modules/chaleur-renouvelable/constants';
 import { getBatEnrBatimentsSelectionContextByBanId } from '@/modules/chaleur-renouvelable/server/service';
 import { sendEmailTemplate } from '@/modules/email';
 import { kdb, sql } from '@/server/db/kysely';
@@ -49,7 +54,8 @@ type BatEnrInsertParams = {
 };
 
 type DemandChaleurRenouvelableInsert = Insertable<DB['demands_chaleur_renouvelable']>;
-const ADMIN_UPDATED_STATUS = 'Étude technico-financière réalisée';
+const ADMIN_UPDATED_PROJECT_STATE = 'Installation ENR votée en AG';
+const ADMIN_UPDATED_STATUS = 'Etude d’opportunité réalisée';
 const sentEmailTemplate = vi.mocked(sendEmailTemplate);
 const mockedFetchJSON = vi.mocked(fetchJSON);
 
@@ -384,7 +390,8 @@ describe('batEnrRouter', () => {
             assigned_to: null,
             created_at: newerDate.toISOString(),
             id: newerDemand.id,
-            status: 'En attente de prise en charge',
+            project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+            status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             updated_at: newerDate.toISOString(),
           },
           {
@@ -392,7 +399,8 @@ describe('batEnrRouter', () => {
             assigned_to: null,
             created_at: olderDate.toISOString(),
             id: olderDemand.id,
-            status: 'En attente de prise en charge',
+            project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+            status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             updated_at: olderDate.toISOString(),
           },
         ],
@@ -480,13 +488,131 @@ describe('batEnrRouter', () => {
 
       const updatedDemand = await kdb
         .selectFrom('demands_chaleur_renouvelable')
-        .select(['assigned_to', 'status'])
+        .select(['assigned_to', 'project_state', 'status'])
         .where('id', '=', demand.id)
         .executeTakeFirstOrThrow();
 
       expect(updatedDemand).toStrictEqual({
         assigned_to: 'Gestionnaire test',
+        project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
         status: ADMIN_UPDATED_STATUS,
+      });
+    });
+
+    it("met à jour l'état du projet quand le statut de validation le permet", async () => {
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+        demandId: demand.id,
+        values: { projectState: ADMIN_UPDATED_PROJECT_STATE },
+      });
+
+      const updatedDemand = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['project_state', 'status'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow();
+
+      expect(updatedDemand).toStrictEqual({
+        project_state: ADMIN_UPDATED_PROJECT_STATE,
+        status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+      });
+    });
+
+    it("réinitialise l'état du projet quand le statut sort de la validation", async () => {
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_state: ADMIN_UPDATED_PROJECT_STATE,
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+        demandId: demand.id,
+        values: { status: ADMIN_UPDATED_STATUS },
+      });
+
+      const updatedDemand = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['project_state', 'status'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow();
+
+      expect(updatedDemand).toStrictEqual({
+        project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+        status: ADMIN_UPDATED_STATUS,
+      });
+    });
+
+    it("refuse de modifier l'état du projet sans statut de validation", async () => {
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      const callRoute = () =>
+        createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+          demandId: demand.id,
+          values: { projectState: ADMIN_UPDATED_PROJECT_STATE },
+        });
+
+      await expect(callRoute).rejects.toMatchObject({
+        code: 'BAD_REQUEST',
       });
     });
   });
