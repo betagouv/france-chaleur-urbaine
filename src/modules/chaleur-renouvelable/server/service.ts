@@ -1,3 +1,5 @@
+import { TRPCError } from '@trpc/server';
+
 import { businessRules } from '@/modules/app/business-rules';
 import { EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
 import type {
@@ -6,26 +8,28 @@ import type {
   BatEnrBatiment,
   BatEnrBatimentsSelectionContext,
   BatEnrByBanIdInput,
+  ColdNetworkEligibility,
   DemandeChaleurRenouvelable,
-  DemandeChaleurRenouvelableStatus,
   FranceRenovSpace,
   FranceRenovSpaceInput,
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
 import {
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
+  DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
 } from '@/modules/chaleur-renouvelable/constants';
 import type { CreateDemandInput, DemandSubmissionResult } from '@/modules/demands/constants';
 import { createDemand } from '@/modules/demands/server/creation-user';
-import { sendEmailTemplate } from '@/modules/email';
+// import { sendEmailTemplate } from '@/modules/email';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { fetchJSON } from '@/utils/network';
 
+import { getAltitudeByCoordinates } from './altimetry';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
+import { getNetworkEligibilityCoordinates, type NetworkEligibilityCoordinates } from './network-eligibility-coordinates';
 
 const batEnrBatimentColumns = [
   'ac1',
@@ -54,7 +58,7 @@ const batEnrBatimentColumns = [
   'type_installation_ecs',
 ] as const;
 
-const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = serverConfig.contactEmail;
+// const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = serverConfig.contactEmail;
 const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = businessRules.fcrBuildingCandidatesRadiusMeters.value;
 
 type BanAddressSearchResponse = {
@@ -92,14 +96,6 @@ const singleConstructionBuildingArea = sql<number | null>`
     LIMIT 1
   )
 `.as('dpe_representatif_logement_surface_habitable_immeuble');
-
-const getInitialDemandeChaleurRenouvelableStatus = (input: DemandeChaleurRenouvelable): DemandeChaleurRenouvelableStatus => {
-  return input.housingType === 'maison_individuelle' ||
-    input.housingType === 'immeuble_chauffage_individuel' ||
-    input.demandConcern === 'Une maison individuelle'
-    ? DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC
-    : DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR;
-};
 
 const getDemandAddressTerritory = (context: string) => {
   const [department = '', , region = ''] = context.split(',').map((contextPart) => contextPart.trim());
@@ -307,7 +303,7 @@ const getBatEnrBatimentsWithinDistanceFromConstructionId = async (batimentConstr
 export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => {
   const communeInfo = await kdb
     .selectFrom('communes')
-    .select(['departement_id', 'temperature_ref_altitude_moyenne'])
+    .select(['altitude_moyenne', 'departement_id', 'temperature_ref_altitude_moyenne'])
     .where(
       'id',
       '=',
@@ -324,6 +320,31 @@ export const getLocationInfos = async ({ cityCode, city }: GetLocationInput) => 
 
 export const getBatEnrBatimentsByBanId = async ({ banId }: BatEnrByBanIdInput) => {
   return await getBatEnrBatimentsByConstructionIds(await getBatEnrBatimentConstructionIdsByBanId({ banId }));
+};
+
+const getColdNetworkEligibility = async (lat: number, lon: number): Promise<ColdNetworkEligibility | null> => {
+  const reseauDeFroid = await kdb
+    .selectFrom('reseaux_de_froid')
+    .select([
+      'Identifiant reseau',
+      'nom_reseau',
+      sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
+        'distance'
+      ),
+    ])
+    .where('has_trace', '=', true)
+    .where('geom', 'is not', null)
+    .orderBy((eb) => sql`${eb.ref('geom')} <-> ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)`)
+    .limit(1)
+    .executeTakeFirst();
+
+  return reseauDeFroid
+    ? {
+        distance: reseauDeFroid.distance,
+        id: reseauDeFroid['Identifiant reseau'] ?? null,
+        name: reseauDeFroid.nom_reseau ?? null,
+      }
+    : null;
 };
 
 const getBatEnrBatimentConstructionIdsByBanId = async ({ banId }: BatEnrByBanIdInput) => {
@@ -407,18 +428,51 @@ const getBatEnrLookupResult = async ({
   };
 };
 
+const getBatEnrAltitudeCoordinates = async (
+  batimentConstructionId: string | null | undefined
+): Promise<NetworkEligibilityCoordinates | null> => {
+  if (!batimentConstructionId) {
+    return null;
+  }
+
+  const coordinates = await kdb
+    .selectFrom('bdnb_batenr')
+    .select((eb) => [
+      sql<number>`ST_X(ST_Transform(ST_PointOnSurface(${eb.ref('geom')}), 4326))`.as('lon'),
+      sql<number>`ST_Y(ST_Transform(ST_PointOnSurface(${eb.ref('geom')}), 4326))`.as('lat'),
+    ])
+    .where('batiment_construction_id', '=', batimentConstructionId)
+    .where('geom', 'is not', null)
+    .where((eb) => sql<boolean>`NOT ST_IsEmpty(${eb.ref('geom')})`)
+    .executeTakeFirst();
+
+  return coordinates && Number.isFinite(coordinates.lat) && Number.isFinite(coordinates.lon) ? coordinates : null;
+};
+
 export const getAddressEligibilityContext = async (input: AddressEligibilityContextInput) => {
-  const [batEnrLookup, infos, eligibiliteReseauChaleur] = await Promise.all([
+  const [batEnrLookup, infos] = await Promise.all([
     getBatEnrLookupResult(input),
     getLocationInfos({ city: input.city, cityCode: input.cityCode }),
-    getEligilityStatus(input.lat, input.lon),
   ]);
+  const networkEligibilityCoordinates = getNetworkEligibilityCoordinates(
+    { lat: input.lat, lon: input.lon },
+    batEnrLookup.selectedBatEnrBatiment
+  );
+  const [eligibiliteReseauChaleur, eligibiliteReseauFroid, batEnrAltitudeCoordinates] = await Promise.all([
+    getEligilityStatus(networkEligibilityCoordinates.lat, networkEligibilityCoordinates.lon),
+    getColdNetworkEligibility(networkEligibilityCoordinates.lat, networkEligibilityCoordinates.lon),
+    getBatEnrAltitudeCoordinates(batEnrLookup.selectedBatEnrBatiment?.batiment_construction_id),
+  ]);
+  const altitudeCoordinates = batEnrAltitudeCoordinates ?? networkEligibilityCoordinates;
+  const altitude = (await getAltitudeByCoordinates(altitudeCoordinates)) ?? infos?.altitude_moyenne ?? null;
 
   return {
+    altitude,
     batEnr: batEnrLookup.batEnr,
     batEnrBatiments: batEnrLookup.batEnrBatiments,
     codeDepartement: infos?.departement_id ?? '',
     eligibiliteReseauChaleur,
+    eligibiliteReseauFroid,
     selectedBatEnrBatiment: batEnrLookup.selectedBatEnrBatiment,
     shouldSelectBatEnrBatiment: batEnrLookup.shouldSelectBatEnrBatiment,
     temperatureRef: infos?.temperature_ref_altitude_moyenne != null ? Number(infos.temperature_ref_altitude_moyenne) : null,
@@ -502,58 +556,58 @@ const getPreselectedBatimentConstructionIdFromRnb = async (banId: string) => {
 };
 
 export const createDemandeChaleurRenouvelable = async ({ input }: { input: DemandeChaleurRenouvelable }) => {
-  const initialStatus = getInitialDemandeChaleurRenouvelableStatus(input);
+  // Pour l'instant, on ne créée pas de demande chaleur renouvelable :
+  // - soit c'est une demande classique RC
+  // - soit on redirige vers un ECFR
 
-  const createdDemand = await kdb
-    .insertInto('demands_chaleur_renouvelable')
-    .values({
-      address: input.address,
-      average_area: input.averageArea,
-      average_residents: input.averageResidents,
-      batiment_construction_id: input.batimentConstructionId,
-      comments: input.comments,
-      created_at: new Date(),
-      demand_concern: input.demandConcern,
-      dpe: input.dpe,
-      email: input.email,
-      first_name: input.firstName,
-      heating_energy: input.heatingEnergy,
-      hot_water_system_type: input.hotWaterSystemType,
-      housing_count: input.housingCount,
-      housing_type: input.housingType,
-      is_public_advisor_selected: input.isPublicAdvisorSelected,
-      last_name: input.lastName,
-      occupant_status: input.occupantStatus,
-      organization_name: input.organizationName,
-      outdoor_space: input.outdoorSpace,
-      phone: input.phone,
-      project_status: input.projectStatus,
-      radiator_type: input.radiatorType,
-      refusal_period: input.refusalPeriod,
-      refusal_reason: input.refusalReason,
-      simulation_url: input.simulationUrl,
-      status: initialStatus,
-      surface_area: input.surfaceArea,
-      updated_at: new Date(),
-    })
-    .returning(['id'])
-    .executeTakeFirstOrThrow();
+  // const createdDemand = await kdb
+  //   .insertInto('demands_chaleur_renouvelable')
+  //   .values({
+  //     address: input.address,
+  //     average_area: input.averageArea,
+  //     average_residents: input.averageResidents,
+  //     batiment_construction_id: input.batimentConstructionId,
+  //     comments: input.comments,
+  //     created_at: new Date(),
+  //     demand_concern: input.demandConcern,
+  //     dpe: input.dpe,
+  //     email: input.email,
+  //     first_name: input.firstName,
+  //     heating_energy: input.heatingEnergy,
+  //     hot_water_system_type: input.hotWaterSystemType,
+  //     housing_count: input.housingCount,
+  //     housing_type: input.housingType,
+  //     is_public_advisor_selected: input.isPublicAdvisorSelected,
+  //     last_name: input.lastName,
+  //     occupant_status: input.occupantStatus,
+  //     organization_name: input.organizationName,
+  //     outdoor_space: input.outdoorSpace,
+  //     phone: input.phone,
+  //     project_status: input.projectStatus,
+  //     radiator_type: input.radiatorType,
+  //     refusal_period: input.refusalPeriod,
+  //     refusal_reason: input.refusalReason,
+  //     simulation_url: input.simulationUrl,
+  //     surface_area: input.surfaceArea,
+  //     updated_at: new Date(),
+  //   })
+  //   .returning(['id'])
+  //   .executeTakeFirstOrThrow();
 
-  await sendEmailTemplate(
-    'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable',
-    { email: DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL },
-    {
-      demand: input,
-      demandId: createdDemand.id,
-      status: initialStatus,
-    }
-  );
+  // await sendEmailTemplate(
+  //   'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable',
+  //   { email: DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL },
+  //   {
+  //     demand: input,
+  //     demandId: createdDemand.id,
+  //   }
+  // );
 
   const demandSubmissionResult = await createRaccordableDemand(input);
 
   return {
     demandSubmissionResult,
-    id: createdDemand.id,
+    id: null, // createdDemand?.id,
   };
 };
 
@@ -583,6 +637,7 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
       'outdoor_space',
       'organization_name',
       'phone',
+      'project_state',
       'project_status',
       'radiator_type',
       'refusal_period',
@@ -610,14 +665,38 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
 };
 
 export const updateDemandeChaleurRenouvelableAdmin = async ({ demandId, values }: AdminUpdateDemandeChaleurRenouvelableInput) => {
+  const currentStatus =
+    values.status === undefined && values.projectState !== undefined
+      ? (
+          await kdb
+            .selectFrom('demands_chaleur_renouvelable')
+            .select('status')
+            .where('id', '=', demandId)
+            .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }))
+        ).status
+      : undefined;
+  const updatedStatus = values.status ?? currentStatus;
+
+  if (values.projectState !== undefined && updatedStatus !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: "L'état du projet ne peut être modifié qu'après validation de l'étude de faisabilité en AG.",
+    });
+  }
+
   return await kdb
     .updateTable('demands_chaleur_renouvelable')
     .set({
       ...(values.assignedTo !== undefined && { assigned_to: values.assignedTo }),
+      ...(values.projectState !== undefined && { project_state: values.projectState }),
+      ...(values.status !== undefined &&
+        values.status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION && {
+          project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+        }),
       ...(values.status !== undefined && { status: values.status }),
       updated_at: new Date(),
     })
     .where('id', '=', demandId)
-    .returning(['assigned_to', 'id', 'status', 'updated_at'])
+    .returning(['assigned_to', 'id', 'project_state', 'status', 'updated_at'])
     .executeTakeFirstOrThrow();
 };

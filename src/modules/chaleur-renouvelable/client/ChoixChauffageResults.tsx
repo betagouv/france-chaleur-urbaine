@@ -71,6 +71,7 @@ export default function ChoixChauffageResults() {
         isOpen={isParamsOpen}
         setIsOpen={setIsParamsOpen}
         values={urlParams.params}
+        paramSources={urlParams.paramSources}
         onSave={urlParams.setParams}
         geoAddress={geoAddress}
         setGeoAddress={setGeoAddress}
@@ -90,12 +91,12 @@ export default function ChoixChauffageResults() {
         <div className="mt-6 border border-gray-200 bg-white px-5 py-6 md:px-10">Chargement des résultats...</div>
       ) : modesEnriched.length > 0 ? (
         <>
+          <EnergySobrietyCallout />
           {heatNetworkSolution && (
             <>
               <HeatNetworkRecommendedSolutionCard
                 item={heatNetworkSolution}
                 coutParAnGaz={coutParAnGaz}
-                coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
                 dpeFrom={params.dpe}
                 geoAddress={geoAddress}
                 isOpen={openAccordionId === undefined || openAccordionId === heatNetworkSolution.id}
@@ -119,7 +120,7 @@ export default function ChoixChauffageResults() {
             openAccordionId={openAccordionId}
             shouldOpenFirstItemByDefault={!heatNetworkSolution}
             situation={situation}
-            title={heatNetworkSolution ? undefined : 'Solutions possibles'}
+            title={heatNetworkSolution ? undefined : 'Solutions à étudier'}
             typeLogement={effectiveTypeLogement}
             onEditParamsClick={handleEditHotWaterParamsClick}
             onOpenChange={handleAccordionOpenChange}
@@ -129,7 +130,7 @@ export default function ChoixChauffageResults() {
               }
             }}
           />
-          <IncompatibleSolutionsSection rows={incompatibleSolutionRows} />
+          <IncompatibleSolutionsSection rows={incompatibleSolutionRows} typeLogement={effectiveTypeLogement} />
           <DemandeFCRForm
             eligibiliteReseauChaleur={situation.eligibiliteReseauChaleur}
             geoAddress={geoAddress}
@@ -149,8 +150,8 @@ export default function ChoixChauffageResults() {
             className="mt-6"
           >
             Nos recommandations sont calculées à partir des informations que vous avez fournies : mode de chauffage, surface moyenne, classe
-            DPE, disponibilité d’espaces extérieurs… Ces critères permettent de classer les solutions par pertinence et d’estimer les coûts
-            et contraintes techniques propres à votre situation.
+            DPE, disponibilité d’espaces extérieurs… Ces critères permettent d’estimer les coûts et contraintes techniques propres à votre
+            situation.
             <div className="fr-mt-3w">
               <Link href="/chaleur-renouvelable/methodologie" postHogEventKey="fcr_results:methodology_link_clicked" isExternal>
                 En savoir plus
@@ -185,5 +186,21 @@ export default function ChoixChauffageResults() {
         <NoResultSection />
       )}
     </>
+  );
+}
+
+function EnergySobrietyCallout() {
+  return (
+    <div className="my-6 border border-dotted border-[#00a95f] bg-[#e3fdeb] px-4 py-4 text-[#161616] md:px-5">
+      <p className="mb-4 flex items-start gap-3 font-bold">
+        <span className="fr-icon-sparkling-2-line mt-0.5 shrink-0" aria-hidden="true" />
+        <span>Le saviez-vous ? Avant de changer votre chauffage, réduisez vos besoins en chaleur</span>
+      </p>
+      <p className="mb-0">
+        Les travaux de sobriété énergétique et d'isolation permettent de réduire durablement les besoins en chauffage d'un bâtiment, avant
+        même de changer l'équipement. <strong>Ils diminuent aussi la puissance à installer, et donc le coût</strong> de consommation
+        ci-dessous.
+      </p>
+    </div>
   );
 }

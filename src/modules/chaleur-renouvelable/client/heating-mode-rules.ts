@@ -1,5 +1,6 @@
 import { businessRules } from '@/modules/app/business-rules';
 import type {
+  ModeDeChauffageId,
   ModeEauChaudeSanitaire,
   PrerequisiteRow,
   PrerequisiteStatus,
@@ -8,15 +9,21 @@ import type {
 } from '@/modules/chaleur-renouvelable/constants';
 
 export const HEAT_NETWORK_MAX_DISTANCE = businessRules.fcrHeatNetworkMaxDistanceMeters.value;
+export const COLD_NETWORK_MAX_DISTANCE = businessRules.fcrColdNetworkMaxDistanceMeters.value;
 export const SOLAR_THERMAL_MIN_COVERAGE = businessRules.fcrSolarThermalMinCoveragePercent.value;
+export const HEATING_MODE_ALTITUDE_THRESHOLD_METERS = businessRules.fcrHeatingModeAltitudeThresholdMeters.value;
 
-export const hasEspaceShared = (situation: Situation) => ['shared', 'both'].includes(situation.espaceExterieur);
+const BIOMASS_BOILER_MODE_IDS: readonly ModeDeChauffageId[] = ['collective-biomass-boiler', 'house-biomass-boiler'];
+const AIR_WATER_HEAT_PUMP_MODE_IDS: readonly ModeDeChauffageId[] = [
+  'collective-air-water-heat-pump',
+  'individual-apartment-air-water-heat-pump',
+  'house-air-water-heat-pump',
+];
+
+export const hasEspaceShared = (situation: Situation) => ['jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
 
 export const hasEspacePrivate = (situation: Situation) =>
-  ['private', 'both', 'terrasseBalcon', 'jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
-
-export const hasEspaceForHouseEquipment = (situation: Situation) =>
-  ['shared', 'both', 'jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
+  ['terrasseBalcon', 'jardinCours', 'terrasseBalconEtJardinCours'].includes(situation.espaceExterieur);
 
 export const hasCompatibleHotWaterMode = (situation: Situation, modes: ModeEauChaudeSanitaire[]) =>
   !situation.modeEauChaudeSanitaire ||
@@ -28,6 +35,9 @@ export const hasCompatibleRadiator = (situation: Situation, radiators: TypeRadia
 
 export const isNearHeatNetwork = (situation: Situation) =>
   (situation.eligibiliteReseauChaleur?.distance ?? Number.POSITIVE_INFINITY) < HEAT_NETWORK_MAX_DISTANCE;
+
+export const isNearColdNetwork = (situation: Situation) =>
+  (situation.eligibiliteReseauFroid?.distance ?? Number.POSITIVE_INFINITY) < COLD_NETWORK_MAX_DISTANCE;
 
 export const hasSufficientSolarThermalCoverage = (situation: Situation) =>
   (situation.solarThermalCoverage ?? Number.NEGATIVE_INFINITY) > SOLAR_THERMAL_MIN_COVERAGE;
@@ -48,6 +58,23 @@ export const hasCompatibleGeothermalPotential = (situation: Situation) =>
   (hasUnknownGeothermalResource(situation) || hasSufficientGeothermalResource(situation)) &&
   situation.hasGeothermalProbeSpace !== false;
 
+export const hasHighAltitudeWithoutAirProtectionPlan = (situation: Situation) =>
+  situation.altitude != null && situation.altitude > HEATING_MODE_ALTITUDE_THRESHOLD_METERS && !situation.planProtectionAtmosphere;
+
+/**
+ * Resolve the final star rating for modes influenced by altitude and air protection plans.
+ */
+export const getHeatingModePertinence = (heatingModeId: ModeDeChauffageId, situation: Situation, fallbackPertinence: number) =>
+  BIOMASS_BOILER_MODE_IDS.includes(heatingModeId)
+    ? hasHighAltitudeWithoutAirProtectionPlan(situation)
+      ? 3
+      : 2
+    : AIR_WATER_HEAT_PUMP_MODE_IDS.includes(heatingModeId)
+      ? situation.planProtectionAtmosphere && situation.altitude != null && situation.altitude < HEATING_MODE_ALTITUDE_THRESHOLD_METERS
+        ? 3
+        : 2
+      : fallbackPertinence;
+
 export const getPdpPrerequisite = (situation: Situation, status: PrerequisiteStatus = 'contraignant'): PrerequisiteRow[] =>
   situation.eligibiliteReseauChaleur?.inPDP
     ? [
@@ -56,6 +83,17 @@ export const getPdpPrerequisite = (situation: Situation, status: PrerequisiteSta
             'Votre bâtiment est situé dans un périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau de chaleur.',
           source: 'France Chaleur Urbaine',
           status,
+        },
+      ]
+    : [];
+
+export const getColdNetworkPrerequisite = (situation: Situation): PrerequisiteRow[] =>
+  isNearColdNetwork(situation)
+    ? [
+        {
+          label: `Distance au réseau de froid < ${businessRules.fcrColdNetworkMaxDistanceMeters.display}`,
+          source: 'France Chaleur Urbaine',
+          status: 'favorable',
         },
       ]
     : [];
@@ -91,11 +129,15 @@ export const getArchitecturalProtectionPrerequisites = (situation: Situation): P
     : [];
 };
 
-export const getPpaPrerequisite = (situation: Situation): PrerequisiteRow[] =>
+export const getPpaPrerequisite = (situation: Situation, modeChauffage?: string): PrerequisiteRow[] =>
   situation.planProtectionAtmosphere
     ? [
         {
-          label: 'Votre bâtiment est situé dans une zone de protection de l’atmosphère',
+          label: `Votre bâtiment est situé dans une zone de protection de l’atmosphère${
+            modeChauffage === 'poele'
+              ? ', l’installation d’un poêle est réservée aux bâtiments déjà chauffés au bois qui souhaiteraient installer un système performant'
+              : ''
+          }`,
           source: 'CEREMA',
           status: 'contraignant',
         },

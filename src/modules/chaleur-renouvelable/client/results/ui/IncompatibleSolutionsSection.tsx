@@ -1,7 +1,13 @@
 import type { IncompatibleSolutionRow } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
 import { PrerequisiteStatusBadge } from '@/modules/chaleur-renouvelable/client/results/ui/PrerequisiteStatusBadge';
+import type { TypeLogement } from '@/modules/chaleur-renouvelable/constants';
 
-export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolutionRow[] }) {
+type IncompatibleSolutionsSectionProps = {
+  rows: IncompatibleSolutionRow[];
+  typeLogement: TypeLogement;
+};
+
+export function IncompatibleSolutionsSection({ rows, typeLogement }: IncompatibleSolutionsSectionProps) {
   if (rows.length === 0) {
     return null;
   }
@@ -9,6 +15,10 @@ export function IncompatibleSolutionsSection({ rows }: { rows: IncompatibleSolut
   return (
     <section>
       <h3 className="fr-mt-6w mb-5">Solutions non compatibles</h3>
+      <p>
+        Il s’agit des solutions adaptées à votre mode de chauffage{' '}
+        {typeLogement === 'immeuble_chauffage_collectif' ? 'collectif' : 'individuel'} mais non compatibles avec votre bâtiment.
+      </p>
       <div className="border border-gray-200 bg-white px-5 py-4 shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">

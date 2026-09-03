@@ -15,18 +15,20 @@ type DpeTagProps = {
   letter: DPE;
   isSelected?: boolean;
   onClick?: (letter: DPE) => void;
+  size?: 'md' | 'sm';
 };
 
-export function DpeTag({ letter, isSelected = false, onClick }: DpeTagProps) {
+export function DpeTag({ letter, isSelected = false, onClick, size = 'md' }: DpeTagProps) {
   const className = cx(
-    'flex h-12 w-12 items-center justify-center rounded-sm border-2',
+    'flex items-center justify-center rounded-sm border-2',
+    size === 'sm' ? 'h-8 w-8' : 'h-10 w-10',
     DPE_BG[letter],
     onClick && 'cursor-pointer',
     isSelected ? 'border-blue ring-2 ring-blue' : 'border-white'
   );
   const content = (
-    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
-      <span className="font-bold">{letter}</span>
+    <div className={cx('flex items-center justify-center rounded-full bg-white', size === 'sm' ? 'h-5 w-5' : 'h-6 w-6')}>
+      <span className={cx('font-bold mt-0.5', size === 'sm' ? 'text-xs' : 'text-sm')}>{letter}</span>
     </div>
   );
 

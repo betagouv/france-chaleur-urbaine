@@ -10,7 +10,7 @@ type SolutionConsumptionPanelProps = {
   dpeFrom: DPE;
   item: ModeDeChauffageEnriched;
   coutParAnGaz: number;
-  coutParAnGazHotWaterOnly: number;
+  coutParAnGazHotWaterOnly?: number;
   className?: string;
 };
 

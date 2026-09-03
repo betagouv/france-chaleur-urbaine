@@ -5,6 +5,7 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import type { SetChoixChauffageParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   type EspaceExterieur,
+  getEspaceExterieurForTypeLogement,
   type TypeLogement,
   type TypeRadiateur,
   typeLogementOptions,
@@ -12,7 +13,7 @@ import {
 } from '@/modules/chaleur-renouvelable/constants';
 import { AddressField } from '@/modules/form/AddressField';
 
-import { OutdoorSpaceSelect } from './OutdoorSpaceSelect';
+import { OutdoorSpaceCheckboxes } from './OutdoorSpaceCheckboxes';
 
 type SettingsTopFieldsProps = {
   adresse: string | null;
@@ -37,7 +38,7 @@ export function SettingsTopFields({
   setParams,
 }: SettingsTopFieldsProps) {
   return (
-    <div className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-4 bg-[#fbf6ed]">
+    <div className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-3 bg-[#fbf6ed]">
       <AddressField
         label="Adresse"
         className="fr-mb-0"
@@ -63,12 +64,15 @@ export function SettingsTopFields({
         className="fr-mb-0"
         options={[...typeLogementOptions]}
         nativeSelectProps={{
-          onChange: (e) => {
-            const nextTypeLogement = (e.target.value || null) as TypeLogement | null;
+          onChange: (event) => {
+            const nextTypeLogement = (event.target.value || null) as TypeLogement | null;
             if (nextTypeLogement) {
               trackPostHogEvent('fcr_landing:heating_mode_selected', { heating_mode: nextTypeLogement });
             }
-            setParams({ typeLogement: nextTypeLogement });
+            setParams({
+              espaceExterieur: getEspaceExterieurForTypeLogement(nextTypeLogement, espaceExterieur ?? 'none'),
+              typeLogement: nextTypeLogement,
+            });
           },
           value: typeLogement ?? undefined,
         }}
@@ -86,7 +90,7 @@ export function SettingsTopFields({
         label="Type de radiateurs"
         required
       />
-      <OutdoorSpaceSelect
+      <OutdoorSpaceCheckboxes
         value={espaceExterieur}
         onChange={(value) => {
           if (value) {

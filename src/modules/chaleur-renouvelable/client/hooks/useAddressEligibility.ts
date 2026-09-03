@@ -1,29 +1,33 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { type BatEnrInfo, EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
-import type { BatEnrBatiment } from '@/modules/chaleur-renouvelable/constants';
+import type { BatEnrBatiment, ColdNetworkEligibility } from '@/modules/chaleur-renouvelable/constants';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 type EligibilityState = {
   geoAddress?: BANAddressFeature;
+  altitude: number | null;
   batEnr: BatEnrInfo;
   batEnrBatiments: BatEnrBatiment[];
   selectedBatEnrBatiment?: BatEnrBatiment;
   codeDepartement: string;
   temperatureRef: number | null;
   eligibiliteReseauChaleur: HeatNetwork | null;
+  eligibiliteReseauFroid: ColdNetworkEligibility | null;
   shouldSelectBatEnrBatiment: boolean;
 };
 
 const emptyState: EligibilityState = {
+  altitude: null,
   batEnr: EMPTY_BAT_ENR_INFO,
   batEnrBatiments: [],
   codeDepartement: '',
   eligibiliteReseauChaleur: null,
+  eligibiliteReseauFroid: null,
   geoAddress: undefined,
   selectedBatEnrBatiment: undefined,
   shouldSelectBatEnrBatiment: false,
@@ -42,18 +46,13 @@ export function useAddressEligibility(
   const trpcUtils = trpc.useUtils();
   const [state, setState] = useState<EligibilityState>(emptyState);
   const [isEligibilityLoading, setIsEligibilityLoading] = useState(false);
-  const selectedBatimentConstructionIdRef = useRef(selectedBatimentConstructionId);
-
-  useEffect(() => {
-    selectedBatimentConstructionIdRef.current = selectedBatimentConstructionId;
-  }, [selectedBatimentConstructionId]);
 
   const resetEligibility = useCallback(() => {
     setState(emptyState);
   }, []);
 
   const computeEligibilityFromSuggestion = useCallback(
-    toastErrors(async (geoAddress: BANAddressFeature) => {
+    toastErrors(async (geoAddress: BANAddressFeature, batimentConstructionId?: string | null) => {
       setIsEligibilityLoading(true);
 
       try {
@@ -66,14 +65,16 @@ export function useAddressEligibility(
           cityCode: citycode,
           lat,
           lon,
-          selectedBatimentConstructionId: selectedBatimentConstructionIdRef.current,
+          selectedBatimentConstructionId: batimentConstructionId ?? null,
         });
 
         setState({
+          altitude: addressEligibilityContext.altitude,
           batEnr: addressEligibilityContext.batEnr,
           batEnrBatiments: addressEligibilityContext.batEnrBatiments,
           codeDepartement: addressEligibilityContext.codeDepartement,
           eligibiliteReseauChaleur: addressEligibilityContext.eligibiliteReseauChaleur,
+          eligibiliteReseauFroid: addressEligibilityContext.eligibiliteReseauFroid,
           geoAddress,
           selectedBatEnrBatiment: addressEligibilityContext.selectedBatEnrBatiment,
           shouldSelectBatEnrBatiment: addressEligibilityContext.shouldSelectBatEnrBatiment,
@@ -87,8 +88,10 @@ export function useAddressEligibility(
   );
 
   const triggerEligibilityFromString = useCallback(
-    toastErrors(async (adresseToTest: string) => {
-      if (!adresseToTest) return;
+    toastErrors(async (adresseToTest: string, batimentConstructionId?: string | null) => {
+      if (!adresseToTest) {
+        return;
+      }
 
       const features = await searchBANAddresses({
         excludeCities: true,
@@ -104,7 +107,7 @@ export function useAddressEligibility(
         return;
       }
 
-      await computeEligibilityFromSuggestion(geoAddress);
+      await computeEligibilityFromSuggestion(geoAddress, batimentConstructionId);
     }),
     [computeEligibilityFromSuggestion, onAddressNotFound, resetEligibility]
   );
@@ -115,13 +118,16 @@ export function useAddressEligibility(
       return;
     }
 
-    void triggerEligibilityFromString(adresse);
-  }, [adresse, resetEligibility, triggerEligibilityFromString]);
+    void triggerEligibilityFromString(adresse, selectedBatimentConstructionId);
+  }, [adresse, resetEligibility, selectedBatimentConstructionId, triggerEligibilityFromString]);
 
   const onSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {
-      if (!geoAddress) return;
-      void computeEligibilityFromSuggestion(geoAddress);
+      if (!geoAddress) {
+        return;
+      }
+
+      void computeEligibilityFromSuggestion(geoAddress, null);
     },
     [computeEligibilityFromSuggestion]
   );

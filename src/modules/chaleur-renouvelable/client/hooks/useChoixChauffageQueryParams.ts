@@ -1,15 +1,15 @@
+import { useSearchParams } from 'next/navigation';
 import { type inferParserType, parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { useCallback, useMemo } from 'react';
 
 import {
   DPE_VALUES,
   ESPACE_EXTERIEUR_VALUES,
-  isEspaceExterieurCompatible,
+  getEspaceExterieurForTypeLogement,
   MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES,
   TYPE_LOGEMENT_VALUES,
   TYPE_RADIATEUR_VALUES,
 } from '@/modules/chaleur-renouvelable/constants';
-import type { SimulationPrefillParams } from '@/modules/chaleur-renouvelable/simulation-prefill';
 
 const queryOptions = {
   history: 'replace' as const,
@@ -18,7 +18,9 @@ const queryOptions = {
 
 const simulationQueryParsers = {
   adresse: parseAsString.withOptions(queryOptions),
-  dpe: parseAsStringLiteral(DPE_VALUES).withDefault('E').withOptions(queryOptions),
+  dpe: parseAsStringLiteral(DPE_VALUES)
+    .withDefault('E')
+    .withOptions({ ...queryOptions, clearOnDefault: false }),
   espaceExterieur: parseAsStringLiteral(ESPACE_EXTERIEUR_VALUES).withOptions(queryOptions),
   habitantsMoyen: parseAsString.withOptions(queryOptions),
   modeEauChaudeSanitaire: parseAsStringLiteral(MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES).withOptions(queryOptions),
@@ -28,7 +30,7 @@ const simulationQueryParsers = {
   typeRadiateur: parseAsStringLiteral(TYPE_RADIATEUR_VALUES).withOptions(queryOptions),
 };
 
-const choixChauffageQueryParsers = {
+export const choixChauffageQueryParsers = {
   ...simulationQueryParsers,
   construction_id: parseAsString.withOptions(queryOptions),
 };
@@ -37,10 +39,13 @@ export type ChoixChauffageSimulationParams = inferParserType<typeof simulationQu
 export type ChoixChauffageParams = ChoixChauffageSimulationParams & {
   constructionId: inferParserType<typeof choixChauffageQueryParsers>['construction_id'];
 };
+export type ChoixChauffageParamSources = {
+  isDpeExplicit: boolean;
+  isModeEauChaudeSanitaireInferred: boolean;
+};
 export type SetChoixChauffageParams = (params: Partial<ChoixChauffageParams>) => Promise<URLSearchParams>;
 
 const getNullableQueryString = (value: string | null | undefined) => (value === '' ? null : (value ?? null));
-const hasQueryParam = (paramName: string) => new URLSearchParams(window.location.search).has(paramName);
 
 export function getNextEspaceExterieurQueryValue({
   currentEspaceExterieur,
@@ -55,18 +60,28 @@ export function getNextEspaceExterieurQueryValue({
     return nextParams.espaceExterieur;
   }
 
-  const candidateEspaceExterieur = nextParams.espaceExterieur ?? currentEspaceExterieur ?? effectiveEspaceExterieur;
+  const candidateEspaceExterieur =
+    'espaceExterieur' in nextParams ? nextParams.espaceExterieur : (currentEspaceExterieur ?? effectiveEspaceExterieur);
 
-  return isEspaceExterieurCompatible(nextParams.typeLogement, candidateEspaceExterieur) ? candidateEspaceExterieur : null;
+  return getEspaceExterieurForTypeLogement(nextParams.typeLogement, candidateEspaceExterieur);
 }
 
 export function useChoixChauffageQueryParams() {
   const [queryParams, setQueryParams] = useQueryStates(choixChauffageQueryParsers);
-  const espaceExterieur = isEspaceExterieurCompatible(queryParams.typeLogement, queryParams.espaceExterieur)
-    ? queryParams.espaceExterieur
-    : null;
+  const searchParams = useSearchParams();
+  const espaceExterieur = getEspaceExterieurForTypeLogement(queryParams.typeLogement, queryParams.espaceExterieur);
   const modeEauChaudeSanitaire =
     queryParams.modeEauChaudeSanitaire ?? (queryParams.typeLogement === 'immeuble_chauffage_collectif' ? 'Collectif' : null);
+  const isDpeExplicit = searchParams?.has('dpe') ?? false;
+  const isModeEauChaudeSanitaireInferred =
+    queryParams.modeEauChaudeSanitaire === null && queryParams.typeLogement === 'immeuble_chauffage_collectif';
+  const paramSources = useMemo(
+    () => ({
+      isDpeExplicit,
+      isModeEauChaudeSanitaireInferred,
+    }),
+    [isDpeExplicit, isModeEauChaudeSanitaireInferred]
+  ) satisfies ChoixChauffageParamSources;
 
   const simulationParams = useMemo(
     () => ({
@@ -121,29 +136,13 @@ export function useChoixChauffageQueryParams() {
     [espaceExterieur, queryParams.espaceExterieur, setQueryParams]
   );
 
-  const setPrefillParams = useCallback(
-    (params: SimulationPrefillParams) => {
-      const nextTypeLogement = !hasQueryParam('typeLogement') ? params.typeLogement : undefined;
-
-      return setQueryParams({
-        dpe: !hasQueryParam('dpe') ? params.dpe : undefined,
-        espaceExterieur: nextTypeLogement && !isEspaceExterieurCompatible(nextTypeLogement, espaceExterieur) ? null : undefined,
-        modeEauChaudeSanitaire: !hasQueryParam('modeEauChaudeSanitaire') ? params.modeEauChaudeSanitaire : undefined,
-        nbLogements: !hasQueryParam('nbLogements') ? params.nbLogements : undefined,
-        surfaceMoyenne: !hasQueryParam('surfaceMoyenne') ? params.surfaceMoyenne : undefined,
-        typeLogement: nextTypeLogement,
-      });
-    },
-    [espaceExterieur, setQueryParams]
-  );
-
   return useMemo(
     () => ({
+      paramSources,
       params,
       setParams,
-      setPrefillParams,
       simulationParams,
     }),
-    [params, setParams, setPrefillParams, simulationParams]
+    [paramSources, params, setParams, simulationParams]
   );
 }

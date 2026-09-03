@@ -12,7 +12,7 @@ export function extractPlainText(rawMdx: string): string {
   return rawMdx
     .replace(/^import\s.*$/gm, '') // ESM import lines
     .replace(/<Mermaid[\s\S]*?\/>/g, ' ') // Mermaid diagram blocks
-    .replace(/<(?:EmailsInventory|CronsInventory|DemandStatuses|EventsInventory)\s*\/>/g, ' ') // generated inventories
+    .replace(/<(?:EmailsInventory|CronsInventory|DemandStatuses|FcrDemandStatuses|EventsInventory)\s*\/>/g, ' ') // generated inventories
     .replace(/<Rule\s+id="([^"]+)"\s*\/>/g, (_match, id: string) => businessRules[id as BusinessRuleId]?.display ?? '') // Rule → its value
     .replace(/&nbsp;/g, ' ') // non-breaking space entities (typographic spacing inside « ») → plain space
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // markdown links → text

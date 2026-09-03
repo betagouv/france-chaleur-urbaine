@@ -103,7 +103,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       .executeTakeFirst(),
     kdb
       .selectFrom('communes')
-      .select(['departement_id', 'temperature_ref_altitude_moyenne'])
+      .select(['altitude_moyenne', 'departement_id', 'temperature_ref_altitude_moyenne'])
       .where(
         'id',
         '=',

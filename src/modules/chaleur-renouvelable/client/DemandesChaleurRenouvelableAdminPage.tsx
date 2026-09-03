@@ -8,9 +8,13 @@ import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import {
+  DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+  type DemandeChaleurRenouvelableProjectState,
   type DemandeChaleurRenouvelableStatus,
+  demandeChaleurRenouvelableProjectStates,
   demandeChaleurRenouvelableStatuses,
-  getEspaceExterieurOptionLabel,
+  getEspaceExterieurLabel,
   modeEauChaudeSanitaireOptions,
   PROJECT_STATUS_VALUES,
   typeLogementOptions,
@@ -23,6 +27,12 @@ import { dayjs } from '@/utils/date';
 type DemandesChaleurRenouvelableAdminItem = RouterOutput['batEnr']['admin']['listDemandesChaleurRenouvelable']['items'][number];
 
 const TABLE_URL_SYNC_KEY = 'demandes_chaleur_renouvelable';
+
+type DemandUpdate = {
+  assigned_to?: string | null;
+  project_state?: DemandeChaleurRenouvelableProjectState;
+  status?: DemandeChaleurRenouvelableStatus;
+};
 
 const defaultAssignmentChipOption: ChipOption = {
   className: 'bg-gray-200 text-gray-900',
@@ -49,6 +59,16 @@ const quickFilterPresets = {
   },
 } satisfies Record<string, QuickFilterPreset<DemandesChaleurRenouvelableAdminItem>>;
 
+const statusOptions = demandeChaleurRenouvelableStatuses.map((status) => ({
+  label: status.label,
+  value: status.label,
+}));
+
+const projectStateOptions = demandeChaleurRenouvelableProjectStates.map((projectState) => ({
+  label: projectState.label,
+  value: projectState.label,
+}));
+
 export default function DemandesChaleurRenouvelableAdminPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const { data, isLoading } = trpc.batEnr.admin.listDemandesChaleurRenouvelable.useQuery();
@@ -68,13 +88,21 @@ export default function DemandesChaleurRenouvelableAdminPage() {
   const { mutateAsync: updateDemandMutation } = trpc.batEnr.admin.updateDemandeChaleurRenouvelable.useMutation();
 
   const updateDemand = useCallback(
-    toastErrors(async (demandId: string, demandUpdate: { assigned_to?: string | null; status?: DemandeChaleurRenouvelableStatus }) => {
+    toastErrors(async (demandId: string, demandUpdate: DemandUpdate) => {
+      const optimisticDemandUpdate = {
+        ...demandUpdate,
+        ...(demandUpdate.status !== undefined &&
+          demandUpdate.status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION && {
+            project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+          }),
+      };
+
       utils.batEnr.admin.listDemandesChaleurRenouvelable.setData(undefined, (demandsData) => {
         if (!demandsData) return demandsData;
 
         return {
           count: demandsData.count,
-          items: demandsData.items.map((demand) => (demand.id === demandId ? { ...demand, ...demandUpdate } : demand)),
+          items: demandsData.items.map((demand) => (demand.id === demandId ? { ...demand, ...optimisticDemandUpdate } : demand)),
         };
       });
 
@@ -82,6 +110,7 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         demandId,
         values: {
           ...(demandUpdate.assigned_to !== undefined && { assignedTo: demandUpdate.assigned_to }),
+          ...(demandUpdate.project_state !== undefined && { projectState: demandUpdate.project_state }),
           ...(demandUpdate.status !== undefined && { status: demandUpdate.status }),
         },
       });
@@ -143,10 +172,7 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         cell: ({ row }) => (
           <Select
             label=""
-            options={demandeChaleurRenouvelableStatuses.map((status) => ({
-              label: status.label,
-              value: status.label,
-            }))}
+            options={statusOptions}
             size="sm"
             nativeSelectProps={{
               'aria-label': 'Statut de la demande',
@@ -159,6 +185,37 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         filterType: 'Facets',
         header: 'Statut',
         width: '290px',
+      },
+      {
+        accessorFn: (row) =>
+          row.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION
+            ? row.project_state
+            : DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+        cell: ({ row }) => {
+          const isProjectStateEditable = row.original.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION;
+
+          return (
+            <Select
+              disabled={!isProjectStateEditable}
+              label=""
+              options={projectStateOptions}
+              size="sm"
+              nativeSelectProps={{
+                'aria-label': 'État du projet',
+                onChange: (event) =>
+                  void updateDemand(row.original.id, { project_state: event.target.value as DemandeChaleurRenouvelableProjectState }),
+                value: isProjectStateEditable
+                  ? (row.original.project_state as DemandeChaleurRenouvelableProjectState)
+                  : DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+              }}
+            />
+          );
+        },
+        enableGlobalFilter: false,
+        filterType: 'Facets',
+        header: 'État du projet',
+        id: 'État du projet',
+        width: '280px',
       },
       {
         accessorKey: 'assigned_to',
@@ -196,7 +253,7 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         width: '190px',
       },
       {
-        accessorFn: (row) => getEspaceExterieurOptionLabel(row.housing_type, row.outdoor_space),
+        accessorFn: (row) => getEspaceExterieurLabel(row.outdoor_space),
         enableGlobalFilter: false,
         filterType: 'Facets',
         header: 'Espace extérieur',

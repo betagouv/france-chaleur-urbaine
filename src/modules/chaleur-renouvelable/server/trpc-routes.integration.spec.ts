@@ -2,14 +2,14 @@ import type { Insertable } from 'kysely';
 import type { User } from 'next-auth';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { DemandeChaleurRenouvelable, DemandeChaleurRenouvelableStatus } from '@/modules/chaleur-renouvelable/constants';
 import {
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
+  DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+  type DemandeChaleurRenouvelable,
 } from '@/modules/chaleur-renouvelable/constants';
 import { getBatEnrBatimentsSelectionContextByBanId } from '@/modules/chaleur-renouvelable/server/service';
 import { sendEmailTemplate } from '@/modules/email';
-import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
 import { cleanDatabase } from '@/tests/fixtures';
@@ -54,7 +54,8 @@ type BatEnrInsertParams = {
 };
 
 type DemandChaleurRenouvelableInsert = Insertable<DB['demands_chaleur_renouvelable']>;
-const ADMIN_UPDATED_STATUS = 'Étude technico-financière réalisée';
+const ADMIN_UPDATED_PROJECT_STATE = 'Installation ENR votée en AG';
+const ADMIN_UPDATED_STATUS = 'Etude d’opportunité réalisée';
 const sentEmailTemplate = vi.mocked(sendEmailTemplate);
 const mockedFetchJSON = vi.mocked(fetchJSON);
 
@@ -70,36 +71,6 @@ async function insertBatEnrRow({ address, constructionId, coordinateX, coordinat
   `.execute(kdb);
 }
 
-function toDemandDatabaseFields(input: DemandeChaleurRenouvelable) {
-  return {
-    address: input.address,
-    average_area: input.averageArea,
-    average_residents: input.averageResidents,
-    batiment_construction_id: input.batimentConstructionId,
-    comments: input.comments,
-    demand_concern: input.demandConcern,
-    dpe: input.dpe,
-    email: input.email,
-    first_name: input.firstName,
-    heating_energy: input.heatingEnergy,
-    hot_water_system_type: input.hotWaterSystemType,
-    housing_count: input.housingCount,
-    housing_type: input.housingType,
-    is_public_advisor_selected: input.isPublicAdvisorSelected,
-    last_name: input.lastName,
-    occupant_status: input.occupantStatus,
-    organization_name: input.organizationName,
-    outdoor_space: input.outdoorSpace,
-    phone: input.phone,
-    project_status: input.projectStatus,
-    radiator_type: input.radiatorType,
-    refusal_period: input.refusalPeriod,
-    refusal_reason: input.refusalReason,
-    simulation_url: input.simulationUrl,
-    surface_area: input.surfaceArea,
-  };
-}
-
 describe('batEnrRouter', () => {
   beforeEach(async () => {
     await cleanDatabase();
@@ -107,7 +78,7 @@ describe('batEnrRouter', () => {
   });
 
   describe('batEnr.createDemandeChaleurRenouvelable', () => {
-    it('crée une demande avec les informations du formulaire et de la simulation', async () => {
+    it('ne crée pas de demande chaleur renouvelable quand le formulaire est orienté vers le conseiller public', async () => {
       const input = {
         address: '10 rue du test',
         averageArea: 72,
@@ -126,7 +97,7 @@ describe('batEnrRouter', () => {
         lastName: 'Test',
         occupantStatus: 'Syndicat de copropriété',
         organizationName: 'Syndicat test',
-        outdoorSpace: 'shared',
+        outdoorSpace: 'jardinCours',
         phone: '0605040302',
         projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],
         radiatorType: 'radiateur-eau',
@@ -138,56 +109,23 @@ describe('batEnrRouter', () => {
 
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
 
-      const demand = await kdb
-        .selectFrom('demands_chaleur_renouvelable')
-        .select([
-          'address',
-          'average_area',
-          'average_residents',
-          'batiment_construction_id',
-          'comments',
-          'demand_concern',
-          'dpe',
-          'email',
-          'first_name',
-          'heating_energy',
-          'hot_water_system_type',
-          'housing_count',
-          'housing_type',
-          'is_public_advisor_selected',
-          'last_name',
-          'occupant_status',
-          'outdoor_space',
-          'organization_name',
-          'phone',
-          'project_status',
-          'radiator_type',
-          'refusal_period',
-          'refusal_reason',
-          'simulation_url',
-          'status',
-          'surface_area',
-        ])
-        .where('id', '=', result.id)
-        .executeTakeFirstOrThrow();
+      const createdDemandes = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
 
-      expect(demand).toStrictEqual({
-        ...toDemandDatabaseFields(input),
-        status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
+      expect({
+        createdDemandes,
+        result,
+        sentEmailCallCount: sentEmailTemplate.mock.calls.length,
+      }).toStrictEqual({
+        createdDemandes: [],
+        result: {
+          demandSubmissionResult: null,
+          id: null,
+        },
+        sentEmailCallCount: 0,
       });
-      expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
-      expect(sentEmailTemplate).toHaveBeenCalledWith(
-        'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable',
-        { email: serverConfig.contactEmail },
-        {
-          demand: input,
-          demandId: result.id,
-          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
-        }
-      );
     });
 
-    it('crée aussi une demande de raccordement quand le bâtiment est raccordable à un réseau de chaleur', async () => {
+    it('crée une demande de raccordement quand le bâtiment est raccordable à un réseau de chaleur', async () => {
       const input = {
         address: '10 rue du test',
         averageArea: 72,
@@ -217,7 +155,7 @@ describe('batEnrRouter', () => {
         lastName: 'Test',
         occupantStatus: 'Syndicat de copropriété',
         organizationName: 'Syndicat test',
-        outdoorSpace: 'shared',
+        outdoorSpace: 'jardinCours',
         phone: '0605040302',
         projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],
         radiatorType: 'radiateur-eau',
@@ -235,16 +173,19 @@ describe('batEnrRouter', () => {
         .where('id', '=', result.demandSubmissionResult?.id ?? '')
         .executeTakeFirstOrThrow();
 
-      expect(result.demandSubmissionResult).toStrictEqual({
-        address: '10 rue du test',
-        createdAt: createdDemand.legacy_values['Date de la demande'],
-        distance: 45,
-        email: 'contact@example.com',
-        id: createdDemand.id,
-        isEligible: true,
-        isExisting: false,
-        networkName: 'CPCU',
-        status: DEMANDE_STATUS.TO_PROCESS,
+      expect(result).toStrictEqual({
+        demandSubmissionResult: {
+          address: '10 rue du test',
+          createdAt: createdDemand.legacy_values['Date de la demande'],
+          distance: 45,
+          email: 'contact@example.com',
+          id: createdDemand.id,
+          isEligible: true,
+          isExisting: false,
+          networkName: 'CPCU',
+          status: DEMANDE_STATUS.TO_PROCESS,
+        },
+        id: null,
       });
       expect({
         Adresse: createdDemand.legacy_values.Adresse,
@@ -279,82 +220,6 @@ describe('batEnrRouter', () => {
         Ville: 'Paris',
         Éligibilité: true,
       });
-    });
-
-    const statusTestCases = [
-      {
-        demandConcern: null,
-        expectedStatus: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
-        housingType: 'maison_individuelle',
-        label: 'maison individuelle → ALEC',
-      },
-      {
-        demandConcern: null,
-        expectedStatus: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
-        housingType: 'immeuble_chauffage_individuel',
-        label: 'chauffage individuel → ALEC',
-      },
-      {
-        demandConcern: 'Une maison individuelle',
-        expectedStatus: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC,
-        housingType: 'immeuble_chauffage_collectif',
-        label: 'demande concernant une maison individuelle → ALEC',
-      },
-      {
-        demandConcern: 'Une copropriété',
-        expectedStatus: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR,
-        housingType: 'immeuble_chauffage_collectif',
-        label: 'chauffage collectif → CCR',
-      },
-    ] satisfies readonly {
-      demandConcern: DemandeChaleurRenouvelable['demandConcern'];
-      expectedStatus: DemandeChaleurRenouvelableStatus;
-      housingType: DemandeChaleurRenouvelable['housingType'];
-      label: string;
-    }[];
-
-    it.each(statusTestCases)('détermine automatiquement le statut initial : $label', async ({
-      demandConcern,
-      expectedStatus,
-      housingType,
-    }) => {
-      const input = {
-        address: '10 rue du test',
-        averageArea: 72,
-        averageResidents: 2,
-        batimentConstructionId: null,
-        comments: null,
-        demandConcern,
-        dpe: 'C',
-        email: 'contact@example.com',
-        firstName: 'Claire',
-        heatingEnergy: 'Gaz',
-        hotWaterSystemType: 'Collectif',
-        housingCount: 18,
-        housingType,
-        isPublicAdvisorSelected: false,
-        lastName: 'Test',
-        occupantStatus: 'Copropriétaire',
-        organizationName: null,
-        outdoorSpace: 'shared',
-        phone: '',
-        projectStatus: ['Début de réflexion'],
-        radiatorType: 'radiateur-eau',
-        refusalPeriod: null,
-        refusalReason: null,
-        simulationUrl: 'https://example.com/simulation',
-        surfaceArea: null,
-      } satisfies DemandeChaleurRenouvelable;
-
-      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
-
-      const demand = await kdb
-        .selectFrom('demands_chaleur_renouvelable')
-        .select(['status'])
-        .where('id', '=', result.id)
-        .executeTakeFirstOrThrow();
-
-      expect(demand).toStrictEqual({ status: expectedStatus });
     });
   });
 
@@ -471,7 +336,7 @@ describe('batEnrRouter', () => {
         last_name: 'Contact',
         occupant_status: 'Copropriétaire',
         organization_name: null,
-        outdoor_space: 'shared',
+        outdoor_space: 'jardinCours',
         phone: '',
         project_status: ['Début de réflexion'],
         radiator_type: null,
@@ -500,7 +365,7 @@ describe('batEnrRouter', () => {
         last_name: 'Contact',
         occupant_status: 'Propriétaire de maison individuelle',
         organization_name: 'Entreprise récente',
-        outdoor_space: 'private',
+        outdoor_space: 'terrasseBalcon',
         phone: '0605040302',
         project_status: ['Audit énergétique déjà réalisé'],
         radiator_type: 'radiateur-eau',
@@ -525,7 +390,8 @@ describe('batEnrRouter', () => {
             assigned_to: null,
             created_at: newerDate.toISOString(),
             id: newerDemand.id,
-            status: 'En attente de prise en charge',
+            project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+            status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             updated_at: newerDate.toISOString(),
           },
           {
@@ -533,7 +399,8 @@ describe('batEnrRouter', () => {
             assigned_to: null,
             created_at: olderDate.toISOString(),
             id: olderDemand.id,
-            status: 'En attente de prise en charge',
+            project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+            status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             updated_at: olderDate.toISOString(),
           },
         ],
@@ -565,7 +432,7 @@ describe('batEnrRouter', () => {
           housing_type: 'immeuble_chauffage_collectif',
           last_name: 'Contact',
           occupant_status: 'Copropriétaire',
-          outdoor_space: 'shared',
+          outdoor_space: 'jardinCours',
           phone: '',
           project_status: ['Début de réflexion'],
           simulation_url: 'https://example.com/test',
@@ -606,7 +473,7 @@ describe('batEnrRouter', () => {
           housing_type: 'immeuble_chauffage_collectif',
           last_name: 'Contact',
           occupant_status: 'Copropriétaire',
-          outdoor_space: 'shared',
+          outdoor_space: 'jardinCours',
           phone: '',
           project_status: ['Début de réflexion'],
           simulation_url: 'https://example.com/test',
@@ -621,13 +488,131 @@ describe('batEnrRouter', () => {
 
       const updatedDemand = await kdb
         .selectFrom('demands_chaleur_renouvelable')
-        .select(['assigned_to', 'status'])
+        .select(['assigned_to', 'project_state', 'status'])
         .where('id', '=', demand.id)
         .executeTakeFirstOrThrow();
 
       expect(updatedDemand).toStrictEqual({
         assigned_to: 'Gestionnaire test',
+        project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
         status: ADMIN_UPDATED_STATUS,
+      });
+    });
+
+    it("met à jour l'état du projet quand le statut de validation le permet", async () => {
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+        demandId: demand.id,
+        values: { projectState: ADMIN_UPDATED_PROJECT_STATE },
+      });
+
+      const updatedDemand = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['project_state', 'status'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow();
+
+      expect(updatedDemand).toStrictEqual({
+        project_state: ADMIN_UPDATED_PROJECT_STATE,
+        status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+      });
+    });
+
+    it("réinitialise l'état du projet quand le statut sort de la validation", async () => {
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_state: ADMIN_UPDATED_PROJECT_STATE,
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+        demandId: demand.id,
+        values: { status: ADMIN_UPDATED_STATUS },
+      });
+
+      const updatedDemand = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['project_state', 'status'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow();
+
+      expect(updatedDemand).toStrictEqual({
+        project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+        status: ADMIN_UPDATED_STATUS,
+      });
+    });
+
+    it("refuse de modifier l'état du projet sans statut de validation", async () => {
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      const callRoute = () =>
+        createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+          demandId: demand.id,
+          values: { projectState: ADMIN_UPDATED_PROJECT_STATE },
+        });
+
+      await expect(callRoute).rejects.toMatchObject({
+        code: 'BAD_REQUEST',
       });
     });
   });

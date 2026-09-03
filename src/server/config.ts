@@ -20,6 +20,7 @@ const serverConfigSchema = {
   DATA_GOUV_FR_API_URL: z.string().default('https://www.data.gouv.fr/api/1'),
   DATA_GOUV_FR_DATASET_ID: z.string().optional(),
   DATABASE_URL: z.string(),
+  GEOPLATEFORME_ALTIMETRY_API_BASE_URL: z.string().default('https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest'),
   GITHUB_CI: z.boolean().default(false),
   IS_REVIEW_APP: z.boolean().default(false),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),

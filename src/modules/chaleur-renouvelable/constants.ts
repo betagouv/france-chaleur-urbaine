@@ -85,6 +85,7 @@ export type FranceRenovSpace = {
 };
 
 export type Situation = {
+  altitude: number | null;
   architecturalProtectionAc1: boolean;
   architecturalProtectionAc2: boolean;
   architecturalProtectionAc3: boolean;
@@ -99,6 +100,7 @@ export type Situation = {
   surfaceMoyenne: number;
   habitantsMoyen: number;
   eligibiliteReseauChaleur: HeatNetwork | null;
+  eligibiliteReseauFroid: ColdNetworkEligibility | null;
   geothermalNappeGmi: number | null;
   geothermalNappePotential: number | null;
   geothermalSondeGmi: number | null;
@@ -106,6 +108,12 @@ export type Situation = {
   modeEauChaudeSanitaire: ModeEauChaudeSanitaireQueryParam | null;
   solarThermalCoverage: number | null;
   typeRadiateur: TypeRadiateur | null;
+};
+
+export type ColdNetworkEligibility = {
+  distance: number | null;
+  id: string | null;
+  name: string | null;
 };
 
 export type IncompatibleSolutionRow = {
@@ -136,12 +144,15 @@ type ExtractModeRoot<Rule> = Rule extends `${infer Root} . bilan . total sans in
  */
 export type PublicodesModeKey = ExtractModeRoot<RuleName>;
 
+export const COOLING_POSSIBLE_ADVANTAGE = 'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs';
+
 export type ModeDeChauffage = {
   id: ModeDeChauffageId;
   label: string;
   usage: ModeDeChauffageUsage;
   icone: string;
   pertinence: number;
+  classement?: number | ((situation: Situation) => number);
   description: React.ReactNode;
   avantages: string[];
   inconvenients: string[];
@@ -150,12 +161,18 @@ export type ModeDeChauffage = {
   coutInstallation?: string | ((situation: Situation) => string);
   gainClasse: number;
   gainVsGaz?: number;
+  rafraichissementPossible?: boolean | ((situation: Situation) => boolean);
   estPossible: (situation: Situation) => boolean;
   incompatibilites?: IncompatibleSolutionRule[];
   prerequis: (situation: Situation) => PrerequisiteRow[];
 };
 
-export type ModeDeChauffageEnriched = ModeDeChauffage & {
+export type ModeDeChauffageResolved = Omit<ModeDeChauffage, 'classement' | 'rafraichissementPossible'> & {
+  classement: number;
+  rafraichissementPossible: boolean;
+};
+
+export type ModeDeChauffageEnriched = Omit<ModeDeChauffageResolved, 'coutInstallation'> & {
   coutParAn: number;
   coutInstallation: string;
 };
@@ -175,58 +192,60 @@ export const typeLogementOptions = [
   value: TypeLogement;
 }[];
 
-export const ESPACE_EXTERIEUR_VALUES = [
-  'shared',
-  'private',
-  'both',
-  'terrasseBalcon',
-  'jardinCours',
-  'terrasseBalconEtJardinCours',
-  'none',
-] as const;
+export const ESPACE_EXTERIEUR_VALUES = ['terrasseBalcon', 'jardinCours', 'terrasseBalconEtJardinCours', 'none'] as const;
 export type EspaceExterieur = (typeof ESPACE_EXTERIEUR_VALUES)[number];
-export const espaceExterieurOptionsByTypeLogement = {
-  immeuble_chauffage_collectif: [
-    { label: 'Espaces extérieurs communs disponibles (cour, jardin...)', value: 'shared' },
-    { label: 'Aucun espace commun disponible', value: 'none' },
-  ],
-  immeuble_chauffage_individuel: [
-    { label: 'Espaces extérieurs privatifs disponibles (balcons, terrasse...)', value: 'private' },
-    { label: 'Aucun espace privatif disponible', value: 'none' },
-  ],
-  maison_individuelle: [
-    { label: 'Terrasse / Balcon', value: 'terrasseBalcon' },
-    { label: 'Jardin / Cours', value: 'jardinCours' },
-    { label: 'Terrasse / Balcon ET Jardin / Cours', value: 'terrasseBalconEtJardinCours' },
-    { label: 'Aucun espace extérieur disponible', value: 'none' },
-  ],
-} satisfies Record<
-  TypeLogement,
-  readonly {
-    label: string;
-    description?: string;
-    value: EspaceExterieur;
-  }[]
->;
 
-export function getEspaceExterieurOptions(typeLogement: TypeLogement | null | undefined) {
-  return typeLogement ? espaceExterieurOptionsByTypeLogement[typeLogement] : [];
+const espaceExterieurLabels = {
+  jardinCours: 'Cour et/ou jardin disponibles',
+  none: 'Aucun espace extérieur disponible',
+  terrasseBalcon: 'Terrasse et/ou balcon disponibles',
+  terrasseBalconEtJardinCours: 'Cour/jardin et terrasse/balcon disponibles',
+} satisfies Record<EspaceExterieur, string>;
+
+export type EspaceExterieurCheckboxState = {
+  hasGarden: boolean;
+  hasTerrace: boolean;
+};
+
+export function getEspaceExterieurLabel(espaceExterieur: EspaceExterieur) {
+  return espaceExterieurLabels[espaceExterieur];
 }
 
-export function getEspaceExterieurOptionLabel(typeLogement: TypeLogement, espaceExterieur: EspaceExterieur) {
-  return (
-    espaceExterieurOptionsByTypeLogement[typeLogement].find((option) => option.value === espaceExterieur)?.label ??
-    espaceExterieurOptionsByTypeLogement[typeLogement][0].label
-  );
+export function getEspaceExterieurCheckboxState(espaceExterieur: EspaceExterieur | null | undefined): EspaceExterieurCheckboxState {
+  switch (espaceExterieur) {
+    case 'jardinCours':
+      return { hasGarden: true, hasTerrace: false };
+    case 'terrasseBalcon':
+      return { hasGarden: false, hasTerrace: true };
+    case 'terrasseBalconEtJardinCours':
+      return { hasGarden: true, hasTerrace: true };
+    case 'none':
+    case null:
+    case undefined:
+      return { hasGarden: false, hasTerrace: false };
+  }
 }
 
-export function isEspaceExterieurCompatible(
+export function getEspaceExterieurFromCheckboxState(
+  typeLogement: TypeLogement | null | undefined,
+  checkboxState: EspaceExterieurCheckboxState
+): EspaceExterieur | null {
+  return typeLogement
+    ? checkboxState.hasGarden && checkboxState.hasTerrace
+      ? 'terrasseBalconEtJardinCours'
+      : checkboxState.hasGarden
+        ? 'jardinCours'
+        : checkboxState.hasTerrace
+          ? 'terrasseBalcon'
+          : 'none'
+    : null;
+}
+
+export function getEspaceExterieurForTypeLogement(
   typeLogement: TypeLogement | null | undefined,
   espaceExterieur: EspaceExterieur | null | undefined
 ) {
-  if (!typeLogement || !espaceExterieur) return false;
-
-  return getEspaceExterieurOptions(typeLogement).some((option) => option.value === espaceExterieur);
+  return espaceExterieur ? getEspaceExterieurFromCheckboxState(typeLogement, getEspaceExterieurCheckboxState(espaceExterieur)) : null;
 }
 
 export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['Individuel', 'Collectif'] as const;
@@ -306,21 +325,28 @@ export const projectStatusOptions = PROJECT_STATUS_VALUES.map((value) => ({
 }));
 
 export const demandeChaleurRenouvelableStatuses = [
-  { label: 'à traiter CCR', value: 'waiting_ccr' },
-  { label: 'à traiter ALEC', value: 'waiting_alec' },
-  { label: 'recontacté pour diagnostic', value: 'waiting_diagnostic' },
-  { label: '[à traiter alec] Réorientation du prospect vers isolation/rénovation globale', value: 'alec_reorientation' },
-  { label: 'Accompagnement ALEC en cours', value: 'alec' },
-  { label: "En attente d'éléments du prospect", value: 'waiting_prospect' },
-  { label: 'Étude technico-financière réalisée', value: 'finance' },
-  { label: "Appel d'offre bureau d'études réalisé", value: 'be' },
-  { label: 'Travaux votés en AG', value: 'voted' },
-  { label: 'Travaux réalisés', value: 'done' },
-  { label: 'Demande non pertinente', value: 'abandoned' },
+  { label: 'A traiter', value: 'to_process' },
+  { label: 'Recontacté pour premier échange', value: 'recontacted_first_exchange' },
+  { label: 'Non pertinent', value: 'irrelevant' },
+  { label: 'Réorienté vers France Rénov’', value: 'redirected_france_renov' },
+  { label: 'Etude d’opportunité en cours', value: 'opportunity_study_in_progress' },
+  { label: 'Etude d’opportunité réalisée', value: 'opportunity_study_done' },
+  { label: '[Validation du projet] Etude de faisabilité votée en AG', value: 'project_validation_feasibility_study_voted' },
+  { label: 'Projet abandonné par le prospect', value: 'abandoned_by_prospect' },
 ] as const;
-export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_CCR = demandeChaleurRenouvelableStatuses[0].label;
-export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_WAITING_ALEC = demandeChaleurRenouvelableStatuses[1].label;
+export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS = demandeChaleurRenouvelableStatuses[0].label;
+export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION = demandeChaleurRenouvelableStatuses[6].label;
 export type DemandeChaleurRenouvelableStatus = (typeof demandeChaleurRenouvelableStatuses)[number]['label'];
+
+export const demandeChaleurRenouvelableProjectStates = [
+  { label: 'En réflexion', value: 'reflection' },
+  { label: 'Etude de faisabilité (BE) réalisée', value: 'feasibility_study_done' },
+  { label: 'Installation ENR votée en AG', value: 'enr_installation_voted' },
+  { label: 'Installation ENR réalisée', value: 'enr_installation_done' },
+  { label: 'Projet abandonné par le prospect', value: 'abandoned_by_prospect' },
+] as const;
+export const DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION = demandeChaleurRenouvelableProjectStates[0].label;
+export type DemandeChaleurRenouvelableProjectState = (typeof demandeChaleurRenouvelableProjectStates)[number]['label'];
 
 export const DEFAULT_SIMULATION_PARAMS = {
   espaceExterieur: 'none',
@@ -417,6 +443,7 @@ export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
   values: z
     .object({
       assignedTo: z.string().nullable(),
+      projectState: z.enum(demandeChaleurRenouvelableProjectStates.map((projectState) => projectState.label)),
       status: z.enum(demandeChaleurRenouvelableStatuses.map((status) => status.label)),
     })
     .partial(),

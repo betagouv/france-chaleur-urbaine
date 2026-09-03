@@ -22,12 +22,14 @@ export function useChoixChauffageResults() {
   useRemoveHashOnScroll('#help-ademe');
 
   const {
+    altitude,
     geoAddress,
     setGeoAddress,
     batEnr,
     batEnrBatiments,
     codeDepartement,
     eligibiliteReseauChaleur,
+    eligibiliteReseauFroid,
     isEligibilityLoading,
     shouldSelectBatEnrBatiment,
     temperatureRef,
@@ -43,8 +45,8 @@ export function useChoixChauffageResults() {
   const contactForm = useContactFormFCU();
 
   const situation = useMemo(
-    () => buildSimulationSituation({ batEnr, eligibiliteReseauChaleur, params }),
-    [batEnr, eligibiliteReseauChaleur, params]
+    () => buildSimulationSituation({ altitude, batEnr, eligibiliteReseauChaleur, eligibiliteReseauFroid, params }),
+    [altitude, batEnr, eligibiliteReseauChaleur, eligibiliteReseauFroid, params]
   );
 
   useEffect(() => {
@@ -138,16 +140,6 @@ export function useChoixChauffageResults() {
     },
     [selectBatEnrBatiment, urlParams]
   );
-
-  useEffect(() => {
-    const batimentConstructionId = selectedBatEnrBatiment?.batiment_construction_id;
-
-    if (!batimentConstructionId) {
-      return;
-    }
-
-    urlParams.setPrefillParams(getSimulationPrefillFromBatEnrBatiment(selectedBatEnrBatiment));
-  }, [selectedBatEnrBatiment, urlParams]);
 
   return {
     batEnrBatiments,

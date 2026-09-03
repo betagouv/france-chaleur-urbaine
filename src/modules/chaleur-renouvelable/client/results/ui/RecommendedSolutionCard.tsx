@@ -14,6 +14,8 @@ import { UsageTags } from '@/modules/chaleur-renouvelable/client/results/ui/Usag
 import type { BatEnrBatiment, DPE } from '@/modules/chaleur-renouvelable/constants';
 import { Map } from '@/modules/map/client/Map';
 
+import { CoolingPossibleTag } from './CoolingPossibleTag';
+
 const MapMarker = dynamic(() => import('@/modules/map/client/interactions/MapMarker').then((mod) => mod.MapMarker), { ssr: false });
 
 export type HeatNetworkRecommendedSolutionCardProps = {
@@ -21,7 +23,6 @@ export type HeatNetworkRecommendedSolutionCardProps = {
   dpeFrom: DPE;
   geoAddress?: BANAddressFeature;
   coutParAnGaz: number;
-  coutParAnGazHotWaterOnly: number;
   isOpen: boolean;
   onOpenChange: (expanded: boolean) => void;
   selectedBatiment?: BatEnrBatiment;
@@ -33,7 +34,6 @@ export function HeatNetworkRecommendedSolutionCard({
   dpeFrom,
   geoAddress,
   coutParAnGaz,
-  coutParAnGazHotWaterOnly,
   isOpen,
   onOpenChange,
   selectedBatiment,
@@ -68,7 +68,7 @@ export function HeatNetworkRecommendedSolutionCard({
   }, [geoAddress]);
 
   return (
-    <section className="fr-mt-6w border border-gray-200 border-l-4 border-l-green-600 bg-white px-6 py-6 md:px-10">
+    <section className="border border-gray-200 border-l-4 border-l-green-600 bg-white px-6 py-6 md:px-10">
       <div className="flex items-start justify-between gap-6">
         <div>
           <p className="mb-2 text-sm font-semibold uppercase tracking-wide">Solution recommandée</p>
@@ -82,6 +82,7 @@ export function HeatNetworkRecommendedSolutionCard({
         un chauffage collectif. Une énergie majoritairement <strong>renouvelable et locale</strong>, un <strong>prix stable</strong> et une{' '}
         <strong>TVA réduite à 5,5 %</strong>, le tout garanti par un service public.
       </p>
+      {item.rafraichissementPossible && <CoolingPossibleTag />}
       <div className="grid-1 grid gap-6 md:grid-cols-3">
         {mapMarkerCoordinates && (
           <Map
@@ -94,13 +95,7 @@ export function HeatNetworkRecommendedSolutionCard({
             <MapMarker longitude={mapMarkerCoordinates[0]} latitude={mapMarkerCoordinates[1]} />
           </Map>
         )}
-        <SolutionConsumptionPanel
-          dpeFrom={dpeFrom}
-          item={item}
-          coutParAnGaz={coutParAnGaz}
-          coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly}
-          className="text-xl"
-        />
+        <SolutionConsumptionPanel dpeFrom={dpeFrom} item={item} coutParAnGaz={coutParAnGaz} className="text-xl" />
         <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
       </div>
       <div className="mt-6 flex flex-col items-start gap-4 md:flex-row md:items-center">

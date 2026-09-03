@@ -1,31 +1,10 @@
-import type { BatEnrBatiment, DPE, ModeEauChaudeSanitaire, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import type { BatEnrBatiment, DPE, ModeEauChaudeSanitaire } from '@/modules/chaleur-renouvelable/constants';
 
 export type SimulationPrefillParams = {
   dpe?: DPE;
   modeEauChaudeSanitaire?: ModeEauChaudeSanitaire;
   nbLogements?: number;
   surfaceMoyenne?: number;
-  typeLogement?: TypeLogement;
-};
-
-const getTypeLogementFromBatEnr = (
-  categorieMajoritaire: string | null,
-  typeInstallationChauffage: string | null
-): TypeLogement | undefined => {
-  const normalizedCategorieMajoritaire = categorieMajoritaire?.trim().toLowerCase();
-  const normalizedTypeInstallationChauffage = typeInstallationChauffage?.trim().toLowerCase();
-
-  if (normalizedCategorieMajoritaire === 'res col' && normalizedTypeInstallationChauffage === 'individuel') {
-    return 'immeuble_chauffage_individuel';
-  }
-
-  if (normalizedCategorieMajoritaire === 'res col' && normalizedTypeInstallationChauffage === 'collectif') {
-    return 'immeuble_chauffage_collectif';
-  }
-
-  return normalizedCategorieMajoritaire === 'res ind' && normalizedTypeInstallationChauffage === 'individuel'
-    ? 'maison_individuelle'
-    : undefined;
 };
 
 const getModeEauChaudeSanitaireFromBatEnr = (typeInstallationEcs: string | null): ModeEauChaudeSanitaire | undefined => {
@@ -51,6 +30,5 @@ export function getSimulationPrefillFromBatEnrBatiment(batEnrBatiment: BatEnrBat
     modeEauChaudeSanitaire: getModeEauChaudeSanitaireFromBatEnr(batEnrBatiment.type_installation_ecs),
     nbLogements,
     surfaceMoyenne,
-    typeLogement: getTypeLogementFromBatEnr(batEnrBatiment.categorie_majoritaire, batEnrBatiment.type_installation_chauffage),
   };
 }

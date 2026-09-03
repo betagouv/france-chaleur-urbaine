@@ -5,13 +5,22 @@ import { DEFAULT_SIMULATION_PARAMS } from '@/modules/chaleur-renouvelable/consta
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 type BuildSimulationSituationParams = {
+  altitude: number | null;
   batEnr: BatEnrInfo;
   eligibiliteReseauChaleur: HeatNetwork | null;
+  eligibiliteReseauFroid: Situation['eligibiliteReseauFroid'];
   params: ChoixChauffageParams;
 };
 
-export const buildSimulationSituation = ({ batEnr, eligibiliteReseauChaleur, params }: BuildSimulationSituationParams): Situation => ({
+export const buildSimulationSituation = ({
+  altitude,
+  batEnr,
+  eligibiliteReseauChaleur,
+  eligibiliteReseauFroid,
+  params,
+}: BuildSimulationSituationParams): Situation => ({
   adresse: params.adresse,
+  altitude,
   architecturalProtectionAc1: batEnr.architecturalProtectionAc1,
   architecturalProtectionAc2: batEnr.architecturalProtectionAc2,
   architecturalProtectionAc3: batEnr.architecturalProtectionAc3,
@@ -19,6 +28,7 @@ export const buildSimulationSituation = ({ batEnr, eligibiliteReseauChaleur, par
   architecturalProtectionAc4bis: batEnr.architecturalProtectionAc4bis,
   dpe: params.dpe,
   eligibiliteReseauChaleur,
+  eligibiliteReseauFroid,
   espaceExterieur: params.espaceExterieur ?? DEFAULT_SIMULATION_PARAMS.espaceExterieur,
   geothermalNappeGmi: batEnr.geothermalNappeGmi,
   geothermalNappePotential: batEnr.geothermalNappePotential,

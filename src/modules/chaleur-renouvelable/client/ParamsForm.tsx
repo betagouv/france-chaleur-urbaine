@@ -1,4 +1,4 @@
-import { type SubmitEvent, useEffect, useState } from 'react';
+import { type SubmitEvent, useEffect, useId, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
@@ -7,15 +7,17 @@ import { trackPostHogEvent } from '@/modules/analytics/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { BatEnrBatimentsMap } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentsMap';
 import type {
+  ChoixChauffageParamSources,
   ChoixChauffageParams,
   SetChoixChauffageParams,
 } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   areParamsFormDraftsEqual,
+  getParamsFormCompletion,
   normalizeDecimalString,
   normalizeDraftNumbers,
   parseIntegerOrNull,
-  toChoixChauffageParams,
+  toChoixChauffageParamsPatch,
   toParamsFormDraft,
 } from '@/modules/chaleur-renouvelable/client/params-form-draft';
 import { DpeTag } from '@/modules/chaleur-renouvelable/client/results/ui/DpeTag';
@@ -23,7 +25,7 @@ import {
   type BatEnrBatiment,
   type DPE,
   DPE_VALUES,
-  isEspaceExterieurCompatible,
+  getEspaceExterieurForTypeLogement,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type ModeEauChaudeSanitaireQueryParam,
   modeEauChaudeSanitaireOptions,
@@ -34,16 +36,19 @@ import {
 } from '@/modules/chaleur-renouvelable/constants';
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 import { AddressField } from '@/modules/form/AddressField';
+import cx from '@/utils/cx';
 
-import { OutdoorSpaceSelect } from './OutdoorSpaceSelect';
+import { OutdoorSpaceCheckboxes } from './OutdoorSpaceCheckboxes';
 
 export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
+const INCOMPLETE_FIELD_MESSAGE = 'À compléter ou vérifier pour affiner vos résultats.';
 
 type ParamsFormProps = {
   batiments: BatEnrBatiment[];
   isOpen: boolean;
   setIsOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
   values: ChoixChauffageParams;
+  paramSources: ChoixChauffageParamSources;
   onSave: SetChoixChauffageParams;
   geoAddress?: BANAddressFeature;
   setGeoAddress: (val: BANAddressFeature | undefined) => void;
@@ -67,8 +72,9 @@ export function ParamsForm({
   onSelectGeoAddress,
   onAddressError: _onAddressError,
   selectedBatiment,
+  paramSources,
 }: ParamsFormProps) {
-  const currentValues = toParamsFormDraft(values);
+  const currentValues = toParamsFormDraft(values, paramSources);
   const [draft, setDraft] = useState(currentValues);
   const [hasPendingLocalChange, setHasPendingLocalChange] = useState(false);
   const draftSelectedBatiment =
@@ -89,9 +95,12 @@ export function ParamsForm({
     currentValues.surfaceMoyenne,
     currentValues.typeLogement,
     currentValues.typeRadiateur,
+    currentValues.isDpeExplicit,
+    currentValues.isModeEauChaudeSanitaireInferred,
   ]);
 
   const isModified = hasPendingLocalChange || !areParamsFormDraftsEqual(draft, currentValues);
+  const completion = getParamsFormCompletion(draft);
 
   const handleOpen = () => {
     trackPostHogEvent('fcr_simulator:params_panel_opened');
@@ -105,6 +114,11 @@ export function ParamsForm({
   };
 
   const handleCancel = () => {
+    if (!isModified) {
+      handleClose();
+      return;
+    }
+
     trackPostHogEvent('fcr_simulator:parameters_cancelled');
     handleClose();
   };
@@ -112,11 +126,11 @@ export function ParamsForm({
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const nextValues = toChoixChauffageParams(draft);
+    const nextValues = toChoixChauffageParamsPatch(draft);
 
     trackPostHogEvent('fcr_simulator:parameters_saved', {
-      dpe: nextValues.dpe,
-      ecs_mode: nextValues.modeEauChaudeSanitaire,
+      dpe: draft.dpe,
+      ecs_mode: draft.modeEauChaudeSanitaire,
       emitter_type: nextValues.typeRadiateur,
       habitants: nextValues.habitantsMoyen ? Number(nextValues.habitantsMoyen) : undefined,
       heating_mode: nextValues.typeLogement,
@@ -134,57 +148,63 @@ export function ParamsForm({
     const prefillParams = getSimulationPrefillFromBatEnrBatiment(batiment);
 
     setHasPendingLocalChange(true);
-    setDraft((previousDraft) => ({
-      ...previousDraft,
-      constructionId: batiment.batiment_construction_id,
-      dpe: prefillParams.dpe ?? previousDraft.dpe,
-      espaceExterieur:
-        prefillParams.typeLogement && !isEspaceExterieurCompatible(prefillParams.typeLogement, previousDraft.espaceExterieur)
-          ? null
-          : previousDraft.espaceExterieur,
-      modeEauChaudeSanitaire: prefillParams.modeEauChaudeSanitaire ?? previousDraft.modeEauChaudeSanitaire,
-      nbLogements: prefillParams.nbLogements === undefined ? previousDraft.nbLogements : String(prefillParams.nbLogements),
-      surfaceMoyenne: prefillParams.surfaceMoyenne === undefined ? previousDraft.surfaceMoyenne : String(prefillParams.surfaceMoyenne),
-      typeLogement: prefillParams.typeLogement ?? previousDraft.typeLogement,
-    }));
+    setDraft((previousDraft) => {
+      return {
+        ...previousDraft,
+        constructionId: batiment.batiment_construction_id,
+        dpe: prefillParams.dpe ?? previousDraft.dpe,
+        isDpeExplicit: prefillParams.dpe ? true : previousDraft.isDpeExplicit,
+        isModeEauChaudeSanitaireInferred: prefillParams.modeEauChaudeSanitaire ? false : previousDraft.isModeEauChaudeSanitaireInferred,
+        modeEauChaudeSanitaire: prefillParams.modeEauChaudeSanitaire ?? previousDraft.modeEauChaudeSanitaire,
+        nbLogements: prefillParams.nbLogements === undefined ? previousDraft.nbLogements : String(prefillParams.nbLogements),
+        surfaceMoyenne: prefillParams.surfaceMoyenne === undefined ? previousDraft.surfaceMoyenne : String(prefillParams.surfaceMoyenne),
+      };
+    });
   };
 
   return (
-    <form id="params-form" className="border border-gray-200 bg-white p-4 shadow-sm" onSubmit={handleSubmit}>
+    <form
+      id="params-form"
+      className={cx('border border-gray-200 bg-white p-4 shadow-sm', !isOpen && 'sticky top-0 z-20')}
+      onSubmit={handleSubmit}
+    >
       {isOpen ? (
         <div className="flex items-start justify-between gap-4">
-          <AddressField
-            label=""
-            value={draft.adresse}
-            className="max-w-100 flex-1"
-            nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
-            onlyAddress
-            onClear={() => {
-              setHasPendingLocalChange(true);
-              setDraft((previousDraft) => ({ ...previousDraft, adresse: '', constructionId: null }));
-              setGeoAddress(undefined);
-              onSelectGeoAddress?.(undefined);
-            }}
-            onSelect={(nextAddress) => {
-              const nextAddressLabel = nextAddress?.properties?.label ?? '';
-              if (nextAddressLabel) {
-                trackPostHogEvent('fcr_simulator:address_selected', {
-                  address: nextAddressLabel,
-                  city: nextAddress?.properties.city,
-                  postcode: nextAddress?.properties.postcode,
-                  source: 'result',
-                });
-              }
-              setHasPendingLocalChange(true);
-              setDraft((previousDraft) => ({
-                ...previousDraft,
-                adresse: nextAddressLabel,
-                constructionId: null,
-              }));
-              setGeoAddress(nextAddress);
-              onSelectGeoAddress?.(nextAddress);
-            }}
-          />
+          <div className="flex min-w-0 flex-1 items-start gap-2 mb-5">
+            <span className="fr-icon-map-pin-2-line mt-2 shrink-0 text-sm" aria-hidden="true" />
+            <AddressField
+              label=""
+              value={draft.adresse}
+              className="max-w-100 flex-1"
+              nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
+              onlyAddress
+              onClear={() => {
+                setHasPendingLocalChange(true);
+                setDraft((previousDraft) => ({ ...previousDraft, adresse: '', constructionId: null }));
+                setGeoAddress(undefined);
+                onSelectGeoAddress?.(undefined);
+              }}
+              onSelect={(nextAddress) => {
+                const nextAddressLabel = nextAddress?.properties?.label ?? '';
+                if (nextAddressLabel) {
+                  trackPostHogEvent('fcr_simulator:address_selected', {
+                    address: nextAddressLabel,
+                    city: nextAddress?.properties.city,
+                    postcode: nextAddress?.properties.postcode,
+                    source: 'result',
+                  });
+                }
+                setHasPendingLocalChange(true);
+                setDraft((previousDraft) => ({
+                  ...previousDraft,
+                  adresse: nextAddressLabel,
+                  constructionId: null,
+                }));
+                setGeoAddress(nextAddress);
+                onSelectGeoAddress?.(nextAddress);
+              }}
+            />
+          </div>
           <button type="button" className="fr-icon-close-line mt-1 text-sm" aria-label="Fermer" onClick={handleClose} />
         </div>
       ) : (
@@ -197,124 +217,27 @@ export function ParamsForm({
             full
             priority="secondary"
             iconId="fr-icon-pencil-line"
-            className="hidden w-auto md:inline-flex"
+            className="relative hidden w-auto md:inline-flex"
             iconPosition="left"
             aria-expanded={isOpen}
             aria-controls="params-form"
             onClick={handleOpen}
           >
-            Complétez les paramètres
+            Compléter mes paramètres
+            <ParamsNotificationBadge count={completion.incompleteCount} />
           </Button>
         </div>
       )}
-      <p className="my-3 hidden md:block">
-        Ajustez les détails de votre simulation (DPE, nombre de logements, mode de production d’eau chaude...) pour obtenir un calcul plus
-        précis des coûts et économies d’énergie.
-      </p>
+      <ParamsIncompleteAlert count={completion.incompleteCount} />
       {isOpen ? (
         <>
           <div className="space-y-4">
-            <section>
-              <div className="flex items-center gap-2">
-                <span className="fr-icon-community-fill" aria-hidden="true" />
-                <h3 className="m-0 text-sm font-bold">Bâtiment</h3>
-              </div>
-              <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-[1fr_2fr]">
-                <BatEnrBatimentsMap
-                  batiments={batiments}
-                  initialCenter={geoAddress?.geometry.coordinates}
-                  onSelect={handleSelectBatiment}
-                  selectedBatiment={draftSelectedBatiment}
-                  className="h-full"
-                />
-                <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2 content-start">
-                  <InputWithSuffix
-                    label="Surface habitable par logement (moy)"
-                    suffix="m²"
-                    value={draft.surfaceMoyenne}
-                    placeholder="70"
-                    onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
-                    onBlur={() => {
-                      const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
-                      if (surfaceM2 !== null) {
-                        trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
-                      }
-                    }}
-                  />
-                  <Input
-                    hideOptionalLabel
-                    label="Habitants par logement (moy)"
-                    nativeInputProps={{
-                      inputMode: 'decimal',
-                      min: 0,
-                      onBlur: () => {
-                        const normalizedHabitantsMoyen = normalizeDecimalString(draft.habitantsMoyen);
-                        if (normalizedHabitantsMoyen) {
-                          trackPostHogEvent('fcr_simulator:habitants_changed', { habitants: Number(normalizedHabitantsMoyen) });
-                        }
-                        setDraft((previousDraft) => ({
-                          ...previousDraft,
-                          habitantsMoyen: normalizedHabitantsMoyen,
-                        }));
-                      },
-                      onChange: (event) => {
-                        const nextValue = event.target.value;
-                        if (!(nextValue === '' || /^[0-9]+([.,][0-9]*)?$/.test(nextValue))) return;
-
-                        setDraft((previousDraft) => ({ ...previousDraft, habitantsMoyen: nextValue }));
-                      },
-                      placeholder: '2',
-                      step: 0.1,
-                      type: 'number',
-                      value: draft.habitantsMoyen,
-                    }}
-                  />
-                  <OutdoorSpaceSelect
-                    typeLogement={draft.typeLogement}
-                    value={draft.espaceExterieur}
-                    onChange={(value) => {
-                      if (value) {
-                        trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoor_space: value });
-                      }
-                      setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }));
-                    }}
-                  />
-                  <Input
-                    hideOptionalLabel
-                    label="Nombre de logements"
-                    nativeInputProps={{
-                      inputMode: 'numeric',
-                      min: 1,
-                      onBlur: () => {
-                        const nbLogements = parseIntegerOrNull(draft.nbLogements);
-                        if (nbLogements !== null) {
-                          trackPostHogEvent('fcr_simulator:nb_logements_changed', { nb_logements: nbLogements });
-                        }
-                      },
-                      onChange: (event) => setDraft((previousDraft) => ({ ...previousDraft, nbLogements: event.target.value })),
-                      placeholder: '25',
-                      type: 'number',
-                      value: draft.nbLogements,
-                    }}
-                  />
-                  <div className="md:col-span-2">
-                    <DpeField
-                      value={draft.dpe}
-                      onChange={(value) => {
-                        trackPostHogEvent('fcr_simulator:dpe_changed', { dpe: value });
-                        setDraft((previousDraft) => ({ ...previousDraft, dpe: value }));
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section id={HOT_WATER_PARAMS_SECTION_ID} className="scroll-mt-4">
-              <div className="flex items-center gap-2">
+            <section id={HOT_WATER_PARAMS_SECTION_ID} className="mb-5 md:mb-0">
+              <div className="flex items-center gap-x-2">
                 <span className="fr-icon-sensor-fill" aria-hidden="true" />
-                <h3 className="m-0 text-sm font-bold">Chauffage et eau chaude sanitaire</h3>
+                <h3 className="m-0 text-base font-bold">Chauffage et eau chaude sanitaire</h3>
               </div>
-              <div className="mt-3 grid grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-3">
+              <div className="mt-3 grid grid-cols-1 gap-x-5 md:grid-cols-3 [&_.fr-label]:text-sm">
                 <Select
                   label="Mode de chauffage"
                   options={[...typeLogementOptions]}
@@ -326,9 +249,7 @@ export function ParamsForm({
                       }
                       setDraft((previousDraft) => ({
                         ...previousDraft,
-                        espaceExterieur: isEspaceExterieurCompatible(nextTypeLogement, previousDraft.espaceExterieur)
-                          ? previousDraft.espaceExterieur
-                          : null,
+                        espaceExterieur: getEspaceExterieurForTypeLogement(nextTypeLogement, previousDraft.espaceExterieur ?? 'none'),
                         typeLogement: nextTypeLogement,
                       }));
                     },
@@ -355,7 +276,19 @@ export function ParamsForm({
                 <Select
                   label="Mode d’eau chaude sanitaire"
                   options={[{ label: 'Non renseigné', value: MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE }, ...modeEauChaudeSanitaireOptions]}
+                  state={completion.isModeEauChaudeSanitaireIncomplete ? 'error' : 'default'}
+                  stateRelatedMessage={INCOMPLETE_FIELD_MESSAGE}
                   nativeSelectProps={{
+                    onBlur: () => {
+                      if (!draft.isModeEauChaudeSanitaireInferred || !draft.modeEauChaudeSanitaire) {
+                        return;
+                      }
+
+                      setDraft((previousDraft) => ({
+                        ...previousDraft,
+                        isModeEauChaudeSanitaireInferred: false,
+                      }));
+                    },
                     onChange: (event) => {
                       const nextModeEauChaudeSanitaire = event.target.value as ModeEauChaudeSanitaireQueryParam;
                       if (nextModeEauChaudeSanitaire) {
@@ -363,6 +296,7 @@ export function ParamsForm({
                       }
                       setDraft((previousDraft) => ({
                         ...previousDraft,
+                        isModeEauChaudeSanitaireInferred: false,
                         modeEauChaudeSanitaire: nextModeEauChaudeSanitaire,
                       }));
                     },
@@ -371,12 +305,120 @@ export function ParamsForm({
                 />
               </div>
             </section>
+            <section>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="fr-icon-community-fill" aria-hidden="true" />
+                <h3 className="m-0 text-base font-bold">Bâtiment</h3>
+                <span className="text-xs text-gray-500">source : CSTB</span>
+              </div>
+              <div className="mt-0 md:mt-3 grid grid-cols-1 gap-4 md:grid-cols-[minmax(190px,0.9fr)_minmax(0,2fr)]">
+                <BatEnrBatimentsMap
+                  batiments={batiments}
+                  initialCenter={geoAddress?.geometry.coordinates}
+                  onSelect={handleSelectBatiment}
+                  selectedBatiment={draftSelectedBatiment}
+                  className="h-full"
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="[&_.fr-label]:text-sm">
+                    <InputWithSuffix
+                      label="Surface habitable par logement (moy)"
+                      suffix="m²"
+                      value={draft.surfaceMoyenne}
+                      placeholder="70"
+                      inputMode="numeric"
+                      min="0"
+                      step="1"
+                      state={completion.isSurfaceMoyenneIncomplete ? 'error' : 'default'}
+                      stateRelatedMessage={INCOMPLETE_FIELD_MESSAGE}
+                      onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
+                      onBlur={() => {
+                        const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
+                        if (surfaceM2 !== null) {
+                          trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
+                        }
+                      }}
+                    />
+                    <InputWithSuffix
+                      label="Habitants par logement (moy)"
+                      suffix="personnes"
+                      value={draft.habitantsMoyen}
+                      placeholder="2"
+                      step="0.1"
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      state={completion.isHabitantsMoyenIncomplete ? 'error' : 'default'}
+                      stateRelatedMessage={INCOMPLETE_FIELD_MESSAGE}
+                      onBlur={() => {
+                        const normalizedHabitantsMoyen = normalizeDecimalString(draft.habitantsMoyen);
+                        if (normalizedHabitantsMoyen) {
+                          trackPostHogEvent('fcr_simulator:habitants_changed', { habitants: Number(normalizedHabitantsMoyen) });
+                        }
+                        setDraft((previousDraft) => ({
+                          ...previousDraft,
+                          habitantsMoyen: normalizedHabitantsMoyen,
+                        }));
+                      }}
+                      onChange={(value) => {
+                        if (!(value === '' || /^[0-9]+([.,][0-9]*)?$/.test(value))) return;
+
+                        setDraft((previousDraft) => ({ ...previousDraft, habitantsMoyen: value }));
+                      }}
+                    />
+                    <Input
+                      hideOptionalLabel
+                      label="Nombre de logements"
+                      state={completion.isNbLogementsIncomplete ? 'error' : 'default'}
+                      stateRelatedMessage={INCOMPLETE_FIELD_MESSAGE}
+                      nativeInputProps={{
+                        'aria-invalid': completion.isNbLogementsIncomplete,
+                        inputMode: 'numeric',
+                        min: 1,
+                        onBlur: () => {
+                          const nbLogements = parseIntegerOrNull(draft.nbLogements);
+                          if (nbLogements !== null) {
+                            trackPostHogEvent('fcr_simulator:nb_logements_changed', { nb_logements: nbLogements });
+                          }
+                        },
+                        onChange: (event) => setDraft((previousDraft) => ({ ...previousDraft, nbLogements: event.target.value })),
+                        placeholder: '25',
+                        type: 'number',
+                        value: draft.nbLogements,
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <DpeField
+                      value={draft.dpe}
+                      hasError={completion.isDpeIncomplete}
+                      onChange={(value) => {
+                        trackPostHogEvent('fcr_simulator:dpe_changed', { dpe: value });
+                        setDraft((previousDraft) => ({ ...previousDraft, dpe: value, isDpeExplicit: true }));
+                      }}
+                    />
+                    <OutdoorSpaceCheckboxes
+                      className="mt-5"
+                      typeLogement={draft.typeLogement}
+                      value={draft.espaceExterieur}
+                      layout="stacked"
+                      onChange={(value) => {
+                        if (value) {
+                          trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoor_space: value });
+                        }
+                        setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }));
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <Button type="submit" iconId="fr-icon-save-line" disabled={!isModified}>
               Enregistrer et recalculer
             </Button>
-            <Button priority="secondary" type="button" onClick={handleCancel} disabled={!isModified}>
+            <Button priority="secondary" type="button" onClick={handleCancel}>
               Annuler
             </Button>
           </div>
@@ -386,31 +428,83 @@ export function ParamsForm({
           full
           priority="secondary"
           iconId="fr-icon-pencil-line"
-          className="my-3 md:hidden"
+          className="relative my-3 md:hidden"
           iconPosition="left"
           aria-expanded={isOpen}
           aria-controls="params-form"
           onClick={handleOpen}
         >
-          Complétez les paramètres
+          Compléter mes paramètres
+          <ParamsNotificationBadge count={completion.incompleteCount} />
         </Button>
       )}
     </form>
   );
 }
 
-function DpeField({ value, onChange }: { value: DPE; onChange: (value: DPE) => void }) {
+type ParamsNotificationBadgeProps = {
+  count: number;
+};
+
+function ParamsNotificationBadge({ count }: ParamsNotificationBadgeProps) {
+  if (count === 0) {
+    return null;
+  }
+
+  return <span className="ml-1 flex h-6 w-6 items-center justify-center rounded-full bg-error text-xs font-bold text-white">{count}</span>;
+}
+
+type ParamsIncompleteAlertProps = {
+  count: number;
+};
+
+function ParamsIncompleteAlert({ count }: ParamsIncompleteAlertProps) {
+  if (count === 0) {
+    return null;
+  }
+
   return (
-    <div>
-      <div className="mb-2">Étiquette DPE</div>
-      <div className="flex flex-wrap gap-1.5">
+    <p className="my-3 bg-[#FFF6D8] px-4 py-3 font-bold text-[#C74700]">
+      <span className="fr-icon-warning-fill mr-2" aria-hidden="true" />
+      {count} information{count > 1 ? 's' : ''} à compléter ou vérifier <span className="font-normal">pour affiner vos résultats.</span>
+    </p>
+  );
+}
+
+type DpeFieldProps = {
+  hasError: boolean;
+  onChange: (value: DPE) => void;
+  value: DPE;
+};
+
+function DpeField({ hasError, value, onChange }: DpeFieldProps) {
+  return (
+    <div className={cx('fr-input-group fr-mb-0', hasError && 'fr-input-group--error')}>
+      <div className="mb-2 text-sm">Étiquette DPE</div>
+      <div className="flex flex-wrap gap-1">
         {DPE_VALUES.map((dpeValue) => (
-          <DpeTag key={dpeValue} letter={dpeValue} isSelected={value === dpeValue} onClick={() => onChange(dpeValue)} />
+          <DpeTag key={dpeValue} letter={dpeValue} isSelected={value === dpeValue} onClick={() => onChange(dpeValue)} size="md" />
         ))}
       </div>
+      {hasError && <p className="fr-error-text">{INCOMPLETE_FIELD_MESSAGE}</p>}
     </div>
   );
 }
+
+type InputWithSuffixProps = {
+  label: string;
+  onBlur?: () => void;
+  onChange: (value: string) => void;
+  placeholder: string;
+  suffix: string;
+  state?: 'default' | 'error';
+  stateRelatedMessage?: string;
+  type?: 'number' | 'text';
+  value: string;
+  inputMode: 'search' | 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | undefined;
+  min: string;
+  step: string;
+};
 
 function InputWithSuffix({
   label,
@@ -418,23 +512,33 @@ function InputWithSuffix({
   onBlur,
   placeholder,
   suffix,
+  state = 'default',
+  stateRelatedMessage,
+  type = 'number',
   value,
-}: {
-  label: string;
-  onChange: (value: string) => void;
-  onBlur?: () => void;
-  placeholder: string;
-  suffix: string;
-  value: string;
-}) {
+  inputMode,
+  min,
+  step,
+}: InputWithSuffixProps) {
+  const inputId = useId();
+  const suffixDescriptionId = `${inputId}-suffix`;
+  const suffixAnchorText = value || placeholder;
+  const hasError = state === 'error';
+
   return (
-    <div className="fr-input-group w-full">
-      <label className="fr-label mb-2">{label}</label>
+    <div className={cx('fr-input-group w-full', hasError && 'fr-input-group--error')}>
+      <label className="fr-label mb-2" htmlFor={inputId}>
+        {label}
+      </label>
       <div className="relative">
         <input
-          className="fr-input pr-12"
-          inputMode="numeric"
-          min={1}
+          aria-describedby={suffixDescriptionId}
+          aria-invalid={hasError}
+          className="fr-input"
+          id={inputId}
+          inputMode={inputMode}
+          min={min}
+          step={step}
           onBlur={onBlur}
           onChange={(event) => onChange(event.target.value)}
           onWheel={(event) => {
@@ -443,11 +547,21 @@ function InputWithSuffix({
             }
           }}
           placeholder={placeholder}
-          type="number"
+          type={type}
           value={value}
         />
-        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">{suffix}</span>
+        <span id={suffixDescriptionId} className="sr-only">
+          Unité : {suffix}
+        </span>
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-4 right-12 flex items-center overflow-hidden whitespace-pre text-base leading-6"
+        >
+          <span className={value ? 'invisible' : 'invisible italic'}>{suffixAnchorText}</span>
+          <span className="ml-1 text-gray-500">{suffix}</span>
+        </span>
       </div>
+      {hasError && <p className="fr-error-text">{stateRelatedMessage}</p>}
     </div>
   );
 }

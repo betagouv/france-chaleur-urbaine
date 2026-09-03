@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
@@ -7,7 +7,6 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
-import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 
 export default function ChoixChauffageForm() {
   const router = useRouter();
@@ -16,20 +15,12 @@ export default function ChoixChauffageForm() {
   const handleAddressNotFound = useCallback(() => {
     chauffageQuery.setParams({ adresse: null });
   }, [chauffageQuery]);
-  const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility, selectedBatEnrBatiment } = useAddressEligibility(
+  const { geoAddress, setGeoAddress, onSelectGeoAddress, resetEligibility } = useAddressEligibility(
     params.adresse ?? null,
     null,
     handleAddressNotFound
   );
-  const isFormDisabled = !params.adresse || !geoAddress || !params.typeLogement || !params.typeRadiateur || !params.espaceExterieur;
-
-  useEffect(() => {
-    if (!selectedBatEnrBatiment) {
-      return;
-    }
-
-    chauffageQuery.setPrefillParams(getSimulationPrefillFromBatEnrBatiment(selectedBatEnrBatiment));
-  }, [chauffageQuery, selectedBatEnrBatiment]);
+  const isFormDisabled = !params.adresse || !geoAddress || !params.typeLogement || !params.typeRadiateur;
 
   return (
     <form>

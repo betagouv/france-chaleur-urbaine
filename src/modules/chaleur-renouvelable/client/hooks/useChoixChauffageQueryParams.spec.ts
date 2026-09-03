@@ -1,6 +1,7 @@
+import { createSerializer } from 'nuqs';
 import { describe, expect, it } from 'vitest';
 
-import { getNextEspaceExterieurQueryValue } from './useChoixChauffageQueryParams';
+import { choixChauffageQueryParsers, getNextEspaceExterieurQueryValue } from './useChoixChauffageQueryParams';
 
 describe('getNextEspaceExterieurQueryValue', () => {
   it('keeps the URL outdoor space when a selected building adds a compatible housing type', () => {
@@ -16,7 +17,7 @@ describe('getNextEspaceExterieurQueryValue', () => {
     ).toStrictEqual('jardinCours');
   });
 
-  it('removes the URL outdoor space when a selected building adds an incompatible housing type', () => {
+  it('keeps the garden/courtyard outdoor space when a selected building adds another housing type', () => {
     expect(
       getNextEspaceExterieurQueryValue({
         currentEspaceExterieur: 'jardinCours',
@@ -26,7 +27,7 @@ describe('getNextEspaceExterieurQueryValue', () => {
           typeLogement: 'immeuble_chauffage_collectif',
         },
       })
-    ).toStrictEqual(null);
+    ).toStrictEqual('jardinCours');
   });
 
   it('uses the explicit next outdoor space when the housing type changes', () => {
@@ -35,10 +36,31 @@ describe('getNextEspaceExterieurQueryValue', () => {
         currentEspaceExterieur: 'jardinCours',
         effectiveEspaceExterieur: null,
         nextParams: {
-          espaceExterieur: 'shared',
+          espaceExterieur: 'jardinCours',
           typeLogement: 'immeuble_chauffage_collectif',
         },
       })
-    ).toStrictEqual('shared');
+    ).toStrictEqual('jardinCours');
+  });
+
+  it('keeps the combined outdoor space when the housing type changes', () => {
+    expect(
+      getNextEspaceExterieurQueryValue({
+        currentEspaceExterieur: 'terrasseBalconEtJardinCours',
+        effectiveEspaceExterieur: null,
+        nextParams: {
+          constructionId: 'BATIMENT-1',
+          typeLogement: 'maison_individuelle',
+        },
+      })
+    ).toStrictEqual('terrasseBalconEtJardinCours');
+  });
+});
+
+describe('choixChauffageQueryParsers', () => {
+  it('keeps DPE E in URL when it is explicitly submitted', () => {
+    const serializeChoixChauffageQueryParams = createSerializer(choixChauffageQueryParsers);
+
+    expect(serializeChoixChauffageQueryParams({ dpe: 'E' })).toStrictEqual('?dpe=E');
   });
 });

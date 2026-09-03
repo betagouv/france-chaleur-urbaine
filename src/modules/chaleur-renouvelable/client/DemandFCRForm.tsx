@@ -481,7 +481,7 @@ function HeatNetworkDemandForm({
         createdAt: new Date().toISOString(),
         distance: null,
         email: value.email,
-        id: result.id,
+        id: result.id ?? '',
         isEligible: !isPublicAdvisorSelected,
         isExisting: false,
         networkName: null,
@@ -505,6 +505,7 @@ function HeatNetworkDemandForm({
   const occupantStatusDetailField = getOccupantStatusDetailField(selectedOccupantStatus);
   const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
   const shouldShowPublicAdvisorCalloutOnly = selectedRecipientId === 'public-advisor';
+  const networkManager = eligibiliteReseauChaleur?.gestionnaire?.trim() || null;
 
   return (
     <section id="help-ademe" className="mt-6 scroll-mt-4 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">
@@ -522,9 +523,17 @@ function HeatNetworkDemandForm({
         />
       )}
       {!isPublicAdvisorSelected && (
-        <div className="mb-4 flex items-start gap-3 border-l-4 border-[#F6C23E] bg-[#FFEBA3] px-4 py-3 font-bold">
+        <div className="mb-4 flex items-start gap-3 border-l-4 border-[#F6C23E] bg-[#FFEBA3] px-4 py-3">
           <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
-          <span>Votre demande sera transmise au gestionnaire du réseau de chaleur.</span>
+          <span>
+            Votre demande sera transmise au gestionnaire du réseau de chaleur
+            {networkManager && (
+              <>
+                {' : '}
+                <strong>{networkManager}</strong>
+              </>
+            )}
+          </span>
         </div>
       )}
       {isPublicAdvisorSelected && <FranceRenovAdvisorCallout variant="inline" />}
