@@ -1,5 +1,9 @@
 import type { DemandeChaleurRenouvelable, DemandeChaleurRenouvelableStatus } from '@/modules/chaleur-renouvelable/constants';
-import { typeLogementOptions, typeRadiateurOptions } from '@/modules/chaleur-renouvelable/constants';
+import {
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+  typeLogementOptions,
+  typeRadiateurOptions,
+} from '@/modules/chaleur-renouvelable/constants';
 import { Button, Layout, Link, Note, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
 
@@ -156,7 +160,7 @@ export const scenarios = defineEmailScenarios<typeof NouvelleDemandeChaleurRenou
         surfaceArea: null,
       },
       demandId: 'demand-123',
-      status: 'à traiter CCR',
+      status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
     },
   },
 });
