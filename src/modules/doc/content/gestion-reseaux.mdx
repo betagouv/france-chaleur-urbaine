@@ -15,6 +15,13 @@ Côté administration, [Gestion des réseaux](/admin/reseaux) permet de mainteni
 
 Il n'y a **pas de « réseaux classés » séparés** : le classement est un simple indicateur (oui/non) porté par chaque réseau de chaleur ou de froid.
 
+## Extensions de réseaux
+
+Un réseau en construction peut être l'**extension d'un réseau de chaleur existant**. Le lien se fait **dans l'admin uniquement** (colonne «&nbsp;Réseau étendu&nbsp;» de l'onglet, recherche par nom ou identifiant SNCU) — jamais dans Airtable. Sans lien, c'est une **création** de réseau. Effets du lien :
+
+- l'identifiant SNCU affiché sur l'extension est une **copie automatique** de celui du réseau parent (maintenue par la synchronisation) ; il alimente la carte et le **filtre par identifiant SNCU** des iframes, qui isole le réseau avec ses extensions et son PDP (voir [Carte et intégrations](/admin/doc/carte-iframes)) ;
+- le nom, le gestionnaire et le maître d'ouvrage de l'extension sont **recopiés automatiquement** depuis le réseau parent (copie stricte maintenue par la synchronisation) : ils ne sont **pas modifiables** sur l'extension tant que le lien existe — une correction se fait sur le réseau de chaleur parent. Si le lien est retiré, l'extension conserve les dernières valeurs héritées, qui redeviennent modifiables.
+
 ## Ce qui est modifiable, ce qui vient d'Airtable
 
 | Donnée | Modifiable dans l'admin ? |
@@ -22,15 +29,23 @@ Il n'y a **pas de « réseaux classés » séparés** : le classement est un sim
 | Tracé (géométrie) | **Oui**, par glisser-déposer d'un fichier GeoJSON sur la carte |
 | Notes internes | **Oui** |
 | Relances réseau | **Oui** (voir plus bas) |
-| Liens réseau ↔ PDP (onglet PDP) | **Oui** |
-| « Ouvert aux raccordements » | **Non** — géré dans Airtable |
+| Liens réseau ↔ PDP (onglet PDP) | **Oui**, par recherche de réseau |
+| Lien extension → réseau de chaleur (onglet réseaux en construction) | **Oui**, par recherche de réseau — n'existe pas dans Airtable |
+| Nom, gestionnaire et maître d'ouvrage de **tous les réseaux** (chaleur, froid, en construction) | **Oui** — gérés dans l'admin (exception : sur une **extension liée**, nom, gestionnaire et MO sont recopiés du réseau parent et non modifiables) ; Airtable n'est plus qu'un miroir en lecture, une modification faite là-bas sera écrasée |
+| Identifiant SNCU des **réseaux de chaleur et de froid** | **Oui** — celui des extensions et des PDP n'est pas saisi : il est recopié automatiquement depuis le réseau de chaleur lié |
+| Gestionnaire et maître d'ouvrage des **PDP** | **Oui** — pré-remplis automatiquement depuis les réseaux liés quand ils sont vides |
+| « Ouvert aux raccordements » et « mise en service » des **réseaux en construction** | **Oui** — gérés dans l'admin ; Airtable n'est qu'un miroir en lecture. Attention, « ouvert aux raccordements » influe directement sur l'[éligibilité](/admin/doc/eligibilite) |
+| « Ouvert aux raccordements » des réseaux de chaleur et de froid | **Non** — géré dans Airtable |
+| Date de création des réseaux en construction | **Non modifiable** — horodatée automatiquement à la création (reprise historique depuis Airtable) |
 | « Classé » | **Non** — géré dans Airtable |
 | « A un tracé », « A un PDP » | **Non** — calculés automatiquement |
-| Métadonnées (gestionnaire, tarifs, mix énergétique, EnR&R, CO2…) | **Non** — gérées dans Airtable |
+| Données d'enquête des réseaux de chaleur et de froid (tarifs, mix énergétique, EnR&R, CO2, livraisons…) | **Non** — gérées dans Airtable (bibliothèque FEDENE) |
+
+Les champs modifiables s'éditent via le bouton **crayon** de chaque ligne, qui ouvre une fenêtre de modification (nom, gestionnaire, maître d'ouvrage, liens entre entités — et pour les réseaux en construction : mise en service prévue, ouvert aux raccordements). À la **création** d'un réseau (dépôt d'un tracé), cette fenêtre s'ouvre automatiquement pour saisir ces informations dans la foulée. L'identifiant d'un réseau en construction ou d'un PDP est **attribué automatiquement** ; pour un réseau de chaleur ou de froid, il faut saisir l'ID SNCU ou l'id FCU correspondant à la ligne Airtable existante.
 
 Deux règles à retenir, car elles ont un effet direct sur ce que voit le public :
 
-- Un réseau **non « ouvert aux raccordements »** disparaît des résultats d'[éligibilité](/admin/doc/eligibilite). Or ce champ se pilote **dans Airtable**, pas dans l'admin.
+- Un réseau **non « ouvert aux raccordements »** disparaît des résultats d'[éligibilité](/admin/doc/eligibilite). Ce champ se pilote **dans Airtable** pour les réseaux de chaleur et de froid, et **dans l'admin** pour les réseaux en construction.
 - Le fait qu'un réseau soit **classé** (donc soumis à obligation dans son PDP) vient aussi d'Airtable.
 
 ## La modification d'un tracé se fait en deux temps
@@ -63,7 +78,7 @@ Au clic sur « Sync », en chaîne :
 
 ## Périmètres de développement prioritaire (PDP)
 
-Un PDP est la zone d'un réseau **classé** où le raccordement peut être **obligatoire** (amende jusqu'à 300 000 € prévue par le code de l'énergie). Dans l'admin, on édite le tracé du PDP et les identifiants des réseaux qu'il couvre ([événement « Mise à jour périmètre de développement »](/admin/events?types=pdp_updated)) ; lier un PDP à un réseau marque ce réseau « A un PDP ». Les PDP ne sont **pas** synchronisés avec Airtable. Voir [Test d'éligibilité](/admin/doc/eligibilite) pour ce que le PDP change côté demandeur.
+Un PDP est la zone d'un réseau **classé** où le raccordement peut être **obligatoire** (amende jusqu'à 300 000 € prévue par le code de l'énergie). Dans l'admin, on édite le tracé du PDP, les réseaux qu'il couvre (par recherche, [événement « Mise à jour périmètre de développement »](/admin/events?types=pdp_updated)) et son **gestionnaire / maître d'ouvrage** ; lier un PDP à un réseau marque ce réseau « A un PDP ». L'**identifiant SNCU** affiché sur un PDP n'est pas saisi : il est recopié automatiquement depuis le réseau de chaleur lié (quand le lien est unique). Quand le gestionnaire ou le MO est vide, il est **pré-rempli automatiquement** depuis les réseaux liés — sauf si ceux-ci portent des valeurs différentes : le [diagnostic des données](/admin/diagnostic) signale alors qu'un choix manuel est attendu. Les PDP ne sont **pas** synchronisés avec Airtable. Voir [Test d'éligibilité](/admin/doc/eligibilite) pour ce que le PDP change côté demandeur.
 
 ## Relances réseau
 

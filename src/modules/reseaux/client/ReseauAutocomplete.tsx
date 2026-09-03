@@ -11,6 +11,8 @@ type ReseauAutocompleteProps = {
   onSelect: (network: NetworkSearchResult) => void;
   excludeNetworkIdFcu?: number | null;
   excludeNetworkType?: NetworkType | null;
+  /** Restricts the results to these network types (default: all). */
+  networkTypes?: NetworkType[];
   placeholder?: string;
   id?: string;
   className?: string;
@@ -25,6 +27,7 @@ export default function ReseauAutocomplete({
   onSelect,
   excludeNetworkIdFcu,
   excludeNetworkType,
+  networkTypes,
   placeholder = 'nom ou identifiant SNCU',
   id,
   className,
@@ -33,9 +36,10 @@ export default function ReseauAutocomplete({
 
   const fetchFn = useCallback(
     async (query: string) => {
-      return utils.reseaux.searchNetworks.fetch({ search: query });
+      const networks = await utils.reseaux.searchNetworks.fetch({ search: query });
+      return networkTypes ? networks.filter((network) => networkTypes.includes(network.network_type)) : networks;
     },
-    [utils]
+    [utils, networkTypes]
   );
 
   const getOptionValue = useCallback((network: NetworkSearchResult) => {

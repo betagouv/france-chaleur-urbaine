@@ -20,6 +20,7 @@ import { useMapConfig } from '../config/useMapConfig';
 import { FcuLogo } from '../controls/FcuLogo';
 import type { MapCanvasController } from '../core/controller';
 import { type LayerKey, layerKeys } from '../iframeCarteParams';
+import { perimetresDeDeveloppementPrioritaireColor } from '../layers/specs/perimetresDeDeveloppementPrioritaire';
 import { reseauDeChaleurNonClasseColor } from '../layers/specs/reseauxDeChaleur';
 import { reseauxDeFroidColor } from '../layers/specs/reseauxDeFroid';
 import { reseauxEnConstructionColor } from '../layers/specs/reseauxEnConstruction';
@@ -46,6 +47,7 @@ const layerLabels: Record<LayerKey, string> = {
 
 /** Short label + legend color per réseau layer, used by the filter-scope pastilles. */
 const layerScopeMeta = {
+  'perimetres-de-developpement-prioritaire': { color: perimetresDeDeveloppementPrioritaireColor, label: 'PDP' },
   'reseaux-de-chaleur': { color: reseauDeChaleurNonClasseColor, label: 'chaleur' },
   'reseaux-de-froid': { color: reseauxDeFroidColor, label: 'froid' },
   'reseaux-en-construction': { color: reseauxEnConstructionColor, label: 'en construction' },
@@ -305,7 +307,7 @@ const IframeGeneratorPage = () => {
             <MultiAutocompleteField
               label="Filtrer par gestionnaire"
               hintText={scopeHint(
-                ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction'],
+                ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'],
                 'Saisie ou suggestions — Entrée pour ajouter.'
               )}
               placeholder="Ex : dalkia"
@@ -317,7 +319,10 @@ const IframeGeneratorPage = () => {
 
             <MultiAutocompleteField
               label="Filtrer par maître d'ouvrage"
-              hintText={scopeHint(['reseaux-de-chaleur', 'reseaux-de-froid'], 'Saisie ou suggestions — Entrée pour ajouter.')}
+              hintText={scopeHint(
+                ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'],
+                'Saisie ou suggestions — Entrée pour ajouter.'
+              )}
               placeholder="Ex : Métropole de Lyon"
               values={config.maitreOuvrage}
               onChange={(maitreOuvrage) => update({ maitreOuvrage })}
@@ -327,8 +332,8 @@ const IframeGeneratorPage = () => {
             <MultiAutocompleteField
               label="Filtrer par identifiants SNCU"
               hintText={scopeHint(
-                ['reseaux-de-chaleur', 'reseaux-de-froid'],
-                'Isole ces réseaux. Limité aux identifiants SNCU pour le moment. Entrée pour ajouter.'
+                ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'],
+                'Isole ces réseaux, ainsi que leurs extensions et PDP portant le même identifiant. Entrée pour ajouter.'
               )}
               placeholder="Ex : 7412C"
               values={config.reseaux}

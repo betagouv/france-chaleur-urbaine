@@ -16,6 +16,9 @@ import {
   zDownloadNetworkGeometryInput,
   zUpdateGeomUpdateInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
+  zUpdateReseauDeChaleurInput,
+  zUpdateReseauDeFroidInput,
+  zUpdateReseauEnConstructionInput,
 } from '@/modules/reseaux/constants';
 import { adminRoute, demandAccessRoute, route, router } from '@/modules/trpc/server';
 import { kdb, sql } from '@/server/db/kysely';
@@ -49,17 +52,71 @@ const reseauDeChaleurRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listReseauxDeChaleur();
   }),
+  update: adminRoute.input(zUpdateReseauDeChaleurInput).mutation(async ({ input, ctx }) => {
+    const { id, ...data } = input;
+    const reseau = await reseauxService.getNetworkLabel(id, 'reseaux_de_chaleur');
+    await reseauxService.updateReseauDeChaleur(id, data);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(id),
+      context_type: 'reseau_de_chaleur',
+      data: {
+        changes: data,
+        id,
+        identifiant_reseau: reseau.identifiant_reseau,
+        nom_reseau: reseau.nom_reseau,
+        type: 'reseaux_de_chaleur',
+      },
+      type: 'network_updated',
+    });
+  }),
 });
 
 const reseauEnConstructionRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listReseauxEnConstruction();
   }),
+  update: adminRoute.input(zUpdateReseauEnConstructionInput).mutation(async ({ input, ctx }) => {
+    const { id, ...data } = input;
+    const reseau = await reseauxService.getNetworkLabel(id, 'zones_et_reseaux_en_construction');
+    await reseauxService.updateReseauEnConstruction(id, data);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(id),
+      context_type: 'reseau_en_construction',
+      data: {
+        changes: data,
+        id,
+        identifiant_reseau: reseau.identifiant_reseau,
+        nom_reseau: reseau.nom_reseau,
+        type: 'zones_et_reseaux_en_construction',
+      },
+      type: 'network_updated',
+    });
+  }),
 });
 
 const reseauDeFroidRouter = router({
   list: adminRoute.query(async () => {
     return await reseauxService.listReseauxDeFroid();
+  }),
+  update: adminRoute.input(zUpdateReseauDeFroidInput).mutation(async ({ input, ctx }) => {
+    const { id, ...data } = input;
+    const reseau = await reseauxService.getNetworkLabel(id, 'reseaux_de_froid');
+    await reseauxService.updateReseauDeFroid(id, data);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(id),
+      context_type: 'reseau_de_froid',
+      data: {
+        changes: data,
+        id,
+        identifiant_reseau: reseau.identifiant_reseau,
+        nom_reseau: reseau.nom_reseau,
+        type: 'reseaux_de_froid',
+      },
+      type: 'network_updated',
+    });
   }),
 });
 
@@ -158,9 +215,9 @@ export const reseauxRouter = router({
     const result = await reseauxService.createNetwork(input.id, input.geometry, input.type);
     await createUserEvent({
       author_id: ctx.user.id,
-      context_id: input.id,
+      context_id: String(result.id_fcu),
       context_type: tableToNetworkEntity[input.type],
-      data: { id: input.id, identifiant_reseau: null, nom_reseau: null, type: input.type },
+      data: { id: String(result.id_fcu), identifiant_reseau: null, nom_reseau: null, type: input.type },
       type: 'network_created',
     });
     return result;

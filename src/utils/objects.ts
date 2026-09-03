@@ -104,6 +104,20 @@ export function omitEmptyStringValues<T extends object>(obj: T): OmitEmptyString
   return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== '')) as OmitEmptyStringValues<T>;
 }
 
+/** Les clés pouvant valoir `undefined` deviennent optionnelles (sans `undefined`), les autres sont conservées telles quelles. */
+export type OmitUndefinedValues<T> = { [K in keyof T as undefined extends T[K] ? K : never]?: Exclude<T[K], undefined> } & {
+  [K in keyof T as undefined extends T[K] ? never : K]: T[K];
+};
+
+/**
+ * omitUndefinedValues(obj) - Crée un nouvel objet en excluant les propriétés dont la valeur est `undefined`.
+ * @param obj - L'objet source
+ * @returns Un nouvel objet sans les propriétés à valeur `undefined`
+ */
+export function omitUndefinedValues<T extends object>(obj: T): OmitUndefinedValues<T> {
+  return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== undefined)) as OmitUndefinedValues<T>;
+}
+
 export const sortKeys = (obj: Record<string, any>) => {
   return Object.keys(obj)
     .sort()

@@ -1001,8 +1001,10 @@ export interface ZoneDeDeveloppementPrioritaire {
   departement: string | null;
   geom: string | null;
   geom_update: string | null;
+  Gestionnaire: string | null;
   id_fcu: number;
   'Identifiant reseau': string | null;
+  MO: string | null;
   notes: string | null;
   organization_id: string | null;
   region: string | null;
@@ -1020,12 +1022,14 @@ export interface ZoneDeDeveloppementPrioritaireTiles {
 export interface ZonesEtReseauxEnConstruction {
   communes: string[] | null;
   communes_insee: string[] | null;
+  created_at: Generated<Timestamp>;
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
   geom: string | null;
   geom_update: string | null;
   gestionnaire: string | null;
   id_fcu: number;
+  'Identifiant reseau': string | null;
   is_zone: Generated<boolean>;
   mise_en_service: string | null;
   MO: string | null;
@@ -1034,6 +1038,7 @@ export interface ZonesEtReseauxEnConstruction {
   organization_id: string | null;
   ouvert_aux_raccordements: boolean;
   region: string | null;
+  reseau_de_chaleur_id: number | null;
 }
 
 export interface ZonesEtReseauxEnConstructionTiles {
