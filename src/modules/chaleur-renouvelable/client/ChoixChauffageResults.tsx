@@ -91,6 +91,7 @@ export default function ChoixChauffageResults() {
         <div className="mt-6 border border-gray-200 bg-white px-5 py-6 md:px-10">Chargement des résultats...</div>
       ) : modesEnriched.length > 0 ? (
         <>
+          <EnergySobrietyCallout />
           {heatNetworkSolution && (
             <>
               <HeatNetworkRecommendedSolutionCard
@@ -111,7 +112,6 @@ export default function ChoixChauffageResults() {
               <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />
             </>
           )}
-          {!heatNetworkSolution && <EnergySobrietyCallout />}
           <ResultsSection
             items={displayedSolutions}
             coutParAnGaz={coutParAnGaz}
@@ -191,7 +191,7 @@ export default function ChoixChauffageResults() {
 
 function EnergySobrietyCallout() {
   return (
-    <div className="mt-6 border border-dotted border-[#00a95f] bg-[#e3fdeb] px-4 py-4 text-[#161616] md:px-5">
+    <div className="my-6 border border-dotted border-[#00a95f] bg-[#e3fdeb] px-4 py-4 text-[#161616] md:px-5">
       <p className="mb-4 flex items-start gap-3 font-bold">
         <span className="fr-icon-sparkling-2-line mt-0.5 shrink-0" aria-hidden="true" />
         <span>Le saviez-vous ? Avant de changer votre chauffage, réduisez vos besoins en chaleur</span>

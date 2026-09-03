@@ -68,7 +68,7 @@ export function HeatNetworkRecommendedSolutionCard({
   }, [geoAddress]);
 
   return (
-    <section className="fr-mt-6w border border-gray-200 border-l-4 border-l-green-600 bg-white px-6 py-6 md:px-10">
+    <section className="border border-gray-200 border-l-4 border-l-green-600 bg-white px-6 py-6 md:px-10">
       <div className="flex items-start justify-between gap-6">
         <div>
           <p className="mb-2 text-sm font-semibold uppercase tracking-wide">Solution recommandée</p>
