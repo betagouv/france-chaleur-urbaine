@@ -738,7 +738,7 @@ const Graph: React.FC<GraphProps> = ({
                       <span className="flex text-xs italic mt-1">
                         <span className="flex-1" />
                         <span className="flex-1 pl-8 tracking-tighter leading-tight text-warning">
-                          Prix moyen français, faute de données tarifaires pour ce réseau.
+                          Prix moyen français, faute de données tarifaires fiables pour ce réseau.
                         </span>
                       </span>
                     )}

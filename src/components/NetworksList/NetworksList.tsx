@@ -17,7 +17,12 @@ import useReseauxDeChaleurFilters, { type FilterWithLimits } from '@/hooks/useRe
 import { dataSourcesVersions } from '@/modules/app/constants';
 import { filtresEnergies, percentageMaxInterval } from '@/modules/map/client/config/map-configuration';
 import { reseauxDeChaleurFilters } from '@/modules/map/client/layers/filters';
-import { gestionnairesFilters } from '@/modules/reseaux/constants';
+import {
+  gestionnairesFilters,
+  isPrixReseauCommunique,
+  isPrixReseauHorsBornes,
+  prixReseauHorsBornesNotice,
+} from '@/modules/reseaux/constants';
 import trpc from '@/modules/trpc/client';
 import type { NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
@@ -103,7 +108,8 @@ const exportColumns = [
     name: 'Contenu CO2 (gCO2/kWh)',
   },
   {
-    accessorKey: 'PM',
+    // a price set to 0 means "not communicated": exported empty, like an absent price
+    accessorFn: (network: NetworkToCompare) => (isPrixReseauCommunique(network.PM) ? network.PM : ''),
     name: 'Prix moyen (€TTC/MWh)',
   },
   {
@@ -241,6 +247,14 @@ const PercentageCell: ColumnDefTemplate<CellContext<NetworkToCompare, any>> = ({
   return (getValue() / 100).toLocaleString(undefined, { maximumFractionDigits: 1, style: 'percent' });
 };
 
+// Not communicated price → "NC"; out-of-bounds price → asterisk pointing to the notice below the table
+const PrixMoyenCell: ColumnDefTemplate<CellContext<NetworkToCompare, any>> = ({ getValue }) => {
+  const prix = getValue();
+  return isPrixReseauCommunique(prix)
+    ? `${prix.toLocaleString('fr-FR', { currency: 'EUR', maximumFractionDigits: 0, style: 'currency' })}${isPrixReseauHorsBornes(prix) ? '*' : ''}`
+    : 'NC';
+};
+
 const NetworksList = () => {
   const { data: allNetworks = [], isLoading: isNetworksLoading } = trpc.reseaux.listNetworks.useQuery();
   const [isDrawerOpened, toggleDrawer] = useState<boolean>(false);
@@ -326,7 +340,7 @@ const NetworksList = () => {
       },
       {
         accessorKey: 'communes',
-        cell: ({ getValue }) => <Text>{getValue() ? getValue().join(', ') : undefined}</Text>,
+        cell: ({ getValue }) => <Text>{getValue() ? getValue().join(', ') : 'NC'}</Text>,
         header: 'Communes',
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.communes.join(', '), rowB.original.communes.join(', ')),
         width: '250px',
@@ -344,7 +358,7 @@ const NetworksList = () => {
       {
         accessorKey: 'Taux EnR&R',
         align: 'right',
-        cell: ({ getValue }) => <Text>{isDefined(getValue()) ? `${getValue()}%` : undefined}</Text>,
+        cell: ({ getValue }) => <Text>{isDefined(getValue()) ? `${getValue()}%` : 'NC'}</Text>,
         header: 'Taux EnR&R',
         width: '110px',
       },
@@ -377,10 +391,7 @@ const NetworksList = () => {
       {
         accessorKey: 'PM',
         align: 'right',
-        cellProps: {
-          maximumFractionDigits: 0,
-        },
-        cellType: 'Price',
+        cell: PrixMoyenCell,
         header: () => (
           <Box>
             Prix moyen
@@ -566,9 +577,15 @@ const NetworksList = () => {
             loading={isLoading}
             padding="sm"
             rowHeight={124}
+            emptyCellValue="NC"
             initialSortingState={[{ desc: false, id: 'Identifiant reseau' }]}
           />
         </Box>
+        {dataToDisplay === 'general' && filteredNetworks.some((network) => isPrixReseauHorsBornes(network.PM)) && (
+          <Text size="xs" fontStyle="italic" mt="1w">
+            {prixReseauHorsBornesNotice}
+          </Text>
+        )}
         <Text size="xs" className="fr-hint-text" mt="2w">
           Sources : L’ensemble des données sont extraites des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le
           concours de l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la transition

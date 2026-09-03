@@ -182,6 +182,7 @@ type TableRowProps<T> = {
   rowIdKey: keyof T;
   isSelected?: boolean;
   padding: 'sm' | 'md' | 'lg';
+  emptyCellValue?: string;
   onRowClick?: (rowId: any) => void;
   onRowDoubleClick?: (rowId: any) => void;
   measureElement?: (element: Element | null) => void;
@@ -204,6 +205,7 @@ const TableRowInner = <T extends RowData>({
   rowIdKey,
   isSelected,
   padding,
+  emptyCellValue,
   onRowClick,
   onRowDoubleClick,
   measureElement,
@@ -281,6 +283,7 @@ const TableRowInner = <T extends RowData>({
               data={cell.row.original}
               cellProps={columnDef.cellProps}
               forceCellRender={cell.column.columnDef.meta?.hasCustomCellRenderer}
+              emptyValue={emptyCellValue}
             >
               {flexRender(columnDef.cell, cell.getContext())}
             </TableCell>
@@ -456,6 +459,10 @@ export type TableSimpleProps<T> = {
   wrapperClassName?: string;
   fluid?: boolean;
   padding?: 'sm' | 'md' | 'lg';
+  /**
+   * Texte affiché dans toute cellule sans valeur (ex : « NC »). Sans effet sur les cellules à rendu personnalisé.
+   */
+  emptyCellValue?: string;
   rowSelection?: RowSelectionState;
   onSelectionChange?: (selectedRows: T[]) => void;
   onRowSelectionChange?: (updater: RowSelectionState | ((old: RowSelectionState) => RowSelectionState)) => void;
@@ -512,6 +519,7 @@ const TableSimple = <T extends RowData>({
   wrapperClassName,
   fluid,
   padding = 'md',
+  emptyCellValue,
   rowHeight = 64,
   controlsLayout = 'inline',
   nbLoadingItems = 5,
@@ -1071,6 +1079,7 @@ const TableSimple = <T extends RowData>({
                       rowIdKey={rowIdKey}
                       isSelected={!!rowSelection?.[(row.original as any)[rowIdKey]]}
                       padding={padding}
+                      emptyCellValue={emptyCellValue}
                       onRowClick={onRowClick}
                       onRowDoubleClick={onRowDoubleClick}
                       measureElement={measureRow}

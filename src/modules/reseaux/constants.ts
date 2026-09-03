@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { businessRules } from '@/modules/app/business-rules';
 import type { DatabaseTileSourceId } from '@/modules/tiles/server/tiles.config';
 import type { DBTableName } from '@/server/db/kysely';
 import { Airtable } from '@/types/enum/Airtable';
@@ -153,6 +154,21 @@ export const zDownloadNetworkGeometryInput = z.object({
 });
 
 export type DownloadNetworkGeometryInput = z.infer<typeof zDownloadNetworkGeometryInput>;
+
+/** Shown next to any price flagged with an asterisk (out of the plausibility bounds). */
+export const prixReseauHorsBornesNotice = '*Pour connaître le prix, veuillez vous adresser directement au gestionnaire du réseau';
+
+/** A price below the threshold (0 €, cents) means "not communicated" in FEDENE data. */
+export const isPrixReseauCommunique = (price: number | null | undefined): price is number =>
+  typeof price === 'number' && price >= businessRules.heatNetworkPriceCommunicatedMin.value;
+
+/** A communicated price outside the plausibility bounds is displayed with an asterisk and not used in computations. */
+export const isPrixReseauHorsBornes = (price: number | null | undefined): boolean =>
+  isPrixReseauCommunique(price) && (price < businessRules.heatNetworkPriceMin.value || price > businessRules.heatNetworkPriceMax.value);
+
+/** Price usable in computations (comparateur): communicated and within the plausibility bounds, else undefined. */
+export const getPrixReseauFiable = (price: number | null | undefined): number | undefined =>
+  isPrixReseauCommunique(price) && !isPrixReseauHorsBornes(price) ? price : undefined;
 
 export const gestionnairesFilters = [
   {

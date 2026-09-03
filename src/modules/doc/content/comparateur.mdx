@@ -36,7 +36,7 @@ Ces valeurs viennent du modèle Publicodes (données 2024), **pas** du registre 
 
 - **Aides** modélisées : Coup de pouce chauffage, MaPrimeRénov', CEE — selon le statut (particulier), l'équipement actuel (chaudière gaz/fioul) et les ressources du ménage.
 - Le **bouclier tarifaire n'est pas** pris en compte pour les réseaux de chaleur.
-- En l'absence de données tarifaires pour un réseau, le calcul utilise **le prix moyen des réseaux français**.
+- En l'absence de données tarifaires pour un réseau, ou si son prix moyen sort des bornes de cohérence (<Rule id="heatNetworkPriceMin" /> à <Rule id="heatNetworkPriceMax" />), le calcul utilise **le prix moyen des réseaux français** (une mention le signale à l'utilisateur).
 - Les notions de **réseau classé** et de **PDP** ne sont **pas** dans le moteur de calcul : elles proviennent du statut du réseau de l'adresse et sont affichées séparément (voir ci-dessous).
 - Une **note méthodologique** est téléchargeable depuis l'outil. Avertissement affiché : l'outil ne peut pas servir à justifier une dérogation à l'obligation de raccordement (critère du « coût manifestement disproportionné »).
 

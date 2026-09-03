@@ -21,6 +21,8 @@ import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { useRecordConversionEvent } from '@/modules/conversion-tracking/client/useRecordConversionEvent';
 import { AddressField } from '@/modules/form/AddressField';
+import { getPrixReseauFiable } from '@/modules/reseaux/constants';
+import type { SimulatorSituation } from '@/modules/simulator/constants';
 import trpc from '@/modules/trpc/client';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { getNetworkEligibilityDistances } from '@/services/eligibility';
@@ -148,7 +150,8 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
       }
 
       engine.setSituation(
-        ObjectEntries(addresseToPublicodesRules).reduce((acc, [key, infoGetter]) => {
+        // null (prix non fiable, réseau absent…) réinitialise la règle à sa valeur par défaut
+        ObjectEntries(addresseToPublicodesRules).reduce<SimulatorSituation>((acc, [key, infoGetter]) => {
           acc[key] = infoGetter(infos) ?? null;
           return acc;
         }, engine.getSituation())
@@ -268,10 +271,10 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 <strong>{nearestReseauDeChaleur.nom_reseau}</strong>
               </Link>{' '}
               est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
-              {!nearestReseauDeChaleur?.PM && (
+              {getPrixReseauFiable(nearestReseauDeChaleur.PM) === undefined && (
                 <p className="font-bold fr-my-1v">
-                  À noter qu'en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix de la chaleur moyen
-                  des réseaux français.
+                  À noter qu'en l'absence de données tarifaires fiables pour ce réseau, les simulations se basent sur le prix de la chaleur
+                  moyen des réseaux français.
                 </p>
               )}
               {addressDetail?.network.inPDP ? noticePDP : addressDetail?.network.isClasse ? noticeClasse : undefined}
@@ -394,7 +397,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           engine={engine}
           advancedMode={advancedMode}
           reseauDeChaleur={{
-            hasPriceData: !!nearestReseauDeChaleur?.PM,
+            hasPriceData: getPrixReseauFiable(nearestReseauDeChaleur?.PM) !== undefined,
             hide: !advancedMode && !nearestReseauDeChaleur,
             label: nearestReseauDeChaleur?.nom_reseau,
           }}
