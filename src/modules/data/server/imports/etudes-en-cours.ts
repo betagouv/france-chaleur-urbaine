@@ -13,7 +13,7 @@ const gristEtudesEnCoursRecordsURL =
 type GristEtudeEnCoursRecord = {
   id: number;
   fields: {
-    Etude_ID: number;
+    Etude_ID: number | string;
     Codes_INSEE: string | null;
     Commune_s_: string;
     Maitre_d_ouvrage: string;
@@ -38,7 +38,7 @@ const zEtudeEnCours = z
       )
       .pipe(z.array(z.string().regex(inseeCodeRegex, 'invalid INSEE code')).min(1)),
     Date_de_debut_lancement: z.number().transform((timestamp) => new Date(timestamp * 1000)),
-    Etude_ID: z.number(),
+    Etude_ID: z.coerce.number().int().positive(),
     Maitre_d_ouvrage: z.string(),
   })
   .transform((fields) => ({
