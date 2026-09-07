@@ -1,3 +1,7 @@
+/**
+ * @deprecated FROZEN — no new feature. Replaced by `src/modules/data-table` (`useDataTable` + `DataTable`);
+ * see `src/modules/data-table/MIGRATION.md` for the migration plan and status.
+ */
 import { fr } from '@codegouvfr/react-dsfr';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { usePrevious } from '@react-hookz/web';

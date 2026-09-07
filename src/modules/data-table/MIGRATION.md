@@ -87,7 +87,7 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 | # | Step | Status | Notes |
 |---|------|--------|-------|
 | 0 | Analysis, plan, decisions validated | ✅ | see this document |
-| 1 | Core module: types, `useDataTable`, built-in filters, toolbar, `DataTable` rendering (plain + virtualized, fixed row heights), cells helpers, export, URL sync, specs, `AGENTS.md`, `.ai/context` entry. Freeze notice on top of `TableSimple.tsx` (no new feature). | ⬜ | |
+| 1 | Core module: types, `useDataTable`, built-in filters, toolbar, `DataTable` rendering (plain + virtualized, fixed row heights), cells helpers, export, URL sync, specs, `AGENTS.md`, root index entry. Freeze notice on top of `TableSimple.tsx` (no new feature). | ✅ | 52 unit tests; sort first click is always ascending; facets on unfiltered data |
 | 2 | Pilot 1: `pages/admin/users.tsx` (filters dialog, export, URL, flex widths, Boolean/Date cells). API validation. | ⬜ | |
 | 3 | Pilot 2: `pages/admin/demandes.tsx` (30 columns, presets, map link, thousands of rows). Profiler measurements before/after on prod-sized data: keystroke in search, scroll frame, row selection. | ⬜ | success criterion of the perf work |
 | 4 | `pages/pro/demandes.tsx`, `pages/pro/mes-demandes.tsx` | ⬜ | share presets/filters with admin demands where possible |
