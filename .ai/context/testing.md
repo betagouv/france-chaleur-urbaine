@@ -17,11 +17,13 @@
 - Deterministic UUIDs via `uuid(n)` from `@/tests/helpers` — never hardcode UUID strings.
 
 ```ts
-const cases: TestCase<string, number>[] = [
-  ['empty → 0', '', 0],
-  ['one word → 1', 'hello', 1],
+const testCases: TestCase<string, number>[] = [
+  { label: 'empty → 0', input: '', expectedOutput: 0 },
+  { label: 'one word → 1', input: 'hello', expectedOutput: 1 },
 ];
-it.each(cases)('%s', (_, input, expected) => expect(countWords(input)).toStrictEqual(expected));
+it.each(testCases)('$label', ({ input, expectedOutput }) => {
+  expect(countWords(input)).toStrictEqual(expectedOutput);
+});
 ```
 
 ## DB & PostGIS

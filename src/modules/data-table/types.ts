@@ -72,7 +72,8 @@ export type ResolvedColumn<Row> = {
   header: ReactNode;
   headerLabel: string;
   accessor: (row: Row) => unknown;
-  cell?: CellRenderer<Row, unknown>;
+  /** Method signature (bivariant): the typed `cell` of the definition fits here, the accessor guarantees its value type. */
+  cell?(context: CellContext<Row, unknown>): ReactNode;
   align: ColumnAlign;
   className?: string;
   width?: ColumnWidth;

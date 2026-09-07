@@ -23,12 +23,14 @@ describe('defaultSearchText', () => {
 
 describe('matchesSearch', () => {
   const index = buildSearchIndex([row], (item) => defaultSearchText(item, columns))[0];
-  const cases: TestCase<string, boolean>[] = [
-    ['empty query matches', '', true],
-    ['accent-insensitive', 'elodie', true],
-    ['every token must match', 'dupont 42', true],
-    ['one missing token rejects', 'dupont 43', false],
-    ['tags are searchable', 'FROID', true],
+  const testCases: TestCase<string, boolean>[] = [
+    { expectedOutput: true, input: '', label: 'empty query matches' },
+    { expectedOutput: true, input: 'elodie', label: 'accent-insensitive' },
+    { expectedOutput: true, input: 'dupont 42', label: 'every token must match' },
+    { expectedOutput: false, input: 'dupont 43', label: 'one missing token rejects' },
+    { expectedOutput: true, input: 'FROID', label: 'tags are searchable' },
   ];
-  it.each(cases)('%s', (_, query, expected) => expect(matchesSearch(index, query)).toStrictEqual(expected));
+  it.each(testCases)('$label', ({ input, expectedOutput }) => {
+    expect(matchesSearch(index, input)).toStrictEqual(expectedOutput);
+  });
 });

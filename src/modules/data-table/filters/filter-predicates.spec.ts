@@ -43,31 +43,37 @@ const custom: FilterDef<Row> = {
 };
 
 describe('matchesFilter', () => {
-  const cases: TestCase<[FilterDef<Row>, Row, unknown], boolean>[] = [
-    ['undefined value → inactive', [facets, rows[1], undefined], true],
-    ['facets: selected key matches', [facets, rows[0], ['open']], true],
-    ['facets: unselected key rejects', [facets, rows[0], ['closed']], false],
-    ['facets: empty selection matches everything', [facets, rows[0], []], true],
-    ['facets: null value matches the empty key', [facets, rows[1], [EMPTY_FACET_KEY]], true],
-    ['facets: array value matches when one tag is selected', [tags, rows[0], ['b']], true],
-    ['facets: empty array value matches the empty key', [tags, rows[1], [EMPTY_FACET_KEY]], true],
-    ['range: inside bounds', [range, rows[0], [0, 100]], true],
-    ['range: outside bounds', [range, rows[1], [0, 100]], false],
-    ['range: null value never matches', [range, rows[2], [0, 1000]], false],
-    ['dateRange: datetime inside bounds (date part compared)', [dateRange, rows[0], { from: '2024-01-15', to: '2024-01-15' }], true],
-    ['dateRange: before from', [dateRange, rows[0], { from: '2024-02-01' }], false],
-    ['dateRange: only to bound', [dateRange, rows[1], { to: '2024-03-01' }], true],
-    ['dateRange: null excluded by default', [dateRange, rows[2], { from: '2024-01-01' }], false],
-    ['dateRange: null included on demand', [dateRange, rows[2], { includeEmpty: true }], true],
-    ['text: accent-insensitive substring', [text, rows[0], 'elo'], true],
-    ['text: no match', [text, rows[0], 'marc'], false],
-    ['text: empty query matches', [text, rows[0], ''], true],
-    ['emptyOrFilled: filled', [emptyOrFilled, rows[0], 'filled'], true],
-    ['emptyOrFilled: empty', [emptyOrFilled, rows[1], 'empty'], true],
-    ['emptyOrFilled: filled rejects null', [emptyOrFilled, rows[1], 'filled'], false],
-    ['custom: predicate', [custom, rows[1], false], true],
+  const testCases: TestCase<[FilterDef<Row>, Row, unknown], boolean>[] = [
+    { expectedOutput: true, input: [facets, rows[1], undefined], label: 'undefined value → inactive' },
+    { expectedOutput: true, input: [facets, rows[0], ['open']], label: 'facets: selected key matches' },
+    { expectedOutput: false, input: [facets, rows[0], ['closed']], label: 'facets: unselected key rejects' },
+    { expectedOutput: true, input: [facets, rows[0], []], label: 'facets: empty selection matches everything' },
+    { expectedOutput: true, input: [facets, rows[1], [EMPTY_FACET_KEY]], label: 'facets: null value matches the empty key' },
+    { expectedOutput: true, input: [tags, rows[0], ['b']], label: 'facets: array value matches when one tag is selected' },
+    { expectedOutput: true, input: [tags, rows[1], [EMPTY_FACET_KEY]], label: 'facets: empty array value matches the empty key' },
+    { expectedOutput: true, input: [range, rows[0], [0, 100]], label: 'range: inside bounds' },
+    { expectedOutput: false, input: [range, rows[1], [0, 100]], label: 'range: outside bounds' },
+    { expectedOutput: false, input: [range, rows[2], [0, 1000]], label: 'range: null value never matches' },
+    {
+      expectedOutput: true,
+      input: [dateRange, rows[0], { from: '2024-01-15', to: '2024-01-15' }],
+      label: 'dateRange: datetime inside bounds (date part compared)',
+    },
+    { expectedOutput: false, input: [dateRange, rows[0], { from: '2024-02-01' }], label: 'dateRange: before from' },
+    { expectedOutput: true, input: [dateRange, rows[1], { to: '2024-03-01' }], label: 'dateRange: only to bound' },
+    { expectedOutput: false, input: [dateRange, rows[2], { from: '2024-01-01' }], label: 'dateRange: null excluded by default' },
+    { expectedOutput: true, input: [dateRange, rows[2], { includeEmpty: true }], label: 'dateRange: null included on demand' },
+    { expectedOutput: true, input: [text, rows[0], 'elo'], label: 'text: accent-insensitive substring' },
+    { expectedOutput: false, input: [text, rows[0], 'marc'], label: 'text: no match' },
+    { expectedOutput: true, input: [text, rows[0], ''], label: 'text: empty query matches' },
+    { expectedOutput: true, input: [emptyOrFilled, rows[0], 'filled'], label: 'emptyOrFilled: filled' },
+    { expectedOutput: true, input: [emptyOrFilled, rows[1], 'empty'], label: 'emptyOrFilled: empty' },
+    { expectedOutput: false, input: [emptyOrFilled, rows[1], 'filled'], label: 'emptyOrFilled: filled rejects null' },
+    { expectedOutput: true, input: [custom, rows[1], false], label: 'custom: predicate' },
   ];
-  it.each(cases)('%s', (_, [filter, row, value], expected) => expect(matchesFilter(filter, row, value)).toStrictEqual(expected));
+  it.each(testCases)('$label', ({ input: [filter, row, value], expectedOutput }) => {
+    expect(matchesFilter(filter, row, value)).toStrictEqual(expectedOutput);
+  });
 });
 
 describe('applyFilters', () => {

@@ -1,7 +1,6 @@
-import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
-import dynamic from 'next/dynamic';
+import type { SortingState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import UserForm from '@/components/Admin/UserForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
@@ -15,10 +14,14 @@ import Heading from '@/components/ui/Heading';
 import Loader from '@/components/ui/Loader';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
-import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { useDialogState } from '@/hooks/useDialogState';
+import { cells } from '@/modules/data-table/cells';
+import { DataTable } from '@/modules/data-table/DataTable';
+import type { FilterDef, FilterValuesOf } from '@/modules/data-table/filters/filter-types';
+import type { DataTableColumn } from '@/modules/data-table/types';
+import { useDataTable } from '@/modules/data-table/useDataTable';
 import { notify, toastErrors } from '@/modules/notification';
 import type { Permission, PermissionType, PermissionWithLabel } from '@/modules/permissions/types';
 import trpc from '@/modules/trpc/client';
@@ -31,11 +34,11 @@ import { withAuthentication } from '@/server/authentication';
 import type { UserRole } from '@/types/enum/UserRole';
 import { saveImpostureReturnPath } from '@/utils/imposture';
 import { postFetchJSON } from '@/utils/network';
-import { compareFrenchStrings } from '@/utils/strings';
 
 import type { AdminUsersStats } from '../api/admin/users-stats';
 
-const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
+// Stable empty reference while users load, so the table's memoized derivations don't recompute every render.
+const emptyUsers: User[] = [];
 
 const permissionTypePluralLabels: Record<PermissionType, string> = {
   commune: 'Communes',
@@ -124,30 +127,35 @@ const startImpersonation = toastErrors(
   }
 );
 
-const initialSortingState: SortingState = [
-  {
-    desc: true,
-    id: 'created_at',
-  },
-];
+const initialSorting: SortingState = [{ desc: true, id: 'created_at' }];
 
-const initialColumnFilters: ColumnFiltersState = [
+const filters = [
+  { getValue: (row: User) => row.role, id: 'role', label: 'Rôle', type: 'facets' },
   {
-    id: 'active',
-    value: { false: false, true: true },
+    formatOption: (key: string) => structureTypesLabels[key as keyof typeof structureTypesLabels] ?? key,
+    getValue: (row: User) => row.structure_type || null,
+    id: 'structure_type',
+    label: 'Type de structure',
+    type: 'facets',
   },
-];
+  { display: 'combobox', getValue: (row: User) => row.tags.map((tag) => tag.name), id: 'tags', label: 'Étiquettes', type: 'facets' },
+  { getValue: (row: User) => row.receive_new_demands, id: 'receive_new_demands', label: 'Notif nouvelle demande', type: 'facets' },
+  { getValue: (row: User) => row.receive_old_demands, id: 'receive_old_demands', label: 'Notif relance', type: 'facets' },
+  { getValue: (row: User) => row.last_connection, id: 'last_connection', label: 'Dernière activité', type: 'dateRange' },
+  { getValue: (row: User) => row.active, id: 'active', label: 'Activé', type: 'facets' },
+  { getValue: (row: User) => row.created_at, id: 'created_at', label: 'Créé le', type: 'dateRange' },
+  { getValue: (row: User) => !!row.from_organization_id, id: 'from_organization_id', label: 'Créé via API', type: 'facets' },
+] as const satisfies readonly FilterDef<User>[];
+
+const initialFilters: FilterValuesOf<User, typeof filters> = { active: ['true'] };
+
+const getRowId = (row: User) => row.id;
 
 export default function ManageUsers() {
   const [userId, setUserId] = useQueryState('userId');
-  const [nbUsersFilter, setNbUsersFilter] = useState<number>(0);
   const bulkTag = useDialogState();
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
-
-  const { data: tagCatalog } = trpc.users.adminTags.list.useQuery();
-  // key = name (not id) so the column filter and the table's global search both match the visible tag name.
-  const tagOptions = useMemo(() => (tagCatalog ?? []).map((tag) => ({ key: tag.name, label: tag.name })), [tagCatalog]);
 
   const {
     items: users,
@@ -173,14 +181,17 @@ export default function ManageUsers() {
     },
   });
 
-  const handleUpdateUser = (userId: string) =>
-    toastErrors(async (userUpdate: UsersResponse['updateInput']) => {
-      await updateUser(userId, userUpdate);
-      if (userId) {
-        void setUserId(null);
-      }
-      notify('success', 'Utilisateur mis à jour');
-    });
+  const handleUpdateUser = useCallback(
+    (userId: string) =>
+      toastErrors(async (userUpdate: UsersResponse['updateInput']) => {
+        await updateUser(userId, userUpdate);
+        if (userId) {
+          void setUserId(null);
+        }
+        notify('success', 'Utilisateur mis à jour');
+      }),
+    [updateUser, setUserId]
+  );
 
   const handleCreateUser = toastErrors(async (userCreate: UsersResponse['createInput'], permissions?: Permission[], tagIds?: string[]) => {
     const result = await createUser(userCreate);
@@ -195,126 +206,76 @@ export default function ManageUsers() {
     notify('success', 'Utilisateur créé');
   });
 
-  const columns: ColumnDef<User>[] = useMemo(
+  const columns = useMemo<DataTableColumn<User>[]>(
     () => [
       {
         accessorKey: 'email',
-        cell: (info) => (
-          <div>
-            <div>
-              {info.getValue<string>()}
-              {!!info.row.original.from_organization_id && <Badge type="api_user" className="mt-1" />}
+        cell: ({ row, value }) => (
+          <div className="leading-tight">
+            <div className="truncate" title={value}>
+              {value}
+              {!!row.from_organization_id && <Badge type="api_user" className="ml-1 inline-block!" />}
             </div>
-            {(info.row.original.first_name || info.row.original.last_name) && (
-              <div className="text-sm text-faded font-bold">
-                {[info.row.original.first_name, info.row.original.last_name].filter(Boolean).join(' ')}
-              </div>
+            {(row.first_name || row.last_name) && (
+              <div className="text-sm text-faded font-bold truncate">{[row.first_name, row.last_name].filter(Boolean).join(' ')}</div>
             )}
           </div>
         ),
-        className: 'break-words break-all',
-        flex: 2.5,
         header: 'Email',
-        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.email, rowB.original.email),
+        width: '26%',
       },
       {
         accessorKey: 'role',
         align: 'center',
-        cell: (info) => {
-          const role = info.getValue<UserRole>();
-          const perms = info.row.original.permissions;
-
+        cell: ({ row, value }) => {
           const content = (
             <div className="flex flex-col items-center gap-1">
-              <UserRoleBadge role={role} />
-              {perms.length > 0 && <span className="text-xs text-faded">{formatPermissionSummary(perms)}</span>}
+              <UserRoleBadge role={value} />
+              {row.permissions.length > 0 && (
+                <span className="text-xs text-faded truncate max-w-full">{formatPermissionSummary(row.permissions)}</span>
+              )}
             </div>
           );
 
-          return perms.length > 0 ? (
-            <Tooltip title={<PermissionTooltipContent permissions={perms} />}>
+          return row.permissions.length > 0 ? (
+            <Tooltip title={<PermissionTooltipContent permissions={row.permissions} />}>
               <div className="cursor-help">{content}</div>
             </Tooltip>
           ) : (
             content
           );
         },
-        filterType: 'Facets',
-        flex: 1.6,
-        header: 'Role',
+        header: 'Rôle',
+        width: '14%',
       },
       {
         accessorFn: (row) => row.structure_type || null,
-        cell: (info) => info.getValue() && structureTypesLabels[info.getValue<keyof typeof structureTypesLabels>()],
-        filterProps: {
-          Component: ({ value }) => <>{structureTypesLabels[value as keyof typeof structureTypesLabels] ?? value}</>,
-        },
-        filterType: 'Facets',
-        flex: 1.4,
+        cell: ({ value }) => (value ? structureTypesLabels[value as keyof typeof structureTypesLabels] : null),
         header: 'Type de structure',
         id: 'structure_type',
+        width: '12%',
       },
       {
         accessorFn: (row) => row.tags.map((tag) => tag.name),
-        cell: (info) =>
-          info.row.original.tags.length > 0 ? (
+        cell: ({ row }) =>
+          row.tags.length > 0 ? (
             <div className="flex flex-wrap gap-1 justify-center">
-              {info.row.original.tags.map((tag) => (
+              {row.tags.map((tag) => (
                 <UserTagBadge key={tag.id} name={tag.name} color={tag.color} />
               ))}
             </div>
           ) : null,
-        exportFn: (row) => row.tags.map((tag) => tag.name).join(', '),
-        filterProps: { options: tagOptions, placeholder: 'Filtrer par étiquette' },
-        filterType: 'ComboBox',
-        flex: 1.5,
+        export: { value: (row) => row.tags.map((tag) => tag.name).join(', ') },
         header: 'Étiquettes',
         id: 'tags',
-        sortingFn: (rowA, rowB) =>
-          compareFrenchStrings(rowA.original.tags.map((tag) => tag.name).join(', '), rowB.original.tags.map((tag) => tag.name).join(', ')),
+        sortValue: (row) => row.tags.map((tag) => tag.name).join(', '),
+        width: '14%',
       },
-      {
-        accessorKey: 'receive_new_demands',
-        align: 'center',
-        cellType: 'Boolean',
-        filterType: 'Facets',
-        header: 'Notif nouvelle demande',
-      },
-      {
-        accessorKey: 'receive_old_demands',
-        align: 'center',
-        cellType: 'Boolean',
-        filterType: 'Facets',
-        header: 'Notif relance',
-      },
-      {
-        accessorKey: 'last_connection',
-        cellType: 'DateTime',
-        filterType: 'Range',
-        header: 'Dernière activité',
-      },
-      {
-        accessorKey: 'active',
-        align: 'center',
-        cellType: 'Boolean',
-        filterType: 'Facets',
-        header: 'Activé',
-      },
-      {
-        accessorKey: 'created_at',
-        cellType: 'Date',
-        filterType: 'Range',
-        header: 'Créé le',
-      },
-      {
-        accessorFn: (row) => !!row.from_organization_id,
-        cellType: 'Boolean',
-        filtersDialogLabel: 'Créé via API',
-        filterType: 'Facets',
-        header: 'Créé via API',
-        id: 'from_organization_id',
-        visible: false,
-      },
+      { accessorKey: 'receive_new_demands', align: 'center', cell: cells.boolean(), header: 'Notif nouvelle demande' },
+      { accessorKey: 'receive_old_demands', align: 'center', cell: cells.boolean(), header: 'Notif relance' },
+      { accessorKey: 'last_connection', cell: cells.dateTime(), header: 'Dernière activité' },
+      { accessorKey: 'active', align: 'center', cell: cells.boolean(), header: 'Activé' },
+      { accessorKey: 'created_at', cell: cells.date(), header: 'Créé le' },
       {
         align: 'right',
         cell: ({ row }) => {
@@ -323,10 +284,10 @@ export default function ManageUsers() {
               icon: 'ri-edit-line',
               id: 'edit',
               label: "Modifier l'utilisateur",
-              onClick: () => setUserId(row.original.id),
+              onClick: () => setUserId(row.id),
             },
             {
-              href: `/admin/events?authorIds=${row.original.id}`,
+              href: `/admin/events?authorIds=${row.id}`,
               icon: 'ri-history-line',
               id: 'history',
               label: "Voir l'historique des événements",
@@ -337,21 +298,21 @@ export default function ManageUsers() {
               label: 'Adopter le profil',
               onClick: () =>
                 startImpersonation({
-                  permissions: row.original.permissions?.map(({ resource_id, type }) => ({ resource_id, type })),
-                  role: row.original.role,
+                  permissions: row.permissions?.map(({ resource_id, type }) => ({ resource_id, type })),
+                  role: row.role,
                 }),
             },
             {
-              icon: row.original.active ? 'ri-delete-back-2-line' : 'ri-refresh-line',
+              icon: row.active ? 'ri-delete-back-2-line' : 'ri-refresh-line',
               id: '',
-              label: row.original.active ? "Désactiver l'utilisateur" : "Réactiver l'utilisateur",
+              label: row.active ? "Désactiver l'utilisateur" : "Réactiver l'utilisateur",
               onClick: () => {
-                void handleUpdateUser(row.original.id)({ active: !row.original.active });
+                void handleUpdateUser(row.id)({ active: !row.active });
               },
-              variant: row.original.active ? 'destructive' : undefined,
+              variant: row.active ? 'destructive' : undefined,
             },
             {
-              disabled: deletingUserId === row.original.id,
+              disabled: deletingUserId === row.id,
               icon: 'ri-delete-bin-line',
               id: 'delete',
               label: "Supprimer l'utilisateur",
@@ -367,7 +328,7 @@ export default function ManageUsers() {
                   )
                 ) {
                   void toastErrors(async () => {
-                    await deleteUser(row.original.id);
+                    await deleteUser(row.id);
                     notify('success', 'Utilisateur supprimé avec succès');
                   })();
                 }
@@ -378,22 +339,26 @@ export default function ManageUsers() {
 
           return <HamburgerMenu items={menuItems} />;
         },
+        export: false,
         header: 'Actions',
         id: 'actions',
-        width: '50px',
+        width: 50,
       },
     ],
-    [tagOptions]
+    [setUserId, handleUpdateUser, deleteUser, deletingUserId]
   );
+
+  const table = useDataTable({
+    columns,
+    data: users ?? emptyUsers,
+    filters,
+    getRowId,
+    initialFilters,
+    initialSorting,
+    urlKey: 'users',
+  });
 
   const editingUser = useMemo(() => users?.find((u) => u.id === (userId as string)), [users, userId]);
-
-  const onFilterChange = useCallback(
-    (filteredRows: typeof users) => {
-      setNbUsersFilter(filteredRows.length);
-    },
-    [setNbUsersFilter]
-  );
 
   return (
     <SimplePage title="Gestion des utilisateurs" mode="authenticated">
@@ -441,7 +406,7 @@ export default function ManageUsers() {
           <Heading as="h2" color="blue-france" mt="4w">
             Liste des comptes{' '}
             <small className="text-faded text-base">
-              {nbUsersFilter} / {users?.length}
+              {table.rows.length} / {users?.length}
             </small>
           </Heading>
           <div className="flex gap-2">
@@ -453,22 +418,14 @@ export default function ManageUsers() {
             </Button>
           </div>
         </header>
-        <TableSimple
-          columns={columns}
-          data={users || []}
-          initialSortingState={initialSortingState}
-          columnFilters={initialColumnFilters}
-          onFilterChange={onFilterChange}
-          enableGlobalFilter
-          enableFiltersDialog
-          export={{
+        <DataTable
+          table={table}
+          loading={isLoading}
+          rowHeight="md"
+          exportConfig={{
             fileName: 'utilisateurs.xlsx',
             sheetName: 'utilisateurs',
           }}
-          controlsLayout="block"
-          padding="sm"
-          loading={isLoading}
-          urlSyncKey="users"
         />
       </Box>
     </SimplePage>

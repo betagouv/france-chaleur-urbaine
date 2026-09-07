@@ -88,7 +88,7 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 |---|------|--------|-------|
 | 0 | Analysis, plan, decisions validated | ✅ | see this document |
 | 1 | Core module: types, `useDataTable`, built-in filters, toolbar, `DataTable` rendering (plain + virtualized, fixed row heights), cells helpers, export, URL sync, specs, `AGENTS.md`, root index entry. Freeze notice on top of `TableSimple.tsx` (no new feature). | ✅ | 52 unit tests; sort first click is always ascending; facets on unfiltered data |
-| 2 | Pilot 1: `pages/admin/users.tsx` (filters dialog, export, URL, flex widths, Boolean/Date cells). API validation. | ⬜ | |
+| 2 | Pilot 1: `pages/admin/users.tsx` (filters dialog, export, URL, flex widths, Boolean/Date cells). API validation. | ✅ | to be validated visually on real data |
 | 3 | Pilot 2: `pages/admin/demandes.tsx` (30 columns, presets, map link, thousands of rows). Profiler measurements before/after on prod-sized data: keystroke in search, scroll frame, row selection. | ⬜ | success criterion of the perf work |
 | 4 | `pages/pro/demandes.tsx`, `pages/pro/mes-demandes.tsx` | ⬜ | share presets/filters with admin demands where possible |
 | 5 | `chaleur-renouvelable/.../DemandesChaleurRenouvelableAdminPage.tsx` | ⬜ | |
@@ -105,7 +105,7 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 
 | Table | Notes |
 |-------|-------|
-| _none yet_ | |
+| `pages/admin/users.tsx` | 9 filters declared at table level (the hidden « Créé via API » column is gone); tag facets come from the data (with counts) instead of the tag catalog query; `users_filters` URL param is now an object (`{ active: ['true'] }`); percentage widths replace `flex`; row height `md` |
 
 ## Decisions log
 
