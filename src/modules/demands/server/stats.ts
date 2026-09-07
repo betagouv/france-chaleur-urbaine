@@ -77,6 +77,7 @@ export const getReseauxStats = async () => {
           )
           .whereRef('demands.network_id', '=', sql.ref('r.id_fcu'))
           .where('demands.network_type', '=', sql.ref<NetworkType>('r.network_type'))
+          .where('demands.validated', '=', true)
           .where('demands.deleted_at', 'is', null)
           .as('demands_stats'),
       (join) => join.onTrue()

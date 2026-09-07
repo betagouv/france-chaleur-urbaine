@@ -434,6 +434,7 @@ const buildDemandFilters = (
   pendingOnly: boolean
 ): ColumnFiltersState => [
   { id: 'network_id', value: { [`${networkType}:${networkId}`]: true } },
+  { id: 'validated', value: { false: false, true: true } },
   ...(pendingOnly ? [{ id: 'Status', value: { [DEMANDE_STATUS.TO_PROCESS]: true } }] : []),
   ...(isDefined(periodMonths)
     ? [{ id: 'Date de la demande', value: [dayjs().subtract(periodMonths, 'month').format('YYYY-MM-DD'), null, false] }]
