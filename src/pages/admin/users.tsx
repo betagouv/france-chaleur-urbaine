@@ -8,6 +8,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Badge from '@/components/ui/Badge';
 import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import Dialog from '@/components/ui/Dialog';
 import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Heading from '@/components/ui/Heading';
@@ -154,6 +155,7 @@ const getRowId = (row: User) => row.id;
 export default function ManageUsers() {
   const [userId, setUserId] = useQueryState('userId');
   const bulkTag = useDialogState();
+  const deleteDialog = useDialogState<User>();
 
   const { data: usersStats } = useFetch<AdminUsersStats>('/api/admin/users-stats');
 
@@ -316,23 +318,7 @@ export default function ManageUsers() {
               icon: 'ri-delete-bin-line',
               id: 'delete',
               label: "Supprimer l'utilisateur",
-              onClick: () => {
-                if (
-                  window.confirm(
-                    `Voulez-vous vraiment supprimer cet utilisateur et toutes ses données associées ? Cette action est irréversible et supprimera :
-- Les tests d'éligibilité et leurs adresses
-- Les configurations du comparateur
-- Les jobs associés
-- Les templates d'email créés
-- Les événements créés`
-                  )
-                ) {
-                  void toastErrors(async () => {
-                    await deleteUser(row.id);
-                    notify('success', 'Utilisateur supprimé avec succès');
-                  })();
-                }
-              },
+              onClick: () => deleteDialog.open(row),
               variant: 'destructive',
             },
           ];
@@ -345,7 +331,7 @@ export default function ManageUsers() {
         width: 50,
       },
     ],
-    [setUserId, handleUpdateUser, deleteUser, deletingUserId]
+    [setUserId, handleUpdateUser, deleteDialog.open, deletingUserId]
   );
 
   const table = useDataTable({
@@ -385,6 +371,26 @@ export default function ManageUsers() {
         )}
       </Dialog>
       <BulkTagDialog control={bulkTag} onSuccess={() => void refetchUsers()} />
+      <ConfirmDialog
+        control={deleteDialog}
+        title="Supprimer l'utilisateur"
+        confirmLabel="Supprimer"
+        danger
+        onConfirm={async (user) => {
+          await deleteUser(user.id);
+          notify('success', 'Utilisateur supprimé avec succès');
+        }}
+      >
+        Voulez-vous vraiment supprimer <strong>{deleteDialog.data?.email}</strong> et toutes ses données associées ? Cette action est
+        irréversible et supprimera :
+        <ul className="mt-2 mb-0">
+          <li>les tests d'éligibilité et leurs adresses</li>
+          <li>les configurations du comparateur</li>
+          <li>les jobs associés</li>
+          <li>les templates d'email créés</li>
+          <li>les événements créés</li>
+        </ul>
+      </ConfirmDialog>
       <Box py="4w" className="fr-container">
         <Heading as="h1" color="blue-france">
           Gestion des utilisateurs

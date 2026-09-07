@@ -2,14 +2,7 @@ import { type ReactNode, useCallback, useMemo, useRef } from 'react';
 
 import cx from '@/utils/cx';
 
-import {
-  DEFAULT_COLUMN_MIN_WIDTH,
-  DEFAULT_TABLE_HEIGHT,
-  LOADING_ROWS_COUNT,
-  ROW_HEIGHTS,
-  SELECTION_COLUMN_WIDTH,
-  VIRTUALIZE_THRESHOLD,
-} from './constants';
+import { DEFAULT_COLUMN_MIN_WIDTH, LOADING_ROWS_COUNT, ROW_HEIGHTS, SELECTION_COLUMN_WIDTH, VIRTUALIZE_THRESHOLD } from './constants';
 import { DataTableBody } from './DataTableBody';
 import { DataTableHeaderCell } from './DataTableHeaderCell';
 import type { ExportConfig } from './export';
@@ -22,9 +15,9 @@ export type DataTableProps<Row, Filters extends readonly FilterDef<Row>[]> = {
   table: DataTableInstance<Row, Filters>;
   /** Fixed height of every row: one, two or three lines of content. */
   rowHeight?: RowHeight;
-  /** `auto` virtualizes above 100 rows; virtualized tables scroll inside `height`. */
+  /** `auto` virtualizes above 100 rows. Virtualization follows the page scroll, or the container when `height` is set. */
   virtualize?: boolean | 'auto';
-  /** Max height of the scroll container (any CSS length); only applies when virtualized. */
+  /** Max height of the table's own scroll container (any CSS length). Without it the table grows with the page. */
   height?: string;
   loading?: boolean;
   emptyMessage?: string;
@@ -52,7 +45,7 @@ export function DataTable<Row, Filters extends readonly FilterDef<Row>[]>({
   table,
   rowHeight = 'md',
   virtualize = 'auto',
-  height = DEFAULT_TABLE_HEIGHT,
+  height,
   loading = false,
   emptyMessage = 'Aucun résultat',
   caption,
@@ -69,6 +62,7 @@ export function DataTable<Row, Filters extends readonly FilterDef<Row>[]>({
 }: DataTableProps<Row, Filters>) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const virtualized = virtualize === 'auto' ? table.rows.length > VIRTUALIZE_THRESHOLD : virtualize;
+  const hasOwnScroll = height !== undefined;
 
   // Stable handlers so unstable callbacks from the page never invalidate the memoized rows.
   const onRowClickRef = useRef(onRowClick);
@@ -105,10 +99,17 @@ export function DataTable<Row, Filters extends readonly FilterDef<Row>[]>({
       {caption && <div className="text-2xl leading-8 font-bold mb-5">{caption}</div>}
       <div
         ref={scrollContainerRef}
-        className="fr-table fr-table--no-scroll my-0! relative overflow-auto scrollbar-visible"
-        style={virtualized ? { maxHeight: height } : undefined}
+        // Page-scrolling tables keep `overflow: visible` so the sticky header follows the viewport (any overflow-x would trap it).
+        className={cx(
+          'fr-table fr-table--no-scroll my-0! relative',
+          hasOwnScroll ? 'overflow-auto scrollbar-visible' : 'overflow-visible!'
+        )}
+        style={hasOwnScroll ? { maxHeight: height } : undefined}
       >
-        <table className={cx('w-full mt-px', hasExplicitWidths ? 'table-fixed' : 'table-auto')} style={{ minWidth }}>
+        <table
+          className={cx('w-full mt-px', hasExplicitWidths || !hasOwnScroll ? 'table-fixed' : 'table-auto')}
+          style={hasOwnScroll ? { minWidth } : undefined}
+        >
           <colgroup>
             {table.enableRowSelection && <col style={{ width: SELECTION_COLUMN_WIDTH }} />}
             {table.columns.map((column) => (
@@ -163,7 +164,7 @@ export function DataTable<Row, Filters extends readonly FilterDef<Row>[]>({
               table={table}
               rowHeight={rowHeight}
               virtualized={virtualized}
-              scrollContainerRef={scrollContainerRef}
+              scrollContainerRef={hasOwnScroll ? scrollContainerRef : null}
               selectedRowId={selectedRowId}
               onRowClick={onRowClick ? handleRowClick : undefined}
               onRowDoubleClick={onRowDoubleClick ? handleRowDoubleClick : undefined}

@@ -111,7 +111,7 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 
 - 2026-09-07 — TanStack Table kept; wrapper rewritten. Module location `src/modules/data-table/`.
 - 2026-09-07 — Fixed row heights everywhere (`sm`/`md`/`lg`), no dynamic measurement; cells adapt.
-- 2026-09-07 — Virtualization automatic above 100 rows, opt-in/out via prop.
+- 2026-09-07 — Virtualization automatic above 100 rows, opt-in/out via prop. It follows the page scroll unless `height` is given (bounded container), so no table is forced to pick a max height.
 - 2026-09-07 — URL sync kept as simple as today (nuqs, JSON where needed); pretty params later.
 - 2026-09-07 — Pilot order: `admin/users` then `admin/demandes`.
 - 2026-09-07 — `TableSimple` frozen from step 1; full migration inside this chantier, then deletion.

@@ -56,11 +56,12 @@ type AccessorFnColumn<Row, Value> = ColumnBase<Row> & {
   cell?: CellRenderer<Row, Value>;
 };
 
+// `cell` has the same signature as the accessorFn variant: TS only derives a contextual signature from a union when they match.
 type DisplayColumn<Row> = ColumnBase<Row> & {
   id: string;
   accessorKey?: never;
   accessorFn?: never;
-  cell: CellRenderer<Row, undefined>;
+  cell: CellRenderer<Row, unknown>;
   sortable?: false;
 };
 
