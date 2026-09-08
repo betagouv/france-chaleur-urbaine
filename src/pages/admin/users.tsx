@@ -215,11 +215,14 @@ export default function ManageUsers() {
         accessorKey: 'email',
         cell: ({ row, value }) => (
           <div className="leading-tight">
-            <div className="truncate" title={value}>
-              {value}
-              {!!row.from_organization_id && <Badge type="api_user" className="ml-1 inline-block!" />}
+            {/* Flex row: the email truncates, the badges never do. */}
+            <div className="flex items-center gap-1">
+              <span className="truncate min-w-0" title={value}>
+                {value}
+              </span>
+              {!!row.from_organization_id && <Badge type="api_user" className="shrink-0" />}
               {!row.active && (
-                <DsfrBadge noIcon severity="warning" small className="ml-1">
+                <DsfrBadge noIcon severity="warning" small className="shrink-0">
                   Désactivé
                 </DsfrBadge>
               )}
