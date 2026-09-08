@@ -1,3 +1,4 @@
+import { Badge as DsfrBadge } from '@codegouvfr/react-dsfr/Badge';
 import type { SortingState } from '@tanstack/react-table';
 import { useQueryState } from 'nuqs';
 import { useCallback, useMemo } from 'react';
@@ -217,6 +218,11 @@ export default function ManageUsers() {
             <div className="truncate" title={value}>
               {value}
               {!!row.from_organization_id && <Badge type="api_user" className="ml-1 inline-block!" />}
+              {!row.active && (
+                <DsfrBadge noIcon severity="warning" small className="ml-1">
+                  Désactivé
+                </DsfrBadge>
+              )}
             </div>
             {(row.first_name || row.last_name) && (
               <div className="text-sm text-faded font-bold truncate">{[row.first_name, row.last_name].filter(Boolean).join(' ')}</div>
@@ -276,7 +282,6 @@ export default function ManageUsers() {
       { accessorKey: 'receive_new_demands', align: 'center', cell: cells.boolean(), header: 'Notif nouvelle demande' },
       { accessorKey: 'receive_old_demands', align: 'center', cell: cells.boolean(), header: 'Notif relance' },
       { accessorKey: 'last_connection', cell: cells.dateTime(), header: 'Dernière activité' },
-      { accessorKey: 'active', align: 'center', cell: cells.boolean(), header: 'Activé' },
       { accessorKey: 'created_at', cell: cells.date(), header: 'Créé le' },
       {
         align: 'right',
