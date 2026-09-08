@@ -85,6 +85,13 @@ export type ResolvedColumn<Row> = {
 
 export type RowHeight = 'sm' | 'md' | 'lg';
 
+/** A sort key of the records, independent from the columns (sortable columns define one implicitly). */
+export type SortDef<Row> = {
+  id: string;
+  label: string;
+  getValue: (row: Row) => SortValue;
+};
+
 export type DataTablePreset<Row, Filters extends readonly FilterDef<Row>[]> = {
   id: string;
   label: ReactNode;
@@ -105,6 +112,8 @@ export type UseDataTableOptions<Row, Filters extends readonly FilterDef<Row>[]> 
   data: Row[];
   columns: DataTableColumn<Row>[];
   filters?: Filters;
+  /** Extra sort keys without a column of their own; ids must not collide with column ids. */
+  sorts?: SortDef<Row>[];
   getRowId: (row: Row) => string;
   initialSorting?: SortingState;
   initialFilters?: FilterValuesOf<Row, Filters>;

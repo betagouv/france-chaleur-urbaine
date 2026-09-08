@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
-import { resolveColumns, toTanstackColumns } from './columns';
+import { resolveColumns, resolveSortKeys, toTanstackColumns } from './columns';
 import {
   applyFilters,
   compactFilterValues,
@@ -18,14 +18,20 @@ import {
 } from './filters/filter-predicates';
 import type { FacetOption, FilterDef, FilterValues, FilterValuesOf } from './filters/filter-types';
 import { buildSearchIndex, defaultSearchText, matchesSearch } from './search';
-import type { DataTableSearchOptions, ResolvedColumn, UseDataTableOptions } from './types';
+import type { DataTableSearchOptions, ResolvedColumn, SortDef, UseDataTableOptions } from './types';
 import { useDataTableState } from './useDataTableState';
+
+// Stable empty defaults: a fresh `[]` per render would recompute every derived memo.
+const EMPTY_FILTERS: never[] = [];
+const EMPTY_SORTS: never[] = [];
 
 export type DataTableInstance<Row, Filters extends readonly FilterDef<Row>[] = readonly FilterDef<Row>[]> = {
   /** TanStack table (sorting, selection). Rendering and filtering do not go through it. */
   table: Table<Row>;
   columns: ResolvedColumn<Row>[];
   filters: Filters;
+  /** Every sort key: sortable columns and extra `sorts`, in that order. */
+  sortKeys: SortDef<Row>[];
   data: Row[];
   /** Rows after search, filters and sorting. */
   rows: Row[];
@@ -66,11 +72,13 @@ export function useDataTable<Row, const Filters extends readonly FilterDef<Row>[
     urlKey,
     enableRowSelection = false,
   } = options;
-  const filters = (options.filters ?? []) as Filters;
+  const filters = (options.filters ?? EMPTY_FILTERS) as Filters;
+  const sorts: SortDef<Row>[] = options.sorts ?? EMPTY_SORTS;
 
   const state = useDataTableState(urlKey, initialSorting, initialFilters);
   const resolvedColumns = useMemo(() => resolveColumns(columns), [columns]);
-  const tanstackColumns = useMemo(() => toTanstackColumns(resolvedColumns), [resolvedColumns]);
+  const sortKeys = useMemo(() => resolveSortKeys(resolvedColumns, sorts), [resolvedColumns, sorts]);
+  const tanstackColumns = useMemo(() => toTanstackColumns(sortKeys), [sortKeys]);
 
   const getSearchText = searchOptions.getText;
   const searchIndex = useMemo(
@@ -150,6 +158,7 @@ export function useDataTable<Row, const Filters extends readonly FilterDef<Row>[
     setSearch: state.setSearch,
     setSorting: state.setSorting,
     sorting: state.sorting,
+    sortKeys,
     table,
   };
 }

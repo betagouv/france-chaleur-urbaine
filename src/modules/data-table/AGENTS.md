@@ -8,7 +8,7 @@ Data table for lists of the app (admin, pro, stats): `useDataTable` (state + der
 import { DataTable } from '@/modules/data-table/DataTable';
 import { cells } from '@/modules/data-table/cells';
 import type { FilterDef } from '@/modules/data-table/filters/filter-types';
-import type { DataTableColumn } from '@/modules/data-table/types';
+import type { DataTableColumn, SortDef } from '@/modules/data-table/types';
 import { useDataTable } from '@/modules/data-table/useDataTable';
 
 const columns: DataTableColumn<User>[] = [
@@ -23,7 +23,9 @@ const filters = [
   { id: 'created_at', type: 'dateRange', label: 'Créé le', getValue: (row) => row.created_at },
 ] as const satisfies readonly FilterDef<User>[];
 
-const table = useDataTable({ data: users, columns, filters, getRowId: (row) => row.id, urlKey: 'users', initialSorting: [{ id: 'created_at', desc: true }] });
+const sorts: SortDef<User>[] = [{ id: 'name', label: 'Nom', getValue: (row) => row.last_name }]; // field inside a composite cell
+
+const table = useDataTable({ data: users, columns, filters, sorts, getRowId: (row) => row.id, urlKey: 'users', initialSorting: [{ id: 'created_at', desc: true }] });
 
 <DataTable table={table} rowHeight="md" exportConfig={{ fileName: 'utilisateurs.xlsx', sheetName: 'utilisateurs' }} />
 ```
@@ -38,11 +40,12 @@ const table = useDataTable({ data: users, columns, filters, getRowId: (row) => r
 - **Rendering**: real `<table>` (DSFR `fr-table`), sticky header, fixed row height (`rowHeight: 'sm' | 'md' | 'lg'` = 1/2/3 lines, text cells clamp with a `title`), `virtualize: 'auto'` above 100 rows using spacer rows (same DOM in both modes, no measurement). Rows are memoized on item identity, columns and flags.
 - **Scrolling**: the table scrolls inside its own container, capped at the viewport height by default (`height` overrides with any CSS length, e.g. beside a map). The page scrolls until the table fills the viewport, then the rows scroll; wide tables scroll horizontally. The DSFR `display: block` on `<table>` is reset to keep a real table layout.
 - **Identity**: `getRowId` is required; `selectedRowId` highlights a row, `enableRowSelection` + `rowSelection`/`onRowSelectionChange` (TanStack `RowSelectionState` keyed by row id) selects. `table.scrollToRow(id)` scrolls in both modes.
-- **Toolbar**: `search` (default on), `filtersDialog` (default on when filters exist), `sortDialog`, `presets` (quick filter sets with counts; active when values match exactly), `exportConfig` (visible columns + `extraColumns`), `actions` slot.
+- **Sorting is a set of keys, not columns.** Sortable columns define a key implicitly; `sorts` adds keys on fields shown inside composite cells or not shown at all. Header click is a shortcut; the « Filtres et tri » dialog lists every key (multi-criteria, ordered).
+- **Toolbar**: `search` (default on), results count, `filtersDialog` (« Filtres et tri », default on when filters or extra sort keys exist), `presets` (quick filter sets with counts; active when values match exactly), `exportConfig` (visible columns + `extraColumns`), `actions` slot. Active sort criteria and filters show as dismissible chips under the toolbar, so the state is always visible without looking at the headers.
 
 ## Files
 
-`types.ts` (columns, options, presets) · `filters/filter-types.ts` + `filter-predicates.ts` (pure, tested) · `search.ts` · `sorting.ts` · `columns.ts` (resolution + TanStack mapping) · `cells.tsx` · `export.ts` · `useDataTableState.ts` (nuqs/local) · `useDataTable.ts` · `DataTable.tsx` + `DataTableBody.tsx` + `DataTableRow.tsx` + `DataTableHeaderCell.tsx` · `filters/FiltersDialog.tsx` + `FilterControl.tsx` · `toolbar/*` · `constants.ts`.
+`types.ts` (columns, options, presets) · `filters/filter-types.ts` + `filter-predicates.ts` (pure, tested) · `search.ts` · `sorting.ts` · `columns.ts` (resolution + TanStack mapping) · `cells.tsx` · `export.ts` · `useDataTableState.ts` (nuqs/local) · `useDataTable.ts` · `DataTable.tsx` + `DataTableBody.tsx` + `DataTableRow.tsx` + `DataTableHeaderCell.tsx` · `filters/FiltersDialog.tsx` + `FilterControl.tsx` + `filter-summary.ts` (chip labels) · `toolbar/*` (`DataTableToolbar`, `DataTableActiveState`, `SortSection`, `DataTablePresets`) · `constants.ts`.
 
 ## Boundaries
 

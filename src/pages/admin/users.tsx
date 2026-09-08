@@ -22,7 +22,7 @@ import { useDialogState } from '@/hooks/useDialogState';
 import { cells } from '@/modules/data-table/cells';
 import { DataTable } from '@/modules/data-table/DataTable';
 import type { FilterDef, FilterValuesOf } from '@/modules/data-table/filters/filter-types';
-import type { DataTableColumn } from '@/modules/data-table/types';
+import type { DataTableColumn, SortDef } from '@/modules/data-table/types';
 import { useDataTable } from '@/modules/data-table/useDataTable';
 import { notify, toastErrors } from '@/modules/notification';
 import type { Permission, PermissionType, PermissionWithLabel } from '@/modules/permissions/types';
@@ -150,6 +150,12 @@ const filters = [
 ] as const satisfies readonly FilterDef<User>[];
 
 const initialFilters: FilterValuesOf<User, typeof filters> = { active: ['true'] };
+
+// Sort keys on fields shown inside composite cells (no column of their own).
+const sorts: SortDef<User>[] = [
+  { getValue: (row) => row.last_name || row.first_name || null, id: 'name', label: 'Nom' },
+  { getValue: (row) => row.active, id: 'active', label: 'Activé' },
+];
 
 const getRowId = (row: User) => row.id;
 
@@ -349,6 +355,7 @@ export default function ManageUsers() {
     getRowId,
     initialFilters,
     initialSorting,
+    sorts,
     urlKey: 'users',
   });
 
@@ -418,10 +425,7 @@ export default function ManageUsers() {
 
         <header className="flex justify-between items-baseline">
           <Heading as="h2" color="blue-france" mt="4w">
-            Liste des comptes{' '}
-            <small className="text-faded text-base">
-              {table.rows.length} / {users?.length}
-            </small>
+            Liste des comptes
           </Heading>
           <div className="flex gap-2">
             <Button size="small" priority="tertiary" iconId="ri-price-tag-3-line" onClick={() => bulkTag.open()}>

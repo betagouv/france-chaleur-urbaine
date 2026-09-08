@@ -70,9 +70,17 @@ describe('DataTable', () => {
     expect(within(firstRow).getAllByRole('cell')[1].textContent).toStrictEqual('1');
   });
 
-  it('shows the filters button when filters are declared', () => {
+  it('shows the « Filtres et tri » button when filters are declared', () => {
     renderHarness({ data: makeRows(3), withFilters: true });
-    expect(screen.getByRole('button', { name: 'Filtres' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Filtres et tri' })).toBeTruthy();
+  });
+
+  it('shows removable chips for the active sort and the results count', () => {
+    renderHarness({ data: makeRows(3) });
+    fireEvent.click(within(screen.getByRole('columnheader', { name: /Compte/ })).getByRole('button'));
+    expect(screen.getByText('3 résultats')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /Tri : Compte/ }));
+    expect(screen.queryByText(/Tri : Compte/)).toBeNull();
   });
 
   it('calls onRowClick with the row item', () => {

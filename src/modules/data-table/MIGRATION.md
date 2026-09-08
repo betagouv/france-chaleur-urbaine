@@ -112,6 +112,7 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 - 2026-09-07 — TanStack Table kept; wrapper rewritten. Module location `src/modules/data-table/`.
 - 2026-09-07 — Fixed row heights everywhere (`sm`/`md`/`lg`), no dynamic measurement; cells adapt.
 - 2026-09-07 — Virtualization automatic above 100 rows, opt-in/out via prop.
+- 2026-09-08 — Sorting decoupled from columns like filters (`sorts` keys); single « Filtres et tri » dialog; active sort/filter chips in the toolbar. Goal: no field needs a column to be sortable or filterable.
 - 2026-09-08 — Page-scroll virtualization tried and dropped: the page became rows × height tall and DSFR makes `<table>` a scrolling block. Tables scroll in their own container capped at the viewport height by default (`height` overrides), so nothing has to be configured.
 - 2026-09-07 — URL sync kept as simple as today (nuqs, JSON where needed); pretty params later.
 - 2026-09-07 — Pilot order: `admin/users` then `admin/demandes`.

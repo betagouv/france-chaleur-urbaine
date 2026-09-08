@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 
-import { compareSortValues } from './sorting';
-import type { DataTableColumn, ResolvedColumn } from './types';
+import { compareSortValues, toSortValue } from './sorting';
+import type { DataTableColumn, ResolvedColumn, SortDef } from './types';
 
 const getColumnId = <Row>(column: DataTableColumn<Row>): string => {
   const id = column.id ?? column.accessorKey;
@@ -34,17 +34,26 @@ export const resolveColumns = <Row>(columns: DataTableColumn<Row>[]): ResolvedCo
       };
     });
 
-/** TanStack columns used for sorting only (rendering reads the resolved columns directly). */
-export const toTanstackColumns = <Row>(columns: ResolvedColumn<Row>[]): ColumnDef<Row, unknown>[] =>
-  columns.map((column) => {
-    const sortAccessor = column.sortValue ?? column.accessor;
-    return {
-      // null → undefined so TanStack's `sortUndefined` keeps empties last in both directions
-      accessorFn: (row) => sortAccessor(row) ?? undefined,
-      enableSorting: column.sortable,
+/** Sort keys of the table: one per sortable column (accessor or `sortValue`), plus the extra `sorts`. */
+export const resolveSortKeys = <Row>(columns: ResolvedColumn<Row>[], sorts: SortDef<Row>[]): SortDef<Row>[] => {
+  const columnKeys = columns
+    .filter((column) => column.sortable)
+    .map((column) => ({
+      getValue: column.sortValue ?? ((row: Row) => toSortValue(column.accessor(row))),
       id: column.id,
-      sortDescFirst: false, // first click always sorts ascending, whatever the value type
-      sortingFn: (rowA, rowB, columnId) => compareSortValues(rowA.getValue(columnId), rowB.getValue(columnId)),
-      sortUndefined: 'last',
-    };
-  });
+      label: column.headerLabel,
+    }));
+  return [...columnKeys, ...sorts.filter((sort) => !columnKeys.some((columnKey) => columnKey.id === sort.id))];
+};
+
+/** TanStack columns used for sorting only (rendering reads the resolved columns directly). */
+export const toTanstackColumns = <Row>(sortKeys: SortDef<Row>[]): ColumnDef<Row, unknown>[] =>
+  sortKeys.map((sortKey) => ({
+    // null → undefined so TanStack's `sortUndefined` keeps empties last in both directions
+    accessorFn: (row) => sortKey.getValue(row) ?? undefined,
+    enableSorting: true,
+    id: sortKey.id,
+    sortDescFirst: false, // first click always sorts ascending, whatever the value type
+    sortingFn: (rowA, rowB, columnId) => compareSortValues(rowA.getValue(columnId), rowB.getValue(columnId)),
+    sortUndefined: 'last',
+  }));

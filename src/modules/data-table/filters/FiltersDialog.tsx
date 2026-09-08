@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import cx from '@/utils/cx';
 
+import { SortSection } from '../toolbar/SortSection';
 import type { DataTableInstance } from '../useDataTable';
 import { FilterControl } from './FilterControl';
 import type { FilterValues } from './filter-types';
@@ -14,16 +15,19 @@ type FiltersDialogProps<Row> = {
 };
 
 /**
- * « Filtres » button opening a dialog that lists every filter of the table with its control.
+ * « Filtres et tri » button opening a dialog with the sort criteria first, then every filter with its control.
+ * Nothing here depends on the displayed columns.
  */
 export function FiltersDialog<Row>({ table }: FiltersDialogProps<Row>) {
   const [isOpen, setIsOpen] = useState(false);
   const filterValues = table.filterValues as FilterValues;
-  const count = table.activeFiltersCount;
+  const hasSort = table.sortKeys.length > 0;
+  const count = table.activeFiltersCount + table.sorting.length;
+  const label = hasSort ? (table.filters.length > 0 ? 'Filtres et tri' : 'Tri') : 'Filtres';
 
   return (
     <Dialog
-      title="Filtres"
+      title={label}
       size="lg"
       open={isOpen}
       onOpenChange={setIsOpen}
@@ -34,11 +38,12 @@ export function FiltersDialog<Row>({ table }: FiltersDialogProps<Row>) {
           iconId="ri-filter-2-line"
           className={cx(count > 0 && 'animate-[puff_0.2s_ease-in-out]')}
         >
-          {count > 0 ? `Filtres (${count})` : 'Filtres'}
+          {count > 0 ? `${label} (${count})` : label}
         </Button>
       }
     >
       <div className="flex flex-col gap-4">
+        {hasSort && <SortSection table={table} />}
         {table.filters.map((filter) => {
           const isActive = filterValues[filter.id] !== undefined;
           return (
@@ -73,7 +78,15 @@ export function FiltersDialog<Row>({ table }: FiltersDialogProps<Row>) {
           );
         })}
         <div className="flex flex-wrap justify-between gap-2 pt-2">
-          <Button priority="tertiary" iconId="ri-refresh-line" size="small" onClick={table.resetFilters}>
+          <Button
+            priority="tertiary"
+            iconId="ri-refresh-line"
+            size="small"
+            onClick={() => {
+              table.resetFilters();
+              table.setSorting([]);
+            }}
+          >
             Réinitialiser tout
           </Button>
           <Button priority="primary" size="small" iconId="ri-check-line" onClick={() => setIsOpen(false)}>

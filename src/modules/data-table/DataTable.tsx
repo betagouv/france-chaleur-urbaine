@@ -35,9 +35,8 @@ export type DataTableProps<Row, Filters extends readonly FilterDef<Row>[]> = {
   onRowClick?: (row: Row) => void;
   onRowDoubleClick?: (row: Row) => void;
   search?: boolean;
-  /** Defaults to true when the table has filters. */
+  /** « Filtres et tri » dialog; defaults to true when the table has filters or extra sort keys. */
   filtersDialog?: boolean;
-  sortDialog?: boolean;
   presets?: DataTablePreset<Row, Filters>[];
   exportConfig?: ExportConfig<Row>;
   /** Extra buttons at the right of the toolbar. */
@@ -61,8 +60,7 @@ export function DataTable<Row, Filters extends readonly FilterDef<Row>[]>({
   onRowClick,
   onRowDoubleClick,
   search = true,
-  filtersDialog = table.filters.length > 0,
-  sortDialog = false,
+  filtersDialog = table.filters.length > 0 || table.sortKeys.length > table.columns.filter((column) => column.sortable).length,
   presets,
   exportConfig,
   actions,
@@ -86,7 +84,7 @@ export function DataTable<Row, Filters extends readonly FilterDef<Row>[]>({
     [table.columns, table.enableRowSelection]
   );
   const columnCount = table.columns.length + (table.enableRowSelection ? 1 : 0);
-  const hasToolbar = search || filtersDialog || sortDialog || (presets && presets.length > 0) || exportConfig || actions;
+  const hasToolbar = search || filtersDialog || (presets && presets.length > 0) || exportConfig || actions;
 
   return (
     <section className={className}>
@@ -95,7 +93,6 @@ export function DataTable<Row, Filters extends readonly FilterDef<Row>[]>({
           table={table}
           search={search}
           filtersDialog={filtersDialog}
-          sortDialog={sortDialog}
           presets={presets}
           exportConfig={exportConfig}
           actions={actions}
