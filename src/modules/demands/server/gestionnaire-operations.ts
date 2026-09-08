@@ -108,7 +108,7 @@ export const updateDemandByGestionnaire = async (ctx: Context, demandId: string,
     data: values,
     type: 'demand_updated',
   });
-  await sendUnrealizableDemandEmailIfNeeded({ currentDemand, nextStatus: values.Status });
+  await sendUnrealizableDemandEmailIfNeeded({ actorRole: ctx.user.role, currentDemand, nextStatus: values.Status });
 
   const demand = await getDemandById(updatedDemand.id);
   const permissions = await ctx.getPermissions();

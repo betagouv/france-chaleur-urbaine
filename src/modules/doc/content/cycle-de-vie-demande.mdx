@@ -21,7 +21,7 @@ Une « demande » est une demande de mise en relation pour un raccordement, dép
     gate -- "Pas encore" --> invisible["Invisible de tous sauf admins et du demandeur"]
     visible --> notif["Notification des gestionnaires (cron, du lundi au vendredi)"]:::email
     notif --> traitement["Traitement : statuts, contact, relances automatiques"]
-    traitement --> nonReal{"Statut changé vers « Non réalisable » par le responsable ou l'admin ?"}
+    traitement --> nonReal{"Statut changé vers « Non réalisable » par un gestionnaire ou l'admin ?"}
     nonReal -- "Oui" --> mailNonReal["Email « Raccordement non réalisable » au demandeur"]:::email
     click mailConf "/admin/emails?type=demands.demandeur.confirmation-demande" "Voir le modèle d'email"
     click evtCreation "/admin/events?types=demand_created" "Voir dans l'activité du site"
@@ -68,7 +68,7 @@ Huit statuts, du dépôt à la clôture — liste et descriptions dans [Référe
 
 - **Aucun ordre n'est imposé** : le statut se change librement dans la liste, il n'y a pas de transitions contrôlées.
 - Le statut est modifié par le **responsable** de la demande (gestionnaire, ou collectivité pour une demande non affectée — voir [Rôles et permissions](/admin/doc/roles-permissions)). Un **admin** peut aussi changer le statut de n'importe quelle demande depuis sa page, en plus de la validation, de l'affectation et du recalcul d'éligibilité.
-- Quand un responsable ou un admin change explicitement le statut vers « Non réalisable », l'email [« Raccordement non réalisable »](/admin/emails?type=demands.demandeur.raccordement-non-realisable) est envoyé au demandeur avec un lien vers le simulateur de modes de chauffage alternatifs. La demande reste conservée : elle n'est pas supprimée par ce changement de statut.
+- Quand un gestionnaire ou un admin change explicitement le statut vers « Non réalisable », l'email [« Raccordement non réalisable »](/admin/emails?type=demands.demandeur.raccordement-non-realisable) est envoyé au demandeur avec un lien vers le simulateur de modes de chauffage alternatifs. La demande reste conservée : elle n'est pas supprimée par ce changement de statut.
 - Côté demandeur, le statut « À traiter » est affiché **« En cours de traitement »** (dans son suivi et sur l'écran de confirmation) ; les autres statuts sont affichés tels quels.
 - L'**API partenaire** peut aussi modifier le statut et le commentaire gestionnaire — rien d'autre ([événement « Mise à jour demande (API) »](/admin/events?types=api_demand_updated)).
 

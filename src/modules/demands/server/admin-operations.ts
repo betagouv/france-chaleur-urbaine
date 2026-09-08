@@ -284,7 +284,7 @@ export const updateDemandByAdmin = async (demandId: string, values: UpdateAdminD
     data: values,
     type: 'demand_updated',
   });
-  await sendUnrealizableDemandEmailIfNeeded({ currentDemand, nextStatus: values.Status });
+  await sendUnrealizableDemandEmailIfNeeded({ actorRole: 'admin', currentDemand, nextStatus: values.Status });
 
   const demand = await getDemandById(updatedDemand.id);
   return enrichDemandForAdmin({ demand, testAddress: testAddress || null });

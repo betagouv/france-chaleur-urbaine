@@ -156,8 +156,7 @@ export const emails = defineEmails({
     scenarios: raccordementNonRealisableScenarios,
     subject: '[France Chaleur Urbaine] Votre demande de raccordement',
     trigger: {
-      description:
-        'Au changement manuel du statut d’une demande vers « Non réalisable » par un gestionnaire, une collectivité responsable d’une demande non affectée, ou un admin.',
+      description: 'Au changement manuel du statut d’une demande vers « Non réalisable » par un gestionnaire ou un admin.',
       type: 'action',
     },
   },

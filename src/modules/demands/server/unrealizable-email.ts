@@ -4,8 +4,10 @@ import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import type { Demands } from '@/server/db/kysely';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import type { UserRole } from '@/types/enum/UserRole';
 
 type MaybeUnrealizableStatusChange = {
+  actorRole: UserRole;
   currentDemand: Pick<Selectable<Demands>, 'id' | 'legacy_values'>;
   nextStatus?: string;
 };
@@ -13,8 +15,14 @@ type MaybeUnrealizableStatusChange = {
 /**
  * Sends the demandeur email when an existing demand is manually closed as unrealizable.
  */
-export const sendUnrealizableDemandEmailIfNeeded = async ({ currentDemand, nextStatus }: MaybeUnrealizableStatusChange) => {
-  if (nextStatus !== DEMANDE_STATUS.UNREALISABLE || currentDemand.legacy_values.Status === DEMANDE_STATUS.UNREALISABLE) {
+export const sendUnrealizableDemandEmailIfNeeded = async ({ actorRole, currentDemand, nextStatus }: MaybeUnrealizableStatusChange) => {
+  const canTriggerEmail = actorRole === 'admin' || actorRole === 'gestionnaire';
+
+  if (
+    !canTriggerEmail ||
+    nextStatus !== DEMANDE_STATUS.UNREALISABLE ||
+    currentDemand.legacy_values.Status === DEMANDE_STATUS.UNREALISABLE
+  ) {
     return;
   }
 
