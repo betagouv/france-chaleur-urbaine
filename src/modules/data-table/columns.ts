@@ -12,7 +12,7 @@ const getColumnId = <Row>(column: DataTableColumn<Row>): string => {
 };
 
 /** Normalizes column definitions (single accessor, id, header label), dropping hidden ones. */
-export const resolveColumns = <Row>(columns: DataTableColumn<Row>[]): ResolvedColumn<Row>[] =>
+export const resolveColumns = <Row>(columns: DataTableColumn<Row>[], sortableByDefault = true): ResolvedColumn<Row>[] =>
   columns
     .filter((column) => !column.hidden)
     .map((column) => {
@@ -28,7 +28,7 @@ export const resolveColumns = <Row>(columns: DataTableColumn<Row>[]): ResolvedCo
         header: column.header,
         headerLabel: column.headerLabel ?? (typeof column.header === 'string' ? column.header : id),
         id,
-        sortable: column.sortable ?? (column.accessorFn !== undefined || accessorKey !== undefined),
+        sortable: column.sortable ?? (sortableByDefault && (column.accessorFn !== undefined || accessorKey !== undefined)),
         sortValue: column.sortValue,
         width: column.width,
       };

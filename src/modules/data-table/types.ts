@@ -114,6 +114,8 @@ export type UseDataTableOptions<Row, Filters extends readonly FilterDef<Row>[]> 
   filters?: Filters;
   /** Extra sort keys without a column of their own; ids must not collide with column ids. */
   sorts?: SortDef<Row>[];
+  /** Default sortability of the columns (a column's own `sortable` wins). `false` for small static tables. */
+  sortable?: boolean;
   getRowId: (row: Row) => string;
   initialSorting?: SortingState;
   initialFilters?: FilterValuesOf<Row, Filters>;

@@ -71,12 +71,13 @@ export function useDataTable<Row, const Filters extends readonly FilterDef<Row>[
     search: searchOptions = {},
     urlKey,
     enableRowSelection = false,
+    sortable = true,
   } = options;
   const filters = (options.filters ?? EMPTY_FILTERS) as Filters;
   const sorts: SortDef<Row>[] = options.sorts ?? EMPTY_SORTS;
 
   const state = useDataTableState(urlKey, initialSorting, initialFilters);
-  const resolvedColumns = useMemo(() => resolveColumns(columns), [columns]);
+  const resolvedColumns = useMemo(() => resolveColumns(columns, sortable), [columns, sortable]);
   const sortKeys = useMemo(() => resolveSortKeys(resolvedColumns, sorts), [resolvedColumns, sorts]);
   const tanstackColumns = useMemo(() => toTanstackColumns(sortKeys), [sortKeys]);
 

@@ -94,17 +94,20 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 | 5 | `chaleur-renouvelable/.../DemandesChaleurRenouvelableAdminPage.tsx` | ⬜ | |
 | 6 | `demands/client/ReseauxStatsPage.tsx` | ⬜ | export-only columns → `exportColumns` |
 | 7 | `conversion-tracking/.../ConversionStatsPage.tsx`, `ConversionAbusePage.tsx` | ⬜ | hidden sortable columns → `sortValue` / sort dialog |
-| 8 | `organizations/.../AdminOrganizationsPage.tsx`, `pages/admin/jobs.tsx` | ⬜ | jobs: remove hooks called inside cell renderers |
+| 8 | `organizations/.../AdminOrganizationsPage.tsx`, `pages/admin/jobs.tsx` | ✅ | jobs: hooks moved out of the cell renderers, `confirm()` → `ConfirmDialog` |
 | 9 | `pro-eligibility-tests/.../ProEligibilityTestItem.tsx` | ⬜ | index-based selection → row ids; one export path |
 | 10 | `reseaux/client/admin/AdminReseauxPage.tsx` (4 tables) | ⬜ | drop hand-computed height |
 | 11 | `NetworksList/NetworksList.tsx` | ⬜ | drawer filters → table filters (custom where needed), unified export/search |
-| 12 | `ComparateurPublicodes/DebugDrawer.tsx` (11 small tables), `components/Us.tsx` | ⬜ | non-virtualized mode |
+| 12 | `ComparateurPublicodes/DebugDrawer.tsx` (11 small tables), `components/Us.tsx` | 🟡 | `Us.tsx` done (`sortable: false`, no toolbar); DebugDrawer pending |
 | 13 | Delete `components/ui/table/*`, `QuickFilterPresets.tsx`; update docs | ⬜ | |
 
 ## Migrated tables
 
 | Table | Notes |
 |-------|-------|
+| `components/Us.tsx` | static 6-row table: module-level columns/rows, `sortable: false`, `search={false}`, `cells.percent()` |
+| `organizations/.../AdminOrganizationsPage.tsx` | typed row from `RouterOutput`; JSX header gets a `headerLabel`; gained the search input and results count |
+| `pages/admin/jobs.tsx` | hooks (`usePost`/`useDelete`) hoisted to the page with URL functions, actions cell is pure; `confirm()` → `ConfirmDialog`; the JSON `result` column is narrowed with a local `JobResult` type (the old `getValue()` hid it as `any`); `rowHeight="lg"` for the 3-line result |
 | `pages/admin/users.tsx` | 9 filters declared at table level (the hidden « Créé via API » column is gone); tag facets come from the data (with counts) instead of the tag catalog query; `users_filters` URL param is now an object (`{ active: ['true'] }`); percentage widths replace `flex`; row height `md` |
 
 ## Decisions log

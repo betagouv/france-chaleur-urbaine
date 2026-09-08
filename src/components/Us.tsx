@@ -4,10 +4,34 @@ import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle } from '@/components/ui/Section';
-import TableSimple from '@/components/ui/table/TableSimple';
 import dataNumberFcu from '@/data/home/data-number-fcu';
+import { cells } from '@/modules/data-table/cells';
+import { DataTable } from '@/modules/data-table/DataTable';
+import type { DataTableColumn } from '@/modules/data-table/types';
+import { useDataTable } from '@/modules/data-table/useDataTable';
+
+type BudgetRow = { id: number; poste: string; '2023': number; '2024': number; '2025': number };
+
+const budgetColumns: DataTableColumn<BudgetRow>[] = [
+  { accessorKey: 'poste', header: 'Poste' },
+  { accessorKey: '2023', align: 'right', cell: cells.percent({ maximumFractionDigits: 0 }), header: '2023', width: 100 },
+  { accessorKey: '2024', align: 'right', cell: cells.percent({ maximumFractionDigits: 0 }), header: '2024', width: 100 },
+  { accessorKey: '2025', align: 'right', cell: cells.percent({ maximumFractionDigits: 0 }), header: '2025', width: 100 },
+];
+
+const budgetRows: BudgetRow[] = [
+  { '2023': 0.25, '2024': 0.4, '2025': 0.3, id: 1, poste: 'Développement web' },
+  { '2023': 0.33, '2024': 0.32, '2025': 0.4, id: 2, poste: 'Déploiement et animation' },
+  { '2023': 0.15, '2024': 0.13, '2025': 0.2, id: 3, poste: 'Coaching et design' },
+  { '2023': 0.13, '2024': 0.08, '2025': 0.1, id: 4, poste: 'Géomatique' },
+  { '2023': 0.05, '2024': 0.04, '2025': 0, id: 5, poste: 'Référencement (SEO/SEA)' },
+  { '2023': 0.09, '2024': 0.04, '2025': 0, id: 6, poste: 'Frais (publicité, salons…)' },
+];
+
+const getBudgetRowId = (row: BudgetRow) => String(row.id);
 
 const Us = () => {
+  const budgetTable = useDataTable({ columns: budgetColumns, data: budgetRows, getRowId: getBudgetRowId, sortable: false });
   return (
     <>
       <Hero variant="ressource">
@@ -113,23 +137,7 @@ const Us = () => {
           <SectionHeading as="h3" className="text-center">
             Répartition par poste
           </SectionHeading>
-          <TableSimple
-            className="mx-auto max-w-[600px]"
-            columns={[
-              { accessorKey: 'poste', flex: 1, header: 'Poste' },
-              { accessorKey: '2023', cellType: 'Percent', header: '2023', width: '120px' },
-              { accessorKey: '2024', cellType: 'Percent', header: '2024', width: '120px' },
-              { accessorKey: '2025', cellType: 'Percent', header: '2025', width: '120px' },
-            ]}
-            data={[
-              { '2023': 0.25, '2024': 0.4, '2025': 0.3, id: 1, poste: 'Développement web' },
-              { '2023': 0.33, '2024': 0.32, '2025': 0.4, id: 2, poste: 'Déploiement et animation' },
-              { '2023': 0.15, '2024': 0.13, '2025': 0.2, id: 3, poste: 'Coaching et design' },
-              { '2023': 0.13, '2024': 0.08, '2025': 0.1, id: 4, poste: 'Géomatique' },
-              { '2023': 0.05, '2024': 0.04, '2025': 0, id: 5, poste: 'Référencement (SEO/SEA)' },
-              { '2023': 0.09, '2024': 0.04, '2025': 0, id: 6, poste: 'Frais (publicité, salons…)' },
-            ]}
-          />
+          <DataTable table={budgetTable} className="mx-auto max-w-[600px]" search={false} rowHeight="sm" />
         </SectionContent>
       </Section>
       <Section variant="accent">
