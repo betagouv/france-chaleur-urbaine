@@ -8,8 +8,8 @@ import Drawer from '@/components/ui/Drawer';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
-import TableSimple from '@/components/ui/table/TableSimple';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { StaticDataTable } from '@/modules/data-table/StaticDataTable';
 import { RuleExplanationDialog } from '@/modules/publicodes/client/RuleExplanationDialog';
 import { formatUnit } from '@/modules/publicodes/format';
 
@@ -108,8 +108,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
           <Box px="3w" maxWidth="100%">
             <Heading size="h2">Bilan 1an</Heading>
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="Coûts par logement / tertiaire"
               columns={[
                 { accessorKey: 'installation', header: 'Installation' },
@@ -145,8 +144,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
 
             <Heading size="h2">Calculs économiques</Heading>
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="Coût d'achat du combustible"
               columns={[
                 { accessorKey: 'parametres', header: 'Paramètres' },
@@ -197,8 +195,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               ]}
             />
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="P4 - Investissement total (sans aide) €TTC"
               columns={[
                 { accessorKey: 'installation', header: 'Installation' },
@@ -220,8 +217,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               }))}
             />
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="P1 - Coût du combustible par lgt type / tertiaire"
               columns={[
                 { accessorKey: 'installation', header: 'Installation' },
@@ -241,8 +237,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               }))}
             />
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="P2, P3 - Coût de l'entretien"
               columns={[
                 { accessorKey: 'installation', header: 'Installation' },
@@ -260,8 +255,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               }))}
             />
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="Montant des aides par logement/tertiaire"
               columns={[
                 { accessorKey: 'installation', header: 'Installation' },
@@ -290,8 +284,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
 
             <Heading size="h2">Calculs techniques</Heading>
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="Puissance totale des installations"
               columns={[
                 { accessorKey: 'installation', header: 'Installation' },
@@ -441,8 +434,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               ]}
             />
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="Si besoins équipements ECS différenciés"
               columns={[
                 { accessorKey: 'installation', header: 'Installation' },
@@ -460,8 +452,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               }))}
             />
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="Bilan par lgt / tertiaire"
               columns={[
                 { accessorKey: 'installation', header: 'Installation' },
@@ -477,8 +468,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
               }))}
             />
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="Bilan des consommations par lgt / tertiaire"
               columns={[
                 { accessorKey: 'installation', header: 'Installation' },
@@ -497,8 +487,7 @@ const DebugDrawer = ({ engine }: { engine: SimulatorEngine }) => {
 
             <Heading size="h2">Calculs environnementaux</Heading>
 
-            <TableSimple
-              fluid
+            <StaticDataTable
               caption="Emissions de CO2"
               columns={[
                 { accessorKey: 'installation', header: 'Installation' },

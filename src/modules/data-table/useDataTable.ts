@@ -6,9 +6,12 @@ import {
   type Table,
   useReactTable,
 } from '@tanstack/react-table';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { isDevModeEnabled } from '@/hooks/useDevMode';
 
 import { resolveColumns, resolveSortKeys, toTanstackColumns } from './columns';
+import { VIRTUALIZE_THRESHOLD } from './constants';
 import {
   applyFilters,
   compactFilterValues,
@@ -18,12 +21,16 @@ import {
 } from './filters/filter-predicates';
 import type { FacetOption, FilterDef, FilterValues, FilterValuesOf } from './filters/filter-types';
 import { buildSearchIndex, defaultSearchText, matchesSearch } from './search';
-import type { DataTableSearchOptions, ResolvedColumn, SortDef, UseDataTableOptions } from './types';
+import type { DataTableColumn, DataTableSearchOptions, ResolvedColumn, SortDef, UseDataTableOptions } from './types';
 import { useDataTableState } from './useDataTableState';
 
 // Stable empty defaults: a fresh `[]` per render would recompute every derived memo.
 const EMPTY_FILTERS: never[] = [];
 const EMPTY_SORTS: never[] = [];
+const indexRowId = (_row: unknown, index: number) => String(index);
+
+// Consecutive renders with a new `columns` identity before the dev-mode warning fires.
+const UNSTABLE_COLUMNS_THRESHOLD = 5;
 
 export type DataTableInstance<Row, Filters extends readonly FilterDef<Row>[] = readonly FilterDef<Row>[]> = {
   /** TanStack table (sorting, selection). Rendering and filtering do not go through it. */
@@ -35,7 +42,7 @@ export type DataTableInstance<Row, Filters extends readonly FilterDef<Row>[] = r
   data: Row[];
   /** Rows after search, filters and sorting. */
   rows: Row[];
-  getRowId: (row: Row) => string;
+  getRowId: (row: Row, index: number) => string;
   search: string;
   setSearch: (search: string) => void;
   searchOptions: DataTableSearchOptions<Row>;
@@ -56,6 +63,24 @@ export type DataTableInstance<Row, Filters extends readonly FilterDef<Row>[] = r
 };
 
 /**
+ * Dev-mode guard on large tables: columns recreated on every render re-render every row and recompute the search
+ * index; the usual cause is an unstable handler in the columns' `useMemo` dependencies. Small static tables are exempt.
+ */
+function useUnstableColumnsWarning<Row>(columns: DataTableColumn<Row>[], rowCount: number) {
+  const previousColumns = useRef(columns);
+  const changes = useRef(0);
+  const warned = useRef(false);
+  useEffect(() => {
+    changes.current = previousColumns.current === columns ? 0 : changes.current + 1;
+    previousColumns.current = columns;
+    if (!warned.current && rowCount > VIRTUALIZE_THRESHOLD && changes.current >= UNSTABLE_COLUMNS_THRESHOLD && isDevModeEnabled()) {
+      warned.current = true;
+      console.warn('[DataTable] `columns` changed on every render: memoize them and keep their dependencies stable.');
+    }
+  });
+}
+
+/**
  * Table state and derived data: search index, filters (single pass, facets computed once per data),
  * TanStack sorting and selection. Pair it with `<DataTable table={instance} />`.
  */
@@ -65,7 +90,7 @@ export function useDataTable<Row, const Filters extends readonly FilterDef<Row>[
   const {
     data,
     columns,
-    getRowId,
+    getRowId = indexRowId,
     initialSorting,
     initialFilters,
     search: searchOptions = {},
@@ -77,6 +102,7 @@ export function useDataTable<Row, const Filters extends readonly FilterDef<Row>[
   const sorts: SortDef<Row>[] = options.sorts ?? EMPTY_SORTS;
 
   const state = useDataTableState(urlKey, initialSorting, initialFilters);
+  useUnstableColumnsWarning(columns, data.length);
   const resolvedColumns = useMemo(() => resolveColumns(columns, sortable), [columns, sortable]);
   const sortKeys = useMemo(() => resolveSortKeys(resolvedColumns, sorts), [resolvedColumns, sorts]);
   const tanstackColumns = useMemo(() => toTanstackColumns(sortKeys), [sortKeys]);

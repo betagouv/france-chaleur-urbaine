@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { resolveColumns } from './columns';
+import { accessorColumn, resolveColumns } from './columns';
 import { buildExportColumns } from './export';
 
 type Row = { name: string; tags: string[]; createdAt: Date; nested: { value: number } };
@@ -17,6 +17,19 @@ describe('resolveColumns', () => {
     expect([byKey.id, byKey.headerLabel, byKey.sortable, byKey.accessor(row)]).toStrictEqual(['name', 'Nom', true, 'Réseau']);
     expect([byFn.id, byFn.width, byFn.accessor(row)]).toStrictEqual(['value', 80, 3]);
     expect([display.id, display.sortable, display.accessor(row)]).toStrictEqual(['actions', false, undefined]);
+  });
+
+  it('resolves a column built with accessorColumn like a literal one', () => {
+    const [column] = resolveColumns<Row>([
+      accessorColumn((item: Row) => item.tags.length, { header: 'Nb tags', id: 'tagCount', width: 60 }),
+    ]);
+    expect([column.id, column.headerLabel, column.sortable, column.width, column.accessor(row)]).toStrictEqual([
+      'tagCount',
+      'Nb tags',
+      true,
+      60,
+      2,
+    ]);
   });
 
   it('drops hidden columns and throws without id', () => {

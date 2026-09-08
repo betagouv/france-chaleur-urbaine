@@ -49,11 +49,13 @@ type AccessorKeyColumn<Row> = {
   };
 }[keyof Row & string];
 
-type AccessorFnColumn<Row, Value> = ColumnBase<Row> & {
+// `cell` is a method signature (bivariant) so a column built by `accessorColumn` with a precise `Value` fits the
+// `DataTableColumn<Row>` union, whose accessorFn member is typed with `unknown`.
+export type AccessorFnColumn<Row, Value> = ColumnBase<Row> & {
   id: string;
   accessorKey?: never;
   accessorFn: (row: Row) => Value;
-  cell?: CellRenderer<Row, Value>;
+  cell?(context: CellContext<Row, Value>): ReactNode;
 };
 
 // `cell` has the same signature as the accessorFn variant: TS only derives a contextual signature from a union when they match.
@@ -112,11 +114,12 @@ export type UseDataTableOptions<Row, Filters extends readonly FilterDef<Row>[]> 
   data: Row[];
   columns: DataTableColumn<Row>[];
   filters?: Filters;
+  /** Row identity for selection, highlight and React keys; defaults to the row index (fine for static data only). */
+  getRowId?: (row: Row, index: number) => string;
   /** Extra sort keys without a column of their own; ids must not collide with column ids. */
   sorts?: SortDef<Row>[];
   /** Default sortability of the columns (a column's own `sortable` wins). `false` for small static tables. */
   sortable?: boolean;
-  getRowId: (row: Row) => string;
   initialSorting?: SortingState;
   initialFilters?: FilterValuesOf<Row, Filters>;
   search?: DataTableSearchOptions<Row>;

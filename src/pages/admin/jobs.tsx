@@ -11,6 +11,7 @@ import Text from '@/components/ui/Text';
 import { useDelete, useFetch, usePost } from '@/hooks/useApi';
 import { useDialogState } from '@/hooks/useDialogState';
 import { cells } from '@/modules/data-table/cells';
+import { accessorColumn } from '@/modules/data-table/columns';
 import { DataTable } from '@/modules/data-table/DataTable';
 import type { DataTableColumn } from '@/modules/data-table/types';
 import { useDataTable } from '@/modules/data-table/useDataTable';
@@ -87,12 +88,11 @@ export default function ManageJobs() {
         sortable: false,
         width: '25%',
       },
-      {
-        accessorFn: (row) => row.user?.email ?? null,
-        cell: ({ value }) => (typeof value === 'string' ? value : <span className="text-faded">Système</span>),
+      accessorColumn((row: AdminJobItem) => row.user?.email ?? null, {
+        cell: ({ value }) => value ?? <span className="text-faded">Système</span>,
         header: 'Utilisateur',
         id: 'user_email',
-      },
+      }),
       { accessorKey: 'created_at', cell: cells.dateTime(), header: 'Créée le', width: 110 },
       { accessorKey: 'updated_at', cell: cells.dateTime(), header: 'Mise à jour le', width: 110 },
       {

@@ -1,7 +1,16 @@
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { compareSortValues, toSortValue } from './sorting';
-import type { DataTableColumn, ResolvedColumn, SortDef } from './types';
+import type { AccessorFnColumn, DataTableColumn, ResolvedColumn, SortDef } from './types';
+
+/**
+ * Column on a computed value with a typed `cell` (TS cannot infer `value` from a sibling `accessorFn` in a literal).
+ * `accessorColumn((row: User) => row.tags.map((tag) => tag.name), { id: 'tags', header: 'Étiquettes', cell: ({ value }) => value.join(', ') })`
+ */
+export const accessorColumn = <Row, Value>(
+  accessorFn: (row: Row) => Value,
+  definition: Omit<AccessorFnColumn<Row, Value>, 'accessorFn' | 'accessorKey'>
+): DataTableColumn<Row> => ({ ...definition, accessorFn });
 
 const getColumnId = <Row>(column: DataTableColumn<Row>): string => {
   const id = column.id ?? column.accessorKey;

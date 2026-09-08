@@ -6,9 +6,8 @@ import Link from '@/components/ui/Link';
 import Section, { SectionContent, SectionHeading, SectionTitle } from '@/components/ui/Section';
 import dataNumberFcu from '@/data/home/data-number-fcu';
 import { cells } from '@/modules/data-table/cells';
-import { DataTable } from '@/modules/data-table/DataTable';
+import { StaticDataTable } from '@/modules/data-table/StaticDataTable';
 import type { DataTableColumn } from '@/modules/data-table/types';
-import { useDataTable } from '@/modules/data-table/useDataTable';
 
 type BudgetRow = { id: number; poste: string; '2023': number; '2024': number; '2025': number };
 
@@ -28,10 +27,7 @@ const budgetRows: BudgetRow[] = [
   { '2023': 0.09, '2024': 0.04, '2025': 0, id: 6, poste: 'Frais (publicité, salons…)' },
 ];
 
-const getBudgetRowId = (row: BudgetRow) => String(row.id);
-
 const Us = () => {
-  const budgetTable = useDataTable({ columns: budgetColumns, data: budgetRows, getRowId: getBudgetRowId, sortable: false });
   return (
     <>
       <Hero variant="ressource">
@@ -137,7 +133,7 @@ const Us = () => {
           <SectionHeading as="h3" className="text-center">
             Répartition par poste
           </SectionHeading>
-          <DataTable table={budgetTable} className="mx-auto max-w-[600px]" search={false} rowHeight="sm" />
+          <StaticDataTable columns={budgetColumns} data={budgetRows} className="mx-auto max-w-[600px]" />
         </SectionContent>
       </Section>
       <Section variant="accent">

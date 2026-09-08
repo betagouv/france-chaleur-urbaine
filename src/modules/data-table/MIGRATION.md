@@ -98,14 +98,15 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 | 9 | `pro-eligibility-tests/.../ProEligibilityTestItem.tsx` | ⬜ | index-based selection → row ids; one export path |
 | 10 | `reseaux/client/admin/AdminReseauxPage.tsx` (4 tables) | ⬜ | drop hand-computed height |
 | 11 | `NetworksList/NetworksList.tsx` | ⬜ | drawer filters → table filters (custom where needed), unified export/search |
-| 12 | `ComparateurPublicodes/DebugDrawer.tsx` (11 small tables), `components/Us.tsx` | 🟡 | `Us.tsx` done (`sortable: false`, no toolbar); DebugDrawer pending |
+| 12 | `ComparateurPublicodes/DebugDrawer.tsx` (11 small tables), `components/Us.tsx` | ✅ | both on `StaticDataTable` |
 | 13 | Delete `components/ui/table/*`, `QuickFilterPresets.tsx`; update docs | ⬜ | |
 
 ## Migrated tables
 
 | Table | Notes |
 |-------|-------|
-| `components/Us.tsx` | static 6-row table: module-level columns/rows, `sortable: false`, `search={false}`, `cells.percent()` |
+| `components/Us.tsx` | `StaticDataTable`, `cells.percent()` |
+| `ComparateurPublicodes/DebugDrawer.tsx` | 11 `StaticDataTable` with inline columns/data (mechanical replacement of `TableSimple fluid caption`) |
 | `organizations/.../AdminOrganizationsPage.tsx` | typed row from `RouterOutput`; JSX header gets a `headerLabel`; gained the search input and results count |
 | `pages/admin/jobs.tsx` | hooks (`usePost`/`useDelete`) hoisted to the page with URL functions, actions cell is pure; `confirm()` → `ConfirmDialog`; the JSON `result` column is narrowed with a local `JobResult` type (the old `getValue()` hid it as `any`); `rowHeight="lg"` for the 3-line result |
 | `pages/admin/users.tsx` | 9 filters declared at table level (the hidden « Créé via API » column is gone); tag facets come from the data (with counts) instead of the tag catalog query; `users_filters` URL param is now an object (`{ active: ['true'] }`); percentage widths replace `flex`; row height `md` |
@@ -115,6 +116,7 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 - 2026-09-07 — TanStack Table kept; wrapper rewritten. Module location `src/modules/data-table/`.
 - 2026-09-07 — Fixed row heights everywhere (`sm`/`md`/`lg`), no dynamic measurement; cells adapt.
 - 2026-09-07 — Virtualization automatic above 100 rows, opt-in/out via prop.
+- 2026-09-08 — `accessorColumn` helper for typed computed columns; `StaticDataTable` for small read-only tables; dev-mode warning on unstable columns (Biome's `useExhaustiveDependencies` is off project-wide, 167 diagnostics if enabled, and would not detect unstable hook results anyway).
 - 2026-09-08 — Sorting decoupled from columns like filters (`sorts` keys); single « Filtres et tri » dialog; active sort/filter chips in the toolbar. Goal: no field needs a column to be sortable or filterable.
 - 2026-09-08 — Page-scroll virtualization tried and dropped: the page became rows × height tall and DSFR makes `<table>` a scrolling block. Tables scroll in their own container capped at the viewport height by default (`height` overrides), so nothing has to be configured.
 - 2026-09-07 — URL sync kept as simple as today (nuqs, JSON where needed); pretty params later.
