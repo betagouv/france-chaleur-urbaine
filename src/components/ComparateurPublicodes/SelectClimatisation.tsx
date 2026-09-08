@@ -12,7 +12,7 @@ const SelectClimatisation = ({ ...props }: SelectClimatisation) => {
 
   return (
     <Select
-      label="climatisation . incluse"
+      label="Inclure la climatisation"
       options={[
         {
           label: 'Non',
