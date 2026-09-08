@@ -79,7 +79,10 @@ function DataTableRowInner<Row>({
         const content = column.cell ? column.cell({ row: item, value }) : renderDefaultCell(value);
         const isText = typeof content === 'string' || typeof content === 'number';
         return (
-          <td key={column.id} className={cx('px-2 py-1 align-middle overflow-hidden', alignClasses[column.align], column.className)}>
+          <td
+            key={column.id}
+            className={cx('px-2 py-1 align-middle overflow-hidden whitespace-normal', alignClasses[column.align], column.className)}
+          >
             <div
               className={cx('overflow-hidden', isText && ROW_LINE_CLAMP[rowHeight])}
               style={{ maxHeight: heightPx - 8 }}

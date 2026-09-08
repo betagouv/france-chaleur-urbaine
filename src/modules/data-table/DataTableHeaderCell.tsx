@@ -26,7 +26,7 @@ export function DataTableHeaderCell<Row>({ column, tanstackColumn, sortingCount 
   return (
     <th
       scope="col"
-      className={cx('px-2 py-2 align-middle', alignClasses[column.align], column.className)}
+      className={cx('px-2 py-2 align-middle whitespace-normal', alignClasses[column.align], column.className)}
       aria-sort={canSort ? (sorted ? ariaSortValues[sorted] : 'none') : undefined}
     >
       <div className={cx('flex items-center gap-1', alignClasses[column.align])}>

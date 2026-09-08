@@ -9,6 +9,9 @@ export const ROW_LINE_CLAMP = { lg: 'line-clamp-3', md: 'line-clamp-2', sm: 'lin
 /** Above this number of rows, `virtualize: 'auto'` switches to virtualized rendering. */
 export const VIRTUALIZE_THRESHOLD = 100;
 
+/** The table never exceeds the viewport: the page scrolls until the table fills it, then the rows scroll. */
+export const DEFAULT_TABLE_HEIGHT = 'calc(100dvh - 1rem)';
+
 export const LOADING_ROWS_COUNT = 5;
 
 /** Width reserved for columns without an explicit width when computing the table minimum width. */
