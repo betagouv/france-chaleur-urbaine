@@ -89,7 +89,7 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 | 0 | Analysis, plan, decisions validated | ✅ | see this document |
 | 1 | Core module: types, `useDataTable`, built-in filters, toolbar, `DataTable` rendering (plain + virtualized, fixed row heights), cells helpers, export, URL sync, specs, `AGENTS.md`, root index entry. Freeze notice on top of `TableSimple.tsx` (no new feature). | ✅ | 52 unit tests; sort first click is always ascending; facets on unfiltered data |
 | 2 | Pilot 1: `pages/admin/users.tsx` (filters dialog, export, URL, flex widths, Boolean/Date cells). API validation. | ✅ | to be validated visually on real data |
-| 3 | Pilot 2: `pages/admin/demandes.tsx` (30 columns, presets, map link, thousands of rows). Profiler measurements before/after on prod-sized data: keystroke in search, scroll frame, row selection. | ⬜ | success criterion of the perf work |
+| 3 | Pilot 2: `pages/admin/demandes.tsx` (30 columns, presets, map link, thousands of rows). Profiler measurements before/after on prod-sized data: keystroke in search, scroll frame, row selection. | 🟡 | migrated; measurements and visual validation pending |
 | 4 | `pages/pro/demandes.tsx`, `pages/pro/mes-demandes.tsx` | ⬜ | share presets/filters with admin demands where possible |
 | 5 | `chaleur-renouvelable/.../DemandesChaleurRenouvelableAdminPage.tsx` | ⬜ | |
 | 6 | `demands/client/ReseauxStatsPage.tsx` | ⬜ | export-only columns → `exportColumns` |
@@ -109,6 +109,7 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 | `ComparateurPublicodes/DebugDrawer.tsx` | 11 `StaticDataTable` with inline columns/data (mechanical replacement of `TableSimple fluid caption`) |
 | `organizations/.../AdminOrganizationsPage.tsx` | typed row from `RouterOutput`; JSX header gets a `headerLabel`; gained the search input and results count |
 | `pages/admin/jobs.tsx` | hooks (`usePost`/`useDelete`) hoisted to the page with URL functions, actions cell is pure; `confirm()` → `ConfirmDialog`; the JSON `result` column is narrowed with a local `JobResult` type (the old `getValue()` hid it as `any`); `rowHeight="lg"` for the 3-line result |
+| `pages/admin/demandes.tsx` | 16 filters and 5 presets moved to `modules/demands/client/admin-demands-filters.tsx` (also typed source of the inbound links from the stats page and the data diagnostic); the 6 hidden filter-only columns are gone; `rowHeight="lg"` with adapted cells: `Contact` on 3 truncated lines (details in tooltip), `Comment` textareas on 2 rows, the pending reassignment block of `AffectedNetworkCell` becomes a warning button opening a popover; the module-level `isUpdatingDemandField` flag is replaced by the displayed-ids signature (map recenters only when the displayed set changes); `confirm()` → `ConfirmDialog`; URL `demands_filters` is now an object |
 | `pages/admin/users.tsx` | 9 filters declared at table level (the hidden « Créé via API » column is gone); tag facets come from the data (with counts) instead of the tag catalog query; `users_filters` URL param is now an object (`{ active: ['true'] }`); percentage widths replace `flex`; row height `md` |
 
 ## Decisions log

@@ -28,6 +28,7 @@ import { objectToURLSearchParams } from '@/utils/network';
 import { compareFrenchStrings, formatMW } from '@/utils/strings';
 
 import type { ReseauxStats } from '../types';
+import type { AdminDemandsFilterValues } from './admin-demands-filters';
 
 const initialSortingState = [{ desc: true, id: 'lastSixMonths' }];
 const initialFilterState: ColumnFiltersState = [];
@@ -423,7 +424,7 @@ const DemandStatsCell = ({
   </span>
 );
 
-const buildAdminDemandsUrl = (filters: ColumnFiltersState) => {
+const buildAdminDemandsUrl = (filters: AdminDemandsFilterValues) => {
   return `/admin/demandes?${objectToURLSearchParams({ demands_filters: filters }).toString()}`;
 };
 
@@ -432,14 +433,12 @@ const buildDemandFilters = (
   networkType: NetworkType,
   periodMonths: number | undefined,
   pendingOnly: boolean
-): ColumnFiltersState => [
-  { id: 'network_id', value: { [`${networkType}:${networkId}`]: true } },
-  { id: 'validated', value: { false: false, true: true } },
-  ...(pendingOnly ? [{ id: 'Status', value: { [DEMANDE_STATUS.TO_PROCESS]: true } }] : []),
-  ...(isDefined(periodMonths)
-    ? [{ id: 'Date de la demande', value: [dayjs().subtract(periodMonths, 'month').format('YYYY-MM-DD'), null, false] }]
-    : []),
-];
+): AdminDemandsFilterValues => ({
+  network_id: [`${networkType}:${networkId}`],
+  validated: ['true'],
+  ...(pendingOnly ? { Status: [DEMANDE_STATUS.TO_PROCESS] } : {}),
+  ...(isDefined(periodMonths) ? { date: { from: dayjs().subtract(periodMonths, 'month').format('YYYY-MM-DD') } } : {}),
+});
 
 const CopyEmailsButton = ({ emails }: { emails: string[] }) => {
   const { copied, copy } = useCopy();

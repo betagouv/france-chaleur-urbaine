@@ -1,11 +1,9 @@
 import { usePrevious } from '@react-hookz/web';
-import type { ColumnFiltersState } from '@tanstack/react-table';
-import { parseAsJson, useQueryState } from 'nuqs';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { SortingState } from '@tanstack/react-table';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import TableAddressAutocomplete from '@/components/Admin/TableAddressAutocomplete';
 import EligibilityHelpDialog from '@/components/EligibilityHelpDialog';
-import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import DemandEmailModal from '@/components/Manager/DemandEmailModal';
 import ModeDeChauffageTag, { getModeDeChauffageDisplay } from '@/components/Manager/ModeDeChauffageTag';
@@ -14,22 +12,26 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';
 import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
-import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
-import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
+import { useDialogState } from '@/hooks/useDialogState';
+import { cells } from '@/modules/data-table/cells';
+import { accessorColumn } from '@/modules/data-table/columns';
+import { DataTable } from '@/modules/data-table/DataTable';
+import type { DataTableColumn } from '@/modules/data-table/types';
+import { useDataTable } from '@/modules/data-table/useDataTable';
 import AccessCountsCell from '@/modules/demands/client/AccessCountsCell';
 import AffectedNetworkCell from '@/modules/demands/client/AffectedNetworkCell';
+import { type AdminDemandItem, adminDemandsPresets, buildAdminDemandsFilters } from '@/modules/demands/client/admin-demands-filters';
 import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
-import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import Status from '@/modules/demands/client/Status';
-import type { DemandStatus } from '@/modules/demands/constants';
-import { eligibilityTypes as eligibilityCases, eligibilityTitleByType } from '@/modules/demands/constants';
+import { eligibilityTitleByType } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
@@ -38,17 +40,14 @@ import { Map } from '@/modules/map/client/Map';
 import { notify, toastErrors } from '@/modules/notification';
 import EligibilityHistoryTooltip from '@/modules/pro-eligibility-tests/client/EligibilityHistoryTooltip';
 import type { NetworkType } from '@/modules/reseaux/constants';
-import trpc, { type RouterOutput } from '@/modules/trpc/client';
+import trpc from '@/modules/trpc/client';
 import { withAuthentication } from '@/server/authentication';
-import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { Point } from '@/types/Point';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
-import { dayjs } from '@/utils/date';
 import { stopPropagation } from '@/utils/events';
 
-type DemandsListAdminData = RouterOutput['demands']['admin']['list'];
-type DemandsListAdminItem = DemandsListAdminData['items'][number];
+type DemandsListAdminItem = AdminDemandItem;
 
 type MapCenterLocation = {
   center: Point;
@@ -56,107 +55,20 @@ type MapCenterLocation = {
   flyTo?: boolean;
 };
 
-// biome-ignore assist/source/useSortedKeys: keep field order as more coherent with most used actions
-const quickFilterPresets = {
-  demandesAAffecter: {
-    filters: [{ id: 'validated', value: { false: true, true: false } }],
-    getStat: (demands) => demands.filter((demand) => !demand.validated).length,
-    label: (
-      <>
-        à valider&nbsp;
-        <Tooltip title="Demandes dont l'affectation réseau n'a pas encore été validée" />
-      </>
-    ),
-    valueSuffix: <Icon name="fr-icon-flag-fill" size="sm" color="red" />,
-  },
-  reaffectationsEnAttente: {
-    filters: [{ id: 'pending_assignment_change_present' as any, value: { Non: false, Oui: true } }],
-    getStat: (demands) => demands.filter((demand) => demand.pending_assignment_change !== null).length,
-    label: (
-      <>
-        réaffectations&nbsp;
-        <br />
-        en attente&nbsp;
-        <Tooltip title="Demandes de réaffectation formulées par une collectivité/ALEC/CCRT/gestionnaire et non encore traitées." />
-      </>
-    ),
-    valueSuffix: <Icon name="fr-icon-arrow-left-right-line" size="sm" color="var(--text-default-warning)" />,
-  },
-  demandesMoisEnCours: {
-    filters: [
-      {
-        id: 'Date de la demande',
-        value: [dayjs().startOf('month').format('YYYY-MM-DD'), dayjs().endOf('month').format('YYYY-MM-DD'), false],
-      },
-    ],
-    getStat: (demands) => {
-      return demands.filter((demand) => {
-        const demandDate = dayjs(demand['Date de la demande']);
-        return demandDate.isSame(dayjs(), 'month');
-      }).length;
-    },
-    label: `en ${dayjs().format('MMMM')}`,
-  },
-  demandesATraiter: {
-    filters: [
-      { id: 'Status', value: { [DEMANDE_STATUS.TO_PROCESS]: true } },
-      {
-        id: 'testAddress_eligibility_type' as any, // Filters do not support nested filters
-        value: Object.fromEntries(
-          eligibilityCases.map((eligibilityCase) => [eligibilityCase.type, eligibilityCase.type !== 'trop_eloigne'])
-        ),
-      },
-    ],
-    getStat: (demands) =>
-      demands.filter((demand) => demand.Status === DEMANDE_STATUS.TO_PROCESS && demand.testAddress.eligibility?.type !== 'trop_eloigne')
-        .length,
-    label: (
-      <>
-        à traiter&nbsp;
-        <Tooltip title={`Le statut de la demande est "À traiter" et l'adresse n'est pas trop éloignée d'un réseau.`} />
-      </>
-    ),
-  },
-  all: {
-    filters: [],
-    getStat: (demands) => demands.length,
-    label: 'demandes totales',
-  },
-} satisfies Record<string, QuickFilterPreset<DemandsListAdminItem>>;
-
-const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
-
-/**
- * Permet de savoir quand la table est rafraichie par un changement de valeur et donc de ne pas centrer la carte sur la première demande quand les demandes changent.
- */
-let isUpdatingDemandField = false;
-
-const demandsTableUrlSyncKey = 'demands';
+const initialSorting: SortingState = [{ desc: true, id: 'Date de la demande' }];
+const initialFilters = adminDemandsPresets[0].filters;
+const emptyDemands: DemandsListAdminItem[] = [];
+const getRowId = (row: DemandsListAdminItem) => row.id;
 
 function DemandesAdmin(): React.ReactElement {
-  const scrollToRowRef = useRef<((rowId: string) => void) | null>(null);
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
-  const tableRowSelection = useMemo(() => {
-    return selectedDemandId ? { [selectedDemandId]: true } : {};
-  }, [selectedDemandId]);
-
   const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [filteredDemands, setFilteredDemands] = useState<DemandsListAdminItem[]>([]);
-
-  // Pour le moment, si l'URL contient les filtres, on applique pas les presets.
-  const [urlColumnFilters] = useQueryState(
-    `${demandsTableUrlSyncKey}_filters`,
-    parseAsJson<ColumnFiltersState>((value) => value as ColumnFiltersState)
-  );
-  const initialColumnFilters = urlColumnFilters !== null ? [] : quickFilterPresets.demandesAAffecter.filters;
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialColumnFilters);
   const [modalDemand, setModalDemand] = useState<DemandsListAdminItem | null>(null);
 
   const handleEmailClick = useCallback((demand: Demand) => setModalDemand(demand as unknown as DemandsListAdminItem), []);
 
   const { data: demandsData, isLoading } = trpc.demands.admin.list.useQuery();
-  const demands = demandsData?.items ?? [];
+  const demands = demandsData?.items ?? emptyDemands;
 
   // `origin_source` stocke l'id (uuid) de l'intégration — on résout son label pour l'affichage.
   const { data: integrations = [] } = trpc.conversionTracking.sources.list.useQuery({ includeArchived: true });
@@ -165,59 +77,12 @@ function DemandesAdmin(): React.ReactElement {
     [integrations]
   );
 
-  // Réinitialise la sélection quand l'ensemble des demandes affichées change (filtres/recherche),
-  // mais pas lors d'une simple édition de ligne, d'un tri ou d'un changement de sélection.
-  // On compare une signature d'appartenance (les ids visibles) en O(n) plutôt que par deep-compare.
-  const filteredIds = useMemo(() => new Set(filteredDemands.map((demand) => demand.id)), [filteredDemands]);
-  const prevFilteredIds = usePrevious(filteredIds);
-
-  useEffect(() => {
-    if (!prevFilteredIds) return;
-    const setChanged = prevFilteredIds.size !== filteredIds.size || [...filteredIds].some((id) => !prevFilteredIds.has(id));
-    if (setChanged) {
-      setSelectedDemandId(null);
-    }
-  }, [filteredIds, prevFilteredIds]);
-
-  // Signature des seuls champs utilisés par la carte : évite de reconstruire la FeatureCollection
-  // (et donc le setData MapLibre) lors d'une édition de contenu (commentaire, nombres…).
-  const mapDataKey = useMemo(
-    () =>
-      filteredDemands
-        .map(
-          (demand) =>
-            `${demand.id}:${demand.Latitude}:${demand.Longitude}:${demand.Structure}:${demand['Mode de chauffage']}:${demand['Type de chauffage']}:${demand.Adresse}`
-        )
-        .join('|'),
-    [filteredDemands]
-  );
-  const filteredDemandsMapData = useMemo(
-    () =>
-      filteredDemands.map(
-        (demand) =>
-          ({
-            address: demand.Adresse,
-            id: demand.id,
-            latitude: demand.Latitude ?? 0,
-            longitude: demand.Longitude ?? 0,
-            modeDeChauffage:
-              getModeDeChauffageDisplay({
-                modeDeChauffage: demand['Mode de chauffage'],
-                typeDeChauffage: demand['Type de chauffage'],
-              }) ?? undefined,
-            typeDeLogement: demand.Structure,
-          }) satisfies AdresseEligible
-      ),
-    [mapDataKey]
-  );
-
   const utils = trpc.useUtils();
   const { mutateAsync: updateDemandMutation } = trpc.demands.admin.update.useMutation();
   const { mutateAsync: deleteDemandMutation } = trpc.demands.admin.delete.useMutation();
 
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: Partial<DemandsListAdminItem>) => {
-      isUpdatingDemandField = true; // prevent the map from being centered on the first demand
       utils.demands.admin.list.setData(undefined, (demandsData) => {
         if (!demandsData) return demandsData;
         return {
@@ -262,7 +127,6 @@ function DemandesAdmin(): React.ReactElement {
 
   const changeNetwork = useCallback(
     toastErrors(async (demandId: string, networkIdFcu: number | null, networkType: NetworkType | null) => {
-      isUpdatingDemandField = true;
       await changeAssignmentMutation({ demandId, networkIdFcu, networkType });
       await utils.demands.admin.list.invalidate();
     }),
@@ -271,7 +135,6 @@ function DemandesAdmin(): React.ReactElement {
 
   const validateDemand = useCallback(
     toastErrors(async (demandId: string) => {
-      isUpdatingDemandField = true;
       utils.demands.admin.list.setData(undefined, (demandsData) => {
         if (!demandsData) return demandsData;
         return {
@@ -289,59 +152,53 @@ function DemandesAdmin(): React.ReactElement {
     [utils, validateDemandMutation]
   );
 
-  const tableColumns: ColumnDef<DemandsListAdminItem>[] = useMemo(
+  const columns = useMemo<DataTableColumn<DemandsListAdminItem>[]>(
     () => [
       {
         align: 'center',
         cell: ({ row }) => (
-          <div className="flex flex-col gap-2">
-            {!row.original.validated && (
+          <div className="flex flex-col items-center gap-2">
+            {!row.validated && (
               <Tooltip title="Cette demande n'a pas encore été validée">
                 <Icon name="fr-icon-flag-fill" size="sm" color="red" />
               </Tooltip>
             )}
-            {row.original.haut_potentiel && <FCUBadge type="haut_potentiel" />}
+            {row.haut_potentiel && <FCUBadge type="haut_potentiel" />}
           </div>
         ),
+        export: false,
         header: '',
+        headerLabel: 'Indicateurs',
         id: 'indicators',
-        width: '46px',
+        width: 46,
       },
       {
         accessorKey: 'Status',
-        cell: ({ row }) => {
-          const demand = row.original;
-          return (
-            <div>
-              <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} className="mb-0!" />
-              <div className="" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-                <EligibilityHelpDialog detailedEligibilityStatus={demand.testAddress.eligibility}>
-                  <Button
-                    className="text-gray-700! font-normal! italic"
-                    title="Voir le détail de l'éligibilité"
-                    priority="tertiary no outline"
-                    size="small"
-                    iconId="fr-icon-info-line"
-                  >
-                    {demand.testAddress.eligibility?.type ? eligibilityTitleByType[demand.testAddress.eligibility?.type] : 'Non connu'}
-                  </Button>
-                </EligibilityHelpDialog>
-              </div>
+        cell: ({ row }) => (
+          <div>
+            <Status demand={row as unknown as Demand} updateDemand={updateDemand} className="mb-0!" />
+            <div onClick={stopPropagation} onDoubleClick={stopPropagation}>
+              <EligibilityHelpDialog detailedEligibilityStatus={row.testAddress.eligibility}>
+                <Button
+                  className="text-gray-700! font-normal! italic"
+                  title="Voir le détail de l'éligibilité"
+                  priority="tertiary no outline"
+                  size="small"
+                  iconId="fr-icon-info-line"
+                >
+                  {row.testAddress.eligibility?.type ? eligibilityTitleByType[row.testAddress.eligibility.type] : 'Non connu'}
+                </Button>
+              </EligibilityHelpDialog>
             </div>
-          );
-        },
-        enableGlobalFilter: false,
-        filterProps: {
-          Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
-        },
-        filterType: 'Facets',
+          </div>
+        ),
         header: 'Statut',
-        width: '290px',
+        width: 290,
       },
       {
         accessorKey: 'Recontacté par le gestionnaire',
         align: 'center',
-        cell: ({ row }) => (
+        cell: ({ row, value }) => (
           <Select
             label=""
             options={[
@@ -352,147 +209,109 @@ function DemandesAdmin(): React.ReactElement {
             size="sm"
             nativeSelectProps={{
               'aria-label': 'Recontacté par le gestionnaire',
-              onChange: (e) =>
-                updateDemand(row.original.id, {
-                  'Recontacté par le gestionnaire': e.target.value as Demand['Recontacté par le gestionnaire'],
+              onChange: (event) =>
+                updateDemand(row.id, {
+                  'Recontacté par le gestionnaire': event.target.value as Demand['Recontacté par le gestionnaire'],
                 }),
-              value: row.original['Recontacté par le gestionnaire'] || '',
+              value: value || '',
             }}
           />
         ),
-        filterType: 'Facets',
-        header: () => (
+        header: (
           <>
             Recontacté par
             <br />
             le gestionnaire
           </>
         ),
-        width: '155px',
+        headerLabel: 'Recontacté par le gestionnaire',
+        width: 155,
       },
-      {
-        accessorFn: (row) => row.network_name ?? '',
+      accessorColumn((row: DemandsListAdminItem) => row.network_name, {
         cell: ({ row }) => (
-          <div className="flex flex-col gap-1 w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-            <AffectedNetworkCell demand={row.original} isAdmin onChangeNetwork={changeNetwork} />
+          <div className="w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
+            <AffectedNetworkCell demand={row} isAdmin onChangeNetwork={changeNetwork} />
           </div>
         ),
-        enableSorting: false,
-        filterType: 'Facets',
         header: 'Réseau affecté',
         id: 'network_name',
-        width: '300px',
-      },
-      {
-        accessorFn: (row) =>
+        sortable: false,
+        width: 300,
+      }),
+      accessorColumn(
+        (row: DemandsListAdminItem) =>
           row.access_counts.gestionnaire + row.access_counts.collectivite + row.access_counts.alec + row.access_counts.ccrt,
-        cell: ({ row }) => (
-          <div onClick={stopPropagation} onDoubleClick={stopPropagation}>
-            <AccessCountsCell demandId={row.original.id} accessCounts={row.original.access_counts} />
-          </div>
-        ),
-        enableGlobalFilter: false,
-        filterType: 'Range',
-        header: 'Accès',
-        id: 'access',
-        width: '135px',
-      },
+        {
+          cell: ({ row }) => (
+            <div onClick={stopPropagation} onDoubleClick={stopPropagation}>
+              <AccessCountsCell demandId={row.id} accessCounts={row.access_counts} />
+            </div>
+          ),
+          header: 'Accès',
+          id: 'access',
+          width: 135,
+        }
+      ),
       {
         accessorKey: 'validated',
         align: 'center',
-        cell: ({ row }) => (
+        cell: ({ row, value }) => (
           <div onClick={stopPropagation} onDoubleClick={stopPropagation}>
-            <ValidateDemandButton demandId={row.original.id} validated={row.original.validated} onValidate={validateDemand} />
+            <ValidateDemandButton demandId={row.id} validated={value} onValidate={validateDemand} />
           </div>
         ),
-        filterType: 'Facets',
         header: 'Validée',
-        width: '110px',
+        width: 110,
       },
-      {
-        accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={handleEmailClick} />,
-        enableSorting: false,
+      accessorColumn((row: DemandsListAdminItem) => `${row.Nom} ${row.Prénom} ${row.Mail}`, {
+        cell: ({ row }) => <Contact demand={row as unknown as Demand} onEmailClick={handleEmailClick} />,
         header: 'Contact',
-        width: '280px',
-      },
+        id: 'contact',
+        sortValue: (row) => `${row.Nom} ${row.Prénom}`,
+        width: 280,
+      }),
       {
         accessorKey: 'Structure',
-        cell: ({ row }) => <Tag text={row.original.Structure} />,
-        enableGlobalFilter: false,
-        enableSorting: false,
-        filterType: 'Facets',
+        cell: ({ value }) => <Tag text={value} />,
         header: 'Type',
-        width: '130px',
+        sortable: false,
+        width: 130,
       },
-      {
-        accessorFn: (row) =>
-          getModeDeChauffageDisplay({
-            modeDeChauffage: row['Mode de chauffage'],
-            typeDeChauffage: row['Type de chauffage'],
-          }),
-        cell: ({ row }) => (
-          <ModeDeChauffageTag modeDeChauffage={row.original['Mode de chauffage']} typeDeChauffage={row.original['Type de chauffage']} />
-        ),
-        enableGlobalFilter: false,
-        enableSorting: false,
-        filterType: 'Facets',
-        header: 'Mode de chauffage',
-        width: '134px',
-      },
-      {
-        accessorKey: 'testAddress.ban_address',
-        cell: (info) => <TableAddressAutocomplete demand={info.row.original} />,
-        enableSorting: false,
+      accessorColumn(
+        (row: DemandsListAdminItem) =>
+          getModeDeChauffageDisplay({ modeDeChauffage: row['Mode de chauffage'], typeDeChauffage: row['Type de chauffage'] }),
+        {
+          cell: ({ row }) => <ModeDeChauffageTag modeDeChauffage={row['Mode de chauffage']} typeDeChauffage={row['Type de chauffage']} />,
+          header: 'Mode de chauffage',
+          id: 'mode_de_chauffage',
+          sortable: false,
+          width: 134,
+        }
+      ),
+      accessorColumn((row: DemandsListAdminItem) => row.testAddress.ban_address, {
+        cell: ({ row }) => <TableAddressAutocomplete demand={row} />,
         header: 'Adresse',
-        width: '240px',
-      },
+        id: 'adresse',
+        sortable: false,
+        width: 240,
+      }),
+      { accessorKey: 'Date de la demande', cell: cells.dateTime(), header: 'Date de la demande', width: 94 },
+      accessorColumn(
+        (row: DemandsListAdminItem) => (row.origin_source ? (integrationLabelById[row.origin_source] ?? row.origin_source) : null),
+        {
+          cell: ({ row, value }) =>
+            row.origin_source && <Link href={`/admin/conversion?source=${encodeURIComponent(row.origin_source)}`}>{value}</Link>,
+          header: 'Source',
+          id: 'origin_source',
+          width: 150,
+        }
+      ),
+      { accessorKey: 'origin_page', header: 'Page source', sortable: false, width: 220 },
+      { accessorKey: 'origin_host', header: 'Site hôte', sortable: false, width: 200 },
       {
-        accessorKey: 'Date de la demande',
-        cellType: 'DateTime',
-        enableGlobalFilter: false,
-        filterType: 'Range',
-        header: 'Date de la demande',
-        width: '94px',
-      },
-      {
-        accessorFn: (row) => (row.origin_source ? (integrationLabelById[row.origin_source] ?? row.origin_source) : undefined),
-        cell: ({ row }) =>
-          row.original.origin_source && (
-            <Link href={`/admin/conversion?source=${encodeURIComponent(row.original.origin_source)}`}>
-              {integrationLabelById[row.original.origin_source] ?? row.original.origin_source}
-            </Link>
-          ),
-        filterType: 'Facets',
-        header: 'Source',
-        id: 'origin_source',
-        width: '150px',
-      },
-      {
-        accessorKey: 'origin_page',
-        enableGlobalFilter: false,
-        enableSorting: false,
-        header: 'Page source',
-        width: '220px',
-      },
-      {
-        accessorKey: 'origin_host',
-        enableGlobalFilter: false,
-        enableSorting: false,
-        header: 'Site hôte',
-        width: '200px',
-      },
-      {
-        accessorKey: 'testAddress.eligibility.id_sncu',
-        filterType: 'Facets',
-        header: 'Réseau le plus proche',
-        visible: false,
-      },
-      {
-        accessorKey: 'testAddress.eligibility_history',
         align: 'center',
         cell: ({ row }) => {
-          const history = row.original.testAddress?.eligibility_history as any;
+          const history = row.testAddress?.eligibility_history as any;
           if (!history || !Array.isArray(history) || history.length === 0) {
             return null;
           }
@@ -502,88 +321,113 @@ function DemandesAdmin(): React.ReactElement {
             </div>
           );
         },
-        enableSorting: false,
-        header: () => 'Historique éligibilité',
-        width: '100px',
+        export: false,
+        header: 'Historique éligibilité',
+        id: 'eligibility_history',
+        width: 100,
       },
-      {
-        accessorKey: 'Commentaire relance',
-        header: 'Commentaire relance',
-        width: '280px',
-      },
+      { accessorKey: 'Commentaire relance', header: 'Commentaire relance', width: 280 },
       {
         accessorKey: 'comment_user',
-        cell: ({ row }) => <Comment demand={row.original} field="comment_user" updateDemand={updateDemand} />,
-        enableSorting: false,
+        cell: ({ row }) => <Comment demand={row} field="comment_user" updateDemand={updateDemand} />,
         header: 'Commentaire demandeur',
-        width: '280px',
+        sortable: false,
+        width: 280,
       },
-      {
-        accessorKey: 'comment_gestionnaire',
-        header: 'Commentaire Gestionnaire',
-        width: '280px',
-      },
+      { accessorKey: 'comment_gestionnaire', header: 'Commentaire Gestionnaire', width: 280 },
       {
         accessorKey: 'comment_fcu',
-        cell: ({ row }) => <Comment demand={row.original} field="comment_fcu" updateDemand={updateDemand} />,
-        enableSorting: false,
+        cell: ({ row }) => <Comment demand={row} field="comment_fcu" updateDemand={updateDemand} />,
         header: 'Commentaires internes FCU',
-        width: '280px',
+        sortable: false,
+        width: 280,
       },
+      { accessorKey: 'Sondage', cell: cells.list(), header: 'Sondage', width: 200 },
       {
-        accessorKey: 'Sondage',
-        cellType: 'Array',
-        filterType: 'Facets',
-      },
-      {
-        accessorKey: 'en PDP',
-        filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
-        visible: false,
-      },
-      {
-        accessorKey: 'testAddress.eligibility.type',
-        filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
-        visible: false,
-      },
-      {
-        accessorKey: 'departement_code',
-        filtersDialogDescription: 'Filtrer par code département.',
-        filtersDialogLabel: 'Département',
-        filterType: 'Facets',
-        header: 'Département',
-        showInFiltersDialog: true,
-        visible: false,
-      },
-      {
-        accessorFn: (row) => (row.network_id ? `${row.network_type}:${row.network_id}` : null),
-        filterType: 'Facets',
-        header: 'network_id',
-        id: 'network_id',
-        visible: false,
-      },
-      {
-        accessorFn: (row) => (row.pending_assignment_change ? 'Oui' : 'Non'),
-        filterType: 'Facets',
-        header: 'Réaffectation en attente',
-        id: 'pending_assignment_change_present',
-        visible: false,
-      },
-      {
-        align: 'right' as const,
-        cell: ({ row }) => <DemandActions demand={row.original} onDelete={deleteDemand} />,
-        enableSorting: false,
+        align: 'right',
+        cell: ({ row }) => <DemandActions demand={row} onDelete={deleteDemand} />,
+        export: false,
         header: '',
+        headerLabel: 'Actions',
         id: 'actions',
-        width: '50px',
+        width: 50,
       },
     ],
     [updateDemand, changeNetwork, validateDemand, deleteDemand, handleEmailClick, integrationLabelById]
   );
 
-  const onMarkerSelect = useCallback((demandId: string) => {
-    setSelectedDemandId(demandId);
-    scrollToRowRef.current?.(demandId);
-  }, []);
+  const filters = useMemo(() => buildAdminDemandsFilters(integrationLabelById), [integrationLabelById]);
+
+  const table = useDataTable({
+    columns,
+    data: demands,
+    filters,
+    getRowId,
+    initialFilters,
+    initialSorting,
+    search: { placeholder: 'Rechercher par nom, email, adresse...' },
+    urlKey: 'demands',
+  });
+  const filteredDemands = table.rows;
+
+  // Membership signature of the displayed demands: O(n), no deep compare. Sorting or editing a row keeps it unchanged.
+  const filteredIds = useMemo(() => new Set(filteredDemands.map((demand) => demand.id)), [filteredDemands]);
+  const previousFilteredIds = usePrevious(filteredIds);
+
+  // When the displayed set changes (filters, search), drops the selection and centers the map on the first demand.
+  useEffect(() => {
+    const setChanged =
+      !previousFilteredIds || previousFilteredIds.size !== filteredIds.size || [...filteredIds].some((id) => !previousFilteredIds.has(id));
+    if (!setChanged) {
+      return;
+    }
+    if (previousFilteredIds) {
+      setSelectedDemandId(null);
+    }
+    const firstDemand = filteredDemands[0];
+    if (firstDemand) {
+      setMapCenterLocation({ center: [firstDemand.Longitude ?? 0, firstDemand.Latitude ?? 0], flyTo: true, zoom: 8 });
+    }
+  }, [filteredIds, previousFilteredIds, filteredDemands]);
+
+  // Signature of the fields the map reads: a content edit (comment, numbers…) must not rebuild the FeatureCollection.
+  const mapDataKey = useMemo(
+    () =>
+      filteredDemands
+        .map(
+          (demand) =>
+            `${demand.id}:${demand.Latitude}:${demand.Longitude}:${demand.Structure}:${demand['Mode de chauffage']}:${demand['Type de chauffage']}:${demand.Adresse}`
+        )
+        .join('|'),
+    [filteredDemands]
+  );
+  const filteredDemandsMapData = useMemo(
+    () =>
+      filteredDemands.map(
+        (demand) =>
+          ({
+            address: demand.Adresse,
+            id: demand.id,
+            latitude: demand.Latitude ?? 0,
+            longitude: demand.Longitude ?? 0,
+            modeDeChauffage:
+              getModeDeChauffageDisplay({
+                modeDeChauffage: demand['Mode de chauffage'],
+                typeDeChauffage: demand['Type de chauffage'],
+              }) ?? undefined,
+            typeDeLogement: demand.Structure,
+          }) satisfies AdresseEligible
+      ),
+    [mapDataKey]
+  );
+
+  const onMarkerSelect = useCallback(
+    (demandId: string) => {
+      setSelectedDemandId(demandId);
+      table.scrollToRow(demandId);
+    },
+    [table.scrollToRow]
+  );
 
   const selectAndCenterOnDemand = useCallback(
     (demandId: string, zoom: number) => {
@@ -599,33 +443,11 @@ function DemandesAdmin(): React.ReactElement {
     },
     [demands]
   );
-  const onTableRowClick = useCallback(
-    (demandId: string) => {
-      selectAndCenterOnDemand(demandId, 13);
-    },
-    [selectAndCenterOnDemand]
-  );
+  const onTableRowClick = useCallback((demand: DemandsListAdminItem) => selectAndCenterOnDemand(demand.id, 13), [selectAndCenterOnDemand]);
   const onTableRowDoubleClick = useCallback(
-    (demandId: string) => {
-      selectAndCenterOnDemand(demandId, 16);
-    },
+    (demand: DemandsListAdminItem) => selectAndCenterOnDemand(demand.id, 16),
     [selectAndCenterOnDemand]
   );
-
-  const onTableFiltersChange = useCallback((demands: DemandsListAdminItem[]) => {
-    setFilteredDemands(demands);
-
-    // center on the first demand if any
-    const firstDemand = demands[0];
-    if (firstDemand && !isUpdatingDemandField) {
-      setMapCenterLocation({
-        center: [firstDemand.Longitude ?? 0, firstDemand.Latitude ?? 0],
-        flyTo: true,
-        zoom: 8,
-      });
-    }
-    isUpdatingDemandField = false;
-  }, []);
 
   return (
     <SimplePage
@@ -635,47 +457,19 @@ function DemandesAdmin(): React.ReactElement {
     >
       <DemandEmailModal demand={modalDemand as unknown as Demand | null} onClose={() => setModalDemand(null)} updateDemand={updateDemand} />
       <div className="mb-8">
-        <div className="flex items-center flex-wrap gap-4">
-          <Input
-            label=""
-            nativeInputProps={{
-              'aria-label': 'rechercher',
-              onChange: (e) => setGlobalFilter(e.target.value),
-              placeholder: 'Rechercher par nom, email, adresse...',
-              required: true,
-              value: globalFilter,
-            }}
-            className="p-2w mb-0! w-[350px]"
-          />
-          <QuickFilterPresets
-            presets={quickFilterPresets}
-            data={demands}
-            loading={isLoading}
-            columnFilters={columnFilters}
-            onFiltersChange={setColumnFilters}
-          />
-          <EligibilityHelpDialog />
-        </div>
         <ResizablePanelGroup orientation="horizontal" className="gap-4">
           <ResizablePanel defaultSize="66%">
-            <TableSimple
-              columns={tableColumns}
-              data={demands}
+            <DataTable
+              table={table}
               loading={isLoading}
-              initialSortingState={initialSortingState}
-              globalFilter={globalFilter}
-              onFilterChange={onTableFiltersChange}
-              fluid
-              controlsLayout="block"
-              padding="sm"
-              columnFilters={columnFilters}
-              rowSelection={tableRowSelection}
+              rowHeight="lg"
+              height="calc(100dvh - 290px)"
+              presets={adminDemandsPresets}
+              actions={<EligibilityHelpDialog />}
+              selectedRowId={selectedDemandId}
               onRowClick={onTableRowClick}
               onRowDoubleClick={onTableRowDoubleClick}
-              loadingEmptyMessage="Aucune demande à afficher"
-              height="calc(100dvh - 164px)"
-              scrollToRowRef={scrollToRowRef}
-              urlSyncKey={demandsTableUrlSyncKey}
+              emptyMessage="Aucune demande à afficher"
             />
           </ResizablePanel>
           <ResizableSeparator />
@@ -745,6 +539,7 @@ function ValidateDemandButton({
 
 function DemandActions({ demand, onDelete }: { demand: DemandsListAdminItem; onDelete: (demandId: string) => Promise<void> }) {
   const utils = trpc.useUtils();
+  const deleteDialog = useDialogState();
   const { mutateAsync: recalculateEligibility } = trpc.demands.admin.recalculateEligibility.useMutation();
   const [pendingItemId, setPendingItemId] = useState<string | null>(null);
 
@@ -808,17 +603,25 @@ function DemandActions({ demand, onDelete }: { demand: DemandsListAdminItem; onD
       id: 'delete-demand',
       label: 'Supprimer la demande',
       loading: pendingItemId === 'delete-demand',
-      onClick: () => {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) {
-          return;
-        }
-        void runAction('delete-demand', () => onDelete(demand.id));
-      },
+      onClick: () => deleteDialog.open(),
       variant: 'destructive',
     },
   ];
 
-  return <HamburgerMenu items={menuItems} />;
+  return (
+    <>
+      <HamburgerMenu items={menuItems} />
+      <ConfirmDialog
+        control={deleteDialog}
+        title="Supprimer la demande"
+        confirmLabel="Supprimer"
+        danger
+        onConfirm={() => runAction('delete-demand', () => onDelete(demand.id))}
+      >
+        Êtes-vous sûr de vouloir supprimer cette demande ? Cette action est irréversible.
+      </ConfirmDialog>
+    </>
+  );
 }
 
 export const getServerSideProps = withAuthentication(['admin']);

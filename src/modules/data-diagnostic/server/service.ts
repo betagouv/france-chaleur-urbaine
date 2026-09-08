@@ -13,9 +13,9 @@ type IssueBuilder = () => Promise<Issue | null>;
 const userHref = (userId: string, email: string) => `/admin/users?userId=${userId}&users_search=${encodeURIComponent(email)}`;
 
 // La page /admin/demandes ne sait pas ouvrir une demande via l'URL — on désactive les presets
-// (demands_filters=[]) et on pré-remplit la recherche avec l'adresse pour que la ligne remonte.
+// (demands_filters={}) et on pré-remplit la recherche avec l'adresse pour que la ligne remonte.
 const demandHref = (address: string | null) => {
-  const params = new URLSearchParams({ demands_filters: '[]' });
+  const params = new URLSearchParams({ demands_filters: '{}' });
   if (address) {
     params.set('demands_search', address);
   }

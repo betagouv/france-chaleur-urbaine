@@ -52,6 +52,7 @@ const Comment = <T extends Demand>({
       nativeTextAreaProps={{
         'aria-label': 'Commentaire',
         onChange: onChangeHandler,
+        rows: 2, // fits the fixed table row height
         value: value ?? '',
       }}
     />

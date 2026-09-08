@@ -3,7 +3,7 @@ import { useState } from 'react';
 import AsyncButton from '@/components/ui/AsyncButton';
 import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import CallOut from '@/components/ui/CallOut';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import Tooltip from '@/components/ui/Tooltip';
 import { notify, toastErrors } from '@/modules/notification';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -45,8 +45,8 @@ type AffectedNetworkCellProps<T extends BaseDemand> = (AdminProps | NonAdminProp
  * Cellule affichage+action pour le réseau affecté à une demande.
  * - lecture via `AffectedNetwork`
  * - bouton (toujours visible) pour réaffecter (admin) ou demander une réaffectation (non-admin)
- * - bloc "en attente de validation" si `pending_assignment_change` est présent, avec les actions admin
- *   (valider, rejeter) ou auteur (annuler) selon le contexte
+ * - bouton « en attente » si `pending_assignment_change` est présent, ouvrant un popover avec le détail et les
+ *   actions admin (valider, rejeter) ou auteur (annuler) selon le contexte — la cellule garde une hauteur fixe
  */
 export default function AffectedNetworkCell<T extends BaseDemand>(props: AffectedNetworkCellProps<T>) {
   const { demand } = props;
@@ -117,82 +117,85 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
   const canCancelPending = !props.isAdmin && !!pending && pending.author_id === props.currentUserId;
 
   return (
-    <div className="flex w-full flex-col gap-2">
-      <div className="flex items-start gap-1">
-        <div className="flex-1 min-w-0 pt-1.5">
-          <AffectedNetwork
-            networkName={demand.network_name}
-            networkType={demand.network_type}
-            networkSncuId={demand.network_sncu_id}
-            distance={demand['Distance au réseau']}
-          />
-          {villeDifferente && <FCUBadge type="warning_ville_differente" size="xs" className="mt-1" />}
-        </div>
-        <Tooltip title={props.isAdmin ? "Changer l'affectation du réseau" : 'Demander une réaffectation'}>
-          <Button
-            priority="tertiary"
-            size="small"
-            iconId="fr-icon-arrow-left-right-line"
-            title={props.isAdmin ? "Changer l'affectation" : 'Demander une réaffectation'}
-            onClick={() => setSelectorOpen(true)}
-            disabled={!props.isAdmin && !!pending}
-            className="shrink-0"
-          />
-        </Tooltip>
+    <div className="flex w-full items-start gap-1">
+      <div className="flex-1 min-w-0 pt-1.5">
+        <AffectedNetwork
+          networkName={demand.network_name}
+          networkType={demand.network_type}
+          networkSncuId={demand.network_sncu_id}
+          distance={demand['Distance au réseau']}
+        />
+        {villeDifferente && <FCUBadge type="warning_ville_differente" size="xs" className="mt-1" />}
       </div>
-
       {pending && (
-        <CallOut
-          variant="info"
-          size="xs"
-          noMarginBottom
-          title={pendingIsUnassign ? 'Désaffectation demandée' : 'Réaffectation demandée'}
-          bodyAs="div"
-        >
-          <div className="flex flex-col gap-1 text-xs">
-            {pendingIsUnassign ? (
-              <span className="text-gray-600 italic">Demande de retrait du réseau affecté</span>
-            ) : (
-              <AffectedNetwork
-                networkName={demand.pending_assignment_name}
-                networkType={pending.network_type}
-                networkSncuId={demand.pending_assignment_sncu_id}
-                distance={pending.distance}
-                notFound={pendingNotFound}
-              />
-            )}
-            {pending.comment && <div className="italic text-gray-700">« {pending.comment} »</div>}
-            {demand.pending_assignment_author_email && (
-              <div className="text-gray-600">Demandé par {demand.pending_assignment_author_email}</div>
-            )}
-
-            {props.isAdmin && (
-              <div className="flex gap-1 pt-1">
-                <AsyncButton
-                  size="small"
-                  priority="primary"
-                  className="mt-0"
-                  onClick={handleAcceptPending}
-                  disabled={pendingNotFound}
-                  title={pendingIsUnassign ? 'Appliquer la désaffectation' : 'Appliquer la réaffectation demandée'}
-                >
-                  Valider
-                </AsyncButton>
-                <AsyncButton size="small" priority="secondary" className="mt-0" onClick={handleRejectPending}>
-                  Rejeter
-                </AsyncButton>
-              </div>
-            )}
-            {canCancelPending && (
-              <div className="pt-1">
-                <AsyncButton size="small" priority="tertiary" className="mt-0" onClick={handleCancelPending}>
-                  Annuler ma demande
-                </AsyncButton>
-              </div>
-            )}
-          </div>
-        </CallOut>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              priority="tertiary"
+              size="small"
+              variant="warning"
+              iconId="fr-icon-time-line"
+              title={pendingIsUnassign ? 'Désaffectation demandée' : 'Réaffectation demandée'}
+              className="shrink-0"
+            />
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-80 border border-solid border-gray-300 p-4 shadow-lg">
+            <div className="flex flex-col gap-2 text-xs">
+              <p className="font-semibold text-sm mb-0">{pendingIsUnassign ? 'Désaffectation demandée' : 'Réaffectation demandée'}</p>
+              {pendingIsUnassign ? (
+                <span className="text-gray-600 italic">Demande de retrait du réseau affecté</span>
+              ) : (
+                <AffectedNetwork
+                  networkName={demand.pending_assignment_name}
+                  networkType={pending.network_type}
+                  networkSncuId={demand.pending_assignment_sncu_id}
+                  distance={pending.distance}
+                  notFound={pendingNotFound}
+                />
+              )}
+              {pending.comment && <div className="italic text-gray-700">« {pending.comment} »</div>}
+              {demand.pending_assignment_author_email && (
+                <div className="text-gray-600">Demandé par {demand.pending_assignment_author_email}</div>
+              )}
+              {props.isAdmin && (
+                <div className="flex gap-1 pt-1">
+                  <AsyncButton
+                    size="small"
+                    priority="primary"
+                    className="mt-0"
+                    onClick={handleAcceptPending}
+                    disabled={pendingNotFound}
+                    title={pendingIsUnassign ? 'Appliquer la désaffectation' : 'Appliquer la réaffectation demandée'}
+                  >
+                    Valider
+                  </AsyncButton>
+                  <AsyncButton size="small" priority="secondary" className="mt-0" onClick={handleRejectPending}>
+                    Rejeter
+                  </AsyncButton>
+                </div>
+              )}
+              {canCancelPending && (
+                <div className="pt-1">
+                  <AsyncButton size="small" priority="tertiary" className="mt-0" onClick={handleCancelPending}>
+                    Annuler ma demande
+                  </AsyncButton>
+                </div>
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
       )}
+      <Tooltip title={props.isAdmin ? "Changer l'affectation du réseau" : 'Demander une réaffectation'}>
+        <Button
+          priority="tertiary"
+          size="small"
+          iconId="fr-icon-arrow-left-right-line"
+          title={props.isAdmin ? "Changer l'affectation" : 'Demander une réaffectation'}
+          onClick={() => setSelectorOpen(true)}
+          disabled={!props.isAdmin && !!pending}
+          className="shrink-0"
+        />
+      </Tooltip>
 
       <NetworkSelectorDialog
         open={selectorOpen}

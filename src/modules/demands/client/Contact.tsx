@@ -42,36 +42,56 @@ const Contact = ({
   }, [demand]);
   const nomStructureAccompagnante = getNomStructureAccompagnante();
 
+  const fullName = `${demand.Prénom ?? ''} ${demand.Nom}`.trim();
+  const details = [
+    fullName,
+    nomStructure,
+    nomStructureAccompagnante && `Pour le compte de : ${nomStructureAccompagnante}`,
+    demand.Mail,
+    demand.Téléphone,
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  // Three truncated lines (fixed-height table rows); the full details stay in the tooltip.
   return (
-    <div className="w-full leading-5">
-      <div className="font-bold">
-        {demand.Prénom ?? ''} {demand.Nom}
+    <div className="w-full min-w-0 leading-5" title={details}>
+      <div className="truncate">
+        <span className="font-bold">{fullName}</span>
+        {nomStructure && <span className="text-gray-500 text-[13px]"> · {nomStructure}</span>}
       </div>
-      {nomStructure && <div>{nomStructure}</div>}
       {demand.Mail && (
         <div
           className={cx(
-            'text-gray-500 text-[13px] text-nowrap inline-block',
+            'text-gray-500 text-[13px] truncate',
             disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-gray-100 cursor-pointer'
           )}
-          onClick={(e) => {
-            e.stopPropagation();
+          onClick={(event) => {
+            event.stopPropagation();
             if (disabled) return;
             onEmailClick(demand);
           }}
           title={disabled ? 'Demande hors de votre périmètre — envoi de mail désactivé' : undefined}
         >
           <Icon size="sm" name="ri-mail-line" className="fr-mr-1w" />
-          <u className="whitespace-normal">{demand.Mail}</u>
+          <u>{demand.Mail}</u>
         </div>
       )}
-      {demand.Téléphone && (
-        <div className="text-gray-500 text-[13px]">
-          <Icon size="sm" name="ri-phone-line" className="fr-mr-1w" />
-          <span>{demand.Téléphone}</span>
+      {(demand.Téléphone || nomStructureAccompagnante) && (
+        <div className="text-gray-500 text-[13px] truncate">
+          {demand.Téléphone && (
+            <>
+              <Icon size="sm" name="ri-phone-line" className="fr-mr-1w" />
+              <span>{demand.Téléphone}</span>
+            </>
+          )}
+          {nomStructureAccompagnante && (
+            <span>
+              {demand.Téléphone ? ' · ' : ''}Pour le compte de : {nomStructureAccompagnante}
+            </span>
+          )}
         </div>
       )}
-      {nomStructureAccompagnante && <div>Pour le compte de : {nomStructureAccompagnante}</div>}
     </div>
   );
 };
