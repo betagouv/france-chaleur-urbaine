@@ -57,7 +57,6 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
         <>
           <Input
             name="bâtiment . habitants par logement"
-            label="bâtiment . habitants par logement"
             help="Le nombre d'habitants permet d'estimer la consommation d'eau chaude sanitaire du logement."
             nativeInputProps={{
               inputMode: 'numeric',
