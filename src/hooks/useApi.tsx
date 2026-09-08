@@ -99,11 +99,16 @@ export const usePut = <TVariables extends object, TOutput = unknown, TError = Er
   ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
 ) => {
   const result = useAction<TVariables, TOutput, TError, TContext>('PUT', ...args);
-  return {
-    ...result,
-    mutate: (id: string, variables: TVariables) => result.mutate({ id, ...variables } as TVariables),
-    mutateAsync: (id: string, variables: TVariables) => result.mutateAsync({ id, ...variables } as TVariables),
-  };
+  // Stable identities (react-query's mutate/mutateAsync are stable) so callers can use them as hook dependencies.
+  const mutate = React.useCallback(
+    (id: string, variables: TVariables) => result.mutate({ id, ...variables } as TVariables),
+    [result.mutate]
+  );
+  const mutateAsync = React.useCallback(
+    (id: string, variables: TVariables) => result.mutateAsync({ id, ...variables } as TVariables),
+    [result.mutateAsync]
+  );
+  return { ...result, mutate, mutateAsync };
 };
 
 // DELETE /static-url
@@ -111,11 +116,15 @@ export const useDelete = <TVariables extends object, TOutput = unknown, TError =
   ...args: OmitFirst<Parameters<typeof useAction<TVariables, TOutput, TError, TContext>>>
 ) => {
   const result = useAction<TVariables, TOutput, TError, TContext>('DELETE', ...args);
-  return {
-    ...result,
-    mutate: (id: string, variables?: TVariables) => result.mutate({ id, ...variables } as TVariables),
-    mutateAsync: (id: string, variables?: TVariables) => result.mutateAsync({ id, ...variables } as TVariables),
-  };
+  const mutate = React.useCallback(
+    (id: string, variables?: TVariables) => result.mutate({ id, ...variables } as TVariables),
+    [result.mutate]
+  );
+  const mutateAsync = React.useCallback(
+    (id: string, variables?: TVariables) => result.mutateAsync({ id, ...variables } as TVariables),
+    [result.mutateAsync]
+  );
+  return { ...result, mutate, mutateAsync };
 };
 
 export const usePutId = <TVariables extends object, TOutput = unknown, TError = Error, TContext = unknown>(

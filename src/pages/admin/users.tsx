@@ -224,7 +224,7 @@ export default function ManageUsers() {
           </div>
         ),
         header: 'Email',
-        width: '26%',
+        width: '22%',
       },
       {
         accessorKey: 'role',
@@ -248,7 +248,7 @@ export default function ManageUsers() {
           );
         },
         header: 'Rôle',
-        width: '14%',
+        width: '12%',
       },
       {
         accessorFn: (row) => row.structure_type || null,
@@ -271,7 +271,7 @@ export default function ManageUsers() {
         header: 'Étiquettes',
         id: 'tags',
         sortValue: (row) => row.tags.map((tag) => tag.name).join(', '),
-        width: '14%',
+        width: '13%',
       },
       { accessorKey: 'receive_new_demands', align: 'center', cell: cells.boolean(), header: 'Notif nouvelle demande' },
       { accessorKey: 'receive_old_demands', align: 'center', cell: cells.boolean(), header: 'Notif relance' },

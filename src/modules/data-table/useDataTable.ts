@@ -97,6 +97,9 @@ export function useDataTable<Row, const Filters extends readonly FilterDef<Row>[
   const onRowSelectionChange = options.onRowSelectionChange ?? setInternalSelection;
 
   const table = useReactTable({
+    // No pagination: TanStack would otherwise reset the page index (a setState) whenever the sorted row model
+    // recomputes, which turns unstable columns into an infinite render loop.
+    autoResetPageIndex: false,
     columns: tanstackColumns,
     data: filteredData,
     enableMultiSort: true,
