@@ -16,6 +16,9 @@ import ReinitialisationMotDePasse, {
 import ConfirmationDemande, { scenarios as confirmationDemandeScenarios } from './templates/demands/demandeur/confirmation-demande';
 import EnqueteSatisfaction, { scenarios as enqueteSatisfactionScenarios } from './templates/demands/demandeur/enquete-satisfaction';
 import MessageGestionnaire, { scenarios as messageGestionnaireScenarios } from './templates/demands/demandeur/message-gestionnaire';
+import RaccordementNonRealisable, {
+  scenarios as raccordementNonRealisableScenarios,
+} from './templates/demands/demandeur/raccordement-non-realisable';
 import NouvelleDemandeChaleurRenouvelable, {
   scenarios as nouvelleDemandeChaleurRenouvelableScenarios,
 } from './templates/demands/equipe-fcu/nouvelle-demande-chaleur-renouvelable';
@@ -141,6 +144,20 @@ export const emails = defineEmails({
     subject: '',
     trigger: {
       description: "À l'envoi manuel par un gestionnaire depuis sa liste de demandes.",
+      type: 'action',
+    },
+  },
+  'demands.demandeur.raccordement-non-realisable': {
+    Component: RaccordementNonRealisable,
+    description:
+      'Email envoyé automatiquement au demandeur lorsqu’un gestionnaire ou un admin classe sa demande de raccordement en « Non réalisable ».',
+    label: 'Raccordement non réalisable',
+    preview: 'Des solutions de chauffage alternatives existent pour votre bâtiment',
+    scenarios: raccordementNonRealisableScenarios,
+    subject: '[France Chaleur Urbaine] Votre demande de raccordement',
+    trigger: {
+      description:
+        'Au changement manuel du statut d’une demande vers « Non réalisable » par un gestionnaire, une collectivité responsable d’une demande non affectée, ou un admin.',
       type: 'action',
     },
   },

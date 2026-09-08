@@ -20,6 +20,7 @@ import {
   resolveNetworkInfo,
 } from './helpers';
 import { mergeLegacyValues } from './legacy-values';
+import { sendUnrealizableDemandEmailIfNeeded } from './unrealizable-email';
 
 const logger = parentLogger.child({ module: 'demands/gestionnaire-operations' });
 
@@ -76,6 +77,13 @@ export const updateDemandByGestionnaire = async (ctx: Context, demandId: string,
 
   await ensureUserCanProcessDemand(ctx, demandId);
 
+  const currentDemand = await kdb
+    .selectFrom('demands')
+    .select(['id', 'legacy_values'])
+    .where('id', '=', demandId)
+    .where('deleted_at', 'is', null)
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+
   const [updatedDemand] = await kdb
     .updateTable('demands')
     .set({
@@ -100,6 +108,7 @@ export const updateDemandByGestionnaire = async (ctx: Context, demandId: string,
     data: values,
     type: 'demand_updated',
   });
+  await sendUnrealizableDemandEmailIfNeeded({ currentDemand, nextStatus: values.Status });
 
   const demand = await getDemandById(updatedDemand.id);
   const permissions = await ctx.getPermissions();

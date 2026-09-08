@@ -35,6 +35,8 @@ La réaffectation n'est **jamais directe** : le gestionnaire propose, l'équipe 
     depot["Une demande validée est affectée à l'un de ses réseaux"]:::db --> notif["Lundi à vendredi, 10h : email « Nouvelles demandes à traiter »"]:::email
     notif --> traite{"Le gestionnaire traite ?"}
     traite -- "Oui" --> statut["Suivi mis à jour, demandeur recontacté"]:::db
+    statut --> nonReal{"Statut « Non réalisable » ?"}
+    nonReal -- "Oui" --> mailNonReal["Email « Raccordement non réalisable » au demandeur"]:::email
     traite -- "Non, demande « À traiter » depuis plus de ${businessRules.unhandledDemandReminderDays.display}" --> rappel["Mardi, 9h55 : email de rappel (si option activée)"]:::email
     statut -.-> relance["${businessRules.firstRelanceDelayMonths.display} puis ${businessRules.secondRelanceDelayDays.display} : FCU demande au demandeur s'il a été recontacté"]:::email
     rappel -.-> relance
@@ -42,6 +44,7 @@ La réaffectation n'est **jamais directe** : le gestionnaire propose, l'équipe 
     click notif "/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter" "Voir le modèle d'email"
     click rappel "/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente" "Voir le modèle d'email"
     click relance "/admin/emails?type=demands.demandeur.enquete-satisfaction" "Voir le modèle d'email"
+    click mailNonReal "/admin/emails?type=demands.demandeur.raccordement-non-realisable" "Voir le modèle d'email"
     classDef email fill:#feecc2,stroke:#b28a00,color:#161616
     classDef evt fill:#cfe3fd,stroke:#3b74c7,color:#161616
     classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
@@ -51,6 +54,7 @@ Détail des trois automatismes :
 
 - **Notification des nouvelles demandes** (lundi à vendredi, 10h) : envoyée si l'option « recevoir les nouvelles demandes » est activée. Ne concerne que les demandes validées, affectées à un réseau de son périmètre, non encore notifiées et dont le statut n'est pas « Non réalisable ». Si aucun gestionnaire n'a de permission sur le réseau, la demande n'est **pas** marquée comme notifiée — elle sera signalée dès qu'une permission sera ajoutée.
 - **Rappel des demandes en attente** (mardi, 9h55) : envoyé si l'option « recevoir les rappels » est activée, pour les demandes restées « À traiter » (ou sans statut) plus de <Rule id="unhandledDemandReminderDays" /> après leur notification.
+- **Email au demandeur si le raccordement est refusé** : quand le gestionnaire classe une demande en « Non réalisable », le demandeur reçoit l'email [« Raccordement non réalisable »](/admin/emails?type=demands.demandeur.raccordement-non-realisable), qui le réoriente vers le simulateur de modes de chauffage alternatifs. La demande reste conservée.
 - **Relance des demandeurs** (lundi, 10h05) : à <Rule id="firstRelanceDelayMonths" /> puis <Rule id="secondRelanceDelayDays" /> après la demande, FCU demande directement au demandeur s'il a été recontacté — uniquement pour les demandes éligibles en chauffage collectif. **La réponse du demandeur est visible de l'équipe FCU** : l'inaction d'un gestionnaire finit donc par se voir.
 
 ## Déroulé type
@@ -75,5 +79,6 @@ Détail des trois automatismes :
 | [Nouvelles demandes à traiter](/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter) | Reçu | Lundi à vendredi 10h, selon option et conditions ci-dessus |
 | [Rappel des demandes en attente](/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente) | Reçu | Mardi 9h55, selon option |
 | [Message du gestionnaire](/admin/emails?type=demands.demandeur.message-gestionnaire) | Envoyé par lui | Quand il contacte un demandeur depuis la plateforme |
+| [Raccordement non réalisable](/admin/emails?type=demands.demandeur.raccordement-non-realisable) | Envoyé automatiquement au demandeur | Quand il classe une demande en «&nbsp;Non réalisable&nbsp;» |
 
-Ses actions émettent des événements consultables dans [Activité du site](/admin/events) : mise à jour de demande, [email envoyé au demandeur](/admin/events?types=demand_email_sent), [demande de réaffectation](/admin/events?types=demand_assignment_change_requested), ainsi que les automatismes ([notification envoyée](/admin/events?types=demand_notification_sent), [relance envoyée](/admin/events?types=demand_relance_sent), [réponse du demandeur](/admin/events?types=demand_satisfaction_submitted)).
+Ses actions émettent des événements consultables dans [Activité du site](/admin/events) : mise à jour de demande, [email envoyé au demandeur](/admin/events?types=demand_email_sent), [demande de réaffectation](/admin/events?types=demand_assignment_change_requested), ainsi que les automatismes ([notification envoyée](/admin/events?types=demand_notification_sent), [email non réalisable](/admin/events?types=demand_unrealizable_email_sent), [relance envoyée](/admin/events?types=demand_relance_sent), [réponse du demandeur](/admin/events?types=demand_satisfaction_submitted)).

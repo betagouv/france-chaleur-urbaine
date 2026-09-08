@@ -26,6 +26,7 @@ export const eventTypes = [
   'demand_deleted',
   'demand_deleted_by_system',
   'demand_email_sent',
+  'demand_unrealizable_email_sent',
   'demand_notification_sent',
   'demand_linked_to_user',
   'demand_assignment_changed',
@@ -86,6 +87,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   demand_satisfaction_comment_submitted: 'Commentaire post-satisfaction',
   demand_satisfaction_submitted: 'Réponse satisfaction',
   demand_survey_submitted: 'Réponse au sondage',
+  demand_unrealizable_email_sent: 'Email raccordement non réalisable',
   demand_updated: 'Mise à jour demande',
   demand_updated_by_system: 'Mise à jour demande (automatique)',
   demand_validated: 'Validation demande',
@@ -148,6 +150,7 @@ export type EventDataMap = {
   demand_deleted: Record<string, unknown> | null;
   demand_deleted_by_system: { reason?: string; kept_demand_id?: string } | null;
   demand_email_sent: { key: string; object: string; to: string };
+  demand_unrealizable_email_sent: null;
   demand_linked_to_user: { count: number; email: string };
   demand_notification_sent: null;
   demand_assignment_changed: { old: EventNetworkSnapshot; new: EventNetworkSnapshot };

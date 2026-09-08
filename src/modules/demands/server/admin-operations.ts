@@ -9,6 +9,7 @@ import { parentLogger } from '@/server/helpers/logger';
 import { computeNetworkDistance } from './eligibility';
 import { buildDemandQuery, enrichDemandForAdmin, getDemandById, resolveNetworkInfo } from './helpers';
 import { mergeLegacyValues } from './legacy-values';
+import { sendUnrealizableDemandEmailIfNeeded } from './unrealizable-email';
 
 const logger = parentLogger.child({ module: 'demands/admin-operations' });
 
@@ -283,6 +284,7 @@ export const updateDemandByAdmin = async (demandId: string, values: UpdateAdminD
     data: values,
     type: 'demand_updated',
   });
+  await sendUnrealizableDemandEmailIfNeeded({ currentDemand, nextStatus: values.Status });
 
   const demand = await getDemandById(updatedDemand.id);
   return enrichDemandForAdmin({ demand, testAddress: testAddress || null });

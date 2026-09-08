@@ -21,9 +21,12 @@ Une « demande » est une demande de mise en relation pour un raccordement, dép
     gate -- "Pas encore" --> invisible["Invisible de tous sauf admins et du demandeur"]
     visible --> notif["Notification des gestionnaires (cron, du lundi au vendredi)"]:::email
     notif --> traitement["Traitement : statuts, contact, relances automatiques"]
+    traitement --> nonReal{"Statut changé vers « Non réalisable » par le responsable ou l'admin ?"}
+    nonReal -- "Oui" --> mailNonReal["Email « Raccordement non réalisable » au demandeur"]:::email
     click mailConf "/admin/emails?type=demands.demandeur.confirmation-demande" "Voir le modèle d'email"
     click evtCreation "/admin/events?types=demand_created" "Voir dans l'activité du site"
     click notif "/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter" "Voir le modèle d'email"
+    click mailNonReal "/admin/emails?type=demands.demandeur.raccordement-non-realisable" "Voir le modèle d'email"
     classDef email fill:#feecc2,stroke:#b28a00,color:#161616
     classDef evt fill:#cfe3fd,stroke:#3b74c7,color:#161616
     classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
@@ -65,6 +68,7 @@ Huit statuts, du dépôt à la clôture — liste et descriptions dans [Référe
 
 - **Aucun ordre n'est imposé** : le statut se change librement dans la liste, il n'y a pas de transitions contrôlées.
 - Le statut est modifié par le **responsable** de la demande (gestionnaire, ou collectivité pour une demande non affectée — voir [Rôles et permissions](/admin/doc/roles-permissions)). Un **admin** peut aussi changer le statut de n'importe quelle demande depuis sa page, en plus de la validation, de l'affectation et du recalcul d'éligibilité.
+- Quand un responsable ou un admin change explicitement le statut vers « Non réalisable », l'email [« Raccordement non réalisable »](/admin/emails?type=demands.demandeur.raccordement-non-realisable) est envoyé au demandeur avec un lien vers le simulateur de modes de chauffage alternatifs. La demande reste conservée : elle n'est pas supprimée par ce changement de statut.
 - Côté demandeur, le statut « À traiter » est affiché **« En cours de traitement »** (dans son suivi et sur l'écran de confirmation) ; les autres statuts sont affichés tels quels.
 - L'**API partenaire** peut aussi modifier le statut et le commentaire gestionnaire — rien d'autre ([événement « Mise à jour demande (API) »](/admin/events?types=api_demand_updated)).
 
@@ -89,4 +93,4 @@ Les gestionnaires et collectivités peuvent exporter **leurs** demandes en Excel
 
 ## Traçabilité
 
-Tout le cycle émet des événements consultables dans [Activité du site](/admin/events) : [création](/admin/events?types=demand_created), [validation](/admin/events?types=demand_validated), [mise à jour](/admin/events?types=demand_updated), [notification gestionnaires](/admin/events?types=demand_notification_sent), [relance](/admin/events?types=demand_relance_sent), [réponse satisfaction](/admin/events?types=demand_satisfaction_submitted), [réaffectations](/admin/events?types=demand_assignment_changed), [suppression](/admin/events?types=demand_deleted), [rattachement à un compte](/admin/events?types=demand_linked_to_user).
+Tout le cycle émet des événements consultables dans [Activité du site](/admin/events) : [création](/admin/events?types=demand_created), [validation](/admin/events?types=demand_validated), [mise à jour](/admin/events?types=demand_updated), [notification gestionnaires](/admin/events?types=demand_notification_sent), [email non réalisable](/admin/events?types=demand_unrealizable_email_sent), [relance](/admin/events?types=demand_relance_sent), [réponse satisfaction](/admin/events?types=demand_satisfaction_submitted), [réaffectations](/admin/events?types=demand_assignment_changed), [suppression](/admin/events?types=demand_deleted), [rattachement à un compte](/admin/events?types=demand_linked_to_user).
