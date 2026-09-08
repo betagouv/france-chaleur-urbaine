@@ -82,6 +82,58 @@ Module `src/modules/data-table/` (`AGENTS.md`, `DataTable.tsx`, `useDataTable.ts
 - Mobile "card" layout for admin tables: a horizontal scroll container is the accepted behavior.
 - `EventsList` / `VirtualList` and `TableBasic` stay as they are.
 
+## Product-visible changes (to know before validating)
+
+Behaviors that differ from `TableSimple`, on every migrated table:
+
+- **Sorting**: first click on a header always sorts ascending; the sort criteria (columns or not) are also managed in the « Filtres et tri » dialog; active criteria and filters show as dismissible chips under the toolbar.
+- **Filters**: facet counts are computed on the unfiltered data; a facet with no value selected is no filter; boolean facets are stored as `['true']` / `['false']`.
+- **URL**: `<key>_filters` is now a JSON object keyed by filter id (was a TanStack array). Old bookmarks with the array form are ignored (no crash, default preset applies).
+- **Rows**: fixed height (`sm` 40 px / `md` 56 px / `lg` 80 px); text cells truncate with the full value in a tooltip; the table scrolls in its own container capped at the viewport height.
+- **Toolbar**: global search, results count, « Filtres et tri », presets, export and page actions live above the table, inside the table's own layout slot.
+- **Dialogs**: every `window.confirm` met during a migration is replaced by `ConfirmDialog`.
+- **Users**: the « Activé » column is gone, a « Désactivé » badge sits next to the email; the tag filter lists the tags in use (with counts) instead of the whole catalog.
+- **Demandes admin**: search, presets and the eligibility help button moved inside the left panel; `Contact` shows 3 truncated lines (full details in the tooltip); comment textareas have 2 rows; the pending reassignment block is a warning button opening a popover (Valider / Rejeter inside); the map recenters only when the displayed set of demands changes (not on sort or edit).
+
+## Validation checklist
+
+Tick when checked on real data. Anything unchecked here is not validated, whatever the step table says.
+
+### Module
+
+- [ ] Scroll performance on a virtualized table (no dropped frames, no CPU when idle).
+- [ ] Sticky header stays visible while scrolling inside the table.
+- [ ] Column widths: px and `%` honoured, unsized columns share the rest, no overflow of the sort icon.
+- [ ] « Filtres et tri » dialog: facets checkboxes vs combobox threshold (12 options), range slider, date range with « vides incluses », text, emptyOrFilled.
+- [ ] Chips: remove one sort criterion / one filter; « Réinitialiser tout » clears both.
+- [ ] URL sync: reload keeps search, sort and filters; the initial preset applies only on a URL without filters.
+- [ ] Export xlsx: visible columns only, `export: false` respected, `extraColumns` present.
+
+### `admin/users`
+
+- [ ] Row height `md`: email + name and role + permissions summary fit on two lines.
+- [ ] Badges « API » / « Désactivé » always visible next to a long email.
+- [ ] Sort keys « Nom » and « Activé » (no column) in the dialog; initial sort on « Créé le » desc.
+- [ ] Delete flow through `ConfirmDialog`.
+
+### `admin/demandes` (pilot 2)
+
+- [ ] Row height `lg`: Statut (select + eligibility button), Accès (up to 4 badges), Adresse (address + 2 badges + source address) — decide between compacting the cell and adding an `xl` step if one overflows.
+- [ ] Toolbar in the 66 % panel: presets and search wrap acceptably around 1400 px.
+- [ ] Table height `calc(100dvh - 290px)` fits under the toolbar without a page scrollbar.
+- [ ] Map link: click / double-click a row centers the map; click a marker highlights and scrolls to the row; editing a comment or status does not recenter.
+- [ ] Default preset « à valider » applied on a fresh URL; presets counts; « demandes totales » clears filters.
+- [ ] Inbound links: stats page (`network_id`, `validated`, `Status`, `date`) and data diagnostic (`demands_filters={}` + search) open the expected list.
+- [ ] Pending reassignment popover: Valider / Rejeter for admins; the warning button is visible on the row.
+- [ ] Profiler before/after on prod-sized data: keystroke in search, scroll frame, row selection (numbers to record here).
+
+### `admin/organisations`, `admin/jobs`, `Us`, `DebugDrawer`
+
+- [ ] Organisations: actions column (480 px) fits; search and count useful.
+- [ ] Jobs: reset / delete actions work from the page-level mutations; result cell on 3 lines.
+- [ ] Us: percentages without decimals, no sort icons, centered 600 px table.
+- [ ] DebugDrawer: the 11 tables render with horizontal scroll where needed.
+
 ## Steps
 
 | # | Step | Status | Notes |
