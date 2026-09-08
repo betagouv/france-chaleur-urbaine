@@ -37,7 +37,7 @@ export const sendUnrealizableDemandEmailIfNeeded = async ({ actorRole, currentDe
   await createEvent({
     context_id: currentDemand.id,
     context_type: 'demand',
-    data: null,
+    data: {},
     type: 'demand_unrealizable_email_sent',
   });
 };

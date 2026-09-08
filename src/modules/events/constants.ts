@@ -150,7 +150,7 @@ export type EventDataMap = {
   demand_deleted: Record<string, unknown> | null;
   demand_deleted_by_system: { reason?: string; kept_demand_id?: string } | null;
   demand_email_sent: { key: string; object: string; to: string };
-  demand_unrealizable_email_sent: null;
+  demand_unrealizable_email_sent: Record<string, never>;
   demand_linked_to_user: { count: number; email: string };
   demand_notification_sent: null;
   demand_assignment_changed: { old: EventNetworkSnapshot; new: EventNetworkSnapshot };

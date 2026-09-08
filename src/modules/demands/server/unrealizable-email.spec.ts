@@ -57,7 +57,7 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
         {
           context_id: demandId,
           context_type: 'demand',
-          data: null,
+          data: {},
           type: 'demand_unrealizable_email_sent',
         },
       ],
