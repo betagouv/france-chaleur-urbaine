@@ -1,7 +1,14 @@
 export const dataSourcesVersions = {
+  arreteClassement: {
+    link: 'https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000050756289',
+    releaseDate: '3 décembre 2024',
+  },
+  // Updated once a year with the arrêté DPE import, see docs/import_arrete_dpe.md
   arreteDpe: {
-    link: 'https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051520810',
-    releaseDate: '11 avril 2025',
+    averageYears: '2022, 2023 et 2024',
+    link: 'https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053957370',
+    referenceYear: '2024',
+    releaseDate: '30 mars 2026',
   },
   bdnb: {
     link: 'https://www.data.gouv.fr/datasets/base-de-donnees-nationale-des-batiments/',

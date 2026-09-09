@@ -50,7 +50,7 @@ const DonneesPage = () => {
             <tr>
               <td className="font-semibold">Réseaux de chaleur existants</td>
               <td>
-                Bibliothèque FEDENE (données 2024), Données locales de l'énergie (SDES, données 2024), Arrêté DPE (2025, données 2023),
+                Bibliothèque FEDENE (données 2024), Données locales de l'énergie (SDES, données 2024), Arrêté DPE (2026, données 2024),
                 gestionnaires de réseaux, collectivités.
                 <br />
                 <Link href="#detail-reseaux-chaleur-froid">Voir le détail des données</Link>
@@ -62,7 +62,7 @@ const DonneesPage = () => {
             <tr>
               <td className="font-semibold">Réseaux de froid existants</td>
               <td>
-                Bibliothèque FEDENE (données 2024), Données locales de l'énergie (SDES, données 2024), Arrêté DPE (2025, données 2023),
+                Bibliothèque FEDENE (données 2024), Données locales de l'énergie (SDES, données 2024), Arrêté DPE (2026, données 2024),
                 gestionnaires de réseaux, collectivités.
                 <br />
                 <Link href="#detail-reseaux-chaleur-froid">Voir le détail des données</Link>
@@ -590,8 +590,8 @@ const DonneesPage = () => {
                 </td>
                 <td>
                   Source :{' '}
-                  <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
-                    Arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
+                  <Link href={dataSourcesVersions.arreteClassement.link} isExternal>
+                    Arrêté du {dataSourcesVersions.arreteClassement.releaseDate}
                   </Link>{' '}
                   relatif au classement des réseaux de chaleur et de froid.
                   <br />
@@ -633,7 +633,8 @@ const DonneesPage = () => {
                   <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
                     Arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
                   </Link>{' '}
-                  relatif au classement des réseaux de chaleur et de froid.
+                  relatif au diagnostic de performance énergétique (arrêté DPE), portant sur l'année{' '}
+                  {dataSourcesVersions.arreteDpe.referenceYear} ou la moyenne des années {dataSourcesVersions.arreteDpe.averageYears}.
                 </td>
               </tr>
               <tr>

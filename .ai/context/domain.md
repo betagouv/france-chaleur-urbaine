@@ -41,6 +41,7 @@ The platform serves several audiences:
 - Admin manages demand routing via permissions (user_permissions table).
 - Eligibility is determined by geographic proximity: distance from address to nearest network trace.
 - Networks have an energy mix (solar, geothermal, biomass, gas, etc.) and an EnR&R percentage.
+- EnR&R rate, CO2 contents and reference year (`Moyenne-annee-DPE`) are regulatory values imported yearly from the arrêté DPE annex (`pnpm cli data import arrete-dpe`, CSV versioned in `src/data/arrete-dpe/`, runbook `docs/import_arrete_dpe.md`), never synced from Airtable; networks absent from the arrêté are reset to null.
 - Classified networks (`reseaux_classes`) have PDPs where buildings may be legally required to connect.
 - Network data includes technical specs: length, capacity (MW), production (MWh), delivery by sector.
 - Invoice/cost comparisons use Publicodes rules (`@betagouv/france-chaleur-urbaine-publicodes`).

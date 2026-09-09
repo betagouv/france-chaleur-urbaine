@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { ImportOptions, ImportParams } from '@/modules/data/server/import';
 import { parentLogger } from '@/server/helpers/logger';
 
+import { importArreteDpe } from './imports/arrete-dpe';
 import { importConsommationsGaz } from './imports/consommations-gaz';
 import { importDonneesReseauxBibliothequeFedene } from './imports/donnees-reseaux-bibliotheque-fedene';
 import { importDonneesReseauxSdes } from './imports/donnees-reseaux-sdes';
@@ -15,6 +16,7 @@ type DataImportConfig = (params: ImportParams) => Promise<void>;
 
 // Configuration des imports de données
 export const dataImportConfigs = {
+  'arrete-dpe': importArreteDpe,
   'consommations-gaz': importConsommationsGaz,
   'donnees-reseaux-bibliotheque-fedene': importDonneesReseauxBibliothequeFedene,
   'donnees-reseaux-sdes': importDonneesReseauxSdes,
