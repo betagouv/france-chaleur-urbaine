@@ -113,7 +113,8 @@ const NetworkPanel = ({
                   <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
                     arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
                   </Link>{' '}
-                  portant sur l’année 2023, ou la moyenne des années 2021, 2022 et 2023. (en attente de l'arrêté 2026)
+                  portant sur l’année {dataSourcesVersions.arreteDpe.referenceYear}, ou la moyenne des années{' '}
+                  {dataSourcesVersions.arreteDpe.averageYears}.
                 </Text>
                 {!isCold && <Property label="Taux d’EnR&R" value={network['Taux EnR&R']} unit="%" />}
                 <Property
@@ -125,7 +126,11 @@ const NetworkPanel = ({
                 <Property label="Contenu CO2" value={network['contenu CO2']} formatter={formatCO2} tooltip="Émissions directes" />
                 <Property
                   label="Année de référence"
-                  value={network['Moyenne-annee-DPE'] === 'Moyenne' ? 'Moyenne 2021-2022-2023' : network['Moyenne-annee-DPE']}
+                  value={
+                    network['Moyenne-annee-DPE'] === 'Moyenne'
+                      ? `Moyenne ${dataSourcesVersions.arreteDpe.averageYears}`
+                      : network['Moyenne-annee-DPE']
+                  }
                 />
               </Box>
             )}
