@@ -4,6 +4,7 @@ import { finished } from 'node:stream/promises';
 import type { Record as AirtableRecord } from 'airtable';
 import type { FieldSet } from 'airtable/lib/field_set';
 
+import { isPrixReseauCommunique } from '@/modules/reseaux/constants';
 import { serverConfig } from '@/server/config';
 import { AirtableDB, createField, listTables } from '@/server/db/airtable';
 import type { Logger } from '@/server/helpers/logger';
@@ -389,9 +390,9 @@ function mapFieldsChaleur(data: ExcelRowBrute, existing?: AirtableRecord<FieldSe
     'Dev_reseau%': ratioToPercent(data['Développement réseau']),
     livraisons_agriculture_MWh: data['Livraisons Agriculture MWh'],
     'PF%': ratioToPercent(toNumberOrNull(data['Part fixe'])),
-    PM: toNumberOrNull(data['Prix moyen \n€ TTC/MWh']),
-    PM_L: toNumberOrNull(data['Coût en € TTC/MWh \nRésidence 30 lots']),
-    PM_T: toNumberOrNull(data['Coût en € TTC/MWh \nBâtiment tertiaire']),
+    PM: toPriceOrNull(data['Prix moyen \n€ TTC/MWh']),
+    PM_L: toPriceOrNull(data['Coût en € TTC/MWh \nRésidence 30 lots']),
+    PM_T: toPriceOrNull(data['Coût en € TTC/MWh \nBâtiment tertiaire']),
     'PV%': ratioToPercent(toNumberOrNull(data['Part variable'])),
     prod_MWh_autre_chaleur_recuperee: data['Prod MWh AUTRE_CHALEUR_RECUPEREE'],
     prod_MWh_autres: data['Prod MWh AUTRE'],
@@ -470,6 +471,12 @@ function toNumberOrNull(value: unknown): number | null {
   }
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
+}
+
+/** A price below the "communicated" threshold (0 €, cents) is normalized to null */
+function toPriceOrNull(value: unknown): number | null {
+  const price = toNumberOrNull(value);
+  return isPrixReseauCommunique(price) ? price : null;
 }
 
 function toStringOrNull(value: unknown): string | null {
