@@ -75,14 +75,7 @@ export const updateDemandByGestionnaire = async (ctx: Context, demandId: string,
   const { comment_gestionnaire, ...legacyUpdates } = values;
   const userId = ctx.user.id;
 
-  await ensureUserCanProcessDemand(ctx, demandId);
-
-  const currentDemand = await kdb
-    .selectFrom('demands')
-    .select(['id', 'legacy_values'])
-    .where('id', '=', demandId)
-    .where('deleted_at', 'is', null)
-    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+  const demandBeforeUpdate = await ensureUserCanProcessDemand(ctx, demandId);
 
   const [updatedDemand] = await kdb
     .updateTable('demands')
@@ -95,12 +88,6 @@ export const updateDemandByGestionnaire = async (ctx: Context, demandId: string,
     .returningAll()
     .execute();
 
-  const testAddress = await kdb
-    .selectFrom('pro_eligibility_tests_addresses')
-    .selectAll()
-    .where('demand_id', '=', updatedDemand.id)
-    .executeTakeFirst();
-
   await createUserEvent({
     author_id: userId,
     context_id: demandId,
@@ -108,7 +95,13 @@ export const updateDemandByGestionnaire = async (ctx: Context, demandId: string,
     data: values,
     type: 'demand_updated',
   });
-  await sendUnrealizableDemandEmailIfNeeded({ actorRole: ctx.user.role, currentDemand, nextStatus: values.Status });
+  await sendUnrealizableDemandEmailIfNeeded({ actorRole: ctx.user.role, currentDemand: demandBeforeUpdate, nextStatus: values.Status });
+
+  const testAddress = await kdb
+    .selectFrom('pro_eligibility_tests_addresses')
+    .selectAll()
+    .where('demand_id', '=', updatedDemand.id)
+    .executeTakeFirst();
 
   const demand = await getDemandById(updatedDemand.id);
   const permissions = await ctx.getPermissions();
