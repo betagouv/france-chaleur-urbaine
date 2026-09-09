@@ -31,6 +31,8 @@ pnpm cli                                                 # List CLI commands
 pnpm cli users:add <email> <password> <role> [networks]  # role: admin|professionnel|particulier|gestionnaire; networks = CSV ids for gestionnaire
 pnpm start:clock                                         # Job processor (crons + jobs)
 pnpm cli openapi:generate                                    # Regenerate public/openapi-schema.yaml from zod (partner-api). Run after editing the contract.
+pnpm cli data arrete-dpe:html-to-csv <page.html> <out.csv>   # Extract the arrêté DPE annex (saved Légifrance page) to a CSV to version in src/data/arrete-dpe/
+pnpm cli data import arrete-dpe --file <csv> [--dry-run]     # Apply regulatory values (CO2, EnR&R, reference year) to networks, then regenerate tiles. Runbook: docs/import_arrete_dpe.md
 ```
 
 ## Email

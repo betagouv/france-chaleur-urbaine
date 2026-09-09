@@ -573,8 +573,8 @@ const NetworksList = () => {
           Sources : L’ensemble des données sont extraites des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le
           concours de l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la transition
           écologique. L'année considérée varie en fonction de la disponibilité actuelle des données. Livraisons et mix énergétique : 2024.
-          Données tarifaires : 2024. Taux ENRR et contenu CO2 (direct et ACV) : 2023 ou moyenne des années 2021, 2022 et 2023, sur la base
-          de l'
+          Données tarifaires : 2024. Taux ENRR et contenu CO2 (direct et ACV) : {dataSourcesVersions.arreteDpe.referenceYear} ou moyenne des
+          années {dataSourcesVersions.arreteDpe.averageYears}, sur la base de l'
           <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
             arrêté DPE du {dataSourcesVersions.arreteDpe.releaseDate}
           </Link>

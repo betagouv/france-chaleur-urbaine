@@ -158,7 +158,7 @@ function calculateRendement(data: DonneesReseauBrutes): number | null {
 
 function mapToAirtableFieldsChaleur(data: DonneesReseauBrutes) {
   return {
-    // Contenus CO2
+    // Contenus CO2 : valeurs réglementaires, importées uniquement depuis l'arrêté DPE (import arrete-dpe)
     // 'contenu CO2': data.CONTENU_EN_CO2,
     // 'contenu CO2 ACV': data.CONTENU_EN_CO2_ACV,
 
@@ -170,7 +170,7 @@ function mapToAirtableFieldsChaleur(data: DonneesReseauBrutes) {
     // livraisons_tertiaire_MWh: data.CONSOT,
     // livraisons_totale_MWh: data.CONSOTOT,
 
-    // Année de référence
+    // Année de référence : importée uniquement depuis l'arrêté DPE (import arrete-dpe)
     // 'Moyenne-annee-DPE': data.ANNEE,
 
     // Points de livraison
@@ -217,7 +217,7 @@ function mapToAirtableFieldsChaleur(data: DonneesReseauBrutes) {
     puissance_MW_UIOM: data.PUISSANCE_UIOM,
     puissance_totale_MW: data.PUISSANCE,
 
-    // Indicateurs calculés
+    // Indicateurs calculés (le taux EnR&R réglementaire vient uniquement de l'arrêté DPE, import arrete-dpe)
     // 'Rend%': calculateRendement(data),
     // 'Taux EnR&R': calculateTauxEnRR(data),
   };
@@ -228,6 +228,7 @@ function mapToAirtableFieldsChaleur(data: DonneesReseauBrutes) {
  */
 function mapToAirtableFieldsFroid(data: DonneesReseauBrutes) {
   return {
+    // Contenus CO2 et année de référence : importés uniquement depuis l'arrêté DPE (import arrete-dpe)
     // 'contenu CO2': data.CONTENU_EN_CO2,
     // 'contenu CO2 ACV': data.CONTENU_EN_CO2_ACV,
     // livraisons_agriculture_MWh: data.CONSOA,

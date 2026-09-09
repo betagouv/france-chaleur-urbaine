@@ -1,4 +1,5 @@
 import { clientConfig } from '@/client-config';
+import { dataSourcesVersions } from '@/modules/app/constants';
 import type { RouterOutput } from '@/modules/trpc/client';
 
 type ProEligibilityTestAddress = RouterOutput['proEligibilityTests']['get']['addresses'][number];
@@ -73,13 +74,13 @@ const columns: CSVColumn[] = [
   },
   {
     accessor: (address) => `${address.eligibility?.taux_enrr ?? ''}`,
-    description: "Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du 11 avril 2025",
+    description: `Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du ${dataSourcesVersions.arreteDpe.releaseDate}`,
     header: 'Taux EnR&R du réseau le plus proche',
     minWidth: 40,
   },
   {
     accessor: (address) => (address.eligibility?.contenu_co2_acv ? `${Math.round(address.eligibility.contenu_co2_acv * 1000)}` : ''),
-    description: "Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du 11 avril 2025",
+    description: `Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du ${dataSourcesVersions.arreteDpe.releaseDate}`,
     header: 'Contenu CO2 ACV (g/kWh)',
     minWidth: 30,
   },

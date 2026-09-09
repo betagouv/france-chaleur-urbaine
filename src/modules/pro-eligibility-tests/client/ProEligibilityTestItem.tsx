@@ -15,6 +15,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { businessRules } from '@/modules/app/business-rules';
+import { dataSourcesVersions } from '@/modules/app/constants';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
 import type { AdresseEligible } from '@/modules/map/client/layers/specs/adressesEligibles';
@@ -275,7 +276,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
           iconProps={{
             className: 'fr-ml-1v',
           }}
-          title={<>Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du 11 avril 2025</>}
+          title={<>Taux d'énergies renouvelables et de récupération issu de l'arrêté DPE du {dataSourcesVersions.arreteDpe.releaseDate}</>}
         />
       </>
     ),
@@ -299,7 +300,7 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
           iconProps={{
             className: 'fr-ml-1v',
           }}
-          title={<>Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du 11 avril 2025</>}
+          title={<>Contenu CO2 en analyse du cycle de vie issu de l'arrêté DPE du {dataSourcesVersions.arreteDpe.releaseDate}</>}
         />
       </>
     ),

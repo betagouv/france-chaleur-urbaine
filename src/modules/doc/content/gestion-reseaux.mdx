@@ -39,7 +39,8 @@ Un réseau en construction peut être l'**extension d'un réseau de chaleur exis
 | Date de création des réseaux en construction | **Non modifiable** — horodatée automatiquement à la création (reprise historique depuis Airtable) |
 | « Classé » | **Non** — géré dans Airtable |
 | « A un tracé », « A un PDP » | **Non** — calculés automatiquement |
-| Données d'enquête des réseaux de chaleur et de froid (tarifs, mix énergétique, EnR&R, CO2, livraisons…) | **Non** — gérées dans Airtable (bibliothèque FEDENE) |
+| Données d'enquête des réseaux de chaleur et de froid (tarifs, mix énergétique, livraisons…) | **Non** — gérées dans Airtable (bibliothèque FEDENE) |
+| Données réglementaires des réseaux de chaleur et de froid (taux EnR&R, contenu CO2 direct et ACV, année de référence) | **Non** — importées chaque année depuis l'arrêté DPE par l'équipe technique (voir plus bas) ; Airtable n'est plus utilisé pour ces champs, une valeur saisie là-bas est ignorée |
 
 Les champs modifiables s'éditent via le bouton **crayon** de chaque ligne, qui ouvre une fenêtre de modification (nom, gestionnaire, maître d'ouvrage, liens entre entités — et pour les réseaux en construction : mise en service prévue, ouvert aux raccordements). À la **création** d'un réseau (dépôt d'un tracé), cette fenêtre s'ouvre automatiquement pour saisir ces informations dans la foulée. L'identifiant d'un réseau en construction ou d'un PDP est **attribué automatiquement** ; pour un réseau de chaleur ou de froid, il faut saisir l'ID SNCU ou l'id FCU correspondant à la ligne Airtable existante.
 
@@ -47,6 +48,16 @@ Deux règles à retenir, car elles ont un effet direct sur ce que voit le public
 
 - Un réseau **non « ouvert aux raccordements »** disparaît des résultats d'[éligibilité](/admin/doc/eligibilite). Ce champ se pilote **dans Airtable** pour les réseaux de chaleur et de froid, et **dans l'admin** pour les réseaux en construction.
 - Le fait qu'un réseau soit **classé** (donc soumis à obligation dans son PDP) vient aussi d'Airtable.
+
+## Données réglementaires : l'arrêté DPE
+
+Le taux d'EnR&R, les contenus CO2 (direct et ACV) et l'année de référence affichés dans la rubrique «&nbsp;Performances environnementales&nbsp;» des fiches réseau sont les valeurs réglementaires de l'**arrêté DPE**, publié chaque année sur Légifrance avec une annexe «&nbsp;Données des réseaux de chaleur et de froid&nbsp;». Elles ne sont saisies **ni dans l'admin, ni dans Airtable**&nbsp;: l'équipe technique les importe à chaque parution.
+
+- Les réseaux sont reconnus par leur **identifiant SNCU**&nbsp;: un réseau sans identifiant, ou dont l'identifiant diffère de celui de l'arrêté, ne reçoit aucune valeur.
+- Un réseau **absent du nouvel arrêté** perd ses anciennes valeurs (remises à vide), afin de ne jamais afficher des chiffres d'un arrêté précédent sous la référence du nouveau.
+- L'import produit un rapport (réseaux mis à jour, réseaux réinitialisés, identifiants de l'arrêté inconnus en base) à relire en mode simulation avant application, puis régénère les tuiles de la carte.
+
+Procédure technique, une fois par an&nbsp;: enregistrer la page Légifrance de l'arrêté en HTML, la convertir en CSV avec `pnpm cli data arrete-dpe:html-to-csv <page.html> src/data/arrete-dpe/<année>.csv`, vérifier le rapport avec `pnpm cli data import arrete-dpe --file <csv> --dry-run`, puis relancer sans `--dry-run`. Mettre à jour la référence de l'arrêté (lien, date, années) dans `dataSourcesVersions.arreteDpe` (`src/modules/app/constants.ts`) et versionner le CSV. Procédure détaillée pour les développeurs dans `docs/import_arrete_dpe.md` du dépôt.
 
 ## La modification d'un tracé se fait en deux temps
 
