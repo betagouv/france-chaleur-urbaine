@@ -33,6 +33,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
+import Tooltip from '@/components/ui/Tooltip';
 import { useTableState } from '@/components/ui/table/useTableState';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { isDefined } from '@/utils/core';
@@ -141,6 +142,8 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
   align?: 'center' | 'left' | 'right';
   className?: string;
   suffix?: React.ReactNode;
+  /** Affiche une icône d'information à côté du libellé de l'en-tête, avec ce contenu en infobulle. */
+  headerTooltip?: React.ReactNode;
   sorting?: keyof ReturnType<typeof customSortingFn<T>>;
   filter?: keyof ReturnType<typeof customFilterFn<T>>;
   filterType?: TableFilterProps['type'];
@@ -370,12 +373,18 @@ const TableTH = <T extends RowData>({
       <div className={cx('flex gap-1', isInlineLayout ? 'flex-row items-center' : 'flex-col')}>
         {/* mt-[5px] to be aligned  */}
         <span
-          className={cx('leading-tight tracking-tighter', isInlineLayout ? '' : 'flex-1', hasAtLeastOneColumnSorting ? 'mt-[5px]' : '')}
+          className={cx(
+            'leading-tight tracking-tighter',
+            isInlineLayout ? '' : 'flex-1',
+            hasAtLeastOneColumnSorting ? 'mt-[5px]' : '',
+            columnDef.headerTooltip ? 'flex items-start gap-1' : ''
+          )}
           style={{
             wordBreak: 'break-word', // does not exist in tailwind
           }}
         >
           {flexRender(columnDef.header, header.getContext())}
+          {columnDef.headerTooltip && <Tooltip title={columnDef.headerTooltip} iconProps={{ className: 'shrink-0' }} />}
         </span>
         <div className={cx('flex gap-1', isInlineLayout ? 'flex-1' : '', className)}>
           {canSort && (

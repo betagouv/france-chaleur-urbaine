@@ -69,6 +69,16 @@ const MixEnergetiqueFieldsList = [
 
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 
+const sourceFedene = `Source : ${dataSourcesVersions.bibliothequeFedene.title}`;
+const columnSources = {
+  arreteDpe: `Source : arrêté DPE du ${dataSourcesVersions.arreteDpe.releaseDate}, portant sur l'année ${dataSourcesVersions.arreteDpe.referenceYear} ou la moyenne des années ${dataSourcesVersions.arreteDpe.averageYears}`,
+  communes: 'Communes traversées par le tracé du réseau, calculées par France Chaleur Urbaine à partir des données IGN',
+  fedene: sourceFedene,
+  fedeneCompletedByFcu: `${sourceFedene}, complétée par France Chaleur Urbaine`,
+  fedenePrix: `${sourceFedene}. Donnée disponible pour les réseaux classés, sauf opposition du maître d'ouvrage ou du gestionnaire du réseau`,
+  mixEnergetique: `Part de l'énergie dans la production totale de chaleur, calculée par France Chaleur Urbaine à partir de la ${dataSourcesVersions.bibliothequeFedene.title}`,
+};
+
 const exportColumns = [
   {
     accessorKey: 'nom_reseau',
@@ -331,28 +341,33 @@ const NetworksList = () => {
           );
         },
         header: 'Nom du réseau',
+        headerTooltip: columnSources.fedeneCompletedByFcu,
         width: '250px',
       },
       {
         accessorKey: 'Identifiant reseau',
         header: 'Identifiant',
+        headerTooltip: columnSources.fedene,
         width: '130px',
       },
       {
         accessorKey: 'communes',
         cell: ({ getValue }) => <Text>{getValue() ? getValue().join(', ') : 'NC'}</Text>,
         header: 'Communes',
+        headerTooltip: columnSources.communes,
         sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.communes.join(', '), rowB.original.communes.join(', ')),
         width: '250px',
       },
       {
         accessorKey: 'Gestionnaire',
         header: 'Gestionnaire',
+        headerTooltip: columnSources.fedeneCompletedByFcu,
         width: '250px',
       },
       {
         accessorKey: 'MO',
         header: "Maître d'ouvrage",
+        headerTooltip: columnSources.fedeneCompletedByFcu,
         width: '250px',
       },
       {
@@ -360,6 +375,7 @@ const NetworksList = () => {
         align: 'right',
         cell: ({ getValue }) => <Text>{isDefined(getValue()) ? `${getValue()}%` : 'NC'}</Text>,
         header: 'Taux EnR&R',
+        headerTooltip: columnSources.arreteDpe,
         width: '110px',
       },
       {
@@ -373,6 +389,7 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
+        headerTooltip: columnSources.arreteDpe,
         width: '175px',
       },
       {
@@ -386,6 +403,7 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
+        headerTooltip: columnSources.arreteDpe,
         width: '140px',
       },
       {
@@ -400,12 +418,14 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
+        headerTooltip: columnSources.fedenePrix,
         width: '130px',
       },
       {
         accessorKey: 'annee_creation',
         align: 'right',
         header: 'Année de construction',
+        headerTooltip: columnSources.fedeneCompletedByFcu,
         width: '130px',
       },
       {
@@ -426,6 +446,7 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
+        headerTooltip: columnSources.fedene,
         width: '180px',
       },
       {
@@ -433,6 +454,7 @@ const NetworksList = () => {
         align: 'right',
         cell: PercentageCell,
         header: 'Biomasse',
+        headerTooltip: columnSources.mixEnergetique,
         width: '110px',
       },
       {
@@ -440,6 +462,7 @@ const NetworksList = () => {
         align: 'right',
         cell: PercentageCell,
         header: 'Géothermie',
+        headerTooltip: columnSources.mixEnergetique,
         width: '110px',
       },
       {
@@ -447,6 +470,7 @@ const NetworksList = () => {
         align: 'right',
         cell: PercentageCell,
         header: 'UVE',
+        headerTooltip: columnSources.mixEnergetique,
         width: '110px',
       },
       {
@@ -454,6 +478,7 @@ const NetworksList = () => {
         align: 'right',
         cell: PercentageCell,
         header: 'Chaleur industrielle',
+        headerTooltip: columnSources.mixEnergetique,
         width: '110px',
       },
       {
@@ -461,6 +486,7 @@ const NetworksList = () => {
         align: 'right',
         cell: PercentageCell,
         header: 'Solaire thermique',
+        headerTooltip: columnSources.mixEnergetique,
         width: '110px',
       },
       {
@@ -468,6 +494,7 @@ const NetworksList = () => {
         align: 'right',
         cell: PercentageCell,
         header: 'Pompe à chaleur',
+        headerTooltip: columnSources.mixEnergetique,
         width: '110px',
       },
       {
@@ -475,6 +502,7 @@ const NetworksList = () => {
         align: 'right',
         cell: PercentageCell,
         header: 'Gaz',
+        headerTooltip: columnSources.mixEnergetique,
         width: '110px',
       },
       {
@@ -482,6 +510,7 @@ const NetworksList = () => {
         align: 'right',
         cell: PercentageCell,
         header: 'Fioul',
+        headerTooltip: columnSources.mixEnergetique,
         width: '110px',
       },
     ],
