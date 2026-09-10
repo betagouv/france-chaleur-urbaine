@@ -1,6 +1,8 @@
 import { Button, Layout, Link, Section, Text } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
 
+const EMAIL_CAMPAIGN = 'demands.demandeur.raccordement-non-realisable';
+
 type RaccordementNonRealisableProps = {
   address: string;
   alternativeHeatingSolutions?: string[];
@@ -9,7 +11,11 @@ type RaccordementNonRealisableProps = {
 
 const RaccordementNonRealisable = ({ address, alternativeHeatingSolutions = [], simulationUrl }: RaccordementNonRealisableProps) => {
   const hasAlternativeHeatingSolutions = alternativeHeatingSolutions.length > 0;
-  const simulationHref = simulationUrl ?? '/chaleur-renouvelable';
+  const buttonHref = hasAlternativeHeatingSolutions ? (simulationUrl ?? '/chaleur-renouvelable') : '/chaleur-renouvelable';
+  const buttonContent = hasAlternativeHeatingSolutions ? 'solutions-chaleur-renouvelable' : 'simulateur-chauffage-alternatif';
+  const buttonLabel = hasAlternativeHeatingSolutions
+    ? 'Découvrir en détail toutes les solutions adaptées à mon bâtiment'
+    : 'Accéder au simulateur de modes de chauffage alternatifs';
 
   return (
     <Layout>
@@ -41,33 +47,22 @@ const RaccordementNonRealisable = ({ address, alternativeHeatingSolutions = [], 
             Découvrez le détail de ces solutions et échangez avec un conseiller France Rénov', qui vous accompagnera gratuitement dans votre
             projet.
           </Text>
-          <Section style={{ textAlign: 'center' }}>
-            <Button href={simulationHref} campaign="demands.demandeur.raccordement-non-realisable" content="solutions-chaleur-renouvelable">
-              Découvrir en détail toutes les solutions adaptées à mon bâtiment
-            </Button>
-          </Section>
         </>
       ) : (
-        <>
-          <Text>
-            <strong>Il existe cependant d'autres solutions</strong> pour vous permettre de bénéficier d'un mode de chauffage plus performant
-            et plus écologique. <strong>Découvrez notre simulateur de modes de chauffage alternatifs : en moins d'une minute</strong>,
-            identifiez les solutions les plus adaptées à votre bâtiment et à son environnement !
-          </Text>
-          <Section style={{ textAlign: 'center' }}>
-            <Button
-              href="/chaleur-renouvelable"
-              campaign="demands.demandeur.raccordement-non-realisable"
-              content="simulateur-chauffage-alternatif"
-            >
-              Accéder au simulateur de modes de chauffage alternatifs
-            </Button>
-          </Section>
-        </>
+        <Text>
+          <strong>Il existe cependant d'autres solutions</strong> pour vous permettre de bénéficier d'un mode de chauffage plus performant
+          et plus écologique. <strong>Découvrez notre simulateur de modes de chauffage alternatifs : en moins d'une minute</strong>,
+          identifiez les solutions les plus adaptées à votre bâtiment et à son environnement !
+        </Text>
       )}
+      <Section style={{ textAlign: 'center' }}>
+        <Button href={buttonHref} campaign={EMAIL_CAMPAIGN} content={buttonContent}>
+          {buttonLabel}
+        </Button>
+      </Section>
       <Text>
         Pour toute question sur votre demande, vous pouvez utiliser le{' '}
-        <Link href="/contact" campaign="demands.demandeur.raccordement-non-realisable" content="contact">
+        <Link href="/contact" campaign={EMAIL_CAMPAIGN} content="contact">
           formulaire de contact
         </Link>
         .

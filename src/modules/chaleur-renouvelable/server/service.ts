@@ -171,11 +171,6 @@ const getDemandCompanyType = (demandConcern: DemandeChaleurRenouvelable['demandC
   }
 };
 
-const getFcrAlternativeHeatingSolutions = (input: DemandeChaleurRenouvelable) =>
-  [
-    ...new Set((input.alternativeHeatingSolutions ?? []).map((solution) => solution.trim()).filter((solution) => solution.length > 0)),
-  ].slice(0, 3);
-
 const getFcrSimulationPath = (simulationUrl: string) => {
   const simulationPath = stripDomainFromURL(simulationUrl);
   const simulationPathname = simulationPath?.split(/[?#]/)[0];
@@ -184,7 +179,7 @@ const getFcrSimulationPath = (simulationUrl: string) => {
 };
 
 const getFcrDemandLegacyValues = (input: DemandeChaleurRenouvelable) => {
-  const alternativeHeatingSolutions = getFcrAlternativeHeatingSolutions(input);
+  const alternativeHeatingSolutions = input.alternativeHeatingSolutions ?? [];
   const simulationPath = getFcrSimulationPath(input.simulationUrl);
 
   return {
