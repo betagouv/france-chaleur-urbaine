@@ -399,6 +399,7 @@ const zDemandeChaleurRenouvelableHeatNetworkEligibility = z.object({
 
 export const zDemandeChaleurRenouvelable = z.object({
   address: z.string(),
+  alternativeHeatingSolutions: z.array(z.string().trim().min(1).max(120)).max(3).optional(),
   averageArea: z.number(),
   averageResidents: z.number(),
   batimentConstructionId: z.string().nullable().default(null),

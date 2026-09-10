@@ -332,6 +332,7 @@ function getOccupantStatusDetailField(occupantStatus: OccupantStatus): OccupantS
 }
 
 type DemandFCRFormProps = {
+  alternativeHeatingSolutionLabels: string[];
   eligibiliteReseauChaleur: HeatNetwork | null;
   geoAddress?: BANAddressFeature;
   selectedRecipientId: ContactRecipientId;
@@ -343,6 +344,7 @@ type DemandFCRFormProps = {
  * Displays the contact block matching the recommended heating solution.
  */
 export default function DemandFCRForm({
+  alternativeHeatingSolutionLabels,
   eligibiliteReseauChaleur,
   geoAddress,
   selectedRecipientId,
@@ -352,6 +354,7 @@ export default function DemandFCRForm({
   if (selectedRecipientId === 'public-advisor') {
     return (
       <HeatNetworkDemandForm
+        alternativeHeatingSolutionLabels={alternativeHeatingSolutionLabels}
         eligibiliteReseauChaleur={eligibiliteReseauChaleur}
         geoAddress={geoAddress}
         selectedRecipientId={selectedRecipientId}
@@ -367,6 +370,7 @@ export default function DemandFCRForm({
     <FranceRenovAdvisorCallout />
   ) : (
     <HeatNetworkDemandForm
+      alternativeHeatingSolutionLabels={alternativeHeatingSolutionLabels}
       eligibiliteReseauChaleur={eligibiliteReseauChaleur}
       geoAddress={geoAddress}
       selectedRecipientId={selectedRecipientId}
@@ -382,6 +386,7 @@ type HeatNetworkDemandFormProps = DemandFCRFormProps;
  * Renders the existing demand form for heat-network contact flows.
  */
 function HeatNetworkDemandForm({
+  alternativeHeatingSolutionLabels,
   eligibiliteReseauChaleur,
   geoAddress,
   selectedRecipientId,
@@ -434,6 +439,7 @@ function HeatNetworkDemandForm({
 
     const result = await createDemandeChaleurRenouvelable.mutateAsync({
       address: params.adresse ?? '',
+      alternativeHeatingSolutions: alternativeHeatingSolutionLabels,
       averageArea,
       averageResidents: Number(params.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
       batimentConstructionId: params.constructionId,
@@ -471,7 +477,7 @@ function HeatNetworkDemandForm({
       radiatorType: params.typeRadiateur,
       refusalPeriod: isPublicAdvisorSelected ? refusalPeriod || null : null,
       refusalReason: isPublicAdvisorSelected ? refusalReason || null : null,
-      simulationUrl: window.location.href,
+      simulationUrl: `${window.location.pathname}${window.location.search}${window.location.hash}`,
       surfaceArea,
     });
 
