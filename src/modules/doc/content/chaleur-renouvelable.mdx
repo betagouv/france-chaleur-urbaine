@@ -74,4 +74,6 @@ La création des demandes chaleur renouvelable dédiées est **suspendue** dans 
 
 Si l'adresse est raccordable et que la personne choisit de contacter le gestionnaire, une **demande classique** est créée par le même service que le formulaire public : mêmes enrichissements, même déduplication (<Rule id="demandDedupWindowDays" />), même statut initial, affectation automatique au réseau, email «&nbsp;Confirmation de demande&nbsp;» au demandeur et notification des gestionnaires par le cron habituel — voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande).
 
+La passerelle conserve aussi dans `legacy_values` les trois premières solutions alternatives affichées sur la page de résultats, hors réseau de chaleur, et l'URL de simulation normalisée vers `/chaleur-renouvelable/resultat`. Si un gestionnaire ou un admin classe ensuite la demande en «&nbsp;Non réalisable&nbsp;», l'email «&nbsp;Raccordement non réalisable&nbsp;» reprend ces solutions et renvoie vers ce résultat personnalisé.
+
 Il n'y a donc plus de double suivi créé automatiquement : la demande créée depuis ce chemin est suivie comme une demande classique par le gestionnaire du réseau.

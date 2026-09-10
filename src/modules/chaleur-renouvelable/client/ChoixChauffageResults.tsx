@@ -52,6 +52,11 @@ export default function ChoixChauffageResults() {
   const displayedSolutions = heatNetworkSolution
     ? modesEnriched.filter((modeDeChauffage) => modeDeChauffage.id !== heatNetworkSolution.id)
     : modesEnriched;
+  const alternativeHeatingSolutionLabels = [
+    ...new Set(
+      displayedSolutions.map((modeDeChauffage) => modeDeChauffage.label.trim()).filter((solutionLabel) => solutionLabel.length > 0)
+    ),
+  ].slice(0, 3);
 
   const handleSelectContactRecipient = (recipientId: ContactRecipientId) => {
     setSelectedContactRecipientId(recipientId);
@@ -132,6 +137,7 @@ export default function ChoixChauffageResults() {
           />
           <IncompatibleSolutionsSection rows={incompatibleSolutionRows} typeLogement={effectiveTypeLogement} />
           <DemandeFCRForm
+            alternativeHeatingSolutionLabels={alternativeHeatingSolutionLabels}
             eligibiliteReseauChaleur={situation.eligibiliteReseauChaleur}
             geoAddress={geoAddress}
             selectedRecipientId={selectedContactRecipientId}

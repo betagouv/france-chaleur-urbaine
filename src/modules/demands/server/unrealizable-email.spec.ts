@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import { uuid } from '@/tests/helpers';
@@ -50,6 +51,45 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
         'demands.demandeur.raccordement-non-realisable',
         { email: 'demandeur@example.fr', id: demandId },
         { address: '10 Rue de Rivoli 75001 Paris' },
+      ],
+    ]);
+    expect(createdEvent.mock.calls).toStrictEqual([
+      [
+        {
+          context_id: demandId,
+          context_type: 'demand',
+          data: {},
+          type: 'demand_unrealizable_email_sent',
+        },
+      ],
+    ]);
+  });
+
+  it('transmet les solutions chaleur renouvelable stockées sur la demande', async () => {
+    const currentDemand = createDemand(DEMANDE_STATUS.TO_PROCESS);
+
+    await sendUnrealizableDemandEmailIfNeeded({
+      actorRole: 'admin',
+      currentDemand: {
+        ...currentDemand,
+        legacy_values: {
+          ...currentDemand.legacy_values,
+          [fcrLegacyValueKeys.alternativeHeatingSolutions]: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
+          [fcrLegacyValueKeys.simulationUrl]: '/chaleur-renouvelable/resultat?adresse=10+Rue+de+Rivoli+75001+Paris',
+        },
+      },
+      nextStatus: DEMANDE_STATUS.UNREALISABLE,
+    });
+
+    expect(sentEmail.mock.calls).toStrictEqual([
+      [
+        'demands.demandeur.raccordement-non-realisable',
+        { email: 'demandeur@example.fr', id: demandId },
+        {
+          address: '10 Rue de Rivoli 75001 Paris',
+          alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
+          simulationUrl: '/chaleur-renouvelable/resultat?adresse=10+Rue+de+Rivoli+75001+Paris',
+        },
       ],
     ]);
     expect(createdEvent.mock.calls).toStrictEqual([

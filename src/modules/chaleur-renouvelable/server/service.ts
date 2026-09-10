@@ -18,14 +18,16 @@ import {
   DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
 } from '@/modules/chaleur-renouvelable/constants';
-import type { CreateDemandInput, DemandSubmissionResult } from '@/modules/demands/constants';
+import { type CreateDemandInput, type DemandSubmissionResult, fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { createDemand } from '@/modules/demands/server/creation-user';
+import { type LegacyValuesPatch, mergeLegacyValues } from '@/modules/demands/server/legacy-values';
 // import { sendEmailTemplate } from '@/modules/email';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { fetchJSON } from '@/utils/network';
+import { stripDomainFromURL } from '@/utils/url';
 
 import { getAltitudeByCoordinates } from './altimetry';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
@@ -60,6 +62,7 @@ const batEnrBatimentColumns = [
 
 // const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = serverConfig.contactEmail;
 const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = businessRules.fcrBuildingCandidatesRadiusMeters.value;
+const CHALEUR_RENOUVELABLE_RESULTS_PATH = '/chaleur-renouvelable/resultat';
 
 type BanAddressSearchResponse = {
   features: {
@@ -168,6 +171,42 @@ const getDemandCompanyType = (demandConcern: DemandeChaleurRenouvelable['demandC
   }
 };
 
+const getFcrAlternativeHeatingSolutions = (input: DemandeChaleurRenouvelable) =>
+  [
+    ...new Set((input.alternativeHeatingSolutions ?? []).map((solution) => solution.trim()).filter((solution) => solution.length > 0)),
+  ].slice(0, 3);
+
+const getFcrSimulationPath = (simulationUrl: string) => {
+  const simulationPath = stripDomainFromURL(simulationUrl);
+  const simulationPathname = simulationPath?.split(/[?#]/)[0];
+
+  return simulationPathname === CHALEUR_RENOUVELABLE_RESULTS_PATH ? simulationPath : null;
+};
+
+const getFcrDemandLegacyValues = (input: DemandeChaleurRenouvelable) => {
+  const alternativeHeatingSolutions = getFcrAlternativeHeatingSolutions(input);
+  const simulationPath = getFcrSimulationPath(input.simulationUrl);
+
+  return {
+    ...(alternativeHeatingSolutions.length > 0 && {
+      [fcrLegacyValueKeys.alternativeHeatingSolutions]: alternativeHeatingSolutions,
+    }),
+    ...(simulationPath && { [fcrLegacyValueKeys.simulationUrl]: simulationPath }),
+  } satisfies LegacyValuesPatch;
+};
+
+const patchDemandWithFcrSnapshot = async (demandId: string, legacyValues: LegacyValuesPatch) => {
+  if (Object.keys(legacyValues).length === 0) {
+    return;
+  }
+
+  await kdb
+    .updateTable('demands')
+    .set({ legacy_values: mergeLegacyValues(legacyValues) })
+    .where('id', '=', demandId)
+    .execute();
+};
+
 const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promise<DemandSubmissionResult | null> => {
   if (input.isPublicAdvisorSelected || !input.geoAddress || !input.heatNetworkEligibility) {
     return null;
@@ -178,7 +217,7 @@ const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promi
   const demandStructure = getDemandStructure(input);
   const organizationName = input.organizationName ?? '';
 
-  return await createDemand(
+  const demandSubmissionResult = await createDemand(
     {
       address: input.address,
       city: input.geoAddress.city,
@@ -205,6 +244,10 @@ const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promi
     },
     { deduplicate: true }
   );
+
+  await patchDemandWithFcrSnapshot(demandSubmissionResult.id, getFcrDemandLegacyValues(input));
+
+  return demandSubmissionResult;
 };
 
 const selectBatEnrBatimentDetails = () =>

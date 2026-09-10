@@ -1,7 +1,7 @@
 import type { NetworkType } from '@/modules/reseaux/constants';
 import type { Demand as LegacyDemand } from '@/types/Summary/Demand';
 
-import type { DemandStatus } from './constants';
+import { type DemandStatus, fcrLegacyValueKeys } from './constants';
 
 /**
  * Snapshot d'une demande de réaffectation en attente de traitement admin.
@@ -45,6 +45,8 @@ export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status'>> 
   'Gestionnaire Conso'?: number | null;
   'Gestionnaire Logement'?: number | null;
   'Surface en m2'?: number | null;
+  [fcrLegacyValueKeys.alternativeHeatingSolutions]?: string[];
+  [fcrLegacyValueKeys.simulationUrl]?: string;
   Logement: number;
 };
 

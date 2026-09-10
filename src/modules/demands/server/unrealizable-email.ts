@@ -1,5 +1,6 @@
 import type { Selectable } from 'kysely';
 
+import { fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import type { Demands } from '@/server/db/kysely';
@@ -26,11 +27,16 @@ export const sendUnrealizableDemandEmailIfNeeded = async ({ actorRole, currentDe
     return;
   }
 
+  const alternativeHeatingSolutions = currentDemand.legacy_values[fcrLegacyValueKeys.alternativeHeatingSolutions] ?? [];
+  const simulationUrl = currentDemand.legacy_values[fcrLegacyValueKeys.simulationUrl];
+
   await sendEmailTemplate(
     'demands.demandeur.raccordement-non-realisable',
     { email: currentDemand.legacy_values.Mail, id: currentDemand.id },
     {
       address: currentDemand.legacy_values.Adresse,
+      ...(alternativeHeatingSolutions.length > 0 && { alternativeHeatingSolutions }),
+      ...(simulationUrl && { simulationUrl }),
     }
   );
 
