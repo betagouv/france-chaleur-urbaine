@@ -31,12 +31,11 @@ export type Type =
   | typeof TypeStringToArray;
 
 // Gestionnaire, MO and nom_reseau are FCU-admin owned: never imported, mirrored back to Airtable (read-only there)
+// contenu CO2, contenu CO2 ACV, Taux EnR&R and Moyenne-annee-DPE come from the yearly arrêté DPE import (data import arrete-dpe)
 const conversionConfigReseauxDeChaleur = {
   // departement: TypeString,
   // region: TypeString,
   annee_creation: TypeNumber,
-  'contenu CO2': TypeNumber,
-  'contenu CO2 ACV': TypeNumber,
   'Dev_reseau%': TypeNumber,
   eau_chaude: TypeString,
   eau_surchauffee: TypeString,
@@ -54,7 +53,6 @@ const conversionConfigReseauxDeChaleur = {
   livraisons_totale_MWh: TypeNumber,
   longueur_reseau: TypeNumber,
   // communes: TypeStringToArray,
-  'Moyenne-annee-DPE': TypeString,
   nb_pdl: TypeNumber,
   ouvert_aux_raccordements: TypeBool,
   'PF%': TypeNumber,
@@ -105,7 +103,6 @@ const conversionConfigReseauxDeChaleur = {
   //'non ref 2022': TypeBool,
   'reseaux classes': TypeBool,
   reseaux_techniques: TypeBool,
-  'Taux EnR&R': TypeNumber,
   vapeur: TypeString,
   website_gestionnaire: TypeString,
 } as const;
@@ -114,8 +111,6 @@ const conversionConfigReseauxDeChaleur = {
 const conversionConfigReseauxDeFroid = {
   annee_creation: TypeNumber,
   // communes: TypeStringToArray,
-  'contenu CO2': TypeNumber,
-  'contenu CO2 ACV': TypeNumber,
   fichiers: TypeJSONArray,
   // id_fcu: TypeNumber,
   'Identifiant reseau': TypeString,
@@ -129,7 +124,6 @@ const conversionConfigReseauxDeFroid = {
   longueur_reseau: TypeNumber,
   // departement: TypeString,
   // region: TypeString,
-  'Moyenne-annee-DPE': TypeString,
   nb_pdl: TypeNumber,
   production_totale_MWh: TypeNumber,
   puissance_totale_MW: TypeNumber,
@@ -138,7 +132,6 @@ const conversionConfigReseauxDeFroid = {
   //'non ref 2022': TypeBool,
   //has_trace: TypeBool,
   // date_actualisation_trace: TypeString,
-  'Taux EnR&R': TypeNumber,
   website_gestionnaire: TypeString,
 } as const;
 

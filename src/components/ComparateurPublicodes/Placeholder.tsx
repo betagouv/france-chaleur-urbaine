@@ -150,7 +150,7 @@ export const DescriptionModal = () => {
           arrêté du {dataSourcesVersions.arreteDpe.releaseDate}
         </Link>
         . AMORCE regrette ces décalages temporels, en partie dus à l'absence de publication de l'arrêté listant les réseaux classés en fin
-        d'année 2025 (sur les chiffres de l'année 2024), et sur l'absence de mise à jour de l'arrêté DPE des réseaux de chaleur.
+        d'année 2025 (sur les chiffres de l'année 2024).
       </p>
       <p>
         Cet outil prend la suite d'RCE33, outil développé par l'association{' '}
