@@ -32,16 +32,29 @@ export type TableCellProps<T> = {
    * Utile quand on veut un tri/filtrage par type mais un rendu personnalisé.
    */
   forceCellRender?: boolean;
+  /**
+   * Texte affiché à la place d'une valeur vide (ex : « NC »). Sans effet sur les cellules à rendu personnalisé.
+   */
+  emptyValue?: string;
 };
 
-const TableCell = <T,>({ value, children: defaultValue, data, type, cellProps = {}, forceCellRender = false }: TableCellProps<T>) => {
+const TableCell = <T,>({
+  value,
+  children: defaultValue,
+  data,
+  type,
+  cellProps = {},
+  forceCellRender = false,
+  emptyValue,
+}: TableCellProps<T>) => {
   // Si forceCellRender est true, on utilise toujours le rendu personnalisé
   if (forceCellRender) {
     return defaultValue;
   }
 
   if (!value && type !== 'Boolean') {
-    return defaultValue;
+    // emptyValue ne remplace que les valeurs réellement absentes : un 0 légitime garde le rendu par défaut
+    return (value == null || value === '' ? emptyValue : undefined) ?? defaultValue;
   }
   const hasCellProps = Object.keys(cellProps).length > 0;
   if (type === 'DateTime' || type === 'Date') {

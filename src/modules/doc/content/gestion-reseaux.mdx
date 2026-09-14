@@ -48,6 +48,17 @@ Deux règles à retenir, car elles ont un effet direct sur ce que voit le public
 - Un réseau **non « ouvert aux raccordements »** disparaît des résultats d'[éligibilité](/admin/doc/eligibilite). Ce champ se pilote **dans Airtable** pour les réseaux de chaleur et de froid, et **dans l'admin** pour les réseaux en construction.
 - Le fait qu'un réseau soit **classé** (donc soumis à obligation dans son PDP) vient aussi d'Airtable.
 
+## Fiabilité des données tarifaires
+
+Les prix des réseaux de chaleur (prix moyen, prix logements, prix tertiaire, en €TTC/MWh) proviennent de l'enquête FEDENE/AMORCE et ne sont pas toujours fiables. Deux mécanismes encadrent leur affichage :
+
+- **Prix non communiqué** : un prix absent — ou inférieur à <Rule id="heatNetworkPriceCommunicatedMin" /> (saisies à 0 € ou en centimes), normalisé en «&nbsp;non communiqué&nbsp;» à l'import, à la synchronisation Airtable et dans les exports — s'affiche «&nbsp;NC&nbsp;» dans la liste des réseaux (comme toute valeur manquante du tableau) et sur les fiches réseaux.
+- **Prix hors bornes de cohérence** : un prix communiqué mais inférieur à <Rule id="heatNetworkPriceMin" /> ou supérieur à <Rule id="heatNetworkPriceMax" /> est jugé peu plausible. Il reste affiché dans la liste des réseaux et sur la fiche réseau, mais avec un **astérisque** et la mention «&nbsp;Pour connaître le prix, veuillez vous adresser directement au gestionnaire du réseau&nbsp;». Le [comparateur](/admin/doc/comparateur) l'ignore et utilise le prix moyen des réseaux français, comme pour un prix non communiqué.
+
+L'**export Excel** de la liste des réseaux et l'**archive opendata** ne portent pas la mention «&nbsp;NC&nbsp;» : les prix y sont exportés **tels quels**, y compris hors bornes (sans astérisque), et un prix absent ou non communiqué sort en valeur vide.
+
+Le **filtre «&nbsp;Prix moyen de la chaleur&nbsp;»** (carte et liste des réseaux) n'est pas concerné : son curseur couvre toute la plage des prix présents en base, bornes de cohérence comprises.
+
 ## La modification d'un tracé se fait en deux temps
 
 C'est le point le plus important — et le plus contre-intuitif. Modifier un tracé n'a **aucun effet immédiat** : la modification est mise en attente (« brouillon »), et rien ne change tant qu'un admin n'a pas cliqué sur **« Sync »** pour l'appliquer.

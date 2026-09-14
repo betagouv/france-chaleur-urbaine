@@ -11,6 +11,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import { dataSourcesVersions } from '@/modules/app/constants';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { Map } from '@/modules/map/client/Map';
+import { isPrixReseauCommunique, isPrixReseauHorsBornes, prixReseauHorsBornesNotice } from '@/modules/reseaux/constants';
 import type { Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
@@ -25,6 +26,12 @@ import { BoxSection, InformationsComplementairesBox } from './Network.styles';
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`;
 };
+
+// Asterisk appended to the unit when the price is out of the plausibility bounds (see the notice below the block)
+const prixUnit = (prix: number | undefined) => (isPrixReseauHorsBornes(prix) ? '€TTC/MWh*' : '€TTC/MWh');
+
+// A price set to 0 means "not communicated" and must render as NC, like in the networks list
+const prixCommunique = (prix: number | undefined) => (isPrixReseauCommunique(prix) ? prix : undefined);
 
 const hasFirstColumn = (isCold: boolean, displayBlocks?: string[]) => {
   return (
@@ -384,49 +391,59 @@ const NetworkPanel = ({
                   </Text>
                   , disponibles pour les réseaux classés - sauf opposition du maître d'ouvrage ou gestionnaire du réseau
                 </Text>
-                {network.PM || network.PM_L || network.PM_T || network['PV%'] || network['PF%'] ? (
+                {isDefined(prixCommunique(network.PM)) ||
+                isDefined(prixCommunique(network.PM_L)) ||
+                isDefined(prixCommunique(network.PM_T)) ||
+                isDefined(network['PV%']) ||
+                isDefined(network['PF%']) ? (
                   <>
-                    {isDefined(network.PM) && <Property label="Prix moyen de la chaleur" value={network.PM} unit="€TTC/MWh" round />}
-                    {(isDefined(network.PM_L) || isDefined(network.PM_T)) && (
-                      <>
-                        <br />
-                        <b>Prix moyen par catégorie d'abonnés</b>
-                        {isDefined(network.PM_L) && (
-                          <Property
-                            label={<Box ml="2w">Logements</Box>}
-                            value={network.PM_L}
-                            unit="€TTC/MWh"
-                            round
-                            tooltip="Prix moyen pour une copropriété de 30 lots avec une consommation de 300 MWh/an"
-                          />
-                        )}
-                        {isDefined(network.PM_T) && (
-                          <Property
-                            label={<Box ml="2w">Tertiaire</Box>}
-                            value={network.PM_T}
-                            unit="€TTC/MWh"
-                            round
-                            tooltip="Prix moyen pour une surface de 1000m² avec une consommation de 1500 MWh/an"
-                          />
-                        )}
-                      </>
-                    )}
-                    {(isDefined(network['PV%']) || isDefined(network['PF%'])) && (
-                      <>
-                        <br />
-                        <b>Poids respectifs des parts fixe et variable</b>
-                        {isDefined(network['PV%']) && (
-                          <Property
-                            label={<Box ml="2w">% de la part variable (fonction des consommations)</Box>}
-                            value={network['PV%']}
-                            round
-                            unit="%"
-                          />
-                        )}
-                        {isDefined(network['PF%']) && (
-                          <Property label={<Box ml="2w">% de la part fixe (abonnement)</Box>} value={network['PF%']} round unit="%" />
-                        )}
-                      </>
+                    <Property
+                      label="Prix moyen de la chaleur"
+                      value={prixCommunique(network.PM)}
+                      unit={prixUnit(network.PM)}
+                      round
+                      emptyValueText="NC"
+                    />
+                    <br />
+                    <b>Prix moyen par catégorie d'abonnés</b>
+                    <Property
+                      label={<Box ml="2w">Logements</Box>}
+                      value={prixCommunique(network.PM_L)}
+                      unit={prixUnit(network.PM_L)}
+                      round
+                      tooltip="Prix moyen pour une copropriété de 30 lots avec une consommation de 300 MWh/an"
+                      emptyValueText="NC"
+                    />
+                    <Property
+                      label={<Box ml="2w">Tertiaire</Box>}
+                      value={prixCommunique(network.PM_T)}
+                      unit={prixUnit(network.PM_T)}
+                      round
+                      tooltip="Prix moyen pour une surface de 1000m² avec une consommation de 1500 MWh/an"
+                      emptyValueText="NC"
+                    />
+                    <br />
+                    <b>Poids respectifs des parts fixe et variable</b>
+                    <Property
+                      label={<Box ml="2w">% de la part variable (fonction des consommations)</Box>}
+                      value={network['PV%']}
+                      round
+                      unit="%"
+                      emptyValueText="NC"
+                    />
+                    <Property
+                      label={<Box ml="2w">% de la part fixe (abonnement)</Box>}
+                      value={network['PF%']}
+                      round
+                      unit="%"
+                      emptyValueText="NC"
+                    />
+                    {(isPrixReseauHorsBornes(network.PM) ||
+                      isPrixReseauHorsBornes(network.PM_L) ||
+                      isPrixReseauHorsBornes(network.PM_T)) && (
+                      <Text size="xs" fontStyle="italic" mt="2w">
+                        {prixReseauHorsBornesNotice}
+                      </Text>
                     )}
                   </>
                 ) : (
@@ -571,6 +588,7 @@ type PropertyProps<T> = {
   tooltip?: string | ReactElement;
   simpleLabel?: boolean;
   skipEmpty?: boolean;
+  emptyValueText?: string;
   valueRenderer?: (valueContent: string | ReactElement) => ReactElement;
 } & BoxProps;
 const Property = <T,>({
@@ -582,6 +600,7 @@ const Property = <T,>({
   round,
   simpleLabel,
   skipEmpty,
+  emptyValueText = 'Non connu',
   valueRenderer = (valueContent: string | ReactElement) => <Box textAlign="right">{valueContent}</Box>,
   ...props
 }: PropertyProps<T>) =>
@@ -603,7 +622,7 @@ const Property = <T,>({
           ? isDefined(formatter)
             ? formatter(value)
             : `${typeof value === 'number' ? prettyFormatNumber(value, round ? 0 : undefined) : value} ${unit ?? ''}`
-          : 'Non connu'
+          : emptyValueText
       )}
     </Box>
   );

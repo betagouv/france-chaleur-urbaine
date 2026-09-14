@@ -1,5 +1,6 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
+import { getPrixReseauFiable } from '@/modules/reseaux/constants';
 import type { LocationInfoResponse } from '@/pages/api/location-infos';
 import { ObjectKeys } from '@/utils/typescript';
 
@@ -166,7 +167,8 @@ export const addresseToPublicodesRules = {
   'réseau de chaleur . caractéristiques . livraisons totales': (infos) => infos.nearestReseauDeChaleur?.livraisons_totale_MWh,
   'réseau de chaleur . caractéristiques . part fixe': (infos) => infos.nearestReseauDeChaleur?.['PF%'],
   'réseau de chaleur . caractéristiques . part variable': (infos) => infos.nearestReseauDeChaleur?.['PV%'],
-  'réseau de chaleur . caractéristiques . prix moyen': (infos) => infos.nearestReseauDeChaleur?.PM,
+  // null when the price is not communicated or out of the plausibility bounds → Publicodes falls back to the French average price
+  'réseau de chaleur . caractéristiques . prix moyen': (infos) => getPrixReseauFiable(infos.nearestReseauDeChaleur?.PM),
   'réseau de chaleur . caractéristiques . production totale': (infos) => infos.nearestReseauDeChaleur?.production_totale_MWh,
   'réseau de chaleur . caractéristiques . taux EnRR': (infos) => infos.nearestReseauDeChaleur?.['Taux EnR&R'],
 

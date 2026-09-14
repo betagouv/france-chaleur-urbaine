@@ -1,7 +1,11 @@
 import type { Record } from 'airtable';
 import type { FieldSet } from 'airtable/lib/field_set';
 
-import { type AirtableSynchronizableNetworkTable, airtableSynchronizableNetworkTableConfig } from '@/modules/reseaux/constants';
+import {
+  type AirtableSynchronizableNetworkTable,
+  airtableSynchronizableNetworkTableConfig,
+  isPrixReseauCommunique,
+} from '@/modules/reseaux/constants';
 import { syncLinkedNetworkFields } from '@/modules/reseaux/server/linked-fields-sync';
 import { AirtableDB } from '@/server/db/airtable';
 import { kdb } from '@/server/db/kysely';
@@ -12,6 +16,7 @@ export const TypeBool: unique symbol = Symbol('bool');
 export const TypeJSONArray: unique symbol = Symbol('json');
 export const TypeNumber: unique symbol = Symbol('number');
 export const TypePercentage: unique symbol = Symbol('percentage');
+export const TypePrice: unique symbol = Symbol('price');
 export const TypeString: unique symbol = Symbol('string');
 export const TypeStringToArray: unique symbol = Symbol('array');
 
@@ -21,6 +26,7 @@ export type Type =
   | typeof TypeJSONArray
   | typeof TypeNumber
   | typeof TypePercentage
+  | typeof TypePrice
   | typeof TypeString
   | typeof TypeStringToArray;
 
@@ -52,9 +58,9 @@ const conversionConfigReseauxDeChaleur = {
   nb_pdl: TypeNumber,
   ouvert_aux_raccordements: TypeBool,
   'PF%': TypeNumber,
-  PM: TypeNumber,
-  PM_L: TypeNumber,
-  PM_T: TypeNumber,
+  PM: TypePrice,
+  PM_L: TypePrice,
+  PM_T: TypePrice,
   'PV%': TypeNumber,
   prod_MWh_autre_chaleur_recuperee: TypeNumber,
   prod_MWh_autres: TypeNumber,
@@ -198,6 +204,11 @@ export function convertAirtableValue(value: any, type: Type) {
       return value !== undefined && value !== null && value !== 'NULL'
         ? value * 100 // be compatible with number and text
         : null;
+    case TypePrice: {
+      // a price below the "communicated" threshold (0 €, cents) is normalized to null; parse numerically to catch Airtable text values
+      const price = Number(value);
+      return value !== undefined && value !== null && isPrixReseauCommunique(price) ? price : null;
+    }
     case TypeString:
       return value !== undefined && value !== null && value !== 'NULL' ? value : null;
     case TypeStringToArray:

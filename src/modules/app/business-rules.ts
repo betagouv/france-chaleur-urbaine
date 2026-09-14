@@ -128,6 +128,27 @@ export const businessRules = {
     label: 'Première relance du demandeur',
     value: 1,
   },
+  heatNetworkPriceCommunicatedMin: {
+    description:
+      "En dessous, le prix d'un réseau de chaleur est considéré comme non communiqué (saisies à 0 € ou en centimes dans l'enquête FEDENE).",
+    display: '1 €TTC/MWh',
+    label: 'Prix de la chaleur : seuil de prix communiqué',
+    value: 1,
+  },
+  heatNetworkPriceMax: {
+    description:
+      "Au-delà, le prix d'un réseau de chaleur est jugé peu plausible : il est marqué d'un astérisque et le comparateur utilise le prix moyen des réseaux français.",
+    display: '160 €TTC/MWh',
+    label: 'Prix de la chaleur : borne haute de cohérence',
+    value: 160,
+  },
+  heatNetworkPriceMin: {
+    description:
+      "En dessous, le prix d'un réseau de chaleur est jugé peu plausible : il est marqué d'un astérisque et le comparateur utilise le prix moyen des réseaux français.",
+    display: '70 €TTC/MWh',
+    label: 'Prix de la chaleur : borne basse de cohérence',
+    value: 70,
+  },
   highEnrrFilterPercent: {
     description: "Taux d'EnR&R minimal du filtre rapide « réseaux les plus vertueux » des tests d'adresses.",
     display: '50 %',
