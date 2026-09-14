@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import { isDefined } from '@/utils/core';
@@ -183,6 +184,9 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
       if (!selected?.spec.popup) {
         setPopup(null);
         return;
+      }
+      if (isDevModeEnabled()) {
+        console.info('map:feature_click', feature);
       }
       trackPostHogEvent('map:feature_click', {
         feature_id: feature.properties?.id_fcu ?? feature.id?.toString(),
