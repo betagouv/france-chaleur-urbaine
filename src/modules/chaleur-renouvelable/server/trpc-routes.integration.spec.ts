@@ -9,6 +9,7 @@ import {
   type DemandeChaleurRenouvelable,
 } from '@/modules/chaleur-renouvelable/constants';
 import { getBatEnrBatimentsSelectionContextByBanId } from '@/modules/chaleur-renouvelable/server/service';
+import { fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { kdb, sql } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
@@ -71,6 +72,49 @@ async function insertBatEnrRow({ address, constructionId, coordinateX, coordinat
   `.execute(kdb);
 }
 
+function buildRaccordableDemandInput(overrides: Partial<DemandeChaleurRenouvelable> = {}) {
+  return {
+    address: '10 rue du test',
+    alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
+    averageArea: 72,
+    averageResidents: 2,
+    batimentConstructionId: 'CONSTRUCTION-123',
+    comments: 'Besoin de préciser le calendrier du projet.',
+    demandConcern: 'Une copropriété',
+    dpe: 'C',
+    email: 'contact@example.com',
+    firstName: 'Claire',
+    geoAddress: {
+      city: 'Paris',
+      context: '75, Paris, Île-de-France',
+      coordinates: [2.3522, 48.8566],
+      postcode: '75001',
+    },
+    heatingEnergy: 'Gaz',
+    heatNetworkEligibility: {
+      distance: 120,
+      inPDP: true,
+      isEligible: true,
+    },
+    hotWaterSystemType: 'Collectif',
+    housingCount: 18,
+    housingType: 'immeuble_chauffage_collectif',
+    isPublicAdvisorSelected: false,
+    lastName: 'Test',
+    occupantStatus: 'Syndicat de copropriété',
+    organizationName: 'Syndicat test',
+    outdoorSpace: 'jardinCours',
+    phone: '0605040302',
+    projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],
+    radiatorType: 'radiateur-eau',
+    refusalPeriod: null,
+    refusalReason: null,
+    simulationUrl: '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif',
+    surfaceArea: null,
+    ...overrides,
+  } satisfies DemandeChaleurRenouvelable;
+}
+
 describe('batEnrRouter', () => {
   beforeEach(async () => {
     await cleanDatabase();
@@ -126,44 +170,7 @@ describe('batEnrRouter', () => {
     });
 
     it('crée une demande de raccordement quand le bâtiment est raccordable à un réseau de chaleur', async () => {
-      const input = {
-        address: '10 rue du test',
-        averageArea: 72,
-        averageResidents: 2,
-        batimentConstructionId: 'CONSTRUCTION-123',
-        comments: 'Besoin de préciser le calendrier du projet.',
-        demandConcern: 'Une copropriété',
-        dpe: 'C',
-        email: 'contact@example.com',
-        firstName: 'Claire',
-        geoAddress: {
-          city: 'Paris',
-          context: '75, Paris, Île-de-France',
-          coordinates: [2.3522, 48.8566],
-          postcode: '75001',
-        },
-        heatingEnergy: 'Gaz',
-        heatNetworkEligibility: {
-          distance: 120,
-          inPDP: true,
-          isEligible: true,
-        },
-        hotWaterSystemType: 'Collectif',
-        housingCount: 18,
-        housingType: 'immeuble_chauffage_collectif',
-        isPublicAdvisorSelected: false,
-        lastName: 'Test',
-        occupantStatus: 'Syndicat de copropriété',
-        organizationName: 'Syndicat test',
-        outdoorSpace: 'jardinCours',
-        phone: '0605040302',
-        projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],
-        radiatorType: 'radiateur-eau',
-        refusalPeriod: null,
-        refusalReason: null,
-        simulationUrl: 'https://example.com/simulation',
-        surfaceArea: null,
-      } satisfies DemandeChaleurRenouvelable;
+      const input = buildRaccordableDemandInput();
 
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
 
@@ -199,6 +206,8 @@ describe('batEnrRouter', () => {
         Nom: createdDemand.legacy_values.Nom,
         Prénom: createdDemand.legacy_values.Prénom,
         Region: createdDemand.legacy_values.Region,
+        [fcrLegacyValueKeys.alternativeHeatingSolutions]: createdDemand.legacy_values[fcrLegacyValueKeys.alternativeHeatingSolutions],
+        [fcrLegacyValueKeys.simulationUrl]: createdDemand.legacy_values[fcrLegacyValueKeys.simulationUrl],
         Structure: createdDemand.legacy_values.Structure,
         'Type de chauffage': createdDemand.legacy_values['Type de chauffage'],
         Ville: createdDemand.legacy_values.Ville,
@@ -215,11 +224,55 @@ describe('batEnrRouter', () => {
         Nom: 'Test',
         Prénom: 'Claire',
         Region: 'Île-de-France',
+        [fcrLegacyValueKeys.alternativeHeatingSolutions]: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
+        [fcrLegacyValueKeys.simulationUrl]:
+          '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif',
         Structure: 'Copropriété',
         'Type de chauffage': 'Collectif',
         Ville: 'Paris',
         Éligibilité: true,
       });
+    });
+
+    it('met à jour le snapshot chaleur renouvelable sur une demande dédupliquée', async () => {
+      const caller = createTestCaller(null);
+      const firstResult = await caller.batEnr.createDemandeChaleurRenouvelable(
+        buildRaccordableDemandInput({
+          alternativeHeatingSolutions: ['PAC géothermique'],
+          simulationUrl: '/chaleur-renouvelable/resultat?source=initiale',
+        })
+      );
+      sentEmailTemplate.mockClear();
+
+      const duplicateResult = await caller.batEnr.createDemandeChaleurRenouvelable(
+        buildRaccordableDemandInput({
+          alternativeHeatingSolutions: ['Chaudière biomasse', 'PAC air-eau collective', 'Solaire thermique'],
+          simulationUrl: '/chaleur-renouvelable/resultat?source=dedoublon',
+        })
+      );
+
+      const demand = await kdb
+        .selectFrom('demands')
+        .select(['legacy_values'])
+        .where('id', '=', firstResult.demandSubmissionResult?.id ?? '')
+        .executeTakeFirstOrThrow();
+      const demands = await kdb.selectFrom('demands').select(['id']).execute();
+
+      expect({
+        demandCount: demands.length,
+        duplicateResult: duplicateResult.demandSubmissionResult,
+        storedAlternativeHeatingSolutions: demand.legacy_values[fcrLegacyValueKeys.alternativeHeatingSolutions],
+        storedSimulationUrl: demand.legacy_values[fcrLegacyValueKeys.simulationUrl],
+      }).toStrictEqual({
+        demandCount: 1,
+        duplicateResult: {
+          ...firstResult.demandSubmissionResult,
+          isExisting: true,
+        },
+        storedAlternativeHeatingSolutions: ['Chaudière biomasse', 'PAC air-eau collective', 'Solaire thermique'],
+        storedSimulationUrl: '/chaleur-renouvelable/resultat?source=dedoublon',
+      });
+      expect(sentEmailTemplate).not.toHaveBeenCalled();
     });
   });
 

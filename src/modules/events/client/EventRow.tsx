@@ -187,6 +187,12 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),
+  demand_unrealizable_email_sent: (event, updateFilters) => (
+    <>
+      <span>Email « Raccordement non réalisable » envoyé au demandeur pour la </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
   demand_updated: (event, updateFilters) => (
     <>
       <span>a mis à jour une </span>

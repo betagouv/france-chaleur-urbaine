@@ -55,6 +55,11 @@ export const demandStatusDefault = demandStatuses[0].label;
 
 export type DemandStatus = DEMANDE_STATUS;
 
+export const fcrLegacyValueKeys = {
+  alternativeHeatingSolutions: 'Solutions chaleur renouvelable',
+  simulationUrl: 'URL simulation chaleur renouvelable',
+} as const;
+
 /**
  * Libellé de statut présenté au demandeur. « À traiter » relève de la file de traitement interne des gestionnaires :
  * on le neutralise en « En cours de traitement ». Les autres statuts restent inchangés.

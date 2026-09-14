@@ -22,7 +22,9 @@ type DemandTestAddress = Pick<
   'id' | 'ban_address' | 'ban_valid' | 'source_address' | 'eligibility_history'
 >;
 
-const loadDemandForAccessOrThrow = async (demandId: string): Promise<DemandForAccess> =>
+type DemandForProcessCheck = DemandForAccess & Pick<Selectable<Demands>, 'id' | 'legacy_values'>;
+
+const buildDemandForAccessCheckQuery = (demandId: string) =>
   kdb
     .selectFrom('demands')
     .leftJoin('reseaux_de_chaleur as rdc', (j) =>
@@ -43,6 +45,16 @@ const loadDemandForAccessOrThrow = async (demandId: string): Promise<DemandForAc
     ])
     .select((eb) => eb.fn.coalesce('rdc.organization_id', 'zrc.organization_id').as('network_organization_id'))
     .where('demands.id', '=', demandId)
+    .where('demands.deleted_at', 'is', null);
+
+const loadDemandForAccessOrThrow = async (demandId: string): Promise<DemandForAccess> =>
+  buildDemandForAccessCheckQuery(demandId).executeTakeFirstOrThrow(
+    () => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' })
+  );
+
+const loadDemandForProcessOrThrow = async (demandId: string): Promise<DemandForProcessCheck> =>
+  buildDemandForAccessCheckQuery(demandId)
+    .select(['demands.id', 'demands.legacy_values'])
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
 
 /**
@@ -51,7 +63,9 @@ const loadDemandForAccessOrThrow = async (demandId: string): Promise<DemandForAc
  */
 export const ensureUserCanAccessDemand = async (ctx: Context, demandId: string): Promise<void> => {
   const demand = await loadDemandForAccessOrThrow(demandId);
-  if (ctx.user.role === 'admin') return;
+  if (ctx.user.role === 'admin') {
+    return;
+  }
   const permissions = await ctx.getPermissions();
   if (!canUserAccessDemand(ctx.user, permissions, demand)) {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'Demande hors de votre périmètre' });
@@ -62,13 +76,16 @@ export const ensureUserCanAccessDemand = async (ctx: Context, demandId: string):
  * Garantit que la demande existe ET que l'utilisateur peut la **traiter** (statut, contact, commentaire, mail).
  * Lève NOT_FOUND si introuvable, FORBIDDEN si pas responsable. Admin : NOT_FOUND uniquement (bypass auth).
  */
-export const ensureUserCanProcessDemand = async (ctx: Context, demandId: string): Promise<void> => {
-  const demand = await loadDemandForAccessOrThrow(demandId);
-  if (ctx.user.role === 'admin') return;
+export const ensureUserCanProcessDemand = async (ctx: Context, demandId: string): Promise<DemandForProcessCheck> => {
+  const demand = await loadDemandForProcessOrThrow(demandId);
+  if (ctx.user.role === 'admin') {
+    return demand;
+  }
   const permissions = await ctx.getPermissions();
   if (!isUserResponsibleForDemand(ctx.user, permissions, demand)) {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'Demande hors de votre périmètre de traitement' });
   }
+  return demand;
 };
 
 /**
