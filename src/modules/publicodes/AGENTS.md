@@ -21,7 +21,7 @@ publicodes/
 
 - Owns: explaining how a publicodes rule value is computed (formula tree with real values, provenance badges saisie/défaut, drill-down), and publicodes display formatting.
 - `explanation-model.ts` and `format.ts` are pure TypeScript (no React) — keep them that way so they stay testable and server-usable.
-- The explanation model normalizes away compiler noise: `$SITUATION` / `par défaut` wrappers, `variable manquante`, unit conversions, fold-seed constants of somme/produit/et/ou. It works on `Engine.evaluate()` output; publicodes exports no usable AST types, hence the internal loose `PublicodesNode` type.
+- The explanation model normalizes away compiler noise: `$SITUATION` / `par défaut` wrappers, `variable manquante`, unit conversions, fold-seed constants of somme/produit/et/ou, the `le maximum de` / `le minimum de` / `moyenne` compiled forms (rebuilt from `sourceMap.args`), and the `X = oui` / `X != non` comparisons compiled from `applicable si` / `est défini` (collapsed to X or its negation). It works on `Engine.evaluate()` output; publicodes exports no usable AST types, hence the internal loose `PublicodesNode` type.
 - Must NOT: access DB or server internals; know about the comparateur's UI.
 - The engine hooks (`usePublicodesEngine`, `useSimulatorEngine`) still live in `src/components/ComparateurPublicodes/` (widely imported); migrating them here is a possible follow-up.
 
