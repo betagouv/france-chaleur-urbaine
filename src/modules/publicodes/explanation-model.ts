@@ -207,9 +207,55 @@ const isNeutralOperand = (node: PublicodesNode, operator: string): boolean =>
   node.nodeKind === 'constant' &&
   (node.rawNode === undefined || (operator === 'et' && node.nodeValue === true) || (operator === 'ou' && node.nodeValue === false));
 
+/**
+ * List mechanisms whose compiled form is unreadable: max/min become a fold of nested conditions over private
+ * `$INTERNAL valeur` / `$INTERNAL acc` rules, moyenne a ratio of two sums. `sourceMap.args.valeur` still holds
+ * the original operands (parsed, not evaluated), so the mechanism is rebuilt from there.
+ */
+const LIST_MECANISMS_REBUILT_FROM_SOURCE = ['le maximum de', 'le minimum de', 'moyenne'];
+
+const isBooleanNode = (node: ExplanationNode): boolean =>
+  node.kind === 'test' ||
+  (node.kind === 'operation' && (COMPARISON_OPERATORS.includes(node.operator) || node.operator === 'et' || node.operator === 'ou')) ||
+  typeof node.value === 'boolean';
+
+/**
+ * « X = oui » / « X != non » ≡ X and « X = non » / « X != oui » ≡ not X — plumbing compiled from
+ * applicable si, non applicable si, est défini and est applicable. Null when the comparison is not of that shape
+ * or when X cannot be negated simply.
+ */
+const collapseBooleanComparison = (operator: string, operands: ExplanationNode[]): ExplanationNode | null => {
+  if (operands.length !== 2) {
+    return null;
+  }
+  const constantIndex = operands.findIndex((operand) => operand.kind === 'constant' && typeof operand.value === 'boolean');
+  if (constantIndex === -1) {
+    return null;
+  }
+  const other = operands[1 - constantIndex];
+  if (!isBooleanNode(other)) {
+    return null;
+  }
+  const keepsValue = (operator === '=') === (operands[constantIndex].value === true);
+  return keepsValue ? other : negateNode(other);
+};
+
 const normalizeNode = (engine: FCUEngine, rawNode: PublicodesNode): ExplanationNode => {
   const node = unwrapNode(rawNode) as PublicodesNode;
   const unit = node.unit ? formatUnit(node.unit) : '';
+
+  const mecanismName = node.sourceMap?.mecanismName ?? '';
+  const foldedOperands = (node.sourceMap as { args?: { valeur?: PublicodesNode[] } } | undefined)?.args?.valeur;
+  if (LIST_MECANISMS_REBUILT_FROM_SOURCE.includes(mecanismName) && Array.isArray(foldedOperands)) {
+    return {
+      // sourceMap operands are not evaluated in place: evaluate them against the current situation
+      children: foldedOperands.map((operand) => normalizeNode(engine, engine.evaluate(operand as never) as PublicodesNode)),
+      kind: 'mecanism',
+      name: mecanismName,
+      unit,
+      value: node.nodeValue,
+    };
+  }
 
   switch (node.nodeKind) {
     case 'reference': {
@@ -240,6 +286,13 @@ const normalizeNode = (engine: FCUEngine, rawNode: PublicodesNode): ExplanationN
         node.nodeValue === undefined && COMPARISON_OPERATORS.includes(operator)
           ? computeComparisonValue(operator, operands[0].value, operands[1].value)
           : node.nodeValue;
+      if (operator === '=' || operator === '!=') {
+        const collapsed = collapseBooleanComparison(operator, operands);
+        if (collapsed) {
+          // a short-circuited X has no value of its own: the comparison verdict is the best we have
+          return collapsed.value === undefined && typeof value === 'boolean' ? { ...collapsed, value } : collapsed;
+        }
+      }
       return { kind: 'operation', operands, operator, unit, value };
     }
     case 'condition': {
