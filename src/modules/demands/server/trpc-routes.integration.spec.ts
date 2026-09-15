@@ -168,6 +168,46 @@ describe('demandsRouter', () => {
           createTestCaller(testUsers.admin).demands.gestionnaire.listEmails({ demand_id: uuid(999) })
         ).rejects.toMatchObject({ code: 'NOT_FOUND' });
       });
+
+      it('ignore les emails supprimés', async () => {
+        await kdb.deleteFrom('demand_emails').execute();
+        await kdb.deleteFrom('demands').execute();
+        const [demand] = await kdb
+          .insertInto('demands')
+          .values({
+            deleted_at: null,
+            legacy_values: JSON.stringify({ Mail: 'demandeur@example.fr' }),
+            validated: true,
+          })
+          .returningAll()
+          .execute();
+        await kdb
+          .insertInto('demand_emails')
+          .values([
+            {
+              body: 'Email actif',
+              demand_id: demand.id,
+              email_key: 'active-email',
+              object: 'Objet actif',
+              to: 'demandeur@example.fr',
+              user_email: testUsers.admin.email!,
+            },
+            {
+              body: 'Email supprimé',
+              deleted_at: new Date(),
+              demand_id: demand.id,
+              email_key: 'deleted-email',
+              object: 'Objet supprimé',
+              to: 'demandeur@example.fr',
+              user_email: testUsers.admin.email!,
+            },
+          ])
+          .execute();
+
+        const emails = await createTestCaller(testUsers.admin).demands.gestionnaire.listEmails({ demand_id: demand.id });
+
+        expect(emails.map((email) => email.email_key)).toStrictEqual(['active-email']);
+      });
     });
   });
 
