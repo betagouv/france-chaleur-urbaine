@@ -140,6 +140,10 @@ describe('demandsRouter', () => {
     });
 
     describe('listEmails', () => {
+      beforeEach(async () => {
+        await cleanDatabase();
+      });
+
       // Permissions: ['gestionnaire', 'admin']
       const permissionTests: PermissionTestCase[] = [
         { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
@@ -170,8 +174,6 @@ describe('demandsRouter', () => {
       });
 
       it('ignore les emails supprimés', async () => {
-        await kdb.deleteFrom('demand_emails').execute();
-        await kdb.deleteFrom('demands').execute();
         const [demand] = await kdb
           .insertInto('demands')
           .values({
