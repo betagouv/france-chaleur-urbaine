@@ -296,7 +296,7 @@ export const tileSourcesConfig = {
   },
   'reseaux-en-construction': {
     aliases: ['reseauxEnConstruction'],
-    cacheProfile: 'revalidate',
+    cacheProfile: 'private',
     generateGeoJSON: extractNDJSONFromDatabaseTable('zones_et_reseaux_en_construction', {
       fields: reseauxEnConstructionFields,
       idField: 'id_fcu',
@@ -316,7 +316,7 @@ export const tileSourcesConfig = {
     cacheProfile: 'private',
     generateGeoJSON: testsAdressesGeoJSONQuery,
     tilesTableName: 'pro_eligibility_tests_addresses_tiles',
-    tippeCanoeArgs: '--drop-rate=0 --no-tile-size-limit --no-feature-limit',
+    tippeCanoeArgs: '-r1 --drop-densest-as-needed --maximum-tile-bytes=2500000',
     zoomMax: 12,
   },
   'zones-a-urbaniser': {

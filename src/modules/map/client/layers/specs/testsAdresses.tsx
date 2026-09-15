@@ -2,8 +2,9 @@ import dayjs from 'dayjs';
 
 import Tooltip from '@/components/ui/Tooltip';
 import { defineLayerPopup, type MapSourceLayersSpecification } from '@/modules/map/client/core/common';
-import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
-import { structureTypesLabels } from '@/modules/users/constants';
+import type { ProEligibilityTestEligibility } from '@/modules/pro-eligibility-tests/types';
+import { type StructureType, structureTypesLabels } from '@/modules/users/constants';
+import type { UserRole } from '@/types/enum/UserRole';
 import { upperCaseFirstChar } from '@/utils/strings';
 
 export const testsAdressesLayerStyle = {
@@ -21,35 +22,80 @@ const getSizesArray = (size: number) => {
   return [1, size * 1.25, size * 1.5, size * 2, size * 2.5, size * 3];
 };
 
-type TestAdresse = {
+type TestsAdressesFeature = {
   id: string;
   ban_address: string;
+  /** JSON-encoded `ProEligibilityTestEligibility` — the last entry of `eligibility_history` */
   eligibility: string;
-  users: string;
+  eligible: boolean;
+  nb_users: number;
+  /** JSON-encoded `TestsAdressesEntry[]` */
+  tests: string;
 };
 
-type Test = {
+/** One row of the tiles `tests` aggregate: a test flattened with its owner */
+type TestsAdressesEntry = {
+  test_id: string;
+  test_name: string;
+  test_created_at: string;
+  user_id: string;
+  user_role: UserRole;
+  user_first_name: string | null;
+  user_last_name: string | null;
+  user_structure_name: string | null;
+  user_structure_type: StructureType | null;
+  user_phone: string | null;
+};
+
+type TestsAdressesTest = {
   id: string;
   name: string;
   created_at: string;
 };
 
-type TestUser = {
+type TestsAdressesUser = {
   id: string;
-  role: string;
-  first_name: string;
-  last_name: string;
-  structure_name: string;
-  structure_type: string;
-  phone: string;
-  tests: Test[];
+  role: UserRole;
+  first_name: string | null;
+  last_name: string | null;
+  structure_name: string | null;
+  structure_type: StructureType | null;
+  phone: string | null;
+  tests: TestsAdressesTest[];
 };
 
-const Popup = defineLayerPopup<TestAdresse>(
-  ({ ban_address, eligibility: eligibility_string, users: users_string }, { Property, Title, TwoColumns }) => {
-    const eligibilityHistory = JSON.parse(eligibility_string) as ProEligibilityTestHistoryEntry[];
-    const currentEligibility = eligibilityHistory[eligibilityHistory.length - 1]?.eligibility;
-    const users: TestUser[] = users_string ? JSON.parse(users_string) : [];
+/**
+ * Groups the flat (test x user) rows carried by the tiles into one entry per user.
+ */
+const groupEntriesByUser = (entries: TestsAdressesEntry[]) => {
+  const usersById = new Map<string, TestsAdressesUser>();
+
+  entries.forEach((entry) => {
+    const test = { created_at: entry.test_created_at, id: entry.test_id, name: entry.test_name };
+    const user = usersById.get(entry.user_id);
+    if (user) {
+      user.tests.push(test);
+      return;
+    }
+    usersById.set(entry.user_id, {
+      first_name: entry.user_first_name,
+      id: entry.user_id,
+      last_name: entry.user_last_name,
+      phone: entry.user_phone,
+      role: entry.user_role,
+      structure_name: entry.user_structure_name,
+      structure_type: entry.user_structure_type,
+      tests: [test],
+    });
+  });
+
+  return Array.from(usersById.values());
+};
+
+const Popup = defineLayerPopup<TestsAdressesFeature>(
+  ({ ban_address, eligibility: eligibility_string, tests: tests_string }, { Property, Title, TwoColumns }) => {
+    const currentEligibility: ProEligibilityTestEligibility | null = eligibility_string ? JSON.parse(eligibility_string) : null;
+    const users = groupEntriesByUser(tests_string ? JSON.parse(tests_string) : []);
 
     return (
       <>
@@ -83,7 +129,7 @@ const Popup = defineLayerPopup<TestAdresse>(
                     >
                       <span>
                         {structure_name || structure_type
-                          ? `${structure_name || ''} ${structure_type ? `(${structureTypesLabels[structure_type as keyof typeof structureTypesLabels]})` : ''}`
+                          ? `${structure_name || ''} ${structure_type ? `(${structureTypesLabels[structure_type]})` : ''}`
                           : 'Structure non connue'}
                       </span>
                     </Tooltip>
@@ -131,9 +177,9 @@ export const testsAdressesLayersSpec = [
             ['linear'],
             ['zoom'],
             8,
-            ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.notEligible.fill.size)],
+            ['interpolate', ['linear'], ['get', 'nb_users'], ...getSizesArray(testsAdressesLayerStyle.notEligible.fill.size)],
             14,
-            ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.notEligible.fill.size * 4)],
+            ['interpolate', ['linear'], ['get', 'nb_users'], ...getSizesArray(testsAdressesLayerStyle.notEligible.fill.size * 4)],
           ],
           'circle-stroke-color': testsAdressesLayerStyle.notEligible.stroke.color,
           'circle-stroke-width': testsAdressesLayerStyle.notEligible.stroke.size,
@@ -152,9 +198,9 @@ export const testsAdressesLayersSpec = [
             ['linear'],
             ['zoom'],
             8,
-            ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.eligible.fill.size)],
+            ['interpolate', ['linear'], ['get', 'nb_users'], ...getSizesArray(testsAdressesLayerStyle.eligible.fill.size)],
             14,
-            ['interpolate', ['linear'], ['get', 'nbUsers'], ...getSizesArray(testsAdressesLayerStyle.eligible.fill.size * 4)],
+            ['interpolate', ['linear'], ['get', 'nb_users'], ...getSizesArray(testsAdressesLayerStyle.eligible.fill.size * 4)],
           ],
           'circle-stroke-color': testsAdressesLayerStyle.eligible.stroke.color,
           'circle-stroke-width': testsAdressesLayerStyle.eligible.stroke.size,

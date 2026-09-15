@@ -827,6 +827,7 @@ export interface TestsAdressesTilesFeatures {
   eligible: boolean | null;
   geom: string | null;
   id: Int8 | null;
+  nb_users: number | null;
   tests: Json | null;
 }
 
