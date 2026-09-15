@@ -12,28 +12,7 @@ import { ensureUserCanAccessDemand, ensureUserCanProcessDemand } from './helpers
  */
 export const listDemandEmails = async (ctx: Context, { demandId }: { demandId: string }) => {
   await ensureUserCanAccessDemand(ctx, demandId);
-  return await kdb
-    .selectFrom('demand_emails')
-    .select([
-      'airtable_id',
-      'body',
-      'cc',
-      'created_at',
-      'deleted_at',
-      'demand_id',
-      'email_key',
-      'id',
-      'object',
-      'reply_to',
-      'sent_at',
-      'signature',
-      'to',
-      'updated_at',
-      'user_email',
-    ])
-    .where('demand_id', '=', demandId)
-    .where('deleted_at', 'is', null)
-    .execute();
+  return await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).where('deleted_at', 'is', null).execute();
 };
 
 const createDemandEmail = async (values: Omit<Insertable<DemandEmails>, 'created_at' | 'updated_at' | 'id'>) => {
