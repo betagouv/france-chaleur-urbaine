@@ -4,7 +4,6 @@ import { buildDemandFeatures } from '@/modules/demands/server/tiles';
 import type { GenerateGeoJSONConfig, ImportLayerConfig, TilesGenerationConfig, TilesTable } from '@/modules/tiles/server/generation';
 import { downloadBatimentsRaccordesReseauxChaleurFroidJSON } from '@/modules/tiles/server/generation-configs/batiments-raccordes-reseaux-chaleur-froid';
 import { reseauxDeChaleurGeoJSONQuery } from '@/modules/tiles/server/generation-configs/reseaux-de-chaleur';
-import { testsAdressesGeoJSONQuery } from '@/modules/tiles/server/generation-configs/tests-adresses';
 import {
   downloadGeoJSONFromURL,
   extractGeoJSONFromDatabaseTable,
@@ -309,14 +308,6 @@ export const tileSourcesConfig = {
     // Source : https://drive.google.com/file/d/1w4lLWQCW1nMoRuIyZvVO5dMLMELo-YD3/view?usp=drive_link
     generateGeoJSON: extractZippedShapefileToGeoJSON,
     tilesTableName: 'ressources_geothermales_nappes_tiles',
-    zoomMax: 12,
-  },
-  'tests-adresses': {
-    aliases: ['testsAdresses'],
-    cacheProfile: 'private',
-    generateGeoJSON: testsAdressesGeoJSONQuery,
-    tilesTableName: 'pro_eligibility_tests_addresses_tiles',
-    tippeCanoeArgs: '-r1 --drop-densest-as-needed --maximum-tile-bytes=2500000',
     zoomMax: 12,
   },
   'zones-a-urbaniser': {

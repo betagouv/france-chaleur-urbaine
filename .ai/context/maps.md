@@ -56,9 +56,7 @@ Cache profiles — `cacheProfile` field per source (`'long' | 'revalidate' | 'pr
 |---------|-----------------|---------|
 | `long` (default) | `public, max-age=86400` | Rarely-changed data (bdnb, geothermie, zones, besoins, communes, enrr…) |
 | `revalidate` | `public, no-cache` | Réseaux + `demands` — browser caches tiles but revalidates on every display (304 if unchanged), so updates are visible immediately after a `markTilesUpdated` bump (bounded by the 60s in-memory metadata TTL) |
-| `private` | `private, max-age=86400, must-revalidate` | `tests-adresses` (admin-only, embedded PII) |
-
-`tests-adresses` is admin-only: auth required on the route, legend checkbox hidden for other roles, no `Access-Control-Allow-Origin: *`.
+| `private` | `private, max-age=86400, must-revalidate` | Reserved for sources embedding PII (`requireAuthentication(['admin'])` on the route, no `Access-Control-Allow-Origin: *`). No source uses it today |
 
 ## Constants
 

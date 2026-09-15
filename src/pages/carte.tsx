@@ -51,7 +51,6 @@ const additionalLayersToConfigPath = {
   reseauxDeFroid: 'reseauxDeFroid',
   reseauxEnConstruction: 'reseauxEnConstruction',
   ressourcesGeothermalesNappes: 'ressourcesGeothermalesNappes',
-  testsAdresses: 'testsAdresses',
   zonesDeDeveloppementPrioritaire: 'zonesDeDeveloppementPrioritaire',
   zonesOpportunite: 'zonesOpportunite.show',
   zonesOpportuniteFroid: 'zonesOpportuniteFroid.show',

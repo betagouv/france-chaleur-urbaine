@@ -26,7 +26,6 @@ import { reseauxDeChaleurLayersSpec } from './specs/reseauxDeChaleur';
 import { reseauxDeFroidLayersSpec } from './specs/reseauxDeFroid';
 import { reseauxEnConstructionLayersSpec } from './specs/reseauxEnConstruction';
 import { ressourcesGeothermalesNappesLayersSpec } from './specs/ressourcesGeothermalesNappes';
-import { testsAdressesLayersSpec } from './specs/testsAdresses';
 import { buildingsDataExtractionLayersSpec } from './specs/tools/buildingsDataExtraction';
 import { distancesMeasurementLayersSpec } from './specs/tools/distancesMeasurement';
 import { linearHeatDensityLayersSpec } from './specs/tools/linearHeatDensity';
@@ -57,7 +56,6 @@ export const allLayers = [
   ...typeChauffageBatimentsCollectifsLayersSpec,
   ...consommationsGazLayersSpec,
   ...demandesEligibiliteLayersSpec,
-  ...testsAdressesLayersSpec,
   ...reseauxDeChaleurLayersSpec,
   ...reseauxDeFroidLayersSpec,
   ...enrrMobilisablesChaleurFataleLayersSpec,
