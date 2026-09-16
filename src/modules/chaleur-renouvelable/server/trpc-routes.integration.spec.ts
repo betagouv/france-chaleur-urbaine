@@ -13,7 +13,7 @@ import { fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { kdb, sql } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
-import { cleanDatabase } from '@/tests/fixtures';
+import { cleanDatabase, seedTableUser } from '@/tests/fixtures';
 import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
@@ -72,9 +72,20 @@ async function insertBatEnrRow({ address, constructionId, coordinateX, coordinat
   `.execute(kdb);
 }
 
-function buildRaccordableDemandInput(overrides: Partial<DemandeChaleurRenouvelable> = {}) {
+async function seedDepartmentPermission(userId: string, departmentCode: string) {
+  await kdb
+    .insertInto('user_permissions')
+    .values({
+      resource_id: departmentCode,
+      type: 'departement',
+      user_id: userId,
+    })
+    .execute();
+}
+
+function buildCcrtExperimentationDemandInput(overrides: Partial<DemandeChaleurRenouvelable> = {}) {
   return {
-    address: '10 rue du test',
+    address: '10 rue du test 13001 Marseille',
     alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
     averageArea: 72,
     averageResidents: 2,
@@ -85,10 +96,11 @@ function buildRaccordableDemandInput(overrides: Partial<DemandeChaleurRenouvelab
     email: 'contact@example.com',
     firstName: 'Claire',
     geoAddress: {
-      city: 'Paris',
-      context: '75, Paris, Île-de-France',
-      coordinates: [2.3522, 48.8566],
-      postcode: '75001',
+      city: 'Marseille',
+      cityCode: '13055',
+      context: '13, Bouches-du-Rhône, Provence-Alpes-Côte d’Azur',
+      coordinates: [5.3698, 43.2965],
+      postcode: '13001',
     },
     heatingEnergy: 'Gaz',
     heatNetworkEligibility: {
@@ -122,45 +134,85 @@ describe('batEnrRouter', () => {
   });
 
   describe('batEnr.createDemandeChaleurRenouvelable', () => {
-    it('ne crée pas de demande chaleur renouvelable quand le formulaire est orienté vers le conseiller public', async () => {
-      const input = {
-        address: '10 rue du test',
-        averageArea: 72,
-        averageResidents: 2,
-        batimentConstructionId: 'CONSTRUCTION-123',
-        comments: 'Besoin de préciser le calendrier du projet.',
-        demandConcern: 'Une copropriété',
-        dpe: 'C',
-        email: 'contact@example.com',
-        firstName: 'Claire',
-        heatingEnergy: 'Gaz',
-        hotWaterSystemType: 'Collectif',
-        housingCount: 18,
-        housingType: 'immeuble_chauffage_collectif',
-        isPublicAdvisorSelected: true,
-        lastName: 'Test',
-        occupantStatus: 'Syndicat de copropriété',
-        organizationName: 'Syndicat test',
-        outdoorSpace: 'jardinCours',
-        phone: '0605040302',
-        projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],
-        radiatorType: 'radiateur-eau',
-        refusalPeriod: 'Il y a moins de 3 mois',
-        refusalReason: 'Coût du raccordement trop élevé',
-        simulationUrl: 'https://example.com/simulation',
-        surfaceArea: null,
-      } satisfies DemandeChaleurRenouvelable;
+    it('crée une demande classique hors expérimentation quand le réseau de chaleur est éligible', async () => {
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
+        buildCcrtExperimentationDemandInput({
+          address: '10 rue du test 75001 Paris',
+          geoAddress: {
+            city: 'Paris',
+            cityCode: '75056',
+            context: '75, Paris, Île-de-France',
+            coordinates: [2.3522, 48.8566],
+            postcode: '75001',
+          },
+        })
+      );
 
-      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
-
-      const createdDemandes = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
+      const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
+      const createdDemand = await kdb.selectFrom('demands').select(['id', 'legacy_values']).executeTakeFirstOrThrow();
 
       expect({
-        createdDemandes,
+        createdDemandesChaleurRenouvelable,
+        result,
+        sentEmailKeys: sentEmailTemplate.mock.calls.map(([emailKey]) => emailKey),
+      }).toStrictEqual({
+        createdDemandesChaleurRenouvelable: [],
+        result: {
+          demandSubmissionResult: {
+            address: '10 rue du test 75001 Paris',
+            createdAt: result.demandSubmissionResult?.createdAt,
+            distance: result.demandSubmissionResult?.distance,
+            email: 'contact@example.com',
+            id: createdDemand.id,
+            isEligible: true,
+            isExisting: false,
+            networkName: result.demandSubmissionResult?.networkName,
+            status: DEMANDE_STATUS.TO_PROCESS,
+          },
+          id: null,
+        },
+        sentEmailKeys: ['demands.demandeur.confirmation-demande'],
+      });
+      expect(createdDemand.legacy_values[fcrLegacyValueKeys.alternativeHeatingSolutions]).toStrictEqual([
+        'PAC géothermique',
+        'Chaudière biomasse',
+        'PAC air-eau collective',
+      ]);
+      expect(createdDemand.legacy_values[fcrLegacyValueKeys.simulationUrl]).toBe(
+        '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif'
+      );
+    });
+
+    it('oriente vers France Rénov hors expérimentation quand le réseau de chaleur n’est pas éligible', async () => {
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
+        buildCcrtExperimentationDemandInput({
+          address: '10 rue du test 75001 Paris',
+          geoAddress: {
+            city: 'Paris',
+            cityCode: '75056',
+            context: '75, Paris, Île-de-France',
+            coordinates: [2.3522, 48.8566],
+            postcode: '75001',
+          },
+          heatNetworkEligibility: {
+            distance: 450,
+            inPDP: false,
+            isEligible: false,
+          },
+        })
+      );
+
+      const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
+      const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
+
+      expect({
+        createdDemandesChaleurRenouvelable,
+        createdDemands,
         result,
         sentEmailCallCount: sentEmailTemplate.mock.calls.length,
       }).toStrictEqual({
-        createdDemandes: [],
+        createdDemandesChaleurRenouvelable: [],
+        createdDemands: [],
         result: {
           demandSubmissionResult: null,
           id: null,
@@ -169,110 +221,215 @@ describe('batEnrRouter', () => {
       });
     });
 
-    it('crée une demande de raccordement quand le bâtiment est raccordable à un réseau de chaleur', async () => {
-      const input = buildRaccordableDemandInput();
+    it('crée une demande classique en expérimentation pour un immeuble collectif éligible au réseau de chaleur', async () => {
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(buildCcrtExperimentationDemandInput());
 
-      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
+      const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
+      const createdDemand = await kdb.selectFrom('demands').select(['id']).executeTakeFirstOrThrow();
 
-      const createdDemand = await kdb
-        .selectFrom('demands')
-        .select(['id', 'legacy_values'])
-        .where('id', '=', result.demandSubmissionResult?.id ?? '')
-        .executeTakeFirstOrThrow();
-
-      expect(result).toStrictEqual({
-        demandSubmissionResult: {
-          address: '10 rue du test',
-          createdAt: createdDemand.legacy_values['Date de la demande'],
-          distance: 45,
-          email: 'contact@example.com',
-          id: createdDemand.id,
-          isEligible: true,
-          isExisting: false,
-          networkName: 'CPCU',
-          status: DEMANDE_STATUS.TO_PROCESS,
-        },
-        id: null,
-      });
       expect({
-        Adresse: createdDemand.legacy_values.Adresse,
-        'Code Postal': createdDemand.legacy_values['Code Postal'],
-        Departement: createdDemand.legacy_values.Departement,
-        'Distance au réseau': createdDemand.legacy_values['Distance au réseau'],
-        Latitude: createdDemand.legacy_values.Latitude,
-        Longitude: createdDemand.legacy_values.Longitude,
-        Mail: createdDemand.legacy_values.Mail,
-        'Mode de chauffage': createdDemand.legacy_values['Mode de chauffage'],
-        Nom: createdDemand.legacy_values.Nom,
-        Prénom: createdDemand.legacy_values.Prénom,
-        Region: createdDemand.legacy_values.Region,
-        [fcrLegacyValueKeys.alternativeHeatingSolutions]: createdDemand.legacy_values[fcrLegacyValueKeys.alternativeHeatingSolutions],
-        [fcrLegacyValueKeys.simulationUrl]: createdDemand.legacy_values[fcrLegacyValueKeys.simulationUrl],
-        Structure: createdDemand.legacy_values.Structure,
-        'Type de chauffage': createdDemand.legacy_values['Type de chauffage'],
-        Ville: createdDemand.legacy_values.Ville,
-        Éligibilité: createdDemand.legacy_values.Éligibilité,
+        createdDemandesChaleurRenouvelable,
+        result,
+        sentEmailKeys: sentEmailTemplate.mock.calls.map(([emailKey]) => emailKey),
       }).toStrictEqual({
-        Adresse: '10 rue du test',
-        'Code Postal': '75001',
-        Departement: '75',
-        'Distance au réseau': 45,
-        Latitude: 48.8566,
-        Longitude: 2.3522,
-        Mail: 'contact@example.com',
-        'Mode de chauffage': 'Gaz',
-        Nom: 'Test',
-        Prénom: 'Claire',
-        Region: 'Île-de-France',
-        [fcrLegacyValueKeys.alternativeHeatingSolutions]: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
-        [fcrLegacyValueKeys.simulationUrl]:
-          '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif',
-        Structure: 'Copropriété',
-        'Type de chauffage': 'Collectif',
-        Ville: 'Paris',
-        Éligibilité: true,
+        createdDemandesChaleurRenouvelable: [],
+        result: {
+          demandSubmissionResult: {
+            address: '10 rue du test 13001 Marseille',
+            createdAt: result.demandSubmissionResult?.createdAt,
+            distance: result.demandSubmissionResult?.distance,
+            email: 'contact@example.com',
+            id: createdDemand.id,
+            isEligible: true,
+            isExisting: false,
+            networkName: result.demandSubmissionResult?.networkName,
+            status: DEMANDE_STATUS.TO_PROCESS,
+          },
+          id: null,
+        },
+        sentEmailKeys: ['demands.demandeur.confirmation-demande'],
       });
     });
 
-    it('met à jour le snapshot chaleur renouvelable sur une demande dédupliquée', async () => {
-      const caller = createTestCaller(null);
-      const firstResult = await caller.batEnr.createDemandeChaleurRenouvelable(
-        buildRaccordableDemandInput({
-          alternativeHeatingSolutions: ['PAC géothermique'],
-          simulationUrl: '/chaleur-renouvelable/resultat?source=initiale',
+    it('oriente vers France Rénov hors expérimentation quand le réseau de chaleur est éligible mais déjà refusé', async () => {
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
+        buildCcrtExperimentationDemandInput({
+          geoAddress: {
+            city: 'Paris',
+            cityCode: '75056',
+            context: '75, Paris, Île-de-France',
+            coordinates: [2.3522, 48.8566],
+            postcode: '75001',
+          },
+          isPublicAdvisorSelected: true,
+          refusalPeriod: 'Il y a moins de 3 mois',
+          refusalReason: 'Coût du raccordement trop élevé',
         })
       );
-      sentEmailTemplate.mockClear();
 
-      const duplicateResult = await caller.batEnr.createDemandeChaleurRenouvelable(
-        buildRaccordableDemandInput({
-          alternativeHeatingSolutions: ['Chaudière biomasse', 'PAC air-eau collective', 'Solaire thermique'],
-          simulationUrl: '/chaleur-renouvelable/resultat?source=dedoublon',
-        })
-      );
-
-      const demand = await kdb
-        .selectFrom('demands')
-        .select(['legacy_values'])
-        .where('id', '=', firstResult.demandSubmissionResult?.id ?? '')
-        .executeTakeFirstOrThrow();
-      const demands = await kdb.selectFrom('demands').select(['id']).execute();
+      const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
+      const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
 
       expect({
-        demandCount: demands.length,
-        duplicateResult: duplicateResult.demandSubmissionResult,
-        storedAlternativeHeatingSolutions: demand.legacy_values[fcrLegacyValueKeys.alternativeHeatingSolutions],
-        storedSimulationUrl: demand.legacy_values[fcrLegacyValueKeys.simulationUrl],
+        createdDemandesChaleurRenouvelable,
+        createdDemands,
+        result,
+        sentEmailCallCount: sentEmailTemplate.mock.calls.length,
       }).toStrictEqual({
-        demandCount: 1,
-        duplicateResult: {
-          ...firstResult.demandSubmissionResult,
-          isExisting: true,
+        createdDemandesChaleurRenouvelable: [],
+        createdDemands: [],
+        result: {
+          demandSubmissionResult: null,
+          id: null,
         },
-        storedAlternativeHeatingSolutions: ['Chaudière biomasse', 'PAC air-eau collective', 'Solaire thermique'],
-        storedSimulationUrl: '/chaleur-renouvelable/resultat?source=dedoublon',
+        sentEmailCallCount: 0,
       });
-      expect(sentEmailTemplate).not.toHaveBeenCalled();
+    });
+
+    it('crée une demande chaleur renouvelable en expérimentation quand le réseau de chaleur est éligible mais déjà refusé', async () => {
+      const ccrtMatchingId = testUsers.ccrt.id!;
+      await seedTableUser([{ email: testUsers.ccrt.email, id: ccrtMatchingId, role: 'ccrt' }]);
+      await seedDepartmentPermission(ccrtMatchingId, '13');
+
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
+        buildCcrtExperimentationDemandInput({
+          isPublicAdvisorSelected: true,
+          refusalPeriod: 'Il y a moins de 3 mois',
+          refusalReason: 'Coût du raccordement trop élevé',
+        })
+      );
+
+      const createdDemandeChaleurRenouvelable = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['id', 'is_public_advisor_selected', 'refusal_period', 'refusal_reason'])
+        .where('id', '=', result.id ?? '')
+        .executeTakeFirstOrThrow();
+      const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
+
+      expect({
+        createdDemandeChaleurRenouvelable,
+        createdDemands,
+        result,
+        sentEmailKeys: sentEmailTemplate.mock.calls.map(([emailKey]) => emailKey),
+      }).toStrictEqual({
+        createdDemandeChaleurRenouvelable: {
+          id: result.id,
+          is_public_advisor_selected: true,
+          refusal_period: 'Il y a moins de 3 mois',
+          refusal_reason: 'Coût du raccordement trop élevé',
+        },
+        createdDemands: [],
+        result: {
+          demandSubmissionResult: null,
+          id: result.id,
+        },
+        sentEmailKeys: ['demands.ccrt.nouvelle-demande-chaleur-renouvelable'],
+      });
+    });
+
+    it('crée une demande chaleur renouvelable en expérimentation pour un immeuble collectif non éligible au réseau de chaleur', async () => {
+      const ccrtMatchingId = testUsers.ccrt.id!;
+      const ccrtOtherDepartmentId = '00000000-0000-0000-0000-000000000207';
+      await seedTableUser([
+        { email: testUsers.ccrt.email, id: ccrtMatchingId, role: 'ccrt' },
+        { email: 'ccrt-other@test.local', id: ccrtOtherDepartmentId, role: 'ccrt' },
+      ]);
+      await Promise.all([seedDepartmentPermission(ccrtMatchingId, '13'), seedDepartmentPermission(ccrtOtherDepartmentId, '75')]);
+
+      const input = buildCcrtExperimentationDemandInput({
+        heatNetworkEligibility: {
+          distance: 450,
+          inPDP: false,
+          isEligible: false,
+        },
+      });
+
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
+
+      const createdDemandeChaleurRenouvelable = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select([
+          'address',
+          'departement_code',
+          'email',
+          'first_name',
+          'heating_energy',
+          'housing_count',
+          'housing_type',
+          'is_public_advisor_selected',
+          'last_name',
+          'simulation_url',
+          'status',
+        ])
+        .where('id', '=', result.id ?? '')
+        .executeTakeFirstOrThrow();
+      const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
+
+      expect({
+        createdDemandeChaleurRenouvelable,
+        createdDemands,
+        result,
+      }).toStrictEqual({
+        createdDemandeChaleurRenouvelable: {
+          address: '10 rue du test 13001 Marseille',
+          departement_code: '13',
+          email: 'contact@example.com',
+          first_name: 'Claire',
+          heating_energy: 'Gaz',
+          housing_count: 18,
+          housing_type: 'immeuble_chauffage_collectif',
+          is_public_advisor_selected: false,
+          last_name: 'Test',
+          simulation_url: '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif',
+          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+        },
+        createdDemands: [],
+        result: {
+          demandSubmissionResult: null,
+          id: result.id,
+        },
+      });
+      expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
+      expect(sentEmailTemplate).toHaveBeenCalledWith(
+        'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
+        { email: testUsers.ccrt.email, id: ccrtMatchingId },
+        expect.objectContaining({
+          demand: expect.objectContaining({ email: 'contact@example.com' }),
+          demandId: result.id,
+          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+        })
+      );
+    });
+
+    it('oriente vers France Rénov en expérimentation si le bâtiment n’est pas un immeuble au chauffage collectif', async () => {
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
+        buildCcrtExperimentationDemandInput({
+          heatNetworkEligibility: {
+            distance: 450,
+            inPDP: false,
+            isEligible: false,
+          },
+          housingType: 'maison_individuelle',
+        })
+      );
+
+      const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
+      const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
+
+      expect({
+        createdDemandesChaleurRenouvelable,
+        createdDemands,
+        result,
+        sentEmailCallCount: sentEmailTemplate.mock.calls.length,
+      }).toStrictEqual({
+        createdDemandesChaleurRenouvelable: [],
+        createdDemands: [],
+        result: {
+          demandSubmissionResult: null,
+          id: null,
+        },
+        sentEmailCallCount: 0,
+      });
     });
   });
 
@@ -378,6 +535,7 @@ describe('batEnrRouter', () => {
         comments: null,
         created_at: olderDate,
         demand_concern: null,
+        departement_code: '13',
         dpe: 'E',
         email: 'older@example.com',
         first_name: 'Ancien',
@@ -407,6 +565,7 @@ describe('batEnrRouter', () => {
         comments: 'Demande à traiter rapidement',
         created_at: newerDate,
         demand_concern: 'Un bâtiment tertiaire',
+        departement_code: '75',
         dpe: 'D',
         email: 'newer@example.com',
         first_name: 'Récent',
@@ -457,6 +616,132 @@ describe('batEnrRouter', () => {
             updated_at: olderDate.toISOString(),
           },
         ],
+      });
+    });
+  });
+
+  describe('batEnr.ccrt.listDemandesChaleurRenouvelable', () => {
+    const permissionTests: PermissionTestCase[] = [
+      { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
+      { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
+      { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
+      { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
+      { allowed: true, label: 'autorise admin', user: testUsers.admin },
+      { allowed: true, label: 'autorise CCRT', user: testUsers.ccrt },
+    ];
+
+    it.each(permissionTests)('$label', async ({ user, allowed }) => {
+      if (user?.id) {
+        await seedTableUser([{ email: user.email, id: user.id, role: user.role }]);
+        await seedDepartmentPermission(user.id, '13');
+      }
+
+      const caller = createTestCaller(user);
+      const callRoute = () => caller.batEnr.ccrt.listDemandesChaleurRenouvelable();
+
+      if (allowed) {
+        await expect(callRoute()).resolves.toStrictEqual({ count: 0, items: [] });
+      } else {
+        await expect(callRoute).rejects.toMatchObject(forbiddenError);
+      }
+    });
+
+    it('liste uniquement les demandes des départements autorisés au CCRT', async () => {
+      const ccrtId = testUsers.ccrt.id!;
+      const matchingDate = new Date('2026-01-03T10:00:00.000Z');
+      const otherDate = new Date('2026-01-04T10:00:00.000Z');
+      await seedTableUser([{ email: testUsers.ccrt.email, id: ccrtId, role: 'ccrt' }]);
+      await seedDepartmentPermission(ccrtId, '13');
+      const matchingDemandInput = {
+        address: '1 rue autorisée',
+        average_area: 70,
+        average_residents: 2,
+        created_at: matchingDate,
+        departement_code: '13',
+        dpe: 'E',
+        email: 'matching@example.com',
+        first_name: 'Autorisée',
+        heating_energy: 'Gaz',
+        housing_count: 12,
+        housing_type: 'immeuble_chauffage_collectif',
+        is_public_advisor_selected: false,
+        last_name: 'Contact',
+        occupant_status: 'Copropriétaire',
+        outdoor_space: 'jardinCours',
+        phone: '',
+        project_status: ['Début de réflexion'],
+        simulation_url: 'https://example.com/matching',
+        updated_at: matchingDate,
+      } satisfies DemandChaleurRenouvelableInsert;
+      const otherDemandInput = {
+        ...matchingDemandInput,
+        address: '2 rue non autorisée',
+        created_at: otherDate,
+        departement_code: '75',
+        email: 'other@example.com',
+        first_name: 'Non autorisée',
+        simulation_url: 'https://example.com/other',
+        updated_at: otherDate,
+      } satisfies DemandChaleurRenouvelableInsert;
+      const [matchingDemand] = await Promise.all([
+        kdb.insertInto('demands_chaleur_renouvelable').values(matchingDemandInput).returning(['id']).executeTakeFirstOrThrow(),
+        kdb.insertInto('demands_chaleur_renouvelable').values(otherDemandInput).returning(['id']).executeTakeFirstOrThrow(),
+      ]);
+
+      const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
+
+      expect(result).toStrictEqual({
+        count: 1,
+        items: [
+          {
+            ...matchingDemandInput,
+            assigned_to: null,
+            batiment_construction_id: null,
+            comments: null,
+            created_at: matchingDate.toISOString(),
+            demand_concern: null,
+            hot_water_system_type: null,
+            id: matchingDemand.id,
+            organization_name: null,
+            project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+            radiator_type: null,
+            refusal_period: null,
+            refusal_reason: null,
+            status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+            surface_area: null,
+            updated_at: matchingDate.toISOString(),
+          },
+        ],
+      });
+    });
+
+    it('renvoie une liste vide pour un CCRT sans permission départementale', async () => {
+      await seedTableUser([{ email: testUsers.ccrt.email, id: testUsers.ccrt.id, role: 'ccrt' }]);
+      await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          departement_code: '13',
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+        })
+        .execute();
+
+      await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable()).resolves.toStrictEqual({
+        count: 0,
+        items: [],
       });
     });
   });

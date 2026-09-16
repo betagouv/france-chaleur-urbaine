@@ -363,6 +363,16 @@ const gestionnaireNavigationMenu: MainNavigationProps.Item[] = [
   },
 ];
 
+const ccrtNavigationMenu: MainNavigationProps.Item[] = [
+  {
+    linkProps: {
+      href: '/pro/demandes-chaleur-renouvelable',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'ccrt_demandes_chaleur_renouvelable', menu_level: 1 }),
+    },
+    text: 'Demandes chaleur renouvelable',
+  },
+];
+
 const adminNavigationMenu: MainNavigationProps.Item[] = [
   {
     linkProps: {
@@ -470,6 +480,7 @@ const PageHeader = (props: PageHeaderProps) => {
         ...authenticatedNavigationMenu,
         ...(hasRole('admin') ? adminNavigationMenu : []),
         ...(hasRole('gestionnaire') || hasRole('collectivite') || hasRole('alec') || hasRole('ccrt') ? gestionnaireNavigationMenu : []),
+        ...(hasRole('ccrt') ? ccrtNavigationMenu : []),
         ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
       ];
     }

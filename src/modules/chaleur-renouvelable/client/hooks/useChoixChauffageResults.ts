@@ -143,6 +143,7 @@ export function useChoixChauffageResults() {
 
   return {
     batEnrBatiments,
+    codeDepartement,
     contactForm,
     coutParAnGaz,
     coutParAnGazHotWaterOnly,

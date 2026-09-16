@@ -11,6 +11,8 @@ Les trois rôles de suivi territorial : **collectivité** (commune, EPCI), **ALE
 
 Même menu que le gestionnaire : **Demandes**, **Comparateur de coûts et CO2**, **Test d'adresses**, **Aide**. La liste des demandes montre celles de son territoire, **validées uniquement**. Filtres proposés : toutes, **non affectées**, en PDP (et « non réalisables » pour ALEC et CCRT).
 
+Les CCRT ont en plus l'onglet **Demandes chaleur renouvelable** (`/pro/demandes-chaleur-renouvelable`) pour les demandes issues de l'expérimentation du parcours chaleur renouvelable. Cette liste est filtrée uniquement par permissions **département** : un CCRT sans permission départementale ne voit aucune demande chaleur renouvelable.
+
 ## Ce qu'il peut faire — la nuance clé
 
 C'est le rôle où la règle [« consulter n'est pas traiter »](/admin/doc/roles-permissions) joue à plein :
@@ -27,6 +29,8 @@ Il peut aussi : exporter ses demandes en Excel, [tester des adresses en masse](/
 ## Ce qu'il ne reçoit pas
 
 Les [emails automatiques](/admin/doc/relances-notifications) (nouvelles demandes, rappels) ne se déclenchent que sur les permissions **réseau** : avec ses permissions territoire, une collectivité **ne reçoit aucun email automatique**. Son suivi passe par la consultation de son espace. (Si un admin lui attribuait une permission réseau, elle recevrait alors ces emails comme un gestionnaire.)
+
+Exception CCRT : pour l'expérimentation chaleur renouvelable, un CCRT actif reçoit immédiatement l'email [«&nbsp;Nouvelle demande chaleur renouvelable CCRT&nbsp;»](/admin/emails?type=demands.ccrt.nouvelle-demande-chaleur-renouvelable) lorsqu'une demande est créée sur un département correspondant à ses permissions.
 
 ## Déroulé type
 
