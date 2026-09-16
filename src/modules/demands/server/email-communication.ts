@@ -12,7 +12,7 @@ import { ensureUserCanAccessDemand, ensureUserCanProcessDemand } from './helpers
  */
 export const listDemandEmails = async (ctx: Context, { demandId }: { demandId: string }) => {
   await ensureUserCanAccessDemand(ctx, demandId);
-  return await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).execute();
+  return await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).where('deleted_at', 'is', null).execute();
 };
 
 const createDemandEmail = async (values: Omit<Insertable<DemandEmails>, 'created_at' | 'updated_at' | 'id'>) => {
