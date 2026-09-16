@@ -91,7 +91,6 @@ France Chaleur Urbaine utilise PostHog pour mesurer l'usage produit. Ce document
 
 | Événement | Propriétés | Description |
 |---|---|---|
-| `fcr_landing:hero_cta_clicked` | _(aucune)_ | Clic sur le CTA principal |
 | `fcr_landing:address_typed` | _(aucune)_ | Première saisie dans le champ adresse |
 | `fcr_landing:heating_mode_selected` | `heating_mode` | Sélection du type de logement / chauffage |
 | `fcr_landing:emitter_type_selected` | `emitter_type` | Sélection du type d'émetteurs |
