@@ -193,9 +193,6 @@ export type PostHogEventMap = {
   'map:contribute_clicked': never;
   // Comparateur
   'comparator:config_create': never;
-  'comparator:config_load': {
-    is_shared: boolean;
-  };
   'comparator:config_share': never;
 
   // Simulateur simplifié: Chaleur renouvelable
@@ -285,10 +282,6 @@ export type PostHogEventMap = {
     energy: HeatingEnergy;
     is_raccordable: boolean;
   };
-  'fcr_contact:nb_logements_filled': {
-    is_raccordable: boolean;
-    nb_logements: number;
-  };
   'fcr_contact:project_stage_selected': {
     is_raccordable: boolean;
     stages: ProjectStatus[];
@@ -372,7 +365,6 @@ export type PostHogEventMap = {
   'global:footer_link_clicked': { link_name: string };
   'global:login_cta_clicked': { is_auth: boolean };
   'consent:cookie_choice_made': { consent: FinalityConsent<string> };
-  'contact:form_submitted': { contact_reason: string };
 
   'network_page:address_test_cta_clicked': { network_id: string };
   'network_list:filter_applied': { filter_name: string; filter_value: string };
