@@ -241,10 +241,6 @@ export const allDatabaseTables: TableInfo[] = [
     name: 'etudes_en_cours_tiles',
   },
   {
-    description: "Tuiles vectorielles des tests d'adresses",
-    name: 'pro_eligibility_tests_addresses_tiles',
-  },
-  {
     description: 'Quartiers prioritaires de la politique de la ville (QPV)',
     name: 'quartiers_prioritaires_politique_ville',
   },

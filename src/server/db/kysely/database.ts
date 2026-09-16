@@ -618,13 +618,6 @@ export interface ProEligibilityTestsAddresses {
   test_id: string | null;
 }
 
-export interface ProEligibilityTestsAddressesTiles {
-  tile: Buffer;
-  x: Int8;
-  y: Int8;
-  z: Int8;
-}
-
 export interface QuartiersPrioritairesPolitiqueVille {
   code_qp: string;
   geom: string | null;
@@ -819,15 +812,6 @@ export interface RessourcesGeothermalesNappesTiles {
 export interface TilesMetadata {
   source_id: string;
   last_modified_at: Generated<Timestamp>;
-}
-
-export interface TestsAdressesTilesFeatures {
-  ban_address: string | null;
-  eligibility: Json | null;
-  eligible: boolean | null;
-  geom: string | null;
-  id: Int8 | null;
-  tests: Json | null;
 }
 
 export type UserPermissions = {
@@ -1097,7 +1081,6 @@ export interface DB {
   pro_comparateur_configurations: ProComparateurConfigurations;
   pro_eligibility_tests: ProEligibilityTests;
   pro_eligibility_tests_addresses: ProEligibilityTestsAddresses;
-  pro_eligibility_tests_addresses_tiles: ProEligibilityTestsAddressesTiles;
   quartiers_prioritaires_politique_ville: QuartiersPrioritairesPolitiqueVille;
   quartiers_prioritaires_politique_ville_2015_anru_tiles: QuartiersPrioritairesPolitiqueVille2015AnruTiles;
   quartiers_prioritaires_politique_ville_2024_tiles: QuartiersPrioritairesPolitiqueVille2024Tiles;
@@ -1107,7 +1090,6 @@ export interface DB {
   reseaux_de_froid: ReseauxDeFroid;
   reseaux_de_froid_tiles: ReseauxDeFroidTiles;
   ressources_geothermales_nappes_tiles: RessourcesGeothermalesNappesTiles;
-  tests_adresses_tiles_features: TestsAdressesTilesFeatures;
   tiles_metadata: TilesMetadata;
   user_permissions: UserPermissions;
   user_tag_assignments: UserTagAssignments;

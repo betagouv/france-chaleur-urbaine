@@ -60,12 +60,6 @@ export const tilesConfigs = {
     tilesTableName: 'reseaux_de_chaleur_tiles',
     generateGeoJSON: reseauxDeChaleurGeoJSONQuery,
   }),
-  'tests-adresses': defineTilesConfig({
-    tilesTableName: 'pro_eligibility_tests_addresses_tiles',
-    zoomMax: 12,
-    tippeCanoeArgs: '--drop-rate=0 --no-tile-size-limit --no-feature-limit',
-    generateGeoJSON: testsAdressesGeoJSONQuery,
-  }),
   // Plus de 15 autres configurations (géothermie, zones d'urbanisation, etc.)
 };
 ```

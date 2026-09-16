@@ -72,7 +72,6 @@ export type MapConfiguration = {
   reseauxEnConstruction: boolean;
   zonesDeDeveloppementPrioritaire: boolean;
   demandesEligibilite: boolean;
-  testsAdresses: boolean;
   consommationsGaz: {
     show: boolean;
     logements: boolean;
@@ -276,7 +275,6 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
   reseauxDeFroid: false,
   reseauxEnConstruction: false,
   ressourcesGeothermalesNappes: false,
-  testsAdresses: false,
   zonesAUrbaniser: false,
   zonesDeDeveloppementPrioritaire: false,
   zonesOpportunite: {
