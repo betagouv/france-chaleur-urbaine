@@ -12,7 +12,6 @@ import {
   typeRadiateurOptions,
 } from '@/modules/chaleur-renouvelable/constants';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
-import { withAuthentication } from '@/server/authentication';
 import { dayjs } from '@/utils/date';
 
 type DemandesChaleurRenouvelableCcrtItem = RouterOutput['batEnr']['ccrt']['listDemandesChaleurRenouvelable']['items'][number];
@@ -239,5 +238,3 @@ export default function DemandesChaleurRenouvelableCcrtPage() {
     </SimplePage>
   );
 }
-
-export const getServerSideProps = withAuthentication(['ccrt', 'admin']);
