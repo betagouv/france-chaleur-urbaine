@@ -42,6 +42,13 @@ export const cronDefinitions = [
     scheduleLabel: 'Le 1er du mois, 8h15',
   },
   {
+    description:
+      'Synchronise la liste des contacts bloqués côté Brevo (rejets définitifs, désinscriptions, plaintes) dans la base, et trace un événement sur les comptes et demandes concernés à chaque blocage ou déblocage détecté.',
+    name: 'syncEmailBlockedContacts',
+    schedule: '0 7-21 * * *',
+    scheduleLabel: 'Toutes les heures de 7h à 21h',
+  },
+  {
     description: `Purge les IP et user-agents des événements de conversion de plus de ${businessRules.conversionIpRetentionDays.display} (anti-abus, rétention courte ; le domaine est conservé).`,
     name: 'purgeOldConversionEventIps',
     schedule: '30 03 * * *',

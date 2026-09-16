@@ -54,3 +54,16 @@ Deux cas fréquents à ne pas confondre avec les relances :
 
 - Les **mises à jour d'éligibilité** des tests d'adresses en masse (réseau qui s'étend, nouveau réseau…) ne génèrent **pas d'email** : uniquement des badges dans l'espace de l'utilisateur (voir [Tests d'adresses en masse](/admin/doc/tests-adresses-pro)).
 - Les demandes de **réaffectation** ne notifient personne par email : elles apparaissent dans le filtre dédié de [Gestion des demandes](/admin/demandes) (voir [Réaffectation](/admin/doc/reaffectation-demandes)).
+
+## Délivrabilité des emails (Brevo)
+
+Tous les emails de l'application partent par le service Brevo. Brevo **cesse d'envoyer** à une adresse dès qu'elle est bloquée de son côté : rejet définitif par le serveur destinataire (hard bounce), désinscription, plainte pour spam ou blocage manuel. L'application ne voit pas ce blocage au moment de l'envoi : le message est accepté puis abandonné par Brevo. Deux cas fréquents : des serveurs de collectivités qui rejettent nos envois pour des raisons de politique de sécurité, et des usagers qui cliquent par erreur sur le bouton «&nbsp;Se désabonner&nbsp;» que Brevo ajoute à tous les emails, y compris transactionnels.
+
+Pour rendre ces blocages visibles, un cron (`syncEmailBlockedContacts`, toutes les heures de 7h à 21h) recopie la liste des contacts bloqués de Brevo dans la base. À chaque apparition ou disparition d'une adresse, un événement est tracé sur le compte et sur chaque demande qui utilisent cette adresse, daté de la date Brevo du blocage : [«&nbsp;Emails bloqués (compte)&nbsp;»](/admin/events?types=user_email_blocked), [«&nbsp;Emails bloqués (demande)&nbsp;»](/admin/events?types=demand_email_blocked), [«&nbsp;Emails réactivés (compte)&nbsp;»](/admin/events?types=user_email_unblocked), [«&nbsp;Emails réactivés (demande)&nbsp;»](/admin/events?types=demand_email_unblocked).
+
+Où l'information apparaît :
+
+- **Admin** : badge «&nbsp;Emails bloqués&nbsp;» dans [Gestion des utilisateurs](/admin/users) (avec le même panneau dans la fiche) et dans [Gestion des demandes](/admin/demandes) sur le contact (filtre «&nbsp;Emails bloqués (Brevo)&nbsp;» disponible, panneau dans la fenêtre d'envoi de courriel). La page [Délivrabilité des emails](/admin/email-delivery) liste toutes les adresses bloquées avec la raison, le compte et les demandes liés, permet une synchronisation manuelle et le déblocage adresse par adresse.
+- **Utilisateurs et gestionnaires** : rien, l'information et le déblocage sont réservés aux admins. Personne n'est censé se désinscrire des emails transactionnels, un déblocage est toujours une correction faite par l'équipe FCU.
+
+Le déblocage (bouton «&nbsp;Réactiver la réception des emails&nbsp;», tracé avec son auteur) supprime l'adresse de la liste de blocage Brevo : les envois reprennent au prochain email. Il n'est possible qu'en production (le compte Brevo est partagé par tous les environnements) et ne garantit rien si la cause du rejet persiste côté destinataire.

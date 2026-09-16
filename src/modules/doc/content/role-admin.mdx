@@ -17,6 +17,7 @@ L'équipe France Chaleur Urbaine. Un admin voit tout et pilote l'ensemble — ut
 | Réseaux | [Gestion des réseaux](/admin/reseaux) | Gérer les réseaux de chaleur et de froid |
 | Organisations | [Gestion des organisations](/admin/organizations) | Rattacher les réseaux à un exploitant, gérer les accès API |
 | Pilotage | [Activité du site](/admin/events), [Conversion](/admin/conversion) (et son [contrôle des abus](/admin/conversion/abus)), [Tests d'adresses](/admin/tests-adresses) | Suivre l'activité, l'entonnoir de conversion et les tests |
+| Emails | [Modèles d'emails](/admin/emails), [Délivrabilité des emails](/admin/email-delivery) | Prévisualiser les modèles, repérer les adresses bloquées côté Brevo et les débloquer (voir [Relances et notifications](/admin/doc/relances-notifications)) |
 | Système | [Suivi des tâches](/admin/jobs), [Diagnostic système](/admin/diagnostic), [Diagnostic des données](/admin/data-diagnostic) | Surveiller les tâches et crons, repérer les incohérences |
 
 ## Ses actions sur une demande
@@ -48,4 +49,4 @@ Points à retenir :
 
 ## Traçabilité
 
-Toutes les actions d'un admin sont tracées dans [Activité du site](/admin/events) avec leur auteur : [validation](/admin/events?types=demand_validated) et [suppression](/admin/events?types=demand_deleted) de demande, [réaffectation](/admin/events?types=demand_assignment_changed), [création](/admin/events?types=user_created_by_admin), [mise à jour](/admin/events?types=user_updated_by_admin) et [suppression](/admin/events?types=user_deleted_by_admin) d'utilisateur, [modification des permissions](/admin/events?types=user_permissions_updated), création et mise à jour d'organisations.
+Toutes les actions d'un admin sont tracées dans [Activité du site](/admin/events) avec leur auteur : [validation](/admin/events?types=demand_validated) et [suppression](/admin/events?types=demand_deleted) de demande, [réaffectation](/admin/events?types=demand_assignment_changed), [création](/admin/events?types=user_created_by_admin), [mise à jour](/admin/events?types=user_updated_by_admin) et [suppression](/admin/events?types=user_deleted_by_admin) d'utilisateur, [modification des permissions](/admin/events?types=user_permissions_updated), création et mise à jour d'organisations, [réactivation des emails d'un compte](/admin/events?types=user_email_unblocked) ou [d'une demande](/admin/events?types=demand_email_unblocked).

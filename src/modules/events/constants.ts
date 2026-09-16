@@ -1,3 +1,4 @@
+import type { EmailUnblockSource } from '@/modules/email/constants';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
@@ -17,6 +18,8 @@ export const eventTypes = [
   'user_tag_created',
   'user_tag_updated',
   'user_tag_deleted',
+  'user_email_blocked',
+  'user_email_unblocked',
   'demand_created',
   'demand_updated',
   'demand_updated_by_system',
@@ -28,6 +31,8 @@ export const eventTypes = [
   'demand_email_sent',
   'demand_unrealizable_email_sent',
   'demand_notification_sent',
+  'demand_email_blocked',
+  'demand_email_unblocked',
   'demand_linked_to_user',
   'demand_assignment_changed',
   'demand_assignment_change_requested',
@@ -80,7 +85,9 @@ export const eventTypeLabels: Record<EventType, string> = {
   demand_created: 'Création demande',
   demand_deleted: 'Suppression demande',
   demand_deleted_by_system: 'Suppression demande (automatique)',
+  demand_email_blocked: 'Emails bloqués (demande)',
   demand_email_sent: 'Email envoyé (demande)',
+  demand_email_unblocked: 'Emails réactivés (demande)',
   demand_linked_to_user: 'Liaison demandes → compte',
   demand_notification_sent: 'Notification gestionnaires',
   demand_relance_sent: 'Relance automatique',
@@ -115,6 +122,8 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_created_by_api: 'Création utilisateur (API)',
   user_deactivated_by_api: 'Désactivation utilisateur (API)',
   user_deleted_by_admin: 'Suppression utilisateur (admin)',
+  user_email_blocked: 'Emails bloqués (compte)',
+  user_email_unblocked: 'Emails réactivés (compte)',
   user_login: 'Connexion utilisateur',
   user_newsletter_subscribed: 'Abonnement newsletter',
   user_newsletter_unsubscribed: 'Désabonnement newsletter',
@@ -141,6 +150,11 @@ export type EventNetworkSnapshot = {
   distance: number | null;
 };
 
+/** Payload of the events created when the Brevo sync detects a blocked contact matching a user or a demand. */
+type EmailBlockedEventData = { email: string; reason_code: string };
+/** Payload of the events created when a blocked contact is unblocked (from FCU or detected at sync time). */
+type EmailUnblockedEventData = { email: string; source: EmailUnblockSource };
+
 export type EventDataMap = {
   build_tiles: { name: string };
   conversion_source_archived: { key: string; label: string };
@@ -149,6 +163,8 @@ export type EventDataMap = {
   demand_created: Record<string, unknown> | null;
   demand_deleted: Record<string, unknown> | null;
   demand_deleted_by_system: { reason?: string; kept_demand_id?: string } | null;
+  demand_email_blocked: EmailBlockedEventData;
+  demand_email_unblocked: EmailUnblockedEventData;
   demand_email_sent: { key: string; object: string; to: string };
   demand_unrealizable_email_sent: Record<string, never>;
   demand_linked_to_user: { count: number; email: string };
@@ -268,6 +284,8 @@ export type EventDataMap = {
     changes: Partial<{ name: { from: string; to: string }; color: { from: string; to: string } }>;
   };
   user_tag_deleted: { tag_id: string; name: string; color: string };
+  user_email_blocked: EmailBlockedEventData;
+  user_email_unblocked: EmailUnblockedEventData;
   user_newsletter_subscribed: null;
   user_newsletter_unsubscribed: null;
 };

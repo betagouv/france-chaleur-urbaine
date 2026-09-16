@@ -93,6 +93,12 @@ export const adminPages = [
     label: "Modèles d'emails",
   },
   {
+    desc: 'Contacts bloqués côté Brevo (rejets, désinscriptions), historique des envois et déblocage',
+    group: 'tools',
+    href: '/admin/email-delivery',
+    label: 'Délivrabilité des emails',
+  },
+  {
     desc: "Comprenez les parcours métier de l'application et leurs règles de gestion",
     group: 'tools',
     href: '/admin/doc',

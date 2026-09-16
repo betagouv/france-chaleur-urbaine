@@ -372,6 +372,13 @@ export interface DonneesDeConsosTiles {
   z: Int8;
 }
 
+export interface EmailBlockedContacts {
+  blocked_at: Timestamp;
+  email: string;
+  reason_code: string;
+  synced_at: Generated<Timestamp>;
+}
+
 export interface EmailTemplates {
   body: string;
   created_at: Generated<Timestamp>;
@@ -1053,6 +1060,7 @@ export interface DB {
   departements: Departements;
   donnees_de_consos: DonneesDeConsos;
   donnees_de_consos_tiles: DonneesDeConsosTiles;
+  email_blocked_contacts: EmailBlockedContacts;
   email_templates: EmailTemplates;
   enrr_mobilisables_friches_tiles: EnrrMobilisablesFrichesTiles;
   enrr_mobilisables_parkings_tiles: EnrrMobilisablesParkingsTiles;

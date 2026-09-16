@@ -51,6 +51,10 @@ export const listAdmin = async () => {
 
   // Flag admin (booléen, jamais renvoyé sous forme de liste de communes) : commune de la demande absente du réseau affecté.
   const records = await buildDemandQuery()
+    .leftJoin('email_blocked_contacts as ebc', (join) =>
+      join.on((eb) => eb('ebc.email', '=', sql<string>`lower(${eb.ref('demands.legacy_values')}->>'Mail')`))
+    )
+    .select('ebc.reason_code as email_blocked_reason')
     .select((eb) => {
       const communes = eb.fn.coalesce('rdc.communes_insee', 'zrc.communes_insee');
       return eb

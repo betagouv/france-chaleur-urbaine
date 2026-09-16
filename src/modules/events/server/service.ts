@@ -151,6 +151,18 @@ export async function createEvent(event: Pick<Insertable<Events>, 'type' | 'cont
   await kdb.insertInto('events').values(event).execute();
 }
 
+/**
+ * Bulk insert of system events with an explicit `created_at` (e.g. dated by an external provider).
+ */
+export async function createEvents(
+  events: Pick<Insertable<Events>, 'type' | 'context_type' | 'context_id' | 'data' | 'created_at' | 'author_id'>[]
+) {
+  if (events.length === 0) {
+    return;
+  }
+  await kdb.insertInto('events').values(events).execute();
+}
+
 export async function createUserEvent(
   event: Required<Pick<Insertable<Events>, 'author_id'>> & Pick<Insertable<Events>, 'type' | 'context_type' | 'context_id' | 'data'>
 ) {

@@ -37,9 +37,10 @@ export const list = async () => {
   const [records, permissionsByUser, tagsByUser] = await Promise.all([
     kdb
       .selectFrom('users')
+      .leftJoin('email_blocked_contacts as ebc', (join) => join.on((eb) => eb('ebc.email', '=', eb.fn<string>('lower', ['users.email']))))
       .select([
-        'id',
-        'email',
+        'users.id',
+        'users.email',
         'role',
         'active',
         'status',
@@ -56,8 +57,9 @@ export const list = async () => {
         'from_organization_id',
         sql<boolean>`coalesce(receive_new_demands, false)`.as('receive_new_demands'),
         sql<boolean>`coalesce(receive_old_demands, false)`.as('receive_old_demands'),
+        'ebc.reason_code as email_blocked_reason',
       ])
-      .orderBy('id')
+      .orderBy('users.id')
       .execute(),
     getAllPermissionsWithLabels(),
     getAllUserTags(),
