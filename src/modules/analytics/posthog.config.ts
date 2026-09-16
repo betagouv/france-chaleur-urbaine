@@ -108,7 +108,6 @@ export type PostHogEventMap = {
     rows_non_eligible: number;
     rows_total: number;
   };
-  'fcr_landing:hero_cta_clicked': never;
   'fcr_landing:address_typed': never;
   'fcr_landing:heating_mode_selected': {
     heating_mode: TypeLogement;
