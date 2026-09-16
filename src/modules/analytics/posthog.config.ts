@@ -245,6 +245,7 @@ export type PostHogEventMap = {
   'fcr_results:recommended_solution_cta_clicked': {
     solution_type: string;
   };
+  'fcr_results:ccrt_contact_cta_clicked': never;
   'fcr_results:tab_switched': {
     tab_value: 'chauffage_ecs' | 'ecs_uniquement';
   };

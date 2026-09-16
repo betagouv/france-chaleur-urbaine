@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { EligibilityFormContact } from '@/components/EligibilityForm';
 import CallOut from '@/components/ui/CallOut';
 import Dialog from '@/components/ui/Dialog';
@@ -7,7 +5,7 @@ import Link from '@/components/ui/Link';
 import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
-import DemandeFCRForm, { type ContactRecipientId } from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
+import DemandeFCRForm from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
 import { useChoixChauffageResults } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageResults';
 import { HeatNetworkContactSteps } from '@/modules/chaleur-renouvelable/client/results/ui/HeatNetworkContactSteps';
 import { IncompatibleSolutionsSection } from '@/modules/chaleur-renouvelable/client/results/ui/IncompatibleSolutionsSection';
@@ -16,13 +14,14 @@ import { HeatNetworkRecommendedSolutionCard } from '@/modules/chaleur-renouvelab
 import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui/ResultsSection';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
+import { isCcrtExperimentationEligible } from '../constants';
 import { ParamsForm } from './ParamsForm';
 
 export default function ChoixChauffageResults() {
   const isMobile = useIsMobile();
-  const [selectedContactRecipientId, setSelectedContactRecipientId] = useState<ContactRecipientId>('network-manager');
   const {
     batEnrBatiments,
+    codeDepartement,
     contactForm,
     coutParAnGaz,
     coutParAnGazHotWaterOnly,
@@ -45,7 +44,9 @@ export default function ChoixChauffageResults() {
     urlParams,
   } = useChoixChauffageResults();
   const params = urlParams.params;
-  const shouldPreselectPublicAdvisor = Boolean(situation.eligibiliteReseauChaleur);
+  const isCcrtExperimentationBuildingEligible = isCcrtExperimentationEligible(codeDepartement, effectiveTypeLogement);
+  const isHeatNetworkEligible = situation.eligibiliteReseauChaleur?.isEligible === true;
+  const shouldCreateCcrtExperimentationDemand = isCcrtExperimentationBuildingEligible && !isHeatNetworkEligible;
   const heatNetworkSolution = situation.eligibiliteReseauChaleur
     ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network')
     : undefined;
@@ -54,8 +55,8 @@ export default function ChoixChauffageResults() {
     : modesEnriched;
   const alternativeHeatingSolutionLabels = displayedSolutions.map((modeDeChauffage) => modeDeChauffage.label).slice(0, 3);
 
-  const handleSelectContactRecipient = (recipientId: ContactRecipientId) => {
-    setSelectedContactRecipientId(recipientId);
+  const handleSelectContactRecipient = () => {
+    trackPostHogEvent('fcr_results:ccrt_contact_cta_clicked');
     requestAnimationFrame(() => {
       document.getElementById('help-ademe')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
@@ -94,24 +95,21 @@ export default function ChoixChauffageResults() {
         <>
           <EnergySobrietyCallout />
           {heatNetworkSolution && (
-            <>
-              <HeatNetworkRecommendedSolutionCard
-                item={heatNetworkSolution}
-                coutParAnGaz={coutParAnGaz}
-                dpeFrom={params.dpe}
-                geoAddress={geoAddress}
-                isOpen={openAccordionId === undefined || openAccordionId === heatNetworkSolution.id}
-                onOpenChange={(expanded) => {
-                  if (expanded) {
-                    trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: heatNetworkSolution.label });
-                  }
-                  handleAccordionOpenChange(heatNetworkSolution.id, expanded);
-                }}
-                selectedBatiment={selectedBatEnrBatiment}
-                situation={situation}
-              />
-              <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />
-            </>
+            <HeatNetworkRecommendedSolutionCard
+              item={heatNetworkSolution}
+              coutParAnGaz={coutParAnGaz}
+              dpeFrom={params.dpe}
+              geoAddress={geoAddress}
+              isOpen={openAccordionId === undefined || openAccordionId === heatNetworkSolution.id}
+              onOpenChange={(expanded) => {
+                if (expanded) {
+                  trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: heatNetworkSolution.label });
+                }
+                handleAccordionOpenChange(heatNetworkSolution.id, expanded);
+              }}
+              selectedBatiment={selectedBatEnrBatiment}
+              situation={situation}
+            />
           )}
           <ResultsSection
             items={displayedSolutions}
@@ -125,19 +123,15 @@ export default function ChoixChauffageResults() {
             typeLogement={effectiveTypeLogement}
             onEditParamsClick={handleEditHotWaterParamsClick}
             onOpenChange={handleAccordionOpenChange}
-            onCtaClick={() => {
-              if (shouldPreselectPublicAdvisor) {
-                setSelectedContactRecipientId('public-advisor');
-              }
-            }}
           />
+          {shouldCreateCcrtExperimentationDemand && <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />}
           <IncompatibleSolutionsSection rows={incompatibleSolutionRows} typeLogement={effectiveTypeLogement} />
           <DemandeFCRForm
             alternativeHeatingSolutionLabels={alternativeHeatingSolutionLabels}
             eligibiliteReseauChaleur={situation.eligibiliteReseauChaleur}
             geoAddress={geoAddress}
-            selectedRecipientId={selectedContactRecipientId}
-            setSelectedRecipientId={setSelectedContactRecipientId}
+            isCcrtExperimentationBuildingEligible={isCcrtExperimentationBuildingEligible}
+            isHeatNetworkEligible={isHeatNetworkEligible}
             topSolution={heatNetworkSolution?.label ?? modesEnriched[0]?.label ?? ''}
           />
           <CallOut

@@ -109,6 +109,19 @@ export const emails = defineEmails({
       type: 'action',
     },
   },
+  'demands.ccrt.nouvelle-demande-chaleur-renouvelable': {
+    Component: NouvelleDemandeChaleurRenouvelable,
+    description:
+      'Notification envoyée aux CCRT ayant une permission sur le département concerné à chaque nouvelle demande d’accompagnement chaleur renouvelable.',
+    label: 'Nouvelle demande chaleur renouvelable CCRT',
+    preview: 'Une nouvelle demande chaleur renouvelable est à traiter',
+    scenarios: nouvelleDemandeChaleurRenouvelableScenarios,
+    subject: '[France Chaleur Urbaine] Nouvelle demande chaleur renouvelable à traiter',
+    trigger: {
+      description: "Au dépôt d'une demande d'accompagnement chaleur renouvelable sur un département couvert par l'expérimentation CCRT.",
+      type: 'action',
+    },
+  },
   'demands.demandeur.confirmation-demande': {
     Component: ConfirmationDemande,
     description:
