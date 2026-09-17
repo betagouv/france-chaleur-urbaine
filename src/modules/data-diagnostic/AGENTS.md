@@ -66,6 +66,8 @@ Warnings (suspicious):
 - `user.national_candidate_unmigrated` — active account with ≥ 50 network permissions and no organization (migrate to org scope)
 - `network.gestionnaire_split_across_organizations` — one `Gestionnaire` value mapped to several organizations
 - `pdp.ambiguous_operator` — PDP with empty Gestionnaire/MO while linked networks carry several distinct values (manual choice expected)
+- `pdp.missing_network_link` — network crossing the PDP polygon but not linked to it (heat networks: classified + open to connections, i.e. dark green on the map; under-construction networks/zones: open to connections). Links = `reseau_de_chaleur_ids`, `reseau_en_construction_ids`, SNCU id
+- `pdp.link_without_intersection` — linked network whose geometry does not intersect the PDP polygon (wrong link, misplaced perimeter or incomplete trace); networks without geometry are skipped
 
 ## Adding a new check
 
