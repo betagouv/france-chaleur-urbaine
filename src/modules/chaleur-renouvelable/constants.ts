@@ -265,26 +265,14 @@ export function getEspaceExterieurCheckboxState(espaceExterieur: EspaceExterieur
   }
 }
 
-export function getEspaceExterieurFromCheckboxState(
-  typeLogement: TypeLogement | null | undefined,
-  checkboxState: EspaceExterieurCheckboxState
-): EspaceExterieur | null {
-  return typeLogement
-    ? checkboxState.hasGarden && checkboxState.hasTerrace
-      ? 'terrasseBalconEtJardinCours'
-      : checkboxState.hasGarden
-        ? 'jardinCours'
-        : checkboxState.hasTerrace
-          ? 'terrasseBalcon'
-          : 'none'
-    : null;
-}
-
-export function getEspaceExterieurForTypeLogement(
-  typeLogement: TypeLogement | null | undefined,
-  espaceExterieur: EspaceExterieur | null | undefined
-) {
-  return espaceExterieur ? getEspaceExterieurFromCheckboxState(typeLogement, getEspaceExterieurCheckboxState(espaceExterieur)) : null;
+export function getEspaceExterieurFromCheckboxState(checkboxState: EspaceExterieurCheckboxState): EspaceExterieur {
+  return checkboxState.hasGarden && checkboxState.hasTerrace
+    ? 'terrasseBalconEtJardinCours'
+    : checkboxState.hasGarden
+      ? 'jardinCours'
+      : checkboxState.hasTerrace
+        ? 'terrasseBalcon'
+        : 'none';
 }
 
 export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['Individuel', 'Collectif'] as const;

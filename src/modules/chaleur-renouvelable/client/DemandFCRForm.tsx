@@ -511,181 +511,192 @@ function HeatNetworkDemandForm({
   const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
   const networkManager = eligibiliteReseauChaleur?.gestionnaire?.trim() || null;
   const isCcrtDemand = isPublicAdvisorSelected || !isHeatNetworkEligible;
-
-  if (isPublicAdvisorSelected && !isCcrtExperimentationBuildingEligible) {
-    return <FranceRenovAdvisorCallout />;
-  }
+  const shouldShowFranceRenovAdvisor = isPublicAdvisorSelected && !isCcrtExperimentationBuildingEligible;
 
   return (
     <section id="help-ademe" className="mt-6 scroll-mt-4 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">
-      <h4 className="mb-4 text-2xl font-bold">{getFormTitle(isHeatNetworkEligible && !isPublicAdvisorSelected)}</h4>
-      <p className="mb-4 max-w-5xl">{getFormDescription(isHeatNetworkEligible && !isPublicAdvisorSelected)}</p>
+      <h4 className="mb-4 text-2xl font-bold">
+        {shouldShowFranceRenovAdvisor
+          ? 'Échangez avec un conseiller neutre et gratuit du service public'
+          : getFormTitle(isHeatNetworkEligible && !isPublicAdvisorSelected)}
+      </h4>
+      <p className="mb-4 max-w-5xl">
+        {shouldShowFranceRenovAdvisor
+          ? 'Un conseiller du service public vous aidera à identifier la meilleure alternative parmi les solutions compatibles ci-dessus.'
+          : getFormDescription(isHeatNetworkEligible && !isPublicAdvisorSelected)}
+      </p>
       {isHeatNetworkEligible && <ContactRecipientSelector selectedRecipientId={selectedRecipientId} onSelect={handleSelectRecipient} />}
-      <div className="mb-4 flex items-center gap-3 border-l-4 border-[#F6C23E] bg-[#FFEBA3] px-4 py-3">
-        <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
-        <span>
-          {isCcrtDemand ? (
-            'Votre demande sera transmise au CCRT compétent.'
-          ) : (
-            <>
-              Votre demande sera transmise au gestionnaire du réseau de chaleur
-              {networkManager && (
+      {shouldShowFranceRenovAdvisor ? (
+        <FranceRenovAdvisorCallout variant="inline" />
+      ) : (
+        <>
+          <div className="mb-4 flex items-center gap-3 border-l-4 border-[#F6C23E] bg-[#FFEBA3] px-4 py-3">
+            <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
+            <span>
+              {isCcrtDemand ? (
+                'Votre demande sera transmise au CCRT compétent.'
+              ) : (
                 <>
-                  {' : '}
-                  <strong>{networkManager}</strong>
+                  Votre demande sera transmise au gestionnaire du réseau de chaleur
+                  {networkManager && (
+                    <>
+                      {' : '}
+                      <strong>{networkManager}</strong>
+                    </>
+                  )}
                 </>
               )}
-            </>
-          )}
-        </span>
-      </div>
-      <Form form={form}>
-        <div className="mb-6 grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 [&_.fr-error-text]:text-error [&_.fr-input]:bg-white [&_.fr-label]:text-(--text-title-grey) [&_.fr-select]:bg-white">
-          <div className={cx(!shouldShowOrganizationName && 'md:col-span-2 mb-5')}>
-            <form.AppField name="occupantStatus">
-              {(field) => (
-                <RichSelect<OccupantStatus>
-                  label="Vous êtes"
-                  value={field.state.value}
-                  onChange={field.handleChange}
-                  options={occupantStatusOptions}
-                  postHogEventKey="fcr_contact:profile_selected"
-                  postHogEventProps={(profile) => ({
-                    is_raccordable: !isPublicAdvisorSelected && isHeatNetworkEligible,
-                    profile,
-                  })}
-                />
-              )}
-            </form.AppField>
+            </span>
           </div>
-          {shouldShowOrganizationName && (
-            <form.AppField name="organizationName">{(field) => <field.TextField label="Nom de votre structure" />}</form.AppField>
-          )}
-          <form.AppField name="lastName">{(field) => <field.TextField label="Nom" />}</form.AppField>
-          <form.AppField name="firstName">{(field) => <field.TextField label="Prénom" />}</form.AppField>
-          <form.AppField name="email">{(field) => <field.EmailField label="Email" />}</form.AppField>
-          <form.AppField name="phone">{(field) => <field.PhoneField label="Téléphone" />}</form.AppField>
-          <form.AppField name="heatingEnergy">
-            {(field) => (
-              <RichSelect<HeatingEnergy>
-                label="Énergie de chauffage"
-                value={field.state.value}
-                onChange={field.handleChange}
-                options={heatingEnergyOptions}
-                postHogEventKey="fcr_contact:energy_selected"
-                postHogEventProps={(energy) => ({
-                  energy,
-                  is_raccordable: !isPublicAdvisorSelected && isHeatNetworkEligible,
-                })}
-              />
-            )}
-          </form.AppField>
-          {occupantStatusDetailField === 'housingCount' && (
-            <form.AppField name="housingCount">
-              {(field) => <field.NumberField label="Nombre de logements" nativeInputProps={{ inputMode: 'numeric', min: 1 }} />}
-            </form.AppField>
-          )}
-          {occupantStatusDetailField === 'surfaceArea' && (
-            <form.AppField name="surfaceArea">
-              {(field) => <field.NumberField label="Surface en m²" nativeInputProps={{ inputMode: 'numeric', min: 1 }} />}
-            </form.AppField>
-          )}
-          {occupantStatusDetailField === 'demandConcern' && (
-            <form.AppField name="demandConcern">
-              {(field) => (
-                <RichSelect<DemandConcern>
-                  label="Votre demande concerne"
-                  value={field.state.value || undefined}
-                  onChange={field.handleChange}
-                  options={demandConcernOptions}
-                  placeholder="Sélectionner une option"
-                />
-              )}
-            </form.AppField>
-          )}
-          <div>
-            <form.AppField name="projectStatus">
-              {(field) => {
-                const projectStatus = field.state.value ?? [];
-                return (
-                  <>
-                    <ProjectStatusSelect
-                      value={projectStatus}
+          <Form form={form}>
+            <div className="mb-6 grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 [&_.fr-error-text]:text-error [&_.fr-input]:bg-white [&_.fr-label]:text-(--text-title-grey) [&_.fr-select]:bg-white">
+              <div className={cx(!shouldShowOrganizationName && 'md:col-span-2 mb-5')}>
+                <form.AppField name="occupantStatus">
+                  {(field) => (
+                    <RichSelect<OccupantStatus>
+                      label="Vous êtes"
+                      value={field.state.value}
                       onChange={field.handleChange}
-                      isPublicAdvisorSelected={isPublicAdvisorSelected || !isHeatNetworkEligible}
+                      options={occupantStatusOptions}
+                      postHogEventKey="fcr_contact:profile_selected"
+                      postHogEventProps={(profile) => ({
+                        is_raccordable: !isPublicAdvisorSelected && isHeatNetworkEligible,
+                        profile,
+                      })}
                     />
+                  )}
+                </form.AppField>
+              </div>
+              {shouldShowOrganizationName && (
+                <form.AppField name="organizationName">{(field) => <field.TextField label="Nom de votre structure" />}</form.AppField>
+              )}
+              <form.AppField name="lastName">{(field) => <field.TextField label="Nom" />}</form.AppField>
+              <form.AppField name="firstName">{(field) => <field.TextField label="Prénom" />}</form.AppField>
+              <form.AppField name="email">{(field) => <field.EmailField label="Email" />}</form.AppField>
+              <form.AppField name="phone">{(field) => <field.PhoneField label="Téléphone" />}</form.AppField>
+              <form.AppField name="heatingEnergy">
+                {(field) => (
+                  <RichSelect<HeatingEnergy>
+                    label="Énergie de chauffage"
+                    value={field.state.value}
+                    onChange={field.handleChange}
+                    options={heatingEnergyOptions}
+                    postHogEventKey="fcr_contact:energy_selected"
+                    postHogEventProps={(energy) => ({
+                      energy,
+                      is_raccordable: !isPublicAdvisorSelected && isHeatNetworkEligible,
+                    })}
+                  />
+                )}
+              </form.AppField>
+              {occupantStatusDetailField === 'housingCount' && (
+                <form.AppField name="housingCount">
+                  {(field) => <field.NumberField label="Nombre de logements" nativeInputProps={{ inputMode: 'numeric', min: 1 }} />}
+                </form.AppField>
+              )}
+              {occupantStatusDetailField === 'surfaceArea' && (
+                <form.AppField name="surfaceArea">
+                  {(field) => <field.NumberField label="Surface en m²" nativeInputProps={{ inputMode: 'numeric', min: 1 }} />}
+                </form.AppField>
+              )}
+              {occupantStatusDetailField === 'demandConcern' && (
+                <form.AppField name="demandConcern">
+                  {(field) => (
+                    <RichSelect<DemandConcern>
+                      label="Votre demande concerne"
+                      value={field.state.value || undefined}
+                      onChange={field.handleChange}
+                      options={demandConcernOptions}
+                      placeholder="Sélectionner une option"
+                    />
+                  )}
+                </form.AppField>
+              )}
+              <div>
+                <form.AppField name="projectStatus">
+                  {(field) => {
+                    const projectStatus = field.state.value ?? [];
+                    return (
+                      <>
+                        <ProjectStatusSelect
+                          value={projectStatus}
+                          onChange={field.handleChange}
+                          isPublicAdvisorSelected={isPublicAdvisorSelected || !isHeatNetworkEligible}
+                        />
 
-                    {projectStatus.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {projectStatus.map((status) => (
-                          <span key={status} className="rounded-full bg-[#E3E3FD] px-3 py-1 text-xs font-medium text-blue">
-                            {status}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                );
-              }}
-            </form.AppField>
-          </div>
-          <form.AppField name="comments">
-            {(field) => (
-              <field.TextareaField
-                label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
-                className="w-full md:col-span-2 mt-5"
-                nativeTextAreaProps={{ rows: 3 }}
-              />
-            )}
-          </form.AppField>
-          {isPublicAdvisorSelected && (
-            <>
-              <RichSelect
-                label="Quand avez-vous reçu ce refus ?"
-                value={refusalPeriod || undefined}
-                onChange={setRefusalPeriod}
-                options={refusalPeriodOptions}
-                placeholder="Sélectionner une période"
-              />
-              <RichSelect
-                label="Quel était le motif principal ?"
-                value={refusalReason || undefined}
-                onChange={(reason) => {
-                  trackPostHogEvent('fcr_contact:non_raccordable_reason_selected', { reason });
-                  setRefusalReason(reason);
-                }}
-                options={refusalReasonOptions}
-                placeholder="Sélectionner un motif"
-              />
-            </>
-          )}
-        </div>
-        <form.AppField
-          name="termOfUse"
-          listeners={{
-            onChange: ({ value }) => {
-              if (value) {
-                trackPostHogEvent('fcr_contact:cgu_accepted', { is_raccordable: !isPublicAdvisorSelected && isHeatNetworkEligible });
-              }
-            },
-          }}
-        >
-          {(field) => (
-            <field.CheckboxField
-              label={
+                        {projectStatus.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {projectStatus.map((status) => (
+                              <span key={status} className="rounded-full bg-[#E3E3FD] px-3 py-1 text-xs font-medium text-blue">
+                                {status}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    );
+                  }}
+                </form.AppField>
+              </div>
+              <form.AppField name="comments">
+                {(field) => (
+                  <field.TextareaField
+                    label="Si besoin, vous pouvez ajouter ici toute autre information utile liée à votre projet"
+                    className="w-full md:col-span-2 mt-5"
+                    nativeTextAreaProps={{ rows: 3 }}
+                  />
+                )}
+              </form.AppField>
+              {isPublicAdvisorSelected && (
                 <>
-                  J’accepte les&nbsp;
-                  <Link href="/cgu">conditions générales d’utilisation</Link>
-                  &nbsp;du service.
+                  <RichSelect
+                    label="Quand avez-vous reçu ce refus ?"
+                    value={refusalPeriod || undefined}
+                    onChange={setRefusalPeriod}
+                    options={refusalPeriodOptions}
+                    placeholder="Sélectionner une période"
+                  />
+                  <RichSelect
+                    label="Quel était le motif principal ?"
+                    value={refusalReason || undefined}
+                    onChange={(reason) => {
+                      trackPostHogEvent('fcr_contact:non_raccordable_reason_selected', { reason });
+                      setRefusalReason(reason);
+                    }}
+                    options={refusalReasonOptions}
+                    placeholder="Sélectionner un motif"
+                  />
                 </>
-              }
-            />
-          )}
-        </form.AppField>
-        <form.SubmitButton disabled={submissionResult !== null} iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-4">
-          Envoyer
-        </form.SubmitButton>
-      </Form>
+              )}
+            </div>
+            <form.AppField
+              name="termOfUse"
+              listeners={{
+                onChange: ({ value }) => {
+                  if (value) {
+                    trackPostHogEvent('fcr_contact:cgu_accepted', { is_raccordable: !isPublicAdvisorSelected && isHeatNetworkEligible });
+                  }
+                },
+              }}
+            >
+              {(field) => (
+                <field.CheckboxField
+                  label={
+                    <>
+                      J’accepte les&nbsp;
+                      <Link href="/cgu">conditions générales d’utilisation</Link>
+                      &nbsp;du service.
+                    </>
+                  }
+                />
+              )}
+            </form.AppField>
+            <form.SubmitButton disabled={submissionResult !== null} iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-4">
+              Envoyer
+            </form.SubmitButton>
+          </Form>
+        </>
+      )}
       <Dialog title="" open={isSubmissionDialogOpen && submissionResult !== null} size="lg" onOpenChange={setIsSubmissionDialogOpen}>
         {submissionResult && <DemandSubmittedPanel submissionResult={submissionResult} />}
       </Dialog>

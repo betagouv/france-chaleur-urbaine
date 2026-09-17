@@ -5,7 +5,6 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import type { SetChoixChauffageParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
   type EspaceExterieur,
-  getEspaceExterieurForTypeLogement,
   type TypeLogement,
   type TypeRadiateur,
   typeLogementOptions,
@@ -70,7 +69,7 @@ export function SettingsTopFields({
               trackPostHogEvent('fcr_landing:heating_mode_selected', { heating_mode: nextTypeLogement });
             }
             setParams({
-              espaceExterieur: getEspaceExterieurForTypeLogement(nextTypeLogement, espaceExterieur ?? 'none'),
+              espaceExterieur: espaceExterieur ?? 'none',
               typeLogement: nextTypeLogement,
             });
           },
@@ -98,7 +97,6 @@ export function SettingsTopFields({
           }
           setParams({ espaceExterieur: value });
         }}
-        typeLogement={typeLogement}
       />
     </div>
   );
