@@ -15,7 +15,6 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
       '@/client-config': resolve(__dirname, 'src/client-config.ts'),
       '@cli': resolve(__dirname, 'scripts'),
-      '@react-hookz/web/useCookieValue': resolve(__dirname, 'node_modules/@react-hookz/web/dist/useCookieValue/index.js'),
       '@root': resolve(__dirname, '.'),
     },
     coverage: {
