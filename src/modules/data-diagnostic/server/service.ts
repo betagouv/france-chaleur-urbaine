@@ -25,6 +25,11 @@ const demandHref = (address: string | null) => {
 // Page des événements filtrée sur la demande, période custom démarrant avant toute donnée = tout l'historique.
 const demandEventsHref = (demandId: string) => `/admin/events?contextType=demand&contextId=${demandId}&preset=custom&dateFrom=2025-01-01`;
 
+const pdpHref = '/admin/reseaux?reseauxTab=perimetres-de-developpement-prioritaire';
+const pdpLabel = (idFcu: number, sncu: string | null) => `PDP #${idFcu}${sncu ? ` (${sncu})` : ''}`;
+const networkLabel = (idFcu: number, nom: string | null, suffix: string | null) =>
+  `${idFcu} ${nom ?? '(sans nom)'}${suffix ? ` (${suffix})` : ''}`;
+
 const fullName = (firstName: string | null, lastName: string | null) => [firstName, lastName].filter(Boolean).join(' ') || null;
 
 const truncate = <T>(rows: T[], toItem: (row: T) => IssueItem) => {
@@ -453,7 +458,7 @@ const checkPdpOrphanNetwork: IssueBuilder = async () => {
     ]
       .filter(Boolean)
       .join(' / '),
-    label: `PDP #${row.id_fcu}${row.sncu ? ` (${row.sncu})` : ''}`,
+    label: pdpLabel(row.id_fcu, row.sncu),
   }));
 
   return {
@@ -502,8 +507,8 @@ const checkPdpAmbiguousOperator: IssueBuilder = async () => {
     ]
       .filter(Boolean)
       .join(' — '),
-    href: '/admin/reseaux?reseauxTab=perimetres-de-developpement-prioritaire',
-    label: `PDP #${row.id_fcu}${row.sncu ? ` (${row.sncu})` : ''}`,
+    href: pdpHref,
+    label: pdpLabel(row.id_fcu, row.sncu),
   }));
 
   return {
@@ -515,6 +520,179 @@ const checkPdpAmbiguousOperator: IssueBuilder = async () => {
     totalCount,
     truncated,
     type: 'pdp.ambiguous_operator',
+  };
+};
+
+/** Regroupe des paires (PDP, réseau) par PDP pour produire un item par PDP. */
+const groupNetworksByPdp = (
+  rdcRows: { id_fcu: number; sncu: string | null; network: string }[],
+  zrcRows: { id_fcu: number; sncu: string | null; network: string }[]
+) => {
+  const byPdp = new Map<number, { sncu: string | null; rdc: string[]; zrc: string[] }>();
+  const entry = (row: { id_fcu: number; sncu: string | null }) => {
+    let value = byPdp.get(row.id_fcu);
+    if (!value) {
+      value = { rdc: [], sncu: row.sncu, zrc: [] };
+      byPdp.set(row.id_fcu, value);
+    }
+    return value;
+  };
+  for (const row of rdcRows) entry(row).rdc.push(row.network);
+  for (const row of zrcRows) entry(row).zrc.push(row.network);
+
+  return [...byPdp.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([id_fcu, { sncu, rdc, zrc }]) => ({
+      context: [
+        rdc.length > 0 ? `réseaux de chaleur : ${rdc.join(', ')}` : null,
+        zrc.length > 0 ? `en construction : ${zrc.join(', ')}` : null,
+      ]
+        .filter(Boolean)
+        .join(' / '),
+      href: pdpHref,
+      label: pdpLabel(id_fcu, sncu),
+    }));
+};
+
+/**
+ * Réseaux qui traversent le polygone d'un PDP sans lui être liés : réseaux de chaleur classés et ouverts
+ * aux raccordements (vert foncé sur la carte), réseaux et zones en construction ouverts aux raccordements.
+ * Le lien (`reseau_de_chaleur_ids`, `reseau_en_construction_ids` ou SNCU) est ce qui fait remonter le
+ * réseau dans la résolution PDP → réseau ; un lien manquant est donc probablement un oubli d'affectation.
+ */
+const checkPdpMissingNetworkLink: IssueBuilder = async () => {
+  const [rdcRows, zrcRows] = await Promise.all([
+    kdb
+      .selectFrom('zone_de_developpement_prioritaire as p')
+      .innerJoin('reseaux_de_chaleur as r', (join) =>
+        join.on(
+          (eb) => sql<boolean>`${eb.ref('r.geom')} && ${eb.ref('p.geom')} AND ST_Intersects(${eb.ref('r.geom')}, ${eb.ref('p.geom')})`
+        )
+      )
+      .select((eb) => [
+        'p.id_fcu',
+        eb.ref('p.Identifiant reseau').as('sncu'),
+        'r.id_fcu as network_id',
+        'r.nom_reseau',
+        eb.ref('r.Identifiant reseau').as('network_sncu'),
+      ])
+      .where('r.ouvert_aux_raccordements', '=', true)
+      .where('r.reseaux classes', '=', true)
+      .where((eb) => eb.not(eb('r.id_fcu', '=', sql<number>`ANY(${eb.ref('p.reseau_de_chaleur_ids')})`)))
+      .where((eb) =>
+        eb.or([
+          eb('p.Identifiant reseau', 'is', null),
+          eb('p.Identifiant reseau', '=', ''),
+          eb('r.Identifiant reseau', 'is distinct from', eb.ref('p.Identifiant reseau')),
+        ])
+      )
+      .orderBy('p.id_fcu')
+      .orderBy('r.id_fcu')
+      .execute(),
+    kdb
+      .selectFrom('zone_de_developpement_prioritaire as p')
+      .innerJoin('zones_et_reseaux_en_construction as c', (join) =>
+        join.on(
+          (eb) => sql<boolean>`${eb.ref('c.geom')} && ${eb.ref('p.geom')} AND ST_Intersects(${eb.ref('c.geom')}, ${eb.ref('p.geom')})`
+        )
+      )
+      .select((eb) => ['p.id_fcu', eb.ref('p.Identifiant reseau').as('sncu'), 'c.id_fcu as network_id', 'c.nom_reseau', 'c.is_zone'])
+      .where('c.ouvert_aux_raccordements', '=', true)
+      .where((eb) => eb.not(eb('c.id_fcu', '=', sql<number>`ANY(${eb.ref('p.reseau_en_construction_ids')})`)))
+      .orderBy('p.id_fcu')
+      .orderBy('c.id_fcu')
+      .execute(),
+  ]);
+
+  if (rdcRows.length === 0 && zrcRows.length === 0) return null;
+
+  const grouped = groupNetworksByPdp(
+    rdcRows.map((row) => ({ ...row, network: networkLabel(row.network_id, row.nom_reseau, row.network_sncu) })),
+    zrcRows.map((row) => ({ ...row, network: networkLabel(row.network_id, row.nom_reseau, row.is_zone ? 'zone' : null) }))
+  );
+  const { items, totalCount, truncated } = truncate(grouped, (item) => item);
+
+  return {
+    description:
+      'Ces réseaux traversent le périmètre du PDP sans lui être liés : réseaux de chaleur classés et ouverts aux raccordements, réseaux ou zones en construction ouverts aux raccordements. Tant que le lien manque, la résolution PDP → réseau ignore ce réseau. Vérifier et ajouter le lien dans Gestion des réseaux (onglet PDP), ou corriger le périmètre.',
+    items,
+    severity: 'warning',
+    title: 'PDP traversé par un réseau non lié',
+    totalCount,
+    truncated,
+    type: 'pdp.missing_network_link',
+  };
+};
+
+/**
+ * Réseaux liés à un PDP (ids ou SNCU) dont le tracé ne touche pas le polygone du PDP : lien erroné,
+ * périmètre mal placé ou tracé incomplet. Les réseaux sans tracé sont ignorés (rien à comparer).
+ */
+const checkPdpLinkWithoutIntersection: IssueBuilder = async () => {
+  const rdcLinkedByIds = kdb
+    .selectFrom('zone_de_developpement_prioritaire as p')
+    .innerJoin('reseaux_de_chaleur as r', (join) =>
+      join.on((eb) => eb('r.id_fcu', '=', sql<number>`ANY(${eb.ref('p.reseau_de_chaleur_ids')})`))
+    )
+    .select((eb) => [
+      'p.id_fcu',
+      eb.ref('p.Identifiant reseau').as('sncu'),
+      'r.id_fcu as network_id',
+      'r.nom_reseau',
+      eb.ref('r.Identifiant reseau').as('network_sncu'),
+    ])
+    .where('p.geom', 'is not', null)
+    .where('r.geom', 'is not', null)
+    .where((eb) => eb.not(sql<boolean>`ST_Intersects(${eb.ref('r.geom')}, ${eb.ref('p.geom')})`));
+
+  const rdcLinkedBySncu = kdb
+    .selectFrom('zone_de_developpement_prioritaire as p')
+    .innerJoin('reseaux_de_chaleur as r', (join) => join.onRef('r.Identifiant reseau', '=', 'p.Identifiant reseau'))
+    .select((eb) => [
+      'p.id_fcu',
+      eb.ref('p.Identifiant reseau').as('sncu'),
+      'r.id_fcu as network_id',
+      'r.nom_reseau',
+      eb.ref('r.Identifiant reseau').as('network_sncu'),
+    ])
+    .where('p.Identifiant reseau', '!=', '')
+    .where('p.geom', 'is not', null)
+    .where('r.geom', 'is not', null)
+    .where((eb) => eb.not(sql<boolean>`ST_Intersects(${eb.ref('r.geom')}, ${eb.ref('p.geom')})`));
+
+  const [rdcRows, zrcRows] = await Promise.all([
+    rdcLinkedByIds.union(rdcLinkedBySncu).orderBy('id_fcu').orderBy('network_id').execute(),
+    kdb
+      .selectFrom('zone_de_developpement_prioritaire as p')
+      .innerJoin('zones_et_reseaux_en_construction as c', (join) =>
+        join.on((eb) => eb('c.id_fcu', '=', sql<number>`ANY(${eb.ref('p.reseau_en_construction_ids')})`))
+      )
+      .select((eb) => ['p.id_fcu', eb.ref('p.Identifiant reseau').as('sncu'), 'c.id_fcu as network_id', 'c.nom_reseau', 'c.is_zone'])
+      .where('p.geom', 'is not', null)
+      .where('c.geom', 'is not', null)
+      .where((eb) => eb.not(sql<boolean>`ST_Intersects(${eb.ref('c.geom')}, ${eb.ref('p.geom')})`))
+      .orderBy('p.id_fcu')
+      .orderBy('c.id_fcu')
+      .execute(),
+  ]);
+
+  if (rdcRows.length === 0 && zrcRows.length === 0) return null;
+
+  const grouped = groupNetworksByPdp(
+    rdcRows.map((row) => ({ ...row, network: networkLabel(row.network_id, row.nom_reseau, row.network_sncu) })),
+    zrcRows.map((row) => ({ ...row, network: networkLabel(row.network_id, row.nom_reseau, row.is_zone ? 'zone' : null) }))
+  );
+  const { items, totalCount, truncated } = truncate(grouped, (item) => item);
+
+  return {
+    description:
+      'Ces PDP sont liés à un réseau dont le tracé ne touche pas leur périmètre : lien erroné (par exemple deux PDP inversés), périmètre mal placé ou tracé incomplet. Vérifier le lien et les géométries dans Gestion des réseaux (onglet PDP).',
+    items,
+    severity: 'warning',
+    title: 'PDP lié à un réseau qui ne le traverse pas',
+    totalCount,
+    truncated,
+    type: 'pdp.link_without_intersection',
   };
 };
 
@@ -924,6 +1102,8 @@ const checks: IssueBuilder[] = [
   checkDemandOrphanNetwork,
   checkPdpOrphanNetwork,
   checkPdpAmbiguousOperator,
+  checkPdpMissingNetworkLink,
+  checkPdpLinkWithoutIntersection,
   checkDemandUnvalidatedOld,
   checkDemandPendingAssignmentStale,
   checkDemandRecontactMismatch,
