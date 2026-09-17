@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import Tooltip from '@/components/ui/Tooltip';
 import cx from '@/utils/cx';
 
-type TypeBadge = 'haut_potentiel' | 'pdp' | 'warning_ville_differente' | 'api_user' | 'actif';
+type TypeBadge = 'haut_potentiel' | 'pdp' | 'warning_ville_differente' | 'api_user' | 'actif' | 'email_blocked';
 
 const badgeCva = cva('block!', {
   defaultVariants: {
@@ -20,6 +20,7 @@ const badgeCva = cva('block!', {
     type: {
       actif: '',
       api_user: 'bg-[#FFDA8F]! text-[#454B58]!',
+      email_blocked: '',
       haut_potentiel: 'bg-green-600! text-white!',
       pdp: 'bg-[#FFDA8F]! text-[#454B58]!',
       warning_ville_differente: 'bg-[#FFDA8F]! text-[#454B58]!',
@@ -30,6 +31,7 @@ const badgeCva = cva('block!', {
 const badgeLabels: Record<TypeBadge, string> = {
   actif: 'Actif',
   api_user: 'API',
+  email_blocked: 'Emails bloqués',
   haut_potentiel: 'HP',
   pdp: 'PDP',
   warning_ville_differente: 'Ville différente',
@@ -37,6 +39,8 @@ const badgeLabels: Record<TypeBadge, string> = {
 
 const badgeTitles: Partial<Record<TypeBadge, string>> = {
   api_user: 'Utilisateur créé depuis l’API',
+  email_blocked:
+    'Adresse bloquée côté Brevo : les emails ne sont plus envoyés à cette personne (rejet définitif, désinscription ou plainte)',
   haut_potentiel:
     'Haut potentiel. Comptabilise les demandes en chauffage collectif à moins de 100m d’un réseau (moins de 60m sur Paris), ou à plus de 100 logements, ou tertiaires.',
   warning_ville_differente: 'La ville de la demande ne correspond pas aux villes du réseau',
@@ -44,6 +48,7 @@ const badgeTitles: Partial<Record<TypeBadge, string>> = {
 
 const badgeSeverities: Partial<Record<TypeBadge, BadgeProps['severity']>> = {
   actif: 'info',
+  email_blocked: 'error',
   warning_ville_differente: 'warning',
 };
 

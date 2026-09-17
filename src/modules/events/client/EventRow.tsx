@@ -3,6 +3,7 @@ import { Fragment, type ReactNode } from 'react';
 
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import Button from '@/components/ui/Button';
+import { emailUnblockSourceLabels, getEmailBlockReasonLabel } from '@/modules/email/constants';
 import type { EventType } from '@/modules/events/constants';
 import type { AdminEvent } from '@/modules/events/server/service';
 import { ObjectKeys } from '@/utils/typescript';
@@ -143,9 +144,28 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       <span> a été supprimée automatiquement{event.data?.reason === 'duplicate' ? ' (doublon)' : ''}</span>
     </>
   ),
+  demand_email_blocked: (event, updateFilters) => (
+    <>
+      <span>Emails bloqués côté Brevo pour </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>{event.data.email}</FilterButton>
+      <span>
+        {' '}
+        (<strong>{getEmailBlockReasonLabel(event.data.reason_code)}</strong>) sur une{' '}
+      </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
   demand_email_sent: (event, updateFilters) => (
     <>
       <span>a envoyé un email à {event.data.to} pour une </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
+    </>
+  ),
+  demand_email_unblocked: (event, updateFilters) => (
+    <>
+      <span>Réception des emails réactivée pour </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>{event.data.email}</FilterButton>
+      <span> ({emailUnblockSourceLabels[event.data.source]}) sur une </span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),
@@ -400,6 +420,23 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
         {event.data.user_email}
       </FilterButton>
+    </>
+  ),
+  user_email_blocked: (event, updateFilters) => (
+    <>
+      <span>Emails bloqués côté Brevo pour le compte </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>{event.data.email}</FilterButton>
+      <span>
+        {' '}
+        : <strong>{getEmailBlockReasonLabel(event.data.reason_code)}</strong>
+      </span>
+    </>
+  ),
+  user_email_unblocked: (event, updateFilters) => (
+    <>
+      <span>Réception des emails réactivée pour le compte </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>{event.data.email}</FilterButton>
+      <span> ({emailUnblockSourceLabels[event.data.source]})</span>
     </>
   ),
   user_login: () => "s'est connecté",

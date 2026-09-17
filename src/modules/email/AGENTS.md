@@ -24,11 +24,40 @@ src/modules/email/
 │       ├── demandeur/
 │       └── gestionnaire/
 ├── server/
-│   └── trpc-routes.ts         # Router admin (`email.list`, `email.preview`)
+│   ├── trpc-routes.ts             # Routers `email.list`, `email.preview` et `email.deliverability.*` (tous admin)
+│   ├── brevo-client.ts            # Appels HTTP à l'API Brevo (liste des bloqués, événements, déblocage)
+│   └── deliverability-service.ts  # Sync de la blocklist Brevo → `email_blocked_contacts`, statut, déblocage, events
 └── client/
+    ├── EmailDeliverabilityPanel.tsx  # Statut de délivrabilité d'une adresse (admin) + déblocage + historique
+    ├── EmailEventsList.tsx           # Timeline des événements Brevo d'une adresse
+    ├── EmailBlockedBadge.tsx         # Badge « Emails bloqués » + raccourci de déblocage (tableaux users / demandes)
+    ├── EmailUnblockButton.tsx        # Bouton icône de déblocage avec confirmation, grisé si écritures désactivées
     └── admin/
-        └── EmailsPage.tsx     # Visualiseur dans /admin/emails
+        ├── EmailsPage.tsx                # Visualiseur dans /admin/emails
+        └── EmailDeliverabilityPage.tsx   # Inventaire des adresses bloquées dans /admin/email-delivery
 ```
+
+## Délivrabilité (Brevo)
+
+L'envoi SMTP réussit même quand Brevo bloque le destinataire (hard bounce, désinscription, plainte) : le blocage n'est visible que via l'API Brevo. Le module miroir la blocklist transactionnelle dans la table `email_blocked_contacts` (owned) :
+
+- **Sync** : `syncBlockedContacts()` (cron `syncEmailBlockedContacts`, `0 7-21 * * *`, et mutation admin). Remplacement complet de la table, puis événements sur transition : `user_email_blocked` / `demand_email_blocked` (datés `blocked_at` Brevo, idempotents) et `user_email_unblocked` / `demand_email_unblocked` (source `external`). Le matching se fait sur `lower(users.email)` et `lower(demands.legacy_values->>'Mail')`.
+- **Statut** : `getEmailDeliverability(email)` = ligne locale uniquement (pas d'appel Brevo). **Historique** : `listEmailEventsForAdmin(email)` = événements Brevo en direct (90 jours max), chargé au clic dans le panneau ; une erreur API est renvoyée dans `error` (message brut affiché à l'admin), jamais levée.
+- **Déblocage** (admin uniquement, pas de self-service : les utilisateurs ne sont pas censés pouvoir se désinscrire) : `unblockEmail(email, { adminUserId })` appelle `DELETE /smtp/blockedContacts/{email}`, supprime la ligne, trace `*_email_unblocked` (source `admin`). Refusé (`FORBIDDEN`) si `BREVO_ALLOW_WRITES` est faux : le compte Brevo est partagé par tous les environnements, seule la prod peut écrire.
+- **Dates Brevo** : `blockedAt` (liste des bloqués) est l'heure locale du compte (Europe/Paris) avec un suffixe `Z` trompeur, alors que les événements portent un vrai offset (`+02:00`) ; toujours passer par `parseBrevoDate()` (`brevo-client.ts`), jamais `new Date()` sur une date Brevo.
+- **Config** : `BREVO_API_KEY` (optionnelle, tout est no-op sans elle), `BREVO_ALLOW_WRITES` (défaut `false`).
+- **Listes admin** : `users.list()` et `demands.admin.list` exposent `email_blocked_reason` (left join sur la table) pour les badges et filtres.
+
+| Procédure | Type | Auth | Description |
+|-----------|------|------|-------------|
+| `email.deliverability.getSettings` | query | admin | Clé configurée, écritures autorisées (pour griser les boutons) |
+| `email.deliverability.getEmailDeliverability` | query | admin | Statut local (bloqué ou non) d'une adresse |
+| `email.deliverability.listEmailEvents` | query | admin | Événements Brevo d'une adresse (à la demande) |
+| `email.deliverability.listBlockedContacts` | query | admin | Inventaire des bloqués (+ compte et nb de demandes liés) |
+| `email.deliverability.unblockContact` | mutation | admin | Réactive une adresse côté Brevo |
+| `email.deliverability.syncBlockedContacts` | mutation | admin | Lance la synchronisation |
+
+Ne pas ajouter de header `X-Mailin-Tag` aux envois (décision produit : pas de nom de template dans les entêtes reçus par les utilisateurs).
 
 ## Convention de nommage
 

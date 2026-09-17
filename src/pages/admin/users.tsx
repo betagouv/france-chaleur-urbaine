@@ -19,6 +19,8 @@ import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { useDialogState } from '@/hooks/useDialogState';
+import EmailBlockedBadge from '@/modules/email/client/EmailBlockedBadge';
+import EmailDeliverabilityPanel from '@/modules/email/client/EmailDeliverabilityPanel';
 import { notify, toastErrors } from '@/modules/notification';
 import type { Permission, PermissionType, PermissionWithLabel } from '@/modules/permissions/types';
 import trpc from '@/modules/trpc/client';
@@ -204,6 +206,15 @@ export default function ManageUsers() {
             <div>
               {info.getValue<string>()}
               {!!info.row.original.from_organization_id && <Badge type="api_user" className="mt-1" />}
+              {info.row.original.email_blocked_reason && (
+                <div className="mt-1">
+                  <EmailBlockedBadge
+                    email={info.row.original.email}
+                    reasonCode={info.row.original.email_blocked_reason}
+                    onUnblocked={() => void refetchUsers()}
+                  />
+                </div>
+              )}
             </div>
             {(info.row.original.first_name || info.row.original.last_name) && (
               <div className="text-sm text-faded font-bold">
@@ -316,6 +327,15 @@ export default function ManageUsers() {
         visible: false,
       },
       {
+        accessorFn: (row) => !!row.email_blocked_reason,
+        cellType: 'Boolean',
+        filtersDialogLabel: 'Emails bloqués (Brevo)',
+        filterType: 'Facets',
+        header: 'Emails bloqués',
+        id: 'email_blocked',
+        visible: false,
+      },
+      {
         align: 'right',
         cell: ({ row }) => {
           const menuItems: HamburgerMenuItem[] = [
@@ -383,7 +403,7 @@ export default function ManageUsers() {
         width: '50px',
       },
     ],
-    [tagOptions]
+    [tagOptions, refetchUsers]
   );
 
   const editingUser = useMemo(() => users?.find((u) => u.id === (userId as string)), [users, userId]);
@@ -412,7 +432,15 @@ export default function ManageUsers() {
         {isLoading ? (
           <Loader size="lg" variant="section" />
         ) : editingUser ? (
-          <UserForm loading={!!updatingUserId} onSubmit={handleUpdateUser(userId as string)} user={editingUser} />
+          <div className="flex flex-col gap-6">
+            <section>
+              <Heading as="h3" size="h6">
+                Réception des emails (Brevo)
+              </Heading>
+              <EmailDeliverabilityPanel email={editingUser.email} />
+            </section>
+            <UserForm loading={!!updatingUserId} onSubmit={handleUpdateUser(userId as string)} user={editingUser} />
+          </div>
         ) : userId === 'new' ? (
           <UserForm loading={creatingUser} onSubmit={handleCreateUser} />
         ) : (

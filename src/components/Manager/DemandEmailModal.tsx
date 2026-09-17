@@ -4,11 +4,14 @@ import DemandEmailForm from '@/components/Manager/DemandEmailForm';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import type { Demand } from '@/modules/demands/types';
+import EmailDeliverabilityPanel from '@/modules/email/client/EmailDeliverabilityPanel';
 
 type DemandEmailModalProps = {
   demand: Demand | null;
   onClose: () => void;
   updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
+  /** Shows the Brevo deliverability status of the recipient above the form (admin screens only: the query is admin-only). */
+  showDeliverability?: boolean;
 };
 
 /**
@@ -16,7 +19,7 @@ type DemandEmailModalProps = {
  * Protège contre une fermeture accidentelle : dès que le contenu est modifié,
  * Échap / clic extérieur / croix déclenchent une confirmation avant de fermer.
  */
-function DemandEmailModal({ demand, onClose, updateDemand }: DemandEmailModalProps) {
+function DemandEmailModal({ demand, onClose, updateDemand, showDeliverability = false }: DemandEmailModalProps) {
   const isDirtyRef = useRef(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
@@ -47,6 +50,11 @@ function DemandEmailModal({ demand, onClose, updateDemand }: DemandEmailModalPro
   return (
     <>
       <Dialog title={`Envoi d'un courriel à ${demand?.Mail}`} size="lg" open={!!demand} onOpenChange={handleOpenChange}>
+        {demand && showDeliverability && demand.Mail && (
+          <div className="mb-6">
+            <EmailDeliverabilityPanel email={demand.Mail} />
+          </div>
+        )}
         {demand && <DemandEmailForm currentDemand={demand} updateDemand={updateDemand} onDirtyChange={handleDirtyChange} />}
       </Dialog>
       <Dialog

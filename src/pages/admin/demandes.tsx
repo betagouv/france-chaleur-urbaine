@@ -31,6 +31,7 @@ import Status from '@/modules/demands/client/Status';
 import type { DemandStatus } from '@/modules/demands/constants';
 import { eligibilityTypes as eligibilityCases, eligibilityTitleByType } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
+import EmailBlockedBadge from '@/modules/email/client/EmailBlockedBadge';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
 import type { AdresseEligible } from '@/modules/map/client/layers/specs/adressesEligibles';
@@ -411,7 +412,20 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
-        cell: ({ row }) => <Contact demand={row.original as unknown as Demand} onEmailClick={handleEmailClick} />,
+        cell: ({ row }) => (
+          <div>
+            <Contact demand={row.original as unknown as Demand} onEmailClick={handleEmailClick} />
+            {row.original.email_blocked_reason && row.original.Mail && (
+              <div className="mt-1">
+                <EmailBlockedBadge
+                  email={row.original.Mail}
+                  reasonCode={row.original.email_blocked_reason}
+                  onUnblocked={() => utils.demands.admin.list.invalidate()}
+                />
+              </div>
+            )}
+          </div>
+        ),
         enableSorting: false,
         header: 'Contact',
         width: '280px',
@@ -569,6 +583,14 @@ function DemandesAdmin(): React.ReactElement {
         visible: false,
       },
       {
+        accessorFn: (row) => (row.email_blocked_reason ? 'Oui' : 'Non'),
+        filtersDialogLabel: 'Emails bloqués (Brevo)',
+        filterType: 'Facets',
+        header: 'Emails bloqués',
+        id: 'email_blocked',
+        visible: false,
+      },
+      {
         align: 'right' as const,
         cell: ({ row }) => <DemandActions demand={row.original} onDelete={deleteDemand} />,
         enableSorting: false,
@@ -577,7 +599,7 @@ function DemandesAdmin(): React.ReactElement {
         width: '50px',
       },
     ],
-    [updateDemand, changeNetwork, validateDemand, deleteDemand, handleEmailClick, integrationLabelById]
+    [updateDemand, changeNetwork, validateDemand, deleteDemand, handleEmailClick, integrationLabelById, utils]
   );
 
   const onMarkerSelect = useCallback((demandId: string) => {
@@ -633,7 +655,12 @@ function DemandesAdmin(): React.ReactElement {
       description="Tableau de bord administrateur pour la validation des demandes de raccordement"
       mode="authenticated"
     >
-      <DemandEmailModal demand={modalDemand as unknown as Demand | null} onClose={() => setModalDemand(null)} updateDemand={updateDemand} />
+      <DemandEmailModal
+        demand={modalDemand as unknown as Demand | null}
+        onClose={() => setModalDemand(null)}
+        updateDemand={updateDemand}
+        showDeliverability
+      />
       <div className="mb-8">
         <div className="flex items-center flex-wrap gap-4">
           <Input

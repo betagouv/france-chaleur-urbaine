@@ -101,6 +101,7 @@ export async function cleanDatabase() {
     kdb.deleteFrom('demand_emails').execute(),
     kdb.deleteFrom('demands_chaleur_renouvelable').execute(),
     kdb.deleteFrom('events').execute(),
+    kdb.deleteFrom('email_blocked_contacts').execute(),
     kdb.deleteFrom('pro_eligibility_tests_addresses').execute(),
     kdb.deleteFrom('jobs').execute(),
   ]);
