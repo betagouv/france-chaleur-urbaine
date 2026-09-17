@@ -71,6 +71,9 @@ export function Mermaid({ chart }: MermaidProps) {
         const mermaid = (await import('mermaid')).default;
         mermaid.initialize({
           fontFamily: 'inherit',
+          // mermaid 12 defaults to ELK layout + 'neo' look; keep the v11 rendering
+          layout: 'dagre',
+          look: 'classic',
           // 'loose' enables click links on nodes — safe: charts are static content authored in the repo, no user input
           securityLevel: 'loose',
           startOnLoad: false,
