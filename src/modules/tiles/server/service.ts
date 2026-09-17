@@ -1,4 +1,4 @@
-import geojsonvt from 'geojson-vt';
+import GeoJSONVT from 'geojson-vt';
 import { sql, type Transaction } from 'kysely';
 import vtpbf from 'vt-pbf';
 
@@ -127,7 +127,7 @@ export const populateTilesCache = () => {
           throw new Error(`No features found for ${sourceId}`);
         }
 
-        cachedTilesIndex[sourceId as CacheTileSourceId] = geojsonvt(
+        cachedTilesIndex[sourceId as CacheTileSourceId] = new GeoJSONVT(
           {
             features: features as GeoJSON.Feature<GeoJSON.Point>[],
             type: 'FeatureCollection',
