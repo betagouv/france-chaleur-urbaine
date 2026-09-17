@@ -624,16 +624,22 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
     };
   }
 
+  const ccrtDemandId = await createCcrtExperimentationDemand(input);
+
+  return {
+    demandSubmissionResult: null,
+    id: ccrtDemandId,
+  };
+};
+
+const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable) => {
   const departmentCode = await getDemandeChaleurRenouvelableDepartmentCode(input);
 
   if (!departmentCode || !isCcrtExperimentationEligible(departmentCode, input.housingType)) {
-    return {
-      demandSubmissionResult: null,
-      id: null,
-    };
+    return null;
   }
 
-  const createdDemand = await kdb
+  const createdCcrtDemand = await kdb
     .insertInto('demands_chaleur_renouvelable')
     .values({
       address: input.address,
@@ -670,14 +676,11 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
 
   await notifyCcrtOfNewDemandeChaleurRenouvelable({
     demand: input,
-    demandId: createdDemand.id,
+    demandId: createdCcrtDemand.id,
     departmentCode,
   });
 
-  return {
-    demandSubmissionResult: null,
-    id: createdDemand.id,
-  };
+  return createdCcrtDemand.id;
 };
 
 const notifyCcrtOfNewDemandeChaleurRenouvelable = async ({

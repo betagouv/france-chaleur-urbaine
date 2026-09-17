@@ -326,6 +326,8 @@ type DemandFCRFormProps = {
   geoAddress?: BANAddressFeature;
   isCcrtExperimentationBuildingEligible: boolean;
   isHeatNetworkEligible: boolean;
+  selectedRecipientId: ContactRecipientId;
+  onSelectedRecipientChange: (recipientId: ContactRecipientId) => void;
   topSolution: string;
 };
 
@@ -338,6 +340,8 @@ export default function DemandFCRForm({
   geoAddress,
   isCcrtExperimentationBuildingEligible,
   isHeatNetworkEligible,
+  selectedRecipientId,
+  onSelectedRecipientChange,
   topSolution,
 }: DemandFCRFormProps) {
   if (!isHeatNetworkEligible && !isCcrtExperimentationBuildingEligible) {
@@ -351,6 +355,8 @@ export default function DemandFCRForm({
       geoAddress={geoAddress}
       isCcrtExperimentationBuildingEligible={isCcrtExperimentationBuildingEligible}
       isHeatNetworkEligible={isHeatNetworkEligible}
+      selectedRecipientId={selectedRecipientId}
+      onSelectedRecipientChange={onSelectedRecipientChange}
       topSolution={topSolution}
     />
   );
@@ -367,13 +373,14 @@ function HeatNetworkDemandForm({
   geoAddress,
   isCcrtExperimentationBuildingEligible,
   isHeatNetworkEligible,
+  selectedRecipientId,
+  onSelectedRecipientChange,
   topSolution,
 }: HeatNetworkDemandFormProps) {
   const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
   const [refusalPeriod, setRefusalPeriod] = useState('');
   const [refusalReason, setRefusalReason] = useState('');
-  const [selectedRecipientId, setSelectedRecipientId] = useState<ContactRecipientId>('network-manager');
   const isPublicAdvisorSelected = isHeatNetworkEligible && selectedRecipientId === 'public-advisor';
 
   const createDemandeChaleurRenouvelable = trpc.batEnr.createDemandeChaleurRenouvelable.useMutation();
@@ -496,7 +503,7 @@ function HeatNetworkDemandForm({
       trackPostHogEvent('fcr_contact:non_raccordable_checked');
     }
 
-    setSelectedRecipientId(recipientId);
+    onSelectedRecipientChange(recipientId);
   };
 
   const selectedOccupantStatus = useStore(form.store, (state) => state.values.occupantStatus);

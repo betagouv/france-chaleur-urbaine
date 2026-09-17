@@ -1,6 +1,5 @@
 import { render } from 'react-email';
 
-import { clientConfig } from '@/client-config';
 import { businessRules } from '@/modules/app/business-rules';
 import type { EmailTrigger } from '@/modules/email/constants';
 import type { EmailScenarios } from '@/modules/email/scenarios';
@@ -13,15 +12,15 @@ import ConfirmationInscription, {
 import ReinitialisationMotDePasse, {
   scenarios as reinitialisationMotDePasseScenarios,
 } from './templates/auth/utilisateur/reinitialisation-mot-de-passe';
+import NouvelleDemandeChaleurRenouvelable, {
+  scenarios as nouvelleDemandeChaleurRenouvelableScenarios,
+} from './templates/demands/ccrt/nouvelle-demande-chaleur-renouvelable';
 import ConfirmationDemande, { scenarios as confirmationDemandeScenarios } from './templates/demands/demandeur/confirmation-demande';
 import EnqueteSatisfaction, { scenarios as enqueteSatisfactionScenarios } from './templates/demands/demandeur/enquete-satisfaction';
 import MessageGestionnaire, { scenarios as messageGestionnaireScenarios } from './templates/demands/demandeur/message-gestionnaire';
 import RaccordementNonRealisable, {
   scenarios as raccordementNonRealisableScenarios,
 } from './templates/demands/demandeur/raccordement-non-realisable';
-import NouvelleDemandeChaleurRenouvelable, {
-  scenarios as nouvelleDemandeChaleurRenouvelableScenarios,
-} from './templates/demands/equipe-fcu/nouvelle-demande-chaleur-renouvelable';
 import NouvellesDemandesATraiter, {
   scenarios as nouvellesDemandesATraiterScenarios,
 } from './templates/demands/gestionnaire/nouvelles-demandes-a-traiter';
@@ -170,18 +169,6 @@ export const emails = defineEmails({
     subject: '[France Chaleur Urbaine] Votre demande de raccordement',
     trigger: {
       description: 'Au changement manuel du statut d’une demande vers « Non réalisable » par un gestionnaire ou un admin.',
-      type: 'action',
-    },
-  },
-  'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable': {
-    Component: NouvelleDemandeChaleurRenouvelable,
-    description: `Notification interne envoyée à ${clientConfig.contactEmail} à chaque nouvelle demande chaleur renouvelable reçue.`,
-    label: 'Nouvelle demande chaleur renouvelable',
-    preview: 'Une nouvelle demande chaleur renouvelable est à traiter',
-    scenarios: nouvelleDemandeChaleurRenouvelableScenarios,
-    subject: '[France Chaleur Urbaine] Nouvelle demande chaleur renouvelable à traiter',
-    trigger: {
-      description: "Au dépôt d'une demande sur le parcours chaleur renouvelable, envoyé à l'équipe FCU.",
       type: 'action',
     },
   },
