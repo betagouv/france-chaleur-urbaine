@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 

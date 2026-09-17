@@ -15,6 +15,7 @@ import { validatePolygonGeometry } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';
 import { downloadBaseEncoded64File } from '@/utils/browser';
 
+import { onDrawEvent } from '../../interactions/MapDrawHost';
 import {
   type AreaSummaryFeature,
   buildingsDataExtractionDrawHotLayerId,
@@ -123,8 +124,8 @@ export function BuildingsDataExtractionTool() {
       updateFeaturesThrottled(updated);
     };
 
-    map.on('draw.create', onDrawCreate);
-    map.on('draw.render', onDrawRender);
+    const offDrawCreate = onDrawEvent(map, 'draw.create', onDrawCreate);
+    const offDrawRender = onDrawEvent(map, 'draw.render', onDrawRender);
 
     // Helper layer for the 2-vertex polygon (still a LineString in MapboxDraw at that stage).
     map.addLayer(
@@ -147,8 +148,8 @@ export function BuildingsDataExtractionTool() {
     }
 
     return () => {
-      map.off('draw.create', onDrawCreate);
-      map.off('draw.render', onDrawRender);
+      offDrawCreate();
+      offDrawRender();
       if (map.getLayer(buildingsDataExtractionDrawHotLayerId)) {
         map.removeLayer(buildingsDataExtractionDrawHotLayerId);
       }

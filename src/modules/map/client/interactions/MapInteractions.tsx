@@ -6,7 +6,8 @@ import { nearestPoint } from '@turf/nearest-point';
 import { nearestPointOnLine } from '@turf/nearest-point-on-line';
 import type { Feature, Geometry, GeometryCollection, Point, Position } from 'geojson';
 import { useAtomValue } from 'jotai';
-import maplibregl, { type MapGeoJSONFeature, type MapMouseEvent } from 'maplibre-gl';
+import type { MapGeoJSONFeature, MapMouseEvent, MapTouchEvent } from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -103,7 +104,7 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
     const hoveredRef: { current: HoveredFeatureRef | null } = { current: null };
     const layerIds = selectableLayers.map((layer) => layer.layerId);
 
-    const queryTop = (event: MapMouseEvent) => {
+    const queryTop = (event: MapMouseEvent | MapTouchEvent) => {
       const renderedIds = layerIds.filter((id) => map.getLayer(id));
       if (renderedIds.length === 0) {
         return { feature: null as MapGeoJSONFeature | null, snapPoint: null as Position | null };
@@ -168,7 +169,7 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
       }
     };
 
-    const onClick = (event: MapMouseEvent) => {
+    const onClick = (event: MapMouseEvent | MapTouchEvent) => {
       const { feature, snapPoint } = queryTop(event);
       if (!feature || !snapPoint) {
         setPopup(null);

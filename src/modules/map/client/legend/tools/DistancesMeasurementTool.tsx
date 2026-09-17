@@ -11,6 +11,7 @@ import { Fragment, useEffect, useRef } from 'react';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import { formatDistance } from '@/modules/geo/client/helpers';
 
+import { onDrawEvent } from '../../interactions/MapDrawHost';
 import {
   distancesMeasurementColorPalette,
   distancesMeasurementLabelsSourceId,
@@ -117,8 +118,8 @@ export function DistancesMeasurementTool() {
       });
     };
 
-    map.on('draw.create', onDrawCreate);
-    map.on('draw.render', onDrawRender);
+    const offDrawCreate = onDrawEvent(map, 'draw.create', onDrawCreate);
+    const offDrawRender = onDrawEvent(map, 'draw.render', onDrawRender);
     // Auto-start drawing whenever there's no completed measurement to resume —
     // in-progress sketches have <2 coords and shouldn't block the auto-start
     // on re-mount (e.g. coming back to the tool after a Retour).
@@ -129,8 +130,8 @@ export function DistancesMeasurementTool() {
     }
 
     return () => {
-      map.off('draw.create', onDrawCreate);
-      map.off('draw.render', onDrawRender);
+      offDrawCreate();
+      offDrawRender();
       draw.deleteAll();
       // Drop any in-progress sketch from the atom so a re-mount sees a clean
       // state (filter is more robust than slice(0, -1) — `onDrawRender` may

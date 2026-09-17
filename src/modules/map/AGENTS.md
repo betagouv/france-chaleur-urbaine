@@ -176,6 +176,7 @@ Only the `batiment_groupe_id` is emitted. Callers that need details should query
 - **Mount-only view props**: `initialView` and `interactive` are snapshotted at the first mount. Use the controller for runtime updates. To switch a map between interactive and static, remount it with a `key` derived from the value.
 - **`mapReady` gates layer setup**: `useConfiguredLayers` only adds sources/layers once `mapReady` becomes `true`. No `map.once('load', …)` race with strict-mode cleanups.
 - **Style switching**: `controller.setStyle(...)` uses MapLibre's `transformStyle` to preserve user-added sources/layers atomically. Tracking owned by `userResources` on the context.
+- **maplibre-gl v6 worker**: ESM-only build — `MapCanvas` calls `setWorkerUrl('/maplibre/maplibre-gl-worker.mjs')`; the worker + shared module are copied from `node_modules` into `public/maplibre/` (gitignored) by `scripts/postinstall.mjs`.
 
 ## Loading convention (page-level)
 
@@ -208,6 +209,7 @@ export default function MiniMap() {
 - Moving the impl into `Map.tsx` — breaks the SSR split, `maplibre-gl` ends up in the server bundle.
 - `dynamic()` on individual controls or layers — cascade of HTTP requests.
 - Static imports of `maplibre-gl` inside SSR-rendered files — crashes the build.
+- Registering `draw.*` listeners with `map.on` — maplibre-gl v6 types only accept its own event map; use `onDrawEvent()` from `interactions/MapDrawHost.tsx` (returns the unsubscribe).
 - `React.lazy()` for map components — same cascade problem.
 
 ## Ad-hoc dynamic layers (runtime data)

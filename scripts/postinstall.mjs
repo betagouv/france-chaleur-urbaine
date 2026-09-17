@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, rmSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
 // ce script supprime les fichiers non compatibles avec le système d'exploitation pour diminuer la taille de node_modules
@@ -47,3 +47,12 @@ const packagesToClean = ['@img+sharp-', '@rollup+rollup-', '@next+swc-', '@biome
 packagesToClean.forEach((packagePrefix) => {
   cleanNativeBinaries(join('node_modules', '.pnpm'), packagePrefix);
 });
+
+// maplibre-gl v6 est ESM-only : avec Next.js/Turbopack, le worker et son module partagé doivent être servis
+// depuis public/ (cf. https://maplibre.org/maplibre-gl-js/docs/ → Turbopack/Next.js) ; MapCanvas appelle setWorkerUrl().
+const maplibreDir = join('public', 'maplibre');
+mkdirSync(maplibreDir, { recursive: true });
+for (const file of ['maplibre-gl-worker.mjs', 'maplibre-gl-shared.mjs']) {
+  copyFileSync(join('node_modules', 'maplibre-gl', 'dist', file), join(maplibreDir, file));
+}
+console.info(`Worker maplibre-gl copié dans ${maplibreDir}`);

@@ -1,4 +1,4 @@
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 
 import cx from '@/utils/cx';
@@ -80,6 +80,9 @@ export function MapCanvas({
 
     const { initialView, interactive } = initialConfigRef.current;
     const hasCenter = initialView && 'center' in initialView;
+
+    // maplibre-gl v6 is ESM-only: with Turbopack the worker must be served from public/ (copied by scripts/postinstall.mjs)
+    maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs');
 
     const instance = new maplibregl.Map({
       attributionControl: false,

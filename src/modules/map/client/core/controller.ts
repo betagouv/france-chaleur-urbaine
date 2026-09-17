@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import type { StyleSpecification } from 'maplibre-gl';
 
 import type { BBox, LngLat } from '../../shared/types';
