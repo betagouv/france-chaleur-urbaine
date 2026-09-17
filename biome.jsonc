@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.10/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -157,7 +157,7 @@
         "noDelete": "error",
         "noImgElement": "off" // trop contraignant pour le moment (est-ce que <Image fill /> fonctionne comme img ?)
       },
-      "recommended": true,
+      "preset": "recommended",
       "security": {
         "noDangerouslySetInnerHtml": "off", // désactivé car nécessaire pour JSON-LD et emails
         "noGlobalEval": "error"

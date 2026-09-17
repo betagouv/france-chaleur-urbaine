@@ -53,9 +53,15 @@ describe('getHeatingSimulation', () => {
     { expectedOutput: 9492.073999999999, input: 'Supérieur', label: 'high income keeps only CEE aid in the default heat pump case' },
   ];
 
-  it.each(incomeCases)('$label', (testCase) => {
-    expect(getHeatingSimulation({ ...baseInput, incomeCategory: testCase.input }).heatPumpNetPrice).toStrictEqual(testCase.expectedOutput);
-  }, 30_000);
+  it.each(incomeCases)(
+    '$label',
+    (testCase) => {
+      expect(getHeatingSimulation({ ...baseInput, incomeCategory: testCase.input }).heatPumpNetPrice).toStrictEqual(
+        testCase.expectedOutput
+      );
+    },
+    30_000
+  );
 });
 
 describe('getIncomeOptions', () => {

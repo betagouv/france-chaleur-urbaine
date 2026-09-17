@@ -1131,7 +1131,7 @@ export type QuickFilterPreset<Data> = {
 function getFCUFacetedMinMaxValues<TData extends RowData>() {
   return (table: Table<TData>, columnId: string) =>
     memo(
-      () => [table.getColumn(columnId)?.getFacetedRowModel(), (table.getColumn(columnId)?.columnDef as any).cellType], // TODO cellType ne devrait pas se retrouver dans tanstack table
+      () => [table.getColumn(columnId)?.getFacetedRowModel(), (table.getColumn(columnId)?.columnDef as any)?.cellType], // TODO cellType ne devrait pas se retrouver dans tanstack table
       (facetedRowModel, cellType) => {
         if (!facetedRowModel) return undefined;
 
