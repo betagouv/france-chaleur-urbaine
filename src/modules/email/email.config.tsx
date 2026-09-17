@@ -1,4 +1,4 @@
-import { render } from '@react-email/components';
+import { render } from 'react-email';
 
 import { clientConfig } from '@/client-config';
 import { businessRules } from '@/modules/app/business-rules';

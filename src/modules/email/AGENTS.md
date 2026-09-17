@@ -4,7 +4,7 @@
 
 Module qui produit et envoie les emails transactionnels de l'application.
 Le rendu HTML/texte est assuré par les composants atomiques de
-[`@react-email/components`](https://react.email/) (`Layout`, `Text`, `Button`…).
+[`react-email`](https://react.email/) (`Layout`, `Text`, `Button`…).
 
 ```
 src/modules/email/
@@ -104,7 +104,7 @@ export default MonEmail;
 
 **Règles** :
 - Les composants importent **uniquement** depuis `@/modules/email/react-email/components`,
-  jamais directement depuis `@react-email/components`.
+  jamais directement depuis `react-email`.
 - Tout template doit déclarer au moins un scénario (clé `defaut` en général).
 - Pour des templates avec branches conditionnelles (éligibilité, distance, type
   de bâtiment…), exposer un scénario par cas significatif — ils seront tous

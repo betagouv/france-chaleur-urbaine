@@ -1,3 +1,4 @@
+import type React from 'react';
 import {
   Body as ReactEmailBody,
   Button as ReactEmailButton,
@@ -13,8 +14,7 @@ import {
   Row as ReactEmailRow,
   Section as ReactEmailSection,
   Text as ReactEmailText,
-} from '@react-email/components';
-import type React from 'react';
+} from 'react-email';
 
 import { clientConfig } from '@/client-config';
 
