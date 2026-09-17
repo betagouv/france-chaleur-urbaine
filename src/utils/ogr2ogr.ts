@@ -1,24 +1,17 @@
 /** biome-ignore-all lint/suspicious/noConfusingVoidType: false positive, typescript prefers void */
-import { rename } from 'node:fs/promises';
-import { basename, join } from 'node:path';
-
 import { serverConfig } from '@/server/config';
 import type { DB } from '@/server/db/kysely';
-import { type CommandResult, dockerImageArch, dockerVolumePath, type RunCommandOptions, runBash, runDocker } from '@/utils/system';
+import { type CommandResult, type RunCommandOptions, runBash } from '@/utils/system';
 
 /**
- * Exécute une commande ogr2ogr avec support Docker
+ * Exécute une commande ogr2ogr
  *
  * @param args - Arguments à passer à ogr2ogr
  * @param options - Options d'exécution
  * @returns Une promesse qui se résout quand la commande se termine
  */
 export function runOgr2ogr(command: string, options: RunCommandOptions = {}): Promise<CommandResult> {
-  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    return runDocker(`ghcr.io/osgeo/gdal:alpine-normal-latest-${dockerImageArch}`, `ogr2ogr ${command}`, options);
-  } else {
-    return runBash(`ogr2ogr ${command}`, options);
-  }
+  return runBash(`ogr2ogr ${command}`, options);
 }
 
 export async function ogr2ogrImportGeoJSONToDatabaseTable(
@@ -38,13 +31,7 @@ export async function ogr2ogrExtractGeoJSONFromDatabaseTable(
   outputFilePath: string,
   options: RunCommandOptions = {}
 ): Promise<CommandResult | void> {
-  await runOgr2ogr(
-    `-f GeoJSON ${serverConfig.USE_DOCKER_GEO_COMMANDS ? 'output.geojson' : outputFilePath} ${pgUrlToGdal(serverConfig.DATABASE_URL)} ${tableName} -t_srs EPSG:4326`,
-    options
-  );
-  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    await rename(join(dockerVolumePath, 'output.geojson'), outputFilePath);
-  }
+  await runOgr2ogr(`-f GeoJSON ${outputFilePath} ${pgUrlToGdal(serverConfig.DATABASE_URL)} ${tableName} -t_srs EPSG:4326`, options);
 }
 
 export async function ogr2ogrConvertToGeoJSON(
@@ -52,37 +39,20 @@ export async function ogr2ogrConvertToGeoJSON(
   outputFilePath: string,
   options: RunCommandOptions = {}
 ): Promise<CommandResult | void> {
-  let inputFileName = basename(inputFilePath);
-  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    const randomPrefix = `input_${Math.random().toString(36).substring(2, 10)}_`;
-    inputFileName = `${randomPrefix}${inputFileName}`;
-    await rename(inputFilePath, join(dockerVolumePath, inputFileName));
-  }
-
-  const inputArg = serverConfig.USE_DOCKER_GEO_COMMANDS ? inputFileName : inputFilePath;
-  const outputArg = serverConfig.USE_DOCKER_GEO_COMMANDS ? 'output.geojson' : outputFilePath;
-
-  const layers = await listNonEmptyLayers(inputArg);
+  const layers = await listNonEmptyLayers(inputFilePath);
   if (layers.length <= 1) {
-    await runOgr2ogr(`-f GeoJSON ${outputArg} ${inputArg} -t_srs EPSG:4326`, options);
+    await runOgr2ogr(`-f GeoJSON ${outputFilePath} ${inputFilePath} -t_srs EPSG:4326`, options);
   } else {
     // KML (and other multi-layer formats): GeoJSON only supports one layer per file.
     // Convert the first layer normally, then append the rest under the same layer name.
     const [first, ...rest] = layers;
-    await runOgr2ogr(`-f GeoJSON ${outputArg} ${inputArg} "${first}" -t_srs EPSG:4326 -nlt GEOMETRY`, options);
+    await runOgr2ogr(`-f GeoJSON ${outputFilePath} ${inputFilePath} "${first}" -t_srs EPSG:4326 -nlt GEOMETRY`, options);
     for (const layer of rest) {
       await runOgr2ogr(
-        `-f GeoJSON -update -append ${outputArg} ${inputArg} "${layer}" -t_srs EPSG:4326 -nlt GEOMETRY -nln "${first}"`,
+        `-f GeoJSON -update -append ${outputFilePath} ${inputFilePath} "${layer}" -t_srs EPSG:4326 -nlt GEOMETRY -nln "${first}"`,
         options
       );
     }
-  }
-
-  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    // input
-    await rename(join(dockerVolumePath, inputFileName), inputFilePath);
-    // output
-    await rename(join(dockerVolumePath, 'output.geojson'), outputFilePath);
   }
 }
 
@@ -91,11 +61,7 @@ export async function ogr2ogrConvertToGeoJSON(
  * Skips empty layers (e.g. LIBKML metadata containers named after the source file).
  */
 async function listNonEmptyLayers(filePath: string): Promise<string[]> {
-  const run = serverConfig.USE_DOCKER_GEO_COMMANDS
-    ? (cmd: string) => runDocker(`ghcr.io/osgeo/gdal:alpine-normal-latest-${dockerImageArch}`, cmd, { captureOutput: true })
-    : (cmd: string) => runBash(cmd, { captureOutput: true });
-
-  const { output } = await run(`ogrinfo -al -so "${filePath}"`);
+  const { output } = await runBash(`ogrinfo -al -so "${filePath}"`, { captureOutput: true });
 
   const layers: string[] = [];
   let currentLayer: string | null = null;
@@ -123,17 +89,10 @@ export async function ogr2ogrExtractNDJSONFromDatabaseTable(
   sqlSelectClause: string,
   options: RunCommandOptions = {}
 ): Promise<CommandResult | void> {
-  let dockerOutputFileName = 'output.json';
-  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    dockerOutputFileName = `output_${Math.random().toString(36).substring(2, 10)}.json`;
-  }
   await runOgr2ogr(
-    `-f GeoJSONSeq ${serverConfig.USE_DOCKER_GEO_COMMANDS ? dockerOutputFileName : outputFilePath} ${pgUrlToGdal(serverConfig.DATABASE_URL)} -t_srs EPSG:4326 -sql 'select ${sqlSelectClause} from ${tableName} where ${sqlWhereClause}'`,
+    `-f GeoJSONSeq ${outputFilePath} ${pgUrlToGdal(serverConfig.DATABASE_URL)} -t_srs EPSG:4326 -sql 'select ${sqlSelectClause} from ${tableName} where ${sqlWhereClause}'`,
     options
   );
-  if (serverConfig.USE_DOCKER_GEO_COMMANDS) {
-    await rename(join(dockerVolumePath, dockerOutputFileName), outputFilePath);
-  }
 }
 
 /**
