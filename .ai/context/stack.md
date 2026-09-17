@@ -3,7 +3,7 @@
 Versions live in `package.json` (authoritative) — this file captures the choices and rules.
 
 ## Core
-- **Next.js 16** (Pages Router), **React 19**, **TypeScript 5.9** (strict), **Node 24**.
+- **Next.js 16** (Pages Router), **React 19**, **TypeScript 6.0** (strict), **Node 24**.
 - **pnpm 10** only — never `npm` / `npx` / `yarn`. CI uses `--frozen-lockfile`.
 
 ## Data & API
@@ -15,7 +15,7 @@ Versions live in `package.json` (authoritative) — this file captures the choic
 - **DSFR** (`@codegouvfr/react-dsfr`) — French government design system, mandatory.
 - **Tailwind 4** (`important: true` to override DSFR). **Radix UI** primitives.
 - **styled-components** — legacy only, do NOT use for new code.
-- **MapLibre GL 5** (+ `@mapbox/mapbox-gl-draw`, `@turf/*`); vector tiles via **Tippecanoe**. See maps.md.
+- **MapLibre GL 6** (ESM-only; worker served from `public/maplibre/`, copied by `scripts/postinstall.mjs`) (+ `@mapbox/mapbox-gl-draw`, `@turf/*`); vector tiles via **Tippecanoe**. See maps.md.
 
 ## Forms & client state
 - **TanStack React Form** (preferred) — React Hook Form is legacy.
@@ -23,7 +23,7 @@ Versions live in `package.json` (authoritative) — this file captures the choic
 
 ## Tooling
 - **Biome 2** (lint + format, replaces ESLint/Prettier): 2-space indent, 140 cols, LF, single quotes JS / double quotes CSS+JSON.
-- **Vitest 4** + Testing Library + happy-dom.
+- **Vitest 5** + Testing Library + happy-dom.
 
 ## Infra
 - **Scalingo** (PaaS; buildpacks for GDAL + Tippecanoe). Sentry (errors), Matomo + PostHog (analytics). Local: Docker Compose (Postgres+PostGIS, Mailpit).
