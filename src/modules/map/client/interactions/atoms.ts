@@ -1,6 +1,6 @@
 import type MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { atom } from 'jotai';
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 
 /** Map atoms scoped per-`<Map>` via `<MapStoreProvider>`. */
 

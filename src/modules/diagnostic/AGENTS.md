@@ -38,7 +38,6 @@ const diagnosticResult = await runDiagnostic();
 /*
 {
   geo: {
-    USE_DOCKER_GEO_COMMANDS: boolean,
     ogr2ogr: { version: CommandResult, functional: CommandTestResult },
     tippecanoe: { version: CommandResult, functional: CommandTestResult }
   },
@@ -50,7 +49,6 @@ const diagnosticResult = await runDiagnostic();
 **Vérifications effectuées :**
 
 1. **Configuration géographique** :
-   - Variable `USE_DOCKER_GEO_COMMANDS`
    - Disponibilité d'ogr2ogr et tippecanoe
    - Tests fonctionnels avec données réelles
 
@@ -150,22 +148,6 @@ const getFunctionalTestStatus = (result: CommandTestResult) => {
 }
 ```
 
-## Configuration Docker vs Binaires
-
-Le module gère deux modes d'exécution des commandes géographiques :
-
-### Mode Docker (`USE_DOCKER_GEO_COMMANDS=true`)
-- Isolation des dépendances
-- Versions contrôlées
-- Déploiement simplifié
-- Performance réduite (overhead Docker)
-
-### Mode Binaires (`USE_DOCKER_GEO_COMMANDS=false`)  
-- Performance optimale
-- Installation manuelle requise
-- Compatibilité système à gérer
-- Maintenance des versions
-
 ## Types et Structures
 
 ### CommandResult
@@ -188,7 +170,6 @@ type CommandTestResult =
 ```typescript
 type DiagnosticResult = {
   geo: {
-    USE_DOCKER_GEO_COMMANDS: boolean;
     ogr2ogr: {
       version: CommandResult;
       functional: CommandTestResult;

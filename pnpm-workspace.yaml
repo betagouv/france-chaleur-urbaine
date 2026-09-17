@@ -4,8 +4,8 @@ onlyBuiltDependencies:
   - sharp
 
 overrides:
-  '@types/react': 19.2.2
-  '@types/react-dom': 19.2.2
+  '@types/react': 19.3.0
+  '@types/react-dom': 19.3.0
   cookie@<0.7.0: '>=0.7.0'
   form-data@<2.5.4: '>=2.5.4'
   glob-parent: ^6.0.1

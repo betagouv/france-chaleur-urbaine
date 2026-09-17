@@ -6,5 +6,5 @@ export default {
     'pnpm doc:build-search-index',
     'git add src/modules/doc/search-index.generated.ts',
   ],
-  '*.{mjs,js,jsx,ts,tsx}': ['pnpm lint:fix:file', 'git add -A'],
+  '*.{mjs,js,jsx,ts,tsx}': ['pnpm lint:fix:file'],
 };

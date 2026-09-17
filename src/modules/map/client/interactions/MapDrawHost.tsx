@@ -1,12 +1,30 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useSetAtom } from 'jotai';
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import { useEffect } from 'react';
 
 import { useMapInstance } from '../core/MapCanvasContext';
 import { mapDrawAtom } from './atoms';
 
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+
+/**
+ * maplibre-gl v6 types `Map.on/off` against its own event map, so the custom
+ * `draw.*` events fired by MapboxDraw need this typed escape hatch.
+ * Returns the unsubscribe function.
+ */
+export function onDrawEvent<K extends keyof MapboxDraw.DrawEvents>(
+  map: maplibregl.Map,
+  type: K,
+  listener: (event: MapboxDraw.DrawEvents[K]) => void
+): () => void {
+  const evented = map as unknown as {
+    on(type: string, listener: (event: never) => void): unknown;
+    off(type: string, listener: (event: never) => void): unknown;
+  };
+  evented.on(type, listener);
+  return () => evented.off(type, listener);
+}
 
 /**
  * Attaches a `MapboxDraw` control to the canvas and exposes it via `mapDrawAtom`.

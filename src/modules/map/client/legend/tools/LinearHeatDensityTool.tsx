@@ -17,6 +17,7 @@ import trpc from '@/modules/trpc/client';
 import { downloadObject } from '@/utils/browser';
 import { formatAsISODateMinutes } from '@/utils/date';
 
+import { onDrawEvent } from '../../interactions/MapDrawHost';
 import {
   linearHeatDensityDefaultColor,
   linearHeatDensityLabelsSourceId,
@@ -127,13 +128,13 @@ export function LinearHeatDensityTool() {
       syncMap();
     };
 
-    map.on('draw.create', onDrawCreate);
-    map.on('draw.render', onDrawRender);
+    const offDrawCreate = onDrawEvent(map, 'draw.create', onDrawCreate);
+    const offDrawRender = onDrawEvent(map, 'draw.render', onDrawRender);
     if (!densite) startMeasurement();
 
     return () => {
-      map.off('draw.create', onDrawCreate);
-      map.off('draw.render', onDrawRender);
+      offDrawCreate();
+      offDrawRender();
       draw.deleteAll();
       drawingFeatureRef.current = null;
       setIsDrawing(false);

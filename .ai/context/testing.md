@@ -1,6 +1,6 @@
 # Testing
 
-> Load before writing the first test. Runner: **Vitest 4** (happy-dom). Config `vitest.config.mts` = two projects: `unit` (parallel) + `integration` (sequential).
+> Load before writing the first test. Runner: **Vitest 5** (happy-dom, pinned `~20.11` — 20.12+ surfaces `AbortError: The animation was canceled` unhandled rejections on `Animation.cancel()` (motion), see happy-dom #2339 / #2412; lift the pin once fixed). Config `vitest.config.mts` = two projects: `unit` (parallel) + `integration` (sequential).
 
 ## Kinds & layout
 - **Unit** `.spec.ts` — services, utils, validators (parallel).

@@ -30,4 +30,4 @@ Scalingo spawns a review app per PR. Staging→prod is ideally a fast-forward `d
 
 ## Troubleshooting
 - Build fails → run `pnpm build` locally (usual causes: missing env var, type error, 8 GB limit).
-- Geo tools fail → `USE_DOCKER_GEO_COMMANDS=true` locally; buildpacks on Scalingo.
+- Geo tools fail → install GDAL (`ogr2ogr`, `ogrinfo`) and `tippecanoe` locally; buildpacks on Scalingo.

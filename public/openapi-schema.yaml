@@ -18,20 +18,20 @@ components:
                 - type: "null"
               description: "Énergie de chauffage actuelle : Électricité, Gaz, Fioul, Autre / Je ne sais pas."
             etablissement:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Nom de l'établissement ou de la structure."
+              type:
+                - string
+                - "null"
             nombre_logements:
               anyOf:
                 - type: integer
                 - type: "null"
               description: "Nombre de logements (valeur corrigée par le gestionnaire si renseignée)."
             surface_m2:
-              anyOf:
-                - type: number
-                - type: "null"
               description: "Surface chauffée (m²)."
+              type:
+                - number
+                - "null"
             type_chauffage:
               anyOf:
                 - type: string
@@ -62,33 +62,33 @@ components:
           additionalProperties: false
           description: "Caractéristiques du bâtiment."
         commentaire:
-          anyOf:
-            - type: string
-            - type: "null"
           description: Commentaire de suivi du gestionnaire. Modifiable.
+          type:
+            - string
+            - "null"
         contact:
           type: object
           properties:
             email:
-              anyOf:
-                - type: string
-                - type: "null"
               description: E-mail du prospect.
+              type:
+                - string
+                - "null"
             nom:
-              anyOf:
-                - type: string
-                - type: "null"
               description: Nom du prospect.
+              type:
+                - string
+                - "null"
             prenom:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Prénom du prospect."
+              type:
+                - string
+                - "null"
             telephone:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Téléphone du prospect."
+              type:
+                - string
+                - "null"
           required:
             - email
             - nom
@@ -109,10 +109,10 @@ components:
               type: boolean
               description: "Située dans un Périmètre de Développement Prioritaire."
             distance_reseau_m:
-              anyOf:
-                - type: number
-                - type: "null"
               description: "Distance estimée au réseau (m)."
+              type:
+                - number
+                - "null"
           required:
             - dans_pdp
             - distance_reseau_m
@@ -125,55 +125,55 @@ components:
           type: object
           properties:
             adresse:
-              anyOf:
-                - type: string
-                - type: "null"
               description: Adresse du bien.
+              type:
+                - string
+                - "null"
             code_postal:
-              anyOf:
-                - type: string
-                - type: "null"
               description: Code postal.
+              type:
+                - string
+                - "null"
             commune_code:
-              anyOf:
-                - type: string
-                - type: "null"
               description: Code INSEE de la commune.
+              type:
+                - string
+                - "null"
             commune_label:
-              anyOf:
-                - type: string
-                - type: "null"
               description: Nom de la commune.
+              type:
+                - string
+                - "null"
             departement_code:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Code INSEE du département."
+              type:
+                - string
+                - "null"
             departement_label:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Nom du département."
+              type:
+                - string
+                - "null"
             latitude:
-              anyOf:
-                - type: number
-                - type: "null"
               description: Latitude (WGS84).
+              type:
+                - number
+                - "null"
             longitude:
-              anyOf:
-                - type: number
-                - type: "null"
               description: Longitude (WGS84).
+              type:
+                - number
+                - "null"
             region_code:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Code INSEE de la région."
+              type:
+                - string
+                - "null"
             region_label:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Nom de la région."
+              type:
+                - string
+                - "null"
           required:
             - adresse
             - code_postal
@@ -191,28 +191,28 @@ components:
           type: object
           properties:
             gestionnaire:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Gestionnaire du réseau affecté."
+              type:
+                - string
+                - "null"
             id_fcu:
               type: integer
               description: "Identifiant interne FCU du réseau affecté."
             identifiant_sncu:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Identifiant national SNCU (null pour un réseau en construction)."
+              type:
+                - string
+                - "null"
             maitre_ouvrage:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Maître d'ouvrage du réseau (réseaux de chaleur uniquement, sinon null)."
+              type:
+                - string
+                - "null"
             nom:
-              anyOf:
-                - type: string
-                - type: "null"
               description: "Nom du réseau affecté."
+              type:
+                - string
+                - "null"
             type:
               type: string
               enum:
@@ -432,9 +432,9 @@ paths:
               properties:
                 commentaire:
                   description: Commentaire de suivi du gestionnaire.
-                  anyOf:
-                    - type: string
-                    - type: "null"
+                  type:
+                    - string
+                    - "null"
                 statut:
                   type: string
                   enum:

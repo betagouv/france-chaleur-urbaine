@@ -1,7 +1,6 @@
 import { spawn } from 'node:child_process';
-import { createWriteStream, existsSync, mkdirSync } from 'node:fs';
+import { createWriteStream, existsSync } from 'node:fs';
 import { copyFile, readdir, stat, unlink } from 'node:fs/promises';
-import { arch } from 'node:os';
 import { join } from 'node:path';
 
 import { createLogger } from '@/server/helpers/logger';
@@ -143,36 +142,6 @@ export async function testCommand(command: string, args: string[] = []): Promise
  */
 export function runBash(command: string, options: RunCommandOptions = {}): Promise<CommandResult> {
   return runCommand('bash', ['-c', command], options);
-}
-
-export const dockerImageArch =
-  arch() === 'arm64'
-    ? 'arm64'
-    : arch() === 'x64'
-      ? 'amd64'
-      : (() => {
-          throw new Error(`Unsupported architecture: ${arch()}`);
-        })();
-
-export const dockerVolumePath = '/tmp/fcu';
-
-// Exceptionnellement, un mkdirSync pour créer le répertoire temporaire
-// et éviter les problèmes de droit si root doit le créer
-mkdirSync(dockerVolumePath, { recursive: true });
-
-/**
- * Exécute une commande dans un conteneur Docker
- *
- * @param image - Image Docker à utiliser
- * @param command - Commande à exécuter dans le conteneur
- * @param options - Options d'exécution
- * @returns Une promesse qui se résout avec le résultat de la commande si captureOutput est true, sinon void
- */
-export function runDocker(image: string, command: string, options: RunCommandOptions = {}): Promise<CommandResult> {
-  return runBash(
-    `docker run -t --rm --network host -v ${dockerVolumePath}:/volume -w /volume --user $(id -u):$(id -g) ${image} ${command}`,
-    options
-  );
 }
 
 /**

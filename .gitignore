@@ -112,3 +112,6 @@ scripts/simulateur/codes-insee.json
 
 # Publicodes branch fetched at Scalingo build time (scripts/fetch-publicodes-branch.sh)
 /france-chaleur-urbaine-publicodes
+
+# maplibre-gl worker copied from node_modules by scripts/postinstall.mjs
+/public/maplibre

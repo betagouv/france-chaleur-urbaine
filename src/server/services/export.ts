@@ -1,4 +1,4 @@
-import archiver from 'archiver';
+import { ZipArchive } from 'archiver';
 import base64 from 'base64-stream';
 import getStream from 'get-stream';
 import XLSX from 'xlsx';
@@ -24,7 +24,7 @@ export const getSpreadSheet = <T>(columns: ExportColumn<T>[], data: T[], format:
 };
 
 export const zip = async (files: any[], name: string) => {
-  const archive = archiver('zip', {
+  const archive = new ZipArchive({
     zlib: { level: 9 },
   });
 

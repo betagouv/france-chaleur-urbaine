@@ -1,5 +1,5 @@
 import { bbox } from '@turf/bbox';
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import { useEffect, useState } from 'react';
 
 import { convertLambert93GeoJSONToWGS84, hasLambert93Projection } from '@/modules/geo/client/helpers';

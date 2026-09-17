@@ -4,7 +4,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { type Migration, type MigrationProvider, Migrator } from 'kysely';
+import { type Migration, type MigrationProvider, Migrator } from 'kysely/migration';
 
 import { kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';

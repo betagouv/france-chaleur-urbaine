@@ -38,7 +38,6 @@ const serverConfigSchema = {
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PRINT_TIPPECANOE_OUTPUT_TO_LOGS: z.boolean().default(false),
   RNB_API_BASE_URL: z.string().default('https://rnb-api.beta.gouv.fr/api/alpha'),
-  USE_DOCKER_GEO_COMMANDS: z.boolean().default(false),
 };
 
 const onlyServerConfig = {

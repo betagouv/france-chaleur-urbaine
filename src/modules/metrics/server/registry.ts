@@ -1,6 +1,6 @@
 import os from 'node:os';
 
-import client from 'prom-client';
+import client from '@prometheus-io/client';
 
 import { serverConfig } from '@/server/config';
 import { logger } from '@/server/helpers/logger';

@@ -9,7 +9,7 @@ metrics/
 ├── AGENTS.md
 └── server/
     ├── api.ts             # Bearer-protected Next.js API handler
-    └── registry.ts        # prom-client default registry + idempotent init
+    └── registry.ts        # @prometheus-io/client default registry + idempotent init
 ```
 
 ## Purpose and boundaries
@@ -17,7 +17,7 @@ metrics/
 Exposes Node.js runtime metrics in Prometheus text format on `/api/metrics`, protected by a Bearer token. Intended for debugging memory leaks, OOM crashes, GC pressure, and CPU/event-loop saturation.
 
 This module owns:
-- `prom-client` default registry initialization (idempotent, safe with hot-reload).
+- `@prometheus-io/client` default registry initialization (idempotent, safe with hot-reload).
 - The list of metrics exposed (currently only `collectDefaultMetrics`).
 
 This module must NOT:
@@ -29,11 +29,11 @@ This module must NOT:
 
 ### `initMetrics()`
 
-Idempotent: sets default labels and enables `prom-client.collectDefaultMetrics()` once. Called from `src/instrumentation.ts` on the Node.js runtime so metrics start collecting at server start, and re-called lazily from the route handler as a defensive fallback.
+Idempotent: sets default labels and enables `@prometheus-io/client.collectDefaultMetrics()` once. Called from `src/instrumentation.ts` on the Node.js runtime so metrics start collecting at server start, and re-called lazily from the route handler as a defensive fallback.
 
 ### `metricsRegister`
 
-The default `prom-client` registry, deduplicated via `globalThis.__fcuPromRegister__` so `instrumentation.ts` and `pages/api` (separate Next.js bundles) share the same Registry instance.
+The default `@prometheus-io/client` registry, deduplicated via `globalThis.__fcuPromRegister__` so `instrumentation.ts` and `pages/api` (separate Next.js bundles) share the same Registry instance.
 
 ## Default labels
 
@@ -55,7 +55,7 @@ Set on every emitted sample via `metricsRegister.setDefaultLabels`:
 
 ## Default metrics exposed
 
-From `prom-client.collectDefaultMetrics()` (Node.js runtime + process):
+From `@prometheus-io/client.collectDefaultMetrics()` (Node.js runtime + process):
 
 - `nodejs_heap_size_total_bytes`, `nodejs_heap_size_used_bytes` — V8 heap (OOM heap detection).
 - `nodejs_external_memory_bytes` — buffers (Sharp, Tippecanoe pipes).
@@ -69,7 +69,7 @@ From `prom-client.collectDefaultMetrics()` (Node.js runtime + process):
 
 ```ts
 // in any server file
-import client from 'prom-client';
+import client from '@prometheus-io/client';
 
 export const tilesGenerated = new client.Counter({
   name: 'fcu_tiles_generated_total',
@@ -115,5 +115,5 @@ If you only see one `instance` after several minutes, the scraper is reusing a k
 
 ## Dependencies
 
-- `prom-client` (default registry, no other modules imported).
+- `@prometheus-io/client` (default registry, no other modules imported).
 - `@/server/config` (`APP`, `CONTAINER` for default labels).

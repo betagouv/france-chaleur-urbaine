@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import { createContext, useContext } from 'react';
 
 import type { MapCanvasController } from './controller';

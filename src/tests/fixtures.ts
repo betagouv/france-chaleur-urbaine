@@ -43,7 +43,7 @@ export function getTestPointCoordinates(name: string): { lat: number; lon: numbe
   const testPoint = eligibilityFixtures.features.find(
     (feature) => feature.properties.type === 'test' && (feature.properties.name ?? feature.properties.expectedEligibilityType) === name
   );
-  if (!testPoint || testPoint.geometry.type !== 'Point') {
+  if (testPoint?.geometry.type !== 'Point') {
     throw new Error(`Point de test non trouvé pour ${name}`);
   }
   const [lon, lat] = testPoint.geometry.coordinates;
