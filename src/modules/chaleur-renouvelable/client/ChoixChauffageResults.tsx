@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { EligibilityFormContact } from '@/components/EligibilityForm';
 import CallOut from '@/components/ui/CallOut';
 import Dialog from '@/components/ui/Dialog';
@@ -5,7 +7,7 @@ import Link from '@/components/ui/Link';
 import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
-import DemandeFCRForm from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
+import DemandeFCRForm, { type ContactRecipientId } from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
 import { useChoixChauffageResults } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageResults';
 import { HeatNetworkContactSteps } from '@/modules/chaleur-renouvelable/client/results/ui/HeatNetworkContactSteps';
 import { IncompatibleSolutionsSection } from '@/modules/chaleur-renouvelable/client/results/ui/IncompatibleSolutionsSection';
@@ -19,6 +21,7 @@ import { ParamsForm } from './ParamsForm';
 
 export default function ChoixChauffageResults() {
   const isMobile = useIsMobile();
+  const [selectedContactRecipientId, setSelectedContactRecipientId] = useState<ContactRecipientId>('network-manager');
   const {
     batEnrBatiments,
     codeDepartement,
@@ -46,7 +49,6 @@ export default function ChoixChauffageResults() {
   const params = urlParams.params;
   const isCcrtExperimentationBuildingEligible = isCcrtExperimentationEligible(codeDepartement, effectiveTypeLogement);
   const isHeatNetworkEligible = situation.eligibiliteReseauChaleur?.isEligible === true;
-  const shouldCreateCcrtExperimentationDemand = isCcrtExperimentationBuildingEligible && !isHeatNetworkEligible;
   const heatNetworkSolution = situation.eligibiliteReseauChaleur
     ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network')
     : undefined;
@@ -55,8 +57,12 @@ export default function ChoixChauffageResults() {
     : modesEnriched;
   const alternativeHeatingSolutionLabels = displayedSolutions.map((modeDeChauffage) => modeDeChauffage.label).slice(0, 3);
 
-  const handleSelectContactRecipient = () => {
-    trackPostHogEvent('fcr_results:ccrt_contact_cta_clicked');
+  const handleSelectContactRecipient = (recipientId: ContactRecipientId) => {
+    if (recipientId === 'public-advisor') {
+      trackPostHogEvent('fcr_results:ccrt_contact_cta_clicked');
+    }
+
+    setSelectedContactRecipientId(recipientId);
     requestAnimationFrame(() => {
       document.getElementById('help-ademe')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
@@ -132,6 +138,8 @@ export default function ChoixChauffageResults() {
             geoAddress={geoAddress}
             isCcrtExperimentationBuildingEligible={isCcrtExperimentationBuildingEligible}
             isHeatNetworkEligible={isHeatNetworkEligible}
+            selectedRecipientId={selectedContactRecipientId}
+            onSelectedRecipientChange={setSelectedContactRecipientId}
             topSolution={heatNetworkSolution?.label ?? modesEnriched[0]?.label ?? ''}
           />
           <CallOut
