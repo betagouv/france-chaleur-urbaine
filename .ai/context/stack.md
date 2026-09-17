@@ -4,7 +4,7 @@ Versions live in `package.json` (authoritative) — this file captures the choic
 
 ## Core
 - **Next.js 16** (Pages Router), **React 19**, **TypeScript 6.0** (strict), **Node 24**.
-- **pnpm 10** only — never `npm` / `npx` / `yarn`. CI uses `--frozen-lockfile`.
+- **pnpm 10** only — never `npm` / `npx` / `yarn`. CI uses `--frozen-lockfile`. Dependency overrides and `peerDependencyRules` live in `pnpm-workspace.yaml` only, each with a comment naming the advisory or the reason; pnpm ignores the workspace overrides as soon as `package.json` declares `resolutions` / `pnpm.overrides`, so never put them in both.
 
 ## Data & API
 - **PostgreSQL 16 + PostGIS 3.5**. **Kysely** query builder (not Prisma) — types generated from the live schema via `pnpm db:sync`.
