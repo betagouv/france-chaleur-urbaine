@@ -491,10 +491,19 @@ function HeatNetworkDemandForm({
     ),
   });
 
+  const handleSelectRecipient = (recipientId: ContactRecipientId) => {
+    if (recipientId === 'public-advisor') {
+      trackPostHogEvent('fcr_contact:non_raccordable_checked');
+    }
+
+    setSelectedRecipientId(recipientId);
+  };
+
   const selectedOccupantStatus = useStore(form.store, (state) => state.values.occupantStatus);
   const occupantStatusDetailField = getOccupantStatusDetailField(selectedOccupantStatus);
   const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
   const networkManager = eligibiliteReseauChaleur?.gestionnaire?.trim() || null;
+  const isCcrtDemand = isPublicAdvisorSelected || !isHeatNetworkEligible;
 
   if (isPublicAdvisorSelected && !isCcrtExperimentationBuildingEligible) {
     return <FranceRenovAdvisorCallout />;
@@ -504,16 +513,25 @@ function HeatNetworkDemandForm({
     <section id="help-ademe" className="mt-6 scroll-mt-4 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">
       <h4 className="mb-4 text-2xl font-bold">{getFormTitle(isHeatNetworkEligible && !isPublicAdvisorSelected)}</h4>
       <p className="mb-4 max-w-5xl">{getFormDescription(isHeatNetworkEligible && !isPublicAdvisorSelected)}</p>
-      {isHeatNetworkEligible && <ContactRecipientSelector selectedRecipientId={selectedRecipientId} onSelect={setSelectedRecipientId} />}
-      {!isHeatNetworkEligible && networkManager && (
-        <div className="mb-4 flex items-start gap-3 border-l-4 border-[#F6C23E] bg-[#FFEBA3] px-4 py-3">
-          <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
-          <span>
-            Réseau de chaleur identifié à proximité : <strong>{networkManager}</strong>. Votre demande d’accompagnement sera transmise au
-            CCRT compétent.
-          </span>
-        </div>
-      )}
+      {isHeatNetworkEligible && <ContactRecipientSelector selectedRecipientId={selectedRecipientId} onSelect={handleSelectRecipient} />}
+      <div className="mb-4 flex items-center gap-3 border-l-4 border-[#F6C23E] bg-[#FFEBA3] px-4 py-3">
+        <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
+        <span>
+          {isCcrtDemand ? (
+            'Votre demande sera transmise au CCRT compétent.'
+          ) : (
+            <>
+              Votre demande sera transmise au gestionnaire du réseau de chaleur
+              {networkManager && (
+                <>
+                  {' : '}
+                  <strong>{networkManager}</strong>
+                </>
+              )}
+            </>
+          )}
+        </span>
+      </div>
       <Form form={form}>
         <div className="mb-6 grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 [&_.fr-error-text]:text-error [&_.fr-input]:bg-white [&_.fr-label]:text-(--text-title-grey) [&_.fr-select]:bg-white">
           <div className={cx(!shouldShowOrganizationName && 'md:col-span-2 mb-5')}>
@@ -625,7 +643,10 @@ function HeatNetworkDemandForm({
               <RichSelect
                 label="Quel était le motif principal ?"
                 value={refusalReason || undefined}
-                onChange={setRefusalReason}
+                onChange={(reason) => {
+                  trackPostHogEvent('fcr_contact:non_raccordable_reason_selected', { reason });
+                  setRefusalReason(reason);
+                }}
                 options={refusalReasonOptions}
                 placeholder="Sélectionner un motif"
               />

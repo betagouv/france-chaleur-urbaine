@@ -111,6 +111,7 @@ export default function ChoixChauffageResults() {
               situation={situation}
             />
           )}
+          {situation.eligibiliteReseauChaleur && <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />}
           <ResultsSection
             items={displayedSolutions}
             coutParAnGaz={coutParAnGaz}
@@ -124,7 +125,6 @@ export default function ChoixChauffageResults() {
             onEditParamsClick={handleEditHotWaterParamsClick}
             onOpenChange={handleAccordionOpenChange}
           />
-          {shouldCreateCcrtExperimentationDemand && <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />}
           <IncompatibleSolutionsSection rows={incompatibleSolutionRows} typeLogement={effectiveTypeLogement} />
           <DemandeFCRForm
             alternativeHeatingSolutionLabels={alternativeHeatingSolutionLabels}
