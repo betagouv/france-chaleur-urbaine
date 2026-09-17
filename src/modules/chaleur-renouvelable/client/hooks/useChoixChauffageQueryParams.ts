@@ -5,7 +5,6 @@ import { useCallback, useMemo } from 'react';
 import {
   DPE_VALUES,
   ESPACE_EXTERIEUR_VALUES,
-  getEspaceExterieurForTypeLogement,
   MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES,
   TYPE_LOGEMENT_VALUES,
   TYPE_RADIATEUR_VALUES,
@@ -63,13 +62,13 @@ export function getNextEspaceExterieurQueryValue({
   const candidateEspaceExterieur =
     'espaceExterieur' in nextParams ? nextParams.espaceExterieur : (currentEspaceExterieur ?? effectiveEspaceExterieur);
 
-  return getEspaceExterieurForTypeLogement(nextParams.typeLogement, candidateEspaceExterieur);
+  return candidateEspaceExterieur;
 }
 
 export function useChoixChauffageQueryParams() {
   const [queryParams, setQueryParams] = useQueryStates(choixChauffageQueryParsers);
   const searchParams = useSearchParams();
-  const espaceExterieur = getEspaceExterieurForTypeLogement(queryParams.typeLogement, queryParams.espaceExterieur);
+  const espaceExterieur = queryParams.espaceExterieur;
   const modeEauChaudeSanitaire =
     queryParams.modeEauChaudeSanitaire ?? (queryParams.typeLogement === 'immeuble_chauffage_collectif' ? 'Collectif' : null);
   const isDpeExplicit = searchParams?.has('dpe') ?? false;
