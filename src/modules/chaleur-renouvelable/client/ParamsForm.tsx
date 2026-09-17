@@ -25,7 +25,6 @@ import {
   type BatEnrBatiment,
   type DPE,
   DPE_VALUES,
-  getEspaceExterieurForTypeLogement,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type ModeEauChaudeSanitaireQueryParam,
   modeEauChaudeSanitaireOptions,
@@ -249,7 +248,7 @@ export function ParamsForm({
                       }
                       setDraft((previousDraft) => ({
                         ...previousDraft,
-                        espaceExterieur: getEspaceExterieurForTypeLogement(nextTypeLogement, previousDraft.espaceExterieur ?? 'none'),
+                        espaceExterieur: previousDraft.espaceExterieur ?? 'none',
                         typeLogement: nextTypeLogement,
                       }));
                     },
@@ -399,7 +398,6 @@ export function ParamsForm({
                     />
                     <OutdoorSpaceCheckboxes
                       className="mt-5"
-                      typeLogement={draft.typeLogement}
                       value={draft.espaceExterieur}
                       layout="stacked"
                       onChange={(value) => {

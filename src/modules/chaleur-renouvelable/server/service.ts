@@ -17,11 +17,14 @@ import type {
 import {
   DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+  isCcrtExperimentationEligible,
 } from '@/modules/chaleur-renouvelable/constants';
+import type { Context } from '@/modules/config/server/context-builder';
 import { type CreateDemandInput, type DemandSubmissionResult, fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { createDemand } from '@/modules/demands/server/creation-user';
 import { type LegacyValuesPatch, mergeLegacyValues } from '@/modules/demands/server/legacy-values';
-// import { sendEmailTemplate } from '@/modules/email';
+import { sendEmailTemplate } from '@/modules/email';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
@@ -60,7 +63,6 @@ const batEnrBatimentColumns = [
   'type_installation_ecs',
 ] as const;
 
-// const DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL = serverConfig.contactEmail;
 const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = businessRules.fcrBuildingCandidatesRadiusMeters.value;
 const CHALEUR_RENOUVELABLE_RESULTS_PATH = '/chaleur-renouvelable/resultat';
 
@@ -104,6 +106,25 @@ const getDemandAddressTerritory = (context: string) => {
   const [department = '', , region = ''] = context.split(',').map((contextPart) => contextPart.trim());
 
   return { department, region };
+};
+
+const normalizeDepartmentCode = (departmentCode: string | null | undefined) => {
+  if (!departmentCode) {
+    return null;
+  }
+
+  return /^\d$/.test(departmentCode) ? `0${departmentCode}` : departmentCode;
+};
+
+const getDemandeChaleurRenouvelableDepartmentCode = async (input: DemandeChaleurRenouvelable) => {
+  if (!input.geoAddress) {
+    return null;
+  }
+
+  const locationInfos = await getLocationInfos({ city: input.geoAddress.city, cityCode: input.geoAddress.cityCode });
+  const fallbackDepartmentCode = getDemandAddressTerritory(input.geoAddress.context).department;
+
+  return normalizeDepartmentCode(locationInfos?.departement_id ?? fallbackDepartmentCode);
 };
 
 const getDemandHeatingEnergy = (heatingEnergy: DemandeChaleurRenouvelable['heatingEnergy']): CreateDemandInput['heatingEnergy'] => {
@@ -203,7 +224,7 @@ const patchDemandWithFcrSnapshot = async (demandId: string, legacyValues: Legacy
 };
 
 const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promise<DemandSubmissionResult | null> => {
-  if (input.isPublicAdvisorSelected || !input.geoAddress || !input.heatNetworkEligibility) {
+  if (input.isPublicAdvisorSelected || !input.geoAddress || input.heatNetworkEligibility?.isEligible !== true) {
     return null;
   }
 
@@ -594,63 +615,121 @@ const getPreselectedBatimentConstructionIdFromRnb = async (banId: string) => {
 };
 
 export const createDemandeChaleurRenouvelable = async ({ input }: { input: DemandeChaleurRenouvelable }) => {
-  // Pour l'instant, on ne créée pas de demande chaleur renouvelable :
-  // - soit c'est une demande classique RC
-  // - soit on redirige vers un ECFR
-
-  // const createdDemand = await kdb
-  //   .insertInto('demands_chaleur_renouvelable')
-  //   .values({
-  //     address: input.address,
-  //     average_area: input.averageArea,
-  //     average_residents: input.averageResidents,
-  //     batiment_construction_id: input.batimentConstructionId,
-  //     comments: input.comments,
-  //     created_at: new Date(),
-  //     demand_concern: input.demandConcern,
-  //     dpe: input.dpe,
-  //     email: input.email,
-  //     first_name: input.firstName,
-  //     heating_energy: input.heatingEnergy,
-  //     hot_water_system_type: input.hotWaterSystemType,
-  //     housing_count: input.housingCount,
-  //     housing_type: input.housingType,
-  //     is_public_advisor_selected: input.isPublicAdvisorSelected,
-  //     last_name: input.lastName,
-  //     occupant_status: input.occupantStatus,
-  //     organization_name: input.organizationName,
-  //     outdoor_space: input.outdoorSpace,
-  //     phone: input.phone,
-  //     project_status: input.projectStatus,
-  //     radiator_type: input.radiatorType,
-  //     refusal_period: input.refusalPeriod,
-  //     refusal_reason: input.refusalReason,
-  //     simulation_url: input.simulationUrl,
-  //     surface_area: input.surfaceArea,
-  //     updated_at: new Date(),
-  //   })
-  //   .returning(['id'])
-  //   .executeTakeFirstOrThrow();
-
-  // await sendEmailTemplate(
-  //   'demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable',
-  //   { email: DEMANDE_CHALEUR_RENOUVELABLE_NOTIFICATION_EMAIL },
-  //   {
-  //     demand: input,
-  //     demandId: createdDemand.id,
-  //   }
-  // );
-
   const demandSubmissionResult = await createRaccordableDemand(input);
 
+  if (demandSubmissionResult) {
+    return {
+      demandSubmissionResult,
+      id: null,
+    };
+  }
+
+  const ccrtDemandId = await createCcrtExperimentationDemand(input);
+
   return {
-    demandSubmissionResult,
-    id: null, // createdDemand?.id,
+    demandSubmissionResult: null,
+    id: ccrtDemandId,
   };
 };
 
+const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable) => {
+  const departmentCode = await getDemandeChaleurRenouvelableDepartmentCode(input);
+
+  if (!departmentCode || !isCcrtExperimentationEligible(departmentCode, input.housingType)) {
+    return null;
+  }
+
+  const createdCcrtDemand = await kdb
+    .insertInto('demands_chaleur_renouvelable')
+    .values({
+      address: input.address,
+      average_area: input.averageArea,
+      average_residents: input.averageResidents,
+      batiment_construction_id: input.batimentConstructionId,
+      comments: input.comments,
+      created_at: new Date(),
+      demand_concern: input.demandConcern,
+      departement_code: departmentCode,
+      dpe: input.dpe,
+      email: input.email,
+      first_name: input.firstName,
+      heating_energy: input.heatingEnergy,
+      hot_water_system_type: input.hotWaterSystemType,
+      housing_count: input.housingCount,
+      housing_type: input.housingType,
+      is_public_advisor_selected: input.isPublicAdvisorSelected,
+      last_name: input.lastName,
+      occupant_status: input.occupantStatus,
+      organization_name: input.organizationName,
+      outdoor_space: input.outdoorSpace,
+      phone: input.phone,
+      project_status: input.projectStatus,
+      radiator_type: input.radiatorType,
+      refusal_period: input.refusalPeriod,
+      refusal_reason: input.refusalReason,
+      simulation_url: input.simulationUrl,
+      surface_area: input.surfaceArea,
+      updated_at: new Date(),
+    })
+    .returning(['id'])
+    .executeTakeFirstOrThrow();
+
+  await notifyCcrtOfNewDemandeChaleurRenouvelable({
+    demand: input,
+    demandId: createdCcrtDemand.id,
+    departmentCode,
+  });
+
+  return createdCcrtDemand.id;
+};
+
+const notifyCcrtOfNewDemandeChaleurRenouvelable = async ({
+  demand,
+  demandId,
+  departmentCode,
+}: {
+  demand: DemandeChaleurRenouvelable;
+  demandId: string;
+  departmentCode: string;
+}) => {
+  const recipients = await kdb
+    .selectFrom('users as u')
+    .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
+    .select(['u.email', 'u.id'])
+    .where('u.active', '=', true)
+    .where('u.role', '=', 'ccrt')
+    .where('up.type', '=', 'departement')
+    .where('up.resource_id', '=', departmentCode)
+    .execute();
+
+  await Promise.all(
+    recipients.map((recipient) =>
+      sendEmailTemplate(
+        'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
+        { email: recipient.email, id: recipient.id },
+        {
+          demand,
+          demandId,
+          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+        }
+      )
+    )
+  );
+};
+
 export const listDemandesChaleurRenouvelableAdmin = async () => {
-  const demandes = await kdb
+  const demandes = await selectDemandesChaleurRenouvelableForList().orderBy('created_at', 'desc').execute();
+
+  const { count } = await kdb
+    .selectFrom('demands_chaleur_renouvelable')
+    .select(kdb.fn.count<number>('id').as('count'))
+    .executeTakeFirstOrThrow();
+
+  return { count, items: serializeDemandesChaleurRenouvelable(demandes) };
+};
+
+const selectDemandesChaleurRenouvelableForList = () =>
+  kdb
     .selectFrom('demands_chaleur_renouvelable')
     .select([
       'address',
@@ -661,6 +740,7 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
       'comments',
       'created_at',
       'demand_concern',
+      'departement_code',
       'dpe',
       'email',
       'first_name',
@@ -684,22 +764,32 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
       'status',
       'surface_area',
       'updated_at',
-    ])
-    .orderBy('created_at', 'desc')
-    .execute();
+    ]);
 
-  const { count } = await kdb
-    .selectFrom('demands_chaleur_renouvelable')
-    .select(kdb.fn.count<number>('id').as('count'))
-    .executeTakeFirstOrThrow();
-
-  const items = demandes.map((demande) => ({
+const serializeDemandesChaleurRenouvelable = <T extends { created_at: Date; updated_at: Date }>(demandes: T[]) =>
+  demandes.map((demande) => ({
     ...demande,
     created_at: demande.created_at.toISOString(),
     updated_at: demande.updated_at.toISOString(),
   }));
 
-  return { count, items };
+export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
+  const permissions = await ctx.getPermissions();
+  const departmentCodes = permissions.filter((permission) => permission.type === 'departement').map((permission) => permission.resource_id);
+
+  if (ctx.user.role !== 'admin' && departmentCodes.length === 0) {
+    return { count: 0, items: [] };
+  }
+
+  const demandes = await selectDemandesChaleurRenouvelableForList()
+    .$if(ctx.user.role !== 'admin', (qb) => qb.where('departement_code', 'in', departmentCodes))
+    .orderBy('created_at', 'desc')
+    .execute();
+
+  return {
+    count: demandes.length,
+    items: serializeDemandesChaleurRenouvelable(demandes),
+  };
 };
 
 export const updateDemandeChaleurRenouvelableAdmin = async ({ demandId, values }: AdminUpdateDemandeChaleurRenouvelableInput) => {

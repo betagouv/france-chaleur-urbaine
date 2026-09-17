@@ -278,6 +278,7 @@ export interface DemandsChaleurRenouvelable {
   comments: string | null;
   created_at: Generated<Timestamp>;
   demand_concern: DemandConcern | null;
+  departement_code: string | null;
   dpe: DPE;
   email: string;
   first_name: string;

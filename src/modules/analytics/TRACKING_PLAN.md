@@ -91,7 +91,6 @@ France Chaleur Urbaine utilise PostHog pour mesurer l'usage produit. Ce document
 
 | Événement | Propriétés | Description |
 |---|---|---|
-| `fcr_landing:hero_cta_clicked` | _(aucune)_ | Clic sur le CTA principal |
 | `fcr_landing:address_typed` | _(aucune)_ | Première saisie dans le champ adresse |
 | `fcr_landing:heating_mode_selected` | `heating_mode` | Sélection du type de logement / chauffage |
 | `fcr_landing:emitter_type_selected` | `emitter_type` | Sélection du type d'émetteurs |
@@ -127,9 +126,10 @@ France Chaleur Urbaine utilise PostHog pour mesurer l'usage produit. Ce document
 | `chaleur-renouvelable:accordeon` | `name` | Ouverture d'un accordéon du parcours |
 | `fcr_results:no_solution_displayed` | `heating_mode?`, `outdoor_space?` | Affichage sans solution compatible |
 | `fcr_results:recommended_solution_displayed` | `solution_type` | Affichage de la solution recommandée |
-| `fcr_results:recommended_solution_expanded` | `solution_type` | Dépliage de la solution recommandée |
-| `fcr_results:recommended_solution_cta_clicked` | `solution_type` | Clic sur le CTA de la solution recommandée |
-| `fcr_results:tab_switched` | `tab_value` | Changement d'onglet de résultats |
+| `fcr_results:recommended_solution_expanded` | `solution_type` | Dépliage du détail de la solution recommandée |
+| `fcr_results:recommended_solution_cta_clicked` | `solution_type` | Clic sur "Bénéficier d'un accompagnement gratuit" depuis la solution recommandée |
+| `fcr_results:ccrt_contact_cta_clicked` | _(aucune)_ | Clic sur un CTA d'accès au formulaire CCRT |
+| `fcr_results:tab_switched` | `tab_value` | Changement d'onglet résultats (`chauffage_ecs`, `ecs_uniquement`) |
 | `fcr_results:alternative_solution_opened` | `solution_type`, `position` | Ouverture d'une solution alternative |
 | `fcr_results:alternative_solution_closed` | `solution_type`, `position` | Fermeture d'une solution alternative |
 | `fcr_results:prerequisite_detail_clicked` | `solution_type`, `prerequisite_label` | Clic sur le détail d'un prérequis |

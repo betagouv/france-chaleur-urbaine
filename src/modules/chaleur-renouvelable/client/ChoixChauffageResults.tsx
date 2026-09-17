@@ -16,6 +16,7 @@ import { HeatNetworkRecommendedSolutionCard } from '@/modules/chaleur-renouvelab
 import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui/ResultsSection';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
+import { isCcrtExperimentationEligible } from '../constants';
 import { ParamsForm } from './ParamsForm';
 
 export default function ChoixChauffageResults() {
@@ -23,6 +24,7 @@ export default function ChoixChauffageResults() {
   const [selectedContactRecipientId, setSelectedContactRecipientId] = useState<ContactRecipientId>('network-manager');
   const {
     batEnrBatiments,
+    codeDepartement,
     contactForm,
     coutParAnGaz,
     coutParAnGazHotWaterOnly,
@@ -45,7 +47,8 @@ export default function ChoixChauffageResults() {
     urlParams,
   } = useChoixChauffageResults();
   const params = urlParams.params;
-  const shouldPreselectPublicAdvisor = Boolean(situation.eligibiliteReseauChaleur);
+  const isCcrtExperimentationBuildingEligible = isCcrtExperimentationEligible(codeDepartement, effectiveTypeLogement);
+  const isHeatNetworkEligible = situation.eligibiliteReseauChaleur?.isEligible === true;
   const heatNetworkSolution = situation.eligibiliteReseauChaleur
     ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network')
     : undefined;
@@ -55,6 +58,10 @@ export default function ChoixChauffageResults() {
   const alternativeHeatingSolutionLabels = displayedSolutions.map((modeDeChauffage) => modeDeChauffage.label).slice(0, 3);
 
   const handleSelectContactRecipient = (recipientId: ContactRecipientId) => {
+    if (recipientId === 'public-advisor') {
+      trackPostHogEvent('fcr_results:ccrt_contact_cta_clicked');
+    }
+
     setSelectedContactRecipientId(recipientId);
     requestAnimationFrame(() => {
       document.getElementById('help-ademe')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -94,25 +101,23 @@ export default function ChoixChauffageResults() {
         <>
           <EnergySobrietyCallout />
           {heatNetworkSolution && (
-            <>
-              <HeatNetworkRecommendedSolutionCard
-                item={heatNetworkSolution}
-                coutParAnGaz={coutParAnGaz}
-                dpeFrom={params.dpe}
-                geoAddress={geoAddress}
-                isOpen={openAccordionId === undefined || openAccordionId === heatNetworkSolution.id}
-                onOpenChange={(expanded) => {
-                  if (expanded) {
-                    trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: heatNetworkSolution.label });
-                  }
-                  handleAccordionOpenChange(heatNetworkSolution.id, expanded);
-                }}
-                selectedBatiment={selectedBatEnrBatiment}
-                situation={situation}
-              />
-              <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />
-            </>
+            <HeatNetworkRecommendedSolutionCard
+              item={heatNetworkSolution}
+              coutParAnGaz={coutParAnGaz}
+              dpeFrom={params.dpe}
+              geoAddress={geoAddress}
+              isOpen={openAccordionId === undefined || openAccordionId === heatNetworkSolution.id}
+              onOpenChange={(expanded) => {
+                if (expanded) {
+                  trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: heatNetworkSolution.label });
+                }
+                handleAccordionOpenChange(heatNetworkSolution.id, expanded);
+              }}
+              selectedBatiment={selectedBatEnrBatiment}
+              situation={situation}
+            />
           )}
+          {situation.eligibiliteReseauChaleur && <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />}
           <ResultsSection
             items={displayedSolutions}
             coutParAnGaz={coutParAnGaz}
@@ -125,19 +130,16 @@ export default function ChoixChauffageResults() {
             typeLogement={effectiveTypeLogement}
             onEditParamsClick={handleEditHotWaterParamsClick}
             onOpenChange={handleAccordionOpenChange}
-            onCtaClick={() => {
-              if (shouldPreselectPublicAdvisor) {
-                setSelectedContactRecipientId('public-advisor');
-              }
-            }}
           />
           <IncompatibleSolutionsSection rows={incompatibleSolutionRows} typeLogement={effectiveTypeLogement} />
           <DemandeFCRForm
             alternativeHeatingSolutionLabels={alternativeHeatingSolutionLabels}
             eligibiliteReseauChaleur={situation.eligibiliteReseauChaleur}
             geoAddress={geoAddress}
+            isCcrtExperimentationBuildingEligible={isCcrtExperimentationBuildingEligible}
+            isHeatNetworkEligible={isHeatNetworkEligible}
             selectedRecipientId={selectedContactRecipientId}
-            setSelectedRecipientId={setSelectedContactRecipientId}
+            onSelectedRecipientChange={setSelectedContactRecipientId}
             topSolution={heatNetworkSolution?.label ?? modesEnriched[0]?.label ?? ''}
           />
           <CallOut

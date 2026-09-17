@@ -21,8 +21,7 @@ const NouvelleDemandeChaleurRenouvelable = ({
       <Title>Nouvelle demande chaleur renouvelable à traiter</Title>
 
       <Text>
-        Une nouvelle demande a été déposée depuis le parcours chaleur renouvelable. Elle est disponible dans l'espace gestionnaire pour
-        traitement.
+        Une nouvelle demande a été déposée depuis le parcours chaleur renouvelable. Elle est disponible dans votre espace pour traitement.
       </Text>
 
       <Text style={{ fontSize: '16px', fontWeight: 'bold', marginTop: '16px' }}>Synthèse</Text>
@@ -118,8 +117,8 @@ const NouvelleDemandeChaleurRenouvelable = ({
       </Table>
 
       <Section style={{ paddingTop: '24px', textAlign: 'center' }}>
-        <Button href="/admin/demandes-chaleur-renouvelable" campaign="demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable">
-          Accéder à l'espace gestionnaire
+        <Button href="/pro/demandes-chaleur-renouvelable" campaign="demands.ccrt.nouvelle-demande-chaleur-renouvelable">
+          Accéder aux demandes
         </Button>
       </Section>
 
@@ -146,7 +145,7 @@ export const scenarios = defineEmailScenarios<typeof NouvelleDemandeChaleurRenou
         hotWaterSystemType: 'Collectif',
         housingCount: 18,
         housingType: 'immeuble_chauffage_collectif',
-        isPublicAdvisorSelected: true,
+        isPublicAdvisorSelected: false,
         lastName: 'Test',
         occupantStatus: 'Syndicat de copropriété',
         organizationName: 'Syndicat test',

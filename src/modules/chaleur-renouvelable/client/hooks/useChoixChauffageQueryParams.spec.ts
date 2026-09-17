@@ -4,6 +4,18 @@ import { describe, expect, it } from 'vitest';
 import { choixChauffageQueryParsers, getNextEspaceExterieurQueryValue } from './useChoixChauffageQueryParams';
 
 describe('getNextEspaceExterieurQueryValue', () => {
+  it('keeps an explicit outdoor space update without requiring a housing type', () => {
+    expect(
+      getNextEspaceExterieurQueryValue({
+        currentEspaceExterieur: null,
+        effectiveEspaceExterieur: null,
+        nextParams: {
+          espaceExterieur: 'jardinCours',
+        },
+      })
+    ).toStrictEqual('jardinCours');
+  });
+
   it('keeps the URL outdoor space when a selected building adds a compatible housing type', () => {
     expect(
       getNextEspaceExterieurQueryValue({

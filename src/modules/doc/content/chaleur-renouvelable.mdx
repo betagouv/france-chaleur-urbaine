@@ -14,9 +14,11 @@ Le parcours «&nbsp;chaleur renouvelable&nbsp;» ([/chaleur-renouvelable](/chale
     selection --> simu["Simulation : la confirmation du bâtiment préremplit DPE, surface, logements et ECS"]
     simu --> resultats["Résultats hiérarchisés : solutions possibles, prérequis, incompatibilités, coûts annuels"]
     resultats --> rc{"Raccordement possible ?"}
-    rc -- "Oui" --> reco["Réseau de chaleur en solution recommandée + formulaire de mise en relation"]
-    rc -- "Non" --> franceRenov["Orientation vers l'Espace Conseil France Rénov' de la commune"]
-    reco --> classique["Création d'une demande classique"]:::db
+    rc -- "Oui" --> classique["Création d'une demande classique"]:::db
+    rc -- "Non" --> exp{"Territoire expérimental CCRT + immeuble chauffage collectif ?"}
+    exp -- "Oui" --> ccrt["Formulaire d'accompagnement CCRT"]
+    exp -- "Non" --> franceRenov["Orientation vers l'Espace Conseil France Rénov' de la commune"]
+    ccrt --> dediee["Création d'une demande chaleur renouvelable"]:::db
     classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
 />
 
@@ -51,7 +53,7 @@ Le bâtiment de référence est identifié depuis l'adresse (RNB, puis BDNB en s
 
 Le catalogue de solutions dépend du **type de logement** (immeuble en chauffage collectif, immeuble en chauffage individuel, maison individuelle) ; chaque solution est ensuite filtrée selon la situation :
 
-- **Réseau de chaleur** : proposé uniquement pour un **immeuble en chauffage collectif**, si l'adresse est éligible, avec un réseau à moins de <Rule id="fcrHeatNetworkMaxDistanceMeters" /> et des **radiateurs à eau** (pas de réponse sur les radiateurs = pas de réseau de chaleur proposé). C'est alors la **solution recommandée**, affichée en tête, avec une orientation en deux étapes : contacter le gestionnaire du réseau, puis un conseiller du service public en cas de refus. Le rafraîchissement est signalé uniquement si un réseau de froid est aussi à moins de <Rule id="fcrColdNetworkMaxDistanceMeters" />.
+- **Réseau de chaleur** : proposé uniquement pour un **immeuble en chauffage collectif**, si l'adresse est éligible, avec un réseau à moins de <Rule id="fcrHeatNetworkMaxDistanceMeters" /> et des **radiateurs à eau** (pas de réponse sur les radiateurs = pas de réseau de chaleur proposé). C'est alors la **solution recommandée**, affichée en tête, et la soumission du formulaire crée une demande classique de raccordement. Le rafraîchissement est signalé uniquement si un réseau de froid est aussi à moins de <Rule id="fcrColdNetworkMaxDistanceMeters" />.
 - **PDP** : dans un périmètre de développement prioritaire, l'obligation d'étude de raccordement est affichée **favorable** pour le réseau de chaleur et **contraignante** pour les autres solutions collectives.
 - **ECS non renseignée** : un mode d'eau chaude sanitaire absent ne filtre aucune solution — un bandeau invite simplement à le renseigner dans les paramètres.
 - **Espaces extérieurs** : deux disponibilités sont conservées de bout en bout dans l'URL, «&nbsp;cour et/ou jardin&nbsp;» et «&nbsp;terrasse et/ou balcon&nbsp;». Elles utilisent les mêmes valeurs techniques pour les maisons et les immeubles (`jardinCours`, `terrasseBalcon`, `terrasseBalconEtJardinCours`, `none`) et peuvent être cumulées, ce qui ouvre les solutions nécessitant l'un ou l'autre espace.
@@ -60,20 +62,19 @@ Le catalogue de solutions dépend du **type de logement** (immeuble en chauffage
 - **Solaire thermique** : jugé suffisant au-delà de <Rule id="fcrSolarThermalMinCoveragePercent" /> de couverture des besoins d'eau chaude sanitaire.
 - Chaque prérequis est affiché avec sa **source** (CEREMA, BRGM, France Chaleur Urbaine, ou déclaré dans le formulaire) et un statut : favorable, défavorable, contraignant ou à vérifier.
 
-Quand le raccordement n'est **pas** possible, il n'y a pas de formulaire : le parcours oriente vers l'**Espace Conseil France Rénov'** de la commune (contact par email de préférence, sinon le site web de l'espace, sinon la page nationale france-renov.gouv.fr). C'est aussi le cas du choix «&nbsp;J'ai déjà reçu un refus ou une réponse négative&nbsp;» : il masque le formulaire au profit de cette même orientation — des champs de motif et de période du refus existent en base mais ne sont pas atteignables depuis le parcours actuel.
+Quand le raccordement n'est **pas** possible, le formulaire CCRT est affiché uniquement dans le périmètre de l'expérimentation pour les immeubles au chauffage collectif. Dans les autres cas, le parcours oriente vers l'**Espace Conseil France Rénov'** de la commune (contact par email de préférence, sinon le site web de l'espace, sinon la page nationale france-renov.gouv.fr). Quand le raccordement est possible, le choix «&nbsp;J'ai déjà reçu un refus ou une réponse négative&nbsp;» bascule aussi vers le formulaire CCRT si l'adresse et le bâtiment sont dans l'expérimentation ; sinon il oriente vers France Rénov'.
 
 ## La demande chaleur renouvelable
 
-La création des demandes chaleur renouvelable dédiées est **suspendue** dans le parcours public. Pour l'instant, le parcours aboutit soit à une demande classique de raccordement quand l'adresse est raccordable et que la personne choisit le gestionnaire, soit à une orientation vers l'Espace Conseil France Rénov' de la commune.
+La création d'une demande chaleur renouvelable dédiée est active uniquement pour l'**expérimentation CCRT**. Les deux conditions territoriales et bâtimentaires doivent être remplies : l'adresse appartient à un département couvert par l'expérimentation (région PACA et départements importés pour le pilote), et le bâtiment est un **immeuble au chauffage collectif**.
 
-- **Aucune création publique** : aucune nouvelle demande chaleur renouvelable dédiée n'est enregistrée depuis ce parcours, donc aucun statut initial n'est attribué.
-- **Traitement existant** : l'interface admin [Gestion des demandes chaleur renouvelable](/admin/demandes-chaleur-renouvelable) reste disponible pour les demandes déjà présentes, avec affectation à un membre de l'équipe et suivi en deux champs : «&nbsp;Statut&nbsp;», puis «&nbsp;État du projet&nbsp;». L'état du projet est grisé et forcé à «&nbsp;En réflexion&nbsp;» tant que le statut n'est pas «&nbsp;[Validation du projet] Etude de faisabilité votée en AG&nbsp;». Les statuts et états de suivi sont inventoriés dans [Références](/admin/doc/references).
-- **Email historique** : le modèle interne [«&nbsp;Nouvelle demande chaleur renouvelable&nbsp;»](/admin/emails?type=demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable) existe encore, mais il n'est plus envoyé par le parcours public tant que cette création dédiée est suspendue.
+- **Réseau de chaleur éligible sans refus déjà reçu** : la soumission crée une demande classique `demands`, y compris quand l'adresse est dans le périmètre de l'expérimentation. Elle suit alors le cycle de vie habituel des demandes de raccordement.
+- **Accompagnement CCRT dédié** : si le réseau de chaleur n'est pas éligible, ou si l'usager indique avoir déjà reçu un refus ou une réponse négative, la soumission du formulaire crée une ligne dans `demands_chaleur_renouvelable` lorsque l'adresse et le bâtiment sont dans l'expérimentation. Aucune demande classique `demands` n'est créée dans ce cas.
+- **Préremplissage** : les informations déjà connues depuis la simulation (adresse, bâtiment, type de logement, DPE, logements, surface moyenne, ECS, radiateurs, solutions affichées et URL du résultat) sont transmises avec la demande.
+- **Suivi CCRT** : les CCRT consultent les demandes sur [Demandes chaleur renouvelable](/pro/demandes-chaleur-renouvelable), filtrées selon leurs permissions **département**. Un CCRT sans permission départementale ne voit aucune demande.
+- **Notification** : à la soumission, un email [«&nbsp;Nouvelle demande chaleur renouvelable CCRT&nbsp;»](/admin/emails?type=demands.ccrt.nouvelle-demande-chaleur-renouvelable) est envoyé aux CCRT actifs qui ont une permission sur le département de la demande.
+- **Suivi admin** : l'interface admin [Gestion des demandes chaleur renouvelable](/admin/demandes-chaleur-renouvelable) reste disponible avec affectation à un membre de l'équipe et suivi en deux champs : «&nbsp;Statut&nbsp;», puis «&nbsp;État du projet&nbsp;». L'état du projet est grisé et forcé à «&nbsp;En réflexion&nbsp;» tant que le statut n'est pas «&nbsp;[Validation du projet] Etude de faisabilité votée en AG&nbsp;». Les statuts et états de suivi sont inventoriés dans [Références](/admin/doc/references).
 
-## La passerelle vers les demandes classiques
+## Hors expérimentation
 
-Si l'adresse est raccordable et que la personne choisit de contacter le gestionnaire, une **demande classique** est créée par le même service que le formulaire public : mêmes enrichissements, même déduplication (<Rule id="demandDedupWindowDays" />), même statut initial, affectation automatique au réseau, email «&nbsp;Confirmation de demande&nbsp;» au demandeur et notification des gestionnaires par le cron habituel — voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande).
-
-La passerelle conserve aussi dans `legacy_values` les trois premières solutions alternatives affichées sur la page de résultats, hors réseau de chaleur, et l'URL de simulation normalisée vers `/chaleur-renouvelable/resultat`. Si un gestionnaire ou un admin classe ensuite la demande en «&nbsp;Non réalisable&nbsp;», l'email «&nbsp;Raccordement non réalisable&nbsp;» reprend ces solutions et renvoie vers ce résultat personnalisé.
-
-Il n'y a donc plus de double suivi créé automatiquement : la demande créée depuis ce chemin est suivie comme une demande classique par le gestionnaire du réseau.
+Si au moins une des deux conditions de l'expérimentation n'est pas remplie, aucun formulaire CCRT n'est affiché et aucune demande dédiée n'est créée. L'usager est orienté vers l'**Espace Conseil France Rénov'** de sa commune quand le réseau de chaleur n'est pas éligible, ou quand il indique avoir déjà reçu un refus ou une réponse négative.
