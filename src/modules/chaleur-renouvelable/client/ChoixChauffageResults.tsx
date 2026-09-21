@@ -101,23 +101,25 @@ export default function ChoixChauffageResults() {
         <>
           <EnergySobrietyCallout />
           {heatNetworkSolution && (
-            <HeatNetworkRecommendedSolutionCard
-              item={heatNetworkSolution}
-              coutParAnGaz={coutParAnGaz}
-              dpeFrom={params.dpe}
-              geoAddress={geoAddress}
-              isOpen={openAccordionId === undefined || openAccordionId === heatNetworkSolution.id}
-              onOpenChange={(expanded) => {
-                if (expanded) {
-                  trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: heatNetworkSolution.label });
-                }
-                handleAccordionOpenChange(heatNetworkSolution.id, expanded);
-              }}
-              selectedBatiment={selectedBatEnrBatiment}
-              situation={situation}
-            />
+            <>
+              <HeatNetworkRecommendedSolutionCard
+                item={heatNetworkSolution}
+                coutParAnGaz={coutParAnGaz}
+                dpeFrom={params.dpe}
+                geoAddress={geoAddress}
+                isOpen={openAccordionId === undefined || openAccordionId === heatNetworkSolution.id}
+                onOpenChange={(expanded) => {
+                  if (expanded) {
+                    trackPostHogEvent('fcr_results:recommended_solution_expanded', { solution_type: heatNetworkSolution.label });
+                  }
+                  handleAccordionOpenChange(heatNetworkSolution.id, expanded);
+                }}
+                selectedBatiment={selectedBatEnrBatiment}
+                situation={situation}
+              />
+              <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />
+            </>
           )}
-          {situation.eligibiliteReseauChaleur && <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />}
           <ResultsSection
             items={displayedSolutions}
             coutParAnGaz={coutParAnGaz}
