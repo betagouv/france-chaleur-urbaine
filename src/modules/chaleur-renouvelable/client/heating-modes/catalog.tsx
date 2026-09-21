@@ -159,16 +159,22 @@ export const modesDeChauffage = {
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: ['Faibles émissions de CO₂', 'Longévité des équipements', 'Coût de la chaleur compétitif', 'Énergie locale (bois)'],
+      avantages: [
+        'Faibles émissions de CO₂',
+        'Longévité des équipements',
+        'Coût de la chaleur compétitif et stable',
+        'Énergie locale (bois)',
+      ],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 2 : 3),
       coutInstallation: '6 000 à 8 000 €',
       coutParAnPublicodeKey: 'chaudière à granulés',
       description: (
         <>
-          Votre bâtiment pourrait être adapté à l’installation d’une chaudière biomasse.
+          Votre bâtiment pourrait être adapté à l’installation d’une chaudière à bûches, à granulés ou à plaquettes.
           <br />
-          <br /> Sous réserve d’espaces suffisamment importants et <strong>d’un approvisionnement local en bois disponible</strong>, cette
-          solution vous permettrait de <strong>réduire les émissions CO₂</strong> de votre bâtiment.
+          <br />
+          Sous réserve d’espaces suffisamment importants et <strong>d’un approvisionnement local en bois disponible</strong>, cette solution
+          vous permettrait de <strong>réduire les émissions CO₂</strong> de votre bâtiment.
         </>
       ),
       estPossible: (situation) =>
@@ -188,9 +194,9 @@ export const modesDeChauffage = {
       inconvenients: [
         'Investissement initial important',
         'Approvisionnement à prévoir (contrat de 3 ans minimum recommandé)',
-        'Nuisance sonore modérée en fonctionnement, forte pendant les livraisons de combustible',
+        'Nuisance sonore modérée en fonctionnement',
       ],
-      label: 'Chaudière biomasse',
+      label: 'Chaudière à bois',
       pertinence: 3,
       prerequis: (situation) => [
         ...getPdpPrerequisite(situation),
@@ -349,7 +355,7 @@ export const modesDeChauffage = {
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -369,14 +375,14 @@ export const modesDeChauffage = {
       gainClasse: 1,
       icone: 'img/icon-solaire.webp',
       id: 'collective-solar-atmospheric-heat-pump-hot-water',
-      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment', 'Nécessite une toiture adaptée'],
+      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment'],
       label: 'PAC sur capteurs solaires atmosphériques',
       pertinence: 2,
       prerequis: (situation) => [
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -581,7 +587,7 @@ export const modesDeChauffage = {
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -601,14 +607,14 @@ export const modesDeChauffage = {
       gainClasse: 1,
       icone: 'img/icon-solaire.webp',
       id: 'individual-apartment-solar-atmospheric-heat-pump-hot-water',
-      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment', 'Nécessite une toiture adaptée'],
+      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment'],
       label: 'PAC sur capteurs solaires atmosphériques',
       pertinence: 2,
       prerequis: (situation) => [
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -738,7 +744,7 @@ export const modesDeChauffage = {
       avantages: [
         'Faibles émissions de CO₂',
         'Longévité des équipements',
-        'Coût de la chaleur compétitif',
+        'Coût de la chaleur compétitif et stable',
         'Énergie renouvelable et locale',
       ],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 1 : 2),
@@ -746,8 +752,8 @@ export const modesDeChauffage = {
       coutParAnPublicodeKey: 'chaudière à granulés',
       description: (
         <>
-          Une chaudière biomasse pourrait équiper votre maison. Sous réserve d’espaces suffisamment importants et d’un approvisionnement
-          local en bois disponible, cette solution vous permettrait de réduire les émissions CO₂ de votre maison.
+          Une chaudière à bûches, à granulés ou plaquettes, pourrait équiper votre maison. Sous réserve d’espaces suffisamment importants et
+          d’un approvisionnement local en bois disponible, cette solution vous permettrait de réduire les émissions CO₂ de votre maison.
         </>
       ),
       estPossible: (situation) =>
@@ -770,7 +776,7 @@ export const modesDeChauffage = {
         },
       ],
       inconvenients: ['Investissement initial important', 'Approvisionnement à prévoir'],
-      label: 'Chaudière biomasse',
+      label: 'Chaudière à bois',
       pertinence: 2,
       prerequis: (situation) => [
         {
@@ -781,6 +787,7 @@ export const modesDeChauffage = {
         ...getPpaPrerequisite(situation),
         ...getArchitecturalProtectionPrerequisites(situation),
         { label: 'Espace requis en local technique pour la chaudière et le stockage', status: 'averifier' },
+        { label: 'Présence d’un conduit d’évacuation', status: 'averifier' },
         { label: 'Accessibilité de la parcelle pour la livraison du combustible', status: 'averifier' },
       ],
       usage: 'heatingAndHotWater',
@@ -864,7 +871,7 @@ export const modesDeChauffage = {
         },
       ],
       inconvenients: ["Ne chauffe qu'une seule pièce", 'Approvisionnement à prévoir'],
-      label: 'Poêle à buche ou à granulés ',
+      label: 'Poêle à buche ou à granulés',
       pertinence: 3,
       prerequis: (situation) => [
         {
@@ -958,7 +965,7 @@ export const modesDeChauffage = {
         },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
       usage: 'heatingAndHotWater',
     },

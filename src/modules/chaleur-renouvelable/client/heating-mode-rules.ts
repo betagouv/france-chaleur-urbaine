@@ -210,7 +210,10 @@ export const hotWaterStoragePrerequisite = {
   status: 'averifier',
 } satisfies PrerequisiteRow;
 
-export const roofSolarCollectorsPrerequisite = {
-  label: 'Espace requis sur la toiture pour les capteurs',
-  status: 'averifier',
-} satisfies PrerequisiteRow;
+export const roofSolarCollectorsPrerequisite = [
+  {
+    label: 'Espace requis sur la toiture pour les capteurs',
+    status: 'averifier',
+  },
+  { label: 'Nécessite une toiture adaptée', status: 'averifier' },
+] satisfies PrerequisiteRow[];
