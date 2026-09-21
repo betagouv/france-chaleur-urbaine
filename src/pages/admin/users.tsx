@@ -12,6 +12,7 @@ import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
@@ -106,7 +107,15 @@ function PermissionTooltipContent({ permissions }: { permissions: PermissionWith
           <div className="font-semibold">{permissionTypePluralLabels[type]}</div>
           <ul className="list-none pl-0 m-0">
             {perms.map((p) => (
-              <li key={p.resource_id}>{p.label}</li>
+              <li key={p.resource_id}>
+                {p.type === 'reseau_de_chaleur' || p.type === 'reseau_en_construction' ? (
+                  <Link href={`/admin/reseaux/stats?reseaux_search=${p.label}`} isExternal>
+                    {p.label}
+                  </Link>
+                ) : (
+                  p.label
+                )}
+              </li>
             ))}
           </ul>
         </div>
