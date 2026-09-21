@@ -565,6 +565,30 @@ const heatingModeCases: HeatingModeCase[] = [
   {
     impossibleCases: [
       {
+        description: 'sans espace extérieur privatif',
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
+      },
+      {
+        description: 'avec une couverture solaire insuffisante',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', solarThermalCoverage: 79 },
+      },
+      {
+        description: 'avec une couverture solaire égale au seuil',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', solarThermalCoverage: 80 },
+      },
+      {
+        description: 'sans couverture solaire connue',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', solarThermalCoverage: null },
+      },
+    ],
+    label: 'Solaire thermique',
+    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel' },
+    typeLogement: 'maison_individuelle',
+    usage: 'hotWaterOnly',
+  },
+  {
+    impossibleCases: [
+      {
         description: 'sans espace extérieur',
         overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
       },
@@ -796,6 +820,14 @@ const incompatibilityCases: IncompatibilityCase[] = [
     source: 'Formulaire',
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
+  },
+  {
+    label: 'Solaire thermique',
+    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', solarThermalCoverage: 79 },
+    reason: 'La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale.',
+    source: 'CEREMA',
+    typeLogement: 'maison_individuelle',
+    usage: 'hotWaterOnly',
   },
 ];
 
