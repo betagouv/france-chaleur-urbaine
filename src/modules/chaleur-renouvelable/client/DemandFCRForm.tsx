@@ -22,7 +22,7 @@ import {
   occupantStatusOptions,
   type ProjectStatus,
   projectStatusOptions,
-  zContactFormChaleuRenouvelable,
+  zContactFormChaleurRenouvelable,
 } from '@/modules/chaleur-renouvelable/constants';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 import type { DemandSubmissionResult } from '@/modules/demands/constants';
@@ -64,10 +64,10 @@ const refusalReasonOptions = [
 ];
 
 export type ContactRecipientId = (typeof contactRecipients)[number]['id'];
-type ContactFormChaleurRenouvelable = z.infer<typeof zContactFormChaleuRenouvelable>;
+type ContactFormChaleurRenouvelable = z.infer<typeof zContactFormChaleurRenouvelable>;
 type OccupantStatusDetailField = 'demandConcern' | 'housingCount' | 'surfaceArea';
 
-const CONTACT_FORM_DEFAULT_VALUES: z.input<typeof zContactFormChaleuRenouvelable> = {
+const CONTACT_FORM_DEFAULT_VALUES: z.input<typeof zContactFormChaleurRenouvelable> = {
   comments: '',
   demandConcern: '',
   email: '',
@@ -386,7 +386,7 @@ function HeatNetworkDemandForm({
   const createDemandeChaleurRenouvelable = trpc.batEnr.createDemandeChaleurRenouvelable.useMutation();
   const chauffageQuery = useChoixChauffageQueryParams();
   const params = chauffageQuery.params;
-  const defaultValues = useMemo<z.input<typeof zContactFormChaleuRenouvelable>>(
+  const defaultValues = useMemo<z.input<typeof zContactFormChaleurRenouvelable>>(
     () => ({
       ...CONTACT_FORM_DEFAULT_VALUES,
       housingCount: Number(params.nbLogements || DEFAULT_SIMULATION_PARAMS.nbLogements),
@@ -489,11 +489,11 @@ function HeatNetworkDemandForm({
   };
 
   const form = useAppForm({
-    ...schemaValidation(zContactFormChaleuRenouvelable),
+    ...schemaValidation(zContactFormChaleurRenouvelable),
     defaultValues,
     onSubmit: toastErrors(
       // re-parse to apply the schema defaults and get the output type
-      async ({ value }) => handleSubmit(zContactFormChaleuRenouvelable.parse(value)),
+      async ({ value }) => handleSubmit(zContactFormChaleurRenouvelable.parse(value)),
       () => 'Une erreur est survenue pendant l’envoi de votre demande. Veuillez réessayer dans quelques instants.'
     ),
   });

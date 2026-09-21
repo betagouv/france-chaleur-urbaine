@@ -390,7 +390,7 @@ export const DEFAULT_SIMULATION_PARAMS = {
   typeLogement: TypeLogement;
 };
 
-export const zContactFormChaleuRenouvelable = z.object({
+export const zContactFormChaleurRenouvelable = z.object({
   comments: z.string().default(''),
   demandConcern: z.enum(DEMAND_CONCERN_VALUES).or(z.literal('')).default(''),
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
