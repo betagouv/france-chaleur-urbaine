@@ -78,7 +78,7 @@ export const scenarios = defineEmailScenarios<typeof RaccordementNonRealisable>(
     label: 'Demande issue du parcours chaleur renouvelable',
     props: {
       address: '20 Avenue de Ségur 75007 Paris',
-      alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
+      alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière à bois', 'PAC air-eau collective'],
       simulationUrl: '/chaleur-renouvelable/resultat?adresse=20+Avenue+de+S%C3%A9gur+75007+Paris&typeLogement=immeuble_chauffage_collectif',
     },
   },

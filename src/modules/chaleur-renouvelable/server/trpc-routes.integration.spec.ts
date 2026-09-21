@@ -86,7 +86,7 @@ async function seedDepartmentPermission(userId: string, departmentCode: string) 
 function buildCcrtExperimentationDemandInput(overrides: Partial<DemandeChaleurRenouvelable> = {}) {
   return {
     address: '10 rue du test 13001 Marseille',
-    alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
+    alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière à bois', 'PAC air-eau collective'],
     averageArea: 72,
     averageResidents: 2,
     batimentConstructionId: 'CONSTRUCTION-123',
@@ -175,7 +175,7 @@ describe('batEnrRouter', () => {
       });
       expect(createdDemand.legacy_values[fcrLegacyValueKeys.alternativeHeatingSolutions]).toStrictEqual([
         'PAC géothermique',
-        'Chaudière biomasse',
+        'Chaudière à bois',
         'PAC air-eau collective',
       ]);
       expect(createdDemand.legacy_values[fcrLegacyValueKeys.simulationUrl]).toBe(

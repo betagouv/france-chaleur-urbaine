@@ -74,7 +74,7 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
         ...currentDemand,
         legacy_values: {
           ...currentDemand.legacy_values,
-          [fcrLegacyValueKeys.alternativeHeatingSolutions]: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
+          [fcrLegacyValueKeys.alternativeHeatingSolutions]: ['PAC géothermique', 'Chaudière à bois', 'PAC air-eau collective'],
           [fcrLegacyValueKeys.simulationUrl]: '/chaleur-renouvelable/resultat?adresse=10+Rue+de+Rivoli+75001+Paris',
         },
       },
@@ -87,7 +87,7 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
         { email: 'demandeur@example.fr', id: demandId },
         {
           address: '10 Rue de Rivoli 75001 Paris',
-          alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
+          alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière à bois', 'PAC air-eau collective'],
           simulationUrl: '/chaleur-renouvelable/resultat?adresse=10+Rue+de+Rivoli+75001+Paris',
         },
       ],
