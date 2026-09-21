@@ -27,6 +27,7 @@ export type ModeDeChauffageId =
   | 'house-wood-stove'
   | 'house-air-air-heat-pump'
   | 'house-combined-solar-system'
+  | 'house-solar-thermal-hot-water'
   | 'house-thermodynamic-water-heater';
 export type BatEnrBatiment = {
   ac1: boolean | null;

@@ -931,6 +931,48 @@ export const modesDeChauffage = {
       usage: 'heatingAndHotWater',
     },
     {
+      avantages: ['Aucune émission CO₂', 'Technologie mature', "Coût de la chaleur compétitif une fois l'installation amortie"],
+      coutInstallation: '5 000 à 6 000 €',
+      coutParAnPublicodeKey: 'solaire thermique',
+      description: (
+        <>
+          L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir
+          une partie de votre eau chaude sanitaire.
+          <br />
+          <br /> Une solution <strong>fiable, mature et économique</strong> à l'usage, qui fonctionne avec un appoint pour les périodes de
+          faible ensoleillement.
+        </>
+      ),
+      estPossible: (situation) =>
+        hasCompatibleHotWaterMode(situation, ['Individuel', 'Collectif']) &&
+        hasEspacePrivate(situation) &&
+        hasSufficientSolarThermalCoverage(situation),
+      gainClasse: 1,
+      gainVsGaz: -50,
+      icone: 'img/icon-solaire.webp',
+      id: 'house-solar-thermal-hot-water',
+      incompatibilites: [
+        {
+          isIncompatible: hasInsufficientSolarThermalCoverage,
+          reason: 'La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale.',
+          source: 'CEREMA',
+        },
+      ],
+      inconvenients: [
+        'Investissement initial important',
+        "Ne couvre que l'eau chaude sanitaire",
+        'Travaux modérés mais potentiellement complexes',
+      ],
+      label: 'Solaire thermique',
+      pertinence: 2,
+      prerequis: (situation) => [
+        ...getArchitecturalProtectionPrerequisites(situation),
+        hotWaterStoragePrerequisite,
+        ...roofSolarCollectorsPrerequisite,
+      ],
+      usage: 'hotWaterOnly',
+    },
+    {
       avantages: [
         'Faibles émissions de CO₂',
         'Coût de la chaleur compétitif',
