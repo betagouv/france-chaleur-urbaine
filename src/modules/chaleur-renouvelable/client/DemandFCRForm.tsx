@@ -42,7 +42,7 @@ const contactRecipients = [
     label: 'Je n’ai pas encore contacté le gestionnaire',
   },
   {
-    description: 'Un conseiller vous aidera à identifier la meilleure alternative parmi les solutions compatibles ci-dessus',
+    description: 'Un·e conseiller·e vous aidera à identifier la meilleure alternative parmi les solutions compatibles ci-dessus',
     id: 'public-advisor',
     label: 'J’ai déjà reçu un refus ou une réponse négative',
   },
@@ -293,7 +293,7 @@ function getProjectStatusTriggerLabel(value: ProjectStatus[], placeholder: strin
 }
 
 function getFormTitle(isHeatNetworkEligible: boolean) {
-  return isHeatNetworkEligible ? 'Faites-vous recontacter par le gestionnaire de réseau' : 'Faites-vous recontacter par un conseiller';
+  return isHeatNetworkEligible ? 'Faites-vous recontacter par le gestionnaire de réseau' : 'Faites-vous recontacter par un·e conseiller·e';
 }
 
 function getFormDescription(isHeatNetworkEligible: boolean) {
