@@ -108,23 +108,14 @@ const getDemandAddressTerritory = (context: string) => {
   return { department, region };
 };
 
-const normalizeDepartmentCode = (departmentCode: string | null | undefined) => {
-  if (!departmentCode) {
-    return null;
-  }
-
-  return /^\d$/.test(departmentCode) ? `0${departmentCode}` : departmentCode;
-};
-
 const getDemandeChaleurRenouvelableDepartmentCode = async (input: DemandeChaleurRenouvelable) => {
   if (!input.geoAddress) {
     return null;
   }
 
   const locationInfos = await getLocationInfos({ city: input.geoAddress.city, cityCode: input.geoAddress.cityCode });
-  const fallbackDepartmentCode = getDemandAddressTerritory(input.geoAddress.context).department;
 
-  return normalizeDepartmentCode(locationInfos?.departement_id ?? fallbackDepartmentCode);
+  return locationInfos?.departement_id;
 };
 
 const getDemandHeatingEnergy = (heatingEnergy: DemandeChaleurRenouvelable['heatingEnergy']): CreateDemandInput['heatingEnergy'] => {
