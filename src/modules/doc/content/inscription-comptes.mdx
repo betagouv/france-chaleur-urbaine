@@ -173,6 +173,7 @@ Cas de refus :
 
 - Email non confirmé → message explicite demandant de confirmer.
 - Compte désactivé par un admin → message générique « Mauvais login/mot de passe », **identique à un mauvais mot de passe**. La personne ne sait pas que son compte est désactivé.
+- Trop de tentatives depuis une même adresse IP : au-delà de <Rule id="loginAttemptsLimit" /> sur <Rule id="loginAttemptsWindowMinutes" /> (réussies ou non), la connexion est refusée avec le message «&nbsp;Trop de tentatives de connexion&nbsp;» jusqu'à la fin de la fenêtre. Les demandes de «&nbsp;mot de passe oublié&nbsp;» et les inscriptions ont leur propre plafond. Chaque échec de connexion est tracé dans les journaux techniques (sans l'email en clair), pas dans les événements.
 
 Données modifiées :
 

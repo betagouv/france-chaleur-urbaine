@@ -155,6 +155,19 @@ export const businessRules = {
     label: 'Filtre EnR&R élevé : seuil',
     value: 50,
   },
+  loginAttemptsLimit: {
+    description:
+      'Nombre maximal de tentatives de connexion (réussies ou non) depuis une même adresse IP sur la fenêtre glissante, au-delà la connexion est bloquée temporairement.',
+    display: '10 tentatives',
+    label: 'Tentatives de connexion : maximum',
+    value: 10,
+  },
+  loginAttemptsWindowMinutes: {
+    description: 'Durée de la fenêtre glissante pendant laquelle les tentatives de connexion sont comptées par adresse IP.',
+    display: '15 minutes',
+    label: 'Tentatives de connexion : fenêtre',
+    value: 15,
+  },
   maxPermissionsPerUser: {
     description: 'Nombre maximal de permissions attribuables à un même compte.',
     display: '400 permissions',

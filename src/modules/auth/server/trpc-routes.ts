@@ -33,5 +33,14 @@ export const authRouter = router({
       const { password, token } = input;
       await changePasswordWithResetToken({ password, token });
     }),
-  resetPassword: route.input(z.object({ email: z.email() })).mutation(async ({ input }) => await requestPassword(input.email)),
+  resetPassword: route
+    .meta({
+      rateLimit: {
+        limit: 5,
+        message: 'Trop de demandes de réinitialisation. Veuillez réessayer dans quelques minutes.',
+        windowMs: 15 * 60 * 1000,
+      },
+    })
+    .input(z.object({ email: z.email() }))
+    .mutation(async ({ input }) => await requestPassword(input.email)),
 });
