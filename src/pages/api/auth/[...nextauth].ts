@@ -1,6 +1,7 @@
 import nextAuth, { type AuthOptions, type Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
+import { withLoginRateLimit } from '@/modules/auth/server/login-rate-limit';
 import { login } from '@/modules/auth/server/service';
 import { getUserSession } from '@/modules/auth/server/session';
 import { stripDomainFromURL } from '@/utils/url';
@@ -59,4 +60,4 @@ export const nextAuthOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-export default nextAuth(nextAuthOptions);
+export default withLoginRateLimit(nextAuth(nextAuthOptions));

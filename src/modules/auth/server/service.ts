@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import bcrypt, { genSalt, hash } from 'bcryptjs';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
@@ -88,20 +90,32 @@ export const register = async ({
   return insertedUser.id;
 };
 
+/**
+ * Short non-reversible fingerprint of an email for the logs: lets us spot repeated failures on one account without logging PII.
+ */
+const emailFingerprint = (email: string): string => createHash('sha256').update(email.trim().toLowerCase()).digest('hex').slice(0, 12);
+
 export const login = async (email: string, password: string) => {
   const user = await kdb
     .selectFrom('users')
     .selectAll()
     .where('email', '=', email.trim().toLowerCase())
     .where('active', 'is', true)
-    .executeTakeFirstOrThrow(() => new Error('Mauvais login/mot de passe'));
+    .executeTakeFirst();
+
+  if (!user) {
+    logger.warn('login failed', { email_fingerprint: emailFingerprint(email), reason: 'unknown_or_inactive_account' });
+    throw new Error('Mauvais login/mot de passe');
+  }
 
   if (user.status === 'pending_email_confirmation') {
+    logger.warn('login failed', { email_fingerprint: emailFingerprint(email), reason: 'pending_email_confirmation', user_id: user.id });
     throw new Error('Vous devez confirmer votre email avant de vous connecter');
   }
 
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (!passwordMatch) {
+    logger.warn('login failed', { email_fingerprint: emailFingerprint(email), reason: 'bad_password', user_id: user.id });
     throw new Error('Mauvais login/mot de passe');
   }
 
