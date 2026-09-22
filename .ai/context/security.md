@@ -10,6 +10,7 @@
   - Client: `const { data: session } = useSession()`.
 - **JWT only contains the user ID (`sub`).** Role, email, etc. are loaded fresh from the DB on every session access via `getUserSession()` — never stale.
 - **Brute-force protection**: credentials sign-in is rate limited per IP by `withLoginRateLimit` (`src/modules/auth/server/login-rate-limit.ts`, limits from `businessRules.loginAttempts*`), registration and password-reset requests have their own limiters. Failed logins are logged at `warn` with a non-reversible `email_fingerprint` (never the email itself).
+- **Password policy**: length only, `zPassword` (`src/utils/validation.ts`) = `businessRules.passwordMinLength` (12) to 100 chars, no composition rule; `passwordHint` is the hint shown on creation forms. Never add per-form password schemas.
 
 ## Authorization
 

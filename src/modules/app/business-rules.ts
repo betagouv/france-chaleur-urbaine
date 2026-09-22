@@ -180,6 +180,13 @@ export const businessRules = {
     label: 'Filtre « proche réseau » : distance',
     value: 100,
   },
+  passwordMinLength: {
+    description:
+      "Longueur minimale d'un mot de passe à l'inscription et à la réinitialisation. Aucune contrainte de composition : une phrase facile à retenir est conseillée.",
+    display: '12 caractères',
+    label: 'Mot de passe : longueur minimale',
+    value: 12,
+  },
   passwordResetTokenValidityHours: {
     description: 'Durée de validité du lien « Mot de passe oublié ».',
     display: '3 heures',

@@ -55,51 +55,19 @@ describe('getSchemaField()', () => {
 });
 
 describe('zPassword', () => {
-  describe('mots de passe valides', () => {
-    const testCases: TestCase<string, boolean>[] = [
-      { expectedOutput: true, input: 'Password1', label: 'accepte "Password1"' },
-      { expectedOutput: true, input: 'Abcdefg1', label: 'accepte "Abcdefg1"' },
-      { expectedOutput: true, input: 'Test1234', label: 'accepte "Test1234"' },
-      { expectedOutput: true, input: 'MyP4ssword', label: 'accepte "MyP4ssword"' },
-      { expectedOutput: true, input: 'LongPassword123', label: 'accepte "LongPassword123"' },
-      { expectedOutput: true, input: 'A1bcdefg', label: 'accepte "A1bcdefg"' },
-    ];
+  const testCases: TestCase<string, boolean>[] = [
+    { expectedOutput: true, input: 'correct horse battery staple', label: 'accepte une phrase de passe avec espaces' },
+    { expectedOutput: true, input: 'abcdefghijkl', label: 'accepte exactement 12 caractères sans chiffre ni majuscule' },
+    { expectedOutput: true, input: 'P@ssw0rd!2026xyz', label: 'accepte les caractères spéciaux' },
+    { expectedOutput: true, input: 'a'.repeat(100), label: 'accepte exactement 100 caractères' },
+    { expectedOutput: false, input: 'Password1!', label: 'rejette 10 caractères même complexes' },
+    { expectedOutput: false, input: 'abcdefghijk', label: 'rejette 11 caractères' },
+    { expectedOutput: false, input: '', label: 'rejette une chaîne vide' },
+    { expectedOutput: false, input: 'a'.repeat(101), label: 'rejette 101 caractères' },
+  ];
 
-    it.each(testCases)('$label', ({ input, expectedOutput }) => {
-      expect(zPassword.safeParse(input).success).toBe(expectedOutput);
-    });
-  });
-
-  describe('mots de passe invalides', () => {
-    const testCases: TestCase<string, boolean>[] = [
-      { expectedOutput: false, input: 'Pass1', label: 'rejette "Pass1" (< 8 caractères)' },
-      { expectedOutput: false, input: 'Abc123', label: 'rejette "Abc123" (< 8 caractères)' },
-      { expectedOutput: false, input: 'Ab1cdef', label: 'rejette "Ab1cdef" (7 caractères)' },
-      { expectedOutput: false, input: 'PASSWORD1', label: 'rejette "PASSWORD1" (sans minuscule)' },
-      { expectedOutput: false, input: 'ABCDEFG1', label: 'rejette "ABCDEFG1" (sans minuscule)' },
-      { expectedOutput: false, input: 'password1', label: 'rejette "password1" (sans majuscule)' },
-      { expectedOutput: false, input: 'abcdefg1', label: 'rejette "abcdefg1" (sans majuscule)' },
-      { expectedOutput: false, input: 'Password', label: 'rejette "Password" (sans chiffre)' },
-      { expectedOutput: false, input: 'Abcdefgh', label: 'rejette "Abcdefgh" (sans chiffre)' },
-      { expectedOutput: false, input: '', label: 'rejette une chaîne vide' },
-    ];
-
-    it.each(testCases)('$label', ({ input, expectedOutput }) => {
-      expect(zPassword.safeParse(input).success).toBe(expectedOutput);
-    });
-  });
-
-  describe('cas limites', () => {
-    const testCases: TestCase<string, boolean>[] = [
-      { expectedOutput: true, input: 'Abcdef1g', label: 'accepte exactement 8 caractères avec toutes les conditions' },
-      { expectedOutput: true, input: 'Abcdefghijklmnop1234567890', label: 'accepte un mot de passe très long' },
-      { expectedOutput: true, input: 'Password1!@#', label: 'accepte les caractères spéciaux (Password1!@#)' },
-      { expectedOutput: true, input: 'P@ssw0rd!', label: 'accepte les caractères spéciaux (P@ssw0rd!)' },
-    ];
-
-    it.each(testCases)('$label', ({ input, expectedOutput }) => {
-      expect(zPassword.safeParse(input).success).toBe(expectedOutput);
-    });
+  it.each(testCases)('$label', ({ input, expectedOutput }) => {
+    expect(zPassword.safeParse(input).success).toBe(expectedOutput);
   });
 });
 
