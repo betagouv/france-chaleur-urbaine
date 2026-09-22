@@ -63,14 +63,15 @@ export type ApiResponseMutation<T = any> = ApiResponseCommon & {
 
 type ValidationType = 'create' | 'update' | 'delete';
 
+/** Valide le body et retourne la valeur parsée (transforms zod appliqués, ex. `trim().toLowerCase()`), ou le body brut sans schéma. */
 const validateSchemaIfExists = (schema?: z.ZodSchema, body?: any) => {
-  if (!schema) return true;
+  if (!schema) return body;
 
   const result = schema.safeParse(body);
   if (!result.success) {
     throw new Error(`Validation error: ${result.error.message}`);
   }
-  return result;
+  return result.data;
 };
 
 /**
@@ -166,13 +167,13 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
   };
 
   const POST = async (req: NextApiRequest): Promise<ApiResponseMutation<DB[T]>> => {
-    validateSchemaIfExists(validation?.create, req.body);
+    const body = validateSchemaIfExists(validation?.create, req.body);
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
     const context = await buildContext(req);
 
     if (!id && handlers.create) {
-      const item = await handlers.create(req.body as Parameters<typeof handlers.create>[0], context);
+      const item = await handlers.create(body as Parameters<typeof handlers.create>[0], context);
       return {
         item,
         status: 'success',
@@ -183,13 +184,13 @@ const crud = <T extends keyof DB, Validation extends CrudValidation>({
   };
 
   const PUT = async (req: NextApiRequest): Promise<ApiResponseMutation<DB[T]>> => {
-    validateSchemaIfExists(validation?.update, req.body);
+    const body = validateSchemaIfExists(validation?.update, req.body);
     const slug = Array.isArray(req.query.slug) ? req.query.slug : [req.query.slug || ''];
     const id = slug.length > 0 ? slug[0] : null;
     const context = await buildContext(req);
 
     if (id && handlers.update) {
-      const item = await handlers.update(id, req.body as Parameters<typeof handlers.update>[0], {}, context);
+      const item = await handlers.update(id, body as Parameters<typeof handlers.update>[0], {}, context);
       return {
         item,
         status: 'success',
