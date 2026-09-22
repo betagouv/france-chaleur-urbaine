@@ -1,0 +1,6 @@
+# Security contact for France Chaleur Urbaine (RFC 9116)
+Contact: mailto:france.chaleur.urbaine@ademe.fr
+Expires: 2027-09-22T00:00:00.000Z
+Preferred-Languages: fr, en
+Canonical: https://france-chaleur-urbaine.beta.gouv.fr/.well-known/security.txt
+Policy: https://france-chaleur-urbaine.beta.gouv.fr/contact
