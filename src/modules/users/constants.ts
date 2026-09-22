@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { type UserRole, userRoles, userRolesInscription } from '@/types/enum/UserRole';
 import { ObjectKeys } from '@/utils/typescript';
+import { zPassword } from '@/utils/validation';
 
 /** Label des types de structure  */
 // biome-ignore assist/source/useSortedKeys: keep field order for clarity and maintainability
@@ -53,10 +54,7 @@ export const zCredentialsSchema = z.object({
   }),
   email: z.email("L'adresse email n'est pas valide").max(100, "L'email ne peut pas dépasser 100 caractères"),
   optin_newsletter: z.boolean(),
-  password: z
-    .string()
-    .min(10, 'Le mot de passe doit contenir au minimum 10 caractères')
-    .max(100, 'Le mot de passe ne peut pas dépasser 100 caractères'),
+  password: zPassword,
 });
 
 export type CredentialsSchema = z.infer<typeof zCredentialsSchema>;

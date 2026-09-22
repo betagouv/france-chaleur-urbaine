@@ -17,6 +17,7 @@ import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
 import { upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
+import { passwordHint } from '@/utils/validation';
 
 type CredentialsValues = z.input<typeof zCredentialsSchema>;
 type IdentityValues = z.input<typeof zIdentitySchema>;
@@ -120,6 +121,7 @@ function CredentialsStep({ connexionHref, defaultValues, onSubmit }: Credentials
             {(field) => (
               <field.PasswordField
                 label="Mot de passe"
+                messagesHint={passwordHint}
                 nativeInputProps={{ autoComplete: 'new-password', placeholder: 'Saisir votre mot de passe' }}
               />
             )}
