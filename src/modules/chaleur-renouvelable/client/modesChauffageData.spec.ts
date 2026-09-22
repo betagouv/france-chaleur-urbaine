@@ -628,6 +628,14 @@ const heatingModeCases: HeatingModeCase[] = [
 const incompatibilityCases: IncompatibilityCase[] = [
   {
     label: 'Réseau de chaleur',
+    overrides: { hasAlreadyReceivedHeatNetworkRefusal: true },
+    reason: 'Une précédente demande de raccordement à cette adresse a été classée « Non réalisable »',
+    source: 'France Chaleur Urbaine',
+    typeLogement: 'immeuble_chauffage_collectif',
+    usage: 'heatingAndHotWater',
+  },
+  {
+    label: 'Réseau de chaleur',
     overrides: { eligibiliteReseauChaleur: createHeatNetwork({ distance: 200 }) },
     reason: 'Votre bâtiment est trop éloigné d’un réseau de chaleur',
     source: 'France Chaleur Urbaine',
@@ -1084,15 +1092,6 @@ describe('modesDeChauffage', () => {
     expect(nearColdNetworkMode.avantages.includes(COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual(true);
     expect(thresholdColdNetworkMode.rafraichissementPossible).toStrictEqual(false);
     expect(thresholdColdNetworkMode.avantages.includes(COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual(false);
-  });
-
-  it('does not display the heat network solution after a previous refusal', () => {
-    const heatingModeIds = getModesDeChauffage(
-      'immeuble_chauffage_collectif',
-      createSituation({ hasAlreadyReceivedHeatNetworkRefusal: true })
-    ).map((modeDeChauffage) => modeDeChauffage.id);
-
-    expect(heatingModeIds).not.toContain('collective-heat-network');
   });
 
   it('adds cold network prerequisite to heat network when cooling is possible', () => {

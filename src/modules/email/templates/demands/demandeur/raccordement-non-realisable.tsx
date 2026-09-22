@@ -17,9 +17,9 @@ const RaccordementNonRealisable = ({
   simulationUrl,
 }: RaccordementNonRealisableProps) => {
   const hasAlternativeHeatingSolutions = alternativeHeatingSolutions.length > 0;
-  const buttonHref = withOriginDemandId(
+  const buttonHref = withDemandContext(
     hasAlternativeHeatingSolutions ? (simulationUrl ?? '/chaleur-renouvelable') : '/chaleur-renouvelable',
-    originDemandId
+    { address, originDemandId }
   );
   const buttonContent = hasAlternativeHeatingSolutions ? 'solutions-chaleur-renouvelable' : 'simulateur-chauffage-alternatif';
   const buttonLabel = hasAlternativeHeatingSolutions
@@ -82,13 +82,19 @@ const RaccordementNonRealisable = ({
   );
 };
 
-const withOriginDemandId = (href: string, originDemandId?: string) => {
-  if (!originDemandId) {
-    return href;
+const withDemandContext = (
+  href: string,
+  { address, originDemandId }: Pick<RaccordementNonRealisableProps, 'address' | 'originDemandId'>
+) => {
+  const url = new URL(href, 'https://france-chaleur-urbaine.invalid');
+
+  if (url.pathname === '/chaleur-renouvelable' && !url.searchParams.has('adresse')) {
+    url.searchParams.set('adresse', address);
   }
 
-  const url = new URL(href, 'https://france-chaleur-urbaine.invalid');
-  url.searchParams.set('originDemandId', originDemandId);
+  if (originDemandId) {
+    url.searchParams.set('originDemandId', originDemandId);
+  }
 
   return `${url.pathname}${url.search}${url.hash}`;
 };

@@ -63,6 +63,11 @@ export const modesDeChauffage = {
       id: 'collective-heat-network',
       incompatibilites: [
         {
+          isIncompatible: (situation) => situation.hasAlreadyReceivedHeatNetworkRefusal,
+          reason: 'Une précédente demande de raccordement à cette adresse a été classée « Non réalisable »',
+          source: 'France Chaleur Urbaine',
+        },
+        {
           isIncompatible: (situation) =>
             situation.eligibiliteReseauChaleur?.distance != null &&
             situation.eligibiliteReseauChaleur.distance >= HEAT_NETWORK_MAX_DISTANCE,
