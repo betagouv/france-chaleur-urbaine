@@ -56,6 +56,10 @@ export default handleRouteErrors(async (req, res) => {
 
 Le rate limiting pour tRPC est géré par le module `trpc` lui-même. Voir la [documentation du module tRPC](../trpc/AGENTS.md#rate-limiting) pour les détails d'utilisation.
 
+## Mots de passe compromis (`pwned-passwords.ts`)
+
+`ensurePasswordNotPwned(password, context)` refuse un mot de passe présent dans des fuites publiques, via l'API k-anonymity de Have I Been Pwned : seuls les 5 premiers caractères du SHA-1 sont envoyés, la comparaison se fait localement sur la plage renvoyée (`countPasswordLeaks`). Appelé par le service auth à l'inscription et à la réinitialisation. **Fail open** : si l'API est indisponible, le mot de passe est accepté et un `warn` est journalisé. Désactivable par `PWNED_PASSWORDS_CHECK_ENABLED=false` (forcé à `false` dans les tests via `setup-mocks.ts`).
+
 ## Validation d'Emails
 
 La liste des emails interdits est centralisée dans `src/server/config.ts` :
