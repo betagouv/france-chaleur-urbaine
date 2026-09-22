@@ -22,6 +22,7 @@ import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import Status from '@/modules/demands/client/Status';
+import { demandLockReasons } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
@@ -229,6 +230,17 @@ const initialSortingState = [{ desc: true, id: 'Date de la demande' }];
  */
 let isUpdatingDemandField = false;
 
+const getDemandModificationState = (demand: Pick<DemandsListItem, 'lock_reason' | 'is_responsible'>) => {
+  const lock = demand.lock_reason ? demandLockReasons[demand.lock_reason] : null;
+
+  return {
+    canModify: demand.is_responsible && !lock,
+    disabledReason: lock?.disabledReason ?? (demand.is_responsible ? undefined : 'Demande hors de votre périmètre de traitement.'),
+    isLocked: !!lock,
+    lockBadgeTitle: lock?.badgeTitle,
+  };
+};
+
 function DemandesNew(): React.ReactElement {
   const { data: session } = useSession();
   const currentUserId = session?.user?.id ?? '';
@@ -325,15 +337,26 @@ function DemandesNew(): React.ReactElement {
     () => [
       {
         align: 'center',
-        cell: ({ row }) => <div className="flex flex-col gap-2">{row.original.haut_potentiel && <Badge type="haut_potentiel" />}</div>,
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-2">
+            {row.original.haut_potentiel && <Badge type="haut_potentiel" />}
+            {getDemandModificationState(row.original).isLocked && (
+              <Badge type="fcr_locked" size="xs" title={getDemandModificationState(row.original).lockBadgeTitle} />
+            )}
+          </div>
+        ),
         header: '',
         id: 'indicators',
-        width: '46px',
+        width: '78px',
       },
       {
         accessorKey: 'Status',
         cell: ({ row }) => (
-          <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} disabled={!row.original.is_responsible} />
+          <Status
+            demand={row.original as unknown as Demand}
+            updateDemand={updateDemand}
+            disabled={!getDemandModificationState(row.original).canModify}
+          />
         ),
         enableGlobalFilter: false,
         filterProps: {
@@ -346,7 +369,12 @@ function DemandesNew(): React.ReactElement {
       {
         accessorFn: (row) => `${row.Nom} ${row.Prénom} ${row.Mail}`,
         cell: ({ row }) => (
-          <Contact demand={row.original as unknown as Demand} onEmailClick={handleEmailClick} disabled={!row.original.is_responsible} />
+          <Contact
+            demand={row.original as unknown as Demand}
+            onEmailClick={handleEmailClick}
+            disabled={!getDemandModificationState(row.original).canModify}
+            disabledReason={getDemandModificationState(row.original).disabledReason}
+          />
         ),
         enableSorting: false,
         header: 'Contact',
@@ -431,7 +459,14 @@ function DemandesNew(): React.ReactElement {
       },
       {
         accessorFn: (row) => row.network_name ?? '',
-        cell: ({ row }) => <AffectedNetworkCell demand={row.original} currentUserId={currentUserId} />,
+        cell: ({ row }) => (
+          <AffectedNetworkCell
+            demand={row.original}
+            currentUserId={currentUserId}
+            disabled={!getDemandModificationState(row.original).canModify}
+            disabledReason={getDemandModificationState(row.original).disabledReason}
+          />
+        ),
         enableSorting: false,
         filterType: 'Facets',
         header: 'Réseau affecté',
@@ -446,7 +481,7 @@ function DemandesNew(): React.ReactElement {
             field="Logement"
             updateDemand={updateDemand}
             type="number"
-            disabled={!row.original.is_responsible}
+            disabled={!getDemandModificationState(row.original).canModify}
           />
         ),
         enableGlobalFilter: false,
@@ -463,7 +498,7 @@ function DemandesNew(): React.ReactElement {
             field="Surface en m2"
             updateDemand={updateDemand}
             type="number"
-            disabled={!row.original.is_responsible}
+            disabled={!getDemandModificationState(row.original).canModify}
           />
         ),
         enableGlobalFilter: false,
@@ -482,7 +517,7 @@ function DemandesNew(): React.ReactElement {
             field="Conso"
             updateDemand={updateDemand}
             type="number"
-            disabled={!row.original.is_responsible}
+            disabled={!getDemandModificationState(row.original).canModify}
           />
         ),
         enableGlobalFilter: false,
@@ -507,7 +542,7 @@ function DemandesNew(): React.ReactElement {
             demand={row.original as unknown as Demand}
             field="comment_gestionnaire"
             updateDemand={updateDemand}
-            disabled={!row.original.is_responsible}
+            disabled={!getDemandModificationState(row.original).canModify}
           />
         ),
         enableSorting: false,
@@ -643,6 +678,7 @@ function DemandesNew(): React.ReactElement {
               controlsLayout="block"
               padding="sm"
               rowSelection={tableRowSelection}
+              rowClassName={(demand) => (getDemandModificationState(demand).isLocked ? 'opacity-60' : undefined)}
               onRowClick={onTableRowClick}
               loadingEmptyMessage="Vous n'avez pas encore reçu de demandes"
               height="calc(100dvh - 140px)"

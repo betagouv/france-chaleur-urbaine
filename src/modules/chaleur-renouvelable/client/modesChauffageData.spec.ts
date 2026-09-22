@@ -109,6 +109,7 @@ const createSituation = (overrides: SituationOverrides = {}): Situation => ({
   geothermalSondeGmi: 1,
   geothermiePossible: true,
   habitantsMoyen: 2,
+  hasAlreadyReceivedHeatNetworkRefusal: false,
   hasGeothermalProbeSpace: true,
   modeEauChaudeSanitaire: null,
   nbLogements: 25,
@@ -165,6 +166,10 @@ const heatingModeCases: HeatingModeCase[] = [
       {
         description: 'sans radiateur à eau',
         overrides: { typeRadiateur: 'radiateur-electrique' },
+      },
+      {
+        description: 'quand le raccordement a déjà été refusé',
+        overrides: { hasAlreadyReceivedHeatNetworkRefusal: true },
       },
     ],
     label: 'Réseau de chaleur',
@@ -1079,6 +1084,15 @@ describe('modesDeChauffage', () => {
     expect(nearColdNetworkMode.avantages.includes(COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual(true);
     expect(thresholdColdNetworkMode.rafraichissementPossible).toStrictEqual(false);
     expect(thresholdColdNetworkMode.avantages.includes(COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual(false);
+  });
+
+  it('does not display the heat network solution after a previous refusal', () => {
+    const heatingModeIds = getModesDeChauffage(
+      'immeuble_chauffage_collectif',
+      createSituation({ hasAlreadyReceivedHeatNetworkRefusal: true })
+    ).map((modeDeChauffage) => modeDeChauffage.id);
+
+    expect(heatingModeIds).not.toContain('collective-heat-network');
   });
 
   it('adds cold network prerequisite to heat network when cooling is possible', () => {

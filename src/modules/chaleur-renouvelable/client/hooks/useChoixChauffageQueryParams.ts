@@ -32,11 +32,13 @@ const simulationQueryParsers = {
 export const choixChauffageQueryParsers = {
   ...simulationQueryParsers,
   construction_id: parseAsString.withOptions(queryOptions),
+  originDemandId: parseAsString.withOptions(queryOptions),
 };
 
 export type ChoixChauffageSimulationParams = inferParserType<typeof simulationQueryParsers>;
 export type ChoixChauffageParams = ChoixChauffageSimulationParams & {
   constructionId: inferParserType<typeof choixChauffageQueryParsers>['construction_id'];
+  originDemandId: inferParserType<typeof choixChauffageQueryParsers>['originDemandId'];
 };
 export type ChoixChauffageParamSources = {
   isDpeExplicit: boolean;
@@ -110,8 +112,9 @@ export function useChoixChauffageQueryParams() {
     () => ({
       ...simulationParams,
       constructionId: queryParams.construction_id,
+      originDemandId: queryParams.originDemandId,
     }),
-    [queryParams.construction_id, simulationParams]
+    [queryParams.construction_id, queryParams.originDemandId, simulationParams]
   ) satisfies ChoixChauffageParams;
 
   const setParams: SetChoixChauffageParams = useCallback(
@@ -128,6 +131,7 @@ export function useChoixChauffageQueryParams() {
         habitantsMoyen: getNullableQueryString(nextParams.habitantsMoyen),
         modeEauChaudeSanitaire: nextParams.modeEauChaudeSanitaire,
         nbLogements: nextParams.nbLogements,
+        originDemandId: nextParams.originDemandId,
         surfaceMoyenne: nextParams.surfaceMoyenne,
         typeLogement: nextParams.typeLogement,
         typeRadiateur: nextParams.typeRadiateur,

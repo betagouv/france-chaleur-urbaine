@@ -1,7 +1,7 @@
 import type { NetworkType } from '@/modules/reseaux/constants';
 import type { Demand as LegacyDemand } from '@/types/Summary/Demand';
 
-import { type DemandStatus, fcrLegacyValueKeys } from './constants';
+import { type DemandLockReason, type DemandStatus, fcrLegacyValueKeys } from './constants';
 
 /**
  * Snapshot d'une demande de réaffectation en attente de traitement admin.
@@ -57,6 +57,7 @@ export type Demand = AirtableLegacyRecord & {
   comment_fcu?: string | null;
   comment_user?: string | null;
   created_at: string;
+  lock_reason?: DemandLockReason | null;
   updated_at: string;
 };
 

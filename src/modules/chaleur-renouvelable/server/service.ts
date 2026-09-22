@@ -29,6 +29,7 @@ import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
 import { stripDomainFromURL } from '@/utils/url';
 
@@ -215,7 +216,7 @@ const patchDemandWithFcrSnapshot = async (demandId: string, legacyValues: Legacy
 };
 
 const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promise<DemandSubmissionResult | null> => {
-  if (input.isPublicAdvisorSelected || !input.geoAddress || input.heatNetworkEligibility?.isEligible !== true) {
+  if (input.isPublicAdvisorSelected || input.originDemandId || !input.geoAddress || input.heatNetworkEligibility?.isEligible !== true) {
     return null;
   }
 
@@ -630,6 +631,8 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
     return null;
   }
 
+  const originDemandId = await getValidOriginDemandId(input);
+
   const createdCcrtDemand = await kdb
     .insertInto('demands_chaleur_renouvelable')
     .values({
@@ -652,6 +655,7 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
       last_name: input.lastName,
       occupant_status: input.occupantStatus,
       organization_name: input.organizationName,
+      origin_demand_id: originDemandId,
       outdoor_space: input.outdoorSpace,
       phone: input.phone,
       project_status: input.projectStatus,
@@ -672,6 +676,24 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
   });
 
   return createdCcrtDemand.id;
+};
+
+const getValidOriginDemandId = async (input: DemandeChaleurRenouvelable) => {
+  if (!input.originDemandId) {
+    return null;
+  }
+
+  const originDemand = await kdb
+    .selectFrom('demands')
+    .select(['id', 'legacy_values'])
+    .where('id', '=', input.originDemandId)
+    .where('deleted_at', 'is', null)
+    .executeTakeFirst();
+
+  const originDemandEmail = originDemand?.legacy_values.Mail?.trim().toLowerCase();
+  const inputEmail = input.email.trim().toLowerCase();
+
+  return originDemand?.legacy_values.Status === DEMANDE_STATUS.UNREALISABLE && originDemandEmail === inputEmail ? originDemand.id : null;
 };
 
 const notifyCcrtOfNewDemandeChaleurRenouvelable = async ({

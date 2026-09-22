@@ -462,6 +462,7 @@ function HeatNetworkDemandForm({
       lastName: value.lastName,
       occupantStatus: value.occupantStatus,
       organizationName,
+      originDemandId: params.originDemandId,
       outdoorSpace: espaceExterieur,
       phone: value.phone,
       projectStatus: value.projectStatus,

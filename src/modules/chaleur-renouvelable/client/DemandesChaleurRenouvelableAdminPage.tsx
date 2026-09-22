@@ -121,11 +121,6 @@ export default function DemandesChaleurRenouvelableAdminPage() {
   const columns: ColumnDef<DemandesChaleurRenouvelableAdminItem>[] = useMemo(
     () => [
       {
-        accessorKey: 'id',
-        header: 'ID',
-        width: '260px',
-      },
-      {
         accessorFn: (row) => row.created_at,
         cellType: 'DateTime',
         enableGlobalFilter: false,

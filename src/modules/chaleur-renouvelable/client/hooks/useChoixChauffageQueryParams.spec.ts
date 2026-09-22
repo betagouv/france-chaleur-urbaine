@@ -75,4 +75,12 @@ describe('choixChauffageQueryParsers', () => {
 
     expect(serializeChoixChauffageQueryParams({ dpe: 'E' })).toStrictEqual('?dpe=E');
   });
+
+  it('serializes the origin demand id used by the non-realizable email flow', () => {
+    const serializeChoixChauffageQueryParams = createSerializer(choixChauffageQueryParsers);
+
+    expect(serializeChoixChauffageQueryParams({ originDemandId: '00000000-0000-4000-8000-000000000301' })).toStrictEqual(
+      '?originDemandId=00000000-0000-4000-8000-000000000301'
+    );
+  });
 });

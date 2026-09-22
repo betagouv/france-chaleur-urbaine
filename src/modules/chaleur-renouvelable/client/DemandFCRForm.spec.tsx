@@ -15,6 +15,7 @@ vi.mock('@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParam
       habitantsMoyen: null,
       modeEauChaudeSanitaire: 'Individuel',
       nbLogements: null,
+      originDemandId: null,
       surfaceMoyenne: null,
       typeLogement: 'immeuble_chauffage_collectif',
       typeRadiateur: 'radiateur-eau',

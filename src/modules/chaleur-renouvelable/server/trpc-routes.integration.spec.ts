@@ -13,7 +13,7 @@ import { fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { kdb, sql } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
-import { cleanDatabase, seedTableUser } from '@/tests/fixtures';
+import { cleanDatabase, seedCcrtExperimentationTerritory, seedTableUser } from '@/tests/fixtures';
 import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
@@ -83,6 +83,23 @@ async function seedDepartmentPermission(userId: string, departmentCode: string) 
     .execute();
 }
 
+async function seedOriginDemand(status = DEMANDE_STATUS.UNREALISABLE) {
+  return await kdb
+    .insertInto('demands')
+    .values({
+      legacy_values: JSON.stringify({
+        Adresse: '10 rue du test 13001 Marseille',
+        'Date de la demande': '2026-09-01T12:00:00.000Z',
+        Logement: 18,
+        Mail: 'contact@example.com',
+        Status: status,
+      }),
+      validated: true,
+    })
+    .returning(['id'])
+    .executeTakeFirstOrThrow();
+}
+
 function buildCcrtExperimentationDemandInput(overrides: Partial<DemandeChaleurRenouvelable> = {}) {
   return {
     address: '10 rue du test 13001 Marseille',
@@ -115,6 +132,7 @@ function buildCcrtExperimentationDemandInput(overrides: Partial<DemandeChaleurRe
     lastName: 'Test',
     occupantStatus: 'Syndicat de copropriété',
     organizationName: 'Syndicat test',
+    originDemandId: null,
     outdoorSpace: 'jardinCours',
     phone: '0605040302',
     projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],
@@ -130,6 +148,7 @@ function buildCcrtExperimentationDemandInput(overrides: Partial<DemandeChaleurRe
 describe('batEnrRouter', () => {
   beforeEach(async () => {
     await cleanDatabase();
+    await seedCcrtExperimentationTerritory();
     vi.clearAllMocks();
   });
 
@@ -324,6 +343,40 @@ describe('batEnrRouter', () => {
           id: result.id,
         },
         sentEmailKeys: ['demands.ccrt.nouvelle-demande-chaleur-renouvelable'],
+      });
+    });
+
+    it('crée une demande chaleur renouvelable liée depuis le lien email même quand le réseau est éligible', async () => {
+      const originDemand = await seedOriginDemand();
+
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
+        buildCcrtExperimentationDemandInput({
+          originDemandId: originDemand.id,
+        })
+      );
+
+      const createdDemandeChaleurRenouvelable = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['id', 'is_public_advisor_selected', 'origin_demand_id'])
+        .where('id', '=', result.id ?? '')
+        .executeTakeFirstOrThrow();
+      const createdDemands = await kdb.selectFrom('demands').select(['id']).where('id', '<>', originDemand.id).execute();
+
+      expect({
+        createdDemandeChaleurRenouvelable,
+        createdDemands,
+        result,
+      }).toStrictEqual({
+        createdDemandeChaleurRenouvelable: {
+          id: result.id,
+          is_public_advisor_selected: false,
+          origin_demand_id: originDemand.id,
+        },
+        createdDemands: [],
+        result: {
+          demandSubmissionResult: null,
+          id: result.id,
+        },
       });
     });
 

@@ -50,7 +50,7 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
       [
         'demands.demandeur.raccordement-non-realisable',
         { email: 'demandeur@example.fr', id: demandId },
-        { address: '10 Rue de Rivoli 75001 Paris' },
+        { address: '10 Rue de Rivoli 75001 Paris', originDemandId: demandId },
       ],
     ]);
     expect(createdEvent.mock.calls).toStrictEqual([
@@ -88,6 +88,7 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
         {
           address: '10 Rue de Rivoli 75001 Paris',
           alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière à bois', 'PAC air-eau collective'],
+          originDemandId: demandId,
           simulationUrl: '/chaleur-renouvelable/resultat?adresse=10+Rue+de+Rivoli+75001+Paris',
         },
       ],

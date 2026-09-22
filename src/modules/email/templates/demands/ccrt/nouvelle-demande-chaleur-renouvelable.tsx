@@ -4,12 +4,11 @@ import {
   typeLogementOptions,
   typeRadiateurOptions,
 } from '@/modules/chaleur-renouvelable/constants';
-import { Button, Layout, Link, Note, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
+import { Button, Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
 
 const NouvelleDemandeChaleurRenouvelable = ({
   demand,
-  demandId,
   status,
 }: {
   demand: DemandeChaleurRenouvelable;
@@ -29,10 +28,6 @@ const NouvelleDemandeChaleurRenouvelable = ({
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Statut</TableColumn>
           <TableColumn>{status}</TableColumn>
-        </TableRow>
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Demande</TableColumn>
-          <TableColumn>{demandId}</TableColumn>
         </TableRow>
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Adresse</TableColumn>
@@ -121,8 +116,6 @@ const NouvelleDemandeChaleurRenouvelable = ({
           Accéder aux demandes
         </Button>
       </Section>
-
-      <Note>Cette notification est envoyée automatiquement à la création d'une demande chaleur renouvelable.</Note>
     </Layout>
   );
 };
@@ -149,6 +142,7 @@ export const scenarios = defineEmailScenarios<typeof NouvelleDemandeChaleurRenou
         lastName: 'Test',
         occupantStatus: 'Syndicat de copropriété',
         organizationName: 'Syndicat test',
+        originDemandId: null,
         outdoorSpace: 'jardinCours',
         phone: '0605040302',
         projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],

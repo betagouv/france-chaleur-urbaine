@@ -48,7 +48,7 @@ export default function ChoixChauffageResults() {
   } = useChoixChauffageResults();
   const params = urlParams.params;
   const isCcrtExperimentationBuildingEligible = isCcrtExperimentationEligible(codeDepartement, effectiveTypeLogement);
-  const isHeatNetworkEligible = situation.eligibiliteReseauChaleur?.isEligible === true;
+  const isHeatNetworkEligible = situation.eligibiliteReseauChaleur?.isEligible === true && !situation.hasAlreadyReceivedHeatNetworkRefusal;
   const heatNetworkSolution = situation.eligibiliteReseauChaleur
     ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network')
     : undefined;

@@ -290,6 +290,7 @@ export interface DemandsChaleurRenouvelable {
   is_public_advisor_selected: Generated<boolean>;
   last_name: string;
   occupant_status: OccupantStatus;
+  origin_demand_id: string | null;
   outdoor_space: EspaceExterieur;
   organization_name: string | null;
   phone: Generated<string>;

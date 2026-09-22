@@ -54,7 +54,7 @@ Détail des quatre automatismes :
 
 - **Notification des nouvelles demandes** (lundi à vendredi, 10h) : envoyée si l'option « recevoir les nouvelles demandes » est activée. Ne concerne que les demandes validées, affectées à un réseau de son périmètre, non encore notifiées et dont le statut n'est pas « Non réalisable ». Si aucun gestionnaire n'a de permission sur le réseau, la demande n'est **pas** marquée comme notifiée — elle sera signalée dès qu'une permission sera ajoutée.
 - **Rappel des demandes en attente** (mardi, 9h55) : envoyé si l'option « recevoir les rappels » est activée, pour les demandes restées « À traiter » (ou sans statut) plus de <Rule id="unhandledDemandReminderDays" /> après leur notification.
-- **Email au demandeur si le raccordement est refusé** : quand le gestionnaire classe une demande en « Non réalisable », le demandeur reçoit l'email [« Raccordement non réalisable »](/admin/emails?type=demands.demandeur.raccordement-non-realisable), qui réoriente vers le simulateur de modes de chauffage alternatifs. La demande reste conservée.
+- **Email au demandeur si le raccordement est refusé** : quand le gestionnaire classe une demande en «&nbsp;Non réalisable&nbsp;», le demandeur reçoit l'email [«&nbsp;Raccordement non réalisable&nbsp;»](/admin/emails?type=demands.demandeur.raccordement-non-realisable), qui réoriente vers le simulateur de modes de chauffage alternatifs. La demande reste conservée. Si le demandeur crée ensuite une demande d'accompagnement chaleur renouvelable depuis ce lien, la demande de raccordement est grisée dans l'espace gestionnaire et ses actions de suivi deviennent indisponibles.
 - **Relance des demandeurs** (lundi, 10h05) : à <Rule id="firstRelanceDelayMonths" /> puis <Rule id="secondRelanceDelayDays" /> après la demande, FCU demande directement au demandeur s'il a été recontacté — uniquement pour les demandes éligibles en chauffage collectif. **La réponse du demandeur est visible de l'équipe FCU** : l'inaction d'un gestionnaire finit donc par se voir.
 
 ## Déroulé type
@@ -67,6 +67,7 @@ Détail des quatre automatismes :
 ## Ce qu'il ne peut pas faire
 
 - Voir des demandes hors de ses permissions, ou non validées par l'équipe FCU.
+- Modifier une demande de raccordement verrouillée parce que le demandeur a créé une demande d'accompagnement chaleur renouvelable à la suite d'un refus.
 - Valider, supprimer ou réaffecter directement une demande.
 - Modifier les informations du demandeur ou les données d'éligibilité.
 - Gérer d'autres utilisateurs.

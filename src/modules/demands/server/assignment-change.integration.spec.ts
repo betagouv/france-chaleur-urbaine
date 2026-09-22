@@ -4,7 +4,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { PendingAssignmentChange } from '@/modules/demands/types';
 import { kdb } from '@/server/db/kysely';
-import { cleanDatabase, createLineGeometry, seedProEligibilityTestsAddress, seedReseauDeChaleur, seedTableUser } from '@/tests/fixtures';
+import {
+  cleanDatabase,
+  createLineGeometry,
+  seedDemandeChaleurRenouvelable,
+  seedProEligibilityTestsAddress,
+  seedReseauDeChaleur,
+  seedTableUser,
+} from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
 import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
 
@@ -12,6 +19,7 @@ vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
 }));
 
+import { demandLockReasons } from '../constants';
 import { changeDemandAssignment, rejectDemandAssignmentChangeRequest } from './admin-operations';
 import { cancelDemandAssignmentChangeRequest, requestDemandAssignmentChange } from './gestionnaire-operations';
 
@@ -181,6 +189,16 @@ describe('désaffectation / réaffectation flow', () => {
 
       await expect(requestDemandAssignmentChange(demand.id, null, null, null, gestionnaireId)).rejects.toThrow(
         new TRPCError({ code: 'CONFLICT', message: 'Une demande de réaffectation est déjà en attente' })
+      );
+    });
+
+    it('throws FORBIDDEN si une demande chaleur renouvelable liée existe', async () => {
+      await setupNetwork(100);
+      const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
+      await seedDemandeChaleurRenouvelable({ origin_demand_id: demand.id });
+
+      await expect(requestDemandAssignmentChange(demand.id, null, null, 'comment', gestionnaireId)).rejects.toThrow(
+        new TRPCError({ code: 'FORBIDDEN', message: demandLockReasons.fcr_demande_created.errorMessage })
       );
     });
   });

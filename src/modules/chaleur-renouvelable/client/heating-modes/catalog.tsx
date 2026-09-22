@@ -54,6 +54,7 @@ export const modesDeChauffage = {
         </>
       ),
       estPossible: (situation) =>
+        !situation.hasAlreadyReceivedHeatNetworkRefusal &&
         (situation.eligibiliteReseauChaleur?.isEligible ?? false) &&
         isNearHeatNetwork(situation) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),

@@ -100,6 +100,7 @@ export type Situation = {
   nbLogements: number;
   surfaceMoyenne: number;
   habitantsMoyen: number;
+  hasAlreadyReceivedHeatNetworkRefusal: boolean;
   eligibiliteReseauChaleur: HeatNetwork | null;
   eligibiliteReseauFroid: ColdNetworkEligibility | null;
   geothermalNappeGmi: number | null;
@@ -447,6 +448,7 @@ export const zDemandeChaleurRenouvelable = z.object({
   lastName: z.string(),
   occupantStatus: z.enum(OCCUPANT_STATUS_VALUES),
   organizationName: z.string().nullable().default(null),
+  originDemandId: z.uuidv4().nullable().default(null),
   outdoorSpace: z.enum(ESPACE_EXTERIEUR_VALUES),
   phone: z
     .string()
