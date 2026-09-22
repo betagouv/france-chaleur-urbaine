@@ -5,7 +5,7 @@ fileignoreconfig:
   - filename
   - filesize
 - filename: .github/workflows/ci.yml
-  checksum: e229be0744f71907a12616b38fa3730caba6aa8f96ed5178b63283d3d03b3558
+  checksum: 8a1b88288c552d05f6a3f0f28e0bb9167b9f55daf94e2a9fb34e6d32894969b8
 - filename: docs/import_qpv.md
   checksum: c1d6b94bb550a972f1d97490a39dc3dc234b03c9ac5c7426cc85b5518a39966d
 - filename: docs/mise_a_jour_donnees_fcu.md
@@ -20,6 +20,8 @@ fileignoreconfig:
   checksum: a01d97790f005033a30a743e86d13ec8946d9c22c2e9d7e96378030c321eca4a
 - filename: scripts/airtable/dump-schema.ts
   checksum: a3ea18c599994f5715090b33dc8e576e260181c3263e08e3f7f04133d1b57d03
+- filename: scripts/batenr/import-batenr-data.sh
+  checksum: a5ca157984a05e458d8a8e83a74a06d45870e610c6b16cfb568e158b38c0b46f
 - filename: scripts/copyRemoteTableToLocal.sh
   checksum: 2b379d50d78806a26e79c2c45562529bdac4115487af223b33863153c7be5b0d
 - filename: scripts/data-import/adapters/zones-opportunite-fort-froid.ts
@@ -53,6 +55,10 @@ fileignoreconfig:
   - filesize
 - filename: src/environment.ts
   checksum: 709d0cbd7d8fa33bd9b7db0d90000c1eb6adb9fbf878e40dc956d1cb5ba6cc50
+- filename: src/modules/chaleur-renouvelable/server/france-renov-spaces.spec.ts
+  checksum: 979c46d453b55a379026ab388098aa3d562993dd76869b797c511e5057b853ac
+- filename: src/modules/chaleur-renouvelable/server/france-renov-spaces.ts
+  checksum: 54403c92867852fb5afabd8ca59ab8c70093fcb554a197c922e252cc6e0959db
 - filename: src/modules/email/react-email/templates/reset-password.tsx
   checksum: ce24c239f7ded12411bc26d68dee01a10be5878b092415b3ee30a9094591ee5d
 - filename: src/modules/opendata/OPENDATA.md
@@ -70,12 +76,6 @@ fileignoreconfig:
 - filename: src/utils/validation.spec.ts
   ignore_detectors:
   - filecontent
-- filename: scripts/batenr/import-batenr-data.sh
-  checksum: a5ca157984a05e458d8a8e83a74a06d45870e610c6b16cfb568e158b38c0b46f
-- filename: src/modules/chaleur-renouvelable/server/france-renov-spaces.ts
-  checksum: 54403c92867852fb5afabd8ca59ab8c70093fcb554a197c922e252cc6e0959db
-- filename: src/modules/chaleur-renouvelable/server/france-renov-spaces.spec.ts
-  checksum: 979c46d453b55a379026ab388098aa3d562993dd76869b797c511e5057b853ac
 scopeconfig:
 - scope: node
 allowed_patterns:
