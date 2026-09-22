@@ -13,6 +13,6 @@
 Branch names: descriptive, no prefix convention. Commits: no strict format — explain the **why**, not the what.
 
 ## Protected files
-- **Never commit**: `.env.local`, credentials, API keys (GitGuardian pre-commit via `.gitguardian.yaml`).
+- **Never commit**: `.env.local`, credentials, API keys (pre-commit hook: Husky + Talisman in `.husky/pre-commit`; `.gitguardian.yaml` configures GitGuardian scanning).
 - **Review carefully**: `src/server/db/migrations/`, `package.json`, CI config.
 - **Auto-generated (don't edit)**: `pnpm-lock.yaml`, `src/server/db/kysely/database.ts` (from `pnpm db:sync`).
