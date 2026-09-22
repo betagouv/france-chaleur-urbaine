@@ -10,6 +10,7 @@ import { businessRules } from '@/modules/app/business-rules';
 import { linkDemandsByEmail } from '@/modules/demands/server/account-linking';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
+import { ensurePasswordNotPwned } from '@/modules/security/server/pwned-passwords';
 import type { Entreprise, StructureType } from '@/modules/users/constants';
 import { findEtablissementBySiret } from '@/modules/users/server/service';
 import { kdb, sql } from '@/server/db/kysely';
@@ -45,6 +46,7 @@ export const register = async ({
   if (existingUser) {
     throw new BadRequestError(`L'utilisateur associé à l'email '${email}' existe déjà. Connectez-vous.`);
   }
+  await ensurePasswordNotPwned(password, 'register');
 
   // Valide l'entreprise par le siret
   const verifiedEntreprise = entreprise ? await findEtablissementBySiret(entreprise.siret) : null;
@@ -228,6 +230,7 @@ export const changePasswordWithResetToken = async (params: { password: string; t
   if (user.reset_token !== token.resetToken) {
     throw new BadRequestError('Lien invalide. Veuillez réinitialiser votre mot de passe.');
   }
+  await ensurePasswordNotPwned(password, 'reset_password');
 
   await kdb
     .updateTable('users')

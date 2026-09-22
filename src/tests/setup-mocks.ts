@@ -38,6 +38,7 @@ vi.mock('@/server/config', () => ({
     AIRTABLE_KEY_API: 'test_airtable_key',
     databaseUrl: process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test',
     GEOPLATEFORME_ALTIMETRY_API_BASE_URL: 'https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest',
+    PWNED_PASSWORDS_CHECK_ENABLED: false, // never call the Have I Been Pwned API from tests
   },
 }));
 

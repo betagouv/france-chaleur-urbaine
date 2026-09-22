@@ -37,6 +37,7 @@ const serverConfigSchema = {
   METRICS_AUTH_TOKEN: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PRINT_TIPPECANOE_OUTPUT_TO_LOGS: z.boolean().default(false),
+  PWNED_PASSWORDS_CHECK_ENABLED: z.boolean().default(true), // rejects passwords known in public breaches (Have I Been Pwned k-anonymity API), fails open if the API is down
   RNB_API_BASE_URL: z.string().default('https://rnb-api.beta.gouv.fr/api/alpha'),
 };
 
