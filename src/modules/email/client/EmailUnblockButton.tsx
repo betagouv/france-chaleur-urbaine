@@ -4,10 +4,13 @@ import { useDialogState } from '@/hooks/useDialogState';
 import { getEmailBlockReasonLabel } from '@/modules/email/constants';
 import { notify, toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
+import cx from '@/utils/cx';
 
 type EmailUnblockButtonProps = {
   email: string;
   reasonCode: string;
+  /** `xs` shrinks the DSFR small button (32px) down to the icon, for dense cells. */
+  size?: 'sm' | 'xs';
   /** Called after a successful unblock, to refresh the list the button lives in. */
   onUnblocked?: () => void | Promise<void>;
 };
@@ -16,7 +19,7 @@ type EmailUnblockButtonProps = {
  * Icon shortcut to unblock an address at Brevo, behind a confirmation.
  * Disabled when writes are off on this instance (the server would refuse anyway).
  */
-function EmailUnblockButton({ email, reasonCode, onUnblocked }: EmailUnblockButtonProps) {
+function EmailUnblockButton({ email, reasonCode, size = 'sm', onUnblocked }: EmailUnblockButtonProps) {
   const confirmDialog = useDialogState();
   const utils = trpc.useUtils();
   // One cached request per page (React Query dedupes it across rows).
@@ -37,6 +40,7 @@ function EmailUnblockButton({ email, reasonCode, onUnblocked }: EmailUnblockButt
         size="small"
         priority="tertiary no outline"
         iconId="fr-icon-lock-unlock-line"
+        className={cx(size === 'xs' && 'min-h-0! p-0.5! before:m-0!')}
         title={canUnblock ? 'Réactiver la réception des emails côté Brevo' : 'Déblocage désactivé sur cette instance'}
         disabled={!canUnblock}
         stopPropagation

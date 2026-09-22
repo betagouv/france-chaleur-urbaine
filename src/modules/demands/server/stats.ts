@@ -91,19 +91,21 @@ export const getReseauxStats = async () => {
       'r.puissance_totale_MW',
 
       // Users with permissions on this network
-      sql<FrontendType<Selectable<Pick<Users, 'id' | 'email' | 'last_connection'>>>[]>`
+      sql<(FrontendType<Selectable<Pick<Users, 'id' | 'email' | 'last_connection'>>> & { email_blocked_reason: string | null })[]>`
         COALESCE(
           (
             SELECT json_agg(
               json_build_object(
                 'id', u.id,
                 'email', u.email,
-                'last_connection', u.last_connection
+                'last_connection', u.last_connection,
+                'email_blocked_reason', ebc.reason_code
               )
               ORDER BY u.last_connection DESC NULLS LAST
             )
             FROM users u
             JOIN user_permissions up ON up.user_id = u.id
+            LEFT JOIN email_blocked_contacts ebc ON ebc.email = lower(u.email)
             WHERE up.resource_id = ${sql.ref('r.id_fcu')}::text
               AND up.type = ${sql.ref('r.network_type')}
               AND u.active IS TRUE

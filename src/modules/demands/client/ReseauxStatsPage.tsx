@@ -14,6 +14,7 @@ import Icon from '@/components/ui/Icon';
 import TimeAgo from '@/components/ui/TimeAgo';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
+import EmailBlockedBadge from '@/modules/email/client/EmailBlockedBadge';
 import { reseauDeChaleurNonClasseColor } from '@/modules/map/client/layers/specs/reseauxDeChaleur';
 import { reseauxEnConstructionColor } from '@/modules/map/client/layers/specs/reseauxEnConstruction';
 import { notify } from '@/modules/notification';
@@ -161,18 +162,28 @@ export default function ReseauxStatsPage() {
                         <Tag as="span" key={user.id} className="bg-gray-100 text-gray-800">
                           <div className="flex flex-col leading-tight break-all text-xs">
                             <span>{user.email}</span>
-                            {user.last_connection ? (
-                              <TimeAgo
-                                date={user.last_connection}
-                                className={cx(lastConnectionClassName)}
-                                prefix={<Icon name="fr-icon-time-line" size="xs" className="mr-1" title="Dernière connexion" />}
-                              />
-                            ) : (
-                              <span className={cx(lastConnectionClassName)}>
-                                <Icon name="fr-icon-time-line" size="xs" className="mr-1" title="Dernière connexion" />
-                                Jamais connecté
-                              </span>
-                            )}
+                            <span className="inline-flex flex-wrap items-center gap-x-1 whitespace-nowrap">
+                              {user.last_connection ? (
+                                <TimeAgo
+                                  date={user.last_connection}
+                                  className={cx(lastConnectionClassName)}
+                                  prefix={<Icon name="fr-icon-time-line" size="xs" className="mr-1" title="Dernière connexion" />}
+                                />
+                              ) : (
+                                <span className={cx(lastConnectionClassName)}>
+                                  <Icon name="fr-icon-time-line" size="xs" className="mr-1" title="Dernière connexion" />
+                                  Jamais connecté
+                                </span>
+                              )}
+                              {user.email_blocked_reason && (
+                                <EmailBlockedBadge
+                                  email={user.email}
+                                  reasonCode={user.email_blocked_reason}
+                                  size="xs"
+                                  onUnblocked={() => utils.demands.admin.getReseauxStats.invalidate()}
+                                />
+                              )}
+                            </span>
                           </div>
                         </Tag>
                       );
@@ -334,6 +345,14 @@ export default function ReseauxStatsPage() {
         visible: false,
       },
       {
+        accessorFn: (row) => (row.users.some((user) => user.email_blocked_reason) ? 'Oui' : 'Non'),
+        filtersDialogLabel: 'Utilisateurs aux emails bloqués (Brevo)',
+        filterType: 'Facets',
+        header: 'Emails bloqués',
+        id: 'email_blocked',
+        visible: false,
+      },
+      {
         accessorFn: (row) => row.allTime.pending,
         filtersDialogDescription: 'Déplacez le curseur gauche pour fixer un minimum.',
         filtersDialogLabel: 'Demandes en attente (toutes périodes)',
@@ -343,7 +362,7 @@ export default function ReseauxStatsPage() {
         visible: false,
       },
     ],
-    [createReminder, updateReminder, deleteReminder, updateNotes]
+    [createReminder, updateReminder, deleteReminder, updateNotes, utils]
   );
 
   return (

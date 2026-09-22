@@ -30,7 +30,7 @@ src/modules/email/
 └── client/
     ├── EmailDeliverabilityPanel.tsx  # Statut de délivrabilité d'une adresse (admin) + déblocage + historique
     ├── EmailEventsList.tsx           # Timeline des événements Brevo d'une adresse
-    ├── EmailBlockedBadge.tsx         # Badge « Emails bloqués » + raccourci de déblocage (tableaux users / demandes)
+    ├── EmailBlockedBadge.tsx         # Badge « Emails bloqués » + raccourci de déblocage (tableaux users / demandes / stats réseaux, taille `xs` pour les cellules denses)
     ├── EmailUnblockButton.tsx        # Bouton icône de déblocage avec confirmation, grisé si écritures désactivées
     └── admin/
         ├── EmailsPage.tsx                # Visualiseur dans /admin/emails
@@ -46,7 +46,7 @@ L'envoi SMTP réussit même quand Brevo bloque le destinataire (hard bounce, dé
 - **Déblocage** (admin uniquement, pas de self-service : les utilisateurs ne sont pas censés pouvoir se désinscrire) : `unblockEmail(email, { adminUserId })` appelle `DELETE /smtp/blockedContacts/{email}`, supprime la ligne, trace `*_email_unblocked` (source `admin`). Refusé (`FORBIDDEN`) si `BREVO_ALLOW_WRITES` est faux : le compte Brevo est partagé par tous les environnements, seule la prod peut écrire.
 - **Dates Brevo** : `blockedAt` (liste des bloqués) est l'heure locale du compte (Europe/Paris) avec un suffixe `Z` trompeur, alors que les événements portent un vrai offset (`+02:00`) ; toujours passer par `parseBrevoDate()` (`brevo-client.ts`), jamais `new Date()` sur une date Brevo.
 - **Config** : `BREVO_API_KEY` (optionnelle, tout est no-op sans elle), `BREVO_ALLOW_WRITES` (défaut `false`).
-- **Listes admin** : `users.list()` et `demands.admin.list` exposent `email_blocked_reason` (left join sur la table) pour les badges et filtres.
+- **Listes admin** : `users.list()`, `demands.admin.list` et `demands.admin.getReseauxStats` (par utilisateur du réseau) exposent `email_blocked_reason` (left join sur la table) pour les badges et filtres.
 
 | Procédure | Type | Auth | Description |
 |-----------|------|------|-------------|
