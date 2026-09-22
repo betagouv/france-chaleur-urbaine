@@ -26,7 +26,9 @@ import { downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
+import { serverConfig } from '@/server/config';
 import { aggregateMonthlyStats } from '@/server/cron/aggregateMonthlyStats';
+import { anonymizeDatabase } from '@/server/db/anonymize';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { registerTestCommands } from '@/tests/commands';
@@ -341,6 +343,30 @@ program
     else {
       await runBash(`pnpm db:pull:prod --data-only ${selectedTables.map((t) => `"${t}"`).join(' ')}`);
     }
+  });
+
+program
+  .command('db:anonymize')
+  .description('Pseudonymise les données personnelles de la base locale (à lancer après db:bootstrap). Refuse toute base distante.')
+  .option('--yes', 'Ne demande pas de confirmation', false)
+  .action(async ({ yes }) => {
+    if (!yes) {
+      const { confirmed } = (await prompts({
+        initial: false,
+        message: 'Remplacer les identités, contacts, commentaires, emails, IP et jetons de la base locale ? (irréversible)',
+        name: 'confirmed',
+        type: 'confirm',
+      })) as { confirmed: boolean };
+      if (!confirmed) {
+        console.warn('Opération annulée.');
+        return;
+      }
+    }
+    const report = await anonymizeDatabase(serverConfig.DATABASE_URL);
+    console.table(report);
+    console.info(
+      "Comptes non admin anonymisés en <role>-<id>@fcu.local. Les admins et les comptes @fcu.local sont conservés, aucun mot de passe n'est modifié."
+    );
   });
 
 program
