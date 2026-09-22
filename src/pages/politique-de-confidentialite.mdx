@@ -1,0 +1,134 @@
+import SimplePage from '@/components/shared/page/SimplePage';
+import { CookieConsentButton } from '@/components/ConsentBanner/CookieConsentButton';
+
+<SimplePage title="Politique de confidentialité" description="Politique de protection des données personnelles de la plateforme France Chaleur Urbaine" layout="center">
+
+<h1 className="fr-sr-only">Politique de confidentialité</h1>
+
+# Politique de confidentialité
+
+**Mise à jour le 22/09/2026**
+
+France Chaleur Urbaine (ci-après « le Service ») est un service public numérique édité par l'Agence de la transition écologique (ADEME), établissement public à caractère industriel et commercial dont le siège est situé 20, avenue du Grésillé, 49000 Angers. L'ADEME est responsable des traitements de données à caractère personnel décrits dans cette page, au sens du Règlement général sur la protection des données (RGPD) et de la loi « Informatique et libertés » du 6 janvier 1978 modifiée.
+
+Cette page décrit, pour chaque usage du Service, les données collectées, leur finalité, leur base légale, les personnes qui y ont accès et leur durée de conservation. Elle décrit aussi vos droits et la manière de les exercer.
+
+## 1. Les traitements de données réalisés par le Service
+
+### 1.1. Test d'éligibilité d'une adresse
+
+Lorsque vous testez une adresse, celle-ci est envoyée à la Base Adresse Nationale pour être géolocalisée, puis comparée aux tracés des réseaux de chaleur et de froid. L'adresse testée n'est pas rattachée à votre identité. Un événement technique de suivi (page, résultat du test, adresse IP) est conservé pour mesurer l'usage du Service et prévenir les abus ; l'adresse IP est effacée après 90 jours.
+
+- Base légale : mission d'intérêt public de l'ADEME.
+- Données : adresse testée, adresse IP et navigateur (temporairement).
+
+### 1.2. Demande de raccordement ou de mise en relation
+
+Lorsque vous déposez une demande, le Service la transmet au gestionnaire du réseau de chaleur ou de froid le plus proche de l'adresse indiquée, afin qu'il vous recontacte, ainsi qu'à la collectivité et à l'agence locale de l'énergie compétentes sur le territoire, qui suivent les demandes de leur périmètre.
+
+- Base légale : mission d'intérêt public de l'ADEME.
+- Données : nom, prénom, adresse électronique, numéro de téléphone, adresse du bâtiment, type et nombre de logements, mode de chauffage actuel, commentaires que vous saisissez, origine de la demande (page ou campagne).
+- Destinataires : l'équipe France Chaleur Urbaine ; le gestionnaire du réseau concerné et, s'il en dispose, son outil de gestion de la relation client raccordé au Service ; la collectivité et l'agence locale de l'énergie du territoire ; les prestataires techniques listés à la section 3.
+- Durée de conservation : trois ans après la clôture de la demande, puis anonymisation.
+
+### 1.3. Compte utilisateur
+
+La création d'un compte est nécessaire pour les professionnels, les gestionnaires de réseaux, les collectivités et les agences locales de l'énergie, et facultative pour les particuliers qui souhaitent suivre leurs demandes.
+
+- Base légale : mission d'intérêt public de l'ADEME et acceptation des conditions générales d'utilisation.
+- Données : adresse électronique, mot de passe (stocké sous forme d'empreinte, jamais en clair), nom, prénom, numéro de téléphone, structure et entreprise (numéro SIREN le cas échéant), date de dernière connexion, préférences de notification, signature des emails envoyés depuis le Service.
+- Destinataires : l'équipe France Chaleur Urbaine.
+- Durée de conservation : deux ans après la dernière connexion ; un compte jamais activé est supprimé après trois mois.
+
+### 1.4. Tests d'adresses en masse (professionnels)
+
+Les professionnels peuvent tester l'éligibilité d'une liste d'adresses et être notifiés lorsque leur éligibilité change.
+
+- Base légale : mission d'intérêt public de l'ADEME.
+- Données : adresses importées, résultats d'éligibilité et leur historique.
+- Destinataires : le compte professionnel auteur du test, l'équipe France Chaleur Urbaine.
+- Durée de conservation : deux ans après le dernier accès au test.
+
+### 1.5. Formulaires de contact, de contribution et de modification de réseau
+
+- Base légale : mission d'intérêt public de l'ADEME.
+- Données : adresse électronique, nom, structure, message, fichiers joints.
+- Destinataires : l'équipe France Chaleur Urbaine.
+- Durée de conservation : un an après le traitement de la demande.
+
+### 1.6. Lettre d'information
+
+Si vous l'acceptez lors de la création de votre compte, votre adresse électronique est utilisée pour vous envoyer des informations sur le Service. Vous pouvez vous désabonner à tout moment depuis chaque message ou en nous écrivant.
+
+- Base légale : consentement.
+- Durée de conservation : jusqu'au retrait du consentement.
+
+### 1.7. Mesure d'audience et amélioration du Service
+
+Le Service utilise Matomo, configuré pour ne pas conserver votre adresse IP et exempté de consentement au sens de la CNIL. D'autres outils de mesure d'audience et d'analyse d'usage ne sont activés qu'avec votre consentement (voir la section 4).
+
+### 1.8. Journaux techniques et sécurité
+
+Les journaux techniques du Service (requêtes, erreurs, tentatives de connexion) servent à assurer son bon fonctionnement et à détecter les abus. Ils ne contiennent ni mot de passe ni contenu de demande. Les échecs de connexion sont journalisés sans l'adresse électronique en clair.
+
+- Base légale : intérêt légitime de l'ADEME à assurer la sécurité du Service et obligation légale de conservation.
+- Durée de conservation : un an.
+
+## 2. Qui a accès à vos données
+
+Les données sont accessibles aux membres habilités de l'équipe France Chaleur Urbaine, aux gestionnaires de réseaux, collectivités et agences locales de l'énergie pour les demandes de leur périmètre uniquement, et aux prestataires techniques ci-dessous pour les seules opérations qui leur sont confiées. L'ADEME peut être tenue de communiquer des données aux autorités publiques habilitées.
+
+## 3. Prestataires techniques
+
+| Prestataire | Rôle | Données concernées | Pays d'hébergement |
+| --- | --- | --- | --- |
+| Scalingo | Hébergement du Service et de sa base de données, sauvegardes | Toutes les données du Service | France |
+| Brevo | Envoi des emails du Service et suivi de leur délivrabilité | Adresses électroniques, contenu des emails envoyés | France (Union européenne) |
+| Grist (Direction interministérielle du numérique) | Outil de gestion interne des demandes et des données réseaux | Données des demandes | France |
+| Airtable | Outil de gestion interne historique, en cours de remplacement par Grist | Données des demandes, fichiers joints | États-Unis, encadré par les clauses contractuelles types de la Commission européenne |
+| Sentry (instance de l'incubateur des services numériques de l'ADEME) | Suivi des erreurs techniques | Traces techniques sans données personnelles | France |
+| Matomo (instance beta.gouv.fr) | Mesure d'audience | Données de navigation anonymisées | France |
+| Base Adresse Nationale, Géoplateforme IGN | Géolocalisation des adresses testées | Adresses testées | France |
+
+Les outils d'analyse soumis à consentement (section 4) sont opérés par des prestataires établis pour certains hors de l'Union européenne ; ils ne reçoivent aucune donnée sans votre accord.
+
+## 4. Cookies et traceurs
+
+Le Service dépose des cookies strictement nécessaires à son fonctionnement (session de connexion, mémorisation de vos choix en matière de cookies) qui ne nécessitent pas de consentement, ainsi que les traceurs suivants.
+
+| Outil | Finalité | Consentement | Durée maximale |
+| --- | --- | --- | --- |
+| Matomo | Mesure d'audience, sans adresse IP ni suivi entre sites | Non requis (exemption CNIL) | 13 mois |
+| PostHog | Analyse d'usage du Service pour l'améliorer | Requis | 13 mois |
+| Hotjar | Analyse d'usage (cartes de chaleur) | Requis | 13 mois |
+| Google (gtag) | Mesure d'audience et de campagnes | Requis | 13 mois |
+| LinkedIn Insight | Mesure de campagnes | Requis | 13 mois |
+
+Votre choix est conservé six mois. Vous pouvez le modifier à tout moment :
+
+<CookieConsentButton />
+
+Pour aller plus loin : [Cookies et traceurs : que dit la loi ?](https://www.cnil.fr/fr/cookies-et-traceurs-que-dit-la-loi) et [Cookies : les outils pour les maîtriser](https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser) sur le site de la CNIL.
+
+## 5. Vos droits
+
+Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et d'opposition sur les données qui vous concernent, ainsi que du droit de retirer votre consentement à tout moment pour les traitements qui en dépendent. Vous pouvez également définir des directives relatives au sort de vos données après votre décès.
+
+Pour exercer ces droits, écrivez à l'équipe du Service à l'adresse [france.chaleur.urbaine@ademe.fr](mailto:france.chaleur.urbaine@ademe.fr), ou au délégué à la protection des données de l'ADEME :
+
+- par email : [rgpd@ademe.fr](mailto:rgpd@ademe.fr) ;
+- par courrier : ADEME, Délégué à la protection des données, 20 avenue du Grésillé, BP 90406, 49004 Angers Cedex 01.
+
+Pour traiter votre demande, il pourra vous être demandé de justifier de votre identité. Une réponse vous sera apportée dans un délai d'un mois.
+
+Si vous estimez, après nous avoir contactés, que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL : [www.cnil.fr/fr/plaintes](https://www.cnil.fr/fr/plaintes), ou par courrier à CNIL, 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07.
+
+## 6. Sécurité
+
+L'ADEME met en œuvre les mesures techniques et organisationnelles adaptées aux risques : hébergement en France, chiffrement des échanges et des données stockées, contrôle des accès selon le rôle de chaque utilisateur, journalisation des actions sensibles, sauvegardes quotidiennes. Le Service ne vous demandera jamais votre mot de passe par email. Un point de contact pour signaler une faille de sécurité est publié à l'adresse [/.well-known/security.txt](/.well-known/security.txt).
+
+## 7. Modifications
+
+L'ADEME peut faire évoluer cette politique, notamment lorsqu'un nouveau prestataire ou un nouveau traitement est mis en place. La date de mise à jour figure en haut de cette page.
+
+</SimplePage>

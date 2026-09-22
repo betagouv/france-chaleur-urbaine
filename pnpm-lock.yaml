@@ -29,9 +29,6 @@ importers:
       '@faker-js/faker':
         specifier: ^10.6.0
         version: 10.6.0
-      '@incubateur-ademe/legal-pages-react':
-        specifier: 0.4.0-next-client.0
-        version: 0.4.0-next-client.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@mapbox/geo-viewport':
         specifier: ^0.5.0
         version: 0.5.0
@@ -1569,15 +1566,6 @@ packages:
     engines: {node: '>=20.9.0'}
     cpu: [x64]
     os: [win32]
-
-  '@incubateur-ademe/legal-pages-markdown@0.4.0-next-client.0':
-    resolution: {integrity: sha512-PSzla0UtbfJMGpX1nAlhcDOJ7JXpfBjnbbNzSb4l7QlrRaZ0bJIyofnz9VeqwcERGKNtwBFw7IGB8nmAR68xcw==}
-
-  '@incubateur-ademe/legal-pages-react@0.4.0-next-client.0':
-    resolution: {integrity: sha512-cFYfRVKbYcrxatpC977l0YoqrWcor+c7Ke+S8AnulSm5Dk+KsyqmcFvu05/uudZWgzI7cMQnnFiszqnIVLum1g==}
-    peerDependencies:
-      react: ^18.3.0
-      react-dom: ^18.3.0
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -5387,10 +5375,6 @@ packages:
   murmurhash-js@1.0.0:
     resolution: {integrity: sha512-TvmkNhkv8yct0SVBSy+o8wYzXjE4Zz3PCesbfs8HiCXXdcTuocApFv11UWlNFWKYsP2okqrhb7JNlSm9InBhIw==}
 
-  mustache@4.2.0:
-    resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
-    hasBin: true
-
   nanoid@3.3.19:
     resolution: {integrity: sha512-Y2tUNy4ouw6tq5oDSKeQYGOyhkUBhNOcGV/02KC+6kd9eDGqdZd++mjMiIDilrBYvjEnCYvVtsuHCuP+okSfug==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -7936,15 +7920,6 @@ snapshots:
 
   '@img/sharp-win32-x64@0.35.4':
     optional: true
-
-  '@incubateur-ademe/legal-pages-markdown@0.4.0-next-client.0': {}
-
-  '@incubateur-ademe/legal-pages-react@0.4.0-next-client.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@incubateur-ademe/legal-pages-markdown': 0.4.0-next-client.0
-      mustache: 4.2.0
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
@@ -12029,8 +12004,6 @@ snapshots:
   ms@2.1.3: {}
 
   murmurhash-js@1.0.0: {}
-
-  mustache@4.2.0: {}
 
   nanoid@3.3.19: {}
 
