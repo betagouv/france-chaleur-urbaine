@@ -6,7 +6,7 @@
 ## Flow
 1. Branch from `dev`.
 2. Open PR → Scalingo spawns a review app (reuses dev DB, no migrations).
-3. CI runs (`.github/workflows/ci.yml`: lint, types, migrations, tests, build).
+3. CI runs (`.github/workflows/ci.yml`: audit blocking on critical vulnerabilities, lint, types, migrations, tests, build). Actions are pinned by SHA; `.github/dependabot.yml` opens npm security-update PRs as soon as a fix exists (no routine version bumps, majors are upgraded by hand) and one grouped monthly PR for the action SHAs.
 4. Merge PR → `dev` auto-deploys to staging.
 5. Production: fast-forward `dev` → `main` → auto-deploys.
 
