@@ -44,6 +44,11 @@ pnpm db:migrate
 pnpm db:bootstrap
 ```
 
+- Pseudonymiser aussitôt les données personnelles de la copie locale (identités, contacts, commentaires, emails, IP, jetons). Les comptes non admin deviennent `<role>-<id>@fcu.local` ; les admins, les comptes `@fcu.local` et tous les mots de passe sont conservés (on se connecte localement avec ses identifiants de production). La commande refuse toute base distante.
+```sh
+pnpm cli db:anonymize
+```
+
 - Si jamais l'étape de bootstrap est trop lente, essayer de récupérer un dump depuis le dashboard Scalingo et l'importer en local (~ 20-30 minutes)
 ```sh
 tar -xzvf 20240XXXXXXXXXX_france_chal_3098.tar.gz

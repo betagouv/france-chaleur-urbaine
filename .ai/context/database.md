@@ -42,4 +42,4 @@ Index patterns: `USING GIN (field jsonb_path_ops)` (JSONB), `USING GIST (geom)` 
 When running SQL via MCP postgres for the user, always show the query at the end in a blockquote: `> **SQL**` + a code block.
 
 ## Seeding
-`pnpm db:bootstrap` (production snapshot via Scalingo CLI) — no seed file. Test users via `pnpm cli users:add`.
+`pnpm db:bootstrap` (production snapshot via Scalingo CLI) — no seed file. **Always follow with `pnpm cli db:anonymize`** (`src/server/db/anonymize.ts`): pseudonymizes identities, contacts, comments, email contents, IPs and partner tokens, keeps addresses/geometries, admin accounts and every password hash; guarded against non-local hosts. Test users via `pnpm cli users:add`.
