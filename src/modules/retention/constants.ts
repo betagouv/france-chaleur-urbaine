@@ -19,7 +19,7 @@ export type RetentionRuleDefinition = {
 export const retentionRuleDefinitions: Record<RetentionRule, RetentionRuleDefinition> = {
   closed_demands: {
     action: 'Anonymisation : nom, prénom, email, téléphone et commentaires effacés ; adresse, réseau, statut et dates conservés',
-    description: `Demandes closes (réalisées, non réalisables ou abandonnées) déposées il y a plus de , ou supprimées depuis plus de `,
+    description: `Demandes closes (réalisées, non réalisables ou abandonnées) déposées il y a plus de ${businessRules.retentionDemandsClosedYears.display}, ou supprimées depuis plus de ${businessRules.retentionDemandsClosedYears.display}`,
     ruleId: 'retentionDemandsClosedYears',
     title: 'Demandes closes',
     transformations: [
