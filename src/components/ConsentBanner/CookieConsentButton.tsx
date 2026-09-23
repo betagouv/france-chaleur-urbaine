@@ -1,13 +1,18 @@
-import { FooterConsentManagementItem } from '@/components/ConsentBanner';
+import Button from '@/components/ui/Button';
 
 /**
  * Opens the DSFR cookie consent modal from a page body (privacy policy).
- * Wraps the footer list item provided by react-dsfr, which is the only public opener.
+ * The modal is created by react-dsfr's consent management with a fixed id; DSFR's JS handles the opening.
  */
 export function CookieConsentButton() {
   return (
-    <ul className="fr-footer__bottom-list">
-      <FooterConsentManagementItem />
-    </ul>
+    <Button
+      className="mb-6"
+      priority="secondary"
+      size="small"
+      nativeButtonProps={{ 'aria-controls': 'fr-consent-modal', 'data-fr-opened': false }}
+    >
+      Gérer mes cookies
+    </Button>
   );
 }
