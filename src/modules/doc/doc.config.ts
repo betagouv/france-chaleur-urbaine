@@ -13,6 +13,7 @@ import PerimetreDoc from './content/perimetre-doc.mdx';
 import ReaffectationDemandes from './content/reaffectation-demandes.mdx';
 import References from './content/references.mdx';
 import RelancesNotifications from './content/relances-notifications.mdx';
+import RetentionDonnees from './content/retention-donnees.mdx';
 import RoleAdmin from './content/role-admin.mdx';
 import RoleCollectivite from './content/role-collectivite.mdx';
 import RoleDemandeur from './content/role-demandeur.mdx';
@@ -136,6 +137,14 @@ export const docPages = [
     slug: 'chaleur-renouvelable',
     theme: 'parcours',
     title: 'Parcours chaleur renouvelable',
+  },
+  {
+    Content: RetentionDonnees,
+    description:
+      "Les durées de conservation des comptes et des demandes, et leur application manuelle par un administrateur depuis l'admin.",
+    slug: 'retention-donnees',
+    theme: 'parcours',
+    title: 'Conservation des données',
   },
   {
     Content: CarteIframes,

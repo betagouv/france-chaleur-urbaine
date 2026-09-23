@@ -1,0 +1,17 @@
+# Conservation des données
+
+Cette page décrit comment les durées de conservation annoncées dans la politique de confidentialité sont appliquées dans l'application. L'application est **manuelle** : un administrateur ouvre la page [Conservation des données](/admin/retention), voit ce que chaque règle archiverait aujourd'hui (nombre et aperçu des plus anciens), puis confirme. Aucun cron ne supprime de données.
+
+## Les règles
+
+| Règle | Concerne | Durée | Ce que fait l'archivage |
+| --- | --- | --- | --- |
+| Comptes jamais activés | Comptes dont l'email n'a jamais été confirmé | <Rule id="retentionAccountsPendingMonths" /> après la création | Suppression du compte |
+| Comptes inactifs | Comptes valides sans connexion (administrateurs exclus) | <Rule id="retentionAccountsInactiveYears" /> après la dernière connexion, ou la création si jamais connecté | Désactivation et anonymisation : email, identité, téléphone, signature effacés, mot de passe invalidé. Les demandes rattachées restent liées au compte anonymisé |
+| Demandes closes | Demandes au statut « Réalisé », « Non réalisable », « Projet abandonné par le prospect », ou supprimées | <Rule id="retentionDemandsClosedYears" /> après la date de dépôt pour une demande close (la date de clôture n'est pas tracée et la date de modification a été réinitialisée par la migration Airtable), ou après la suppression | Anonymisation : nom, prénom, email, téléphone et commentaires effacés ; adresse, réseau, statut, dates et données de logement conservés pour les statistiques |
+
+Ce qui n'est pas couvert par cette page : le formulaire de contact (formulaire du CRM de l'ADEME intégré en iframe, données hors du Service), les formulaires de contribution et de modification de réseau (stockés dans Airtable ou Grist), les tests d'adresses professionnels (rattachés au compte, supprimés avec lui) et les journaux techniques (conservés un an par l'hébergeur).
+
+## Traçabilité
+
+Chaque archivage émet un événement [« Archivage de données (conservation) »](/admin/events?types=data_retention_applied) avec la règle et le nombre d'éléments traités. Un élément anonymisé est reconnaissable à son email commençant par `anonymise-` et n'est plus proposé à l'archivage.
