@@ -6,20 +6,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     ALTER TABLE public.demands_chaleur_renouvelable
       ADD COLUMN IF NOT EXISTS origin_demand_id uuid;
 
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1
-        FROM pg_constraint
-        WHERE conname = 'demands_chaleur_renouvelable_origin_demand_id_fkey'
-      ) THEN
-        ALTER TABLE public.demands_chaleur_renouvelable
-          ADD CONSTRAINT demands_chaleur_renouvelable_origin_demand_id_fkey
-          FOREIGN KEY (origin_demand_id)
-          REFERENCES public.demands(id)
-          ON DELETE SET NULL;
-      END IF;
-    END $$;
+    ALTER TABLE public.demands_chaleur_renouvelable
+      ADD CONSTRAINT demands_chaleur_renouvelable_origin_demand_id_fkey
+      FOREIGN KEY (origin_demand_id)
+      REFERENCES public.demands(id)
+      ON DELETE SET NULL;
 
     CREATE INDEX IF NOT EXISTS demands_chaleur_renouvelable_origin_demand_id_idx
       ON public.demands_chaleur_renouvelable (origin_demand_id);
