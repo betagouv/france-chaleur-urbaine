@@ -1,13 +1,18 @@
-import type { NextApiRequest } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit/next-pages';
 import { serverConfig } from '@/server/config';
 import { AirtableDB } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
 
-export default handleRouteErrors(async function PostRecords(req: NextApiRequest) {
+// Public form endpoint without authentication: same per-IP limit as the other public forms
+const recordsRateLimiter = createNextApiRateLimiter({ path: '/api/airtable/records' });
+
+export default handleRouteErrors(async function PostRecords(req: NextApiRequest, res: NextApiResponse) {
   requirePostMethod(req);
+  await recordsRateLimiter(req, res);
 
   const { type, ...values } = req.body;
 
