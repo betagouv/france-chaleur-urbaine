@@ -28,6 +28,7 @@ export const eventTypes = [
   'demand_survey_submitted',
   'demand_deleted',
   'demand_deleted_by_system',
+  'data_retention_applied',
   'demand_email_sent',
   'demand_unrealizable_email_sent',
   'demand_notification_sent',
@@ -78,6 +79,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   conversion_source_archived: "Archivage d'intégration iframe",
   conversion_source_created: "Création d'intégration iframe",
   conversion_source_updated: "Mise à jour d'intégration iframe",
+  data_retention_applied: 'Archivage de données (conservation)',
   demand_assignment_change_request_cancelled: 'Annulation de demande de réaffectation',
   demand_assignment_change_request_rejected: 'Rejet de demande de réaffectation',
   demand_assignment_change_requested: 'Demande de réaffectation',
@@ -162,6 +164,7 @@ export type EventDataMap = {
   conversion_source_updated: { key: string; label: string };
   demand_created: Record<string, unknown> | null;
   demand_deleted: Record<string, unknown> | null;
+  data_retention_applied: { rule: string; count: number };
   demand_deleted_by_system: { reason?: string; kept_demand_id?: string } | null;
   demand_email_blocked: EmailBlockedEventData;
   demand_email_unblocked: EmailUnblockedEventData;

@@ -193,6 +193,25 @@ export const businessRules = {
     label: 'Validité du lien de réinitialisation',
     value: 3,
   },
+  retentionAccountsInactiveYears: {
+    description: "Sans connexion pendant cette durée, un compte (hors administrateurs) est désactivé et anonymisé lors de l'archivage.",
+    display: '2 ans',
+    label: 'Conservation des comptes inactifs',
+    value: 2,
+  },
+  retentionAccountsPendingMonths: {
+    description: "Un compte dont l'email n'a jamais été confirmé est supprimé passé ce délai lors de l'archivage.",
+    display: '3 mois',
+    label: 'Conservation des comptes non activés',
+    value: 3,
+  },
+  retentionDemandsClosedYears: {
+    description:
+      "Passé ce délai après leur clôture (réalisée, non réalisable, abandonnée ou supprimée), les demandes sont anonymisées lors de l'archivage : identité, coordonnées et commentaires effacés, adresse et statistiques conservées.",
+    display: '3 ans',
+    label: 'Conservation des demandes closes',
+    value: 3,
+  },
   secondRelanceDelayDays: {
     description: 'Délai après le dépôt avant la seconde relance de satisfaction du demandeur.',
     display: '45 jours',
