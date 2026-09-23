@@ -24,6 +24,8 @@ const serverConfigSchema = {
   DATABASE_URL: z.string(),
   GEOPLATEFORME_ALTIMETRY_API_BASE_URL: z.string().default('https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest'),
   GITHUB_CI: z.boolean().default(false),
+  GRIST_ALLOW_WRITES: z.boolean().default(false), // writes to the shared FCU Grist doc: enabled on production only
+  GRIST_API_KEY: z.string().optional(),
   IS_REVIEW_APP: z.boolean().default(false),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   LOG_SQL_QUERIES: z.boolean().default(false),
