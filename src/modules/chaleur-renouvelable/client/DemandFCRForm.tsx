@@ -512,6 +512,7 @@ function HeatNetworkDemandForm({
   const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
   const networkManager = eligibiliteReseauChaleur?.gestionnaire?.trim() || null;
   const isCcrtDemand = isPublicAdvisorSelected || !isHeatNetworkEligible;
+  const nextStepsContext = isCcrtExperimentationBuildingEligible && isCcrtDemand ? 'renewable-advisor' : 'heat-network';
   const shouldShowFranceRenovAdvisor = isPublicAdvisorSelected && !isCcrtExperimentationBuildingEligible;
 
   return (
@@ -699,7 +700,7 @@ function HeatNetworkDemandForm({
         </>
       )}
       <Dialog title="" open={isSubmissionDialogOpen && submissionResult !== null} size="lg" onOpenChange={setIsSubmissionDialogOpen}>
-        {submissionResult && <DemandSubmittedPanel submissionResult={submissionResult} />}
+        {submissionResult && <DemandSubmittedPanel nextStepsContext={nextStepsContext} submissionResult={submissionResult} />}
       </Dialog>
     </section>
   );
