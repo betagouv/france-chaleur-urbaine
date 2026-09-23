@@ -81,7 +81,13 @@ const previewRule = async (rule: RetentionRule): Promise<RetentionPreview> => {
         .select([
           'id',
           sql<string>`coalesce(legacy_values->>'Adresse', '')`.as('label'),
-          sql<Date | null>`coalesce(deleted_at, (legacy_values->>'Date de la demande')::timestamptz)`.as('date'),
+          // the date that makes the row eligible: request date for a closed demand, deletion date otherwise
+          sql<Date | null>`CASE
+            WHEN legacy_values->>'Status' IN (${sql.join(closedDemandStatuses)})
+              AND (legacy_values->>'Date de la demande')::timestamptz < ${cutoff(businessRules.retentionDemandsClosedYears.value, 'years')}
+            THEN (legacy_values->>'Date de la demande')::timestamptz
+            ELSE deleted_at
+          END`.as('date'),
         ])
         .orderBy('updated_at')
         .execute();

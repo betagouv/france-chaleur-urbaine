@@ -71,6 +71,17 @@ describe('retention', () => {
       { Adresse: '4 rue Supprimée', Mail: 'deleted@test.local', Nom: 'Petit', Status: 'À traiter' },
       { deleted_at: yearsAgo(4) }
     );
+    await seedDemand(
+      uuid(14),
+      {
+        Adresse: '5 rue Close puis supprimée',
+        'Date de la demande': yearsAgo(4).toISOString(),
+        Mail: 'both@test.local',
+        Nom: 'Roux',
+        Status: 'Non réalisable',
+      },
+      { deleted_at: monthsAgo(2) }
+    );
   });
 
   describe('permissions', () => {
@@ -100,8 +111,12 @@ describe('retention', () => {
     expect(previews.map(({ rule, count, items }) => ({ count, labels: items.map((item) => item.label).sort(), rule }))).toStrictEqual([
       { count: 1, labels: ['pending-old@test.local'], rule: 'pending_accounts' },
       { count: 2, labels: ['inactive@test.local', 'never-connected@test.local'], rule: 'inactive_accounts' },
-      { count: 2, labels: ['1 rue Close', '4 rue Supprimée'], rule: 'closed_demands' },
+      { count: 3, labels: ['1 rue Close', '4 rue Supprimée', '5 rue Close puis supprimée'], rule: 'closed_demands' },
     ]);
+
+    // a closed demand deleted recently is eligible by its request date: that is the date shown, not the deletion
+    const bothItem = previews.find((preview) => preview.rule === 'closed_demands')?.items.find((item) => item.id === uuid(14));
+    expect(bothItem?.date && Math.abs(new Date(bothItem.date).getTime() - yearsAgo(4).getTime()) < 1000).toStrictEqual(true);
   });
 
   it('deletes never-activated accounts past the delay', async () => {
@@ -142,7 +157,7 @@ describe('retention', () => {
     const result = await createTestCaller(testUsers.admin).retention.archive({ rule: 'closed_demands' });
 
     const rows = await kdb.selectFrom('demands').select(['id', 'legacy_values']).orderBy('id').execute();
-    expect(result).toStrictEqual({ count: 2, rule: 'closed_demands' });
+    expect(result).toStrictEqual({ count: 3, rule: 'closed_demands' });
     expect(
       rows.map((row) => ({
         adresse: (row.legacy_values as any).Adresse,
@@ -155,6 +170,7 @@ describe('retention', () => {
       { adresse: '2 rue Récente', id: uuid(11), mail: 'recent@test.local', nom: 'Martin' },
       { adresse: '3 rue Ouverte', id: uuid(12), mail: 'open@test.local', nom: 'Durand' },
       { adresse: '4 rue Supprimée', id: uuid(13), mail: `anonymise-${uuid(13)}@anonymise.invalid`, nom: 'Anonymisé' },
+      { adresse: '5 rue Close puis supprimée', id: uuid(14), mail: `anonymise-${uuid(14)}@anonymise.invalid`, nom: 'Anonymisé' },
     ]);
 
     const previewAfter = await createTestCaller(testUsers.admin).retention.preview();
