@@ -299,7 +299,7 @@ function getFormTitle(isHeatNetworkEligible: boolean) {
 function getFormDescription(isHeatNetworkEligible: boolean) {
   return isHeatNetworkEligible
     ? 'Vous êtes éligible au réseau de chaleur. C’est lui qu’il faut contacter en priorité : le gestionnaire évaluera gratuitement la faisabilité technique et le coût exact du raccordement pour votre bâtiment.'
-    : 'Votre demande sera transmise au CCRT compétent sur votre territoire pour vous accompagner dans la suite de votre projet.';
+    : 'Votre demande sera transmise au conseiller chaleur renouvelable compétent sur votre territoire pour vous accompagner dans la suite de votre projet.';
 }
 
 function hasOrganizationNameField(occupantStatus: OccupantStatus) {
@@ -535,7 +535,7 @@ function HeatNetworkDemandForm({
             <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
             <span>
               {isCcrtDemand ? (
-                'Votre demande sera transmise au CCRT compétent.'
+                'Votre demande sera transmise au conseiller chaleur renouvelable compétent.'
               ) : (
                 <>
                   Votre demande sera transmise au gestionnaire du réseau de chaleur
@@ -651,7 +651,7 @@ function HeatNetworkDemandForm({
               {isPublicAdvisorSelected && (
                 <>
                   <RichSelect
-                    label="Quand avez-vous reçu ce refus ?"
+                    label="Quand avez-vous reçu le refus ou la réponse négative du réseau de chaleur ?"
                     value={refusalPeriod || undefined}
                     onChange={setRefusalPeriod}
                     options={refusalPeriodOptions}
