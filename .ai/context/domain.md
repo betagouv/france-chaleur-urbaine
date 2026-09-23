@@ -103,6 +103,7 @@ Permissions are managed in `user_permissions` table (not string tags). See `secu
 | BDNB (Base de Données Nationale des Bâtiments) | Building energy data | `src/modules/bdnb/` |
 | data.gouv.fr | Open data publishing (API registration) | `src/modules/opendata/` |
 | Airtable | Legacy CRM data sync (demands, networks) | `src/server/db/airtable.ts` |
+| Grist (DINUM) | Studies in progress import (read-only) and support requests from municipalities without network (write, `GRIST_API_KEY` + `GRIST_ALLOW_WRITES`) | `src/modules/data/server/imports/etudes-en-cours.ts`, `src/modules/communes-sans-reseau/` |
 | Matomo | Web analytics | `src/modules/analytics/` |
 | PostHog | Product analytics | PostHog JS SDK |
 | Sentry | Error tracking | Sentry SDK |
