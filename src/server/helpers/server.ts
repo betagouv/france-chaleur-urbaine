@@ -1,4 +1,6 @@
 import * as Sentry from '@sentry/nextjs';
+import { TRPCError } from '@trpc/server';
+import { getHTTPStatusCodeFromError } from '@trpc/server/http';
 import AirtableError from 'airtable/lib/airtable_error';
 import { errors as formidableErrors } from 'formidable';
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
@@ -161,6 +163,17 @@ export function handleRouteErrors<HandlersConfig extends Partial<Record<RequestM
           });
           return res.status(400).json({
             error,
+            message: error.message,
+          });
+        }
+        // Les services partagés avec tRPC (ex. users) lèvent des TRPCError métier (CONFLICT, NOT_FOUND…)
+        if (error instanceof TRPCError) {
+          logger.error('trpc error', {
+            code: error.code,
+            error: error.message,
+          });
+          return res.status(getHTTPStatusCodeFromError(error)).json({
+            code: error.code,
             message: error.message,
           });
         }
