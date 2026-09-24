@@ -1,6 +1,7 @@
 import XLSX from 'xlsx';
 
 import { downloadFile } from '@/utils/browser';
+import { escapeSpreadsheetFormula } from '@/utils/spreadsheet';
 
 type ExportColumn<T extends Record<string, any>> = {
   name: string;
@@ -30,7 +31,7 @@ const processData = <T extends Record<string, any>>(items: T[], columns: ExportC
         value = value?.toString();
       }
 
-      row[col.name] = value;
+      row[col.name] = escapeSpreadsheetFormula(value);
     });
 
     return row;

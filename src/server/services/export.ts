@@ -5,10 +5,13 @@ import XLSX from 'xlsx';
 
 import type { ExportFormat } from '@/modules/data/constants';
 import type { ExportColumn } from '@/types/ExportColumn';
+import { escapeSpreadsheetFormula } from '@/utils/spreadsheet';
 
 const convertToStringArray = (columns: ExportColumn<any>[], data: any[]): string[][] => {
   return [columns.map((column) => column.header)].concat(
-    data.map((d) => columns.map((column) => (typeof column.value === 'function' ? column.value(d) : d[column.value])))
+    data.map((d) =>
+      columns.map((column) => escapeSpreadsheetFormula(typeof column.value === 'function' ? column.value(d) : d[column.value]))
+    )
   );
 };
 

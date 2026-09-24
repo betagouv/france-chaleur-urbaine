@@ -128,6 +128,7 @@ const nextConfig: NextConfig = {
     ];
   },
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  poweredByHeader: false, // no framework disclosure in responses
   // https://nextjs.org/docs/app/api-reference/config/next-config-js/reactCompiler
   // disabled because it seems to break tanstack table sorting (e.g. https://github.com/TanStack/table/issues/6117)
   // reactCompiler: true,

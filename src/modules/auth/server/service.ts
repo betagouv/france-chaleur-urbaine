@@ -190,7 +190,7 @@ export const requestPassword = async (email: string) => {
   const user = await kdb.selectFrom('users').selectAll().where('email', '=', lowerCaseEmail).where('active', 'is', true).executeTakeFirst();
 
   if (!user) {
-    logger.warn('reset-password: missing user', { email: lowerCaseEmail });
+    logger.warn('reset-password: missing user', { email_fingerprint: emailFingerprint(lowerCaseEmail) });
     return;
   }
 

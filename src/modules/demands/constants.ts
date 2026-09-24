@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import type { EligibilityType } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import { escapeHtml } from '@/utils/html';
 import { type ExtractKeys, nonEmptyArray } from '@/utils/typescript';
 
 export const COMMENT_USER_MAX_LENGTH = 500;
@@ -23,9 +24,8 @@ export const zListEmailsInput = z.object({
 export const zSendEmailInput = z.object({
   demand_id: z.string(),
   emailContent: z.object({
-    body: z.string().transform((v) => {
-      return v.replace(/(?:\r\n|\r|\n)/g, '<br />');
-    }),
+    // plain textarea rendered as HTML in the email: escape first, then turn line breaks into <br />
+    body: z.string().transform((v) => escapeHtml(v).replace(/(?:\r\n|\r|\n)/g, '<br />')),
     cc: z.preprocess((v) => {
       const str = String(v);
       return str ? str.split(',') : [];
