@@ -13,7 +13,7 @@ Small public API integration for the `france-chaleur-urbaine-pac` frontend proto
 
 - This module exposes calculation, anonymous tracking relay logic and France Rénov' advisor lookup only. It must not read/write the database.
 - Publicodes rule names stay encapsulated in the service; callers use the API schema from `constants.ts`.
-- Public REST routes live in `src/pages/api/pac/` because they are consumed by a separate frontend repository.
+- Public REST routes live in `src/pages/api/pac/` because they are consumed by a separate frontend repository. Every route is rate limited per IP (`createNextApiRateLimiter`): 60 / min for the simulation routes, 120 / min for the tracking events.
 - Tracking accepts only declared `simulateur_pac:*` events and bounded non-PII properties; do not add free-form analytics payloads.
 
 ## Public API
