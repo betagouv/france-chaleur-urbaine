@@ -154,6 +154,8 @@ const TagsCombobox = ({ value, onChange, disabled }: TagsComboboxProps) => {
               event.stopPropagation();
               setIsOpen(true);
             }}
+            // Close when focus leaves the field (click elsewhere, Tab). Picking an option never blurs: see onMouseDown below.
+            onBlur={() => setIsOpen(false)}
             onChange={(event) => {
               event.stopPropagation();
               setQuery(event.target.value);
@@ -175,6 +177,8 @@ const TagsCombobox = ({ value, onChange, disabled }: TagsComboboxProps) => {
         }}
         // Don't let Radix move focus to the (non-focusable) trigger div on close → it would land on <body>.
         onCloseAutoFocus={(event) => event.preventDefault()}
+        // Keep focus in the input (no blur → no close) for any mousedown in the dropdown, scrollbar included.
+        onMouseDown={(event) => event.preventDefault()}
       >
         {/* stopPropagation on wheel: let this list scroll despite the parent Dialog's scroll-lock (react-remove-scroll). */}
         <ul className="max-h-60 overflow-auto p-0 my-0 list-none" onWheel={(event) => event.stopPropagation()}>
@@ -185,11 +189,7 @@ const TagsCombobox = ({ value, onChange, disabled }: TagsComboboxProps) => {
                 'flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-blue-50',
                 index === highlightedIndex && 'bg-blue-50'
               )}
-              onMouseDown={(event) => {
-                // Keep focus in the input (no blur) when picking an option with the mouse.
-                event.preventDefault();
-                toggle(tag.id);
-              }}
+              onMouseDown={() => toggle(tag.id)}
               onMouseEnter={() => setHighlightedIndex(index)}
             >
               <span className={cx('fr-icon-check-line', value.includes(tag.id) ? 'opacity-100' : 'opacity-0')} />
@@ -199,10 +199,7 @@ const TagsCombobox = ({ value, onChange, disabled }: TagsComboboxProps) => {
           {canCreate && (
             <li
               className={cx('flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-blue-50', isCreateHighlighted && 'bg-blue-50')}
-              onMouseDown={(event) => {
-                event.preventDefault();
-                void handleCreate();
-              }}
+              onMouseDown={() => void handleCreate()}
               onMouseEnter={() => setHighlightedIndex(filteredOptions.length)}
             >
               <Icon name="fr-icon-add-line" size="sm" />
