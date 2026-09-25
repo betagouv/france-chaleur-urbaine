@@ -108,7 +108,6 @@ export type PostHogEventMap = {
     rows_non_eligible: number;
     rows_total: number;
   };
-  'fcr_landing:hero_cta_clicked': never;
   'fcr_landing:address_typed': never;
   'fcr_landing:heating_mode_selected': {
     heating_mode: TypeLogement;
@@ -245,6 +244,7 @@ export type PostHogEventMap = {
   'fcr_results:recommended_solution_cta_clicked': {
     solution_type: string;
   };
+  'fcr_results:ccrt_contact_cta_clicked': never;
   'fcr_results:tab_switched': {
     tab_value: 'chauffage_ecs' | 'ecs_uniquement';
   };

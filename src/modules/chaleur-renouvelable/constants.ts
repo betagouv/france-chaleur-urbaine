@@ -27,6 +27,7 @@ export type ModeDeChauffageId =
   | 'house-wood-stove'
   | 'house-air-air-heat-pump'
   | 'house-combined-solar-system'
+  | 'house-solar-thermal-hot-water'
   | 'house-thermodynamic-water-heater';
 export type BatEnrBatiment = {
   ac1: boolean | null;
@@ -99,6 +100,7 @@ export type Situation = {
   nbLogements: number;
   surfaceMoyenne: number;
   habitantsMoyen: number;
+  hasAlreadyReceivedHeatNetworkRefusal: boolean;
   eligibiliteReseauChaleur: HeatNetwork | null;
   eligibiliteReseauFroid: ColdNetworkEligibility | null;
   geothermalNappeGmi: number | null;
@@ -192,6 +194,45 @@ export const typeLogementOptions = [
   value: TypeLogement;
 }[];
 
+export const CCRT_EXPERIMENTATION_DEPARTMENT_CODES = [
+  '01',
+  '03',
+  '04',
+  '05',
+  '06',
+  '07',
+  '13',
+  '15',
+  '22',
+  '26',
+  '29',
+  '35',
+  '38',
+  '42',
+  '56',
+  '61',
+  '63',
+  '69',
+  '73',
+  '74',
+  '77',
+  '78',
+  '83',
+  '84',
+  '91',
+  '92',
+  '93',
+  '94',
+  '95',
+] as const;
+
+export function isCcrtExperimentationEligible(departmentCode: string | null | undefined, housingType: TypeLogement | null | undefined) {
+  return (
+    housingType === 'immeuble_chauffage_collectif' &&
+    CCRT_EXPERIMENTATION_DEPARTMENT_CODES.some((experimentationDepartmentCode) => experimentationDepartmentCode === departmentCode)
+  );
+}
+
 export const ESPACE_EXTERIEUR_VALUES = ['terrasseBalcon', 'jardinCours', 'terrasseBalconEtJardinCours', 'none'] as const;
 export type EspaceExterieur = (typeof ESPACE_EXTERIEUR_VALUES)[number];
 
@@ -226,29 +267,22 @@ export function getEspaceExterieurCheckboxState(espaceExterieur: EspaceExterieur
   }
 }
 
-export function getEspaceExterieurFromCheckboxState(
-  typeLogement: TypeLogement | null | undefined,
-  checkboxState: EspaceExterieurCheckboxState
-): EspaceExterieur | null {
-  return typeLogement
-    ? checkboxState.hasGarden && checkboxState.hasTerrace
-      ? 'terrasseBalconEtJardinCours'
-      : checkboxState.hasGarden
-        ? 'jardinCours'
-        : checkboxState.hasTerrace
-          ? 'terrasseBalcon'
-          : 'none'
-    : null;
+export function getEspaceExterieurFromCheckboxState(checkboxState: EspaceExterieurCheckboxState): EspaceExterieur {
+  return checkboxState.hasGarden && checkboxState.hasTerrace
+    ? 'terrasseBalconEtJardinCours'
+    : checkboxState.hasGarden
+      ? 'jardinCours'
+      : checkboxState.hasTerrace
+        ? 'terrasseBalcon'
+        : 'none';
 }
 
-export function getEspaceExterieurForTypeLogement(
-  typeLogement: TypeLogement | null | undefined,
-  espaceExterieur: EspaceExterieur | null | undefined
-) {
-  return espaceExterieur ? getEspaceExterieurFromCheckboxState(typeLogement, getEspaceExterieurCheckboxState(espaceExterieur)) : null;
-}
-
-export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['Individuel', 'Collectif'] as const;
+export const MODE_EAU_CHAUDE_SANITAIRE_IMMEUBLE_VALUES = ['Individuel', 'Collectif'] as const;
+export const MODE_EAU_CHAUDE_SANITAIRE_MAISON_VALUES = ['Couplé au chauffage', 'Indépendant'] as const;
+export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = [
+  ...MODE_EAU_CHAUDE_SANITAIRE_IMMEUBLE_VALUES,
+  ...MODE_EAU_CHAUDE_SANITAIRE_MAISON_VALUES,
+] as const;
 export type ModeEauChaudeSanitaire = (typeof MODE_EAU_CHAUDE_SANITAIRE_VALUES)[number];
 export const MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE = 'nonRenseigne';
 export const MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES = [
@@ -256,13 +290,55 @@ export const MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES = [
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
 ] as const;
 export type ModeEauChaudeSanitaireQueryParam = (typeof MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES)[number];
-export const modeEauChaudeSanitaireOptions = [
+
+const modeEauChaudeSanitaireImmeubleOptions = [
   { label: 'Individuel', value: 'Individuel' },
   { label: 'Collectif', value: 'Collectif' },
 ] satisfies readonly {
   label: string;
   value: ModeEauChaudeSanitaire;
 }[];
+
+const modeEauChaudeSanitaireMaisonOptions = [
+  { label: 'Couplé au chauffage', value: 'Couplé au chauffage' },
+  { label: 'Indépendant', value: 'Indépendant' },
+] satisfies readonly {
+  label: string;
+  value: ModeEauChaudeSanitaire;
+}[];
+
+export const modeEauChaudeSanitaireOptions = [
+  ...modeEauChaudeSanitaireImmeubleOptions,
+  ...modeEauChaudeSanitaireMaisonOptions,
+] satisfies readonly {
+  label: string;
+  value: ModeEauChaudeSanitaire;
+}[];
+
+export function getModeEauChaudeSanitaireOptions(typeLogement: TypeLogement | null | undefined) {
+  return typeLogement === 'maison_individuelle' ? modeEauChaudeSanitaireMaisonOptions : modeEauChaudeSanitaireImmeubleOptions;
+}
+
+export function normalizeModeEauChaudeSanitaireForTypeLogement(
+  modeEauChaudeSanitaire: ModeEauChaudeSanitaireQueryParam | null | undefined,
+  typeLogement: TypeLogement | null | undefined
+): ModeEauChaudeSanitaireQueryParam | null {
+  if (!modeEauChaudeSanitaire) {
+    return null;
+  }
+
+  if (modeEauChaudeSanitaire === MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE) {
+    return modeEauChaudeSanitaire;
+  }
+
+  const compatibleModes = getModeEauChaudeSanitaireOptions(typeLogement).map((option) => option.value);
+
+  if (compatibleModes.includes(modeEauChaudeSanitaire)) {
+    return modeEauChaudeSanitaire;
+  }
+
+  return MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE;
+}
 
 export function getModeEauChaudeSanitaireLabel(modeEauChaudeSanitaire: ModeEauChaudeSanitaireQueryParam | null | undefined) {
   return modeEauChaudeSanitaire && modeEauChaudeSanitaire !== MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE
@@ -362,7 +438,8 @@ export const DEFAULT_SIMULATION_PARAMS = {
   typeLogement: TypeLogement;
 };
 
-export const zContactFormChaleuRenouvelable = z.object({
+export const zContactFormChaleurRenouvelable = z.object({
+  annualHeatingConsumption: z.number().positive('Veuillez renseigner une consommation annuelle supérieure à 0 MWh').optional(),
   comments: z.string().default(''),
   demandConcern: z.enum(DEMAND_CONCERN_VALUES).or(z.literal('')).default(''),
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
@@ -386,6 +463,7 @@ export const zContactFormChaleuRenouvelable = z.object({
 
 const zDemandeChaleurRenouvelableGeoAddress = z.object({
   city: z.string(),
+  cityCode: z.string(),
   context: z.string(),
   coordinates: z.tuple([z.number(), z.number()]),
   postcode: z.string(),
@@ -400,6 +478,11 @@ const zDemandeChaleurRenouvelableHeatNetworkEligibility = z.object({
 export const zDemandeChaleurRenouvelable = z.object({
   address: z.string(),
   alternativeHeatingSolutions: z.array(z.string().trim().min(1).max(120)).max(3).optional(),
+  annualHeatingConsumption: z
+    .number()
+    .positive('Veuillez renseigner une consommation annuelle supérieure à 0 MWh')
+    .nullable()
+    .default(null),
   averageArea: z.number(),
   averageResidents: z.number(),
   batimentConstructionId: z.string().nullable().default(null),
@@ -418,6 +501,7 @@ export const zDemandeChaleurRenouvelable = z.object({
   lastName: z.string(),
   occupantStatus: z.enum(OCCUPANT_STATUS_VALUES),
   organizationName: z.string().nullable().default(null),
+  originDemandId: z.uuidv4().nullable().default(null),
   outdoorSpace: z.enum(ESPACE_EXTERIEUR_VALUES),
   phone: z
     .string()

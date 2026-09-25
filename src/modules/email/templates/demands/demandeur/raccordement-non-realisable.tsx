@@ -6,12 +6,21 @@ const EMAIL_CAMPAIGN = 'demands.demandeur.raccordement-non-realisable';
 type RaccordementNonRealisableProps = {
   address: string;
   alternativeHeatingSolutions?: string[];
+  originDemandId?: string;
   simulationUrl?: string;
 };
 
-const RaccordementNonRealisable = ({ address, alternativeHeatingSolutions = [], simulationUrl }: RaccordementNonRealisableProps) => {
+const RaccordementNonRealisable = ({
+  address,
+  alternativeHeatingSolutions = [],
+  originDemandId,
+  simulationUrl,
+}: RaccordementNonRealisableProps) => {
   const hasAlternativeHeatingSolutions = alternativeHeatingSolutions.length > 0;
-  const buttonHref = hasAlternativeHeatingSolutions ? (simulationUrl ?? '/chaleur-renouvelable') : '/chaleur-renouvelable';
+  const buttonHref = withDemandContext(
+    hasAlternativeHeatingSolutions ? (simulationUrl ?? '/chaleur-renouvelable') : '/chaleur-renouvelable',
+    { address, originDemandId }
+  );
   const buttonContent = hasAlternativeHeatingSolutions ? 'solutions-chaleur-renouvelable' : 'simulateur-chauffage-alternatif';
   const buttonLabel = hasAlternativeHeatingSolutions
     ? 'Découvrir en détail toutes les solutions adaptées à mon bâtiment'
@@ -73,12 +82,30 @@ const RaccordementNonRealisable = ({ address, alternativeHeatingSolutions = [], 
   );
 };
 
+const withDemandContext = (
+  href: string,
+  { address, originDemandId }: Pick<RaccordementNonRealisableProps, 'address' | 'originDemandId'>
+) => {
+  const url = new URL(href, 'https://france-chaleur-urbaine.invalid');
+
+  if (url.pathname === '/chaleur-renouvelable' && !url.searchParams.has('adresse')) {
+    url.searchParams.set('adresse', address);
+  }
+
+  if (originDemandId) {
+    url.searchParams.set('originDemandId', originDemandId);
+  }
+
+  return `${url.pathname}${url.search}${url.hash}`;
+};
+
 export const scenarios = defineEmailScenarios<typeof RaccordementNonRealisable>({
   avecSolutionsChaleurRenouvelable: {
     label: 'Demande issue du parcours chaleur renouvelable',
     props: {
       address: '20 Avenue de Ségur 75007 Paris',
-      alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière biomasse', 'PAC air-eau collective'],
+      alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière à bois', 'PAC air-eau collective'],
+      originDemandId: '00000000-0000-4000-8000-000000000301',
       simulationUrl: '/chaleur-renouvelable/resultat?adresse=20+Avenue+de+S%C3%A9gur+75007+Paris&typeLogement=immeuble_chauffage_collectif',
     },
   },
@@ -86,6 +113,7 @@ export const scenarios = defineEmailScenarios<typeof RaccordementNonRealisable>(
     label: 'Demande classée non réalisable',
     props: {
       address: '15 Rue Victor Renelle 93240 Stains',
+      originDemandId: '00000000-0000-4000-8000-000000000302',
     },
   },
 });

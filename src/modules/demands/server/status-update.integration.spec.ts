@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { sendEmailTemplate } from '@/modules/email';
 import { kdb } from '@/server/db/kysely';
-import { cleanDatabase, seedProEligibilityTestsAddress, seedTableUser } from '@/tests/fixtures';
+import { cleanDatabase, seedDemandeChaleurRenouvelable, seedProEligibilityTestsAddress, seedTableUser } from '@/tests/fixtures';
 import { createMockContext, testUsers } from '@/tests/trpc-helpers';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
@@ -10,8 +10,9 @@ vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
 }));
 
+import { demandLockReasons } from '../constants';
 import { updateDemandByAdmin } from './admin-operations';
-import { updateDemandByGestionnaire } from './gestionnaire-operations';
+import { listDemands, updateDemandByGestionnaire } from './gestionnaire-operations';
 
 const adminUserId = testUsers.admin.id!;
 const gestionnaireUserId = testUsers.gestionnaire.id!;
@@ -80,7 +81,7 @@ describe('demand status updates', () => {
       [
         'demands.demandeur.raccordement-non-realisable',
         { email: 'demandeur@example.fr', id: demand.id },
-        { address: '10 Rue de Rivoli 75001 Paris' },
+        { address: '10 Rue de Rivoli 75001 Paris', originDemandId: demand.id },
       ],
     ]);
     expect(await getUnrealizableEmailEventCount(demand.id)).toStrictEqual(1);
@@ -98,7 +99,7 @@ describe('demand status updates', () => {
       [
         'demands.demandeur.raccordement-non-realisable',
         { email: 'demandeur@example.fr', id: demand.id },
-        { address: '10 Rue de Rivoli 75001 Paris' },
+        { address: '10 Rue de Rivoli 75001 Paris', originDemandId: demand.id },
       ],
     ]);
     expect(await getUnrealizableEmailEventCount(demand.id)).toStrictEqual(1);
@@ -120,5 +121,19 @@ describe('demand status updates', () => {
 
     expect(sentEmail.mock.calls).toStrictEqual([]);
     expect(await getUnrealizableEmailEventCount(demand.id)).toStrictEqual(0);
+  });
+
+  it('verrouille la modification gestionnaire après création d’une demande chaleur renouvelable liée', async () => {
+    const demand = await seedDemand(DEMANDE_STATUS.UNREALISABLE);
+    await seedDemandeChaleurRenouvelable({ origin_demand_id: demand.id });
+
+    const context = createMockContext(testUsers.gestionnaire);
+    const listedDemands = await listDemands(context);
+
+    expect(listedDemands.find((listedDemand) => listedDemand.id === demand.id)?.lock_reason).toStrictEqual('fcr_demande_created');
+    await expect(updateDemandByGestionnaire(context, demand.id, { Status: DEMANDE_STATUS.RECONTACTED })).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+      message: demandLockReasons.fcr_demande_created.errorMessage,
+    });
   });
 });

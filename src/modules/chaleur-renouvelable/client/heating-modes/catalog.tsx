@@ -54,6 +54,7 @@ export const modesDeChauffage = {
         </>
       ),
       estPossible: (situation) =>
+        !situation.hasAlreadyReceivedHeatNetworkRefusal &&
         (situation.eligibiliteReseauChaleur?.isEligible ?? false) &&
         isNearHeatNetwork(situation) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
@@ -61,6 +62,11 @@ export const modesDeChauffage = {
       icone: 'img/icon-rcu.webp',
       id: 'collective-heat-network',
       incompatibilites: [
+        {
+          isIncompatible: (situation) => situation.hasAlreadyReceivedHeatNetworkRefusal,
+          reason: 'Une précédente demande de raccordement à cette adresse a été classée « Non réalisable »',
+          source: 'France Chaleur Urbaine',
+        },
         {
           isIncompatible: (situation) =>
             situation.eligibiliteReseauChaleur?.distance != null &&
@@ -159,16 +165,22 @@ export const modesDeChauffage = {
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: ['Faibles émissions de CO₂', 'Longévité des équipements', 'Coût de la chaleur compétitif', 'Énergie locale (bois)'],
+      avantages: [
+        'Faibles émissions de CO₂',
+        'Longévité des équipements',
+        'Coût de la chaleur compétitif et stable',
+        'Énergie locale (bois)',
+      ],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 2 : 3),
       coutInstallation: '6 000 à 8 000 €',
       coutParAnPublicodeKey: 'chaudière à granulés',
       description: (
         <>
-          Votre bâtiment pourrait être adapté à l’installation d’une chaudière biomasse.
+          Votre bâtiment pourrait être adapté à l’installation d’une chaudière à bûches, à granulés ou à plaquettes.
           <br />
-          <br /> Sous réserve d’espaces suffisamment importants et <strong>d’un approvisionnement local en bois disponible</strong>, cette
-          solution vous permettrait de <strong>réduire les émissions CO₂</strong> de votre bâtiment.
+          <br />
+          Sous réserve d’espaces suffisamment importants et <strong>d’un approvisionnement local en bois disponible</strong>, cette solution
+          vous permettrait de <strong>réduire les émissions CO₂</strong> de votre bâtiment.
         </>
       ),
       estPossible: (situation) =>
@@ -188,9 +200,9 @@ export const modesDeChauffage = {
       inconvenients: [
         'Investissement initial important',
         'Approvisionnement à prévoir (contrat de 3 ans minimum recommandé)',
-        'Nuisance sonore modérée en fonctionnement, forte pendant les livraisons de combustible',
+        'Nuisance sonore modérée en fonctionnement',
       ],
-      label: 'Chaudière biomasse',
+      label: 'Chaudière à bois',
       pertinence: 3,
       prerequis: (situation) => [
         ...getPdpPrerequisite(situation),
@@ -349,7 +361,7 @@ export const modesDeChauffage = {
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -369,14 +381,14 @@ export const modesDeChauffage = {
       gainClasse: 1,
       icone: 'img/icon-solaire.webp',
       id: 'collective-solar-atmospheric-heat-pump-hot-water',
-      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment', 'Nécessite une toiture adaptée'],
+      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment'],
       label: 'PAC sur capteurs solaires atmosphériques',
       pertinence: 2,
       prerequis: (situation) => [
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -581,7 +593,7 @@ export const modesDeChauffage = {
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -601,14 +613,14 @@ export const modesDeChauffage = {
       gainClasse: 1,
       icone: 'img/icon-solaire.webp',
       id: 'individual-apartment-solar-atmospheric-heat-pump-hot-water',
-      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment', 'Nécessite une toiture adaptée'],
+      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment'],
       label: 'PAC sur capteurs solaires atmosphériques',
       pertinence: 2,
       prerequis: (situation) => [
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
       usage: 'hotWaterOnly',
     },
@@ -686,7 +698,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) =>
         hasEspaceShared(situation) &&
-        hasCompatibleHotWaterMode(situation, ['Collectif']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleGeothermalPotential(situation) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
@@ -738,7 +750,7 @@ export const modesDeChauffage = {
       avantages: [
         'Faibles émissions de CO₂',
         'Longévité des équipements',
-        'Coût de la chaleur compétitif',
+        'Coût de la chaleur compétitif et stable',
         'Énergie renouvelable et locale',
       ],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 1 : 2),
@@ -746,13 +758,13 @@ export const modesDeChauffage = {
       coutParAnPublicodeKey: 'chaudière à granulés',
       description: (
         <>
-          Une chaudière biomasse pourrait équiper votre maison. Sous réserve d’espaces suffisamment importants et d’un approvisionnement
-          local en bois disponible, cette solution vous permettrait de réduire les émissions CO₂ de votre maison.
+          Une chaudière à bûches, à granulés ou plaquettes, pourrait équiper votre maison. Sous réserve d’espaces suffisamment importants et
+          d’un approvisionnement local en bois disponible, cette solution vous permettrait de réduire les émissions CO₂ de votre maison.
         </>
       ),
       estPossible: (situation) =>
         hasEspaceShared(situation) &&
-        hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-biomasse.webp',
@@ -770,7 +782,7 @@ export const modesDeChauffage = {
         },
       ],
       inconvenients: ['Investissement initial important', 'Approvisionnement à prévoir'],
-      label: 'Chaudière biomasse',
+      label: 'Chaudière à bois',
       pertinence: 2,
       prerequis: (situation) => [
         {
@@ -781,6 +793,7 @@ export const modesDeChauffage = {
         ...getPpaPrerequisite(situation),
         ...getArchitecturalProtectionPrerequisites(situation),
         { label: 'Espace requis en local technique pour la chaudière et le stockage', status: 'averifier' },
+        { label: 'Présence d’un conduit d’évacuation', status: 'averifier' },
         { label: 'Accessibilité de la parcelle pour la livraison du combustible', status: 'averifier' },
       ],
       usage: 'heatingAndHotWater',
@@ -800,7 +813,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) =>
         situation.espaceExterieur !== 'none' &&
-        hasCompatibleHotWaterMode(situation, ['Individuel']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-pac.webp',
@@ -852,7 +865,7 @@ export const modesDeChauffage = {
           et/ou d’eau chaude.
         </>
       ),
-      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Individuel']),
+      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Indépendant']),
       gainClasse: 1,
       icone: 'img/icon-biomasse.webp',
       id: 'house-wood-stove',
@@ -864,7 +877,7 @@ export const modesDeChauffage = {
         },
       ],
       inconvenients: ["Ne chauffe qu'une seule pièce", 'Approvisionnement à prévoir'],
-      label: 'Poêle à buche ou à granulés ',
+      label: 'Poêle à buche ou à granulés',
       pertinence: 3,
       prerequis: (situation) => [
         {
@@ -888,7 +901,7 @@ export const modesDeChauffage = {
           sanitaire.
         </>
       ),
-      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Individuel']),
+      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Indépendant']),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
       id: 'house-air-air-heat-pump',
@@ -924,6 +937,48 @@ export const modesDeChauffage = {
       usage: 'heatingAndHotWater',
     },
     {
+      avantages: ['Aucune émission CO₂', 'Technologie mature', "Coût de la chaleur compétitif une fois l'installation amortie"],
+      coutInstallation: '5 000 à 6 000 €',
+      coutParAnPublicodeKey: 'solaire thermique',
+      description: (
+        <>
+          L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir
+          une partie de votre eau chaude sanitaire.
+          <br />
+          <br /> Une solution <strong>fiable, mature et économique</strong> à l'usage, qui fonctionne avec un appoint pour les périodes de
+          faible ensoleillement.
+        </>
+      ),
+      estPossible: (situation) =>
+        hasCompatibleHotWaterMode(situation, ['Indépendant']) &&
+        hasEspacePrivate(situation) &&
+        hasSufficientSolarThermalCoverage(situation),
+      gainClasse: 1,
+      gainVsGaz: -50,
+      icone: 'img/icon-solaire.webp',
+      id: 'house-solar-thermal-hot-water',
+      incompatibilites: [
+        {
+          isIncompatible: hasInsufficientSolarThermalCoverage,
+          reason: 'La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale.',
+          source: 'CEREMA',
+        },
+      ],
+      inconvenients: [
+        'Investissement initial important',
+        "Ne couvre que l'eau chaude sanitaire",
+        'Travaux modérés mais potentiellement complexes',
+      ],
+      label: 'Solaire thermique',
+      pertinence: 2,
+      prerequis: (situation) => [
+        ...getArchitecturalProtectionPrerequisites(situation),
+        hotWaterStoragePrerequisite,
+        ...roofSolarCollectorsPrerequisite,
+      ],
+      usage: 'hotWaterOnly',
+    },
+    {
       avantages: [
         'Faibles émissions de CO₂',
         'Coût de la chaleur compétitif',
@@ -941,7 +996,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) =>
         situation.espaceExterieur !== 'none' &&
-        hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       gainVsGaz: -50,
@@ -958,7 +1013,7 @@ export const modesDeChauffage = {
         },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
       usage: 'heatingAndHotWater',
     },
@@ -977,7 +1032,7 @@ export const modesDeChauffage = {
           partir de l'air extérieur, avec un gain important sur votre facture par rapport à un ballon électrique classique.
         </>
       ),
-      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Individuel']) && hasEspacePrivate(situation),
+      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Indépendant']) && hasEspacePrivate(situation),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
       id: 'house-thermodynamic-water-heater',

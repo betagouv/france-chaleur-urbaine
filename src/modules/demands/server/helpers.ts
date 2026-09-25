@@ -4,7 +4,14 @@ import type { Selectable } from 'kysely';
 import { jsonBuildObject } from 'kysely/helpers/postgres';
 
 import type { Context } from '@/modules/config/server/context-builder';
-import { demandStatusDefault, normalizeHeatingEnergy, normalizeHeatingType } from '@/modules/demands/constants';
+import {
+  DEMAND_LOCK_REASON_FCR_DEMANDE_CREATED,
+  type DemandLockReason,
+  demandLockReasons,
+  demandStatusDefault,
+  normalizeHeatingEnergy,
+  normalizeHeatingType,
+} from '@/modules/demands/constants';
 import { canUserAccessDemand, type DemandForAccess, isUserResponsibleForDemand } from '@/modules/permissions/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -22,7 +29,29 @@ type DemandTestAddress = Pick<
   'id' | 'ban_address' | 'ban_valid' | 'source_address' | 'eligibility_history'
 >;
 
-type DemandForProcessCheck = DemandForAccess & Pick<Selectable<Demands>, 'id' | 'legacy_values'>;
+type DemandForProcessCheck = DemandForAccess &
+  Pick<Selectable<Demands>, 'id' | 'legacy_values'> & {
+    lock_reason: DemandLockReason | null;
+  };
+
+export const selectDemandLockReason = () =>
+  sql<DemandLockReason | null>`
+    CASE
+      WHEN EXISTS (
+        SELECT 1
+        FROM demands_chaleur_renouvelable AS dcr
+        WHERE dcr.origin_demand_id = ${sql.ref('demands.id')}
+      )
+        THEN ${DEMAND_LOCK_REASON_FCR_DEMANDE_CREATED}
+      ELSE NULL
+    END
+  `.as('lock_reason');
+
+export const ensureDemandIsNotLocked = (demand: { lock_reason: DemandLockReason | null }) => {
+  if (demand.lock_reason) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: demandLockReasons[demand.lock_reason].errorMessage });
+  }
+};
 
 const buildDemandForAccessCheckQuery = (demandId: string) =>
   kdb
@@ -55,6 +84,7 @@ const loadDemandForAccessOrThrow = async (demandId: string): Promise<DemandForAc
 const loadDemandForProcessOrThrow = async (demandId: string): Promise<DemandForProcessCheck> =>
   buildDemandForAccessCheckQuery(demandId)
     .select(['demands.id', 'demands.legacy_values'])
+    .select(selectDemandLockReason())
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
 
 /**
@@ -85,6 +115,7 @@ export const ensureUserCanProcessDemand = async (ctx: Context, demandId: string)
   if (!isUserResponsibleForDemand(ctx.user, permissions, demand)) {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'Demande hors de votre périmètre de traitement' });
   }
+  ensureDemandIsNotLocked(demand);
   return demand;
 };
 
@@ -184,6 +215,7 @@ export const buildDemandQuery = () => {
       eb.fn.coalesce('pending_rdc.nom_reseau', 'pending_zrc.nom_reseau').as('pending_assignment_name'),
       eb.ref('pending_rdc.Identifiant reseau').as('pending_assignment_sncu_id'),
       eb.ref('pending_author.email').as('pending_assignment_author_email'),
+      selectDemandLockReason(),
       jsonBuildObject({
         ban_address: eb.ref('pro_eligibility_tests_addresses.ban_address'),
         ban_valid: eb.ref('pro_eligibility_tests_addresses.ban_valid'),

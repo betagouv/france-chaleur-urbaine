@@ -271,6 +271,7 @@ export interface ConversionSources {
 
 export interface DemandsChaleurRenouvelable {
   address: string;
+  annual_heating_consumption: number | null;
   assigned_to: string | null;
   average_area: number;
   average_residents: number;
@@ -278,6 +279,7 @@ export interface DemandsChaleurRenouvelable {
   comments: string | null;
   created_at: Generated<Timestamp>;
   demand_concern: DemandConcern | null;
+  departement_code: string | null;
   dpe: DPE;
   email: string;
   first_name: string;
@@ -289,6 +291,7 @@ export interface DemandsChaleurRenouvelable {
   is_public_advisor_selected: Generated<boolean>;
   last_name: string;
   occupant_status: OccupantStatus;
+  origin_demand_id: string | null;
   outdoor_space: EspaceExterieur;
   organization_name: string | null;
   phone: Generated<string>;

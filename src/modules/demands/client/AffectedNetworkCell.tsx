@@ -38,6 +38,8 @@ type NonAdminProps = {
 };
 
 type AffectedNetworkCellProps<T extends BaseDemand> = (AdminProps | NonAdminProps) & {
+  disabled?: boolean;
+  disabledReason?: string;
   demand: T;
 };
 
@@ -114,7 +116,13 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
   const pending = demand.pending_assignment_change;
   const pendingIsUnassign = !!pending && pending.network_id === null;
   const pendingNotFound = !!pending && !pendingIsUnassign && !demand.pending_assignment_name;
-  const canCancelPending = !props.isAdmin && !!pending && pending.author_id === props.currentUserId;
+  const canCancelPending = !props.isAdmin && !props.disabled && !!pending && pending.author_id === props.currentUserId;
+  const isNetworkChangeDisabled = !props.isAdmin && (props.disabled || !!pending);
+  const networkChangeTooltipTitle = props.disabled
+    ? (props.disabledReason ?? 'Modification désactivée')
+    : props.isAdmin
+      ? "Changer l'affectation du réseau"
+      : 'Demander une réaffectation';
 
   return (
     <div className="flex w-full flex-col gap-2">
@@ -128,14 +136,14 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
           />
           {villeDifferente && <FCUBadge type="warning_ville_differente" size="xs" className="mt-1" />}
         </div>
-        <Tooltip title={props.isAdmin ? "Changer l'affectation du réseau" : 'Demander une réaffectation'}>
+        <Tooltip title={networkChangeTooltipTitle}>
           <Button
             priority="tertiary"
             size="small"
             iconId="fr-icon-arrow-left-right-line"
             title={props.isAdmin ? "Changer l'affectation" : 'Demander une réaffectation'}
             onClick={() => setSelectorOpen(true)}
-            disabled={!props.isAdmin && !!pending}
+            disabled={isNetworkChangeDisabled}
             className="shrink-0"
           />
         </Tooltip>

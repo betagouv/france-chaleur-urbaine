@@ -121,11 +121,6 @@ export default function DemandesChaleurRenouvelableAdminPage() {
   const columns: ColumnDef<DemandesChaleurRenouvelableAdminItem>[] = useMemo(
     () => [
       {
-        accessorKey: 'id',
-        header: 'ID',
-        width: '260px',
-      },
-      {
         accessorFn: (row) => row.created_at,
         cellType: 'DateTime',
         enableGlobalFilter: false,
@@ -274,6 +269,18 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         filterType: 'Facets',
         header: 'Énergie de chauffage',
         width: '160px',
+      },
+      {
+        accessorKey: 'annual_heating_consumption',
+        align: 'right',
+        cellProps: { maximumFractionDigits: 2 },
+        cellType: 'Number',
+        enableGlobalFilter: false,
+        exportHeader: 'Consommations annuelles de chauffage (MWh)',
+        filterType: 'Range',
+        header: 'Conso chauffage',
+        suffix: <span className="ml-1">MWh</span>,
+        width: '150px',
       },
       {
         accessorFn: (row) =>

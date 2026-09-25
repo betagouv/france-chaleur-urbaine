@@ -9,10 +9,12 @@ const Contact = ({
   demand,
   onEmailClick,
   disabled = false,
+  disabledReason,
 }: {
   demand: Demand;
   onEmailClick: (demand: Demand) => void;
   disabled?: boolean;
+  disabledReason?: string;
 }) => {
   const getNomStructure = useCallback(() => {
     if (
@@ -59,7 +61,7 @@ const Contact = ({
             if (disabled) return;
             onEmailClick(demand);
           }}
-          title={disabled ? 'Demande hors de votre périmètre — envoi de mail désactivé' : undefined}
+          title={disabled ? (disabledReason ?? 'Demande hors de votre périmètre — envoi de mail désactivé') : undefined}
         >
           <Icon size="sm" name="ri-mail-line" className="fr-mr-1w" />
           <u className="whitespace-normal">{demand.Mail}</u>

@@ -15,9 +15,11 @@ import {
   anonymizePhone,
   buildDemandQuery,
   enrichDemandForGestionnaire,
+  ensureDemandIsNotLocked,
   ensureUserCanProcessDemand,
   getDemandById,
   resolveNetworkInfo,
+  selectDemandLockReason,
 } from './helpers';
 import { mergeLegacyValues } from './legacy-values';
 import { sendUnrealizableDemandEmailIfNeeded } from './unrealizable-email';
@@ -130,9 +132,12 @@ export const requestDemandAssignmentChange = async (
   const demand = await kdb
     .selectFrom('demands')
     .select(['id', 'network_id', 'network_type', 'pending_assignment_change'])
+    .select(selectDemandLockReason())
     .where('id', '=', demandId)
     .where('deleted_at', 'is', null)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+
+  ensureDemandIsNotLocked(demand);
 
   if (demand.pending_assignment_change) {
     throw new TRPCError({ code: 'CONFLICT', message: 'Une demande de réaffectation est déjà en attente' });
@@ -219,9 +224,12 @@ export const cancelDemandAssignmentChangeRequest = async (demandId: string, user
   const demand = await kdb
     .selectFrom('demands')
     .select(['id', 'pending_assignment_change'])
+    .select(selectDemandLockReason())
     .where('id', '=', demandId)
     .where('deleted_at', 'is', null)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+
+  ensureDemandIsNotLocked(demand);
 
   const pending = demand.pending_assignment_change;
   if (!pending) {

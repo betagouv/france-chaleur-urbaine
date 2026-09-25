@@ -4,12 +4,11 @@ import {
   typeLogementOptions,
   typeRadiateurOptions,
 } from '@/modules/chaleur-renouvelable/constants';
-import { Button, Layout, Link, Note, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
+import { Button, Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
 
 const NouvelleDemandeChaleurRenouvelable = ({
   demand,
-  demandId,
   status,
 }: {
   demand: DemandeChaleurRenouvelable;
@@ -21,8 +20,7 @@ const NouvelleDemandeChaleurRenouvelable = ({
       <Title>Nouvelle demande chaleur renouvelable à traiter</Title>
 
       <Text>
-        Une nouvelle demande a été déposée depuis le parcours chaleur renouvelable. Elle est disponible dans l'espace gestionnaire pour
-        traitement.
+        Une nouvelle demande a été déposée depuis le parcours chaleur renouvelable. Elle est disponible dans votre espace pour traitement.
       </Text>
 
       <Text style={{ fontSize: '16px', fontWeight: 'bold', marginTop: '16px' }}>Synthèse</Text>
@@ -30,10 +28,6 @@ const NouvelleDemandeChaleurRenouvelable = ({
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Statut</TableColumn>
           <TableColumn>{status}</TableColumn>
-        </TableRow>
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Demande</TableColumn>
-          <TableColumn>{demandId}</TableColumn>
         </TableRow>
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Adresse</TableColumn>
@@ -101,6 +95,12 @@ const NouvelleDemandeChaleurRenouvelable = ({
           <TableColumn style={{ fontWeight: 'bold' }}>Énergie de chauffage</TableColumn>
           <TableColumn>{demand.heatingEnergy}</TableColumn>
         </TableRow>
+        {demand.annualHeatingConsumption !== null && (
+          <TableRow>
+            <TableColumn style={{ fontWeight: 'bold' }}>Consommations annuelles chauffage</TableColumn>
+            <TableColumn>{demand.annualHeatingConsumption.toLocaleString('fr-FR', { maximumFractionDigits: 2 })} MWh</TableColumn>
+          </TableRow>
+        )}
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Radiateurs</TableColumn>
           <TableColumn>{typeRadiateurOptions.find((option) => option.value === demand.radiatorType)?.label ?? 'Non renseigné'}</TableColumn>
@@ -118,12 +118,10 @@ const NouvelleDemandeChaleurRenouvelable = ({
       </Table>
 
       <Section style={{ paddingTop: '24px', textAlign: 'center' }}>
-        <Button href="/admin/demandes-chaleur-renouvelable" campaign="demands.equipe-fcu.nouvelle-demande-chaleur-renouvelable">
-          Accéder à l'espace gestionnaire
+        <Button href="/pro/demandes-chaleur-renouvelable" campaign="demands.ccrt.nouvelle-demande-chaleur-renouvelable">
+          Accéder aux demandes
         </Button>
       </Section>
-
-      <Note>Cette notification est envoyée automatiquement à la création d'une demande chaleur renouvelable.</Note>
     </Layout>
   );
 };
@@ -134,6 +132,7 @@ export const scenarios = defineEmailScenarios<typeof NouvelleDemandeChaleurRenou
     props: {
       demand: {
         address: '10 rue du Test, 75001 Paris',
+        annualHeatingConsumption: 820.5,
         averageArea: 70,
         averageResidents: 2,
         batimentConstructionId: 'CONSTRUCTION-123',
@@ -146,10 +145,11 @@ export const scenarios = defineEmailScenarios<typeof NouvelleDemandeChaleurRenou
         hotWaterSystemType: 'Collectif',
         housingCount: 18,
         housingType: 'immeuble_chauffage_collectif',
-        isPublicAdvisorSelected: true,
+        isPublicAdvisorSelected: false,
         lastName: 'Test',
         occupantStatus: 'Syndicat de copropriété',
         organizationName: 'Syndicat test',
+        originDemandId: null,
         outdoorSpace: 'jardinCours',
         phone: '0605040302',
         projectStatus: ['Début de réflexion', 'Audit énergétique déjà réalisé'],

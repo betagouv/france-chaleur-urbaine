@@ -60,6 +60,19 @@ export const fcrLegacyValueKeys = {
   simulationUrl: 'URL simulation chaleur renouvelable',
 } as const;
 
+export const DEMAND_LOCK_REASON_FCR_DEMANDE_CREATED = 'fcr_demande_created';
+
+export const demandLockReasons = {
+  [DEMAND_LOCK_REASON_FCR_DEMANDE_CREATED]: {
+    badgeTitle: 'Le demandeur a créé une demande d’accompagnement chaleur renouvelable après le refus de raccordement.',
+    disabledReason:
+      'Cette demande n’est plus modifiable : le demandeur a créé une demande d’accompagnement chaleur renouvelable après le refus de raccordement.',
+    errorMessage: 'Cette demande n’est plus modifiable car le demandeur a déposé une demande d’accompagnement chaleur renouvelable.',
+  },
+} as const;
+
+export type DemandLockReason = keyof typeof demandLockReasons;
+
 /**
  * Libellé de statut présenté au demandeur. « À traiter » relève de la file de traitement interne des gestionnaires :
  * on le neutralise en « En cours de traitement ». Les autres statuts restent inchangés.

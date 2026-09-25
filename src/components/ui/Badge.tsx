@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import Tooltip from '@/components/ui/Tooltip';
 import cx from '@/utils/cx';
 
-type TypeBadge = 'haut_potentiel' | 'pdp' | 'warning_ville_differente' | 'api_user' | 'actif' | 'email_blocked';
+type TypeBadge = 'haut_potentiel' | 'pdp' | 'warning_ville_differente' | 'api_user' | 'actif' | 'email_blocked' | 'fcr_locked';
 
 const badgeCva = cva('block!', {
   defaultVariants: {
@@ -21,6 +21,7 @@ const badgeCva = cva('block!', {
       actif: '',
       api_user: 'bg-[#FFDA8F]! text-[#454B58]!',
       email_blocked: '',
+      fcr_locked: 'bg-gray-200! text-gray-700!',
       haut_potentiel: 'bg-green-600! text-white!',
       pdp: 'bg-[#FFDA8F]! text-[#454B58]!',
       warning_ville_differente: 'bg-[#FFDA8F]! text-[#454B58]!',
@@ -32,6 +33,7 @@ const badgeLabels: Record<TypeBadge, string> = {
   actif: 'Actif',
   api_user: 'API',
   email_blocked: 'Emails bloqués',
+  fcr_locked: 'Verrouillée',
   haut_potentiel: 'HP',
   pdp: 'PDP',
   warning_ville_differente: 'Ville différente',
