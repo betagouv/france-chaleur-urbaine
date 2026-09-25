@@ -1,0 +1,371 @@
+﻿Solution,Modes de chauffage,Mode d'ECS,Emetteur,Espaces extérieurs,Critères techniques excluants,Critères techniques d'information,Coût d'installation (HT) : préciser par logement,Coût par an (TTC) - hors P4,Gains vs. Gaz,Gain DPE,Descriptif de la solution,Avantages,Inconvénients,Prérequis et faisabilité,Rafraichissement possible,Etoiles,Classement,Message - solution non compatible
+Réseau de chaleur,Immeuble en chauffage collectif,"ECS collective, ECS individuelle",Radiateur ou plancher chauffant à eau,"Aucun, Les deux : Espaces communs et individuels disponibles, Uniquement espaces communs disponibles (cour jardin toit terrasse...), Uniquement espaces individuels (balcons terasses)",(Réseau de chaleur) Distance < 200 m via API FCU,(Réseau de chaleur) Zone PDP,"Cf. https://france-chaleur-urbaine.beta.gouv.fr/ressources/cout-raccordement#contenu. Valeurs à prendre en compte pour le calcul : Résidentiel (statique) + Nombre de logements (source : paramètres personnalisables par l’usager)
+Résultat à afficher : Coût du rac cordement / nombre de logement","A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “Réseau de chaleur”
+
+Ne modifier que : 
+- le mode de chauffage
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 25)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 1 classe,"Votre bâtiment est à proximité d'un réseau de chaleur (Xm à vol d'oiseau) : c'est la solution à privilégier pour un chauffage collectif. Une énergie majoritairement renouvelable et locale, un prix stable et une TVA réduite à 5,5 %, le tout garanti par un service public.","• Faibles émissions de CO2
+• Prix stables
+• TVA réduite à 5,5 %
+• Garantie d'un service public","• contrat long (15-20 ans)
+","• Chauffage collectif et radiateurs à eau - source : formulaire - favorable
+  • distance au réseau de chaleur <200m - source : France Chaleur Urbaine - favorable
+-  [conditionnel PDP = true] Votre bâtiment est situé dans un Périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau. - source : France Chaleur Urbaine - contraignant
+  • [conditonnel réseau de froid <50 m] Distance au réseau de froid < 50 m",Yes,4,1,[conditonnel : distance > 200m ]votre bâtiment est trop éloigné d’un réseau de chaleur - source : France Chaleur Urbaine -défavorable
+PAC géothermique,Immeuble en chauffage collectif,"ECS collective, ECS individuelle",Radiateur ou plancher chauffant à eau,"Les deux : Espaces communs et individuels disponibles, Uniquement espaces communs disponibles (cour jardin toit terrasse...)","(Géothermie) Faisabilité technique = oui, (Géothermie) Taux de couverture > 80 %, (Géothermie) Zone GMI (Orange/verte)",(Réseau de chaleur) Zone PDP,8000 à 11 000 € (statique),"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC eau/eau collective”
+
+Ne modifier que : 
+- le mode de chauffage
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 25)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts",Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés.,DPE (par défaut E ou modifié par l’usager) + 2 classes,"Votre bâtiment est situé en zone favorable à la géothermie. La pompe à chaleur géothermique capte la chaleur du sous-sol pour chauffer votre immeuble et produire du chauffage et de l'eau chaude : l'une des solutions les plus performantes et les plus sobres en CO₂. Cette solution est plus pertinente avec une rénovation globale ou un bâtiment récent, car c’est dans ces configurations qu’elle sera le plus efficace et donc le plus rentable.","• Faibles émissions de CO2
+• Suppression des chaudières (gain de place, sécurité)
+• Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs
+• Aucune nuisance sonore
+ ","• Investissement initial important
+• Travaux importants dans les parties extérieures collectives pour le forage dans le sol","• Chauffage collectif et radiateurs à eau - source : formulaire - favorable  
+-  [conditionnel PDP = true] Votre bâtiment est situé dans un Périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau. - source : France Chaleur Urbaine - contraignant
+  - [conditonnel : Zone GMI verte ou orange = True] Votre bâtiment est situé dans une zone favorable au forage - source Cerema - favorable
+- [conditionnel : taux de couverture > 80 % = True] La ressource énergétique de la parcelle est suffisante - source Cerema - favorable
+- [conditionnel : faisabilité technique = True] Place suffisante pour l’implantation de sondes géothermiques- source Cerema - favorable
+- Espace requis en local technique - à vérifier
+  • accessibilité de la parcelle pour les machines de forage - à vérifier
+",Yes,3,2,"  • [conditionnel : espaces extérieurs communs = aucun] : vous ne disposez pas d’espace extérieur pour disposer les sondes source : formulaire - défavorable
+ • [conditonnel : Zone GMI rouge = True] Votre bâtiment est situé dans une zone défavorable au forage - source : Cerema - défavorable
+  • [conditionnel : taux de couverture < 80 % = True] La ressource énergétique de la parcelle est insuffisante source : Cerema - défavorable
+  • [conditionnel : faisabilité technique = False] Place insuffisante pour l’implantation de sondes géothermiques source : Cerema - défavorable"
+Chaudière à bois,Immeuble en chauffage collectif,"ECS collective, ECS individuelle",Radiateur ou plancher chauffant à eau,"Les deux : Espaces communs et individuels disponibles, Uniquement espaces communs disponibles (cour jardin toit terrasse...)",,"(Réseau de chaleur) Zone PDP, PPA",6000 à 8000 € (statique),"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “Chaudière à granulés collective”
+
+Ne modifier que : 
+- le mode de chauffage
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 25)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 2 classes,"Votre bâtiment pourrait être adapté à l’installation d’une chaudière à bûches, à granulés ou à plaquettes. Sous réserve d’espaces suffisamment importants et d’un approvisionnement local en bois disponible, ces solutions vous permettraient de réduire les émissions CO2 de votre bâtiment. ","• Faibles émissions de CO2
+• Longévité des équipements
+• Coût de la chaleur compétitif et stable
+• Énergie locale (bois)","• Investissement initial important
+• Approvisionnement à prévoir (contrat de 3 ans minimum recommandé)
+• Nuisance sonore modérée en fonctionnement","-  [conditionnel PDP = true] Votre bâtiment est situé dans un Périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau. - source : CEREMA
+• Chauffage collectif et radiateurs à eau - source : formulaire - favorable
+-  [conditionnel PPA = true] Votre bâtiment est situé dans une zone de protection de l’atmosphère, des restrictions peuvent s’appliquer  - source : France Chaleur Urbaine - à vérifier
+  • [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une zone architecturale ‘{AC_TYPE}’, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+- Espace requis en local technique pour la chaudière et le stockage de combustible - à vérifier
+- accessibilité de la parcelle pour la livraison du combustible - à vérifier",No,"  • [conditionnel : si zone d'altitude = true] alors Etoiles = 3
+  • [si PPA = True] alors Etoiles = 2
+  • [si PPA = True & zone d'altitude = true] alors Etoiles = 2
+  • Si non Etoiles = 2
+","- [conditionnel : si zone d'altitude = true] alors classement = 9
+- [si PPA = True] alors classement = 10
+- [si PPA = True & zone d'altitude = true] alors classement = 10
+- Si non, classement = 10","
+- [conditionnel : espaces extérieurs communs = aucun] : vous ne disposez pas d’espace extérieur pour le stockage de combustible
+source : formulaire - défavorable"
+PAC air/eau collective,Immeuble en chauffage collectif,"ECS collective, ECS individuelle",Radiateur ou plancher chauffant à eau,"Les deux : Espaces communs et individuels disponibles, Uniquement espaces communs disponibles (cour jardin toit terrasse...)",,"(Contrainte de perfomance) zone d'altitude, (Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis, (Réseau de chaleur) Zone PDP",4000 à 6000 € (statique),"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC air/eau collective”
+
+Ne modifier que : 
+- le mode de chauffage
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 25)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 2 classes,"Votre bâtiment semble disposer d’un espace extérieur pour accueillir une pompe à chaleur air/eau collective. Elle capte les calories de l'air extérieur pour chauffer votre immeuble et produire l'eau chaude, tout en supprimant vos chaudières. Cette solution est plus pertinente avec une rénovation globale ou un bâtiment récent, car c’est dans ces configurations qu’elle sera le plus efficace et donc le plus rentable.","• Faibles émissions de CO2
+• Suppression des chaudières (gain de place, sécurité)
+  • Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs
+","  • Étude acoustique nécessaire 
+• Impact esthétique des modules extérieurs","• Chauffage collectif et radiateurs à eau - source : formulaire - favorable
+-  [conditionnel PDP = true] Votre bâtiment est situé dans un Périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau. - source : France Chaleur Urbaine - contraignant
+  • [conditionnel Zone d’altitude] En zone d’altitude, une très bonne isolation de votre bâtiment est nécessaire pour garantir sa perfomance
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+- Espace requis en local technique - à vérifier
+• Espace requis pour les modules extérieurs - à vérifier
+• Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique - à vérifier 
+• Raccordement électrique du bâtiment adapté à la puissance de l'équipement - à vérifier ",Yes,"- [conditionnel : si zone d'altitude = true] alors Etoiles = 2
+- [si PPA = True] alors Etoiles = 3
+- [si PPA = True & zone d'altitude = true] alors Etoiles = 2
+- Si non Etoiles = 2","- [conditionnel : si zone d'altitude = true] alors classement = 10
+- [si PPA = True] alors classement = 9
+- [si PPA = True & zone d'altitude = true] alors classement = 9
+- Si non, classement = 9",- [conditionnel : espaces extérieurs communs = aucun] : vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure - source : formulaire - défavorable
+Hybride : Pompe à chaleur air/eau collective et chaudière gaz,Immeuble en chauffage collectif,"ECS collective, ECS individuelle",Radiateur ou plancher chauffant à eau,"Les deux : Espaces communs et individuels disponibles, Uniquement espaces communs disponibles (cour jardin toit terrasse...)",,"(Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis, (Réseau de chaleur) Zone PDP",3000 à 5000 € (statique),"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC air/eau collective” + ajouter 20% 
+
+Ne modifier que : 
+- le mode de chauffage- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 25)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 1 classe,"Votre bâtiment pourrait accueillir une solution hybride associant pompe à chaleur et chaudière gaz. La PAC couvre la majorité des besoins et la chaudière prend le relais les jours les plus froids : un bon compromis quand la PAC seule n'est pas possible. ","• Faibles émissions de CO2
+• Optimisation du fonctionnement de la PAC
+• Minimise l'investissement initial (PAC moins puissante)
+  • Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs","• Double abonnement et double maintenance
+• Nuisances sonores
+• Impact esthétique des modules extérieurs","• Chauffage collectif et radiateurs à eau - source : formulaire - favorable
+-  [conditionnel PDP = true] Votre bâtiment est situé dans un Périmètre de développement prioritaire et soumis à une obligation d’étude du raccordement au réseau. - source : France Chaleur Urbaine - contraignant
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+- Espace requis en local technique - à vérifier
+• Espace requis pour les modules extérieurs - à vérifier
+• Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique - à vérifier
+• Raccordement électrique du bâtiment adaptée à la puissance de l'équipement - à vérifier",Yes,1,12,- [conditionnel : espaces extérieurs communs = aucun] : vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure- source : formulaire - défavorable
+Solaire thermique - ECS uniquement (Immeuble),"Immeuble en chauffage collectif, Immeuble en chauffage individuel",ECS collective,"Autre : climatiseur ..., Radiateur ou plancher chauffant à eau, Radiateur ou plancher chauffant électrique","Les deux : Espaces communs et individuels disponibles, Uniquement espaces communs disponibles (cour jardin toit terrasse...), Uniquement espaces individuels (balcons terasses)",(Solaire) Taux de couverture > 80 %,(Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis,2000 à 3000 €,préciser : coûts pour l’ECS uniquement            hypothèses : conso 955 kWh/an.habitant        prix du gaz 0.15 €/kwh + taux de couverture solaire e 50%                                                    coût par an = 955 * nb d’habitant *0.15 /2,-50% par rapport au gaz,DPE (par défaut E ou modifié par l’usager)+ 1 classe,"L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir une partie de votre eau chaude sanitaire. Une solution fiable, mature et économique à l'usage, qui fonctionne avec un appoint pour les périodes de faible ensoleillement.","• Aucune émission CO₂
+• Technologie mature
+• Coût de la chaleur compétitif une fois l'installation amortie","• Investissement initial important
+• Ne couvre que l'eau chaude sanitaire
+• Travaux modérés mais potentiellement complexes","• système eau chaude sanitaire collectif - source : formulaire - favorable
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+- Espace requis en local technique pour les ballons de stockage - à vérifier
+• Espace requis sur la toiture pour les capteurs - à vérifier",No,2,7,"- [conditionnel : taux de couverture < 80 % = True] La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale.
+source : Cerema - défavorable"
+PAC air/eau individuelle (appartement),Immeuble en chauffage individuel,ECS individuelle,Radiateur ou plancher chauffant à eau,"Les deux : Espaces communs et individuels disponibles, Uniquement espaces individuels (balcons terasses)",,(Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis,7 000 à 10 000 €,"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC air/eau individuelle”
+
+Ne modifier que : 
+- le mode de chauffage
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 25)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 1 classe,"Votre appartement pourrait accueillir une pompe à chaleur air/eau individuelle. Elle remplacerait votre chaudière gaz et produirait chauffage et eau chaude, avec un gain important sur vos émissions de CO₂.","• Faibles émissions de CO2
+• Suppression de la chaudière individuelle (gain de place, sécurité)
+ - Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs
+","• Nuisance sonore 
+• Impact esthétique des modules extérieurs
+• Travaux de changement de système dans l'appartement","• Chauffage individuel et radiateurs à eau - source : formulaire - favorable
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+  • règlementation de la copro autorisant la pose d’unité extérieures sur les balcons - à vérifier
+• Espace requis pour les modules extérieurs - à vérifier
+• Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique  - à vérifier
+• Raccordement électrique de l’appartement adaptée à la puissance de l'équipement - à vérifier",Yes,3,14,"- [conditionnel : espaces extérieurs privatif = aucun] : vous ne disposez pas d’espace extérieur pour installer l’unité extérieure - source : formulaire - défavorable
+  • [conditionnel : radiateur électrique = true] vous ne disposez pas de radiateur à eau - source : formulaire - défavorable "
+PAC air/air individuelle (appartement) - chauffage seul,Immeuble en chauffage individuel,"ECS collective, ECS individuelle","Autre : climatiseur ..., Radiateur ou plancher chauffant électrique","Les deux : Espaces communs et individuels disponibles, Uniquement espaces individuels (balcons terasses)",,(Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis,3000 à 5000 €,"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC air/air individuelle”
+
+Ne modifier que : 
+- le mode de chauffage
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 25)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 2 classes,"Votre appartement pourrait accueillir une pompe à chaleur air/air, qui remplacerait vos radiateurs électriques et pourrait aussi rafraîchir en été. Prévoir un système complémentaire pour l'eau chaude sanitaire.","• Faibles émissions de CO2
+• Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs
+
+• Installation relativement simple
+","• Faible confort thermique (air soufflé)
+• Nuisances sonores
+• Impact esthétique des modules extérieurs
+• N'assure pas la production d'eau chaude sanitaire","• Chauffage individuel et radiateurs électriques - source : formulaire - favorable
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+- règlementation de la copro autorisant la pose d’unité extérieures sur les balcons - à vérifier
+• Espace requis pour les modules extérieurs - à vérifier
+• Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique - à vérifier
+• Raccordement électrique de l’appartement adaptée à la puissance de l'équipement - à vérifier",Yes,1,17,"- [conditionnel : espaces extérieurs privatif = aucun] : vous ne disposez pas d’espace extérieur pour installer l’unité extérieure - source : formulaire - défavorable
+- [conditionnel : radiateur à eau = true] vous disposez de radiateurs à eau qui pourraient être mieux valorisés - source : formulaire - défavorable "
+PAC géothermique (maison),Maison individuelle,"ECS couplée, ECS indépendante",Radiateur ou plancher chauffant à eau,"Jardin / cours, Terrasse / balcon ET jardin/cours",,,20 000 à 25 000 €,"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC eau/eau indiv”
+
+Ne modifier que : 
+- le mode de chauffage- l’adresse
+- Nombre de logement = 1
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 100)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 2 classes,"Votre maison est située en zone favorable à la géothermie. La pompe à chaleur géothermique puise la chaleur naturelle du sol pour chauffer votre maison et votre eau chaude, avec un très bon rendement et sans unité extérieure visible.","• Faibles émissions de CO2
+• Coût de la chaleur compétitif
+ • Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs
+
+• Aucune unité extérieure visible","• Investissement initial important
+• Travaux d'installation conséquents","• Maison à chauffage individuel et radiateurs à eau - source : formulaire - favorable
+• votre maison possède des espaces extérieurs, la géothermie est à étudier
+- accessibilité de la parcelle pour les machines de forage - à vérifier",Yes,4,3,"  • [conditionnel : espaces extérieurs  = aucun ou terrasse/balcon] : vous ne disposez pas d’espace extérieur pour disposer les sondes - source : formulaire - défavorable
+  • [conditionnel : radiateur électrique = true] vous ne disposez pas de radiateur à eau - source : formulaire - défavorable "
+Chaudière à bois (maison),Maison individuelle,"ECS couplée, ECS indépendante",Radiateur ou plancher chauffant à eau,"Jardin / cours, Terrasse / balcon ET jardin/cours",,PPA,10 0000 à 17 000 €,"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “Chaudière biomasse”
+
+Ne modifier que : 
+- le mode de chauffage- l’adresse
+- Nombre de logement = 1
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 100)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 2 classes,"Une chaudière à bûches, à granulés ou plaquettes, pourrait équiper votre maison. Sous réserve d’espaces suffisamment importants et d’un approvisionnement local en bois disponible, cette solution vous permettrait de réduire les émissions CO2 de votre maison. ","• Faibles émissions de CO2
+• Longévité des équipements
+• Coût de la chaleur compétitif et satble
+• Énergie renouvelable et locale","• Investissement initial important
+• Approvisionnement à prévoir","• Maison à chauffage individuel et radiateurs à eau - source : formulaire - favorable
+-  [conditionnel PPA = true] Votre bâtiment est situé dans une zone de protection de l’atmosphère, des restrictions peuvent s’appliquer  - source : CEREMA - à vérifier
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+- Espace requis en local technique pour la chaudière et le stockage - à vérifier
+  • Présence d’un conduit d’évacuation - à vérifier
+- accessibilité de la parcelle pour la livraison du combustible - à vérifier",No,"  • [conditionnel : si zone d'altitude = true] alors Etoiles = 3
+• [si PPA = True] alors Etoiles = 2
+• [si PPA = True & zone d'altitude = true] alors Etoiles = 2
+• Si non Etoiles = 2
+","- [conditionnel : si zone d'altitude = true] alors classement = 12
+- [si PPA = True] alors classement = 13
+- [si PPA = True & zone d'altitude = true] alors classement = 13
+- Si non, classement = 13","- [conditionnel : espace extérieur = aucun ou terrasse/balcon ] : vous ne disposez pas d’espace extérieur  pour le stockage de combustible - source : formulaire - défavorable
+- [conditionnel : radiateur électrique = true] vous ne disposez pas de radiateur à eau - source : formulaire - défavorable "
+PAC air/eau individuelle (maison),Maison individuelle,"ECS couplée, ECS indépendante",Radiateur ou plancher chauffant à eau,"Jardin / cours, Terrasse / balcon",,"(Contrainte de perfomance) zone d'altitude, (Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis"," 12 000 à 15 000 €","A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC air/eau individuelle”
+
+Ne modifier que : 
+- le mode de chauffage
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 1)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 2 classes,"Votre maison semble adaptée à l'installation d'une pompe à chaleur air/eau individuelle. Elle remplace votre chaudière et produit chauffage et eau chaude à partir de l'air extérieur, pour diminuer vos émissions de CO₂ et réduire fortement votre facture.
+Une solution à privilégier pour les maisons récentes ou rénovées pour une meilleure efficacité !","• Faibles émissions de CO2
+• Économique si bien dimensionnée
+• Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs","• Nuisances sonores (unité extérieure)
+• Impact esthétique des modules extérieurs","• Maison à chauffage individuel et radiateurs à eau - source : formulaire - favorable
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+• Espace requis pour les modules extérieurs - à vérifier
+• Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique - à vérifier
+• Raccordement électrique de la maison adaptée à la puissance de l'équipement - à vérifier ",Yes,"- [conditionnel : si zone d'altitude = true] alors Etoiles = 2
+- [si PPA = True] alors Etoiles = 3
+- [si PPA = True & zone d'altitude = true] alors Etoiles = 2
+- Si non Etoiles = 2","- [conditionnel : si zone d'altitude = true] alors classement = 13
+- [si PPA = True] alors classement = 12
+- [si PPA = True & zone d'altitude = true] alors classement = 12
+- Si non, Classement = 12","- [conditionnel : espaces extérieurs = aucun] : vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure de la PAC - source : formulaire - défavorable
+- [conditionnel : radiateur électrique = true] vous ne disposez pas de radiateur à eau - source : formulaire - défavorable"
+"Poêle ou insert à bois - chauffage seul ",Maison individuelle,ECS indépendante,"Autre : climatiseur ..., Radiateur ou plancher chauffant à eau, Radiateur ou plancher chauffant électrique","Jardin / cours, Terrasse / balcon",,PPA,4000 à 6000 €,"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “Poêle à granulés individuel”
+
+Ne modifier que : 
+- le mode de chauffage- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 1)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 1 classe,"Votre maison pourrait accueillir un poêle à bûches ou à granulés, un insert ou un foyer fermé, en appoint ou en chauffage principal d'une pièce de vie.  Ces solutions renouvelables, au bois local, avec un coût de la chaleur compétitif et stable sont à compléter par un système de chauffage central et/ou d’eau chaude.","• Faibles émissions de CO2
+• Coût de la chaleur compétitif et stable
+• Longévité des équipements
+• Énergie renouvelable et locale","• Doit généralement être complété par une autre solution de chauffage
+• Approvisionnement à prévoir
+  • N'assure pas la production d'eau chaude sanitaire","• Maison à chauffage individuel et radiateurs électrique - source : formulaire - favorable
+-  [conditionnel PPA = true] Votre bâtiment est situé dans une zone de protection de l’atmosphère, des restrictions peuvent s’appliquer  - source : Cerema
+ - à vérifier
+- accessibilité de la parcelle pour la livraison du combustible - à vérifier
+- Présence d’un conduit d’évacuation - à vérifier
+",No,3,15,"- [conditionnel : radiateur à eau = true] vous disposez de radiateurs à eau qui ne sont pas nécessaires pour cet appareil - source : formulaire - défavorable
+- [conditionnel : espaces extérieurs = aucun] : vous ne disposez pas d’espace extérieur pour stocker du bois - source : formulaire - défavorable"
+"PAC air/air individuelle (maison) - chauffage seul ",Maison individuelle,ECS indépendante,"Autre : climatiseur ..., Radiateur ou plancher chauffant à eau, Radiateur ou plancher chauffant électrique","Jardin / cours, Terrasse / balcon",,(Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis,6 000 à 8 000 €,"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC air/air individuelle”
+
+Ne modifier que : 
+- le mode de chauffage
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 1)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et perfomance de FCU pour les paramètres renseignés. ",DPE (par défaut E ou modifié par l’usager) + 1 classe,"Votre maison pourrait accueillir une pompe à chaleur air/air, qui capte les calories de l'air extérieur pour chauffer (ou rafraîchir) votre intérieur. Une solution simple à installer, à prévoir avec un système complémentaire pour l'eau chaude sanitaire.","• Faibles émissions de CO2
+- Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs
+• Économique si bien dimensionnée
+• Installation relativement simple","• Faible confort thermique (air soufflé)
+• Nuisances sonores
+• Impact esthétique des modules extérieurs
+• N'assure pas la production d'eau chaude sanitaire","• Chauffage individuel et radiateurs électriques - source : formulaire - favorable
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+• Espace requis pour les modules extérieurs - à vérifier
+• Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique - à vérifier
+• Raccordement électrique de la maison adaptée à la puissance de l'équipement - à vérifier",Yes,1,16,"- [conditionnel : espaces extérieurs privatif = aucun] : vous ne disposez pas d’espace extérieur pour installer l’unité extérieure de la PAC - source : formulaire - défavorable
+- [conditionnel : radiateur à eau = true] vous disposez de radiateurs à eau qui pourraient être mieux valorisés. - source : formulaire - défavorable"
+Solaire thermique - ECS uniquement (maison),Maison individuelle,ECS indépendante,"Autre : climatiseur ..., Radiateur ou plancher chauffant à eau, Radiateur ou plancher chauffant électrique","Les deux : Espaces communs et individuels disponibles, Uniquement espaces communs disponibles (cour jardin toit terrasse...), Uniquement espaces individuels (balcons terasses)",,(Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis,5000 à 6000 €,préciser : coûts pour l’ECS uniquement            hypothèses : conso 955 kWh/an.habitant        prix du gaz 0.15 €/kwh + taux de couverture solaire e 50%                                                    coût par an = 955 * nb d’habitant *0.15 /2,-50% par rapport au gaz,DPE (par défaut E ou modifié par l’usager)+ 1 classe,"L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir une partie de votre eau chaude sanitaire. Une solution fiable, mature et économique à l'usage, qui fonctionne avec un appoint pour les périodes de faible ensoleillement.","• Aucune émission CO₂
+• Technologie mature
+• Coût de la chaleur compétitif une fois l'installation amortie","• Investissement initial important
+• Ne couvre que l'eau chaude sanitaire
+• Travaux modérés mais potentiellement complexes","• système eau chaude sanitaire collectif - source : formulaire - favorable
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+- Espace requis en local technique pour les ballons de stockage - à vérifier
+• Espace requis sur la toiture pour les capteurs - à vérifier",No,2,9,
+Système solaire combiné,Maison individuelle,"ECS couplée, ECS indépendante",Radiateur ou plancher chauffant à eau,"Jardin / cours, Terrasse / balcon",(Solaire) Taux de couverture > 80 %,(Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis,20 000 à 25 000 €,"Hypothèses : taux de couverture solaire de 50%                                                                            calcul : en fonction de la lettre DPE, de la surface renseignée et le nb d’habitants, considérer (besoin chauffage + besoin ECS * nb d’habitants) * prix du gaz /2",-50% par rapport au gaz,DPE (par défaut E ou modifié par l’usager) + 2 classes,L’exposition et la surface de votre toiture pourraient être propices à l’installation d’un système solaire combiné. Les panneaux produisent à la fois le chauffage et l'eau chaude sanitaire. Ce système est toujours associé à un appoint pour les jours de faible ensoleillement.,"• Faibles émissions de CO2
+• Coût de la chaleur compétitif
+• Longévité des équipements
+• Couvre à la fois chauffage et ECS","• Investissement initial important
+• Nécessite un système d'appoint (gaz, bois ou électricité)","• Maison à chauffage individuel - radiateurs à eau- source : formulaire - favorable
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+- Espace requis en local technique pour les ballons de stockage - à vérifier
+• Espace requis sur la toiture pour les capteurs - à vérifier",No,3,6,- [conditionnel : taux de couverture < 80 % = True] La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale - source : Cerema - défavorable
+Pas de solution,"Immeuble en chauffage collectif, Immeuble en chauffage individuel",,,Aucun,,,/,/,,,Reprendre le texte des maquettes,,,,No,,20,
+PAC sur capteurs solaires atmosphériques - ECS uniquement,"Immeuble en chauffage collectif, Immeuble en chauffage individuel",ECS collective,"Autre : climatiseur ..., Radiateur ou plancher chauffant à eau, Radiateur ou plancher chauffant électrique","Les deux : Espaces communs et individuels disponibles, Uniquement espaces communs disponibles (cour jardin toit terrasse...)",,(Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis,"Entre 3 000 et 4 000 € ","A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC air/eau collective” en ne prenant en compte que les consommation d’eau chaude sanitaire
+
+Ne modifier que : 
+- le mode de production d’ECS
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 25)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et performance de FCU pour les paramètres renseignés  sur la base du besoin ECS uniquement. ","DPE (par défaut E ou modifié par l'usager) + 0 à 1 classe ","Votre toiture pourrait accueillir des capteurs solaires atmosphériques qui alimentent une pompe à chaleur dédiée à l'eau chaude sanitaire. Une solution silencieuse, sans unité extérieure bruyante, avec de très faibles émissions de CO₂ qui nécessite cependant une place importante en local technique pour les ballons de stockage.","• Très faibles émissions de CO2
+• Aucune nuisance sonore
+• Solution mature et fiable","• Travaux modérés mais complexes selon structure du bâtiment
+• Nécessite une toiture adaptée","• système eau chaude sanitaire collectif - source : formulaire - favorable
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+- Espace requis en local technique pour les ballons de stockage - à vérifier
+• Espace requis sur la toiture pour les capteurs - à vérifier",No,2,10,- [conditionnel : taux de couverture < 80 % = True] La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale - source : Cerema - défavorable
+Chauffe-eau thermodynamique - ECS uniquement,"Immeuble en chauffage collectif, Immeuble en chauffage individuel, Maison individuelle",ECS indépendante,"Autre : climatiseur ..., Radiateur ou plancher chauffant à eau, Radiateur ou plancher chauffant électrique","Les deux : Espaces communs et individuels disponibles, Uniquement espaces individuels (balcons terasses)",,(Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis,Entre 2 000 et 3 000 €,"A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC air/eau collective” en ne prenant en compte que les consommation d’eau chaude sanitaire
+
+Ne modifier que : 
+- le mode de production d’ECS
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 25)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts","Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et performance de FCU pour les paramètres renseignés, sur la base du besoin ECS uniquement","DPE (par défaut E ou modifié par l'usager) + 0 à 1 classe ","Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à partir de l'air extérieur, avec un gain important sur votre facture par rapport à un ballon électrique classique.","• Faibles émissions de CO2
+• Économique à l'usage par rapport à un ballon électrique classique
+• Solution simple à installer","• Nuisance sonore à prendre en compte
+• Impact esthétique de l'unité extérieure
+• Travaux de changement de système dans l'appartement","- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+• Espace requis pour le module extérieur - à vérifier
+• Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique - à vérifier
+",No,2,18,- [conditionnel : espaces extérieurs communs = aucun] : vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure - source : formulaire - défavorable
+PAC air/eau collective - ECS uniquement,"Immeuble en chauffage collectif, Immeuble en chauffage individuel",ECS collective,"Autre : climatiseur ..., Radiateur ou plancher chauffant à eau, Radiateur ou plancher chauffant électrique","Les deux : Espaces communs et individuels disponibles, Uniquement espaces communs disponibles (cour jardin toit terrasse...)",,(Contraintes architecturales) Zone AC1/AC2/AC3/AC4/AC4bis,"Entre 2 000 et 3 000 € ","A partir du comparateur de coût et performance de FCU, calculer le coût par an pour la solution “PAC air/eau collective” en ne prenant en compte que les consommation d’eau chaude sanitaire
+
+Ne modifier que : 
+- le mode de production d’ECS
+- l’adresse
+- Nombre de logement (si modifié uniquement, autrement choisir 25)
+- DPE (si modifié uniquement, autrement choisir DPE E)
+- surface (si modifié uniquement,  autrement choisir 70)
+- Nombre d'habitants moyen par appartement (si modifié uniquement,  autrement choisir 2)
+
+Afficher la fourchette des coûts",Calculer le % de réduction du coût par rapport aux prix du gaz donnés par le comparateur de coût et performance de FCU pour les paramètres renseignés  sur la base du besoin ECS uniquement,"DPE (par défaut E ou modifié par l'usager) + 0 à 1 classe ","Votre bâtiment semble disposer d’un espace extérieur pour accueillir une pompe à chaleur air/eau collective destinée à l’eau chaude sanitaire. Elle capte les calories de l'air extérieur pour chauffer l’eau. ","• Faibles émissions de CO2
+• Solution compacte et éprouvée
+• Permet de conserver le système de chauffage existant","• Nuisances sonores
+• Étude acoustique nécessaire 
+• Impact esthétique de l'unité extérieure","• système ECS collectif - source : formulaire - favorable
+- [conditionnel AC_TYPE = true] votre bâtiment se trouve dans une {AC_TYPE}, ce qui peut présenter des contraintes d'intégration - source : Cerema - contraignant
+• Espace requis pour les modules extérieurs - à vérifier
+- Espace requis en local technique pour les ballons de stockage - à vérifier
+• Réglementation acoustique : le bruit ne doit pas dépasser les seuils du Code de la santé publique - à vérifier
+• Raccordement électrique du bâtiment adaptée à la puissance de l'équipement - à vérifier
+
+
+
+
+",No,2,11,- [conditionnel : espaces extérieurs communs = aucun] : vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure - source : formulaire - défavorable

@@ -277,7 +277,12 @@ export function getEspaceExterieurFromCheckboxState(checkboxState: EspaceExterie
         : 'none';
 }
 
-export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = ['Individuel', 'Collectif'] as const;
+export const MODE_EAU_CHAUDE_SANITAIRE_IMMEUBLE_VALUES = ['Individuel', 'Collectif'] as const;
+export const MODE_EAU_CHAUDE_SANITAIRE_MAISON_VALUES = ['Couplé au chauffage', 'Indépendant'] as const;
+export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = [
+  ...MODE_EAU_CHAUDE_SANITAIRE_IMMEUBLE_VALUES,
+  ...MODE_EAU_CHAUDE_SANITAIRE_MAISON_VALUES,
+] as const;
 export type ModeEauChaudeSanitaire = (typeof MODE_EAU_CHAUDE_SANITAIRE_VALUES)[number];
 export const MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE = 'nonRenseigne';
 export const MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES = [
@@ -285,13 +290,55 @@ export const MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES = [
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
 ] as const;
 export type ModeEauChaudeSanitaireQueryParam = (typeof MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES)[number];
-export const modeEauChaudeSanitaireOptions = [
+
+const modeEauChaudeSanitaireImmeubleOptions = [
   { label: 'Individuel', value: 'Individuel' },
   { label: 'Collectif', value: 'Collectif' },
 ] satisfies readonly {
   label: string;
   value: ModeEauChaudeSanitaire;
 }[];
+
+const modeEauChaudeSanitaireMaisonOptions = [
+  { label: 'Couplé au chauffage', value: 'Couplé au chauffage' },
+  { label: 'Indépendant', value: 'Indépendant' },
+] satisfies readonly {
+  label: string;
+  value: ModeEauChaudeSanitaire;
+}[];
+
+export const modeEauChaudeSanitaireOptions = [
+  ...modeEauChaudeSanitaireImmeubleOptions,
+  ...modeEauChaudeSanitaireMaisonOptions,
+] satisfies readonly {
+  label: string;
+  value: ModeEauChaudeSanitaire;
+}[];
+
+export function getModeEauChaudeSanitaireOptions(typeLogement: TypeLogement | null | undefined) {
+  return typeLogement === 'maison_individuelle' ? modeEauChaudeSanitaireMaisonOptions : modeEauChaudeSanitaireImmeubleOptions;
+}
+
+export function normalizeModeEauChaudeSanitaireForTypeLogement(
+  modeEauChaudeSanitaire: ModeEauChaudeSanitaireQueryParam | null | undefined,
+  typeLogement: TypeLogement | null | undefined
+): ModeEauChaudeSanitaireQueryParam | null {
+  if (!modeEauChaudeSanitaire) {
+    return null;
+  }
+
+  if (modeEauChaudeSanitaire === MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE) {
+    return modeEauChaudeSanitaire;
+  }
+
+  const compatibleModes = getModeEauChaudeSanitaireOptions(typeLogement).map((option) => option.value);
+
+  if (compatibleModes.includes(modeEauChaudeSanitaire)) {
+    return modeEauChaudeSanitaire;
+  }
+
+  return MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE;
+}
 
 export function getModeEauChaudeSanitaireLabel(modeEauChaudeSanitaire: ModeEauChaudeSanitaireQueryParam | null | undefined) {
   return modeEauChaudeSanitaire && modeEauChaudeSanitaire !== MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE

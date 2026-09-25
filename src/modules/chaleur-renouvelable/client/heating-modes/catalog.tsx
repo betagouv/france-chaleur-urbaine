@@ -698,7 +698,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) =>
         hasEspaceShared(situation) &&
-        hasCompatibleHotWaterMode(situation, ['Collectif']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleGeothermalPotential(situation) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
@@ -764,7 +764,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) =>
         hasEspaceShared(situation) &&
-        hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-biomasse.webp',
@@ -813,7 +813,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) =>
         situation.espaceExterieur !== 'none' &&
-        hasCompatibleHotWaterMode(situation, ['Individuel']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-pac.webp',
@@ -865,7 +865,7 @@ export const modesDeChauffage = {
           et/ou d’eau chaude.
         </>
       ),
-      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Individuel']),
+      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Indépendant']),
       gainClasse: 1,
       icone: 'img/icon-biomasse.webp',
       id: 'house-wood-stove',
@@ -901,7 +901,7 @@ export const modesDeChauffage = {
           sanitaire.
         </>
       ),
-      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Individuel']),
+      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Indépendant']),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
       id: 'house-air-air-heat-pump',
@@ -950,7 +950,7 @@ export const modesDeChauffage = {
         </>
       ),
       estPossible: (situation) =>
-        hasCompatibleHotWaterMode(situation, ['Individuel', 'Collectif']) &&
+        hasCompatibleHotWaterMode(situation, ['Indépendant']) &&
         hasEspacePrivate(situation) &&
         hasSufficientSolarThermalCoverage(situation),
       gainClasse: 1,
@@ -996,7 +996,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) =>
         situation.espaceExterieur !== 'none' &&
-        hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       gainVsGaz: -50,
@@ -1032,7 +1032,7 @@ export const modesDeChauffage = {
           partir de l'air extérieur, avec un gain important sur votre facture par rapport à un ballon électrique classique.
         </>
       ),
-      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Individuel']) && hasEspacePrivate(situation),
+      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Indépendant']) && hasEspacePrivate(situation),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
       id: 'house-thermodynamic-water-heater',

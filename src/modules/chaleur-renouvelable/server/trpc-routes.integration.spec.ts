@@ -623,7 +623,7 @@ describe('batEnrRouter', () => {
         email: 'newer@example.com',
         first_name: 'Récent',
         heating_energy: 'Électricité',
-        hot_water_system_type: 'Collectif',
+        hot_water_system_type: 'Indépendant',
         housing_count: 24,
         housing_type: 'maison_individuelle',
         is_public_advisor_selected: true,

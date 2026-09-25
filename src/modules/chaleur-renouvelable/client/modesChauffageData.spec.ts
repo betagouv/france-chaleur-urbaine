@@ -461,41 +461,42 @@ const heatingModeCases: HeatingModeCase[] = [
     additionalPossibleCases: [
       {
         description: 'quand la ressource géothermique est inconnue',
-        overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 0, modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 0, modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
     ],
     impossibleCases: [
       {
         description: 'sans espace extérieur adapté aux équipements',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
-      },
-      {
-        description: 'avec une eau chaude individuelle',
-        overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
       {
         description: 'sans radiateur à eau',
-        overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Collectif', typeRadiateur: 'radiateur-electrique' },
+        overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Couplé au chauffage', typeRadiateur: 'radiateur-electrique' },
       },
       {
         description: 'quand la géothermie est impossible',
-        overrides: { espaceExterieur: 'jardinCours', geothermiePossible: false, modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'jardinCours', geothermiePossible: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
       {
         description: 'en zone défavorable au forage',
-        overrides: { espaceExterieur: 'jardinCours', geothermalNappeGmi: 3, geothermalSondeGmi: 3, modeEauChaudeSanitaire: 'Collectif' },
+        overrides: {
+          espaceExterieur: 'jardinCours',
+          geothermalNappeGmi: 3,
+          geothermalSondeGmi: 3,
+          modeEauChaudeSanitaire: 'Couplé au chauffage',
+        },
       },
       {
         description: 'avec une ressource énergétique insuffisante',
-        overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 5, modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 5, modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
       {
         description: 'sans place pour les sondes',
-        overrides: { espaceExterieur: 'jardinCours', hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'jardinCours', hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
     ],
     label: 'PAC géothermique',
-    possibleOverrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Collectif' },
+    possibleOverrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Couplé au chauffage' },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
   },
@@ -503,15 +504,15 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur adapté aux équipements',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
       },
       {
         description: 'sans radiateur à eau',
-        overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Individuel', typeRadiateur: 'radiateur-electrique' },
+        overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Indépendant', typeRadiateur: 'radiateur-electrique' },
       },
     ],
     label: 'Chaudière à bois',
-    possibleOverrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Individuel' },
+    possibleOverrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Indépendant' },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
   },
@@ -519,19 +520,15 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur',
-        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
-      },
-      {
-        description: 'avec une eau chaude collective',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Indépendant' },
       },
       {
         description: 'sans radiateur à eau',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', typeRadiateur: 'radiateur-electrique' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant', typeRadiateur: 'radiateur-electrique' },
       },
     ],
     label: 'PAC air-eau individuelle',
-    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel' },
+    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
   },
@@ -539,15 +536,15 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur',
-        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Indépendant' },
       },
       {
-        description: 'avec une eau chaude collective',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+        description: 'avec une ECS couplée au chauffage',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
     ],
     label: 'Poêle à buche ou à granulés',
-    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel' },
+    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
   },
@@ -555,15 +552,15 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur',
-        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Indépendant' },
       },
       {
-        description: 'avec une eau chaude collective',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+        description: 'avec une ECS couplée au chauffage',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
     ],
     label: 'PAC air-air individuelle',
-    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel' },
+    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
   },
@@ -571,23 +568,27 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur privatif',
-        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Indépendant' },
+      },
+      {
+        description: 'avec une ECS couplée au chauffage',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
       {
         description: 'avec une couverture solaire insuffisante',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', solarThermalCoverage: 79 },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant', solarThermalCoverage: 79 },
       },
       {
         description: 'avec une couverture solaire égale au seuil',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', solarThermalCoverage: 80 },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant', solarThermalCoverage: 80 },
       },
       {
         description: 'sans couverture solaire connue',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', solarThermalCoverage: null },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant', solarThermalCoverage: null },
       },
     ],
     label: 'Solaire thermique',
-    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel' },
+    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
     typeLogement: 'maison_individuelle',
     usage: 'hotWaterOnly',
   },
@@ -595,15 +596,15 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur',
-        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Indépendant' },
       },
       {
         description: 'sans radiateur à eau',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', typeRadiateur: 'radiateur-electrique' },
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant', typeRadiateur: 'radiateur-electrique' },
       },
     ],
     label: 'Système solaire combiné ',
-    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel' },
+    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
   },
@@ -611,15 +612,15 @@ const heatingModeCases: HeatingModeCase[] = [
     impossibleCases: [
       {
         description: 'sans espace extérieur privatif',
-        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Indépendant' },
       },
       {
-        description: 'avec une eau chaude collective',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+        description: 'avec une ECS couplée au chauffage',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
     ],
     label: 'Chauffe-eau thermodynamique',
-    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel' },
+    possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
     typeLogement: 'maison_individuelle',
     usage: 'hotWaterOnly',
   },
@@ -748,7 +749,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC géothermique',
-    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Couplé au chauffage' },
     reason: 'Vous ne disposez pas d’espace extérieur pour disposer les sondes',
     source: 'Formulaire',
     typeLogement: 'maison_individuelle',
@@ -756,7 +757,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC géothermique',
-    overrides: { espaceExterieur: 'jardinCours', geothermalNappeGmi: 3, modeEauChaudeSanitaire: 'Collectif' },
+    overrides: { espaceExterieur: 'jardinCours', geothermalNappeGmi: 3, modeEauChaudeSanitaire: 'Couplé au chauffage' },
     reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
     source: 'BRGM',
     typeLogement: 'maison_individuelle',
@@ -764,7 +765,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC géothermique',
-    overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 5, modeEauChaudeSanitaire: 'Collectif' },
+    overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 5, modeEauChaudeSanitaire: 'Couplé au chauffage' },
     reason: 'La ressource énergétique de la parcelle est insuffisante',
     source: 'BRGM',
     typeLogement: 'maison_individuelle',
@@ -772,7 +773,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC géothermique',
-    overrides: { espaceExterieur: 'jardinCours', hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Collectif' },
+    overrides: { espaceExterieur: 'jardinCours', hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
     reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
     source: 'BRGM',
     typeLogement: 'maison_individuelle',
@@ -780,7 +781,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC géothermique',
-    overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Collectif', typeRadiateur: 'radiateur-electrique' },
+    overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Couplé au chauffage', typeRadiateur: 'radiateur-electrique' },
     reason: 'Vous ne disposez pas de radiateur à eau',
     source: 'Formulaire',
     typeLogement: 'maison_individuelle',
@@ -788,7 +789,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'Chaudière à bois',
-    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel' },
+    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
     reason: 'Vous ne disposez pas d’espace extérieur pour le stockage de combustible',
     source: 'Formulaire',
     typeLogement: 'maison_individuelle',
@@ -796,7 +797,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'Chaudière à bois',
-    overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Individuel', typeRadiateur: 'radiateur-electrique' },
+    overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Indépendant', typeRadiateur: 'radiateur-electrique' },
     reason: 'Vous ne disposez pas de radiateur à eau',
     source: 'Formulaire',
     typeLogement: 'maison_individuelle',
@@ -804,7 +805,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC air-eau individuelle',
-    overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
+    overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Indépendant' },
     reason: 'Vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure de la PAC',
     source: 'Formulaire',
     typeLogement: 'maison_individuelle',
@@ -812,7 +813,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC air-eau individuelle',
-    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', typeRadiateur: 'radiateur-electrique' },
+    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant', typeRadiateur: 'radiateur-electrique' },
     reason: 'Vous ne disposez pas de radiateur à eau',
     source: 'Formulaire',
     typeLogement: 'maison_individuelle',
@@ -820,7 +821,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'Poêle à buche ou à granulés',
-    overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
+    overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Indépendant' },
     reason: 'Vous ne disposez pas d’espace extérieur pour stocker du bois',
     source: 'Formulaire',
     typeLogement: 'maison_individuelle',
@@ -828,7 +829,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC air-air individuelle',
-    overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Individuel' },
+    overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Indépendant' },
     reason: 'Vous ne disposez pas d’espace extérieur pour installer l’unité extérieure de la PAC',
     source: 'Formulaire',
     typeLogement: 'maison_individuelle',
@@ -836,7 +837,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'Solaire thermique',
-    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Individuel', solarThermalCoverage: 79 },
+    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant', solarThermalCoverage: 79 },
     reason: 'La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale.',
     source: 'CEREMA',
     typeLogement: 'maison_individuelle',
@@ -897,14 +898,14 @@ const pertinenceCases: PertinenceCase[] = [
   {
     expectedPertinence: 3,
     label: 'PAC air-eau individuelle',
-    overrides: { altitude: 900, modeEauChaudeSanitaire: 'Individuel', planProtectionAtmosphere: true },
+    overrides: { altitude: 900, modeEauChaudeSanitaire: 'Indépendant', planProtectionAtmosphere: true },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
   },
   {
     expectedPertinence: 2,
     label: 'PAC air-eau individuelle',
-    overrides: { altitude: 1000, modeEauChaudeSanitaire: 'Individuel', planProtectionAtmosphere: true },
+    overrides: { altitude: 1000, modeEauChaudeSanitaire: 'Indépendant', planProtectionAtmosphere: true },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
   },
@@ -928,12 +929,12 @@ const heatingModeOrderCases: HeatingModeOrderCase[] = [
   },
   {
     expectedAdjacentModeIds: ['house-biomass-boiler', 'house-air-water-heat-pump'],
-    overrides: { altitude: 1200, espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Individuel', planProtectionAtmosphere: false },
+    overrides: { altitude: 1200, espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Indépendant', planProtectionAtmosphere: false },
     typeLogement: 'maison_individuelle',
   },
   {
     expectedAdjacentModeIds: ['house-air-water-heat-pump', 'house-biomass-boiler'],
-    overrides: { altitude: 900, espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Individuel', planProtectionAtmosphere: false },
+    overrides: { altitude: 900, espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Indépendant', planProtectionAtmosphere: false },
     typeLogement: 'maison_individuelle',
   },
 ];

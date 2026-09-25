@@ -25,9 +25,10 @@ import {
   type BatEnrBatiment,
   type DPE,
   DPE_VALUES,
+  getModeEauChaudeSanitaireOptions,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type ModeEauChaudeSanitaireQueryParam,
-  modeEauChaudeSanitaireOptions,
+  normalizeModeEauChaudeSanitaireForTypeLogement,
   type TypeLogement,
   type TypeRadiateur,
   typeLogementOptions,
@@ -100,6 +101,7 @@ export function ParamsForm({
 
   const isModified = hasPendingLocalChange || !areParamsFormDraftsEqual(draft, currentValues);
   const completion = getParamsFormCompletion(draft);
+  const modeEauChaudeSanitaireOptions = getModeEauChaudeSanitaireOptions(draft.typeLogement);
 
   const handleOpen = () => {
     trackPostHogEvent('fcr_simulator:params_panel_opened');
@@ -154,7 +156,9 @@ export function ParamsForm({
         dpe: prefillParams.dpe ?? previousDraft.dpe,
         isDpeExplicit: prefillParams.dpe ? true : previousDraft.isDpeExplicit,
         isModeEauChaudeSanitaireInferred: prefillParams.modeEauChaudeSanitaire ? false : previousDraft.isModeEauChaudeSanitaireInferred,
-        modeEauChaudeSanitaire: prefillParams.modeEauChaudeSanitaire ?? previousDraft.modeEauChaudeSanitaire,
+        modeEauChaudeSanitaire: prefillParams.modeEauChaudeSanitaire
+          ? normalizeModeEauChaudeSanitaireForTypeLogement(prefillParams.modeEauChaudeSanitaire, previousDraft.typeLogement)
+          : previousDraft.modeEauChaudeSanitaire,
         nbLogements: prefillParams.nbLogements === undefined ? previousDraft.nbLogements : String(prefillParams.nbLogements),
         surfaceMoyenne: prefillParams.surfaceMoyenne === undefined ? previousDraft.surfaceMoyenne : String(prefillParams.surfaceMoyenne),
       };
@@ -249,6 +253,10 @@ export function ParamsForm({
                       setDraft((previousDraft) => ({
                         ...previousDraft,
                         espaceExterieur: previousDraft.espaceExterieur ?? 'none',
+                        isModeEauChaudeSanitaireInferred: false,
+                        modeEauChaudeSanitaire:
+                          normalizeModeEauChaudeSanitaireForTypeLogement(previousDraft.modeEauChaudeSanitaire, nextTypeLogement) ??
+                          MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
                         typeLogement: nextTypeLogement,
                       }));
                     },

@@ -1,6 +1,12 @@
 import { createSerializer } from 'nuqs';
 import { describe, expect, it } from 'vitest';
 
+import {
+  getModeEauChaudeSanitaireOptions,
+  MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
+  normalizeModeEauChaudeSanitaireForTypeLogement,
+} from '@/modules/chaleur-renouvelable/constants';
+
 import { choixChauffageQueryParsers, getNextEspaceExterieurQueryValue } from './useChoixChauffageQueryParams';
 
 describe('getNextEspaceExterieurQueryValue', () => {
@@ -66,6 +72,33 @@ describe('getNextEspaceExterieurQueryValue', () => {
         },
       })
     ).toStrictEqual('terrasseBalconEtJardinCours');
+  });
+});
+
+describe('mode eau chaude sanitaire par type de logement', () => {
+  it('returns house hot water options only for individual houses', () => {
+    expect(getModeEauChaudeSanitaireOptions('maison_individuelle')).toStrictEqual([
+      { label: 'Couplé au chauffage', value: 'Couplé au chauffage' },
+      { label: 'Indépendant', value: 'Indépendant' },
+    ]);
+  });
+
+  it('keeps building hot water options for apartment buildings', () => {
+    expect(getModeEauChaudeSanitaireOptions('immeuble_chauffage_collectif')).toStrictEqual([
+      { label: 'Individuel', value: 'Individuel' },
+      { label: 'Collectif', value: 'Collectif' },
+    ]);
+  });
+
+  it.each([
+    ['Collectif', 'maison_individuelle'],
+    ['Individuel', 'maison_individuelle'],
+    ['Couplé au chauffage', 'immeuble_chauffage_collectif'],
+    ['Indépendant', 'immeuble_chauffage_collectif'],
+  ] as const)('resets incompatible hot water value %s for %s', (modeEauChaudeSanitaire, typeLogement) => {
+    expect(normalizeModeEauChaudeSanitaireForTypeLogement(modeEauChaudeSanitaire, typeLogement)).toStrictEqual(
+      MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE
+    );
   });
 });
 
