@@ -104,6 +104,7 @@ function buildCcrtExperimentationDemandInput(overrides: Partial<DemandeChaleurRe
   return {
     address: '10 rue du test 13001 Marseille',
     alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière à bois', 'PAC air-eau collective'],
+    annualHeatingConsumption: 820.5,
     averageArea: 72,
     averageResidents: 2,
     batimentConstructionId: 'CONSTRUCTION-123',
@@ -403,6 +404,7 @@ describe('batEnrRouter', () => {
         .selectFrom('demands_chaleur_renouvelable')
         .select([
           'address',
+          'annual_heating_consumption',
           'departement_code',
           'email',
           'first_name',
@@ -425,6 +427,7 @@ describe('batEnrRouter', () => {
       }).toStrictEqual({
         createdDemandeChaleurRenouvelable: {
           address: '10 rue du test 13001 Marseille',
+          annual_heating_consumption: 820.5,
           departement_code: '13',
           email: 'contact@example.com',
           first_name: 'Claire',
@@ -582,6 +585,7 @@ describe('batEnrRouter', () => {
       const newerDate = new Date('2026-01-03T10:00:00.000Z');
       const olderDemandInput = {
         address: '1 rue ancienne',
+        annual_heating_consumption: null,
         average_area: 70,
         average_residents: 2,
         batiment_construction_id: null,
@@ -612,6 +616,7 @@ describe('batEnrRouter', () => {
       } satisfies DemandChaleurRenouvelableInsert;
       const newerDemandInput = {
         address: '2 rue récente',
+        annual_heating_consumption: 950.25,
         average_area: 80,
         average_residents: 3,
         batiment_construction_id: 'BATIMENT-RECENT',
@@ -707,6 +712,7 @@ describe('batEnrRouter', () => {
       await seedDepartmentPermission(ccrtId, '13');
       const matchingDemandInput = {
         address: '1 rue autorisée',
+        annual_heating_consumption: 640.75,
         average_area: 70,
         average_residents: 2,
         created_at: matchingDate,

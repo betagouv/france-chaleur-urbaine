@@ -271,6 +271,18 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         width: '160px',
       },
       {
+        accessorKey: 'annual_heating_consumption',
+        align: 'right',
+        cellProps: { maximumFractionDigits: 2 },
+        cellType: 'Number',
+        enableGlobalFilter: false,
+        exportHeader: 'Consommations annuelles de chauffage (MWh)',
+        filterType: 'Range',
+        header: 'Conso chauffage',
+        suffix: <span className="ml-1">MWh</span>,
+        width: '150px',
+      },
+      {
         accessorFn: (row) =>
           modeEauChaudeSanitaireOptions.find((option) => option.value === row.hot_water_system_type)?.label ?? 'Non renseigné',
         enableGlobalFilter: false,

@@ -95,6 +95,12 @@ const NouvelleDemandeChaleurRenouvelable = ({
           <TableColumn style={{ fontWeight: 'bold' }}>Énergie de chauffage</TableColumn>
           <TableColumn>{demand.heatingEnergy}</TableColumn>
         </TableRow>
+        {demand.annualHeatingConsumption !== null && (
+          <TableRow>
+            <TableColumn style={{ fontWeight: 'bold' }}>Consommations annuelles chauffage</TableColumn>
+            <TableColumn>{demand.annualHeatingConsumption.toLocaleString('fr-FR', { maximumFractionDigits: 2 })} MWh</TableColumn>
+          </TableRow>
+        )}
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Radiateurs</TableColumn>
           <TableColumn>{typeRadiateurOptions.find((option) => option.value === demand.radiatorType)?.label ?? 'Non renseigné'}</TableColumn>
@@ -126,6 +132,7 @@ export const scenarios = defineEmailScenarios<typeof NouvelleDemandeChaleurRenou
     props: {
       demand: {
         address: '10 rue du Test, 75001 Paris',
+        annualHeatingConsumption: 820.5,
         averageArea: 70,
         averageResidents: 2,
         batimentConstructionId: 'CONSTRUCTION-123',

@@ -637,6 +637,7 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
     .insertInto('demands_chaleur_renouvelable')
     .values({
       address: input.address,
+      annual_heating_consumption: input.annualHeatingConsumption,
       average_area: input.averageArea,
       average_residents: input.averageResidents,
       batiment_construction_id: input.batimentConstructionId,
@@ -746,6 +747,7 @@ const selectDemandesChaleurRenouvelableForList = () =>
     .selectFrom('demands_chaleur_renouvelable')
     .select([
       'address',
+      'annual_heating_consumption',
       'assigned_to',
       'average_area',
       'average_residents',

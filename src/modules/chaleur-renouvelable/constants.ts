@@ -439,6 +439,7 @@ export const DEFAULT_SIMULATION_PARAMS = {
 };
 
 export const zContactFormChaleurRenouvelable = z.object({
+  annualHeatingConsumption: z.number().positive('Veuillez renseigner une consommation annuelle supérieure à 0 MWh').optional(),
   comments: z.string().default(''),
   demandConcern: z.enum(DEMAND_CONCERN_VALUES).or(z.literal('')).default(''),
   email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
@@ -477,6 +478,11 @@ const zDemandeChaleurRenouvelableHeatNetworkEligibility = z.object({
 export const zDemandeChaleurRenouvelable = z.object({
   address: z.string(),
   alternativeHeatingSolutions: z.array(z.string().trim().min(1).max(120)).max(3).optional(),
+  annualHeatingConsumption: z
+    .number()
+    .positive('Veuillez renseigner une consommation annuelle supérieure à 0 MWh')
+    .nullable()
+    .default(null),
   averageArea: z.number(),
   averageResidents: z.number(),
   batimentConstructionId: z.string().nullable().default(null),

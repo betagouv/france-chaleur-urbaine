@@ -68,6 +68,7 @@ type ContactFormChaleurRenouvelable = z.infer<typeof zContactFormChaleurRenouvel
 type OccupantStatusDetailField = 'demandConcern' | 'housingCount' | 'surfaceArea';
 
 const CONTACT_FORM_DEFAULT_VALUES: z.input<typeof zContactFormChaleurRenouvelable> = {
+  annualHeatingConsumption: undefined,
   comments: '',
   demandConcern: '',
   email: '',
@@ -430,6 +431,7 @@ function HeatNetworkDemandForm({
     const result = await createDemandeChaleurRenouvelable.mutateAsync({
       address: params.adresse ?? '',
       alternativeHeatingSolutions: alternativeHeatingSolutionLabels,
+      annualHeatingConsumption: isCcrtDemand ? (value.annualHeatingConsumption ?? null) : null,
       averageArea,
       averageResidents: Number(params.habitantsMoyen || DEFAULT_SIMULATION_PARAMS.habitantsMoyen),
       batimentConstructionId: params.constructionId,
@@ -591,6 +593,16 @@ function HeatNetworkDemandForm({
                   />
                 )}
               </form.AppField>
+              {isCcrtDemand && (
+                <form.AppField name="annualHeatingConsumption">
+                  {(field) => (
+                    <field.NumberField
+                      label="Consommations annuelles en énergie de chauffage (MWh)"
+                      nativeInputProps={{ inputMode: 'decimal', min: 0.01, step: 0.01 }}
+                    />
+                  )}
+                </form.AppField>
+              )}
               {occupantStatusDetailField === 'housingCount' && (
                 <form.AppField name="housingCount">
                   {(field) => <field.NumberField label="Nombre de logements" nativeInputProps={{ inputMode: 'numeric', min: 1 }} />}
