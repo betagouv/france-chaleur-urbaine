@@ -676,7 +676,6 @@ export const modesDeChauffage = {
       estPossible: (situation) =>
         hasEspaceShared(situation) &&
         hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
-        hasCompatibleGeothermalPotential(situation) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-geothermie.webp',
