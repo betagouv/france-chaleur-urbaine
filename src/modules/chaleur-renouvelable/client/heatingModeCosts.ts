@@ -2,6 +2,7 @@ import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import type { ModeDeChauffageEnriched, ModeDeChauffageResolved, Situation } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+import { prettyFormatNumber } from '@/utils/strings';
 
 function getPublicodesFieldAsNumber(
   engine: SimulatorEngine,
@@ -19,13 +20,24 @@ function getPublicodesFieldAsNumber(
   );
 }
 
-function enrichHeatingMode(mode: ModeDeChauffageResolved, engine: SimulatorEngine, situation: Situation): ModeDeChauffageEnriched {
-  const coutParAnPublicodeRule = `${mode.coutParAnPublicodeKey} . bilan . total sans installation` satisfies RuleName;
-  const coutParAn = mode.coutParAnPublicodeKey
-    ? getPublicodesFieldAsNumber(engine, coutParAnPublicodeRule, mode.coutParAnPublicodesSituation)
-    : 0;
-  const coutInstallation =
-    typeof mode.coutInstallation === 'function' ? mode.coutInstallation(situation) : String(mode.coutInstallation ?? '0');
+function formatEuroRange(minimum: number, maximum: number) {
+  return `${prettyFormatNumber(minimum)} € à ${prettyFormatNumber(maximum)} €`;
+}
+
+function getInstallationCost(mode: ModeDeChauffageResolved, engine: SimulatorEngine) {
+  const situationOverride = mode.publicodeSituation;
+  const minimumRule = `${mode.publicodeKey} . coûts . installation . minimum` satisfies RuleName;
+  const maximumRule = `${mode.publicodeKey} . coûts . installation . maximum` satisfies RuleName;
+  const minimum = getPublicodesFieldAsNumber(engine, minimumRule, situationOverride);
+  const maximum = getPublicodesFieldAsNumber(engine, maximumRule, situationOverride);
+
+  return formatEuroRange(minimum, maximum);
+}
+
+function enrichHeatingMode(mode: ModeDeChauffageResolved, engine: SimulatorEngine): ModeDeChauffageEnriched {
+  const coutParAnPublicodeRule = `${mode.publicodeKey} . bilan . total sans installation` satisfies RuleName;
+  const coutParAn = getPublicodesFieldAsNumber(engine, coutParAnPublicodeRule, mode.publicodeSituation);
+  const coutInstallation = getInstallationCost(mode, engine);
 
   return { ...mode, coutInstallation, coutParAn };
 }
@@ -69,8 +81,8 @@ export function setPublicodesSituation(
   engine.resetField('ecs . type de production');
 }
 
-export function getHeatingModeCosts(engine: SimulatorEngine, modes: ModeDeChauffageResolved[], situation: Situation) {
-  const modesEnriched = modes.map((modeDeChauffage) => enrichHeatingMode(modeDeChauffage, engine, situation));
+export function getHeatingModeCosts(engine: SimulatorEngine, modes: ModeDeChauffageResolved[]) {
+  const modesEnriched = modes.map((modeDeChauffage) => enrichHeatingMode(modeDeChauffage, engine));
   const coutParAnGaz = engine.getFieldAsNumber('gaz coll sans cond . bilan . total avec aides');
   const coutParAnGazHotWaterOnly = Math.max(
     0,

@@ -158,9 +158,8 @@ export type ModeDeChauffage = {
   description: React.ReactNode;
   avantages: string[];
   inconvenients: string[];
-  coutParAnPublicodeKey: PublicodesModeKey;
-  coutParAnPublicodesSituation?: Partial<Record<RuleName, string | number>>;
-  coutInstallation?: string | ((situation: Situation) => string);
+  publicodeKey: PublicodesModeKey;
+  publicodeSituation?: Partial<Record<RuleName, string | number>>;
   gainClasse: number;
   gainVsGaz?: number;
   rafraichissementPossible?: boolean | ((situation: Situation) => boolean);
