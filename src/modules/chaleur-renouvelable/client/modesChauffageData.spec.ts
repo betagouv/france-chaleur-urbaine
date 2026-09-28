@@ -463,6 +463,27 @@ const heatingModeCases: HeatingModeCase[] = [
         description: 'quand la ressource géothermique est inconnue',
         overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 0, modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
+      {
+        description: 'même quand la géothermie est impossible',
+        overrides: { espaceExterieur: 'jardinCours', geothermiePossible: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
+      },
+      {
+        description: 'même en zone défavorable au forage',
+        overrides: {
+          espaceExterieur: 'jardinCours',
+          geothermalNappeGmi: 3,
+          geothermalSondeGmi: 3,
+          modeEauChaudeSanitaire: 'Couplé au chauffage',
+        },
+      },
+      {
+        description: 'même avec une ressource énergétique insuffisante',
+        overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 5, modeEauChaudeSanitaire: 'Couplé au chauffage' },
+      },
+      {
+        description: 'même sans place pour les sondes',
+        overrides: { espaceExterieur: 'jardinCours', hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
+      },
     ],
     impossibleCases: [
       {
@@ -472,27 +493,6 @@ const heatingModeCases: HeatingModeCase[] = [
       {
         description: 'sans radiateur à eau',
         overrides: { espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Couplé au chauffage', typeRadiateur: 'radiateur-electrique' },
-      },
-      {
-        description: 'quand la géothermie est impossible',
-        overrides: { espaceExterieur: 'jardinCours', geothermiePossible: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
-      },
-      {
-        description: 'en zone défavorable au forage',
-        overrides: {
-          espaceExterieur: 'jardinCours',
-          geothermalNappeGmi: 3,
-          geothermalSondeGmi: 3,
-          modeEauChaudeSanitaire: 'Couplé au chauffage',
-        },
-      },
-      {
-        description: 'avec une ressource énergétique insuffisante',
-        overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 5, modeEauChaudeSanitaire: 'Couplé au chauffage' },
-      },
-      {
-        description: 'sans place pour les sondes',
-        overrides: { espaceExterieur: 'jardinCours', hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
     ],
     label: 'PAC géothermique',
