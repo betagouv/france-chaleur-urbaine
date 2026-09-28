@@ -109,7 +109,8 @@ function PermissionTooltipContent({ permissions }: { permissions: PermissionWith
             {perms.map((p) => (
               <li key={p.resource_id}>
                 {p.type === 'reseau_de_chaleur' || p.type === 'reseau_en_construction' ? (
-                  <Link href={`/admin/reseaux/stats?reseaux_search=${p.label}`} isExternal>
+                  // Supprime l'éventuel id sncu pour ne garder que le nom
+                  <Link href={`/admin/reseaux/stats?reseaux_search=${encodeURIComponent(p.label.replace(/ \([^)]*\)$/, ''))}`} isExternal>
                     {p.label}
                   </Link>
                 ) : (
