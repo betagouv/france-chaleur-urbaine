@@ -9,6 +9,7 @@ export enum STAT_METHOD {
   ACTIONS = 'Events.getAction',
   ACTIONS_CATEGORY = 'Events.getCategory',
   AIRTABLE = 'Airtable',
+  GRIST = 'Grist',
   DATABASE = 'Database',
 }
 

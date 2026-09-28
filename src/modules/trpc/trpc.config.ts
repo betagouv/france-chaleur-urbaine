@@ -3,6 +3,7 @@ import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { authRouter } from '@/modules/auth/server/trpc-routes';
 import { bdnbRouter } from '@/modules/bdnb/server/trpc-routes';
 import { batEnrRouter } from '@/modules/chaleur-renouvelable/server/trpc-routes';
+import { communesSansReseauRouter } from '@/modules/communes-sans-reseau/server/trpc-routes';
 import buildContext from '@/modules/config/server/context-builder';
 import { conversionTrackingRouter } from '@/modules/conversion-tracking/server/trpc-routes';
 import { dataRouter } from '@/modules/data/server/trpc-routes';
@@ -45,6 +46,7 @@ export const appRouter = router({
   auth: authRouter,
   batEnr: batEnrRouter,
   bdnb: bdnbRouter,
+  communesSansReseau: communesSansReseauRouter,
   conversionTracking: conversionTrackingRouter,
   data: dataRouter,
   dataDiagnostic: dataDiagnosticRouter,

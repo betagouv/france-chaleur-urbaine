@@ -1,8 +1,7 @@
-import base from '@/server/db/airtable';
+import { countDemandesCommunesSansReseauByMonth } from '@/modules/communes-sans-reseau/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
 import type { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
-import { Airtable } from '@/types/enum/Airtable';
 import { STAT_COMMUNES_SANS_RESEAU, STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
 import { formatAsISODate } from '@/utils/date';
 
@@ -169,54 +168,11 @@ const addStat =
 
 const addStatFromDB = addStat(STAT_METHOD.DATABASE);
 const addStatFromAirtable = addStat(STAT_METHOD.AIRTABLE);
+const addStatFromGrist = addStat(STAT_METHOD.GRIST);
 const addStatFromActions = addStat(STAT_METHOD.ACTIONS);
 const addStatFromActionsCategory = addStat(STAT_METHOD.ACTIONS_CATEGORY);
 const addStatFromVisitsSummary = addStat(STAT_METHOD.VISIT_SUMMARY);
 const addStatFromMapVisitSummary = addStat(STAT_METHOD.MAP_VISIT_SUMMARY);
-
-const countRecordsFromAirtable = async (
-  startDate: string,
-  endDate: string,
-  { table, dateField, period }: { table: Airtable; dateField: string; period: STAT_PERIOD }
-) => {
-  const records = await base(table)
-    .select({
-      filterByFormula: `AND(
-          IS_BEFORE({${dateField}}, "${endDate}"),
-          IS_AFTER({${dateField}}, "${startDate}")
-        )`,
-    })
-    .all();
-
-  // Group records by day or month and count them
-  const recordsByDay = records.reduce((acc: Record<string, number>, record: any) => {
-    const date = record.fields[dateField];
-    if (date) {
-      let formattedDate;
-      if (period === STAT_PERIOD.DAILY) {
-        // Format date to YYYY-MM-DD for daily period
-        formattedDate = new Date(date).toISOString().split('T')[0];
-      } else if (period === STAT_PERIOD.MONTHLY) {
-        // Format date to YYYY-MM-01 for monthly period (first day of month)
-        const dateObj = new Date(date);
-        formattedDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-01`;
-      } else {
-        // Default to daily format
-        formattedDate = new Date(date).toISOString().split('T')[0];
-      }
-      acc[formattedDate] = (acc[formattedDate] || 0) + 1;
-    }
-    return acc;
-  }, {});
-
-  const results: Record<string, number> = {};
-
-  Object.entries(recordsByDay).forEach(([date, count]) => {
-    results[date] = count;
-  });
-
-  return results;
-};
 
 const countRecordsFromMatomo =
   (method: STAT_METHOD) =>
@@ -508,16 +464,12 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
     })
   );
 
-  // Those stats are retrieved from Airtable and not matomo as there are discrepancies between the two
-  const results = await countRecordsFromAirtable(startDate, endDate, {
-    dateField: 'Date de création',
-    period: STAT_PERIOD.MONTHLY,
-    table: Airtable.COMMUNES_SANS_RESEAU,
-  });
+  // Those stats are retrieved from Grist and not matomo as there are discrepancies between the two
+  const results = await countDemandesCommunesSansReseauByMonth(startDate, endDate);
 
   await Promise.all(
     Object.entries(results).map(([stat_date, value]) =>
-      addStatFromAirtable({
+      addStatFromGrist({
         date: stat_date,
         period: STAT_PERIOD.MONTHLY,
         stat_key: STAT_COMMUNES_SANS_RESEAU.NB_DEMANDES,

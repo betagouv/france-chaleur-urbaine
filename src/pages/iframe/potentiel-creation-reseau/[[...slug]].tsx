@@ -3,13 +3,13 @@ import type { GetStaticPaths } from 'next';
 import { clientConfig } from '@/client-config';
 import Link from '@/components/ui/Link';
 import Newsletter from '@/components/ui/Newsletter';
+import { useSubmitDemandeCommuneSansReseau } from '@/modules/communes-sans-reseau/client/useSubmitDemandeCommuneSansReseau';
 import {
   CommuneMap,
   DetailsCommune,
   franceBounds,
   type PotentielCreationReseauPageProps,
   SearchCommune,
-  submitDemandeCommuneSansReseau,
 } from '@/pages/collectivites-et-exploitants/potentiel-creation-reseau/[[...slug]]';
 import { getCommunePotentiel } from '@/server/services/communeAPotentiel';
 import cx from '@/utils/cx';
@@ -26,10 +26,11 @@ const Logo = ({ className }: { className: string }) => (
 
 const Page: React.FC<PotentielCreationReseauPageProps> = ({ commune }) => {
   const bounds = commune?.bounds || franceBounds;
+  const submitDemande = useSubmitDemandeCommuneSansReseau(commune);
   return (
     <>
       <div className="fr-grid-row">
-        <Newsletter onSignUp={(email) => submitDemandeCommuneSansReseau(commune, email)} withCheckbox>
+        <Newsletter onSignUp={submitDemande} withCheckbox>
           <div className="fr-col-12 fr-col-lg-4 fr-mt-2w">
             <div className="flex flex-col h-full">
               <div className="flex-1 my-5 px-2 lg:px-4">{commune ? <DetailsCommune commune={commune} /> : <SearchCommune />}</div>
