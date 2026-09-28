@@ -25,9 +25,6 @@ vi.mock('@/server/config', () => ({
     summaryAreaSizeLimit: 5,
     tracking: {
       googleTagIds: [],
-      hotjarId: undefined,
-      hotjarSv: undefined,
-      linkInPartnerId: undefined,
       matomoServerURL: undefined,
       matomoSiteId: undefined,
     },

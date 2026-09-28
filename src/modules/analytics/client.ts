@@ -26,10 +26,6 @@ const onRouteChange = (url: string) => {
       page_title: document.title,
     });
   }
-  // see https://help.hotjar.com/hc/en-us/articles/115011805428-Hotjar-on-Single-Page-Apps
-  if (clientConfig.tracking.hotjarId && typeof window?.hj === 'function') {
-    window.hj('stateChange', url);
-  }
 };
 
 // prevent the double init effect due to strict mode
@@ -38,7 +34,6 @@ let hookInitialized = false;
 /**
  * Register analytics (Matomo only for now).
  * Matomo and Google Analytics page views both have to be triggered manually.
- * Linkedin track page views automatically when loaded.
  */
 export const useAnalytics = () => {
   const [matomoAnalyticsLoadingState, setMatomoAnalyticsLoadedState] = useAtom(matomoAnalyticsLoadingStateAtom);
@@ -88,15 +83,6 @@ export const useAnalytics = () => {
   if (typeof window === 'object') {
     document.addEventListener(
       'multiplegtag_loaded',
-      () => {
-        setAnalyticsLoaded(true);
-      },
-      {
-        once: true,
-      }
-    );
-    document.addEventListener(
-      'hotjar_loaded',
       () => {
         setAnalyticsLoaded(true);
       },
@@ -159,11 +145,9 @@ export function trackPostHogEvent<Event extends PostHogEvent>(event?: Event, pro
 // augment window type with tracking helpers
 declare let window: Window & {
   gtag: (...args: any[]) => void; // google
-  lintrk: (action: string, param: any) => void; // linkedin
   _paq: [any]; // matomo
   Matomo: any; // matomo
   matomoAbTestingAsyncInit: any; // matomo
-  hj: (...args: any[]) => void; // hotjar
 };
 
 const performTracking = (trackingConfig: TrackingConfiguration, eventPayload?: any[]) => {
@@ -173,9 +157,6 @@ const performTracking = (trackingConfig: TrackingConfiguration, eventPayload?: a
         send_to: `${googleTagId}/${trackingConfig.google}`,
       });
     });
-  }
-  if (trackingConfig.linkedin && typeof window?.lintrk === 'function') {
-    window.lintrk('track', { conversion_id: trackingConfig.linkedin });
   }
   if (trackingConfig.matomo && typeof window?._paq?.push === 'function') {
     window._paq.push(['trackEvent', ...trackingConfig.matomo, ...(eventPayload ?? [])]);

@@ -16,9 +16,6 @@ export const clientConfig = {
   summaryAreaSizeLimit: 5, // km²
   tracking: {
     googleTagIds: (process.env.NEXT_PUBLIC_GOOGLE_TAG_ID ?? '').split(',').filter(Boolean),
-    hotjarId: process.env.NEXT_PUBLIC_HOTJAR_ID,
-    hotjarSv: process.env.NEXT_PUBLIC_HOTJAR_SV,
-    linkInPartnerId: process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID,
     matomoServerURL: process.env.NEXT_PUBLIC_MATOMO_URL,
     matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
     postHogApiHost: process.env.NEXT_PUBLIC_POSTHOG_HOST,

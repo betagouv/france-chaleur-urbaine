@@ -7,7 +7,7 @@ import { consentStorageState } from './consent-state';
  * Runs as a `setup` project dependency so every test (and the Playwright MCP) starts without the banner.
  *
  * We click "Tout refuser": it hides the banner without loading the consent-gated third-party embeds
- * (YouTube player, Google/Hotjar/LinkedIn tags) that would otherwise inject their own a11y violations.
+ * (YouTube player, Google tags) that would otherwise inject their own a11y violations.
  */
 setup('dismiss cookie banner', async ({ page }) => {
   await page.goto('/');

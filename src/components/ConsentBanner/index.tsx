@@ -8,34 +8,18 @@ import { usePostHog } from '@/components/ConsentBanner/usePostHog';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 
 import GoogleTagsScript from './GoogleTagsScript';
-import HotjarScript from './HotjarScript';
-import LinkedInScript from './LinkedInScript';
 
 type FinalityDescription = Parameters<typeof createConsentManagement>[0]['finalityDescription'];
 
 const googleEnabled = clientConfig.tracking.googleTagIds.length > 0;
-const linkedinEnabled = !!clientConfig.tracking.linkInPartnerId;
-const hotjarEnabled = clientConfig.tracking.hotjarId && clientConfig.tracking.hotjarSv;
 const posthogEnabled = !!(clientConfig.tracking.postHogApiHost && clientConfig.tracking.postHogKey);
 
 const consentConfig: FinalityDescription = {};
 
-if (linkedinEnabled) {
-  consentConfig.linkedin_insights = {
-    description: "Mesure d'audience",
-    title: 'LinkedIn Insights',
-  };
-}
 if (googleEnabled) {
   consentConfig.google_analytics = {
     description: "Mesure d'audience",
     title: 'Google Analytics (gtag.js)',
-  };
-}
-if (hotjarEnabled) {
-  consentConfig.hotjar = {
-    description: "Mesure d'audience",
-    title: 'Hotjar',
   };
 }
 if (posthogEnabled) {
@@ -71,12 +55,6 @@ export const ConsentBanner = () => {
           <ConsentBannerAndConsentManagement />
 
           {googleEnabled && finalityConsent?.google_analytics && <GoogleTagsScript tagIds={clientConfig.tracking.googleTagIds} />}
-          {linkedinEnabled && finalityConsent?.linkedin_insights && (
-            <LinkedInScript partnerId={clientConfig.tracking.linkInPartnerId as string} />
-          )}
-          {hotjarEnabled && finalityConsent?.hotjar && (
-            <HotjarScript hjid={clientConfig.tracking.hotjarId as string} hjsv={clientConfig.tracking.hotjarSv as string} />
-          )}
         </>
       )}
     </>

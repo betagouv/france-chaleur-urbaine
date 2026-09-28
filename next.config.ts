@@ -58,17 +58,14 @@ const configFunctions = [
         'https://france-chaleur-urbaine-dev.osc-fr1.scalingo.io/',
         'https://data.geopf.fr/',
         'https://stats.beta.gouv.fr',
-        'https://cdn.linkedin.oribi.io',
         'https://google.com/',
-        'https://px.ads.linkedin.com',
         'https://data.geopf.fr',
         'https://recherche-entreprises.api.gouv.fr',
         'https://api.mapbox.com/',
         'https://sentry.incubateur.net',
-        'https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com',
         'https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com',
       ],
-      'font-src': ["'self'", 'https:', 'data:', 'https://*.hotjar.com'],
+      'font-src': ["'self'", 'https:', 'data:'],
       'frame-src': ['https://td.doubleclick.net', 'https://www.youtube.com/', 'https://cloud.contact.ademe.fr'],
       'img-src': ["'self'", 'https:', 'data:'],
       'script-src': [
@@ -85,8 +82,6 @@ const configFunctions = [
         "'sha256-Ny4QAH1g1FWyqlgrnIVWh1mj+jM8c6SjgqJ2i6c2REU='", // PROD - google analytics common
         "'sha256-8r71P9EINuYzK2mdhvMfZG0nDrKZhY5rvxXNAgVD45g='", // PROD - Google AW-16641573937
         "'sha256-/To7QTI1yR8LpZjhrqYdP21zirnpAwwI4s7M8TwKxnI='", // PROD - Google G-B35Q28PSV8
-        "'sha256-/CSSb6w0OrYpmMov6mf2agdZaX5CEjsuUL45DW0yKI4='", // PROD - Hotjar 3874965 6
-        "'sha256-cLrFOA9eDIz+hTs9m3AUrlzvroRre9vJ4cvv1ygI/Bw='", // PROD - LinkedIn 3494650
         "'sha256-cWPc/BJwUWRnFb5b17VxDNk72/ZwL1GOqTQ6dAU/P3E='", // PROD - unknown yet
         'https://stats.beta.gouv.fr',
         'https://static.axept.io',
@@ -94,13 +89,11 @@ const configFunctions = [
         'https://www.googletagmanager.com https://*.googletagmanager.com',
         'https://www.googleadservices.com',
         'https://googleads.g.doubleclick.net',
-        'https://snap.licdn.com',
         'https://api.mapbox.com/',
-        'https://*.hotjar.com',
         'https://www.ssa.gov/accessibility/', // Nécessaire pour faire fonctionner le bookmarklet ANDI
         'https://ajax.googleapis.com/', // Nécessaire pour faire fonctionner le bookmarklet ANDI
       ],
-      'style-src': ["'self'", 'https:', "'unsafe-inline'", 'https://*.hotjar.com'],
+      'style-src': ["'self'", 'https:', "'unsafe-inline'"],
       'worker-src': ["'self'", 'blob:'],
     },
   }),
