@@ -2,7 +2,6 @@ import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import type { ModeDeChauffageEnriched, ModeDeChauffageResolved, Situation } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
-import { prettyFormatNumber } from '@/utils/strings';
 
 function getPublicodesFieldAsNumber(
   engine: SimulatorEngine,
@@ -20,8 +19,12 @@ function getPublicodesFieldAsNumber(
   );
 }
 
+function formatEuroAmount(amount: number) {
+  return Math.round(amount).toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+}
+
 function formatEuroRange(minimum: number, maximum: number) {
-  return `${prettyFormatNumber(minimum)} € à ${prettyFormatNumber(maximum)} €`;
+  return `${formatEuroAmount(minimum)} € à ${formatEuroAmount(maximum)} €`;
 }
 
 function getInstallationCost(mode: ModeDeChauffageResolved, engine: SimulatorEngine) {

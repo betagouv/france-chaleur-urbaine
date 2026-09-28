@@ -407,6 +407,7 @@ export const demandeChaleurRenouvelableStatuses = [
   { label: 'Etude d’opportunité en cours', value: 'opportunity_study_in_progress' },
   { label: 'Etude d’opportunité réalisée', value: 'opportunity_study_done' },
   { label: '[Validation du projet] Etude de faisabilité votée en AG', value: 'project_validation_feasibility_study_voted' },
+  { label: 'Premier conseil téléphonique réalisé', value: 'phone_contact_realised' },
   { label: 'Projet abandonné par le prospect', value: 'abandoned_by_prospect' },
 ] as const;
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS = demandeChaleurRenouvelableStatuses[0].label;
@@ -533,6 +534,11 @@ export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
     .partial(),
 });
 export type AdminUpdateDemandeChaleurRenouvelableInput = z.infer<typeof zAdminUpdateDemandeChaleurRenouvelableInput>;
+
+export const zAdminValidateDemandeChaleurRenouvelableInput = z.object({
+  demandId: z.string(),
+});
+export type AdminValidateDemandeChaleurRenouvelableInput = z.infer<typeof zAdminValidateDemandeChaleurRenouvelableInput>;
 
 export const zLocationInfos = z.strictObject({
   city: z.string(),

@@ -22,9 +22,9 @@ Renewable heating guidance journey: collect building/context inputs, rank heatin
 - **Result page state**: query params are parsed/serialized by `useChoixChauffageQueryParams`; avoid adding local state that can drift from the URL.
 - **Building selection**: BAN/RNB/BDNB/BatEnR logic is in `getBatEnrBatimentsSelectionContextByBanId`; multiple candidates trigger the client selector.
 - **Classic demand**: `createDemandeChaleurRenouvelable` first calls the classic demand path when the heat network is eligible and the user has not selected the public-advisor/refusal path. It reuses `@/modules/demands/server/creation-user` and patches FCR snapshot fields into `legacy_values`.
-- **Dedicated CCRT demand**: when no classic demand is created, `createCcrtExperimentationDemand` creates `demands_chaleur_renouvelable` only if the resolved department is in `CCRT_EXPERIMENTATION_DEPARTMENT_CODES` and the housing type is `immeuble_chauffage_collectif`.
+- **Dedicated CCRT demand**: when no classic demand is created, `createCcrtExperimentationDemand` creates an unvalidated `demands_chaleur_renouvelable` row only if the resolved department is in `CCRT_EXPERIMENTATION_DEPARTMENT_CODES` and the housing type is `immeuble_chauffage_collectif`. Admin validation publishes it to the CCRT workspace and sends the CCRT notification email.
 - **Refusal follow-up link**: `originDemandId` and `adresse` come from the “Raccordement non réalisable” email URL. On results, `originDemandId` suppresses the heat-network solution from compatible/recommended results, shows it as incompatible with a refusal reason, and bypasses classic demand creation; it is validated against an existing non-deleted `demands` row with status `Non réalisable` and the same email before being stored as `demands_chaleur_renouvelable.origin_demand_id`.
-- **CCRT permissions**: CCRT list access is department-based (`user_permissions.type = 'departement'`); admins see all.
+- **CCRT permissions**: CCRT list access is department-based (`user_permissions.type = 'departement'`) and only returns validated dedicated demands; admins use the admin list to see pending/unvalidated rows.
 - **Admin update**: project state is forced back to `En réflexion` unless status is `[Validation du projet] Etude de faisabilité votée en AG`.
 
 ## tRPC Routes
@@ -40,6 +40,7 @@ Renewable heating guidance journey: collect building/context inputs, rank heatin
 | `batEnr.getLocationInfos` | query | public | Reads `communes` metadata by city code/name. |
 | `batEnr.admin.listDemandesChaleurRenouvelable` | query | admin | Full admin list. |
 | `batEnr.admin.updateDemandeChaleurRenouvelable` | mutation | admin | Status, assignee and project-state follow-up. |
+| `batEnr.admin.validateDemandeChaleurRenouvelable` | mutation | admin | Publishes a dedicated demand to the CCRT workspace and sends the matching CCRT notification email. |
 | `batEnr.ccrt.listDemandesChaleurRenouvelable` | query | admin, ccrt | Department-scoped for CCRT users. |
 
 ## Data Ownership

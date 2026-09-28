@@ -11,6 +11,7 @@ const statusDescriptions: Record<FcrStatusValue, string> = {
   irrelevant: 'La demande ne donne pas lieu à un accompagnement chaleur renouvelable.',
   opportunity_study_done: "L'étude d'opportunité a été finalisée.",
   opportunity_study_in_progress: "L'étude d'opportunité est en cours.",
+  phone_contact_realised: '1er contact téléphonique réalisé.',
   project_validation_feasibility_study_voted:
     "L'étude de faisabilité a été votée en assemblée générale ; l'état du projet devient modifiable.",
   recontacted_first_exchange: 'Le prospect a été recontacté pour un premier échange.',

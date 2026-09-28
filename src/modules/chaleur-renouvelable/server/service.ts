@@ -5,6 +5,7 @@ import { EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur
 import type {
   AddressEligibilityContextInput,
   AdminUpdateDemandeChaleurRenouvelableInput,
+  AdminValidateDemandeChaleurRenouvelableInput,
   BatEnrBatiment,
   BatEnrBatimentsSelectionContext,
   BatEnrByBanIdInput,
@@ -670,12 +671,6 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
     .returning(['id'])
     .executeTakeFirstOrThrow();
 
-  await notifyCcrtOfNewDemandeChaleurRenouvelable({
-    demand: input,
-    demandId: createdCcrtDemand.id,
-    departmentCode,
-  });
-
   return createdCcrtDemand.id;
 };
 
@@ -731,6 +726,103 @@ const notifyCcrtOfNewDemandeChaleurRenouvelable = async ({
   );
 };
 
+const getDemandeChaleurRenouvelableForCcrtNotification = async (demandId: string) => {
+  return await kdb
+    .selectFrom('demands_chaleur_renouvelable')
+    .select([
+      'address',
+      'annual_heating_consumption',
+      'average_area',
+      'average_residents',
+      'batiment_construction_id',
+      'comments',
+      'demand_concern',
+      'departement_code',
+      'dpe',
+      'email',
+      'first_name',
+      'heating_energy',
+      'hot_water_system_type',
+      'housing_count',
+      'housing_type',
+      'id',
+      'is_public_advisor_selected',
+      'last_name',
+      'occupant_status',
+      'organization_name',
+      'origin_demand_id',
+      'outdoor_space',
+      'phone',
+      'project_status',
+      'radiator_type',
+      'refusal_period',
+      'refusal_reason',
+      'simulation_url',
+      'surface_area',
+      'updated_at',
+      'validated',
+    ])
+    .where('id', '=', demandId)
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
+};
+
+type DemandeChaleurRenouvelableForCcrtNotification = Awaited<ReturnType<typeof getDemandeChaleurRenouvelableForCcrtNotification>>;
+
+const toDemandeChaleurRenouvelableEmailPayload = (demand: DemandeChaleurRenouvelableForCcrtNotification): DemandeChaleurRenouvelable => ({
+  address: demand.address,
+  annualHeatingConsumption: demand.annual_heating_consumption,
+  averageArea: demand.average_area,
+  averageResidents: demand.average_residents,
+  batimentConstructionId: demand.batiment_construction_id,
+  comments: demand.comments,
+  demandConcern: demand.demand_concern,
+  dpe: demand.dpe,
+  email: demand.email,
+  firstName: demand.first_name,
+  heatingEnergy: demand.heating_energy,
+  hotWaterSystemType: demand.hot_water_system_type,
+  housingCount: demand.housing_count,
+  housingType: demand.housing_type,
+  isPublicAdvisorSelected: demand.is_public_advisor_selected,
+  lastName: demand.last_name,
+  occupantStatus: demand.occupant_status,
+  organizationName: demand.organization_name,
+  originDemandId: demand.origin_demand_id,
+  outdoorSpace: demand.outdoor_space,
+  phone: demand.phone,
+  projectStatus: demand.project_status,
+  radiatorType: demand.radiator_type,
+  refusalPeriod: demand.refusal_period,
+  refusalReason: demand.refusal_reason,
+  simulationUrl: demand.simulation_url,
+  surfaceArea: demand.surface_area,
+});
+
+export const validateDemandeChaleurRenouvelableAdmin = async ({ demandId }: AdminValidateDemandeChaleurRenouvelableInput) => {
+  const validationResult = await kdb
+    .updateTable('demands_chaleur_renouvelable')
+    .set({
+      updated_at: new Date(),
+      validated: true,
+    })
+    .where('id', '=', demandId)
+    .where('validated', '=', false)
+    .returning(['id'])
+    .executeTakeFirst();
+
+  const demand = await getDemandeChaleurRenouvelableForCcrtNotification(demandId);
+
+  if (validationResult && demand.departement_code) {
+    await notifyCcrtOfNewDemandeChaleurRenouvelable({
+      demand: toDemandeChaleurRenouvelableEmailPayload(demand),
+      demandId: demand.id,
+      departmentCode: demand.departement_code,
+    });
+  }
+
+  return { id: demand.id, updated_at: demand.updated_at, validated: demand.validated };
+};
+
 export const listDemandesChaleurRenouvelableAdmin = async () => {
   const demandes = await selectDemandesChaleurRenouvelableForList().orderBy('created_at', 'desc').execute();
 
@@ -779,6 +871,7 @@ const selectDemandesChaleurRenouvelableForList = () =>
       'status',
       'surface_area',
       'updated_at',
+      'validated',
     ]);
 
 const serializeDemandesChaleurRenouvelable = <T extends { created_at: Date; updated_at: Date }>(demandes: T[]) =>
@@ -797,6 +890,7 @@ export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
   }
 
   const demandes = await selectDemandesChaleurRenouvelableForList()
+    .where('validated', '=', true)
     .$if(ctx.user.role !== 'admin', (qb) => qb.where('departement_code', 'in', departmentCodes))
     .orderBy('created_at', 'desc')
     .execute();

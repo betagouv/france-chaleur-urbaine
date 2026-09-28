@@ -304,6 +304,7 @@ export interface DemandsChaleurRenouvelable {
   status: Generated<string>;
   surface_area: number | null;
   updated_at: Generated<Timestamp>;
+  validated: Generated<boolean>;
 }
 
 export interface DemandEmails {

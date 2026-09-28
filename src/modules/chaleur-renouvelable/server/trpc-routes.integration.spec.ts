@@ -343,7 +343,7 @@ describe('batEnrRouter', () => {
           demandSubmissionResult: null,
           id: result.id,
         },
-        sentEmailKeys: ['demands.ccrt.nouvelle-demande-chaleur-renouvelable'],
+        sentEmailKeys: [],
       });
     });
 
@@ -415,6 +415,7 @@ describe('batEnrRouter', () => {
           'last_name',
           'simulation_url',
           'status',
+          'validated',
         ])
         .where('id', '=', result.id ?? '')
         .executeTakeFirstOrThrow();
@@ -438,6 +439,7 @@ describe('batEnrRouter', () => {
           last_name: 'Test',
           simulation_url: '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif',
           status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+          validated: false,
         },
         createdDemands: [],
         result: {
@@ -445,16 +447,7 @@ describe('batEnrRouter', () => {
           id: result.id,
         },
       });
-      expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
-      expect(sentEmailTemplate).toHaveBeenCalledWith(
-        'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
-        { email: testUsers.ccrt.email, id: ccrtMatchingId },
-        expect.objectContaining({
-          demand: expect.objectContaining({ email: 'contact@example.com' }),
-          demandId: result.id,
-          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
-        })
-      );
+      expect(sentEmailTemplate).toHaveBeenCalledTimes(0);
     });
 
     it('oriente vers France Rénov en expérimentation si le bâtiment n’est pas un immeuble au chauffage collectif', async () => {
@@ -663,6 +656,7 @@ describe('batEnrRouter', () => {
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             updated_at: newerDate.toISOString(),
+            validated: false,
           },
           {
             ...olderDemandInput,
@@ -672,6 +666,7 @@ describe('batEnrRouter', () => {
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             updated_at: olderDate.toISOString(),
+            validated: false,
           },
         ],
       });
@@ -731,6 +726,7 @@ describe('batEnrRouter', () => {
         project_status: ['Début de réflexion'],
         simulation_url: 'https://example.com/matching',
         updated_at: matchingDate,
+        validated: true,
       } satisfies DemandChaleurRenouvelableInsert;
       const otherDemandInput = {
         ...matchingDemandInput,
@@ -769,6 +765,7 @@ describe('batEnrRouter', () => {
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             surface_area: null,
             updated_at: matchingDate.toISOString(),
+            validated: true,
           },
         ],
       });
@@ -801,6 +798,188 @@ describe('batEnrRouter', () => {
       await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable()).resolves.toStrictEqual({
         count: 0,
         items: [],
+      });
+    });
+
+    it('masque les demandes non validées dans l’espace CCRT', async () => {
+      await seedTableUser([{ email: testUsers.ccrt.email, id: testUsers.ccrt.id, role: 'ccrt' }]);
+      await seedDepartmentPermission(testUsers.ccrt.id!, '13');
+      await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          departement_code: '13',
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+          validated: false,
+        })
+        .execute();
+
+      await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable()).resolves.toStrictEqual({
+        count: 0,
+        items: [],
+      });
+    });
+  });
+
+  describe('batEnr.admin.validateDemandeChaleurRenouvelable', () => {
+    const permissionTests: PermissionTestCase[] = [
+      { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
+      { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
+      { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
+      { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
+      { allowed: true, label: 'autorise admin', user: testUsers.admin },
+    ];
+
+    it.each(permissionTests)('$label', async ({ user, allowed }) => {
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          departement_code: '13',
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      const caller = createTestCaller(user);
+      const callRoute = () => caller.batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: demand.id });
+
+      if (allowed) {
+        const result = await callRoute();
+
+        expect({ id: result.id, validated: result.validated }).toStrictEqual({ id: demand.id, validated: true });
+      } else {
+        await expect(callRoute).rejects.toMatchObject(forbiddenError);
+      }
+    });
+
+    it('valide la demande et notifie le CCRT du département correspondant', async () => {
+      const ccrtMatchingId = testUsers.ccrt.id!;
+      const ccrtOtherDepartmentId = '00000000-0000-0000-0000-000000000208';
+      await seedTableUser([
+        { email: testUsers.ccrt.email, id: ccrtMatchingId, role: 'ccrt' },
+        { email: 'ccrt-other@test.local', id: ccrtOtherDepartmentId, role: 'ccrt' },
+      ]);
+      await Promise.all([seedDepartmentPermission(ccrtMatchingId, '13'), seedDepartmentPermission(ccrtOtherDepartmentId, '75')]);
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          annual_heating_consumption: 820.5,
+          average_area: 70,
+          average_residents: 2,
+          batiment_construction_id: 'CONSTRUCTION-123',
+          comments: 'Besoin de préciser le calendrier du projet.',
+          demand_concern: 'Une copropriété',
+          departement_code: '13',
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          hot_water_system_type: 'Collectif',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          is_public_advisor_selected: true,
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          organization_name: 'Copro test',
+          outdoor_space: 'jardinCours',
+          phone: '0605040302',
+          project_status: ['Début de réflexion'],
+          radiator_type: 'radiateur-eau',
+          refusal_period: 'Il y a moins de 3 mois',
+          refusal_reason: 'Coût du raccordement trop élevé',
+          simulation_url: 'https://example.com/test',
+          surface_area: 840,
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: demand.id });
+
+      const updatedDemand = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['validated'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow();
+      const ccrtList = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
+
+      expect({ ccrtListCount: ccrtList.count, updatedDemand }).toStrictEqual({
+        ccrtListCount: 1,
+        updatedDemand: { validated: true },
+      });
+      expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
+      expect(sentEmailTemplate).toHaveBeenCalledWith(
+        'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
+        { email: testUsers.ccrt.email, id: ccrtMatchingId },
+        expect.objectContaining({
+          demand: expect.objectContaining({ email: 'test@example.com' }),
+          demandId: demand.id,
+          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+        })
+      );
+    });
+
+    it('ne notifie pas deux fois une demande déjà validée', async () => {
+      const ccrtMatchingId = testUsers.ccrt.id!;
+      await seedTableUser([{ email: testUsers.ccrt.email, id: ccrtMatchingId, role: 'ccrt' }]);
+      await seedDepartmentPermission(ccrtMatchingId, '13');
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          departement_code: '13',
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+          validated: true,
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      const result = await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: demand.id });
+
+      expect({ id: result.id, sentEmailCallCount: sentEmailTemplate.mock.calls.length, validated: result.validated }).toStrictEqual({
+        id: demand.id,
+        sentEmailCallCount: 0,
+        validated: true,
       });
     });
   });

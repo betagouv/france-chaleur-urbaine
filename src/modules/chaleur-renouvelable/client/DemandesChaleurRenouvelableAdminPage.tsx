@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import Select from '@/components/form/dsfr/Select';
 import SimplePage from '@/components/shared/page/SimplePage';
+import AsyncButton from '@/components/ui/AsyncButton';
 import ChipAutoComplete, { type ChipOption } from '@/components/ui/ChipAutoComplete';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
@@ -47,6 +48,11 @@ const quickFilterPresets = {
     getStat: (demands) => demands.length,
     label: 'demandes totales',
   },
+  demandesAAValider: {
+    filters: [{ id: 'validated', value: { false: true, true: false } }],
+    getStat: (demands) => demands.filter((demand) => !demand.validated).length,
+    label: 'à valider',
+  },
   demandesMoisEnCours: {
     filters: [
       {
@@ -86,6 +92,7 @@ export default function DemandesChaleurRenouvelableAdminPage() {
   );
   const utils = trpc.useUtils();
   const { mutateAsync: updateDemandMutation } = trpc.batEnr.admin.updateDemandeChaleurRenouvelable.useMutation();
+  const { mutateAsync: validateDemandMutation } = trpc.batEnr.admin.validateDemandeChaleurRenouvelable.useMutation();
 
   const updateDemand = useCallback(
     toastErrors(async (demandId: string, demandUpdate: DemandUpdate) => {
@@ -116,6 +123,23 @@ export default function DemandesChaleurRenouvelableAdminPage() {
       });
     }),
     [updateDemandMutation, utils]
+  );
+
+  const validateDemand = useCallback(
+    toastErrors(async (demandId: string) => {
+      utils.batEnr.admin.listDemandesChaleurRenouvelable.setData(undefined, (demandsData) => {
+        if (!demandsData) return demandsData;
+
+        return {
+          count: demandsData.count,
+          items: demandsData.items.map((demand) => (demand.id === demandId ? { ...demand, validated: true } : demand)),
+        };
+      });
+
+      await validateDemandMutation({ demandId });
+      await utils.batEnr.ccrt.listDemandesChaleurRenouvelable.invalidate();
+    }),
+    [utils, validateDemandMutation]
   );
 
   const columns: ColumnDef<DemandesChaleurRenouvelableAdminItem>[] = useMemo(
@@ -229,6 +253,17 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         enableSorting: false,
         header: 'Affecté à',
         width: '200px',
+      },
+      {
+        accessorKey: 'validated',
+        align: 'center',
+        cell: ({ row }) => (
+          <ValidateDemandButton demandId={row.original.id} validated={row.original.validated} onValidate={validateDemand} />
+        ),
+        enableGlobalFilter: false,
+        filterType: 'Facets',
+        header: 'Validée',
+        width: '110px',
       },
       {
         accessorFn: (row) => (row.is_public_advisor_selected ? 'Conseiller public' : 'Gestionnaire réseau'),
@@ -382,7 +417,7 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         width: '110px',
       },
     ],
-    [assignmentRulesResultsOptions, updateDemand]
+    [assignmentRulesResultsOptions, updateDemand, validateDemand]
   );
 
   return (
@@ -422,5 +457,32 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         />
       </div>
     </SimplePage>
+  );
+}
+
+type ValidateDemandButtonProps = {
+  demandId: string;
+  onValidate: (demandId: string) => Promise<void>;
+  validated: boolean;
+};
+
+/**
+ * Button used by admins to publish a renewable heat demand to the CCRT workspace.
+ */
+function ValidateDemandButton({ demandId, onValidate, validated }: ValidateDemandButtonProps) {
+  if (validated) {
+    return null;
+  }
+
+  return (
+    <AsyncButton
+      priority="primary"
+      size="small"
+      iconId="fr-icon-check-line"
+      title="Valider la demande"
+      onClick={() => onValidate(demandId)}
+    >
+      Valider
+    </AsyncButton>
   );
 }
