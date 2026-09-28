@@ -36,6 +36,7 @@ export const sendUnrealizableDemandEmailIfNeeded = async ({ actorRole, currentDe
     {
       address: currentDemand.legacy_values.Adresse,
       ...(alternativeHeatingSolutions.length > 0 && { alternativeHeatingSolutions }),
+      originDemandId: currentDemand.id,
       ...(simulationUrl && { simulationUrl }),
     }
   );

@@ -4,7 +4,6 @@ import {
   type EspaceExterieur,
   getEspaceExterieurCheckboxState,
   getEspaceExterieurFromCheckboxState,
-  type TypeLogement,
 } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
 
@@ -12,14 +11,13 @@ type OutdoorSpaceCheckboxesProps = {
   className?: string;
   layout?: OutdoorSpaceCheckboxesLayout;
   onChange: (value: EspaceExterieur | null) => void;
-  typeLogement: TypeLogement | null;
   value: EspaceExterieur | null;
 };
 
 type OutdoorSpaceCheckboxKey = 'garden' | 'terrace';
 type OutdoorSpaceCheckboxesLayout = 'inline' | 'stacked';
 
-export function OutdoorSpaceCheckboxes({ className, layout = 'inline', onChange, typeLogement, value }: OutdoorSpaceCheckboxesProps) {
+export function OutdoorSpaceCheckboxes({ className, layout = 'inline', onChange, value }: OutdoorSpaceCheckboxesProps) {
   const id = useId();
   const checkboxState = getEspaceExterieurCheckboxState(value);
   const hasGarden = checkboxState.hasGarden;
@@ -32,7 +30,6 @@ export function OutdoorSpaceCheckboxes({ className, layout = 'inline', onChange,
         checked,
         hasGarden,
         hasTerrace,
-        typeLogement,
       })
     );
   };
@@ -63,19 +60,13 @@ export function getNextOutdoorSpaceValue({
   checked,
   hasGarden,
   hasTerrace,
-  typeLogement,
 }: {
   checkboxKey: OutdoorSpaceCheckboxKey;
   checked: boolean;
   hasGarden: boolean;
   hasTerrace: boolean;
-  typeLogement: TypeLogement | null;
-}): EspaceExterieur | null {
-  if (!typeLogement) {
-    return null;
-  }
-
-  return getEspaceExterieurFromCheckboxState(typeLogement, {
+}): EspaceExterieur {
+  return getEspaceExterieurFromCheckboxState({
     hasGarden: checkboxKey === 'garden' ? checked : hasGarden,
     hasTerrace: checkboxKey === 'terrace' ? checked : hasTerrace,
   });

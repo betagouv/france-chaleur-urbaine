@@ -190,6 +190,7 @@ type TableRowProps<T> = {
   onRowDoubleClick?: (rowId: any) => void;
   measureElement?: (element: Element | null) => void;
   columnClassName: (columnDef: ColumnDef<T>) => string;
+  rowClassName?: (row: T) => string | undefined;
   /**
    * Column definitions, passed to invalidate the row's memoization when a cell renderer changes
    * (e.g. a `cell` closing over external toggle state) without the row data itself changing.
@@ -213,6 +214,7 @@ const TableRowInner = <T extends RowData>({
   onRowDoubleClick,
   measureElement,
   columnClassName,
+  rowClassName,
 }: TableRowProps<T>) => {
   const canSelectRow = onRowClick || onRowDoubleClick;
   return (
@@ -223,7 +225,8 @@ const TableRowInner = <T extends RowData>({
         'grid absolute w-full',
         canSelectRow && 'cursor-pointer transition-colors duration-100',
         !isSelected && 'hover:bg-gray-200!',
-        isSelected ? 'bg-[#e1f1f5]! hover:bg-[#d2eaf1]!' : virtualIndex % 2 === 0 ? 'bg-white!' : 'bg-stripe!'
+        isSelected ? 'bg-[#e1f1f5]! hover:bg-[#d2eaf1]!' : virtualIndex % 2 === 0 ? 'bg-white!' : 'bg-stripe!',
+        rowClassName?.(row.original)
       )}
       style={{
         gridTemplateColumns,
@@ -478,6 +481,7 @@ export type TableSimpleProps<T> = {
   onRowClick?: (rowId: any) => void;
   onRowDoubleClick?: (rowId: any) => void;
   rowIdKey?: keyof T;
+  rowClassName?: (row: T) => string | undefined;
   rowHeight?: number;
   controlsLayout?: 'inline' | 'block';
   onFilterChange?: (filteredRows: T[]) => void;
@@ -523,6 +527,7 @@ const TableSimple = <T extends RowData>({
   onRowClick,
   onRowDoubleClick,
   rowIdKey = 'id' as any,
+  rowClassName,
   onFilterChange,
   className: tableClassName,
   wrapperClassName,
@@ -1093,6 +1098,7 @@ const TableSimple = <T extends RowData>({
                       onRowDoubleClick={onRowDoubleClick}
                       measureElement={measureRow}
                       columnClassName={columnClassName}
+                      rowClassName={rowClassName}
                       columns={tableColumns}
                     />
                   );

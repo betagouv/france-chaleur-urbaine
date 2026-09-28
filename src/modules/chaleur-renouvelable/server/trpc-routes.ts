@@ -1,6 +1,7 @@
 import {
   zAddressEligibilityContextInput,
   zAdminUpdateDemandeChaleurRenouvelableInput,
+  zAdminValidateDemandeChaleurRenouvelableInput,
   zBatEnrByBanIdInput,
   zDemandeChaleurRenouvelable,
   zFranceRenovSpaceInput,
@@ -15,7 +16,9 @@ import {
   getFranceRenovSpace,
   getLocationInfos,
   listDemandesChaleurRenouvelableAdmin,
+  listDemandesChaleurRenouvelableCcrt,
   updateDemandeChaleurRenouvelableAdmin,
+  validateDemandeChaleurRenouvelableAdmin,
 } from '@/modules/chaleur-renouvelable/server/service';
 import { zGetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { route, routeRole, router } from '@/modules/trpc/server';
@@ -26,6 +29,12 @@ export const batEnrRouter = router({
     updateDemandeChaleurRenouvelable: routeRole(['admin'])
       .input(zAdminUpdateDemandeChaleurRenouvelableInput)
       .mutation(async ({ input }) => await updateDemandeChaleurRenouvelableAdmin(input)),
+    validateDemandeChaleurRenouvelable: routeRole(['admin'])
+      .input(zAdminValidateDemandeChaleurRenouvelableInput)
+      .mutation(async ({ input }) => await validateDemandeChaleurRenouvelableAdmin(input)),
+  },
+  ccrt: {
+    listDemandesChaleurRenouvelable: routeRole(['admin', 'ccrt']).query(async ({ ctx }) => await listDemandesChaleurRenouvelableCcrt(ctx)),
   },
   createDemandeChaleurRenouvelable: route
     .input(zDemandeChaleurRenouvelable)

@@ -194,6 +194,75 @@ export async function seedRegion(data: InsertObject<DB, 'ign_regions'>) {
   return await kdb.insertInto('ign_regions').values(data).returningAll().executeTakeFirstOrThrow();
 }
 
+export async function seedCcrtExperimentationTerritory() {
+  await kdb
+    .insertInto('departements')
+    .values({
+      annee: '2026',
+      dju_chaud_moyen: 0,
+      dju_froid_moyen: 0,
+      id: '13',
+      nom_departement: 'Bouches-du-Rhône',
+      source: 'test',
+      sous_zone_climatique: null,
+      zone_climatique: null,
+    })
+    .onConflict((onConflict) =>
+      onConflict.column('id').doUpdateSet({
+        annee: '2026',
+        nom_departement: 'Bouches-du-Rhône',
+        source: 'test',
+      })
+    )
+    .execute();
+
+  await kdb
+    .insertInto('communes')
+    .values({
+      altitude_moyenne: 0,
+      code_postal: '13001',
+      commune: 'MARSEILLE',
+      departement_id: '13',
+      id: '13055',
+      source: 'test',
+      temperature_ref_altitude_moyenne: 0,
+    })
+    .onConflict((onConflict) =>
+      onConflict.column('id').doUpdateSet({
+        code_postal: '13001',
+        commune: 'MARSEILLE',
+        departement_id: '13',
+        source: 'test',
+      })
+    )
+    .execute();
+}
+
+export async function seedDemandeChaleurRenouvelable(data: Partial<InsertObject<DB, 'demands_chaleur_renouvelable'>> = {}) {
+  return await kdb
+    .insertInto('demands_chaleur_renouvelable')
+    .values({
+      address: '10 Rue de Rivoli 75001 Paris',
+      average_area: 70,
+      average_residents: 2,
+      dpe: 'E',
+      email: 'demandeur@example.fr',
+      first_name: 'Jean',
+      heating_energy: 'Gaz',
+      housing_count: 25,
+      housing_type: 'immeuble_chauffage_collectif',
+      last_name: 'Dupont',
+      occupant_status: 'Copropriétaire',
+      origin_demand_id: null,
+      outdoor_space: 'none',
+      project_status: ['Début de réflexion'],
+      simulation_url: '/chaleur-renouvelable/resultat?adresse=10+Rue+de+Rivoli+75001+Paris',
+      ...data,
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
+}
+
 /**
  * Properties to exclude when extracting entity properties (everything except data properties)
  */

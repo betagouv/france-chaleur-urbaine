@@ -135,10 +135,10 @@ function ChaleurRenouvelableMethodologiePage() {
             <strong>Pompe à chaleur eau/eau géothermique</strong> (si le terrain le permet)
           </li>
           <li>
-            <strong>Biomasse</strong> (poêle ou chaudière à granulés)
+            <strong>Solaire thermique</strong> (pour l’eau chaude et/ou le chauffage)
           </li>
           <li>
-            <strong>Solaire thermique</strong> (pour l’eau chaude et/ou le chauffage)
+            <strong>Poêle, insert, foyer fermé ou chaudière</strong> (à bûches ou à granulés)
           </li>
           <li>
             <strong>Pompe à chaleur air/eau</strong> (si espace extérieur)

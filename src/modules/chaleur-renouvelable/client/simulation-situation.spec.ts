@@ -25,6 +25,7 @@ describe('buildSimulationSituation', () => {
         habitantsMoyen: '3',
         modeEauChaudeSanitaire: null,
         nbLogements: null,
+        originDemandId: null,
         surfaceMoyenne: null,
         typeRadiateur: null,
       },
@@ -47,6 +48,7 @@ describe('buildSimulationSituation', () => {
       geothermalSondeGmi: null,
       geothermiePossible: true,
       habitantsMoyen: 3,
+      hasAlreadyReceivedHeatNetworkRefusal: false,
       hasGeothermalProbeSpace: null,
       modeEauChaudeSanitaire: null,
       nbLogements: DEFAULT_SIMULATION_PARAMS.nbLogements,
@@ -55,5 +57,28 @@ describe('buildSimulationSituation', () => {
       surfaceMoyenne: DEFAULT_SIMULATION_PARAMS.surfaceMoyenne,
       typeRadiateur: null,
     });
+  });
+
+  it('marks a heat network refusal when the result URL comes from an origin demand', () => {
+    const situation = buildSimulationSituation({
+      altitude: null,
+      batEnr: EMPTY_BAT_ENR_INFO,
+      eligibiliteReseauChaleur: null,
+      eligibiliteReseauFroid: null,
+      params: {
+        ...DEFAULT_SIMULATION_PARAMS,
+        adresse: null,
+        constructionId: null,
+        dpe: 'D',
+        habitantsMoyen: null,
+        modeEauChaudeSanitaire: null,
+        nbLogements: null,
+        originDemandId: '96184961-d283-456d-af10-c8f9c9415499',
+        surfaceMoyenne: null,
+        typeRadiateur: null,
+      },
+    });
+
+    expect(situation.hasAlreadyReceivedHeatNetworkRefusal).toStrictEqual(true);
   });
 });

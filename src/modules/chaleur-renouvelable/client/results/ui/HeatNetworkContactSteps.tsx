@@ -2,10 +2,6 @@ import type { ContactRecipientId } from '@/modules/chaleur-renouvelable/client/D
 import cx from '@/utils/cx';
 
 export function HeatNetworkContactSteps({ onSelectRecipient }: { onSelectRecipient: (recipientId: ContactRecipientId) => void }) {
-  const handleSelectRecipient = (recipientId: ContactRecipientId) => {
-    onSelectRecipient(recipientId);
-  };
-
   return (
     <section aria-label="Étapes de prise de contact" className="mt-6 grid border border-(--border-default-grey) md:grid-cols-2 gap-3">
       <ContactStep
@@ -13,15 +9,15 @@ export function HeatNetworkContactSteps({ onSelectRecipient }: { onSelectRecipie
         number={1}
         title="Contactez d’abord le gestionnaire de réseau"
         actionLabel="Être contacté·e par le gestionnaire"
-        onClick={() => handleSelectRecipient('network-manager')}
+        onClick={() => onSelectRecipient('network-manager')}
         isPrimary
       />
       <ContactStep
         description="Si le raccordement n’est finalement pas possible, un·e conseiller·e du service public vous aide à choisir parmi les autres solutions ci-dessous."
         number={2}
         title="Refus ou réponse négative ?"
-        actionLabel="Être contacté·e par un conseiller"
-        onClick={() => handleSelectRecipient('public-advisor')}
+        actionLabel="Être contacté·e par un·e conseiller·e"
+        onClick={() => onSelectRecipient('public-advisor')}
       />
     </section>
   );

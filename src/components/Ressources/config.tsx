@@ -141,7 +141,7 @@ export const understandings: Record<string, Document> = {
     seoDescription:
       'Stabilisez le montant de votre facture de chauffage, réduisez vos émissions de gaz à effet de serre de 51 % (gaz) à 64 % (fioul).',
     seoTitle: 'Comparatif chauffage urbain vs. chaudière gaz ou fioul',
-    title: 'Quels avantages par rapport à un chauffage collectif au gaz ou fioul ?',
+    title: 'Quels avantages du réseau de chaleur par rapport à un chauffage collectif au gaz ou fioul ?',
   },
   'cout-raccordement': {
     content: <CoutRaccordement />,

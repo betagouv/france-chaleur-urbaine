@@ -54,7 +54,6 @@ export default function ChoixChauffageForm() {
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
-            trackPostHogEvent('fcr_landing:hero_cta_clicked');
             trackPostHogEvent('fcr_landing:simulation_started', {
               address_filled: Boolean(params.adresse),
               emitter_type: params.typeRadiateur,

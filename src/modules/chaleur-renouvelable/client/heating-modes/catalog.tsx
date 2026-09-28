@@ -22,7 +22,6 @@ import {
   roofSolarCollectorsPrerequisite,
 } from '@/modules/chaleur-renouvelable/client/heating-mode-rules';
 import type { ModeDeChauffage, Situation, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
-import { getCoutRaccordementResidentiel, prettyPrintCout } from '@/modules/simulator/client/SimulateurCoutRaccordement';
 
 export type {
   IncompatibleSolutionRow,
@@ -34,19 +33,12 @@ export type {
   Situation,
 } from '@/modules/chaleur-renouvelable/constants';
 
+const HOUSE_PUBLICODES_SITUATION = { 'bâtiment . appartement ou maison': "'Maison'" } as const;
+
 export const modesDeChauffage = {
   immeuble_chauffage_collectif: [
     {
       avantages: ['Faibles émissions de CO₂', 'Prix stables', 'TVA réduite à 5,5 %', "Garantie d'un service public"],
-      coutInstallation: (situation: Situation) => {
-        const result = getCoutRaccordementResidentiel(situation.nbLogements);
-        if (Array.isArray(result)) {
-          const [lowerBoundString, upperBoundString] = result;
-          return `${prettyPrintCout(lowerBoundString / situation.nbLogements)} à ${prettyPrintCout(upperBoundString / situation.nbLogements)}`;
-        }
-        return 'Inconnu';
-      },
-      coutParAnPublicodeKey: 'réseau de chaleur',
       description: (
         <>
           Votre bâtiment est à proximité d'un réseau de chaleur : c'est la solution à privilégier pour un chauffage collectif. Une énergie
@@ -54,6 +46,7 @@ export const modesDeChauffage = {
         </>
       ),
       estPossible: (situation) =>
+        !situation.hasAlreadyReceivedHeatNetworkRefusal &&
         (situation.eligibiliteReseauChaleur?.isEligible ?? false) &&
         isNearHeatNetwork(situation) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
@@ -61,6 +54,11 @@ export const modesDeChauffage = {
       icone: 'img/icon-rcu.webp',
       id: 'collective-heat-network',
       incompatibilites: [
+        {
+          isIncompatible: (situation) => situation.hasAlreadyReceivedHeatNetworkRefusal,
+          reason: 'Une précédente demande de raccordement à cette adresse a été classée « Non réalisable »',
+          source: 'France Chaleur Urbaine',
+        },
         {
           isIncompatible: (situation) =>
             situation.eligibiliteReseauChaleur?.distance != null &&
@@ -86,13 +84,12 @@ export const modesDeChauffage = {
         ...getColdNetworkPrerequisite(situation),
         ...getPdpPrerequisite(situation, 'favorable'),
       ],
+      publicodeKey: 'réseau de chaleur',
       rafraichissementPossible: isNearColdNetwork,
       usage: 'heatingAndHotWater',
     },
     {
       avantages: ['Faibles émissions de CO₂', 'Suppression des chaudières (gain de place, sécurité)', 'Aucune nuisance sonore'],
-      coutInstallation: '8000 à 11 000 €',
-      coutParAnPublicodeKey: 'PAC eau-eau coll',
       description: (
         <>
           Votre bâtiment est <strong>situé en zone favorable à la géothermie</strong>.<br /> La pompe à chaleur géothermique capte la
@@ -155,20 +152,25 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      publicodeKey: 'PAC eau-eau coll',
       rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: ['Faibles émissions de CO₂', 'Longévité des équipements', 'Coût de la chaleur compétitif', 'Énergie locale (bois)'],
+      avantages: [
+        'Faibles émissions de CO₂',
+        'Longévité des équipements',
+        'Coût de la chaleur compétitif et stable',
+        'Énergie locale (bois)',
+      ],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 2 : 3),
-      coutInstallation: '6 000 à 8 000 €',
-      coutParAnPublicodeKey: 'chaudière à granulés',
       description: (
         <>
-          Votre bâtiment pourrait être adapté à l’installation d’une chaudière biomasse.
+          Votre bâtiment pourrait être adapté à l’installation d’une chaudière à bûches, à granulés ou à plaquettes.
           <br />
-          <br /> Sous réserve d’espaces suffisamment importants et <strong>d’un approvisionnement local en bois disponible</strong>, cette
-          solution vous permettrait de <strong>réduire les émissions CO₂</strong> de votre bâtiment.
+          <br />
+          Sous réserve d’espaces suffisamment importants et <strong>d’un approvisionnement local en bois disponible</strong>, cette solution
+          vous permettrait de <strong>réduire les émissions CO₂</strong> de votre bâtiment.
         </>
       ),
       estPossible: (situation) =>
@@ -188,9 +190,9 @@ export const modesDeChauffage = {
       inconvenients: [
         'Investissement initial important',
         'Approvisionnement à prévoir (contrat de 3 ans minimum recommandé)',
-        'Nuisance sonore modérée en fonctionnement, forte pendant les livraisons de combustible',
+        'Nuisance sonore modérée en fonctionnement',
       ],
-      label: 'Chaudière biomasse',
+      label: 'Chaudière à bois',
       pertinence: 3,
       prerequis: (situation) => [
         ...getPdpPrerequisite(situation),
@@ -210,13 +212,12 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      publicodeKey: 'chaudière à granulés',
       usage: 'heatingAndHotWater',
     },
     {
       avantages: ['Faibles émissions de CO₂', 'Suppression des chaudières (gain de place, sécurité)'],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 3 : 2),
-      coutInstallation: '4 000 à 6 000 €',
-      coutParAnPublicodeKey: 'PAC air-eau coll',
       description: (
         <>
           Votre bâtiment semble disposer d’un espace extérieur pour accueillir une pompe à chaleur air/eau collective.
@@ -258,6 +259,7 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      publicodeKey: 'PAC air-eau coll',
       rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
@@ -267,8 +269,6 @@ export const modesDeChauffage = {
         'Optimisation du fonctionnement de la PAC',
         "Minimise l'investissement initial (PAC moins puissante)",
       ],
-      coutInstallation: '3 000 à 5 000 €',
-      coutParAnPublicodeKey: 'PAC air-eau coll hybride',
       description: (
         <>
           Votre bâtiment pourrait accueillir une solution hybride associant pompe à chaleur et chaudière gaz.
@@ -309,13 +309,12 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      publicodeKey: 'PAC air-eau coll hybride',
       rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
       avantages: ['Aucune émission CO₂', 'Technologie mature', "Coût de la chaleur compétitif une fois l'installation amortie"],
-      coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'solaire thermique',
       description: (
         <>
           L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir
@@ -349,15 +348,13 @@ export const modesDeChauffage = {
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
+      publicodeKey: 'solaire thermique',
       usage: 'hotWaterOnly',
     },
     {
       avantages: ['Très faibles émissions de CO₂', 'Aucune nuisance sonore', 'Solution mature et fiable'],
-      coutInstallation: '3 000 à 4 000 €',
-      coutParAnPublicodeKey: 'PAC capteurs solaires atmosphériques',
-      coutParAnPublicodesSituation: { 'ecs . type de production': "'Solaire thermique'" },
       description: (
         <>
           Votre toiture pourrait accueillir des capteurs solaires atmosphériques qui alimentent une pompe à chaleur dédiée à l'eau chaude
@@ -369,15 +366,17 @@ export const modesDeChauffage = {
       gainClasse: 1,
       icone: 'img/icon-solaire.webp',
       id: 'collective-solar-atmospheric-heat-pump-hot-water',
-      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment', 'Nécessite une toiture adaptée'],
+      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment'],
       label: 'PAC sur capteurs solaires atmosphériques',
       pertinence: 2,
       prerequis: (situation) => [
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
+      publicodeKey: 'PAC capteurs solaires atmosphériques',
+      publicodeSituation: { 'ecs . type de production': "'Solaire thermique'" },
       usage: 'hotWaterOnly',
     },
     {
@@ -386,9 +385,6 @@ export const modesDeChauffage = {
         "Économique à l'usage par rapport à un ballon électrique classique",
         'Solution simple à installer',
       ],
-      coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
-      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à
@@ -407,13 +403,12 @@ export const modesDeChauffage = {
       label: 'Chauffe-eau thermodynamique',
       pertinence: 2,
       prerequis: (situation) => [...getArchitecturalProtectionPrerequisites(situation), ...outdoorSinglePacPrerequisites],
+      publicodeKey: 'chauffe-eau thermodynamique',
+      publicodeSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       usage: 'hotWaterOnly',
     },
     {
       avantages: ['Faibles émissions de CO₂', 'Solution compacte et éprouvée', 'Permet de conserver le système de chauffage existant'],
-      coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'PAC air-eau collective ECS',
-      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre bâtiment semble disposer d’un espace extérieur pour accueillir une pompe à chaleur air/eau collective destinée à l’eau
@@ -437,14 +432,14 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      publicodeKey: 'PAC air-eau collective ECS',
+      publicodeSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       usage: 'hotWaterOnly',
     },
   ],
   immeuble_chauffage_individuel: [
     {
       avantages: ['Faibles émissions de CO₂', 'Suppression de la chaudière individuelle (gain de place, sécurité)'],
-      coutInstallation: '7 000 à 10 000 €',
-      coutParAnPublicodeKey: 'PAC air-eau indiv',
       description: (
         <>
           Votre appartement pourrait accueillir une pompe à chaleur air/eau individuelle. Elle remplacerait votre chaudière gaz et
@@ -487,13 +482,12 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      publicodeKey: 'PAC air-eau indiv',
       rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
       avantages: ['Faibles émissions de CO₂', 'Installation relativement simple'],
-      coutInstallation: '3 000 à 5 000 €',
-      coutParAnPublicodeKey: 'PAC air-air indiv',
       description: (
         <>
           Votre appartement pourrait accueillir une pompe à chaleur air/air, qui remplacerait vos radiateurs électriques et pourrait aussi
@@ -541,13 +535,12 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      publicodeKey: 'PAC air-air indiv',
       rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
     {
       avantages: ['Aucune émission CO₂', 'Technologie mature', "Coût de la chaleur compétitif une fois l'installation amortie"],
-      coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'solaire thermique',
       description: (
         <>
           L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir
@@ -581,15 +574,13 @@ export const modesDeChauffage = {
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
+      publicodeKey: 'solaire thermique',
       usage: 'hotWaterOnly',
     },
     {
       avantages: ['Très faibles émissions de CO₂', 'Aucune nuisance sonore', 'Solution mature et fiable'],
-      coutInstallation: '3 000 à 4 000 €',
-      coutParAnPublicodeKey: 'PAC capteurs solaires atmosphériques',
-      coutParAnPublicodesSituation: { 'ecs . type de production': "'Solaire thermique'" },
       description: (
         <>
           Votre toiture pourrait accueillir des capteurs solaires atmosphériques qui alimentent une pompe à chaleur dédiée à l'eau chaude
@@ -601,15 +592,17 @@ export const modesDeChauffage = {
       gainClasse: 1,
       icone: 'img/icon-solaire.webp',
       id: 'individual-apartment-solar-atmospheric-heat-pump-hot-water',
-      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment', 'Nécessite une toiture adaptée'],
+      inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment'],
       label: 'PAC sur capteurs solaires atmosphériques',
       pertinence: 2,
       prerequis: (situation) => [
         { label: 'Système eau chaude sanitaire collectif', source: 'Formulaire', status: 'favorable' },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
+      publicodeKey: 'PAC capteurs solaires atmosphériques',
+      publicodeSituation: { 'ecs . type de production': "'Solaire thermique'" },
       usage: 'hotWaterOnly',
     },
     {
@@ -618,9 +611,6 @@ export const modesDeChauffage = {
         "Économique à l'usage par rapport à un ballon électrique classique",
         'Solution simple à installer',
       ],
-      coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
-      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à
@@ -639,13 +629,12 @@ export const modesDeChauffage = {
       label: 'Chauffe-eau thermodynamique',
       pertinence: 2,
       prerequis: (situation) => [...getArchitecturalProtectionPrerequisites(situation), ...outdoorSinglePacPrerequisites],
+      publicodeKey: 'chauffe-eau thermodynamique',
+      publicodeSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       usage: 'hotWaterOnly',
     },
     {
       avantages: ['Faibles émissions de CO₂', 'Solution compacte et éprouvée', 'Permet de conserver le système de chauffage existant'],
-      coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'PAC air-eau collective ECS',
-      coutParAnPublicodesSituation: { 'ecs . type de production': "'Chauffe-eau électrique'" },
       description: (
         <>
           Votre bâtiment semble disposer d’un espace extérieur pour accueillir une pompe à chaleur air/eau collective destinée à l’eau
@@ -669,14 +658,14 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      publicodeKey: 'PAC air-eau collective ECS',
+      publicodeSituation: { 'ecs . type de production': "'Chauffe-eau électrique'" },
       usage: 'hotWaterOnly',
     },
   ],
   maison_individuelle: [
     {
       avantages: ['Faibles émissions de CO₂', 'Suppression des chaudières (gain de place, sécurité)', 'Aucune nuisance sonore'],
-      coutInstallation: '20 000 à 25 000 €',
-      coutParAnPublicodeKey: 'PAC eau-eau indiv',
       description: (
         <>
           Votre maison est <strong>située en zone favorable à la géothermie.</strong>
@@ -686,8 +675,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) =>
         hasEspaceShared(situation) &&
-        hasCompatibleHotWaterMode(situation, ['Collectif']) &&
-        hasCompatibleGeothermalPotential(situation) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-geothermie.webp',
@@ -731,6 +719,7 @@ export const modesDeChauffage = {
         ...getGeothermalPrerequisites(situation),
         { label: 'Accessibilité de la parcelle pour les machines de forage', status: 'averifier' },
       ],
+      publicodeKey: 'PAC eau-eau indiv',
       rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
@@ -738,21 +727,19 @@ export const modesDeChauffage = {
       avantages: [
         'Faibles émissions de CO₂',
         'Longévité des équipements',
-        'Coût de la chaleur compétitif',
+        'Coût de la chaleur compétitif et stable',
         'Énergie renouvelable et locale',
       ],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 1 : 2),
-      coutInstallation: '10 000 à 17 000 €',
-      coutParAnPublicodeKey: 'chaudière à granulés',
       description: (
         <>
-          Une chaudière biomasse pourrait équiper votre maison. Sous réserve d’espaces suffisamment importants et d’un approvisionnement
-          local en bois disponible, cette solution vous permettrait de réduire les émissions CO₂ de votre maison.
+          Une chaudière à bûches, à granulés ou plaquettes, pourrait équiper votre maison. Sous réserve d’espaces suffisamment importants et
+          d’un approvisionnement local en bois disponible, cette solution vous permettrait de réduire les émissions CO₂ de votre maison.
         </>
       ),
       estPossible: (situation) =>
         hasEspaceShared(situation) &&
-        hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-biomasse.webp',
@@ -770,7 +757,7 @@ export const modesDeChauffage = {
         },
       ],
       inconvenients: ['Investissement initial important', 'Approvisionnement à prévoir'],
-      label: 'Chaudière biomasse',
+      label: 'Chaudière à bois',
       pertinence: 2,
       prerequis: (situation) => [
         {
@@ -781,15 +768,16 @@ export const modesDeChauffage = {
         ...getPpaPrerequisite(situation),
         ...getArchitecturalProtectionPrerequisites(situation),
         { label: 'Espace requis en local technique pour la chaudière et le stockage', status: 'averifier' },
+        { label: 'Présence d’un conduit d’évacuation', status: 'averifier' },
         { label: 'Accessibilité de la parcelle pour la livraison du combustible', status: 'averifier' },
       ],
+      publicodeKey: 'chaudière à granulés',
+      publicodeSituation: HOUSE_PUBLICODES_SITUATION,
       usage: 'heatingAndHotWater',
     },
     {
       avantages: ['Faibles émissions de CO₂', 'Économique si bien dimensionnée'],
       classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 2 : 1),
-      coutInstallation: '12 000 à 15 000 €',
-      coutParAnPublicodeKey: 'PAC air-eau indiv',
       description: (
         <>
           Votre maison semble adaptée à l'installation d'une pompe à chaleur air/eau individuelle. Elle remplace votre chaudière et produit
@@ -800,7 +788,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) =>
         situation.espaceExterieur !== 'none' &&
-        hasCompatibleHotWaterMode(situation, ['Individuel']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       icone: 'img/icon-pac.webp',
@@ -833,6 +821,8 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      publicodeKey: 'PAC air-eau indiv',
+      publicodeSituation: HOUSE_PUBLICODES_SITUATION,
       rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
     },
@@ -843,8 +833,6 @@ export const modesDeChauffage = {
         'Longévité des équipements',
         'Énergie renouvelable et locale',
       ],
-      coutInstallation: '4 000 à 6 000 €',
-      coutParAnPublicodeKey: 'poêle à granulés',
       description: (
         <>
           Votre maison pourrait accueillir un poêle à bûches ou à granulés, en appoint ou en chauffage principal d'une pièce de vie. Cette
@@ -852,7 +840,7 @@ export const modesDeChauffage = {
           et/ou d’eau chaude.
         </>
       ),
-      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Individuel']),
+      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Indépendant']),
       gainClasse: 1,
       icone: 'img/icon-biomasse.webp',
       id: 'house-wood-stove',
@@ -864,7 +852,7 @@ export const modesDeChauffage = {
         },
       ],
       inconvenients: ["Ne chauffe qu'une seule pièce", 'Approvisionnement à prévoir'],
-      label: 'Poêle à buche ou à granulés ',
+      label: 'Poêle à buche ou à granulés',
       pertinence: 3,
       prerequis: (situation) => [
         {
@@ -875,12 +863,11 @@ export const modesDeChauffage = {
         ...getPpaPrerequisite(situation, 'poele'),
         { label: 'Accessibilité de la parcelle pour la livraison du combustible', status: 'averifier' },
       ],
+      publicodeKey: 'poêle à granulés',
       usage: 'heatingAndHotWater',
     },
     {
       avantages: ['Faibles émissions de CO₂', 'Économique si bien dimensionnée', 'Installation relativement simple'],
-      coutInstallation: '6 000 à 8 000 €',
-      coutParAnPublicodeKey: 'PAC air-air indiv',
       description: (
         <>
           Votre maison pourrait accueillir une pompe à chaleur air/air, qui capte les calories de l'air extérieur pour chauffer (ou
@@ -888,7 +875,7 @@ export const modesDeChauffage = {
           sanitaire.
         </>
       ),
-      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Individuel']),
+      estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Indépendant']),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
       id: 'house-air-air-heat-pump',
@@ -920,8 +907,52 @@ export const modesDeChauffage = {
           status: 'averifier',
         },
       ],
+      publicodeKey: 'PAC air-air indiv',
+      publicodeSituation: HOUSE_PUBLICODES_SITUATION,
       rafraichissementPossible: true,
       usage: 'heatingAndHotWater',
+    },
+    {
+      avantages: ['Aucune émission CO₂', 'Technologie mature', "Coût de la chaleur compétitif une fois l'installation amortie"],
+      description: (
+        <>
+          L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir
+          une partie de votre eau chaude sanitaire.
+          <br />
+          <br /> Une solution <strong>fiable, mature et économique</strong> à l'usage, qui fonctionne avec un appoint pour les périodes de
+          faible ensoleillement.
+        </>
+      ),
+      estPossible: (situation) =>
+        hasCompatibleHotWaterMode(situation, ['Indépendant']) &&
+        hasEspacePrivate(situation) &&
+        hasSufficientSolarThermalCoverage(situation),
+      gainClasse: 1,
+      gainVsGaz: -50,
+      icone: 'img/icon-solaire.webp',
+      id: 'house-solar-thermal-hot-water',
+      incompatibilites: [
+        {
+          isIncompatible: hasInsufficientSolarThermalCoverage,
+          reason: 'La place disponible en toiture est insuffisante ou l’orientation n’est pas idéale.',
+          source: 'CEREMA',
+        },
+      ],
+      inconvenients: [
+        'Investissement initial important',
+        "Ne couvre que l'eau chaude sanitaire",
+        'Travaux modérés mais potentiellement complexes',
+      ],
+      label: 'Solaire thermique',
+      pertinence: 2,
+      prerequis: (situation) => [
+        ...getArchitecturalProtectionPrerequisites(situation),
+        hotWaterStoragePrerequisite,
+        ...roofSolarCollectorsPrerequisite,
+      ],
+      publicodeKey: 'solaire thermique',
+      publicodeSituation: HOUSE_PUBLICODES_SITUATION,
+      usage: 'hotWaterOnly',
     },
     {
       avantages: [
@@ -930,8 +961,6 @@ export const modesDeChauffage = {
         'Longévité des équipements',
         'Couvre à la fois chauffage et ECS',
       ],
-      coutInstallation: '20 000 à 25 000 €',
-      coutParAnPublicodeKey: 'système solaire combiné',
       description: (
         <>
           L’exposition et la surface de votre toiture pourraient être propices à l’installation d’un système solaire combiné. Les panneaux
@@ -941,7 +970,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) =>
         situation.espaceExterieur !== 'none' &&
-        hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
+        hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       gainVsGaz: -50,
@@ -958,8 +987,10 @@ export const modesDeChauffage = {
         },
         ...getArchitecturalProtectionPrerequisites(situation),
         hotWaterStoragePrerequisite,
-        roofSolarCollectorsPrerequisite,
+        ...roofSolarCollectorsPrerequisite,
       ],
+      publicodeKey: 'système solaire combiné',
+      publicodeSituation: HOUSE_PUBLICODES_SITUATION,
       usage: 'heatingAndHotWater',
     },
     {
@@ -968,16 +999,13 @@ export const modesDeChauffage = {
         "Économique à l'usage par rapport à un ballon électrique classique",
         'Solution simple à installer',
       ],
-      coutInstallation: '2 000 à 3 000 €',
-      coutParAnPublicodeKey: 'chauffe-eau thermodynamique',
-      coutParAnPublicodesSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       description: (
         <>
           Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à
           partir de l'air extérieur, avec un gain important sur votre facture par rapport à un ballon électrique classique.
         </>
       ),
-      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Individuel']) && hasEspacePrivate(situation),
+      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Indépendant']) && hasEspacePrivate(situation),
       gainClasse: 1,
       icone: 'img/icon-pac.webp',
       id: 'house-thermodynamic-water-heater',
@@ -989,6 +1017,8 @@ export const modesDeChauffage = {
       label: 'Chauffe-eau thermodynamique',
       pertinence: 2,
       prerequis: (situation) => [...getArchitecturalProtectionPrerequisites(situation), ...outdoorSinglePacPrerequisites],
+      publicodeKey: 'chauffe-eau thermodynamique',
+      publicodeSituation: { 'ecs . type de production': "'Avec équipement chauffage'" },
       usage: 'hotWaterOnly',
     },
   ],

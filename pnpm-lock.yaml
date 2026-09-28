@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@betagouv/france-chaleur-urbaine-publicodes':
-        specifier: 2.1.0
-        version: 2.1.0(publicodes@1.10.3)
+        specifier: 2.2.0
+        version: 2.2.0(publicodes@1.10.3)
       '@bprogress/next':
         specifier: ^3.2.12
         version: 3.2.12(next@16.3.5(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(@types/node@25.9.7)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -1093,8 +1093,8 @@ packages:
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
 
-  '@betagouv/france-chaleur-urbaine-publicodes@2.1.0':
-    resolution: {integrity: sha512-yXBXrqtF5O5emnj/x/zZ6MvIJ9y5osT40S8lecqNtLqTgrYZ3tg2W2S5gqSm08St+D70EPbeokAbtp7CZumE2w==}
+  '@betagouv/france-chaleur-urbaine-publicodes@2.2.0':
+    resolution: {integrity: sha512-kh9LI8/u7e7/7T9fbfFv9YevBx5iXTyrCGR5zpj7FOAq+VguLXN7n+qg3WGxO/ukSR75sK8ItRhtl6XHetKCVA==}
     engines: {node: '24', pnpm: '10'}
     peerDependencies:
       publicodes: ^1.10.1
@@ -7620,7 +7620,7 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@betagouv/france-chaleur-urbaine-publicodes@2.1.0(publicodes@1.10.3)':
+  '@betagouv/france-chaleur-urbaine-publicodes@2.2.0(publicodes@1.10.3)':
     dependencies:
       publicodes: 1.10.3
 

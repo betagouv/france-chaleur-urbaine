@@ -16,6 +16,7 @@ const formatDemandDate = (isoDate: string) => {
 };
 
 export type DemandSubmittedPanelProps = {
+  nextStepsContext?: 'heat-network' | 'renewable-advisor';
   submissionResult: DemandSubmissionResult;
 };
 
@@ -23,7 +24,7 @@ export type DemandSubmittedPanelProps = {
  * Écran affiché après soumission d'une demande de mise en relation (espace public).
  * Deux cas : demande nouvellement enregistrée, ou demande déjà déposée (même email + adresse < 30 jours).
  */
-function DemandSubmittedPanel({ submissionResult }: DemandSubmittedPanelProps) {
+function DemandSubmittedPanel({ nextStepsContext = 'heat-network', submissionResult }: DemandSubmittedPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Le panneau remplace un formulaire long dans une modale DSFR : sans ça, le scroll reste en bas (no-op hors modale).
@@ -36,7 +37,7 @@ function DemandSubmittedPanel({ submissionResult }: DemandSubmittedPanelProps) {
       {submissionResult.isExisting ? (
         <ExistingDemandPanel submissionResult={submissionResult} />
       ) : (
-        <NewDemandPanel submissionResult={submissionResult} />
+        <NewDemandPanel nextStepsContext={nextStepsContext} submissionResult={submissionResult} />
       )}
     </div>
   );
@@ -44,7 +45,13 @@ function DemandSubmittedPanel({ submissionResult }: DemandSubmittedPanelProps) {
 
 export default DemandSubmittedPanel;
 
-function NewDemandPanel({ submissionResult }: { submissionResult: DemandSubmissionResult }) {
+function NewDemandPanel({
+  nextStepsContext,
+  submissionResult,
+}: {
+  nextStepsContext: NonNullable<DemandSubmittedPanelProps['nextStepsContext']>;
+  submissionResult: DemandSubmissionResult;
+}) {
   const networkLabel =
     submissionResult.isEligible && submissionResult.networkName
       ? `${submissionResult.networkName}${submissionResult.distance != null ? ` (~${Math.round(submissionResult.distance)} m)` : ''}`
@@ -63,13 +70,7 @@ function NewDemandPanel({ submissionResult }: { submissionResult: DemandSubmissi
 
       <div className="flex flex-col gap-2">
         <p className="fr-text--xs font-bold uppercase text-(--text-mention-grey) mb-0">Prochaines étapes :</p>
-        <NextStep>
-          <strong>À proximité d'un réseau,</strong> votre demande est transmise au gestionnaire, qui vous recontactera pour étudier le
-          raccordement de votre bâtiment.
-        </NextStep>
-        <NextStep>
-          <strong>Sinon,</strong> nous informons la collectivité de votre intérêt pour le réseau de chaleur.
-        </NextStep>
+        {nextStepsContext === 'renewable-advisor' ? <RenewableAdvisorNextSteps /> : <HeatNetworkNextSteps />}
       </div>
 
       <RecapTable
@@ -105,6 +106,29 @@ function NewDemandPanel({ submissionResult }: { submissionResult: DemandSubmissi
         </div>
       </div>
     </div>
+  );
+}
+
+function HeatNetworkNextSteps() {
+  return (
+    <>
+      <NextStep>
+        <strong>À proximité d'un réseau,</strong> votre demande est transmise au gestionnaire, qui vous recontactera pour étudier le
+        raccordement de votre bâtiment.
+      </NextStep>
+      <NextStep>
+        <strong>Sinon,</strong> nous informons la collectivité de votre intérêt pour le réseau de chaleur.
+      </NextStep>
+    </>
+  );
+}
+
+function RenewableAdvisorNextSteps() {
+  return (
+    <NextStep>
+      Votre demande est transmise au conseiller chaleur renouvelable compétent sur votre territoire, qui vous recontactera pour vous
+      accompagner dans la suite de votre projet.
+    </NextStep>
   );
 }
 
