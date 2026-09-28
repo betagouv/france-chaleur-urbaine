@@ -18,8 +18,6 @@ analytics/
 - **PostHog** - Product analytics (nouvelle plateforme principale). Voir [TRACKING_PLAN.md](./TRACKING_PLAN.md) pour le plan de tracking complet, les conventions de nommage, le consentement et l'identification.
 - **Matomo** - Analytics historique (en cours de remplacement par PostHog, migration progressive). Ne pas ajouter de nouveaux events Matomo : utiliser PostHog.
 - **Google Analytics 4** - Conversion tracking
-- **LinkedIn Ads** - Professional network advertising
-- **Hotjar** - User behavior recording
 
 ## Migration Matomo → PostHog
 
@@ -49,7 +47,6 @@ export const trackingEvents = {
   'Eligibilité|Formulaire de test - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de test - Envoi'],
     google: 'XNYRCJ6h6c0ZELGIqf89',
-    linkedin: 5492674,
   },
 } as const;
 ```
@@ -71,7 +68,7 @@ function App() {
 
 ### `trackEvent(eventKey, ...payload)`
 
-Track custom events across all configured platforms (Matomo, Google, LinkedIn).
+Track custom events across all configured platforms (Matomo, Google).
 
 ```typescript
 import { trackEvent } from '@/modules/analytics/client';
@@ -153,12 +150,6 @@ NEXT_PUBLIC_MATOMO_SITE_ID=1
 # Google Analytics (optional)
 NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=GTM-XXXXXX
 NEXT_PUBLIC_GOOGLE_TAG_ID=G-XXXXXXXXXX
-
-# LinkedIn Ads (optional)
-NEXT_PUBLIC_LINKEDIN_PARTNER_ID=123456
-
-# Hotjar (optional)
-NEXT_PUBLIC_HOTJAR_ID=123456
 ```
 
 ## Development Mode
