@@ -3,6 +3,7 @@ import type { GetStaticPaths, GetStaticProps } from 'next';
 import styled from 'styled-components';
 
 import MarkdownWrapper from '@/components/MarkdownWrapper';
+import NewsletterFollow from '@/components/Newsletter/NewsletterFollow';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
@@ -91,6 +92,11 @@ const ActualitePage: React.FC<{ article: Article }> = ({ article }) => {
       <ArticleContentWrapper pt="5w" pb="10w" className="fr-container">
         <MarkdownWrapper value={content} color="black" />
       </ArticleContentWrapper>
+
+      <NewsletterFollow
+        description="Cet article vous a été utile ? Recevez les prochaines actualités de France Chaleur Urbaine par email."
+        source="actus-article"
+      />
     </SimplePage>
   );
 };

@@ -1,3 +1,4 @@
+import NewsletterLink from '@/components/Newsletter/NewsletterLink';
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
@@ -30,11 +31,14 @@ const LastArticles = () => {
             </Box>
           ))}
         </div>
-        <div>
+        <div className="flex flex-wrap items-center gap-4">
           <Link href="/actus" className="fr-link">
             Voir toutes les actus
             <Icon name="ri-arrow-right-line" />
           </Link>
+          <NewsletterLink source="bloc-actus" variant="secondary">
+            Recevoir la newsletter
+          </NewsletterLink>
         </div>
       </RemainingArticles>
     </Articles>

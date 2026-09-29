@@ -227,6 +227,12 @@ Ces événements n'utilisent pas `posthog-js` dans le widget : le navigateur app
 | `pro:tool_cta_clicked` | `tool_name` | Clic sur un outil professionnel |
 | `tools:tool_accessed` | `tool_name` | Accès à un outil depuis la page outils |
 
+### Newsletter
+
+| Événement | Propriétés | Description |
+|---|---|---|
+| `newsletter:signup_link_clicked` | `source` (`collectivites`, `professionnels`, `webinaires`, `actus-intro`, `actus-article`, `bloc-actus`, `accueil`, `footer`) | Clic vers la page d'inscription ADEME à la newsletter (nouvel onglet) |
+
 ---
 
 ## Funnels clés à configurer dans PostHog
@@ -296,6 +302,7 @@ fcr_landing:simulation_started
 - Top contenus consultés (`content:click` par `content_name`).
 - Top CTAs cliqués (`link:click` par `link_name`).
 - Navigation principale (`nav:menu_item_clicked` par `item` et `menu_level`).
+- Points d'entrée newsletter (`newsletter:signup_link_clicked` par `source`).
 
 ### Chaleur renouvelable
 

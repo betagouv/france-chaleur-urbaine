@@ -3,6 +3,7 @@ import Tag from '@codegouvfr/react-dsfr/Tag';
 import { parseAsArrayOf, parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { useMemo } from 'react';
 
+import NewsletterLink from '@/components/Newsletter/NewsletterLink';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Card from '@/components/ui/Card';
@@ -55,7 +56,8 @@ const ActualitesPage = () => {
         <HeroSubtitle>
           France Chaleur Urbaine est un service en évolution permanente&nbsp;!
           <br />
-          Retrouvez ici toutes nos actualités.
+          Retrouvez ici toutes nos actualités. Pour ne rien manquer, recevez-les directement par email en vous{' '}
+          <NewsletterLink source="actus-intro">abonnant à notre newsletter</NewsletterLink>.
         </HeroSubtitle>
       </Hero>
 
