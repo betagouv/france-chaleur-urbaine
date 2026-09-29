@@ -10,6 +10,7 @@ import styled, { css } from 'styled-components';
 
 import { adminPageGroups, adminPages } from '@/components/Admin/adminPages';
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
+import { getNewsletterLinkTitle, NEWSLETTER_SIGNUP_URL } from '@/components/Newsletter/constants';
 import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
@@ -672,6 +673,16 @@ const PageFooter = () => (
           onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'contact' }),
         },
         text: 'Contact',
+      },
+      {
+        linkProps: {
+          href: NEWSLETTER_SIGNUP_URL,
+          onClick: () => trackPostHogEvent('newsletter:signup_link_clicked', { source: 'footer' }),
+          rel: 'noopener noreferrer',
+          target: '_blank',
+          title: getNewsletterLinkTitle('Newsletter'),
+        },
+        text: 'Newsletter',
       },
       {
         linkProps: {

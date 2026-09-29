@@ -1,6 +1,5 @@
 export enum Airtable {
   CONTACT = 'FCU - Formulaire de contact',
-  NEWSLETTER = 'FCU - Newsletter',
   CONTRIBUTION = 'FCU - Contribution',
   NETWORKS = 'FCU - Réseaux de chaleur',
   COLD_NETWORKS = 'FCU - Réseaux de froid',
