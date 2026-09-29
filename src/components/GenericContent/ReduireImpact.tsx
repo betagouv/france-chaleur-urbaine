@@ -17,10 +17,13 @@ const ReduireImpact = () => {
       </Text>
       <Text mt="3w">
         Pour réduire l’impact écologique d’une copropriété et ses factures d’énergie, la rénovation thermique est le premier réflexe à
-        avoir. Le <Link href="/ressources/avantages#contenu">remplacement d’un chauffage collectif au gaz ou fioul</Link>, par un
-        raccordement à un réseau de chaleur permet également d’y contribuer. Alimentés majoritairement par des énergies renouvelables et de
-        récupération locales, les réseaux de chaleur émettent deux fois moins de gaz à effet de serre qu’un chauffage gaz ou fioul et
-        offrent des prix stables et compétitifs.
+        avoir. Le{' '}
+        <Link href="/ressources/reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul#contenu">
+          remplacement d’un chauffage collectif au gaz ou fioul
+        </Link>
+        , par un raccordement à un réseau de chaleur permet également d’y contribuer. Alimentés majoritairement par des énergies
+        renouvelables et de récupération locales, les réseaux de chaleur émettent deux fois moins de gaz à effet de serre qu’un chauffage
+        gaz ou fioul et offrent des prix stables et compétitifs.
       </Text>
       <Text mt="6w">
         Des réseaux de chaleur existent dans la plupart des grandes villes, par exemple <Link href="/villes/paris">Paris</Link>,{' '}

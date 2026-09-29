@@ -1,102 +1,89 @@
 import Card from '@codegouvfr/react-dsfr/Card';
 import type { ReactNode } from 'react';
 
-import { coldNetworks, growths, issues, otherHeatingSystem, understandings } from '@/components/Ressources/config';
+import { coldNetworks, issues, otherHeatingSystem, understandings } from '@/components/Ressources/config';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Section, { SectionContent, SectionTitle } from '@/components/ui/Section';
 
-const articlesEnjeuxReseauxDeChaleur: ArticleItemProps[] = Object.entries(issues).map(([key, article]) => ({
-  ...article,
-  slug: key,
-}));
+const articlesBySlug = {
+  ...issues,
+  ...understandings,
+  ...coldNetworks,
+  ...otherHeatingSystem,
+};
 
-const articlesComprendreReseauxDeChaleur: ArticleItemProps[] = Object.entries(understandings).map(([key, article]) => ({
-  ...article,
-  slug: key,
-}));
+const articleSections = [
+  {
+    slugs: ['reseau', 'energies-vertes', 'pacImmeubleUsage'],
+    title: '1. Comprendre les différentes solutions de chauffage écologique',
+    variant: undefined,
+  },
+  {
+    slugs: [
+      'le-reseau-de-chaleur-un-mode-de-chauffage-aux-multiples-atouts',
+      'reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul',
+      'avantages-pac',
+      'choix-pac',
+      'qu-est-ce-qui-determine-la-faisabilite-du-raccordement-aux-reseaux-de-chaleur',
+      'obligations-raccordement',
+      'qu-est-ce-qu-un-reseau-de-chaleur-classe',
+    ],
+    title: '2. Choisir la solution adaptée à mon immeuble',
+    variant: 'light',
+  },
+  {
+    slugs: [
+      'coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur',
+      'combien-coute-un-raccordement-a-un-reseau-de-chaleur',
+      'financer-le-raccordement-de-sa-copropriete-a-un-reseau-de-chaleur-dans-le-cadre-d-une-renovation-globale',
+      'obligations-copropriété',
+      'comprendre-la-facture-de-chauffage-d-une-copropriete-raccordee-a-un-reseau-de-chaleur',
+      'valoriser-un-raccordement-a-un-reseau-de-chaleur-dans-le-cadre-du-dispositif-eco-energie-tertiaire',
+    ],
+    title: '3. Financer et piloter mon projet',
+    variant: undefined,
+  },
+  {
+    slugs: ['reseau-de-froid'],
+    title: '4. Rafraîchir mon immeuble',
+    variant: 'light',
+  },
+] as const;
 
-const articlesCroissance: ArticleItemProps[] = Object.entries(growths).map(([key, article]) => ({
-  ...article,
-  slug: key,
-}));
+type ArticleSlug = (typeof articleSections)[number]['slugs'][number];
 
-const articlesReseauxDeFroid: ArticleItemProps[] = Object.entries(coldNetworks).map(([key, article]) => ({
-  ...article,
-  slug: key,
-}));
-const articlesAutresModeChauffage: ArticleItemProps[] = Object.entries(otherHeatingSystem).map(([key, article]) => ({
-  ...article,
-  slug: key,
-}));
+const getSectionArticles = (slugs: readonly ArticleSlug[]): ArticleItemProps[] =>
+  slugs.map((slug) => ({
+    ...articlesBySlug[slug],
+    slug,
+  }));
 
 const ArticlesPage = () => {
   return (
     <SimplePage
-      title="Nos articles sur la chaleur urbaine"
+      title="Nos articles sur les énergies renouvelables"
       description="Retrouvez les réponses à toutes vos questions sur les réseaux de chaleur, de froid et autres solutions de chauffage écologiques."
     >
       <Hero variant="ressource" image="/img/ressources_header.webp" imagePosition="right" imageType="inline">
-        <HeroTitle>Nos articles sur le chauffage urbain</HeroTitle>
+        <HeroTitle>Nos articles sur les énergies renouvelables</HeroTitle>
         <HeroSubtitle>
           Retrouvez les réponses à toutes vos questions sur les réseaux de chaleur, de froid et autres solutions de chauffage écologiques.
         </HeroSubtitle>
       </Hero>
 
-      <Section>
-        <SectionTitle>Les enjeux de la transition énergétique avec les réseaux de chaleur</SectionTitle>
-        <SectionContent>
-          <div className="fr-grid-row fr-grid-row--gutters">
-            {articlesEnjeuxReseauxDeChaleur.map((article, index) => (
-              <ArticleItem {...article} key={index} />
-            ))}
-          </div>
-        </SectionContent>
-      </Section>
-
-      <Section variant="light">
-        <SectionTitle>Les réseaux de chaleur en pratique&nbsp;: tout comprendre pour se raccorder</SectionTitle>
-        <SectionContent>
-          <div className="fr-grid-row fr-grid-row--gutters">
-            {articlesComprendreReseauxDeChaleur.map((article, index) => (
-              <ArticleItem {...article} key={index} />
-            ))}
-          </div>
-        </SectionContent>
-      </Section>
-
-      <Section>
-        <SectionTitle>Une filière en pleine croissance</SectionTitle>
-        <SectionContent>
-          <div className="fr-grid-row fr-grid-row--gutters">
-            {articlesCroissance.map((article, index) => (
-              <ArticleItem {...article} key={index} />
-            ))}
-          </div>
-        </SectionContent>
-      </Section>
-
-      <Section variant="light">
-        <SectionTitle>Autre modes de chauffage écologiques</SectionTitle>
-        <SectionContent>
-          <div className="fr-grid-row fr-grid-row--gutters">
-            {articlesAutresModeChauffage.map((article, index) => (
-              <ArticleItem {...article} key={index} />
-            ))}
-          </div>
-        </SectionContent>
-      </Section>
-
-      <Section>
-        <SectionTitle>Les réseaux de froid&nbsp;: un enjeu pour l'avenir</SectionTitle>
-        <SectionContent>
-          <div className="fr-grid-row fr-grid-row--gutters">
-            {articlesReseauxDeFroid.map((article, index) => (
-              <ArticleItem {...article} key={index} />
-            ))}
-          </div>
-        </SectionContent>
-      </Section>
+      {articleSections.map((section) => (
+        <Section key={section.title} variant={section.variant}>
+          <SectionTitle>{section.title}</SectionTitle>
+          <SectionContent>
+            <div className="fr-grid-row fr-grid-row--gutters">
+              {getSectionArticles(section.slugs).map((article) => (
+                <ArticleItem {...article} key={article.slug} />
+              ))}
+            </div>
+          </SectionContent>
+        </Section>
+      ))}
     </SimplePage>
   );
 };

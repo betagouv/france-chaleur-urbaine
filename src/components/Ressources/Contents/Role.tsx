@@ -65,7 +65,9 @@ const contents = [
       <>
         Mise en place du{' '}
         <b>
-          <Link href="/ressources/aides#contenu">coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires</Link>
+          <Link href="/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur#contenu">
+            coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires
+          </Link>
         </b>{' '}
         (aides financières conséquentes pour le raccordement de ces bâtiments aux réseaux de chaleur, attribuées dans le cadre du dispositif
         des certificats d’économies d’énergie).
