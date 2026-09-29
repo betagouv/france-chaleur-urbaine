@@ -5,6 +5,7 @@ import IframeIntegration from '@/components/GenericContent/IframeIntegration';
 import ObligationRaccordement from '@/components/GenericContent/ObligationRaccordement';
 import ReduireImpact from '@/components/GenericContent/ReduireImpact';
 import HeadSliceForm from '@/components/HeadSliceForm';
+import NewsletterFollow from '@/components/Newsletter/NewsletterFollow';
 import Partners from '@/components/Partners/Partners';
 import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
@@ -256,6 +257,12 @@ const Professionnels = () => {
       <Box py="10w">
         <IframeIntegration pageFrom="pro" />
       </Box>
+
+      <NewsletterFollow
+        title="Restez informé des actualités de France Chaleur Urbaine"
+        description="Test d'adresses en masse, comparateur de coûts, données des réseaux actualisées, évolutions réglementaires : la newsletter France Chaleur Urbaine s'adresse aux bureaux d'études, bailleurs et gestionnaires de bâtiments."
+        source="professionnels"
+      />
 
       <Box py="10w" backgroundColor="blue-france-975-75" id="articles">
         <Box className="fr-container">

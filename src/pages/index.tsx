@@ -5,6 +5,7 @@ import LastArticles from '@/components/Articles/LastArticles';
 import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
 import HeadSliceForm from '@/components/HeadSliceForm';
 import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
+import NewsletterLink from '@/components/Newsletter/NewsletterLink';
 import Partners from '@/components/Partners/Partners';
 import { issues, understandings } from '@/components/Ressources/config';
 import Understanding from '@/components/Ressources/Understanding';
@@ -449,7 +450,8 @@ Ce système contribue à la transition énergétique des villes en mutualisant l
           </p>
           <p>
             Vous êtes professionnels (bureau d'étude, bailleur social, gestionnaire de bâtiments tertiaires…) ? Rendez-vous sur notre{' '}
-            <Link href="/professionnels">page dédiée</Link>
+            <Link href="/professionnels">page dédiée</Link> et{' '}
+            <NewsletterLink source="accueil">abonnez-vous à notre newsletter</NewsletterLink>.
           </p>
         </SectionContent>
       </Section>
