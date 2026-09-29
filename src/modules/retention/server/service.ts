@@ -96,7 +96,7 @@ const previewRule = async (rule: RetentionRule): Promise<RetentionPreview> => {
   }
 };
 
-/** The rows each retention rule would archive today (full list, the admin reviews it before confirming). */
+/** The rows each retention rule would process today (full list, the admin reviews it before confirming). */
 export const previewRetention = async (): Promise<RetentionPreview[]> => Promise.all(retentionRules.map(previewRule));
 
 const applyRule = async (rule: RetentionRule): Promise<number> => {
@@ -152,7 +152,7 @@ const applyRule = async (rule: RetentionRule): Promise<number> => {
 };
 
 /**
- * Archives the rows matching a retention rule and records the operation in the audit trail.
+ * Applies a retention rule (deletion or anonymization of the matching rows) and records the operation in the audit trail.
  * Manual and admin-driven on purpose: no cron deletes data silently.
  */
 export const applyRetentionRule = async (rule: RetentionRule, adminUserId: string): Promise<{ rule: RetentionRule; count: number }> => {

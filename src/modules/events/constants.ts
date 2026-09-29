@@ -79,7 +79,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   conversion_source_archived: "Archivage d'intégration iframe",
   conversion_source_created: "Création d'intégration iframe",
   conversion_source_updated: "Mise à jour d'intégration iframe",
-  data_retention_applied: 'Archivage de données (conservation)',
+  data_retention_applied: "Application d'une règle de conservation",
   demand_assignment_change_request_cancelled: 'Annulation de demande de réaffectation',
   demand_assignment_change_request_rejected: 'Rejet de demande de réaffectation',
   demand_assignment_change_requested: 'Demande de réaffectation',

@@ -28,7 +28,7 @@ const seedDemand = (id: string, values: Record<string, unknown>, extra: { delete
 describe('retention', () => {
   beforeEach(async () => {
     await cleanDatabase();
-    // the admin must exist: archiving events reference their author
+    // the admin must exist: retention events reference their author
     await seedTableUser([
       { ...testUsers.admin },
       { created_at: monthsAgo(4), email: 'pending-old@test.local', id: uuid(1), status: 'pending_email_confirmation' },
@@ -94,8 +94,8 @@ describe('retention', () => {
           await expect(call()).rejects.toMatchObject(forbiddenError);
         }
       });
-      it(`archive: ${user?.role ?? 'anonymous'} → ${allowed ? 'allowed' : 'forbidden'}`, async () => {
-        const call = () => createTestCaller(user).retention.archive({ rule: 'pending_accounts' });
+      it(`run: ${user?.role ?? 'anonymous'} → ${allowed ? 'allowed' : 'forbidden'}`, async () => {
+        const call = () => createTestCaller(user).retention.run({ rule: 'pending_accounts' });
         if (allowed) {
           await expect(call()).resolves.toStrictEqual({ count: 1, rule: 'pending_accounts' });
         } else {
@@ -120,7 +120,7 @@ describe('retention', () => {
   });
 
   it('deletes never-activated accounts past the delay', async () => {
-    const result = await createTestCaller(testUsers.admin).retention.archive({ rule: 'pending_accounts' });
+    const result = await createTestCaller(testUsers.admin).retention.run({ rule: 'pending_accounts' });
 
     const remaining = await kdb.selectFrom('users').select('email').where('status', '=', 'pending_email_confirmation').execute();
     expect(result).toStrictEqual({ count: 1, rule: 'pending_accounts' });
@@ -128,7 +128,7 @@ describe('retention', () => {
   });
 
   it('deactivates and anonymizes inactive accounts, keeps admins and active accounts', async () => {
-    const result = await createTestCaller(testUsers.admin).retention.archive({ rule: 'inactive_accounts' });
+    const result = await createTestCaller(testUsers.admin).retention.run({ rule: 'inactive_accounts' });
 
     const users = await kdb
       .selectFrom('users')
@@ -154,7 +154,7 @@ describe('retention', () => {
   });
 
   it('anonymizes closed demands past the delay and leaves open or recent ones untouched', async () => {
-    const result = await createTestCaller(testUsers.admin).retention.archive({ rule: 'closed_demands' });
+    const result = await createTestCaller(testUsers.admin).retention.run({ rule: 'closed_demands' });
 
     const rows = await kdb.selectFrom('demands').select(['id', 'legacy_values']).orderBy('id').execute();
     expect(result).toStrictEqual({ count: 3, rule: 'closed_demands' });

@@ -1,10 +1,10 @@
 # Conservation des données
 
-Cette page décrit comment les durées de conservation annoncées dans la politique de confidentialité sont appliquées dans l'application. L'application est **manuelle** : un administrateur ouvre la page [Conservation des données](/admin/retention), voit ce que chaque règle archiverait aujourd'hui (nombre et aperçu des plus anciens), puis confirme. Aucun cron ne supprime de données.
+Cette page décrit comment les durées de conservation annoncées dans la politique de confidentialité sont appliquées dans l'application. L'application est **manuelle** : un administrateur ouvre la page [Conservation des données](/admin/retention), voit ce que chaque règle traiterait aujourd'hui (suppression ou anonymisation) (nombre et aperçu des plus anciens), puis confirme. Aucun cron ne supprime de données.
 
 ## Les règles
 
-| Règle | Concerne | Durée | Ce que fait l'archivage |
+| Règle | Concerne | Durée | Ce que fait la règle |
 | --- | --- | --- | --- |
 | Comptes jamais activés | Comptes dont l'email n'a jamais été confirmé | <Rule id="retentionAccountsPendingMonths" /> après la création | Suppression du compte |
 | Comptes inactifs | Comptes valides sans connexion (administrateurs exclus) | <Rule id="retentionAccountsInactiveYears" /> après la dernière connexion, ou la création si jamais connecté | Désactivation et anonymisation : email, identité, téléphone, signature effacés, mot de passe invalidé. Les demandes rattachées restent liées au compte anonymisé |
@@ -14,4 +14,4 @@ Ce qui n'est pas couvert par cette page : le formulaire de contact (formulaire d
 
 ## Traçabilité
 
-Chaque archivage émet un événement [« Archivage de données (conservation) »](/admin/events?types=data_retention_applied) avec la règle et le nombre d'éléments traités. Un élément anonymisé est reconnaissable à son email commençant par `anonymise-` et n'est plus proposé à l'archivage.
+Chaque application d'une règle émet un événement [« Application d'une règle de conservation »](/admin/events?types=data_retention_applied) avec la règle et le nombre d'éléments traités. Un élément anonymisé est reconnaissable à son email commençant par `anonymise-` et n'est plus proposé à l'archivage.

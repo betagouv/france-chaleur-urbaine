@@ -103,8 +103,9 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   ),
   data_retention_applied: (event) => (
     <span>
-      a archivé <strong>{event.data.count}</strong> élément(s) au titre de la conservation des données (règle{' '}
-      <strong>{retentionRuleDefinitions[event.data.rule as RetentionRule]?.title ?? event.data.rule}</strong>)
+      a appliqué la règle de conservation{' '}
+      <strong>{retentionRuleDefinitions[event.data.rule as RetentionRule]?.title ?? event.data.rule}</strong> :{' '}
+      <strong>{event.data.count}</strong> élément(s) traité(s)
     </span>
   ),
   demand_assignment_change_request_cancelled: (event, updateFilters) => (

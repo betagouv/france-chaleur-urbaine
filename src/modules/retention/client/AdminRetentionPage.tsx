@@ -17,20 +17,20 @@ type RetentionPreview = RouterOutput['retention']['preview'][number];
 type RetentionPreviewItem = RetentionPreview['items'][number];
 
 /**
- * Admin page applying the data retention rules: for each rule, the rows that would be archived today,
- * the field-level effect of the archiving, then a manual, confirmed and audited action.
+ * Admin page applying the data retention rules: for each rule, the rows concerned today,
+ * the field-level effect of the rule (deletion or anonymization), then a manual, confirmed and audited action.
  */
 const AdminRetentionPage = () => {
   const [selectedRule, setSelectedRule] = useState<RetentionRule | null>(null);
   const utils = trpc.useUtils();
   const { data: previews, isLoading } = trpc.retention.preview.useQuery();
-  const archiveRule = trpc.retention.archive.useMutation();
+  const runRule = trpc.retention.run.useMutation();
 
   const selectedPreview = previews?.find((preview) => preview.rule === selectedRule);
 
-  const handleArchive = toastErrors(async (rule: RetentionRule) => {
-    const result = await archiveRule.mutateAsync({ rule });
-    notify('success', `${result.count} élément(s) archivé(s) : ${retentionRuleDefinitions[rule].title}`);
+  const handleRun = toastErrors(async (rule: RetentionRule) => {
+    const result = await runRule.mutateAsync({ rule });
+    notify('success', `${result.count} élément(s) traité(s) : ${retentionRuleDefinitions[rule].title}`);
     setSelectedRule(null);
     await utils.retention.preview.invalidate();
   });
@@ -42,7 +42,8 @@ const AdminRetentionPage = () => {
       </Heading>
       <Text className="mb-6">
         Application manuelle des durées de conservation publiées dans la politique de confidentialité. Chaque règle affiche ce qu'elle
-        archiverait aujourd'hui ; l'archivage est irréversible et tracé dans l'activité du site.
+        traiterait aujourd'hui (suppression ou anonymisation selon la règle) ; l'opération est irréversible et tracée dans l'activité du
+        site.
       </Text>
 
       <div className="flex flex-col gap-6">
@@ -63,7 +64,7 @@ const AdminRetentionPage = () => {
       </div>
 
       <Dialog
-        title={selectedRule ? `Archiver : ${retentionRuleDefinitions[selectedRule].title}` : ''}
+        title={selectedRule ? `Appliquer : ${retentionRuleDefinitions[selectedRule].title}` : ''}
         size="xl"
         open={!!selectedRule}
         onOpenChange={(open) => !open && setSelectedRule(null)}
@@ -73,7 +74,7 @@ const AdminRetentionPage = () => {
             definition={retentionRuleDefinitions[selectedRule]}
             preview={selectedPreview}
             onCancel={() => setSelectedRule(null)}
-            onConfirm={() => handleArchive(selectedRule)}
+            onConfirm={() => handleRun(selectedRule)}
           />
         )}
       </Dialog>
@@ -106,9 +107,9 @@ function RetentionRuleCard({ definition, duration, loading, preview, onOpen }: R
         Durée : {duration}. {definition.action}.
       </Text>
       <div className="flex flex-wrap items-center gap-4">
-        <span className="font-bold">{loading ? 'Calcul…' : `${count} élément(s) à archiver`}</span>
+        <span className="font-bold">{loading ? 'Calcul…' : `${count} élément(s) concerné(s)`}</span>
         <Button size="small" priority="secondary" disabled={loading || count === 0} onClick={onOpen}>
-          Prévisualiser et archiver
+          Prévisualiser et appliquer
         </Button>
       </div>
     </div>
@@ -148,7 +149,7 @@ function RetentionConfirmation({ definition, preview, onCancel, onConfirm }: Ret
         <thead>
           <tr>
             <th className="border border-(--border-default-grey) bg-(--background-alt-grey) px-3 py-2 text-left">Champ</th>
-            <th className="border border-(--border-default-grey) bg-(--background-alt-grey) px-3 py-2 text-left">Après archivage</th>
+            <th className="border border-(--border-default-grey) bg-(--background-alt-grey) px-3 py-2 text-left">Après application</th>
           </tr>
         </thead>
         <tbody>
@@ -177,7 +178,7 @@ function RetentionConfirmation({ definition, preview, onCancel, onConfirm }: Ret
           Annuler
         </Button>
         <AsyncButton iconId="ri-delete-bin-line" onClick={onConfirm}>
-          Archiver {preview.count} élément(s)
+          Appliquer à {preview.count} élément(s)
         </AsyncButton>
       </div>
     </div>

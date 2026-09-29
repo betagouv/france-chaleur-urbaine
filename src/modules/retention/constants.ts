@@ -6,12 +6,12 @@ export type RetentionRule = (typeof retentionRules)[number];
 export type RetentionTransformation = { field: string; after: string };
 
 export type RetentionRuleDefinition = {
-  /** What the archiving does to the matching rows. */
+  /** What the rule does to the matching rows. */
   action: string;
   description: string;
   ruleId: keyof typeof businessRules;
   title: string;
-  /** Field-level effect of the archiving, shown before confirmation. */
+  /** Field-level effect of the rule, shown before confirmation. */
   transformations: RetentionTransformation[];
 };
 

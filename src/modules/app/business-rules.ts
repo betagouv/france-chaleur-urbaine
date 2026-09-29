@@ -194,20 +194,22 @@ export const businessRules = {
     value: 3,
   },
   retentionAccountsInactiveYears: {
-    description: "Sans connexion pendant cette durée, un compte (hors administrateurs) est désactivé et anonymisé lors de l'archivage.",
+    description:
+      "Sans connexion pendant cette durée, un compte (hors administrateurs) est désactivé et anonymisé lors de l'application des règles de conservation.",
     display: '2 ans',
     label: 'Conservation des comptes inactifs',
     value: 2,
   },
   retentionAccountsPendingMonths: {
-    description: "Un compte dont l'email n'a jamais été confirmé est supprimé passé ce délai lors de l'archivage.",
+    description:
+      "Un compte dont l'email n'a jamais été confirmé est supprimé passé ce délai lors de l'application des règles de conservation.",
     display: '3 mois',
     label: 'Conservation des comptes non activés',
     value: 3,
   },
   retentionDemandsClosedYears: {
     description:
-      "Passé ce délai après leur clôture (réalisée, non réalisable, abandonnée ou supprimée), les demandes sont anonymisées lors de l'archivage : identité, coordonnées et commentaires effacés, adresse et statistiques conservées.",
+      "Passé ce délai après leur clôture (réalisée, non réalisable, abandonnée ou supprimée), les demandes sont anonymisées lors de l'application des règles de conservation : identité, coordonnées et commentaires effacés, adresse et statistiques conservées.",
     display: '3 ans',
     label: 'Conservation des demandes closes',
     value: 3,
