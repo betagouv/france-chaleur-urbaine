@@ -83,6 +83,19 @@ async function seedDepartmentPermission(userId: string, departmentCode: string) 
     .execute();
 }
 
+async function seedRnicLookupBuilding() {
+  await sql`
+    INSERT INTO bdnb_batenr (adresse, batiment_construction_id, batiment_groupe_id, geom)
+    VALUES (
+      '10 rue du test 13001 Marseille',
+      'CONSTRUCTION-123',
+      'GROUPE-RNIC-123',
+      ST_Multi(ST_Buffer(ST_Transform(ST_SetSRID(ST_MakePoint(5.3698, 43.2965), 4326), 2154), 5))
+    )
+    ON CONFLICT DO NOTHING
+  `.execute(kdb);
+}
+
 async function seedOriginDemand(status = DEMANDE_STATUS.UNREALISABLE) {
   return await kdb
     .insertInto('demands')
@@ -151,6 +164,7 @@ describe('batEnrRouter', () => {
     await cleanDatabase();
     await seedCcrtExperimentationTerritory();
     vi.clearAllMocks();
+    mockedFetchJSON.mockReset();
   });
 
   describe('batEnr.createDemandeChaleurRenouvelable', () => {
@@ -201,6 +215,7 @@ describe('batEnrRouter', () => {
       expect(createdDemand.legacy_values[fcrLegacyValueKeys.simulationUrl]).toBe(
         '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif'
       );
+      expect(mockedFetchJSON).toHaveBeenCalledTimes(0);
     });
 
     it('oriente vers France Rénov hors expérimentation quand le réseau de chaleur n’est pas éligible', async () => {
@@ -390,6 +405,18 @@ describe('batEnrRouter', () => {
       ]);
       await Promise.all([seedDepartmentPermission(ccrtMatchingId, '13'), seedDepartmentPermission(ccrtOtherDepartmentId, '75')]);
 
+      await seedRnicLookupBuilding();
+      mockedFetchJSON.mockResolvedValue({
+        data: [
+          {
+            latitude: 43.2965,
+            longitude: 5.3698,
+            nom_usage_copropriete: 'COPRO TEST',
+            siret_representant_legal: '12345678900012',
+          },
+        ],
+      });
+
       const input = buildCcrtExperimentationDemandInput({
         heatNetworkEligibility: {
           distance: 450,
@@ -413,6 +440,8 @@ describe('batEnrRouter', () => {
           'housing_type',
           'is_public_advisor_selected',
           'last_name',
+          'rnic_nom_copropriete',
+          'rnic_siret_representant_legal',
           'simulation_url',
           'status',
           'validated',
@@ -437,6 +466,8 @@ describe('batEnrRouter', () => {
           housing_type: 'immeuble_chauffage_collectif',
           is_public_advisor_selected: false,
           last_name: 'Test',
+          rnic_nom_copropriete: 'COPRO TEST',
+          rnic_siret_representant_legal: '12345678900012',
           simulation_url: '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif',
           status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
           validated: false,
@@ -447,6 +478,50 @@ describe('batEnrRouter', () => {
           id: result.id,
         },
       });
+      expect(sentEmailTemplate).toHaveBeenCalledTimes(0);
+    });
+
+    it('enregistre la demande chaleur renouvelable même si le RNIC est indisponible', async () => {
+      await seedRnicLookupBuilding();
+      mockedFetchJSON.mockRejectedValue(new Error('RNIC unavailable'));
+
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
+        buildCcrtExperimentationDemandInput({
+          heatNetworkEligibility: {
+            distance: 450,
+            inPDP: false,
+            isEligible: false,
+          },
+        })
+      );
+
+      const createdDemandeChaleurRenouvelable = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['address', 'email', 'housing_count', 'rnic_nom_copropriete', 'rnic_siret_representant_legal', 'simulation_url'])
+        .where('id', '=', result.id ?? '')
+        .executeTakeFirstOrThrow();
+      const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
+
+      expect({
+        createdDemandeChaleurRenouvelable,
+        createdDemands,
+        result,
+      }).toStrictEqual({
+        createdDemandeChaleurRenouvelable: {
+          address: '10 rue du test 13001 Marseille',
+          email: 'contact@example.com',
+          housing_count: 18,
+          rnic_nom_copropriete: null,
+          rnic_siret_representant_legal: null,
+          simulation_url: '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif',
+        },
+        createdDemands: [],
+        result: {
+          demandSubmissionResult: null,
+          id: result.id,
+        },
+      });
+      expect(mockedFetchJSON).toHaveBeenCalledTimes(1);
       expect(sentEmailTemplate).toHaveBeenCalledTimes(0);
     });
 
@@ -654,6 +729,8 @@ describe('batEnrRouter', () => {
             created_at: newerDate.toISOString(),
             id: newerDemand.id,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+            rnic_nom_copropriete: null,
+            rnic_siret_representant_legal: null,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             updated_at: newerDate.toISOString(),
             validated: false,
@@ -664,6 +741,8 @@ describe('batEnrRouter', () => {
             created_at: olderDate.toISOString(),
             id: olderDemand.id,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+            rnic_nom_copropriete: null,
+            rnic_siret_representant_legal: null,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             updated_at: olderDate.toISOString(),
             validated: false,
@@ -762,6 +841,8 @@ describe('batEnrRouter', () => {
             radiator_type: null,
             refusal_period: null,
             refusal_reason: null,
+            rnic_nom_copropriete: null,
+            rnic_siret_representant_legal: null,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             surface_area: null,
             updated_at: matchingDate.toISOString(),

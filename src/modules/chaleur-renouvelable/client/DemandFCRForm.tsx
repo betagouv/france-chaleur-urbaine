@@ -712,7 +712,9 @@ function HeatNetworkDemandForm({
         </>
       )}
       <Dialog title="" open={isSubmissionDialogOpen && submissionResult !== null} size="lg" onOpenChange={setIsSubmissionDialogOpen}>
-        {submissionResult && <DemandSubmittedPanel nextStepsContext={nextStepsContext} submissionResult={submissionResult} />}
+        {submissionResult && (
+          <DemandSubmittedPanel nextStepsContext={nextStepsContext} showEmailNotice={false} submissionResult={submissionResult} />
+        )}
       </Dialog>
     </section>
   );
