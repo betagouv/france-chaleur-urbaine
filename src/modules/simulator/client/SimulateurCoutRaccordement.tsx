@@ -98,7 +98,8 @@ const SimulateurCoutRaccordement = (props: { embedded?: boolean }) => {
             {props.embedded && (
               <>
                 {' '}
-                En savoir plus sur notre <Link href="/ressources/cout-raccordement#contenu">article dédié</Link>.
+                En savoir plus sur notre{' '}
+                <Link href="/ressources/combien-coute-un-raccordement-a-un-reseau-de-chaleur#contenu">article dédié</Link>.
               </>
             )}
           </Text>

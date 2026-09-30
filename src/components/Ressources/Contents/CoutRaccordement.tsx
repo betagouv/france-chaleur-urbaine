@@ -149,9 +149,11 @@ const CoutRaccordement = () => {
       </ul>
       <p>
         A noter que le coup de pouce{' '}
-        <Link href="/ressources/aides#contenu">"Chauffage des bâtiments résidentiels collectifs et tertiaires”</Link> permet d’obtenir des
-        aides financières conséquentes pour se raccorder. Le coût du raccordement peut ainsi être réduit à quelques centaines d’euros par
-        logement.
+        <Link href="/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur#contenu">
+          "Chauffage des bâtiments résidentiels collectifs et tertiaires”
+        </Link>{' '}
+        permet d’obtenir des aides financières conséquentes pour se raccorder. Le coût du raccordement peut ainsi être réduit à quelques
+        centaines d’euros par logement.
       </p>
       <SimulateurCoutRaccordement />
       <Heading size="h3" color="blue-france" mt="4w">

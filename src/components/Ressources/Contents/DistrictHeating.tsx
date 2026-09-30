@@ -90,7 +90,10 @@ const DistrictHeating = ({
           Le chauffage urbain permet de mobiliser des énergies renouvelables et de récupération locales. En 2023, les réseaux de chaleur
           français sont alimentés à plus de 66 % par celles-ci, un pourcentage qui ne cesse d'augmenter. Le recours à ces énergies locales
           et décarbonées permet au chauffage urbain d'afficher des{' '}
-          <Link href="/ressources/avantages#contenu">atouts de natures différentes</Link> :
+          <Link href="/ressources/reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul#contenu">
+            atouts de natures différentes
+          </Link>{' '}
+          :
           <ul>
             <br />
             <li>
@@ -111,8 +114,9 @@ const DistrictHeating = ({
               plus économique pour les immeubles de logements collectifs et tertiaires, loin devant toutes les autres solutions de
               chauffage. Enfin, les aides financières mises en place récemment au titre du « Coup de pouce chauffage des bâtiments
               résidentiels collectifs et tertiaires » permettent de réduire significativement le coût des travaux pour le raccordement au
-              chauffage urbain. Un <Link href="/ressources/cout-raccordement">simulateur des coûts de raccordement</Link>, avant et après
-              déduction du coup de pouce, et un{' '}
+              chauffage urbain. Un{' '}
+              <Link href="/ressources/combien-coute-un-raccordement-a-un-reseau-de-chaleur">simulateur des coûts de raccordement</Link>,
+              avant et après déduction du coup de pouce, et un{' '}
               <Link href="/comparateur-couts-performances">comparateur des coûts et émissions de CO2 des modes de chauffage</Link> sont
               disponibles sur France Chaleur Urbaine.
             </li>
@@ -142,7 +146,9 @@ const DistrictHeating = ({
       <Subtitle ref={chargeRef}>Qui est en charge du chauffage urbain ?</Subtitle>
       Les réseaux de chaleur sont le plus souvent créés{' '}
       <b>
-        <Link href="/ressources/acteurs#contenu">à l’initiative de collectivités</Link>
+        <Link href="/ressources/quels-sont-les-principaux-acteurs-de-la-filiere-des-reseaux-de-chaleur#contenu">
+          à l’initiative de collectivités
+        </Link>
       </b>
       , pour chauffer les bâtiments publics et privés de leur territoire. Il s’agit toutefois d’une compétence optionnelle : les
       collectivités n’ont aucune obligation d’équiper leur territoire du chauffage urbain. Il s’agit également d’une compétence non
@@ -179,8 +185,11 @@ const DistrictHeating = ({
       <br />
       <br />
       <Subtitle ref={critereRef}>Quels critères faut-il satisfaire pour être raccordable ?</Subtitle>
-      La <Link href="/ressources/faisabilite#contenu">faisabilité d’un raccordement</Link> au chauffage urbain dépend des critères
-      suivants :
+      La{' '}
+      <Link href="/ressources/qu-est-ce-qui-determine-la-faisabilite-du-raccordement-aux-reseaux-de-chaleur#contenu">
+        faisabilité d’un raccordement
+      </Link>{' '}
+      au chauffage urbain dépend des critères suivants :
       <ul>
         <br />
         <li>
@@ -336,7 +345,9 @@ const DistrictHeating = ({
       <Subtitle ref={aidesRef}>Quelles sont les aides financières disponibles ?</Subtitle>
       La principale aide pour se raccorder au chauffage urbain est le «{' '}
       <b>
-        <Link href="/ressources/aides#contenu">Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires</Link>
+        <Link href="/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur#contenu">
+          Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires
+        </Link>
       </b>{' '}
        », mis en place dans le cadre du dispositif des certificats d’économie d’énergie. Le montant de cette prime est fonction du nombre de
       logements du bâtiment pour de l’habitat collectif, et de la surface pour un bâtiment tertiaire. À titre d’exemple, une aide de plus de
@@ -360,7 +371,9 @@ const DistrictHeating = ({
       </b>
       <br />
       <br />
-      <Link href="/ressources/financement#contenu">D’autres aides peuvent être mobilisées</Link>{' '}
+      <Link href="/ressources/financer-le-raccordement-de-sa-copropriete-a-un-reseau-de-chaleur-dans-le-cadre-d-une-renovation-globale#contenu">
+        D’autres aides peuvent être mobilisées
+      </Link>{' '}
       <b>lorsque le raccordement au chauffage urbain s’inscrit dans le cadre d’une rénovation plus globale</b>, par exemple
       MaPrimeRénov’Copropriétés, MaPrimeRénov’Sérénité pour les ménages modestes, ou encore le « coup de pouce rénovation performante de
       bâtiment résidentiel collectif ». Le raccordement au chauffage urbain est obligatoire pour bénéficier de ce dernier, dès lors qu’il

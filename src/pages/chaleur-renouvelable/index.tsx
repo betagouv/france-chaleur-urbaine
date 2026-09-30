@@ -140,8 +140,14 @@ type ResourceCardProps = {
 };
 
 const heatingSystemResources: ResourceCardProps[] = [
-  { slug: 'avantages', ...understandings.avantages },
-  { slug: 'facture', ...understandings.facture },
+  {
+    slug: 'reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul',
+    ...understandings['reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul'],
+  },
+  {
+    slug: 'comprendre-la-facture-de-chauffage-d-une-copropriete-raccordee-a-un-reseau-de-chaleur',
+    ...understandings['comprendre-la-facture-de-chauffage-d-une-copropriete-raccordee-a-un-reseau-de-chaleur'],
+  },
   { slug: 'reseau', ...issues.reseau },
   ...Object.entries(otherHeatingSystem).map(([slug, article]) => ({
     ...article,

@@ -18,10 +18,15 @@ import { TertiaireStyle } from './index.styles';
 import Owner from './Owner';
 
 const tertiaireCards = {
-  acteurs: growths.acteurs,
-  aides: understandings.aides,
-  avantages: understandings.avantages,
+  'coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur':
+    understandings[
+      'coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur'
+    ],
   'energies-vertes': issues['energies-vertes'],
+  'quels-sont-les-principaux-acteurs-de-la-filiere-des-reseaux-de-chaleur':
+    growths['quels-sont-les-principaux-acteurs-de-la-filiere-des-reseaux-de-chaleur'],
+  'reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul':
+    understandings['reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul'],
 };
 
 function Tertiaire({ alt }: { alt?: boolean }) {
@@ -99,7 +104,10 @@ Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
             à effet de serre, entreront en vigueur et <strong>excluent l'installation de nouvelles chaudières au fioul.</strong>
             <br />
             <strong>
-              <Link href="/ressources/aides#contenu">Des aides</Link> accompagnent cette transition.
+              <Link href="/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur#contenu">
+                Des aides
+              </Link>{' '}
+              accompagnent cette transition.
             </strong>
           </PuceIcon>
         </Simulator>
@@ -117,7 +125,7 @@ Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
         <MarkdownWrapper
           value={`##### Vous souhaitez raccorder vos locaux au chauffage urbain&nbsp;?
 
-Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires&nbsp;»](/ressources/aides#contenu)** a pour objectif d’inciter financièrement les propriétaires ou gestionnaires de bâtiments tertiaires à remplacer leurs équipements de chauffage au charbon, au fioul ou au gaz au profit d’un raccordement à un réseau de chaleur.
+Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires&nbsp;»](/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur#contenu)** a pour objectif d’inciter financièrement les propriétaires ou gestionnaires de bâtiments tertiaires à remplacer leurs équipements de chauffage au charbon, au fioul ou au gaz au profit d’un raccordement à un réseau de chaleur.
               `}
           className="aides-rcu-body"
         />
@@ -143,7 +151,7 @@ Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels co
 
 :small[Au niveau européen, la France ne se place qu’en 20ème position en termes de recours aux réseaux de chaleur, avec environ 5 % des besoins en chaleur du pays couverts par le chauffage urbain. Le secteur tertiaire représente près de 36 % des livraisons annuelles de chaleur par les réseaux.]
 
-:small[Aujourd’hui, de nombreux établissements tertiaires sont amenés à réaliser des travaux de rénovation thermique pour réduire leurs consommations d’énergie et satisfaire les obligations du dispositif Éco-Énergie Tertiaire. C’est le moment opportun pour changer de mode de chauffage et opter pour un raccordement au réseau de chaleur dès lors que celui-ci est possible. Le [coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaire](/ressources/aides#contenu) permet de réduire significativement les frais de raccordement.]
+:small[Aujourd’hui, de nombreux établissements tertiaires sont amenés à réaliser des travaux de rénovation thermique pour réduire leurs consommations d’énergie et satisfaire les obligations du dispositif Éco-Énergie Tertiaire. C’est le moment opportun pour changer de mode de chauffage et opter pour un raccordement au réseau de chaleur dès lors que celui-ci est possible. Le [coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaire](/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur#contenu) permet de réduire significativement les frais de raccordement.]
 `}
         />
       </Slice>
