@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import { emailUnblockSourceLabels, getEmailBlockReasonLabel } from '@/modules/email/constants';
 import type { EventType } from '@/modules/events/constants';
 import type { AdminEvent } from '@/modules/events/server/service';
+import { type RetentionRule, retentionRuleDefinitions } from '@/modules/retention/constants';
 import { ObjectKeys } from '@/utils/typescript';
 
 import type { EventFilters } from './types';
@@ -98,6 +99,13 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   conversion_source_updated: (event) => (
     <span>
       a mis à jour l'intégration iframe <strong>{event.data.label}</strong> (source <strong>{event.data.key}</strong>)
+    </span>
+  ),
+  data_retention_applied: (event) => (
+    <span>
+      a appliqué la règle de conservation{' '}
+      <strong>{retentionRuleDefinitions[event.data.rule as RetentionRule]?.title ?? event.data.rule}</strong> :{' '}
+      <strong>{event.data.count}</strong> élément(s) traité(s)
     </span>
   ),
   demand_assignment_change_request_cancelled: (event, updateFilters) => (

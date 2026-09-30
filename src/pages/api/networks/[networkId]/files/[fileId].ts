@@ -17,7 +17,7 @@ export default handleRouteErrors(async (req, res) => {
   requireGetMethod(req);
   const { networkId, fileId } = await validateObjectSchema(req.query, {
     fileId: z.string(),
-    networkId: z.string(),
+    networkId: z.string().regex(/^[A-Za-z0-9_-]{1,20}$/), // interpolated in an Airtable formula: no quotes or operators allowed
   });
 
   const [network] = await AirtableDB('FCU - Réseaux de chaleur')

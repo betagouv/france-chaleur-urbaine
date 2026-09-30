@@ -1,0 +1,20 @@
+# Dependabot: security update PRs only for npm (no routine version bumps, majors are reviewed by hand).
+# Security updates are not scheduled: a PR opens as soon as a fix exists for a vulnerable dependency,
+# whatever the severity. They require "Dependabot alerts" + "Dependabot security updates" enabled in the
+# repository settings (Settings → Advanced Security). PRs target the default branch (`dev`), normal CI + review.
+version: 2
+updates:
+  - package-ecosystem: npm # pnpm is detected from pnpm-lock.yaml (lockfile v9) and engines.pnpm
+    directory: /
+    schedule:
+      interval: weekly # only drives version updates, which are disabled below
+    open-pull-requests-limit: 0 # disables version-update PRs; security updates ignore this limit
+
+  # GitHub Actions are pinned by SHA in the workflows: one grouped PR a month bumps the SHAs and their version comments.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']

@@ -3,11 +3,12 @@ import { readFile } from 'node:fs/promises';
 import formidable from 'formidable';
 import { z } from 'zod';
 
+import { hasPdfSignature } from '@/modules/security/server/file-signature';
 import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit/next-pages';
 import { serverConfig } from '@/server/config';
 import { AirtableDB, uploadAttachment } from '@/server/db/airtable';
 import { logger } from '@/server/helpers/logger';
-import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
+import { BadRequestError, handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
 import { parseValue } from '@/utils/form-utils';
 
 export const config = {
@@ -70,6 +71,13 @@ export default handleRouteErrors(async (req, res) => {
   const [fields, files] = await form.parse(req);
 
   const { fichiers, ...formValues } = await validateObjectSchema({ ...fields, fichiers: files.fichiers }, zModificationReseau);
+
+  // The MIME type above is declared by the browser: check the actual bytes before relaying the file to Airtable
+  for (const fichier of fichiers ?? []) {
+    if (!(await hasPdfSignature(fichier.filepath))) {
+      throw new BadRequestError(`Le fichier « ${fichier.originalFilename} » n'est pas un PDF valide.`);
+    }
+  }
 
   const record = await AirtableDB('FCU - Modifications réseau').create(
     {

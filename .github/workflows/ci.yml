@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
         with:
           version: 10
 
@@ -54,8 +54,9 @@ jobs:
         run: ./scripts/fetch-publicodes-branch.sh
 
       - name: Audit 🛡️
-        run: pnpm audit
-        continue-on-error: true
+        # Blocks the build on critical vulnerabilities only. Lower severities do not fail the build:
+        # Dependabot security updates (.github/dependabot.yml + repo settings) open PRs for them.
+        run: pnpm audit --audit-level=critical
 
       - name: Lint 🧹
         run: pnpm lint:ci

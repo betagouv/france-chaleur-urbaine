@@ -155,6 +155,19 @@ export const businessRules = {
     label: 'Filtre EnR&R élevé : seuil',
     value: 50,
   },
+  loginAttemptsLimit: {
+    description:
+      'Nombre maximal de tentatives de connexion (réussies ou non) depuis une même adresse IP sur la fenêtre glissante, au-delà la connexion est bloquée temporairement.',
+    display: '10 tentatives',
+    label: 'Tentatives de connexion : maximum',
+    value: 10,
+  },
+  loginAttemptsWindowMinutes: {
+    description: 'Durée de la fenêtre glissante pendant laquelle les tentatives de connexion sont comptées par adresse IP.',
+    display: '15 minutes',
+    label: 'Tentatives de connexion : fenêtre',
+    value: 15,
+  },
   maxPermissionsPerUser: {
     description: 'Nombre maximal de permissions attribuables à un même compte.',
     display: '400 permissions',
@@ -167,10 +180,38 @@ export const businessRules = {
     label: 'Filtre « proche réseau » : distance',
     value: 100,
   },
+  passwordMinLength: {
+    description:
+      "Longueur minimale d'un mot de passe à l'inscription et à la réinitialisation. Aucune contrainte de composition : une phrase facile à retenir est conseillée.",
+    display: '12 caractères',
+    label: 'Mot de passe : longueur minimale',
+    value: 12,
+  },
   passwordResetTokenValidityHours: {
     description: 'Durée de validité du lien « Mot de passe oublié ».',
     display: '3 heures',
     label: 'Validité du lien de réinitialisation',
+    value: 3,
+  },
+  retentionAccountsInactiveYears: {
+    description:
+      "Sans connexion pendant cette durée, un compte (hors administrateurs) est désactivé et anonymisé lors de l'application des règles de conservation.",
+    display: '2 ans',
+    label: 'Conservation des comptes inactifs',
+    value: 2,
+  },
+  retentionAccountsPendingMonths: {
+    description:
+      "Un compte dont l'email n'a jamais été confirmé est supprimé passé ce délai lors de l'application des règles de conservation.",
+    display: '3 mois',
+    label: 'Conservation des comptes non activés',
+    value: 3,
+  },
+  retentionDemandsClosedYears: {
+    description:
+      "Passé ce délai après leur clôture (réalisée, non réalisable, abandonnée ou supprimée), les demandes sont anonymisées lors de l'application des règles de conservation : identité, coordonnées et commentaires effacés, adresse et statistiques conservées.",
+    display: '3 ans',
+    label: 'Conservation des demandes closes',
     value: 3,
   },
   secondRelanceDelayDays: {

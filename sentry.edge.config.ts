@@ -8,9 +8,9 @@ import { init } from '@sentry/nextjs';
 init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
-  // Enable sending user PII (Personally Identifiable Information)
+  // Never send PII (IP, cookies, headers): errors are correlated by stack trace only, users are never identified in Sentry
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
-  sendDefaultPii: true,
+  sendDefaultPii: false,
 
   // Performance monitoring / tracing disabled: we only report errors with stack traces.
   tracesSampleRate: 0,

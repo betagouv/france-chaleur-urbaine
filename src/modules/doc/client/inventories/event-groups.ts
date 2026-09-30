@@ -18,4 +18,5 @@ export const specificEventGroups: { label: string; match: (type: EventType) => b
   { label: 'Réseaux et périmètres', match: (type) => type.startsWith('network_') || type === 'pdp_updated' },
   { label: 'Organisations', match: (type) => type.startsWith('organization_') },
   { label: 'Intégrations iframe', match: (type) => type.startsWith('conversion_source') },
+  { label: 'Conservation des données', match: (type) => type.startsWith('data_retention') },
 ];

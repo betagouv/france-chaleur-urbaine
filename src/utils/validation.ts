@@ -1,5 +1,7 @@
 import { ZodArray, ZodIntersection, ZodObject, ZodPipe, type ZodRawShape, type ZodType, ZodUnion, z } from 'zod';
 
+import { businessRules } from '@/modules/app/business-rules';
+
 /**
  * Recursively unwraps zod v4 wrapper schemas — pipes/transforms (input side),
  * optional, nullable, default, catch… — down to the underlying schema.
@@ -75,18 +77,14 @@ export const getSchemaField = (schema: ZodType, fieldPath: string): ZodType | un
 
 export const zAirtableRecordId = z.string().regex(/^[a-zA-Z0-9]{17}$/); // e.g. rec6nCFUO7Nzj6M9n
 
-export const zPassword = z.string().refine(
-  (password) => {
-    if (password.length < 8) return false;
-    if (!/[a-z]/.test(password)) return false;
-    if (!/[A-Z]/.test(password)) return false;
-    if (!/[0-9]/.test(password)) return false;
-    return true;
-  },
-  {
-    error: 'Le mot de passe doit contenir au moins 8 caractères, une lettre minuscule, une lettre majuscule et un chiffre.',
-  }
-);
+// Length only, no composition rule (ANSSI: length beats forced character classes; a passphrase is encouraged in the UI hint)
+export const zPassword = z
+  .string()
+  .min(businessRules.passwordMinLength.value, `Le mot de passe doit contenir au moins ${businessRules.passwordMinLength.display}.`)
+  .max(100, 'Le mot de passe ne peut pas dépasser 100 caractères.');
+
+// Shown under the password field of creation forms (registration, reset): passphrases over forced symbols
+export const passwordHint = `${businessRules.passwordMinLength.display} minimum, sans autre contrainte. Conseil : une phrase facile à retenir, par exemple plusieurs mots sans lien entre eux.`;
 
 export const emailSchema = z.string().trim().toLowerCase().email('Invalid email address');
 

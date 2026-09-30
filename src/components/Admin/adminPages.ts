@@ -111,6 +111,12 @@ export const adminPages = [
     label: 'Suivi des tâches',
   },
   {
+    desc: 'Appliquez les durées de conservation : comptes non activés ou inactifs, demandes closes',
+    group: 'system',
+    href: '/admin/retention',
+    label: 'Conservation des données',
+  },
+  {
     desc: "Vérifiez l'état des outils et configurations du système",
     group: 'system',
     href: '/admin/diagnostic',

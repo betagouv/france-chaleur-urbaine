@@ -63,6 +63,8 @@ Règles du formulaire :
 - L'acceptation des CGU est obligatoire ; l'abonnement à la newsletter est optionnel.
 - Pour un professionnel, la structure et son type sont obligatoires (le type « Autre » doit être précisé). Si un SIRET est renseigné, il est vérifié auprès de l'annuaire officiel des entreprises.
 - Un email déjà associé à un compte est refusé, quel que soit l'état de ce compte.
+- Le mot de passe doit contenir au moins <Rule id="passwordMinLength" />, sans autre contrainte de composition : une phrase facile à retenir est conseillée. La même règle s'applique à la réinitialisation du mot de passe.
+- Un mot de passe présent dans des fuites de données publiques est refusé (vérification auprès du service Have I Been Pwned, sans transmettre le mot de passe). Si ce service est indisponible, le mot de passe est accepté. Même règle à la réinitialisation.
 
 Règles à connaître :
 
@@ -173,6 +175,7 @@ Cas de refus :
 
 - Email non confirmé → message explicite demandant de confirmer.
 - Compte désactivé par un admin → message générique « Mauvais login/mot de passe », **identique à un mauvais mot de passe**. La personne ne sait pas que son compte est désactivé.
+- Trop de tentatives depuis une même adresse IP : au-delà de <Rule id="loginAttemptsLimit" /> sur <Rule id="loginAttemptsWindowMinutes" /> (réussies ou non), la connexion est refusée avec le message «&nbsp;Trop de tentatives de connexion&nbsp;» jusqu'à la fin de la fenêtre. Les demandes de «&nbsp;mot de passe oublié&nbsp;» et les inscriptions ont leur propre plafond. Chaque échec de connexion est tracé dans les journaux techniques (sans l'email en clair), pas dans les événements.
 
 Données modifiées :
 

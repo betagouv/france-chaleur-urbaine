@@ -7,16 +7,12 @@ import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
+import { passwordHint, zPassword } from '@/utils/validation';
 
 const zNewPasswordForm = z
   .object({
     confirmation: z.string(),
-    password: z
-      .string()
-      .min(8, 'Votre mot de passe doit avoir au moins 8 caractères')
-      .regex(/[a-z]/, 'Votre mot de passe doit contenir au moins une lettre minuscule')
-      .regex(/[A-Z]/, 'Votre mot de passe doit contenir au moins une lettre majuscule')
-      .regex(/[0-9]/, 'Votre mot de passe doit contenir au moins un chiffre'),
+    password: zPassword,
   })
   .refine((data) => data.password === data.confirmation, {
     error: 'Les mots de passe sont différents',
@@ -52,7 +48,9 @@ const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
       </Heading>
       <Form form={form} className="flex flex-col gap-4">
         <form.AppField name="password">
-          {(field) => <field.PasswordField label="Mot de passe" nativeInputProps={{ autoComplete: 'new-password' }} />}
+          {(field) => (
+            <field.PasswordField label="Mot de passe" messagesHint={passwordHint} nativeInputProps={{ autoComplete: 'new-password' }} />
+          )}
         </form.AppField>
         <form.AppField name="confirmation">
           {(field) => <field.PasswordField label="Confirmer" nativeInputProps={{ autoComplete: 'new-password' }} />}

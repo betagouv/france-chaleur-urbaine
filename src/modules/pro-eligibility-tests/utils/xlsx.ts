@@ -1,6 +1,7 @@
 import { clientConfig } from '@/client-config';
 import { dataSourcesVersions } from '@/modules/app/constants';
 import type { RouterOutput } from '@/modules/trpc/client';
+import { escapeSpreadsheetFormula } from '@/utils/spreadsheet';
 
 type ProEligibilityTestAddress = RouterOutput['proEligibilityTests']['get']['addresses'][number];
 
@@ -106,7 +107,9 @@ export const getProEligibilityTestAsXlsx = async (addresses: ProEligibilityTestA
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(
-    [columns.map((col) => col.header)].concat(addresses.map((address) => columns.map((col) => col.accessor(address))))
+    [columns.map((col) => col.header)].concat(
+      addresses.map((address) => columns.map((col) => escapeSpreadsheetFormula(col.accessor(address))))
+    )
   );
 
   // Définir les largeurs de colonnes pour la feuille de résultats
