@@ -295,7 +295,7 @@ export const tileSourcesConfig = {
   },
   'reseaux-en-construction': {
     aliases: ['reseauxEnConstruction'],
-    cacheProfile: 'private',
+    cacheProfile: 'revalidate',
     generateGeoJSON: extractNDJSONFromDatabaseTable('zones_et_reseaux_en_construction', {
       fields: reseauxEnConstructionFields,
       idField: 'id_fcu',
