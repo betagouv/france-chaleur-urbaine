@@ -1,29 +1,15 @@
-import LegalNoticeComponent from '@incubateur-ademe/legal-pages-react/LegalNoticeWithBetaClient';
-
-import { clientConfig } from '@/client-config';
 import SimplePage from '@/components/shared/page/SimplePage';
+import { LegalArticle } from '@/modules/legal/client/LegalArticle';
+import Content from '@/modules/legal/content/mentions-legales.mdx';
 
 function MentionsLegalesPage() {
   return (
     <SimplePage
       title="Mentions légales"
-      description="France Chaleur Urbaine est un service du Ministère de la transition écologique qui vise à faciliter et multiplier les raccordements aux réseaux de chaleur."
+      description="Éditeur, hébergeur et conditions de réutilisation de France Chaleur Urbaine, service public numérique de l'ADEME"
       layout="center"
     >
-      <h1 className="fr-sr-only">Mentions légales</h1>
-      <LegalNoticeComponent
-        siteName="France Chaleur Urbaine"
-        siteUrl={clientConfig.websiteUrl}
-        licenceUrl="https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
-        date="08/09/2025"
-        siteHost={{
-          address: '13 rue Jacques Peirotes<br/>67000 Strasbourg',
-          country: 'France',
-          email: 'support@scalingo.com',
-          name: 'Scalingo',
-        }}
-        contactEmail={clientConfig.contactEmail}
-      />
+      <LegalArticle content={Content} />
     </SimplePage>
   );
 }
