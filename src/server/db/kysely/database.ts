@@ -300,6 +300,9 @@ export interface DemandsChaleurRenouvelable {
   radiator_type: TypeRadiateur | null;
   refusal_period: string | null;
   refusal_reason: string | null;
+  rnic_nom_copropriete: string | null;
+  rnic_numero_immatriculation: string | null;
+  rnic_siret_representant_legal: string | null;
   simulation_url: string;
   status: Generated<string>;
   surface_area: number | null;

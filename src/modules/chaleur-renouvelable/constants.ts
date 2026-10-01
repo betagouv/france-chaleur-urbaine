@@ -348,9 +348,9 @@ export function getModeEauChaudeSanitaireLabel(modeEauChaudeSanitaire: ModeEauCh
 export const TYPE_RADIATEUR_VALUES = ['radiateur-eau', 'radiateur-electrique', 'none'] as const;
 export type TypeRadiateur = (typeof TYPE_RADIATEUR_VALUES)[number];
 export const typeRadiateurOptions = [
-  { icone: 'img/icon-goutte.svg', label: 'Radiateur ou plancher chauffant à eau', value: 'radiateur-eau' },
-  { icone: 'img/icon-eclair.svg', label: 'Radiateur ou plancher chauffant électrique', value: 'radiateur-electrique' },
-  { icone: 'img/icon-clim.svg', label: 'Autre : climatiseur, ...', value: 'none' },
+  { icone: '/img/icon-goutte.svg', label: 'Radiateur ou plancher chauffant à eau', value: 'radiateur-eau' },
+  { icone: '/img/icon-eclair.svg', label: 'Radiateur ou plancher chauffant électrique', value: 'radiateur-electrique' },
+  { icone: '/img/icon-clim.svg', label: 'Autre : climatiseur, ...', value: 'none' },
 ] satisfies readonly {
   label: string;
   icone?: string;

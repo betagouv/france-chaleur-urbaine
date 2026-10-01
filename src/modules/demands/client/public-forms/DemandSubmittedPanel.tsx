@@ -17,6 +17,7 @@ const formatDemandDate = (isoDate: string) => {
 
 export type DemandSubmittedPanelProps = {
   nextStepsContext?: 'heat-network' | 'renewable-advisor';
+  showEmailNotice?: boolean;
   submissionResult: DemandSubmissionResult;
 };
 
@@ -24,7 +25,7 @@ export type DemandSubmittedPanelProps = {
  * Écran affiché après soumission d'une demande de mise en relation (espace public).
  * Deux cas : demande nouvellement enregistrée, ou demande déjà déposée (même email + adresse < 30 jours).
  */
-function DemandSubmittedPanel({ nextStepsContext = 'heat-network', submissionResult }: DemandSubmittedPanelProps) {
+function DemandSubmittedPanel({ nextStepsContext = 'heat-network', showEmailNotice = true, submissionResult }: DemandSubmittedPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Le panneau remplace un formulaire long dans une modale DSFR : sans ça, le scroll reste en bas (no-op hors modale).
@@ -35,9 +36,9 @@ function DemandSubmittedPanel({ nextStepsContext = 'heat-network', submissionRes
   return (
     <div ref={containerRef}>
       {submissionResult.isExisting ? (
-        <ExistingDemandPanel submissionResult={submissionResult} />
+        <ExistingDemandPanel showEmailNotice={showEmailNotice} submissionResult={submissionResult} />
       ) : (
-        <NewDemandPanel nextStepsContext={nextStepsContext} submissionResult={submissionResult} />
+        <NewDemandPanel nextStepsContext={nextStepsContext} showEmailNotice={showEmailNotice} submissionResult={submissionResult} />
       )}
     </div>
   );
@@ -45,13 +46,13 @@ function DemandSubmittedPanel({ nextStepsContext = 'heat-network', submissionRes
 
 export default DemandSubmittedPanel;
 
-function NewDemandPanel({
-  nextStepsContext,
-  submissionResult,
-}: {
+type NewDemandPanelProps = {
   nextStepsContext: NonNullable<DemandSubmittedPanelProps['nextStepsContext']>;
+  showEmailNotice: boolean;
   submissionResult: DemandSubmissionResult;
-}) {
+};
+
+function NewDemandPanel({ nextStepsContext, showEmailNotice, submissionResult }: NewDemandPanelProps) {
   const networkLabel =
     submissionResult.isEligible && submissionResult.networkName
       ? `${submissionResult.networkName}${submissionResult.distance != null ? ` (~${Math.round(submissionResult.distance)} m)` : ''}`
@@ -64,9 +65,11 @@ function NewDemandPanel({
         title="Demande de mise en relation bien reçue"
       />
 
-      <EmailNotice>
-        Un e-mail de confirmation vient de vous être envoyé via <strong>{clientConfig.noReplyEmail}</strong>. Pensez à vérifier vos spams.
-      </EmailNotice>
+      {showEmailNotice && (
+        <EmailNotice>
+          Un e-mail de confirmation vient de vous être envoyé via <strong>{clientConfig.noReplyEmail}</strong>. Pensez à vérifier vos spams.
+        </EmailNotice>
+      )}
 
       <div className="flex flex-col gap-2">
         <p className="fr-text--xs font-bold uppercase text-(--text-mention-grey) mb-0">Prochaines étapes :</p>
@@ -132,7 +135,12 @@ function RenewableAdvisorNextSteps() {
   );
 }
 
-function ExistingDemandPanel({ submissionResult }: DemandSubmittedPanelProps) {
+type ExistingDemandPanelProps = {
+  showEmailNotice: boolean;
+  submissionResult: DemandSubmissionResult;
+};
+
+function ExistingDemandPanel({ showEmailNotice, submissionResult }: ExistingDemandPanelProps) {
   return (
     <div className="flex flex-col gap-5">
       <PanelHeader iconClassName="fr-icon-info-fill text-(--text-action-high-blue-france)" title="Demande déjà enregistrée" />
@@ -156,9 +164,11 @@ function ExistingDemandPanel({ submissionResult }: DemandSubmittedPanelProps) {
         ]}
       />
 
-      <EmailNotice>
-        Un e-mail de confirmation vous a déjà été envoyé via <strong>{clientConfig.noReplyEmail}</strong>. Pensez à vérifier vos spams.
-      </EmailNotice>
+      {showEmailNotice && (
+        <EmailNotice>
+          Un e-mail de confirmation vous a déjà été envoyé via <strong>{clientConfig.noReplyEmail}</strong>. Pensez à vérifier vos spams.
+        </EmailNotice>
+      )}
 
       <InfoCallout>
         <strong>Suivez l'évolution de votre demande depuis votre espace personnel France Chaleur Urbaine.</strong>

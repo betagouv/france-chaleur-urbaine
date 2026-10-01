@@ -37,6 +37,7 @@ import { stripDomainFromURL } from '@/utils/url';
 import { getAltitudeByCoordinates } from './altimetry';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
 import { getNetworkEligibilityCoordinates, type NetworkEligibilityCoordinates } from './network-eligibility-coordinates';
+import { getRnicCoproprieteByBatimentConstructionId } from './rnic';
 
 const batEnrBatimentColumns = [
   'ac1',
@@ -625,6 +626,14 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
   };
 };
 
+const getRnicCoproprieteSafe = async (batimentConstructionId: string | null) => {
+  try {
+    return await getRnicCoproprieteByBatimentConstructionId(batimentConstructionId);
+  } catch {
+    return null;
+  }
+};
+
 const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable) => {
   const departmentCode = await getDemandeChaleurRenouvelableDepartmentCode(input);
 
@@ -632,7 +641,10 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
     return null;
   }
 
-  const originDemandId = await getValidOriginDemandId(input);
+  const [originDemandId, rnicCopropriete] = await Promise.all([
+    getValidOriginDemandId(input),
+    getRnicCoproprieteSafe(input.batimentConstructionId),
+  ]);
 
   const createdCcrtDemand = await kdb
     .insertInto('demands_chaleur_renouvelable')
@@ -664,6 +676,9 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
       radiator_type: input.radiatorType,
       refusal_period: input.refusalPeriod,
       refusal_reason: input.refusalReason,
+      rnic_nom_copropriete: rnicCopropriete?.nomCopropriete ?? null,
+      rnic_numero_immatriculation: rnicCopropriete?.numeroImmatriculation ?? null,
+      rnic_siret_representant_legal: rnicCopropriete?.siretRepresentantLegal ?? null,
       simulation_url: input.simulationUrl,
       surface_area: input.surfaceArea,
       updated_at: new Date(),
@@ -867,6 +882,9 @@ const selectDemandesChaleurRenouvelableForList = () =>
       'radiator_type',
       'refusal_period',
       'refusal_reason',
+      'rnic_nom_copropriete',
+      'rnic_numero_immatriculation',
+      'rnic_siret_representant_legal',
       'simulation_url',
       'status',
       'surface_area',
