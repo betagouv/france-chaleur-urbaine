@@ -412,6 +412,7 @@ describe('batEnrRouter', () => {
             latitude: 43.2965,
             longitude: 5.3698,
             nom_usage_copropriete: 'COPRO TEST',
+            numero_immatriculation: 'AA1234567',
             siret_representant_legal: '12345678900012',
           },
         ],
@@ -441,6 +442,7 @@ describe('batEnrRouter', () => {
           'is_public_advisor_selected',
           'last_name',
           'rnic_nom_copropriete',
+          'rnic_numero_immatriculation',
           'rnic_siret_representant_legal',
           'simulation_url',
           'status',
@@ -467,6 +469,7 @@ describe('batEnrRouter', () => {
           is_public_advisor_selected: false,
           last_name: 'Test',
           rnic_nom_copropriete: 'COPRO TEST',
+          rnic_numero_immatriculation: 'AA1234567',
           rnic_siret_representant_legal: '12345678900012',
           simulation_url: '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif',
           status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
@@ -497,7 +500,15 @@ describe('batEnrRouter', () => {
 
       const createdDemandeChaleurRenouvelable = await kdb
         .selectFrom('demands_chaleur_renouvelable')
-        .select(['address', 'email', 'housing_count', 'rnic_nom_copropriete', 'rnic_siret_representant_legal', 'simulation_url'])
+        .select([
+          'address',
+          'email',
+          'housing_count',
+          'rnic_nom_copropriete',
+          'rnic_numero_immatriculation',
+          'rnic_siret_representant_legal',
+          'simulation_url',
+        ])
         .where('id', '=', result.id ?? '')
         .executeTakeFirstOrThrow();
       const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
@@ -512,6 +523,7 @@ describe('batEnrRouter', () => {
           email: 'contact@example.com',
           housing_count: 18,
           rnic_nom_copropriete: null,
+          rnic_numero_immatriculation: null,
           rnic_siret_representant_legal: null,
           simulation_url: '/chaleur-renouvelable/resultat?adresse=10+rue+du+test&typeLogement=immeuble_chauffage_collectif',
         },
@@ -730,6 +742,7 @@ describe('batEnrRouter', () => {
             id: newerDemand.id,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
             rnic_nom_copropriete: null,
+            rnic_numero_immatriculation: null,
             rnic_siret_representant_legal: null,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             updated_at: newerDate.toISOString(),
@@ -742,6 +755,7 @@ describe('batEnrRouter', () => {
             id: olderDemand.id,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
             rnic_nom_copropriete: null,
+            rnic_numero_immatriculation: null,
             rnic_siret_representant_legal: null,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             updated_at: olderDate.toISOString(),
@@ -842,6 +856,7 @@ describe('batEnrRouter', () => {
             refusal_period: null,
             refusal_reason: null,
             rnic_nom_copropriete: null,
+            rnic_numero_immatriculation: null,
             rnic_siret_representant_legal: null,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             surface_area: null,

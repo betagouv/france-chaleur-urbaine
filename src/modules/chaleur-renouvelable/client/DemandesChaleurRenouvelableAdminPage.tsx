@@ -384,6 +384,12 @@ export default function DemandesChaleurRenouvelableAdminPage() {
         width: '240px',
       },
       {
+        accessorFn: (row) => row.rnic_numero_immatriculation ?? 'Non renseigné',
+        header: 'Immatriculation RNIC',
+        id: 'Immatriculation RNIC',
+        width: '180px',
+      },
+      {
         accessorFn: (row) => row.rnic_siret_representant_legal ?? 'Non renseigné',
         header: 'SIRET représentant légal RNIC',
         id: 'SIRET représentant légal RNIC',
