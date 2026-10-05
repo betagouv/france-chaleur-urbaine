@@ -1,6 +1,7 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import type { FinalityConsent } from '@codegouvfr/react-dsfr/consentManagement/types';
 
+import type { NewsletterLinkSource } from '@/components/Newsletter/constants';
 import type {
   DPE,
   EspaceExterieur,
@@ -380,6 +381,8 @@ export type PostHogEventMap = {
   'collectivities:iframe_cta_clicked': never;
 
   'pro:tool_cta_clicked': { tool_name: string };
+
+  'newsletter:signup_link_clicked': { source: NewsletterLinkSource };
 
   'link:internal': { news_slug: string; source: 'home' | 'actus_list' };
 };

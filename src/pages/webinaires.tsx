@@ -1,3 +1,4 @@
+import NewsletterFollow from '@/components/Newsletter/NewsletterFollow';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
@@ -109,6 +110,12 @@ const WebinairesPage = () => {
           Accédez aux replays et présentations de nos webinaires, sur les réseaux de chaleur et sur les outils France Chaleur Urbaine
         </HeroSubtitle>
       </Hero>
+      <NewsletterFollow
+        title="Ne manquez pas nos prochains webinaires"
+        description="Classement des réseaux, création de réseau, comparateur de coûts… Abonnez-vous à la newsletter pour recevoir les invitations à nos prochains webinaires et les liens vers les replays."
+        buttonLabel="Recevoir les invitations"
+        source="webinaires"
+      />
       <Section>
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
           {webinaires.map((webinaire) => (
