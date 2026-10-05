@@ -13,10 +13,10 @@ export function HeatNetworkContactSteps({ onSelectRecipient }: { onSelectRecipie
         isPrimary
       />
       <ContactStep
-        description="Si le raccordement n’est finalement pas possible, un·e conseiller·e du service public vous aide à choisir parmi les autres solutions ci-dessous."
+        description="Si le raccordement n’est finalement pas possible, un·e conseiller·ère du service public vous aide à choisir parmi les autres solutions ci-dessous."
         number={2}
         title="Refus ou réponse négative ?"
-        actionLabel="Être contacté·e par un·e conseiller·e"
+        actionLabel="Être contacté·e par un·e conseiller·ère"
         onClick={() => onSelectRecipient('public-advisor')}
       />
     </section>

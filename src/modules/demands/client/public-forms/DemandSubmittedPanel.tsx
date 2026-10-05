@@ -129,8 +129,8 @@ function HeatNetworkNextSteps() {
 function RenewableAdvisorNextSteps() {
   return (
     <NextStep>
-      Votre demande est transmise au conseiller chaleur renouvelable compétent sur votre territoire, qui vous recontactera pour vous
-      accompagner dans la suite de votre projet.
+      Votre demande est transmise à votre conseiller·ère chaleur renouvelable compétent sur votre territoire, qui vous recontactera pour
+      vous accompagner dans la suite de votre projet.
     </NextStep>
   );
 }

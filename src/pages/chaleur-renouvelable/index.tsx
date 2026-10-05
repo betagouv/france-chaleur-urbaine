@@ -80,7 +80,7 @@ const TEMOIGNAGES = [
 
 const STEPS = [
   { text: 'Je découvre les solutions<br /> adaptées à mon bâtiment', title: 'Je simule' },
-  { text: "Un conseiller m'aide gratuitement à affiner mon projet", title: 'Je suis accompagné' },
+  { text: "Un·e conseiller·ère m'aide gratuitement à affiner mon projet", title: 'Je suis accompagné' },
   { text: 'Un DPE ou audit énergétique précise les travaux à envisager', title: 'Je réalise un audit' },
   { text: "Je monte mon dossier MaPrimeRénov', CEE ...", title: 'Je mobilise les aides' },
   { text: 'Vote en<br /> assemblée générale', title: 'Ma copropriété décide' },

@@ -89,7 +89,12 @@ export const modesDeChauffage = {
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: ['Faibles émissions de CO₂', 'Suppression des chaudières (gain de place, sécurité)', 'Aucune nuisance sonore'],
+      avantages: [
+        'Faibles émissions de CO₂',
+        'Coût de la chaleur compétitif',
+        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
+        'Aucune unité extérieure visible',
+      ],
       description: (
         <>
           Votre bâtiment est <strong>situé en zone favorable à la géothermie</strong>.<br /> La pompe à chaleur géothermique capte la
@@ -129,10 +134,7 @@ export const modesDeChauffage = {
           source: 'BRGM',
         },
       ],
-      inconvenients: [
-        'Investissement initial important',
-        'Travaux importants dans les parties extérieures collectives pour le forage dans le sol',
-      ],
+      inconvenients: ['Investissement initial important', "Travaux d'installation conséquents"],
       label: 'PAC géothermique',
       pertinence: 3,
       prerequis: (situation) => [
@@ -829,7 +831,7 @@ export const modesDeChauffage = {
     {
       avantages: [
         'Faibles émissions de CO₂',
-        'Coût de la chaleur compétitif',
+        'Coût de la chaleur compétitif et stable',
         'Longévité des équipements',
         'Énergie renouvelable et locale',
       ],
@@ -851,8 +853,12 @@ export const modesDeChauffage = {
           source: 'Formulaire',
         },
       ],
-      inconvenients: ["Ne chauffe qu'une seule pièce", 'Approvisionnement à prévoir'],
-      label: 'Poêle à buche ou à granulés',
+      inconvenients: [
+        'Doit généralement être complété par une autre solution de chauffage',
+        'Approvisionnement à prévoir',
+        "N'assure pas la production d'eau chaude sanitaire",
+      ],
+      label: 'Poêle ou insert à bois - chauffage seul',
       pertinence: 3,
       prerequis: (situation) => [
         {

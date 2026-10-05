@@ -73,6 +73,6 @@ describe('DemandFCRForm', () => {
 
     expect(screen.getByText('Je n’ai pas encore contacté le gestionnaire')).toBeInTheDocument();
     expect(screen.getByText('J’ai déjà reçu un refus ou une réponse négative')).toBeInTheDocument();
-    expect(screen.getByText('Échangez avec un conseiller neutre et gratuit du service public')).toBeInTheDocument();
+    expect(screen.getByText('Échangez avec un·e conseiller·ère neutre et gratuit·e du service public')).toBeInTheDocument();
   });
 });
