@@ -5,25 +5,41 @@ import StickyForm from '@/components/StickyForm/StickyForm';
 import Box from '@/components/ui/Box';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 
-import { coldNetworks, growths, issues, otherHeatingSystem, understandings } from './config';
+import { articleCategories, articlesBySlug, getRessource } from './config';
 import Guide from './Guide';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
 
-const getContent = (ressourceKey: string) => {
-  return (
-    issues[ressourceKey] ||
-    understandings[ressourceKey] ||
-    growths[ressourceKey] ||
-    coldNetworks[ressourceKey] ||
-    otherHeatingSystem[ressourceKey]
-  );
+type RessourceProps = {
+  ressourceKey: string;
 };
 
-const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
+/**
+ * Displays a resource article with the shared article categories in the side menu.
+ */
+const Ressource = ({ ressourceKey }: RessourceProps) => {
   const router = useRouter();
+  const content = getRessource(ressourceKey);
+  const sideMenuItems = articleCategories.map((section) => {
+    const isActive = section.slugs.some((slug) => slug === ressourceKey);
+
+    return {
+      expandedByDefault: isActive,
+      isActive,
+      items: section.slugs.map((slug) => ({
+        isActive: ressourceKey === slug,
+        linkProps: {
+          href: `/ressources/${slug}#contenu`,
+          scroll: false,
+        },
+        text: articlesBySlug[slug].title,
+      })),
+      text: section.title,
+    };
+  });
+
   useEffect(() => {
-    if (ressourceKey && !getContent(ressourceKey)) {
+    if (ressourceKey && !content) {
       void router.push('/ressources');
     }
 
@@ -40,15 +56,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
-  }, [router, ressourceKey]);
-
-  const selected = {
-    coldNetworks: Object.keys(coldNetworks).includes(ressourceKey),
-    growths: Object.keys(growths).includes(ressourceKey),
-    issues: Object.keys(issues).includes(ressourceKey),
-    otherHeatingSystem: Object.keys(otherHeatingSystem).includes(ressourceKey),
-    understandings: Object.keys(understandings).includes(ressourceKey),
-  };
+  }, [content, router, ressourceKey]);
 
   return (
     <>
@@ -61,80 +69,10 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
       <StickyWrapper>
         <Box as="main" className="fr-container fr-grid-row" my="4w">
           <Box className="fr-col-12 fr-col-md-3">
-            <SideMenu
-              burgerMenuButtonText="Dans cette rubrique"
-              title="Aller plus loin :"
-              items={[
-                {
-                  expandedByDefault: selected.issues,
-                  isActive: selected.issues,
-                  items: Object.entries(issues).map(([key, issue]) => ({
-                    isActive: ressourceKey === key,
-                    linkProps: {
-                      href: `/ressources/${key}#contenu`,
-                      scroll: false,
-                    },
-                    text: issue.title,
-                  })),
-                  text: 'Les enjeux de la transition énergétique avec les réseaux de chaleur',
-                },
-                {
-                  expandedByDefault: selected.understandings,
-                  isActive: selected.understandings,
-                  items: Object.entries(understandings).map(([key, issue]) => ({
-                    isActive: ressourceKey === key,
-                    linkProps: {
-                      href: `/ressources/${key}#contenu`,
-                      scroll: false,
-                    },
-                    text: issue.title,
-                  })),
-                  text: 'Les réseaux de chaleur en pratique : tout comprendre pour se raccorder',
-                },
-                {
-                  expandedByDefault: selected.growths,
-                  isActive: selected.growths,
-                  items: Object.entries(growths).map(([key, issue]) => ({
-                    isActive: ressourceKey === key,
-                    linkProps: {
-                      href: `/ressources/${key}#contenu`,
-                      scroll: false,
-                    },
-                    text: issue.title,
-                  })),
-                  text: 'Une filière en pleine croissance',
-                },
-                {
-                  expandedByDefault: selected.otherHeatingSystem,
-                  isActive: selected.otherHeatingSystem,
-                  items: Object.entries(otherHeatingSystem).map(([key, issue]) => ({
-                    isActive: ressourceKey === key,
-                    linkProps: {
-                      href: `/ressources/${key}#contenu`,
-                      scroll: false,
-                    },
-                    text: issue.title,
-                  })),
-                  text: 'Les autres systèmes de chauffage',
-                },
-                {
-                  expandedByDefault: selected.coldNetworks,
-                  isActive: selected.coldNetworks,
-                  items: Object.entries(coldNetworks).map(([key, issue]) => ({
-                    isActive: ressourceKey === key,
-                    linkProps: {
-                      href: `/ressources/${key}#contenu`,
-                      scroll: false,
-                    },
-                    text: issue.title,
-                  })),
-                  text: "Les réseaux de froid, un enjeu pour l'avenir",
-                },
-              ]}
-            />
+            <SideMenu burgerMenuButtonText="Dans cette rubrique" title="Aller plus loin :" items={sideMenuItems} />
           </Box>
           <Box className="fr-col-12 fr-col-md-9">
-            <RessourceContent content={getContent(ressourceKey)} />
+            <RessourceContent content={content} />
             <Guide />
           </Box>
         </Box>

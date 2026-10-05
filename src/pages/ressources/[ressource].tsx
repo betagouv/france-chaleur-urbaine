@@ -15,16 +15,18 @@ const RessourcePage = ({ ressource, ressourceName }: InferGetStaticPropsType<typ
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const ressourceName = params?.ressource as keyof typeof ressourceKeys;
-  // description is a react component sent from server and thus will make static rendering fail so remove it from the fields
-  // Another solution could be to convert it to a string on server with ReactDOM or use Markdown string
-  const { description, content, ...ressource } = getRessource(ressourceName) || {};
+  const ressourceName = typeof params?.ressource === 'string' ? params.ressource : undefined;
+  const resourceContent = getRessource(ressourceName);
 
-  if (!ressource.title) {
+  if (!resourceContent) {
     return {
       notFound: true,
     };
   }
+
+  // description is a react component sent from server and thus will make static rendering fail so remove it from the fields
+  // Another solution could be to convert it to a string on server with ReactDOM or use Markdown string
+  const { description, content, ...ressource } = resourceContent;
 
   return {
     props: { ressource, ressourceName },

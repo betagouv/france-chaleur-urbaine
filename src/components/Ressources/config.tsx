@@ -302,20 +302,68 @@ export const otherHeatingSystem: Record<string, Document> = {
   },
 };
 
-export const ressourceKeys = [
-  ...Object.keys(coldNetworks),
-  ...Object.keys(growths),
-  ...Object.keys(issues),
-  ...Object.keys(understandings),
-  ...Object.keys(otherHeatingSystem),
-];
+export const articlesBySlug: Record<string, Document> = {
+  ...issues,
+  ...understandings,
+  ...growths,
+  ...coldNetworks,
+  ...otherHeatingSystem,
+};
 
-export const getRessource = (ressourceKey: keyof typeof ressourceKeys) => {
-  return (
-    issues[ressourceKey as keyof typeof issues] ||
-    otherHeatingSystem[ressourceKey as keyof typeof otherHeatingSystem] ||
-    understandings[ressourceKey as keyof typeof understandings] ||
-    growths[ressourceKey as keyof typeof growths] ||
-    coldNetworks[ressourceKey as keyof typeof coldNetworks]
-  );
+export const articleSections = [
+  {
+    slugs: ['reseau', 'energies-vertes', 'pacImmeubleUsage'],
+    title: '1. Comprendre les différentes solutions de chauffage écologique',
+    variant: undefined,
+  },
+  {
+    slugs: [
+      'le-reseau-de-chaleur-un-mode-de-chauffage-aux-multiples-atouts',
+      'reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul',
+      'avantages-pac',
+      'choix-pac',
+      'qu-est-ce-qui-determine-la-faisabilite-du-raccordement-aux-reseaux-de-chaleur',
+      'obligations-raccordement',
+      'qu-est-ce-qu-un-reseau-de-chaleur-classe',
+    ],
+    title: '2. Choisir la solution adaptée à mon immeuble',
+    variant: 'light',
+  },
+  {
+    slugs: [
+      'coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur',
+      'combien-coute-un-raccordement-a-un-reseau-de-chaleur',
+      'financer-le-raccordement-de-sa-copropriete-a-un-reseau-de-chaleur-dans-le-cadre-d-une-renovation-globale',
+      'obligations-copropriété',
+      'comprendre-la-facture-de-chauffage-d-une-copropriete-raccordee-a-un-reseau-de-chaleur',
+      'valoriser-un-raccordement-a-un-reseau-de-chaleur-dans-le-cadre-du-dispositif-eco-energie-tertiaire',
+    ],
+    title: '3. Financer et piloter mon projet',
+    variant: undefined,
+  },
+  {
+    slugs: ['reseau-de-froid'],
+    title: '4. Rafraîchir mon immeuble',
+    variant: 'light',
+  },
+] as const;
+
+export const furtherReadingSection = {
+  slugs: [
+    'histoire',
+    'reseaux-de-chaleur-un-role-cle-dans-la-transition-energetique',
+    'livraisons',
+    'etat',
+    'quels-sont-les-principaux-acteurs-de-la-filiere-des-reseaux-de-chaleur',
+  ],
+  title: 'Pour aller plus loin : enjeux écologiques et économiques',
+  variant: undefined,
+} as const;
+
+export const articleCategories = [...articleSections, furtherReadingSection] as const;
+
+export const ressourceKeys = articleCategories.flatMap((section) => section.slugs);
+
+export const getRessource = (ressourceKey: string | undefined) => {
+  return ressourceKey ? articlesBySlug[ressourceKey] : undefined;
 };
