@@ -427,9 +427,14 @@ function DemandesAdmin(): React.ReactElement {
           </div>
         ),
         enableSorting: false,
+        exportFn: (row) => row.Mail ?? '',
+        exportHeader: 'Email',
         header: 'Contact',
         width: '280px',
       },
+      { accessorKey: 'Nom', exportOnly: true, header: 'Nom', visible: false },
+      { accessorKey: 'Prénom', exportOnly: true, header: 'Prénom', visible: false },
+      { accessorKey: 'Téléphone', exportOnly: true, header: 'Téléphone', visible: false },
       {
         accessorKey: 'Structure',
         cell: ({ row }) => <Tag text={row.original.Structure} />,
@@ -458,6 +463,7 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'testAddress.ban_address',
         cell: (info) => <TableAddressAutocomplete demand={info.row.original} />,
         enableSorting: false,
+        exportFn: (row) => row.testAddress.ban_address ?? row.Adresse ?? '',
         header: 'Adresse',
         width: '240px',
       },
@@ -465,6 +471,7 @@ function DemandesAdmin(): React.ReactElement {
         accessorKey: 'Date de la demande',
         cellType: 'DateTime',
         enableGlobalFilter: false,
+        exportFn: (row) => dayjs(row['Date de la demande']).format('DD/MM/YYYY'),
         filterType: 'Range',
         header: 'Date de la demande',
         width: '94px',
@@ -498,8 +505,17 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorKey: 'testAddress.eligibility.id_sncu',
+        exportFn: (row) => row.testAddress.eligibility?.id_sncu ?? '',
+        exportOnly: true,
         filterType: 'Facets',
         header: 'Réseau le plus proche',
+        visible: false,
+      },
+      {
+        accessorKey: 'Distance au réseau',
+        exportHeader: 'Distance au réseau (m)',
+        exportOnly: true,
+        header: 'Distance au réseau',
         visible: false,
       },
       {
@@ -517,6 +533,8 @@ function DemandesAdmin(): React.ReactElement {
           );
         },
         enableSorting: false,
+        exportFn: (row) => (row.testAddress.eligibility?.type ? eligibilityTitleByType[row.testAddress.eligibility.type] : ''),
+        exportHeader: 'Éligibilité',
         header: () => 'Historique éligibilité',
         width: '100px',
       },
@@ -561,6 +579,7 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorKey: 'departement_code',
+        exportOnly: true,
         filtersDialogDescription: 'Filtrer par code département.',
         filtersDialogLabel: 'Département',
         filterType: 'Facets',
@@ -703,6 +722,10 @@ function DemandesAdmin(): React.ReactElement {
               height="calc(100dvh - 164px)"
               scrollToRowRef={scrollToRowRef}
               urlSyncKey={demandsTableUrlSyncKey}
+              export={{
+                fileName: `demandes_${dayjs().format('YYYY-MM-DD')}.xlsx`,
+                sheetName: 'demandes',
+              }}
             />
           </ResizablePanel>
           <ResizableSeparator />
