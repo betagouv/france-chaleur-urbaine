@@ -65,8 +65,7 @@ function FranceRenovAdvisorContent({ franceRenovSpace, isLoading, isOpen, varian
         <>
           <h4 className="text-xl font-bold md:text-2xl">Échangez avec un·e conseiller·ère neutre et gratuit·e du service public</h4>
           <p className="mb-4">
-            Un·e conseiller·ère du service public vous aidera à identifier la meilleure alternative parmi les solutions compatibles
-            ci-dessus.
+            Un·e conseiller·ère du service public vous aidera à identifier la solution la plus adaptée à votre situation.
           </p>
         </>
       )}

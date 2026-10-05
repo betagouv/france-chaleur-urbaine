@@ -42,7 +42,7 @@ const contactRecipients = [
     label: 'Je n’ai pas encore contacté le gestionnaire',
   },
   {
-    description: 'Un·e conseiller·ère vous aidera à identifier la meilleure alternative parmi les solutions compatibles ci-dessus',
+    description: 'Un·e conseiller·ère vous aidera à identifier la solution la plus adaptée à votre situation',
     id: 'public-advisor',
     label: 'J’ai déjà reçu un refus ou une réponse négative',
   },
@@ -208,7 +208,14 @@ function ProjectStatusSelect({
 
   return (
     <div ref={containerRef}>
-      <FieldWrapper label="Où en êtes-vous de votre projet ? (optionnel)" className="mb-0">
+      <FieldWrapper
+        label={
+          <>
+            Où en êtes-vous de votre projet ?<small> (Optionnel)</small>
+          </>
+        }
+        className="mb-0"
+      >
         <div className="relative">
           <button
             type="button"
@@ -302,7 +309,7 @@ function getFormTitle(isHeatNetworkEligible: boolean) {
 function getFormDescription(isHeatNetworkEligible: boolean) {
   return isHeatNetworkEligible
     ? 'Vous êtes éligible au réseau de chaleur. C’est lui qu’il faut contacter en priorité : le gestionnaire évaluera gratuitement la faisabilité technique et le coût exact du raccordement pour votre bâtiment.'
-    : 'Votre demande sera transmise à votre conseiller.ère chaleur renouvelable compétent sur votre territoire pour vous accompagner dans la suite de votre projet.';
+    : 'Votre demande sera transmise à un·e conseiller·ère chaleur renouvelable compétent·e sur votre territoire pour vous accompagner dans la suite de votre projet.';
 }
 
 function hasOrganizationNameField(occupantStatus: OccupantStatus) {
@@ -528,7 +535,7 @@ function HeatNetworkDemandForm({
       </h4>
       <p className="mb-4 max-w-5xl">
         {shouldShowFranceRenovAdvisor
-          ? 'Un·e conseiller·ère du service public vous aidera à identifier la meilleure alternative parmi les solutions compatibles ci-dessus.'
+          ? 'Un·e conseiller·ère du service public vous aidera à identifier la solution la plus adaptée à votre situation.'
           : getFormDescription(isHeatNetworkEligible && !isPublicAdvisorSelected)}
       </p>
       {isHeatNetworkEligible && <ContactRecipientSelector selectedRecipientId={selectedRecipientId} onSelect={handleSelectRecipient} />}
@@ -540,7 +547,7 @@ function HeatNetworkDemandForm({
             <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
             <span>
               {isCcrtDemand ? (
-                'La demande sera transmise à votre conseiller.ère chaleur renouvelable compétent.'
+                'La demande sera transmise à un·e conseiller·ère chaleur renouvelable compétent·e.'
               ) : (
                 <>
                   Votre demande sera transmise au gestionnaire du réseau de chaleur
@@ -666,7 +673,7 @@ function HeatNetworkDemandForm({
               {isPublicAdvisorSelected && (
                 <>
                   <RichSelect
-                    label="Quand avez-vous reçu le refus ou la réponse négative du réseau de chaleur ?"
+                    label="Quand avez-vous reçu la réponse négative du réseau de chaleur ?"
                     value={refusalPeriod || undefined}
                     onChange={setRefusalPeriod}
                     options={refusalPeriodOptions}
@@ -715,7 +722,12 @@ function HeatNetworkDemandForm({
       )}
       <Dialog title="" open={isSubmissionDialogOpen && submissionResult !== null} size="lg" onOpenChange={setIsSubmissionDialogOpen}>
         {submissionResult && (
-          <DemandSubmittedPanel nextStepsContext={nextStepsContext} showEmailNotice={false} submissionResult={submissionResult} />
+          <DemandSubmittedPanel
+            nextStepsContext={nextStepsContext}
+            showEmailNotice={false}
+            showHeatNetworkActions={nextStepsContext !== 'renewable-advisor'}
+            submissionResult={submissionResult}
+          />
         )}
       </Dialog>
     </section>

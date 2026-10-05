@@ -603,7 +603,7 @@ const heatingModeCases: HeatingModeCase[] = [
         overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant', typeRadiateur: 'radiateur-electrique' },
       },
     ],
-    label: 'Système solaire combiné ',
+    label: 'Système solaire combiné',
     possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
@@ -1085,6 +1085,33 @@ describe('modesDeChauffage', () => {
 
     expect(heatingMode.rafraichissementPossible).toStrictEqual(true);
     expect(heatingMode.avantages.includes(COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual(true);
+  });
+
+  it('uses the reviewed house geothermal ranking and advantages', () => {
+    const heatingMode = getResolvedMode(
+      'maison_individuelle',
+      'PAC géothermique',
+      'heatingAndHotWater',
+      createSituation({ espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Couplé au chauffage' })
+    );
+
+    expect(heatingMode.classement).toStrictEqual(3);
+    expect(heatingMode.avantages).toStrictEqual([
+      'Faibles émissions de CO₂',
+      'Coût de la chaleur compétitif',
+      'Aucune unité extérieure visible',
+      COOLING_POSSIBLE_ADVANTAGE,
+    ]);
+  });
+
+  it('does not mention electric radiators in wood stove prerequisites', () => {
+    const prerequisiteLabels = getMode('maison_individuelle', 'Poêle ou insert à bois - chauffage seul', 'heatingAndHotWater')
+      .prerequis(createSituation({ espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' }))
+      .map((row) => row.label);
+
+    expect(prerequisiteLabels).toContain('Maison à chauffage individuel');
+    expect(prerequisiteLabels).toContain('Présence d’un conduit d’évacuation');
+    expect(prerequisiteLabels).not.toContain('Maison à chauffage individuel et radiateurs électriques');
   });
 
   it('resolves heat network cooling from cold network distance', () => {

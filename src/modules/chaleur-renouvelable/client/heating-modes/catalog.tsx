@@ -667,7 +667,8 @@ export const modesDeChauffage = {
   ],
   maison_individuelle: [
     {
-      avantages: ['Faibles émissions de CO₂', 'Suppression des chaudières (gain de place, sécurité)', 'Aucune nuisance sonore'],
+      avantages: ['Faibles émissions de CO₂', 'Coût de la chaleur compétitif', 'Aucune unité extérieure visible'],
+      classement: 3,
       description: (
         <>
           Votre maison est <strong>située en zone favorable à la géothermie.</strong>
@@ -732,7 +733,7 @@ export const modesDeChauffage = {
         'Coût de la chaleur compétitif et stable',
         'Énergie renouvelable et locale',
       ],
-      classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 1 : 2),
+      classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 12 : 13),
       description: (
         <>
           Une chaudière à bûches, à granulés ou plaquettes, pourrait équiper votre maison. Sous réserve d’espaces suffisamment importants et
@@ -779,7 +780,7 @@ export const modesDeChauffage = {
     },
     {
       avantages: ['Faibles émissions de CO₂', 'Économique si bien dimensionnée'],
-      classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 2 : 1),
+      classement: (situation: Situation) => (hasHighAltitudeWithoutAirProtectionPlan(situation) ? 13 : 12),
       description: (
         <>
           Votre maison semble adaptée à l'installation d'une pompe à chaleur air/eau individuelle. Elle remplace votre chaudière et produit
@@ -835,11 +836,12 @@ export const modesDeChauffage = {
         'Longévité des équipements',
         'Énergie renouvelable et locale',
       ],
+      classement: 15,
       description: (
         <>
-          Votre maison pourrait accueillir un poêle à bûches ou à granulés, en appoint ou en chauffage principal d'une pièce de vie. Cette
-          solution renouvelable, au bois local, avec un coût de la chaleur compétitif est à compléter par un système de chauffage central
-          et/ou d’eau chaude.
+          Votre maison pourrait accueillir un poêle à bûches ou à granulés, un insert ou un foyer fermé, en appoint ou en chauffage
+          principal d'une pièce de vie. Cette solution renouvelable, au bois local, présente un coût de chaleur compétitif et stable, mais
+          reste généralement à compléter par un système de chauffage central et/ou d’eau chaude.
         </>
       ),
       estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Indépendant']),
@@ -862,11 +864,12 @@ export const modesDeChauffage = {
       pertinence: 3,
       prerequis: (situation) => [
         {
-          label: 'Maison à chauffage individuel et radiateurs électriques',
+          label: 'Maison à chauffage individuel',
           source: 'Formulaire',
           status: 'favorable',
         },
         ...getPpaPrerequisite(situation, 'poele'),
+        { label: 'Présence d’un conduit d’évacuation', status: 'averifier' },
         { label: 'Accessibilité de la parcelle pour la livraison du combustible', status: 'averifier' },
       ],
       publicodeKey: 'poêle à granulés',
@@ -874,6 +877,7 @@ export const modesDeChauffage = {
     },
     {
       avantages: ['Faibles émissions de CO₂', 'Économique si bien dimensionnée', 'Installation relativement simple'],
+      classement: 16,
       description: (
         <>
           Votre maison pourrait accueillir une pompe à chaleur air/air, qui capte les calories de l'air extérieur pour chauffer (ou
@@ -920,6 +924,7 @@ export const modesDeChauffage = {
     },
     {
       avantages: ['Aucune émission CO₂', 'Technologie mature', "Coût de la chaleur compétitif une fois l'installation amortie"],
+      classement: 9,
       description: (
         <>
           L’exposition et la surface de votre toiture pourraient être propices à l’installation de capteurs solaires thermiques pour couvrir
@@ -967,6 +972,7 @@ export const modesDeChauffage = {
         'Longévité des équipements',
         'Couvre à la fois chauffage et ECS',
       ],
+      classement: 6,
       description: (
         <>
           L’exposition et la surface de votre toiture pourraient être propices à l’installation d’un système solaire combiné. Les panneaux
@@ -983,7 +989,7 @@ export const modesDeChauffage = {
       icone: 'img/icon-solaire.webp',
       id: 'house-combined-solar-system',
       inconvenients: ['Investissement initial important', "Nécessite un système d'appoint (gaz, bois ou électricité)"],
-      label: 'Système solaire combiné ',
+      label: 'Système solaire combiné',
       pertinence: 3,
       prerequis: (situation) => [
         {
@@ -1005,6 +1011,7 @@ export const modesDeChauffage = {
         "Économique à l'usage par rapport à un ballon électrique classique",
         'Solution simple à installer',
       ],
+      classement: 18,
       description: (
         <>
           Votre logement pourrait accueillir un chauffe-eau thermodynamique avec unité extérieure. Il produit votre eau chaude sanitaire à

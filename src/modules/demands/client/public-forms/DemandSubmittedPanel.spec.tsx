@@ -41,4 +41,14 @@ describe('DemandSubmittedPanel', () => {
 
     expect(screen.queryByText(/Un e-mail de confirmation vient de vous être envoyé/)).not.toBeInTheDocument();
   });
+
+  it('hides heat-network actions for renewable advisor confirmations', () => {
+    render(
+      <DemandSubmittedPanel nextStepsContext="renewable-advisor" showHeatNetworkActions={false} submissionResult={submissionResult} />
+    );
+
+    expect(screen.getByText(/Votre demande est transmise à votre conseiller·ère chaleur renouvelable/)).toBeInTheDocument();
+    expect(screen.queryByText('Accéder à mon espace personnel')).not.toBeInTheDocument();
+    expect(screen.queryByText('Téléchargez notre guide pratique du raccordement')).not.toBeInTheDocument();
+  });
 });

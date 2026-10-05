@@ -18,6 +18,7 @@ const formatDemandDate = (isoDate: string) => {
 export type DemandSubmittedPanelProps = {
   nextStepsContext?: 'heat-network' | 'renewable-advisor';
   showEmailNotice?: boolean;
+  showHeatNetworkActions?: boolean;
   submissionResult: DemandSubmissionResult;
 };
 
@@ -25,7 +26,12 @@ export type DemandSubmittedPanelProps = {
  * Écran affiché après soumission d'une demande de mise en relation (espace public).
  * Deux cas : demande nouvellement enregistrée, ou demande déjà déposée (même email + adresse < 30 jours).
  */
-function DemandSubmittedPanel({ nextStepsContext = 'heat-network', showEmailNotice = true, submissionResult }: DemandSubmittedPanelProps) {
+function DemandSubmittedPanel({
+  nextStepsContext = 'heat-network',
+  showEmailNotice = true,
+  showHeatNetworkActions = true,
+  submissionResult,
+}: DemandSubmittedPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Le panneau remplace un formulaire long dans une modale DSFR : sans ça, le scroll reste en bas (no-op hors modale).
@@ -36,9 +42,18 @@ function DemandSubmittedPanel({ nextStepsContext = 'heat-network', showEmailNoti
   return (
     <div ref={containerRef}>
       {submissionResult.isExisting ? (
-        <ExistingDemandPanel showEmailNotice={showEmailNotice} submissionResult={submissionResult} />
+        <ExistingDemandPanel
+          showEmailNotice={showEmailNotice}
+          showHeatNetworkActions={showHeatNetworkActions}
+          submissionResult={submissionResult}
+        />
       ) : (
-        <NewDemandPanel nextStepsContext={nextStepsContext} showEmailNotice={showEmailNotice} submissionResult={submissionResult} />
+        <NewDemandPanel
+          nextStepsContext={nextStepsContext}
+          showEmailNotice={showEmailNotice}
+          showHeatNetworkActions={showHeatNetworkActions}
+          submissionResult={submissionResult}
+        />
       )}
     </div>
   );
@@ -49,10 +64,11 @@ export default DemandSubmittedPanel;
 type NewDemandPanelProps = {
   nextStepsContext: NonNullable<DemandSubmittedPanelProps['nextStepsContext']>;
   showEmailNotice: boolean;
+  showHeatNetworkActions: boolean;
   submissionResult: DemandSubmissionResult;
 };
 
-function NewDemandPanel({ nextStepsContext, showEmailNotice, submissionResult }: NewDemandPanelProps) {
+function NewDemandPanel({ nextStepsContext, showEmailNotice, showHeatNetworkActions, submissionResult }: NewDemandPanelProps) {
   const networkLabel =
     submissionResult.isEligible && submissionResult.networkName
       ? `${submissionResult.networkName}${submissionResult.distance != null ? ` (~${Math.round(submissionResult.distance)} m)` : ''}`
@@ -89,25 +105,27 @@ function NewDemandPanel({ nextStepsContext, showEmailNotice, submissionResult }:
         <strong>Inutile de renvoyer votre demande.</strong> Elle est enregistrée, vous serez recontacté·e directement.
       </InfoCallout>
 
-      <PersonalSpaceButton />
+      {showHeatNetworkActions && <PersonalSpaceButton />}
 
-      <div className="flex items-center gap-3 border border-(--border-default-grey) p-4">
-        <span className="fr-icon-download-line text-(--text-action-high-blue-france) shrink-0" aria-hidden="true" />
-        <div>
-          <Link
-            href="/documentation/guide-france-chaleur-urbaine.pdf"
-            eventKey="Téléchargement|Guide FCU|Confirmation éligibilité"
-            postHogEventKey="content:click"
-            postHogEventProps={{ content_name: 'Guide Copropriétés', content_type: 'guide', source: 'confirmation-demande' }}
-            isExternal
-          >
-            Téléchargez notre guide pratique du raccordement
-          </Link>
-          <p className="fr-text--xs text-(--text-mention-grey) mb-0 mt-2">
-            Les étapes d'un raccordement et les aides financières mobilisables en PDF.
-          </p>
+      {showHeatNetworkActions && (
+        <div className="flex items-center gap-3 border border-(--border-default-grey) p-4">
+          <span className="fr-icon-download-line text-(--text-action-high-blue-france) shrink-0" aria-hidden="true" />
+          <div>
+            <Link
+              href="/documentation/guide-france-chaleur-urbaine.pdf"
+              eventKey="Téléchargement|Guide FCU|Confirmation éligibilité"
+              postHogEventKey="content:click"
+              postHogEventProps={{ content_name: 'Guide Copropriétés', content_type: 'guide', source: 'confirmation-demande' }}
+              isExternal
+            >
+              Téléchargez notre guide pratique du raccordement
+            </Link>
+            <p className="fr-text--xs text-(--text-mention-grey) mb-0 mt-2">
+              Les étapes d'un raccordement et les aides financières mobilisables en PDF.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -137,10 +155,11 @@ function RenewableAdvisorNextSteps() {
 
 type ExistingDemandPanelProps = {
   showEmailNotice: boolean;
+  showHeatNetworkActions: boolean;
   submissionResult: DemandSubmissionResult;
 };
 
-function ExistingDemandPanel({ showEmailNotice, submissionResult }: ExistingDemandPanelProps) {
+function ExistingDemandPanel({ showEmailNotice, showHeatNetworkActions, submissionResult }: ExistingDemandPanelProps) {
   return (
     <div className="flex flex-col gap-5">
       <PanelHeader iconClassName="fr-icon-info-fill text-(--text-action-high-blue-france)" title="Demande déjà enregistrée" />
@@ -170,13 +189,17 @@ function ExistingDemandPanel({ showEmailNotice, submissionResult }: ExistingDema
         </EmailNotice>
       )}
 
-      <InfoCallout>
-        <strong>Suivez l'évolution de votre demande depuis votre espace personnel France Chaleur Urbaine.</strong>
-        <br />
-        Toujours pas de réponse du gestionnaire sous 30 jours ? Signalez-le nous directement depuis votre espace personnel.
-      </InfoCallout>
+      {showHeatNetworkActions && (
+        <>
+          <InfoCallout>
+            <strong>Suivez l'évolution de votre demande depuis votre espace personnel France Chaleur Urbaine.</strong>
+            <br />
+            Toujours pas de réponse du gestionnaire sous 30 jours ? Signalez-le nous directement depuis votre espace personnel.
+          </InfoCallout>
 
-      <PersonalSpaceButton />
+          <PersonalSpaceButton />
+        </>
+      )}
     </div>
   );
 }
