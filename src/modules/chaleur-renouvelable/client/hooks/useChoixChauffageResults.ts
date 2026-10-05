@@ -67,7 +67,7 @@ export function useChoixChauffageResults() {
   );
 
   const { coutParAnGaz, coutParAnGazHotWaterOnly, modesEnriched } = useMemo(
-    () => getHeatingModeCosts(engine, modesDeChauffage),
+    () => getHeatingModeCosts(engine, modesDeChauffage, situation),
     [engine, modesDeChauffage, situation]
   );
 
