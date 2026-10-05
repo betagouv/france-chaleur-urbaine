@@ -540,8 +540,8 @@ const DonneesPage = () => {
                 </td>
                 <td>
                   Information textuelle libre fournie par le gestionnaire ou le maître d'ouvrage via notre{' '}
-                  <Link href="/contribution">formulaire de contribution</Link>. Peut également contenir des fichiers joints. Contient
-                  généralement le schéma directeur du réseau.
+                  <Link href="/reseaux/modifier">formulaire de modification de fiche</Link>. Peut également contenir des fichiers joints.
+                  Contient généralement le schéma directeur du réseau.
                 </td>
               </tr>
               <tr>

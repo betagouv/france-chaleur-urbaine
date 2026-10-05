@@ -1,73 +1,34 @@
 import { z } from 'zod';
 
+import { type AllowedFileExtension, allowedFileTypes, fileUploadLimits } from '@/modules/files/constants';
+import type { networkChangeRequestContactTypes, networkChangeRequestKinds } from '@/modules/network-change-requests/constants';
 import { formatFileSize } from '@/utils/strings';
-import { nonEmptyArray } from '@/utils/typescript';
+import { nonEmptyArray, ObjectEntries } from '@/utils/typescript';
 
 export const typesUtilisateur = [
-  {
-    key: 'Collectivité',
-    label: 'une collectivité',
-  },
-  {
-    key: 'Exploitant',
-    label: 'un exploitant',
-  },
-  {
-    key: 'Autre',
-    label: 'autre',
-  },
-] as const;
+  { key: 'collectivite', label: 'une collectivité' },
+  { key: 'exploitant', label: 'un exploitant' },
+  { key: 'autre', label: 'autre' },
+] as const satisfies readonly { key: (typeof networkChangeRequestContactTypes)[number]; label: string }[];
 
 export type TypeUtilisateur = (typeof typesUtilisateur)[number]['key'];
 
+/** Kinds proposed by the contribution form (the page modification has its own form: /reseaux/modifier). */
 export const typesDemande = [
-  {
-    key: 'ajout tracé réseau existant',
-    label: 'ajouter le tracé d’un réseau existant',
-  },
-  {
-    key: 'ajout tracé réseau en construction',
-    label: 'ajouter le tracé d’un réseau en construction (nouveau réseau ou extension)',
-  },
-  {
-    key: 'ajout périmètre développement prioritaire',
-    label: 'ajouter un périmètre de développement prioritaire',
-  },
-  {
-    key: 'ajout schéma directeur',
-    label: 'ajouter un schéma directeur',
-  },
-  {
-    key: 'autre',
-    label: 'autre',
-  },
-] as const;
+  { key: 'trace_existant', label: 'ajouter le tracé d’un réseau existant' },
+  { key: 'trace_construction', label: 'ajouter le tracé d’un réseau en construction (nouveau réseau ou extension)' },
+  { key: 'pdp', label: 'ajouter un périmètre de développement prioritaire' },
+  { key: 'autre', label: 'autre' },
+] as const satisfies readonly { key: (typeof networkChangeRequestKinds)[number]; label: string }[];
 
 export type TypeDemande = (typeof typesDemande)[number]['key'];
 
-export const filesLimits = {
-  maxFileSize: 50 * 1024 * 1024,
-  maxFiles: 10,
-  maxTotalFileSize: 250 * 1024 * 1024,
-};
+export const filesLimits = fileUploadLimits;
 
-export const geoAllowedExtensions = [
-  '.geojson',
-  '.json',
-  '.shp',
-  '.shx',
-  '.dbf',
-  '.prj',
-  '.cpg',
-  '.qmd',
-  '.kml',
-  '.kmz',
-  '.gpkg',
-  '.zip',
-  '.pdf',
-];
-
-export const docAllowedExtensions = ['.pdf', '.doc', '.docx', '.odt', '.zip'];
+/** Geo formats (and PDF) accepted for a trace or a perimeter, from the server-side allowlist. */
+export const geoAllowedExtensions = ObjectEntries(allowedFileTypes)
+  .filter(([, fileType]) => fileType.group === 'geo' || fileType.group === 'pdf')
+  .map(([extension]) => extension as AllowedFileExtension);
 
 const requiredShapefileExtensions = ['.shp', '.prj'];
 
@@ -154,7 +115,7 @@ const createZipInspector = (allowedExtensions: string[]) => {
   };
 };
 
-// full validation for the API schema: sync checks + zip inspection in one schema
+// full validation for the submit: sync checks + zip inspection in one schema
 const createFilesSchemaWithZipInspection = (allowedExtensions: string[]) => {
   const inspectZips = createZipInspector(allowedExtensions);
   return createFilesSchema(allowedExtensions).superRefine(async (files, ctx) => {
@@ -166,7 +127,8 @@ const createFilesSchemaWithZipInspection = (allowedExtensions: string[]) => {
   });
 };
 
-const stringSchema = z.string({ error: 'Ce champ est obligatoire' });
+// same rules as the server input (`zCreateNetworkChangeRequestInput`): a server rejection is never expected on a valid form
+const requiredStringSchema = z.string({ error: 'Ce champ est obligatoire' }).trim().min(1, 'Ce champ est obligatoire');
 const optionalPositiveNumberSchema = z.number().positive('La puissance doit être supérieure à 0').optional();
 
 const sncuIdentificationFieldsShape = {
@@ -185,7 +147,7 @@ export const zCommonFormData = z.object({
 });
 
 export const isTypeUtilisateurAutreValid = (data: { typeUtilisateur?: string; typeUtilisateurAutre?: string }) =>
-  data.typeUtilisateur !== 'Autre' || !!data.typeUtilisateurAutre;
+  data.typeUtilisateur !== 'autre' || !!data.typeUtilisateurAutre;
 export const typeUtilisateurAutreRefineParams = { message: 'Ce champ est obligatoire', path: ['typeUtilisateurAutre'], when: () => true };
 
 export const isEmailReferentCommercialValid = (data: {
@@ -202,43 +164,38 @@ export const emailReferentCommercialRefineParams = {
 const createContributionBranches = (filesSchema: typeof createFilesSchema) => {
   const reseauFieldsShape = {
     commentaire: z.string().optional(),
-    emailReferentCommercial: z.string().optional(),
+    emailReferentCommercial: z.union([z.literal(''), z.email()], { error: "L'adresse email n'est pas valide" }).optional(),
     fichiers: filesSchema(geoAllowedExtensions),
     fichiersPDP: filesSchema(geoAllowedExtensions).optional(),
-    gestionnaire: stringSchema,
+    gestionnaire: requiredStringSchema,
     ...sncuIdentificationFieldsShape,
-    localisation: stringSchema,
-    maitreOuvrage: stringSchema,
-    nomReseau: stringSchema,
+    localisation: z.string().trim().optional(),
+    maitreOuvrage: requiredStringSchema,
+    nomReseau: requiredStringSchema,
     ouvertAuxRaccordements: z.boolean({ error: 'Ce choix est obligatoire' }),
     reseauDeclasse: z.boolean().optional(),
   };
 
   return [
     zCommonFormData.extend({
-      typeDemande: z.literal('ajout tracé réseau existant'),
+      typeDemande: z.literal('trace_existant'),
       ...reseauFieldsShape,
     }),
     zCommonFormData.extend({
-      typeDemande: z.literal('ajout tracé réseau en construction'),
+      typeDemande: z.literal('trace_construction'),
       ...reseauFieldsShape,
-      dateMiseEnServicePrevisionnelle: stringSchema,
+      dateMiseEnServicePrevisionnelle: requiredStringSchema,
       puissanceTotalePrevisionnelleMW: optionalPositiveNumberSchema,
     }),
     zCommonFormData.extend({
       fichiers: filesSchema(geoAllowedExtensions),
       ...sncuIdentificationFieldsShape,
-      localisation: stringSchema,
-      nomReseau: stringSchema,
-      typeDemande: z.literal('ajout périmètre développement prioritaire'),
+      localisation: requiredStringSchema,
+      nomReseau: requiredStringSchema,
+      typeDemande: z.literal('pdp'),
     }),
     zCommonFormData.extend({
-      fichiers: filesSchema(docAllowedExtensions),
-      nomReseau: stringSchema,
-      typeDemande: z.literal('ajout schéma directeur'),
-    }),
-    zCommonFormData.extend({
-      precisions: stringSchema,
+      precisions: requiredStringSchema,
       typeDemande: z.literal('autre'),
     }),
   ] as const;
@@ -247,12 +204,16 @@ const createContributionBranches = (filesSchema: typeof createFilesSchema) => {
 export const zContributionFormDataBase = z.discriminatedUnion(
   'typeDemande',
   createContributionBranches(createFilesSchemaWithZipInspection),
-  { error: 'Ce choix est obligatoire' }
+  {
+    error: 'Ce choix est obligatoire',
+  }
 );
 
 export const zContributionFormData = zContributionFormDataBase
   .refine(isEmailReferentCommercialValid, emailReferentCommercialRefineParams)
   .refine(isTypeUtilisateurAutreValid, typeUtilisateurAutreRefineParams);
+
+export type ContributionFormData = z.infer<typeof zContributionFormData>;
 
 export type ContributionFormValues = Omit<z.input<typeof zCommonFormData>, 'dansCadreDemandeADEME' | 'typeUtilisateur'> & {
   dansCadreDemandeADEME?: boolean;
@@ -310,4 +271,3 @@ export const createFichiersFieldValidator = (allowedExtensions: string[], option
 
 export const geoFichiersValidator = createFichiersFieldValidator(geoAllowedExtensions);
 export const optionalGeoFichiersValidator = createFichiersFieldValidator(geoAllowedExtensions, { required: false });
-export const docFichiersValidator = createFichiersFieldValidator(docAllowedExtensions);

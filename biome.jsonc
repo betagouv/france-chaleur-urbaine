@@ -165,6 +165,14 @@
       "style": {
         "noDescendingSpecificity": "off", // désactivé car trop de cas complexes avec CSS
         "noNonNullAssertion": "off", // désactivé car souvent nécessaire avec TypeScript strict
+        "noRestrictedImports": {
+          "level": "warn", // dépréciation : les usages historiques restent à migrer
+          "options": {
+            "paths": {
+              "next/link": "Utilisez le composant Link du projet (@/components/ui/Link) : DSFR, isExternal, tracking."
+            }
+          }
+        },
         "useConsistentArrayType": {
           "level": "error",
           "options": {
@@ -215,6 +223,11 @@
     }
   },
   "overrides": [
+    {
+      // seuls endroits où le composant Link de Next est nécessaire (wrapper du projet, enregistrement DSFR)
+      "includes": ["src/components/ui/Link.tsx", "src/components/Theme/ThemeProvider.tsx", "src/pages/_app.tsx"],
+      "linter": { "rules": { "style": { "noRestrictedImports": "off" } } }
+    },
     {
       "includes": ["src/modules/**/server/**", "src/server/**"],
       "linter": {

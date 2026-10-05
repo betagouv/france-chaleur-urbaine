@@ -214,6 +214,13 @@ export const businessRules = {
     label: 'Conservation des demandes closes',
     value: 3,
   },
+  retentionNetworkChangeRequestsYears: {
+    description:
+      "Passé ce délai après leur traitement (acceptation ou refus), les demandes de modification de réseau sont anonymisées lors de l'application des règles de conservation : identité et coordonnées du déposant effacées, contenu des fichiers supprimé, valeurs proposées et décision conservées.",
+    display: '3 ans',
+    label: 'Conservation des demandes de modification de réseau traitées',
+    value: 3,
+  },
   secondRelanceDelayDays: {
     description: 'Délai après le dépôt avant la seconde relance de satisfaction du demandeur.',
     display: '45 jours',
@@ -225,6 +232,12 @@ export const businessRules = {
     display: '7 jours',
     label: 'Rappel des demandes en attente',
     value: 7,
+  },
+  uploadedFileOrphanRetentionHours: {
+    description: 'Délai après lequel un fichier déposé mais jamais rattaché à une demande (formulaire abandonné) est supprimé.',
+    display: '24 heures',
+    label: 'Fichiers déposés orphelins : délai de suppression',
+    value: 24,
   },
   veryEligibleDistanceDefault: {
     description: "En dessous, l'adresse est très proche d'un réseau : le cas le plus favorable.",

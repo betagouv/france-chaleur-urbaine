@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server';
 import type { ExpressionBuilder, RawBuilder } from 'kysely';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
@@ -7,31 +8,41 @@ import { parseBbox } from '@/modules/geo/client/helpers';
 import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
 import type { BoundingBox } from '@/modules/geo/types';
 import { createWarnEligibilityChangesJob } from '@/modules/pro-eligibility-tests/server/service';
-import { type ApplyGeometriesUpdatesInput, type NetworkType, networkSlugToEntity } from '@/modules/reseaux/constants';
+import {
+  type ApplyGeometriesUpdatesInput,
+  type NetworkType,
+  networkSlugToEntity,
+  normalizeNetworkValue,
+} from '@/modules/reseaux/constants';
 import { type NetworkTable, updateNetworkHasPDP } from '@/modules/reseaux/server/geometry-operations';
 import { syncLinkedNetworkFields } from '@/modules/reseaux/server/linked-fields-sync';
 import { reminderJsonAggSQL } from '@/modules/reseaux/server/reminders';
-import { createBuildTilesJob, createSyncGeometriesToAirtableJob, createSyncMetadataFromAirtableJob } from '@/modules/tiles/server/service';
+import { createBuildTilesJob } from '@/modules/tiles/server/service';
 import { type DB, kdb, sql, type ZoneDeDeveloppementPrioritaire, type ZonesEtReseauxEnConstruction } from '@/server/db/kysely';
 import type { ApiContext } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
-import type { Network, NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
+
+import { networkFieldDefinitions } from '../field-sources';
+import { networkDocumentsJsonAgg } from './documents';
 
 const logger = parentLogger.child({
   module: 'reseaux',
 });
 
-export const getNetwork = async (id: string): Promise<Network> => {
-  const result = await kdb
+/** A heat network for its public page (`/reseaux/<sncu>`). */
+export const getNetwork = async (id: string) =>
+  await kdb
     .selectFrom('reseaux_de_chaleur')
     .select([
+      sql<'reseau_de_chaleur'>`'reseau_de_chaleur'`.as('type'),
       'id_fcu',
       'Taux EnR&R',
-      'Identifiant reseau',
+      sql<string>`"Identifiant reseau"`.as('Identifiant reseau'),
       'communes',
       'has_trace',
       'Gestionnaire',
+      'gestionnaire_fcu',
       'contenu CO2',
       'contenu CO2 ACV',
       'ecoreseau',
@@ -98,24 +109,25 @@ export const getNetwork = async (id: string): Promise<Network> => {
       'website_gestionnaire',
       'reseaux classes',
       'informationsComplementaires',
-      'fichiers',
+      networkDocumentsJsonAgg('reseaux_de_chaleur', 'reseau_de_chaleur').as('fichiers'),
       'region',
       'ouvert_aux_raccordements',
     ])
     .where('Identifiant reseau', '=', id)
     .executeTakeFirst();
-  return result as unknown as Network;
-};
 
-export const getColdNetwork = async (id: string): Promise<Network> => {
-  const result = await kdb
+/** A cold network for its public page: fewer survey figures than a heat network, no eligibility. */
+export const getColdNetwork = async (id: string) =>
+  await kdb
     .selectFrom('reseaux_de_froid')
     .select([
+      sql<'reseau_de_froid'>`'reseau_de_froid'`.as('type'),
       'id_fcu',
       'Taux EnR&R',
-      'Identifiant reseau',
+      sql<string>`"Identifiant reseau"`.as('Identifiant reseau'),
       'communes',
       'Gestionnaire',
+      'gestionnaire_fcu',
       'contenu CO2',
       'contenu CO2 ACV',
       'Moyenne-annee-DPE',
@@ -136,15 +148,14 @@ export const getColdNetwork = async (id: string): Promise<Network> => {
       sql<number>`ST_Y(ST_Transform(ST_Centroid(geom), 4326))`.as('lat'),
       'website_gestionnaire',
       'informationsComplementaires',
-      'fichiers',
+      networkDocumentsJsonAgg('reseaux_de_froid', 'reseau_de_froid').as('fichiers'),
       'Rend%',
     ])
     .where('Identifiant reseau', '=', id)
     .executeTakeFirst();
-  return result as unknown as Network;
-};
 
-export const listNetworks = async (): Promise<NetworkToCompare[]> => {
+/** Heat networks of the public list and the comparator (`/reseaux`), with the energy shares in percent. */
+export const listNetworks = async () => {
   const networks = await kdb
     .selectFrom('reseaux_de_chaleur')
     .select([
@@ -153,6 +164,7 @@ export const listNetworks = async (): Promise<NetworkToCompare[]> => {
       'Identifiant reseau',
       'has_trace',
       'Gestionnaire',
+      'gestionnaire_fcu',
       'contenu CO2',
       'contenu CO2 ACV',
       'ecoreseau',
@@ -196,7 +208,6 @@ export const listNetworks = async (): Promise<NetworkToCompare[]> => {
       'website_gestionnaire',
       'reseaux classes',
       'informationsComplementaires',
-      'fichiers',
       'region',
       'communes',
       sql<number>`"prod_MWh_biomasse_solide" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100`.as('energie_ratio_biomasse'),
@@ -230,14 +241,14 @@ export const listNetworks = async (): Promise<NetworkToCompare[]> => {
     .where('nom_reseau', 'is not', null)
     .where(sql<boolean>`LENGTH("Identifiant reseau") <= 5`) //Some networks has format 84XXC_16 and are not ready to be displayed
     .execute();
-  return networks.map((network: any) => {
+  return networks.map((network) => {
     return {
       id: network.id_fcu,
       ...network,
       'contenu CO2': isDefined(network['contenu CO2']) ? network['contenu CO2'] * 1000 : null,
       'contenu CO2 ACV': isDefined(network['contenu CO2 ACV']) ? network['contenu CO2 ACV'] * 1000 : null,
       livraisons_totale_MWh: isDefined(network.livraisons_totale_MWh) ? network.livraisons_totale_MWh / 1000 : null,
-    } as NetworkToCompare;
+    };
   });
 };
 
@@ -250,6 +261,8 @@ export const listReseauxDeChaleur = async () => {
       'nom_reseau',
       'communes',
       'Gestionnaire',
+      'gestionnaire_fcu',
+      'gestionnaire_fedene',
       'MO',
       eb
         .selectFrom('organizations')
@@ -263,7 +276,7 @@ export const listReseauxDeChaleur = async () => {
           .whereRef('extension.reseau_de_chaleur_id', '=', 'reseaux_de_chaleur.id_fcu')
           .orderBy('extension.id_fcu')
       ).as('extensions'),
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+      sql<BoundingBox | null>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
@@ -273,6 +286,9 @@ export const listReseauxDeChaleur = async () => {
       'date_actualisation_trace',
       'puissance_totale_MW',
       'ouvert_aux_raccordements',
+      'website_gestionnaire',
+      'informationsComplementaires',
+      networkDocumentsJsonAgg('reseaux_de_chaleur', 'reseau_de_chaleur').as('documents'),
       'notes',
       reminderJsonAggSQL(eb, 'reseaux_de_chaleur', 'reseau_de_chaleur', 'trace').as('reminders'),
       sql<boolean>`geom_update IS NOT NULL AND ST_IsEmpty(geom_update)`.as('geom_delete'),
@@ -283,7 +299,8 @@ export const listReseauxDeChaleur = async () => {
 
   // transforme les bbox en JS pour être performant
   reseauxDeChaleur.forEach((reseau) => {
-    reseau.bbox = parseBbox(reseau.bbox as unknown as string);
+    // null for an entity without geometry yet (e.g. a heat network created by the FEDENE import, trace to come)
+    reseau.bbox = reseau.bbox ? parseBbox(reseau.bbox as unknown as string) : null;
   });
 
   return reseauxDeChaleur;
@@ -310,7 +327,7 @@ export const listReseauxEnConstruction = async () => {
         .select('name')
         .whereRef('organizations.id', '=', 'zones_et_reseaux_en_construction.organization_id')
         .as('organization_name'),
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+      sql<BoundingBox | null>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
@@ -328,7 +345,8 @@ export const listReseauxEnConstruction = async () => {
 
   // transforme les bbox en JS pour être performant
   reseauxDeChaleur.forEach((reseau) => {
-    reseau.bbox = parseBbox(reseau.bbox as unknown as string);
+    // null for an entity without geometry yet (e.g. a heat network created by the FEDENE import, trace to come)
+    reseau.bbox = reseau.bbox ? parseBbox(reseau.bbox as unknown as string) : null;
   });
 
   return reseauxDeChaleur;
@@ -343,13 +361,19 @@ export const listReseauxDeFroid = async () => {
       'nom_reseau',
       'communes',
       'Gestionnaire',
+      'gestionnaire_fcu',
+      'gestionnaire_fedene',
       'MO',
       'has_trace',
       'date_actualisation_trace',
       'puissance_totale_MW',
+      'reseaux classes',
+      'website_gestionnaire',
+      'informationsComplementaires',
+      networkDocumentsJsonAgg('reseaux_de_froid', 'reseau_de_froid').as('documents'),
       'notes',
       reminderJsonAggSQL(eb, 'reseaux_de_froid', 'reseau_de_froid', 'trace').as('reminders'),
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+      sql<BoundingBox | null>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
@@ -361,7 +385,8 @@ export const listReseauxDeFroid = async () => {
 
   // transforme les bbox en JS pour être performant
   reseauxDeFroid.forEach((reseau) => {
-    reseau.bbox = parseBbox(reseau.bbox as unknown as string);
+    // null for an entity without geometry yet (e.g. a heat network created by the FEDENE import, trace to come)
+    reseau.bbox = reseau.bbox ? parseBbox(reseau.bbox as unknown as string) : null;
   });
 
   return reseauxDeFroid;
@@ -392,7 +417,7 @@ export const listPerimetresDeDeveloppementPrioritaire = async () => {
       'communes',
       'notes',
       reminderJsonAggSQL(eb, 'zone_de_developpement_prioritaire', 'perimetre_de_developpement_prioritaire', 'trace').as('reminders'),
-      sql<BoundingBox>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
+      sql<BoundingBox | null>`st_transform(ST_Envelope(COALESCE(CASE WHEN ST_IsEmpty(geom_update) THEN NULL ELSE geom_update END, geom)), 4326)::box2d`.as(
         'bbox'
       ),
       sql<any>`CASE WHEN geom_update IS NOT NULL THEN ST_AsGeoJSON(ST_Transform(geom_update, 4326))::json ELSE NULL END`.as('geom_update'),
@@ -404,7 +429,8 @@ export const listPerimetresDeDeveloppementPrioritaire = async () => {
 
   // transforme les bbox en JS pour être performant
   perimetresDeDeveloppementPrioritaire.forEach((perimetre) => {
-    perimetre.bbox = parseBbox(perimetre.bbox as unknown as string);
+    // null for an entity without geometry yet (e.g. a heat network created by the FEDENE import, trace to come)
+    perimetre.bbox = perimetre.bbox ? parseBbox(perimetre.bbox as unknown as string) : null;
   });
 
   return perimetresDeDeveloppementPrioritaire;
@@ -431,20 +457,73 @@ export const updateReseauEnConstruction = async (
   await syncLinkedNetworkFields();
 };
 
-export const updateReseauDeChaleur = async (
+/**
+ * Fields an admin can change on a heat / cold network. `Gestionnaire`, `MO` and `nom_reseau` are the *displayed* values: they are
+ * stored as FCU corrections (`*_fcu`) of the FEDENE survey value (`*_fedene`), see {@link toFcuOverrides}.
+ */
+export type UpdatableReseauFields = Partial<
+  Pick<
+    DB['reseaux_de_chaleur'],
+    'Identifiant reseau' | 'reseaux classes' | 'ouvert_aux_raccordements' | 'website_gestionnaire' | 'informationsComplementaires'
+  > & { Gestionnaire: string | null; MO: string | null; nom_reseau: string | null }
+>;
+
+const overridableColumns = {
+  Gestionnaire: { fcu: 'gestionnaire_fcu', fedene: 'gestionnaire_fedene' },
+  MO: { fcu: 'mo_fcu', fedene: 'mo_fedene' },
+  nom_reseau: { fcu: 'nom_reseau_fcu', fedene: 'nom_reseau_fedene' },
+} as const;
+type OverridableField = keyof typeof overridableColumns;
+
+/**
+ * Turns displayed values into FCU correction columns: a value equal to the survey one (case and spaces aside) or empty clears
+ * the correction (the survey value is displayed again), any other value is stored as the correction.
+ */
+const toFcuOverrides = async (
+  table: 'reseaux_de_chaleur' | 'reseaux_de_froid',
   id: number,
-  data: Partial<Pick<DB['reseaux_de_chaleur'], 'Gestionnaire' | 'Identifiant reseau' | 'MO' | 'nom_reseau'>>
+  { Gestionnaire, MO, nom_reseau, ...rest }: UpdatableReseauFields
 ) => {
-  await kdb.updateTable('reseaux_de_chaleur').set(data).where('id_fcu', '=', id).execute();
+  const displayed: Partial<Record<OverridableField, string | null>> = { Gestionnaire, MO, nom_reseau };
+  const fields = (Object.keys(overridableColumns) as OverridableField[]).filter((field) => displayed[field] !== undefined);
+  if (fields.length === 0) {
+    return rest;
+  }
+  const survey = await kdb
+    .selectFrom(table)
+    .select(['gestionnaire_fedene', 'mo_fedene', 'nom_reseau_fedene'])
+    .where('id_fcu', '=', id)
+    .executeTakeFirstOrThrow();
+  return {
+    ...rest,
+    ...Object.fromEntries(
+      fields.map((field) => {
+        const value = displayed[field] ?? null;
+        const normalized = normalizeNetworkValue(value);
+        const matchesSurvey = normalized === '' || normalized === normalizeNetworkValue(survey[overridableColumns[field].fedene]);
+        return [overridableColumns[field].fcu, matchesSurvey ? null : value];
+      })
+    ),
+  };
+};
+
+export const updateReseauDeChaleur = async (id: number, data: UpdatableReseauFields) => {
+  const values = await toFcuOverrides('reseaux_de_chaleur', id, data);
+  if (Object.keys(values).length === 0) {
+    return;
+  }
+  await kdb.updateTable('reseaux_de_chaleur').set(values).where('id_fcu', '=', id).execute();
   // Les extensions et PDP liés héritent des champs vides du RC : re-dérive après modification
   await syncLinkedNetworkFields();
 };
 
-export const updateReseauDeFroid = async (
-  id: number,
-  data: Partial<Pick<DB['reseaux_de_froid'], 'Gestionnaire' | 'Identifiant reseau' | 'MO' | 'nom_reseau'>>
-) => {
-  await kdb.updateTable('reseaux_de_froid').set(data).where('id_fcu', '=', id).execute();
+// cold networks have no « ouvert aux raccordements » column (no eligibility on cold networks)
+export const updateReseauDeFroid = async (id: number, { ouvert_aux_raccordements: _ignored, ...data }: UpdatableReseauFields) => {
+  const values = await toFcuOverrides('reseaux_de_froid', id, data);
+  if (Object.keys(values).length === 0) {
+    return;
+  }
+  await kdb.updateTable('reseaux_de_froid').set(values).where('id_fcu', '=', id).execute();
 };
 
 export const updateGeomUpdate = async (
@@ -552,8 +631,8 @@ export const deleteNetwork = async (
   logger.info(`Le réseau ${id_fcu} a été mis en attente de suppression`);
 };
 
-const createReseauDeChaleur = async (id: string, finalGeometry: RawBuilder<any>) => {
-  const id_sncu = id.includes('C') || id.includes('F') ? id : null;
+const createReseauDeChaleur = async (id: string | undefined, finalGeometry: RawBuilder<any>) => {
+  const id_sncu = id && (id.includes('C') || id.includes('F')) ? id : null;
 
   // Pour les réseaux de chaleur, l'ID est l'identifiant réseau (string)
   const maxIdResult = await kdb
@@ -564,7 +643,9 @@ const createReseauDeChaleur = async (id: string, finalGeometry: RawBuilder<any>)
   return await kdb
     .insertInto('reseaux_de_chaleur')
     .values({
-      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id, 10) }),
+      ...(id_sncu
+        ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id }
+        : { id_fcu: id ? parseInt(id, 10) : maxIdResult.next_id }),
       fichiers: [],
       geom: null,
       geom_update: finalGeometry,
@@ -576,7 +657,7 @@ const createReseauDeChaleur = async (id: string, finalGeometry: RawBuilder<any>)
     .executeTakeFirstOrThrow();
 };
 
-// id_fcu attribué automatiquement pour construction et PDP : plus de ligne Airtable à faire
+// id_fcu attribué automatiquement pour construction et PDP
 // correspondre, l'id est purement interne. Sous-requête dans l'INSERT (pas de max+1 côté JS)
 // pour réduire la fenêtre de course ; la PK attrape le cas résiduel.
 const nextIdFcuSQL = (table: 'zones_et_reseaux_en_construction' | 'zone_de_developpement_prioritaire') =>
@@ -610,8 +691,8 @@ const createPerimetreDeDeveloppementPrioritaire = async (finalGeometry: RawBuild
     .executeTakeFirstOrThrow();
 };
 
-const createReseauDeFroid = async (id: string, finalGeometry: RawBuilder<any>) => {
-  const id_sncu = id.includes('C') || id.includes('F') ? id : null;
+const createReseauDeFroid = async (id: string | undefined, finalGeometry: RawBuilder<any>) => {
+  const id_sncu = id && (id.includes('C') || id.includes('F')) ? id : null;
 
   // Pour les réseaux de froid, l'ID est l'identifiant réseau (string)
   const maxIdResult = await kdb
@@ -622,7 +703,9 @@ const createReseauDeFroid = async (id: string, finalGeometry: RawBuilder<any>) =
   return await kdb
     .insertInto('reseaux_de_froid')
     .values({
-      ...(id_sncu ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id } : { id_fcu: parseInt(id, 10) }),
+      ...(id_sncu
+        ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id }
+        : { id_fcu: id ? parseInt(id, 10) : maxIdResult.next_id }),
       fichiers: [],
       geom: null,
       geom_update: finalGeometry,
@@ -641,12 +724,10 @@ export const createNetwork = async (
   const finalGeometry = createGeometryExpression(processedGeometry.geom, processedGeometry.srid);
 
   switch (dbName) {
-    // L'id reste saisi pour chaleur/froid : il doit correspondre à la ligne Airtable (id_fcu ou SNCU)
+    // chaleur / froid : id_fcu automatique, l'identifiant SNCU se saisit ensuite dans la fenêtre de modification
+    // (la CLI peut encore imposer un SNCU ou un id_fcu numérique)
     case 'reseaux_de_chaleur':
     case 'reseaux_de_froid': {
-      if (!id) {
-        throw new Error("L'identifiant est requis pour un réseau de chaleur ou de froid");
-      }
       return dbName === 'reseaux_de_chaleur'
         ? await createReseauDeChaleur(id, finalGeometry)
         : await createReseauDeFroid(id, finalGeometry);
@@ -676,9 +757,10 @@ type TableConfig = {
  * @param config Configuration de la table
  * @returns Array de bounding boxes avec buffer appliqué
  */
-async function getUpdatedNetworkBboxes(config: TableConfig): Promise<BoundingBox[]> {
+async function getUpdatedNetworkBboxes(config: TableConfig, idFcu?: number): Promise<BoundingBox[]> {
   const bboxes = await kdb
     .selectFrom(config.tableName)
+    .$if(idFcu !== undefined, (qb) => qb.where('id_fcu', '=', idFcu as number))
     .select([
       sql<BoundingBox>`ST_Transform(
         ST_Expand(
@@ -782,11 +864,13 @@ async function updateLabelsCommunesDepartementAndRegion(tableName: NetworkTable,
     .execute();
 }
 
-const processTableGeometryUpdates = async (config: TableConfig) => {
+/** Applies the pending drafts (`geom_update`) of a table, or of one network when `idFcu` is given. */
+const processTableGeometryUpdates = async (config: TableConfig, idFcu?: number) => {
   const [created, updated, deleted] = await Promise.all([
     // Créations (!geom && geom_update)
     kdb
       .updateTable(config.tableName)
+      .$if(idFcu !== undefined, (qb) => qb.where('id_fcu', '=', idFcu as number))
       .set((eb) => ({
         communes_insee: communesInseeExpressionGeomUpdate,
         date_actualisation_trace: eb.val(new Date()),
@@ -803,6 +887,7 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
     // Mises à jour (geom && geom_update)
     kdb
       .updateTable(config.tableName)
+      .$if(idFcu !== undefined, (qb) => qb.where('id_fcu', '=', idFcu as number))
       .set((eb) => ({
         communes_insee: communesInseeExpressionGeomUpdate,
         date_actualisation_trace: eb.val(new Date()),
@@ -819,6 +904,7 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
     // Suppressions (geom_update vide)
     kdb
       .deleteFrom(config.tableName)
+      .$if(idFcu !== undefined, (qb) => qb.where('id_fcu', '=', idFcu as number))
       .where('geom_update', 'is not', null)
       .where(sql<boolean>`ST_IsEmpty(geom_update)`)
       .returning('id_fcu')
@@ -845,6 +931,29 @@ const processTableGeometryUpdates = async (config: TableConfig) => {
   };
 };
 
+/**
+ * Applies the draft geometry of one network right away (an accepted change request): the trace goes live, the tiles are
+ * rebuilt and the eligibility of the nearby addresses rechecked, exactly like a « Sync » restricted to this network.
+ */
+export const applyNetworkGeometryDraft = async (tableName: NetworkTable, idFcu: number, userId: string) => {
+  const config = tables.find((table) => table.tableName === tableName);
+  if (!config) {
+    throw new Error(`Table ${tableName} not found`);
+  }
+  // the job helpers only read the user id of the API context
+  const context = { user: { id: userId } } as unknown as ApiContext;
+  const affectedBboxes = await getUpdatedNetworkBboxes(config, idFcu);
+  const processed = await processTableGeometryUpdates(config, idFcu);
+  if (processed.total === 0) {
+    return processed;
+  }
+  await createBuildTilesJob({ name: config.internalName }, context, { replace: true });
+  if (affectedBboxes.length > 0) {
+    await createWarnEligibilityChangesJob(affectedBboxes, context);
+  }
+  return processed;
+};
+
 export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInput, context: ApiContext) => {
   const networkTableConfig = tables.find((table) => table.internalName === name);
   if (!networkTableConfig) {
@@ -866,15 +975,7 @@ export const applyGeometriesUpdates = async ({ name }: ApplyGeometriesUpdatesInp
     updated: updateResults.updated,
   };
 
-  const rebuildingJobIds = [
-    // pas d'onglet airtable pour les PDP
-    ...(name !== 'perimetres-de-developpement-prioritaire' ? [(await createSyncGeometriesToAirtableJob({ name }, context)).id] : []),
-    // import de métadonnées Airtable seulement pour chaleur/froid : celles des réseaux en construction sont gérées dans l'admin
-    ...(name === 'reseaux-de-chaleur' || name === 'reseaux-de-froid'
-      ? [(await createSyncMetadataFromAirtableJob({ name }, context)).id]
-      : []),
-    (await createBuildTilesJob({ name }, context)).id,
-  ];
+  const rebuildingJobIds = [(await createBuildTilesJob({ name }, context)).id];
 
   // Step 4: Créer un job pour vérifier l'éligibilité dans les zones affectées
   if (affectedBboxes.length > 0) {
@@ -1152,4 +1253,35 @@ export const searchNetworks = async (search: string): Promise<NetworkSearchResul
     ...existants.map((r) => ({ ...r, network_type: 'reseau_de_chaleur' as const })),
     ...enConstruction.map((r) => ({ ...r, network_type: 'reseau_en_construction' as const })),
   ];
+};
+
+/**
+ * Every column of a heat or cold network as stored (geometries as WKT summaries), for the admin raw data viewer that
+ * replaces the Airtable grid. Labels and sources come from the field registry on the client.
+ */
+const networkRawDataColumns = (Object.keys(networkFieldDefinitions) as (keyof DB['reseaux_de_chaleur'])[]).filter(
+  (column) => column !== 'geom' && column !== 'geom_update'
+) as Exclude<keyof DB['reseaux_de_chaleur'], 'geom' | 'geom_update'>[];
+
+export const getNetworkRawData = async (
+  table: 'reseaux_de_chaleur' | 'reseaux_de_froid',
+  idFcu: number
+): Promise<Record<string, unknown>> => {
+  const row = await kdb
+    .selectFrom(table)
+    // every column of the registry except the geometries, summarised below instead of fetching their WKB
+    .select(networkRawDataColumns)
+    .select([
+      sql<string | null>`CASE WHEN geom IS NULL THEN NULL ELSE st_geometrytype(geom) || ' (' || st_npoints(geom) || ' points)' END`.as(
+        'geom'
+      ),
+      sql<
+        string | null
+      >`CASE WHEN geom_update IS NULL THEN NULL ELSE st_geometrytype(geom_update) || ' (' || st_npoints(geom_update) || ' points)' END`.as(
+        'geom_update'
+      ),
+    ])
+    .where('id_fcu', '=', idFcu)
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Réseau introuvable' }));
+  return row;
 };

@@ -41,7 +41,7 @@ The platform serves several audiences:
 - Admin manages demand routing via permissions (user_permissions table).
 - Eligibility is determined by geographic proximity: distance from address to nearest network trace.
 - Networks have an energy mix (solar, geothermal, biomass, gas, etc.) and an EnR&R percentage.
-- EnR&R rate, CO2 contents and reference year (`Moyenne-annee-DPE`) are regulatory values imported yearly from the arrêté DPE annex (`pnpm cli data import arrete-dpe`, CSV versioned in `src/data/arrete-dpe/`, runbook `docs/import_arrete_dpe.md`), never synced from Airtable; networks absent from the arrêté are reset to null.
+- EnR&R rate, CO2 contents and reference year (`Moyenne-annee-DPE`) are regulatory values imported yearly from the arrêté DPE annex (`pnpm cli data import arrete-dpe`, CSV versioned in `src/data/arrete-dpe/`, runbook `docs/import_arrete_dpe.md`), networks absent from the arrêté are reset to null. Survey figures come from the yearly FEDENE library and SDES imports (`data import donnees-reseaux-*`), written directly in the base; the survey's name / gestionnaire / MO go to `*_fedene` columns, the admin corrections to `*_fcu`, and the historical columns (`nom_reseau`, `Gestionnaire`, `MO`) are Postgres generated columns `coalesce(fcu, fedene)` read by everything (see `reseaux/field-sources.ts`); the import clears a correction matched by the survey and turns a remaining difference into an `enquete` change request proposing to drop it.
 - Classified networks (`reseaux_classes`) have PDPs where buildings may be legally required to connect.
 - Network data includes technical specs: length, capacity (MW), production (MWh), delivery by sector.
 - Invoice/cost comparisons use Publicodes rules (`@betagouv/france-chaleur-urbaine-publicodes`).
@@ -102,7 +102,7 @@ Permissions are managed in `user_permissions` table (not string tags). See `secu
 | BAN (Base Adresse Nationale) | Address geocoding/autocomplete | `src/modules/ban/` |
 | BDNB (Base de Données Nationale des Bâtiments) | Building energy data | `src/modules/bdnb/` |
 | data.gouv.fr | Open data publishing (API registration) | `src/modules/opendata/` |
-| Airtable | Legacy CRM data sync (demands, networks) | `src/server/db/airtable.ts` |
+| Airtable | Legacy: newsletter sign-ups only (`/api/airtable/records`); one-off migration commands `reseaux:import-airtable-*` read the old network tables | `src/server/db/airtable.ts` |
 | Grist (DINUM) | Studies in progress import (read-only) and support requests from municipalities without network (write, `GRIST_API_KEY` + `GRIST_ALLOW_WRITES`) | `src/modules/data/server/imports/etudes-en-cours.ts`, `src/modules/communes-sans-reseau/` |
 | Matomo | Web analytics | `src/modules/analytics/` |
 | PostHog | Product analytics | PostHog JS SDK |

@@ -2,7 +2,7 @@ import { businessRules } from '@/modules/app/business-rules';
 
 # Gestion des réseaux et PDP
 
-Côté administration, [Gestion des réseaux](/admin/reseaux) permet de maintenir les données géographiques des réseaux. C'est une zone à part : une partie des données y est éditable, l'autre vient d'Airtable et n'est modifiable qu'là-bas.
+Côté administration, [Gestion des réseaux](/admin/reseaux) permet de maintenir les données géographiques et descriptives des réseaux. C'est une zone à part : une partie des données y est éditable, l'autre est importée chaque année depuis les enquêtes nationales et n'est pas modifiable à la main.
 
 ## Les quatre entités
 
@@ -17,12 +17,12 @@ Il n'y a **pas de « réseaux classés » séparés** : le classement est un sim
 
 ## Extensions de réseaux
 
-Un réseau en construction peut être l'**extension d'un réseau de chaleur existant**. Le lien se fait **dans l'admin uniquement** (colonne «&nbsp;Réseau étendu&nbsp;» de l'onglet, recherche par nom ou identifiant SNCU) — jamais dans Airtable. Sans lien, c'est une **création** de réseau. Effets du lien :
+Un réseau en construction peut être l'**extension d'un réseau de chaleur existant**. Le lien se fait **dans l'admin** (colonne «&nbsp;Réseau étendu&nbsp;» de l'onglet, recherche par nom ou identifiant SNCU). Sans lien, c'est une **création** de réseau. Effets du lien :
 
 - l'identifiant SNCU affiché sur l'extension est une **copie automatique** de celui du réseau parent (maintenue par la synchronisation) ; il alimente la carte et le **filtre par identifiant SNCU** des iframes, qui isole le réseau avec ses extensions et son PDP (voir [Carte et intégrations](/admin/doc/carte-iframes)) ;
 - le nom, le gestionnaire et le maître d'ouvrage de l'extension sont **recopiés automatiquement** depuis le réseau parent (copie stricte maintenue par la synchronisation) : ils ne sont **pas modifiables** sur l'extension tant que le lien existe — une correction se fait sur le réseau de chaleur parent. Si le lien est retiré, l'extension conserve les dernières valeurs héritées, qui redeviennent modifiables.
 
-## Ce qui est modifiable, ce qui vient d'Airtable
+## Ce qui est modifiable, ce qui est importé
 
 | Donnée | Modifiable dans l'admin ? |
 | --- | --- |
@@ -30,28 +30,35 @@ Un réseau en construction peut être l'**extension d'un réseau de chaleur exis
 | Notes internes | **Oui** |
 | Relances réseau | **Oui** (voir plus bas) |
 | Liens réseau ↔ PDP (onglet PDP) | **Oui**, par recherche de réseau |
-| Lien extension → réseau de chaleur (onglet réseaux en construction) | **Oui**, par recherche de réseau — n'existe pas dans Airtable |
-| Nom, gestionnaire et maître d'ouvrage de **tous les réseaux** (chaleur, froid, en construction) | **Oui** — gérés dans l'admin (exception : sur une **extension liée**, nom, gestionnaire et MO sont recopiés du réseau parent et non modifiables) ; Airtable n'est plus qu'un miroir en lecture, une modification faite là-bas sera écrasée |
+| Lien extension → réseau de chaleur (onglet réseaux en construction) | **Oui**, par recherche de réseau |
+| Nom, gestionnaire et maître d'ouvrage des **réseaux de chaleur et de froid** | **Oui, comme correction de l'enquête.** Chacun de ces champs existe en deux colonnes : la valeur de l'enquête FEDENE (`*_fedene`, écrite uniquement par l'import annuel) et la correction FCU (`*_fcu`, écrite uniquement par l'admin, vide tant qu'il n'y a pas de correction). La valeur affichée partout (fiche, liste, carte, API, opendata) est la correction si elle existe, sinon l'enquête&nbsp;: c'est une colonne calculée par la base, impossible à écrire directement. La provenance est donc toujours connue. Dans la fenêtre de modification, la valeur de l'enquête est rappelée sous le champ&nbsp;; saisir une valeur différente crée la correction, vider le champ ou ressaisir la valeur de l'enquête la retire |
+| Nom, gestionnaire et maître d'ouvrage des **réseaux en construction** | **Oui** — gérés dans l'admin (exception : sur une **extension liée**, ils sont recopiés du réseau parent et non modifiables) |
+| **Gestionnaire corrigé par FCU** (affichage public) | Quand une correction FCU du gestionnaire existe, la fiche réseau, la liste des réseaux, les étiquettes de la carte et le résultat du test d'adresse affichent le gestionnaire suivi de `**` et la note «&nbsp;Sources actualisées par France Chaleur Urbaine&nbsp;». Les tuiles de la carte portent ce drapeau&nbsp;: il faut une régénération (Sync) pour qu'un changement apparaisse dans les étiquettes |
+| **Écart entre une correction FCU et l'enquête** | À chaque import FEDENE, une correction désormais identique à l'enquête (casse et espaces ignorés) est retirée automatiquement&nbsp;; une correction qui diffère encore devient une [demande de modification](/admin/doc/modifications-reseau) «&nbsp;écart avec l'enquête&nbsp;» proposant de la retirer. L'enquête n'écrase jamais une correction sans validation |
 | Identifiant SNCU des **réseaux de chaleur et de froid** | **Oui** — celui des extensions et des PDP n'est pas saisi : il est recopié automatiquement depuis le réseau de chaleur lié |
 | Gestionnaire et maître d'ouvrage des **PDP** | **Oui** — pré-remplis automatiquement depuis les réseaux liés quand ils sont vides |
-| « Ouvert aux raccordements » et « mise en service » des **réseaux en construction** | **Oui** — gérés dans l'admin ; Airtable n'est qu'un miroir en lecture. Attention, « ouvert aux raccordements » influe directement sur l'[éligibilité](/admin/doc/eligibilite) |
-| « Ouvert aux raccordements » des réseaux de chaleur et de froid | **Non** — géré dans Airtable |
-| Date de création des réseaux en construction | **Non modifiable** — horodatée automatiquement à la création (reprise historique depuis Airtable) |
-| « Classé » | **Non** — géré dans Airtable |
+| « Ouvert aux raccordements » et « mise en service » des **réseaux en construction** | **Oui** — gérés dans l'admin. Attention, « ouvert aux raccordements » influe directement sur l'[éligibilité](/admin/doc/eligibilite) |
+| « Ouvert aux raccordements » et « Classé » des **réseaux de chaleur et de froid** | **Oui** — gérés dans l'admin (fenêtre de modification), ou appliqués depuis une [demande de modification](/admin/doc/modifications-reseau) traitée |
+| Site internet, informations complémentaires et documents publiés sur la fiche des **réseaux de chaleur et de froid** (PDF, ou archive zip pour un schéma directeur en plusieurs parties&nbsp;; 3 documents maximum) | **Oui** — gérés dans l'admin (fenêtre de modification) ou appliqués depuis une demande de modification traitée |
+| Date de création des réseaux en construction | **Non modifiable** — horodatée automatiquement à la création |
 | « A un tracé », « A un PDP » | **Non** — calculés automatiquement |
-| Données d'enquête des réseaux de chaleur et de froid (tarifs, mix énergétique, livraisons…) | **Non** — gérées dans Airtable (bibliothèque FEDENE) |
-| Données réglementaires des réseaux de chaleur et de froid (taux EnR&R, contenu CO2 direct et ACV, année de référence) | **Non** — importées chaque année depuis l'arrêté DPE par l'équipe technique (voir plus bas) ; Airtable n'est plus utilisé pour ces champs, une valeur saisie là-bas est ignorée |
+| Données d'enquête des réseaux de chaleur et de froid (tarifs, mix énergétique, livraisons, points de livraison, rendement) | **Non** — importées chaque année par l'équipe technique depuis la bibliothèque FEDENE (`pnpm cli data import donnees-reseaux-bibliotheque-fedene`), puissances depuis le SDES (`donnees-reseaux-sdes`). Un réseau de l'enquête inconnu de la base y est créé sans tracé |
+| Données réglementaires des réseaux de chaleur et de froid (taux EnR&R, contenu CO2 direct et ACV, année de référence) | **Non** — importées chaque année depuis l'arrêté DPE par l'équipe technique (voir plus bas) |
 
-Les champs modifiables s'éditent via le bouton **crayon** de chaque ligne, qui ouvre une fenêtre de modification (nom, gestionnaire, maître d'ouvrage, liens entre entités — et pour les réseaux en construction : mise en service prévue, ouvert aux raccordements). À la **création** d'un réseau (dépôt d'un tracé), cette fenêtre s'ouvre automatiquement pour saisir ces informations dans la foulée. L'identifiant d'un réseau en construction ou d'un PDP est **attribué automatiquement** ; pour un réseau de chaleur ou de froid, il faut saisir l'ID SNCU ou l'id FCU correspondant à la ligne Airtable existante.
+Le bouton **tableau** de chaque ligne (réseaux de chaleur et de froid) ouvre toutes les colonnes du réseau en brut, groupées par source, pour vérifier une donnée comme on le faisait dans la grille Airtable. Les champs modifiables s'éditent via le bouton **crayon** de chaque ligne, qui ouvre une fenêtre de modification (nom, gestionnaire, maître d'ouvrage, liens entre entités — pour les réseaux de chaleur et de froid : classé, ouvert aux raccordements, site internet, informations complémentaires et documents PDF ou zip — et pour les réseaux en construction : mise en service prévue, ouvert aux raccordements). À la **création** d'un réseau, on dépose le tracé puis cette fenêtre s'ouvre automatiquement pour saisir les informations dans la foulée&nbsp;: aucun identifiant n'est demandé avant le dépôt, l'id FCU est **attribué automatiquement** pour tous les types, et l'**identifiant SNCU** d'un réseau de chaleur ou de froid (celui de l'enquête nationale, clé des imports FEDENE et SDES) se saisit dans la fenêtre. Un réseau peut aussi naître de l'acceptation d'une [demande de modification](/admin/doc/modifications-reseau) (tracé d'un réseau en construction, périmètre).
+
+Une icône en fin de ligne signale l'état de la géométrie&nbsp;: **réseau créé à synchroniser** (vert), **tracé modifié ou supprimé à synchroniser** (orange), ou **sans tracé** (repère orange). Un réseau sans tracé est créé par l'import FEDENE quand l'enquête connaît un réseau absent de la base&nbsp;: son tracé est à déposer avec «&nbsp;Modifier la géométrie&nbsp;», puis à synchroniser. D'ici là, sa fiche publique s'affiche sans carte. Pour un réseau de chaleur ou de froid dont on ne connaît pas le tracé, le bouton **Placer un point** du panneau d'édition permet de cliquer sa position sur la carte (la recherche d'adresse reste disponible pour s'y rendre)&nbsp;: comme les autres réseaux sans tracé, il apparaît alors comme un point, rattaché à sa commune pour l'éligibilité, sans calcul de distance.
 
 Deux règles à retenir, car elles ont un effet direct sur ce que voit le public :
 
-- Un réseau **non « ouvert aux raccordements »** disparaît des résultats d'[éligibilité](/admin/doc/eligibilite). Ce champ se pilote **dans Airtable** pour les réseaux de chaleur et de froid, et **dans l'admin** pour les réseaux en construction.
-- Le fait qu'un réseau soit **classé** (donc soumis à obligation dans son PDP) vient aussi d'Airtable.
+- Un réseau **non « ouvert aux raccordements »** disparaît des résultats d'[éligibilité](/admin/doc/eligibilite). Ce champ se pilote **dans l'admin** pour toutes les entités.
+- Le fait qu'un réseau soit **classé** (donc soumis à obligation dans son PDP) se pilote aussi dans l'admin.
+
+La source de chaque colonne des tables réseaux est listée dans [Références](/admin/doc/references).
 
 ## Données réglementaires : l'arrêté DPE
 
-Le taux d'EnR&R, les contenus CO2 (direct et ACV) et l'année de référence affichés dans la rubrique «&nbsp;Performances environnementales&nbsp;» des fiches réseau sont les valeurs réglementaires de l'**arrêté DPE**, publié chaque année sur Légifrance avec une annexe «&nbsp;Données des réseaux de chaleur et de froid&nbsp;». Elles ne sont saisies **ni dans l'admin, ni dans Airtable**&nbsp;: l'équipe technique les importe à chaque parution.
+Le taux d'EnR&R, les contenus CO2 (direct et ACV) et l'année de référence affichés dans la rubrique «&nbsp;Performances environnementales&nbsp;» des fiches réseau sont les valeurs réglementaires de l'**arrêté DPE**, publié chaque année sur Légifrance avec une annexe «&nbsp;Données des réseaux de chaleur et de froid&nbsp;». Elles ne sont pas saisies dans l'admin&nbsp;: l'équipe technique les importe à chaque parution.
 
 - Les réseaux sont reconnus par leur **identifiant SNCU**&nbsp;: un réseau sans identifiant, ou dont l'identifiant diffère de celui de l'arrêté, ne reçoit aucune valeur.
 - Un réseau **absent du nouvel arrêté** perd ses anciennes valeurs (remises à vide), afin de ne jamais afficher des chiffres d'un arrêté précédent sous la référence du nouveau.
@@ -63,7 +70,7 @@ Procédure technique, une fois par an&nbsp;: enregistrer la page Légifrance de 
 
 Les prix des réseaux de chaleur (prix moyen, prix logements, prix tertiaire, en €TTC/MWh) proviennent de l'enquête FEDENE/AMORCE et ne sont pas toujours fiables. Deux mécanismes encadrent leur affichage :
 
-- **Prix non communiqué** : un prix absent — ou inférieur à <Rule id="heatNetworkPriceCommunicatedMin" /> (saisies à 0 € ou en centimes), normalisé en «&nbsp;non communiqué&nbsp;» à l'import, à la synchronisation Airtable et dans les exports — s'affiche «&nbsp;NC&nbsp;» dans la liste des réseaux (comme toute valeur manquante du tableau) et sur les fiches réseaux.
+- **Prix non communiqué** : un prix absent — ou inférieur à <Rule id="heatNetworkPriceCommunicatedMin" /> (saisies à 0 € ou en centimes), normalisé en «&nbsp;non communiqué&nbsp;» à l'import et dans les exports — s'affiche «&nbsp;NC&nbsp;» dans la liste des réseaux (comme toute valeur manquante du tableau) et sur les fiches réseaux.
 - **Prix hors bornes de cohérence** : un prix communiqué mais inférieur à <Rule id="heatNetworkPriceMin" /> ou supérieur à <Rule id="heatNetworkPriceMax" /> est jugé peu plausible. Il reste affiché dans la liste des réseaux et sur la fiche réseau, mais avec un **astérisque** et la mention «&nbsp;Pour connaître le prix, veuillez vous adresser directement au gestionnaire du réseau&nbsp;». Le [comparateur](/admin/doc/comparateur) l'ignore et utilise le prix moyen des réseaux français, comme pour un prix non communiqué.
 
 L'**export Excel** de la liste des réseaux et l'**archive opendata** ne portent pas la mention «&nbsp;NC&nbsp;» : les prix y sont exportés **tels quels**, y compris hors bornes (sans astérisque), et un prix absent ou non communiqué sort en valeur vide.
@@ -72,20 +79,18 @@ Le **filtre «&nbsp;Prix moyen de la chaleur&nbsp;»** (carte et liste des rése
 
 ## La modification d'un tracé se fait en deux temps
 
-C'est le point le plus important — et le plus contre-intuitif. Modifier un tracé n'a **aucun effet immédiat** : la modification est mise en attente (« brouillon »), et rien ne change tant qu'un admin n'a pas cliqué sur **« Sync »** pour l'appliquer.
+C'est le point le plus important — et le plus contre-intuitif. Modifier un tracé depuis cette carte n'a **aucun effet immédiat** : la modification est mise en attente (« brouillon »), et rien ne change tant qu'un admin n'a pas cliqué sur **« Sync »** pour l'appliquer. Seule exception : un tracé ou un périmètre accepté depuis une [demande de modification](/admin/doc/modifications-reseau) est appliqué immédiatement, la carte avant / après de la demande servant de contrôle.
 
 <Mermaid
   chart={`flowchart TD
     edit["L'admin dépose / modifie / supprime un tracé"] --> draft["Modification en attente (brouillon)"]:::db
     draft --> apply{"Clic sur « Sync »"}
     apply --> geom["Le tracé validé remplace l'ancien ; « A un tracé », communes, PDP recalculés"]:::db
-    geom --> airtable["Jobs de synchronisation Airtable (sauf pour les PDP)"]:::crm
     geom --> tiles["Tâche de régénération des tuiles de la carte"]:::db
     geom --> recompute["Recalcul de l'éligibilité des adresses testées à moins de ${businessRules.eligibilityRecomputeBufferMeters.display}"]:::db
     recompute --> notify["Les tests d'adresses concernés sont marqués « Mises à jour »"]:::evt
     geom --> evt["Événement « Application des modifications géométriques »"]:::evt
     click evt "/admin/events?types=network_geometries_applied" "Voir dans l'activité du site"
-    classDef crm fill:#e3d9fd,stroke:#7c5cd9,color:#161616
     classDef evt fill:#cfe3fd,stroke:#3b74c7,color:#161616
     classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
 />
@@ -93,14 +98,13 @@ C'est le point le plus important — et le plus contre-intuitif. Modifier un tra
 Au clic sur « Sync », en chaîne :
 
 1. Le tracé en attente devient le tracé officiel ; « A un tracé », les communes/département/région, et les liens PDP sont recalculés.
-2. Des **synchronisations Airtable** sont lancées (sauf pour les PDP) : d'abord les données dérivées de la géométrie vers Airtable, puis les métadonnées d'Airtable vers la base.
-3. Les **tuiles de la carte** sont régénérées pour refléter le nouveau tracé.
-4. **Effet de bord majeur** : toutes les adresses des [tests en masse](/admin/doc/tests-adresses-pro) situées à moins de <Rule id="eligibilityRecomputeBufferMeters" /> du tracé modifié sont recalculées ; celles dont l'éligibilité change voient leur test marqué « Mises à jour ». Modifier un tracé peut donc **signaler un changement à des utilisateurs professionnels**.
-5. L'événement [« Application des modifications géométriques »](/admin/events?types=network_geometries_applied) est enregistré.
+2. Les **tuiles de la carte** sont régénérées pour refléter le nouveau tracé.
+3. **Effet de bord majeur** : toutes les adresses des [tests en masse](/admin/doc/tests-adresses-pro) situées à moins de <Rule id="eligibilityRecomputeBufferMeters" /> du tracé modifié sont recalculées ; celles dont l'éligibilité change voient leur test marqué « Mises à jour ». Modifier un tracé peut donc **signaler un changement à des utilisateurs professionnels**.
+4. L'événement [« Application des modifications géométriques »](/admin/events?types=network_geometries_applied) est enregistré.
 
 ## Périmètres de développement prioritaire (PDP)
 
-Un PDP est la zone d'un réseau **classé** où le raccordement peut être **obligatoire** (amende jusqu'à 300 000 € prévue par le code de l'énergie). Dans l'admin, on édite le tracé du PDP, les réseaux qu'il couvre (par recherche, [événement « Mise à jour périmètre de développement »](/admin/events?types=pdp_updated)) et son **gestionnaire / maître d'ouvrage** ; lier un PDP à un réseau marque ce réseau « A un PDP ». L'**identifiant SNCU** affiché sur un PDP n'est pas saisi : il est recopié automatiquement depuis le réseau de chaleur lié (quand le lien est unique). Quand le gestionnaire ou le MO est vide, il est **pré-rempli automatiquement** depuis les réseaux liés — sauf si ceux-ci portent des valeurs différentes : le [diagnostic des données](/admin/data-diagnostic) signale alors qu'un choix manuel est attendu. Ce même diagnostic signale les **liens PDP ↔ réseau à vérifier** : un réseau qui traverse le périmètre sans lui être lié (réseau de chaleur classé et ouvert aux raccordements, réseau ou zone en construction ouvert aux raccordements), et à l'inverse un réseau lié dont le tracé ne touche pas le périmètre. Les PDP ne sont **pas** synchronisés avec Airtable. Voir [Test d'éligibilité](/admin/doc/eligibilite) pour ce que le PDP change côté demandeur.
+Un PDP est la zone d'un réseau **classé** où le raccordement peut être **obligatoire** (amende jusqu'à 300 000 € prévue par le code de l'énergie). Dans l'admin, on édite le tracé du PDP, les réseaux qu'il couvre (par recherche, [événement « Mise à jour périmètre de développement »](/admin/events?types=pdp_updated)) et son **gestionnaire / maître d'ouvrage** ; lier un PDP à un réseau marque ce réseau « A un PDP ». L'**identifiant SNCU** affiché sur un PDP n'est pas saisi : il est recopié automatiquement depuis le réseau de chaleur lié (quand le lien est unique). Quand le gestionnaire ou le MO est vide, il est **pré-rempli automatiquement** depuis les réseaux liés — sauf si ceux-ci portent des valeurs différentes : le [diagnostic des données](/admin/data-diagnostic) signale alors qu'un choix manuel est attendu. Ce même diagnostic signale les **liens PDP ↔ réseau à vérifier** : un réseau qui traverse le périmètre sans lui être lié (réseau de chaleur classé et ouvert aux raccordements, réseau ou zone en construction ouvert aux raccordements), et à l'inverse un réseau lié dont le tracé ne touche pas le périmètre. Voir [Test d'éligibilité](/admin/doc/eligibilite) pour ce que le PDP change côté demandeur.
 
 ## Relances réseau
 
@@ -122,7 +126,7 @@ Le **rattachement d'un utilisateur** à une organisation ne se fait pas ici mais
 
 ## Tuiles de la carte
 
-La carte publique est servie à partir de **tuiles** pré-calculées. Elles sont régénérées (tâche visible dans [Suivi des tâches](/admin/jobs)) après l'application d'une modification de tracé, après un test d'adresses en masse, ou manuellement. **Aucun cron** ne les régénère : une donnée réseau modifiée dans Airtable n'apparaît sur la carte qu'après une régénération. Une fois la régénération terminée, les tuiles des réseaux (chaleur, froid, en construction, PDP) sont visibles dès le rechargement de la page (environ une minute de délai maximum) ; les autres couches, moins fréquemment mises à jour, peuvent rester en cache navigateur jusqu'à 24 h.
+La carte publique est servie à partir de **tuiles** pré-calculées. Elles sont régénérées (tâche visible dans [Suivi des tâches](/admin/jobs)) après l'application d'une modification de tracé, après un test d'adresses en masse, ou manuellement. **Aucun cron** ne les régénère : une donnée réseau modifiée dans l'admin ou importée n'apparaît sur la carte qu'après une régénération. Une fois la régénération terminée, les tuiles des réseaux (chaleur, froid, en construction, PDP) sont visibles dès le rechargement de la page (environ une minute de délai maximum) ; les autres couches, moins fréquemment mises à jour, peuvent rester en cache navigateur jusqu'à 24 h.
 
 ## Statistiques
 

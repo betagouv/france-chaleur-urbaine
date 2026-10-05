@@ -1,11 +1,23 @@
 import { z } from 'zod';
 
+import { clientConfig } from '@/client-config';
 import { businessRules } from '@/modules/app/business-rules';
-import type { DatabaseTileSourceId } from '@/modules/tiles/server/tiles.config';
-import type { DBTableName } from '@/server/db/kysely';
-import { Airtable } from '@/types/enum/Airtable';
-import { defineSubsetConfig, ObjectKeys } from '@/utils/typescript';
 import { zGeometry } from '@/utils/validation';
+
+/** Documents (PDF or zip) published on the page of a heat or cold network. */
+export const MAX_NETWORK_DOCUMENTS = 3;
+
+/** Footnote shown wherever a gestionnaire corrected by FCU (`gestionnaire_fcu` set) is displayed. */
+export const sourcesActualiseesParFcuNotice = '** Sources actualisées par France Chaleur Urbaine';
+
+/** The displayed gestionnaire, with the footnote reference when it is a FCU correction of the FEDENE survey value. */
+export const withSourceFcuMark = (
+  gestionnaire: string | null | undefined,
+  gestionnaireFcu: string | boolean | null | undefined
+): string | null => (gestionnaire ? (gestionnaireFcu ? `${gestionnaire} **` : gestionnaire) : null);
+
+/** Comparison key of a name / gestionnaire / MO value: the FEDENE survey and the admin spell them with varying case and spaces. */
+export const normalizeNetworkValue = (value: string | null | undefined): string => (value ?? '').trim().toLowerCase();
 
 // Les 4 entités réseau (clé canonique : singulier, snake_case).
 // Réutilisée comme valeur pour : `network_reminders.network_type`, `permissions.type` (sous-ensemble), `events.context_type`.
@@ -109,12 +121,17 @@ export const zUpdateReseauEnConstructionInput = z.object({
 
 export type UpdateReseauEnConstructionInput = z.infer<typeof zUpdateReseauEnConstructionInput>;
 
+// Admin-owned fields of heat and cold networks (never overwritten by the yearly FEDENE / SDES imports)
 export const zUpdateReseauDeChaleurInput = z.object({
   Gestionnaire: z.string().nullable().optional(),
   'Identifiant reseau': z.string().nullable().optional(),
   id: z.number(),
+  informationsComplementaires: z.string().trim().max(clientConfig.networkInfoFieldMaxCharacters).nullable().optional(),
   MO: z.string().nullable().optional(),
   nom_reseau: z.string().min(1).optional(),
+  ouvert_aux_raccordements: z.boolean().optional(),
+  'reseaux classes': z.boolean().optional(),
+  website_gestionnaire: z.string().trim().nullable().optional(),
 });
 
 export type UpdateReseauDeChaleurInput = z.infer<typeof zUpdateReseauDeChaleurInput>;
@@ -140,8 +157,8 @@ export type DeleteNetworkInput = z.infer<typeof zDeleteNetworkInput>;
 // Pas de métadonnées à la création : la fenêtre de modification s'ouvre juste après pour les saisir
 export const zCreateNetworkInput = z.object({
   geometry: zGeometry,
-  // Requis pour chaleur/froid (doit matcher la ligne Airtable : id_fcu numérique ou identifiant SNCU) ;
-  // absent pour construction et PDP, dont l'id_fcu est attribué automatiquement (max + 1)
+  // optional SNCU (or numeric id_fcu) for heat / cold networks, used by the CLI; the admin creates from the trace alone and
+  // fills the identifiers in the edit dialog, the id_fcu being attributed automatically (max + 1)
   id: z.string().optional(),
   type: z.enum(tableNames),
 });
@@ -180,22 +197,3 @@ export const gestionnairesFilters = [
   { label: 'IDEX', value: 'idex' },
   { label: 'Autre', value: 'autre' },
 ];
-
-// Tables whose metadata is still imported from Airtable. Les réseaux en construction n'en font
-// plus partie : toutes leurs métadonnées sont gérées dans l'admin FCU (Airtable = miroir en lecture).
-export const airtableSynchronizableNetworkTableConfig = defineSubsetConfig<
-  DatabaseTileSourceId,
-  { airtable: Airtable; table: DBTableName }
->()({
-  'reseaux-de-chaleur': {
-    airtable: Airtable.NETWORKS,
-    table: 'reseaux_de_chaleur',
-  },
-  'reseaux-de-froid': {
-    airtable: Airtable.COLD_NETWORKS,
-    table: 'reseaux_de_froid',
-  },
-});
-
-export const zAirtableSynchronizableNetworkTable = z.enum(ObjectKeys(airtableSynchronizableNetworkTableConfig));
-export type AirtableSynchronizableNetworkTable = z.infer<typeof zAirtableSynchronizableNetworkTable>;

@@ -45,6 +45,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
           city: addressData.geoAddress?.properties.city,
           distance,
           gestionnaire: addressData.eligibility.gestionnaire?.trim() || null,
+          gestionnaireSourceFcu: addressData.eligibility.gestionnaireSourceFcu ?? false,
           hasPDP: addressData.eligibility.hasPDP,
           inPDP: addressData.eligibility.inPDP,
           isClasse: addressData.eligibility.isClasse,

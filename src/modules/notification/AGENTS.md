@@ -57,15 +57,20 @@ const handleSubmit = toastErrors(async (formData: FormData) => {
   notify('success', 'Form submitted successfully');
 });
 
-// With custom error message
+// With a custom message, replacing the generic one for errors that are not validation errors
 const handleSubmit = toastErrors(
   async (formData: FormData) => {
     await api.submit(formData);
     notify('success', 'Form submitted successfully');
   },
-  (err) => `Custom error message: ${err.message}`
+  () => 'Something went wrong, please try again later'
 );
 ```
+
+Displayed message (`getUserFacingErrorMessage`, shared with the tRPC client link so an error raised by a mutation shows
+a single toast): the first issue of a tRPC input validation error (any depth), else the message of a 400 response
+(REST `FetchError` or tRPC `BAD_REQUEST`) or of an error raised by the client code; for any other error (401, 403, 404,
+429, 5xx) the generic message, followed by the error message as detail.
 
 ### URL-based Notifications
 
@@ -151,7 +156,7 @@ Wraps an async function to handle errors with toast notifications.
 
 **Parameters:**
 - `func: (...args: any[]) => void | Promise<void>` - The function to wrap
-- `customError?: (err: Error) => ReactNode` - Custom error message function
+- `customError?: (err: Error) => string | JSX.Element` - Replaces the generic message (errors that are not validation errors)
 
 **Returns:** `(...args: any[]) => Promise<void>` - The wrapped function
 

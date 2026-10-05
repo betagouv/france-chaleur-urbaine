@@ -11,8 +11,14 @@ import Tooltip from '@/components/ui/Tooltip';
 import { dataSourcesVersions } from '@/modules/app/constants';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { Map } from '@/modules/map/client/Map';
-import { isPrixReseauCommunique, isPrixReseauHorsBornes, prixReseauHorsBornesNotice } from '@/modules/reseaux/constants';
-import type { Network } from '@/types/Summary/Network';
+import {
+  isPrixReseauCommunique,
+  isPrixReseauHorsBornes,
+  prixReseauHorsBornesNotice,
+  sourcesActualiseesParFcuNotice,
+  withSourceFcuMark,
+} from '@/modules/reseaux/constants';
+import type { Network } from '@/modules/reseaux/types';
 import { isDefined } from '@/utils/core';
 import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
 
@@ -28,10 +34,10 @@ const getFullURL = (link: string) => {
 };
 
 // Asterisk appended to the unit when the price is out of the plausibility bounds (see the notice below the block)
-const prixUnit = (prix: number | undefined) => (isPrixReseauHorsBornes(prix) ? '€TTC/MWh*' : '€TTC/MWh');
+const prixUnit = (prix: number | null | undefined) => (isPrixReseauHorsBornes(prix) ? '€TTC/MWh*' : '€TTC/MWh');
 
 // A price set to 0 means "not communicated" and must render as NC, like in the networks list
-const prixCommunique = (prix: number | undefined) => (isPrixReseauCommunique(prix) ? prix : undefined);
+const prixCommunique = (prix: number | null | undefined) => (isPrixReseauCommunique(prix) ? prix : undefined);
 
 const hasFirstColumn = (isCold: boolean, displayBlocks?: string[]) => {
   return (
@@ -62,7 +68,7 @@ const NetworkPanel = ({
   displayBlocks?: string[];
   externalLinks?: boolean;
 }) => {
-  const isCold = network['Identifiant reseau'].includes('F');
+  const isCold = network.type === 'reseau_de_froid';
   return (
     <>
       {(!displayBlocks || displayBlocks.includes('titre')) && (
@@ -70,7 +76,7 @@ const NetworkPanel = ({
           <Heading as="h1" color="blue-france">
             {network.nom_reseau ?? 'Nom inconnu'} ({network['Identifiant reseau']})
           </Heading>
-          {(network['reseaux classes'] || network.ecoreseau) && (
+          {!isCold && (network['reseaux classes'] || network.ecoreseau) && (
             <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-center">
               {network['reseaux classes'] && (
                 <div className="flex">
@@ -95,7 +101,7 @@ const NetworkPanel = ({
             </Alert>
           )}
           <Text mt="1w" size="sm">
-            Vous êtes le maître d’ouvrage ou l’exploitant de ce réseau et vous souhaitez ajouter ou modifier des informations ?
+            Vous êtes le maître d’ouvrage ou l’exploitant de ce réseau et vous souhaitez ajouter des informations complémentaires ?
             <Link href={`/reseaux/modifier?reseau=${network['Identifiant reseau']}`} className="fr-ml-1w">
               Cliquez ici
             </Link>
@@ -463,7 +469,7 @@ const NetworkPanel = ({
                   Contacts
                 </Heading>
                 <Property label="Maître d'Ouvrage" value={network.MO} />
-                <Property label="Gestionnaire" value={network.Gestionnaire} />
+                <Property label="Gestionnaire" value={withSourceFcuMark(network.Gestionnaire, network.gestionnaire_fcu)} />
                 <Property
                   label="Site Internet"
                   value={network.website_gestionnaire}
@@ -495,37 +501,38 @@ const NetworkPanel = ({
               <EligibilityTestBox networkId={network['Identifiant reseau']} />
             )}
 
-            {(!displayBlocks || displayBlocks.includes('informations')) && network.informationsComplementaires && (
-              <InformationsComplementairesBox>
-                <Heading as="h3" color="blue-france">
-                  Informations complémentaires
-                </Heading>
-                {network.informationsComplementaires
-                  .split('\n')
-                  .map((line, index) => (line === '' ? <br key={index} /> : <Text key={index}>{line}</Text>))}
-                {network.fichiers.length > 0 && (
-                  <Box mt="2w">
-                    {network.fichiers.map((fichier, index) => (
-                      <Link
-                        key={index}
-                        href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
-                        className="fr-mr-1w"
-                        isExternal
-                        eventKey="Téléchargement|Schéma directeur"
-                        eventPayload={`${network['Identifiant reseau']},${fichier.filename}`}
-                        postHogEventKey="link:click"
-                        postHogEventProps={{ link_name: 'schema_directeur', source: 'fiche-reseau' }}
-                      >
-                        {fichier.filename}
-                      </Link>
-                    ))}
-                  </Box>
-                )}
-                <Text size="sm" legacyColor="lightgrey" fontStyle="italic" mt="4w">
-                  Informations fournies par la collectivité ou l’exploitant
-                </Text>
-              </InformationsComplementairesBox>
-            )}
+            {(!displayBlocks || displayBlocks.includes('informations')) &&
+              (network.informationsComplementaires || network.fichiers.length > 0) && (
+                <InformationsComplementairesBox>
+                  <Heading as="h3" color="blue-france">
+                    Informations complémentaires
+                  </Heading>
+                  {network.informationsComplementaires
+                    ?.split('\n')
+                    .map((line, index) => (line === '' ? <br key={index} /> : <Text key={index}>{line}</Text>))}
+                  {network.fichiers.length > 0 && (
+                    <Box mt="2w">
+                      {network.fichiers.map((fichier, index) => (
+                        <Link
+                          key={index}
+                          href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
+                          className="fr-mr-1w"
+                          isExternal
+                          eventKey="Téléchargement|Schéma directeur"
+                          eventPayload={`${network['Identifiant reseau']},${fichier.filename}`}
+                          postHogEventKey="link:click"
+                          postHogEventProps={{ link_name: 'schema_directeur', source: 'fiche-reseau' }}
+                        >
+                          {fichier.filename}
+                        </Link>
+                      ))}
+                    </Box>
+                  )}
+                  <Text size="sm" legacyColor="lightgrey" fontStyle="italic" mt="4w">
+                    Informations fournies par la collectivité ou l’exploitant
+                  </Text>
+                </InformationsComplementairesBox>
+              )}
 
             {!isCold && (!displayBlocks || displayBlocks.includes('energies')) && (
               <BoxSection>
@@ -539,7 +546,8 @@ const NetworkPanel = ({
               </BoxSection>
             )}
 
-            {(!displayBlocks || displayBlocks.includes('map')) && (
+            {/* a network without geometry yet (created by the FEDENE import) has no position to show */}
+            {(!displayBlocks || displayBlocks.includes('map')) && isDefined(network.lon) && isDefined(network.lat) && (
               <Box height="655px">
                 <Map
                   initialView={{ center: [network.lon, network.lat], zoom: 13 }}
@@ -555,7 +563,7 @@ const NetworkPanel = ({
             )}
             {(!displayBlocks || displayBlocks.includes('communes')) && (
               <Box fontStyle="italic" fontSize="12px">
-                Commune{network.communes.length > 1 ? 's' : ''} d'implantation : {network.communes.join(', ')}
+                Commune{(network.communes ?? []).length > 1 ? 's' : ''} d'implantation : {(network.communes ?? []).join(', ')}
               </Box>
             )}
           </Box>
@@ -565,10 +573,11 @@ const NetworkPanel = ({
       {(!displayBlocks || displayBlocks.includes('sources')) && (
         <div className="fr-mt-4w">
           <p className="fr-hint-text">
-            Sources : L’ensemble des données sont extraites des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le
-            concours de l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la
-            transition écologique.
+            Sources : Les données sont issues des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le concours de
+            l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la transition
+            écologique, et des informations reçues par France Chaleur Urbaine.
           </p>
+          {network.gestionnaire_fcu && <p className="fr-hint-text">{sourcesActualiseesParFcuNotice}</p>}
           <p className="fr-hint-text">
             Pour plus de détails sur les sources des données, consultez notre page{' '}
             <Link href="/donnees#detail-donnees-reseaux">Données et sources</Link>.
@@ -586,7 +595,7 @@ export default NetworkPanel;
 
 type PropertyProps<T> = {
   label: string | ReactElement;
-  value: T | undefined;
+  value: T | null | undefined;
   unit?: string; // overridden by the formatter if present
   round?: boolean;
   formatter?: (value: T) => string | ReactElement;

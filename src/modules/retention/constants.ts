@@ -1,6 +1,6 @@
 import { businessRules } from '@/modules/app/business-rules';
 
-export const retentionRules = ['pending_accounts', 'inactive_accounts', 'closed_demands'] as const;
+export const retentionRules = ['pending_accounts', 'inactive_accounts', 'closed_demands', 'processed_network_change_requests'] as const;
 export type RetentionRule = (typeof retentionRules)[number];
 
 export type RetentionTransformation = { field: string; after: string };
@@ -51,5 +51,19 @@ export const retentionRuleDefinitions: Record<RetentionRule, RetentionRuleDefini
     ruleId: 'retentionAccountsPendingMonths',
     title: 'Comptes jamais activés',
     transformations: [{ after: 'supprimé définitivement (aucune demande ni donnée rattachée à un compte jamais activé)', field: 'Compte' }],
+  },
+  processed_network_change_requests: {
+    action:
+      'Anonymisation du déposant (identité, coordonnées, structure) et suppression du contenu des fichiers joints ; valeurs proposées, réseau et décision conservés',
+    description: `Demandes de modification de réseau traitées depuis plus de ${businessRules.retentionNetworkChangeRequestsYears.display}`,
+    ruleId: 'retentionNetworkChangeRequestsYears',
+    title: 'Demandes de modification de réseau traitées',
+    transformations: [
+      { after: '« Anonymisé »', field: 'Nom' },
+      { after: 'vide', field: 'Prénom, structure, fonction, précision du type de déposant' },
+      { after: 'anonymise-<identifiant>@anonymise.invalid', field: 'Email' },
+      { after: 'supprimé (nom, taille et type conservés)', field: 'Contenu des fichiers joints' },
+      { after: 'conservés', field: 'Type de demande, réseau, valeurs proposées, statut, commentaire et date de décision' },
+    ],
   },
 };

@@ -27,6 +27,12 @@ export const adminPages = [
     label: 'Gestion des demandes chaleur renouvelable',
   },
   {
+    desc: 'Traitez les demandes de modification de fiche, de tracé ou de périmètre déposées par les collectivités et exploitants',
+    group: 'management',
+    href: '/admin/modifications-reseau',
+    label: 'Demandes de modification de réseau',
+  },
+  {
     desc: "Gérez les utilisateurs de l'application",
     group: 'management',
     href: '/admin/users',

@@ -1,14 +1,25 @@
+import { sql } from 'kysely';
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { cleanDatabase, seedReseauDeChaleur, seedReseauDeFroid, seedZoneEtReseauEnConstruction } from '@/tests/fixtures';
-import type { TestCase } from '@/tests/trpc-helpers';
+import { kdb } from '@/server/db/kysely';
+import {
+  cleanDatabase,
+  seedCommune,
+  seedReseauDeChaleur,
+  seedReseauDeFroid,
+  seedTableUser,
+  seedZoneEtReseauEnConstruction,
+} from '@/tests/fixtures';
+import { type TestCase, testUsers } from '@/tests/trpc-helpers';
 
 import {
+  applyNetworkGeometryDraft,
   type ContributionNetworkSearchResult,
   type NetworkSearchResult,
   searchHeatNetworksForContribution,
   searchNetworkOperators,
   searchNetworks,
+  updateGeomUpdate,
 } from './service';
 
 const chaleurNord: NetworkSearchResult = {
@@ -231,5 +242,31 @@ describe('searchHeatNetworksForContribution()', () => {
 
   it.each(cases)('$label', async ({ input, expectedOutput }) => {
     expect(await searchHeatNetworksForContribution(input)).toStrictEqual(expectedOutput);
+  });
+});
+
+describe('a point placed on the map for a network known without trace', () => {
+  it('goes live as a point, without trace, attached to its commune', async () => {
+    await cleanDatabase();
+    await seedTableUser([{ ...testUsers.admin }]);
+    // created by the FEDENE import: no geometry, no commune
+    await seedReseauDeChaleur({ 'Identifiant reseau': '4510C', id_fcu: 3001, nom_reseau: 'Sans tracé' } as any);
+    const paris = sql`ST_Transform(ST_SetSRID(ST_MakePoint(2.3522, 48.8566), 4326), 2154)`;
+    await seedCommune({
+      geom: sql`ST_Multi(ST_Buffer(${paris}, 1000))`,
+      geom_150m: sql`ST_Multi(ST_Buffer(${paris}, 1150))`,
+      insee_com: '75056',
+      nom: 'Paris',
+    } as any);
+
+    await updateGeomUpdate(3001, { coordinates: [2.3522, 48.8566], type: 'Point' }, 'reseaux_de_chaleur');
+    await applyNetworkGeometryDraft('reseaux_de_chaleur', 3001, testUsers.admin.id);
+
+    const network = await kdb
+      .selectFrom('reseaux_de_chaleur')
+      .select((eb) => ['has_trace', 'communes_insee', 'geom_update', eb.fn<string>('ST_GeometryType', ['geom']).as('type')])
+      .where('id_fcu', '=', 3001)
+      .executeTakeFirstOrThrow();
+    expect(network).toStrictEqual({ communes_insee: ['75056'], geom_update: null, has_trace: false, type: 'ST_Point' });
   });
 });

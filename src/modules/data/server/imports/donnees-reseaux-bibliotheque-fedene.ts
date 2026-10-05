@@ -1,15 +1,10 @@
 import { createWriteStream } from 'node:fs';
 import { finished } from 'node:stream/promises';
 
-import type { Record as AirtableRecord } from 'airtable';
-import type { FieldSet } from 'airtable/lib/field_set';
-
-import { isPrixReseauCommunique } from '@/modules/reseaux/constants';
-import { serverConfig } from '@/server/config';
-import { AirtableDB, createField, listTables } from '@/server/db/airtable';
+import { upsertSurveyDiscrepancyRequest } from '@/modules/network-change-requests/server/service';
+import { isPrixReseauCommunique, normalizeNetworkValue } from '@/modules/reseaux/constants';
+import { type DB, kdb, sql } from '@/server/db/kysely';
 import type { Logger } from '@/server/helpers/logger';
-import { Airtable } from '@/types/enum/Airtable';
-import { processInParallel } from '@/utils/async';
 
 import { defineFileImportFunc } from '../import';
 import { loadXlsxFromFile } from '../import-utils';
@@ -18,20 +13,10 @@ import { loadXlsxFromFile } from '../import-utils';
 // Constants + Types
 // ---------------------------------------------------------------------------
 
-const EDITION_YEAR = 2025;
+export const FEDENE_EDITION_YEAR = 2025;
 const EXCEL_SHEET_NAME = 'BDD - complète';
-const PRESENT_FIELD_NAME = `present_biblio_fedene_${EDITION_YEAR}`;
 
-const FIELDS_TO_ENSURE = [
-  `enquete_commune_${EDITION_YEAR}`,
-  `Gestionnaire_${EDITION_YEAR}`,
-  'longueur_reseau_aller',
-  `MO_${EDITION_YEAR}`,
-  `nom_reseau_${EDITION_YEAR}`,
-  PRESENT_FIELD_NAME,
-];
-
-type ExcelRowBrute = {
+export type ExcelRowBrute = {
   'ID EARCF': string;
   Commune: string | null;
   Nom: string;
@@ -77,38 +62,69 @@ type ExcelRowBrute = {
   'Coût en € TTC/MWh \nBâtiment tertiaire': number | null;
 };
 
+type NetworkTable = 'reseaux_de_chaleur' | 'reseaux_de_froid';
+type NetworkType = 'reseau_de_chaleur' | 'reseau_de_froid';
+
+/** Survey columns written on the network row (common to both tables). */
+type CommonSurveyFields = Pick<
+  DB['reseaux_de_froid'],
+  | 'livraisons_autre_MWh'
+  | 'livraisons_industrie_MWh'
+  | 'livraisons_residentiel_MWh'
+  | 'livraisons_tertiaire_MWh'
+  | 'livraisons_totale_MWh'
+  | 'nb_pdl'
+  | 'production_totale_MWh'
+  | 'Rend%'
+>;
+type ChaleurSurveyFields = CommonSurveyFields &
+  Pick<
+    DB['reseaux_de_chaleur'],
+    | 'Dev_reseau%'
+    | 'livraisons_agriculture_MWh'
+    | 'PF%'
+    | 'PM'
+    | 'PM_L'
+    | 'PM_T'
+    | 'PV%'
+    | 'prod_MWh_autre_chaleur_recuperee'
+    | 'prod_MWh_autres'
+    | 'prod_MWh_autres_ENR'
+    | 'prod_MWh_biogaz'
+    | 'prod_MWh_biomasse_solide'
+    | 'prod_MWh_chaleur_industiel'
+    | 'prod_MWh_charbon'
+    | 'prod_MWh_chaudieres_electriques'
+    | 'prod_MWh_dechets_internes'
+    | 'prod_MWh_fioul_domestique'
+    | 'prod_MWh_fioul_lourd'
+    | 'prod_MWh_GPL'
+    | 'prod_MWh_gaz_naturel'
+    | 'prod_MWh_geothermie'
+    | 'prod_MWh_PAC'
+    | 'prod_MWh_solaire_thermique'
+    | 'prod_MWh_UIOM'
+  >;
+
+/** Name, gestionnaire and MO reported by the survey: written on the `*_fedene` columns, the FCU corrections (`*_fcu`) stay. */
+type SurveyIdentity = Pick<DB['reseaux_de_chaleur'], 'gestionnaire_fedene' | 'mo_fedene' | 'nom_reseau_fedene'>;
+
 type FiliereConfig = {
   label: string;
-  mapFields: (data: ExcelRowBrute, existing?: AirtableRecord<FieldSet>) => Record<string, unknown>;
+  mapFields: (data: ExcelRowBrute) => Record<string, number | string | null>;
+  networkType: NetworkType;
   sncuPattern: RegExp;
-  table: Airtable;
+  table: NetworkTable;
 };
 
-type FieldDiff = {
-  field: string;
-  newValue: unknown;
-  oldValue: unknown;
-};
+type FieldDiff = { field: string; newValue: unknown; oldValue: unknown };
+type ChangeEntry = { diffs: FieldDiff[]; id: string; type: 'UPDATE' | 'CREATE' };
 
-type ChangeEntry = {
-  diffs: FieldDiff[];
-  id: string;
-  type: 'UPDATE' | 'CREATE';
-};
-
-type AbsentEntry = {
-  id: string;
-  oldValue: unknown;
-  recordId: string;
-};
-
-type FiliereResult = {
-  absents: AbsentEntry[];
+export type FiliereResult = {
   changes: ChangeEntry[];
   createdCount: number;
   invalidIdsCount: number;
   missingFromExcel: string[];
-  notFoundIds: string[];
   updatedCount: number;
 };
 
@@ -119,274 +135,262 @@ type FiliereResult = {
 const FILIERE_CHALEUR: FiliereConfig = {
   label: 'chaleur',
   mapFields: mapFieldsChaleur,
+  networkType: 'reseau_de_chaleur',
   sncuPattern: /^\d+C$/,
-  table: Airtable.NETWORKS,
+  table: 'reseaux_de_chaleur',
 };
 
 const FILIERE_FROID: FiliereConfig = {
   label: 'froid',
   mapFields: mapFieldsFroid,
+  networkType: 'reseau_de_froid',
   sncuPattern: /^\d+F$/,
-  table: Airtable.COLD_NETWORKS,
+  table: 'reseaux_de_froid',
 };
 
 // ---------------------------------------------------------------------------
 // Main export
 // ---------------------------------------------------------------------------
 
+/**
+ * Yearly import of the FEDENE library (Excel): survey figures are written on the heat and cold networks (keyed by SNCU id,
+ * networks unknown to the base are created without geometry). The survey's name, gestionnaire and MO go to the `*_fedene`
+ * columns; a FCU correction (`*_fcu`) is kept as is, cleared when the survey now matches it, and otherwise becomes a pending
+ * « écart avec l'enquête » request proposing to drop the correction.
+ */
 export const importDonneesReseauxBibliothequeFedene = defineFileImportFunc(async ({ filepath, logger, options }) => {
   const dryRun = options?.dryRun ?? false;
 
-  logger.info(`Début de l'import des données réseaux depuis le fichier Fedene (Edition ${EDITION_YEAR})`);
+  logger.info(`Début de l'import des données réseaux depuis le fichier Fedene (Edition ${FEDENE_EDITION_YEAR})`);
   logger.info(`Mode: ${dryRun ? 'dry-run' : 'live'}`);
 
-  // 1. Read Excel
   const rows = (await loadXlsxFromFile(filepath, EXCEL_SHEET_NAME)) as ExcelRowBrute[];
   logger.info(`${rows.length} lignes lues depuis le fichier Excel`);
 
-  const reseauxChaleur = rows.filter((r) => r['ID EARCF']?.endsWith('C'));
-  const reseauxFroid = rows.filter((r) => r['ID EARCF']?.endsWith('F'));
-  logger.info(`${reseauxChaleur.length} réseaux de chaleur, ${reseauxFroid.length} réseaux de froid`);
+  const results = await importFedeneRows(rows, { dryRun, logger });
 
-  // 2. Ensure fields exist in Airtable
-  if (!dryRun) {
-    await ensureFieldsExist(logger, Airtable.NETWORKS);
-    await ensureFieldsExist(logger, Airtable.COLD_NETWORKS);
-  }
-
-  // 3. Read Airtable data
-  const [airtableChaleur, airtableFroid] = await Promise.all([
-    AirtableDB(Airtable.NETWORKS).select().all(),
-    AirtableDB(Airtable.COLD_NETWORKS).select().all(),
-  ]);
-  logger.info(`${airtableChaleur.length} réseaux de chaleur existants dans Airtable`);
-  logger.info(`${airtableFroid.length} réseaux de froid existants dans Airtable`);
-
-  // 4. Process each filière (updates, creates, absents)
   const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
   const logFilePath = `import-bibliotheque-fedene-${timestamp}.log`;
   const logStream = createWriteStream(logFilePath, { encoding: 'utf-8' });
   const log = (text: string) => logStream.write(`${text}\n`);
-
-  log(`# Import Fedene Edition ${EDITION_YEAR} - ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`);
+  log(`# Import Fedene Edition ${FEDENE_EDITION_YEAR} - ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`);
   log(`Mode: ${dryRun ? 'dry-run' : 'live'}`);
   log('');
-
-  const opts = { dryRun };
-  const sncuChaleurExcel = new Set(reseauxChaleur.map((r) => r['ID EARCF']));
-  const sncuFroidExcel = new Set(reseauxFroid.map((r) => r['ID EARCF']));
-
-  const resultChaleur = await processFiliere(FILIERE_CHALEUR, reseauxChaleur, airtableChaleur, sncuChaleurExcel, opts);
-  writeLogSection(log, FILIERE_CHALEUR.label, resultChaleur);
-  logFiliereConsoleOutput(logger, FILIERE_CHALEUR.label, resultChaleur);
-
-  const resultFroid = await processFiliere(FILIERE_FROID, reseauxFroid, airtableFroid, sncuFroidExcel, opts);
-  writeLogSection(log, FILIERE_FROID.label, resultFroid);
-  logFiliereConsoleOutput(logger, FILIERE_FROID.label, resultFroid);
-
-  // 5. Write report
+  writeLogSection(log, FILIERE_CHALEUR.label, results.chaleur);
+  writeLogSection(log, FILIERE_FROID.label, results.froid);
   log('## Résumé');
   for (const [label, result] of [
-    [FILIERE_CHALEUR.label, resultChaleur],
-    [FILIERE_FROID.label, resultFroid],
+    [FILIERE_CHALEUR.label, results.chaleur],
+    [FILIERE_FROID.label, results.froid],
   ] as const) {
-    const updated = result.changes.filter((c) => c.type === 'UPDATE').length;
-    const created = result.changes.filter((c) => c.type === 'CREATE').length;
-    log(`- Réseaux de ${label} mis à jour: ${updated}`);
-    log(`- Réseaux de ${label} créés: ${created}`);
-    log(`- Réseaux de ${label} marqués absents de l'enquête: ${result.absents.length}`);
+    log(`- Réseaux de ${label} mis à jour: ${result.changes.filter((change) => change.type === 'UPDATE').length}`);
+    log(`- Réseaux de ${label} créés: ${result.createdCount}`);
+    log(`- Réseaux de ${label} en base mais absents du fichier: ${result.missingFromExcel.length}`);
   }
-
   logStream.end();
   await finished(logStream);
   logger.info(`Fichier de log généré: ${logFilePath}`);
-
-  const totalUpdated = resultChaleur.updatedCount + resultFroid.updatedCount;
-  const totalCreated = resultChaleur.createdCount + resultFroid.createdCount;
-  const totalAbsents = resultChaleur.absents.length + resultFroid.absents.length;
-  logger.info(`Import terminé: ${totalUpdated} réseaux mis à jour, ${totalCreated} créés, ${totalAbsents} marqués absents`);
 });
+
+/** Applies the rows of the FEDENE file to the base (exported for tests: no file, no log file). */
+export const importFedeneRows = async (rows: ExcelRowBrute[], { dryRun, logger }: { dryRun: boolean; logger: Logger }) => {
+  const reseauxChaleur = rows.filter((row) => row['ID EARCF']?.endsWith('C'));
+  const reseauxFroid = rows.filter((row) => row['ID EARCF']?.endsWith('F'));
+  logger.info(`${reseauxChaleur.length} réseaux de chaleur, ${reseauxFroid.length} réseaux de froid`);
+
+  const chaleur = await processFiliere(FILIERE_CHALEUR, reseauxChaleur, { dryRun });
+  logFiliereConsoleOutput(logger, FILIERE_CHALEUR.label, chaleur);
+  const froid = await processFiliere(FILIERE_FROID, reseauxFroid, { dryRun });
+  logFiliereConsoleOutput(logger, FILIERE_FROID.label, froid);
+
+  logger.info(
+    `Import terminé: ${chaleur.updatedCount + froid.updatedCount} réseaux mis à jour, ${chaleur.createdCount + froid.createdCount} créés, ${chaleur.missingFromExcel.length + froid.missingFromExcel.length} absents du fichier`
+  );
+  return { chaleur, froid };
+};
 
 // ---------------------------------------------------------------------------
 // Processing logic
 // ---------------------------------------------------------------------------
 
-async function processFiliere(
-  config: FiliereConfig,
-  reseaux: ExcelRowBrute[],
-  airtableRecords: readonly AirtableRecord<FieldSet>[],
-  sncuExcel: Set<string>,
-  { dryRun }: { dryRun: boolean }
-): Promise<FiliereResult> {
-  const airtableBySncu = new Map<string, AirtableRecord<FieldSet>>(
-    airtableRecords.map((record) => [record.get('Identifiant reseau') as string, record])
-  );
+async function processFiliere(config: FiliereConfig, reseaux: ExcelRowBrute[], { dryRun }: { dryRun: boolean }): Promise<FiliereResult> {
+  const existingNetworks = await kdb
+    .selectFrom(config.table)
+    .select(['id_fcu', 'Identifiant reseau', 'gestionnaire_fcu', 'mo_fcu', 'nom_reseau_fcu'])
+    .where('Identifiant reseau', 'is not', null)
+    .execute();
+  const idFcuBySncu = new Map(existingNetworks.map((network) => [network['Identifiant reseau'] as string, network.id_fcu]));
+  const networkBySncu = new Map(existingNetworks.map((network) => [network['Identifiant reseau'] as string, network]));
+  const sncuExcel = new Set(reseaux.map((row) => row['ID EARCF']));
 
-  const toUpdate = reseaux
-    .map((reseau) => ({ airtableRecord: airtableBySncu.get(reseau['ID EARCF']), reseau }))
-    .filter((r): r is { airtableRecord: AirtableRecord<FieldSet>; reseau: ExcelRowBrute } => r.airtableRecord != null);
-
-  const notFound = reseaux.filter((r) => !airtableBySncu.has(r['ID EARCF']));
-
-  const updates = toUpdate.map(({ airtableRecord, reseau }) => {
-    const fields = config.mapFields(reseau, airtableRecord);
-    const updateData = Object.fromEntries(Object.entries(fields).map(([key, value]) => [key, value ?? null])) as Partial<FieldSet>;
-    return { airtableRecord, diffs: collectDiffs(airtableRecord, updateData), id: reseau['ID EARCF'], updateData };
-  });
-
-  const updateChanges: ChangeEntry[] = updates
-    .filter(({ diffs }) => diffs.length > 0)
-    .map(({ diffs, id }) => ({ diffs, id, type: 'UPDATE' as const }));
-
-  if (!dryRun) {
-    await processInParallel(updates, 5, async ({ airtableRecord, id, updateData }) => {
-      try {
-        await AirtableDB(config.table).update(airtableRecord.id, updateData);
-      } catch (error) {
-        console.error(`Failed to update record ${id}:`, JSON.stringify(updateData, null, 2));
-        throw error;
+  const changes: ChangeEntry[] = [];
+  let updatedCount = 0;
+  let createdCount = 0;
+  // sequential: one network at a time keeps the log ordered and the diff readable
+  for (const row of reseaux) {
+    const sncu = row['ID EARCF'];
+    const survey = mapSurveyIdentity(row);
+    // an empty survey value keeps the previous one (and the FCU correction): the file is not always complete
+    const fields = { ...config.mapFields(row), ...Object.fromEntries(Object.entries(survey).filter(([, value]) => value !== null)) };
+    const idFcu = idFcuBySncu.get(sncu);
+    if (idFcu !== undefined) {
+      const diffs = await collectDiffs(config.table, idFcu, fields);
+      if (diffs.length > 0) {
+        changes.push({ diffs, id: sncu, type: 'UPDATE' });
       }
-    });
-  }
-
-  const creates = notFound.map((reseau) => {
-    const fields = config.mapFields(reseau);
-    return {
-      createData: Object.fromEntries(
-        Object.entries({ 'Identifiant reseau': reseau['ID EARCF'], ...fields }).map(([key, value]) => [key, value ?? null])
-      ) as Partial<FieldSet>,
-      id: reseau['ID EARCF'],
-    };
-  });
-
-  const createChanges: ChangeEntry[] = creates.map(({ createData, id }) => ({
-    diffs: buildCreateDiffs(createData),
-    id,
-    type: 'CREATE' as const,
-  }));
-
-  if (!dryRun && creates.length > 0) {
-    await processInParallel(creates, 5, async ({ createData, id }) => {
-      try {
-        await AirtableDB(config.table).create(createData);
-      } catch (error) {
-        console.error(`Failed to create record ${id}:`, JSON.stringify(createData, null, 2));
-        throw error;
+      updatedCount++;
+      if (!dryRun) {
+        const network = networkBySncu.get(sncu) as (typeof existingNetworks)[number];
+        // a FCU correction now matched by the survey is dropped; one still differing is proposed for removal
+        const corrections = [
+          { fcu: network.gestionnaire_fcu, fcuColumn: 'gestionnaire_fcu', payloadKey: 'gestionnaire', survey: survey.gestionnaire_fedene },
+          { fcu: network.mo_fcu, fcuColumn: 'mo_fcu', payloadKey: 'maitreOuvrage', survey: survey.mo_fedene },
+          { fcu: network.nom_reseau_fcu, fcuColumn: 'nom_reseau_fcu', payloadKey: 'nomReseau', survey: survey.nom_reseau_fedene },
+        ] as const;
+        const matched = corrections.filter(
+          ({ fcu, survey: surveyValue }) => fcu !== null && surveyValue !== null && !isDifferent(surveyValue, fcu)
+        );
+        await kdb
+          .updateTable(config.table)
+          .set({ ...fields, ...Object.fromEntries(matched.map(({ fcuColumn }) => [fcuColumn, null])) })
+          .where('id_fcu', '=', idFcu)
+          .execute();
+        const displayedName = network.nom_reseau_fcu ?? survey.nom_reseau_fedene ?? '';
+        await upsertSurveyDiscrepancyRequest(
+          { id: idFcu, label: `${sncu} - ${displayedName}`.trim(), type: config.networkType },
+          {
+            edition: FEDENE_EDITION_YEAR,
+            ...Object.fromEntries(
+              corrections
+                .filter(({ fcu, survey: surveyValue }) => fcu !== null && isDifferent(surveyValue, fcu))
+                .map(({ payloadKey, survey: surveyValue }) => [payloadKey, surveyValue as string])
+            ),
+          }
+        );
       }
-    });
+      continue;
+    }
+    changes.push({ diffs: buildCreateDiffs(fields), id: sncu, type: 'CREATE' });
+    createdCount++;
+    if (!dryRun) {
+      // a network known to the survey but not to the base: created without geometry (the trace comes later from the admin)
+      await kdb
+        .insertInto(config.table)
+        .values({
+          ...fields,
+          'Identifiant reseau': sncu,
+          id_fcu: sql<number>`(SELECT COALESCE(MAX(id_fcu), 0) + 1 FROM ${sql.table(config.table)})`,
+          'reseaux classes': false,
+          ...(config.table === 'reseaux_de_chaleur' ? { ouvert_aux_raccordements: false } : {}),
+        })
+        .execute();
+    }
   }
 
-  const missingFromExcel = [...airtableBySncu.keys()].filter((id) => !sncuExcel.has(id) && id && config.sncuPattern.test(id));
+  const missingFromExcel = [...idFcuBySncu.keys()].filter((sncu) => !sncuExcel.has(sncu) && config.sncuPattern.test(sncu));
+  const invalidIdsCount = existingNetworks.filter((network) => !config.sncuPattern.test(network['Identifiant reseau'] ?? '')).length;
 
-  const invalidIdsCount = airtableRecords.filter((r) => {
-    const id = r.get('Identifiant reseau') as string;
-    return !id || !config.sncuPattern.test(id);
-  }).length;
+  return { changes, createdCount, invalidIdsCount, missingFromExcel, updatedCount };
+}
 
-  const absents: AbsentEntry[] = missingFromExcel
-    .map((id) => {
-      const record = airtableBySncu.get(id)!;
-      return { id, oldValue: record.get(PRESENT_FIELD_NAME) ?? null, recordId: record.id };
-    })
-    .filter(({ oldValue }) => oldValue != null && oldValue !== '');
+/** A survey value counts as different only when it is filled and differs from the base value (case and whitespace ignored). */
+const isDifferent = (surveyValue: string | null, baseValue: string | null) =>
+  normalizeNetworkValue(surveyValue) !== '' && normalizeNetworkValue(surveyValue) !== normalizeNetworkValue(baseValue);
 
-  if (!dryRun && absents.length > 0) {
-    await processInParallel(absents, 5, async ({ recordId }) => {
-      await AirtableDB(config.table).update(recordId, { [PRESENT_FIELD_NAME]: '' });
-    });
-  }
-
-  return {
-    absents,
-    changes: [...updateChanges, ...createChanges],
-    createdCount: creates.length,
-    invalidIdsCount,
-    missingFromExcel,
-    notFoundIds: notFound.map((r) => r['ID EARCF']),
-    updatedCount: updates.length,
-  };
+async function collectDiffs(table: NetworkTable, idFcu: number, fields: Record<string, number | string | null>): Promise<FieldDiff[]> {
+  const columns = Object.keys(fields) as (keyof DB['reseaux_de_chaleur'])[];
+  const current = await kdb
+    .selectFrom(table)
+    .select(columns as any)
+    .where('id_fcu', '=', idFcu)
+    .executeTakeFirstOrThrow();
+  return Object.entries(fields)
+    .map(([field, newValue]) => ({ field, newValue, oldValue: (current as Record<string, unknown>)[field] ?? null }))
+    .filter(({ newValue, oldValue }) => oldValue !== newValue);
 }
 
 // ---------------------------------------------------------------------------
 // Reporting
 // ---------------------------------------------------------------------------
 
-function writeLogSection(log: (text: string) => void, label: string, { absents, changes }: FiliereResult): void {
+function writeLogSection(log: (text: string) => void, label: string, { missingFromExcel, changes }: FiliereResult): void {
   if (changes.length > 0) {
     log(`## Détail des changements - Réseaux de ${label}`);
     log('');
-    changes.forEach((c) => {
-      log(formatChangeEntry(c));
+    changes.forEach((change) => {
+      log(formatChangeEntry(change));
       log('');
     });
   }
-
-  if (absents.length > 0) {
-    log(`## Réseaux de ${label} marqués absents de l'enquête`);
+  if (missingFromExcel.length > 0) {
+    log(`## Réseaux de ${label} en base mais absents du fichier`);
     log('');
-    absents.forEach((a) => {
-      log(formatAbsentEntry(a));
-      log('');
-    });
+    missingFromExcel.forEach((sncu) => log(`- ${sncu}`));
+    log('');
   }
 }
 
 function logFiliereConsoleOutput(logger: Logger, label: string, result: FiliereResult): void {
   logger.info(
-    `Réseaux de ${label}: ${result.updatedCount} mis à jour, ${result.createdCount} créés, ${result.absents.length} marqués absents`
+    `Réseaux de ${label}: ${result.updatedCount} mis à jour, ${result.createdCount} créés, ${result.missingFromExcel.length} absents du fichier`
   );
   if (result.invalidIdsCount > 0) {
-    logger.warn(`${result.invalidIdsCount} réseaux de ${label} dans Airtable ont un identifiant SNCU invalide ou vide`);
+    logger.warn(`${result.invalidIdsCount} réseaux de ${label} en base ont un identifiant SNCU invalide`);
   }
-  if (result.notFoundIds.length > 0) {
-    console.log(`\nRéseaux de ${label} dans Excel mais absents d'Airtable (${result.notFoundIds.length}):`);
-    console.log(result.notFoundIds.sort().join('\n'));
+  const created = result.changes.filter((change) => change.type === 'CREATE').map((change) => change.id);
+  if (created.length > 0) {
+    console.log(`\nRéseaux de ${label} dans Excel mais absents de la base (${created.length}):`);
+    console.log(created.sort().join('\n'));
   }
   if (result.missingFromExcel.length > 0) {
-    console.log(`\nRéseaux de ${label} dans Airtable mais absents du fichier Excel (${result.missingFromExcel.length}):`);
+    console.log(`\nRéseaux de ${label} en base mais absents du fichier Excel (${result.missingFromExcel.length}):`);
     console.log(result.missingFromExcel.sort().join('\n'));
   }
 }
 
 function formatChangeEntry({ diffs, id, type }: ChangeEntry): string {
-  return [`### ${id} - ${type}`, ...diffs.map((d) => `  ${d.field}: ${formatValue(d.oldValue)} → ${formatValue(d.newValue)}`)].join('\n');
+  return [
+    `### ${id} - ${type}`,
+    ...diffs.map((diff) => `  ${diff.field}: ${formatValue(diff.oldValue)} → ${formatValue(diff.newValue)}`),
+  ].join('\n');
 }
 
-function formatAbsentEntry({ id, oldValue }: AbsentEntry): string {
-  return [`### ${id}`, `  ${PRESENT_FIELD_NAME}: ${formatValue(oldValue)} → ""`].join('\n');
+function formatValue(value: unknown): string {
+  return value === null || value === undefined ? 'null' : typeof value === 'string' ? `"${value}"` : String(value);
+}
+
+function buildCreateDiffs(createData: Record<string, unknown>): FieldDiff[] {
+  return Object.entries(createData).map(([field, newValue]) => ({ field, newValue: newValue ?? null, oldValue: null }));
 }
 
 // ---------------------------------------------------------------------------
 // Mapping
 // ---------------------------------------------------------------------------
 
-function mapCommonFields(data: ExcelRowBrute, existing?: AirtableRecord<FieldSet>): Record<string, unknown> {
-  const mo = toStringOrNull(data["Maitre d'Ouvrage"]);
-  const gestionnaire = formatGestionnaire(data.Gestionnaire, data['Groupe gestionnaire']);
-
+function mapSurveyIdentity(data: ExcelRowBrute): SurveyIdentity {
   return {
-    [`enquete_commune_${EDITION_YEAR}`]: toStringOrNull(data.Commune),
-    [`Gestionnaire_${EDITION_YEAR}`]: existing ? valueOrIdentique(gestionnaire, existing.get('Gestionnaire')) : gestionnaire,
-    [`MO_${EDITION_YEAR}`]: existing ? valueOrIdentique(mo, existing.get('MO')) : mo,
+    gestionnaire_fedene: formatGestionnaire(data.Gestionnaire, data['Groupe gestionnaire']),
+    mo_fedene: toStringOrNull(data["Maitre d'Ouvrage"]),
+    nom_reseau_fedene: toStringOrNull(data.Nom),
+  };
+}
+
+function mapCommonFields(data: ExcelRowBrute): CommonSurveyFields {
+  return {
     livraisons_autre_MWh: data['Livraisons Autre MWh'],
     livraisons_industrie_MWh: data['Livraisons Industrie MWh'],
     livraisons_residentiel_MWh: data['Livraisons Résidentiel MWh'],
     livraisons_tertiaire_MWh: data['Livraisons Tertiaire MWh'],
     livraisons_totale_MWh: data['Livraisons nettes MWh'],
-    longueur_reseau_aller: parseLongueur(data['Longueur du réseau km (aller)']),
     nb_pdl: data['Nombre points de livraison'],
-    [`nom_reseau_${EDITION_YEAR}`]: existing
-      ? valueOrIdentique(toStringOrNull(data.Nom), existing.get('nom_reseau'))
-      : toStringOrNull(data.Nom),
-    [PRESENT_FIELD_NAME]: 'oui',
     production_totale_MWh: data['Production totale MWh'],
     'Rend%': ratioToPercent(data['Rendement de distribution']),
   };
 }
 
-function mapFieldsChaleur(data: ExcelRowBrute, existing?: AirtableRecord<FieldSet>): Record<string, unknown> {
+function mapFieldsChaleur(data: ExcelRowBrute): ChaleurSurveyFields {
   return {
-    ...mapCommonFields(data, existing),
+    ...mapCommonFields(data),
     'Dev_reseau%': ratioToPercent(data['Développement réseau']),
     livraisons_agriculture_MWh: data['Livraisons Agriculture MWh'],
     'PF%': ratioToPercent(toNumberOrNull(data['Part fixe'])),
@@ -414,63 +418,25 @@ function mapFieldsChaleur(data: ExcelRowBrute, existing?: AirtableRecord<FieldSe
   };
 }
 
-function mapFieldsFroid(data: ExcelRowBrute, existing?: AirtableRecord<FieldSet>): Record<string, unknown> {
-  return mapCommonFields(data, existing);
-}
-
-// ---------------------------------------------------------------------------
-// Field creation
-// ---------------------------------------------------------------------------
-
-async function ensureFieldsExist(logger: Logger, tableName: string): Promise<void> {
-  const tables = await listTables(serverConfig.AIRTABLE_BASE);
-  const table = tables.find((t) => t.name === tableName);
-  if (!table) {
-    throw new Error(`Table "${tableName}" not found in Airtable base`);
-  }
-
-  const existingFields = new Set(table.fields.map((f: { name: string }) => f.name));
-  const missingFields = FIELDS_TO_ENSURE.filter((name) => !existingFields.has(name));
-
-  if (missingFields.length === 0) {
-    logger.info(`All new fields already exist in "${tableName}"`);
-    return;
-  }
-
-  logger.info(`Creating ${missingFields.length} missing fields in "${tableName}": ${missingFields.join(', ')}`);
-  for (const name of missingFields) {
-    await createField(serverConfig.AIRTABLE_BASE, table.id, { name, type: 'singleLineText' });
-    logger.info(`  Created field "${name}"`);
-  }
+function mapFieldsFroid(data: ExcelRowBrute): CommonSurveyFields {
+  return mapCommonFields(data);
 }
 
 // ---------------------------------------------------------------------------
 // Utilities
 // ---------------------------------------------------------------------------
 
-/** Parse "[10,20]" into "10,20" */
-function parseLongueur(value: string | null): string | null {
-  if (!value) {
-    return null;
-  }
-  const match = value.match(/\[([^\]]+)\]/);
-  return match ? match[1] : null;
-}
-
 /** Convert ratio (0.82) to percentage (82.0) rounded to 1 decimal */
 function ratioToPercent(value: number | null): number | null {
-  if (value == null) {
-    return null;
-  }
-  return Math.round(value * 100 * 10) / 10;
+  return value == null ? null : Math.round(value * 100 * 10) / 10;
 }
 
 function toNumberOrNull(value: unknown): number | null {
   if (value == null || value === '') {
     return null;
   }
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 /** A price below the "communicated" threshold (0 €, cents) is normalized to null */
@@ -487,43 +453,5 @@ function formatGestionnaire(gestionnaire: string | null, groupe: string | null):
   if (!gestionnaire) {
     return null;
   }
-  if (!groupe || gestionnaire.toLowerCase().includes(groupe.toLowerCase())) {
-    return gestionnaire;
-  }
-  return `${gestionnaire} (${groupe})`;
-}
-
-function valueOrIdentique(newValue: string | null, existingValue: unknown): string | null {
-  if (newValue == null) {
-    return null;
-  }
-  return newValue === toStringOrNull(existingValue) ? '<<<IDENTIQUE>>>' : newValue;
-}
-
-function collectDiffs(airtableRecord: AirtableRecord<FieldSet>, newData: Partial<FieldSet>): FieldDiff[] {
-  return Object.entries(newData)
-    .map(([field, newValue]) => ({
-      field,
-      newValue: newValue ?? null,
-      oldValue: airtableRecord.get(field) ?? null,
-    }))
-    .filter(({ newValue, oldValue }) => oldValue !== newValue);
-}
-
-function buildCreateDiffs(createData: Partial<FieldSet>): FieldDiff[] {
-  return Object.entries(createData).map(([field, newValue]) => ({
-    field,
-    newValue: newValue ?? null,
-    oldValue: null,
-  }));
-}
-
-function formatValue(value: unknown): string {
-  if (value === null || value === undefined) {
-    return 'null';
-  }
-  if (typeof value === 'string') {
-    return `"${value}"`;
-  }
-  return String(value);
+  return !groupe || gestionnaire.toLowerCase().includes(groupe.toLowerCase()) ? gestionnaire : `${gestionnaire} (${groupe})`;
 }

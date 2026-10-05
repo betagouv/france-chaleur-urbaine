@@ -60,12 +60,19 @@ const excludedPages = [
   // misc pages
   '/satisfaction',
   '/inscription/bravo',
+
+  // dynamic sitemap of the network pages (listed in robots.txt below, not a page)
+  '/server-sitemap.xml',
 ];
 
 /** @type {import('next-sitemap').IConfig} */
 export default {
   exclude: excludedPages,
   generateRobotsTxt: true, // (optional)
+  robotsTxtOptions: {
+    // the network pages are rendered on request: their sitemap is served by the app
+    additionalSitemaps: [`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://france-chaleur-urbaine.beta.gouv.fr'}/server-sitemap.xml`],
+  },
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://france-chaleur-urbaine.beta.gouv.fr',
   transform: (config, path) => {
     return {

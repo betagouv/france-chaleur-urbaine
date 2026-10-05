@@ -3,7 +3,6 @@ declare global {
     interface ProcessEnv {
       IS_REVIEW_APP: 'true' | 'false';
       NODE_ENV: 'development' | 'production';
-      GITHUB_CI?: 'true';
     }
   }
 }

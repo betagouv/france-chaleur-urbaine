@@ -5,6 +5,7 @@ import { purgeOldConversionEventIps } from '@/modules/conversion-tracking/server
 import { notifyGestionnairesOfNewDemands, notifyGestionnairesOfUnhandledDemands } from '@/modules/demands/server/manager-notifications';
 import { sendRelanceToDemandeurs } from '@/modules/demands/server/relances';
 import { syncBlockedContacts } from '@/modules/email/server/deliverability-service';
+import { purgeOrphanFiles } from '@/modules/files/server/service';
 import { type CronName, cronDefinitions } from '@/modules/jobs/cron.config';
 import { parentLogger } from '@/server/helpers/logger';
 
@@ -20,6 +21,7 @@ const cronHandlers: Record<CronName, () => Promise<unknown>> = {
   notifyGestionnairesOfNewDemands,
   notifyGestionnairesOfUnhandledDemands,
   purgeOldConversionEventIps: () => purgeOldConversionEventIps(),
+  purgeOrphanFiles,
   sendRelanceToDemandeurs,
   syncEmailBlockedContacts: syncBlockedContacts,
 };
