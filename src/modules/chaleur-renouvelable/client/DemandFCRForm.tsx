@@ -42,7 +42,7 @@ const contactRecipients = [
     label: 'Je n’ai pas encore contacté le gestionnaire',
   },
   {
-    description: 'Un·e conseiller·e vous aidera à identifier la meilleure alternative parmi les solutions compatibles ci-dessus',
+    description: 'Un·e conseiller·ère vous aidera à identifier la solution la plus adaptée à votre situation',
     id: 'public-advisor',
     label: 'J’ai déjà reçu un refus ou une réponse négative',
   },
@@ -208,7 +208,14 @@ function ProjectStatusSelect({
 
   return (
     <div ref={containerRef}>
-      <FieldWrapper label="Où en êtes-vous de votre projet ? (optionnel)" className="mb-0">
+      <FieldWrapper
+        label={
+          <>
+            Où en êtes-vous de votre projet ?<small> (Optionnel)</small>
+          </>
+        }
+        className="mb-0"
+      >
         <div className="relative">
           <button
             type="button"
@@ -294,13 +301,15 @@ function getProjectStatusTriggerLabel(value: ProjectStatus[], placeholder: strin
 }
 
 function getFormTitle(isHeatNetworkEligible: boolean) {
-  return isHeatNetworkEligible ? 'Faites-vous recontacter par le gestionnaire de réseau' : 'Faites-vous recontacter par un·e conseiller·e';
+  return isHeatNetworkEligible
+    ? 'Faites-vous recontacter par le gestionnaire de réseau'
+    : 'Faites-vous recontacter par un·e conseiller·ère';
 }
 
 function getFormDescription(isHeatNetworkEligible: boolean) {
   return isHeatNetworkEligible
     ? 'Vous êtes éligible au réseau de chaleur. C’est lui qu’il faut contacter en priorité : le gestionnaire évaluera gratuitement la faisabilité technique et le coût exact du raccordement pour votre bâtiment.'
-    : 'Votre demande sera transmise au conseiller chaleur renouvelable compétent sur votre territoire pour vous accompagner dans la suite de votre projet.';
+    : 'Votre demande sera transmise à un·e conseiller·ère chaleur renouvelable compétent·e sur votre territoire pour vous accompagner dans la suite de votre projet.';
 }
 
 function hasOrganizationNameField(occupantStatus: OccupantStatus) {
@@ -521,12 +530,12 @@ function HeatNetworkDemandForm({
     <section id="help-ademe" className="mt-6 scroll-mt-4 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">
       <h4 className="mb-4 text-2xl font-bold">
         {shouldShowFranceRenovAdvisor
-          ? 'Échangez avec un conseiller neutre et gratuit du service public'
+          ? 'Échangez avec un·e conseiller·ère neutre et gratuit·e du service public'
           : getFormTitle(isHeatNetworkEligible && !isPublicAdvisorSelected)}
       </h4>
       <p className="mb-4 max-w-5xl">
         {shouldShowFranceRenovAdvisor
-          ? 'Un conseiller du service public vous aidera à identifier la meilleure alternative parmi les solutions compatibles ci-dessus.'
+          ? 'Un·e conseiller·ère du service public vous aidera à identifier la solution la plus adaptée à votre situation.'
           : getFormDescription(isHeatNetworkEligible && !isPublicAdvisorSelected)}
       </p>
       {isHeatNetworkEligible && <ContactRecipientSelector selectedRecipientId={selectedRecipientId} onSelect={handleSelectRecipient} />}
@@ -538,7 +547,7 @@ function HeatNetworkDemandForm({
             <span className="fr-icon-mail-line mt-0.5" aria-hidden="true" />
             <span>
               {isCcrtDemand ? (
-                'Votre demande sera transmise au conseiller chaleur renouvelable compétent.'
+                'La demande sera transmise à un·e conseiller·ère chaleur renouvelable compétent·e.'
               ) : (
                 <>
                   Votre demande sera transmise au gestionnaire du réseau de chaleur
@@ -664,7 +673,7 @@ function HeatNetworkDemandForm({
               {isPublicAdvisorSelected && (
                 <>
                   <RichSelect
-                    label="Quand avez-vous reçu le refus ou la réponse négative du réseau de chaleur ?"
+                    label="Quand avez-vous reçu la réponse négative du réseau de chaleur ?"
                     value={refusalPeriod || undefined}
                     onChange={setRefusalPeriod}
                     options={refusalPeriodOptions}
@@ -712,7 +721,14 @@ function HeatNetworkDemandForm({
         </>
       )}
       <Dialog title="" open={isSubmissionDialogOpen && submissionResult !== null} size="lg" onOpenChange={setIsSubmissionDialogOpen}>
-        {submissionResult && <DemandSubmittedPanel nextStepsContext={nextStepsContext} submissionResult={submissionResult} />}
+        {submissionResult && (
+          <DemandSubmittedPanel
+            nextStepsContext={nextStepsContext}
+            showEmailNotice={false}
+            showHeatNetworkActions={nextStepsContext !== 'renewable-advisor'}
+            submissionResult={submissionResult}
+          />
+        )}
       </Dialog>
     </section>
   );

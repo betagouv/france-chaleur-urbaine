@@ -216,7 +216,7 @@ function ChaleurRenouvelableMethodologiePage() {
         Le simulateur vous donne une <strong>première estimation</strong>, mais chaque projet est unique. Pour aller plus loin :
         <ul>
           <li>
-            <strong>Contactez un conseiller France Rénov’</strong> pour une étude personnalisée et neutre.
+            <strong>Contactez un·e conseiller·ère France Rénov’</strong> pour une étude personnalisée et neutre.
           </li>
           <li>
             <strong>Comparez les devis</strong> de plusieurs professionnels qualifiés RGE.

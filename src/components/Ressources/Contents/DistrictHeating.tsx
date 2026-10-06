@@ -316,7 +316,7 @@ const DistrictHeating = ({
       <b>La rénovation thermique d’un bâtiment énergivore est le premier réflexe à avoir</b> pour réduire son impact écologique et ses
       factures d’énergie. Il convient de réaliser les travaux nécessaires avant de souscrire un contrat pour une puissance de chauffage
       donnée, qui pourrait s’avérer surestimée suite à la rénovation du bâtiment.{' '}
-      <b>Les conseillers France Rénov’ accompagnent l’ensemble des projets de rénovation de l’habitat</b> :{' '}
+      <b>Les conseiller·ères France Rénov’ accompagnent l’ensemble des projets de rénovation de l’habitat</b> :{' '}
       <Link href="https://france-renov.gouv.fr/" isExternal>
         https://france-renov.gouv.fr/
       </Link>

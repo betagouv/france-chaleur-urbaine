@@ -63,9 +63,9 @@ function FranceRenovAdvisorContent({ franceRenovSpace, isLoading, isOpen, varian
     <div>
       {variant !== 'inline' && (
         <>
-          <h4 className="text-xl font-bold md:text-2xl">Échangez avec un conseiller neutre et gratuit du service public</h4>
+          <h4 className="text-xl font-bold md:text-2xl">Échangez avec un·e conseiller·ère neutre et gratuit·e du service public</h4>
           <p className="mb-4">
-            Un conseiller du service public vous aidera à identifier la meilleure alternative parmi les solutions compatibles ci-dessus.
+            Un·e conseiller·ère du service public vous aidera à identifier la solution la plus adaptée à votre situation.
           </p>
         </>
       )}
@@ -84,7 +84,7 @@ function FranceRenovAdvisorContent({ franceRenovSpace, isLoading, isOpen, varian
       {isOpen && (
         <div className="mt-6">
           {isLoading ? (
-            <p>Recherche du conseiller France Rénov’ de votre commune…</p>
+            <p>Recherche de votre conseiller·ère France Rénov’ de votre commune…</p>
           ) : (
             <FranceRenovAdvisorDetails franceRenovSpace={franceRenovSpace} />
           )}
@@ -99,8 +99,8 @@ function FranceRenovAdvisorDetails({ franceRenovSpace }: { franceRenovSpace: Fra
     return (
       <>
         <p className="mb-5 max-w-4xl">
-          Les conseillers France Rénov’ sont des experts de la rénovation. Ils vous apportent des informations sur les travaux et les aides
-          les plus adaptées à votre logement et à vos besoins.
+          Les conseiller·ères France Rénov’ sont des experts de la rénovation. Ils vous apportent des informations sur les travaux et les
+          aides les plus adaptées à votre logement et à vos besoins.
         </p>
         <Link
           href="https://france-renov.gouv.fr/preparer-projet/trouver-conseiller"
@@ -109,7 +109,7 @@ function FranceRenovAdvisorDetails({ franceRenovSpace }: { franceRenovSpace: Fra
           isExternal
           postHogEventKey="fcr_results:france_renov_cta_clicked"
         >
-          Prendre rendez-vous avec un conseiller
+          Prendre rendez-vous avec un·e conseiller·ère
         </Link>
       </>
     );
@@ -124,8 +124,8 @@ function FranceRenovAdvisorDetails({ franceRenovSpace }: { franceRenovSpace: Fra
   return (
     <>
       <p className="mb-5">
-        Les conseillers France Rénov’ sont des experts de la rénovation. Ils vous apportent des informations sur les travaux et les aides
-        les plus adaptées à votre logement et à vos besoins.
+        Les conseiller·ères France Rénov’ sont des experts de la rénovation. Ils vous apportent des informations sur les travaux et les
+        aides les plus adaptées à votre logement et à vos besoins.
       </p>
 
       <p className="mb-3 font-bold">{franceRenovSpace.name}</p>
@@ -173,7 +173,7 @@ function FranceRenovAdvisorDetails({ franceRenovSpace }: { franceRenovSpace: Fra
         isExternal={Boolean(franceRenovSpace.website) || !franceRenovSpace.email}
         postHogEventKey="fcr_results:france_renov_cta_clicked"
       >
-        Prendre rendez-vous avec un conseiller
+        Prendre rendez-vous avec un·e conseiller·ère
       </Link>
     </>
   );

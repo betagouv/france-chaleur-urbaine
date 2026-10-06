@@ -9,7 +9,7 @@ Renewable heating guidance journey: collect building/context inputs, rank heatin
 - `constants.ts` — shared domain constants, option lists, Zod schemas, CCRT statuses/project states, `zDemandeChaleurRenouvelable`, `isCcrtExperimentationEligible`.
 - `server/trpc-routes.ts` — thin tRPC routing only; business logic stays in `server/service.ts`.
 - `server/service.ts` — main server logic: BatEnR lookup, address eligibility context, France Rénov lookup, classic demand creation, CCRT demand creation/list/update.
-- `server/altimetry.ts`, `server/france-renov-spaces.ts`, `server/network-eligibility-coordinates.ts` — focused external/geographic helpers with their own tests.
+- `server/altimetry.ts`, `server/france-renov-spaces.ts`, `server/network-eligibility-coordinates.ts`, `server/rnic.ts` — focused external/geographic helpers used by `server/service.ts`.
 - `client/hooks/useChoixChauffageQueryParams.ts` — URL is the source of truth for simulation/result parameters, including `construction_id` and `originDemandId`.
 - `client/simulation-situation.ts` and `client/hooks/useChoixChauffageResults.ts` — convert URL/form state into ranked heating solutions.
 - `client/heating-modes/catalog.tsx`, `client/heating-modes/selectors.ts`, `client/heating-mode-rules.ts`, `client/modesChauffageData.ts` — heating mode catalogue, filtering, prerequisites and display data.
@@ -47,7 +47,7 @@ Renewable heating guidance journey: collect building/context inputs, rank heatin
 
 - Owns table `demands_chaleur_renouvelable`.
 - Reads `communes` to resolve the department for CCRT eligibility; the `geoAddress.context` string is not authoritative for creation.
-- Reads `bdnb_batenr`, `bdnb_batiments`, `reseaux_de_chaleur`, `reseaux_de_froid`, `ign_communes`, and France Rénov data for simulation context.
+- Reads `bdnb_batenr`, `bdnb_batiments`, `reseaux_de_chaleur`, `reseaux_de_froid`, `ign_communes`, France Rénov data, and the RNIC data.gouv tabular API for simulation/demand context.
 - Creates/patches classic `demands` only through the demands module APIs; never write classic demand legacy blobs directly here except via existing helpers such as `mergeLegacyValues`.
 
 ## Tests

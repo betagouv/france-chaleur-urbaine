@@ -2,7 +2,7 @@ import type { ModeDeChauffageEnriched } from '@/modules/chaleur-renouvelable/cli
 import cx from '@/utils/cx';
 
 export function getGainPercentVsGaz(item: ModeDeChauffageEnriched, coutParAnGaz: number, coutParAnGazHotWaterOnly: number | undefined) {
-  if (item.usage !== 'hotWaterOnly' && item.gainVsGaz !== undefined) {
+  if (item.gainVsGaz !== undefined) {
     return item.gainVsGaz;
   }
 

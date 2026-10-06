@@ -543,7 +543,7 @@ const heatingModeCases: HeatingModeCase[] = [
         overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
     ],
-    label: 'Poêle à buche ou à granulés',
+    label: 'Poêle ou insert à bois - chauffage seul',
     possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
@@ -603,7 +603,7 @@ const heatingModeCases: HeatingModeCase[] = [
         overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant', typeRadiateur: 'radiateur-electrique' },
       },
     ],
-    label: 'Système solaire combiné ',
+    label: 'Système solaire combiné',
     possibleOverrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' },
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
@@ -820,7 +820,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
     usage: 'heatingAndHotWater',
   },
   {
-    label: 'Poêle à buche ou à granulés',
+    label: 'Poêle ou insert à bois - chauffage seul',
     overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Indépendant' },
     reason: 'Vous ne disposez pas d’espace extérieur pour stocker du bois',
     source: 'Formulaire',
@@ -1053,14 +1053,26 @@ describe('modesDeChauffage', () => {
     ]);
   });
 
-  it('keeps cooling advantages out of catalog base advantages', () => {
+  it('keeps catalog base cooling advantages scoped to geothermal collective heat pump', () => {
     const coolingCatalogAdvantages = TYPE_LOGEMENT_VALUES.flatMap((typeLogement) =>
-      modesDeChauffage[typeLogement].flatMap((modeDeChauffage) =>
-        modeDeChauffage.avantages.filter((avantage) => avantage.includes('besoins en froid'))
-      )
+      modesDeChauffage[typeLogement]
+        .filter((modeDeChauffage) => modeDeChauffage.avantages.includes(COOLING_POSSIBLE_ADVANTAGE))
+        .map((modeDeChauffage) => ({
+          id: modeDeChauffage.id,
+          label: modeDeChauffage.label,
+          typeLogement,
+          usage: modeDeChauffage.usage,
+        }))
     );
 
-    expect(coolingCatalogAdvantages).toStrictEqual([]);
+    expect(coolingCatalogAdvantages).toStrictEqual([
+      {
+        id: 'collective-geothermal-heat-pump',
+        label: 'PAC géothermique',
+        typeLogement: 'immeuble_chauffage_collectif',
+        usage: 'heatingAndHotWater',
+      },
+    ]);
   });
 
   it('adds cooling advantage when a heating mode enables cooling', () => {
@@ -1073,6 +1085,33 @@ describe('modesDeChauffage', () => {
 
     expect(heatingMode.rafraichissementPossible).toStrictEqual(true);
     expect(heatingMode.avantages.includes(COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual(true);
+  });
+
+  it('uses the reviewed house geothermal ranking and advantages', () => {
+    const heatingMode = getResolvedMode(
+      'maison_individuelle',
+      'PAC géothermique',
+      'heatingAndHotWater',
+      createSituation({ espaceExterieur: 'jardinCours', modeEauChaudeSanitaire: 'Couplé au chauffage' })
+    );
+
+    expect(heatingMode.classement).toStrictEqual(3);
+    expect(heatingMode.avantages).toStrictEqual([
+      'Faibles émissions de CO₂',
+      'Coût de la chaleur compétitif',
+      'Aucune unité extérieure visible',
+      COOLING_POSSIBLE_ADVANTAGE,
+    ]);
+  });
+
+  it('does not mention electric radiators in wood stove prerequisites', () => {
+    const prerequisiteLabels = getMode('maison_individuelle', 'Poêle ou insert à bois - chauffage seul', 'heatingAndHotWater')
+      .prerequis(createSituation({ espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Indépendant' }))
+      .map((row) => row.label);
+
+    expect(prerequisiteLabels).toContain('Maison à chauffage individuel');
+    expect(prerequisiteLabels).toContain('Présence d’un conduit d’évacuation');
+    expect(prerequisiteLabels).not.toContain('Maison à chauffage individuel et radiateurs électriques');
   });
 
   it('resolves heat network cooling from cold network distance', () => {

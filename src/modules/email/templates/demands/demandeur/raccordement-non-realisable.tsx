@@ -53,8 +53,8 @@ const RaccordementNonRealisable = ({
             </ul>
           </Section>
           <Text>
-            Découvrez le détail de ces solutions et échangez avec un conseiller France Rénov', qui vous accompagnera gratuitement dans votre
-            projet.
+            Découvrez le détail de ces solutions et échangez avec un·e conseiller·ère France Rénov', qui vous accompagnera gratuitement dans
+            votre projet.
           </Text>
         </>
       ) : (

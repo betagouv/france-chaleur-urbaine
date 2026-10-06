@@ -86,13 +86,13 @@ const createTestEngine = (): HeatingModeCostEngine => {
 
 describe('getHeatingModeCosts', () => {
   it(
-    'enrichit le solaire thermique collectif au périmètre immeuble',
+    'enrichit le solaire thermique collectif au périmètre logement',
     () => {
       const engine = createTestEngine();
       const situation = createSituation();
       setPublicodesSituation(engine, { codeDepartement: '75', situation, temperatureRef: -5 });
 
-      const result = getHeatingModeCosts(engine, getModesDeChauffage('immeuble_chauffage_collectif', situation));
+      const result = getHeatingModeCosts(engine, getModesDeChauffage('immeuble_chauffage_collectif', situation), situation);
       const heatNetworkMode = result.modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network');
       const solarThermalMode = result.modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-solar-thermal-hot-water');
 
@@ -109,8 +109,8 @@ describe('getHeatingModeCosts', () => {
           coutInstallation: '2 967 € à 4 451 €',
         },
         solarThermal: {
-          coutInstallation: '19 760 € à 29 640 €',
-          coutParAn: 1700.34,
+          coutInstallation: '790 € à 1 186 €',
+          coutParAn: 68.01,
         },
       });
     },
@@ -128,7 +128,7 @@ describe('getHeatingModeCosts', () => {
       });
       setPublicodesSituation(engine, { codeDepartement: '69', situation, temperatureRef: -5 });
 
-      const result = getHeatingModeCosts(engine, getModesDeChauffage('maison_individuelle', situation));
+      const result = getHeatingModeCosts(engine, getModesDeChauffage('maison_individuelle', situation), situation);
       const airWaterHeatPumpMode = result.modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'house-air-water-heat-pump');
       const solarThermalMode = result.modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'house-solar-thermal-hot-water');
       const combinedSolarSystemMode = result.modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'house-combined-solar-system');

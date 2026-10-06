@@ -42,7 +42,7 @@ function InstallationCostPrerequisite({ coutInstallation, solutionType }: { cout
       <span className="flex flex-col md:flex-row items-start md:items-center gap-3">
         <PrerequisiteStatusBadge status="averifier" />
         <span>
-          <strong>Coûts d’installation : {coutInstallation}</strong>. Vérifiez votre éligibilité aux aides
+          <strong>Coûts d’installation : {coutInstallation}</strong> par logement. Vérifiez votre éligibilité aux aides
         </span>
       </span>
       <Link

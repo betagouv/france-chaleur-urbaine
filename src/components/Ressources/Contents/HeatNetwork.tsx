@@ -501,7 +501,7 @@ const HeatNetwork = ({
           l’environnement (RGE) ;
         </li>
         <br />
-        <li>un numéro de téléphone national (0 808 800 700) pour joindre les conseillers France Rénov’ ;</li>
+        <li>un numéro de téléphone national (0 808 800 700) pour joindre les conseiller·ères France Rénov’ ;</li>
         <br />
         <li>
           un réseau de guichets Espaces conseil France Rénov’, répartis sur l’ensemble du territoire, pour informer et conseiller les

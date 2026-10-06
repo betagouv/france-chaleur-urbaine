@@ -178,6 +178,24 @@ export default function DemandesChaleurRenouvelableCcrtPage() {
         width: '190px',
       },
       {
+        accessorFn: (row) => row.rnic_nom_copropriete ?? 'Non renseigné',
+        header: 'Copropriété RNIC',
+        id: 'Copropriété RNIC',
+        width: '240px',
+      },
+      {
+        accessorFn: (row) => row.rnic_numero_immatriculation ?? 'Non renseigné',
+        header: 'Immatriculation RNIC',
+        id: 'Immatriculation RNIC',
+        width: '180px',
+      },
+      {
+        accessorFn: (row) => row.rnic_siret_representant_legal ?? 'Non renseigné',
+        header: 'SIRET représentant légal RNIC',
+        id: 'SIRET représentant légal RNIC',
+        width: '210px',
+      },
+      {
         accessorKey: 'housing_count',
         align: 'right',
         cellType: 'Number',

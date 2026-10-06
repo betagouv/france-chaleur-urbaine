@@ -1,7 +1,17 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 
 import type { SimulatorEngine } from '@/components/ComparateurPublicodes/useSimulatorEngine';
-import type { ModeDeChauffageEnriched, ModeDeChauffageResolved, Situation } from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+import type {
+  ModeDeChauffageEnriched,
+  ModeDeChauffageId,
+  ModeDeChauffageResolved,
+  Situation,
+} from '@/modules/chaleur-renouvelable/client/modesChauffageData';
+
+const BUILDING_SCOPE_SOLAR_THERMAL_HOT_WATER_MODE_IDS = [
+  'collective-solar-thermal-hot-water',
+  'individual-apartment-solar-thermal-hot-water',
+] as const satisfies readonly ModeDeChauffageId[];
 
 function getPublicodesFieldAsNumber(
   engine: SimulatorEngine,
@@ -27,20 +37,29 @@ function formatEuroRange(minimum: number, maximum: number) {
   return `${formatEuroAmount(minimum)} € à ${formatEuroAmount(maximum)} €`;
 }
 
-function getInstallationCost(mode: ModeDeChauffageResolved, engine: SimulatorEngine) {
+function getInstallationCost(mode: ModeDeChauffageResolved, engine: SimulatorEngine, costDisplayDivisor = 1) {
   const situationOverride = mode.publicodeSituation;
   const minimumRule = `${mode.publicodeKey} . coûts . installation . minimum` satisfies RuleName;
   const maximumRule = `${mode.publicodeKey} . coûts . installation . maximum` satisfies RuleName;
   const minimum = getPublicodesFieldAsNumber(engine, minimumRule, situationOverride);
   const maximum = getPublicodesFieldAsNumber(engine, maximumRule, situationOverride);
 
-  return formatEuroRange(minimum, maximum);
+  return formatEuroRange(minimum / costDisplayDivisor, maximum / costDisplayDivisor);
 }
 
-function enrichHeatingMode(mode: ModeDeChauffageResolved, engine: SimulatorEngine): ModeDeChauffageEnriched {
+function isBuildingScopeSolarThermalHotWaterMode(mode: ModeDeChauffageResolved) {
+  return BUILDING_SCOPE_SOLAR_THERMAL_HOT_WATER_MODE_IDS.some((modeId) => modeId === mode.id);
+}
+
+function getCostDisplayDivisor(mode: ModeDeChauffageResolved, situation: Situation) {
+  return isBuildingScopeSolarThermalHotWaterMode(mode) ? situation.nbLogements : 1;
+}
+
+function enrichHeatingMode(mode: ModeDeChauffageResolved, engine: SimulatorEngine, situation: Situation): ModeDeChauffageEnriched {
   const coutParAnPublicodeRule = `${mode.publicodeKey} . bilan . total sans installation` satisfies RuleName;
-  const coutParAn = getPublicodesFieldAsNumber(engine, coutParAnPublicodeRule, mode.publicodeSituation);
-  const coutInstallation = getInstallationCost(mode, engine);
+  const costDisplayDivisor = getCostDisplayDivisor(mode, situation);
+  const coutParAn = getPublicodesFieldAsNumber(engine, coutParAnPublicodeRule, mode.publicodeSituation) / costDisplayDivisor;
+  const coutInstallation = getInstallationCost(mode, engine, costDisplayDivisor);
 
   return { ...mode, coutInstallation, coutParAn };
 }
@@ -84,8 +103,8 @@ export function setPublicodesSituation(
   engine.resetField('ecs . type de production');
 }
 
-export function getHeatingModeCosts(engine: SimulatorEngine, modes: ModeDeChauffageResolved[]) {
-  const modesEnriched = modes.map((modeDeChauffage) => enrichHeatingMode(modeDeChauffage, engine));
+export function getHeatingModeCosts(engine: SimulatorEngine, modes: ModeDeChauffageResolved[], situation: Situation) {
+  const modesEnriched = modes.map((modeDeChauffage) => enrichHeatingMode(modeDeChauffage, engine, situation));
   const coutParAnGaz = engine.getFieldAsNumber('gaz coll sans cond . bilan . total avec aides');
   const coutParAnGazHotWaterOnly = Math.max(
     0,
