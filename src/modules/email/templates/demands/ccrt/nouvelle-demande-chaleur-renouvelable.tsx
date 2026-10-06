@@ -7,6 +7,8 @@ import {
 import { Button, Layout, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
 
+const EMAIL_CAMPAIGN = 'demands.ccrt.nouvelle-demande-chaleur-renouvelable';
+
 const getHousingTypeLabel = (value: DemandeChaleurRenouvelable['housingType']) =>
   typeLogementOptions.find((option) => option.value === value)?.label ?? value;
 
@@ -15,25 +17,31 @@ const getRadiatorTypeLabel = (value: DemandeChaleurRenouvelable['radiatorType'])
 
 const formatMwh = (value: number | null) => (value === null ? null : `${value.toLocaleString('fr-FR', { maximumFractionDigits: 2 })} MWh`);
 
-const NouvelleDemandeChaleurRenouvelable = ({
-  demand,
-  demandUrl,
-  pendingDemandCount,
-  status,
-}: {
+type NouvelleDemandeChaleurRenouvelableProps = {
   demand: DemandeChaleurRenouvelable;
   demandId: string;
   demandUrl: string;
   pendingDemandCount: number;
   status: DemandeChaleurRenouvelableStatus;
-}) => {
+};
+
+const NouvelleDemandeChaleurRenouvelable = ({ demand, demandUrl, pendingDemandCount, status }: NouvelleDemandeChaleurRenouvelableProps) => {
   const alternativeHeatingSolutions = demand.alternativeHeatingSolutions ?? [];
 
   return (
     <Layout>
       <Title>Nouvelle demande d'accompagnement à traiter</Title>
 
-      <Text>Une nouvelle demande d'accompagnement est à traiter dans votre espace CCRT.</Text>
+      <Text>
+        Une nouvelle demande d'accompagnement vers un système de chauffage renouvelable est disponible dans votre espace CCRT pour
+        traitement.
+      </Text>
+
+      <Section style={{ paddingTop: '8px', textAlign: 'center' }}>
+        <Button href={demandUrl} campaign={EMAIL_CAMPAIGN} content="haut-email">
+          Voir la demande
+        </Button>
+      </Section>
 
       <Text style={{ fontSize: '16px', fontWeight: 'bold', marginTop: '16px' }}>Synthèse</Text>
       <Table>
@@ -86,7 +94,15 @@ const NouvelleDemandeChaleurRenouvelable = ({
         {alternativeHeatingSolutions.length > 0 && (
           <TableRow>
             <TableColumn style={{ fontWeight: 'bold' }}>Top solutions</TableColumn>
-            <TableColumn>{alternativeHeatingSolutions.join(', ')}</TableColumn>
+            <TableColumn>
+              <ul style={{ margin: '0 0 0 20px', padding: 0 }}>
+                {alternativeHeatingSolutions.map((solution) => (
+                  <li key={solution} style={{ marginBottom: '4px' }}>
+                    {solution}
+                  </li>
+                ))}
+              </ul>
+            </TableColumn>
           </TableRow>
         )}
         {demand.comments && (
@@ -99,11 +115,16 @@ const NouvelleDemandeChaleurRenouvelable = ({
 
       {pendingDemandCount > 1 && <Text>Vous avez actuellement {pendingDemandCount} demande(s) à traiter sur votre territoire.</Text>}
 
+      <Text>Depuis la demande, vous pouvez contacter l'usager puis mettre à jour le statut dans le tableau de suivi.</Text>
+
       <Section style={{ paddingTop: '24px', textAlign: 'center' }}>
-        <Button href={demandUrl} campaign="demands.ccrt.nouvelle-demande-chaleur-renouvelable">
+        <Button href={demandUrl} campaign={EMAIL_CAMPAIGN} content="bas-email">
           Voir la demande et contacter l'usager
         </Button>
       </Section>
+
+      <Text>Bien cordialement,</Text>
+      <Text>L'équipe France Chaleur Urbaine</Text>
     </Layout>
   );
 };

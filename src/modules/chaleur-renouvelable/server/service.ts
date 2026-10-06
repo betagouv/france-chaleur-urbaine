@@ -76,7 +76,6 @@ const batEnrBatimentColumns = [
 const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = businessRules.fcrBuildingCandidatesRadiusMeters.value;
 const CHALEUR_RENOUVELABLE_RESULTS_PATH = '/chaleur-renouvelable/resultat';
 const CCRT_DEMANDES_PATH = '/pro/demandes-chaleur-renouvelable';
-const EMAIL_CONCURRENCY = 5;
 
 type BanAddressSearchResponse = {
   features: {
@@ -1129,7 +1128,7 @@ export const updateDemandeChaleurRenouvelableCcrt = async (
   return updatedDemand;
 };
 
-export const notifyCcrtOfUnhandledDemandesChaleurRenouvelable = async () => {
+export const notifyCcrtOfUnhandledDemandesChaleurRenouvelable = async (runDate = dayjs().tz('Europe/Paris')) => {
   const recipients = await kdb
     .selectFrom('users as u')
     .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
@@ -1142,7 +1141,7 @@ export const notifyCcrtOfUnhandledDemandesChaleurRenouvelable = async () => {
     .groupBy(['u.email', 'u.id', 'u.structure_name'])
     .execute();
 
-  await processInParallel(recipients, EMAIL_CONCURRENCY, async (recipient) => {
+  await processInParallel(recipients, businessRules.emailSendConcurrency.value, async (recipient) => {
     const demands = await kdb
       .selectFrom('demands_chaleur_renouvelable')
       .select(['address', 'created_at', 'housing_count', 'housing_type', 'id'])
@@ -1166,7 +1165,7 @@ export const notifyCcrtOfUnhandledDemandesChaleurRenouvelable = async () => {
           housingCount: demand.housing_count,
           housingType: demand.housing_type,
           id: demand.id,
-          waitingDays: Math.max(0, dayjs().diff(dayjs(demand.created_at), 'day')),
+          waitingDays: Math.max(0, runDate.diff(dayjs(demand.created_at), 'day')),
         })),
         pendingDemandCount: demands.length,
       },
