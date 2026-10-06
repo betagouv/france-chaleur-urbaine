@@ -1,16 +1,27 @@
 import type { ColumnFiltersState } from '@tanstack/react-table';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import Select from '@/components/form/dsfr/Select';
 import SimplePage from '@/components/shared/page/SimplePage';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import {
+  DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+  type DemandeChaleurRenouvelableProjectState,
+  type DemandeChaleurRenouvelableStatus,
+  demandeChaleurRenouvelableProjectStates,
+  demandeChaleurRenouvelableStatuses,
   getEspaceExterieurLabel,
   modeEauChaudeSanitaireOptions,
   PROJECT_STATUS_VALUES,
   typeLogementOptions,
   typeRadiateurOptions,
 } from '@/modules/chaleur-renouvelable/constants';
+import { toastErrors } from '@/modules/notification';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { dayjs } from '@/utils/date';
 
@@ -18,11 +29,31 @@ type DemandesChaleurRenouvelableCcrtItem = RouterOutput['batEnr']['ccrt']['listD
 
 const TABLE_URL_SYNC_KEY = 'demandes_chaleur_renouvelable_ccrt';
 
+type DemandUpdate = {
+  project_state?: DemandeChaleurRenouvelableProjectState;
+  status?: DemandeChaleurRenouvelableStatus;
+};
+
+const statusOptions = demandeChaleurRenouvelableStatuses.map((status) => ({
+  label: status.label,
+  value: status.label,
+}));
+
+const projectStateOptions = demandeChaleurRenouvelableProjectStates.map((projectState) => ({
+  label: projectState.label,
+  value: projectState.label,
+}));
+
 const quickFilterPresets = {
   all: {
     filters: [],
     getStat: (demands) => demands.length,
     label: 'demandes totales',
+  },
+  demandesATraiter: {
+    filters: [{ id: 'status', value: { [DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS]: true } }],
+    getStat: (demands) => demands.filter((demand) => demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS).length,
+    label: 'à traiter',
   },
   demandesMoisEnCours: {
     filters: [
@@ -43,7 +74,81 @@ export default function DemandesChaleurRenouvelableCcrtPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const { data, isLoading } = trpc.batEnr.ccrt.listDemandesChaleurRenouvelable.useQuery();
   const demands = data?.items ?? [];
+  const listViewTrackedRef = useRef(false);
   const typeLogementLabels = useMemo(() => Object.fromEntries(typeLogementOptions.map((option) => [option.value, option.label])), []);
+  const utils = trpc.useUtils();
+  const { mutateAsync: updateDemandMutation } = trpc.batEnr.ccrt.updateDemandeChaleurRenouvelable.useMutation();
+
+  useEffect(() => {
+    if (!data || listViewTrackedRef.current) {
+      return;
+    }
+
+    trackPostHogEvent('ccrt_demandes:list_viewed', {
+      departement: data.trackingContext.departements.join(',') || null,
+      onglet: 'toutes',
+      structure_ccrt: data.trackingContext.structure_ccrt,
+    });
+    listViewTrackedRef.current = true;
+  }, [data]);
+
+  const getDemandTrackingProps = useCallback(
+    (demand: DemandesChaleurRenouvelableCcrtItem) => ({
+      demande_id: demand.id,
+      departement: demand.departement_code,
+      solution_1: demand.alternative_heating_solutions[0] ?? null,
+      structure_ccrt: data?.trackingContext.structure_ccrt ?? null,
+    }),
+    [data?.trackingContext.structure_ccrt]
+  );
+
+  const updateDemand = useCallback(
+    toastErrors(async (demandId: string, demandUpdate: DemandUpdate, trigger: 'contact' | 'manual' = 'manual') => {
+      const optimisticDemandUpdate = {
+        ...demandUpdate,
+        ...(demandUpdate.status !== undefined &&
+          demandUpdate.status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION && {
+            project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+          }),
+      };
+
+      utils.batEnr.ccrt.listDemandesChaleurRenouvelable.setData(undefined, (demandsData) => {
+        if (!demandsData) return demandsData;
+
+        return {
+          ...demandsData,
+          items: demandsData.items.map((demand) => (demand.id === demandId ? { ...demand, ...optimisticDemandUpdate } : demand)),
+        };
+      });
+
+      await updateDemandMutation({
+        demandId,
+        trigger,
+        values: {
+          ...(demandUpdate.project_state !== undefined && { projectState: demandUpdate.project_state }),
+          ...(demandUpdate.status !== undefined && { status: demandUpdate.status }),
+        },
+      });
+      await utils.batEnr.admin.listDemandesChaleurRenouvelable.invalidate();
+    }),
+    [updateDemandMutation, utils]
+  );
+
+  const trackContact = useCallback(
+    (demand: DemandesChaleurRenouvelableCcrtItem, contactType: 'email' | 'phone') => {
+      const trackingProps = { ...getDemandTrackingProps(demand), emplacement: 'liste' as const };
+      trackPostHogEvent('ccrt_demande:contact_clicked', trackingProps);
+      trackPostHogEvent(
+        contactType === 'email' ? 'ccrt_demande:contact_email_clicked' : 'ccrt_demande:contact_phone_clicked',
+        trackingProps
+      );
+
+      if (demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS) {
+        void updateDemand(demand.id, { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT }, 'contact');
+      }
+    },
+    [getDemandTrackingProps, updateDemand]
+  );
 
   const columns: ColumnDef<DemandesChaleurRenouvelableCcrtItem>[] = useMemo(
     () => [
@@ -63,10 +168,22 @@ export default function DemandesChaleurRenouvelableCcrtPage() {
             <span className="font-semibold">
               {row.original.first_name} {row.original.last_name}
             </span>
-            <a className="link link-neutral text-sm" href={`mailto:${row.original.email}`}>
+            <a
+              className="link link-neutral text-sm"
+              href={`mailto:${row.original.email}`}
+              onClick={() => trackContact(row.original, 'email')}
+            >
               {row.original.email}
             </a>
-            {row.original.phone ? <span className="text-sm text-gray-600">{row.original.phone}</span> : null}
+            {row.original.phone ? (
+              <a
+                className="link link-neutral text-sm"
+                href={`tel:${row.original.phone}`}
+                onClick={() => trackContact(row.original, 'phone')}
+              >
+                {row.original.phone}
+              </a>
+            ) : null}
           </div>
         ),
         enableSorting: false,
@@ -79,6 +196,56 @@ export default function DemandesChaleurRenouvelableCcrtPage() {
         cell: ({ row }) => <span className="font-medium">{row.original.address}</span>,
         header: 'Adresse',
         width: '300px',
+      },
+      {
+        accessorKey: 'status',
+        cell: ({ row }) => (
+          <Select
+            label=""
+            options={statusOptions}
+            size="sm"
+            nativeSelectProps={{
+              'aria-label': 'Statut de la demande',
+              onChange: (event) => void updateDemand(row.original.id, { status: event.target.value as DemandeChaleurRenouvelableStatus }),
+              value: row.original.status as DemandeChaleurRenouvelableStatus,
+            }}
+          />
+        ),
+        enableGlobalFilter: false,
+        filterType: 'Facets',
+        header: 'Statut',
+        width: '290px',
+      },
+      {
+        accessorFn: (row) =>
+          row.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION
+            ? row.project_state
+            : DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+        cell: ({ row }) => {
+          const isProjectStateEditable = row.original.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION;
+
+          return (
+            <Select
+              disabled={!isProjectStateEditable}
+              label=""
+              options={projectStateOptions}
+              size="sm"
+              nativeSelectProps={{
+                'aria-label': 'État du projet',
+                onChange: (event) =>
+                  void updateDemand(row.original.id, { project_state: event.target.value as DemandeChaleurRenouvelableProjectState }),
+                value: isProjectStateEditable
+                  ? (row.original.project_state as DemandeChaleurRenouvelableProjectState)
+                  : DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+              }}
+            />
+          );
+        },
+        enableGlobalFilter: false,
+        filterType: 'Facets',
+        header: 'État du projet',
+        id: 'État du projet',
+        width: '280px',
       },
       {
         accessorFn: (row) => typeLogementLabels[row.housing_type] ?? row.housing_type,
@@ -166,6 +333,13 @@ export default function DemandesChaleurRenouvelableCcrtPage() {
         width: '300px',
       },
       {
+        accessorKey: 'alternative_heating_solutions',
+        cellType: 'Array',
+        enableGlobalFilter: true,
+        header: 'Solutions',
+        width: '260px',
+      },
+      {
         accessorFn: (row) => row.comments ?? 'Non renseigné',
         header: 'Commentaires',
         id: 'Commentaires',
@@ -217,7 +391,18 @@ export default function DemandesChaleurRenouvelableCcrtPage() {
       {
         accessorKey: 'simulation_url',
         cell: ({ row }) => (
-          <a className="link link-neutral" href={row.original.simulation_url} target="_blank" rel="noreferrer">
+          <a
+            className="link link-neutral"
+            href={row.original.simulation_url}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() =>
+              trackPostHogEvent('ccrt_demande:simulation_viewed', {
+                ...getDemandTrackingProps(row.original),
+                emplacement: 'liste',
+              })
+            }
+          >
             Ouvrir
           </a>
         ),
@@ -226,7 +411,7 @@ export default function DemandesChaleurRenouvelableCcrtPage() {
         width: '110px',
       },
     ],
-    [typeLogementLabels]
+    [getDemandTrackingProps, trackContact, typeLogementLabels, updateDemand]
   );
 
   return (

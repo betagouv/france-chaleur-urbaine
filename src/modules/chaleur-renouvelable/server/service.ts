@@ -9,8 +9,11 @@ import type {
   BatEnrBatiment,
   BatEnrBatimentsSelectionContext,
   BatEnrByBanIdInput,
+  CcrtUpdateDemandeChaleurRenouvelableInput,
   ColdNetworkEligibility,
   DemandeChaleurRenouvelable,
+  DemandeChaleurRenouvelableProjectState,
+  DemandeChaleurRenouvelableStatus,
   FranceRenovSpace,
   FranceRenovSpaceInput,
   GetLocationInput,
@@ -32,10 +35,13 @@ import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import { processInParallel } from '@/utils/async';
+import { dayjs } from '@/utils/date';
 import { fetchJSON } from '@/utils/network';
 import { stripDomainFromURL } from '@/utils/url';
 
 import { getAltitudeByCoordinates } from './altimetry';
+import { recordCcrtPostHogEvent } from './ccrt-tracking';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
 import { getNetworkEligibilityCoordinates, type NetworkEligibilityCoordinates } from './network-eligibility-coordinates';
 import { getRnicCoproprieteByBatimentConstructionId } from './rnic';
@@ -69,6 +75,8 @@ const batEnrBatimentColumns = [
 
 const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = businessRules.fcrBuildingCandidatesRadiusMeters.value;
 const CHALEUR_RENOUVELABLE_RESULTS_PATH = '/chaleur-renouvelable/resultat';
+const CCRT_DEMANDES_PATH = '/pro/demandes-chaleur-renouvelable';
+const EMAIL_CONCURRENCY = 5;
 
 type BanAddressSearchResponse = {
   features: {
@@ -204,6 +212,52 @@ const getFcrDemandLegacyValues = (input: DemandeChaleurRenouvelable) => {
     }),
     ...(simulationPath && { [fcrLegacyValueKeys.simulationUrl]: simulationPath }),
   } satisfies LegacyValuesPatch;
+};
+
+const getCcrtDemandesUrl = (demandId?: string) =>
+  demandId ? `${CCRT_DEMANDES_PATH}?demandes_chaleur_renouvelable_ccrt_search=${encodeURIComponent(demandId)}` : CCRT_DEMANDES_PATH;
+
+const getCcrtTrackingDemandProperties = ({
+  demandId,
+  departmentCode,
+  solution1,
+  structureName,
+}: {
+  demandId: string;
+  departmentCode: string | null;
+  solution1?: string | null;
+  structureName?: string | null;
+}) => ({
+  demande_id: demandId,
+  departement: departmentCode,
+  solution_1: solution1 ?? null,
+  structure_ccrt: structureName ?? null,
+});
+
+const getProjectStateForStatus = ({
+  projectState,
+  status,
+}: {
+  projectState?: DemandeChaleurRenouvelableProjectState;
+  status: DemandeChaleurRenouvelableStatus;
+}) =>
+  status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION && projectState
+    ? projectState
+    : DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION;
+
+const assertProjectStateCanBeUpdated = ({
+  projectState,
+  status,
+}: {
+  projectState?: DemandeChaleurRenouvelableProjectState;
+  status: DemandeChaleurRenouvelableStatus;
+}) => {
+  if (projectState !== undefined && status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: "L'état du projet ne peut être modifié qu'après validation de l'étude de faisabilité en AG.",
+    });
+  }
 };
 
 const patchDemandWithFcrSnapshot = async (demandId: string, legacyValues: LegacyValuesPatch) => {
@@ -651,6 +705,7 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
     .insertInto('demands_chaleur_renouvelable')
     .values({
       address: input.address,
+      alternative_heating_solutions: input.alternativeHeatingSolutions ?? [],
       annual_heating_consumption: input.annualHeatingConsumption,
       average_area: input.averageArea,
       average_residents: input.averageResidents,
@@ -687,6 +742,8 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
     .returning(['id'])
     .executeTakeFirstOrThrow();
 
+  await sendEmailTemplate('demands.demandeur.confirmation-demande-chaleur-renouvelable', { email: input.email }, { demand: input });
+
   return createdCcrtDemand.id;
 };
 
@@ -720,24 +777,48 @@ const notifyCcrtOfNewDemandeChaleurRenouvelable = async ({
   const recipients = await kdb
     .selectFrom('users as u')
     .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
-    .select(['u.email', 'u.id'])
+    .select(['u.email', 'u.id', 'u.structure_name'])
     .where('u.active', '=', true)
     .where('u.role', '=', 'ccrt')
     .where('up.type', '=', 'departement')
     .where('up.resource_id', '=', departmentCode)
     .execute();
 
+  const pendingDemandCount = (
+    await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select(kdb.fn.count<number>('id').as('count'))
+      .where('validated', '=', true)
+      .where('status', '=', DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS)
+      .where('departement_code', '=', departmentCode)
+      .executeTakeFirstOrThrow()
+  ).count;
+
   await Promise.all(
-    recipients.map((recipient) =>
-      sendEmailTemplate(
-        'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
-        { email: recipient.email, id: recipient.id },
-        {
-          demand,
-          demandId,
-          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
-        }
-      )
+    recipients.map(async (recipient) =>
+      Promise.all([
+        sendEmailTemplate(
+          'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
+          { email: recipient.email, id: recipient.id },
+          {
+            demand,
+            demandId,
+            demandUrl: getCcrtDemandesUrl(demandId),
+            pendingDemandCount,
+            status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+          }
+        ),
+        recordCcrtPostHogEvent({
+          distinctId: recipient.id,
+          event: 'ccrt_demandes:demande_received',
+          properties: getCcrtTrackingDemandProperties({
+            demandId,
+            departmentCode,
+            solution1: demand.alternativeHeatingSolutions?.[0],
+            structureName: recipient.structure_name,
+          }),
+        }),
+      ])
     )
   );
 };
@@ -747,6 +828,7 @@ const getDemandeChaleurRenouvelableForCcrtNotification = async (demandId: string
     .selectFrom('demands_chaleur_renouvelable')
     .select([
       'address',
+      'alternative_heating_solutions',
       'annual_heating_consumption',
       'average_area',
       'average_residents',
@@ -786,6 +868,7 @@ type DemandeChaleurRenouvelableForCcrtNotification = Awaited<ReturnType<typeof g
 
 const toDemandeChaleurRenouvelableEmailPayload = (demand: DemandeChaleurRenouvelableForCcrtNotification): DemandeChaleurRenouvelable => ({
   address: demand.address,
+  alternativeHeatingSolutions: demand.alternative_heating_solutions,
   annualHeatingConsumption: demand.annual_heating_consumption,
   averageArea: demand.average_area,
   averageResidents: demand.average_residents,
@@ -855,6 +938,7 @@ const selectDemandesChaleurRenouvelableForList = () =>
     .selectFrom('demands_chaleur_renouvelable')
     .select([
       'address',
+      'alternative_heating_solutions',
       'annual_heating_consumption',
       'assigned_to',
       'average_area',
@@ -903,9 +987,14 @@ const serializeDemandesChaleurRenouvelable = <T extends { created_at: Date; upda
 export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
   const permissions = await ctx.getPermissions();
   const departmentCodes = permissions.filter((permission) => permission.type === 'departement').map((permission) => permission.resource_id);
+  const user = await kdb.selectFrom('users').select(['structure_name']).where('id', '=', ctx.user.id).executeTakeFirst();
+  const trackingContext = {
+    departements: departmentCodes,
+    structure_ccrt: user?.structure_name ?? null,
+  };
 
   if (ctx.user.role !== 'admin' && departmentCodes.length === 0) {
-    return { count: 0, items: [] };
+    return { count: 0, items: [], trackingContext };
   }
 
   const demandes = await selectDemandesChaleurRenouvelableForList()
@@ -917,6 +1006,7 @@ export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
   return {
     count: demandes.length,
     items: serializeDemandesChaleurRenouvelable(demandes),
+    trackingContext,
   };
 };
 
@@ -933,12 +1023,10 @@ export const updateDemandeChaleurRenouvelableAdmin = async ({ demandId, values }
       : undefined;
   const updatedStatus = values.status ?? currentStatus;
 
-  if (values.projectState !== undefined && updatedStatus !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION) {
-    throw new TRPCError({
-      code: 'BAD_REQUEST',
-      message: "L'état du projet ne peut être modifié qu'après validation de l'étude de faisabilité en AG.",
-    });
-  }
+  assertProjectStateCanBeUpdated({
+    projectState: values.projectState,
+    status: updatedStatus as DemandeChaleurRenouvelableStatus,
+  });
 
   return await kdb
     .updateTable('demands_chaleur_renouvelable')
@@ -955,4 +1043,138 @@ export const updateDemandeChaleurRenouvelableAdmin = async ({ demandId, values }
     .where('id', '=', demandId)
     .returning(['assigned_to', 'id', 'project_state', 'status', 'updated_at'])
     .executeTakeFirstOrThrow();
+};
+
+export const updateDemandeChaleurRenouvelableCcrt = async (
+  ctx: Context,
+  { demandId, trigger, values }: CcrtUpdateDemandeChaleurRenouvelableInput
+) => {
+  const permissions = await ctx.getPermissions();
+  const departmentCodes = permissions.filter((permission) => permission.type === 'departement').map((permission) => permission.resource_id);
+
+  const currentDemand = await kdb
+    .selectFrom('demands_chaleur_renouvelable')
+    .select(['alternative_heating_solutions', 'departement_code', 'id', 'project_state', 'status', 'validated'])
+    .where('id', '=', demandId)
+    .$if(ctx.user.role !== 'admin', (qb) =>
+      qb.where('validated', '=', true).where('departement_code', 'in', departmentCodes.length > 0 ? departmentCodes : [''])
+    )
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
+
+  const updatedStatus = (values.status ?? currentDemand.status) as DemandeChaleurRenouvelableStatus;
+  const updatedProjectState =
+    values.projectState ??
+    getProjectStateForStatus({
+      projectState: currentDemand.project_state as DemandeChaleurRenouvelableProjectState,
+      status: updatedStatus,
+    });
+
+  assertProjectStateCanBeUpdated({
+    projectState: values.projectState,
+    status: updatedStatus,
+  });
+
+  const updatedDemand = await kdb
+    .updateTable('demands_chaleur_renouvelable')
+    .set({
+      ...(values.projectState !== undefined || values.status !== undefined ? { project_state: updatedProjectState } : {}),
+      ...(values.status !== undefined && { status: values.status }),
+      updated_at: new Date(),
+    })
+    .where('id', '=', demandId)
+    .returning(['id', 'project_state', 'status', 'updated_at'])
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
+
+  const user = await kdb.selectFrom('users').select(['structure_name']).where('id', '=', ctx.user.id).executeTakeFirst();
+  const declenchement = trigger === 'contact' ? 'contact' : ctx.user.role === 'admin' ? 'admin' : 'manual';
+
+  if (values.status !== undefined && currentDemand.status !== values.status) {
+    await recordCcrtPostHogEvent({
+      distinctId: ctx.user.id,
+      event: 'ccrt_demande:status_changed',
+      properties: {
+        ...getCcrtTrackingDemandProperties({
+          demandId,
+          departmentCode: currentDemand.departement_code,
+          solution1: currentDemand.alternative_heating_solutions[0],
+          structureName: user?.structure_name,
+        }),
+        declenchement,
+        statut_apres: values.status,
+        statut_avant: currentDemand.status,
+        type_statut: 'statut',
+      },
+    });
+  }
+
+  if (values.projectState !== undefined && currentDemand.project_state !== values.projectState) {
+    await recordCcrtPostHogEvent({
+      distinctId: ctx.user.id,
+      event: 'ccrt_demande:status_changed',
+      properties: {
+        ...getCcrtTrackingDemandProperties({
+          demandId,
+          departmentCode: currentDemand.departement_code,
+          solution1: currentDemand.alternative_heating_solutions[0],
+          structureName: user?.structure_name,
+        }),
+        declenchement,
+        statut_apres: values.projectState,
+        statut_avant: currentDemand.project_state,
+        type_statut: 'etat_projet',
+      },
+    });
+  }
+
+  return updatedDemand;
+};
+
+export const notifyCcrtOfUnhandledDemandesChaleurRenouvelable = async () => {
+  const recipients = await kdb
+    .selectFrom('users as u')
+    .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
+    .select(['u.email', 'u.id', 'u.structure_name'])
+    .select((eb) => [sql<string[]>`array_agg(distinct ${eb.ref('up.resource_id')})`.as('department_codes')])
+    .where('u.active', '=', true)
+    .where('u.role', '=', 'ccrt')
+    .where('u.receive_old_demands', '=', true)
+    .where('up.type', '=', 'departement')
+    .groupBy(['u.email', 'u.id', 'u.structure_name'])
+    .execute();
+
+  await processInParallel(recipients, EMAIL_CONCURRENCY, async (recipient) => {
+    const demands = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select(['address', 'created_at', 'housing_count', 'housing_type', 'id'])
+      .where('validated', '=', true)
+      .where('status', '=', DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS)
+      .where('departement_code', 'in', recipient.department_codes)
+      .orderBy('created_at', 'asc')
+      .execute();
+
+    if (demands.length === 0) {
+      return;
+    }
+
+    await sendEmailTemplate(
+      'demands.ccrt.rappel-demandes-en-attente',
+      { email: recipient.email, id: recipient.id },
+      {
+        demandListUrl: CCRT_DEMANDES_PATH,
+        demands: demands.slice(0, 5).map((demand) => ({
+          address: demand.address,
+          housingCount: demand.housing_count,
+          housingType: demand.housing_type,
+          id: demand.id,
+          waitingDays: Math.max(0, dayjs().diff(dayjs(demand.created_at), 'day')),
+        })),
+        pendingDemandCount: demands.length,
+      },
+      {
+        subject: `[France Chaleur Urbaine] ${demands.length} demande(s) d'accompagnement en attente de traitement`,
+      }
+    );
+  });
+
+  console.info(`${recipients.length} CCRT vérifié(s) pour les demandes chaleur renouvelable à traiter.`);
 };
