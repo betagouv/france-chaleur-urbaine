@@ -2,7 +2,7 @@ import { businessRules } from '@/modules/app/business-rules';
 
 # Relances et notifications
 
-Trois automatismes quotidiens ou hebdomadaires entourent les demandes. Ils partagent un objectif : qu'aucune demande validée ne reste sans suite, et que l'inaction soit visible. Leur état d'exécution est consultable dans [Suivi des tâches](/admin/jobs), leur inventaire complet dans [Références](/admin/doc/references).
+Quatre automatismes quotidiens, hebdomadaires ou mensuels entourent les demandes. Ils partagent un objectif : qu'aucune demande validée ne reste sans suite, et que l'inaction soit visible. Leur état d'exécution est consultable dans [Suivi des tâches](/admin/jobs), leur inventaire complet dans [Références](/admin/doc/references).
 
 <Mermaid
   chart={`flowchart TD
@@ -12,11 +12,13 @@ Trois automatismes quotidiens ou hebdomadaires entourent les demandes. Ils parta
     attente -- "Oui" --> rappel["Mardi, 9h55 : « Rappel demandes en attente »"]:::email
     relanceCheck{"Éligible + chauffage collectif + pas recontacté ?"} -- "Oui, ${businessRules.firstRelanceDelayMonths.display} après le dépôt" --> relance1["Lundi, 10h05 : « Enquête de satisfaction » (1re relance)"]:::email
     relance1 -- "Toujours rien à ${businessRules.secondRelanceDelayDays.display} du dépôt" --> relance2["Seconde relance"]:::email
+    ccrtCheck["Demande chaleur renouvelable CCRT validée, encore « À traiter »"]:::db --> ccrtRappel["1er du mois, 9h45 : « Rappel demandes CCRT en attente »"]:::email
     relance1 --> reponse["Le demandeur répond : recontacté oui/non + commentaire"]
     relance2 --> reponse
     reponse --> trace["Réponse enregistrée, visible de l'équipe FCU"]:::evt
     click notif "/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter" "Voir le modèle d'email"
     click rappel "/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente" "Voir le modèle d'email"
+    click ccrtRappel "/admin/emails?type=demands.ccrt.rappel-demandes-en-attente" "Voir le modèle d'email"
     click relance1 "/admin/emails?type=demands.demandeur.enquete-satisfaction" "Voir le modèle d'email"
     click trace "/admin/events?types=demand_satisfaction_submitted" "Voir dans l'activité du site"
     classDef email fill:#feecc2,stroke:#b28a00,color:#161616
@@ -36,7 +38,11 @@ Email [« Nouvelles demandes à traiter »](/admin/emails?type=demands.gestionna
 
 Email [« Rappel demandes en attente »](/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente) : pour les demandes restées « À traiter » (ou sans statut) plus de <Rule id="unhandledDemandReminderDays" /> **après leur notification**. Nécessite l'option « recevoir les rappels » sur le compte.
 
-## 3. Relance des demandeurs — lundi, 10h05
+## 3. Rappel des demandes CCRT en attente — 1er du mois, 9h45
+
+Email [«&nbsp;Rappel demandes CCRT en attente&nbsp;»](/admin/emails?type=demands.ccrt.rappel-demandes-en-attente) : pour les demandes d'accompagnement chaleur renouvelable dédiées à l'expérimentation CCRT, **validées** et encore «&nbsp;À traiter&nbsp;» sur les départements du CCRT. Nécessite l'option «&nbsp;recevoir les rappels&nbsp;» sur le compte. L'email liste les cinq plus anciennes demandes et renvoie vers [Demandes chaleur renouvelable](/pro/demandes-chaleur-renouvelable).
+
+## 4. Relance des demandeurs — lundi, 10h05
 
 Email [« Enquête de satisfaction »](/admin/emails?type=demands.demandeur.enquete-satisfaction), envoyé directement au demandeur. Conditions :
 
