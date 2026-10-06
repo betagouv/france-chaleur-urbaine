@@ -9,11 +9,6 @@ import { dayjs } from '@/utils/date';
 
 import { mergeLegacyValues } from './legacy-values';
 
-/**
- * Number of concurrent email sends — matches the nodemailer pool size.
- */
-const EMAIL_CONCURRENCY = 5;
-
 /** Day of the week (0 = Sunday) of the weekly digest, matching the cron (Monday 10h). */
 const WEEKLY_DIGEST_DAY = 1;
 
@@ -70,7 +65,7 @@ export const notifyGestionnairesOfUnhandledDemands = async () => {
     )
     .execute();
 
-  await processInParallel(recipients, EMAIL_CONCURRENCY, async ({ id, email }) => {
+  await processInParallel(recipients, businessRules.emailSendConcurrency.value, async ({ id, email }) => {
     await sendEmailTemplate('demands.gestionnaire.rappel-demandes-en-attente', { email, id });
   });
 
@@ -140,7 +135,7 @@ export const notifyGestionnairesOfNewDemands = async () => {
     );
   }
 
-  await processInParallel(recipients, EMAIL_CONCURRENCY, async ({ id, email, frequency, demand_ids }) => {
+  await processInParallel(recipients, businessRules.emailSendConcurrency.value, async ({ id, email, frequency, demand_ids }) => {
     await sendEmailTemplate(
       frequency === 'weekly'
         ? 'demands.gestionnaire.nouvelles-demandes-a-traiter-weekly'
