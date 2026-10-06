@@ -33,8 +33,8 @@ export const cronDefinitions = [
     description:
       "Relance les CCRT sur les demandes d'accompagnement chaleur renouvelable validées encore au statut « À traiter » sur leurs départements (option « recevoir les rappels »).",
     name: 'notifyCcrtOfUnhandledDemandesChaleurRenouvelable',
-    schedule: '45 9 1 * *',
-    scheduleLabel: 'Le 1er du mois, 9h45',
+    schedule: '45 9 * * 1',
+    scheduleLabel: 'Un lundi sur deux, 9h45',
   },
   {
     description: `Envoie l'enquête de satisfaction aux demandeurs non recontactés par leur gestionnaire, à ${businessRules.firstRelanceDelayMonths.display} puis ${businessRules.secondRelanceDelayDays.display} après le dépôt (demandes éligibles en chauffage collectif).`,

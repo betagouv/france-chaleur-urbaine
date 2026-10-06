@@ -138,7 +138,7 @@ export const emails = defineEmails({
     subject: "[France Chaleur Urbaine] {{n}} demande(s) d'accompagnement en attente de traitement",
     trigger: {
       description:
-        "Cron du 1er du mois 9h45 — demandes d'accompagnement CCRT validées encore au statut « À traiter » ; nécessite l'option « recevoir les rappels ».",
+        "Cron un lundi sur deux 9h45 — demandes d'accompagnement CCRT validées encore au statut « À traiter » ; nécessite l'option « recevoir les rappels ».",
       type: 'cron',
     },
   },

@@ -8,11 +8,6 @@ import { processInParallel } from '@/utils/async';
 import { mergeLegacyValues } from './legacy-values';
 
 /**
- * Number of concurrent email sends — matches the nodemailer pool size.
- */
-const EMAIL_CONCURRENCY = 5;
-
-/**
  * Base : jointure (user, permission, demande) avec les filtres communs aux notifications.
  * On match strictement sur la permission réseau (`up.type` = `d.network_type`, `up.resource_id` = `d.network_id`).
  * Les demandes sans réseau, supprimées ou non validées sont écartées.
@@ -51,7 +46,7 @@ export const notifyGestionnairesOfUnhandledDemands = async () => {
     )
     .execute();
 
-  await processInParallel(recipients, EMAIL_CONCURRENCY, async ({ id, email }) => {
+  await processInParallel(recipients, businessRules.emailSendConcurrency.value, async ({ id, email }) => {
     await sendEmailTemplate('demands.gestionnaire.rappel-demandes-en-attente', { email, id });
   });
 
@@ -100,7 +95,7 @@ export const notifyGestionnairesOfNewDemands = async () => {
     );
   }
 
-  await processInParallel(recipients, EMAIL_CONCURRENCY, async ({ id, email, demand_ids }) => {
+  await processInParallel(recipients, businessRules.emailSendConcurrency.value, async ({ id, email, demand_ids }) => {
     await sendEmailTemplate('demands.gestionnaire.nouvelles-demandes-a-traiter', { email, id }, { nbDemands: demand_ids.length });
   });
 
