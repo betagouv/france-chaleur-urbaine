@@ -271,6 +271,7 @@ export interface ConversionSources {
 
 export interface DemandsChaleurRenouvelable {
   address: string;
+  alternative_heating_solutions: Generated<string[]>;
   annual_heating_consumption: number | null;
   assigned_to: string | null;
   average_area: number;

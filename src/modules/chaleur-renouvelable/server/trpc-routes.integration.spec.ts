@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
   type DemandeChaleurRenouvelable,
@@ -386,7 +387,7 @@ describe('batEnrRouter', () => {
           demandSubmissionResult: null,
           id: result.id,
         },
-        sentEmailKeys: [],
+        sentEmailKeys: ['demands.demandeur.confirmation-demande-chaleur-renouvelable'],
       });
     });
 
@@ -460,6 +461,7 @@ describe('batEnrRouter', () => {
         .selectFrom('demands_chaleur_renouvelable')
         .select([
           'address',
+          'alternative_heating_solutions',
           'annual_heating_consumption',
           'departement_code',
           'email',
@@ -487,6 +489,7 @@ describe('batEnrRouter', () => {
       }).toStrictEqual({
         createdDemandeChaleurRenouvelable: {
           address: '10 rue du test 13001 Marseille',
+          alternative_heating_solutions: ['PAC géothermique', 'Chaudière à bois', 'PAC air-eau collective'],
           annual_heating_consumption: 820.5,
           departement_code: '13',
           email: 'contact@example.com',
@@ -509,7 +512,12 @@ describe('batEnrRouter', () => {
           id: result.id,
         },
       });
-      expect(sentEmailTemplate).toHaveBeenCalledTimes(0);
+      expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
+      expect(sentEmailTemplate).toHaveBeenCalledWith(
+        'demands.demandeur.confirmation-demande-chaleur-renouvelable',
+        { email: 'contact@example.com' },
+        { demand: input }
+      );
     });
 
     it('enregistre la demande chaleur renouvelable même si le RNIC est indisponible', async () => {
@@ -562,7 +570,12 @@ describe('batEnrRouter', () => {
         },
       });
       expect(mockedFetchJSON).toHaveBeenCalledTimes(1);
-      expect(sentEmailTemplate).toHaveBeenCalledTimes(0);
+      expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
+      expect(sentEmailTemplate).toHaveBeenCalledWith(
+        'demands.demandeur.confirmation-demande-chaleur-renouvelable',
+        { email: 'contact@example.com' },
+        { demand: expect.objectContaining({ email: 'contact@example.com' }) }
+      );
     });
 
     it('oriente vers France Rénov en expérimentation si le bâtiment n’est pas un immeuble au chauffage collectif', async () => {
@@ -765,6 +778,7 @@ describe('batEnrRouter', () => {
         items: [
           {
             ...newerDemandInput,
+            alternative_heating_solutions: [],
             assigned_to: null,
             created_at: newerDate.toISOString(),
             id: newerDemand.id,
@@ -778,6 +792,7 @@ describe('batEnrRouter', () => {
           },
           {
             ...olderDemandInput,
+            alternative_heating_solutions: [],
             assigned_to: null,
             created_at: olderDate.toISOString(),
             id: olderDemand.id,
@@ -814,7 +829,14 @@ describe('batEnrRouter', () => {
       const callRoute = () => caller.batEnr.ccrt.listDemandesChaleurRenouvelable();
 
       if (allowed) {
-        await expect(callRoute()).resolves.toStrictEqual({ count: 0, items: [] });
+        await expect(callRoute()).resolves.toStrictEqual({
+          count: 0,
+          items: [],
+          trackingContext: {
+            departements: user?.id ? ['13'] : [],
+            structure_ccrt: null,
+          },
+        });
       } else {
         await expect(callRoute).rejects.toMatchObject(forbiddenError);
       }
@@ -871,6 +893,7 @@ describe('batEnrRouter', () => {
         items: [
           {
             ...matchingDemandInput,
+            alternative_heating_solutions: [],
             assigned_to: null,
             batiment_construction_id: null,
             comments: null,
@@ -892,6 +915,10 @@ describe('batEnrRouter', () => {
             validated: true,
           },
         ],
+        trackingContext: {
+          departements: ['13'],
+          structure_ccrt: null,
+        },
       });
     });
 
@@ -922,6 +949,10 @@ describe('batEnrRouter', () => {
       await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable()).resolves.toStrictEqual({
         count: 0,
         items: [],
+        trackingContext: {
+          departements: [],
+          structure_ccrt: null,
+        },
       });
     });
 
@@ -954,7 +985,88 @@ describe('batEnrRouter', () => {
       await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable()).resolves.toStrictEqual({
         count: 0,
         items: [],
+        trackingContext: {
+          departements: ['13'],
+          structure_ccrt: null,
+        },
       });
+    });
+  });
+
+  describe('batEnr.ccrt.updateDemandeChaleurRenouvelable', () => {
+    it('permet à un CCRT de mettre à jour une demande validée sur son département', async () => {
+      await seedTableUser([{ email: testUsers.ccrt.email, id: testUsers.ccrt.id, role: 'ccrt' }]);
+      await seedDepartmentPermission(testUsers.ccrt.id!, '13');
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          departement_code: '13',
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+          validated: true,
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+        demandId: demand.id,
+        trigger: 'contact',
+        values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT },
+      });
+
+      expect(result).toMatchObject({
+        id: demand.id,
+        project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+        status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
+      });
+    });
+
+    it('refuse la mise à jour CCRT hors permission départementale', async () => {
+      await seedTableUser([{ email: testUsers.ccrt.email, id: testUsers.ccrt.id, role: 'ccrt' }]);
+      await seedDepartmentPermission(testUsers.ccrt.id!, '75');
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          departement_code: '13',
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+          validated: true,
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      await expect(
+        createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+          demandId: demand.id,
+          values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT },
+        })
+      ).rejects.toMatchObject({ code: 'NOT_FOUND' });
     });
   });
 

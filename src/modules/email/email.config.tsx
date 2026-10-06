@@ -15,7 +15,13 @@ import ReinitialisationMotDePasse, {
 import NouvelleDemandeChaleurRenouvelable, {
   scenarios as nouvelleDemandeChaleurRenouvelableScenarios,
 } from './templates/demands/ccrt/nouvelle-demande-chaleur-renouvelable';
+import RappelDemandesEnAttenteCcrt, {
+  scenarios as rappelDemandesEnAttenteCcrtScenarios,
+} from './templates/demands/ccrt/rappel-demandes-en-attente';
 import ConfirmationDemande, { scenarios as confirmationDemandeScenarios } from './templates/demands/demandeur/confirmation-demande';
+import ConfirmationDemandeChaleurRenouvelable, {
+  scenarios as confirmationDemandeChaleurRenouvelableScenarios,
+} from './templates/demands/demandeur/confirmation-demande-chaleur-renouvelable';
 import EnqueteSatisfaction, { scenarios as enqueteSatisfactionScenarios } from './templates/demands/demandeur/enquete-satisfaction';
 import MessageGestionnaire, { scenarios as messageGestionnaireScenarios } from './templates/demands/demandeur/message-gestionnaire';
 import RaccordementNonRealisable, {
@@ -111,15 +117,29 @@ export const emails = defineEmails({
   'demands.ccrt.nouvelle-demande-chaleur-renouvelable': {
     Component: NouvelleDemandeChaleurRenouvelable,
     description:
-      'Notification envoyée aux CCRT ayant une permission sur le département concerné quand un admin valide une demande d’accompagnement chaleur renouvelable.',
-    label: 'Nouvelle demande chaleur renouvelable CCRT',
-    preview: 'Une nouvelle demande chaleur renouvelable est à traiter',
+      "Notification envoyée aux CCRT ayant une permission sur le département concerné quand un admin valide une demande d'accompagnement chaleur renouvelable.",
+    label: "Nouvelle demande d'accompagnement CCRT",
+    preview: "Une nouvelle demande d'accompagnement est à traiter",
     scenarios: nouvelleDemandeChaleurRenouvelableScenarios,
-    subject: '[France Chaleur Urbaine] Nouvelle demande chaleur renouvelable à traiter',
+    subject: "[France Chaleur Urbaine] À traiter : Nouvelle demande d'accompagnement",
     trigger: {
       description:
         "À la validation admin d'une demande d'accompagnement chaleur renouvelable sur un département couvert par l'expérimentation CCRT.",
       type: 'action',
+    },
+  },
+  'demands.ccrt.rappel-demandes-en-attente': {
+    Component: RappelDemandesEnAttenteCcrt,
+    description:
+      "Relance envoyée aux CCRT ayant au moins une demande d'accompagnement validée encore au statut « À traiter » sur leurs départements.",
+    label: 'Rappel demandes CCRT en attente',
+    preview: "Des demandes d'accompagnement nécessitent votre attention",
+    scenarios: rappelDemandesEnAttenteCcrtScenarios,
+    subject: "[France Chaleur Urbaine] {{n}} demande(s) d'accompagnement en attente de traitement",
+    trigger: {
+      description:
+        "Cron du 1er du mois 9h45 — demandes d'accompagnement CCRT validées encore au statut « À traiter » ; nécessite l'option « recevoir les rappels ».",
+      type: 'cron',
     },
   },
   'demands.demandeur.confirmation-demande': {
@@ -132,6 +152,20 @@ export const emails = defineEmails({
     subject: '[France Chaleur Urbaine] Votre demande de contact',
     trigger: {
       description: "Au dépôt d'une demande de raccordement (formulaire public ou espace connecté).",
+      type: 'action',
+    },
+  },
+  'demands.demandeur.confirmation-demande-chaleur-renouvelable': {
+    Component: ConfirmationDemandeChaleurRenouvelable,
+    description:
+      "Accusé de réception envoyé au demandeur juste après dépôt d'une demande d'accompagnement chaleur renouvelable dédiée CCRT.",
+    label: "Confirmation demande d'accompagnement chaleur renouvelable",
+    preview: "Votre demande d'accompagnement a bien été envoyée",
+    scenarios: confirmationDemandeChaleurRenouvelableScenarios,
+    subject: "[France Chaleur Urbaine] Votre demande d'accompagnement",
+    trigger: {
+      description:
+        "Au dépôt d'une demande d'accompagnement chaleur renouvelable dédiée CCRT ; les demandes classiques de raccordement gardent l'accusé de réception habituel.",
       type: 'action',
     },
   },
