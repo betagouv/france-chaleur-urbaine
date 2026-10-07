@@ -36,8 +36,8 @@ const INCOME_PUBLICODES_THRESHOLDS = {
   'Très modeste': 'ménage . revenu . plafond très modeste',
 } as const satisfies Record<Exclude<HeatingSimulationInput['incomeCategory'], 'Supérieur'>, string>;
 
-export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimulationResult {
-  const engine = createEngineForSimulation(input);
+export async function getHeatingSimulation(input: HeatingSimulationInput): Promise<HeatingSimulationResult> {
+  const engine = await createEngineForSimulation(input);
   const heatPumpGrossPrice = getRuleValue(engine, 'PAC air-eau indiv . coûts . investissement équipement');
   const heatPumpMaprimerenovAid = getOptionalRuleValue(engine, 'PAC air-eau indiv . aides . ma prime rénov');
   const heatPumpCoupDePouce = getOptionalRuleValue(engine, 'aides . coup de pouce PAC air-eau');
@@ -55,8 +55,8 @@ export function getHeatingSimulation(input: HeatingSimulationInput): HeatingSimu
   };
 }
 
-export function getIncomeOptions(input: IncomeOptionsInput): IncomeOption[] {
-  const engine = createEngineForIncome(input);
+export async function getIncomeOptions(input: IncomeOptionsInput): Promise<IncomeOption[]> {
+  const engine = await createEngineForIncome(input);
   const veryLowThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS['Très modeste']);
   const lowThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS.Modeste);
   const middleThreshold = getRuleValue(engine, INCOME_PUBLICODES_THRESHOLDS.Intermédiaire);
@@ -85,8 +85,8 @@ export function getIncomeOptions(input: IncomeOptionsInput): IncomeOption[] {
   ];
 }
 
-function createEngineForSimulation(input: HeatingSimulationInput) {
-  const engine = createPublicodesEngine();
+async function createEngineForSimulation(input: HeatingSimulationInput) {
+  const engine = await getPublicodesEngine();
 
   engine.setSituation({
     'aides . CEE . BAR-TH-171 PAC air-eau . efficacité énergétique saisonnière': '150%',
@@ -111,8 +111,8 @@ function createEngineForSimulation(input: HeatingSimulationInput) {
   return engine;
 }
 
-function createEngineForIncome(input: IncomeOptionsInput) {
-  const engine = createPublicodesEngine();
+async function createEngineForIncome(input: IncomeOptionsInput) {
+  const engine = await getPublicodesEngine();
 
   engine.setSituation({
     'bâtiment . habitants par logement': input.occupants,
@@ -122,15 +122,37 @@ function createEngineForIncome(input: IncomeOptionsInput) {
   return engine;
 }
 
-// Si surcharge serveur, faire un singleton
-function createPublicodesEngine() {
-  return new Engine<RuleName>(publicodesRules, {
-    logger: {
-      error: () => undefined,
-      log: () => undefined,
-      warn: () => undefined,
-    },
-  });
+let enginePromise: Promise<Engine<RuleName>> | undefined;
+
+/**
+ * Lazy singleton: the first request instantiates the engine (parsing the rules is expensive)
+ * and every request awaits the same promise, so concurrent first requests share one instance.
+ * If the instantiation fails, the promise is dropped so the next request retries.
+ *
+ * Never create one engine per request: publicodes keeps a module-level cache keyed by
+ * engine-specific rule ids (`parseReplacements` in publicodes 1.10), so every `new Engine()`
+ * leaks ~500 KB until the process runs out of memory.
+ *
+ * The shared engine is safe as long as `setSituation()` and the `evaluate()` calls that follow
+ * run synchronously, without any `await` in between.
+ */
+function getPublicodesEngine(): Promise<Engine<RuleName>> {
+  enginePromise ??= Promise.resolve()
+    .then(
+      () =>
+        new Engine<RuleName>(publicodesRules, {
+          logger: {
+            error: () => undefined,
+            log: () => undefined,
+            warn: () => undefined,
+          },
+        })
+    )
+    .catch((error) => {
+      enginePromise = undefined;
+      throw error;
+    });
+  return enginePromise;
 }
 
 function getAnnualBill(engine: Engine<RuleName>, prefix: HeatingBillPrefix) {

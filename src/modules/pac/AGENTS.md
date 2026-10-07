@@ -6,7 +6,7 @@ Small public API integration for the `france-chaleur-urbaine-pac` frontend proto
 
 - `constants.ts` owns API schemas and shared types.
 - `server/france-renov-space-service.ts` exposes the France Rénov' advisor lookup to the external PAC frontend.
-- `server/simulation-service.ts` maps validated API input to the publicodes engine and returns normalized numbers.
+- `server/simulation-service.ts` maps validated API input to the publicodes engine and returns normalized numbers. The engine is a lazy singleton (shared promise, `setSituation` + `evaluate` run synchronously per request): never instantiate one engine per request, publicodes keeps a module-level cache per engine instance and the process leaks until OOM.
 - `server/tracking-service.ts` relays whitelisted anonymous widget events to PostHog.
 
 ## Boundaries

@@ -10,11 +10,27 @@ import type { ApiContext } from '@/server/db/kysely/base-model';
 import { parentLogger } from '@/server/helpers/logger';
 import { ObjectEntries } from '@/utils/typescript';
 
-let tilesCacheDay = 0;
-const cachedTilesIndex: Partial<Record<CacheTileSourceId, any>> = {};
-
 const TILES_METADATA_TTL_MS = 60_000;
-const tilesMetadataCache = new Map<TileSourceId, { lastModified: Date; expiresAt: number }>();
+
+type TilesCacheState = {
+  cachedTilesIndex: Partial<Record<CacheTileSourceId, any>>;
+  /** Day of month of the last build of the dynamic indexes (refreshed daily) */
+  tilesCacheDay: number;
+  tilesMetadataCache: Map<TileSourceId, { lastModified: Date; expiresAt: number }>;
+};
+
+const GLOBAL_KEY = '__fcuTilesCache__';
+
+// In Next.js, instrumentation.ts and pages/api are separate bundles that each get
+// their own instance of this module. The state is deduplicated via globalThis so the
+// index built at startup is the one served by the API (same pattern as metrics/server/registry.ts).
+const globalScope = globalThis as typeof globalThis & { [GLOBAL_KEY]?: TilesCacheState };
+
+const state: TilesCacheState = (globalScope[GLOBAL_KEY] ??= {
+  cachedTilesIndex: {},
+  tilesCacheDay: 0,
+  tilesMetadataCache: new Map(),
+});
 
 /**
  * Marque une source de tuiles comme mise à jour : upsert dans `tiles_metadata`
@@ -27,7 +43,7 @@ export const markTilesUpdated = async (sourceId: TileSourceId): Promise<void> =>
     .values({ last_modified_at: new Date(), source_id: sourceId })
     .onConflict((oc) => oc.column('source_id').doUpdateSet({ last_modified_at: new Date() }))
     .execute();
-  tilesMetadataCache.delete(sourceId);
+  state.tilesMetadataCache.delete(sourceId);
 };
 
 /**
@@ -37,7 +53,7 @@ export const markTilesUpdated = async (sourceId: TileSourceId): Promise<void> =>
  */
 export const getTileLastModified = async (sourceId: TileSourceId): Promise<Date | null> => {
   const now = Date.now();
-  const cached = tilesMetadataCache.get(sourceId);
+  const cached = state.tilesMetadataCache.get(sourceId);
   if (cached && cached.expiresAt > now) {
     return cached.lastModified;
   }
@@ -47,7 +63,7 @@ export const getTileLastModified = async (sourceId: TileSourceId): Promise<Date 
   if (!row) {
     return null;
   }
-  tilesMetadataCache.set(sourceId, { expiresAt: now + TILES_METADATA_TTL_MS, lastModified: row.last_modified_at });
+  state.tilesMetadataCache.set(sourceId, { expiresAt: now + TILES_METADATA_TTL_MS, lastModified: row.last_modified_at });
   return row.last_modified_at;
 };
 
@@ -110,7 +126,7 @@ export const createSyncMetadataFromAirtableJob = async ({ name }: { name: Airtab
  * Le cache est rafraîchi chaque jour.
  */
 export const populateTilesCache = () => {
-  tilesCacheDay = new Date().getDate();
+  state.tilesCacheDay = new Date().getDate();
   Promise.all(
     ObjectEntries(tileSourcesConfig).map(async ([sourceId, config]) => {
       if (!('cache' in config)) return;
@@ -127,7 +143,7 @@ export const populateTilesCache = () => {
           throw new Error(`No features found for ${sourceId}`);
         }
 
-        cachedTilesIndex[sourceId as CacheTileSourceId] = new GeoJSONVT(
+        state.cachedTilesIndex[sourceId as CacheTileSourceId] = new GeoJSONVT(
           {
             features: features as GeoJSON.Feature<GeoJSON.Point>[],
             type: 'FeatureCollection',
@@ -184,11 +200,11 @@ export const getTile = async (
   // Source avec cache dynamique
   if ('cache' in config) {
     // Rafraîchir le cache si on a changé de jour
-    if (tilesCacheDay !== new Date().getDate()) {
+    if (state.tilesCacheDay !== new Date().getDate()) {
       populateTilesCache();
     }
 
-    const tileIndex = cachedTilesIndex[sourceId as CacheTileSourceId];
+    const tileIndex = state.cachedTilesIndex[sourceId as CacheTileSourceId];
     if (!tileIndex) {
       return null;
     }

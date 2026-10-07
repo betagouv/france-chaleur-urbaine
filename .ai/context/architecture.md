@@ -69,6 +69,7 @@ Pre-module code remains in `src/server/services/` and `src/services/`. New featu
 - **tRPC over REST** — end-to-end type safety; legacy REST routes are not extended.
 - **Module-based over MVC** — each domain self-contained, easy to test/migrate.
 - **PostgreSQL job queue over Redis** — simpler infra, transactional with business data.
+- **Module-level singletons go through `globalThis`** — `instrumentation.ts`, `proxy.ts` and the pages/API routes are separate bundles, each with its own instance of every module. Any module state that must be unique per process (DB pool, in-memory cache, metrics registry, index) is stored under a `globalThis` key (see `metrics/server/registry.ts`, `tiles/server/service.ts`); otherwise it is silently duplicated (double memory, cache invalidated in one copy only).
 - **DSFR** (government mandate) + Tailwind (`important: true`) on top. **styled-components deprecated** (legacy only).
 
 ## New module checklist
