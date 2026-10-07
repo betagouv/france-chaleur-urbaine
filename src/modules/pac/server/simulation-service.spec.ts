@@ -15,8 +15,8 @@ const baseInput = {
 } satisfies HeatingSimulationInput;
 
 describe('getHeatingSimulation', () => {
-  it('returns individual residential heating costs and heat pump prices', () => {
-    const result = getHeatingSimulation(baseInput);
+  it('returns individual residential heating costs and heat pump prices', async () => {
+    const result = await getHeatingSimulation(baseInput);
 
     expect(result).toStrictEqual({
       gasBoilerAnnualBill: 2001.4857088235294,
@@ -55,8 +55,8 @@ describe('getHeatingSimulation', () => {
 
   it.each(incomeCases)(
     '$label',
-    (testCase) => {
-      expect(getHeatingSimulation({ ...baseInput, incomeCategory: testCase.input }).heatPumpNetPrice).toStrictEqual(
+    async (testCase) => {
+      expect((await getHeatingSimulation({ ...baseInput, incomeCategory: testCase.input })).heatPumpNetPrice).toStrictEqual(
         testCase.expectedOutput
       );
     },
@@ -65,8 +65,8 @@ describe('getHeatingSimulation', () => {
 });
 
 describe('getIncomeOptions', () => {
-  it('returns income ranges for the requested department and household size', () => {
-    const result = getIncomeOptions({
+  it('returns income ranges for the requested department and household size', async () => {
+    const result = await getIncomeOptions({
       departmentCode: '75',
       occupants: 3,
     });
