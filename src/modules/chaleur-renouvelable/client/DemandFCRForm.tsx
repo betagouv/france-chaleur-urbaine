@@ -17,6 +17,7 @@ import {
   ESPACE_EXTERIEUR_VALUES,
   type HeatingEnergy,
   heatingEnergyOptions,
+  IS_CCRT_DEMAND_ENABLED,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type OccupantStatus,
   occupantStatusOptions,
@@ -354,7 +355,7 @@ export default function DemandFCRForm({
   onSelectedRecipientChange,
   topSolution,
 }: DemandFCRFormProps) {
-  if (!isHeatNetworkEligible && !isCcrtExperimentationBuildingEligible) {
+  if (!isHeatNetworkEligible && (!IS_CCRT_DEMAND_ENABLED || !isCcrtExperimentationBuildingEligible)) {
     return <FranceRenovAdvisorCallout />;
   }
 
@@ -524,7 +525,7 @@ function HeatNetworkDemandForm({
   const networkManager = eligibiliteReseauChaleur?.gestionnaire?.trim() || null;
   const isCcrtDemand = isPublicAdvisorSelected || !isHeatNetworkEligible;
   const nextStepsContext = isCcrtExperimentationBuildingEligible && isCcrtDemand ? 'renewable-advisor' : 'heat-network';
-  const shouldShowFranceRenovAdvisor = isPublicAdvisorSelected && !isCcrtExperimentationBuildingEligible;
+  const shouldShowFranceRenovAdvisor = isPublicAdvisorSelected && (!IS_CCRT_DEMAND_ENABLED || !isCcrtExperimentationBuildingEligible);
 
   return (
     <section id="help-ademe" className="mt-6 scroll-mt-4 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">

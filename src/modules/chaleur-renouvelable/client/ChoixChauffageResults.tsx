@@ -16,7 +16,7 @@ import { HeatNetworkRecommendedSolutionCard } from '@/modules/chaleur-renouvelab
 import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui/ResultsSection';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
-import { isCcrtExperimentationEligible } from '../constants';
+import { IS_CCRT_DEMAND_ENABLED, isCcrtExperimentationEligible } from '../constants';
 import { ParamsForm } from './ParamsForm';
 
 export default function ChoixChauffageResults() {
@@ -47,7 +47,8 @@ export default function ChoixChauffageResults() {
     urlParams,
   } = useChoixChauffageResults();
   const params = urlParams.params;
-  const isCcrtExperimentationBuildingEligible = isCcrtExperimentationEligible(codeDepartement, effectiveTypeLogement);
+  const isCcrtExperimentationBuildingEligible =
+    IS_CCRT_DEMAND_ENABLED && isCcrtExperimentationEligible(codeDepartement, effectiveTypeLogement);
   const isHeatNetworkEligible = situation.eligibiliteReseauChaleur?.isEligible === true && !situation.hasAlreadyReceivedHeatNetworkRefusal;
   const heatNetworkSolution = situation.eligibiliteReseauChaleur
     ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network')

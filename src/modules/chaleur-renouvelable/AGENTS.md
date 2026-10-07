@@ -19,6 +19,7 @@ Renewable heating guidance journey: collect building/context inputs, rank heatin
 
 ## Main Flows
 
+- **Temporary CCRT collection switch**: `IS_CCRT_DEMAND_ENABLED` in `constants.ts` is currently `false`. Classic connection forms and submissions remain available. The result page skips experimentation eligibility checks and directs all alternative-heating/refusal paths to France Rénov'. The server skips dedicated CCRT creation and its territory checks. Set the shared switch to `true` to restore the preserved experimentation flows; existing demand follow-up remains available.
 - **Result page state**: query params are parsed/serialized by `useChoixChauffageQueryParams`; avoid adding local state that can drift from the URL.
 - **Building selection**: BAN/RNB/BDNB/BatEnR logic is in `getBatEnrBatimentsSelectionContextByBanId`; multiple candidates trigger the client selector.
 - **Classic demand**: `createDemandeChaleurRenouvelable` first calls the classic demand path when the heat network is eligible and the user has not selected the public-advisor/refusal path. It reuses `@/modules/demands/server/creation-user` and patches FCR snapshot fields into `legacy_values`.

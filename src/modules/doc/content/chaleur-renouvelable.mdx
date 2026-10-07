@@ -13,9 +13,11 @@ Le parcours «&nbsp;chaleur renouvelable&nbsp;» ([/chaleur-renouvelable](/chale
     bat -- "Non" --> simu
     selection --> simu["Simulation : la confirmation du bâtiment préremplit DPE, surface, logements et ECS"]
     simu --> resultats["Résultats hiérarchisés : solutions possibles, prérequis, incompatibilités, coûts annuels"]
-    resultats --> rc{"Raccordement possible ?"}
+    resultats --> rc{"Raccordement possible et aucun refus déjà reçu ?"}
     rc -- "Oui" --> classique["Création d'une demande classique"]:::db
-    rc -- "Non" --> exp{"Territoire expérimental CCRT + immeuble chauffage collectif ?"}
+    rc -- "Non" --> collecte{"Collecte CCRT suspendue ?"}
+    collecte -- "Oui (actuellement)" --> franceRenov
+    collecte -- "Non" --> exp{"Territoire expérimental CCRT + immeuble chauffage collectif ?"}
     exp -- "Oui" --> ccrt["Formulaire d'accompagnement CCRT"]
     exp -- "Non" --> franceRenov["Orientation vers l'Espace Conseil France Rénov' de la commune"]
     ccrt --> dediee["Création d'une demande chaleur renouvelable non validée"]:::db
@@ -28,6 +30,16 @@ Le parcours «&nbsp;chaleur renouvelable&nbsp;» ([/chaleur-renouvelable](/chale
 />
 
 Tous les paramètres de la simulation sont portés par l'**URL de la page de résultats** : elle se partage telle quelle et se rejoue à l'identique.
+
+## Suspension temporaire des demandes d'accompagnement CCRT
+
+La collecte des demandes d'accompagnement chaleur renouvelable **CCRT** est temporairement suspendue. La demande classique de raccordement reste disponible lorsque le réseau de chaleur est éligible et que l'usager n'a pas déjà reçu de refus.
+
+Pour les autres solutions et après un refus de raccordement, l'usager voit systématiquement le bloc de l'**Espace Conseil France Rénov'** de sa commune, sans vérification du territoire de l'expérimentation CCRT. Le bouton d'accompagnement mène aux coordonnées de l'espace local (email de préférence, sinon site web), avec la page nationale de recherche de conseiller en secours. Les étapes de contact et le choix du gestionnaire restent disponibles pour les bâtiments éligibles au réseau de chaleur.
+
+Le serveur continue de créer les demandes classiques avec leurs emails habituels. Il ignore la création des demandes dédiées CCRT, sans vérifier leur territoire ni envoyer d'email CCRT. La simulation et le suivi des demandes déjà enregistrées restent disponibles.
+
+Le code de l'expérimentation est conservé : l'interrupteur `IS_CCRT_DEMAND_ENABLED` dans `src/modules/chaleur-renouvelable/constants.ts`, actuellement à `false`, permet de rétablir les parcours CCRT décrits ci-dessous en le passant à `true`.
 
 À l'étape de saisie, seuls l'adresse, le type de logement et l'espace extérieur sont obligatoires — le type de radiateurs peut être renseigné plus tard, mais sans réponse «&nbsp;radiateurs à eau&nbsp;», le réseau de chaleur ne sera pas proposé (voir plus bas).
 
@@ -68,11 +80,11 @@ Le catalogue de solutions dépend du **type de logement** (immeuble en chauffage
 - **Solaire thermique** : jugé suffisant au-delà de <Rule id="fcrSolarThermalMinCoveragePercent" /> de couverture des besoins d'eau chaude sanitaire. Les coûts et caractéristiques affichés viennent de Publicodes : besoin ECS de 360&nbsp;kWh/an par personne + 600&nbsp;kWh/an par logement, 60&nbsp;% couverts par le solaire, productivité selon la zone d'ensoleillement du département et le type d'installation (CESI, SSC ou collectif), surface de capteurs arrondie à l'unité, stockage de 50&nbsp;L/m², appoint électrique sur les 40&nbsp;% restants, P2/P3 à 11&nbsp;€/m²/an et investissement à 1&nbsp;500&nbsp;€/m² en individuel ou 1&nbsp;300&nbsp;€/m² en collectif. Pour le solaire thermique collectif, Publicodes dimensionne l'installation au périmètre de l'immeuble complet, puis France Chaleur Urbaine divise le coût annuel et le coût d'installation par le nombre de logements pour l'affichage ; le badge d'économies vs gaz est forcé à -50&nbsp;%.
 - Chaque prérequis est affiché avec sa **source** (CEREMA, BRGM, France Chaleur Urbaine, ou déclaré dans le formulaire) et un statut : favorable, défavorable, contraignant ou à vérifier.
 
-Quand le raccordement n'est **pas** possible, le formulaire CCRT est affiché uniquement dans le périmètre de l'expérimentation pour les immeubles au chauffage collectif. Dans les autres cas, le parcours oriente vers l'**Espace Conseil France Rénov'** de la commune (contact par email de préférence, sinon le site web de l'espace, sinon la page nationale france-renov.gouv.fr). Quand le raccordement est possible, le choix «&nbsp;J'ai déjà reçu un refus ou une réponse négative&nbsp;» bascule aussi vers le formulaire CCRT si l'adresse et le bâtiment sont dans l'expérimentation ; sinon il oriente vers France Rénov'.
+Lorsque la collecte CCRT est réactivée et que le raccordement n'est **pas** possible, le formulaire CCRT est affiché uniquement dans le périmètre de l'expérimentation pour les immeubles au chauffage collectif. Dans les autres cas, le parcours oriente vers l'**Espace Conseil France Rénov'** de la commune (contact par email de préférence, sinon le site web de l'espace, sinon la page nationale france-renov.gouv.fr). Quand le raccordement est possible, le choix «&nbsp;J'ai déjà reçu un refus ou une réponse négative&nbsp;» bascule aussi vers le formulaire CCRT si l'adresse et le bâtiment sont dans l'expérimentation ; sinon il oriente vers France Rénov'.
 
 ## La demande chaleur renouvelable
 
-La création d'une demande chaleur renouvelable dédiée est active uniquement pour l'**expérimentation CCRT**. Les deux conditions territoriales et bâtimentaires doivent être remplies : l'adresse appartient à un département couvert par l'expérimentation (région PACA et départements importés pour le pilote), et le bâtiment est un **immeuble au chauffage collectif**.
+Lorsque la collecte CCRT est réactivée, la création d'une demande chaleur renouvelable dédiée est possible uniquement pour l'**expérimentation CCRT**. Les deux conditions territoriales et bâtimentaires doivent être remplies : l'adresse appartient à un département couvert par l'expérimentation (région PACA et départements importés pour le pilote), et le bâtiment est un **immeuble au chauffage collectif**.
 
 - **Réseau de chaleur éligible sans refus déjà reçu** : la soumission crée une demande classique `demands`, y compris quand l'adresse est dans le périmètre de l'expérimentation. Elle suit alors le cycle de vie habituel des demandes de raccordement.
 - **Accompagnement CCRT dédié** : si le réseau de chaleur n'est pas éligible, ou si l'usager indique avoir déjà reçu un refus ou une réponse négative, la soumission du formulaire crée une ligne **non validée** dans `demands_chaleur_renouvelable` lorsque l'adresse et le bâtiment sont dans l'expérimentation. Aucune demande classique `demands` n'est créée dans ce cas. La confirmation affiche l'accusé de réception et les prochaines étapes CCRT, sans bouton d'espace personnel ni guide pratique du raccordement.
@@ -85,4 +97,4 @@ La création d'une demande chaleur renouvelable dédiée est active uniquement p
 
 ## Hors expérimentation
 
-Si au moins une des deux conditions de l'expérimentation n'est pas remplie, aucun formulaire CCRT n'est affiché et aucune demande dédiée n'est créée. L'usager est orienté vers l'**Espace Conseil France Rénov'** de sa commune quand le réseau de chaleur n'est pas éligible, ou quand il indique avoir déjà reçu un refus ou une réponse négative.
+Lorsque la collecte CCRT est réactivée, si au moins une des deux conditions de l'expérimentation n'est pas remplie, aucun formulaire CCRT n'est affiché et aucune demande dédiée n'est créée. L'usager est orienté vers l'**Espace Conseil France Rénov'** de sa commune quand le réseau de chaleur n'est pas éligible, ou quand il indique avoir déjà reçu un refus ou une réponse négative.

@@ -19,6 +19,7 @@ import {
   DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+  IS_CCRT_DEMAND_ENABLED,
   isCcrtExperimentationEligible,
 } from '@/modules/chaleur-renouvelable/constants';
 import type { Context } from '@/modules/config/server/context-builder';
@@ -618,7 +619,7 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
     };
   }
 
-  const ccrtDemandId = await createCcrtExperimentationDemand(input);
+  const ccrtDemandId = IS_CCRT_DEMAND_ENABLED ? await createCcrtExperimentationDemand(input) : null;
 
   return {
     demandSubmissionResult: null,
