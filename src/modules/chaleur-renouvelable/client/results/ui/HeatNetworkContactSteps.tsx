@@ -1,4 +1,5 @@
 import type { ContactRecipientId } from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
+import { IS_CCRT_DEMAND_ENABLED } from '@/modules/chaleur-renouvelable/constants';
 import cx from '@/utils/cx';
 
 export function HeatNetworkContactSteps({ onSelectRecipient }: { onSelectRecipient: (recipientId: ContactRecipientId) => void }) {
@@ -16,7 +17,7 @@ export function HeatNetworkContactSteps({ onSelectRecipient }: { onSelectRecipie
         description="Si le raccordement n’est finalement pas possible, un·e conseiller·ère du service public vous aide à choisir parmi les autres solutions ci-dessous."
         number={2}
         title="Refus ou réponse négative ?"
-        actionLabel="Être contacté·e par un·e conseiller·ère"
+        actionLabel={IS_CCRT_DEMAND_ENABLED ? 'Être contacté·e par un·e conseiller·ère' : 'Contacter mon Espace Conseil France Rénov’'}
         onClick={() => onSelectRecipient('public-advisor')}
       />
     </section>

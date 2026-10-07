@@ -18,6 +18,15 @@ import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helper
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
 
+const demandCollection = vi.hoisted(() => ({ isEnabled: true }));
+
+vi.mock('@/modules/chaleur-renouvelable/constants', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/modules/chaleur-renouvelable/constants')>()),
+  get IS_CCRT_DEMAND_ENABLED() {
+    return demandCollection.isEnabled;
+  },
+}));
+
 vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
 }));
@@ -161,6 +170,7 @@ function buildCcrtExperimentationDemandInput(overrides: Partial<DemandeChaleurRe
 
 describe('batEnrRouter', () => {
   beforeEach(async () => {
+    demandCollection.isEnabled = true;
     await cleanDatabase();
     await seedCcrtExperimentationTerritory();
     vi.clearAllMocks();
@@ -168,7 +178,24 @@ describe('batEnrRouter', () => {
   });
 
   describe('batEnr.createDemandeChaleurRenouvelable', () => {
+    it.each([
+      ['previous refusal', { isPublicAdvisorSelected: true }],
+      ['ineligible heat network', { heatNetworkEligibility: { distance: 450, inPDP: false, isEligible: false } }],
+    ] as const)('skips CCRT collection without side effects for %s when suspended', async (_, overrides) => {
+      demandCollection.isEnabled = false;
+
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(buildCcrtExperimentationDemandInput(overrides));
+
+      expect(result).toStrictEqual({ demandSubmissionResult: null, id: null });
+
+      expect(await kdb.selectFrom('demands').select(['id']).execute()).toStrictEqual([]);
+      expect(await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute()).toStrictEqual([]);
+      expect(sentEmailTemplate).not.toHaveBeenCalled();
+      expect(mockedFetchJSON).not.toHaveBeenCalled();
+    });
+
     it('crée une demande classique hors expérimentation quand le réseau de chaleur est éligible', async () => {
+      demandCollection.isEnabled = false;
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
         buildCcrtExperimentationDemandInput({
           address: '10 rue du test 75001 Paris',
@@ -257,6 +284,7 @@ describe('batEnrRouter', () => {
     });
 
     it('crée une demande classique en expérimentation pour un immeuble collectif éligible au réseau de chaleur', async () => {
+      demandCollection.isEnabled = false;
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(buildCcrtExperimentationDemandInput());
 
       const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();

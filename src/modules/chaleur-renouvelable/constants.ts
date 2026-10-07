@@ -4,6 +4,9 @@ import { z } from 'zod';
 
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
+// Pause dedicated CCRT demands while preserving classic connection requests.
+export const IS_CCRT_DEMAND_ENABLED = false;
+
 export type ModeDeChauffageUsage = 'heatingAndHotWater' | 'hotWaterOnly';
 export type ModeDeChauffageId =
   | 'collective-heat-network'
