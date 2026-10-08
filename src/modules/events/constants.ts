@@ -1,4 +1,5 @@
 import type { EmailUnblockSource } from '@/modules/email/constants';
+import type { NetworkChangeRequestKind } from '@/modules/network-change-requests/constants';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
@@ -62,6 +63,10 @@ export const eventTypes = [
   'network_geometries_applied',
   'network_notes_updated',
   'network_updated',
+  'network_change_request_created',
+  'network_change_request_processed',
+  'fedene_survey_imported',
+  'fedene_survey_discrepancies_cleared',
   'conversion_source_created',
   'conversion_source_updated',
   'conversion_source_archived',
@@ -100,6 +105,10 @@ export const eventTypeLabels: Record<EventType, string> = {
   demand_updated: 'Mise à jour demande',
   demand_updated_by_system: 'Mise à jour demande (automatique)',
   demand_validated: 'Validation demande',
+  fedene_survey_discrepancies_cleared: 'Écarts FEDENE en attente vidés',
+  fedene_survey_imported: 'Import de la bibliothèque FEDENE',
+  network_change_request_created: 'Demande de modification de réseau déposée',
+  network_change_request_processed: 'Demande de modification de réseau traitée',
   network_created: 'Création réseau/PDP',
   network_deleted: 'Suppression réseau/PDP',
   network_geometries_applied: 'Application des modifications géométriques',
@@ -157,7 +166,30 @@ type EmailBlockedEventData = { email: string; reason_code: string };
 /** Payload of the events created when a blocked contact is unblocked (from FCU or detected at sync time). */
 type EmailUnblockedEventData = { email: string; source: EmailUnblockSource };
 
+/** Payload of the events of a network change request: enough to render the line without loading the request. */
+type NetworkChangeRequestEventData = {
+  request_id: string;
+  kind: NetworkChangeRequestKind;
+  network_label: string;
+  network_type: NetworkEntityType | null;
+  network_id: number | null;
+};
+
+/** Origin of a network event written while processing a change request. */
+type NetworkChangeRequestSource = { request_id?: string; request_kind?: NetworkChangeRequestKind };
+
 export type EventDataMap = {
+  network_change_request_created: NetworkChangeRequestEventData;
+  /** `applied: false`: closed without changing anything */
+  network_change_request_processed: NetworkChangeRequestEventData & { applied?: boolean };
+  fedene_survey_discrepancies_cleared: { count: number };
+  fedene_survey_imported: {
+    filename: string;
+    updated: number;
+    created: number;
+    cleared_corrections: number;
+    discrepancies: number;
+  };
   build_tiles: { name: string };
   conversion_source_archived: { key: string; label: string };
   conversion_source_created: { key: string; label: string };
@@ -204,7 +236,7 @@ export type EventDataMap = {
   pro_eligibility_test_updated: Record<string, unknown> | null;
   sync_geometries_to_airtable: { name: string };
   sync_metadata_from_airtable: { name: string };
-  network_created: { id: string; identifiant_reseau: string | null; nom_reseau: string | null; type: string };
+  network_created: { id: string; identifiant_reseau: string | null; nom_reseau: string | null; type: string } & NetworkChangeRequestSource;
   network_deleted: { id: number; identifiant_reseau: string | null; nom_reseau: string | null; type: string };
   network_geometries_applied: {
     name: string;
@@ -227,6 +259,10 @@ export type EventDataMap = {
     nom_reseau: string | null;
     type: string;
     changes: Record<string, unknown>;
+    /** who the values come from: the admin dialog (default) or a processed change request (kind + id) */
+    source?: 'admin' | 'network_change_request';
+    request_id?: string;
+    request_kind?: NetworkChangeRequestKind;
   };
   pdp_updated: {
     'Identifiant reseau'?: string;

@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/suspicious/noConfusingVoidType: false positive, typescript prefers void */
 import { serverConfig } from '@/server/config';
 import type { DB } from '@/server/db/kysely';
-import { type CommandResult, type RunCommandOptions, runBash } from '@/utils/system';
+import { type CommandResult, type RunCommandOptions, runBash, runCommand } from '@/utils/system';
 
 /**
  * Exécute une commande ogr2ogr
@@ -34,22 +34,53 @@ export async function ogr2ogrExtractGeoJSONFromDatabaseTable(
   await runOgr2ogr(`-f GeoJSON ${outputFilePath} ${pgUrlToGdal(serverConfig.DATABASE_URL)} ${tableName} -t_srs EPSG:4326`, options);
 }
 
+// a .shp uploaded without its .shx index (the public forms only require .shp + .prj): GDAL rebuilds the index
+const gdalConfig = ['--config', 'SHAPE_RESTORE_SHX', 'YES'];
+
+/**
+ * Runs a GDAL command without a shell (the input file, and so its layer names, can come from a public upload) and
+ * throws with GDAL's error line when it fails.
+ */
+async function runGdal(executable: 'ogr2ogr' | 'ogrinfo', args: string[], options: RunCommandOptions = {}): Promise<string> {
+  const { output, success } = await runCommand(executable, [...args, ...gdalConfig], { ...options, captureOutput: true });
+  if (!success) {
+    const gdalError = output.split('\n').find((line) => line.startsWith('ERROR')) ?? output.trim().split('\n').at(-1);
+    throw new Error(`${executable} : ${gdalError || 'échec'}`);
+  }
+  return output;
+}
+
 export async function ogr2ogrConvertToGeoJSON(
   inputFilePath: string,
   outputFilePath: string,
   options: RunCommandOptions = {}
-): Promise<CommandResult | void> {
-  const layers = await listNonEmptyLayers(inputFilePath);
+): Promise<void> {
+  const layers = await listNonEmptyLayers(inputFilePath, options);
   if (layers.length <= 1) {
-    await runOgr2ogr(`-f GeoJSON ${outputFilePath} ${inputFilePath} -t_srs EPSG:4326`, options);
+    await runGdal('ogr2ogr', ['-f', 'GeoJSON', outputFilePath, inputFilePath, '-t_srs', 'EPSG:4326'], options);
   } else {
     // KML (and other multi-layer formats): GeoJSON only supports one layer per file.
     // Convert the first layer normally, then append the rest under the same layer name.
     const [first, ...rest] = layers;
-    await runOgr2ogr(`-f GeoJSON ${outputFilePath} ${inputFilePath} "${first}" -t_srs EPSG:4326 -nlt GEOMETRY`, options);
+    await runGdal('ogr2ogr', ['-f', 'GeoJSON', outputFilePath, inputFilePath, first, '-t_srs', 'EPSG:4326', '-nlt', 'GEOMETRY'], options);
     for (const layer of rest) {
-      await runOgr2ogr(
-        `-f GeoJSON -update -append ${outputFilePath} ${inputFilePath} "${layer}" -t_srs EPSG:4326 -nlt GEOMETRY -nln "${first}"`,
+      await runGdal(
+        'ogr2ogr',
+        [
+          '-f',
+          'GeoJSON',
+          '-update',
+          '-append',
+          outputFilePath,
+          inputFilePath,
+          layer,
+          '-t_srs',
+          'EPSG:4326',
+          '-nlt',
+          'GEOMETRY',
+          '-nln',
+          first,
+        ],
         options
       );
     }
@@ -60,8 +91,8 @@ export async function ogr2ogrConvertToGeoJSON(
  * Returns the names of layers that contain at least one feature.
  * Skips empty layers (e.g. LIBKML metadata containers named after the source file).
  */
-async function listNonEmptyLayers(filePath: string): Promise<string[]> {
-  const { output } = await runBash(`ogrinfo -al -so "${filePath}"`, { captureOutput: true });
+async function listNonEmptyLayers(filePath: string, options: RunCommandOptions = {}): Promise<string[]> {
+  const output = await runGdal('ogrinfo', ['-al', '-so', filePath], options);
 
   const layers: string[] = [];
   let currentLayer: string | null = null;

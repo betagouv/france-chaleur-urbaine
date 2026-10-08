@@ -3,6 +3,7 @@ import type React from 'react';
 import { ArrowItem } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
 import Link from '@/components/ui/Link';
 import type { AvailableHeating } from '@/modules/app/types';
+import { sourcesActualiseesParFcuNotice, withSourceFcuMark } from '@/modules/reseaux/constants';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
 type EligibilityResult = {
@@ -12,6 +13,7 @@ type EligibilityResult = {
     distance: string;
     inPDP: boolean;
     gestionnaire: string | null;
+    gestionnaireSourceFcu: boolean;
     tauxENRR: number | null;
     isClasse: boolean | null;
     hasPDP: boolean | null;
@@ -139,6 +141,8 @@ export const getEligibilityResult = (
     </ArrowItem>
   );
 
+  const SourceFcuNote = () => <span className="block fr-text--xs fr-mb-0">{sourcesActualiseesParFcuNotice}</span>;
+
   const ParisPuissanceNote = ({ city }: { city?: string }) =>
     city === 'Paris' ? (
       <p className="fr-text--sm fr-mb-0">A noter: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</p>
@@ -146,7 +150,7 @@ export const getEligibilityResult = (
 
   // 3 rue du petit bois 78370 Plaisir
   const closeCollectif: EligibilityResult = {
-    body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => (
+    body: ({ distance, inPDP, gestionnaire, gestionnaireSourceFcu, tauxENRR, isClasse, hasPDP, city }) => (
       <>
         <h3>Bonne nouvelle&nbsp;!</h3>
         <ArrowItem>
@@ -160,7 +164,8 @@ export const getEligibilityResult = (
         </ArrowItem>
         {gestionnaire && (
           <ArrowItem>
-            Le gestionnaire du réseau le plus proche est <strong>{gestionnaire}</strong>.
+            Le gestionnaire du réseau le plus proche est <strong>{withSourceFcuMark(gestionnaire, gestionnaireSourceFcu)}</strong>.
+            {gestionnaireSourceFcu && <SourceFcuNote />}
             {tauxENRR ? (
               <>
                 {' '}
@@ -210,7 +215,7 @@ export const getEligibilityResult = (
 
   // 1 rue du berry 78370 Plaisir
   const intermediateCollectif: EligibilityResult = {
-    body: ({ distance, inPDP, gestionnaire, tauxENRR, isClasse, hasPDP, city }) => (
+    body: ({ distance, inPDP, gestionnaire, gestionnaireSourceFcu, tauxENRR, isClasse, hasPDP, city }) => (
       <>
         <ArrowItem>
           <strong>Il n’existe pour le moment pas de réseau de chaleur</strong> à proximité immédiate de votre adresse, toutefois, le réseau
@@ -224,7 +229,8 @@ export const getEligibilityResult = (
         </ArrowItem>
         {gestionnaire && (
           <ArrowItem>
-            Le gestionnaire du réseau le plus proche est <strong>{gestionnaire}</strong>.
+            Le gestionnaire du réseau le plus proche est <strong>{withSourceFcuMark(gestionnaire, gestionnaireSourceFcu)}</strong>.
+            {gestionnaireSourceFcu && <SourceFcuNote />}
             {tauxENRR ? (
               <>
                 {' '}
@@ -349,7 +355,7 @@ export const getEligibilityResult = (
 
   // 2 rue hardenberg 92220 Bagneux
   const farCollectifInPDP: EligibilityResult = {
-    body: ({ gestionnaire, tauxENRR }) => (
+    body: ({ gestionnaire, gestionnaireSourceFcu, tauxENRR }) => (
       <>
         <ArrowItem>
           <strong>Il n’existe pour le moment pas de réseau de chaleur</strong> à proximité de votre adresse.
@@ -357,7 +363,8 @@ export const getEligibilityResult = (
         <ObligationsRaccordementLink proche />
         {gestionnaire && (
           <ArrowItem>
-            Le gestionnaire du réseau le plus proche est <strong>{gestionnaire}</strong>.
+            Le gestionnaire du réseau le plus proche est <strong>{withSourceFcuMark(gestionnaire, gestionnaireSourceFcu)}</strong>.
+            {gestionnaireSourceFcu && <SourceFcuNote />}
             {tauxENRR ? (
               <>
                 {' '}
@@ -465,7 +472,7 @@ export const getEligibilityResult = (
   };
 
   const noTraceCollectif: EligibilityResult = {
-    body: ({ gestionnaire, tauxENRR, isClasse, city }) => (
+    body: ({ gestionnaire, gestionnaireSourceFcu, tauxENRR, isClasse, city }) => (
       <>
         <ArrowItem>
           Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.
@@ -477,7 +484,8 @@ export const getEligibilityResult = (
         </ArrowItem>
         {gestionnaire && (
           <ArrowItem>
-            Le gestionnaire du réseau le plus proche est <strong>{gestionnaire}</strong>.
+            Le gestionnaire du réseau le plus proche est <strong>{withSourceFcuMark(gestionnaire, gestionnaireSourceFcu)}</strong>.
+            {gestionnaireSourceFcu && <SourceFcuNote />}
             {tauxENRR ? (
               <>
                 {' '}

@@ -3,7 +3,7 @@
  * Please do not edit it manually.
  */
 
-import type { ColumnType, JSONColumnType } from 'kysely';
+import type { ColumnType, GeneratedAlways, JSONColumnType } from 'kysely';
 
 import type {
   DemandConcern,
@@ -20,6 +20,16 @@ import type {
 import type { ConversionEventType, ConversionIpDisposition, ConversionSourceConfig } from '@/modules/conversion-tracking/constants';
 import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
+import type { FileScanStatus } from '@/modules/files/constants';
+import type {
+  NetworkChangeRequestContactType,
+  NetworkChangeRequestFileRole,
+  NetworkChangeRequestGeometryRole,
+  NetworkChangeRequestKind,
+  NetworkChangeRequestOrigin,
+  NetworkChangeRequestPayload,
+  NetworkChangeRequestStatus,
+} from '@/modules/network-change-requests/constants';
 import type { Permission } from '@/modules/permissions/types';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { EcoreseauLabel } from '@/modules/reseaux/types';
@@ -481,6 +491,20 @@ export interface Events {
   type: EventType;
 }
 
+export interface Files {
+  content: Buffer | null;
+  content_type: string;
+  created_at: Generated<Timestamp>;
+  filename: string;
+  id: Generated<string>;
+  purged_at: Timestamp | null;
+  scan_details: string | null;
+  scan_status: Generated<FileScanStatus>;
+  scanned_at: Timestamp | null;
+  sha256: string;
+  size: number;
+}
+
 export interface IgnCommunes {
   geom: string | null;
   geom_150m: string | null;
@@ -545,12 +569,7 @@ export interface Jobs {
   id: Generated<string>;
   result: Json | null;
   status: 'pending' | 'processing' | 'finished' | 'error';
-  type:
-    | 'pro_eligibility_test'
-    | 'build_tiles'
-    | 'sync_geometries_to_airtable'
-    | 'sync_metadata_from_airtable'
-    | 'pro_eligibility_test_notify_changes';
+  type: 'pro_eligibility_test' | 'build_tiles' | 'pro_eligibility_test_notify_changes' | 'scan_file' | 'parse_request_geometries';
   updated_at: Generated<Timestamp>;
   user_id: string | null;
 }
@@ -563,6 +582,55 @@ export interface MatomoStats {
   stat_key: string | null;
   stat_label: string | null;
   value: number;
+}
+
+export interface NetworkChangeRequestFiles {
+  file_id: string;
+  request_id: string;
+  /** the admin replaced this file by a converted one; the original stays downloadable */
+  replaced_at: Timestamp | null;
+  role: NetworkChangeRequestFileRole;
+}
+
+export interface NetworkChangeRequestGeometries {
+  error: string | null;
+  geometry: JSONColumnType<GeoJSON.Geometry> | null;
+  parsed_at: Generated<Timestamp>;
+  request_id: string;
+  role: NetworkChangeRequestGeometryRole;
+}
+
+export interface NetworkChangeRequests {
+  contact_email: string | null;
+  contact_first_name: string | null;
+  contact_function: string | null;
+  contact_last_name: string | null;
+  contact_structure: string | null;
+  contact_type: NetworkChangeRequestContactType;
+  contact_type_other: string | null;
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  kind: NetworkChangeRequestKind;
+  network_id: number | null;
+  network_label: string;
+  /** the submitter was emailed the publication (at processing, when something was published) */
+  notified: Generated<boolean>;
+  network_type: NetworkEntityType | null;
+  origin: Generated<NetworkChangeRequestOrigin>;
+  payload: JSONColumnType<NetworkChangeRequestPayload>;
+  processed_at: Timestamp | null;
+  processed_by: string | null;
+  status: Generated<NetworkChangeRequestStatus>;
+  updated_at: Generated<Timestamp>;
+  user_id: string | null;
+}
+
+export interface NetworkFiles {
+  created_at: Generated<Timestamp>;
+  file_id: string;
+  network_id: number;
+  network_type: NetworkEntityType;
+  position: Generated<number>;
 }
 
 export interface NetworkReminders {
@@ -688,7 +756,12 @@ export interface ReseauxDeChaleur {
   fichiers: Json | null;
   geom: string | null;
   geom_update: string | null;
-  Gestionnaire: string | null;
+  /** displayed value: `coalesce(gestionnaire_fcu, gestionnaire_fedene)`, maintained by Postgres */
+  Gestionnaire: GeneratedAlways<string | null>;
+  /** gestionnaire corrected by FCU (null = the survey value is displayed) */
+  gestionnaire_fcu: string | null;
+  /** gestionnaire of the latest FEDENE survey */
+  gestionnaire_fedene: string | null;
   has_PDP: Generated<boolean>;
   has_trace: Generated<boolean>;
   id_fcu: number;
@@ -701,10 +774,16 @@ export interface ReseauxDeChaleur {
   livraisons_tertiaire_MWh: number | null;
   livraisons_totale_MWh: number | null;
   longueur_reseau: number | null;
-  MO: string | null;
+  /** displayed value: `coalesce(mo_fcu, mo_fedene)`, maintained by Postgres */
+  MO: GeneratedAlways<string | null>;
+  mo_fcu: string | null;
+  mo_fedene: string | null;
   'Moyenne-annee-DPE': string | null;
   nb_pdl: number | null;
-  nom_reseau: string | null;
+  /** displayed value: `coalesce(nom_reseau_fcu, nom_reseau_fedene)`, maintained by Postgres */
+  nom_reseau: GeneratedAlways<string | null>;
+  nom_reseau_fcu: string | null;
+  nom_reseau_fedene: string | null;
   organization_id: string | null;
   ouvert_aux_raccordements: boolean;
   'PF%': number | null;
@@ -781,7 +860,12 @@ export interface ReseauxDeFroid {
   fichiers: Json | null;
   geom: string | null;
   geom_update: string | null;
-  Gestionnaire: string | null;
+  /** displayed value: `coalesce(gestionnaire_fcu, gestionnaire_fedene)`, maintained by Postgres */
+  Gestionnaire: GeneratedAlways<string | null>;
+  /** gestionnaire corrected by FCU (null = the survey value is displayed) */
+  gestionnaire_fcu: string | null;
+  /** gestionnaire of the latest FEDENE survey */
+  gestionnaire_fedene: string | null;
   has_trace: Generated<boolean>;
   id_fcu: number;
   'Identifiant reseau': string | null;
@@ -793,10 +877,16 @@ export interface ReseauxDeFroid {
   livraisons_tertiaire_MWh: number | null;
   livraisons_totale_MWh: number | null;
   longueur_reseau: number | null;
-  MO: string | null;
+  /** displayed value: `coalesce(mo_fcu, mo_fedene)`, maintained by Postgres */
+  MO: GeneratedAlways<string | null>;
+  mo_fcu: string | null;
+  mo_fedene: string | null;
   'Moyenne-annee-DPE': string | null;
   nb_pdl: number | null;
-  nom_reseau: string | null;
+  /** displayed value: `coalesce(nom_reseau_fcu, nom_reseau_fedene)`, maintained by Postgres */
+  nom_reseau: GeneratedAlways<string | null>;
+  nom_reseau_fcu: string | null;
+  nom_reseau_fedene: string | null;
   notes: string | null;
   organization_id: string | null;
   production_totale_MWh: number | null;
@@ -1079,6 +1169,7 @@ export interface DB {
   etudes_en_cours: EtudesEnCours;
   etudes_en_cours_tiles: EtudesEnCoursTiles;
   events: Events;
+  files: Files;
   ign_communes: IgnCommunes;
   ign_departements: IgnDepartements;
   ign_regions: IgnRegions;
@@ -1087,6 +1178,10 @@ export interface DB {
   installations_geothermie_surface_echangeurs_ouverts_tiles: InstallationsGeothermieSurfaceEchangeursOuvertsTiles;
   jobs: Jobs;
   matomo_stats: MatomoStats;
+  network_change_request_files: NetworkChangeRequestFiles;
+  network_change_request_geometries: NetworkChangeRequestGeometries;
+  network_change_requests: NetworkChangeRequests;
+  network_files: NetworkFiles;
   network_reminders: NetworkReminders;
   organization_api_credentials: OrganizationApiCredentials;
   organizations: Organizations;

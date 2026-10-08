@@ -1,6 +1,6 @@
 # Mise à jour annuelle des données réglementaires (arrêté DPE)
 
-Le taux d'EnR&R, les contenus CO2 (direct et ACV) et l'année de référence des réseaux de chaleur et de froid sont les valeurs de l'annexe « Données des réseaux de chaleur et de froid » de l'**arrêté modifiant l'arrêté du 15 septembre 2006 relatif au DPE**, publié chaque année sur Légifrance (généralement au printemps, sur les données de l'année N-2). Ces champs ne viennent plus d'Airtable : ils sont importés directement en base par la procédure ci-dessous, et la synchronisation Airtable → Postgres les ignore (`src/modules/reseaux/server/download-network.ts`).
+Le taux d'EnR&R, les contenus CO2 (direct et ACV) et l'année de référence des réseaux de chaleur et de froid sont les valeurs de l'annexe « Données des réseaux de chaleur et de froid » de l'**arrêté modifiant l'arrêté du 15 septembre 2006 relatif au DPE**, publié chaque année sur Légifrance (généralement au printemps, sur les données de l'année N-2). Ils sont importés directement en base par la procédure ci-dessous ; les imports FEDENE et SDES ne les touchent pas.
 
 Ne pas confondre avec l'**arrêté relatif au classement des réseaux**, publié séparément (`dataSourcesVersions.arreteClassement`).
 

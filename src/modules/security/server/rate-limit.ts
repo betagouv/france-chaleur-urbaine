@@ -2,7 +2,7 @@ import { ipKeyGenerator, MemoryStore, type Options, rateLimit } from 'express-ra
 
 import { getClientIp } from '@/server/helpers/request-ip';
 
-export const rateLimitError = new Error('too many requests'); // 429
+export const rateLimitError = new Error('Trop de requêtes, veuillez réessayer plus tard.'); // 429, message shown to the user
 
 // Store global partagé par toutes les routes
 export const sharedStore = new MemoryStore();

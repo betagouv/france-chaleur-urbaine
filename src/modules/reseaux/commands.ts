@@ -16,6 +16,8 @@ import {
   updateEntityWithoutGeometry,
   updateNetworkHasPDP,
 } from './server/geometry-operations';
+import { registerImportAirtableDocumentsCommand } from './server/import-airtable-documents';
+import { registerImportAirtableNetworkMetadataCommand } from './server/import-airtable-network-metadata';
 import { syncLinkedNetworkFields } from './server/linked-fields-sync';
 
 const entityTypes = ['rdc', 'rdf', 'pdp', 'futur'] as const;
@@ -29,6 +31,8 @@ const entityTypeToTable = {
 } as const satisfies Record<EntityType, NetworkTable>;
 
 export function registerNetworkCommands(parentProgram: Command) {
+  registerImportAirtableDocumentsCommand(parentProgram);
+  registerImportAirtableNetworkMetadataCommand(parentProgram);
   parentProgram
     .command('reseaux:sync-linked-fields')
     .description('Resynchronise les champs dérivés des liens entre entités (SNCU des extensions, gestionnaire/MO des PDP)')
@@ -41,9 +45,7 @@ export function registerNetworkCommands(parentProgram: Command) {
 
   program
     .command('insert')
-    .description(
-      "Insère une nouvelle entité avec une géométrie. Il faut avoir créé l'entité sur airtable au préalable. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)"
-    )
+    .description('Insère une nouvelle entité avec une géométrie. La géométrie peut être en WGS 84 (4326) ou Lambert 93 (2154)')
     .argument('<type>', "type d'entité", (v) => z.enum(entityTypes).parse(v))
     .argument('<fileName>', 'input file (format GeoJSON)')
     .argument('[id_fcu]', 'id_fcu du réseau (autogénéré si non renseigné)', (v) => z.coerce.number().parse(v))
@@ -109,7 +111,7 @@ export function registerNetworkCommands(parentProgram: Command) {
   program
     .command('bulk-update')
     .description(
-      "Met à jour (ou crée) les tracés des réseaux de chaleur/froid à partir d'un répertoire de <id_sncu>.geojson. Les réseaux absents de la BDD sont créés en récupérant leur id_fcu depuis Airtable. Skip les fichiers vides."
+      "Met à jour (ou crée) les tracés des réseaux de chaleur/froid à partir d'un répertoire de <id_sncu>.geojson. Les réseaux absents de la BDD sont créés avec un id_fcu automatique. Skip les fichiers vides."
     )
     .argument('<directory>', 'Répertoire contenant les fichiers <id_sncu>.geojson')
     .option('--apply', 'Applique réellement les mises à jour (par défaut: dry-run)', false)

@@ -1,10 +1,12 @@
 import { adminPageGroups, adminPages } from '@/components/Admin/adminPages';
 import Heading from '@/components/ui/Heading';
 import Tile from '@/components/ui/Tile';
+import AdminDashboardIndicators from '@/modules/admin/client/AdminDashboardIndicators';
 
 export default function DashboardAdmin() {
   return (
     <div className="flex flex-col gap-8 mb-5">
+      <AdminDashboardIndicators />
       {adminPageGroups.map(({ id, label }) => {
         const pages = adminPages.filter((page) => page.group === id);
         if (pages.length === 0) {

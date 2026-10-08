@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import { emailUnblockSourceLabels, getEmailBlockReasonLabel } from '@/modules/email/constants';
 import type { EventType } from '@/modules/events/constants';
 import type { AdminEvent } from '@/modules/events/server/service';
+import { networkChangeRequestKindLabels } from '@/modules/network-change-requests/constants';
 import { type RetentionRule, retentionRuleDefinitions } from '@/modules/retention/constants';
 import { ObjectKeys } from '@/utils/typescript';
 
@@ -45,6 +46,23 @@ const FilterButton = ({ onClick, children }: { onClick: () => void; children: Re
     {children}
   </Button>
 );
+
+/** « depuis une demande … » when a network event was written while processing a change request (filters on that request). */
+type RequestSourceProps = {
+  data: { request_id?: string; request_kind?: keyof typeof networkChangeRequestKindLabels };
+  updateFilters: (filters: Partial<EventFilters>) => void;
+};
+
+function RequestSource({ data, updateFilters }: RequestSourceProps) {
+  return data.request_id ? (
+    <>
+      {' depuis une '}
+      <FilterButton onClick={() => updateFilters({ contextId: data.request_id, contextType: 'network_change_request' })}>
+        demande{data.request_kind ? ` « ${networkChangeRequestKindLabels[data.request_kind]} »` : ''}
+      </FilterButton>
+    </>
+  ) : null;
+}
 
 type EventRenderer<T extends EventType> = (
   event: Extract<AdminEvent, { type: T }>,
@@ -257,9 +275,50 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
   ),
-  network_created: (event) => (
+  fedene_survey_discrepancies_cleared: (event) => (
     <span>
-      a créé un réseau <strong>{event.data.type}</strong> (ID: {event.data.id})
+      a vidé <strong>{event.data.count}</strong> écart{event.data.count > 1 ? 's' : ''} FEDENE en attente
+    </span>
+  ),
+  fedene_survey_imported: (event) => (
+    <span>
+      a importé la bibliothèque FEDENE <strong>{event.data.filename}</strong> : {event.data.updated} réseaux mis à jour,{' '}
+      {event.data.created} créés, {event.data.cleared_corrections} corrections FCU retirées, {event.data.discrepancies} écarts à trancher
+    </span>
+  ),
+  network_change_request_created: (event, updateFilters) => {
+    const kind = `« ${networkChangeRequestKindLabels[event.data.kind]} »`;
+    // no author: an anonymous submitter of a public form, or the FEDENE import (survey discrepancy)
+    const subject = event.author
+      ? `a déposé une demande ${kind}`
+      : event.data.kind === 'enquete'
+        ? `L'import FEDENE a créé une demande ${kind}`
+        : `Demande ${kind} déposée via le formulaire public`;
+    return (
+      <>
+        <span>{subject} pour </span>
+        <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'network_change_request' })}>
+          {event.data.network_label}
+        </FilterButton>
+      </>
+    );
+  },
+  network_change_request_processed: (event, updateFilters) => (
+    <>
+      <span>
+        {event.data.applied === false ? 'a clos sans changement' : 'a traité'} une demande «{' '}
+        {networkChangeRequestKindLabels[event.data.kind]} » pour{' '}
+      </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'network_change_request' })}>
+        {event.data.network_label}
+      </FilterButton>
+    </>
+  ),
+  network_created: (event, updateFilters) => (
+    <span>
+      a créé un réseau <strong>{event.data.type}</strong>
+      {event.data.nom_reseau ? ` "${event.data.nom_reseau}"` : null} (ID: {event.data.id})
+      <RequestSource data={event.data} updateFilters={updateFilters} />
     </span>
   ),
   network_deleted: (event) => (
@@ -318,12 +377,13 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
-  network_updated: (event) => (
+  network_updated: (event, updateFilters) => (
     <span>
       a mis à jour les données (<strong>{Object.keys(event.data.changes ?? {}).join(', ')}</strong>) d'un réseau{' '}
       <strong>{event.data.type}</strong>
       {event.data.nom_reseau ? ` "${event.data.nom_reseau}"` : null} (ID: {event.data.id}
       {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null})
+      <RequestSource data={event.data} updateFilters={updateFilters} />
     </span>
   ),
   organization_created: (event) => (

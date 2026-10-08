@@ -10,6 +10,8 @@ export type HeatNetwork = {
   name: string | null;
   tauxENRR: number | null;
   gestionnaire: string | null;
+  /** FCU holds a more recent gestionnaire than the FEDENE survey: shown with a footnote */
+  gestionnaireSourceFcu?: boolean;
   co2: number | null;
   isClasse: boolean | null;
   hasPDP: boolean | null;

@@ -8,6 +8,7 @@ import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 
+import AdminPageMenuLabel from '@/components/Admin/AdminPageMenuLabel';
 import { adminPageGroups, adminPages } from '@/components/Admin/adminPages';
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
 import { getNewsletterLinkTitle, NEWSLETTER_SIGNUP_URL } from '@/components/Newsletter/constants';
@@ -382,16 +383,21 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
     text: 'Tableau de bord',
   },
   {
-    linkProps: {
-      href: '/pro/comparateur-couts-performances',
-    },
-    text: 'Comparateur de coûts et CO2',
-  },
-  {
-    linkProps: {
-      href: '/pro/tests-adresses',
-    },
-    text: "Test d'adresses",
+    menuLinks: [
+      {
+        linkProps: {
+          href: '/pro/comparateur-couts-performances',
+        },
+        text: 'Comparateur de coûts et CO2',
+      },
+      {
+        linkProps: {
+          href: '/pro/tests-adresses',
+        },
+        text: "Test d'adresses",
+      },
+    ],
+    text: 'Outils',
   },
   {
     megaMenu: {
@@ -403,7 +409,7 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
             linkProps: {
               href: page.href,
             },
-            text: page.label,
+            text: <AdminPageMenuLabel page={page} />,
           })),
       })),
     },

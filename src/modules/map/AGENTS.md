@@ -84,6 +84,7 @@ src/modules/map/
       MapContextMenu.tsx      # right-click context menu (extensible). Single action today: eligibility test at the clicked point (parallel reseaux.eligibilityStatus + BAN reverse-geocode for the nearest address < 100m); drops a persistent MapMarker + EligibilityPopup
       BdnbBatimentSelector.tsx # building selector on the bdnb-batiments source (controlled, lock-on-select)
       FileDropHandler.tsx     # drag/drop + paste geo-file → GeoJSON source overlay
+      MapPointPicker.tsx      # <MapPointPicker active onPick> — click to place a point (crosshair, owns the click via useMapClickCapture)
       fileConversion.ts       # file → GeoJSON helpers (kml/kmz/geojson/shapefile, proj4)
     controls/                 # IControl wrappers (mounted by MapCanvas when interactive)
     layers/
@@ -127,7 +128,7 @@ src/modules/map/
 
 | Prop | Default | Description |
 |---|---|---|
-| `initialView` | center=France, zoom=5 | `{ center, zoom? }` or `{ bbox }` — snapshotted at mount, change later via controller. |
+| `initialView` | center=France, zoom=5 | `{ center, zoom? }` or `{ bbox, maxZoom? }` (fitted by the MapLibre constructor: no animation, only the tiles of that view are loaded) — snapshotted at mount, change later via controller. |
 | `interactive` | `true` | When `false`: pan/zoom/touch disabled, no controls (attribution still rendered), no click/hover popups. |
 | `layers` | — | `MapSourceLayersSpecification[]`. Auto-mounted + diffed against `config`. |
 | `config` | — | `MapConfiguration` driving each spec's `isVisible` / `filter`. |

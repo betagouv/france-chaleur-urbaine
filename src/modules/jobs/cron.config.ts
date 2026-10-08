@@ -54,6 +54,12 @@ export const cronDefinitions = [
     schedule: '30 03 * * *',
     scheduleLabel: 'Tous les jours, 3h30',
   },
+  {
+    description: `Supprime les fichiers déposés depuis plus de ${businessRules.uploadedFileOrphanRetentionHours.display} qui ne sont rattachés à aucune demande (formulaire abandonné avant envoi).`,
+    name: 'purgeOrphanFiles',
+    schedule: '45 03 * * *',
+    scheduleLabel: 'Tous les jours, 3h45',
+  },
 ] as const satisfies readonly CronDefinition[];
 
 export type CronName = (typeof cronDefinitions)[number]['name'];

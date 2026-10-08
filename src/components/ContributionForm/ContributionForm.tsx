@@ -1,22 +1,23 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import { useStore } from '@tanstack/react-form';
-import Link from 'next/link';
 import { useState } from 'react';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
 import CallOut from '@/components/ui/CallOut';
+import Link from '@/components/ui/Link';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import type { UploadedFile } from '@/modules/files/constants';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
+import trpc from '@/modules/trpc/client';
 import { postFormDataFetchJSON } from '@/utils/network';
 import { formatFileSize } from '@/utils/strings';
 
+import { buildContributionRequest } from './buildContributionRequest';
 import { type ContributionNetworkSearchResult, ContributionNetworkSncuField } from './ContributionNetworkSncuField';
 import {
   contributionDefaultValues,
-  docAllowedExtensions,
-  docFichiersValidator,
   filesLimits,
   geoAllowedExtensions,
   geoFichiersValidator,
@@ -66,21 +67,20 @@ const optionalPdpUploadConfig = {
   fichiersValidator: optionalGeoFichiersValidator,
 } satisfies ContributionUploadConfig;
 
-const docUploadConfig = {
-  allowedExtensions: docAllowedExtensions,
-  fichiersValidator: docFichiersValidator,
-  formatsHint: 'Formats préférentiels : PDF, Word.',
-} satisfies ContributionUploadConfig;
+/** Uploads the files of one field, `[]` when the field is empty. */
+const uploadFiles = async (files: File[] | undefined): Promise<UploadedFile[]> =>
+  files && files.length > 0 ? (await postFormDataFetchJSON<{ files: UploadedFile[] }>('/api/files/upload', { files })).files : [];
 
 /**
  * Public contribution form: network managers/collectivités submit geo data
- * (network traces, priority perimeters, master plans) with file uploads.
+ * (network traces, priority perimeters) with file uploads, stored as change requests reviewed by the FCU team.
  * The fields depend on the selected demand type (discriminated union schema).
  */
 function ContributionForm() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [selectedContributionNetwork, setSelectedContributionNetwork] = useState<ContributionNetworkSearchResult | null>(null);
   const [hasNoSncuIdentifier, setHasNoSncuIdentifier] = useState(false);
+  const createRequest = trpc.networkChangeRequests.create.useMutation();
 
   const form = useAppForm({
     ...schemaValidation(zContributionForm),
@@ -89,7 +89,12 @@ function ContributionForm() {
       async ({ value }) => {
         trackPostHogEvent('map:manager_contact_form_submitted');
         // re-parse through the union: strips the fields of unselected branches and types the output
-        await postFormDataFetchJSON('/api/contribution', await zContributionFormData.parseAsync(value));
+        const data = await zContributionFormData.parseAsync(value);
+        const [trace, pdp] = await Promise.all([
+          uploadFiles('fichiers' in data ? data.fichiers : undefined),
+          uploadFiles('fichiersPDP' in data ? data.fichiersPDP : undefined),
+        ]);
+        await createRequest.mutateAsync(buildContributionRequest(data, { pdp, trace }, selectedContributionNetwork));
         setFormSuccess(true);
       },
       () => (
@@ -227,11 +232,7 @@ function ContributionForm() {
                 label={
                   <span>
                     Le réseau a été déclassé par arrêté (si celui-ci n’est pas dans la{' '}
-                    <Link
-                      href="https://www.ecologie.gouv.fr/politiques-publiques/reseaux-chaleur"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <Link href="https://www.ecologie.gouv.fr/politiques-publiques/reseaux-chaleur" isExternal>
                       liste des réseaux déclassés
                     </Link>{' '}
                     et/ou que vous n’avez pas encore transmis votre délibération, merci de l’envoyer à l’adresse
@@ -295,7 +296,7 @@ function ContributionForm() {
       title="Nous vous remercions pour votre contribution."
       description={
         <>
-          Son intégration sur la carte sera réalisée sous quelques semaines.{' '}
+          Un accusé de réception vous a été envoyé par email. Son intégration sur la carte sera réalisée sous quelques semaines.{' '}
           {form.state.values.dansCadreDemandeADEME
             ? "L'attestation pour votre dossier de demande de subvention ADEME vous sera transmise sous quelques jours."
             : 'Nous vous tiendrons au courant.'}
@@ -308,7 +309,7 @@ function ContributionForm() {
         name="typeUtilisateur"
         listeners={{
           onChange: ({ value }) => {
-            if (value !== 'Autre') {
+            if (value !== 'autre') {
               form.setFieldValue('typeUtilisateurAutre', '', { dontUpdateMeta: true });
             }
           },
@@ -316,7 +317,7 @@ function ContributionForm() {
       >
         {(field) => <field.RadioField label="Vous êtes :" options={typeUtilisateurOptions} />}
       </form.AppField>
-      {typeUtilisateur === 'Autre' && (
+      {typeUtilisateur === 'autre' && (
         <form.AppField name="typeUtilisateurAutre">
           {(field) => <field.TextField label="Précisez :" nativeInputProps={{ required: true }} />}
         </form.AppField>
@@ -355,9 +356,9 @@ function ContributionForm() {
         {(field) => <field.RadioField label="Vous souhaitez :" options={typeDemandeOptions} />}
       </form.AppField>
 
-      {typeDemande === 'ajout tracé réseau existant' && renderReseauFields(false)}
-      {typeDemande === 'ajout tracé réseau en construction' && renderReseauFields(true)}
-      {typeDemande === 'ajout périmètre développement prioritaire' && (
+      {typeDemande === 'trace_existant' && renderReseauFields(false)}
+      {typeDemande === 'trace_construction' && renderReseauFields(true)}
+      {typeDemande === 'pdp' && (
         <>
           {renderSncuIdentificationFields(false)}
           <form.AppField name="nomReseau">{(field) => <field.TextField label="Nom du réseau :" />}</form.AppField>
@@ -365,13 +366,11 @@ function ContributionForm() {
           {renderUploadField('fichiers', 'Téléverser vos fichiers :', geoUploadConfig)}
         </>
       )}
-      {typeDemande === 'ajout schéma directeur' && (
-        <>
-          <form.AppField name="nomReseau">{(field) => <field.TextField label="Nom du réseau ou du territoire concerné :" />}</form.AppField>
-          {renderUploadField('fichiers', 'Téléverser vos fichiers :', docUploadConfig)}
-        </>
-      )}
       {typeDemande === 'autre' && <form.AppField name="precisions">{(field) => <field.TextField label="Précisez :" />}</form.AppField>}
+      <p className="fr-text--sm fr-mb-2w">
+        Pour compléter la fiche d'un réseau (informations, site internet, schéma directeur…), utilisez le{' '}
+        <Link href="/reseaux/modifier">formulaire de modification de fiche</Link>.
+      </p>
 
       <form.SubmitButton>Envoyer</form.SubmitButton>
     </Form>

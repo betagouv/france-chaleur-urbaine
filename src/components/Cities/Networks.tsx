@@ -6,7 +6,7 @@ import Link from '@/components/ui/Link';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { MapMarker } from '@/modules/map/client/interactions/MapMarker';
 import { Map } from '@/modules/map/client/Map';
-import type { Network } from '@/types/Summary/Network';
+import type { HeatNetwork } from '@/modules/reseaux/types';
 
 import { NetworkContainer } from './Networks.styles';
 
@@ -20,7 +20,7 @@ type NetworksData = {
 type NetworksProps = {
   citySlug: string;
   networksData: NetworksData;
-  network?: Network;
+  network?: HeatNetwork;
   cityCoord: [number, number];
 };
 
@@ -49,7 +49,7 @@ const Networks = ({ citySlug, networksData, network, cityCoord }: NetworksProps)
         )}
         {network && (
           <>
-            {network.longueur_reseau > 0 && (
+            {(network.longueur_reseau ?? 0) > 0 && (
               <ArrowItem>
                 <strong>{network.longueur_reseau} km</strong> de canalisations souterraines
               </ArrowItem>

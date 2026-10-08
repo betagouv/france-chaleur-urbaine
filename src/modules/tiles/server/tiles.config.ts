@@ -70,6 +70,7 @@ const bdnbBatimentsFields = [
   'dpe_representatif_logement_type_energie_chauffage',
   'dpe_representatif_logement_type_installation_chauffage',
 ] as const satisfies (keyof BdnbBatiments)[];
+
 export type BdnbBatimentTile = AsTile<Required<Pick<BdnbBatiments, (typeof bdnbBatimentsFields)[number]>>>;
 
 const reseauxDeFroidFields = [
@@ -77,6 +78,7 @@ const reseauxDeFroidFields = [
   'geom',
   'Taux EnR&R',
   'Gestionnaire',
+  'gestionnaire_fcu',
   'MO',
   'Identifiant reseau',
   'reseaux classes',

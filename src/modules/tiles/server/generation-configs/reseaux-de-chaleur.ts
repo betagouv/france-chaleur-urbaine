@@ -39,6 +39,7 @@ const reseauxDeChaleurFields = [
   'PM',
   'annee_creation',
   'ouvert_aux_raccordements',
+  'gestionnaire_fcu',
   ...energieRatioFields,
 ] as const satisfies readonly (keyof ReseauxDeChaleur | EnergieRatioField)[];
 

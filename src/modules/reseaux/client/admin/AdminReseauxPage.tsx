@@ -3,7 +3,6 @@ import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
-import Input from '@/components/form/dsfr/Input';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
@@ -17,6 +16,7 @@ import { useDialogState } from '@/hooks/useDialogState';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { FileDropHandler } from '@/modules/map/client/interactions/FileDropHandler';
 import { MapFitBounds } from '@/modules/map/client/interactions/MapFitBounds';
+import { MapPointPicker } from '@/modules/map/client/interactions/MapPointPicker';
 import { CustomGeojsonLegend } from '@/modules/map/client/layers/specs/customGeojson.legend';
 import { GeomUpdateLegend } from '@/modules/map/client/layers/specs/geomUpdate.legend';
 import { PerimetresDeDeveloppementPrioritaireLegend } from '@/modules/map/client/layers/specs/perimetresDeDeveloppementPrioritaire.legend';
@@ -29,6 +29,7 @@ import { notify, toastErrors } from '@/modules/notification';
 import DeleteNetworkDialog, { type NetworkToDelete } from '@/modules/reseaux/client/admin/DeleteNetworkDialog';
 import { type EditableNetwork, type EditableNetworkValues, EditNetworkDialog } from '@/modules/reseaux/client/admin/EditNetworkDialog';
 import { networkLinkLabel } from '@/modules/reseaux/client/admin/NetworkLinksField';
+import NetworkRawDataDialog, { type NetworkRawDataTarget } from '@/modules/reseaux/client/admin/NetworkRawDataDialog';
 import { NotesCell } from '@/modules/reseaux/client/admin/NotesCell';
 import { RemindersCell } from '@/modules/reseaux/client/admin/RemindersCell';
 import type { NetworkEntityType } from '@/modules/reseaux/constants';
@@ -53,8 +54,23 @@ const ModifiedIcon = <T extends Record<string, any>>(record: T & { geom_delete: 
     return null;
   }
 
+  // no geometry and no draft: created without a trace (FEDENE import), the trace is still to be drawn or dropped
+  if (record.geom_create && !record.geom_update) {
+    return (
+      <Icon
+        name="fr-icon-map-pin-2-line"
+        size="sm"
+        color="warning"
+        title="Sans tracé : à dessiner ou déposer avec « Modifier la géométrie », puis à synchroniser"
+        className="flex items-center"
+      />
+    );
+  }
+
   if (record.geom_create) {
-    return <Icon name="fr-icon-add-circle-line" size="sm" color="success" title="Nouveau réseau créé" className="flex items-center" />;
+    return (
+      <Icon name="fr-icon-add-circle-line" size="sm" color="success" title="Nouveau réseau, à synchroniser" className="flex items-center" />
+    );
   }
 
   return (
@@ -75,6 +91,28 @@ function GeomUpdateLayerData({ features }: { features: GeoJSON.Feature[] }) {
   return null;
 }
 
+/** Shows the geometry being edited (dropped file or placed point) in red on the `customGeojson` source; cleared when there is none. */
+type EditedGeometryLayerDataProps = { geometry: GeoJSON.GeoJSON | null };
+
+function EditedGeometryLayerData({ geometry }: EditedGeometryLayerDataProps) {
+  const sources = useMemo<MapDynamicSource[]>(
+    () => [
+      {
+        data:
+          geometry === null
+            ? { features: [], type: 'FeatureCollection' }
+            : geometry.type === 'FeatureCollection' || geometry.type === 'Feature'
+              ? geometry
+              : { geometry, properties: {}, type: 'Feature' },
+        id: 'customGeojson',
+      },
+    ],
+    [geometry]
+  );
+  useMapLayers({ sources });
+  return null;
+}
+
 const GestionDesReseaux = () => {
   const [selectedTab, setSelectedTab] = useQueryState('reseauxTab', parseAsStringLiteral(tabIds).withDefault('reseaux-de-chaleur'));
 
@@ -83,7 +121,15 @@ const GestionDesReseaux = () => {
   >(null);
   const [editingId, setEditingId] = useState<string | number | null>(null);
   const [updatedGeom, setUpdatedGeom] = useState<any>(null);
+  // « Placer un point » mode: each click on the map sets the geometry being edited (a network known without trace)
+  const [isPlacingPoint, setIsPlacingPoint] = useState(false);
+  useEffect(() => {
+    if (editingId === null) {
+      setIsPlacingPoint(false);
+    }
+  }, [editingId]);
   const deleteNetworkDialog = useDialogState<NetworkToDelete>();
+  const rawDataDialog = useDialogState<NetworkRawDataTarget>();
   const [isPollingJobs, setIsPollingJobs] = useState(true);
 
   const {
@@ -114,7 +160,7 @@ const GestionDesReseaux = () => {
     {
       limit: 100,
       statuses: ['pending', 'processing'],
-      types: ['build_tiles', 'sync_geometries_to_airtable', 'sync_metadata_from_airtable'],
+      types: ['build_tiles'],
     },
     {
       refetchInterval: isPollingJobs ? 5000 : false,
@@ -133,8 +179,6 @@ const GestionDesReseaux = () => {
   const pendingReseauDeFroidJobs = [];
   const pendingReseauEnConstructionJobs = [];
   const pendingPerimetreJobs = [];
-  const pendingSyncMetadataJobs = [];
-  const pendingSyncGeometriesJobs = [];
   const pendingBuildTilesJobs = [];
 
   for (const job of pendingJobs) {
@@ -149,11 +193,7 @@ const GestionDesReseaux = () => {
       pendingPerimetreJobs.push(job);
     }
 
-    if (job.type === 'sync_metadata_from_airtable') {
-      pendingSyncMetadataJobs.push(job);
-    } else if (job.type === 'sync_geometries_to_airtable') {
-      pendingSyncGeometriesJobs.push(job);
-    } else if (job.type === 'build_tiles') {
+    if (job.type === 'build_tiles') {
       pendingBuildTilesJobs.push(job);
     }
   }
@@ -162,8 +202,6 @@ const GestionDesReseaux = () => {
   const hasPendingReseauDeFroidJobs = pendingReseauDeFroidJobs.length > 0;
   const hasPendingReseauEnConstructionJobs = pendingReseauEnConstructionJobs.length > 0;
   const hasPendingPerimetreJobs = pendingPerimetreJobs.length > 0;
-  const hasPendingSyncMetadataJobs = pendingSyncMetadataJobs.length > 0;
-  const hasPendingSyncGeometriesJobs = pendingSyncGeometriesJobs.length > 0;
   const hasPendingBuildTilesJobs = pendingBuildTilesJobs.length > 0;
 
   const onTableRowClick = useCallback(
@@ -230,6 +268,8 @@ const GestionDesReseaux = () => {
   };
 
   const tabInfo = tabsInfo[selectedTab];
+  // a point is how a heat or cold network known without trace is shown (`has_trace` false after the sync)
+  const isPointAllowed = tabInfo.type === 'reseaux_de_chaleur' || tabInfo.type === 'reseaux_de_froid';
 
   const { mutateAsync: createReminder } = trpc.reseaux.networkReminders.create.useMutation({
     onError: (error) => notify('error', `Erreur lors de l'enregistrement de la relance : ${error.message}`),
@@ -301,8 +341,12 @@ const GestionDesReseaux = () => {
               Gestionnaire: values.gestionnaire,
               'Identifiant reseau': values.id_sncu,
               id: network.id_fcu,
+              informationsComplementaires: values.informations_complementaires,
               MO: values.maitre_ouvrage,
               nom_reseau: values.nom_reseau,
+              ouvert_aux_raccordements: values.ouvert_aux_raccordements,
+              'reseaux classes': values.reseau_classe,
+              website_gestionnaire: values.website_gestionnaire,
             })
           );
           break;
@@ -312,8 +356,12 @@ const GestionDesReseaux = () => {
               Gestionnaire: values.gestionnaire,
               'Identifiant reseau': values.id_sncu,
               id: network.id_fcu,
+              informationsComplementaires: values.informations_complementaires,
               MO: values.maitre_ouvrage,
               nom_reseau: values.nom_reseau,
+              ouvert_aux_raccordements: values.ouvert_aux_raccordements,
+              'reseaux classes': values.reseau_classe,
+              website_gestionnaire: values.website_gestionnaire,
             })
           );
           break;
@@ -376,9 +424,6 @@ const GestionDesReseaux = () => {
     },
   });
 
-  // L'id n'est saisi que pour chaleur/froid (correspondance Airtable) : construction et PDP sont en id auto
-  const creationRequiresId = tabInfo.type === 'reseaux_de_chaleur' || tabInfo.type === 'reseaux_de_froid';
-
   const handleValidateGeometry = useCallback(
     toastErrors(async () => {
       if (!updatedGeom) {
@@ -386,15 +431,8 @@ const GestionDesReseaux = () => {
       }
 
       if (!selectedNetwork) {
-        const id = editingId?.toString().trim();
-        if (creationRequiresId && !id) {
-          return;
-        }
-        await createNetwork({
-          geometry: updatedGeom,
-          ...(creationRequiresId ? { id } : {}),
-          type: tabInfo.type,
-        });
+        // created from the trace alone: identifiers, name and gestionnaire are filled in the edit dialog that opens next
+        await createNetwork({ geometry: updatedGeom, type: tabInfo.type });
       } else {
         if (!editingId) {
           return;
@@ -406,7 +444,7 @@ const GestionDesReseaux = () => {
         });
       }
     }),
-    [editingId, updatedGeom, updateGeomUpdate, createNetwork, selectedNetwork, selectedTab, creationRequiresId]
+    [editingId, updatedGeom, updateGeomUpdate, createNetwork, selectedNetwork, selectedTab]
   );
 
   const handleDeleteGeomUpdate = useCallback(
@@ -451,13 +489,19 @@ const GestionDesReseaux = () => {
       switch (selectedTab) {
         case 'reseaux-de-chaleur':
         case 'reseaux-de-froid':
+          // freshly created network: the admin-owned page fields are still empty
           setNetworkBeingEdited({
             gestionnaire,
+            gestionnaire_fedene: null,
             id_fcu: createdNetwork.id_fcu,
             id_sncu: createdNetwork['Identifiant reseau'],
+            informations_complementaires: null,
             maitre_ouvrage: createdNetwork.MO,
             nom_reseau: 'nom_reseau' in createdNetwork ? createdNetwork.nom_reseau : null,
+            ouvert_aux_raccordements: selectedTab === 'reseaux-de-chaleur' ? false : null,
+            reseau_classe: false,
             type: selectedTab === 'reseaux-de-chaleur' ? 'reseau_de_chaleur' : 'reseau_de_froid',
+            website_gestionnaire: null,
           });
           break;
         case 'reseaux-en-construction':
@@ -578,13 +622,32 @@ const GestionDesReseaux = () => {
               onClick={() => {
                 setNetworkBeingEdited({
                   gestionnaire: row.original.Gestionnaire,
+                  gestionnaire_fedene: row.original.gestionnaire_fedene,
                   id_fcu: row.original.id_fcu,
                   id_sncu: row.original['Identifiant reseau'],
+                  informations_complementaires: row.original.informationsComplementaires,
                   maitre_ouvrage: row.original.MO,
                   nom_reseau: row.original.nom_reseau,
+                  ouvert_aux_raccordements: row.original.ouvert_aux_raccordements,
+                  reseau_classe: row.original['reseaux classes'] ?? false,
                   type: 'reseau_de_chaleur',
+                  website_gestionnaire: row.original.website_gestionnaire,
                 });
               }}
+            />
+            <Button
+              size="small"
+              priority="secondary"
+              iconId="fr-icon-table-line"
+              title="Voir toutes les données"
+              stopPropagation
+              onClick={() =>
+                rawDataDialog.open({
+                  id: row.original.id_fcu,
+                  label: `${row.original['Identifiant reseau'] ?? row.original.id_fcu} - ${row.original.nom_reseau ?? ''}`,
+                  table: 'reseaux_de_chaleur',
+                })
+              }
             />
             <Button
               size="small"
@@ -616,7 +679,7 @@ const GestionDesReseaux = () => {
           </div>
         ),
         id: 'actions',
-        width: '180px',
+        width: '220px',
       },
       {
         accessorKey: 'id_fcu',
@@ -813,13 +876,32 @@ const GestionDesReseaux = () => {
               onClick={() => {
                 setNetworkBeingEdited({
                   gestionnaire: row.original.Gestionnaire,
+                  gestionnaire_fedene: row.original.gestionnaire_fedene,
                   id_fcu: row.original.id_fcu,
                   id_sncu: row.original['Identifiant reseau'],
+                  informations_complementaires: row.original.informationsComplementaires,
                   maitre_ouvrage: row.original.MO,
                   nom_reseau: row.original.nom_reseau,
+                  ouvert_aux_raccordements: null,
+                  reseau_classe: row.original['reseaux classes'] ?? false,
                   type: 'reseau_de_froid',
+                  website_gestionnaire: row.original.website_gestionnaire,
                 });
               }}
+            />
+            <Button
+              size="small"
+              priority="secondary"
+              iconId="fr-icon-table-line"
+              title="Voir toutes les données"
+              stopPropagation
+              onClick={() =>
+                rawDataDialog.open({
+                  id: row.original.id_fcu,
+                  label: `${row.original['Identifiant reseau'] ?? row.original.id_fcu} - ${row.original.nom_reseau ?? ''}`,
+                  table: 'reseaux_de_froid',
+                })
+              }
             />
             <Button
               size="small"
@@ -849,7 +931,7 @@ const GestionDesReseaux = () => {
           </div>
         ),
         id: 'actions',
-        width: '180px',
+        width: '220px',
       },
       {
         accessorKey: 'id_fcu',
@@ -1375,15 +1457,10 @@ const GestionDesReseaux = () => {
   const hasPendingGeomUpdates = totalGeomUpdates > 0 && (!pendingJobs || pendingJobs.length === 0);
   const hasPendingJobs = pendingJobs && pendingJobs.length > 0;
 
-  // +/- approximatif, et pas responsive
+  // +/- approximatif, et pas responsive (les tables mesurent elles-mêmes leur hauteur via height="viewport")
   const navHeaderSize = 56;
   const noticeSize = 56;
   const contentVerticalMargin = 32;
-
-  const tableVerticalMargin = 32;
-  const tableTabsSize = 48;
-  const tableFilterHeaderSize = 64;
-  const tableHeight = `calc(100dvh - ${navHeaderSize + contentVerticalMargin + (hasPendingGeomUpdates ? noticeSize : 0) + (hasPendingJobs ? noticeSize : 0) + tableTabsSize + tableVerticalMargin + tableFilterHeaderSize}px)`;
 
   const mapContainerHeight = `${navHeaderSize + contentVerticalMargin + (hasPendingGeomUpdates ? noticeSize : 0) + (hasPendingJobs ? noticeSize : 0)}px`;
 
@@ -1398,7 +1475,8 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau de chaleur à afficher"
-          height={tableHeight}
+          height="viewport"
+          showResultsCount
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -1445,7 +1523,8 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau de froid à afficher"
-          height={tableHeight}
+          height="viewport"
+          showResultsCount
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -1492,7 +1571,8 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau en construction à afficher"
-          height={tableHeight}
+          height="viewport"
+          showResultsCount
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -1538,7 +1618,8 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun périmètre de développement prioritaire à afficher"
-          height={tableHeight}
+          height="viewport"
+          showResultsCount
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -1612,10 +1693,8 @@ const GestionDesReseaux = () => {
             </span>
             <span className="text-sm text-gray-700 font-normal">
               {[
-                hasPendingSyncMetadataJobs && `${pendingSyncMetadataJobs.length} sync métadonnées`,
                 hasPendingBuildTilesJobs &&
                   `${pendingBuildTilesJobs.length} génération${pendingBuildTilesJobs.length > 1 ? 's' : ''} de tuiles`,
-                hasPendingSyncGeometriesJobs && `${pendingSyncGeometriesJobs.length} sync géométries`,
               ]
                 .filter(Boolean)
                 .join(', ')}
@@ -1656,13 +1735,26 @@ const GestionDesReseaux = () => {
                   zonesDeDeveloppementPrioritaire: true,
                 })}
                 legend="hidden"
-                search={editingId !== null ? 'none' : 'network'}
+                // address search stays available while editing: it is how the admin finds where to place a point
+                search="network"
               >
-                <FileDropHandler onDrop={setUpdatedGeom} />
+                <FileDropHandler
+                  onDrop={(geojson) => {
+                    // a dropped trace replaces a placed point
+                    setIsPlacingPoint(false);
+                    setUpdatedGeom(geojson);
+                  }}
+                />
+                <MapPointPicker active={editingId !== null && isPlacingPoint} onPick={setUpdatedGeom} />
+                <EditedGeometryLayerData geometry={updatedGeom} />
                 <GeomUpdateLayerData features={geomUpdateFeatures} />
-                <MapFitBounds bbox={selectedNetwork?.bbox as [number, number, number, number] | undefined} duration={1200} maxZoom={16} />
+                <MapFitBounds
+                  bbox={(selectedNetwork?.bbox ?? undefined) as [number, number, number, number] | undefined}
+                  duration={1200}
+                  maxZoom={16}
+                />
                 {editingId !== null && (
-                  <div className="absolute top-2 left-12 max-w-md z-10 bg-white shadow rounded overflow-y-auto p-2">
+                  <div className="absolute top-16 left-12 max-w-md z-10 bg-white shadow rounded overflow-y-auto p-2">
                     {networkMarkedForDeletion ? (
                       <>
                         <div className="text-center text-sm mt-2">
@@ -1708,24 +1800,7 @@ const GestionDesReseaux = () => {
                     ) : (
                       <>
                         {!selectedNetwork ? (
-                          <>
-                            <div className="text-center text-sm mt-2">Création d'un nouveau {tabInfo.title}</div>
-                            {creationRequiresId && (
-                              <div className="m-2">
-                                <Input
-                                  label="ID SNCU ou ID FCU du nouveau réseau"
-                                  nativeInputProps={{
-                                    onChange: (e) => {
-                                      setEditingId(e.target.value);
-                                    },
-                                    placeholder: 'Ex: 7412A ou 123',
-                                    required: true,
-                                    value: editingId?.toString() || '',
-                                  }}
-                                />
-                              </div>
-                            )}
-                          </>
+                          <div className="text-center text-sm mt-2">Création d'un nouveau {tabInfo.title}</div>
                         ) : (
                           <div className="text-center text-sm mt-2">
                             Modification du tracé de{' '}
@@ -1735,14 +1810,38 @@ const GestionDesReseaux = () => {
                             </strong>
                           </div>
                         )}
-                        {!updatedGeom ? (
+                        {isPlacingPoint ? (
+                          <Notice variant="info" size="sm" className="mx-2">
+                            {updatedGeom
+                              ? 'Point placé en rouge : cliquez ailleurs pour le déplacer'
+                              : 'Cliquez sur la carte pour placer le point (recherchez une adresse pour vous y rendre)'}
+                          </Notice>
+                        ) : !updatedGeom ? (
                           <Notice variant="warning" size="sm" className="mx-2">
                             Glissez et déposez le tracé sur la carte
+                            {isPointAllowed ? ', ou placez un point pour un réseau connu sans tracé' : ''}
                           </Notice>
                         ) : (
                           <Notice variant="info" size="sm" className="mx-2">
                             Tracé déposé en rouge
                           </Notice>
+                        )}
+                        {isPointAllowed && (
+                          <div className="flex justify-center mt-2">
+                            <Button
+                              size="small"
+                              priority={isPlacingPoint ? 'secondary' : 'tertiary'}
+                              iconId="fr-icon-map-pin-2-line"
+                              stopPropagation
+                              onClick={() => {
+                                setIsPlacingPoint(!isPlacingPoint);
+                                // a dropped trace and a placed point are exclusive: switching mode starts over
+                                setUpdatedGeom(null);
+                              }}
+                            >
+                              {isPlacingPoint ? 'Revenir au dépôt de tracé' : 'Placer un point'}
+                            </Button>
+                          </div>
                         )}
                         <div className="flex gap-2 items-center justify-center my-2">
                           {selectedNetwork?.geom_update && !updatedGeom ? (
@@ -1772,7 +1871,7 @@ const GestionDesReseaux = () => {
                               iconId="fr-icon-check-line"
                               title={!selectedNetwork ? 'Créer le réseau' : 'Valider la modification'}
                               loading={!selectedNetwork ? isCreatingNetwork : isUpdatingGeometry}
-                              disabled={!updatedGeom || (!selectedNetwork && creationRequiresId && !editingId?.toString().trim())}
+                              disabled={!updatedGeom}
                               stopPropagation
                               onClick={() => {
                                 void handleValidateGeometry();
@@ -1817,7 +1916,15 @@ const GestionDesReseaux = () => {
         </ResizablePanelGroup>
       </div>
       <DeleteNetworkDialog control={deleteNetworkDialog} onConfirm={handleConfirmDeleteNetwork} />
-      <EditNetworkDialog network={networkBeingEdited} onClose={() => setNetworkBeingEdited(null)} onSave={handleSaveNetworkEdit} />
+      <NetworkRawDataDialog control={rawDataDialog} />
+      <EditNetworkDialog
+        network={networkBeingEdited}
+        onClose={() => setNetworkBeingEdited(null)}
+        onSave={handleSaveNetworkEdit}
+        onDocumentsChange={async () => {
+          await Promise.all([trpcUtils.reseaux.reseauDeChaleur.list.invalidate(), trpcUtils.reseaux.reseauDeFroid.list.invalidate()]);
+        }}
+      />
     </SimplePage>
   );
 };

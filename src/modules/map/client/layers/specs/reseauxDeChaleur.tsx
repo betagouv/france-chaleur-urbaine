@@ -5,6 +5,7 @@ import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import { DownloadNetworkGeometryButton } from '@/modules/map/client/components/DownloadNetworkGeometryButton';
+import { sourcesActualiseesParFcuNotice, withSourceFcuMark } from '@/modules/reseaux/constants';
 import type { ReseauxDeChaleurTile } from '@/modules/tiles/server/generation-configs/reseaux-de-chaleur';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
@@ -18,7 +19,7 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>((reseauDeChaleur, { Propert
       <Title title={`ID FCU: ${reseauDeChaleur.id_fcu}`}>{reseauDeChaleur.nom_reseau ?? 'Réseau de chaleur'}</Title>
       <TwoColumns>
         <Property label="Identifiant" value={reseauDeChaleur['Identifiant reseau']} />
-        <Property label="Gestionnaire" value={reseauDeChaleur.Gestionnaire} />
+        <Property label="Gestionnaire" value={withSourceFcuMark(reseauDeChaleur.Gestionnaire, reseauDeChaleur.gestionnaire_fcu)} />
         <Property label="Maître d'ouvrage" value={reseauDeChaleur.MO} />
         <Property label="Taux EnR&R" value={reseauDeChaleur['Taux EnR&R']} unit="%" />
         <Property
@@ -44,6 +45,7 @@ const Popup = defineLayerPopup<ReseauxDeChaleurTile>((reseauDeChaleur, { Propert
           />
         )}
       </TwoColumns>
+      {reseauDeChaleur.gestionnaire_fcu && <div className="text-xs italic">{sourcesActualiseesParFcuNotice}</div>}
       {!reseauDeChaleur.ouvert_aux_raccordements && (
         <div className="text-sm">
           <Icon name="ri-lock-2-fill" size="sm" className="mr-1" />
