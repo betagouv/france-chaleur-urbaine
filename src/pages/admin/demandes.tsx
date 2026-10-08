@@ -719,7 +719,7 @@ function DemandesAdmin(): React.ReactElement {
               onRowClick={onTableRowClick}
               onRowDoubleClick={onTableRowDoubleClick}
               loadingEmptyMessage="Aucune demande à afficher"
-              height="calc(100dvh - 164px)"
+              height="viewport"
               scrollToRowRef={scrollToRowRef}
               urlSyncKey={demandsTableUrlSyncKey}
               export={{

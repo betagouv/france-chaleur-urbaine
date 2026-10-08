@@ -586,6 +586,12 @@ function DemandesNew(): React.ReactElement {
 
   const scrollToRowRef = useRef<((rowId: string) => void) | null>(null);
 
+  // Stable: depends only on the row data (a locked demand is dimmed)
+  const getTableRowClassName = useCallback(
+    (demand: DemandsListItem) => (getDemandModificationState(demand).isLocked ? 'opacity-60' : undefined),
+    []
+  );
+
   const onTableRowClick = useCallback(
     (demandId: string) => {
       setSelectedDemandId(demandId);
@@ -678,10 +684,10 @@ function DemandesNew(): React.ReactElement {
               controlsLayout="block"
               padding="sm"
               rowSelection={tableRowSelection}
-              rowClassName={(demand) => (getDemandModificationState(demand).isLocked ? 'opacity-60' : undefined)}
+              rowClassName={getTableRowClassName}
               onRowClick={onTableRowClick}
               loadingEmptyMessage="Vous n'avez pas encore reçu de demandes"
-              height="calc(100dvh - 140px)"
+              height="viewport"
               scrollToRowRef={scrollToRowRef}
             />
           </ResizablePanel>

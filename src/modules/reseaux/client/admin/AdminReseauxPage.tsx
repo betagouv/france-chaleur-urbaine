@@ -1455,15 +1455,10 @@ const GestionDesReseaux = () => {
   const hasPendingGeomUpdates = totalGeomUpdates > 0 && (!pendingJobs || pendingJobs.length === 0);
   const hasPendingJobs = pendingJobs && pendingJobs.length > 0;
 
-  // +/- approximatif, et pas responsive
+  // +/- approximatif, et pas responsive (les tables mesurent elles-mêmes leur hauteur via height="viewport")
   const navHeaderSize = 56;
   const noticeSize = 56;
   const contentVerticalMargin = 32;
-
-  const tableVerticalMargin = 32;
-  const tableTabsSize = 48;
-  const tableFilterHeaderSize = 64;
-  const tableHeight = `calc(100dvh - ${navHeaderSize + contentVerticalMargin + (hasPendingGeomUpdates ? noticeSize : 0) + (hasPendingJobs ? noticeSize : 0) + tableTabsSize + tableVerticalMargin + tableFilterHeaderSize}px)`;
 
   const mapContainerHeight = `${navHeaderSize + contentVerticalMargin + (hasPendingGeomUpdates ? noticeSize : 0) + (hasPendingJobs ? noticeSize : 0)}px`;
 
@@ -1478,7 +1473,8 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau de chaleur à afficher"
-          height={tableHeight}
+          height="viewport"
+          showResultsCount
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -1525,7 +1521,8 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau de froid à afficher"
-          height={tableHeight}
+          height="viewport"
+          showResultsCount
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -1572,7 +1569,8 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun réseau en construction à afficher"
-          height={tableHeight}
+          height="viewport"
+          showResultsCount
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
@@ -1618,7 +1616,8 @@ const GestionDesReseaux = () => {
           controlsLayout="block"
           padding="sm"
           loadingEmptyMessage="Aucun périmètre de développement prioritaire à afficher"
-          height={tableHeight}
+          height="viewport"
+          showResultsCount
           onRowClick={onTableRowClick}
           rowIdKey="id_fcu"
           enableGlobalFilter
