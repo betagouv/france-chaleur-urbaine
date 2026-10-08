@@ -30,6 +30,7 @@ import { type CreateDemandInput, type DemandSubmissionResult, fcrLegacyValueKeys
 import { createDemand } from '@/modules/demands/server/creation-user';
 import { type LegacyValuesPatch, mergeLegacyValues } from '@/modules/demands/server/legacy-values';
 import { sendEmailTemplate } from '@/modules/email';
+import { createUserEvent } from '@/modules/events/server/service';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
@@ -38,9 +39,13 @@ import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { processInParallel } from '@/utils/async';
 import { dayjs } from '@/utils/date';
 import { fetchJSON } from '@/utils/network';
+import { ObjectKeys } from '@/utils/typescript';
 import { stripDomainFromURL } from '@/utils/url';
 
 import { getAltitudeByCoordinates } from './altimetry';
+import { applyCcrtAccessFilter, ensureCcrtDemandAccess, getCcrtTerritory } from './ccrt-access';
+import { selectDemandesChaleurRenouvelableForList, serializeDemandesChaleurRenouvelable } from './ccrt-demand-query';
+import { insertCcrtNote } from './ccrt-notes';
 import { recordCcrtPostHogEvent } from './ccrt-tracking';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
 import { getNetworkEligibilityCoordinates, type NetworkEligibilityCoordinates } from './network-eligibility-coordinates';
@@ -700,9 +705,11 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
     getRnicCoproprieteSafe(input.batimentConstructionId),
   ]);
 
+  const territory = await getCcrtTerritory(input.geoAddress?.cityCode ?? null, departmentCode);
   const createdCcrtDemand = await kdb
     .insertInto('demands_chaleur_renouvelable')
     .values({
+      ...territory,
       address: input.address,
       alternative_heating_solutions: input.alternativeHeatingSolutions ?? [],
       annual_heating_consumption: input.annualHeatingConsumption,
@@ -932,57 +939,6 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
   return { count, items: serializeDemandesChaleurRenouvelable(demandes) };
 };
 
-const selectDemandesChaleurRenouvelableForList = () =>
-  kdb
-    .selectFrom('demands_chaleur_renouvelable')
-    .select([
-      'address',
-      'alternative_heating_solutions',
-      'annual_heating_consumption',
-      'assigned_to',
-      'average_area',
-      'average_residents',
-      'batiment_construction_id',
-      'comments',
-      'created_at',
-      'demand_concern',
-      'departement_code',
-      'dpe',
-      'email',
-      'first_name',
-      'heating_energy',
-      'hot_water_system_type',
-      'housing_count',
-      'housing_type',
-      'id',
-      'is_public_advisor_selected',
-      'last_name',
-      'occupant_status',
-      'outdoor_space',
-      'organization_name',
-      'phone',
-      'project_state',
-      'project_status',
-      'radiator_type',
-      'refusal_period',
-      'refusal_reason',
-      'rnic_nom_copropriete',
-      'rnic_numero_immatriculation',
-      'rnic_siret_representant_legal',
-      'simulation_url',
-      'status',
-      'surface_area',
-      'updated_at',
-      'validated',
-    ]);
-
-const serializeDemandesChaleurRenouvelable = <T extends { created_at: Date; updated_at: Date }>(demandes: T[]) =>
-  demandes.map((demande) => ({
-    ...demande,
-    created_at: demande.created_at.toISOString(),
-    updated_at: demande.updated_at.toISOString(),
-  }));
-
 export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
   const permissions = await ctx.getPermissions();
   const departmentCodes = permissions.filter((permission) => permission.type === 'departement').map((permission) => permission.resource_id);
@@ -992,13 +948,9 @@ export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
     structure_ccrt: user?.structure_name ?? null,
   };
 
-  if (ctx.user.role !== 'admin' && departmentCodes.length === 0) {
-    return { count: 0, items: [], trackingContext };
-  }
-
   const demandes = await selectDemandesChaleurRenouvelableForList()
+    .$call((query) => applyCcrtAccessFilter(query, ctx.user, permissions))
     .where('validated', '=', true)
-    .$if(ctx.user.role !== 'admin', (qb) => qb.where('departement_code', 'in', departmentCodes))
     .orderBy('created_at', 'desc')
     .execute();
 
@@ -1009,85 +961,109 @@ export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
   };
 };
 
-export const updateDemandeChaleurRenouvelableAdmin = async ({ demandId, values }: AdminUpdateDemandeChaleurRenouvelableInput) => {
-  const currentStatus =
-    values.status === undefined && values.projectState !== undefined
-      ? (
-          await kdb
-            .selectFrom('demands_chaleur_renouvelable')
-            .select('status')
-            .where('id', '=', demandId)
-            .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }))
-        ).status
-      : undefined;
-  const updatedStatus = values.status ?? currentStatus;
-
-  assertProjectStateCanBeUpdated({
-    projectState: values.projectState,
-    status: updatedStatus as DemandeChaleurRenouvelableStatus,
+export const updateDemandeChaleurRenouvelableAdmin = async (
+  ctx: Context,
+  { demandId, values }: AdminUpdateDemandeChaleurRenouvelableInput
+) =>
+  kdb.transaction().execute(async (transaction) => {
+    const current = await transaction
+      .selectFrom('demands_chaleur_renouvelable')
+      .select(['assigned_to', 'project_state', 'status'])
+      .where('id', '=', demandId)
+      .forUpdate()
+      .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
+    assertProjectStateCanBeUpdated({
+      projectState: values.projectState,
+      status: (values.status ?? current.status) as DemandeChaleurRenouvelableStatus,
+    });
+    const result = await transaction
+      .updateTable('demands_chaleur_renouvelable')
+      .set({
+        ...(values.assignedTo !== undefined && { assigned_to: values.assignedTo }),
+        ...(values.projectState !== undefined && { project_state: values.projectState }),
+        ...(values.status !== undefined &&
+          values.status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION && {
+            project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+          }),
+        ...(values.status !== undefined && { status: values.status }),
+        updated_at: new Date(),
+      })
+      .where('id', '=', demandId)
+      .returning(['assigned_to', 'id', 'project_state', 'status', 'updated_at'])
+      .executeTakeFirstOrThrow();
+    const changes = Object.fromEntries(
+      ObjectKeys(current).flatMap((field) =>
+        current[field] === result[field] ? [] : [[field, { from: current[field], to: result[field] }]]
+      )
+    );
+    if (Object.keys(changes).length) {
+      await createUserEvent(
+        { author_id: ctx.user.id, context_id: demandId, context_type: 'ccrt_demand', data: { changes }, type: 'ccrt_demand_updated' },
+        transaction
+      );
+    }
+    return result;
   });
-
-  return await kdb
-    .updateTable('demands_chaleur_renouvelable')
-    .set({
-      ...(values.assignedTo !== undefined && { assigned_to: values.assignedTo }),
-      ...(values.projectState !== undefined && { project_state: values.projectState }),
-      ...(values.status !== undefined &&
-        values.status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION && {
-          project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
-        }),
-      ...(values.status !== undefined && { status: values.status }),
-      updated_at: new Date(),
-    })
-    .where('id', '=', demandId)
-    .returning(['assigned_to', 'id', 'project_state', 'status', 'updated_at'])
-    .executeTakeFirstOrThrow();
-};
 
 export const updateDemandeChaleurRenouvelableCcrt = async (
   ctx: Context,
   { demandId, trigger, values }: CcrtUpdateDemandeChaleurRenouvelableInput
 ) => {
-  const permissions = await ctx.getPermissions();
-  const departmentCodes = permissions.filter((permission) => permission.type === 'departement').map((permission) => permission.resource_id);
+  const currentDemand = await ensureCcrtDemandAccess(ctx, demandId);
 
-  const currentDemand = await kdb
-    .selectFrom('demands_chaleur_renouvelable')
-    .select(['alternative_heating_solutions', 'departement_code', 'id', 'project_state', 'status', 'validated'])
-    .where('id', '=', demandId)
-    .$if(ctx.user.role !== 'admin', (qb) =>
-      qb.where('validated', '=', true).where('departement_code', 'in', departmentCodes.length > 0 ? departmentCodes : [''])
-    )
-    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
-
-  const updatedStatus = (values.status ?? currentDemand.status) as DemandeChaleurRenouvelableStatus;
-  const updatedProjectState =
-    values.projectState ??
-    getProjectStateForStatus({
-      projectState: currentDemand.project_state as DemandeChaleurRenouvelableProjectState,
-      status: updatedStatus,
+  const updatedDemand = await kdb.transaction().execute(async (transaction) => {
+    const lockedDemand = await transaction
+      .selectFrom('demands_chaleur_renouvelable')
+      .select(['status', 'project_state', 'updated_at'])
+      .where('id', '=', demandId)
+      .forUpdate()
+      .executeTakeFirstOrThrow();
+    // Opening an external email/phone link must not overwrite a concurrent manual status change.
+    if (trigger === 'contact' && lockedDemand.status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS) {
+      return { id: demandId, ...lockedDemand };
+    }
+    assertProjectStateCanBeUpdated({
+      projectState: values.projectState,
+      status: (values.status ?? lockedDemand.status) as DemandeChaleurRenouvelableStatus,
     });
-
-  assertProjectStateCanBeUpdated({
-    projectState: values.projectState,
-    status: updatedStatus,
+    const projectState =
+      values.projectState ??
+      getProjectStateForStatus({
+        projectState: lockedDemand.project_state as DemandeChaleurRenouvelableProjectState,
+        status: (values.status ?? lockedDemand.status) as DemandeChaleurRenouvelableStatus,
+      });
+    const result = await transaction
+      .updateTable('demands_chaleur_renouvelable')
+      .set({
+        ...(values.projectState !== undefined || values.status !== undefined ? { project_state: projectState } : {}),
+        ...(values.status !== undefined && { status: values.status }),
+        updated_at: new Date(),
+      })
+      .where('id', '=', demandId)
+      .returning(['id', 'project_state', 'status', 'updated_at'])
+      .executeTakeFirstOrThrow();
+    const changes = Object.fromEntries(
+      Object.entries({ project_state: result.project_state, status: result.status }).flatMap(([field, value]) => {
+        const previousValue = field === 'status' ? lockedDemand.status : lockedDemand.project_state;
+        return previousValue === value ? [] : [[field, { from: previousValue, to: value }]];
+      })
+    );
+    if (Object.keys(changes).length) {
+      await createUserEvent(
+        { author_id: ctx.user.id, context_id: demandId, context_type: 'ccrt_demand', data: { changes }, type: 'ccrt_demand_updated' },
+        transaction
+      );
+    }
+    if (values.note) {
+      await insertCcrtNote(ctx, { body: values.note, demandId }, transaction);
+    }
+    return result;
   });
-
-  const updatedDemand = await kdb
-    .updateTable('demands_chaleur_renouvelable')
-    .set({
-      ...(values.projectState !== undefined || values.status !== undefined ? { project_state: updatedProjectState } : {}),
-      ...(values.status !== undefined && { status: values.status }),
-      updated_at: new Date(),
-    })
-    .where('id', '=', demandId)
-    .returning(['id', 'project_state', 'status', 'updated_at'])
-    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
 
   const user = await kdb.selectFrom('users').select(['structure_name']).where('id', '=', ctx.user.id).executeTakeFirst();
   const declenchement = trigger === 'contact' ? 'contact' : ctx.user.role === 'admin' ? 'admin' : 'manual';
 
-  if (values.status !== undefined && currentDemand.status !== values.status) {
+  if (values.status !== undefined && currentDemand.status !== updatedDemand.status) {
     await recordCcrtPostHogEvent({
       distinctId: ctx.user.id,
       event: 'ccrt_demande:status_changed',
@@ -1099,14 +1075,14 @@ export const updateDemandeChaleurRenouvelableCcrt = async (
           structureName: user?.structure_name,
         }),
         declenchement,
-        statut_apres: values.status,
+        statut_apres: updatedDemand.status,
         statut_avant: currentDemand.status,
         type_statut: 'statut',
       },
     });
   }
 
-  if (values.projectState !== undefined && currentDemand.project_state !== values.projectState) {
+  if (values.projectState !== undefined && currentDemand.project_state !== updatedDemand.project_state) {
     await recordCcrtPostHogEvent({
       distinctId: ctx.user.id,
       event: 'ccrt_demande:status_changed',
@@ -1118,7 +1094,7 @@ export const updateDemandeChaleurRenouvelableCcrt = async (
           structureName: user?.structure_name,
         }),
         declenchement,
-        statut_apres: values.projectState,
+        statut_apres: updatedDemand.project_state,
         statut_avant: currentDemand.project_state,
         type_statut: 'etat_projet',
       },
