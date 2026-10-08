@@ -12,7 +12,6 @@ import {
   typeRadiateurOptions,
 } from '../constants';
 import type { CcrtFollowUp } from '../types';
-import { CcrtNoteCard } from './CcrtNoteCard';
 
 type CcrtDemandHistoryProps = { followUp: CcrtFollowUp; offset: number; onPageChange: (offset: number) => void };
 
@@ -47,7 +46,12 @@ export function CcrtDemandHistory({ followUp, offset, onPageChange }: CcrtDemand
                 )}
               />
               <h5 className="mb-1 text-lg font-medium leading-7">{getEventLabel(event)}</h5>
-              {note && <CcrtNoteCard note={note} />}
+              {note && (
+                <div>
+                  <p className="mb-0 whitespace-pre-wrap">{note.body}</p>
+                  {note.updated_at !== note.created_at && <p className="mb-0 text-sm">Note modifiée</p>}
+                </div>
+              )}
               {event.type === 'ccrt_demand_note_created' && !note && <p className="mb-1">Note supprimée</p>}
               {event.type === 'ccrt_demand_updated' && (
                 <ul className="m-0 pl-4">

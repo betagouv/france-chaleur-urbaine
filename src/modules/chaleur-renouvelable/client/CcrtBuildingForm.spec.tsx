@@ -127,14 +127,18 @@ describe('CcrtBuildingForm', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et recalculer' }));
 
     await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1));
-    expect(mocks.mutateAsync.mock.calls[0][0].values).toMatchObject({
-      address: demand.address,
-      comments,
-      project_status: ['DPE déjà réalisé'],
-      rnic_nom_copropriete: null,
-      rnic_numero_immatriculation: null,
-      rnic_siret_representant_legal: null,
-    });
+    const savedValues = mocks.mutateAsync.mock.calls[0][0].values;
+    expect(savedValues.average_area).toStrictEqual(80);
+    expect(
+      [
+        'address',
+        'comments',
+        'project_status',
+        'rnic_nom_copropriete',
+        'rnic_numero_immatriculation',
+        'rnic_siret_representant_legal',
+      ].filter((field) => field in savedValues)
+    ).toStrictEqual([]);
   });
 
   it('preserves a dirty draft and its original conflict token when a colleague updates the demand', async () => {

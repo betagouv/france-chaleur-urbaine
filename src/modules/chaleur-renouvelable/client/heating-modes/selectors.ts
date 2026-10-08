@@ -36,6 +36,15 @@ export function getModesDeChauffage(typeLogement: TypeLogement, situation: Situa
     .sort((leftHeatingMode, rightHeatingMode) => leftHeatingMode.classement - rightHeatingMode.classement);
 }
 
+/**
+ * Keeps the first three alternatives independently of the dedicated heat-network result.
+ */
+export const getAlternativeHeatingSolutionLabels = (heatingModes: Pick<ModeDeChauffage, 'id' | 'label'>[]) =>
+  heatingModes
+    .filter((mode) => mode.id !== 'collective-heat-network')
+    .slice(0, 3)
+    .map((mode) => mode.label);
+
 const getHeatingModeClassement = (heatingMode: ModeDeChauffage, situation: Situation, fallbackClassement: number) =>
   typeof heatingMode.classement === 'function' ? heatingMode.classement(situation) : (heatingMode.classement ?? fallbackClassement);
 
