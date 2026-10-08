@@ -1,6 +1,7 @@
-import { typeLogementOptions } from '@/modules/chaleur-renouvelable/constants';
 import { Button, Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
+
+import { getHousingTypeLabel } from '../chaleur-renouvelable';
 
 const EMAIL_CAMPAIGN = 'demands.ccrt.rappel-demandes-en-attente';
 
@@ -11,8 +12,6 @@ export type CcrtPendingDemandReminder = {
   id: string;
   waitingDays: number;
 };
-
-const getHousingTypeLabel = (value: string) => typeLogementOptions.find((option) => option.value === value)?.label ?? value;
 
 type RappelDemandesEnAttenteProps = {
   demands: CcrtPendingDemandReminder[];
