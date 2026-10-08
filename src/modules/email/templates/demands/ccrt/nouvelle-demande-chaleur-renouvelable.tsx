@@ -4,24 +4,44 @@ import {
   typeLogementOptions,
   typeRadiateurOptions,
 } from '@/modules/chaleur-renouvelable/constants';
-import { Button, Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
+import { Button, Layout, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
 
-const NouvelleDemandeChaleurRenouvelable = ({
-  demand,
-  status,
-}: {
+const EMAIL_CAMPAIGN = 'demands.ccrt.nouvelle-demande-chaleur-renouvelable';
+
+const getHousingTypeLabel = (value: DemandeChaleurRenouvelable['housingType']) =>
+  typeLogementOptions.find((option) => option.value === value)?.label ?? value;
+
+const getRadiatorTypeLabel = (value: DemandeChaleurRenouvelable['radiatorType']) =>
+  value ? (typeRadiateurOptions.find((option) => option.value === value)?.label ?? value) : 'Non renseigné';
+
+const formatMwh = (value: number | null) => (value === null ? null : `${value.toLocaleString('fr-FR', { maximumFractionDigits: 2 })} MWh`);
+
+type NouvelleDemandeChaleurRenouvelableProps = {
   demand: DemandeChaleurRenouvelable;
   demandId: string;
+  demandUrl: string;
+  pendingDemandCount: number;
   status: DemandeChaleurRenouvelableStatus;
-}) => {
+};
+
+const NouvelleDemandeChaleurRenouvelable = ({ demand, demandUrl, pendingDemandCount, status }: NouvelleDemandeChaleurRenouvelableProps) => {
+  const alternativeHeatingSolutions = demand.alternativeHeatingSolutions ?? [];
+
   return (
     <Layout>
-      <Title>Nouvelle demande chaleur renouvelable à traiter</Title>
+      <Title>Nouvelle demande d'accompagnement à traiter</Title>
 
       <Text>
-        Une nouvelle demande a été déposée depuis le parcours chaleur renouvelable. Elle est disponible dans votre espace pour traitement.
+        Une nouvelle demande d'accompagnement vers un système de chauffage renouvelable est disponible dans votre espace CCRT pour
+        traitement.
       </Text>
+
+      <Section style={{ paddingTop: '8px', textAlign: 'center' }}>
+        <Button href={demandUrl} campaign={EMAIL_CAMPAIGN} content="haut-email">
+          Voir la demande
+        </Button>
+      </Section>
 
       <Text style={{ fontSize: '16px', fontWeight: 'bold', marginTop: '16px' }}>Synthèse</Text>
       <Table>
@@ -31,11 +51,13 @@ const NouvelleDemandeChaleurRenouvelable = ({
         </TableRow>
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Adresse</TableColumn>
-          <TableColumn>{demand.address || 'Non renseignée'}</TableColumn>
+          <TableColumn>{demand.address}</TableColumn>
         </TableRow>
         <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Profil</TableColumn>
-          <TableColumn>{demand.occupantStatus}</TableColumn>
+          <TableColumn style={{ fontWeight: 'bold' }}>Demandeur</TableColumn>
+          <TableColumn>
+            {demand.firstName} {demand.lastName} - {demand.occupantStatus}
+          </TableColumn>
         </TableRow>
         {demand.organizationName && (
           <TableRow>
@@ -43,95 +65,77 @@ const NouvelleDemandeChaleurRenouvelable = ({
             <TableColumn>{demand.organizationName}</TableColumn>
           </TableRow>
         )}
-        {demand.demandConcern && (
-          <TableRow>
-            <TableColumn style={{ fontWeight: 'bold' }}>Demande concernant</TableColumn>
-            <TableColumn>{demand.demandConcern}</TableColumn>
-          </TableRow>
-        )}
-      </Table>
-
-      <Text style={{ fontSize: '16px', fontWeight: 'bold', marginTop: '16px' }}>Contact</Text>
-      <Table>
         <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Nom</TableColumn>
-          <TableColumn>{demand.lastName}</TableColumn>
-        </TableRow>
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Prénom</TableColumn>
-          <TableColumn>{demand.firstName}</TableColumn>
-        </TableRow>
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Email</TableColumn>
+          <TableColumn style={{ fontWeight: 'bold' }}>Type de bâtiment</TableColumn>
           <TableColumn>
-            <Link href={`mailto:${demand.email}`}>{demand.email}</Link>
+            {getHousingTypeLabel(demand.housingType)} - {demand.housingCount} logement(s)
           </TableColumn>
         </TableRow>
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Téléphone</TableColumn>
-          <TableColumn>{demand.phone || 'Non renseigné'}</TableColumn>
-        </TableRow>
-      </Table>
-
-      <Text style={{ fontSize: '16px', fontWeight: 'bold', marginTop: '16px' }}>Projet</Text>
-      <Table>
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Type de logement</TableColumn>
-          <TableColumn>
-            {typeLogementOptions.find((option) => option.value === demand.housingType)?.label ?? demand.housingType}
-          </TableColumn>
-        </TableRow>
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Nombre de logements</TableColumn>
-          <TableColumn>{demand.housingCount}</TableColumn>
-        </TableRow>
-        {demand.surfaceArea !== null && (
-          <TableRow>
-            <TableColumn style={{ fontWeight: 'bold' }}>Surface</TableColumn>
-            <TableColumn>{demand.surfaceArea} m²</TableColumn>
-          </TableRow>
-        )}
         <TableRow>
           <TableColumn style={{ fontWeight: 'bold' }}>Énergie de chauffage</TableColumn>
           <TableColumn>{demand.heatingEnergy}</TableColumn>
         </TableRow>
-        {demand.annualHeatingConsumption !== null && (
+        <TableRow>
+          <TableColumn style={{ fontWeight: 'bold' }}>Émetteurs</TableColumn>
+          <TableColumn>{getRadiatorTypeLabel(demand.radiatorType)}</TableColumn>
+        </TableRow>
+        {demand.projectStatus.length > 0 && (
           <TableRow>
-            <TableColumn style={{ fontWeight: 'bold' }}>Consommations annuelles chauffage</TableColumn>
-            <TableColumn>{demand.annualHeatingConsumption.toLocaleString('fr-FR', { maximumFractionDigits: 2 })} MWh</TableColumn>
+            <TableColumn style={{ fontWeight: 'bold' }}>Étapes du projet</TableColumn>
+            <TableColumn>{demand.projectStatus.join(', ')}</TableColumn>
           </TableRow>
         )}
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Radiateurs</TableColumn>
-          <TableColumn>{typeRadiateurOptions.find((option) => option.value === demand.radiatorType)?.label ?? 'Non renseigné'}</TableColumn>
-        </TableRow>
-        <TableRow>
-          <TableColumn style={{ fontWeight: 'bold' }}>Étapes du projet</TableColumn>
-          <TableColumn>{demand.projectStatus.length > 0 ? demand.projectStatus.join(', ') : 'Non renseigné'}</TableColumn>
-        </TableRow>
+        {formatMwh(demand.annualHeatingConsumption) && (
+          <TableRow>
+            <TableColumn style={{ fontWeight: 'bold' }}>Consommation annuelle de chauffage</TableColumn>
+            <TableColumn>{formatMwh(demand.annualHeatingConsumption)}</TableColumn>
+          </TableRow>
+        )}
+        {alternativeHeatingSolutions.length > 0 && (
+          <TableRow>
+            <TableColumn style={{ fontWeight: 'bold' }}>Top solutions</TableColumn>
+            <TableColumn>
+              <ul style={{ margin: '0 0 0 20px', padding: 0 }}>
+                {alternativeHeatingSolutions.map((solution) => (
+                  <li key={solution} style={{ marginBottom: '4px' }}>
+                    {solution}
+                  </li>
+                ))}
+              </ul>
+            </TableColumn>
+          </TableRow>
+        )}
         {demand.comments && (
           <TableRow>
-            <TableColumn style={{ fontWeight: 'bold' }}>Commentaires</TableColumn>
+            <TableColumn style={{ fontWeight: 'bold' }}>Commentaire usager</TableColumn>
             <TableColumn>{demand.comments}</TableColumn>
           </TableRow>
         )}
       </Table>
 
+      {pendingDemandCount > 1 && <Text>Vous avez actuellement {pendingDemandCount} demande(s) à traiter sur votre territoire.</Text>}
+
+      <Text>Depuis la demande, vous pouvez contacter l'usager puis mettre à jour le statut dans le tableau de suivi.</Text>
+
       <Section style={{ paddingTop: '24px', textAlign: 'center' }}>
-        <Button href="/pro/demandes-chaleur-renouvelable" campaign="demands.ccrt.nouvelle-demande-chaleur-renouvelable">
-          Accéder aux demandes
+        <Button href={demandUrl} campaign={EMAIL_CAMPAIGN} content="bas-email">
+          Voir la demande et contacter l'usager
         </Button>
       </Section>
+
+      <Text>Bien cordialement,</Text>
+      <Text>L'équipe France Chaleur Urbaine</Text>
     </Layout>
   );
 };
 
 export const scenarios = defineEmailScenarios<typeof NouvelleDemandeChaleurRenouvelable>({
   defaut: {
-    label: 'Nouvelle demande chaleur renouvelable',
+    label: "Nouvelle demande d'accompagnement",
     props: {
       demand: {
         address: '10 rue du Test, 75001 Paris',
+        alternativeHeatingSolutions: ['PAC géothermique', 'Chaudière à bois', 'PAC air-eau collective'],
         annualHeatingConsumption: 820.5,
         averageArea: 70,
         averageResidents: 2,
@@ -160,6 +164,8 @@ export const scenarios = defineEmailScenarios<typeof NouvelleDemandeChaleurRenou
         surfaceArea: null,
       },
       demandId: 'demand-123',
+      demandUrl: '/pro/demandes-chaleur-renouvelable',
+      pendingDemandCount: 4,
       status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
     },
   },

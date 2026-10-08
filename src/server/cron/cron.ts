@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs';
 import { CronJob } from 'cron';
 
+import { runScheduledCcrtUnhandledDemandReminder } from '@/modules/chaleur-renouvelable/server/ccrt-reminders';
 import { purgeOldConversionEventIps } from '@/modules/conversion-tracking/server/service';
 import { notifyGestionnairesOfNewDemands, notifyGestionnairesOfUnhandledDemands } from '@/modules/demands/server/manager-notifications';
 import { sendRelanceToDemandeurs } from '@/modules/demands/server/relances';
@@ -17,6 +18,7 @@ const logger = parentLogger.child({ module: 'cron' });
 // Handlers bound by name to the definitions in cron.config.ts (kept separate so the metadata stays client-safe).
 const cronHandlers: Record<CronName, () => Promise<unknown>> = {
   aggregateMonthlyStats,
+  notifyCcrtOfUnhandledDemandesChaleurRenouvelable: runScheduledCcrtUnhandledDemandReminder,
   notifyGestionnairesOfNewDemands,
   notifyGestionnairesOfUnhandledDemands,
   purgeOldConversionEventIps: () => purgeOldConversionEventIps(),

@@ -87,10 +87,10 @@ export const adminPages = [
     label: 'Impostures',
   },
   {
-    desc: "Prévisualisez les modèles d'emails envoyés par l'application",
+    desc: "Prévisualisez les emails automatiques envoyés par l'application",
     group: 'tools',
     href: '/admin/emails',
-    label: "Modèles d'emails",
+    label: 'Emails automatiques',
   },
   {
     desc: 'Contacts bloqués côté Brevo (rejets, désinscriptions), historique des envois et déblocage',

@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 
+import { businessRules } from '@/modules/app/business-rules';
 import { serverConfig } from '@/server/config';
 import { logger } from '@/server/helpers/logger';
 
@@ -18,7 +19,7 @@ const mailTransport = nodemailer.createTransport({
   dnsTimeout: 30000,
   greetingTimeout: 30000,
   host: serverConfig.MAIL_HOST,
-  maxConnections: 5,
+  maxConnections: businessRules.emailSendConcurrency.value,
   maxMessages: 100,
   pool: true,
   port: serverConfig.MAIL_PORT,

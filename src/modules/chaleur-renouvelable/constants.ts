@@ -414,6 +414,7 @@ export const demandeChaleurRenouvelableStatuses = [
   { label: 'Projet abandonné par le prospect', value: 'abandoned_by_prospect' },
 ] as const;
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS = demandeChaleurRenouvelableStatuses[0].label;
+export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT = demandeChaleurRenouvelableStatuses[1].label;
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION = demandeChaleurRenouvelableStatuses[6].label;
 export type DemandeChaleurRenouvelableStatus = (typeof demandeChaleurRenouvelableStatuses)[number]['label'];
 
@@ -537,6 +538,18 @@ export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
     .partial(),
 });
 export type AdminUpdateDemandeChaleurRenouvelableInput = z.infer<typeof zAdminUpdateDemandeChaleurRenouvelableInput>;
+
+export const zCcrtUpdateDemandeChaleurRenouvelableInput = z.object({
+  demandId: z.string(),
+  trigger: z.enum(['manual', 'contact']).default('manual'),
+  values: z
+    .object({
+      projectState: z.enum(demandeChaleurRenouvelableProjectStates.map((projectState) => projectState.label)),
+      status: z.enum(demandeChaleurRenouvelableStatuses.map((status) => status.label)),
+    })
+    .partial(),
+});
+export type CcrtUpdateDemandeChaleurRenouvelableInput = z.infer<typeof zCcrtUpdateDemandeChaleurRenouvelableInput>;
 
 export const zAdminValidateDemandeChaleurRenouvelableInput = z.object({
   demandId: z.string(),

@@ -81,6 +81,12 @@ export const businessRules = {
     label: "Distance d'éligibilité (Paris)",
     value: 100,
   },
+  emailSendConcurrency: {
+    description: "Nombre maximal d'emails transactionnels envoyés en parallèle, aligné sur le pool SMTP.",
+    display: '5 envois',
+    label: "Emails : concurrence d'envoi",
+    value: 5,
+  },
   fcrBuildingCandidatesRadiusMeters: {
     description:
       'Rayon autour du bâtiment de référence dans lequel les bâtiments BatEnR sont proposés comme candidats dans le simulateur chaleur renouvelable.',

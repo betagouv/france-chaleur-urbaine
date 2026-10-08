@@ -16,6 +16,16 @@ import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constan
 import type { SimulateurPacEventProperties } from '@/modules/pac/constants';
 import type { TypeCommune } from '@/server/services/communeAPotentiel';
 
+type CcrtCommonTrackingProperties = {
+  departement?: string | null;
+  structure_ccrt?: string | null;
+};
+
+type CcrtDemandTrackingProperties = CcrtCommonTrackingProperties & {
+  demande_id: string;
+  solution_1?: string | null;
+};
+
 /**
  * Configuration des événements PostHog.
  *
@@ -246,6 +256,31 @@ export type PostHogEventMap = {
     solution_type: string;
   };
   'fcr_results:ccrt_contact_cta_clicked': never;
+  'ccrt_demandes:demande_received': CcrtDemandTrackingProperties;
+  'ccrt_demandes:list_viewed': CcrtCommonTrackingProperties & {
+    onglet: string;
+  };
+  'ccrt_demandes:demande_opened': CcrtDemandTrackingProperties & {
+    premiere_ouverture: boolean;
+  };
+  'ccrt_demande:status_changed': CcrtDemandTrackingProperties & {
+    declenchement: 'admin' | 'contact' | 'manual';
+    statut_apres: string;
+    statut_avant: string | null;
+    type_statut: 'etat_projet' | 'statut';
+  };
+  'ccrt_demande:contact_clicked': CcrtDemandTrackingProperties & {
+    emplacement: 'liste';
+  };
+  'ccrt_demande:contact_email_clicked': CcrtDemandTrackingProperties & {
+    emplacement: 'liste';
+  };
+  'ccrt_demande:contact_phone_clicked': CcrtDemandTrackingProperties & {
+    emplacement: 'liste';
+  };
+  'ccrt_demande:simulation_viewed': CcrtDemandTrackingProperties & {
+    emplacement: 'liste';
+  };
   'fcr_results:tab_switched': {
     tab_value: 'chauffage_ecs' | 'ecs_uniquement';
   };
