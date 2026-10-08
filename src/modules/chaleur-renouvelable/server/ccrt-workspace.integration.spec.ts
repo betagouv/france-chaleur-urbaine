@@ -11,9 +11,12 @@ import { fetchJSON } from '@/utils/network';
 
 import { EMPTY_BAT_ENR_INFO } from '../bat-enr';
 import {
+  DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+  demandeChaleurRenouvelableProjectStates,
   zCcrtBuilding,
 } from '../constants';
 import * as ccrtNotesService from './ccrt-notes';
@@ -44,6 +47,18 @@ const heatNetworkEligibility = {
   name: null,
   tauxENRR: null,
   veryEligibleDistance: null,
+};
+
+const addressEligibilityContext = {
+  altitude: 0,
+  batEnr: EMPTY_BAT_ENR_INFO,
+  batEnrBatiments: [],
+  codeDepartement: '13',
+  eligibiliteReseauChaleur: heatNetworkEligibility,
+  eligibiliteReseauFroid: null,
+  selectedBatEnrBatiment: undefined,
+  shouldSelectBatEnrBatiment: false,
+  temperatureRef: 0,
 };
 
 const emailContent = {
@@ -84,17 +99,7 @@ beforeEach(async () => {
   vi.mocked(fetchJSON).mockResolvedValue({
     features: [{ geometry: { coordinates: [5.37, 43.3] }, properties: { city: 'MARSEILLE', citycode: '13055', id: '13055_test' } }],
   });
-  vi.mocked(getAddressEligibilityContext).mockResolvedValue({
-    altitude: 0,
-    batEnr: EMPTY_BAT_ENR_INFO,
-    batEnrBatiments: [],
-    codeDepartement: '13',
-    eligibiliteReseauChaleur: heatNetworkEligibility,
-    eligibiliteReseauFroid: null,
-    selectedBatEnrBatiment: undefined,
-    shouldSelectBatEnrBatiment: false,
-    temperatureRef: 0,
-  });
+  vi.mocked(getAddressEligibilityContext).mockResolvedValue(addressEligibilityContext);
 });
 
 describe('CCRT workspace access', () => {
@@ -109,30 +114,15 @@ describe('CCRT workspace access', () => {
         await seedTableUser([user]);
         await kdb.insertInto('user_permissions').values({ resource_id: '13', type: 'departement', user_id: user.id }).execute();
       }
-      const note = await kdb
-        .insertInto('ccrt_demand_notes')
-        .values({ author_id: testUsers.ccrt.id, body: 'Note', demand_id: demand.id, id: uuid(501) })
-        .returningAll()
-        .executeTakeFirstOrThrow();
       const route = createTestCaller(user).batEnr.ccrt;
       const calls = [
         () => route.getFollowUp({ demandId: demand.id }),
         () => route.getHeatNetworkEligibility({ demandId: demand.id }),
         () =>
           route.updateBuilding({ demandId: demand.id, updatedAt: demand.updated_at.toISOString(), values: zCcrtBuilding.parse(demand) }),
-        () => route.createNote({ body: 'Nouvelle note', demandId: demand.id }),
-        () => route.updateNote({ body: 'Correction', demandId: demand.id, noteId: note.id, updatedAt: note.updated_at.toISOString() }),
         () => route.sendEmail({ demandId: demand.id, emailContent, messageId: uuid(502) }),
         () =>
           route.updateDemandeChaleurRenouvelable({ demandId: demand.id, values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED } }),
-        async () => {
-          const current = await kdb
-            .selectFrom('ccrt_demand_notes')
-            .select('updated_at')
-            .where('id', '=', note.id)
-            .executeTakeFirstOrThrow();
-          return route.deleteNote({ demandId: demand.id, noteId: note.id, updatedAt: current.updated_at.toISOString() });
-        },
       ];
       await calls.reduce(async (previous, call) => {
         await previous;
@@ -162,8 +152,11 @@ describe('CCRT workspace access', () => {
     const list = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
     expect(list.items.map((item) => item.id)).toStrictEqual([demand.id]);
     await expect(
-      createTestCaller(testUsers.ccrt).batEnr.ccrt.createNote({ body: 'Note partagée', demandId: demand.id })
-    ).resolves.toStrictEqual({ id: expect.any(String) });
+      createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+        demandId: demand.id,
+        values: { note: 'Note partagée' },
+      })
+    ).resolves.toMatchObject({ id: demand.id });
   });
 
   it('denies all actions outside the territory or on unpublished demands', async () => {
@@ -174,9 +167,9 @@ describe('CCRT workspace access', () => {
       notFound
     );
     expect(getEligilityStatus).not.toHaveBeenCalled();
-    await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.createNote({ body: 'Intrusion', demandId: uuid(999) })).rejects.toMatchObject(
-      notFound
-    );
+    await expect(
+      createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({ demandId: uuid(999), values: { note: 'Intrusion' } })
+    ).rejects.toMatchObject(notFound);
   });
 });
 
@@ -206,6 +199,48 @@ describe('CCRT heat-network eligibility', () => {
 });
 
 describe('CCRT notes and shared history', () => {
+  it.each(['admin', 'ccrt'] as const)('applies the same project-state reset and audit from %s', async (role) => {
+    const demand = await seedWorkspace();
+    const projectState = demandeChaleurRenouvelableProjectStates[1].label;
+    await kdb
+      .updateTable('demands_chaleur_renouvelable')
+      .set({ project_state: projectState, status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION })
+      .where('id', '=', demand.id)
+      .execute();
+    await createTestCaller(testUsers[role]).batEnr[role].updateDemandeChaleurRenouvelable({
+      demandId: demand.id,
+      values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED },
+    });
+    const followUp = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    expect(followUp.history.map((event) => event.data)).toStrictEqual([
+      {
+        changes: {
+          project_state: { from: projectState, to: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION },
+          status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED },
+        },
+      },
+    ]);
+  });
+
+  it('keeps an automatic contact from overwriting a closed demand or adding a misleading audit', async () => {
+    const demand = await seedWorkspace();
+    await createTestCaller(testUsers.alec).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+      demandId: demand.id,
+      values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED },
+    });
+    const before = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+      demandId: demand.id,
+      trigger: 'contact',
+      values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT },
+    });
+    const after = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    expect({ history: after.history, status: result.status }).toStrictEqual({
+      history: before.history,
+      status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED,
+    });
+  });
+
   it('saves the status and note together with both audit events', async () => {
     const demand = await seedWorkspace();
     await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
@@ -255,29 +290,24 @@ describe('CCRT notes and shared history', () => {
     });
   });
 
-  it('allows a colleague to edit/delete notes, rejects stale writes and keeps an audit without the deleted body', async () => {
+  it('adds a note without rewriting the demand or its concurrency token', async () => {
     const demand = await seedWorkspace();
-    const note = await createTestCaller(testUsers.ccrt).batEnr.ccrt.createNote({ body: 'Première note', demandId: demand.id });
-    const initial = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
-    const updatedAt = initial.notes[0].updated_at;
-    await createTestCaller(testUsers.alec).batEnr.ccrt.updateNote({ body: 'Correction', demandId: demand.id, noteId: note.id, updatedAt });
-    await expect(
-      createTestCaller(testUsers.ccrt).batEnr.ccrt.updateNote({ body: 'Ancienne version', demandId: demand.id, noteId: note.id, updatedAt })
-    ).rejects.toMatchObject({ code: 'CONFLICT' });
-    const current = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
-    expect(current.notes.map((item) => item.body)).toStrictEqual(['Correction']);
-    await createTestCaller(testUsers.ccrt).batEnr.ccrt.deleteNote({
+    const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
       demandId: demand.id,
-      noteId: note.id,
-      updatedAt: current.notes[0].updated_at,
+      values: { note: 'Première note', status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS },
     });
-    const result = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
-    expect(result.notes).toStrictEqual([]);
-    expect(result.history.map((event) => event.type)).toStrictEqual([
-      'ccrt_demand_note_deleted',
-      'ccrt_demand_note_updated',
-      'ccrt_demand_note_created',
-    ]);
+    const followUp = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    expect({
+      history: followUp.history.map((event) => event.type),
+      notes: followUp.notes.map((note) => note.body),
+      status: result.status,
+      updatedAt: result.updated_at,
+    }).toStrictEqual({
+      history: ['ccrt_demand_note_created'],
+      notes: ['Première note'],
+      status: demand.status,
+      updatedAt: demand.updated_at,
+    });
   });
 
   it('lists all effective users and exposes only relevant permission changes in the audit', async () => {
@@ -392,6 +422,66 @@ describe('CCRT email delivery', () => {
 });
 
 describe('CCRT building corrections', () => {
+  it('preserves read-only identification and original declarations even when submitted with a correction', async () => {
+    const demand = await seedWorkspace();
+    const readOnlyValues = {
+      address: demand.address,
+      comments: null,
+      project_status: demand.project_status,
+      rnic_nom_copropriete: 'Copropriété initiale',
+      rnic_numero_immatriculation: 'AA0000000',
+      rnic_siret_representant_legal: '12345678901234',
+    };
+    await kdb.updateTable('demands_chaleur_renouvelable').set(readOnlyValues).where('id', '=', demand.id).execute();
+    await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateBuilding({
+      demandId: demand.id,
+      updatedAt: demand.updated_at.toISOString(),
+      values: {
+        ...zCcrtBuilding.parse(demand),
+        ...Object.fromEntries(Object.keys(readOnlyValues).map((field) => [field, 'Remplacement interdit'])),
+        dpe: 'D',
+      },
+    });
+    const current = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select([
+        'address',
+        'comments',
+        'project_status',
+        'rnic_nom_copropriete',
+        'rnic_numero_immatriculation',
+        'rnic_siret_representant_legal',
+      ])
+      .where('id', '=', demand.id)
+      .executeTakeFirstOrThrow();
+    const followUp = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    expect({ changes: followUp.history.map((event) => event.data), current }).toStrictEqual({
+      changes: [{ changes: { dpe: { from: 'E', to: 'D' } } }],
+      current: readOnlyValues,
+    });
+    expect(vi.mocked(fetchJSON).mock.calls[0][1]).toMatchObject({ params: { q: demand.address } });
+  });
+
+  it('keeps an eligible heat network out of the saved alternative solutions', async () => {
+    const demand = await seedWorkspace();
+    vi.mocked(getAddressEligibilityContext).mockResolvedValue({
+      ...addressEligibilityContext,
+      eligibiliteReseauChaleur: { ...heatNetworkEligibility, distance: 50, isEligible: true },
+    });
+    await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateBuilding({
+      demandId: demand.id,
+      updatedAt: demand.updated_at.toISOString(),
+      values: { ...zCcrtBuilding.parse(demand), outdoor_space: 'jardinCours', radiator_type: 'radiateur-eau' },
+    });
+    const current = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select('alternative_heating_solutions')
+      .where('id', '=', demand.id)
+      .executeTakeFirstOrThrow();
+    expect(current.alternative_heating_solutions.length).toStrictEqual(3);
+    expect(current.alternative_heating_solutions).not.toContain('Réseau de chaleur');
+  });
+
   it('preserves decimal residents in storage and the result URL across consecutive corrections', async () => {
     const demand = await seedWorkspace();
     const values = { ...zCcrtBuilding.parse(demand), average_residents: 2.5 };

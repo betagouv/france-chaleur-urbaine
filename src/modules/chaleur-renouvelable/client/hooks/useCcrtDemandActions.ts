@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import {
@@ -8,6 +8,8 @@ import {
 import type { CcrtDemand, CcrtDemandUpdate } from '@/modules/chaleur-renouvelable/types';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
+
+import { invalidateCcrtDemand } from '../ccrt-demand-cache';
 
 /**
  * Preserves contact tracking and applies follow-up changes confirmed by the server.
@@ -20,51 +22,33 @@ export function useCcrtDemandActions(structureName: string | null) {
   const openedDemands = useRef(new Set<string>());
   const updatingDemands = useRef(new Set<string>());
 
-  const getTrackingProperties = useCallback(
-    (demand: CcrtDemand) => ({
-      demande_id: demand.id,
-      departement: demand.departement_code,
-      solution_1: demand.alternative_heating_solutions[0] ?? null,
-      structure_ccrt: structureName,
-    }),
-    [structureName]
-  );
+  const getTrackingProperties = (demand: CcrtDemand) => ({
+    demande_id: demand.id,
+    departement: demand.departement_code,
+    solution_1: demand.alternative_heating_solutions[0] ?? null,
+    structure_ccrt: structureName,
+  });
 
-  const updateDemand = useCallback(
-    async (demand: CcrtDemand, values: CcrtDemandUpdate, trigger: 'contact' | 'manual' = 'manual') => {
-      if (updatingDemands.current.has(demand.id)) {
-        return;
-      }
-      updatingDemands.current.add(demand.id);
-      try {
-        const updatedDemand = await mutation.mutateAsync({ demandId: demand.id, trigger, values });
-        utils.batEnr.ccrt.listDemandesChaleurRenouvelable.setData(
-          undefined,
-          (data) =>
-            data && {
-              ...data,
-              items: data.items.map((item) =>
-                item.id === demand.id
-                  ? {
-                      ...item,
-                      project_state: updatedDemand.project_state,
-                      status: updatedDemand.status,
-                    }
-                  : item
-              ),
-            }
-        );
-        await Promise.all([
-          utils.batEnr.ccrt.listDemandesChaleurRenouvelable.invalidate(),
-          utils.batEnr.admin.listDemandesChaleurRenouvelable.invalidate(),
-          utils.batEnr.ccrt.getFollowUp.invalidate({ demandId: demand.id }),
-        ]);
-      } finally {
-        updatingDemands.current.delete(demand.id);
-      }
-    },
-    [mutation.mutateAsync, utils]
-  );
+  const updateDemand = async (demand: CcrtDemand, values: CcrtDemandUpdate, trigger: 'contact' | 'manual' = 'manual') => {
+    if (updatingDemands.current.has(demand.id)) {
+      return;
+    }
+    updatingDemands.current.add(demand.id);
+    try {
+      const updatedDemand = await mutation.mutateAsync({ demandId: demand.id, trigger, values });
+      utils.batEnr.ccrt.listDemandesChaleurRenouvelable.setData(
+        undefined,
+        (data) =>
+          data && {
+            ...data,
+            items: data.items.map((item) => (item.id === demand.id ? { ...item, ...updatedDemand } : item)),
+          }
+      );
+      await invalidateCcrtDemand(utils, demand.id);
+    } finally {
+      updatingDemands.current.delete(demand.id);
+    }
+  };
 
   const trackContact = (demand: CcrtDemand, contactType: 'email' | 'phone', shouldUpdateStatus = true) => {
     const trackingProperties = { ...getTrackingProperties(demand), emplacement: 'liste' as const };

@@ -14,6 +14,7 @@ import type { CcrtDemand } from '../types';
 import { CcrtDetailsSection } from './CcrtDetailsSection';
 import { CcrtProjectFields } from './CcrtProjectFields';
 import { CcrtSimulationFields } from './CcrtSimulationFields';
+import { invalidateCcrtDemand } from './ccrt-demand-cache';
 
 const identificationFields = [
   { label: 'Adresse du bâtiment', name: 'address' },
@@ -42,12 +43,7 @@ export function CcrtBuildingForm({ demand, onSimulation }: CcrtBuildingFormProps
     onSubmit: toastErrors(async ({ value }) => {
       const result = await mutation.mutateAsync({ demandId: demand.id, updatedAt: updatedAt.current, values: value });
       updatedAt.current = result.updatedAt;
-      await Promise.all([
-        utils.batEnr.ccrt.listDemandesChaleurRenouvelable.invalidate(),
-        utils.batEnr.admin.listDemandesChaleurRenouvelable.invalidate(),
-        utils.batEnr.ccrt.getFollowUp.invalidate({ demandId: demand.id }),
-        utils.batEnr.ccrt.getHeatNetworkEligibility.invalidate({ demandId: demand.id }),
-      ]);
+      await invalidateCcrtDemand(utils, demand.id, { buildingChanged: true });
       defaultValues.current = value;
       form.reset(value);
     }),
@@ -137,7 +133,6 @@ const getBuildingDefaultValues = (demand: CcrtDemand): z.input<typeof zCcrtBuild
   return {
     ...zCcrtBuilding.parse(demand),
     annual_heating_consumption: demand.annual_heating_consumption ?? undefined,
-    comments: demand.comments ?? '',
     hot_water_system_type: demand.hot_water_system_type ?? MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
     refusal_period: demand.refusal_period ?? '',
     refusal_reason: demand.refusal_reason ?? '',
