@@ -9,15 +9,22 @@ import cx from '@/utils/cx';
 
 type OutdoorSpaceCheckboxesProps = {
   className?: string;
+  label?: string;
   layout?: OutdoorSpaceCheckboxesLayout;
   onChange: (value: EspaceExterieur | null) => void;
   value: EspaceExterieur | null;
 };
 
 type OutdoorSpaceCheckboxKey = 'garden' | 'terrace';
-type OutdoorSpaceCheckboxesLayout = 'inline' | 'stacked';
+type OutdoorSpaceCheckboxesLayout = 'inline' | 'stacked' | 'row';
 
-export function OutdoorSpaceCheckboxes({ className, layout = 'inline', onChange, value }: OutdoorSpaceCheckboxesProps) {
+export function OutdoorSpaceCheckboxes({
+  className,
+  label = 'Espaces extérieurs disponibles :',
+  layout = 'inline',
+  onChange,
+  value,
+}: OutdoorSpaceCheckboxesProps) {
   const id = useId();
   const checkboxState = getEspaceExterieurCheckboxState(value);
   const hasGarden = checkboxState.hasGarden;
@@ -36,8 +43,8 @@ export function OutdoorSpaceCheckboxes({ className, layout = 'inline', onChange,
 
   return (
     <div className={cx('mb-0 flex flex-col gap-2', layout === 'inline' && 'md:col-span-3 md:flex-row md:items-center', className)}>
-      <span className={cx(layout === 'stacked' && 'text-sm mb-2')}>Espaces extérieurs disponibles : </span>
-      <div className={cx('flex flex-col gap-2', layout === 'inline' && 'sm:flex-row sm:items-center sm:gap-3')}>
+      <span className={cx(layout !== 'inline' && 'text-sm leading-6', layout === 'stacked' && 'mb-2')}>{label}</span>
+      <div className={cx('flex flex-col gap-2', layout !== 'stacked' && 'sm:flex-row sm:items-center sm:gap-3')}>
         <OutdoorSpaceCheckbox
           checked={hasGarden}
           id={`${id}-garden`}

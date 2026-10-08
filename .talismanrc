@@ -77,6 +77,7 @@ fileignoreconfig:
 scopeconfig:
 - scope: node
 allowed_patterns:
+- https://www\.figma\.com/design/t3chbwPeNK6ZulaWs4Rn4S/France-Chaleur-Renouvelable\?node-id=3463-18759
 - \/codegouvfr\/react-dsfr\/blob\/.*
 - pass
 - (?i).*key.*

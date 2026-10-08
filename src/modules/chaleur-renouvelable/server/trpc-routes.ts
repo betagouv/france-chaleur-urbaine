@@ -3,7 +3,14 @@ import {
   zAdminUpdateDemandeChaleurRenouvelableInput,
   zAdminValidateDemandeChaleurRenouvelableInput,
   zBatEnrByBanIdInput,
+  zCcrtCreateNote,
+  zCcrtDeleteNote,
+  zCcrtDemandId,
+  zCcrtFollowUpInput,
+  zCcrtSendEmail,
+  zCcrtUpdateBuilding,
   zCcrtUpdateDemandeChaleurRenouvelableInput,
+  zCcrtUpdateNote,
   zDemandeChaleurRenouvelable,
   zFranceRenovSpaceInput,
   zLocationInfos,
@@ -23,23 +30,36 @@ import {
   validateDemandeChaleurRenouvelableAdmin,
 } from '@/modules/chaleur-renouvelable/server/service';
 import { zGetBdnbConstructionInput } from '@/modules/tiles/constants';
-import { route, routeRole, router } from '@/modules/trpc/server';
+import { demandAccessRoute, route, routeRole, router } from '@/modules/trpc/server';
+
+import { updateCcrtBuilding } from './ccrt-building';
+import { sendCcrtEmail } from './ccrt-emails';
+import { getCcrtFollowUp } from './ccrt-follow-up';
+import { getCcrtHeatNetworkEligibility } from './ccrt-heat-network';
+import { createCcrtNote, deleteCcrtNote, updateCcrtNote } from './ccrt-notes';
 
 export const batEnrRouter = router({
   admin: {
     listDemandesChaleurRenouvelable: routeRole(['admin']).query(async () => await listDemandesChaleurRenouvelableAdmin()),
     updateDemandeChaleurRenouvelable: routeRole(['admin'])
       .input(zAdminUpdateDemandeChaleurRenouvelableInput)
-      .mutation(async ({ input }) => await updateDemandeChaleurRenouvelableAdmin(input)),
+      .mutation(async ({ ctx, input }) => await updateDemandeChaleurRenouvelableAdmin(ctx, input)),
     validateDemandeChaleurRenouvelable: routeRole(['admin'])
       .input(zAdminValidateDemandeChaleurRenouvelableInput)
       .mutation(async ({ input }) => await validateDemandeChaleurRenouvelableAdmin(input)),
   },
   ccrt: {
-    listDemandesChaleurRenouvelable: routeRole(['admin', 'ccrt']).query(async ({ ctx }) => await listDemandesChaleurRenouvelableCcrt(ctx)),
-    updateDemandeChaleurRenouvelable: routeRole(['admin', 'ccrt'])
+    createNote: demandAccessRoute.input(zCcrtCreateNote).mutation(({ ctx, input }) => createCcrtNote(ctx, input)),
+    deleteNote: demandAccessRoute.input(zCcrtDeleteNote).mutation(({ ctx, input }) => deleteCcrtNote(ctx, input)),
+    getFollowUp: demandAccessRoute.input(zCcrtFollowUpInput).query(({ ctx, input }) => getCcrtFollowUp(ctx, input)),
+    getHeatNetworkEligibility: demandAccessRoute.input(zCcrtDemandId).query(({ ctx, input }) => getCcrtHeatNetworkEligibility(ctx, input)),
+    listDemandesChaleurRenouvelable: demandAccessRoute.query(async ({ ctx }) => await listDemandesChaleurRenouvelableCcrt(ctx)),
+    sendEmail: demandAccessRoute.input(zCcrtSendEmail).mutation(({ ctx, input }) => sendCcrtEmail(ctx, input)),
+    updateBuilding: demandAccessRoute.input(zCcrtUpdateBuilding).mutation(({ ctx, input }) => updateCcrtBuilding(ctx, input)),
+    updateDemandeChaleurRenouvelable: demandAccessRoute
       .input(zCcrtUpdateDemandeChaleurRenouvelableInput)
       .mutation(async ({ ctx, input }) => await updateDemandeChaleurRenouvelableCcrt(ctx, input)),
+    updateNote: demandAccessRoute.input(zCcrtUpdateNote).mutation(({ ctx, input }) => updateCcrtNote(ctx, input)),
   },
   createDemandeChaleurRenouvelable: route
     .input(zDemandeChaleurRenouvelable)
