@@ -561,11 +561,9 @@ export const zCcrtFollowUpForm = zCcrtUpdateDemandeChaleurRenouvelableInput.shap
 export const zCcrtDemandId = z.object({ demandId: z.uuid() });
 export const zCcrtFollowUpInput = zCcrtDemandId.extend({ offset: z.number().int().nonnegative().default(0) });
 export const zCcrtBuilding = z.object({
-  address: z.string().trim().min(1, 'Veuillez renseigner une adresse'),
   annual_heating_consumption: z.number().positive().nullish(),
   average_area: z.number().int().positive(),
   average_residents: z.number().nonnegative('Veuillez renseigner un nombre d’habitants supérieur ou égal à 0'),
-  comments: z.string().max(5000).nullable(),
   dpe: z.enum(DPE_VALUES),
   heating_energy: z.enum(HEATING_ENERGY_VALUES),
   hot_water_system_type: z.enum(MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES).nullable(),
@@ -573,19 +571,13 @@ export const zCcrtBuilding = z.object({
   housing_type: z.enum(TYPE_LOGEMENT_VALUES),
   is_public_advisor_selected: z.boolean(),
   outdoor_space: z.enum(ESPACE_EXTERIEUR_VALUES),
-  project_status: z.array(z.enum(PROJECT_STATUS_VALUES)),
   radiator_type: z.enum(TYPE_RADIATEUR_VALUES).nullable(),
   refusal_period: z.string().max(500).nullable(),
   refusal_reason: z.string().max(5000).nullable(),
-  rnic_nom_copropriete: z.string().max(500).nullable(),
-  rnic_numero_immatriculation: z.string().max(100).nullable(),
-  rnic_siret_representant_legal: z.string().max(100).nullable(),
   surface_area: z.number().positive().nullish(),
 });
 export const zCcrtUpdateBuilding = zCcrtDemandId.extend({ updatedAt: z.iso.datetime(), values: zCcrtBuilding });
 export const zCcrtCreateNote = zCcrtDemandId.extend(zCcrtNote.shape);
-export const zCcrtUpdateNote = zCcrtCreateNote.extend({ noteId: z.uuid(), updatedAt: z.iso.datetime() });
-export const zCcrtDeleteNote = zCcrtDemandId.extend({ noteId: z.uuid(), updatedAt: z.iso.datetime() });
 export const zCcrtEmailContent = z.object({
   body: z.string().trim().min(1, 'Veuillez saisir un message').max(20000),
   cc: z.string().refine((value) => !value || value.split(',').every((email) => z.email().safeParse(email.trim()).success), {

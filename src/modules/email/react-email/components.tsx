@@ -242,6 +242,26 @@ export const TableColumn = ({ children, style }: React.TableHTMLAttributes<HTMLT
   </td>
 );
 
+type SummaryTableProps = { rows: ReadonlyArray<readonly [label: string, value: React.ReactNode]> };
+
+/**
+ * Two-column email summary omitting empty optional values while preserving zeroes.
+ */
+export function SummaryTable({ rows }: SummaryTableProps) {
+  return (
+    <Table>
+      {rows.map(([label, value]) =>
+        value === null || value === undefined || value === '' || value === false ? null : (
+          <TableRow key={label}>
+            <TableColumn style={{ fontWeight: 'bold' }}>{label}</TableColumn>
+            <TableColumn>{value}</TableColumn>
+          </TableRow>
+        )
+      )}
+    </Table>
+  );
+}
+
 export const Title = ({ children, style }: React.ComponentProps<typeof ReactEmailText>) => (
   <Text style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px', ...style }}>{children}</Text>
 );

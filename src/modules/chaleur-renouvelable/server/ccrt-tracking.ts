@@ -1,18 +1,59 @@
 import type { PostHogEvent, PostHogEventMap } from '@/modules/analytics/posthog.config';
+import type { Context } from '@/modules/config/server/context-builder';
 import { serverConfig } from '@/server/config';
+import { kdb } from '@/server/db/kysely';
 import { createLogger } from '@/server/helpers/logger';
 import { postFetchJSON } from '@/utils/network';
 
+import type { CcrtUpdateDemandeChaleurRenouvelableInput } from '../constants';
+import type { ensureCcrtDemandAccess } from './ccrt-access';
+import type { applyCcrtFollowUpUpdate } from './ccrt-demand-update';
+
 const logger = createLogger('chaleur-renouvelable:ccrt-tracking');
 
-type ServerPostHogCapturePayload<Event extends PostHogEvent> = {
-  api_key: string;
-  distinct_id: string;
-  event: Event;
-  properties: PostHogEventMap[Event] & {
-    $process_person_profile: false;
-    source: 'ccrt_workspace';
+/**
+ * Reports committed transitions using the previous values read under the demand lock.
+ */
+export const recordCcrtFollowUpChanges = async (
+  ctx: Context,
+  demand: Pick<Awaited<ReturnType<typeof ensureCcrtDemandAccess>>, 'id' | 'departement_code' | 'alternative_heating_solutions'>,
+  changes: Awaited<ReturnType<typeof applyCcrtFollowUpUpdate>>['changes'],
+  trigger: CcrtUpdateDemandeChaleurRenouvelableInput['trigger']
+) => {
+  if (!changes.status && !changes.project_state) {
+    return;
+  }
+  const user = await kdb.selectFrom('users').select('structure_name').where('id', '=', ctx.user.id).executeTakeFirst();
+  const declenchement = trigger === 'contact' ? 'contact' : ctx.user.role === 'admin' ? 'admin' : 'manual';
+  const properties = {
+    demande_id: demand.id,
+    departement: demand.departement_code,
+    solution_1: demand.alternative_heating_solutions[0] ?? null,
+    structure_ccrt: user?.structure_name ?? null,
   };
+  const transitions = [
+    { change: changes.status, type: 'statut' },
+    { change: changes.project_state, type: 'etat_projet' },
+  ] as const;
+  await Promise.all(
+    transitions.flatMap((transition) =>
+      transition.change
+        ? [
+            recordCcrtPostHogEvent({
+              distinctId: ctx.user.id,
+              event: 'ccrt_demande:status_changed',
+              properties: {
+                ...properties,
+                declenchement,
+                statut_apres: transition.change.to,
+                statut_avant: transition.change.from,
+                type_statut: transition.type,
+              },
+            }),
+          ]
+        : []
+    )
+  );
 };
 
 /**
@@ -35,31 +76,16 @@ export async function recordCcrtPostHogEvent<Event extends PostHogEvent>({
   }
 
   try {
-    await postFetchJSON(`${postHogApiHost}/capture/`, getPostHogCapturePayload({ distinctId, event, properties }, postHogKey));
+    await postFetchJSON(`${postHogApiHost}/capture/`, {
+      api_key: postHogKey,
+      distinct_id: distinctId,
+      event,
+      properties: { ...properties, $process_person_profile: false, source: 'ccrt_workspace' },
+    });
   } catch (error) {
     logger.warn('PostHog CCRT tracking failed', {
       error: error instanceof Error ? error.message : error,
       event,
     });
   }
-}
-
-function getPostHogCapturePayload<Event extends PostHogEvent>(
-  input: {
-    distinctId: string;
-    event: Event;
-    properties: PostHogEventMap[Event];
-  },
-  postHogKey: string
-): ServerPostHogCapturePayload<Event> {
-  return {
-    api_key: postHogKey,
-    distinct_id: input.distinctId,
-    event: input.event,
-    properties: {
-      ...input.properties,
-      $process_person_profile: false,
-      source: 'ccrt_workspace',
-    },
-  };
 }

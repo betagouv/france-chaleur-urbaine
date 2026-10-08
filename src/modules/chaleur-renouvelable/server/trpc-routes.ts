@@ -3,14 +3,11 @@ import {
   zAdminUpdateDemandeChaleurRenouvelableInput,
   zAdminValidateDemandeChaleurRenouvelableInput,
   zBatEnrByBanIdInput,
-  zCcrtCreateNote,
-  zCcrtDeleteNote,
   zCcrtDemandId,
   zCcrtFollowUpInput,
   zCcrtSendEmail,
   zCcrtUpdateBuilding,
   zCcrtUpdateDemandeChaleurRenouvelableInput,
-  zCcrtUpdateNote,
   zDemandeChaleurRenouvelable,
   zFranceRenovSpaceInput,
   zLocationInfos,
@@ -36,7 +33,6 @@ import { updateCcrtBuilding } from './ccrt-building';
 import { sendCcrtEmail } from './ccrt-emails';
 import { getCcrtFollowUp } from './ccrt-follow-up';
 import { getCcrtHeatNetworkEligibility } from './ccrt-heat-network';
-import { createCcrtNote, deleteCcrtNote, updateCcrtNote } from './ccrt-notes';
 
 export const batEnrRouter = router({
   admin: {
@@ -49,8 +45,6 @@ export const batEnrRouter = router({
       .mutation(async ({ input }) => await validateDemandeChaleurRenouvelableAdmin(input)),
   },
   ccrt: {
-    createNote: demandAccessRoute.input(zCcrtCreateNote).mutation(({ ctx, input }) => createCcrtNote(ctx, input)),
-    deleteNote: demandAccessRoute.input(zCcrtDeleteNote).mutation(({ ctx, input }) => deleteCcrtNote(ctx, input)),
     getFollowUp: demandAccessRoute.input(zCcrtFollowUpInput).query(({ ctx, input }) => getCcrtFollowUp(ctx, input)),
     getHeatNetworkEligibility: demandAccessRoute.input(zCcrtDemandId).query(({ ctx, input }) => getCcrtHeatNetworkEligibility(ctx, input)),
     listDemandesChaleurRenouvelable: demandAccessRoute.query(async ({ ctx }) => await listDemandesChaleurRenouvelableCcrt(ctx)),
@@ -59,7 +53,6 @@ export const batEnrRouter = router({
     updateDemandeChaleurRenouvelable: demandAccessRoute
       .input(zCcrtUpdateDemandeChaleurRenouvelableInput)
       .mutation(async ({ ctx, input }) => await updateDemandeChaleurRenouvelableCcrt(ctx, input)),
-    updateNote: demandAccessRoute.input(zCcrtUpdateNote).mutation(({ ctx, input }) => updateCcrtNote(ctx, input)),
   },
   createDemandeChaleurRenouvelable: route
     .input(zDemandeChaleurRenouvelable)

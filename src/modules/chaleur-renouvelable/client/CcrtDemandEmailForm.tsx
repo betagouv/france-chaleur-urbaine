@@ -18,6 +18,7 @@ import { isUUID } from '@/utils/core';
 import { zCcrtEmailForm } from '../constants';
 import type { CcrtDemand } from '../types';
 import { CcrtEmailSignature } from './CcrtEmailSignature';
+import { invalidateCcrtDemand } from './ccrt-demand-cache';
 
 type CcrtDemandEmailFormProps = { demand: CcrtDemand; onClose: () => void; preferences: UserPreferences };
 
@@ -50,12 +51,7 @@ export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemand
         messageId: messageId.current,
         updateStatusOnSend,
       });
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['/api/user/preferences'] }),
-        utils.batEnr.ccrt.listDemandesChaleurRenouvelable.invalidate(),
-        utils.batEnr.admin.listDemandesChaleurRenouvelable.invalidate(),
-        utils.batEnr.ccrt.getFollowUp.invalidate({ demandId: demand.id }),
-      ]);
+      await Promise.all([queryClient.invalidateQueries({ queryKey: ['/api/user/preferences'] }), invalidateCcrtDemand(utils, demand.id)]);
       onClose();
     }),
   });

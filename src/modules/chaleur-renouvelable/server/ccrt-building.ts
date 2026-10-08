@@ -8,7 +8,7 @@ import { kdb, sql } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
 import { ObjectKeys } from '@/utils/typescript';
 
-import { getModesDeChauffage } from '../client/heating-modes/selectors';
+import { getAlternativeHeatingSolutionLabels, getModesDeChauffage } from '../client/heating-modes/selectors';
 import { buildSimulationSituation } from '../client/simulation-situation';
 import {
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
@@ -33,22 +33,21 @@ export const updateCcrtBuilding = async (ctx: Context, input: z.infer<typeof zCc
   };
   const searchResult = await fetchJSON<{
     features: { properties: { id: string; city: string; citycode: string }; geometry: { coordinates: [number, number] } }[];
-  }>(`${serverConfig.banApiBaseUrl}search`, { params: { limit: 1, q: values.address } });
+  }>(`${serverConfig.banApiBaseUrl}search`, { params: { limit: 1, q: demand.address } });
   const address = searchResult.features[0];
   if (!address) {
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cette adresse ne permet pas de recalculer les solutions. Veuillez la vérifier.' });
   }
-  const constructionId = values.address === demand.address ? demand.batiment_construction_id : null;
   const context = await getAddressEligibilityContext({
     banId: address.properties.id,
     city: address.properties.city,
     cityCode: address.properties.citycode,
     lat: address.geometry.coordinates[1],
     lon: address.geometry.coordinates[0],
-    selectedBatimentConstructionId: constructionId,
+    selectedBatimentConstructionId: demand.batiment_construction_id,
   });
   const params = {
-    adresse: values.address,
+    adresse: demand.address,
     constructionId: context.selectedBatEnrBatiment?.batiment_construction_id ?? null,
     dpe: values.dpe,
     espaceExterieur: values.outdoor_space,
@@ -61,9 +60,7 @@ export const updateCcrtBuilding = async (ctx: Context, input: z.infer<typeof zCc
     typeRadiateur: values.radiator_type,
   } satisfies Parameters<typeof buildSimulationSituation>[0]['params'];
   const situation = buildSimulationSituation({ ...context, params });
-  const solutions = getModesDeChauffage(values.housing_type, situation)
-    .slice(0, 3)
-    .map((mode) => mode.label);
+  const solutions = getAlternativeHeatingSolutionLabels(getModesDeChauffage(values.housing_type, situation));
   const query = new URLSearchParams();
   Object.entries({ ...params, construction_id: params.constructionId }).forEach(([key, value]) => {
     if (key !== 'constructionId' && value !== null) {
