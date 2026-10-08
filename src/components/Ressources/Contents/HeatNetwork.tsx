@@ -248,7 +248,9 @@ const HeatNetwork = ({
       <Subtitle ref={avantagesRef}>Quels sont les avantages des réseaux de chaleur ?</Subtitle>
       Les réseaux de chaleur présentent des{' '}
       <b>
-        <Link href="/ressources/avantages#contenu">atouts de différentes natures</Link>
+        <Link href="/ressources/reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul#contenu">
+          atouts de différentes natures
+        </Link>
       </b>
       , comparativement aux autres modes de chauffage (gaz, fioul, électricité...). Grâce à l’exploitation d’énergies renouvelables et de
       récupération locales, ils offrent :
@@ -320,7 +322,10 @@ const HeatNetwork = ({
       Les réseaux de chaleur sont le plus souvent créés{' '}
       <b>
         à l’
-        <Link href="/ressources/acteurs#contenu">initiative de collectivités</Link> (commune, intercommunalité)
+        <Link href="/ressources/quels-sont-les-principaux-acteurs-de-la-filiere-des-reseaux-de-chaleur#contenu">
+          initiative de collectivités
+        </Link>{' '}
+        (commune, intercommunalité)
       </b>{' '}
        : on parle alors de service public de chauffage urbain. Les collectivités n’ont cependant pas l’obligation d’équiper leur territoire
       d’un réseau de chaleur. Par ailleurs, des réseaux de chaleur peuvent également être créés par d’autres acteurs, notamment des acteurs
@@ -354,7 +359,10 @@ const HeatNetwork = ({
       <br />
       <br />
       <Subtitle ref={raccordablesRef}>Tous les bâtiments sont-ils raccordables à un réseau de chaleur ?</Subtitle>
-      La possibilité de se raccorder à un réseau de chaleur dépend de <Link href="/ressources/faisabilite#contenu">plusieurs critères</Link>
+      La possibilité de se raccorder à un réseau de chaleur dépend de{' '}
+      <Link href="/ressources/qu-est-ce-qui-determine-la-faisabilite-du-raccordement-aux-reseaux-de-chaleur#contenu">
+        plusieurs critères
+      </Link>
       , et notamment des suivants :
       <br />
       <br />
@@ -584,8 +592,11 @@ const HeatNetwork = ({
       <br />
       Depuis le 1er septembre 2022,{' '}
       <b>
-        le coup de pouce « <Link href="/ressources/aides#contenu">Chauffage des bâtiments résidentiels collectifs et tertiaires</Link>  »
-        permet de réduire significativement le coût du raccordement à un réseau de chaleur.
+        le coup de pouce «{' '}
+        <Link href="/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur#contenu">
+          Chauffage des bâtiments résidentiels collectifs et tertiaires
+        </Link>{' '}
+         » permet de réduire significativement le coût du raccordement à un réseau de chaleur.
       </b>
       <br />
       <br />
@@ -625,8 +636,11 @@ const HeatNetwork = ({
         </li>
       </ul>
       <br />
-      D’<Link href="/ressources/financement#contenu">autres aides</Link> peuvent être mobilisées pour les copropriétés qui se raccordent à
-      un réseau de chaleur dans le cadre d’une rénovation globale :
+      D’
+      <Link href="/ressources/financer-le-raccordement-de-sa-copropriete-a-un-reseau-de-chaleur-dans-le-cadre-d-une-renovation-globale#contenu">
+        autres aides
+      </Link>{' '}
+      peuvent être mobilisées pour les copropriétés qui se raccordent à un réseau de chaleur dans le cadre d’une rénovation globale :
       <br />
       <br />
       <ul>

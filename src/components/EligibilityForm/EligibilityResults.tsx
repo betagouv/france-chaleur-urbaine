@@ -121,7 +121,7 @@ export const getEligibilityResult = (
   const ReseauClasseItem = (
     <ArrowItem>
       Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (
-      <a href="/ressources/reseau-classe#contenu" target="_blank" rel="noreferrer">
+      <a href="/ressources/qu-est-ce-qu-un-reseau-de-chaleur-classe#contenu" target="_blank" rel="noreferrer">
         en savoir plus
       </a>
       ).

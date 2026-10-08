@@ -18,7 +18,7 @@ const ClassedNetwork = ({ externalLinks }: { externalLinks?: boolean }) => {
         <br />
         pour certains bâtiments (
         <Link
-          href="/ressources/reseau-classe#contenu"
+          href="/ressources/qu-est-ce-qu-un-reseau-de-chaleur-classe#contenu"
           target={externalLinks ? '_blank' : undefined}
           rel={externalLinks ? 'noopener noreferrer' : undefined}
         >

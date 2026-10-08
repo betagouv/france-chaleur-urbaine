@@ -219,6 +219,62 @@ const nextConfig: NextConfig = {
         source: '/ressources',
       },
       {
+        destination: '/ressources/le-reseau-de-chaleur-un-mode-de-chauffage-aux-multiples-atouts',
+        permanent: true,
+        source: '/ressources/atouts',
+      },
+      {
+        destination: '/ressources/reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul',
+        permanent: true,
+        source: '/ressources/avantages',
+      },
+      {
+        destination: '/ressources/reseaux-de-chaleur-un-role-cle-dans-la-transition-energetique',
+        permanent: true,
+        source: '/ressources/role',
+      },
+      {
+        destination: '/ressources/combien-coute-un-raccordement-a-un-reseau-de-chaleur',
+        permanent: true,
+        source: '/ressources/cout-raccordement',
+      },
+      {
+        destination: '/ressources/qu-est-ce-qui-determine-la-faisabilite-du-raccordement-aux-reseaux-de-chaleur',
+        permanent: true,
+        source: '/ressources/faisabilite',
+      },
+      {
+        destination:
+          '/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur',
+        permanent: true,
+        source: '/ressources/aides',
+      },
+      {
+        destination: '/ressources/financer-le-raccordement-de-sa-copropriete-a-un-reseau-de-chaleur-dans-le-cadre-d-une-renovation-globale',
+        permanent: true,
+        source: '/ressources/financement',
+      },
+      {
+        destination: '/ressources/comprendre-la-facture-de-chauffage-d-une-copropriete-raccordee-a-un-reseau-de-chaleur',
+        permanent: true,
+        source: '/ressources/facture',
+      },
+      {
+        destination: '/ressources/valoriser-un-raccordement-a-un-reseau-de-chaleur-dans-le-cadre-du-dispositif-eco-energie-tertiaire',
+        permanent: true,
+        source: '/ressources/dispositif-eco-energie-tertiaire',
+      },
+      {
+        destination: '/ressources/qu-est-ce-qu-un-reseau-de-chaleur-classe',
+        permanent: true,
+        source: '/ressources/reseau-classe',
+      },
+      {
+        destination: '/ressources/quels-sont-les-principaux-acteurs-de-la-filiere-des-reseaux-de-chaleur',
+        permanent: true,
+        source: '/ressources/acteurs',
+      },
+      {
         destination: '/campagnes2024',
         permanent: true,
         source: '/evos',

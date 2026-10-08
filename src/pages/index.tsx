@@ -23,9 +23,11 @@ import type { TrackingEvent } from '@/modules/analytics/client';
 import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 
 const coproprietaireCards = {
-  atouts: issues.atouts,
   'energies-vertes': issues['energies-vertes'],
-  faisabilite: understandings.faisabilite,
+  'le-reseau-de-chaleur-un-mode-de-chauffage-aux-multiples-atouts':
+    issues['le-reseau-de-chaleur-un-mode-de-chauffage-aux-multiples-atouts'],
+  'qu-est-ce-qui-determine-la-faisabilite-du-raccordement-aux-reseaux-de-chaleur':
+    understandings['qu-est-ce-qui-determine-la-faisabilite-du-raccordement-aux-reseaux-de-chaleur'],
   reseau: issues.reseau,
 };
 
@@ -49,7 +51,7 @@ const tools: { eventKey: TrackingEvent; excerpt: string; href: string; image: st
   {
     eventKey: 'Outil|Coûts de raccordement et aides',
     excerpt: 'Calculez le coût du raccordement et les aides.',
-    href: '/ressources/cout-raccordement#contenu',
+    href: '/ressources/combien-coute-un-raccordement-a-un-reseau-de-chaleur#contenu',
     image: '/icons/tools/v2/raccordement.svg',
     postHogToolName: 'cout_raccordement',
     title: 'Raccordement',
@@ -74,7 +76,7 @@ const tools: { eventKey: TrackingEvent; excerpt: string; href: string; image: st
   {
     eventKey: 'Outil|Décret tertiaire',
     excerpt: 'Découvrez le dispositif Éco-Énergie Tertiaire.',
-    href: '/ressources/dispositif-eco-energie-tertiaire#contenu',
+    href: '/ressources/valoriser-un-raccordement-a-un-reseau-de-chaleur-dans-le-cadre-du-dispositif-eco-energie-tertiaire#contenu',
     image: '/icons/tools/v2/decret_tertiaire.svg',
     postHogToolName: 'decret_tertiaire',
     title: 'Décret tertiaire',
@@ -250,7 +252,7 @@ function Home() {
               <Text size="lg" mt="3w">
                 Dans la plupart des cas, le réseau de chaleur appartient à une collectivité territoriale et est{' '}
                 <Link
-                  href="/ressources/acteurs#contenu"
+                  href="/ressources/quels-sont-les-principaux-acteurs-de-la-filiere-des-reseaux-de-chaleur#contenu"
                   postHogEventKey="home:pedagogic_section_clicked"
                   postHogEventProps={{ element_name: 'acteurs' }}
                 >
@@ -297,8 +299,9 @@ Ce système contribue à la transition énergétique des villes en mutualisant l
               Les réseaux classés
             </SectionHeading>
             <Text size="lg">
-              Plus de 500 réseaux de chaleur sont désormais <Link href="/ressources/reseau-classe#contenu">“classés”</Link>, ce qui signifie
-              que certains bâtiments ont l'obligation de se raccorder.
+              Plus de 500 réseaux de chaleur sont désormais{' '}
+              <Link href="/ressources/qu-est-ce-qu-un-reseau-de-chaleur-classe#contenu">“classés”</Link>, ce qui signifie que certains
+              bâtiments ont l'obligation de se raccorder.
             </Text>
             <Text size="lg" mt="3w">
               Cette obligation s’applique dans une certaine zone autour du réseau, définie par la collectivité, qualifiée de périmètre de
@@ -412,7 +415,7 @@ Ce système contribue à la transition énergétique des villes en mutualisant l
       </Section>
 
       <Section variant="light">
-        <SectionTitle>Nos articles sur le chauffage urbain</SectionTitle>
+        <SectionTitle>Nos articles sur les énergies renouvelables</SectionTitle>
         <SectionContent>
           <Understanding cards={coproprietaireCards} />
         </SectionContent>
@@ -436,10 +439,13 @@ Ce système contribue à la transition énergétique des villes en mutualisant l
           </p>
           <p>
             Pour réduire l’impact écologique du chauffage, la rénovation thermique est le premier réflexe à avoir. Le{' '}
-            <Link href="/ressources/avantages#contenu">remplacement d’un chauffage collectif au gaz ou fioul</Link> par un raccordement à un
-            réseau de chaleur permet également d’y contribuer. Alimentés majoritairement par des énergies renouvelables et de récupération
-            locales, les réseaux de chaleur émettent deux fois moins de gaz à effet de serre qu’un chauffage au gaz et trois fois moins
-            qu'un chauffage au fioul. Ils offrent généralement des prix compétitifs et plus stables que ceux des énergies fossiles.
+            <Link href="/ressources/reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul#contenu">
+              remplacement d’un chauffage collectif au gaz ou fioul
+            </Link>{' '}
+            par un raccordement à un réseau de chaleur permet également d’y contribuer. Alimentés majoritairement par des énergies
+            renouvelables et de récupération locales, les réseaux de chaleur émettent deux fois moins de gaz à effet de serre qu’un
+            chauffage au gaz et trois fois moins qu'un chauffage au fioul. Ils offrent généralement des prix compétitifs et plus stables que
+            ceux des énergies fossiles.
           </p>
           <p>
             Des réseaux de chaleur existent dans la plupart des grandes villes, par exemple <Link href="/villes/paris">Paris</Link>,{' '}

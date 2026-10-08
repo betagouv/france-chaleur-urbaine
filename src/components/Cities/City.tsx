@@ -127,7 +127,10 @@ const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; networ
               </ArrowItem>
             </div>
             <div className="ml-8 mt-1">
-              <Link href="/ressources/aides#contenu" variant="primary">
+              <Link
+                href="/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur#contenu"
+                variant="primary"
+              >
                 Tout savoir sur cette aide
               </Link>
             </div>

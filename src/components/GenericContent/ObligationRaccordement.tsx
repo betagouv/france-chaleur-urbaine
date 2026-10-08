@@ -16,8 +16,9 @@ const ObligationRaccordement = () => {
             Les réseaux classés
           </Heading>
           <Text size="lg">
-            Plus de 500 réseaux de chaleur sont désormais <Link href="/ressources/reseau-classe#contenu">“classés”</Link>, ce qui signifie
-            que certains bâtiments ont l'obligation de se raccorder.
+            Plus de 500 réseaux de chaleur sont désormais{' '}
+            <Link href="/ressources/qu-est-ce-qu-un-reseau-de-chaleur-classe#contenu">“classés”</Link>, ce qui signifie que certains
+            bâtiments ont l'obligation de se raccorder.
           </Text>
           <Text size="lg" mt="3w">
             Cette obligation s’applique dans une certaine zone autour du réseau, définie par la collectivité, qualifiée de périmètre de

@@ -26,10 +26,14 @@ const SimulateurCoutRaccordement = dynamic(() => import('@/modules/simulator/cli
 });
 
 const conseillerCards = {
-  aides: understandings.aides,
-  avantages: understandings.avantages,
+  'coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur':
+    understandings[
+      'coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur'
+    ],
   'energies-vertes': issues['energies-vertes'],
   'obligations-raccordement': understandings['obligations-raccordement'],
+  'reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul':
+    understandings['reseau-de-chaleur-quels-avantages-par-rapport-a-un-chauffage-collectif-au-gaz-ou-au-fioul'],
 };
 
 const Professionnels = () => {
@@ -163,7 +167,7 @@ const Professionnels = () => {
           <Text>
             Estimez le montant du Coup de pouce ”
             <Link
-              href="/ressources/aides#contenu"
+              href="/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur#contenu"
               postHogEventKey="pro:tool_cta_clicked"
               postHogEventProps={{ tool_name: 'simulateur_aides' }}
             >
@@ -241,7 +245,7 @@ const Professionnels = () => {
               </Text>
               <Text size="lg" mt="2w">
                 <Link
-                  href="/ressources/aides#contenu"
+                  href="/ressources/coup-de-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires-une-aide-consequente-pour-se-raccorder-a-un-reseau-de-chaleur#contenu"
                   postHogEventKey="pro:tool_cta_clicked"
                   postHogEventProps={{ tool_name: 'simulateur_aides' }}
                 >
