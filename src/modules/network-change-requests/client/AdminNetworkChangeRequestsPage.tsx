@@ -5,13 +5,12 @@ import { useMemo, useState } from 'react';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
+import Link from '@/components/ui/Link';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
-import { useDialogState } from '@/hooks/useDialogState';
 import trpc from '@/modules/trpc/client';
 
 import { networkChangeRequestContactTypeLabels, networkChangeRequestKindLabels, networkChangeRequestStatusLabels } from '../constants';
-import AcceptNetworkChangeRequestDialog, { type AcceptNetworkChangeRequestData } from './AcceptNetworkChangeRequestDialog';
 import { isConversionPending } from './buildChangeRows';
 import NetworkChangeRequestDetail, { type NetworkChangeRequestItem } from './NetworkChangeRequestDetail';
 
@@ -38,7 +37,6 @@ export default function AdminNetworkChangeRequestsPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(urlColumnFilters ?? []);
   // `id` in the URL: deep link (dashboard, events) and the state of the detail dialog
   const [selectedId, setSelectedId] = useQueryState('id');
-  const acceptDialog = useDialogState<AcceptNetworkChangeRequestData>();
   const { data: requests = [], isLoading } = trpc.networkChangeRequests.admin.list.useQuery(undefined, {
     // conversions run in the background: poll while one is pending so the detail unlocks without a reload
     refetchInterval: (query) => (query.state.data?.some(isConversionPending) ? 5000 : false),
@@ -131,33 +129,35 @@ export default function AdminNetworkChangeRequestsPage() {
       title="Demandes de modification de réseau"
       description="Traitement des demandes déposées par les collectivités et exploitants"
       mode="authenticated"
+      layout="center"
     >
-      <div className="fr-container py-8">
-        <div className="mb-6 flex flex-wrap items-center gap-4">
-          <QuickFilterPresets
-            presets={quickFilterPresets}
-            data={requests}
-            loading={isLoading}
-            columnFilters={columnFilters}
-            onFiltersChange={setColumnFilters}
-          />
-        </div>
-        <TableSimple
-          columns={columns}
+      <div className="mb-6 flex flex-wrap items-center gap-4">
+        <QuickFilterPresets
+          presets={quickFilterPresets}
           data={requests}
           loading={isLoading}
-          initialSortingState={[{ desc: true, id: 'created_at' }]}
           columnFilters={columnFilters}
-          fluid
-          controlsLayout="block"
-          padding="sm"
-          loadingEmptyMessage="Aucune demande de modification de réseau"
-          urlSyncKey="modifications_reseau"
-          enableGlobalFilter
-          onRowClick={(rowId) => void setSelectedId(rowId)}
-          rowIdKey="id"
+          onFiltersChange={setColumnFilters}
         />
+        <Link href="/admin/enquete-fedene" variant="tertiary" className="ml-auto fr-btn--sm fr-btn--icon-left fr-icon-file-text-line">
+          Enquête FEDENE : import et écarts
+        </Link>
       </div>
+      <TableSimple
+        columns={columns}
+        data={requests}
+        loading={isLoading}
+        initialSortingState={[{ desc: true, id: 'created_at' }]}
+        columnFilters={columnFilters}
+        fluid
+        controlsLayout="block"
+        padding="sm"
+        loadingEmptyMessage="Aucune demande de modification de réseau"
+        urlSyncKey="modifications_reseau"
+        enableGlobalFilter
+        onRowClick={(rowId) => void setSelectedId(rowId)}
+        rowIdKey="id"
+      />
       <Dialog
         open={!!selectedRequest}
         onOpenChange={(open) => {
@@ -168,9 +168,8 @@ export default function AdminNetworkChangeRequestsPage() {
         title={selectedRequest ? `${networkChangeRequestKindLabels[selectedRequest.kind]} · ${selectedRequest.network_label}` : ''}
         size="xl"
       >
-        {selectedRequest && <NetworkChangeRequestDetail key={selectedRequest.id} request={selectedRequest} onAccept={acceptDialog.open} />}
+        {selectedRequest && <NetworkChangeRequestDetail key={selectedRequest.id} request={selectedRequest} />}
       </Dialog>
-      <AcceptNetworkChangeRequestDialog control={acceptDialog} />
     </SimplePage>
   );
 }

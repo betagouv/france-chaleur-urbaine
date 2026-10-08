@@ -436,6 +436,7 @@ describe('networkChangeRequests', () => {
         network: {
           documents: [],
           gestionnaire: null,
+          hasGeometry: false,
           id_fcu: 1,
           identifiant_reseau: '7501C',
           informationsComplementaires: null,
@@ -576,7 +577,63 @@ describe('networkChangeRequests', () => {
       expect(request.status).toStrictEqual('processed');
     });
 
-    it('refuses an existing network trace until it is linked and converted', async () => {
+    it('creates the heat network of an unattached existing network trace, with its perimeter', async () => {
+      const { id } = await createTraceRequest('trace_existant', null);
+      await seedGeometry(id, 'trace', lineGeometry);
+      await seedGeometry(id, 'pdp', polygonGeometry);
+      const caller = createTestCaller(testUsers.admin);
+
+      await caller.networkChangeRequests.admin.accept({ id });
+
+      const [request] = await caller.networkChangeRequests.admin.list();
+      const network = await kdb
+        .selectFrom('reseaux_de_chaleur')
+        .select(['id_fcu', 'nom_reseau', 'Gestionnaire', 'gestionnaire_fcu', 'MO', 'ouvert_aux_raccordements', 'has_trace', 'geom_update'])
+        .where('id_fcu', '=', request.network_id as number)
+        .executeTakeFirstOrThrow();
+      // the request is attached to the created network; its values are FCU values (no survey yet)
+      expect({ network, type: request.network_type }).toStrictEqual({
+        network: {
+          Gestionnaire: 'Exploitant SA',
+          geom_update: null,
+          gestionnaire_fcu: 'Exploitant SA',
+          has_trace: true,
+          id_fcu: request.network_id,
+          MO: 'Ville',
+          nom_reseau: 'Réseau de Massy',
+          ouvert_aux_raccordements: true,
+        },
+        type: 'reseau_de_chaleur',
+      });
+      expect(await kdb.selectFrom('zone_de_developpement_prioritaire').select('reseau_de_chaleur_ids').execute()).toStrictEqual([
+        { reseau_de_chaleur_ids: [request.network_id] },
+      ]);
+      expect((await listEvents('network_created')).map((event) => event.context_type).sort()).toStrictEqual([
+        'perimetre_de_developpement_prioritaire',
+        'reseau_de_chaleur',
+      ]);
+    });
+
+    it('refuses to create the network of an unattached existing network trace made of a PDF only', async () => {
+      await seedFile(uuid(23));
+      const { id } = await createTestCaller(null).networkChangeRequests.create({
+        contact: ficheInput.contact,
+        files: [{ id: uuid(23), role: 'trace' }],
+        kind: 'trace_existant',
+        network: null,
+        networkLabel: 'Réseau inconnu',
+        payload: tracePayload,
+      });
+      const caller = createTestCaller(testUsers.admin);
+
+      await expect(caller.networkChangeRequests.admin.accept({ id })).rejects.toMatchObject({
+        code: 'BAD_REQUEST',
+        message: expect.stringContaining('tracé exploitable'),
+      });
+      expect((await caller.networkChangeRequests.admin.list())[0].status).toStrictEqual('pending');
+    });
+
+    it('refuses an existing network trace while its files are not converted, attached or not', async () => {
       const { id } = await createTraceRequest('trace_existant', null);
       const caller = createTestCaller(testUsers.admin);
 
@@ -615,6 +672,55 @@ describe('networkChangeRequests', () => {
         { error: null, role: 'trace' },
       ]);
       await expect(caller.networkChangeRequests.admin.accept({ id })).resolves.toBeUndefined();
+    });
+
+    it.each([
+      { crs: { properties: { name: 'urn:ogc:def:crs:EPSG::2154' }, type: 'name' }, label: 'declared' },
+      { crs: undefined, label: 'not declared' },
+    ])('reprojects a Lambert 93 replacement GeoJSON to WGS84 (crs $label)', async ({ crs }) => {
+      const { id } = await createTraceRequest('trace_existant', { id: 1, type: 'reseau_de_chaleur' });
+      // Oberhausbergen (Strasbourg), as exported by a GIS in Lambert 93
+      const lambert93 = {
+        ...(crs ? { crs } : {}),
+        features: [
+          {
+            geometry: {
+              coordinates: [
+                [
+                  [1046325.95, 6844165.2],
+                  [1046326.3, 6844165.6],
+                ],
+              ],
+              type: 'MultiLineString',
+            },
+            properties: {},
+            type: 'Feature',
+          },
+        ],
+        type: 'FeatureCollection',
+      };
+      await kdb
+        .insertInto('files')
+        .values({
+          content: Buffer.from(JSON.stringify(lambert93)),
+          content_type: 'application/geo+json',
+          filename: 'trace-lambert93.geojson',
+          id: uuid(30),
+          scan_status: 'skipped',
+          sha256: 'geo',
+          size: 10,
+        })
+        .execute();
+      const caller = createTestCaller(testUsers.admin);
+
+      await caller.networkChangeRequests.admin.replaceGeometryFile({ fileId: uuid(30), id, role: 'trace' });
+
+      const geometry = (await caller.networkChangeRequests.admin.getRequestGeometry({ id, role: 'trace' })) as GeoJSON.MultiLineString;
+      const [longitude, latitude] = geometry.coordinates[0][0];
+      expect({ latitude: Math.round(latitude * 10) / 10, longitude: Math.round(longitude * 10) / 10 }).toStrictEqual({
+        latitude: 48.6,
+        longitude: 7.7,
+      });
     });
 
     it('lets the admin replay a failed conversion: the error is cleared and a new job is queued', async () => {
@@ -767,51 +873,29 @@ describe('networkChangeRequests', () => {
       expect(await listEvents('network_updated')).toStrictEqual([]);
     });
 
-    it('applies an import-created survey discrepancy by dropping the FCU corrections, without emailing anyone', async () => {
-      await kdb
-        .updateTable('reseaux_de_chaleur')
-        .set({
-          gestionnaire_fcu: 'Exploitant corrigé',
-          gestionnaire_fedene: 'Dalkia (EDF)',
-          nom_reseau_fcu: 'Nom corrigé',
-          nom_reseau_fedene: 'Réseau de Paris',
-        })
-        .where('id_fcu', '=', 1)
-        .execute();
+    it('refuses a survey discrepancy: it is decided field by field on the FEDENE survey page', async () => {
       const { id } = await kdb
         .insertInto('network_change_requests')
         .values({
           contact_type: 'autre',
-          contact_type_other: 'Enquête FEDENE 2025',
           kind: 'enquete',
           network_id: 1,
-          network_label: '7501C - Nom corrigé',
+          network_label: '7501C - Réseau de test',
           network_type: 'reseau_de_chaleur',
           origin: 'import',
-          payload: JSON.stringify({ edition: 2025, gestionnaire: 'Dalkia (EDF)', nomReseau: 'Réseau de Paris' }),
+          payload: JSON.stringify({ gestionnaire: 'Dalkia (EDF)' }),
         })
         .returning('id')
         .executeTakeFirstOrThrow();
-      vi.mocked(sendEmailTemplate).mockClear();
       const caller = createTestCaller(testUsers.admin);
 
-      await caller.networkChangeRequests.admin.accept({ id, included: ['gestionnaire'] });
-
-      expect(
-        await kdb
-          .selectFrom('reseaux_de_chaleur')
-          .select(['nom_reseau', 'nom_reseau_fcu', 'Gestionnaire', 'gestionnaire_fcu', 'MO'])
-          .where('id_fcu', '=', 1)
-          .executeTakeFirstOrThrow()
-      ).toStrictEqual({
-        Gestionnaire: 'Dalkia (EDF)',
-        gestionnaire_fcu: null,
-        MO: null,
-        nom_reseau: 'Nom corrigé',
-        nom_reseau_fcu: 'Nom corrigé',
+      await expect(caller.networkChangeRequests.admin.accept({ id })).rejects.toMatchObject({
+        code: 'BAD_REQUEST',
+        message: expect.stringContaining('Enquête FEDENE'),
       });
-      expect(vi.mocked(sendEmailTemplate)).not.toHaveBeenCalled();
-      expect((await caller.networkChangeRequests.admin.list())[0].status).toStrictEqual('processed');
+      // not listed with the submitted requests, nor counted with them
+      expect(await caller.networkChangeRequests.admin.list()).toStrictEqual([]);
+      expect(await caller.networkChangeRequests.admin.countPending()).toStrictEqual(0);
     });
 
     it('accepts an « autre » request without applying anything', async () => {

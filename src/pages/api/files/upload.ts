@@ -1,6 +1,6 @@
 import formidable from 'formidable';
 
-import { fileUploadLimits } from '@/modules/files/constants';
+import { adminOnlyFileTypeGroups, allowedFileTypes, fileUploadLimits, publicFileExtensions } from '@/modules/files/constants';
 import { discardTemporaryFiles, FileValidationError, prepareUploadedFile, storeUploadedFiles } from '@/modules/files/server/service';
 import { createNextApiRateLimiter } from '@/modules/security/server/rate-limit/next-pages';
 import { logger } from '@/server/helpers/logger';
@@ -36,6 +36,12 @@ export default handleRouteErrors(async (req, res) => {
   try {
     // validate the whole batch before storing anything: a rejected file fails the request without leaving orphans
     const preparedFiles = await Promise.all(receivedFiles.map(prepareUploadedFile));
+    if (
+      req.user?.role !== 'admin' &&
+      preparedFiles.some((file) => adminOnlyFileTypeGroups.includes(allowedFileTypes[file.extension].group))
+    ) {
+      throw new FileValidationError(`Extensions acceptées : ${publicFileExtensions.join(', ')}.`);
+    }
     return { files: await storeUploadedFiles(preparedFiles, logger) };
   } catch (error) {
     await discardTemporaryFiles(receivedFiles);

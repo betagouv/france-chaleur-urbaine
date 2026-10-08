@@ -2,7 +2,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-import { processGeometry } from '@/modules/geo/server/helpers';
+import { processGeometryToWgs84 } from '@/modules/geo/server/helpers';
 import { ogr2ogrConvertToGeoJSON } from '@/utils/ogr2ogr';
 
 export type GeoSourceFile = { content: Buffer; filename: string };
@@ -44,7 +44,8 @@ export const convertGeoFilesToGeometry = async (files: GeoSourceFile[]): Promise
     if (features.length === 0) {
       throw new Error('Aucune géométrie trouvée dans les fichiers transmis');
     }
-    return (await processGeometry({ features, type: 'FeatureCollection' })).geom;
+    // ogr2ogr reprojects when the projection is declared (.prj, crs); a Lambert 93 file without it is caught here
+    return await processGeometryToWgs84({ features, type: 'FeatureCollection' });
   } finally {
     await rm(tempDir, { force: true, recursive: true });
   }

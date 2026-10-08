@@ -5,13 +5,14 @@ import type { Logger } from 'winston';
 
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
+import { type SurveyDiscrepancyField, surveyDiscrepancyFields } from '@/modules/fedene-survey/constants';
 import { getFileTypeGroup } from '@/modules/files/constants';
 import { getFileForDownload, getFilesMetadata, renameStoredFile } from '@/modules/files/server/service';
-import { processGeometry } from '@/modules/geo/server/helpers';
+import { processGeometryToWgs84 } from '@/modules/geo/server/helpers';
 import { documentChangeKey, documentRemovalChangeKey } from '@/modules/network-change-requests/document-change-keys';
 import { storeRequestGeometry } from '@/modules/network-change-requests/server/jobs';
 import { getUsersWithNetworkPermission } from '@/modules/permissions/server/service';
-import { MAX_NETWORK_DOCUMENTS, type NetworkEntityType, networkEntityToTable } from '@/modules/reseaux/constants';
+import { MAX_NETWORK_DOCUMENTS, type NetworkEntityType, networkEntityToTable, normalizeNetworkValue } from '@/modules/reseaux/constants';
 import {
   addNetworkDocuments,
   assertNetworkDocumentsPublishable,
@@ -40,6 +41,7 @@ import {
   type NetworkChangeRequestGeometryRole,
   type NetworkChangeRequestKind,
   type NetworkChangeRequestPayloads,
+  type NetworkChangeRequestStatus,
   networkChangeRequestFileRules,
   networkChangeRequestGeometryRoles,
   networkChangeRequestKindLabels,
@@ -132,14 +134,57 @@ export const createNetworkChangeRequest = async (input: CreateNetworkChangeReque
 };
 
 /**
- * Suggestion created by a data import (FEDENE survey values differing from the base): one pending request per network
- * and edition, refreshed on every import and removed when the discrepancy disappears. No submitter, no email.
+ * Survey discrepancy created by the FEDENE import: the survey values differing from a FCU correction, one pending request
+ * per network, refreshed on every import and removed when the discrepancy disappears. A correction the admin kept against
+ * a survey value is not proposed again while the survey reports the same value. No submitter, no email.
  */
+export type SurveyDiscrepancyRequestRow = { id: string; payload: unknown; status: NetworkChangeRequestStatus };
+const surveyPayloadOf = (request: SurveyDiscrepancyRequestRow) => request.payload as NetworkChangeRequestPayloads['enquete'];
+
+/**
+ * The survey values to propose for a network: those differing from a FCU correction, minus the ones the admin already
+ * decided to keep against the same survey value (processed requests of the network).
+ */
+export const proposedSurveyDiscrepancies = (
+  requests: SurveyDiscrepancyRequestRow[],
+  survey: Partial<Record<SurveyDiscrepancyField, string>>
+): Partial<Record<SurveyDiscrepancyField, string>> => {
+  const keptAgainst = (field: SurveyDiscrepancyField, value: string) =>
+    requests.some(
+      (request) =>
+        request.status === 'processed' &&
+        surveyPayloadOf(request).decisions?.[field] === 'keep_fcu' &&
+        normalizeNetworkValue(surveyPayloadOf(request)[field]) === normalizeNetworkValue(value)
+    );
+  return Object.fromEntries(
+    surveyDiscrepancyFields.flatMap((field) => {
+      const value = survey[field];
+      return value !== undefined && !keptAgainst(field, value) ? [[field, value]] : [];
+    })
+  );
+};
+
+/** The `enquete` requests of the networks of a type, keyed by network id (one query for a whole import run). */
+export const listSurveyDiscrepancyRequests = async (networkType: DocumentedNetworkType) => {
+  const requests = await kdb
+    .selectFrom('network_change_requests')
+    .select(['id', 'payload', 'status', 'network_id'])
+    .where('kind', '=', 'enquete')
+    .where('network_type', '=', networkType)
+    .execute();
+  const byNetworkId = new Map<number, SurveyDiscrepancyRequestRow[]>();
+  for (const request of requests) {
+    if (request.network_id !== null) {
+      byNetworkId.set(request.network_id, [...(byNetworkId.get(request.network_id) ?? []), request]);
+    }
+  }
+  return byNetworkId;
+};
+
 export const upsertSurveyDiscrepancyRequest = async (
   network: { id: number; type: DocumentedNetworkType; label: string },
-  payload: NetworkChangeRequestPayloads['enquete']
+  survey: Partial<Record<SurveyDiscrepancyField, string>>
 ) => {
-  const hasDiscrepancy = payload.gestionnaire !== undefined || payload.maitreOuvrage !== undefined || payload.nomReseau !== undefined;
   const requests = await kdb
     .selectFrom('network_change_requests')
     .select(['id', 'payload', 'status'])
@@ -147,23 +192,35 @@ export const upsertSurveyDiscrepancyRequest = async (
     .where('network_type', '=', network.type)
     .where('network_id', '=', network.id)
     .execute();
-  const ofEdition = requests.filter((request) => (request.payload as NetworkChangeRequestPayloads['enquete']).edition === payload.edition);
-  // an admin already processed the survey values of this edition (applied or closed): do not ask again on the next import run
-  if (ofEdition.some((request) => request.status === 'processed')) {
-    return 'handled';
-  }
-  const sameEdition = ofEdition.find((request) => request.status === 'pending');
-  if (!hasDiscrepancy) {
-    if (sameEdition) {
-      await kdb.deleteFrom('network_change_requests').where('id', '=', sameEdition.id).execute();
+  const payloadOf = surveyPayloadOf;
+  const proposed = proposedSurveyDiscrepancies(requests, survey);
+  const pending = requests.find((request) => request.status === 'pending');
+  if (Object.keys(proposed).length === 0) {
+    if (pending) {
+      await kdb.deleteFrom('network_change_requests').where('id', '=', pending.id).execute();
     }
-    return sameEdition ? 'resolved' : 'none';
+    return pending ? 'resolved' : 'none';
   }
-  if (sameEdition) {
+  if (pending) {
+    // a decision already taken on a pending discrepancy stays while the survey value is the same
+    const previous = payloadOf(pending);
+    const decisions = Object.fromEntries(
+      (Object.keys(proposed) as SurveyDiscrepancyField[]).flatMap((field) =>
+        previous.decisions?.[field] && normalizeNetworkValue(previous[field]) === normalizeNetworkValue(proposed[field])
+          ? [[field, previous.decisions[field]]]
+          : []
+      )
+    );
+    const allDecided = Object.keys(proposed).every((field) => decisions[field] !== undefined);
     await kdb
       .updateTable('network_change_requests')
-      .set({ network_label: network.label, payload: JSON.stringify(payload), updated_at: new Date() })
-      .where('id', '=', sameEdition.id)
+      .set({
+        network_label: network.label,
+        payload: JSON.stringify({ ...proposed, ...(Object.keys(decisions).length > 0 ? { decisions } : {}) }),
+        ...(allDecided ? { processed_at: new Date(), status: 'processed' as const } : {}),
+        updated_at: new Date(),
+      })
+      .where('id', '=', pending.id)
       .execute();
     return 'updated';
   }
@@ -171,13 +228,13 @@ export const upsertSurveyDiscrepancyRequest = async (
     .insertInto('network_change_requests')
     .values({
       contact_type: 'autre',
-      contact_type_other: `Enquête FEDENE ${payload.edition}`,
+      contact_type_other: 'Enquête FEDENE',
       kind: 'enquete',
       network_id: network.id,
       network_label: network.label,
       network_type: network.type,
       origin: 'import',
-      payload: JSON.stringify(payload),
+      payload: JSON.stringify(proposed),
     })
     .returning('id')
     .executeTakeFirstOrThrow();
@@ -190,7 +247,10 @@ export const upsertSurveyDiscrepancyRequest = async (
   return 'created';
 };
 
-/** Every request with its reviewer and the metadata of its files (never their content), newest first. */
+/**
+ * Every request submitted by a person (survey discrepancies have their own page), with its processor and the metadata of
+ * its files (never their content), newest first.
+ */
 export const listNetworkChangeRequests = async () =>
   await kdb
     .selectFrom('network_change_requests as request')
@@ -242,6 +302,7 @@ export const listNetworkChangeRequests = async () =>
           .orderBy('file.filename')
       ).as('files'),
     ])
+    .where('request.kind', '!=', 'enquete')
     .orderBy('request.created_at', 'desc')
     .execute();
 
@@ -250,6 +311,8 @@ export const countPendingNetworkChangeRequests = async () => {
     .selectFrom('network_change_requests')
     .select((eb) => eb.fn.countAll<number>().as('count'))
     .where('status', '=', 'pending')
+    // survey discrepancies have their own page and counter
+    .where('kind', '!=', 'enquete')
     .executeTakeFirstOrThrow();
   return Number(row.count);
 };
@@ -283,6 +346,7 @@ export const getNetworkChangeRequestReviewContext = async (requestId: string) =>
         eb.ref(`${table}.Gestionnaire`).as('gestionnaire'),
         eb.ref(`${table}.informationsComplementaires`).as('informationsComplementaires'),
         eb.ref(`${table}.reseaux classes`).as('reseauClasse'),
+        sql<boolean>`${eb.ref(`${table}.geom`)} IS NOT NULL`.as('hasGeometry'),
       ])
       .where(`${table}.id_fcu`, '=', request.network_id)
       .executeTakeFirst(),
@@ -374,8 +438,8 @@ export const replaceNetworkChangeRequestGeometryFile = async ({ fileId, id, role
   let geometry: GeoJSON.Geometry;
   try {
     const parsed = JSON.parse(stored.content.toString('utf8')) as GeoJSON.GeoJSON;
-    // a single Feature is read as a collection of one: processGeometry takes collections and bare geometries
-    geometry = (await processGeometry(parsed.type === 'Feature' ? { features: [parsed], type: 'FeatureCollection' } : parsed)).geom;
+    // a single Feature is read as a collection of one; a Lambert 93 file (declared `crs` or not) is reprojected to WGS84
+    geometry = await processGeometryToWgs84(parsed.type === 'Feature' ? { features: [parsed], type: 'FeatureCollection' } : parsed);
   } catch (error) {
     throw new TRPCError({ code: 'BAD_REQUEST', message: `GeoJSON illisible : ${error instanceof Error ? error.message : String(error)}` });
   }
@@ -436,11 +500,15 @@ export const getNetworkChangeRequestGeometry = async (requestId: string, role: N
 export const linkNetworkChangeRequest = async (input: LinkNetworkChangeRequestInput) => {
   const request = await kdb
     .selectFrom('network_change_requests')
-    .select(['id', 'status'])
+    .select(['id', 'kind', 'status'])
     .where('id', '=', input.id)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
   if (request.status !== 'pending') {
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cette demande a déjà été traitée' });
+  }
+  if (request.kind === 'enquete') {
+    // created by the import for one network: detaching it would get it recreated at the next import
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Un écart avec l’enquête FEDENE reste rattaché à son réseau' });
   }
   if (input.network) {
     await assertNetworkExists(input.network);
@@ -498,7 +566,7 @@ const releaseClaimedRequest = async (requestId: string) => {
 /**
  * Processes a pending request: the included changes are applied to the base, per kind:
  * - `fiche`: the proposed values are written on the network (same fields as the admin edit dialog), documents published / taken down;
- * - `enquete`: the survey values replace the FCU corrections;
+ * - `enquete`: refused, decided field by field on the « Enquête FEDENE » page;
  * - `trace_existant`: the converted trace goes live on the network (tiles rebuilt), metadata updated, optional perimeter created;
  * - `trace_construction`: a construction network is created (or the linked one updated) with the trace, optional perimeter created;
  * - `pdp`: a priority development perimeter is created, linked to the network when known;
@@ -515,6 +583,10 @@ export const acceptNetworkChangeRequest = async (
     .select(['id', 'kind', 'status', 'network_label', 'network_type', 'network_id', 'contact_email', 'payload', 'origin'])
     .where('id', '=', input.id)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+  if (request.kind === 'enquete') {
+    // decided field by field on the « Enquête FEDENE » page (`resolveSurveyDiscrepancy`)
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Les écarts avec l’enquête FEDENE se traitent depuis la page Enquête FEDENE' });
+  }
   await claimPendingRequest(request.id, context.userId);
   const isIncluded = (key: string) => !input.included || input.included.includes(key);
   let applied: AppliedResult;
@@ -654,27 +726,11 @@ const applyRequest = async (request: AcceptableRequest, isIncluded: IsIncluded, 
     case 'pdp':
       return await applyPdpRequest(request, context);
     case 'enquete':
-      return await applySurveyRequest(request, networkChangeRequestPayloadSchemas.enquete.parse(request.payload), isIncluded);
+      // refused upstream (`acceptNetworkChangeRequest`): decided on the « Enquête FEDENE » page
+      throw new TRPCError({ code: 'BAD_REQUEST', message: 'Les écarts avec l’enquête FEDENE se traitent depuis la page Enquête FEDENE' });
     case 'autre':
       return { changes: {}, network: null };
   }
-};
-
-const applySurveyRequest = async (
-  request: AcceptableRequest,
-  payload: NetworkChangeRequestPayloads['enquete'],
-  isIncluded: IsIncluded
-): Promise<AppliedResult> => {
-  if (!isDocumentedNetworkType(request.network_type) || request.network_id === null) {
-    throw new TRPCError({ code: 'BAD_REQUEST', message: "Cette demande n'est rattachée à aucun réseau de chaleur ou de froid" });
-  }
-  const columns = toNetworkColumns(
-    pickIncluded({ gestionnaire: payload.gestionnaire, maitreOuvrage: payload.maitreOuvrage, nomReseau: payload.nomReseau }, isIncluded)
-  );
-  await (request.network_type === 'reseau_de_chaleur'
-    ? updateReseauDeChaleur(request.network_id, columns)
-    : updateReseauDeFroid(request.network_id, columns));
-  return { changes: columns, network: null };
 };
 
 const applyFicheRequest = async (
@@ -720,6 +776,9 @@ const applyTraceExistantRequest = async (
   isIncluded: IsIncluded,
   context: { userId: string }
 ): Promise<AppliedResult> => {
+  if (request.network_type === null) {
+    return await createHeatNetworkFromTrace(request, payload, isIncluded, context);
+  }
   if (!isDocumentedNetworkType(request.network_type) || request.network_id === null) {
     throw new TRPCError({ code: 'BAD_REQUEST', message: "Rattachez d'abord la demande au réseau de chaleur ou de froid concerné" });
   }
@@ -754,6 +813,62 @@ const applyTraceExistantRequest = async (
     changes: { ...columns, ...(trace ? { geometry_applied: true } : {}), ...(pdpId ? { pdp_created: pdpId } : {}) },
     created: pdpId ? [{ id: pdpId, type: 'perimetre_de_developpement_prioritaire' }] : [],
     network: null,
+  };
+};
+
+const attachRequestToNetwork = async (requestId: string, network: { id: number; type: NetworkEntityType }) => {
+  await kdb
+    .updateTable('network_change_requests')
+    .set({ network_id: network.id, network_type: network.type })
+    .where('id', '=', requestId)
+    .execute();
+};
+
+/**
+ * A trace of an existing network unknown to the base (not attached by the admin): the heat network is created from the
+ * trace, named after the submitter's label, with the proposed metadata (FCU values: no survey yet), and its optional
+ * perimeter. The trace is required: a PDF-only request has to be attached to a network, or its file replaced.
+ */
+const createHeatNetworkFromTrace = async (
+  request: AcceptableRequest,
+  payload: NetworkChangeRequestPayloads['trace_existant'],
+  isIncluded: IsIncluded,
+  context: { userId: string }
+): Promise<AppliedResult> => {
+  const trace = await getRequestGeometry(request.id, 'trace');
+  if (!trace) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message:
+        'Pour créer le réseau, il faut un tracé exploitable : rattachez la demande à un réseau de la base, ou remplacez le PDF par un GeoJSON',
+    });
+  }
+  const perimeter = isIncluded('pdp') ? await getRequestGeometry(request.id, 'pdp') : null;
+  const columns = toNetworkColumns(
+    pickIncluded(
+      {
+        gestionnaire: payload.gestionnaire,
+        maitreOuvrage: payload.maitreOuvrage,
+        ouvertAuxRaccordements: payload.ouvertAuxRaccordements,
+        ...(payload.reseauClasse === null ? {} : { reseauClasse: payload.reseauClasse }),
+      },
+      isIncluded
+    )
+  );
+  const created = await createNetwork(undefined, trace, 'reseaux_de_chaleur');
+  // attached right away: a retry after a failure below updates this network instead of creating another one
+  await attachRequestToNetwork(request.id, { id: created.id_fcu, type: 'reseau_de_chaleur' });
+  await updateReseauDeChaleur(created.id_fcu, { ...columns, nom_reseau: request.network_label });
+  // the trace goes live right away (tiles rebuilt in the background)
+  await applyNetworkGeometryDraft('reseaux_de_chaleur', created.id_fcu, context.userId);
+  const pdpId = await createLinkedPdp(perimeter, { reseau_de_chaleur_ids: [created.id_fcu] }, context.userId);
+  return {
+    changes: { ...columns, geometry_applied: true, ...(pdpId ? { pdp_created: pdpId } : {}) },
+    created: [
+      { id: created.id_fcu, type: 'reseau_de_chaleur' },
+      ...(pdpId ? [{ id: pdpId, type: 'perimetre_de_developpement_prioritaire' as const }] : []),
+    ],
+    network: { id: created.id_fcu, type: 'reseau_de_chaleur' },
   };
 };
 
@@ -793,6 +908,8 @@ const applyTraceConstructionRequest = async (
       })()
     : await (async () => {
         const created = await createNetwork(undefined, trace, 'zones_et_reseaux_en_construction');
+        // attached right away: a retry after a failure below updates this network instead of creating another one
+        await attachRequestToNetwork(request.id, { id: created.id_fcu, type: 'reseau_en_construction' });
         await updateReseauEnConstruction(created.id_fcu, {
           ...metadata,
           nom_reseau: request.network_label,

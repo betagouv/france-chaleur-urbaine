@@ -10,10 +10,10 @@ import { parentLogger } from '@/server/helpers/logger';
 import { formatFileSize } from '@/utils/strings';
 
 import {
-  allowedFileExtensions,
   allowedFileTypes,
   type FileScanStatus,
   fileUploadLimits,
+  publicFileExtensions,
   type UploadedFile,
   zipMaxUncompressedSize,
 } from '../constants';
@@ -29,7 +29,8 @@ export type TemporaryUploadedFile = { filepath: string; hash?: string | null; or
 
 export type PreparedFile = DetectedFileType & { filename: string; filepath: string; sha256: string; size: number };
 
-const zipEntryAllowedExtensions = allowedFileExtensions.filter((extension) => extension !== '.zip');
+// a public archive holds geo files or PDF: no nested archive, no admin-only type
+const zipEntryAllowedExtensions = publicFileExtensions.filter((extension) => extension !== '.zip');
 
 /**
  * Validates a file received by the upload route without loading it in memory: accepted type (first bytes), size and,
@@ -57,7 +58,7 @@ export const prepareUploadedFile = async (file: TemporaryUploadedFile): Promise<
     const detected = detectFileType(filename, head);
     if (!detected) {
       throw new FileValidationError(
-        `Le fichier « ${filename} » n'est pas d'un type accepté ou son contenu ne correspond pas à son extension. Extensions acceptées : ${allowedFileExtensions.join(', ')}.`
+        `Le fichier « ${filename} » n'est pas d'un type accepté ou son contenu ne correspond pas à son extension. Extensions acceptées : ${publicFileExtensions.join(', ')}.`
       );
     }
     if (allowedFileTypes[detected.extension].check === 'zip') {

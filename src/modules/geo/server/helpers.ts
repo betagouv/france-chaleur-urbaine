@@ -99,6 +99,67 @@ export async function processGeometry(
   };
 }
 
+/** Every coordinate pair of a geometry. */
+const coordinatePairs = (geom: GeoJSON.Geometry): number[][] =>
+  geom.type === 'GeometryCollection'
+    ? geom.geometries.flatMap(coordinatePairs)
+    : ([geom.coordinates].flat(
+        geom.type === 'Point' ? 0 : geom.type === 'LineString' || geom.type === 'MultiPoint' ? 1 : geom.type === 'MultiPolygon' ? 3 : 2
+      ) as number[][]);
+
+/** `true` when every coordinate is a valid longitude / latitude. */
+export const isWgs84Geometry = (geom: GeoJSON.Geometry): boolean =>
+  coordinatePairs(geom).every(
+    ([longitude, latitude]) =>
+      Number.isFinite(longitude) && Number.isFinite(latitude) && Math.abs(longitude) <= 180 && Math.abs(latitude) <= 90
+  );
+
+/** Extent of EPSG:2154 (metropolitan France): metre coordinates outside it are another projection (CC zones, UTM, Web Mercator…). */
+const lambert93Extent = { maxX: 1320649, maxY: 7235612, minX: -378305, minY: 6005281 };
+const isWithinLambert93Extent = (geom: GeoJSON.Geometry): boolean =>
+  coordinatePairs(geom).every(
+    ([x, y]) => x >= lambert93Extent.minX && x <= lambert93Extent.maxX && y >= lambert93Extent.minY && y <= lambert93Extent.maxY
+  );
+const acceptedCrsNames = ['2154', '4326', 'CRS84'];
+const unsupportedProjectionError = () =>
+  new Error('Projection du fichier non prise en charge : attendu WGS84 (longitude / latitude) ou Lambert 93 (EPSG:2154)');
+
+/**
+ * Processes a GeoJSON (see `processGeometry`) and returns its geometry in WGS84, the GeoJSON standard read by the maps:
+ * coordinates in metres are taken as Lambert 93 (declared `crs` or not) and reprojected. Throws for another projection:
+ * a `crs` declared as something else, or metre coordinates outside the Lambert 93 extent.
+ */
+export async function processGeometryToWgs84(
+  geometry: (GeoJSON.FeatureCollection | GeoJSON.GeometryCollection | GeoJSON.Geometry) & {
+    crs?: { type?: string; properties?: { name?: string } };
+  }
+): Promise<GeoJSON.Geometry> {
+  const crsName = geometry.crs?.properties?.name;
+  if (crsName && !acceptedCrsNames.some((accepted) => crsName.includes(accepted))) {
+    throw unsupportedProjectionError();
+  }
+  const { geom, srid } = await processGeometry(geometry);
+  if (srid === 2154 && !isWithinLambert93Extent(geom)) {
+    throw unsupportedProjectionError();
+  }
+  const wgs84 =
+    srid === 4326
+      ? geom
+      : (JSON.parse(
+          (
+            await kdb
+              .selectNoFrom(
+                sql<string>`ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(${JSON.stringify(geom)}), 2154), 4326))`.as('geojson')
+              )
+              .executeTakeFirstOrThrow()
+          ).geojson
+        ) as GeoJSON.Geometry);
+  if (!isWgs84Geometry(wgs84)) {
+    throw unsupportedProjectionError();
+  }
+  return wgs84;
+}
+
 /**
  * Read a GeoJSON file and return the unique geometry with its detected SRID.
  * Throws an error if the file contains multiple features or geometries.

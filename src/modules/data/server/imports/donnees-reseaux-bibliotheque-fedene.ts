@@ -1,20 +1,41 @@
 import { createWriteStream } from 'node:fs';
 import { finished } from 'node:stream/promises';
 
-import { upsertSurveyDiscrepancyRequest } from '@/modules/network-change-requests/server/service';
+import {
+  listSurveyDiscrepancyRequests,
+  proposedSurveyDiscrepancies,
+  upsertSurveyDiscrepancyRequest,
+} from '@/modules/network-change-requests/server/service';
 import { isPrixReseauCommunique, normalizeNetworkValue } from '@/modules/reseaux/constants';
+import { syncLinkedNetworkFields } from '@/modules/reseaux/server/linked-fields-sync';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import type { Logger } from '@/server/helpers/logger';
 
 import { defineFileImportFunc } from '../import';
-import { loadXlsxFromFile } from '../import-utils';
+import { loadXlsxFromBuffer, loadXlsxFromFile } from '../import-utils';
 
 // ---------------------------------------------------------------------------
 // Constants + Types
 // ---------------------------------------------------------------------------
 
-export const FEDENE_EDITION_YEAR = 2025;
 const EXCEL_SHEET_NAME = 'BDD - complète';
+
+/** The file is not usable as the FEDENE library (wrong sheet, missing column, duplicated id): shown to the admin as is. */
+export class FedeneFileError extends Error {}
+
+/** Rows of the FEDENE library held in memory (file uploaded on the admin page). */
+export const loadFedeneRows = (buffer: Buffer) => {
+  let rows: ExcelRowBrute[];
+  try {
+    rows = loadXlsxFromBuffer(buffer, EXCEL_SHEET_NAME) as ExcelRowBrute[];
+  } catch (error) {
+    throw new FedeneFileError(error instanceof Error ? error.message : 'Fichier illisible');
+  }
+  if (rows.length > 0 && !('ID EARCF' in rows[0])) {
+    throw new FedeneFileError("Colonne « ID EARCF » absente : ce n'est pas la bibliothèque de données FEDENE attendue");
+  }
+  return rows;
+};
 
 export type ExcelRowBrute = {
   'ID EARCF': string;
@@ -123,9 +144,17 @@ type ChangeEntry = { diffs: FieldDiff[]; id: string; type: 'UPDATE' | 'CREATE' }
 export type FiliereResult = {
   changes: ChangeEntry[];
   createdCount: number;
+  /** networks of the file unknown to the base (created without geometry) */
+  created: { sncu: string; name: string | null }[];
   invalidIdsCount: number;
   missingFromExcel: string[];
   updatedCount: number;
+  /** FCU corrections now matched by the survey: dropped */
+  clearedCorrections: number;
+  /** networks with at least one FCU correction still differing from the survey: a survey discrepancy to decide */
+  discrepancyNetworks: number;
+  /** FCU corrections still differing from the survey */
+  discrepancyFields: number;
 };
 
 // ---------------------------------------------------------------------------
@@ -161,7 +190,7 @@ const FILIERE_FROID: FiliereConfig = {
 export const importDonneesReseauxBibliothequeFedene = defineFileImportFunc(async ({ filepath, logger, options }) => {
   const dryRun = options?.dryRun ?? false;
 
-  logger.info(`Début de l'import des données réseaux depuis le fichier Fedene (Edition ${FEDENE_EDITION_YEAR})`);
+  logger.info(`Début de l'import des données réseaux depuis le fichier Fedene ${filepath}`);
   logger.info(`Mode: ${dryRun ? 'dry-run' : 'live'}`);
 
   const rows = (await loadXlsxFromFile(filepath, EXCEL_SHEET_NAME)) as ExcelRowBrute[];
@@ -173,7 +202,7 @@ export const importDonneesReseauxBibliothequeFedene = defineFileImportFunc(async
   const logFilePath = `import-bibliotheque-fedene-${timestamp}.log`;
   const logStream = createWriteStream(logFilePath, { encoding: 'utf-8' });
   const log = (text: string) => logStream.write(`${text}\n`);
-  log(`# Import Fedene Edition ${FEDENE_EDITION_YEAR} - ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`);
+  log(`# Import Fedene ${filepath} - ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`);
   log(`Mode: ${dryRun ? 'dry-run' : 'live'}`);
   log('');
   writeLogSection(log, FILIERE_CHALEUR.label, results.chaleur);
@@ -194,19 +223,35 @@ export const importDonneesReseauxBibliothequeFedene = defineFileImportFunc(async
 
 /** Applies the rows of the FEDENE file to the base (exported for tests: no file, no log file). */
 export const importFedeneRows = async (rows: ExcelRowBrute[], { dryRun, logger }: { dryRun: boolean; logger: Logger }) => {
-  const reseauxChaleur = rows.filter((row) => row['ID EARCF']?.endsWith('C'));
-  const reseauxFroid = rows.filter((row) => row['ID EARCF']?.endsWith('F'));
-  logger.info(`${reseauxChaleur.length} réseaux de chaleur, ${reseauxFroid.length} réseaux de froid`);
+  const reseauxChaleur = rows.filter((row) => FILIERE_CHALEUR.sncuPattern.test(row['ID EARCF'] ?? ''));
+  const reseauxFroid = rows.filter((row) => FILIERE_FROID.sncuPattern.test(row['ID EARCF'] ?? ''));
+  const ignoredRows = rows.length - reseauxChaleur.length - reseauxFroid.length;
+  logger.info(
+    `${reseauxChaleur.length} réseaux de chaleur, ${reseauxFroid.length} réseaux de froid, ${ignoredRows} lignes sans ID EARCF valide`
+  );
+  // a duplicated id would create the network twice (no unique index on the cold networks): refused before any write
+  const occurrences = new Map<string, number>();
+  for (const row of [...reseauxChaleur, ...reseauxFroid]) {
+    occurrences.set(row['ID EARCF'], (occurrences.get(row['ID EARCF']) ?? 0) + 1);
+  }
+  const duplicates = [...occurrences.entries()].filter(([, count]) => count > 1).map(([sncu]) => sncu);
+  if (duplicates.length > 0) {
+    throw new FedeneFileError(`ID EARCF en double dans le fichier : ${duplicates.join(', ')}`);
+  }
 
   const chaleur = await processFiliere(FILIERE_CHALEUR, reseauxChaleur, { dryRun });
   logFiliereConsoleOutput(logger, FILIERE_CHALEUR.label, chaleur);
   const froid = await processFiliere(FILIERE_FROID, reseauxFroid, { dryRun });
   logFiliereConsoleOutput(logger, FILIERE_FROID.label, froid);
 
+  if (!dryRun) {
+    // the extensions copy the name, gestionnaire and MO of their heat network
+    await syncLinkedNetworkFields();
+  }
   logger.info(
     `Import terminé: ${chaleur.updatedCount + froid.updatedCount} réseaux mis à jour, ${chaleur.createdCount + froid.createdCount} créés, ${chaleur.missingFromExcel.length + froid.missingFromExcel.length} absents du fichier`
   );
-  return { chaleur, froid };
+  return { chaleur, froid, ignoredRows };
 };
 
 // ---------------------------------------------------------------------------
@@ -222,10 +267,16 @@ async function processFiliere(config: FiliereConfig, reseaux: ExcelRowBrute[], {
   const idFcuBySncu = new Map(existingNetworks.map((network) => [network['Identifiant reseau'] as string, network.id_fcu]));
   const networkBySncu = new Map(existingNetworks.map((network) => [network['Identifiant reseau'] as string, network]));
   const sncuExcel = new Set(reseaux.map((row) => row['ID EARCF']));
+  // the decisions already taken: a correction the admin kept against the same survey value is not an discrepancy
+  const discrepancyRequests = await listSurveyDiscrepancyRequests(config.networkType);
 
   const changes: ChangeEntry[] = [];
+  const created: FiliereResult['created'] = [];
   let updatedCount = 0;
   let createdCount = 0;
+  let clearedCorrections = 0;
+  let discrepancyNetworks = 0;
+  let discrepancyFields = 0;
   // sequential: one network at a time keeps the log ordered and the diff readable
   for (const row of reseaux) {
     const sncu = row['ID EARCF'];
@@ -239,17 +290,23 @@ async function processFiliere(config: FiliereConfig, reseaux: ExcelRowBrute[], {
         changes.push({ diffs, id: sncu, type: 'UPDATE' });
       }
       updatedCount++;
+      const network = networkBySncu.get(sncu) as (typeof existingNetworks)[number];
+      // a FCU correction now matched by the survey is dropped; one still differing is proposed for removal
+      const corrections = [
+        { fcu: network.gestionnaire_fcu, fcuColumn: 'gestionnaire_fcu', payloadKey: 'gestionnaire', survey: survey.gestionnaire_fedene },
+        { fcu: network.mo_fcu, fcuColumn: 'mo_fcu', payloadKey: 'maitreOuvrage', survey: survey.mo_fedene },
+        { fcu: network.nom_reseau_fcu, fcuColumn: 'nom_reseau_fcu', payloadKey: 'nomReseau', survey: survey.nom_reseau_fedene },
+      ] as const;
+      const matched = corrections.filter(
+        ({ fcu, survey: surveyValue }) => fcu !== null && surveyValue !== null && !isDifferent(surveyValue, fcu)
+      );
+      const differing = corrections.filter(({ fcu, survey: surveyValue }) => fcu !== null && isDifferent(surveyValue, fcu));
+      const surveyValues = Object.fromEntries(differing.map(({ payloadKey, survey: surveyValue }) => [payloadKey, surveyValue as string]));
+      const proposed = proposedSurveyDiscrepancies(discrepancyRequests.get(idFcu) ?? [], surveyValues);
+      clearedCorrections += matched.length;
+      discrepancyFields += Object.keys(proposed).length;
+      discrepancyNetworks += Object.keys(proposed).length > 0 ? 1 : 0;
       if (!dryRun) {
-        const network = networkBySncu.get(sncu) as (typeof existingNetworks)[number];
-        // a FCU correction now matched by the survey is dropped; one still differing is proposed for removal
-        const corrections = [
-          { fcu: network.gestionnaire_fcu, fcuColumn: 'gestionnaire_fcu', payloadKey: 'gestionnaire', survey: survey.gestionnaire_fedene },
-          { fcu: network.mo_fcu, fcuColumn: 'mo_fcu', payloadKey: 'maitreOuvrage', survey: survey.mo_fedene },
-          { fcu: network.nom_reseau_fcu, fcuColumn: 'nom_reseau_fcu', payloadKey: 'nomReseau', survey: survey.nom_reseau_fedene },
-        ] as const;
-        const matched = corrections.filter(
-          ({ fcu, survey: surveyValue }) => fcu !== null && surveyValue !== null && !isDifferent(surveyValue, fcu)
-        );
         await kdb
           .updateTable(config.table)
           .set({ ...fields, ...Object.fromEntries(matched.map(({ fcuColumn }) => [fcuColumn, null])) })
@@ -258,20 +315,14 @@ async function processFiliere(config: FiliereConfig, reseaux: ExcelRowBrute[], {
         const displayedName = network.nom_reseau_fcu ?? survey.nom_reseau_fedene ?? '';
         await upsertSurveyDiscrepancyRequest(
           { id: idFcu, label: `${sncu} - ${displayedName}`.trim(), type: config.networkType },
-          {
-            edition: FEDENE_EDITION_YEAR,
-            ...Object.fromEntries(
-              corrections
-                .filter(({ fcu, survey: surveyValue }) => fcu !== null && isDifferent(surveyValue, fcu))
-                .map(({ payloadKey, survey: surveyValue }) => [payloadKey, surveyValue as string])
-            ),
-          }
+          surveyValues
         );
       }
       continue;
     }
     changes.push({ diffs: buildCreateDiffs(fields), id: sncu, type: 'CREATE' });
     createdCount++;
+    created.push({ name: survey.nom_reseau_fedene, sncu });
     if (!dryRun) {
       // a network known to the survey but not to the base: created without geometry (the trace comes later from the admin)
       await kdb
@@ -290,7 +341,17 @@ async function processFiliere(config: FiliereConfig, reseaux: ExcelRowBrute[], {
   const missingFromExcel = [...idFcuBySncu.keys()].filter((sncu) => !sncuExcel.has(sncu) && config.sncuPattern.test(sncu));
   const invalidIdsCount = existingNetworks.filter((network) => !config.sncuPattern.test(network['Identifiant reseau'] ?? '')).length;
 
-  return { changes, createdCount, invalidIdsCount, missingFromExcel, updatedCount };
+  return {
+    changes,
+    clearedCorrections,
+    created,
+    createdCount,
+    discrepancyFields,
+    discrepancyNetworks,
+    invalidIdsCount,
+    missingFromExcel,
+    updatedCount,
+  };
 }
 
 /** A survey value counts as different only when it is filled and differs from the base value (case and whitespace ignored). */

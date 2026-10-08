@@ -28,14 +28,15 @@ export function MapPointPicker({ active, onPick }: MapPointPickerProps) {
       return;
     }
     const canvas = map.getCanvas();
-    canvas.style.cursor = 'crosshair';
+    // a class, not an inline style: `MapInteractions` resets `style.cursor` when the capture starts
+    canvas.classList.add('cursor-crosshair');
     const onClick = (event: MapMouseEvent) => {
       onPickRef.current({ coordinates: [event.lngLat.lng, event.lngLat.lat], type: 'Point' });
     };
     map.on('click', onClick);
     return () => {
       map.off('click', onClick);
-      canvas.style.cursor = '';
+      canvas.classList.remove('cursor-crosshair');
     };
   }, [map, mapReady, active]);
 

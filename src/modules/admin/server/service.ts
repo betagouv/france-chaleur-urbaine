@@ -23,7 +23,10 @@ export const getAdminDashboardIndicators = async (): Promise<AdminDashboardIndic
       .executeTakeFirstOrThrow(),
     kdb
       .selectFrom('network_change_requests')
-      .select((eb) => eb.fn.countAll<number>().as('count'))
+      .select((eb) => [
+        eb.fn.count<number>(eb.case().when('kind', '!=', 'enquete').then(1).end()).as('submitted'),
+        eb.fn.count<number>(eb.case().when('kind', '=', 'enquete').then(1).end()).as('survey'),
+      ])
       .where('status', '=', 'pending')
       .executeTakeFirstOrThrow(),
     kdb
@@ -37,8 +40,9 @@ export const getAdminDashboardIndicators = async (): Promise<AdminDashboardIndic
   return {
     demandsToValidate: Number(demands.to_validate),
     jobsInError: Number(jobs.count),
-    networkChangeRequestsPending: Number(networkChangeRequests.count),
+    networkChangeRequestsPending: Number(networkChangeRequests.submitted),
     pendingReassignments: Number(demands.pending_reassignments),
     renewableHeatDemandsToValidate: Number(renewableHeatDemands.count),
+    surveyDiscrepanciesPending: Number(networkChangeRequests.survey),
   };
 };

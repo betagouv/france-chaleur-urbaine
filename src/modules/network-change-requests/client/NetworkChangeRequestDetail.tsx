@@ -20,7 +20,6 @@ import {
   notifiedNetworkChangeRequestKinds,
 } from '../constants';
 import { documentChangeKey } from '../document-change-keys';
-import type { AcceptNetworkChangeRequestData } from './AcceptNetworkChangeRequestDialog';
 import { buildChangeRows } from './buildChangeRows';
 import { DetailRow, DetailSection } from './DetailLayout';
 import LinkNetworkField from './LinkNetworkField';
@@ -32,7 +31,6 @@ export type NetworkChangeRequestItem = RouterOutput['networkChangeRequests']['ad
 export type ReviewContext = RouterOutput['networkChangeRequests']['admin']['getReviewContext'];
 
 type NetworkChangeRequestDetailProps = {
-  onAccept: (data: AcceptNetworkChangeRequestData) => void;
   request: NetworkChangeRequestItem;
 };
 
@@ -54,7 +52,6 @@ const adminTabByType: Record<NetworkEntityType, string> = {
 const informationOnlyFields = [
   'commentaire',
   'dansCadreDemandeADEME',
-  'edition',
   'emailReferentCommercial',
   'localisation',
   'precisions',
@@ -66,7 +63,7 @@ const informationOnlyFields = [
  * included or excluded), before / after map for traces and perimeters, files and the single decision button.
  * Keyed by request id by its parent: the state starts fresh for each request.
  */
-function NetworkChangeRequestDetail({ onAccept, request }: NetworkChangeRequestDetailProps) {
+function NetworkChangeRequestDetail({ request }: NetworkChangeRequestDetailProps) {
   const { data: reviewContext } = trpc.networkChangeRequests.admin.getReviewContext.useQuery({ id: request.id });
   const currentNetwork = reviewContext?.network ?? null;
   const isLinked = request.network_type !== null && request.network_id !== null;
@@ -94,20 +91,22 @@ function NetworkChangeRequestDetail({ onAccept, request }: NetworkChangeRequestD
   const geometryPending = (role: NetworkChangeRequestGeometryRole) => hasGeoFiles(role) && !geometryReady(role);
   // a construction network or a perimeter drawn by hand: the request is closed without creating nor publishing anything
   const pdfOnly = (request.kind === 'trace_construction' || request.kind === 'pdp') && !hasGeoFiles(geometryRole as 'trace' | 'pdp');
-  const needsDocumentedNetwork = request.kind === 'fiche' || request.kind === 'trace_existant' || request.kind === 'enquete';
+  const needsDocumentedNetwork = request.kind === 'fiche' || request.kind === 'trace_existant';
   const isDocumentedLink = request.network_type === 'reseau_de_chaleur' || request.network_type === 'reseau_de_froid';
+  // the trace of an existing network unknown to the base: processing it creates the heat network (a trace file is needed)
+  const createsHeatNetwork = request.kind === 'trace_existant' && request.network_type === null;
   const documentsPending = request.files.some(
     (file) => file.role === 'document' && file.scan_status === 'pending' && included.has(documentChangeKey(file.id))
   );
   const canAccept =
     initialized &&
-    (!needsDocumentedNetwork || isDocumentedLink) &&
+    (!needsDocumentedNetwork || isDocumentedLink || (createsHeatNetwork && hasGeoFiles('trace'))) &&
     (geometryRole === null || !geometryPending(geometryRole)) &&
     !(included.has('pdp') && geometryPending('pdp')) &&
     !documentsPending;
   // one button whose label says what the decision does: the bizdev sees every entity touched before clicking
   const actionLabel =
-    included.size === 0 || request.kind === 'autre' || pdfOnly
+    request.kind === 'autre' || pdfOnly || (included.size === 0 && !createsHeatNetwork)
       ? 'Clore la demande'
       : request.kind === 'trace_construction'
         ? [
@@ -119,9 +118,16 @@ function NetworkChangeRequestDetail({ onAccept, request }: NetworkChangeRequestD
         : request.kind === 'pdp'
           ? 'Créer le périmètre de développement prioritaire'
           : request.kind === 'trace_existant'
-            ? [...included].some((key) => key !== 'pdp')
-              ? `Mettre à jour le réseau${included.has('pdp') ? ' et créer le périmètre de développement prioritaire' : ''}`
-              : 'Créer le périmètre de développement prioritaire'
+            ? createsHeatNetwork
+              ? ['Créer le réseau de chaleur', ...(included.has('pdp') ? ['créer son périmètre de développement prioritaire'] : [])].join(
+                  ' et '
+                )
+              : [...included].some((key) => key !== 'pdp')
+                ? // a network created without trace (FEDENE import) gets its first trace
+                  `${currentNetwork?.hasGeometry === false && included.has('trace') ? 'Ajouter le tracé du réseau' : 'Mettre à jour le réseau'}${
+                    included.has('pdp') ? ' et créer le périmètre de développement prioritaire' : ''
+                  }`
+                : 'Créer le périmètre de développement prioritaire'
             : 'Mettre à jour la fiche';
   const notifiedEmail =
     included.size > 0 &&
@@ -138,6 +144,22 @@ function NetworkChangeRequestDetail({ onAccept, request }: NetworkChangeRequestD
   const renameFile = trpc.networkChangeRequests.admin.renameFile.useMutation();
   const replaceGeometryFile = trpc.networkChangeRequests.admin.replaceGeometryFile.useMutation();
   const retryGeometryConversion = trpc.networkChangeRequests.admin.retryGeometryConversion.useMutation();
+  const acceptRequest = trpc.networkChangeRequests.admin.accept.useMutation();
+  // no confirmation: the button label and the note under it already say what the decision does
+  const accept = toastErrors(async () => {
+    await acceptRequest.mutateAsync({ id: request.id, included: [...included] });
+    notify('success', notifiedEmail ? `Demande traitée, email envoyé à ${notifiedEmail}` : 'Demande traitée');
+    await Promise.all([
+      utils.networkChangeRequests.admin.list.invalidate(),
+      utils.networkChangeRequests.admin.countPending.invalidate(),
+      // other pending requests on the same network compare with the updated page
+      utils.networkChangeRequests.admin.getReviewContext.invalidate(),
+      utils.reseaux.reseauDeChaleur.list.invalidate(),
+      utils.reseaux.reseauDeFroid.list.invalidate(),
+      utils.reseaux.reseauEnConstruction.list.invalidate(),
+      utils.reseaux.perimetreDeDeveloppementPrioritaire.list.invalidate(),
+    ]);
+  });
   const retryConversion = toastErrors(async () => {
     await retryGeometryConversion.mutateAsync({ id: request.id });
     await utils.networkChangeRequests.admin.list.invalidate();
@@ -365,7 +387,13 @@ function NetworkChangeRequestDetail({ onAccept, request }: NetworkChangeRequestD
       {request.status === 'pending' ? (
         <div className="flex flex-col gap-2">
           {needsDocumentedNetwork && !isDocumentedLink && (
-            <p className="mb-0 text-sm text-gray-600">Rattachez la demande à un réseau de chaleur de la base pour pouvoir l'appliquer.</p>
+            <p className="mb-0 text-sm text-gray-600">
+              {!createsHeatNetwork
+                ? "Rattachez la demande à un réseau de chaleur de la base pour pouvoir l'appliquer."
+                : hasGeoFiles('trace')
+                  ? "Aucun réseau de la base n'est rattaché : le traitement crée un nouveau réseau de chaleur à partir du tracé. Si le réseau existe déjà, rattachez-le plutôt."
+                  : 'Rattachez la demande à un réseau de chaleur de la base, ou remplacez le PDF par un GeoJSON pour créer le réseau.'}
+            </p>
           )}
           {((geometryRole && geometryPending(geometryRole)) || (included.has('pdp') && geometryPending('pdp'))) && (
             <p className="mb-0 text-sm text-gray-600">
@@ -386,20 +414,7 @@ function NetworkChangeRequestDetail({ onAccept, request }: NetworkChangeRequestD
           )}
           <div className="flex flex-col gap-1">
             <div>
-              <Button
-                iconId="fr-icon-check-line"
-                disabled={!canAccept}
-                onClick={() =>
-                  onAccept({
-                    actionLabel,
-                    emailPreviewUrl,
-                    id: request.id,
-                    included: [...included],
-                    networkLabel: request.network_label,
-                    notifiedEmail,
-                  })
-                }
-              >
+              <Button iconId="fr-icon-check-line" disabled={!canAccept} loading={acceptRequest.isPending} onClick={accept}>
                 {actionLabel}
                 {changedKeys.length > 0 ? ` (${included.size}/${changedKeys.length})` : ''}
               </Button>

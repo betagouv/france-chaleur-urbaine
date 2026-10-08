@@ -25,7 +25,7 @@ const seedDemand = (
     .values({ id, legacy_values: JSON.stringify({ Mail: `${id}@test.local` }), ...values })
     .execute();
 
-const seedRequest = (status: 'pending' | 'processed') =>
+const seedRequest = (status: 'pending' | 'processed', kind: 'autre' | 'enquete' = 'autre') =>
   kdb
     .insertInto('network_change_requests')
     .values({
@@ -33,7 +33,7 @@ const seedRequest = (status: 'pending' | 'processed') =>
       contact_first_name: 'A',
       contact_last_name: 'B',
       contact_type: 'exploitant',
-      kind: 'autre',
+      kind,
       network_label: 'Réseau',
       payload: JSON.stringify({ dansCadreDemandeADEME: false, precisions: 'x' }),
       status,
@@ -70,6 +70,7 @@ describe('admin.getDashboardIndicators', () => {
     await seedRequest('pending');
     await seedRequest('pending');
     await seedRequest('processed');
+    await seedRequest('pending', 'enquete'); // survey discrepancy: counted apart
     await seedJob('error', daysAgo(1));
     await seedJob('error', daysAgo(10)); // older than the window: ignored
     await seedJob('finished', daysAgo(1));
@@ -81,6 +82,7 @@ describe('admin.getDashboardIndicators', () => {
       networkChangeRequestsPending: 2,
       pendingReassignments: 1,
       renewableHeatDemandsToValidate: 1,
+      surveyDiscrepanciesPending: 1,
     });
   });
 });

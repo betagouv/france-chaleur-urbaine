@@ -92,7 +92,9 @@ function GeomUpdateLayerData({ features }: { features: GeoJSON.Feature[] }) {
 }
 
 /** Shows the geometry being edited (dropped file or placed point) in red on the `customGeojson` source; cleared when there is none. */
-function EditedGeometryLayerData({ geometry }: { geometry: GeoJSON.GeoJSON | null }) {
+type EditedGeometryLayerDataProps = { geometry: GeoJSON.GeoJSON | null };
+
+function EditedGeometryLayerData({ geometry }: EditedGeometryLayerDataProps) {
   const sources = useMemo<MapDynamicSource[]>(
     () => [
       {

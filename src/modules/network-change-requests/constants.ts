@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';
+import { surveyDiscrepancyDecisions, surveyDiscrepancyFields } from '@/modules/fedene-survey/constants';
 import { type FileTypeGroup, fileUploadLimits } from '@/modules/files/constants';
 import { MAX_NETWORK_DOCUMENTS, networkEntityTypes } from '@/modules/reseaux/constants';
 
@@ -74,7 +75,6 @@ export const networkChangeRequestPayloadFieldLabels: Record<string, string> = {
   commentaire: 'Commentaire',
   dansCadreDemandeADEME: "Dans le cadre d'une demande de subvention ADEME",
   dateMiseEnServicePrevisionnelle: 'Mise en service prévisionnelle',
-  edition: "Édition de l'enquête",
   emailReferentCommercial: 'Référent commercial',
   gestionnaire: 'Gestionnaire',
   informationsComplementaires: 'Informations complémentaires',
@@ -123,7 +123,8 @@ export const networkChangeRequestPayloadSchemas = {
   }),
   // only the survey values that differ from the base are present
   enquete: z.object({
-    edition: z.number().int(),
+    /** decision taken on each field (page « Enquête FEDENE »); the request is processed once every field has one */
+    decisions: z.partialRecord(z.enum(surveyDiscrepancyFields), z.enum(surveyDiscrepancyDecisions)).optional(),
     gestionnaire: z.string().trim().min(1).optional(),
     maitreOuvrage: z.string().trim().min(1).optional(),
     nomReseau: z.string().trim().min(1).optional(),

@@ -38,14 +38,24 @@ export const allowedFileTypes = {
   '.qmd': { check: 'xml', contentType: 'application/xml', group: 'geo' },
   '.shp': { check: 'shape', contentType: 'application/x-esri-shape', group: 'geo' },
   '.shx': { check: 'shape', contentType: 'application/x-esri-shape-index', group: 'geo' },
+  // the FEDENE library, uploaded by an admin on the « Enquête FEDENE » page: refused for anyone else by the upload route
+  '.xlsx': { check: 'zip', contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', group: 'spreadsheet' },
   '.zip': { check: 'zip', contentType: 'application/zip', group: 'geo' },
-} as const satisfies Record<string, { check: string; contentType: string; group: 'geo' | 'pdf' }>;
+} as const satisfies Record<string, { check: string; contentType: string; group: 'geo' | 'pdf' | 'spreadsheet' }>;
 
 export type AllowedFileExtension = keyof typeof allowedFileTypes;
 export type FileTypeGroup = (typeof allowedFileTypes)[AllowedFileExtension]['group'];
 export type FileContentType = (typeof allowedFileTypes)[AllowedFileExtension]['contentType'];
 
 export const allowedFileExtensions = Object.keys(allowedFileTypes) as AllowedFileExtension[];
+
+/** Type groups only an admin may upload. */
+export const adminOnlyFileTypeGroups: readonly FileTypeGroup[] = ['spreadsheet'];
+
+/** Extensions a public form accepts (the admin-only types aside), listed in the error messages. */
+export const publicFileExtensions = allowedFileExtensions.filter(
+  (extension) => !adminOnlyFileTypeGroups.includes(allowedFileTypes[extension].group)
+);
 
 const fileTypeGroupByContentType = Object.fromEntries(
   Object.values(allowedFileTypes).map((fileType) => [fileType.contentType, fileType.group])

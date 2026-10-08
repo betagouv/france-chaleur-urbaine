@@ -35,6 +35,12 @@ export const adminDashboardIndicators = [
     label: 'Modifications de réseau à traiter',
   },
   {
+    description: "Réseaux dont une correction FCU (nom, gestionnaire, maître d'ouvrage) diffère encore de l'enquête FEDENE",
+    href: '/admin/enquete-fedene',
+    key: 'surveyDiscrepanciesPending',
+    label: "Écarts avec l'enquête FEDENE",
+  },
+  {
     description: 'Tâches asynchrones terminées en erreur au cours des 7 derniers jours',
     href: '/admin/jobs',
     key: 'jobsInError',

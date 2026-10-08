@@ -4,7 +4,7 @@ import { getColdNetwork, getNetwork } from '@/modules/reseaux/server/service';
 import { kdb } from '@/server/db/kysely';
 import { cleanDatabase, seedReseauDeChaleur, seedReseauDeFroid } from '@/tests/fixtures';
 
-import { type ExcelRowBrute, FEDENE_EDITION_YEAR, importFedeneRows } from './donnees-reseaux-bibliotheque-fedene';
+import { type ExcelRowBrute, importFedeneRows } from './donnees-reseaux-bibliotheque-fedene';
 
 const logger = { info: vi.fn(), warn: vi.fn() } as any;
 
@@ -119,13 +119,13 @@ describe('FEDENE import', () => {
       .execute();
     expect(suggestion).toStrictEqual({
       contact_email: null,
-      contact_type_other: `Enquête FEDENE ${FEDENE_EDITION_YEAR}`,
+      contact_type_other: 'Enquête FEDENE',
       kind: 'enquete',
       network_id: 1,
       network_label: '9101C - Massy (admin)',
       network_type: 'reseau_de_chaleur',
       origin: 'import',
-      payload: { edition: FEDENE_EDITION_YEAR, gestionnaire: 'Dalkia (EDF)', nomReseau: 'Réseau de Massy' },
+      payload: { gestionnaire: 'Dalkia (EDF)', nomReseau: 'Réseau de Massy' },
       status: 'pending',
     });
 
@@ -135,7 +135,7 @@ describe('FEDENE import', () => {
       await kdb.selectFrom('reseaux_de_chaleur').select(['nom_reseau', 'nom_reseau_fcu']).where('id_fcu', '=', 1).executeTakeFirstOrThrow()
     ).toStrictEqual({ nom_reseau: 'Massy (admin)', nom_reseau_fcu: null });
     expect(await kdb.selectFrom('network_change_requests').select(['payload']).execute()).toStrictEqual([
-      { payload: { edition: FEDENE_EDITION_YEAR, gestionnaire: 'Dalkia (EDF)' } },
+      { payload: { gestionnaire: 'Dalkia (EDF)' } },
     ]);
 
     // the survey catches up on the gestionnaire too (case aside): no correction left, suggestion removed
@@ -173,15 +173,30 @@ describe('FEDENE import', () => {
     expect(await kdb.selectFrom('network_change_requests').select('id').execute()).toStrictEqual([]);
   });
 
-  it('does not recreate a suggestion the admin already closed for the same edition', async () => {
+  it('does not propose again a correction the admin kept, until the survey reports another value', async () => {
     await importFedeneRows([row({})], { dryRun: false, logger });
-    await kdb.updateTable('network_change_requests').set({ processed_at: new Date(), status: 'processed' }).execute();
+    await kdb
+      .updateTable('network_change_requests')
+      .set({
+        payload: JSON.stringify({
+          decisions: { gestionnaire: 'keep_fcu', nomReseau: 'keep_fcu' },
+          gestionnaire: 'Dalkia (EDF)',
+          nomReseau: 'Réseau de Massy',
+        }),
+        processed_at: new Date(),
+        status: 'processed',
+      })
+      .execute();
 
+    // same survey values: nothing proposed again
     await importFedeneRows([row({})], { dryRun: false, logger });
+    expect(await kdb.selectFrom('network_change_requests').select('status').execute()).toStrictEqual([{ status: 'processed' }]);
 
-    expect((await kdb.selectFrom('network_change_requests').select('status').execute()).map((request) => request.status)).toStrictEqual([
-      'processed',
-    ]);
+    // the survey now reports another gestionnaire: only that field is proposed again
+    await importFedeneRows([row({ Gestionnaire: 'Coriance', 'Groupe gestionnaire': null })], { dryRun: false, logger });
+    expect(
+      await kdb.selectFrom('network_change_requests').select(['status', 'payload']).where('status', '=', 'pending').execute()
+    ).toStrictEqual([{ payload: { gestionnaire: 'Coriance' }, status: 'pending' }]);
   });
 
   it('exposes the FCU correction of the gestionnaire to the public pages', async () => {

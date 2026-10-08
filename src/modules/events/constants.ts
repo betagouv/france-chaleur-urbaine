@@ -65,6 +65,8 @@ export const eventTypes = [
   'network_updated',
   'network_change_request_created',
   'network_change_request_processed',
+  'fedene_survey_imported',
+  'fedene_survey_discrepancies_cleared',
   'conversion_source_created',
   'conversion_source_updated',
   'conversion_source_archived',
@@ -103,6 +105,8 @@ export const eventTypeLabels: Record<EventType, string> = {
   demand_updated: 'Mise à jour demande',
   demand_updated_by_system: 'Mise à jour demande (automatique)',
   demand_validated: 'Validation demande',
+  fedene_survey_discrepancies_cleared: 'Écarts FEDENE en attente vidés',
+  fedene_survey_imported: 'Import de la bibliothèque FEDENE',
   network_change_request_created: 'Demande de modification de réseau déposée',
   network_change_request_processed: 'Demande de modification de réseau traitée',
   network_created: 'Création réseau/PDP',
@@ -178,6 +182,14 @@ export type EventDataMap = {
   network_change_request_created: NetworkChangeRequestEventData;
   /** `applied: false`: closed without changing anything */
   network_change_request_processed: NetworkChangeRequestEventData & { applied?: boolean };
+  fedene_survey_discrepancies_cleared: { count: number };
+  fedene_survey_imported: {
+    filename: string;
+    updated: number;
+    created: number;
+    cleared_corrections: number;
+    discrepancies: number;
+  };
   build_tiles: { name: string };
   conversion_source_archived: { key: string; label: string };
   conversion_source_created: { key: string; label: string };

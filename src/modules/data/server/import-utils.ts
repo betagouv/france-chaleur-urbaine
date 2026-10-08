@@ -39,13 +39,17 @@ export const loadDataFromFile = async (filepath: string, options: Parameters<typ
   throw new Error('Format de fichier non pris en charge');
 };
 
-export const loadXlsxFromFile = async (filepath: string, sheetName?: string): Promise<Record<string, unknown>[]> => {
-  const buffer = await readFile(filepath);
-  const workbook = XLSX.read(buffer);
+export const loadXlsxFromFile = async (filepath: string, sheetName?: string): Promise<Record<string, unknown>[]> =>
+  loadXlsxFromBuffer(await readFile(filepath), sheetName);
+
+/** Rows of a sheet (the first one by default) of an Excel file held in memory (e.g. a file uploaded by an admin). */
+export const loadXlsxFromBuffer = (buffer: Buffer, sheetName?: string): Record<string, unknown>[] => {
+  // only the wanted sheet is parsed: the file comes from an upload
+  const workbook = XLSX.read(buffer, sheetName ? { sheets: sheetName } : undefined);
   const name = sheetName ?? workbook.SheetNames[0];
   const sheet = workbook.Sheets[name];
   if (!sheet) {
-    throw new Error(`Sheet "${name}" not found in ${filepath}. Available: ${workbook.SheetNames.join(', ')}`);
+    throw new Error(`Onglet « ${name} » introuvable dans le fichier. Onglets présents : ${workbook.SheetNames.join(', ')}`);
   }
   return XLSX.utils.sheet_to_json(sheet, { defval: null });
 };

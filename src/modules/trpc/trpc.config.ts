@@ -13,6 +13,7 @@ import { demandsRouter } from '@/modules/demands/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
 import { emailRouter } from '@/modules/email/server/trpc-routes';
 import { eventsRouter } from '@/modules/events/server/trpc-routes';
+import { fedeneSurveyRouter } from '@/modules/fedene-survey/server/trpc-routes';
 import { jobsRouter } from '@/modules/jobs/server/trpc-routes';
 import { networkChangeRequestsRouter } from '@/modules/network-change-requests/server/trpc-routes';
 import { organizationsRouter } from '@/modules/organizations/server/trpc-routes';
@@ -58,6 +59,7 @@ export const appRouter = router({
   diagnostic: diagnosticRouter,
   email: emailRouter,
   events: eventsRouter,
+  fedeneSurvey: fedeneSurveyRouter,
   // Health check endpoint - no auth required
   healthCheck: route.query(() => {
     return {

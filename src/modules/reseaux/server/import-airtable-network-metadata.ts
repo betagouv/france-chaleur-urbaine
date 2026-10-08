@@ -2,7 +2,6 @@ import type { Command } from '@commander-js/extra-typings';
 import type { Record } from 'airtable';
 import type { FieldSet } from 'airtable/lib/field_set';
 
-import { FEDENE_EDITION_YEAR } from '@/modules/data/server/imports/donnees-reseaux-bibliotheque-fedene';
 import { isPrixReseauCommunique } from '@/modules/reseaux/constants';
 import { syncLinkedNetworkFields } from '@/modules/reseaux/server/linked-fields-sync';
 import { AirtableDB } from '@/server/db/airtable';
@@ -10,7 +9,10 @@ import { kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { Airtable } from '@/types/enum/Airtable';
 
-/** One-off migration of the network metadata still held in Airtable (survey figures), run once before Airtable is cut. */
+// One-off migration of the network metadata still held in Airtable (survey figures), run once before Airtable is cut.
+
+/** Year of the survey columns of Airtable (`Gestionnaire_2025`…), the reference to detect the FCU corrections. */
+const AIRTABLE_SURVEY_COLUMNS_YEAR = 2025;
 const sources = [
   { airtable: Airtable.NETWORKS, networkType: 'reseau_de_chaleur', table: 'reseaux_de_chaleur' },
   { airtable: Airtable.COLD_NETWORKS, networkType: 'reseau_de_froid', table: 'reseaux_de_froid' },
@@ -141,9 +143,9 @@ export const importAirtableNetworkMetadata = async ({ dryRun }: { dryRun: boolea
       }
       const values = convertEntityFromAirtableToPostgres(source, network);
       const provenance = {
-        ...splitProvenance('gestionnaire', network.get(`Gestionnaire_${FEDENE_EDITION_YEAR}`), network.get('Gestionnaire')),
-        ...splitProvenance('mo', network.get(`MO_${FEDENE_EDITION_YEAR}`), network.get('MO')),
-        ...splitProvenance('nom_reseau', network.get(`nom_reseau_${FEDENE_EDITION_YEAR}`), network.get('nom_reseau')),
+        ...splitProvenance('gestionnaire', network.get(`Gestionnaire_${AIRTABLE_SURVEY_COLUMNS_YEAR}`), network.get('Gestionnaire')),
+        ...splitProvenance('mo', network.get(`MO_${AIRTABLE_SURVEY_COLUMNS_YEAR}`), network.get('MO')),
+        ...splitProvenance('nom_reseau', network.get(`nom_reseau_${AIRTABLE_SURVEY_COLUMNS_YEAR}`), network.get('nom_reseau')),
       };
       const correctionCount = [provenance.gestionnaire_fcu, provenance.mo_fcu, provenance.nom_reseau_fcu].filter(
         (value) => value !== null

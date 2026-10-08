@@ -4,7 +4,7 @@ Storage of files uploaded by public forms, in the database (`files` table, `cont
 
 ## Structure
 
-- `constants.ts` — `allowedFileTypes` (extension → detected content type, byte-level check, type group `pdf` / `geo`), upload limits, scan statuses and labels, `zUploadedFile`.
+- `constants.ts` — `allowedFileTypes` (extension → detected content type, byte-level check, type group `pdf` / `geo` / `spreadsheet`; `spreadsheet` = the FEDENE library xlsx, admin-only: `adminOnlyFileTypeGroups`, refused for anyone else by the upload route, never accepted inside a public zip, not listed in `publicFileExtensions`), upload limits, scan statuses and labels, `zUploadedFile`.
 - `server/file-type.ts` — `detectFileType(filename, head)`: extension must be allowed and the first bytes (`FILE_TYPE_PROBE_LENGTH`) must match it (PDF, zip, SQLite, shapefile, dBase, text/JSON/XML probes). The browser MIME type is never used.
 - `server/zip-inspection.ts` — `listZipEntries(reader)` reads the central directory by random access (buffer or file descriptor) without inflating nor loading the archive: entry names (a plain `.zip` may only contain accepted types) and uncompressed size cap (zip bomb).
 - `server/scanner.ts` — `FILE_SCANNER=none|clamav`; clamd INSTREAM client, `parseClamdResponse`. Errors are returned, never thrown.

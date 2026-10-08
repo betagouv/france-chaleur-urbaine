@@ -48,14 +48,13 @@ const FilterButton = ({ onClick, children }: { onClick: () => void; children: Re
 );
 
 /** « depuis une demande … » when a network event was written while processing a change request (filters on that request). */
-const RequestSource = ({
-  data,
-  updateFilters,
-}: {
+type RequestSourceProps = {
   data: { request_id?: string; request_kind?: keyof typeof networkChangeRequestKindLabels };
   updateFilters: (filters: Partial<EventFilters>) => void;
-}) =>
-  data.request_id ? (
+};
+
+function RequestSource({ data, updateFilters }: RequestSourceProps) {
+  return data.request_id ? (
     <>
       {' depuis une '}
       <FilterButton onClick={() => updateFilters({ contextId: data.request_id, contextType: 'network_change_request' })}>
@@ -63,6 +62,7 @@ const RequestSource = ({
       </FilterButton>
     </>
   ) : null;
+}
 
 type EventRenderer<T extends EventType> = (
   event: Extract<AdminEvent, { type: T }>,
@@ -274,6 +274,17 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       <span>a validé une </span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'demand' })}>demande</FilterButton>
     </>
+  ),
+  fedene_survey_discrepancies_cleared: (event) => (
+    <span>
+      a vidé <strong>{event.data.count}</strong> écart{event.data.count > 1 ? 's' : ''} FEDENE en attente
+    </span>
+  ),
+  fedene_survey_imported: (event) => (
+    <span>
+      a importé la bibliothèque FEDENE <strong>{event.data.filename}</strong> : {event.data.updated} réseaux mis à jour,{' '}
+      {event.data.created} créés, {event.data.cleared_corrections} corrections FCU retirées, {event.data.discrepancies} écarts à trancher
+    </span>
   ),
   network_change_request_created: (event, updateFilters) => {
     const kind = `« ${networkChangeRequestKindLabels[event.data.kind]} »`;

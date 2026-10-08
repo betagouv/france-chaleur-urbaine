@@ -70,7 +70,7 @@ export function buildChangeRows(request: NetworkChangeRequestItem, network: Revi
     return [
       {
         conversionFailed: !!geometry?.error,
-        current: network && role === 'trace' ? 'Tracé actuel (voir la carte)' : null,
+        current: network && role === 'trace' ? (network.hasGeometry ? 'Tracé actuel (voir la carte)' : 'Aucun tracé') : null,
         files: files.map((file) => ({
           ...uploadedFile(file),
           key: `${role}:${file.id}`,
@@ -87,14 +87,12 @@ export function buildChangeRows(request: NetworkChangeRequestItem, network: Revi
     case 'fiche':
       return [...fieldRow('informationsComplementaires', network?.informationsComplementaires), ...documentsRow];
     case 'enquete':
-      return [
-        ...fieldRow('nomReseau', network?.nom_reseau),
-        ...fieldRow('gestionnaire', network?.gestionnaire),
-        ...fieldRow('maitreOuvrage', network?.maitreOuvrage),
-      ];
+      // decided field by field on the « Enquête FEDENE » page, never listed with the submitted requests
+      return [];
     case 'trace_existant':
       return [
-        ...geometryRow('trace', 'Tracé'),
+        // not attached: the trace creates the network, it cannot be excluded
+        ...geometryRow('trace', 'Tracé', request.network_type === null),
         ...geometryRow('pdp', 'Périmètre de développement prioritaire'),
         ...fieldRow('gestionnaire', network?.gestionnaire),
         ...fieldRow('maitreOuvrage', network?.maitreOuvrage),

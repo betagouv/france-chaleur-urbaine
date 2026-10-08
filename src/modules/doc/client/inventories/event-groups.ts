@@ -17,6 +17,7 @@ export const specificEventGroups: { label: string; match: (type: EventType) => b
   { label: "Tests d'adresses", match: (type) => type.startsWith('pro_eligibility_test') },
   { label: 'Demandes de modification de réseau', match: (type) => type.startsWith('network_change_request') },
   { label: 'Réseaux et périmètres', match: (type) => type.startsWith('network_') || type === 'pdp_updated' },
+  { label: 'Enquête FEDENE', match: (type) => type.startsWith('fedene_survey') },
   { label: 'Organisations', match: (type) => type.startsWith('organization_') },
   { label: 'Intégrations iframe', match: (type) => type.startsWith('conversion_source') },
   { label: 'Conservation des données', match: (type) => type.startsWith('data_retention') },
