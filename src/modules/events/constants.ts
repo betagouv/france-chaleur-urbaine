@@ -4,6 +4,12 @@ import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/res
 import type { UserRole } from '@/types/enum/UserRole';
 
 export const eventTypes = [
+  'ccrt_demand_updated',
+  'ccrt_demand_note_created',
+  'ccrt_demand_note_updated',
+  'ccrt_demand_note_deleted',
+  'ccrt_demand_email_sent',
+
   'user_login',
   'user_activated',
   'user_registered',
@@ -84,6 +90,11 @@ export const eventTypeLabels: Record<EventType, string> = {
   api_demand_updated: 'Mise à jour demande (API)',
   api_demands_listed: 'Récupération demandes (API)',
   build_tiles: 'Reconstruction tuiles',
+  ccrt_demand_email_sent: 'Email envoyé (CCRT)',
+  ccrt_demand_note_created: 'Note ajoutée (CCRT)',
+  ccrt_demand_note_deleted: 'Note supprimée (CCRT)',
+  ccrt_demand_note_updated: 'Note modifiée (CCRT)',
+  ccrt_demand_updated: 'Modification de demande CCRT',
   conversion_source_archived: "Archivage d'intégration iframe",
   conversion_source_created: "Création d'intégration iframe",
   conversion_source_updated: "Mise à jour d'intégration iframe",
@@ -197,6 +208,13 @@ export type EventDataMap = {
     cleared_corrections: number;
     discrepancies: number;
   };
+  ccrt_demand_updated: {
+    changes: Record<string, { from: string | number | boolean | null | string[]; to: string | number | boolean | null | string[] }>;
+  };
+  ccrt_demand_note_created: { noteId: string };
+  ccrt_demand_note_updated: { noteId: string };
+  ccrt_demand_note_deleted: { noteId: string };
+  ccrt_demand_email_sent: { messageId: string; object: string; to: string };
   build_tiles: { name: string };
   conversion_source_archived: { key: string; label: string };
   conversion_source_created: { key: string; label: string };

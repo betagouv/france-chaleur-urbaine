@@ -1,4 +1,4 @@
-import { type SubmitEvent, useEffect, useId, useState } from 'react';
+import { type SubmitEvent, useEffect, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
@@ -20,11 +20,8 @@ import {
   toChoixChauffageParamsPatch,
   toParamsFormDraft,
 } from '@/modules/chaleur-renouvelable/client/params-form-draft';
-import { DpeTag } from '@/modules/chaleur-renouvelable/client/results/ui/DpeTag';
 import {
   type BatEnrBatiment,
-  type DPE,
-  DPE_VALUES,
   getModeEauChaudeSanitaireOptions,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type ModeEauChaudeSanitaireQueryParam,
@@ -38,6 +35,8 @@ import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouv
 import { AddressField } from '@/modules/form/AddressField';
 import cx from '@/utils/cx';
 
+import { DpeField } from './DpeField';
+import { InputWithSuffix } from './InputWithSuffix';
 import { OutdoorSpaceCheckboxes } from './OutdoorSpaceCheckboxes';
 
 export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
@@ -474,100 +473,5 @@ function ParamsIncompleteAlert({ count }: ParamsIncompleteAlertProps) {
       <span className="fr-icon-warning-fill mr-2" aria-hidden="true" />
       {count} information{count > 1 ? 's' : ''} à compléter ou vérifier <span className="font-normal">pour affiner vos résultats.</span>
     </p>
-  );
-}
-
-type DpeFieldProps = {
-  hasError: boolean;
-  onChange: (value: DPE) => void;
-  value: DPE;
-};
-
-function DpeField({ hasError, value, onChange }: DpeFieldProps) {
-  return (
-    <div className={cx('fr-input-group fr-mb-0', hasError && 'fr-input-group--error')}>
-      <div className="mb-2 text-sm">Étiquette DPE</div>
-      <div className="flex flex-wrap gap-1">
-        {DPE_VALUES.map((dpeValue) => (
-          <DpeTag key={dpeValue} letter={dpeValue} isSelected={value === dpeValue} onClick={() => onChange(dpeValue)} size="md" />
-        ))}
-      </div>
-      {hasError && <p className="fr-error-text">{INCOMPLETE_FIELD_MESSAGE}</p>}
-    </div>
-  );
-}
-
-type InputWithSuffixProps = {
-  label: string;
-  onBlur?: () => void;
-  onChange: (value: string) => void;
-  placeholder: string;
-  suffix: string;
-  state?: 'default' | 'error';
-  stateRelatedMessage?: string;
-  type?: 'number' | 'text';
-  value: string;
-  inputMode: 'search' | 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | undefined;
-  min: string;
-  step: string;
-};
-
-function InputWithSuffix({
-  label,
-  onChange,
-  onBlur,
-  placeholder,
-  suffix,
-  state = 'default',
-  stateRelatedMessage,
-  type = 'number',
-  value,
-  inputMode,
-  min,
-  step,
-}: InputWithSuffixProps) {
-  const inputId = useId();
-  const suffixDescriptionId = `${inputId}-suffix`;
-  const suffixAnchorText = value || placeholder;
-  const hasError = state === 'error';
-
-  return (
-    <div className={cx('fr-input-group w-full', hasError && 'fr-input-group--error')}>
-      <label className="fr-label mb-2" htmlFor={inputId}>
-        {label}
-      </label>
-      <div className="relative">
-        <input
-          aria-describedby={suffixDescriptionId}
-          aria-invalid={hasError}
-          className="fr-input"
-          id={inputId}
-          inputMode={inputMode}
-          min={min}
-          step={step}
-          onBlur={onBlur}
-          onChange={(event) => onChange(event.target.value)}
-          onWheel={(event) => {
-            if (event.currentTarget.type === 'number') {
-              event.currentTarget.blur();
-            }
-          }}
-          placeholder={placeholder}
-          type={type}
-          value={value}
-        />
-        <span id={suffixDescriptionId} className="sr-only">
-          Unité : {suffix}
-        </span>
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-4 right-12 flex items-center overflow-hidden whitespace-pre text-base leading-6"
-        >
-          <span className={value ? 'invisible' : 'invisible italic'}>{suffixAnchorText}</span>
-          <span className="ml-1 text-gray-500">{suffix}</span>
-        </span>
-      </div>
-      {hasError && <p className="fr-error-text">{stateRelatedMessage}</p>}
-    </div>
   );
 }

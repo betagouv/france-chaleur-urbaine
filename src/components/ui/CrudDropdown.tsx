@@ -33,6 +33,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   data,
   valueKey = 'id' as keyof CrudItem<T>,
   nameKey = 'name' as keyof CrudItem<T>,
+  triggerLabel,
   saveLabel = 'Sauvegarder',
   loadLabel = 'Charger',
   addPlaceholderLabel = 'Nom',
@@ -57,6 +58,7 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
   loadWhenOnlyOneConfig?: boolean;
   url: string;
   isSameObject?: (obj1: Partial<CrudItem<T>>, obj2: Partial<CrudItem<T>>) => boolean;
+  triggerLabel?: string;
   saveLabel?: string;
   loadLabel?: string;
   addLabel?: string;
@@ -155,15 +157,21 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
 
   return (
     <div className="relative min-w-64 font-sans" ref={dropdownRef}>
-      <div
-        className="flex items-center justify-between px-3 py-2 border rounded-md bg-white cursor-pointer shadcn-border shadcn-shadow hover:bg-gray-50 transition-colors"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span className={'text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis text-sm'}>
-          {isLoading ? <Loader /> : !selectedItem && dataEmpty ? loadLabel : (selectedItem?.[nameKey] as React.ReactNode) || saveLabel}
-        </span>
-        <Icon name={isOpen ? 'ri-arrow-drop-up-line' : 'ri-arrow-drop-down-line'} className="text-gray-500 shrink-0" size="md" />
-      </div>
+      {triggerLabel ? (
+        <Button size="small" priority="tertiary" onClick={() => setIsOpen(!isOpen)} aria-expanded={isOpen}>
+          {triggerLabel}
+        </Button>
+      ) : (
+        <div
+          className="flex items-center justify-between px-3 py-2 border rounded-md bg-white cursor-pointer shadcn-border shadcn-shadow hover:bg-gray-50 transition-colors"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <span className={'text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis text-sm'}>
+            {isLoading ? <Loader /> : !selectedItem && dataEmpty ? loadLabel : (selectedItem?.[nameKey] as React.ReactNode) || saveLabel}
+          </span>
+          <Icon name={isOpen ? 'ri-arrow-drop-up-line' : 'ri-arrow-drop-down-line'} className="text-gray-500 shrink-0" size="md" />
+        </div>
+      )}
       {isOpen && (
         <div className="absolute w-full mt-2 bg-white border rounded-md z-10">
           {items.map((rawItem) => {
