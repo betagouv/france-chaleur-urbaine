@@ -776,7 +776,6 @@ const notifyCcrtOfNewDemandeChaleurRenouvelable = async ({
           { email: recipient.email, id: recipient.id },
           {
             demand,
-            demandId,
             demandUrl: getCcrtDemandesUrl(demandId),
             pendingDemandCount,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,

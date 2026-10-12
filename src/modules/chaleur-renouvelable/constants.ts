@@ -101,7 +101,6 @@ export type Situation = {
   architecturalProtectionAc4bis: boolean;
   espaceExterieur: EspaceExterieur;
   planProtectionAtmosphere: boolean;
-  geothermiePossible: boolean;
   dpe: DPE;
   adresse: string | null;
   nbLogements: number;

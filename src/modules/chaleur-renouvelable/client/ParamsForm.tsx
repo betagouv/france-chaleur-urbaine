@@ -1,5 +1,5 @@
 import { useStore } from '@tanstack/react-form';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
@@ -14,11 +14,9 @@ import type {
   SetChoixChauffageParams,
 } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
-  areParamsFormDraftsEqual,
   getParamsFormCompletion,
   normalizeDecimalString,
   normalizeDraftNumbers,
-  type ParamsFormDraft,
   parseIntegerOrNull,
   toChoixChauffageParamsPatch,
   toParamsFormDraft,
@@ -79,16 +77,16 @@ export function ParamsForm({
   selectedBatiment,
   paramSources,
 }: ParamsFormProps) {
-  const currentValues = toParamsFormDraft(values, paramSources);
+  const currentValues = useMemo(() => toParamsFormDraft(values, paramSources), [values, paramSources]);
   const form = useAppForm({
     ...schemaValidation(zParamsForm),
-    defaultValues: { draft: currentValues },
+    defaultValues: currentValues,
     onSubmit: async ({ value }) => {
-      const nextValues = toChoixChauffageParamsPatch(value.draft);
+      const nextValues = toChoixChauffageParamsPatch(value);
 
       trackPostHogEvent('fcr_simulator:parameters_saved', {
-        dpe: value.draft.dpe,
-        ecs_mode: value.draft.modeEauChaudeSanitaire,
+        dpe: value.dpe,
+        ecs_mode: value.modeEauChaudeSanitaire,
         emitter_type: nextValues.typeRadiateur,
         habitants: nextValues.habitantsMoyen ? Number(nextValues.habitantsMoyen) : undefined,
         heating_mode: nextValues.typeLogement,
@@ -97,14 +95,15 @@ export function ParamsForm({
       });
       await onSave(nextValues);
 
-      form.reset({ draft: normalizeDraftNumbers(value.draft) });
-      setHasPendingLocalChange(false);
+      form.reset(normalizeDraftNumbers(value));
+      setHasPendingAddressChange(false);
       setIsOpen(false);
     },
   });
-  const draft = useStore(form.store, (state) => state.values.draft);
-  const setDraft = (next: ParamsFormDraft | ((previousDraft: ParamsFormDraft) => ParamsFormDraft)) => form.setFieldValue('draft', next);
-  const [hasPendingLocalChange, setHasPendingLocalChange] = useState(false);
+  const draft = useStore(form.store, (state) => state.values);
+  const isDefaultValue = useStore(form.store, (state) => state.isDefaultValue);
+  // Address selection also updates the URL and eligibility context before submission.
+  const [hasPendingAddressChange, setHasPendingAddressChange] = useState(false);
   const draftSelectedBatiment =
     draft.constructionId === null
       ? null
@@ -112,23 +111,10 @@ export function ParamsForm({
 
   useEffect(() => {
     // Reflect saved URL parameters, including building-prefill updates, in the editable draft.
-    form.reset({ draft: currentValues });
-  }, [
-    currentValues.adresse,
-    currentValues.constructionId,
-    currentValues.dpe,
-    currentValues.espaceExterieur,
-    currentValues.habitantsMoyen,
-    currentValues.modeEauChaudeSanitaire,
-    currentValues.nbLogements,
-    currentValues.surfaceMoyenne,
-    currentValues.typeLogement,
-    currentValues.typeRadiateur,
-    currentValues.isDpeExplicit,
-    currentValues.isModeEauChaudeSanitaireInferred,
-  ]);
+    form.reset(currentValues);
+  }, [form, currentValues]);
 
-  const isModified = hasPendingLocalChange || !areParamsFormDraftsEqual(draft, currentValues);
+  const isModified = hasPendingAddressChange || !isDefaultValue;
   const completion = getParamsFormCompletion(draft);
   const modeEauChaudeSanitaireOptions = getModeEauChaudeSanitaireOptions(draft.typeLogement);
 
@@ -138,8 +124,8 @@ export function ParamsForm({
   };
 
   const handleClose = () => {
-    form.reset({ draft: currentValues });
-    setHasPendingLocalChange(false);
+    form.reset(currentValues);
+    setHasPendingAddressChange(false);
     setIsOpen(false);
   };
 
@@ -156,21 +142,24 @@ export function ParamsForm({
   const handleSelectBatiment = (batiment: BatEnrBatiment) => {
     const prefillParams = getSimulationPrefillFromBatEnrBatiment(batiment);
 
-    setHasPendingLocalChange(true);
-    setDraft((previousDraft) => {
-      return {
-        ...previousDraft,
-        constructionId: batiment.batiment_construction_id,
-        dpe: prefillParams.dpe ?? previousDraft.dpe,
-        isDpeExplicit: prefillParams.dpe ? true : previousDraft.isDpeExplicit,
-        isModeEauChaudeSanitaireInferred: prefillParams.modeEauChaudeSanitaire ? false : previousDraft.isModeEauChaudeSanitaireInferred,
-        modeEauChaudeSanitaire: prefillParams.modeEauChaudeSanitaire
-          ? normalizeModeEauChaudeSanitaireForTypeLogement(prefillParams.modeEauChaudeSanitaire, previousDraft.typeLogement)
-          : previousDraft.modeEauChaudeSanitaire,
-        nbLogements: prefillParams.nbLogements === undefined ? previousDraft.nbLogements : String(prefillParams.nbLogements),
-        surfaceMoyenne: prefillParams.surfaceMoyenne === undefined ? previousDraft.surfaceMoyenne : String(prefillParams.surfaceMoyenne),
-      };
-    });
+    form.setFieldValue('constructionId', batiment.batiment_construction_id);
+    if (prefillParams.dpe) {
+      form.setFieldValue('dpe', prefillParams.dpe);
+      form.setFieldValue('isDpeExplicit', true);
+    }
+    if (prefillParams.modeEauChaudeSanitaire) {
+      form.setFieldValue('isModeEauChaudeSanitaireInferred', false);
+      form.setFieldValue(
+        'modeEauChaudeSanitaire',
+        normalizeModeEauChaudeSanitaireForTypeLogement(prefillParams.modeEauChaudeSanitaire, draft.typeLogement)
+      );
+    }
+    if (prefillParams.nbLogements !== undefined) {
+      form.setFieldValue('nbLogements', String(prefillParams.nbLogements));
+    }
+    if (prefillParams.surfaceMoyenne !== undefined) {
+      form.setFieldValue('surfaceMoyenne', String(prefillParams.surfaceMoyenne));
+    }
   };
 
   return (
@@ -186,8 +175,9 @@ export function ParamsForm({
               nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
               onlyAddress
               onClear={() => {
-                setHasPendingLocalChange(true);
-                setDraft((previousDraft) => ({ ...previousDraft, adresse: '', constructionId: null }));
+                setHasPendingAddressChange(true);
+                form.setFieldValue('adresse', '');
+                form.setFieldValue('constructionId', null);
                 setGeoAddress(undefined);
                 onSelectGeoAddress?.(undefined);
               }}
@@ -201,12 +191,9 @@ export function ParamsForm({
                     source: 'result',
                   });
                 }
-                setHasPendingLocalChange(true);
-                setDraft((previousDraft) => ({
-                  ...previousDraft,
-                  adresse: nextAddressLabel,
-                  constructionId: null,
-                }));
+                setHasPendingAddressChange(true);
+                form.setFieldValue('adresse', nextAddressLabel);
+                form.setFieldValue('constructionId', null);
                 setGeoAddress(nextAddress);
                 onSelectGeoAddress?.(nextAddress);
               }}
@@ -254,15 +241,14 @@ export function ParamsForm({
                       if (nextTypeLogement) {
                         trackPostHogEvent('fcr_simulator:heating_mode_selected', { heating_mode: nextTypeLogement });
                       }
-                      setDraft((previousDraft) => ({
-                        ...previousDraft,
-                        espaceExterieur: previousDraft.espaceExterieur ?? 'none',
-                        isModeEauChaudeSanitaireInferred: false,
-                        modeEauChaudeSanitaire:
-                          normalizeModeEauChaudeSanitaireForTypeLogement(previousDraft.modeEauChaudeSanitaire, nextTypeLogement) ??
-                          MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
-                        typeLogement: nextTypeLogement,
-                      }));
+                      form.setFieldValue('espaceExterieur', draft.espaceExterieur ?? 'none');
+                      form.setFieldValue('isModeEauChaudeSanitaireInferred', false);
+                      form.setFieldValue(
+                        'modeEauChaudeSanitaire',
+                        normalizeModeEauChaudeSanitaireForTypeLogement(draft.modeEauChaudeSanitaire, nextTypeLogement) ??
+                          MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE
+                      );
+                      form.setFieldValue('typeLogement', nextTypeLogement);
                     },
                     value: draft.typeLogement ?? undefined,
                   }}
@@ -276,10 +262,7 @@ export function ParamsForm({
                       if (nextTypeRadiateur) {
                         trackPostHogEvent('fcr_simulator:emitter_type_selected', { emitter_type: nextTypeRadiateur });
                       }
-                      setDraft((previousDraft) => ({
-                        ...previousDraft,
-                        typeRadiateur: nextTypeRadiateur,
-                      }));
+                      form.setFieldValue('typeRadiateur', nextTypeRadiateur);
                     },
                     value: draft.typeRadiateur ?? undefined,
                   }}
@@ -295,21 +278,15 @@ export function ParamsForm({
                         return;
                       }
 
-                      setDraft((previousDraft) => ({
-                        ...previousDraft,
-                        isModeEauChaudeSanitaireInferred: false,
-                      }));
+                      form.setFieldValue('isModeEauChaudeSanitaireInferred', false);
                     },
                     onChange: (event) => {
                       const nextModeEauChaudeSanitaire = event.target.value as ModeEauChaudeSanitaireQueryParam;
                       if (nextModeEauChaudeSanitaire) {
                         trackPostHogEvent('fcr_simulator:ecs_mode_changed', { ecs_mode: nextModeEauChaudeSanitaire });
                       }
-                      setDraft((previousDraft) => ({
-                        ...previousDraft,
-                        isModeEauChaudeSanitaireInferred: false,
-                        modeEauChaudeSanitaire: nextModeEauChaudeSanitaire,
-                      }));
+                      form.setFieldValue('isModeEauChaudeSanitaireInferred', false);
+                      form.setFieldValue('modeEauChaudeSanitaire', nextModeEauChaudeSanitaire);
                     },
                     value: draft.modeEauChaudeSanitaire ?? undefined,
                   }}
@@ -332,7 +309,7 @@ export function ParamsForm({
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="[&_.fr-label]:text-sm">
-                    <form.AppField name="draft.surfaceMoyenne">
+                    <form.AppField name="surfaceMoyenne">
                       {(field) => (
                         <field.CustomField
                           Component={InputWithSuffix}
@@ -368,15 +345,12 @@ export function ParamsForm({
                         if (normalizedHabitantsMoyen) {
                           trackPostHogEvent('fcr_simulator:habitants_changed', { habitants: Number(normalizedHabitantsMoyen) });
                         }
-                        setDraft((previousDraft) => ({
-                          ...previousDraft,
-                          habitantsMoyen: normalizedHabitantsMoyen,
-                        }));
+                        form.setFieldValue('habitantsMoyen', normalizedHabitantsMoyen);
                       }}
                       onChange={(value) => {
                         if (!(value === '' || /^[0-9]+([.,][0-9]*)?$/.test(value))) return;
 
-                        setDraft((previousDraft) => ({ ...previousDraft, habitantsMoyen: value }));
+                        form.setFieldValue('habitantsMoyen', value);
                       }}
                     />
                     <Input
@@ -394,7 +368,7 @@ export function ParamsForm({
                             trackPostHogEvent('fcr_simulator:nb_logements_changed', { nb_logements: nbLogements });
                           }
                         },
-                        onChange: (event) => setDraft((previousDraft) => ({ ...previousDraft, nbLogements: event.target.value })),
+                        onChange: (event) => form.setFieldValue('nbLogements', event.target.value),
                         placeholder: '25',
                         type: 'number',
                         value: draft.nbLogements,
@@ -407,7 +381,8 @@ export function ParamsForm({
                       hasError={completion.isDpeIncomplete}
                       onChange={(value) => {
                         trackPostHogEvent('fcr_simulator:dpe_changed', { dpe: value });
-                        setDraft((previousDraft) => ({ ...previousDraft, dpe: value, isDpeExplicit: true }));
+                        form.setFieldValue('dpe', value);
+                        form.setFieldValue('isDpeExplicit', true);
                       }}
                     />
                     <OutdoorSpaceCheckboxes
@@ -418,7 +393,7 @@ export function ParamsForm({
                         if (value) {
                           trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoor_space: value });
                         }
-                        setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }));
+                        form.setFieldValue('espaceExterieur', value);
                       }}
                     />
                   </div>

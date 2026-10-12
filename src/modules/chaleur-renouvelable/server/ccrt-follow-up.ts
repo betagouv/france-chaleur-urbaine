@@ -79,7 +79,7 @@ export const getCcrtFollowUp = async (ctx: Context, input: z.infer<typeof zCcrtF
     historyQuery.select(kdb.fn.count<number>('events.id').as('count')).executeTakeFirstOrThrow(),
   ]);
   return {
-    emails: emails.map((email) => ({ ...email, email_key: email.id, sent_at: email.sent_at?.toISOString() ?? null })),
+    emails: emails.map((email) => ({ ...email, sent_at: email.sent_at?.toISOString() ?? null })),
     history: history.map((event) => {
       if (event.type === 'user_permissions_updated' || event.type === 'user_permissions_synced_from_api') {
         const permissionsData = event.data as EventDataMap['user_permissions_updated'];

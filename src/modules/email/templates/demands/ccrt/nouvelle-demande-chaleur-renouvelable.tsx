@@ -9,7 +9,6 @@ const EMAIL_CAMPAIGN = 'demands.ccrt.nouvelle-demande-chaleur-renouvelable';
 
 type NouvelleDemandeChaleurRenouvelableProps = {
   demand: DemandeChaleurRenouvelable;
-  demandId: string;
   demandUrl: string;
   pendingDemandCount: number;
   status: DemandeChaleurRenouvelableStatus;
@@ -82,7 +81,6 @@ export const scenarios = defineEmailScenarios<typeof NouvelleDemandeChaleurRenou
     label: "Nouvelle demande d'accompagnement",
     props: {
       demand: sampleRenewableHeatDemand,
-      demandId: 'demand-123',
       demandUrl: '/pro/demandes-chaleur-renouvelable',
       pendingDemandCount: 4,
       status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
