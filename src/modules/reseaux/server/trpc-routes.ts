@@ -5,6 +5,7 @@ import { createUserEvent } from '@/modules/events/server/service';
 import { getUsersWithNetworkPermission, removeNetworkPermissionFromAllUsers } from '@/modules/permissions/server/service';
 import {
   type DeleteNetworkInput,
+  mergeableNetworkTables,
   type NetworkType,
   networkEntityToTable,
   networkEntityTypes,
@@ -15,6 +16,8 @@ import {
   zDeleteGeomUpdateInput,
   zDeleteNetworkInput,
   zDownloadNetworkGeometryInput,
+  zMergeNetworksInput,
+  zNetworkMergePreviewInput,
   zUpdateGeomUpdateInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
   zUpdateReseauDeChaleurInput,
@@ -40,6 +43,7 @@ export type ReseauxDeChaleurLimits = {
 import { renameStoredFile } from '@/modules/files/server/service';
 
 import { addNetworkDocuments, listNetworkDocuments, removeNetworkDocument } from './documents';
+import { getNetworkMergePreview, mergeNetworks, searchNetworksToMerge } from './merge';
 import { createNetworkReminder, deleteNetworkReminder, updateNetworkNotes, updateNetworkReminder } from './reminders';
 import * as reseauxService from './service';
 
@@ -330,6 +334,10 @@ export const reseauxRouter = router({
   listNetworks: route.query(async () => {
     return await reseauxService.listNetworks();
   }),
+  /** Networks of one table merged into one (values picked by the admin, references repointed, traces united). */
+  mergeNetworks: adminRoute.input(zMergeNetworksInput).mutation(({ input, ctx }) => mergeNetworks(input, { userId: ctx.user.id })),
+  /** What a merge would do: values of each network, what points to it, and what forbids the merge. */
+  mergePreview: adminRoute.input(zNetworkMergePreviewInput).query(({ input }) => getNetworkMergePreview(input)),
   /**
    * Limites min/max sur les dimensions filtrables des réseaux de chaleur.
    * Utilisé par `useMapConfiguration` côté carte pour initialiser les filtres
@@ -392,6 +400,10 @@ export const reseauxRouter = router({
   searchNetworks: demandAccessRoute.input(z.object({ search: z.string().min(2).max(100) })).query(async ({ input }) => {
     return await reseauxService.searchNetworks(input.search);
   }),
+  /** Networks of a table to add to a merge, by name, SNCU or id. */
+  searchNetworksToMerge: adminRoute
+    .input(z.object({ search: z.string().min(1).max(100), table: z.enum(mergeableNetworkTables) }))
+    .query(({ input }) => searchNetworksToMerge(input.table, input.search)),
   searchOperators: route
     .input(z.object({ field: z.enum(['gestionnaire', 'maitreOuvrage']), search: z.string().min(1).max(100) }))
     .query(async ({ input }) => {

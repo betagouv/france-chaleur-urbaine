@@ -350,6 +350,20 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null})
     </span>
   ),
+  network_merged: (event) => (
+    <span>
+      a fusionné{' '}
+      {event.data.absorbed
+        .map(
+          (network) => `"${network.nom_reseau ?? `#${network.id}`}"${network.identifiant_reseau ? ` (${network.identifiant_reseau})` : ''}`
+        )
+        .join(', ')}{' '}
+      dans le réseau <strong>{event.data.type}</strong>
+      {event.data.nom_reseau ? ` "${event.data.nom_reseau}"` : null} (ID: {event.data.id}
+      {event.data.identifiant_reseau ? `, SNCU: ${event.data.identifiant_reseau}` : null}) : {event.data.impacts.demands} demande(s),{' '}
+      {event.data.impacts.permissions} permission(s), {event.data.impacts.documents} document(s) repointés
+    </span>
+  ),
   network_notes_updated: (event, updateFilters) => (
     <>
       <span>a mis à jour les notes du {networkTypeLabels[event.data.network_type]} </span>

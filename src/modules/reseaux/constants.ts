@@ -197,3 +197,71 @@ export const gestionnairesFilters = [
   { label: 'IDEX', value: 'idex' },
   { label: 'Autre', value: 'autre' },
 ];
+
+// ─── Merge of networks (admin) ───────────────────────────────────────────────
+
+/** Tables whose networks can be merged together (always within one table). */
+export const mergeableNetworkTables = ['reseaux_de_chaleur', 'reseaux_de_froid', 'zones_et_reseaux_en_construction'] as const;
+export type MergeableNetworkTable = (typeof mergeableNetworkTables)[number];
+
+export type NetworkMergeField = { key: string; label: string };
+
+/**
+ * Values the admin picks from one of the merged networks (the kept one by default), per table. Everything else is either
+ * recomputed from the geometry, or follows the SNCU (survey values), or is repointed (demands, permissions, documents…).
+ */
+export const networkMergeFields = {
+  reseaux_de_chaleur: [
+    { key: 'identifiant_reseau', label: "Identifiant SNCU (les valeurs de l'enquête FEDENE suivent)" },
+    { key: 'nom_reseau', label: 'Nom' },
+    { key: 'gestionnaire', label: 'Gestionnaire' },
+    { key: 'mo', label: "Maître d'ouvrage" },
+    { key: 'informations_complementaires', label: 'Informations complémentaires' },
+    { key: 'website_gestionnaire', label: 'Site web du gestionnaire' },
+    { key: 'ouvert_aux_raccordements', label: 'Ouvert aux raccordements' },
+    { key: 'reseaux_classes', label: 'Réseau classé' },
+    { key: 'organization', label: 'Organisation' },
+    { key: 'notes', label: 'Notes' },
+  ],
+  reseaux_de_froid: [
+    { key: 'identifiant_reseau', label: "Identifiant SNCU (les valeurs de l'enquête FEDENE suivent)" },
+    { key: 'nom_reseau', label: 'Nom' },
+    { key: 'gestionnaire', label: 'Gestionnaire' },
+    { key: 'mo', label: "Maître d'ouvrage" },
+    { key: 'informations_complementaires', label: 'Informations complémentaires' },
+    { key: 'website_gestionnaire', label: 'Site web du gestionnaire' },
+    { key: 'reseaux_classes', label: 'Réseau classé' },
+    { key: 'organization', label: 'Organisation' },
+    { key: 'notes', label: 'Notes' },
+  ],
+  zones_et_reseaux_en_construction: [
+    { key: 'nom_reseau', label: 'Nom' },
+    { key: 'gestionnaire', label: 'Gestionnaire' },
+    { key: 'mo', label: "Maître d'ouvrage" },
+    { key: 'mise_en_service', label: 'Mise en service prévisionnelle' },
+    { key: 'ouvert_aux_raccordements', label: 'Ouvert aux raccordements' },
+    { key: 'reseau_de_chaleur', label: 'Réseau de chaleur étendu' },
+    { key: 'organization', label: 'Organisation' },
+    { key: 'notes', label: 'Notes' },
+  ],
+} as const satisfies Record<MergeableNetworkTable, readonly NetworkMergeField[]>;
+
+export const MAX_MERGED_NETWORKS = 10;
+
+export const zNetworkMergePreviewInput = z.object({
+  ids: z.array(z.number().int()).min(1).max(MAX_MERGED_NETWORKS),
+  table: z.enum(mergeableNetworkTables),
+});
+export type NetworkMergePreviewInput = z.infer<typeof zNetworkMergePreviewInput>;
+
+export const zMergeNetworksInput = z.object({
+  absorbedIds: z
+    .array(z.number().int())
+    .min(1)
+    .max(MAX_MERGED_NETWORKS - 1),
+  /** field key → `id_fcu` of the network whose value is kept (the kept network when absent) */
+  choices: z.record(z.string().max(50), z.number().int()),
+  keptId: z.number().int(),
+  table: z.enum(mergeableNetworkTables),
+});
+export type MergeNetworksInput = z.infer<typeof zMergeNetworksInput>;

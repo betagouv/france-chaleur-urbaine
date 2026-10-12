@@ -59,6 +59,7 @@ export const eventTypes = [
   'pdp_updated',
   'network_created',
   'network_deleted',
+  'network_merged',
   'network_geometry_updated',
   'network_geometries_applied',
   'network_notes_updated',
@@ -115,6 +116,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   network_deleted: 'Suppression réseau/PDP',
   network_geometries_applied: 'Application des modifications géométriques',
   network_geometry_updated: 'Mise à jour géométrie réseau',
+  network_merged: 'Fusion de réseaux',
   network_notes_updated: 'Mise à jour des notes du réseau',
   network_reminder_created: 'Création relance réseau',
   network_reminder_deleted: 'Suppression relance réseau',
@@ -242,6 +244,23 @@ export type EventDataMap = {
   sync_metadata_from_airtable: { name: string };
   network_created: { id: string; identifiant_reseau: string | null; nom_reseau: string | null; type: string } & NetworkChangeRequestSource;
   network_deleted: { id: number; identifiant_reseau: string | null; nom_reseau: string | null; type: string };
+  /** the kept network, the networks absorbed into it, and what was repointed */
+  network_merged: {
+    id: number;
+    identifiant_reseau: string | null;
+    nom_reseau: string | null;
+    type: string;
+    absorbed: { id: number; identifiant_reseau: string | null; nom_reseau: string | null }[];
+    impacts: {
+      permissions: number;
+      demands: number;
+      change_requests: number;
+      documents: number;
+      reminders: number;
+      extensions: number;
+      pdps: number;
+    };
+  };
   network_geometries_applied: {
     name: string;
     processed: { total: number; created: number; updated: number; deleted: number };

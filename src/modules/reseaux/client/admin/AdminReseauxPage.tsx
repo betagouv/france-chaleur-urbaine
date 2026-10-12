@@ -28,6 +28,7 @@ import { Map } from '@/modules/map/client/Map';
 import { notify, toastErrors } from '@/modules/notification';
 import DeleteNetworkDialog, { type NetworkToDelete } from '@/modules/reseaux/client/admin/DeleteNetworkDialog';
 import { type EditableNetwork, type EditableNetworkValues, EditNetworkDialog } from '@/modules/reseaux/client/admin/EditNetworkDialog';
+import MergeNetworksDialog, { type NetworkToMerge } from '@/modules/reseaux/client/admin/MergeNetworksDialog';
 import { networkLinkLabel } from '@/modules/reseaux/client/admin/NetworkLinksField';
 import NetworkRawDataDialog, { type NetworkRawDataTarget } from '@/modules/reseaux/client/admin/NetworkRawDataDialog';
 import { NotesCell } from '@/modules/reseaux/client/admin/NotesCell';
@@ -129,6 +130,7 @@ const GestionDesReseaux = () => {
     }
   }, [editingId]);
   const deleteNetworkDialog = useDialogState<NetworkToDelete>();
+  const mergeNetworksDialog = useDialogState<NetworkToMerge>();
   const rawDataDialog = useDialogState<NetworkRawDataTarget>();
   const [isPollingJobs, setIsPollingJobs] = useState(true);
 
@@ -1498,6 +1500,14 @@ const GestionDesReseaux = () => {
               <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={handleAddNewNetwork}>
                 Ajouter un réseau
               </Button>
+              <Button
+                size="small"
+                priority="secondary"
+                iconId="ri-git-merge-line"
+                onClick={() => mergeNetworksDialog.open({ table: 'reseaux_de_chaleur' })}
+              >
+                Fusionner des réseaux
+              </Button>
             </div>
           }
         />
@@ -1546,6 +1556,14 @@ const GestionDesReseaux = () => {
               <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={handleAddNewNetwork}>
                 Ajouter un réseau
               </Button>
+              <Button
+                size="small"
+                priority="secondary"
+                iconId="ri-git-merge-line"
+                onClick={() => mergeNetworksDialog.open({ table: 'reseaux_de_froid' })}
+              >
+                Fusionner des réseaux
+              </Button>
             </div>
           }
         />
@@ -1592,6 +1610,14 @@ const GestionDesReseaux = () => {
               </Button>
               <Button size="small" priority="secondary" iconId="fr-icon-add-line" onClick={handleAddNewNetwork}>
                 Ajouter un réseau
+              </Button>
+              <Button
+                size="small"
+                priority="secondary"
+                iconId="ri-git-merge-line"
+                onClick={() => mergeNetworksDialog.open({ table: 'zones_et_reseaux_en_construction' })}
+              >
+                Fusionner des réseaux
               </Button>
             </div>
           }
@@ -1916,6 +1942,7 @@ const GestionDesReseaux = () => {
         </ResizablePanelGroup>
       </div>
       <DeleteNetworkDialog control={deleteNetworkDialog} onConfirm={handleConfirmDeleteNetwork} />
+      <MergeNetworksDialog control={mergeNetworksDialog} onMerged={invalidateNetworkLists} />
       <NetworkRawDataDialog control={rawDataDialog} />
       <EditNetworkDialog
         network={networkBeingEdited}
