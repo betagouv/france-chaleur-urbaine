@@ -54,9 +54,10 @@ export const hasUnknownGeothermalResource = (situation: Situation) => [0, 1].inc
 
 export const hasCompatibleGeothermalPotential = (situation: Situation) =>
   situation.geothermiePossible &&
+  situation.geothermalNappeGmi !== 3 &&
+  situation.geothermalSondeGmi !== 3 &&
   hasFavorableGeothermalArea(situation) &&
-  (hasUnknownGeothermalResource(situation) || hasSufficientGeothermalResource(situation)) &&
-  situation.hasGeothermalProbeSpace !== false;
+  (hasUnknownGeothermalResource(situation) || hasSufficientGeothermalResource(situation));
 
 export const hasHighAltitudeWithoutAirProtectionPlan = (situation: Situation) =>
   situation.altitude != null && situation.altitude > HEATING_MODE_ALTITUDE_THRESHOLD_METERS && !situation.planProtectionAtmosphere;

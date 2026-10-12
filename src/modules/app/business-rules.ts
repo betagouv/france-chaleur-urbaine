@@ -115,6 +115,13 @@ export const businessRules = {
     label: 'Chaleur renouvelable : distance réseau maximale',
     value: 200,
   },
+  fcrMinimumAverageHousingArea: {
+    description:
+      'Surface habitable minimale par logement acceptée dans le simulateur chaleur renouvelable, en saisie et en préremplissage.',
+    display: '9 m²',
+    label: 'Chaleur renouvelable : surface minimale par logement',
+    value: 9,
+  },
   fcrSolarThermalMinCoveragePercent: {
     description:
       "Taux de couverture des besoins d'eau chaude sanitaire à partir duquel le solaire thermique est jugé suffisant dans le simulateur chaleur renouvelable.",

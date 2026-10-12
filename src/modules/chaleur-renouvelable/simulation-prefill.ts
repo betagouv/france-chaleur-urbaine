@@ -1,4 +1,4 @@
-import type { BatEnrBatiment, DPE, ModeEauChaudeSanitaire } from '@/modules/chaleur-renouvelable/constants';
+import { type BatEnrBatiment, type DPE, type ModeEauChaudeSanitaire, zAverageHousingArea } from './constants';
 
 export type SimulationPrefillParams = {
   dpe?: DPE;
@@ -6,8 +6,6 @@ export type SimulationPrefillParams = {
   nbLogements?: number;
   surfaceMoyenne?: number;
 };
-
-const MINIMUM_AVERAGE_HOUSING_AREA = 9;
 
 const getModeEauChaudeSanitaireFromBatEnr = (typeInstallationEcs: string | null): ModeEauChaudeSanitaire | undefined => {
   const normalizedTypeInstallationEcs = typeInstallationEcs?.trim().toLowerCase();
@@ -26,7 +24,7 @@ const getAverageHousingAreaFromBatEnr = (surfaceHabitable: number | null, nbLoge
 
   const surfaceMoyenne = Math.round(surfaceHabitable / nbLogements);
 
-  return surfaceMoyenne >= MINIMUM_AVERAGE_HOUSING_AREA ? surfaceMoyenne : undefined;
+  return zAverageHousingArea.safeParse(surfaceMoyenne).success ? surfaceMoyenne : undefined;
 };
 
 export function getSimulationPrefillFromBatEnrBatiment(batEnrBatiment: BatEnrBatiment): SimulationPrefillParams {

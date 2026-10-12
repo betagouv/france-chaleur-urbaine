@@ -1,9 +1,16 @@
+import { z } from 'zod';
+
 import type {
   ChoixChauffageParamSources,
   ChoixChauffageParams,
   ChoixChauffageSimulationParams,
 } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
-import { type DPE, MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE } from '@/modules/chaleur-renouvelable/constants';
+import {
+  type DPE,
+  MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE,
+  MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
+  zAverageHousingArea,
+} from '@/modules/chaleur-renouvelable/constants';
 
 export type ParamsFormDraft = {
   adresse: NonNullable<ChoixChauffageSimulationParams['adresse']>;
@@ -19,6 +26,15 @@ export type ParamsFormDraft = {
   typeLogement: ChoixChauffageSimulationParams['typeLogement'];
   typeRadiateur: ChoixChauffageSimulationParams['typeRadiateur'];
 };
+
+export const zParamsForm = z.object({
+  draft: z
+    .custom<ParamsFormDraft>()
+    .refine((draft) => draft.surfaceMoyenne.trim() === '' || zAverageHousingArea.safeParse(Number(draft.surfaceMoyenne)).success, {
+      message: MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE,
+      path: ['surfaceMoyenne'],
+    }),
+});
 
 export function parseIntegerOrNull(value: string) {
   const trimmedValue = value.trim();
@@ -114,7 +130,7 @@ export function getParamsFormCompletion(draft: ParamsFormDraft) {
     draft.modeEauChaudeSanitaire === MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE ||
     draft.isModeEauChaudeSanitaireInferred;
   const isNbLogementsIncomplete = parseIntegerOrNull(draft.nbLogements) === null;
-  const isSurfaceMoyenneIncomplete = parseIntegerOrNull(draft.surfaceMoyenne) === null;
+  const isSurfaceMoyenneIncomplete = !zAverageHousingArea.safeParse(parseIntegerOrNull(draft.surfaceMoyenne)).success;
   const incompleteCount = [
     isDpeIncomplete,
     isHabitantsMoyenIncomplete,

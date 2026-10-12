@@ -1,9 +1,11 @@
-import { type SubmitEvent, useEffect, useState } from 'react';
+import { useStore } from '@tanstack/react-form';
+import { useEffect, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { businessRules } from '@/modules/app/business-rules';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { BatEnrBatimentsMap } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentsMap';
 import type {
@@ -16,9 +18,11 @@ import {
   getParamsFormCompletion,
   normalizeDecimalString,
   normalizeDraftNumbers,
+  type ParamsFormDraft,
   parseIntegerOrNull,
   toChoixChauffageParamsPatch,
   toParamsFormDraft,
+  zParamsForm,
 } from '@/modules/chaleur-renouvelable/client/params-form-draft';
 import {
   type BatEnrBatiment,
@@ -33,6 +37,8 @@ import {
 } from '@/modules/chaleur-renouvelable/constants';
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 import { AddressField } from '@/modules/form/AddressField';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import cx from '@/utils/cx';
 
 import { DpeField } from './DpeField';
@@ -74,7 +80,30 @@ export function ParamsForm({
   paramSources,
 }: ParamsFormProps) {
   const currentValues = toParamsFormDraft(values, paramSources);
-  const [draft, setDraft] = useState(currentValues);
+  const form = useAppForm({
+    ...schemaValidation(zParamsForm),
+    defaultValues: { draft: currentValues },
+    onSubmit: async ({ value }) => {
+      const nextValues = toChoixChauffageParamsPatch(value.draft);
+
+      trackPostHogEvent('fcr_simulator:parameters_saved', {
+        dpe: value.draft.dpe,
+        ecs_mode: value.draft.modeEauChaudeSanitaire,
+        emitter_type: nextValues.typeRadiateur,
+        habitants: nextValues.habitantsMoyen ? Number(nextValues.habitantsMoyen) : undefined,
+        heating_mode: nextValues.typeLogement,
+        nb_logements: nextValues.nbLogements ?? undefined,
+        surface_m2: nextValues.surfaceMoyenne ?? undefined,
+      });
+      await onSave(nextValues);
+
+      form.reset({ draft: normalizeDraftNumbers(value.draft) });
+      setHasPendingLocalChange(false);
+      setIsOpen(false);
+    },
+  });
+  const draft = useStore(form.store, (state) => state.values.draft);
+  const setDraft = (next: ParamsFormDraft | ((previousDraft: ParamsFormDraft) => ParamsFormDraft)) => form.setFieldValue('draft', next);
   const [hasPendingLocalChange, setHasPendingLocalChange] = useState(false);
   const draftSelectedBatiment =
     draft.constructionId === null
@@ -82,7 +111,8 @@ export function ParamsForm({
       : (batiments.find((batiment) => batiment.batiment_construction_id === draft.constructionId) ?? selectedBatiment);
 
   useEffect(() => {
-    setDraft(currentValues);
+    // Reflect saved URL parameters, including building-prefill updates, in the editable draft.
+    form.reset({ draft: currentValues });
   }, [
     currentValues.adresse,
     currentValues.constructionId,
@@ -108,7 +138,7 @@ export function ParamsForm({
   };
 
   const handleClose = () => {
-    setDraft(currentValues);
+    form.reset({ draft: currentValues });
     setHasPendingLocalChange(false);
     setIsOpen(false);
   };
@@ -121,27 +151,6 @@ export function ParamsForm({
 
     trackPostHogEvent('fcr_simulator:parameters_cancelled');
     handleClose();
-  };
-
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const nextValues = toChoixChauffageParamsPatch(draft);
-
-    trackPostHogEvent('fcr_simulator:parameters_saved', {
-      dpe: draft.dpe,
-      ecs_mode: draft.modeEauChaudeSanitaire,
-      emitter_type: nextValues.typeRadiateur,
-      habitants: nextValues.habitantsMoyen ? Number(nextValues.habitantsMoyen) : undefined,
-      heating_mode: nextValues.typeLogement,
-      nb_logements: nextValues.nbLogements ?? undefined,
-      surface_m2: nextValues.surfaceMoyenne ?? undefined,
-    });
-    onSave(nextValues);
-
-    setDraft(normalizeDraftNumbers(draft));
-    setHasPendingLocalChange(false);
-    setIsOpen(false);
   };
 
   const handleSelectBatiment = (batiment: BatEnrBatiment) => {
@@ -165,11 +174,7 @@ export function ParamsForm({
   };
 
   return (
-    <form
-      id="params-form"
-      className={cx('border border-gray-200 bg-white p-4 shadow-sm', !isOpen && 'sticky top-0 z-20')}
-      onSubmit={handleSubmit}
-    >
+    <Form form={form} id="params-form" className={cx('border border-gray-200 bg-white p-4 shadow-sm', !isOpen && 'sticky top-0 z-20')}>
       {isOpen ? (
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 flex-1 items-start gap-2 mb-5">
@@ -327,24 +332,26 @@ export function ParamsForm({
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="[&_.fr-label]:text-sm">
-                    <InputWithSuffix
-                      label="Surface habitable par logement (moy)"
-                      suffix="m²"
-                      value={draft.surfaceMoyenne}
-                      placeholder="70"
-                      inputMode="numeric"
-                      min="0"
-                      step="1"
-                      state={completion.isSurfaceMoyenneIncomplete ? 'error' : 'default'}
-                      stateRelatedMessage={INCOMPLETE_FIELD_MESSAGE}
-                      onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
-                      onBlur={() => {
-                        const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
-                        if (surfaceM2 !== null) {
-                          trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
-                        }
-                      }}
-                    />
+                    <form.AppField name="draft.surfaceMoyenne">
+                      {(field) => (
+                        <field.CustomField
+                          Component={InputWithSuffix}
+                          label="Surface habitable par logement (moy)"
+                          suffix="m²"
+                          placeholder="70"
+                          inputMode="numeric"
+                          min={String(businessRules.fcrMinimumAverageHousingArea.value)}
+                          step="1"
+                          onBlur={() => {
+                            field.handleBlur();
+                            const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
+                            if (surfaceM2 !== null) {
+                              trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
+                            }
+                          }}
+                        />
+                      )}
+                    </form.AppField>
                     <InputWithSuffix
                       label="Habitants par logement (moy)"
                       suffix="personnes"
@@ -443,7 +450,7 @@ export function ParamsForm({
           <ParamsNotificationBadge count={completion.incompleteCount} />
         </Button>
       )}
-    </form>
+    </Form>
   );
 }
 
