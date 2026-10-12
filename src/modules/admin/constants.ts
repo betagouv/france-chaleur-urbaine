@@ -41,6 +41,12 @@ export const adminDashboardIndicators = [
     label: "Écarts avec l'enquête FEDENE",
   },
   {
+    description: "Réseaux correspondant au motif d'une organisation sans y être rattachés, ou rattachés hors de tout motif",
+    href: '/admin/organizations',
+    key: 'organizationNetworksDrift',
+    label: 'Écarts de rattachement aux organisations',
+  },
+  {
     description: 'Tâches asynchrones terminées en erreur au cours des 7 derniers jours',
     href: '/admin/jobs',
     key: 'jobsInError',

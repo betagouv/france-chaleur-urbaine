@@ -1,3 +1,4 @@
+import { findAttachedNetworksNotMatchingPatterns, findUnattachedNetworksMatchingPatterns } from '@/modules/organizations/server/service';
 import { kdb } from '@/server/db/kysely';
 
 import type { AdminDashboardIndicators } from '../constants';
@@ -7,7 +8,7 @@ const JOBS_IN_ERROR_WINDOW_DAYS = 7;
 /** Counts of the items waiting for the FCU team, displayed on the admin dashboard. */
 export const getAdminDashboardIndicators = async (): Promise<AdminDashboardIndicators> => {
   const jobsErrorCutoff = new Date(Date.now() - JOBS_IN_ERROR_WINDOW_DAYS * 24 * 3600 * 1000);
-  const [demands, renewableHeatDemands, networkChangeRequests, jobs] = await Promise.all([
+  const [demands, renewableHeatDemands, networkChangeRequests, jobs, unattachedMatching, attachedUnmatched] = await Promise.all([
     kdb
       .selectFrom('demands')
       .select((eb) => [
@@ -35,12 +36,16 @@ export const getAdminDashboardIndicators = async (): Promise<AdminDashboardIndic
       .where('status', '=', 'error')
       .where('updated_at', '>', jobsErrorCutoff)
       .executeTakeFirstOrThrow(),
+    // same rows as the « Écart » column of the organizations page and its dialog
+    findUnattachedNetworksMatchingPatterns(),
+    findAttachedNetworksNotMatchingPatterns(),
   ]);
 
   return {
     demandsToValidate: Number(demands.to_validate),
     jobsInError: Number(jobs.count),
     networkChangeRequestsPending: Number(networkChangeRequests.submitted),
+    organizationNetworksDrift: unattachedMatching.length + attachedUnmatched.length,
     pendingReassignments: Number(demands.pending_reassignments),
     renewableHeatDemandsToValidate: Number(renewableHeatDemands.count),
     surveyDiscrepanciesPending: Number(networkChangeRequests.survey),

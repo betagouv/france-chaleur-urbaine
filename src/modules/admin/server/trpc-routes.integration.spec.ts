@@ -2,7 +2,7 @@ import type { User } from 'next-auth';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { kdb } from '@/server/db/kysely';
-import { cleanDatabase, seedDemandeChaleurRenouvelable, seedTableUser } from '@/tests/fixtures';
+import { cleanDatabase, seedDemandeChaleurRenouvelable, seedReseauDeChaleur, seedTableUser } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
 import { createTestCaller, forbiddenError, type TestCaseBoolean, testUsers } from '@/tests/trpc-helpers';
 
@@ -74,12 +74,21 @@ describe('admin.getDashboardIndicators', () => {
     await seedJob('error', daysAgo(1));
     await seedJob('error', daysAgo(10)); // older than the window: ignored
     await seedJob('finished', daysAgo(1));
+    await kdb.deleteFrom('organizations').execute();
+    await kdb
+      .insertInto('organizations')
+      .values({ gestionnaire_patterns: ['%engie%'], id: uuid(30), name: 'ENGIE' })
+      .execute();
+    await seedReseauDeChaleur({ Gestionnaire: 'ENGIE Solutions', id_fcu: 1, ouvert_aux_raccordements: true }); // to attach
+    await seedReseauDeChaleur({ Gestionnaire: 'Dalkia', id_fcu: 2, organization_id: uuid(30), ouvert_aux_raccordements: true }); // out of pattern
+    await seedReseauDeChaleur({ Gestionnaire: 'Engie Réseaux', id_fcu: 3, organization_id: uuid(30), ouvert_aux_raccordements: true }); // consistent
     const caller = createTestCaller(testUsers.admin);
 
     expect(await caller.admin.getDashboardIndicators()).toStrictEqual({
       demandsToValidate: 1,
       jobsInError: 1,
       networkChangeRequestsPending: 2,
+      organizationNetworksDrift: 2,
       pendingReassignments: 1,
       renewableHeatDemandsToValidate: 1,
       surveyDiscrepanciesPending: 1,
