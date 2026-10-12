@@ -53,7 +53,6 @@ export const hasSufficientGeothermalResource = (situation: Situation) => [7, 8, 
 export const hasUnknownGeothermalResource = (situation: Situation) => [0, 1].includes(situation.geothermalNappePotential ?? 0);
 
 export const hasCompatibleGeothermalPotential = (situation: Situation) =>
-  situation.geothermiePossible &&
   situation.geothermalNappeGmi !== 3 &&
   situation.geothermalSondeGmi !== 3 &&
   hasFavorableGeothermalArea(situation) &&

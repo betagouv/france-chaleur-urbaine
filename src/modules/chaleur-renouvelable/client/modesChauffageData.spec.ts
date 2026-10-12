@@ -107,7 +107,6 @@ const createSituation = (overrides: SituationOverrides = {}): Situation => ({
   geothermalNappeGmi: 1,
   geothermalNappePotential: 7,
   geothermalSondeGmi: 1,
-  geothermiePossible: true,
   habitantsMoyen: 2,
   hasAlreadyReceivedHeatNetworkRefusal: false,
   hasGeothermalProbeSpace: true,
@@ -198,8 +197,8 @@ const heatingModeCases: HeatingModeCase[] = [
         overrides: { modeEauChaudeSanitaire: 'Collectif', typeRadiateur: 'radiateur-electrique' },
       },
       {
-        description: 'quand la géothermie est impossible',
-        overrides: { geothermiePossible: false, modeEauChaudeSanitaire: 'Collectif' },
+        description: 'sans zone favorable au forage',
+        overrides: { geothermalNappeGmi: null, geothermalSondeGmi: null, modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'en zone défavorable au forage',
@@ -470,8 +469,13 @@ const heatingModeCases: HeatingModeCase[] = [
     ],
     impossibleCases: [
       {
-        description: 'quand la géothermie est impossible',
-        overrides: { espaceExterieur: 'jardinCours', geothermiePossible: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
+        description: 'sans zone favorable au forage',
+        overrides: {
+          espaceExterieur: 'jardinCours',
+          geothermalNappeGmi: null,
+          geothermalSondeGmi: null,
+          modeEauChaudeSanitaire: 'Couplé au chauffage',
+        },
       },
       {
         description: 'en zone défavorable au forage',

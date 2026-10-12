@@ -33,7 +33,6 @@ export const buildSimulationSituation = ({
   geothermalNappeGmi: batEnr.geothermalNappeGmi,
   geothermalNappePotential: batEnr.geothermalNappePotential,
   geothermalSondeGmi: batEnr.geothermalSondeGmi,
-  geothermiePossible: batEnr.geothermiePossible,
   habitantsMoyen: Number.parseFloat(params.habitantsMoyen || String(DEFAULT_SIMULATION_PARAMS.habitantsMoyen)),
   hasAlreadyReceivedHeatNetworkRefusal: Boolean(params.originDemandId),
   hasGeothermalProbeSpace: batEnr.hasGeothermalProbeSpace,
