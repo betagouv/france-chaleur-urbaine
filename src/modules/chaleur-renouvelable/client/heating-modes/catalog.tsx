@@ -128,11 +128,6 @@ export const modesDeChauffage = {
           reason: 'La ressource énergétique de la parcelle est insuffisante',
           source: 'BRGM',
         },
-        {
-          isIncompatible: (situation) => situation.hasGeothermalProbeSpace === false,
-          reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
-          source: 'BRGM',
-        },
       ],
       inconvenients: ['Investissement initial important', "Travaux d'installation conséquents"],
       label: 'PAC géothermique',
@@ -679,7 +674,8 @@ export const modesDeChauffage = {
       estPossible: (situation) =>
         hasEspaceShared(situation) &&
         hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
-        hasCompatibleRadiator(situation, ['radiateur-eau']),
+        hasCompatibleRadiator(situation, ['radiateur-eau']) &&
+        hasCompatibleGeothermalPotential(situation),
       gainClasse: 2,
       icone: 'img/icon-geothermie.webp',
       id: 'house-geothermal-heat-pump',
@@ -697,11 +693,6 @@ export const modesDeChauffage = {
         {
           isIncompatible: (situation) => situation.geothermalNappePotential === 5 || situation.geothermalNappePotential === 6,
           reason: 'La ressource énergétique de la parcelle est insuffisante',
-          source: 'BRGM',
-        },
-        {
-          isIncompatible: (situation) => situation.hasGeothermalProbeSpace === false,
-          reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
           source: 'BRGM',
         },
         {

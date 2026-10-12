@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { areParamsFormDraftsEqual, getParamsFormCompletion, type ParamsFormDraft, toChoixChauffageParamsPatch } from './params-form-draft';
+import {
+  areParamsFormDraftsEqual,
+  getParamsFormCompletion,
+  type ParamsFormDraft,
+  toChoixChauffageParamsPatch,
+  zParamsForm,
+} from './params-form-draft';
 
 const baseDraft = {
   adresse: '1 rue de la Paix 75002 Paris',
@@ -18,6 +24,19 @@ const baseDraft = {
 } satisfies ParamsFormDraft;
 
 describe('params form draft', () => {
+  it.each([
+    ['5', false],
+    ['8', false],
+    ['0', false],
+    ['-1', false],
+    ['invalid', false],
+    ['9', true],
+    ['60', true],
+    ['', true],
+  ])('validates the manually entered area while allowing defaults: %s', (surfaceMoyenne, expected) => {
+    expect(zParamsForm.safeParse({ draft: { ...baseDraft, surfaceMoyenne } }).success).toStrictEqual(expected);
+  });
+
   it('detects a selected building change', () => {
     expect(
       areParamsFormDraftsEqual(baseDraft, {

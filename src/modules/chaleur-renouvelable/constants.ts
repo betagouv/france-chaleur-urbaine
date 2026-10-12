@@ -2,7 +2,11 @@ import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import type { ReactNode } from 'react';
 import { z } from 'zod';
 
+import { businessRules } from '@/modules/app/business-rules';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
+
+export const MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE = `La surface doit être d’au moins ${businessRules.fcrMinimumAverageHousingArea.display} par logement.`;
+export const zAverageHousingArea = z.number().min(businessRules.fcrMinimumAverageHousingArea.value, MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE);
 
 // Pause dedicated CCRT demands while preserving classic connection requests.
 export const IS_CCRT_DEMAND_ENABLED = true;
