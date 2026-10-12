@@ -12,6 +12,23 @@ import cx from '@/utils/cx';
 
 const viewModes = ['html', 'text'] as const;
 
+const renewableHeatEmailTypes = new Set([
+  'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
+  'demands.ccrt.rappel-demandes-en-attente',
+  'demands.demandeur.confirmation-demande-chaleur-renouvelable',
+]);
+
+const emailCategoryNames = ['Comptes utilisateurs', 'Demandes classiques', 'Demandes chaleur renouvelable', 'Autres emails'] as const;
+
+const getEmailCategoryName = (emailType: string) =>
+  emailType.startsWith('auth.')
+    ? 'Comptes utilisateurs'
+    : renewableHeatEmailTypes.has(emailType)
+      ? 'Demandes chaleur renouvelable'
+      : emailType.startsWith('demands.')
+        ? 'Demandes classiques'
+        : 'Autres emails';
+
 const EmailsPage = () => {
   const { data: emails, isLoading: isLoadingList } = trpc.email.list.useQuery();
 
@@ -22,18 +39,17 @@ const EmailsPage = () => {
   });
 
   const groupedEmails = useMemo(() => {
-    if (!emails) return [];
-    const groups = new Map<string, typeof emails>();
-    for (const email of emails) {
-      const moduleName = email.type.split('.')[0];
-      if (!groups.has(moduleName)) groups.set(moduleName, []);
-      groups.get(moduleName)!.push(email);
-    }
-    return Array.from(groups.entries()).map(([name, items]) => ({ items, name }));
+    return emailCategoryNames
+      .map((name) => ({
+        items: (emails ?? []).filter((email) => getEmailCategoryName(email.type) === name),
+        name,
+      }))
+      .filter((group) => group.items.length > 0);
   }, [emails]);
 
-  const selectedEmail = emails?.find((e) => e.type === type) ?? emails?.[0];
-  const selectedScenarioKey = selectedEmail?.scenarios.find((s) => s.key === scenario)?.key ?? selectedEmail?.scenarios[0]?.key;
+  const selectedEmail = emails?.find((email) => email.type === type) ?? emails?.[0];
+  const selectedScenarioKey =
+    selectedEmail?.scenarios.find((emailScenario) => emailScenario.key === scenario)?.key ?? selectedEmail?.scenarios[0]?.key;
 
   const { data: preview, isFetching: isLoadingPreview } = trpc.email.preview.useQuery(
     selectedEmail && selectedScenarioKey ? { scenarioKey: selectedScenarioKey, type: selectedEmail.type } : skipToken,
@@ -41,14 +57,14 @@ const EmailsPage = () => {
   );
 
   return (
-    <SimplePage title="Modèles d'emails" mode="authenticated">
+    <SimplePage title="Emails automatiques" mode="authenticated">
       <Box py="4w" className="fr-container-fluid px-6">
         <Heading as="h1" color="blue-france">
-          Modèles d'emails
+          Emails automatiques
         </Heading>
         <Text className="mb-6">
           Aperçu des emails envoyés par l'application aux utilisateurs et à l'équipe France Chaleur Urbaine, avec les différents cas de
-          figure pris en compte par chaque modèle. Pour modifier un modèle, il faut demander aux développeurs. 😊
+          figure pris en compte par chaque modèle. Pour modifier un email automatique, il faut demander aux développeurs.
         </Text>
 
         {isLoadingList ? (
@@ -112,11 +128,11 @@ const EmailsPage = () => {
                         id="scenario-select"
                         className="fr-select max-w-full"
                         value={selectedScenarioKey ?? ''}
-                        onChange={(e) => setQuery({ scenario: e.target.value })}
+                        onChange={(event) => setQuery({ scenario: event.target.value })}
                       >
-                        {selectedEmail.scenarios.map((s) => (
-                          <option key={s.key} value={s.key}>
-                            {s.label}
+                        {selectedEmail.scenarios.map((emailScenario) => (
+                          <option key={emailScenario.key} value={emailScenario.key}>
+                            {emailScenario.label}
                           </option>
                         ))}
                       </select>

@@ -1,6 +1,7 @@
 import SimplePage from '@/components/shared/page/SimplePage';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
+import { businessRules } from '@/modules/app/business-rules';
 
 function ChaleurRenouvelableMethodologiePage() {
   return (
@@ -75,8 +76,8 @@ function ChaleurRenouvelableMethodologiePage() {
         informations utiles.
         <ul>
           <li>
-            La première (API FCU) permet de savoir si un réseau de chaleur passe à proximité (à moins de 100 mètres), ce qui indique si un
-            raccordement est envisageable,
+            La première (API FCU) permet de savoir si un réseau de chaleur passe à proximité (à moins de{' '}
+            {businessRules.fcrHeatNetworkMaxDistanceMeters.display}), ce qui indique si un raccordement est envisageable,
           </li>
           <li>
             La seconde (API Bat-ENR) fournit des informations sur les contraintes environnementales de la parcelle : possibilité ou non de
@@ -105,8 +106,8 @@ function ChaleurRenouvelableMethodologiePage() {
         Les solutions sont classées par ordre de pertinence, selon la logique “ENR choix” :
         <ol>
           <li>
-            <strong>Réseau de chaleur</strong> (si disponible à moins de 100 m) : chaleur produite à partir de biomasse, géothermie ou
-            chaleur fatale (récupération de chaleur industrielle), distribuée via un réseau.
+            <strong>Réseau de chaleur</strong> (si disponible à moins de {businessRules.fcrHeatNetworkMaxDistanceMeters.display}) : chaleur
+            produite à partir de biomasse, géothermie ou chaleur fatale (récupération de chaleur industrielle), distribuée via un réseau.
           </li>
           <li>
             <strong>Géothermie</strong> (si le sous-sol est adapté) : exploitation de la chaleur naturelle du sous-sol.

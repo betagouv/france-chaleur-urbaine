@@ -103,6 +103,18 @@ describe('mode eau chaude sanitaire par type de logement', () => {
 });
 
 describe('choixChauffageQueryParsers', () => {
+  it.each([
+    ['5', null],
+    ['8', null],
+    ['0', null],
+    ['-1', null],
+    ['invalid', null],
+    ['9', 9],
+    ['60', 60],
+  ])('validates the average housing area in shared links: %s', (value, expected) => {
+    expect(choixChauffageQueryParsers.surfaceMoyenne.parse(String(value))).toStrictEqual(expected);
+  });
+
   it('keeps DPE E in URL when it is explicitly submitted', () => {
     const serializeChoixChauffageQueryParams = createSerializer(choixChauffageQueryParsers);
 

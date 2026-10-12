@@ -1,9 +1,11 @@
-import { type SubmitEvent, useEffect, useId, useState } from 'react';
+import { useStore } from '@tanstack/react-form';
+import { useEffect, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { businessRules } from '@/modules/app/business-rules';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { BatEnrBatimentsMap } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentsMap';
 import type {
@@ -16,15 +18,14 @@ import {
   getParamsFormCompletion,
   normalizeDecimalString,
   normalizeDraftNumbers,
+  type ParamsFormDraft,
   parseIntegerOrNull,
   toChoixChauffageParamsPatch,
   toParamsFormDraft,
+  zParamsForm,
 } from '@/modules/chaleur-renouvelable/client/params-form-draft';
-import { DpeTag } from '@/modules/chaleur-renouvelable/client/results/ui/DpeTag';
 import {
   type BatEnrBatiment,
-  type DPE,
-  DPE_VALUES,
   getModeEauChaudeSanitaireOptions,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type ModeEauChaudeSanitaireQueryParam,
@@ -36,8 +37,12 @@ import {
 } from '@/modules/chaleur-renouvelable/constants';
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 import { AddressField } from '@/modules/form/AddressField';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import cx from '@/utils/cx';
 
+import { DpeField } from './DpeField';
+import { InputWithSuffix } from './InputWithSuffix';
 import { OutdoorSpaceCheckboxes } from './OutdoorSpaceCheckboxes';
 
 export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
@@ -75,7 +80,30 @@ export function ParamsForm({
   paramSources,
 }: ParamsFormProps) {
   const currentValues = toParamsFormDraft(values, paramSources);
-  const [draft, setDraft] = useState(currentValues);
+  const form = useAppForm({
+    ...schemaValidation(zParamsForm),
+    defaultValues: { draft: currentValues },
+    onSubmit: async ({ value }) => {
+      const nextValues = toChoixChauffageParamsPatch(value.draft);
+
+      trackPostHogEvent('fcr_simulator:parameters_saved', {
+        dpe: value.draft.dpe,
+        ecs_mode: value.draft.modeEauChaudeSanitaire,
+        emitter_type: nextValues.typeRadiateur,
+        habitants: nextValues.habitantsMoyen ? Number(nextValues.habitantsMoyen) : undefined,
+        heating_mode: nextValues.typeLogement,
+        nb_logements: nextValues.nbLogements ?? undefined,
+        surface_m2: nextValues.surfaceMoyenne ?? undefined,
+      });
+      await onSave(nextValues);
+
+      form.reset({ draft: normalizeDraftNumbers(value.draft) });
+      setHasPendingLocalChange(false);
+      setIsOpen(false);
+    },
+  });
+  const draft = useStore(form.store, (state) => state.values.draft);
+  const setDraft = (next: ParamsFormDraft | ((previousDraft: ParamsFormDraft) => ParamsFormDraft)) => form.setFieldValue('draft', next);
   const [hasPendingLocalChange, setHasPendingLocalChange] = useState(false);
   const draftSelectedBatiment =
     draft.constructionId === null
@@ -83,7 +111,8 @@ export function ParamsForm({
       : (batiments.find((batiment) => batiment.batiment_construction_id === draft.constructionId) ?? selectedBatiment);
 
   useEffect(() => {
-    setDraft(currentValues);
+    // Reflect saved URL parameters, including building-prefill updates, in the editable draft.
+    form.reset({ draft: currentValues });
   }, [
     currentValues.adresse,
     currentValues.constructionId,
@@ -109,7 +138,7 @@ export function ParamsForm({
   };
 
   const handleClose = () => {
-    setDraft(currentValues);
+    form.reset({ draft: currentValues });
     setHasPendingLocalChange(false);
     setIsOpen(false);
   };
@@ -122,27 +151,6 @@ export function ParamsForm({
 
     trackPostHogEvent('fcr_simulator:parameters_cancelled');
     handleClose();
-  };
-
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const nextValues = toChoixChauffageParamsPatch(draft);
-
-    trackPostHogEvent('fcr_simulator:parameters_saved', {
-      dpe: draft.dpe,
-      ecs_mode: draft.modeEauChaudeSanitaire,
-      emitter_type: nextValues.typeRadiateur,
-      habitants: nextValues.habitantsMoyen ? Number(nextValues.habitantsMoyen) : undefined,
-      heating_mode: nextValues.typeLogement,
-      nb_logements: nextValues.nbLogements ?? undefined,
-      surface_m2: nextValues.surfaceMoyenne ?? undefined,
-    });
-    onSave(nextValues);
-
-    setDraft(normalizeDraftNumbers(draft));
-    setHasPendingLocalChange(false);
-    setIsOpen(false);
   };
 
   const handleSelectBatiment = (batiment: BatEnrBatiment) => {
@@ -166,11 +174,7 @@ export function ParamsForm({
   };
 
   return (
-    <form
-      id="params-form"
-      className={cx('border border-gray-200 bg-white p-4 shadow-sm', !isOpen && 'sticky top-0 z-20')}
-      onSubmit={handleSubmit}
-    >
+    <Form form={form} id="params-form" className={cx('border border-gray-200 bg-white p-4 shadow-sm', !isOpen && 'sticky top-0 z-20')}>
       {isOpen ? (
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 flex-1 items-start gap-2 mb-5">
@@ -328,24 +332,26 @@ export function ParamsForm({
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="[&_.fr-label]:text-sm">
-                    <InputWithSuffix
-                      label="Surface habitable par logement (moy)"
-                      suffix="m²"
-                      value={draft.surfaceMoyenne}
-                      placeholder="70"
-                      inputMode="numeric"
-                      min="0"
-                      step="1"
-                      state={completion.isSurfaceMoyenneIncomplete ? 'error' : 'default'}
-                      stateRelatedMessage={INCOMPLETE_FIELD_MESSAGE}
-                      onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
-                      onBlur={() => {
-                        const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
-                        if (surfaceM2 !== null) {
-                          trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
-                        }
-                      }}
-                    />
+                    <form.AppField name="draft.surfaceMoyenne">
+                      {(field) => (
+                        <field.CustomField
+                          Component={InputWithSuffix}
+                          label="Surface habitable par logement (moy)"
+                          suffix="m²"
+                          placeholder="70"
+                          inputMode="numeric"
+                          min={String(businessRules.fcrMinimumAverageHousingArea.value)}
+                          step="1"
+                          onBlur={() => {
+                            field.handleBlur();
+                            const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
+                            if (surfaceM2 !== null) {
+                              trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
+                            }
+                          }}
+                        />
+                      )}
+                    </form.AppField>
                     <InputWithSuffix
                       label="Habitants par logement (moy)"
                       suffix="personnes"
@@ -444,7 +450,7 @@ export function ParamsForm({
           <ParamsNotificationBadge count={completion.incompleteCount} />
         </Button>
       )}
-    </form>
+    </Form>
   );
 }
 
@@ -474,100 +480,5 @@ function ParamsIncompleteAlert({ count }: ParamsIncompleteAlertProps) {
       <span className="fr-icon-warning-fill mr-2" aria-hidden="true" />
       {count} information{count > 1 ? 's' : ''} à compléter ou vérifier <span className="font-normal">pour affiner vos résultats.</span>
     </p>
-  );
-}
-
-type DpeFieldProps = {
-  hasError: boolean;
-  onChange: (value: DPE) => void;
-  value: DPE;
-};
-
-function DpeField({ hasError, value, onChange }: DpeFieldProps) {
-  return (
-    <div className={cx('fr-input-group fr-mb-0', hasError && 'fr-input-group--error')}>
-      <div className="mb-2 text-sm">Étiquette DPE</div>
-      <div className="flex flex-wrap gap-1">
-        {DPE_VALUES.map((dpeValue) => (
-          <DpeTag key={dpeValue} letter={dpeValue} isSelected={value === dpeValue} onClick={() => onChange(dpeValue)} size="md" />
-        ))}
-      </div>
-      {hasError && <p className="fr-error-text">{INCOMPLETE_FIELD_MESSAGE}</p>}
-    </div>
-  );
-}
-
-type InputWithSuffixProps = {
-  label: string;
-  onBlur?: () => void;
-  onChange: (value: string) => void;
-  placeholder: string;
-  suffix: string;
-  state?: 'default' | 'error';
-  stateRelatedMessage?: string;
-  type?: 'number' | 'text';
-  value: string;
-  inputMode: 'search' | 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | undefined;
-  min: string;
-  step: string;
-};
-
-function InputWithSuffix({
-  label,
-  onChange,
-  onBlur,
-  placeholder,
-  suffix,
-  state = 'default',
-  stateRelatedMessage,
-  type = 'number',
-  value,
-  inputMode,
-  min,
-  step,
-}: InputWithSuffixProps) {
-  const inputId = useId();
-  const suffixDescriptionId = `${inputId}-suffix`;
-  const suffixAnchorText = value || placeholder;
-  const hasError = state === 'error';
-
-  return (
-    <div className={cx('fr-input-group w-full', hasError && 'fr-input-group--error')}>
-      <label className="fr-label mb-2" htmlFor={inputId}>
-        {label}
-      </label>
-      <div className="relative">
-        <input
-          aria-describedby={suffixDescriptionId}
-          aria-invalid={hasError}
-          className="fr-input"
-          id={inputId}
-          inputMode={inputMode}
-          min={min}
-          step={step}
-          onBlur={onBlur}
-          onChange={(event) => onChange(event.target.value)}
-          onWheel={(event) => {
-            if (event.currentTarget.type === 'number') {
-              event.currentTarget.blur();
-            }
-          }}
-          placeholder={placeholder}
-          type={type}
-          value={value}
-        />
-        <span id={suffixDescriptionId} className="sr-only">
-          Unité : {suffix}
-        </span>
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-4 right-12 flex items-center overflow-hidden whitespace-pre text-base leading-6"
-        >
-          <span className={value ? 'invisible' : 'invisible italic'}>{suffixAnchorText}</span>
-          <span className="ml-1 text-gray-500">{suffix}</span>
-        </span>
-      </div>
-      {hasError && <p className="fr-error-text">{stateRelatedMessage}</p>}
-    </div>
   );
 }

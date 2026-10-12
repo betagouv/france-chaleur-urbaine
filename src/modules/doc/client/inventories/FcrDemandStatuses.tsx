@@ -8,6 +8,7 @@ type FcrProjectStateValue = (typeof demandeChaleurRenouvelableProjectStates)[num
 // Authored descriptions; the Record forces a description for any new status added to the list.
 const statusDescriptions: Record<FcrStatusValue, string> = {
   abandoned_by_prospect: 'Le prospect a abandonné le projet avant la phase de validation.',
+  closed: 'La demande est archivée pour toutes les personnes autorisées ; elle reste consultable et peut être rouverte.',
   irrelevant: 'La demande ne donne pas lieu à un accompagnement chaleur renouvelable.',
   opportunity_study_done: "L'étude d'opportunité a été finalisée.",
   opportunity_study_in_progress: "L'étude d'opportunité est en cours.",

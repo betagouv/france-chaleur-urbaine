@@ -167,8 +167,10 @@ Le typing garantit que `templateProps` correspond aux props du composant cible.
 Depuis `@/modules/email/react-email/components` :
 
 `Layout`, `Text`, `Title`, `Button`, `Link`, `Note`, `Callout`, `Table`,
-`TableRow`, `TableColumn`, `Section`, `Row`, `Column`, `Hr`, `Markdown`,
+`TableRow`, `TableColumn`, `SummaryTable`, `Section`, `Row`, `Column`, `Hr`, `Markdown`,
 `Img`, `LogoFCU`, `LogoRF`, `LogoADEME`.
+
+`SummaryTable` takes `rows` as label/value pairs and omits null, undefined, empty string and false values while retaining zeroes. Renewable-heat templates share formatting helpers and preview demand data in `templates/demands/chaleur-renouvelable.ts`.
 
 Ne pas créer de composants stylés ad-hoc dans les templates — étendre
 `components.tsx` si un nouveau primitif est nécessaire.

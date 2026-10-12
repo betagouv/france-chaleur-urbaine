@@ -1,6 +1,7 @@
+import type { Kysely } from 'kysely';
 import { jsonBuildObject } from 'kysely/helpers/postgres';
 
-import { type Events, type Insertable, kdb, sql } from '@/server/db/kysely';
+import { type DB, type Events, type Insertable, kdb, sql } from '@/server/db/kysely';
 import type { UserRole } from '@/types/enum/UserRole';
 
 import type { EventDataMap, EventGranularity, EventType } from '../constants';
@@ -164,9 +165,10 @@ export async function createEvents(
 }
 
 export async function createUserEvent(
-  event: Required<Pick<Insertable<Events>, 'author_id'>> & Pick<Insertable<Events>, 'type' | 'context_type' | 'context_id' | 'data'>
+  event: Required<Pick<Insertable<Events>, 'author_id'>> & Pick<Insertable<Events>, 'type' | 'context_type' | 'context_id' | 'data'>,
+  database: Kysely<DB> = kdb
 ) {
-  await kdb.insertInto('events').values(event).execute();
+  await database.insertInto('events').values(event).execute();
 }
 
 export async function searchAuthors(search: string) {

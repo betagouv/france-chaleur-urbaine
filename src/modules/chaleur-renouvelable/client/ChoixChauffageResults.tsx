@@ -17,6 +17,7 @@ import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
 import { IS_CCRT_DEMAND_ENABLED, isCcrtExperimentationEligible } from '../constants';
+import { getAlternativeHeatingSolutionLabels } from './heating-modes/selectors';
 import { ParamsForm } from './ParamsForm';
 
 export default function ChoixChauffageResults() {
@@ -56,7 +57,7 @@ export default function ChoixChauffageResults() {
   const displayedSolutions = heatNetworkSolution
     ? modesEnriched.filter((modeDeChauffage) => modeDeChauffage.id !== heatNetworkSolution.id)
     : modesEnriched;
-  const alternativeHeatingSolutionLabels = displayedSolutions.map((modeDeChauffage) => modeDeChauffage.label).slice(0, 3);
+  const alternativeHeatingSolutionLabels = getAlternativeHeatingSolutionLabels(modesEnriched);
 
   const handleSelectContactRecipient = (recipientId: ContactRecipientId) => {
     if (recipientId === 'public-advisor') {

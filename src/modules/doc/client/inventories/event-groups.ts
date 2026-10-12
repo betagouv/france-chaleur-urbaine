@@ -12,7 +12,7 @@ export const catchAllEventGroupLabel = 'Système';
 export const specificEventGroups: { label: string; match: (type: EventType) => boolean }[] = [
   { label: 'Comptes utilisateurs', match: (type) => type.startsWith('user_') && !type.startsWith('user_permissions') },
   { label: 'Permissions', match: (type) => type.startsWith('user_permissions') },
-  { label: 'Demandes', match: (type) => type.startsWith('demand_') },
+  { label: 'Demandes', match: (type) => type.startsWith('demand_') || type.startsWith('ccrt_demand_') },
   { label: 'API partenaire', match: (type) => type.startsWith('api_') },
   { label: "Tests d'adresses", match: (type) => type.startsWith('pro_eligibility_test') },
   { label: 'Réseaux et périmètres', match: (type) => type.startsWith('network_') || type === 'pdp_updated' },

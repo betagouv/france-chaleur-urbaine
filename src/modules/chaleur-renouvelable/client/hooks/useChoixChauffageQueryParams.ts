@@ -1,5 +1,5 @@
 import { useSearchParams } from 'next/navigation';
-import { type inferParserType, parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
+import { createParser, type inferParserType, parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { useCallback, useMemo } from 'react';
 
 import {
@@ -9,6 +9,7 @@ import {
   normalizeModeEauChaudeSanitaireForTypeLogement,
   TYPE_LOGEMENT_VALUES,
   TYPE_RADIATEUR_VALUES,
+  zAverageHousingArea,
 } from '@/modules/chaleur-renouvelable/constants';
 
 const queryOptions = {
@@ -25,7 +26,13 @@ const simulationQueryParsers = {
   habitantsMoyen: parseAsString.withOptions(queryOptions),
   modeEauChaudeSanitaire: parseAsStringLiteral(MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES).withOptions(queryOptions),
   nbLogements: parseAsInteger.withOptions(queryOptions),
-  surfaceMoyenne: parseAsInteger.withOptions(queryOptions),
+  surfaceMoyenne: createParser({
+    parse: (value) => {
+      const result = zAverageHousingArea.safeParse(parseAsInteger.parse(value));
+      return result.success ? result.data : null;
+    },
+    serialize: String,
+  }).withOptions(queryOptions),
   typeLogement: parseAsStringLiteral(TYPE_LOGEMENT_VALUES).withOptions(queryOptions),
   typeRadiateur: parseAsStringLiteral(TYPE_RADIATEUR_VALUES).withOptions(queryOptions),
 };

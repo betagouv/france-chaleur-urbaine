@@ -1,0 +1,81 @@
+import { TRPCError } from '@trpc/server';
+import type { SelectQueryBuilder } from 'kysely';
+
+import type { Context } from '@/modules/config/server/context-builder';
+import { getUsersWithAccessToDemand } from '@/modules/permissions/server/demand-access';
+import { type Permission, territoryPermissionToColumn } from '@/modules/permissions/types';
+import { type DB, kdb, sql } from '@/server/db/kysely';
+
+import { selectDemandesChaleurRenouvelableForList } from './ccrt-demand-query';
+
+/**
+ * Uses the same territorial scopes for the list and every individual action, including impersonation.
+ */
+export const applyCcrtAccessFilter = <Output>(
+  query: SelectQueryBuilder<DB, 'demands_chaleur_renouvelable', Output>,
+  user: Context['user'],
+  permissions: Permission[]
+) => {
+  if (user.role === 'admin') {
+    return query;
+  }
+  const territories = Object.entries(territoryPermissionToColumn);
+  return query.where('validated', '=', true).where((expression) => {
+    const conditions = territories.flatMap(([type, column]) =>
+      permissions.filter((permission) => permission.type === type).map((permission) => expression(column, '=', permission.resource_id))
+    );
+    return conditions.length ? expression.or(conditions) : sql.lit(false);
+  });
+};
+
+export const ensureCcrtDemandAccess = async (ctx: Context, demandId: string) =>
+  applyCcrtAccessFilter(selectDemandesChaleurRenouvelableForList(), ctx.user, await ctx.getPermissions())
+    .where('id', '=', demandId)
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
+
+/**
+ * Resolves administrative scopes from authoritative geographic tables, never from an address context string.
+ */
+export const getCcrtTerritory = async (cityCode: string | null, departmentCode: string | null) => {
+  const [commune, ept, department] = await Promise.all([
+    cityCode
+      ? kdb
+          .selectFrom('ign_communes')
+          .select(['insee_com', 'insee_dep', 'insee_reg', 'siren_epci'])
+          .where('insee_com', '=', cityCode)
+          .executeTakeFirst()
+      : undefined,
+    cityCode
+      ? kdb
+          .selectFrom('ept')
+          .select('code')
+          .where((expression) => sql<boolean>`${expression.ref('membres')} @> ${JSON.stringify([{ code: cityCode }])}::jsonb`)
+          .executeTakeFirst()
+      : undefined,
+    departmentCode
+      ? kdb.selectFrom('ign_departements').select('insee_reg').where('insee_dep', '=', departmentCode).executeTakeFirst()
+      : undefined,
+  ]);
+  return {
+    commune_code: commune?.insee_com ?? cityCode,
+    departement_code: commune?.insee_dep ?? departmentCode,
+    epci_code: commune?.siren_epci ?? null,
+    ept_code: ept?.code ?? null,
+    region_code: commune?.insee_reg ?? department?.insee_reg ?? null,
+  };
+};
+
+export const listCcrtUsersWithAccess = async (ctx: Context, demandId: string) => {
+  const demand = await ensureCcrtDemandAccess(ctx, demandId);
+  const [users, admins] = await Promise.all([
+    demand.validated ? getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null }) : [],
+    kdb
+      .selectFrom('users')
+      .select(['id', 'email', 'role', 'first_name', 'last_name', 'structure_name'])
+      .where('active', '=', true)
+      .where('role', '=', 'admin')
+      .orderBy('email')
+      .execute(),
+  ]);
+  return [...users, ...admins];
+};
