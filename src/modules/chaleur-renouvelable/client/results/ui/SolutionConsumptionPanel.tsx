@@ -39,7 +39,7 @@ export function SolutionConsumptionPanel({
       <p className={cx('mb-0 flex items-center gap-2 font-bold', gainPercentVsGaz <= 0 ? 'text-success' : 'text-error')}>
         <span className={gainPercentVsGaz <= 0 ? 'fr-icon-arrow-right-down-line' : 'fr-icon-arrow-right-up-line'} aria-hidden="true" />
         {gainPercentVsGaz <= 0 ? '-' : '+'}
-        {Math.abs(gainPercentVsGaz)} % d’économies vs gaz
+        {Math.abs(gainPercentVsGaz)} % vs gaz
       </p>
     </div>
   );
