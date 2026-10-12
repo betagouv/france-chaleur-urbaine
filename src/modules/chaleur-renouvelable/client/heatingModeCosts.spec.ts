@@ -55,7 +55,6 @@ const createSituation = (overrides: Partial<Situation> = {}): Situation => ({
   geothermalNappeGmi: 1,
   geothermalNappePotential: 7,
   geothermalSondeGmi: 1,
-  geothermiePossible: true,
   habitantsMoyen: 2,
   hasAlreadyReceivedHeatNetworkRefusal: false,
   hasGeothermalProbeSpace: true,

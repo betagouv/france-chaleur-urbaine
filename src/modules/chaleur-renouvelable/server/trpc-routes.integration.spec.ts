@@ -1193,7 +1193,7 @@ describe('batEnrRouter', () => {
         { email: testUsers.ccrt.email, id: ccrtMatchingId },
         expect.objectContaining({
           demand: expect.objectContaining({ email: 'test@example.com' }),
-          demandId: demand.id,
+          demandUrl: `/pro/demandes-chaleur-renouvelable?demandes_chaleur_renouvelable_ccrt_search=${demand.id}`,
           status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
         })
       );

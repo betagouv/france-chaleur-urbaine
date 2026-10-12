@@ -3,38 +3,36 @@ import { z } from 'zod';
 import type {
   ChoixChauffageParamSources,
   ChoixChauffageParams,
-  ChoixChauffageSimulationParams,
 } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
-  type DPE,
+  DPE_VALUES,
+  ESPACE_EXTERIEUR_VALUES,
   MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
+  MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES,
+  TYPE_LOGEMENT_VALUES,
+  TYPE_RADIATEUR_VALUES,
   zAverageHousingArea,
 } from '@/modules/chaleur-renouvelable/constants';
 
-export type ParamsFormDraft = {
-  adresse: NonNullable<ChoixChauffageSimulationParams['adresse']>;
-  constructionId: string | null;
-  dpe: DPE;
-  espaceExterieur: ChoixChauffageSimulationParams['espaceExterieur'];
-  habitantsMoyen: NonNullable<ChoixChauffageSimulationParams['habitantsMoyen']>;
-  modeEauChaudeSanitaire: ChoixChauffageSimulationParams['modeEauChaudeSanitaire'] | null;
-  nbLogements: string;
-  surfaceMoyenne: string;
-  isDpeExplicit: boolean;
-  isModeEauChaudeSanitaireInferred: boolean;
-  typeLogement: ChoixChauffageSimulationParams['typeLogement'];
-  typeRadiateur: ChoixChauffageSimulationParams['typeRadiateur'];
-};
-
 export const zParamsForm = z.object({
-  draft: z
-    .custom<ParamsFormDraft>()
-    .refine((draft) => draft.surfaceMoyenne.trim() === '' || zAverageHousingArea.safeParse(Number(draft.surfaceMoyenne)).success, {
-      message: MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE,
-      path: ['surfaceMoyenne'],
-    }),
+  adresse: z.string(),
+  constructionId: z.string().nullable(),
+  dpe: z.enum(DPE_VALUES),
+  espaceExterieur: z.enum(ESPACE_EXTERIEUR_VALUES).nullable(),
+  habitantsMoyen: z.string(),
+  isDpeExplicit: z.boolean(),
+  isModeEauChaudeSanitaireInferred: z.boolean(),
+  modeEauChaudeSanitaire: z.enum(MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES).nullable(),
+  nbLogements: z.string(),
+  surfaceMoyenne: z.string().refine((value) => value.trim() === '' || zAverageHousingArea.safeParse(Number(value)).success, {
+    message: MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE,
+  }),
+  typeLogement: z.enum(TYPE_LOGEMENT_VALUES).nullable(),
+  typeRadiateur: z.enum(TYPE_RADIATEUR_VALUES).nullable(),
 });
+
+export type ParamsFormDraft = z.infer<typeof zParamsForm>;
 
 export function parseIntegerOrNull(value: string) {
   const trimmedValue = value.trim();
@@ -103,23 +101,6 @@ export function normalizeDraftNumbers(draft: ParamsFormDraft): ParamsFormDraft {
     nbLogements: normalizedNbLogements === null ? '' : String(normalizedNbLogements),
     surfaceMoyenne: normalizedSurfaceMoyenne === null ? '' : String(normalizedSurfaceMoyenne),
   };
-}
-
-export function areParamsFormDraftsEqual(left: ParamsFormDraft, right: ParamsFormDraft) {
-  return (
-    left.adresse === right.adresse &&
-    left.constructionId === right.constructionId &&
-    left.dpe === right.dpe &&
-    left.espaceExterieur === right.espaceExterieur &&
-    left.habitantsMoyen === right.habitantsMoyen &&
-    left.isDpeExplicit === right.isDpeExplicit &&
-    left.isModeEauChaudeSanitaireInferred === right.isModeEauChaudeSanitaireInferred &&
-    left.modeEauChaudeSanitaire === right.modeEauChaudeSanitaire &&
-    left.nbLogements === right.nbLogements &&
-    left.surfaceMoyenne === right.surfaceMoyenne &&
-    left.typeLogement === right.typeLogement &&
-    left.typeRadiateur === right.typeRadiateur
-  );
 }
 
 export function getParamsFormCompletion(draft: ParamsFormDraft) {
