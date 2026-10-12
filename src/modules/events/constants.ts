@@ -65,6 +65,7 @@ export const eventTypes = [
   'network_updated',
   'network_change_request_created',
   'network_change_request_processed',
+  'network_change_request_reopened',
   'fedene_survey_imported',
   'fedene_survey_discrepancies_cleared',
   'conversion_source_created',
@@ -109,6 +110,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   fedene_survey_imported: 'Import de la bibliothèque FEDENE',
   network_change_request_created: 'Demande de modification de réseau déposée',
   network_change_request_processed: 'Demande de modification de réseau traitée',
+  network_change_request_reopened: 'Demande de modification de réseau réouverte',
   network_created: 'Création réseau/PDP',
   network_deleted: 'Suppression réseau/PDP',
   network_geometries_applied: 'Application des modifications géométriques',
@@ -182,6 +184,8 @@ export type EventDataMap = {
   network_change_request_created: NetworkChangeRequestEventData;
   /** `applied: false`: closed without changing anything */
   network_change_request_processed: NetworkChangeRequestEventData & { applied?: boolean };
+  /** a request closed without change put back to pending by an admin */
+  network_change_request_reopened: NetworkChangeRequestEventData;
   fedene_survey_discrepancies_cleared: { count: number };
   fedene_survey_imported: {
     filename: string;

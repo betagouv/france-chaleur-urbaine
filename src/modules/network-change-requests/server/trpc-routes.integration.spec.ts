@@ -286,7 +286,7 @@ describe('networkChangeRequests', () => {
       const requests = await caller.networkChangeRequests.admin.list();
       expect(requests.map((request) => ({ notified: request.notified, status: request.status }))).toStrictEqual([
         { notified: true, status: 'processed' },
-        { notified: false, status: 'processed' },
+        { notified: false, status: 'closed' },
       ]);
       // the closed request is traced as such, and touches no network data
       const processed = await listEvents('network_change_request_processed');
@@ -814,7 +814,7 @@ describe('networkChangeRequests', () => {
       await caller.networkChangeRequests.admin.accept({ id });
 
       expect(await kdb.selectFrom('zone_de_developpement_prioritaire').select('id_fcu').execute()).toStrictEqual([]);
-      expect((await caller.networkChangeRequests.admin.list())[0]).toMatchObject({ notified: false, status: 'processed' });
+      expect((await caller.networkChangeRequests.admin.list())[0]).toMatchObject({ notified: false, status: 'closed' });
       // nothing was published: no publication email
       expect(vi.mocked(sendEmailTemplate).mock.calls).toStrictEqual([]);
     });
@@ -836,6 +836,53 @@ describe('networkChangeRequests', () => {
       // no half-applied request: the network is not created and the request is still pending
       expect(await kdb.selectFrom('zones_et_reseaux_en_construction').select('id_fcu').execute()).toStrictEqual([]);
       expect((await caller.networkChangeRequests.admin.list())[0].status).toStrictEqual('pending');
+    });
+
+    it('closes a request without processing it, whatever its state (conversion failed, not attached)', async () => {
+      const { id } = await createTraceRequest('trace_construction', null);
+      await kdb
+        .insertInto('network_change_request_geometries')
+        .values({ error: 'ogr2ogr : ERROR 1: invalid polygon', request_id: id, role: 'trace' })
+        .execute();
+      const caller = createTestCaller(testUsers.admin);
+      vi.mocked(sendEmailTemplate).mockClear();
+
+      await caller.networkChangeRequests.admin.accept({ id, included: [] });
+
+      expect(await kdb.selectFrom('zones_et_reseaux_en_construction').select('id_fcu').execute()).toStrictEqual([]);
+      expect((await caller.networkChangeRequests.admin.list())[0]).toMatchObject({ notified: false, status: 'closed' });
+      expect(vi.mocked(sendEmailTemplate).mock.calls).toStrictEqual([]);
+      expect(await kdb.selectFrom('events').select('data').where('type', '=', 'network_change_request_processed').execute()).toMatchObject([
+        { data: { applied: false, kind: 'trace_construction', request_id: id } },
+      ]);
+    });
+
+    it('reopens a request closed without change, and refuses to reopen an applied one', async () => {
+      const { id } = await createTraceRequest('trace_construction', null);
+      const caller = createTestCaller(testUsers.admin);
+      await caller.networkChangeRequests.admin.accept({ id, included: [] });
+      expect((await caller.networkChangeRequests.admin.list())[0].status).toStrictEqual('closed');
+
+      await caller.networkChangeRequests.admin.reopen({ id });
+
+      expect((await caller.networkChangeRequests.admin.list())[0]).toMatchObject({
+        processed_at: null,
+        processed_by_email: null,
+        status: 'pending',
+      });
+      expect(await listEvents('network_change_request_reopened')).toMatchObject([
+        { author_id: testUsers.admin.id, context_id: id, data: { kind: 'trace_construction', request_id: id } },
+      ]);
+      await expect(caller.networkChangeRequests.admin.reopen({ id })).rejects.toMatchObject({ code: 'BAD_REQUEST' });
+
+      // applied: the created network would be duplicated by a second acceptance
+      await seedGeometry(id, 'trace', lineGeometry);
+      await caller.networkChangeRequests.admin.accept({ id });
+      expect((await caller.networkChangeRequests.admin.list())[0].status).toStrictEqual('processed');
+      await expect(caller.networkChangeRequests.admin.reopen({ id })).rejects.toMatchObject({
+        code: 'BAD_REQUEST',
+        message: 'Seule une demande close sans changement peut être réouverte',
+      });
     });
 
     it('creates the perimeter of a perimeter request, linked to the network', async () => {

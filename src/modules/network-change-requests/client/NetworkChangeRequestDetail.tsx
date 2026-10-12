@@ -101,34 +101,33 @@ function NetworkChangeRequestDetail({ request }: NetworkChangeRequestDetailProps
   const canAccept =
     initialized &&
     (!needsDocumentedNetwork || isDocumentedLink || (createsHeatNetwork && hasGeoFiles('trace'))) &&
-    (geometryRole === null || !geometryPending(geometryRole)) &&
+    !(geometryRole && included.has(geometryRole) && geometryPending(geometryRole)) &&
     !(included.has('pdp') && geometryPending('pdp')) &&
     !documentsPending;
+  // the decision closes the request without applying anything (nothing to apply, or everything excluded)
+  const isClosingOnly = request.kind === 'autre' || pdfOnly || (included.size === 0 && !createsHeatNetwork);
   // one button whose label says what the decision does: the bizdev sees every entity touched before clicking
-  const actionLabel =
-    request.kind === 'autre' || pdfOnly || (included.size === 0 && !createsHeatNetwork)
-      ? 'Clore la demande'
-      : request.kind === 'trace_construction'
-        ? [
-            request.network_type === 'reseau_en_construction'
-              ? 'Mettre à jour le réseau en construction'
-              : 'Créer le réseau en construction',
-            ...(included.has('pdp') ? ['créer son périmètre de développement prioritaire'] : []),
-          ].join(' et ')
-        : request.kind === 'pdp'
-          ? 'Créer le périmètre de développement prioritaire'
-          : request.kind === 'trace_existant'
-            ? createsHeatNetwork
-              ? ['Créer le réseau de chaleur', ...(included.has('pdp') ? ['créer son périmètre de développement prioritaire'] : [])].join(
-                  ' et '
-                )
-              : [...included].some((key) => key !== 'pdp')
-                ? // a network created without trace (FEDENE import) gets its first trace
-                  `${currentNetwork?.hasGeometry === false && included.has('trace') ? 'Ajouter le tracé du réseau' : 'Mettre à jour le réseau'}${
-                    included.has('pdp') ? ' et créer le périmètre de développement prioritaire' : ''
-                  }`
-                : 'Créer le périmètre de développement prioritaire'
-            : 'Mettre à jour la fiche';
+  const actionLabel = isClosingOnly
+    ? 'Clore la demande'
+    : request.kind === 'trace_construction'
+      ? [
+          request.network_type === 'reseau_en_construction' ? 'Mettre à jour le réseau en construction' : 'Créer le réseau en construction',
+          ...(included.has('pdp') ? ['créer son périmètre de développement prioritaire'] : []),
+        ].join(' et ')
+      : request.kind === 'pdp'
+        ? 'Créer le périmètre de développement prioritaire'
+        : request.kind === 'trace_existant'
+          ? createsHeatNetwork
+            ? ['Créer le réseau de chaleur', ...(included.has('pdp') ? ['créer son périmètre de développement prioritaire'] : [])].join(
+                ' et '
+              )
+            : [...included].some((key) => key !== 'pdp')
+              ? // a network created without trace (FEDENE import) gets its first trace
+                `${currentNetwork?.hasGeometry === false && included.has('trace') ? 'Ajouter le tracé du réseau' : 'Mettre à jour le réseau'}${
+                  included.has('pdp') ? ' et créer le périmètre de développement prioritaire' : ''
+                }`
+              : 'Créer le périmètre de développement prioritaire'
+          : 'Mettre à jour la fiche';
   const notifiedEmail =
     included.size > 0 &&
     !pdfOnly &&
@@ -145,10 +144,20 @@ function NetworkChangeRequestDetail({ request }: NetworkChangeRequestDetailProps
   const replaceGeometryFile = trpc.networkChangeRequests.admin.replaceGeometryFile.useMutation();
   const retryGeometryConversion = trpc.networkChangeRequests.admin.retryGeometryConversion.useMutation();
   const acceptRequest = trpc.networkChangeRequests.admin.accept.useMutation();
+  const reopenRequest = trpc.networkChangeRequests.admin.reopen.useMutation();
   // no confirmation: the button label and the note under it already say what the decision does
   const accept = toastErrors(async () => {
     await acceptRequest.mutateAsync({ id: request.id, included: [...included] });
     notify('success', notifiedEmail ? `Demande traitée, email envoyé à ${notifiedEmail}` : 'Demande traitée');
+    await invalidateAfterDecision();
+  });
+  // an incomplete request, unreadable files…: closed as is, nothing is checked nor written server-side
+  const closeWithoutProcessing = toastErrors(async () => {
+    await acceptRequest.mutateAsync({ id: request.id, included: [] });
+    notify('success', 'Demande close sans traitement');
+    await invalidateAfterDecision();
+  });
+  const invalidateAfterDecision = async () => {
     await Promise.all([
       utils.networkChangeRequests.admin.list.invalidate(),
       utils.networkChangeRequests.admin.countPending.invalidate(),
@@ -159,6 +168,12 @@ function NetworkChangeRequestDetail({ request }: NetworkChangeRequestDetailProps
       utils.reseaux.reseauEnConstruction.list.invalidate(),
       utils.reseaux.perimetreDeDeveloppementPrioritaire.list.invalidate(),
     ]);
+  };
+  // a request closed without change (by mistake, or completed since): back to the pending list
+  const reopen = toastErrors(async () => {
+    await reopenRequest.mutateAsync({ id: request.id });
+    notify('success', 'Demande réouverte');
+    await Promise.all([utils.networkChangeRequests.admin.list.invalidate(), utils.networkChangeRequests.admin.countPending.invalidate()]);
   });
   const retryConversion = toastErrors(async () => {
     await retryGeometryConversion.mutateAsync({ id: request.id });
@@ -220,7 +235,7 @@ function NetworkChangeRequestDetail({ request }: NetworkChangeRequestDetailProps
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
         <span>Déposée le {dayjs(request.created_at).format('DD/MM/YYYY à HH:mm')}</span>
-        <Badge as="span" small noIcon severity={request.status === 'pending' ? 'new' : 'success'}>
+        <Badge as="span" small noIcon severity={request.status === 'pending' ? 'new' : request.status === 'closed' ? 'info' : 'success'}>
           {networkChangeRequestStatusLabels[request.status]}
         </Badge>
       </div>
@@ -413,11 +428,21 @@ function NetworkChangeRequestDetail({ request }: NetworkChangeRequestDetailProps
             </p>
           )}
           <div className="flex flex-col gap-1">
-            <div>
+            <div className="flex flex-wrap gap-2">
               <Button iconId="fr-icon-check-line" disabled={!canAccept} loading={acceptRequest.isPending} onClick={accept}>
                 {actionLabel}
                 {changedKeys.length > 0 ? ` (${included.size}/${changedKeys.length})` : ''}
               </Button>
+              {!isClosingOnly && (
+                <Button
+                  priority="secondary"
+                  iconId="fr-icon-close-line"
+                  disabled={acceptRequest.isPending}
+                  onClick={closeWithoutProcessing}
+                >
+                  Clore sans traiter
+                </Button>
+              )}
             </div>
             <span className="text-xs italic text-gray-600 mt-1">
               {notifiedEmail ? (
@@ -444,6 +469,19 @@ function NetworkChangeRequestDetail({ request }: NetworkChangeRequestDetailProps
               label="Email au déposant"
               value={request.notified ? 'Mise en ligne notifiée' : 'Aucun : demande close sans rien publier, ou type sans mise en ligne'}
             />
+          )}
+          {request.status === 'closed' && (
+            <div className="mt-2">
+              <Button
+                priority="secondary"
+                size="small"
+                iconId="fr-icon-arrow-go-back-line"
+                loading={reopenRequest.isPending}
+                onClick={reopen}
+              >
+                Réouvrir la demande
+              </Button>
+            </div>
           )}
         </DetailSection>
       )}

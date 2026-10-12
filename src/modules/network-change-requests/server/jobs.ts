@@ -14,12 +14,19 @@ export type ParseRequestGeometriesJob = Omit<Selectable<Jobs>, 'data'> & {
   };
 };
 
-type ParseOutcome = { role: NetworkChangeRequestGeometryRole; status: 'parsed' | 'error'; error?: string };
+type ParseOutcome = {
+  role: NetworkChangeRequestGeometryRole;
+  status: 'parsed' | 'error';
+  error?: string;
+  /** files left out of a parsed geometry (unreadable by ogr2ogr), listed in the job result and the logs */
+  skippedFiles?: { filename: string; error: string }[];
+};
 
 /**
  * Extracts a geometry from the geo files of a change request, per role, so admins never open the uploaded files:
  * the result (or the conversion error) is stored on the request; the files stay (downloadable, purged with the request).
  * A file still waiting for its antivirus scan is recorded as a conversion error: the admin replays the conversion once scanned.
+ * An unreadable file among readable ones is skipped: the geometry is partial, the skipped files are in the job result.
  */
 export async function processParseRequestGeometriesJob(job: ParseRequestGeometriesJob, logger: Logger): Promise<ParseOutcome[]> {
   const files = await kdb
@@ -58,10 +65,16 @@ export async function processParseRequestGeometriesJob(job: ParseRequestGeometri
       continue;
     }
     try {
-      const geometry = await convertGeoFilesToGeometry(
+      const converted = await convertGeoFilesToGeometry(
         roleFiles.map((file) => ({ content: file.content as Buffer, filename: file.filename }))
       );
-      outcomes.push(await storeRequestGeometry(job.data.requestId, role, { geometry }));
+      if (converted.skippedFiles.length > 0) {
+        logger.warn('geometry converted without some files', { requestId: job.data.requestId, role, skippedFiles: converted.skippedFiles });
+      }
+      outcomes.push({
+        ...(await storeRequestGeometry(job.data.requestId, role, { geometry: converted.geometry })),
+        ...(converted.skippedFiles.length > 0 ? { skippedFiles: converted.skippedFiles } : {}),
+      });
     } catch (error) {
       logger.warn('geometry conversion failed', {
         error: error instanceof Error ? error.message : String(error),

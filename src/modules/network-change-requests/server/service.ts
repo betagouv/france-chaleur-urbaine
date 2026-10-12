@@ -554,6 +554,36 @@ const claimPendingRequest = async (requestId: string, userId: string) => {
   }
 };
 
+/**
+ * Puts a request closed without change (`closed`) back to pending: closed by mistake, or completed by the submitter since.
+ * A `processed` request published something: applying it again would duplicate what it created.
+ */
+export const reopenNetworkChangeRequest = async (id: string, context: NetworkChangeRequestContext & { userId: string }) => {
+  const request = await kdb
+    .selectFrom('network_change_requests')
+    .select(['id', 'kind', 'status', 'network_label', 'network_type', 'network_id'])
+    .where('id', '=', id)
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+  if (request.status !== 'closed') {
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Seule une demande close sans changement peut être réouverte' });
+  }
+  await releaseClaimedRequest(request.id);
+  await createUserEvent({
+    author_id: context.userId,
+    context_id: request.id,
+    context_type: 'network_change_request',
+    data: {
+      kind: request.kind,
+      network_id: request.network_id,
+      network_label: request.network_label,
+      network_type: request.network_type,
+      request_id: request.id,
+    },
+    type: 'network_change_request_reopened',
+  });
+  context.logger.info('network change request reopened', { id: request.id, kind: request.kind });
+};
+
 /** Puts a claimed request back to pending when applying it failed (the network is untouched or partially updated: the error is surfaced). */
 const releaseClaimedRequest = async (requestId: string) => {
   await kdb
@@ -573,6 +603,7 @@ const releaseClaimedRequest = async (requestId: string) => {
  * - `autre`: nothing to apply.
  * Every input (geometries, documents) is resolved and validated before the first write. A request whose geo files are PDF only is
  * closed without creating anything (the admin draws it by hand). The submitter is emailed when something was published.
+ * `included: []` closes the request without applying anything, whatever its state (not attached, conversion failed, scan pending).
  */
 export const acceptNetworkChangeRequest = async (
   input: AcceptNetworkChangeRequestInput,
@@ -591,18 +622,23 @@ export const acceptNetworkChangeRequest = async (
   const isIncluded = (key: string) => !input.included || input.included.includes(key);
   let applied: AppliedResult;
   try {
-    applied = await applyRequest(request, isIncluded, context);
+    // closed without processing: nothing is checked nor written (an incomplete request, unreadable files…)
+    applied = input.included?.length === 0 ? { changes: {}, network: null } : await applyRequest(request, isIncluded, context);
   } catch (error) {
     await releaseClaimedRequest(request.id);
     throw error;
   }
-  if (applied.network) {
-    await kdb
-      .updateTable('network_change_requests')
-      .set({ network_id: applied.network.id, network_type: applied.network.type })
-      .where('id', '=', request.id)
-      .execute();
-  }
+  // the submitter is told about the publication right away, when something was published on the fiche or the map
+  const published = Object.keys(applied.changes).length > 0;
+  await kdb
+    .updateTable('network_change_requests')
+    .set({
+      // nothing published: closed (reopenable), `processed` otherwise
+      status: published ? 'processed' : 'closed',
+      ...(applied.network ? { network_id: applied.network.id, network_type: applied.network.type } : {}),
+    })
+    .where('id', '=', request.id)
+    .execute();
 
   const network =
     applied.network ??
@@ -666,8 +702,6 @@ export const acceptNetworkChangeRequest = async (
         ]
       : []),
   ]);
-  // the submitter is told about the publication right away, when something was published on the fiche or the map
-  const published = Object.keys(applied.changes).length > 0;
   const notify =
     published && request.origin === 'form' && !!request.contact_email && notifiedNetworkChangeRequestKinds.includes(request.kind);
   if (notify) {

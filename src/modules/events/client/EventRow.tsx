@@ -314,6 +314,14 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
+  network_change_request_reopened: (event, updateFilters) => (
+    <>
+      <span>a réouvert une demande « {networkChangeRequestKindLabels[event.data.kind]} » pour </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'network_change_request' })}>
+        {event.data.network_label}
+      </FilterButton>
+    </>
+  ),
   network_created: (event, updateFilters) => (
     <span>
       a créé un réseau <strong>{event.data.type}</strong>

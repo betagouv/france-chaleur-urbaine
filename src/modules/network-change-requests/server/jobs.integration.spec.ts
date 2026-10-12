@@ -87,7 +87,7 @@ describe('parse_request_geometries job', () => {
   it('stores one geometry per role and keeps the converted files', async () => {
     await seedFile(uuid(20), uuid(10), 'trace');
     await seedFile(uuid(21), uuid(10), 'pdp');
-    vi.mocked(convertGeoFilesToGeometry).mockResolvedValue(lineGeometry);
+    vi.mocked(convertGeoFilesToGeometry).mockResolvedValue({ geometry: lineGeometry, skippedFiles: [] });
 
     const outcomes = await processParseRequestGeometriesJob(job(uuid(10)), { info: vi.fn(), warn: vi.fn() } as any);
 
@@ -107,6 +107,20 @@ describe('parse_request_geometries job', () => {
       [`trace-${uuid(20).slice(-2)}.geojson`],
       [`trace-${uuid(21).slice(-2)}.geojson`],
     ]);
+  });
+
+  it('stores the partial geometry when a file is unreadable and reports the skipped files in the outcome', async () => {
+    await seedFile(uuid(20), uuid(10), 'trace');
+    await seedFile(uuid(21), uuid(10), 'trace');
+    const skippedFiles = [{ error: 'ogr2ogr : ERROR 1: not a geo file', filename: `trace-${uuid(21).slice(-2)}.geojson` }];
+    vi.mocked(convertGeoFilesToGeometry).mockResolvedValue({ geometry: lineGeometry, skippedFiles });
+    const logger = { info: vi.fn(), warn: vi.fn() };
+
+    const outcomes = await processParseRequestGeometriesJob(job(uuid(10)), logger as any);
+
+    expect(outcomes).toStrictEqual([{ role: 'trace', skippedFiles, status: 'parsed' }]);
+    expect(await listGeometries(uuid(10))).toStrictEqual([{ error: null, geometry: lineGeometry, role: 'trace' }]);
+    expect(logger.warn).toHaveBeenCalledWith('geometry converted without some files', { requestId: uuid(10), role: 'trace', skippedFiles });
   });
 
   it('records the conversion error and keeps the file content', async () => {

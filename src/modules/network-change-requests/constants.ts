@@ -21,10 +21,12 @@ export const networkChangeRequestKindLabels: Record<NetworkChangeRequestKind, st
 export const networkChangeRequestOrigins = ['form', 'import'] as const;
 export type NetworkChangeRequestOrigin = (typeof networkChangeRequestOrigins)[number];
 
-export const networkChangeRequestStatuses = ['pending', 'processed'] as const;
+/** `processed`: something was published; `closed`: decided without publishing anything (can be reopened) */
+export const networkChangeRequestStatuses = ['pending', 'processed', 'closed'] as const;
 export type NetworkChangeRequestStatus = (typeof networkChangeRequestStatuses)[number];
 
 export const networkChangeRequestStatusLabels: Record<NetworkChangeRequestStatus, string> = {
+  closed: 'Close sans changement',
   pending: 'À traiter',
   processed: 'Traitée',
 };

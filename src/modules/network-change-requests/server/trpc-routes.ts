@@ -18,6 +18,7 @@ import {
   linkNetworkChangeRequest,
   listNetworkChangeRequests,
   renameNetworkChangeRequestFile,
+  reopenNetworkChangeRequest,
   replaceNetworkChangeRequestGeometryFile,
   retryNetworkChangeRequestGeometryConversion,
 } from './service';
@@ -43,6 +44,10 @@ export const networkChangeRequestsRouter = router({
     renameFile: adminRoute
       .input(z.object({ fileId: z.uuid(), filename: z.string().trim().min(1).max(200), id: z.uuid() }))
       .mutation(({ input }) => renameNetworkChangeRequestFile(input)),
+    /** Puts a request closed without change back to pending. */
+    reopen: adminRoute
+      .input(z.object({ id: z.uuid() }))
+      .mutation(({ input, ctx }) => reopenNetworkChangeRequest(input.id, { logger: ctx.logger, userId: ctx.user.id })),
     /** Replaces the files of a role by a GeoJSON converted by the admin (geometry read right away). */
     replaceGeometryFile: adminRoute
       .input(zReplaceNetworkChangeRequestGeometryFileInput)
