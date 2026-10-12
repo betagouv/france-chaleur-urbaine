@@ -6,7 +6,7 @@ import OrganizationNetworks from '../OrganizationNetworks';
 
 /** Dialog autonome listant/éditant les réseaux rattachés à une organisation. */
 const OrganizationNetworksDialog = ({ control }: { control: DialogControl<OrganizationRef> }) => (
-  <Dialog {...control.dialogProps} title={`Réseaux — ${control.data?.name ?? ''}`}>
+  <Dialog {...control.dialogProps} size="lg" title={`Réseaux — ${control.data?.name ?? ''}`}>
     {control.isOpen && control.data && (
       <div className="space-y-3">
         <p className="text-sm text-faded">

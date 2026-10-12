@@ -11,6 +11,7 @@ import {
   createOrganization,
   deleteOrganization,
   detachAllOrganizationNetworks,
+  detachUnmatchedOrganizationNetworks,
   getOrganization,
   getOrganizationNetworkDrift,
   listCredentials,
@@ -41,12 +42,18 @@ export const organizationsRouter = router({
     list: adminRoute.query(() => listOrganizations()),
 
     networks: {
+      attach: adminRoute
+        .input(z.object({ idFcu: z.number().int(), organizationId: z.uuidv4(), type: z.enum(networkTypes) }))
+        .mutation(({ input }) => assignNetworks(networkEntityToTable[input.type], [input.idFcu], input.organizationId)),
       detach: adminRoute
         .input(z.object({ idFcu: z.number().int(), type: z.enum(networkTypes) }))
         .mutation(({ input }) => assignNetworks(networkEntityToTable[input.type], [input.idFcu], null)),
       detachAll: adminRoute
         .input(z.object({ organizationId: z.uuidv4() }))
         .mutation(({ input }) => detachAllOrganizationNetworks(input.organizationId)),
+      detachUnmatched: adminRoute
+        .input(z.object({ organizationId: z.uuidv4() }))
+        .mutation(({ input }) => detachUnmatchedOrganizationNetworks(input.organizationId)),
       drift: adminRoute
         .input(z.object({ organizationId: z.uuidv4() }))
         .query(({ input }) => getOrganizationNetworkDrift(input.organizationId)),
