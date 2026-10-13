@@ -22,7 +22,12 @@ Scalingo spawns a review app per PR. Staging→prod is ideally a fast-forward `d
 
 ## Background processing
 - Job processor: `pnpm start:clock` (or `pnpm cli jobs start`); crons gated by `CLOCK_CRONS_ENABLE=true`.
-- Job types: `build_tiles`, `pro_eligibility_test`, `sync_geometries_to_airtable`, `sync_metadata_from_airtable`.
+- Job types: `build_tiles`, `pro_eligibility_test`, `pro_eligibility_test_notify_changes`, `scan_file` (antivirus, when `FILE_SCANNER=clamav`), `parse_request_geometries` (ogr2ogr conversion of the geo files of a network change request: runs in the clock process, GDAL required there).
+
+## Airtable exit (one-off, right after the deployment of `migration_airtable_reseaux`)
+- `pnpm cli reseaux:import-airtable-metadata [--dry-run]`: last copy of the survey figures and, above all, the split of the provenance of name / gestionnaire / MO (`*_fedene` from the FEDENE per-edition Airtable columns, `*_fcu` when the Airtable value differs). Until it runs, every value sits in `*_fedene` (no « corrected by FCU » mention anywhere).
+- `pnpm cli reseaux:import-airtable-documents [--dry-run]`: PDF documents of the networks into the `files` table.
+- Then regenerate the network tiles (Sync in the admin) so the map popups carry the `gestionnaire_source_fcu` flag.
 
 ## Monitoring
 - **Sentry** (errors, sentry.incubateur.net, betagouv/fcu-prod), **Matomo** (stats.beta.gouv.fr), **PostHog** (product analytics, tunneled via Next rewrites), **Winston** (structured logs via the tRPC context logger — no PII).

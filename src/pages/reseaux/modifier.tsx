@@ -1,5 +1,5 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import Link from 'next/link';
+import { useStore } from '@tanstack/react-form';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
@@ -8,69 +8,116 @@ import { clientConfig } from '@/client-config';
 import NetworkSearchInput from '@/components/Network/NetworkSearchInput';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
+import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
+import type { UploadedFile } from '@/modules/files/constants';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
+import { MAX_NETWORK_DOCUMENTS, networkTableForId } from '@/modules/reseaux/constants';
+import trpc from '@/modules/trpc/client';
 import type { NetworkSearchResult } from '@/pages/api/networks/search';
+import cx from '@/utils/cx';
 import { postFetchJSON, postFormDataFetchJSON } from '@/utils/network';
+import { formatFileSize } from '@/utils/strings';
 
 const maxFileSize = 5 * 1024 * 1024;
+const maxDocuments = MAX_NETWORK_DOCUMENTS;
 
-const zModificationReseauForm = z.object({
-  email: z.email("L'adresse email n'est pas valide"),
-  fichiers: z
-    .array(z.instanceof(File))
-    .max(3, 'Vous ne pouvez déposer que 3 fichiers maximum.')
-    .refine((files) => files.every((file) => file.type === 'application/pdf'), { error: 'Seuls les fichiers PDF sont autorisés.' })
-    .refine((files) => files.every((file) => file.size <= maxFileSize), {
-      error: 'Chaque fichier doit être inférieur à la taille maximale autorisée (5 Mo).',
-    })
-    .optional(),
-  fonction: z.string().min(1, 'Ce champ est obligatoire'),
-  gestionnaire: z.string().min(1, 'Ce champ est obligatoire'),
-  idReseau: z.string().min(1, 'Ce champ est obligatoire'),
-  informationsComplementaires: z.string().max(clientConfig.networkInfoFieldMaxCharacters).optional(),
-  maitreOuvrage: z.string().min(1, 'Ce champ est obligatoire'),
-  nom: z.string().min(1, 'Ce champ est obligatoire'),
-  prenom: z.string().min(1, 'Ce champ est obligatoire'),
-  reseauClasse: z.boolean({ error: 'Ce choix est obligatoire' }),
-  siteInternet: z.string().optional(),
-  structure: z.string().min(1, 'Ce champ est obligatoire'),
-  type: z.enum(['collectivite', 'exploitant'], { error: 'Ce choix est obligatoire' }),
-});
+const zModificationReseauForm = z
+  .object({
+    /** ids of the published documents to take down from the page */
+    documentsToRemove: z.array(z.string()),
+    email: z.email("L'adresse email n'est pas valide"),
+    fichiers: z
+      .array(z.instanceof(File))
+      .max(maxDocuments, `Vous ne pouvez déposer que ${maxDocuments} fichiers maximum.`)
+      .refine((files) => files.every((file) => file.type === 'application/pdf'), { error: 'Seuls les fichiers PDF sont autorisés.' })
+      .refine((files) => files.every((file) => file.size <= maxFileSize), {
+        error: 'Chaque fichier doit être inférieur à la taille maximale autorisée (5 Mo).',
+      })
+      .optional(),
+    fonction: z.string().min(1, 'Ce champ est obligatoire'),
+    idReseau: z.string().min(1, 'Ce champ est obligatoire'),
+    informationsComplementaires: z.string().max(clientConfig.networkInfoFieldMaxCharacters).optional(),
+    nom: z.string().min(1, 'Ce champ est obligatoire'),
+    prenom: z.string().min(1, 'Ce champ est obligatoire'),
+    /** documents already published on the selected network: the new files only fill the remaining slots */
+    publishedDocumentsCount: z.number().int().min(0),
+    structure: z.string().min(1, 'Ce champ est obligatoire'),
+    type: z.enum(['collectivite', 'exploitant'], { error: 'Ce choix est obligatoire' }),
+  })
+  .refine((values) => (values.fichiers?.length ?? 0) <= maxDocuments - (values.publishedDocumentsCount - values.documentsToRemove.length), {
+    error: `La fiche ne peut pas avoir plus de ${maxDocuments} documents : retirez-en ou déposez-en moins.`,
+    path: ['fichiers'],
+    when: () => true,
+  });
 
 type ModificationReseauFormValues = z.input<typeof zModificationReseauForm>;
 
 const defaultValues: ModificationReseauFormValues = {
+  documentsToRemove: [],
   email: '',
   fichiers: [],
   fonction: '',
-  gestionnaire: '',
   idReseau: '',
   informationsComplementaires: '',
-  maitreOuvrage: '',
   nom: '',
   prenom: '',
-  // required choices without a preselected option (see the module AGENTS.md pattern)
-  reseauClasse: undefined as unknown as boolean,
-  siteInternet: '',
+  publishedDocumentsCount: 0,
   structure: '',
+  // required choice without a preselected option (see the module AGENTS.md pattern)
   type: undefined as unknown as 'collectivite' | 'exploitant',
 };
 
+/**
+ * Public form: a collectivité or an exploitant proposes changes to the public page of a heat or cold network.
+ * The proposal is stored as a change request (kind « fiche ») reviewed by the FCU team; PDF documents are uploaded first.
+ */
 function ModifierReseauxPage() {
   const router = useRouter();
   const [formSent, setFormSent] = useState(false);
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkSearchResult | null>(null);
+  const createRequest = trpc.networkChangeRequests.create.useMutation();
 
   const form = useAppForm({
     ...schemaValidation(zModificationReseauForm),
     defaultValues,
     onSubmit: toastErrors(
       async ({ value }) => {
-        await postFormDataFetchJSON('/api/modification-reseau', value);
+        const networkTable = selectedNetwork?.['Identifiant reseau'] ? networkTableForId(selectedNetwork['Identifiant reseau']) : null;
+        const uploaded =
+          value.fichiers && value.fichiers.length > 0
+            ? await postFormDataFetchJSON<{ files: UploadedFile[] }>('/api/files/upload', { files: value.fichiers })
+            : { files: [] };
+        await createRequest.mutateAsync({
+          contact: {
+            email: value.email,
+            firstName: value.prenom,
+            function: value.fonction,
+            lastName: value.nom,
+            structure: value.structure,
+            type: value.type,
+          },
+          files: uploaded.files.map((file) => ({ id: file.id, role: 'document' as const })),
+          kind: 'fiche',
+          network:
+            selectedNetwork && networkTable
+              ? {
+                  id: Number(selectedNetwork.id_fcu),
+                  type: networkTable === 'reseaux_de_chaleur' ? 'reseau_de_chaleur' : 'reseau_de_froid',
+                }
+              : null,
+          networkLabel: value.idReseau,
+          payload: {
+            documentsToRemove: value.documentsToRemove.length > 0 ? value.documentsToRemove : undefined,
+            // an empty text is not a proposal to erase the current one
+            informationsComplementaires: value.informationsComplementaires || undefined,
+          },
+        });
         setFormSent(true);
       },
       () => (
@@ -88,12 +135,14 @@ function ModifierReseauxPage() {
     }
 
     form.setFieldValue('idReseau', `${network['Identifiant reseau']} - ${network.nom_reseau}`, { dontUpdateMeta: true });
-    form.setFieldValue('reseauClasse', network['reseaux classes'] ?? false, { dontUpdateMeta: true });
-    form.setFieldValue('maitreOuvrage', network.MO ?? '', { dontUpdateMeta: true });
-    form.setFieldValue('gestionnaire', network.Gestionnaire ?? '', { dontUpdateMeta: true });
-    form.setFieldValue('siteInternet', network.website_gestionnaire ?? '', { dontUpdateMeta: true });
     form.setFieldValue('informationsComplementaires', network.informationsComplementaires ?? '', { dontUpdateMeta: true });
+    form.setFieldValue('documentsToRemove', [], { dontUpdateMeta: true });
+    form.setFieldValue('publishedDocumentsCount', network.documents.length, { dontUpdateMeta: true });
   };
+
+  const documentsToRemove = useStore(form.store, (state) => state.values.documentsToRemove);
+  const keptDocumentsCount = selectedNetwork ? selectedNetwork.documents.length - documentsToRemove.length : 0;
+  const remainingDocumentSlots = Math.max(0, maxDocuments - keptDocumentsCount);
 
   // automatically fill the network when coming from another link
   useEffect(() => {
@@ -106,22 +155,8 @@ function ModifierReseauxPage() {
       const [network] = await postFetchJSON<NetworkSearchResult[]>('/api/networks/search', {
         search: reseau,
       });
-      if (!network) {
-        return;
-      }
-      onNetworkSelect(network);
-      // download existing files as if they were uploaded by the user
-      if (Array.isArray(network.fichiers)) {
-        const existingFiles = (
-          await Promise.all(
-            network.fichiers.map(
-              async (fichier) =>
-                await createFileFromURL(`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`, fichier.filename)
-            )
-          )
-        ).filter((file): file is File => file !== null);
-
-        form.setFieldValue('fichiers', existingFiles, { dontUpdateMeta: true });
+      if (network) {
+        onNetworkSelect(network);
       }
     })();
   }, [router.isReady, router.query.reseau]);
@@ -141,7 +176,7 @@ function ModifierReseauxPage() {
         <ul>
           <li>
             les données issues de la dernière enquête réalisée par la FEDENE Réseaux de chaleur & froid pour le compte du ministère de la
-            transition énergétique&nbsp;;
+            transition énergétique, complétées par France Chaleur Urbaine&nbsp;;
           </li>
           <li>les données réglementaires de l'arrêté "DPE".</li>
         </ul>
@@ -152,16 +187,17 @@ function ModifierReseauxPage() {
           réseau".
         </Text>
         <Text mt="2w" mb="6w">
-          Vous avez également la possibilité de télécharger jusqu'à 3 documents PDF que vous jugez utiles à porter à la connaissance des
-          usagers de France chaleur Urbaine. Nous vous encourageons notamment à déposer le schéma directeur du réseau, qui nous est souvent
-          demandé.
+          Vous avez également la possibilité de télécharger jusqu'à {maxDocuments} documents PDF que vous jugez utiles à porter à la
+          connaissance des usagers de France chaleur Urbaine. Nous vous encourageons notamment à déposer le schéma directeur du réseau, qui
+          nous est souvent demandé. Les documents déjà publiés sont listés une fois le réseau choisi : vous pouvez les consulter, et
+          demander le retrait de ceux qui ne sont plus à jour.
         </Text>
 
         {formSent ? (
           <Alert
             severity="success"
             title="Merci pour votre contribution"
-            description="Nous reviendrons rapidement vers vous pour vous confirmer la bonne prise en compte des éléments transmis."
+            description="Un accusé de réception vous a été envoyé par email. Nous reviendrons rapidement vers vous pour vous confirmer la bonne prise en compte des éléments transmis."
           />
         ) : (
           <Form form={form} className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6">
@@ -176,7 +212,7 @@ function ModifierReseauxPage() {
               )}
             </form.AppField>
             {selectedNetwork && (
-              <Link href={`/reseaux/${selectedNetwork['Identifiant reseau']}`} target="_blank">
+              <Link href={`/reseaux/${selectedNetwork['Identifiant reseau']}`} isExternal>
                 Voir la fiche actuelle du réseau
               </Link>
             )}
@@ -200,24 +236,8 @@ function ModifierReseauxPage() {
             <form.AppField name="email">{(field) => <field.EmailField label="Votre email" />}</form.AppField>
 
             <Text mt="4w" mb="2w" fontWeight="bold">
-              Modifier des informations erronées ou incomplètes sur la fiche
+              <Link href="/contact">Modifier des informations erronées ou incomplètes sur la fiche</Link>
             </Text>
-            <form.AppField name="reseauClasse">
-              {(field) => (
-                <field.BooleanRadioField label="" orientation="horizontal" yesLabel="Réseau classé" noLabel="Réseau non classé" />
-              )}
-            </form.AppField>
-            <form.AppField name="maitreOuvrage">{(field) => <field.TextField label="Maître d’ouvrage" />}</form.AppField>
-            <form.AppField name="gestionnaire">{(field) => <field.TextField label="Gestionnaire" />}</form.AppField>
-            <form.AppField name="siteInternet">
-              {(field) => (
-                <field.TextField
-                  label="Site internet du réseau"
-                  // type: 'url', uncomment when all data has been cleaned from airtable
-                  nativeInputProps={{ placeholder: 'https://www.monreseau.fr' }}
-                />
-              )}
-            </form.AppField>
 
             <Text mt="4w" mb="1w" fontWeight="bold">
               Renseigner des informations complémentaires à faire apparaître sur la fiche du réseau (
@@ -237,15 +257,65 @@ function ModifierReseauxPage() {
               )}
             </form.AppField>
             <Text mt="4w" mb="1w" fontWeight="bold">
-              Télécharger des documents à mettre à disposition depuis la fiche du réseau (schéma directeur, ...) - 3 documents PDF maximum
-              (&lt;5 Mo par fichier) (Optionnel)
+              Documents mis à disposition depuis la fiche du réseau (schéma directeur, ...) - {maxDocuments} documents PDF maximum (&lt;5 Mo
+              par fichier) (Optionnel)
             </Text>
+            {selectedNetwork && selectedNetwork.documents.length > 0 && (
+              <form.AppField name="documentsToRemove">
+                {(field) => (
+                  <div className="mb-2w">
+                    Document(s) déjà publié(s) :{' '}
+                    {selectedNetwork.documents.map((document) => {
+                      const removed = field.state.value.includes(document.id);
+                      return (
+                        <div key={document.id} className="flex items-center gap-2">
+                          <span className={cx(removed && 'line-through text-gray-500')}>
+                            -{' '}
+                            <a
+                              href={`/api/networks/${selectedNetwork['Identifiant reseau']}/files/${document.id}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {document.filename}
+                            </a>{' '}
+                            <span className="text-gray-600">({formatFileSize(document.size)})</span>
+                          </span>
+                          {removed ? (
+                            <Button
+                              size="small"
+                              className="fr-btn--tertiary-no-outline"
+                              onClick={() => field.handleChange(field.state.value.filter((fileId) => fileId !== document.id))}
+                            >
+                              Annuler le retrait
+                            </Button>
+                          ) : (
+                            <Button
+                              size="small"
+                              className="fr-btn--tertiary-no-outline"
+                              title="Retirer ce document de la fiche"
+                              onClick={() => field.handleChange([...field.state.value, document.id])}
+                            >
+                              <Icon name="ri-delete-bin-2-line" color="var(--text-default-error)" size="lg" />
+                            </Button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </form.AppField>
+            )}
+            {selectedNetwork && remainingDocumentSlots < maxDocuments && (
+              <Text size="sm" className="fr-hint-text" mb="1w">
+                {remainingDocumentSlots} emplacement(s) restant(s) sur la fiche
+              </Text>
+            )}
             <form.AppField name="fichiers">
               {(field) => <field.UploadField label="" append removable multiple nativeInputProps={{ accept: 'application/pdf' }} />}
             </form.AppField>
             <Text mt="4w">Les informations transmises seront validées manuellement par France Chaleur Urbaine avant mise en ligne.</Text>
 
-            <form.SubmitButton className="fr-mt-2w">Soumettre la demande de modification</form.SubmitButton>
+            <form.SubmitButton className="fr-mt-2w">Envoyer les informations complémentaires</form.SubmitButton>
           </Form>
         )}
       </Box>
@@ -254,26 +324,3 @@ function ModifierReseauxPage() {
 }
 
 export default ModifierReseauxPage;
-
-/**
- * Helper used to create a File object (as used by the input[type=file] component)
- * to display already existing files as if they had been uploaded manually.
- */
-async function createFileFromURL(url: string, filename: string): Promise<File | null> {
-  try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`invalid status: ${res.status}`);
-    }
-
-    const buffer = await res.arrayBuffer();
-    const file = new File([new Blob([buffer])], filename, {
-      type: res.headers.get('content-type') ?? '',
-    });
-
-    return file;
-  } catch (err) {
-    console.error('could not create file from url', err);
-    return null;
-  }
-}

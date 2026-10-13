@@ -1,10 +1,11 @@
 import { useState } from 'react';
 
 import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
 import { notify } from '@/modules/notification';
-import { permissionTypeBadgeColors, permissionTypeLabels } from '@/modules/permissions/constants';
 import trpc from '@/modules/trpc/client';
-import cx from '@/utils/cx';
+
+import OrganizationNetworkList, { type OrganizationNetworkListItem } from './OrganizationNetworkList';
 
 const OrganizationNetworks = ({ organizationId }: { organizationId: string }) => {
   const utils = trpc.useUtils();
@@ -29,6 +30,7 @@ const OrganizationNetworks = ({ organizationId }: { organizationId: string }) =>
       notify('success', `${count} réseau(x) rattaché(s)`);
     },
   });
+  const attach = trpc.organizations.admin.networks.attach.useMutation({ onSuccess: invalidate });
   const detach = trpc.organizations.admin.networks.detach.useMutation({ onSuccess: invalidate });
   const detachAll = trpc.organizations.admin.networks.detachAll.useMutation({
     onSuccess: (count) => {
@@ -36,6 +38,18 @@ const OrganizationNetworks = ({ organizationId }: { organizationId: string }) =>
       notify('success', `${count} réseau(x) détaché(s)`);
     },
   });
+  const detachUnmatched = trpc.organizations.admin.networks.detachUnmatched.useMutation({
+    onSuccess: (count) => {
+      invalidate();
+      notify('success', `${count} réseau(x) détaché(s)`);
+    },
+  });
+  const detachAction = {
+    disabled: detach.isPending,
+    iconId: 'ri-link-unlink' as const,
+    label: 'Détacher',
+    onClick: (network: OrganizationNetworkListItem) => detach.mutate({ idFcu: network.id_fcu, type: network.type }),
+  };
 
   const addPattern = () => {
     if (trimmed.length < 2 || patterns.includes(trimmed)) return;
@@ -102,26 +116,51 @@ const OrganizationNetworks = ({ organizationId }: { organizationId: string }) =>
         )}
       </div>
 
-      {drift && (drift.unattachedCount > 0 || drift.attachedUnmatchedCount > 0) && (
-        <div className="space-y-2 rounded bg-gray-100 p-3 text-sm">
-          {drift.unattachedCount > 0 && (
-            <div className="flex items-center justify-between gap-2">
-              <span>{drift.unattachedCount} réseau(x) correspondent à un motif mais ne sont pas rattachés.</span>
-              <Button
-                type="button"
-                size="small"
-                priority="primary"
-                iconId="ri-links-line"
-                disabled={refresh.isPending}
-                onClick={() => refresh.mutate({ organizationId })}
-              >
-                Rattacher
-              </Button>
-            </div>
-          )}
-          {drift.attachedUnmatchedCount > 0 && (
-            <p className="mb-0">⚠️ {drift.attachedUnmatchedCount} réseau(x) rattachés ne correspondent à aucun motif (à vérifier).</p>
-          )}
+      {drift && drift.unattachedMatching.length > 0 && (
+        <div className="space-y-1">
+          <div className="flex items-center justify-between gap-2">
+            <p className="mb-0 text-sm font-medium">Réseaux à rattacher ({drift.unattachedMatching.length})</p>
+            <Button
+              type="button"
+              size="small"
+              priority="primary"
+              iconId="ri-links-line"
+              disabled={refresh.isPending}
+              onClick={() => refresh.mutate({ organizationId })}
+            >
+              Tout rattacher
+            </Button>
+          </div>
+          <OrganizationNetworkList
+            networks={drift.unattachedMatching}
+            action={{
+              disabled: attach.isPending,
+              iconId: 'ri-links-line',
+              label: 'Rattacher',
+              onClick: (network) => attach.mutate({ idFcu: network.id_fcu, organizationId, type: network.type }),
+            }}
+          />
+        </div>
+      )}
+
+      {drift && drift.attachedUnmatched.length > 0 && (
+        <div className="space-y-1">
+          <div className="flex items-center justify-between gap-2">
+            <p className="mb-0 flex items-center gap-1 text-sm font-medium">
+              <Icon name="fr-icon-warning-line" size="sm" color="warning" />À détacher ou vérifier ({drift.attachedUnmatched.length})
+            </p>
+            <Button
+              type="button"
+              size="small"
+              priority="secondary"
+              iconId="ri-link-unlink"
+              disabled={detachUnmatched.isPending}
+              onClick={() => detachUnmatched.mutate({ organizationId })}
+            >
+              Tout détacher
+            </Button>
+          </div>
+          <OrganizationNetworkList networks={drift.attachedUnmatched} action={detachAction} />
         </div>
       )}
 
@@ -146,34 +185,7 @@ const OrganizationNetworks = ({ organizationId }: { organizationId: string }) =>
               Tout détacher
             </Button>
           </div>
-          <ul className="max-h-64 space-y-1 overflow-y-auto">
-            {networks.map((network) => (
-              <li
-                key={`${network.type}-${network.id_fcu}`}
-                className="flex items-center justify-between gap-2 rounded border border-gray-200 px-3 py-1.5"
-              >
-                <div className="min-w-0 text-sm">
-                  <div className="truncate">{network.nom_reseau ?? `Réseau #${network.id_fcu}`}</div>
-                  <div className="mt-0.5 flex items-center gap-1 truncate text-xs text-faded">
-                    <span className={cx('rounded px-1.5 py-0.5 font-medium', permissionTypeBadgeColors[network.type])}>
-                      {permissionTypeLabels[network.type]}
-                    </span>
-                    {network.gestionnaire ? <span className="truncate">· {network.gestionnaire}</span> : null}
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  size="small"
-                  priority="tertiary"
-                  iconId="ri-link-unlink"
-                  disabled={detach.isPending}
-                  onClick={() => detach.mutate({ idFcu: network.id_fcu, type: network.type })}
-                >
-                  Détacher
-                </Button>
-              </li>
-            ))}
-          </ul>
+          <OrganizationNetworkList networks={networks} action={detachAction} />
         </div>
       ) : (
         <p className="text-sm text-faded">

@@ -43,6 +43,7 @@ import type { FlattenKeys } from '@/utils/typescript';
 import TableCell, { type TableCellProps } from './TableCell';
 import TableFilter, { DEFAULT_MAX_DATE, DEFAULT_MIN_DATE, defaultTableFilterFns, type TableFilterProps } from './TableFilter';
 import { useTableVirtualization } from './useTableVirtualization';
+import { useViewportBoundedHeight } from './useViewportBoundedHeight';
 
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
@@ -276,7 +277,9 @@ const TableRowInner = <T extends RowData>({
               'flex! items-center',
               {
                 'fr-cell--fixed': columnDef.id === 'selection',
-                'overflow-auto': !React.isValidElement(cell.getValue()),
+                // overflow ≠ visible resets the grid item's min-width so long content cannot blow the column
+                // out; hidden (not auto) avoids in-cell scrollbars, wrap-break-word wraps long tokens instead.
+                'overflow-hidden wrap-break-word': !React.isValidElement(cell.getValue()),
               },
               columnClassName(columnDef),
               cellCustomClasses({ padding })
@@ -356,7 +359,7 @@ const TableTH = <T extends RowData>({
       key={header.id}
       colSpan={header.colSpan}
       className={cx(
-        'flex! flex-nowrap items-between overflow-auto gap-1',
+        'flex! flex-nowrap items-between overflow-hidden gap-1',
         'hover:shadow-[-5px_0_5px_-5px_rgba(0,0,0,0.05),5px_0_5px_-5px_rgba(0,0,0,0.05)]',
         isInlineLayout ? 'items-center' : 'items-between',
         columnClassName(columnDef),
@@ -487,7 +490,15 @@ export type TableSimpleProps<T> = {
   onFilterChange?: (filteredRows: T[]) => void;
   nbLoadingItems?: number;
   loadingEmptyMessage?: string;
+  /**
+   * Hauteur max du conteneur de défilement (longueur CSS, 600px par défaut), ou `'viewport'` : la table
+   * mesure sa position et s'arrête en bas de l'écran, quoi qu'il y ait au-dessus.
+   */
   height?: string;
+  /**
+   * Affiche le nombre de lignes de la vue filtrée (et le total quand un filtre est actif) à côté des actions.
+   */
+  showResultsCount?: boolean;
   virtualizerRef?: RefObject<Virtualizer<HTMLDivElement, Element>>;
   /** Imperative: scrolls the row whose `rowIdKey` matches into view, using the current sorted/filtered order. */
   scrollToRowRef?: RefObject<((rowId: string) => void) | null>;
@@ -539,6 +550,7 @@ const TableSimple = <T extends RowData>({
   nbLoadingItems = 5,
   loadingEmptyMessage = 'Aucun résultat',
   height = '600px',
+  showResultsCount = false,
   virtualizerRef,
   scrollToRowRef,
   topRightActions,
@@ -727,11 +739,20 @@ const TableSimple = <T extends RowData>({
 
   const hasAtLeastOneColumnSorting = table.getHeaderGroups()[0].headers.some((header) => header.column.getCanSort());
 
+  // Guard on `data`, not on the filtered rows: a filter leaving zero rows must still notify (map pins).
   React.useEffect(() => {
-    if (onFilterChange && rows.length > 0) {
+    if (onFilterChange && data.length > 0) {
       onFilterChange(filteredRows.map((row) => row.original));
     }
-  }, [rows, filteredRows, onFilterChange]);
+  }, [data, filteredRows, onFilterChange]);
+
+  // Stable row handlers: pages often pass inline callbacks, which would void TableRow's memoization.
+  const onRowClickRef = React.useRef(onRowClick);
+  onRowClickRef.current = onRowClick;
+  const onRowDoubleClickRef = React.useRef(onRowDoubleClick);
+  onRowDoubleClickRef.current = onRowDoubleClick;
+  const handleRowClick = React.useCallback((rowId: any) => onRowClickRef.current?.(rowId), []);
+  const handleRowDoubleClick = React.useCallback((rowId: any) => onRowDoubleClickRef.current?.(rowId), []);
 
   const buildExportData = useCallback(() => {
     if (!exportConfig) {
@@ -775,6 +796,8 @@ const TableSimple = <T extends RowData>({
 
   // the virtualizer needs to know the scrollable container element
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
+  const viewportBoundedHeight = useViewportBoundedHeight(tableContainerRef, height === 'viewport');
+  const maxHeight = height === 'viewport' ? viewportBoundedHeight : height;
 
   // Use custom hook for virtualization logic
   const rowVirtualizer = useTableVirtualization({
@@ -819,7 +842,11 @@ const TableSimple = <T extends RowData>({
     })
     .join(' ');
 
-  const bodyHeight = loading ? nbLoadingItems * rowHeight : rowVirtualizer.getTotalSize() || 1 * rowHeight;
+  const bodyHeight = loading ? nbLoadingItems * rowHeight : rowVirtualizer.getTotalSize() || rowHeight;
+  const resultsCount = filteredRows.length;
+  const resultsCountLabel = `${resultsCount.toLocaleString('fr-FR')} résultat${resultsCount > 1 ? 's' : ''}${
+    resultsCount !== data.length ? ` sur ${data.length.toLocaleString('fr-FR')}` : ''
+  }`;
 
   return (
     <section className={wrapperClassName}>
@@ -835,8 +862,9 @@ const TableSimple = <T extends RowData>({
             }}
           />
         )}
-        {(hasFiltersDialog || exportConfig || topRightActions) && (
+        {(hasFiltersDialog || exportConfig || topRightActions || showResultsCount) && (
           <div className="flex items-center gap-2">
+            {showResultsCount && !loading && <span className="text-sm text-gray-600 whitespace-nowrap">{resultsCountLabel}</span>}
             {hasFiltersDialog && (
               <Dialog
                 title="Filtres"
@@ -1006,7 +1034,7 @@ const TableSimple = <T extends RowData>({
         className={cx(fr.cx('fr-table', 'fr-table--no-scroll'), 'scrollbar-visible my-0!')}
         ref={tableContainerRef}
         style={{
-          maxHeight: height, // should be a fixed height
+          maxHeight,
           overflow: 'auto', // our scrollable table container
           position: 'relative', // needed for sticky header
         }}
@@ -1063,13 +1091,15 @@ const TableSimple = <T extends RowData>({
                   className="grid absolute w-full"
                   style={{ gridTemplateColumns, height: rowHeight, transform: `translateY(${value * rowHeight}px)` }}
                 >
-                  {columns.map((column, index) => (
-                    <td key={`loading_${value}_${index}`} className={cx('flex! items-center', columnClassName(column))}>
-                      <div role="status" className="animate-pulse text-center w-[90%]">
-                        <div className="mx-auto my-2 h-3.5 rounded-full bg-gray-200" />
-                      </div>
-                    </td>
-                  ))}
+                  {tableColumns
+                    .filter((column) => column.visible !== false)
+                    .map((column, index) => (
+                      <td key={`loading_${value}_${index}`} className={cx('flex! items-center', columnClassName(column))}>
+                        <div role="status" className="animate-pulse text-center w-[90%]">
+                          <div className="mx-auto my-2 h-3.5 rounded-full bg-gray-200" />
+                        </div>
+                      </td>
+                    ))}
                 </tr>
               ))}
             {!loading &&
@@ -1094,8 +1124,8 @@ const TableSimple = <T extends RowData>({
                       isSelected={!!rowSelection?.[(row.original as any)[rowIdKey]]}
                       padding={padding}
                       emptyCellValue={emptyCellValue}
-                      onRowClick={onRowClick}
-                      onRowDoubleClick={onRowDoubleClick}
+                      onRowClick={onRowClick ? handleRowClick : undefined}
+                      onRowDoubleClick={onRowDoubleClick ? handleRowDoubleClick : undefined}
                       measureElement={measureRow}
                       columnClassName={columnClassName}
                       rowClassName={rowClassName}

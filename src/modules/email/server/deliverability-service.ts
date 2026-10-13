@@ -157,6 +157,13 @@ export async function listBlockedContacts() {
         .where((eb2) => eb2(eb2.fn<string>('lower', ['users.email']), '=', eb2.ref('ebc.email')))
         .limit(1)
         .as('user_id'),
+      // deactivated accounts are hidden by default on the admin page: nothing to fix for them
+      eb
+        .selectFrom('users')
+        .select('users.active')
+        .where((eb2) => eb2(eb2.fn<string>('lower', ['users.email']), '=', eb2.ref('ebc.email')))
+        .limit(1)
+        .as('user_active'),
       sql<number>`(${eb
         .selectFrom('demands')
         .select((eb2) => eb2.fn.countAll().as('count'))

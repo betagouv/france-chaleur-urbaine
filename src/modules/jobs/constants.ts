@@ -5,8 +5,8 @@ export const jobTypes = [
   'build_tiles',
   'pro_eligibility_test',
   'pro_eligibility_test_notify_changes',
-  'sync_geometries_to_airtable',
-  'sync_metadata_from_airtable',
+  'scan_file',
+  'parse_request_geometries',
 ] as const;
 
 export const jobStatuses = ['pending', 'processing', 'finished', 'error'] as const;

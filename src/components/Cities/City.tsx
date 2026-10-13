@@ -11,7 +11,7 @@ import Link from '@/components/ui/Link';
 import WrappedText from '@/components/WrappedText';
 import userExperience from '@/data/villes/user-experience';
 import citiesData from '@/data/villes/villes';
-import type { Network } from '@/types/Summary/Network';
+import type { HeatNetwork } from '@/modules/reseaux/types';
 
 import ClassedNetworks from './ClassedNetworks';
 import Dispositifs, { type DispositifsData } from './Dispositifs';
@@ -21,7 +21,7 @@ const Simulator = dynamic(() => import('@/modules/simulator/client/Simulator'), 
   ssr: false,
 });
 
-const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; network?: Network }) => {
+const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; network?: HeatNetwork }) => {
   const cityData = citiesData[citySlug];
   if (!cityData) return;
   const hasUniqueNetwork = !!cityData.networksData?.identifiant;

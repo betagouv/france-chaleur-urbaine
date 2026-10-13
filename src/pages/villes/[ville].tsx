@@ -1,4 +1,4 @@
-import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 
 import City from '@/components/Cities/City';
 import { GlobalStyle } from '@/components/shared/layout/Global.style';
@@ -8,7 +8,7 @@ import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackP
 import { getNetwork } from '@/modules/reseaux/server/service';
 import { deepCloneJSON } from '@/utils/objects';
 
-type ComponentProps = InferGetStaticPropsType<typeof getStaticProps>;
+type ComponentProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const PageVille: React.FC<ComponentProps> = ({ cityData, network }) => {
   useTrackPageView();
@@ -27,7 +27,8 @@ const PageVille: React.FC<ComponentProps> = ({ cityData, network }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+// rendered on request: the network block follows the admin edits and the yearly imports, and the build does not touch the database
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const ville = (params?.ville as string)?.toLowerCase();
   // description is a react component sent from server and thus will make static rendering fail so remove it from the fields
   // Another solution could be to convert it to a string on server with ReactDOM or use Markdown string
@@ -40,7 +41,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
   let network: Awaited<ReturnType<typeof getNetwork>> | null = null;
 
-  if (cityData.networksData?.identifiant && process.env.GITHUB_CI !== 'true') {
+  if (cityData.networksData?.identifiant) {
     network = await getNetwork(cityData.networksData?.identifiant);
   }
 
@@ -49,17 +50,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       cityData: deepCloneJSON(cityData),
       network,
     },
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = Object.keys(citiesData).map((city) => ({
-    params: { ville: city },
-  }));
-
-  return {
-    fallback: false,
-    paths,
   };
 };
 

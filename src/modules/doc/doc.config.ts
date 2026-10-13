@@ -9,6 +9,7 @@ import Eligibilite from './content/eligibilite.mdx';
 import GestionReseaux from './content/gestion-reseaux.mdx';
 import Glossaire from './content/glossaire.mdx';
 import InscriptionComptes from './content/inscription-comptes.mdx';
+import ModificationsReseau from './content/modifications-reseau.mdx';
 import PerimetreDoc from './content/perimetre-doc.mdx';
 import ReaffectationDemandes from './content/reaffectation-demandes.mdx';
 import References from './content/references.mdx';
@@ -121,6 +122,14 @@ export const docPages = [
     slug: 'gestion-reseaux',
     theme: 'parcours',
     title: 'Gestion des réseaux et PDP',
+  },
+  {
+    Content: ModificationsReseau,
+    description:
+      'Les demandes de modification de fiche, de tracé ou de périmètre déposées par les collectivités et exploitants : types, cycle de vie, emails, fichiers joints et antivirus.',
+    slug: 'modifications-reseau',
+    theme: 'parcours',
+    title: 'Demandes de modification de réseau',
   },
   {
     Content: Comparateur,

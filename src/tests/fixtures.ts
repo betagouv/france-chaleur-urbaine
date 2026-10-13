@@ -104,8 +104,13 @@ export async function cleanDatabase() {
     kdb.deleteFrom('email_blocked_contacts').execute(),
     kdb.deleteFrom('pro_eligibility_tests_addresses').execute(),
     kdb.deleteFrom('jobs').execute(),
+    kdb.deleteFrom('network_change_requests').execute(), // cascades to network_change_request_files
   ]);
-  await Promise.all([kdb.deleteFrom('demands').execute(), kdb.deleteFrom('pro_eligibility_tests').execute()]);
+  await Promise.all([
+    kdb.deleteFrom('demands').execute(),
+    kdb.deleteFrom('pro_eligibility_tests').execute(),
+    kdb.deleteFrom('files').execute(),
+  ]);
   await kdb.deleteFrom('users').execute();
 }
 
@@ -166,12 +171,32 @@ export async function seedProEligibilityTestsAddress(
   return result;
 }
 
-export async function seedReseauDeChaleur(data: InsertObject<DB, 'reseaux_de_chaleur'>) {
-  return await kdb.insertInto('reseaux_de_chaleur').values(data).returningAll().executeTakeFirstOrThrow();
+/** `Gestionnaire`, `MO` and `nom_reseau` are generated columns: a seed gives them as the survey (FEDENE) values. */
+type SeedNetworkValues<Table extends 'reseaux_de_chaleur' | 'reseaux_de_froid'> = InsertObject<DB, Table> & {
+  Gestionnaire?: string | null;
+  MO?: string | null;
+  nom_reseau?: string | null;
+};
+
+const toSurveyColumns = <Table extends 'reseaux_de_chaleur' | 'reseaux_de_froid'>({
+  Gestionnaire,
+  MO,
+  nom_reseau,
+  ...data
+}: SeedNetworkValues<Table>): InsertObject<DB, Table> =>
+  ({
+    ...data,
+    ...(Gestionnaire !== undefined ? { gestionnaire_fedene: Gestionnaire } : {}),
+    ...(MO !== undefined ? { mo_fedene: MO } : {}),
+    ...(nom_reseau !== undefined ? { nom_reseau_fedene: nom_reseau } : {}),
+  }) as InsertObject<DB, Table>;
+
+export async function seedReseauDeChaleur(data: SeedNetworkValues<'reseaux_de_chaleur'>) {
+  return await kdb.insertInto('reseaux_de_chaleur').values(toSurveyColumns(data)).returningAll().executeTakeFirstOrThrow();
 }
 
-export async function seedReseauDeFroid(data: InsertObject<DB, 'reseaux_de_froid'>) {
-  return await kdb.insertInto('reseaux_de_froid').values(data).returningAll().executeTakeFirstOrThrow();
+export async function seedReseauDeFroid(data: SeedNetworkValues<'reseaux_de_froid'>) {
+  return await kdb.insertInto('reseaux_de_froid').values(toSurveyColumns(data)).returningAll().executeTakeFirstOrThrow();
 }
 
 export async function seedZoneEtReseauEnConstruction(data: InsertObject<DB, 'zones_et_reseaux_en_construction'>) {

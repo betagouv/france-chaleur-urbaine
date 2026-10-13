@@ -27,6 +27,12 @@ import NouvellesDemandesATraiter, {
 import RappelDemandesEnAttente, {
   scenarios as rappelDemandesEnAttenteScenarios,
 } from './templates/demands/gestionnaire/rappel-demandes-en-attente';
+import AccuseReceptionModificationReseau, {
+  scenarios as accuseReceptionModificationReseauScenarios,
+} from './templates/reseaux/demandeur/accuse-reception';
+import DemandeModificationReseauAcceptee, {
+  scenarios as demandeModificationReseauAccepteeScenarios,
+} from './templates/reseaux/demandeur/demande-acceptee';
 
 /**
  * Définition d'un modèle d'email. Le générique `C` lie le composant React
@@ -196,6 +202,33 @@ export const emails = defineEmails({
     trigger: {
       description: `Cron du mardi 9h55 — demandes « À traiter » notifiées depuis plus de ${businessRules.unhandledDemandReminderDays.display} ; nécessite l'option « recevoir les rappels ».`,
       type: 'cron',
+    },
+  },
+  'reseaux.demandeur.accuse-reception': {
+    Component: AccuseReceptionModificationReseau,
+    description:
+      "Accusé de réception envoyé au déposant juste après l'envoi d'un formulaire : texte « modification de fiche » ou texte « contribution à la cartographie » (tracé, périmètre, autre, avec la mention de l'attestation ADEME).",
+    label: 'Accusé de réception de demande de modification de réseau',
+    preview: 'Nous avons bien reçu votre demande',
+    scenarios: accuseReceptionModificationReseauScenarios,
+    subject: '[France Chaleur Urbaine] Nous avons bien reçu votre demande',
+    trigger: {
+      description: "Au dépôt d'une demande de modification de réseau depuis un formulaire public.",
+      type: 'action',
+    },
+  },
+  'reseaux.demandeur.demande-acceptee': {
+    Component: DemandeModificationReseauAcceptee,
+    description:
+      "Mise en ligne des éléments transmis : sur la fiche du réseau (modification de fiche) ou sur la carte (tracé, périmètre). Envoyé au moment où l'admin applique la demande, jamais pour une demande close sans changement ni pour une demande « autre ».",
+    label: 'Demande de modification de réseau mise en ligne',
+    preview: 'Vos éléments ont été publiés',
+    scenarios: demandeModificationReseauAccepteeScenarios,
+    subject: '[France Chaleur Urbaine] Vos éléments ont été publiés',
+    trigger: {
+      description:
+        'Au clic sur le bouton de mise en ligne (« Mettre à jour … et notifier », « Créer … et notifier ») par un admin, dans le détail d’une demande.',
+      type: 'action',
     },
   },
 });

@@ -1,19 +1,18 @@
 import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
-import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 
 import NetworkPanel from '@/components/Network/Network';
 import Slice from '@/components/Slice/Slice';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { getColdNetwork, getNetwork } from '@/modules/reseaux/server/service';
-import { kdb } from '@/server/db/kysely';
-import type { Network } from '@/types/Summary/Network';
+import type { Network } from '@/modules/reseaux/types';
 
-const PageReseau = ({ network }: InferGetStaticPropsType<typeof getStaticProps>) => {
+const PageReseau = ({ network }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <SimplePage
       currentPage="/reseaux"
       mode="public-fullscreen"
-      title={network.nom_reseau}
+      title={network.nom_reseau ?? ''}
       description={`Réseau de ${network['Identifiant reseau']?.includes('F') ? 'froid' : 'chaleur'} géré par ${
         network.Gestionnaire
       }, créé en ${network.annee_creation}`}
@@ -41,23 +40,11 @@ const PageReseau = ({ network }: InferGetStaticPropsType<typeof getStaticProps>)
   );
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const networks = process.env.GITHUB_CI
-    ? []
-    : await kdb
-        .selectFrom('reseaux_de_chaleur')
-        .select('Identifiant reseau')
-        .where('Identifiant reseau', 'is not', null)
-        .union(kdb.selectFrom('reseaux_de_froid').select('Identifiant reseau').where('Identifiant reseau', 'is not', null))
-        .execute();
-
-  return {
-    fallback: false,
-    paths: networks.map((network) => ({ params: { network: network['Identifiant reseau'] ?? undefined } })),
-  };
-};
-
-export const getStaticProps: GetStaticProps<{
+/**
+ * Rendered on each request: the page follows the admin edits and the yearly imports immediately, and the build does not
+ * depend on the database. The pages are listed for search engines by `/server-sitemap.xml`.
+ */
+export const getServerSideProps: GetServerSideProps<{
   network: Network;
 }> = async (context) => {
   const networkId = context.params?.network as string;
@@ -74,9 +61,7 @@ export const getStaticProps: GetStaticProps<{
   const network = await (networkId.includes('F') ? getColdNetwork(networkId) : getNetwork(networkId));
 
   if (!network) {
-    return {
-      notFound: true,
-    };
+    return { notFound: true };
   }
 
   return { props: { network } };

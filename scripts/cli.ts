@@ -21,10 +21,7 @@ import { renderOpenApiYaml } from '@/modules/partner-api/server/openapi';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { registerEcoreseauCommand } from '@/modules/reseaux/commands/ecoreseau';
-import { zAirtableSynchronizableNetworkTable } from '@/modules/reseaux/constants';
-import { downloadNetwork } from '@/modules/reseaux/server/download-network';
 import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
-import { syncPostgresToAirtable } from '@/modules/reseaux/server/sync-pg-to-airtable';
 import { registerTilesCommands } from '@/modules/tiles/commands';
 import { serverConfig } from '@/server/config';
 import { aggregateMonthlyStats } from '@/server/cron/aggregateMonthlyStats';
@@ -39,7 +36,6 @@ import { sleep } from '@/utils/time';
 
 import { registerOpendataCommands } from '../src/modules/opendata/commands';
 import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
-import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
 import { upsertFixedSimulateurData } from './simulateur/import';
 
@@ -93,25 +89,10 @@ program
   });
 
 program
-  .command('create-modifications-reseau')
-  .argument('<airtable_base>', 'Base Airtable', validateKnownAirtableBase)
-  .action(async (airtableBase) => {
-    await createModificationsReseau(airtableBase);
-  });
-
-program
   .command('dump-schema')
   .argument('<airtable_base>', 'Base Airtable', validateKnownAirtableBase)
   .action(async (airtableBase) => {
     await fetchBaseSchema(airtableBase);
-  });
-
-program
-  .command('download-network')
-  .description("Synchronise les données d'une table réseau de Airtable vers la table correspondante dans Postgres.")
-  .argument('<network-id>', 'Network id', (v) => zAirtableSynchronizableNetworkTable.parse(v))
-  .action(async (table) => {
-    await downloadNetwork(table);
   });
 
 type EPCI = {
@@ -222,16 +203,6 @@ program
   .option('--dry-run', 'Run the command in dry-run mode', false)
   .action(async ({ dryRun }) => {
     await applyGeometryUpdates(dryRun);
-  });
-
-program
-  .command('sync-postgres-to-airtable')
-  .description(
-    'Synchronise les tables postgres FCU vers Airtable (champs géométrie : has_trace, is_zone, communes + champs admin : nom, gestionnaire, MO, SNCU)'
-  )
-  .option('--dry-run', 'Run the command in dry-run mode', false)
-  .action(async ({ dryRun }) => {
-    await syncPostgresToAirtable(dryRun);
   });
 
 program

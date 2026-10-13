@@ -4,6 +4,7 @@ import { genSalt, hash } from 'bcryptjs';
 
 import { businessRules } from '@/modules/app/business-rules';
 import { createUserEvent } from '@/modules/events/server/service';
+import { purgeFileContents } from '@/modules/files/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
@@ -57,6 +58,14 @@ const closedDemandsQuery = () =>
       ])
     );
 
+/** Processed network change requests older than the retention, not yet anonymized. */
+const processedNetworkChangeRequestsQuery = () =>
+  kdb
+    .selectFrom('network_change_requests')
+    .where('status', '<>', 'pending')
+    .where('contact_email', 'not like', `${ANONYMIZED_EMAIL_PREFIX}%`)
+    .where('processed_at', '<', cutoff(businessRules.retentionNetworkChangeRequestsYears.value, 'years'));
+
 export type RetentionPreviewItem = { id: string; label: string; date: Date | null };
 export type RetentionPreview = { rule: RetentionRule; count: number; items: RetentionPreviewItem[] };
 
@@ -90,6 +99,14 @@ const previewRule = async (rule: RetentionRule): Promise<RetentionPreview> => {
           END`.as('date'),
         ])
         .orderBy('updated_at')
+        .execute();
+      return { count: Number(count), items, rule };
+    }
+    case 'processed_network_change_requests': {
+      const { count } = await processedNetworkChangeRequestsQuery().select(kdb.fn.countAll<number>().as('count')).executeTakeFirstOrThrow();
+      const items = await processedNetworkChangeRequestsQuery()
+        .select(['id', 'network_label as label', 'processed_at as date'])
+        .orderBy('processed_at')
         .execute();
       return { count: Number(count), items, rule };
     }
@@ -145,6 +162,37 @@ const applyRule = async (rule: RetentionRule): Promise<number> => {
           updated_at: new Date(),
         })
         .where('id', 'in', closedDemandsQuery().select('id'))
+        .executeTakeFirst();
+      return Number(updated.numUpdatedRows);
+    }
+    case 'processed_network_change_requests': {
+      const requestIds = (await processedNetworkChangeRequestsQuery().select('id').execute()).map((request) => request.id);
+      if (requestIds.length === 0) {
+        return 0;
+      }
+      const fileIds = (
+        await kdb.selectFrom('network_change_request_files').select('file_id').where('request_id', 'in', requestIds).execute()
+      ).map((file) => file.file_id);
+      // documents published on a network page keep their content: they belong to the network now
+      const publishedFileIds =
+        fileIds.length === 0
+          ? []
+          : (await kdb.selectFrom('network_files').select('file_id').where('file_id', 'in', fileIds).execute()).map((file) => file.file_id);
+      await purgeFileContents(fileIds.filter((fileId) => !publishedFileIds.includes(fileId)));
+      const updated = await kdb
+        .updateTable('network_change_requests')
+        .set({
+          contact_email: sql<string>`${ANONYMIZED_EMAIL_PREFIX} || id::text || ${ANONYMIZED_EMAIL_DOMAIN}`,
+          contact_first_name: '',
+          contact_function: null,
+          contact_last_name: 'Anonymisé',
+          contact_structure: null,
+          contact_type_other: null,
+          // the commercial referent of a trace request is a person too
+          payload: sql`payload - 'emailReferentCommercial'`,
+          updated_at: new Date(),
+        })
+        .where('id', 'in', requestIds)
         .executeTakeFirst();
       return Number(updated.numUpdatedRows);
     }

@@ -33,6 +33,8 @@ Server-side functions requiring Node.js and PostGIS:
 - **`GeometryWithSrid`** - Type for geometry with detected SRID (4326 or 2154)
 - **`createGeometryExpression()`** - Build Kysely SQL expression for PostGIS geometry
 - **`processGeometry()`** - Process GeoJSON and detect SRID, handle collections, convert to multi-geometries
+- **`processGeometryToWgs84()`** - Same, returned in WGS84 (Lambert 93 reprojected by PostGIS), rejects coordinates still outside longitude / latitude bounds: use it for any geometry stored as GeoJSON and shown on a map
+- **`isWgs84Geometry()`** - Every coordinate is a valid longitude / latitude
 - **`readFileGeometry()`** - Read and process GeoJSON file from disk
 - **`detectSrid()`** - Auto-detect coordinate system from coordinate values
 - **`mergeGeoJSONFeaturesGeometries()`** - Merge multiple GeoJSON features using PostGIS

@@ -69,5 +69,3 @@ jobs:
 
       - name: Build 📦
         run: pnpm build
-        env:
-          GITHUB_CI: true

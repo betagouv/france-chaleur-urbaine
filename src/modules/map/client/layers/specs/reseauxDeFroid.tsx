@@ -3,6 +3,7 @@ import Button from '@/components/ui/Button';
 import { DownloadNetworkGeometryButton } from '@/modules/map/client/components/DownloadNetworkGeometryButton';
 import { defineLayerPopup, ifHoverElse, type MapSourceLayersSpecification } from '@/modules/map/client/core/common';
 import { buildFiltreGestionnaire, buildFiltreIdentifiantReseau, buildFiltreMaitreOuvrage } from '@/modules/map/client/layers/filters';
+import { sourcesActualiseesParFcuNotice, withSourceFcuMark } from '@/modules/reseaux/constants';
 import type { ReseauxDeFroidTile } from '@/modules/tiles/server/tiles.config';
 import { isDefined } from '@/utils/core';
 import { prettyFormatNumber } from '@/utils/strings';
@@ -15,7 +16,7 @@ const Popup = defineLayerPopup<ReseauxDeFroidTile>((reseauDeFroid, { Property, T
       <Title>{reseauDeFroid.nom_reseau ?? 'Réseau de froid'}</Title>
       <TwoColumns>
         <Property label="Identifiant" value={reseauDeFroid['Identifiant reseau']} />
-        <Property label="Gestionnaire" value={reseauDeFroid.Gestionnaire} />
+        <Property label="Gestionnaire" value={withSourceFcuMark(reseauDeFroid.Gestionnaire, reseauDeFroid.gestionnaire_fcu)} />
         <Property label="Maître d'ouvrage" value={reseauDeFroid.MO} />
         <Property
           label="Contenu CO2 ACV"
@@ -23,6 +24,7 @@ const Popup = defineLayerPopup<ReseauxDeFroidTile>((reseauDeFroid, { Property, T
           formatter={(value) => (isDefined(value) ? `${prettyFormatNumber(value * 1000)} g/kWh` : 'Non connu')}
         />
       </TwoColumns>
+      {reseauDeFroid.gestionnaire_fcu && <div className="text-xs italic">{sourcesActualiseesParFcuNotice}</div>}
       {reseauDeFroid['Identifiant reseau'] && (
         <Button
           priority="secondary"

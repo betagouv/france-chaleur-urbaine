@@ -6,7 +6,7 @@ Browser → Next.js Pages Router → React (DSFR + Tailwind + MapLibre)
   → tRPC client → tRPC routes (modules/*/server/trpc-routes.ts)
     → services (business logic) → Kysely → PostgreSQL + PostGIS
 ```
-Async work runs on a PostgreSQL-backed job queue + cron (tile generation, bulk eligibility, Airtable sync).
+Async work runs on a PostgreSQL-backed job queue + cron (tile generation, bulk eligibility, file scans, geometry conversion).
 
 ## Layers (and what each must NOT do)
 | Layer | Location | Must NOT |

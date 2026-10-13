@@ -22,9 +22,11 @@ import {
   isPrixReseauCommunique,
   isPrixReseauHorsBornes,
   prixReseauHorsBornesNotice,
+  sourcesActualiseesParFcuNotice,
+  withSourceFcuMark,
 } from '@/modules/reseaux/constants';
+import type { NetworkToCompare } from '@/modules/reseaux/types';
 import trpc from '@/modules/trpc/client';
-import type { NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { type Interval, intervalsEqual } from '@/utils/interval';
 import { compareFrenchStrings } from '@/utils/strings';
@@ -209,7 +211,7 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
         showReseau = false;
       }
     });
-    if (filters.regions.length > 0 && !filters.regions.includes(reseau.region)) {
+    if (filters.regions.length > 0 && !filters.regions.includes(reseau.region ?? '')) {
       showReseau = false;
     }
 
@@ -306,10 +308,11 @@ const NetworksList = () => {
 
     const newRegionsList: ReseauxDeChaleurFiltersProps['regionsList'] = [];
     allNetworks.forEach((network) => {
-      if (!newRegionsList.find(({ name }) => name === network.region.trim())) {
-        newRegionsList.push({ coord: `${network.lon},${network.lat}`, name: network.region.trim() });
+      const region = (network.region ?? '').trim();
+      if (!newRegionsList.find(({ name }) => name === region)) {
+        newRegionsList.push({ coord: `${network.lon},${network.lat}`, name: region });
       } else {
-        const index = newRegionsList.findIndex(({ name }) => name === network.region.trim());
+        const index = newRegionsList.findIndex(({ name }) => name === region);
         const existingCoords = newRegionsList[index].coord.split(',');
         // Calculate average position between existing and new coordinates
         const avgLon = (parseFloat(existingCoords[0]) + network.lon) / 2;
@@ -329,17 +332,16 @@ const NetworksList = () => {
         cell: (params) => (
           <NetworkName
             ecoreseau={params.row.original.ecoreseau}
-            name={params.row.original.nom_reseau}
-            isClassed={params.row.original['reseaux classes']}
-            identifiant={params.row.original['Identifiant reseau']}
+            name={params.row.original.nom_reseau ?? ''}
+            isClassed={params.row.original['reseaux classes'] ?? false}
+            identifiant={params.row.original['Identifiant reseau'] ?? ''}
           />
         ),
-        filterFn: (row, _, filterValue) => {
-          return (
+        filterFn: (row, _, filterValue) =>
+          !!(
             row.original.nom_reseau?.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) ||
             row.original['Identifiant reseau']?.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase())
-          );
-        },
+          ),
         header: 'Nom du réseau',
         headerTooltip: columnSources.fedeneCompletedByFcu,
         width: '250px',
@@ -355,11 +357,13 @@ const NetworksList = () => {
         cell: ({ getValue }) => <Text>{getValue() ? getValue().join(', ') : 'NC'}</Text>,
         header: 'Communes',
         headerTooltip: columnSources.communes,
-        sortingFn: (rowA, rowB) => compareFrenchStrings(rowA.original.communes.join(', '), rowB.original.communes.join(', ')),
+        sortingFn: (rowA, rowB) =>
+          compareFrenchStrings((rowA.original.communes ?? []).join(', '), (rowB.original.communes ?? []).join(', ')),
         width: '250px',
       },
       {
         accessorKey: 'Gestionnaire',
+        cell: ({ row }) => withSourceFcuMark(row.original.Gestionnaire, row.original.gestionnaire_fcu),
         header: 'Gestionnaire',
         headerTooltip: columnSources.fedeneCompletedByFcu,
         width: '250px',
@@ -616,11 +620,12 @@ const NetworksList = () => {
           </Text>
         )}
         <Text size="xs" className="fr-hint-text" mt="2w">
-          Sources : L’ensemble des données sont extraites des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le
-          concours de l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la transition
-          écologique. L'année considérée varie en fonction de la disponibilité actuelle des données. Livraisons et mix énergétique : 2024.
-          Données tarifaires : 2024. Taux ENRR et contenu CO2 (direct et ACV) : {dataSourcesVersions.arreteDpe.referenceYear} ou moyenne des
-          années {dataSourcesVersions.arreteDpe.averageYears}, sur la base de l'
+          Sources : Les données sont issues des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le concours de
+          l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la transition écologique,
+          et des informations reçues par France Chaleur Urbaine. L'année considérée varie en fonction de la disponibilité actuelle des
+          données. Livraisons et mix énergétique : 2024. Données tarifaires : 2024. Taux ENRR et contenu CO2 (direct et ACV) :{' '}
+          {dataSourcesVersions.arreteDpe.referenceYear} ou moyenne des années {dataSourcesVersions.arreteDpe.averageYears}, sur la base de
+          l'
           <Link href={dataSourcesVersions.arreteDpe.link} isExternal>
             arrêté DPE du {dataSourcesVersions.arreteDpe.releaseDate}
           </Link>
@@ -636,6 +641,11 @@ const NetworksList = () => {
             En savoir plus
           </Link>
         </Text>
+        {filteredNetworks.some((network) => network.gestionnaire_fcu) && (
+          <Text size="xs" className="fr-hint-text" mt="1w">
+            {sourcesActualiseesParFcuNotice}
+          </Text>
+        )}
       </Box>
     </NetworksListContainer>
   );

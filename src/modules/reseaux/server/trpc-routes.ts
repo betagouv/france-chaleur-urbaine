@@ -1,9 +1,11 @@
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { createUserEvent } from '@/modules/events/server/service';
 import { getUsersWithNetworkPermission, removeNetworkPermissionFromAllUsers } from '@/modules/permissions/server/service';
 import {
   type DeleteNetworkInput,
+  mergeableNetworkTables,
   type NetworkType,
   networkEntityToTable,
   networkEntityTypes,
@@ -14,6 +16,8 @@ import {
   zDeleteGeomUpdateInput,
   zDeleteNetworkInput,
   zDownloadNetworkGeometryInput,
+  zMergeNetworksInput,
+  zNetworkMergePreviewInput,
   zUpdateGeomUpdateInput,
   zUpdatePerimetreDeDeveloppementPrioritaireInput,
   zUpdateReseauDeChaleurInput,
@@ -36,6 +40,10 @@ export type ReseauxDeChaleurLimits = {
   anneeConstruction: Interval;
 };
 
+import { renameStoredFile } from '@/modules/files/server/service';
+
+import { addNetworkDocuments, listNetworkDocuments, removeNetworkDocument } from './documents';
+import { getNetworkMergePreview, mergeNetworks, searchNetworksToMerge } from './merge';
 import { createNetworkReminder, deleteNetworkReminder, updateNetworkNotes, updateNetworkReminder } from './reminders';
 import * as reseauxService from './service';
 
@@ -204,6 +212,60 @@ const networkRemindersRouter = router({
     }),
 });
 
+const zNetworkDocumentsTarget = z.object({
+  networkId: z.number().int(),
+  networkType: z.enum(['reseau_de_chaleur', 'reseau_de_froid']),
+});
+
+/** Documents published on the page of a heat or cold network (PDF stored in the `files` table). */
+const networkDocumentsRouter = router({
+  add: adminRoute.input(zNetworkDocumentsTarget.extend({ fileIds: z.array(z.uuid()).min(1) })).mutation(async ({ input, ctx }) => {
+    const reseau = await reseauxService.getNetworkLabel(input.networkId, networkEntityToTable[input.networkType]);
+    await addNetworkDocuments(input.networkType, input.networkId, input.fileIds);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(input.networkId),
+      context_type: input.networkType,
+      data: {
+        changes: { documents_added: input.fileIds },
+        id: input.networkId,
+        identifiant_reseau: reseau.identifiant_reseau,
+        nom_reseau: reseau.nom_reseau,
+        type: networkEntityToTable[input.networkType],
+      },
+      type: 'network_updated',
+    });
+  }),
+  list: adminRoute.input(zNetworkDocumentsTarget).query(({ input }) => listNetworkDocuments(input.networkType, input.networkId)),
+  remove: adminRoute.input(zNetworkDocumentsTarget.extend({ fileId: z.uuid() })).mutation(async ({ input, ctx }) => {
+    const reseau = await reseauxService.getNetworkLabel(input.networkId, networkEntityToTable[input.networkType]);
+    await removeNetworkDocument(input.networkType, input.networkId, input.fileId);
+    await createUserEvent({
+      author_id: ctx.user.id,
+      context_id: String(input.networkId),
+      context_type: input.networkType,
+      data: {
+        changes: { documents_removed: [input.fileId] },
+        id: input.networkId,
+        identifiant_reseau: reseau.identifiant_reseau,
+        nom_reseau: reseau.nom_reseau,
+        type: networkEntityToTable[input.networkType],
+      },
+      type: 'network_updated',
+    });
+  }),
+  /** Renames a published document (display name on the page, the extension stays). */
+  rename: adminRoute
+    .input(zNetworkDocumentsTarget.extend({ fileId: z.uuid(), filename: z.string().trim().min(1).max(200) }))
+    .mutation(async ({ input }) => {
+      const published = await listNetworkDocuments(input.networkType, input.networkId);
+      if (!published.some((document) => document.id === input.fileId)) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Document introuvable' });
+      }
+      return { filename: await renameStoredFile(input.fileId, input.filename) };
+    }),
+});
+
 export const reseauxRouter = router({
   applyGeometriesUpdates: adminRoute
     .input(zApplyGeometriesUpdatesInput)
@@ -249,13 +311,13 @@ export const reseauxRouter = router({
     });
     return result;
   }),
+  documents: networkDocumentsRouter,
   eligibilityStatus: route.input(z.object({ lat: z.number(), lon: z.number() })).query(async ({ input }) => {
     return (await getEligilityStatus(input.lat, input.lon)) as HeatNetworksResponse; // legacy type for compatibility
   }),
   getNetworkGeometry: route.input(zDownloadNetworkGeometryInput).query(async ({ input }) => {
     return await reseauxService.getNetworkGeometry(input.type, input.id);
   }),
-  // Lists users whose permissions reference this network (to warn before deletion).
   getNetworkLinkedUsers: adminRoute.input(zDeleteNetworkInput).query(async ({ input }) => {
     const type = networkPermissionType(input.type);
     if (!type) {
@@ -263,10 +325,19 @@ export const reseauxRouter = router({
     }
     return await getUsersWithNetworkPermission(type, String(input.id));
   }),
+  // Lists users whose permissions reference this network (to warn before deletion).
+  /** All stored columns of a heat or cold network (admin raw data viewer). */
+  getNetworkRawData: adminRoute
+    .input(z.object({ id: z.number().int(), table: z.enum(['reseaux_de_chaleur', 'reseaux_de_froid']) }))
+    .query(({ input }) => reseauxService.getNetworkRawData(input.table, input.id)),
   // Route publique pour lister tous les réseaux (utilisé pour la comparaison)
   listNetworks: route.query(async () => {
     return await reseauxService.listNetworks();
   }),
+  /** Networks of one table merged into one (values picked by the admin, references repointed, traces united). */
+  mergeNetworks: adminRoute.input(zMergeNetworksInput).mutation(({ input, ctx }) => mergeNetworks(input, { userId: ctx.user.id })),
+  /** What a merge would do: values of each network, what points to it, and what forbids the merge. */
+  mergePreview: adminRoute.input(zNetworkMergePreviewInput).query(({ input }) => getNetworkMergePreview(input)),
   /**
    * Limites min/max sur les dimensions filtrables des réseaux de chaleur.
    * Utilisé par `useMapConfiguration` côté carte pour initialiser les filtres
@@ -329,6 +400,10 @@ export const reseauxRouter = router({
   searchNetworks: demandAccessRoute.input(z.object({ search: z.string().min(2).max(100) })).query(async ({ input }) => {
     return await reseauxService.searchNetworks(input.search);
   }),
+  /** Networks of a table to add to a merge, by name, SNCU or id. */
+  searchNetworksToMerge: adminRoute
+    .input(z.object({ search: z.string().min(1).max(100), table: z.enum(mergeableNetworkTables) }))
+    .query(({ input }) => searchNetworksToMerge(input.table, input.search)),
   searchOperators: route
     .input(z.object({ field: z.enum(['gestionnaire', 'maitreOuvrage']), search: z.string().min(1).max(100) }))
     .query(async ({ input }) => {

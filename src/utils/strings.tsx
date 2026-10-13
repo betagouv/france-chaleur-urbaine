@@ -91,8 +91,16 @@ export function upperCaseFirstChar(string: string): string {
   return `${(string[0] ?? '').toUpperCase()}${string.substring(1)}`;
 }
 
+/** Human-readable size: bytes below 1 Ko, whole Ko below 1 Mo, then Mo with one decimal (French formatting). */
 export function formatFileSize(size: number): string {
-  return `${Math.round(size / 1024 / 1024)} Mo`;
+  if (size < 1024) {
+    return `${size} o`;
+  }
+  if (size < 1024 * 1024) {
+    return `${Math.round(size / 1024)} Ko`;
+  }
+  const megabytes = size / 1024 / 1024;
+  return `${(Math.round(megabytes * 10) / 10).toLocaleString('fr-FR', { maximumFractionDigits: 1 })} Mo`;
 }
 
 export function slugify(text?: string | null) {

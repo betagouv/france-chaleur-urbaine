@@ -6,6 +6,7 @@ import { DemandStatuses } from './inventories/DemandStatuses';
 import { EmailsInventory } from './inventories/EmailsInventory';
 import { EventsInventory } from './inventories/EventsInventory';
 import { FcrDemandStatuses } from './inventories/FcrDemandStatuses';
+import { NetworkFieldsInventory } from './inventories/NetworkFieldsInventory';
 import { tableClasses } from './inventories/table-classes';
 import { Mermaid } from './Mermaid';
 import { Rule } from './Rule';
@@ -29,6 +30,7 @@ const mdxComponents: MDXComponents = {
   EventsInventory,
   FcrDemandStatuses,
   Mermaid,
+  NetworkFieldsInventory,
   Rule,
   table: (props) => (
     <div className={tableClasses.wrapper}>

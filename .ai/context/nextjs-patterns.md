@@ -3,7 +3,7 @@
 > **Pages Router** (NOT App Router) — no `src/app/` routing.
 
 - File-based routing: `src/pages/carte.tsx` → `/carte`; dynamic `[id].tsx` / `[...slug].tsx`; special `_app.tsx` / `_document.tsx` / `_error.tsx`.
-- `getServerSideProps` for auth/fresh data — wrap protected pages with `withServerSession()` (access session + call services directly). `getStaticProps` + `getStaticPaths` (+ ISR `revalidate`) for content pages (articles, cities). MDX via `createMDX()` in `next.config.ts`.
+- `getServerSideProps` for auth/fresh data — wrap protected pages with `withServerSession()` (access session + call services directly). `getStaticProps` + `getStaticPaths` for content pages built from files (articles, resources). Pages reading the database (network pages, cities, `/server-sitemap.xml`) use `getServerSideProps` so the build never touches the database. MDX via `createMDX()` in `next.config.ts`.
 
 ## Data fetching
 - **Client**: tRPC hooks (`trpc.<router>.<procedure>.useQuery()`) — the primary pattern (see api-patterns.md).

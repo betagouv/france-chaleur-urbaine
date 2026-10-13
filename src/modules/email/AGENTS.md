@@ -53,7 +53,7 @@ L'envoi SMTP réussit même quand Brevo bloque le destinataire (hard bounce, dé
 | `email.deliverability.getSettings` | query | admin | Clé configurée, écritures autorisées (pour griser les boutons) |
 | `email.deliverability.getEmailDeliverability` | query | admin | Statut local (bloqué ou non) d'une adresse |
 | `email.deliverability.listEmailEvents` | query | admin | Événements Brevo d'une adresse (à la demande) |
-| `email.deliverability.listBlockedContacts` | query | admin | Inventaire des bloqués (+ compte et nb de demandes liés) |
+| `email.deliverability.listBlockedContacts` | query | admin | Inventaire des bloqués (+ compte lié et son état `user_active`, nb de demandes liées) |
 | `email.deliverability.unblockContact` | mutation | admin | Réactive une adresse côté Brevo |
 | `email.deliverability.syncBlockedContacts` | mutation | admin | Lance la synchronisation |
 

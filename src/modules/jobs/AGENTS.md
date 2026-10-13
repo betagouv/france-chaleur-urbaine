@@ -24,8 +24,8 @@ Définis dans `constants.ts` :
 
 - `build_tiles` - Génération de tuiles cartographiques vectorielles
 - `pro_eligibility_test` - Tests d'éligibilité pour les professionnels  
-- `sync_geometries_to_airtable` - Synchronisation géométries → Airtable
-- `sync_metadata_from_airtable` - Synchronisation métadonnées ← Airtable
+- `scan_file` - Analyse antivirus d'un fichier déposé (module `files`, si `FILE_SCANNER=clamav`)
+- `parse_request_geometries` - Conversion ogr2ogr des fichiers géographiques d'une demande de modification de réseau (module `network-change-requests`)
 
 ### Statuts
 
@@ -53,8 +53,6 @@ Les handlers sont configurés dans `jobs.config.ts` :
 export const jobHandlers = {
   pro_eligibility_test: processProEligibilityTestJob,
   build_tiles: processBuildTilesJob,
-  sync_geometries_to_airtable: processSyncGeometriesToAirtableJob,
-  sync_metadata_from_airtable: processSyncMetadataFromAirtableJob,
 } as const;
 ```
 
@@ -184,7 +182,7 @@ import trpc from '@/modules/trpc/client';
 
 const { data: pendingJobs } = trpc.jobs.list.useQuery(
   {
-    types: ['build_tiles', 'sync_geometries_to_airtable'],
+    types: ['build_tiles'],
     statuses: ['pending', 'processing'],
   },
   {

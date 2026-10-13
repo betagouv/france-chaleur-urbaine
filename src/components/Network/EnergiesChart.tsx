@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Chart from 'react-google-charts';
 
-import type { Network } from '@/types/Summary/Network';
+import type { HeatNetwork } from '@/modules/reseaux/types';
 
 type GraphLegend = {
   position?: string;
@@ -9,26 +9,26 @@ type GraphLegend = {
   labeledValueText?: string;
 };
 
-const getGraphOptions = (network: Network) => [
+const getGraphOptions = (network: HeatNetwork) => [
   ['Catégorie', 'Production'],
-  ['UVE', network.prod_MWh_dechets_internes + network.prod_MWh_UIOM, '#d1570c'],
-  ['Chaleur industrielle', network.prod_MWh_chaleur_industiel, '#652a96'],
-  ['Biomasse', network.prod_MWh_biomasse_solide, '#87ca46'],
-  ['Géothermie', network.prod_MWh_geothermie, '#c4218e'],
-  ['Autres ENR&R', network.prod_MWh_autres_ENR, '#bcd090'],
-  ['Chaufferies électriques', network.prod_MWh_chaudieres_electriques, '#e81919'],
-  ['Gaz', network.prod_MWh_gaz_naturel, '#ffb800'],
-  ['Charbon', network.prod_MWh_charbon, '#000000'],
-  ['Fioul', network.prod_MWh_fioul_domestique + network.prod_MWh_fioul_lourd, '#0065b8'],
-  ['GPL', network.prod_MWh_GPL, '#0009b7'],
-  ['Autres', network.prod_MWh_autres, '#747474'],
-  ['Autre chaleur récupérée', network.prod_MWh_autre_chaleur_recuperee, '#d6c2e6'],
-  ['Pompe à chaleur', network.prod_MWh_PAC, '#ec9ba4'],
-  ['Biogaz', network.prod_MWh_biogaz, '#e6e905'],
-  ['Solaire thermique', network.prod_MWh_solaire_thermique, '#ffff00'],
+  ['UVE', (network.prod_MWh_dechets_internes ?? 0) + (network.prod_MWh_UIOM ?? 0), '#d1570c'],
+  ['Chaleur industrielle', network.prod_MWh_chaleur_industiel ?? 0, '#652a96'],
+  ['Biomasse', network.prod_MWh_biomasse_solide ?? 0, '#87ca46'],
+  ['Géothermie', network.prod_MWh_geothermie ?? 0, '#c4218e'],
+  ['Autres ENR&R', network.prod_MWh_autres_ENR ?? 0, '#bcd090'],
+  ['Chaufferies électriques', network.prod_MWh_chaudieres_electriques ?? 0, '#e81919'],
+  ['Gaz', network.prod_MWh_gaz_naturel ?? 0, '#ffb800'],
+  ['Charbon', network.prod_MWh_charbon ?? 0, '#000000'],
+  ['Fioul', (network.prod_MWh_fioul_domestique ?? 0) + (network.prod_MWh_fioul_lourd ?? 0), '#0065b8'],
+  ['GPL', network.prod_MWh_GPL ?? 0, '#0009b7'],
+  ['Autres', network.prod_MWh_autres ?? 0, '#747474'],
+  ['Autre chaleur récupérée', network.prod_MWh_autre_chaleur_recuperee ?? 0, '#d6c2e6'],
+  ['Pompe à chaleur', network.prod_MWh_PAC ?? 0, '#ec9ba4'],
+  ['Biogaz', network.prod_MWh_biogaz ?? 0, '#e6e905'],
+  ['Solaire thermique', network.prod_MWh_solaire_thermique ?? 0, '#ffff00'],
 ];
 
-const EnergiesChart = ({ network, width, height }: { network: Network; width?: string; height?: string }) => {
+const EnergiesChart = ({ network, width, height }: { network: HeatNetwork; width?: string; height?: string }) => {
   const graphOptions = useMemo(() => getGraphOptions(network), [network]);
   const [legendOptions, setLegendOptions] = useState<GraphLegend>({});
   const [chartAreaWidth, setChartAreaWidth] = useState<string>('100%');

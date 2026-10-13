@@ -54,7 +54,7 @@ const RenameEligibilityTestForm = ({ testId, currentName }: RenameEligibilityTes
         });
         closeModal();
       },
-      (err) => `Une erreur est survenue lors du renommage du test: ${err.message}`
+      () => 'Une erreur est survenue lors du renommage du test'
     ),
   });
 

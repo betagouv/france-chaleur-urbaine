@@ -19,6 +19,39 @@ const adminOnly: TestCaseBoolean<Partial<User> | null>[] = [
 const yearsAgo = (years: number) => new Date(Date.now() - years * 365 * 24 * 3600 * 1000);
 const monthsAgo = (months: number) => new Date(Date.now() - months * 30 * 24 * 3600 * 1000);
 
+const seedNetworkChangeRequest = (id: string, label: string, review: { processed_at?: Date; status?: 'processed' }) =>
+  kdb
+    .insertInto('network_change_requests')
+    .values({
+      contact_email: `${label.toLowerCase().replaceAll(' ', '-')}@test.local`,
+      contact_first_name: 'Marie',
+      contact_last_name: 'Dupont',
+      contact_structure: 'Ville',
+      contact_type: 'collectivite',
+      id,
+      kind: 'autre',
+      network_label: label,
+      payload: JSON.stringify({ dansCadreDemandeADEME: false, emailReferentCommercial: 'referent@exploitant.fr', precisions: 'x' }),
+      ...review,
+    })
+    .execute();
+
+const seedRequestFile = async (fileId: string, requestId: string) => {
+  await kdb
+    .insertInto('files')
+    .values({
+      content: Buffer.from('%PDF-'),
+      content_type: 'application/pdf',
+      filename: 'doc.pdf',
+      id: fileId,
+      scan_status: 'skipped',
+      sha256: fileId,
+      size: 5,
+    })
+    .execute();
+  await kdb.insertInto('network_change_request_files').values({ file_id: fileId, request_id: requestId, role: 'document' }).execute();
+};
+
 const seedDemand = (id: string, values: Record<string, unknown>, extra: { deleted_at?: Date | null } = {}) =>
   kdb
     .insertInto('demands')
@@ -82,6 +115,11 @@ describe('retention', () => {
       },
       { deleted_at: monthsAgo(2) }
     );
+    await seedNetworkChangeRequest(uuid(20), 'Réseau ancien', { processed_at: yearsAgo(4), status: 'processed' });
+    await seedNetworkChangeRequest(uuid(21), 'Réseau récent', { processed_at: monthsAgo(2), status: 'processed' });
+    await seedNetworkChangeRequest(uuid(22), 'Réseau en attente', {});
+    await seedRequestFile(uuid(30), uuid(20));
+    await seedRequestFile(uuid(31), uuid(21));
   });
 
   describe('permissions', () => {
@@ -112,6 +150,7 @@ describe('retention', () => {
       { count: 1, labels: ['pending-old@test.local'], rule: 'pending_accounts' },
       { count: 2, labels: ['inactive@test.local', 'never-connected@test.local'], rule: 'inactive_accounts' },
       { count: 3, labels: ['1 rue Close', '4 rue Supprimée', '5 rue Close puis supprimée'], rule: 'closed_demands' },
+      { count: 1, labels: ['Réseau ancien'], rule: 'processed_network_change_requests' },
     ]);
 
     // a closed demand deleted recently is eligible by its request date: that is the date shown, not the deletion
@@ -175,5 +214,54 @@ describe('retention', () => {
 
     const previewAfter = await createTestCaller(testUsers.admin).retention.preview();
     expect(previewAfter.find((preview) => preview.rule === 'closed_demands')?.count).toStrictEqual(0);
+  });
+
+  it('anonymizes processed network change requests past the delay and purges their files', async () => {
+    const result = await createTestCaller(testUsers.admin).retention.run({ rule: 'processed_network_change_requests' });
+
+    expect(result).toStrictEqual({ count: 1, rule: 'processed_network_change_requests' });
+    const rows = await kdb
+      .selectFrom('network_change_requests')
+      .select(['id', 'contact_email', 'contact_last_name', 'contact_structure', 'network_label', 'status'])
+      .orderBy('id')
+      .execute();
+    expect(rows).toStrictEqual([
+      {
+        contact_email: `anonymise-${uuid(20)}@anonymise.invalid`,
+        contact_last_name: 'Anonymisé',
+        contact_structure: null,
+        id: uuid(20),
+        network_label: 'Réseau ancien',
+        status: 'processed',
+      },
+      {
+        contact_email: 'réseau-récent@test.local',
+        contact_last_name: 'Dupont',
+        contact_structure: 'Ville',
+        id: uuid(21),
+        network_label: 'Réseau récent',
+        status: 'processed',
+      },
+      {
+        contact_email: 'réseau-en-attente@test.local',
+        contact_last_name: 'Dupont',
+        contact_structure: 'Ville',
+        id: uuid(22),
+        network_label: 'Réseau en attente',
+        status: 'pending',
+      },
+    ]);
+    expect(await kdb.selectFrom('files').select(['id', 'purged_at']).orderBy('id').execute()).toStrictEqual([
+      { id: uuid(30), purged_at: expect.any(Date) },
+      { id: uuid(31), purged_at: null },
+    ]);
+    // the commercial referent is personal data too
+    expect(await kdb.selectFrom('network_change_requests').select(['id', 'payload']).orderBy('id').execute()).toStrictEqual([
+      { id: uuid(20), payload: { dansCadreDemandeADEME: false, precisions: 'x' } },
+      { id: uuid(21), payload: { dansCadreDemandeADEME: false, emailReferentCommercial: 'referent@exploitant.fr', precisions: 'x' } },
+      { id: uuid(22), payload: { dansCadreDemandeADEME: false, emailReferentCommercial: 'referent@exploitant.fr', precisions: 'x' } },
+    ]);
+    const previewAfter = await createTestCaller(testUsers.admin).retention.preview();
+    expect(previewAfter.find((preview) => preview.rule === 'processed_network_change_requests')?.count).toStrictEqual(0);
   });
 });

@@ -1,3 +1,4 @@
+import type { ColumnFiltersState } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -16,6 +17,12 @@ import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { formatFrenchDateTime } from '@/utils/date';
 
 type BlockedContact = RouterOutput['email']['deliverability']['listBlockedContacts'][number];
+
+const accountLabels = { active: 'Actif', deactivated: 'Désactivé', none: 'Aucun' } as const;
+const accountLabel = (contact: BlockedContact) =>
+  contact.user_id === null ? accountLabels.none : contact.user_active ? accountLabels.active : accountLabels.deactivated;
+// a blocked address of a deactivated account needs no action: hidden unless the admin widens the filter
+const defaultColumnFilters: ColumnFiltersState = [{ id: 'user', value: { [accountLabels.active]: true, [accountLabels.none]: true } }];
 
 /**
  * Admin inventory of the addresses blocked by Brevo for transactional emails: reason, date, linked account
@@ -74,14 +81,14 @@ const EmailDeliverabilityPage = () => {
         width: '150px',
       },
       {
-        accessorFn: (row) => (row.user_id ? 'Oui' : 'Non'),
+        accessorFn: accountLabel,
         cell: ({ row }) =>
           row.original.user_id ? (
             <Link href={`/admin/users?userId=${row.original.user_id}`} isExternal>
-              Voir le compte
+              {accountLabel(row.original)}
             </Link>
           ) : (
-            <span className="text-faded">Aucun</span>
+            <span className="text-faded">{accountLabels.none}</span>
           ),
         filterType: 'Facets',
         header: 'Compte FCU',
@@ -91,6 +98,18 @@ const EmailDeliverabilityPage = () => {
       {
         accessorKey: 'demands_count',
         align: 'right',
+        cell: ({ row }) =>
+          row.original.demands_count > 0 ? (
+            <Link
+              href={`/admin/demandes?demands_search=${encodeURIComponent(row.original.email)}`}
+              isExternal
+              title="Voir les demandes de cette adresse"
+            >
+              {row.original.demands_count}
+            </Link>
+          ) : (
+            <span className="text-faded">0</span>
+          ),
         filterType: 'Range',
         header: 'Demandes',
         width: '160px',
@@ -135,6 +154,8 @@ const EmailDeliverabilityPage = () => {
         data={blockedContacts ?? []}
         loading={isLoading}
         enableGlobalFilter
+        enableFiltersDialog
+        columnFilters={defaultColumnFilters}
         padding="sm"
         initialSortingState={[{ desc: true, id: 'blocked_at' }]}
         export={{ fileName: 'emails-bloques', sheetName: 'Emails bloqués' }}

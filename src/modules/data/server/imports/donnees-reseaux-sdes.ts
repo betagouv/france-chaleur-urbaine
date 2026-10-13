@@ -1,13 +1,8 @@
 import { createWriteStream } from 'node:fs';
 import { finished } from 'node:stream/promises';
 
-import type { Record as AirtableRecord } from 'airtable';
-import type { FieldSet } from 'airtable/lib/field_set';
-
-import { AirtableDB } from '@/server/db/airtable';
+import { type DB, kdb } from '@/server/db/kysely';
 import type { Logger } from '@/server/helpers/logger';
-import { Airtable } from '@/types/enum/Airtable';
-import { processInParallel } from '@/utils/async';
 import { fetchJSON } from '@/utils/network';
 
 import { defineImportFunc } from '../import';
@@ -21,7 +16,7 @@ const SDES_API_URL =
  *
  * Comme nous avons les données plus complètes dans la bibliothèque Fedene, nous importons uniquement les puissances via ces données.
  */
-type DonneesReseauBrutes = {
+export type DonneesReseauBrutes = {
   // Identification
   ANNEE: string;
   COMMUNE_CODE: string;
@@ -154,50 +149,34 @@ function calculateRendement(data: DonneesReseauBrutes): number | null {
   return Math.round((data.CONSOTOT / data.PRODUCTION_TOTALE) * 100 * 10) / 10;
 }
 
-// --- Mapping SDES → Airtable ---
+// --- Mapping SDES → base ---
 
-function mapToAirtableFieldsChaleur(data: DonneesReseauBrutes) {
+type ChaleurPowerFields = Pick<
+  DB['reseaux_de_chaleur'],
+  | 'puissance_MW_autre_chaleur_recuperee'
+  | 'puissance_MW_autres'
+  | 'puissance_MW_autres_ENR'
+  | 'puissance_MW_biogaz'
+  | 'puissance_MW_biomasse_solide'
+  | 'puissance_MW_chaleur_industiel'
+  | 'puissance_MW_charbon'
+  | 'puissance_MW_chaudieres_electriques'
+  | 'puissance_MW_dechets_internes'
+  | 'puissance_MW_fioul_domestique'
+  | 'puissance_MW_fioul_lourd'
+  | 'puissance_MW_GPL'
+  | 'puissance_MW_gaz_naturel'
+  | 'puissance_MW_geothermie'
+  | 'puissance_MW_PAC'
+  | 'puissance_MW_solaire_thermique'
+  | 'puissance_MW_UIOM'
+  | 'puissance_totale_MW'
+>;
+
+// Only the powers are imported: the FEDENE library is more complete for the other survey figures, and the regulatory
+// values (CO2 contents, EnR&R rate, reference year) come from the arrêté DPE import.
+function mapFieldsChaleur(data: DonneesReseauBrutes): ChaleurPowerFields {
   return {
-    // Contenus CO2 : valeurs réglementaires, importées uniquement depuis l'arrêté DPE (import arrete-dpe)
-    // 'contenu CO2': data.CONTENU_EN_CO2,
-    // 'contenu CO2 ACV': data.CONTENU_EN_CO2_ACV,
-
-    // Livraisons (MWh)
-    // livraisons_agriculture_MWh: data.CONSOA,
-    // livraisons_autre_MWh: data.CONSONA,
-    // livraisons_industrie_MWh: data.CONSOI,
-    // livraisons_residentiel_MWh: data.CONSOR,
-    // livraisons_tertiaire_MWh: data.CONSOT,
-    // livraisons_totale_MWh: data.CONSOTOT,
-
-    // Année de référence : importée uniquement depuis l'arrêté DPE (import arrete-dpe)
-    // 'Moyenne-annee-DPE': data.ANNEE,
-
-    // Points de livraison
-    // nb_pdl: data.PDL,
-    // nom_reseau: data.OPERATEUR,
-
-    // Productions (MWh)
-    // prod_MWh_autre_chaleur_recuperee: data.PRODUCTION_AUTRE_CHALEUR_RECUPEREE,
-    // prod_MWh_autres: data.PRODUCTION_AUTRES,
-    // prod_MWh_autres_ENR: data.PRODUCTION_AUTRES_ENR,
-    // prod_MWh_biogaz: data.PRODUCTION_BIOGAZ,
-    // prod_MWh_biomasse_solide: data.PRODUCTION_BIOMASSE_SOLIDE,
-    // prod_MWh_chaleur_industiel: data.PRODUCTION_CHALEUR_INDUSTRIEL,
-    // prod_MWh_charbon: data.PRODUCTION_CHARBON,
-    // prod_MWh_chaudieres_electriques: data.PRODUCTION_CHAUDIERES_ELECTRIQUES,
-    // prod_MWh_dechets_internes: data.PRODUCTION_DECHETS_INTERNES,
-    // prod_MWh_fioul_domestique: data.PRODUCTION_FIOUL_DOMESTIQUE,
-    // prod_MWh_fioul_lourd: data.PRODUCTION_FIOUL_LOURD,
-    // prod_MWh_GPL: data.PRODUCTION_GPL,
-    // prod_MWh_gaz_naturel: data.PRODUCTION_GAZ_NATUREL,
-    // prod_MWh_geothermie: data.PRODUCTION_GEOTHERMIE,
-    // prod_MWh_PAC: data.PRODUCTION_PAC,
-    // prod_MWh_solaire_thermique: data.PRODUCTION_SOLAIRE_THERMIQUE,
-    // prod_MWh_UIOM: data.PRODUCTION_UIOM,
-    // production_totale_MWh: data.PRODUCTION_TOTALE,
-
-    // Puissances (MW)
     puissance_MW_autre_chaleur_recuperee: data.PUISSANCE_AUTRE_CHALEUR_RECUPEREE,
     puissance_MW_autres: data.PUISSANCE_AUTRES,
     puissance_MW_autres_ENR: data.PUISSANCE_AUTRES_ENR,
@@ -216,174 +195,93 @@ function mapToAirtableFieldsChaleur(data: DonneesReseauBrutes) {
     puissance_MW_solaire_thermique: data.PUISSANCE_SOLAIRE_THERMIQUE,
     puissance_MW_UIOM: data.PUISSANCE_UIOM,
     puissance_totale_MW: data.PUISSANCE,
-
-    // Indicateurs calculés (le taux EnR&R réglementaire vient uniquement de l'arrêté DPE, import arrete-dpe)
-    // 'Rend%': calculateRendement(data),
-    // 'Taux EnR&R': calculateTauxEnRR(data),
   };
 }
 
-/**
- * Note: Le champ 'Taux EnR&R' n'existe pas dans la table Airtable des réseaux de froid
- */
-function mapToAirtableFieldsFroid(data: DonneesReseauBrutes) {
-  return {
-    // Contenus CO2 et année de référence : importés uniquement depuis l'arrêté DPE (import arrete-dpe)
-    // 'contenu CO2': data.CONTENU_EN_CO2,
-    // 'contenu CO2 ACV': data.CONTENU_EN_CO2_ACV,
-    // livraisons_agriculture_MWh: data.CONSOA,
-    // livraisons_autre_MWh: data.CONSONA,
-    // livraisons_industrie_MWh: data.CONSOI,
-    // livraisons_residentiel_MWh: data.CONSOR,
-    // livraisons_tertiaire_MWh: data.CONSOT,
-    // livraisons_totale_MWh: data.CONSOTOT,
-    // 'Moyenne-annee-DPE': data.ANNEE,
-    // nb_pdl: data.PDL,
-    // nom_reseau: data.OPERATEUR,
-    // production_totale_MWh: data.PRODUCTION_TOTALE,
-    puissance_totale_MW: data.PUISSANCE,
-    // 'Rend%': calculateRendement(data),
-  };
-}
-
-// --- Helpers de données ---
-
-function prepareUpdateData(data: Record<string, unknown>): Partial<FieldSet> {
-  return Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value === 'secret' ? null : value])) as Partial<FieldSet>;
-}
-
-function collectDiffs(airtableRecord: AirtableRecord<FieldSet>, newData: Partial<FieldSet>): FieldDiff[] {
-  return Object.entries(newData)
-    .map(([field, newValue]) => ({
-      field,
-      newValue: newValue ?? null,
-      oldValue: airtableRecord.get(field) ?? null,
-    }))
-    .filter(({ newValue, oldValue }) => oldValue !== newValue);
-}
-
-function buildCreateDiffs(createData: Partial<FieldSet>): FieldDiff[] {
-  return Object.entries(createData).map(([field, newValue]) => ({
-    field,
-    newValue: newValue ?? null,
-    oldValue: null,
-  }));
+function mapFieldsFroid(data: DonneesReseauBrutes): Pick<DB['reseaux_de_froid'], 'puissance_totale_MW'> {
+  return { puissance_totale_MW: data.PUISSANCE };
 }
 
 // --- Types et formatage du log ---
 
-type FieldDiff = {
-  field: string;
-  newValue: unknown;
-  oldValue: unknown;
-};
-
-type ChangeEntry = {
-  diffs: FieldDiff[];
-  id: string;
-  type: 'UPDATE' | 'CREATE';
-};
+type FieldDiff = { field: string; newValue: unknown; oldValue: unknown };
+type ChangeEntry = { diffs: FieldDiff[]; id: string };
 
 function formatValue(value: unknown): string {
-  if (value === null || value === undefined) {
-    return 'null';
-  }
-  if (typeof value === 'string') {
-    return `"${value}"`;
-  }
-  return String(value);
+  return value === null || value === undefined ? 'null' : typeof value === 'string' ? `"${value}"` : String(value);
 }
 
-function formatChangeEntry({ diffs, id, type }: ChangeEntry): string {
-  return [`### ${id} - ${type}`, ...diffs.map((d) => `  ${d.field}: ${formatValue(d.oldValue)} → ${formatValue(d.newValue)}`)].join('\n');
+function formatChangeEntry({ diffs, id }: ChangeEntry): string {
+  return [`### ${id}`, ...diffs.map((diff) => `  ${diff.field}: ${formatValue(diff.oldValue)} → ${formatValue(diff.newValue)}`)].join('\n');
 }
 
 // --- Traitement générique d'une filière ---
 
+type NetworkTable = 'reseaux_de_chaleur' | 'reseaux_de_froid';
+
 type FiliereConfig = {
   label: string;
-  mapToAirtableFields: (data: DonneesReseauBrutes) => Record<string, unknown>;
+  mapFields: (data: DonneesReseauBrutes) => Record<string, number | null>;
   sncuPattern: RegExp;
-  table: Airtable;
+  table: NetworkTable;
 };
 
-type FiliereResult = {
+export type FiliereResult = {
   changes: ChangeEntry[];
-  createdCount: number;
   invalidIdsCount: number;
   missingFromSdes: string[];
   notFoundIds: string[];
   updatedCount: number;
 };
 
+/**
+ * Updates the powers of the networks known to the base (keyed by SNCU id). Networks of the SDES file unknown to the base
+ * are only reported: the FEDENE import is the one that creates networks.
+ */
 async function processFiliere(
   config: FiliereConfig,
   reseaux: DonneesReseauBrutes[],
-  airtableRecords: readonly AirtableRecord<FieldSet>[],
-  sncuSdes: Set<string>,
   { dryRun }: { dryRun: boolean }
 ): Promise<FiliereResult> {
-  const airtableBySncu = new Map<string, AirtableRecord<FieldSet>>(
-    airtableRecords.map((record) => [record.get('Identifiant reseau') as string, record])
-  );
+  const existingNetworks = await kdb
+    .selectFrom(config.table)
+    .select(['id_fcu', 'Identifiant reseau'])
+    .where('Identifiant reseau', 'is not', null)
+    .execute();
+  const idFcuBySncu = new Map(existingNetworks.map((network) => [network['Identifiant reseau'] as string, network.id_fcu]));
+  const sncuSdes = new Set(reseaux.map((reseau) => reseau.ID));
 
-  // Séparation found / not-found
-  const toUpdate = reseaux
-    .map((reseau) => ({ airtableRecord: airtableBySncu.get(reseau.ID), reseau }))
-    .filter((r): r is { airtableRecord: AirtableRecord<FieldSet>; reseau: DonneesReseauBrutes } => r.airtableRecord != null);
-
-  const notFound = reseaux.filter((r) => !airtableBySncu.has(r.ID));
-
-  // Calcul des diffs pour les updates
-  const updates = toUpdate.map(({ airtableRecord, reseau }) => {
-    const updateData = prepareUpdateData(config.mapToAirtableFields(reseau));
-    return { airtableRecord, diffs: collectDiffs(airtableRecord, updateData), id: reseau.ID, updateData };
-  });
-
-  const updateChanges: ChangeEntry[] = updates
-    .filter(({ diffs }) => diffs.length > 0)
-    .map(({ diffs, id }) => ({ diffs, id, type: 'UPDATE' as const }));
-
-  if (!dryRun) {
-    await processInParallel(updates, 5, async ({ airtableRecord, updateData }) => {
-      await AirtableDB(config.table).update(airtableRecord.id, updateData);
-    });
+  const changes: ChangeEntry[] = [];
+  const notFoundIds: string[] = [];
+  let updatedCount = 0;
+  for (const reseau of reseaux) {
+    const idFcu = idFcuBySncu.get(reseau.ID);
+    if (idFcu === undefined) {
+      notFoundIds.push(reseau.ID);
+      continue;
+    }
+    const fields = config.mapFields(reseau);
+    const current = await kdb
+      .selectFrom(config.table)
+      .select(Object.keys(fields) as any)
+      .where('id_fcu', '=', idFcu)
+      .executeTakeFirstOrThrow();
+    const diffs = Object.entries(fields)
+      .map(([field, newValue]) => ({ field, newValue, oldValue: (current as Record<string, unknown>)[field] ?? null }))
+      .filter(({ newValue, oldValue }) => oldValue !== newValue);
+    if (diffs.length > 0) {
+      changes.push({ diffs, id: reseau.ID });
+    }
+    updatedCount++;
+    if (!dryRun) {
+      await kdb.updateTable(config.table).set(fields).where('id_fcu', '=', idFcu).execute();
+    }
   }
 
-  // Création des réseaux manquants
-  const creates = notFound.map((reseau) => ({
-    createData: prepareUpdateData({ 'Identifiant reseau': reseau.ID, ...config.mapToAirtableFields(reseau) }),
-    id: reseau.ID,
-  }));
+  const missingFromSdes = [...idFcuBySncu.keys()].filter((sncu) => !sncuSdes.has(sncu) && config.sncuPattern.test(sncu));
+  const invalidIdsCount = existingNetworks.filter((network) => !config.sncuPattern.test(network['Identifiant reseau'] ?? '')).length;
 
-  const createChanges: ChangeEntry[] = creates.map(({ createData, id }) => ({
-    diffs: buildCreateDiffs(createData),
-    id,
-    type: 'CREATE' as const,
-  }));
-
-  if (!dryRun && creates.length > 0) {
-    await processInParallel(creates, 5, async ({ createData }) => {
-      await AirtableDB(config.table).create(createData);
-    });
-  }
-
-  // Réseaux absents du SDES (identifiants valides uniquement)
-  const missingFromSdes = [...airtableBySncu.keys()].filter((id) => !sncuSdes.has(id) && id && config.sncuPattern.test(id));
-
-  const invalidIdsCount = airtableRecords.filter((r) => {
-    const id = r.get('Identifiant reseau') as string;
-    return !id || !config.sncuPattern.test(id);
-  }).length;
-
-  return {
-    changes: [...updateChanges, ...createChanges],
-    createdCount: creates.length,
-    invalidIdsCount,
-    missingFromSdes,
-    notFoundIds: notFound.map((r) => r.ID),
-    updatedCount: updates.length,
-  };
+  return { changes, invalidIdsCount, missingFromSdes, notFoundIds, updatedCount };
 }
 
 // --- Écriture du log par filière ---
@@ -392,24 +290,24 @@ function writeLogSection(log: (text: string) => void, label: string, { changes }
   if (changes.length > 0) {
     log(`## Détail des changements - Réseaux de ${label}`);
     log('');
-    changes.forEach((c) => {
-      log(formatChangeEntry(c));
+    changes.forEach((change) => {
+      log(formatChangeEntry(change));
       log('');
     });
   }
 }
 
 function logFiliereConsoleOutput(logger: Logger, label: string, result: FiliereResult): void {
-  logger.info(`Réseaux de ${label}: ${result.updatedCount} mis à jour, ${result.createdCount} créés`);
+  logger.info(`Réseaux de ${label}: ${result.updatedCount} mis à jour`);
   if (result.invalidIdsCount > 0) {
-    logger.warn(`${result.invalidIdsCount} réseaux de ${label} dans Airtable ont un identifiant SNCU invalide ou vide`);
+    logger.warn(`${result.invalidIdsCount} réseaux de ${label} en base ont un identifiant SNCU invalide`);
   }
   if (result.notFoundIds.length > 0) {
-    console.log(`\nRéseaux de ${label} dans SDES mais absents d'Airtable (${result.notFoundIds.length}):`);
+    console.log(`\nRéseaux de ${label} dans SDES mais absents de la base (${result.notFoundIds.length}):`);
     console.log(result.notFoundIds.sort().join('\n'));
   }
   if (result.missingFromSdes.length > 0) {
-    console.log(`\nRéseaux de ${label} dans Airtable mais absents des données SDES (${result.missingFromSdes.length}):`);
+    console.log(`\nRéseaux de ${label} en base mais absents des données SDES (${result.missingFromSdes.length}):`);
     console.log(result.missingFromSdes.sort().join('\n'));
   }
 }
@@ -418,16 +316,16 @@ function logFiliereConsoleOutput(logger: Logger, label: string, result: FiliereR
 
 const FILIERE_CHALEUR: FiliereConfig = {
   label: 'chaleur',
-  mapToAirtableFields: mapToAirtableFieldsChaleur,
+  mapFields: mapFieldsChaleur,
   sncuPattern: /^\d+C$/,
-  table: Airtable.NETWORKS,
+  table: 'reseaux_de_chaleur',
 };
 
 const FILIERE_FROID: FiliereConfig = {
   label: 'froid',
-  mapToAirtableFields: mapToAirtableFieldsFroid,
+  mapFields: mapFieldsFroid,
   sncuPattern: /^\d+F$/,
-  table: Airtable.COLD_NETWORKS,
+  table: 'reseaux_de_froid',
 };
 
 // --- Import principal ---
@@ -441,57 +339,34 @@ export const importDonneesReseauxSdes = defineImportFunc(async ({ logger, option
   const donneesReseaux = await fetchJSON<DonneesReseauBrutes[]>(SDES_API_URL);
   logger.info(`${donneesReseaux.length} enregistrements téléchargés depuis l'API SDES`);
 
-  const reseauxChaleur = donneesReseaux.filter((r) => r.FILIERE === 'C');
-  const reseauxFroid = donneesReseaux.filter((r) => r.FILIERE === 'F');
-  logger.info(`${reseauxChaleur.length} réseaux de chaleur, ${reseauxFroid.length} réseaux de froid`);
+  const results = await importSdesRows(donneesReseaux, { dryRun, logger });
 
-  const [airtableChaleur, airtableFroid] = await Promise.all([
-    AirtableDB(Airtable.NETWORKS).select().all(),
-    AirtableDB(Airtable.COLD_NETWORKS).select().all(),
-  ]);
-  logger.info(`${airtableChaleur.length} réseaux de chaleur existants dans Airtable`);
-  logger.info(`${airtableFroid.length} réseaux de froid existants dans Airtable`);
-
-  // Fichier de log en streaming
   const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
   const logFilePath = `import-sdes-${timestamp}.log`;
   const logStream = createWriteStream(logFilePath, { encoding: 'utf-8' });
   const log = (text: string) => logStream.write(`${text}\n`);
-
-  log(`# Import SDES 2024 - ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`);
+  log(`# Import SDES - ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`);
   log(`Mode: ${dryRun ? 'dry-run' : 'live'}`);
   log('');
-
-  const opts = { dryRun };
-  const sncuChaleurSdes = new Set(reseauxChaleur.map((r) => r.ID));
-  const sncuFroidSdes = new Set(reseauxFroid.map((r) => r.ID));
-
-  // Traitement des deux filières
-  const resultChaleur = await processFiliere(FILIERE_CHALEUR, reseauxChaleur, airtableChaleur, sncuChaleurSdes, opts);
-  writeLogSection(log, FILIERE_CHALEUR.label, resultChaleur);
-  logFiliereConsoleOutput(logger, FILIERE_CHALEUR.label, resultChaleur);
-
-  const resultFroid = await processFiliere(FILIERE_FROID, reseauxFroid, airtableFroid, sncuFroidSdes, opts);
-  writeLogSection(log, FILIERE_FROID.label, resultFroid);
-  logFiliereConsoleOutput(logger, FILIERE_FROID.label, resultFroid);
-
-  // Résumé en fin de fichier
+  writeLogSection(log, FILIERE_CHALEUR.label, results.chaleur);
+  writeLogSection(log, FILIERE_FROID.label, results.froid);
   log('## Résumé');
-  for (const [label, result] of [
-    [FILIERE_CHALEUR.label, resultChaleur],
-    [FILIERE_FROID.label, resultFroid],
-  ] as const) {
-    const updated = result.changes.filter((c) => c.type === 'UPDATE').length;
-    const created = result.changes.filter((c) => c.type === 'CREATE').length;
-    log(`- Réseaux de ${label} mis à jour: ${updated}`);
-    log(`- Réseaux de ${label} créés: ${created}`);
-  }
-
+  log(`- Réseaux de chaleur mis à jour: ${results.chaleur.updatedCount}`);
+  log(`- Réseaux de froid mis à jour: ${results.froid.updatedCount}`);
   logStream.end();
   await finished(logStream);
   logger.info(`Fichier de log généré: ${logFilePath}`);
-
-  const totalUpdated = resultChaleur.updatedCount + resultFroid.updatedCount;
-  const totalCreated = resultChaleur.createdCount + resultFroid.createdCount;
-  logger.info(`Import terminé: ${totalUpdated} réseaux mis à jour, ${totalCreated} créés (données millésime 2024)`);
 });
+
+/** Applies the SDES records to the base (exported for tests: no download, no log file). */
+export const importSdesRows = async (donneesReseaux: DonneesReseauBrutes[], { dryRun, logger }: { dryRun: boolean; logger: Logger }) => {
+  const reseauxChaleur = donneesReseaux.filter((reseau) => reseau.FILIERE === 'C');
+  const reseauxFroid = donneesReseaux.filter((reseau) => reseau.FILIERE === 'F');
+  logger.info(`${reseauxChaleur.length} réseaux de chaleur, ${reseauxFroid.length} réseaux de froid`);
+
+  const chaleur = await processFiliere(FILIERE_CHALEUR, reseauxChaleur, { dryRun });
+  logFiliereConsoleOutput(logger, FILIERE_CHALEUR.label, chaleur);
+  const froid = await processFiliere(FILIERE_FROID, reseauxFroid, { dryRun });
+  logFiliereConsoleOutput(logger, FILIERE_FROID.label, froid);
+  return { chaleur, froid };
+};

@@ -1,11 +1,8 @@
-import { Readable } from 'node:stream';
-
 import { z } from 'zod';
 
-import { AirtableDB } from '@/server/db/airtable';
-import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
-import type { NetworkAttachment } from '@/types/Summary/Network';
-import { sanitizeFilename } from '@/utils/strings';
+import { sendStoredFile } from '@/modules/files/server/http';
+import { getNetworkDocumentForDownload } from '@/modules/reseaux/server/documents';
+import { handleRouteErrors, invalidRouteError, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
 
 export const config = {
   api: {
@@ -13,43 +10,18 @@ export const config = {
   },
 };
 
+/** Public download of a document published on a network page (validated by an admin), served from the database. */
 export default handleRouteErrors(async (req, res) => {
   requireGetMethod(req);
   const { networkId, fileId } = await validateObjectSchema(req.query, {
-    fileId: z.string(),
-    networkId: z.string().regex(/^[A-Za-z0-9_-]{1,20}$/), // interpolated in an Airtable formula: no quotes or operators allowed
+    fileId: z.uuid(),
+    networkId: z.string().regex(/^[A-Za-z0-9_-]{1,20}$/),
   });
 
-  const [network] = await AirtableDB('FCU - Réseaux de chaleur')
-    .select({
-      fields: ['fichiers'],
-      filterByFormula: `{Identifiant reseau} = '${networkId}'`,
-    })
-    .all();
-  if (!network) {
-    throw new Error('not found');
+  const file = await getNetworkDocumentForDownload(networkId, fileId);
+  if (!file) {
+    throw invalidRouteError;
   }
-  const fichier = (network.fields.fichiers! as NetworkAttachment[]).find((fichier) => fichier.id === fileId);
-  if (!fichier) {
-    throw new Error('not found');
-  }
-  const downloadRes = await fetch(fichier.url);
-  if (!downloadRes.ok) {
-    throw new Error(`invalid status code: ${downloadRes.status}`);
-  }
-  if (!downloadRes.body) {
-    throw new Error(`no body`);
-  }
-  res.writeHead(200, {
-    'Content-Disposition': `inline; filename="${sanitizeFilename(fichier.filename)}"`,
-    'Content-Length': fichier.size,
-    'Content-Type': fichier.type,
-  });
-
-  // stream the file to the client and convert web stream (fetch body) to node stream (used by http Response)
-  const contentStream = Readable.fromWeb(downloadRes.body as any);
-  await new Promise((resolve) => {
-    contentStream.pipe(res);
-    contentStream.on('end', resolve);
-  });
+  // PDF open in the browser, archives download
+  sendStoredFile(res, file, file.content_type === 'application/pdf' ? 'inline' : 'attachment');
 });

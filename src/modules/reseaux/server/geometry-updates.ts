@@ -1,10 +1,6 @@
 import { createLogger, format, transports } from 'winston';
 
-import { AirtableDB, type AirtableTable } from '@/server/db/airtable';
 import { kdb, sql } from '@/server/db/kysely';
-import { formatAsISODate } from '@/utils/date';
-
-import { type Type, TypeBool, TypeString } from './download-network';
 
 // pour juste logger et ne pas faire les opérations
 let globalDryRun = false;
@@ -44,75 +40,16 @@ type PostgresConfig = {
   getUpdateProps: (changement: Changement) => object;
 };
 
-type AirtableConfig = {
-  tableName: AirtableTable;
-  createSearchFormula?: (changement: Changement) => string;
-  getCreateProps: (changement: Changement) => object;
-  getUpdateProps: (changement: Changement) => object;
-  fieldsConversion: Record<string, Type>;
-};
-
 type TableConfig = {
   tableChangements: string;
   tableChangementsSelectFields?: string[];
-  pgToAirtableSyncAdditionalFields?: string[];
   tableCible: string;
   postgres?: PostgresConfig;
-  airtable?: AirtableConfig;
 };
 
 // Cette configuration permet de mettre à jour chaque type de données avec ses spécificités
 export const tableConfigs: TableConfig[] = [
   {
-    airtable: {
-      createSearchFormula: (changement) => `OR(
-        FIND(${changement.id_fcu}, {id_fcu}) ${changement.id_sncu ? `, FIND("${changement.id_sncu}", {Identifiant reseau})` : ''}
-      )`,
-      fieldsConversion: {
-        communes: TypeString,
-        date_actualisation_pdp: TypeString,
-        date_actualisation_trace: TypeString,
-        departement: TypeString,
-        Gestionnaire: TypeString,
-        has_PDP: TypeBool,
-        has_trace: TypeBool,
-        'Identifiant reseau': TypeString,
-        id_fcu: TypeString,
-        MO: TypeString,
-        nom_reseau: TypeString,
-        region: TypeString,
-      },
-      getCreateProps: (changement) => ({
-        communes: changement.ign_communes.join(','),
-        has_trace: changement.is_line,
-        'Identifiant reseau': changement.id_sncu,
-        id_fcu: changement.id_fcu,
-      }),
-      getUpdateProps: (changement) => ({
-        communes: changement.ign_communes.join(','),
-        date_actualisation_pdp: changement.date_actualisation_pdp ? formatAsISODate(changement.date_actualisation_pdp) : null,
-        date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
-        departement: changement.departement,
-        Gestionnaire: changement.Gestionnaire ?? null,
-        has_PDP: changement.has_PDP,
-        has_trace: changement.is_line,
-        'Identifiant reseau': changement['Identifiant reseau'] ?? null,
-        id_fcu: changement.id_fcu,
-        MO: changement.MO ?? null,
-        nom_reseau: changement.nom_reseau ?? null,
-        region: changement.region,
-      }),
-      tableName: 'FCU - Réseaux de chaleur',
-    },
-    pgToAirtableSyncAdditionalFields: [
-      'has_PDP',
-      'date_actualisation_trace',
-      'date_actualisation_pdp',
-      'Gestionnaire',
-      'MO',
-      'nom_reseau',
-      'Identifiant reseau',
-    ],
     postgres: {
       getCreateProps: (changement) => ({
         communes: changement.ign_communes,
@@ -129,44 +66,6 @@ export const tableConfigs: TableConfig[] = [
     tableCible: 'public.reseaux_de_chaleur',
   },
   {
-    airtable: {
-      createSearchFormula: (changement) => `OR(
-        FIND(${changement.id_fcu}, {id_fcu}),
-        FIND("${changement.id_sncu}", {Identifiant reseau})
-      )`,
-      fieldsConversion: {
-        communes: TypeString,
-        date_actualisation_trace: TypeString,
-        departement: TypeString,
-        Gestionnaire: TypeString,
-        has_trace: TypeBool,
-        'Identifiant reseau': TypeString,
-        id_fcu: TypeString,
-        MO: TypeString,
-        nom_reseau: TypeString,
-        region: TypeString,
-      },
-      getCreateProps: (changement) => ({
-        communes: changement.ign_communes.join(','),
-        has_trace: changement.is_line,
-        'Identifiant reseau': changement.id_sncu,
-        id_fcu: changement.id_fcu,
-      }),
-      getUpdateProps: (changement) => ({
-        communes: changement.ign_communes.join(','),
-        date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
-        departement: changement.departement,
-        Gestionnaire: changement.Gestionnaire ?? null,
-        has_trace: changement.is_line,
-        'Identifiant reseau': changement['Identifiant reseau'] ?? null,
-        id_fcu: changement.id_fcu,
-        MO: changement.MO ?? null,
-        nom_reseau: changement.nom_reseau ?? null,
-        region: changement.region,
-      }),
-      tableName: 'FCU - Réseaux de froid',
-    },
-    pgToAirtableSyncAdditionalFields: ['date_actualisation_trace', 'Gestionnaire', 'MO', 'nom_reseau', 'Identifiant reseau'],
     postgres: {
       getCreateProps: (changement) => ({
         communes: changement.ign_communes,
@@ -187,49 +86,6 @@ export const tableConfigs: TableConfig[] = [
     tableCible: 'public.zone_de_developpement_prioritaire', // attention pas de pluriel ici
   },
   {
-    airtable: {
-      fieldsConversion: {
-        communes: TypeString,
-        date_actualisation_trace: TypeString,
-        departement: TypeString,
-        gestionnaire: TypeString,
-        id_fcu: TypeString,
-        is_zone: TypeBool,
-        MO: TypeString,
-        mise_en_service: TypeString,
-        nom_reseau: TypeString,
-        ouvert_aux_raccordements: TypeBool,
-        region: TypeString,
-      },
-      getCreateProps: (changement) => ({
-        communes: changement.ign_communes.join(','),
-        id_fcu: changement.id_fcu,
-        is_zone: changement.is_zone,
-      }),
-      getUpdateProps: (changement) => ({
-        communes: changement.ign_communes.join(','),
-        date_actualisation_trace: changement.date_actualisation_trace ? formatAsISODate(changement.date_actualisation_trace) : null,
-        departement: changement.departement,
-        gestionnaire: changement.gestionnaire ?? null,
-        id_fcu: changement.id_fcu,
-        is_zone: changement.is_zone,
-        MO: changement.MO ?? null,
-        mise_en_service: changement.mise_en_service ?? null,
-        nom_reseau: changement.nom_reseau ?? null,
-        ouvert_aux_raccordements: changement.ouvert_aux_raccordements,
-        region: changement.region,
-      }),
-      tableName: 'FCU - Futurs réseaux de chaleur',
-    },
-    pgToAirtableSyncAdditionalFields: [
-      'is_zone',
-      'date_actualisation_trace',
-      'gestionnaire',
-      'MO',
-      'nom_reseau',
-      'mise_en_service',
-      'ouvert_aux_raccordements',
-    ],
     postgres: {
       getCreateProps: (changement) => ({
         communes: changement.ign_communes,
@@ -259,31 +115,9 @@ export type Changement = {
  * dans les tables finales.
  *
  * Boucle sur les changements et modif des tables cibles :
- *   - si supprimé, alors on supprime dans PG et aussi dans airtable
- *   - si ajouté, alors on ajoute et on fait correspondre côté airtable via id sncu
- *   - si modifié, on maj la geom et has_trace de airtable
- *
- * Lien avec airtable
- * - réseau de froid :
- *   - création airtable :
- *     - si id_fcu existant : Identifiant reseau, has_trace
- *     - si Identifiant reseau existant : id_fcu, has_trace
- *     - sinon : id_fcu, Identifiant reseau, has_trace, communes
- *   - modification airtable :
- *     - si id_fcu existant : has_trace
- *     - sinon : erreur
- * - réseau de chaleur :
- *   - création airtable :
- *     - si id_fcu existant : Identifiant reseau, has_trace
- *     - si Identifiant reseau existant : id_fcu, has_trace
- *     - sinon : id_fcu, Identifiant reseau, has_trace, communes
- *   - modification airtable :
- *     - si id_fcu existant : has_trace
- *     - sinon : erreur
- * - futur réseau :
- *   - création airtable : is_zone, communes
- *   - modification airtable : is_zone
- * - zone DP : rien
+ *   - si supprimé, alors on supprime dans PG
+ *   - si ajouté, alors on ajoute
+ *   - si modifié, on met à jour la géométrie
  */
 export const applyGeometryUpdates = async (dryRun: boolean) => {
   globalDryRun = dryRun;
@@ -322,9 +156,6 @@ export const applyGeometryUpdates = async (dryRun: boolean) => {
             })
           );
 
-          if (tableConfig.airtable) {
-            await createAirtable(tableConfig.airtable, changement);
-          }
           break;
         }
 
@@ -339,77 +170,17 @@ export const applyGeometryUpdates = async (dryRun: boolean) => {
               .where('id_fcu', '=', changement.id_fcu)
           );
 
-          if (tableConfig.airtable) {
-            await updateAirtable(tableConfig.airtable, changement);
-          }
           break;
         }
         case 'Supprimé': {
           await logPGQuery(kdb.deleteFrom(tableConfig.tableCible as any).where('id_fcu', '=', changement.id_fcu));
 
-          if (tableConfig.airtable) {
-            await deleteAirtable(tableConfig.airtable, changement);
-          }
           break;
         }
       }
     }
   }
 };
-
-// stratégies de mises à jour côté airtable
-
-async function createAirtable(airtableConfig: AirtableConfig, changement: Changement) {
-  // recherche par id_fcu et/ou Identifiant reseau parfois
-  const records = await AirtableDB(airtableConfig.tableName)
-    .select({
-      filterByFormula: airtableConfig.createSearchFormula?.(changement) ?? `{id_fcu} = "${changement.id_fcu}"`,
-      maxRecords: 1,
-    })
-    .firstPage();
-
-  if (records.length === 0) {
-    await logAirtableQuery('create', airtableConfig.tableName, airtableConfig.getCreateProps(changement));
-    return;
-  }
-  const recordId = records[0].id;
-  await logAirtableQuery('update', airtableConfig.tableName, recordId, airtableConfig.getUpdateProps(changement));
-}
-
-async function updateAirtable(airtableConfig: AirtableConfig, changement: Changement) {
-  // recherche par id_fcu
-  const records = await AirtableDB(airtableConfig.tableName)
-    .select({
-      filterByFormula: `{id_fcu} = "${changement.id_fcu}"`,
-      maxRecords: 1,
-    })
-    .firstPage();
-
-  if (records.length === 0) {
-    logger.error(`- Aucun record airtable trouvé pour la modification avec id FCU '${changement.id_fcu}'`);
-    return;
-  }
-
-  const recordId = records[0].id;
-  await logAirtableQuery('update', airtableConfig.tableName, recordId, airtableConfig.getUpdateProps(changement));
-}
-
-async function deleteAirtable(airtableConfig: AirtableConfig, changement: Changement) {
-  // recherche par id_fcu
-  const records = await AirtableDB(airtableConfig.tableName)
-    .select({
-      filterByFormula: `{id_fcu} = "${changement.id_fcu}"`,
-      maxRecords: 1,
-    })
-    .firstPage();
-
-  if (records.length === 0) {
-    logger.warn(`Record airtable non trouvé pour l'id FCU '${changement.id_fcu}'. Déjà supprimé ?`);
-    return;
-  }
-  const recordId = records[0].id;
-  await logAirtableQuery('destroy', airtableConfig.tableName, recordId);
-}
 
 // fonctions utilitaires pour logger les requêtes
 
@@ -422,33 +193,6 @@ async function logPGQuery<T>(queryBuilder: { compile: () => { sql: string; param
     return (queryBuilder as any).execute();
   }
   return Promise.resolve();
-}
-
-function logAirtableQuery(operation: 'create', table: AirtableTable, data: object): Promise<any>;
-function logAirtableQuery(operation: 'update', table: AirtableTable, recordId: string, data: object): Promise<any>;
-function logAirtableQuery(operation: 'destroy', table: AirtableTable, recordId: string): Promise<any>;
-async function logAirtableQuery(
-  operation: 'create' | 'update' | 'destroy',
-  table: AirtableTable,
-  recordIdOrData: string | object,
-  data?: object
-): Promise<any> {
-  if (operation === 'create') {
-    queriesLogger.debug(`- Airtable: ${operation} ${table} ${JSON.stringify(recordIdOrData)}`);
-    if (!globalDryRun) await AirtableDB(table).create(recordIdOrData as object);
-    return;
-  }
-  if (operation === 'update') {
-    queriesLogger.debug(`- Airtable: ${operation} ${table} ${recordIdOrData}: ${JSON.stringify(data)}`);
-    if (!globalDryRun) await AirtableDB(table).update(recordIdOrData as string, data as object);
-    return;
-  }
-  if (operation === 'destroy') {
-    queriesLogger.debug(`- Airtable: ${operation} ${table} ${recordIdOrData}`);
-    if (!globalDryRun) await AirtableDB(table).destroy(recordIdOrData as string);
-    return;
-  }
-  throw new Error(`Invalid operation '${operation}'`);
 }
 
 function truncateGeomCoordinates(jsonGeom: string): string {

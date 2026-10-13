@@ -1,9 +1,12 @@
+import type { Selectable } from 'kysely';
 import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';
+import { networkDocumentsJsonAgg } from '@/modules/reseaux/server/documents';
+import type { NetworkDocumentSummary } from '@/modules/reseaux/types';
+import type { DB } from '@/server/db/kysely';
 import { kdb } from '@/server/db/kysely';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
-import type { Network } from '@/types/Summary/Network';
 
 const selectedNetworkFields = [
   'id_fcu',
@@ -14,10 +17,11 @@ const selectedNetworkFields = [
   'website_gestionnaire',
   'reseaux classes',
   'informationsComplementaires',
-  'fichiers',
-] satisfies (keyof Network)[];
+] satisfies (keyof DB['reseaux_de_chaleur'])[];
 
-export type NetworkSearchResult = Pick<Network, (typeof selectedNetworkFields)[number]>;
+export type NetworkSearchResult = Pick<Selectable<DB['reseaux_de_chaleur']>, (typeof selectedNetworkFields)[number]> & {
+  documents: NetworkDocumentSummary[];
+};
 
 /**
  * Search for hot and cold networks by id or name, and return 10 elements max
@@ -30,13 +34,13 @@ export default handleRouteErrors(async (req) => {
   const [hotNetworks, coldNetworks] = await Promise.all([
     kdb
       .selectFrom('reseaux_de_chaleur')
-      .select(selectedNetworkFields)
+      .select([...selectedNetworkFields, networkDocumentsJsonAgg('reseaux_de_chaleur', 'reseau_de_chaleur').as('documents')])
       .where((eb) => eb.or([eb('Identifiant reseau', 'ilike', `%${search}%`), eb('nom_reseau', 'ilike', `%${search}%`)]))
       .limit(10)
       .execute(),
     kdb
       .selectFrom('reseaux_de_froid')
-      .select(selectedNetworkFields)
+      .select([...selectedNetworkFields, networkDocumentsJsonAgg('reseaux_de_froid', 'reseau_de_froid').as('documents')])
       .where((eb) => eb.or([eb('Identifiant reseau', 'ilike', `%${search}%`), eb('nom_reseau', 'ilike', `%${search}%`)]))
       .limit(10)
       .execute(),

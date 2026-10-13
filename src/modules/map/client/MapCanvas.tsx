@@ -80,6 +80,7 @@ export function MapCanvas({
 
     const { initialView, interactive } = initialConfigRef.current;
     const hasCenter = initialView && 'center' in initialView;
+    const initialBbox = initialView && 'bbox' in initialView ? initialView : null;
 
     // maplibre-gl v6 is ESM-only: with Turbopack the worker must be served from public/ (copied by scripts/postinstall.mjs)
     maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs');
@@ -93,18 +94,16 @@ export function MapCanvas({
       minZoom: defaultMinZoom,
       style: osmStyle,
       zoom: hasCenter ? (initialView.zoom ?? defaultZoom) : defaultZoom,
-    });
-
-    if (initialView && 'bbox' in initialView) {
-      const { bbox } = initialView;
-      instance.fitBounds(
-        [
-          [bbox[0], bbox[1]],
-          [bbox[2], bbox[3]],
+      // the constructor fits the bounds before the first render: only the tiles of the final view are loaded
+      ...(initialBbox && {
+        bounds: [
+          [initialBbox.bbox[0], initialBbox.bbox[1]],
+          [initialBbox.bbox[2], initialBbox.bbox[3]],
         ],
-        { animate: false, padding: 40 }
-      );
-    }
+        // `maxZoom` left out when undefined (see MapFitBounds: an explicit undefined breaks MapLibre's defaults)
+        fitBoundsOptions: { padding: 40, ...(initialBbox.maxZoom !== undefined && { maxZoom: initialBbox.maxZoom }) },
+      }),
+    });
 
     mapInstanceRef.current = instance;
     setMap(instance);

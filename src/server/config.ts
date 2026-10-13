@@ -15,6 +15,8 @@ const serverConfigSchema = {
   BDNB_API_BASE_URL: z.string().default('https://api.bdnb.io/v1/bdnb/donnees'),
   BREVO_ALLOW_WRITES: z.boolean().default(false), // unblocking contacts modifies the shared Brevo account: enabled on production only
   BREVO_API_KEY: z.string().optional(),
+  CLAMAV_HOST: z.string().default('127.0.0.1'),
+  CLAMAV_PORT: z.number().default(3310),
   CLOCK_CRONS_ENABLE: z.boolean().default(true),
   CLOCK_JOBS_PROCESSOR_ENABLE: z.boolean().default(true),
   CONTAINER: z.string().optional(), // injected by Scalingo (e.g. "web-1")
@@ -22,8 +24,8 @@ const serverConfigSchema = {
   DATA_GOUV_FR_API_URL: z.string().default('https://www.data.gouv.fr/api/1'),
   DATA_GOUV_FR_DATASET_ID: z.string().optional(),
   DATABASE_URL: z.string(),
+  FILE_SCANNER: z.enum(['none', 'clamav']).default('none'), // antivirus applied to uploaded files: 'none' marks them as skipped (still downloadable by admins)
   GEOPLATEFORME_ALTIMETRY_API_BASE_URL: z.string().default('https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest'),
-  GITHUB_CI: z.boolean().default(false),
   GRIST_ALLOW_WRITES: z.boolean().default(false), // writes to the shared FCU Grist doc: enabled on production only
   GRIST_API_KEY: z.string().optional(),
   IS_REVIEW_APP: z.boolean().default(false),

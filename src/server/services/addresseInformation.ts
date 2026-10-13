@@ -129,6 +129,7 @@ const mapDetailedEligibilityToHeatNetwork = (detailed: DetailedEligibilityStatus
     distance,
     futurNetwork: isFuturNetwork,
     gestionnaire: gestionnaire ?? null,
+    gestionnaireSourceFcu: !!detailed.gestionnaire_fcu,
     hasNoTraceNetwork: type === 'dans_ville_reseau_existant_sans_trace' ? true : type === 'trop_eloigne' ? false : null,
     hasPDP: hasPDP ?? null,
     id: id_sncu || null,
@@ -181,6 +182,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         'Taux EnR&R',
         'contenu CO2 ACV',
         'Gestionnaire',
+        'gestionnaire_fcu',
         'reseaux classes',
         'has_PDP',
         sql<number>`round(ST_Distance(geom, ST_Transform('SRID=4326;POINT(${sql.lit(lon)} ${sql.lit(lat)})'::geometry, 2154)))`.as(
@@ -211,7 +213,17 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       .innerJoin('commune', (join) =>
         join.on((eb) => eb('commune.insee_com', '=', sql<string>`ANY(${eb.ref('reseaux_de_chaleur.communes_insee')})`))
       )
-      .select(['id_fcu', 'Identifiant reseau', 'nom_reseau', 'commune.nom', 'communes', 'Gestionnaire', 'Taux EnR&R', 'contenu CO2 ACV'])
+      .select([
+        'id_fcu',
+        'Identifiant reseau',
+        'nom_reseau',
+        'commune.nom',
+        'communes',
+        'Gestionnaire',
+        'gestionnaire_fcu',
+        'Taux EnR&R',
+        'contenu CO2 ACV',
+      ])
       .where('has_trace', '=', false)
       .where('ouvert_aux_raccordements', '=', true)
       .limit(1)
@@ -307,6 +319,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         communes: pdp.communes ?? [],
         distance: networkInfos?.distance ?? 0,
         gestionnaire: networkInfos?.gestionnaire ?? null,
+        gestionnaire_fcu: networkInfos.type === 'existant' ? (networkInfos.gestionnaire_fcu ?? null) : null,
         hasPDP: true,
         id_fcu: networkInfos?.id_fcu ?? null,
         id_sncu: pdp['Identifiant reseau'] ?? (networkInfos?.type === 'existant' ? networkInfos?.['Identifiant reseau'] : null) ?? '',
@@ -324,6 +337,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
         gestionnaire: reseauDeChaleur.Gestionnaire ?? null,
+        gestionnaire_fcu: reseauDeChaleur.gestionnaire_fcu ?? null,
         hasPDP: reseauDeChaleur.has_PDP ?? null,
         id_fcu: reseauDeChaleur.id_fcu ?? '',
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
@@ -341,6 +355,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
         gestionnaire: reseauEnConstruction.gestionnaire ?? null,
+        gestionnaire_fcu: null,
         hasPDP: false,
         id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
@@ -358,6 +373,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         communes: zoneEnConstruction.communes ?? [],
         distance: null,
         gestionnaire: zoneEnConstruction.gestionnaire ?? null,
+        gestionnaire_fcu: null,
         hasPDP: false,
         id_fcu: zoneEnConstruction.id_fcu,
         id_sncu: '',
@@ -375,6 +391,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
         gestionnaire: reseauDeChaleur.Gestionnaire ?? null,
+        gestionnaire_fcu: reseauDeChaleur.gestionnaire_fcu ?? null,
         hasPDP: reseauDeChaleur.has_PDP ?? null,
         id_fcu: reseauDeChaleur.id_fcu,
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
@@ -392,6 +409,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
         gestionnaire: reseauEnConstruction.gestionnaire ?? null,
+        gestionnaire_fcu: null,
         hasPDP: false,
         id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
@@ -409,6 +427,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         communes: reseauDeChaleur.communes ?? [],
         distance: reseauDeChaleur.distance,
         gestionnaire: reseauDeChaleur.Gestionnaire ?? null,
+        gestionnaire_fcu: reseauDeChaleur.gestionnaire_fcu ?? null,
         hasPDP: reseauDeChaleur.has_PDP ?? null,
         id_fcu: reseauDeChaleur.id_fcu,
         id_sncu: reseauDeChaleur['Identifiant reseau'] ?? '',
@@ -426,6 +445,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         communes: reseauEnConstruction.communes ?? [],
         distance: reseauEnConstruction.distance,
         gestionnaire: reseauEnConstruction.gestionnaire ?? null,
+        gestionnaire_fcu: null,
         hasPDP: false,
         id_fcu: reseauEnConstruction.id_fcu,
         id_sncu: '',
@@ -443,6 +463,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         communes: [reseauDeChaleurSansTrace.nom ?? ''],
         distance: null,
         gestionnaire: reseauDeChaleurSansTrace.Gestionnaire ?? null,
+        gestionnaire_fcu: reseauDeChaleurSansTrace.gestionnaire_fcu ?? null,
         hasPDP: false,
         id_fcu: reseauDeChaleurSansTrace.id_fcu,
         id_sncu: reseauDeChaleurSansTrace['Identifiant reseau'] ?? '',
@@ -459,6 +480,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
       communes: [],
       distance: null,
       gestionnaire: null,
+      gestionnaire_fcu: null,
       hasPDP: null,
       id_fcu: null,
       id_sncu: '',
@@ -515,6 +537,8 @@ type EligibilityResult = {
   nom: string;
   communes: string[];
   gestionnaire: string | null;
+  /** gestionnaire corrected by FCU (heat networks only): shown with a footnote */
+  gestionnaire_fcu: string | null;
   co2: number | null;
   tauxENRR: number | null;
   isClasse: boolean | null;
@@ -543,6 +567,7 @@ const findPDPAssociatedNetwork = async (
             'nom_reseau',
             'communes',
             'Gestionnaire as gestionnaire',
+            'gestionnaire_fcu',
             'Taux EnR&R',
             'contenu CO2 ACV',
             'reseaux classes',

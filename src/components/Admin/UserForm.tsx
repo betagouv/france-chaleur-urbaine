@@ -75,7 +75,8 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
     status: user?.status || 'pending_email_confirmation',
     structure_name: user?.structure_name ?? '',
     structure_other: user?.structure_other ?? '',
-    structure_type: user?.structure_type ?? null,
+    // preselected for a new account only: an existing account keeps its (possibly empty) structure type
+    structure_type: isNew ? 'gestionnaire_reseaux' : (user?.structure_type ?? null),
   };
 
   // both mode schemas validate the same runtime values; unify their type for TanStack

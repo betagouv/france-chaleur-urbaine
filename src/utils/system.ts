@@ -10,6 +10,8 @@ const logger = createLogger('system');
 export type RunCommandOptions = {
   /** Si true, capture et retourne la sortie. Si false, affiche la sortie dans le terminal */
   captureOutput?: boolean;
+  /** Tue le process (SIGKILL) après ce délai : la commande échoue avec « délai dépassé » */
+  timeoutMs?: number;
   /** Répertoire de travail pour la commande */
   cwd?: string;
 };
@@ -23,7 +25,7 @@ export type RunCommandOptions = {
  * @returns Une promesse qui se résout avec le résultat de la commande si captureOutput est true, sinon void
  */
 export async function runCommand(executablePath: string, args: string[] = [], options: RunCommandOptions = {}): Promise<CommandResult> {
-  const { captureOutput = false, cwd } = options;
+  const { captureOutput = false, cwd, timeoutMs } = options;
 
   logger.info(`Running command: ${executablePath} ${args.join(' ')}`);
 
@@ -32,6 +34,13 @@ export async function runCommand(executablePath: string, args: string[] = [], op
     const process = spawn(executablePath, args, { cwd, stdio });
 
     let output = '';
+    let timedOut = false;
+    const timer = timeoutMs
+      ? setTimeout(() => {
+          timedOut = true;
+          process.kill('SIGKILL');
+        }, timeoutMs)
+      : undefined;
 
     if (captureOutput) {
       process.stdout?.on('data', (data) => {
@@ -44,10 +53,14 @@ export async function runCommand(executablePath: string, args: string[] = [], op
     }
 
     process.on('close', (code) => {
+      clearTimeout(timer);
+      if (timedOut) {
+        output += `\nERROR: délai de ${timeoutMs} ms dépassé`;
+      }
       if (captureOutput) {
         resolve({
           output: output.trim(),
-          success: code === 0,
+          success: code === 0 && !timedOut,
         });
       } else {
         if (code === 0) {

@@ -16,6 +16,8 @@ export type NetworkTableName = 'reseaux_de_chaleur' | 'reseaux_de_froid' | 'zone
 export type NetworkPatternDriftRow = {
   id_fcu: number;
   type: NetworkType;
+  /** SNCU of a heat network (link to its public page), null for a construction network */
+  identifiant_reseau: string | null;
   nom_reseau: string | null;
   gestionnaire: string | null;
   organization_id: string;
@@ -155,6 +157,7 @@ export const findUnattachedNetworksMatchingPatterns = async (organizationId?: st
     .select((eb) => [
       'r.id_fcu',
       'r.nom_reseau',
+      eb.ref('r.Identifiant reseau').as('identifiant_reseau'),
       eb.ref('r.Gestionnaire').as('gestionnaire'),
       'o.id as organization_id',
       'o.name as organization_name',
@@ -167,7 +170,14 @@ export const findUnattachedNetworksMatchingPatterns = async (organizationId?: st
   const construction = kdb
     .selectFrom('zones_et_reseaux_en_construction as r')
     .innerJoin('organizations as o', (join) => join.onTrue())
-    .select(['r.id_fcu', 'r.nom_reseau', 'r.gestionnaire', 'o.id as organization_id', 'o.name as organization_name'])
+    .select((eb) => [
+      'r.id_fcu',
+      'r.nom_reseau',
+      sql<string | null>`null`.as('identifiant_reseau'),
+      eb.ref('r.gestionnaire').as('gestionnaire'),
+      'o.id as organization_id',
+      'o.name as organization_name',
+    ])
     .where('r.organization_id', 'is', null)
     .where(
       (eb) =>
@@ -191,6 +201,7 @@ export const findAttachedNetworksNotMatchingPatterns = async (organizationId?: s
     .select((eb) => [
       'r.id_fcu',
       'r.nom_reseau',
+      eb.ref('r.Identifiant reseau').as('identifiant_reseau'),
       eb.ref('r.Gestionnaire').as('gestionnaire'),
       'o.id as organization_id',
       'o.name as organization_name',
@@ -203,7 +214,14 @@ export const findAttachedNetworksNotMatchingPatterns = async (organizationId?: s
   const construction = kdb
     .selectFrom('zones_et_reseaux_en_construction as r')
     .innerJoin('organizations as o', 'o.id', 'r.organization_id')
-    .select(['r.id_fcu', 'r.nom_reseau', 'r.gestionnaire', 'o.id as organization_id', 'o.name as organization_name'])
+    .select((eb) => [
+      'r.id_fcu',
+      'r.nom_reseau',
+      sql<string | null>`null`.as('identifiant_reseau'),
+      eb.ref('r.gestionnaire').as('gestionnaire'),
+      'o.id as organization_id',
+      'o.name as organization_name',
+    ])
     .where((eb) => sql<boolean>`cardinality(${eb.ref('o.gestionnaire_patterns')}) > 0`)
     .where(
       (eb) =>
@@ -264,11 +282,11 @@ export const refreshOrganizationNetworks = async (organizationId: string): Promi
   return Number(chaleur?.numUpdatedRows ?? 0) + Number(construction?.numUpdatedRows ?? 0);
 };
 
-/** Motifs déclarés + compteurs de dérive (à rattacher / rattachés hors motif) pour le dialog. */
+/** Motifs déclarés + lignes de dérive (à rattacher / rattachés hors motif) pour le dialog : l'admin tranche réseau par réseau. */
 export const getOrganizationNetworkDrift = async (
   organizationId: string
-): Promise<{ patterns: string[]; unattachedCount: number; attachedUnmatchedCount: number }> => {
-  const [org, unattached, attachedUnmatched] = await Promise.all([
+): Promise<{ patterns: string[]; unattachedMatching: NetworkPatternDriftRow[]; attachedUnmatched: NetworkPatternDriftRow[] }> => {
+  const [org, unattachedMatching, attachedUnmatched] = await Promise.all([
     kdb
       .selectFrom('organizations')
       .select('gestionnaire_patterns')
@@ -277,7 +295,18 @@ export const getOrganizationNetworkDrift = async (
     findUnattachedNetworksMatchingPatterns(organizationId),
     findAttachedNetworksNotMatchingPatterns(organizationId),
   ]);
-  return { attachedUnmatchedCount: attachedUnmatched.length, patterns: org.gestionnaire_patterns, unattachedCount: unattached.length };
+  return { attachedUnmatched, patterns: org.gestionnaire_patterns, unattachedMatching };
+};
+
+/** Détache les réseaux rattachés à l'org dont le gestionnaire ne matche plus aucun motif. Retourne le nombre détaché. */
+export const detachUnmatchedOrganizationNetworks = async (organizationId: string): Promise<number> => {
+  const rows = await findAttachedNetworksNotMatchingPatterns(organizationId);
+  const idsOf = (type: NetworkType) => rows.filter((row) => row.type === type).map((row) => row.id_fcu);
+  const [chaleur, construction] = await Promise.all([
+    assignNetworks('reseaux_de_chaleur', idsOf('reseau_de_chaleur'), null),
+    assignNetworks('zones_et_reseaux_en_construction', idsOf('reseau_en_construction'), null),
+  ]);
+  return chaleur + construction;
 };
 
 // ─── API credentials ───────────────────────────────────────────────────────────
@@ -316,12 +345,12 @@ export const listOrganizationNetworks = async (organizationId: string) => {
   const [chaleur, construction] = await Promise.all([
     kdb
       .selectFrom('reseaux_de_chaleur')
-      .select(['id_fcu', 'nom_reseau', 'Gestionnaire as gestionnaire'])
+      .select(['id_fcu', 'nom_reseau', 'Identifiant reseau as identifiant_reseau', 'Gestionnaire as gestionnaire'])
       .where('organization_id', '=', organizationId)
       .execute(),
     kdb
       .selectFrom('zones_et_reseaux_en_construction')
-      .select(['id_fcu', 'nom_reseau', 'gestionnaire'])
+      .select(['id_fcu', 'nom_reseau', sql<string | null>`null`.as('identifiant_reseau'), 'gestionnaire'])
       .where('organization_id', '=', organizationId)
       .execute(),
   ]);

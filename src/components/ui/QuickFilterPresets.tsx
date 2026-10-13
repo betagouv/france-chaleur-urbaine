@@ -48,7 +48,11 @@ function QuickFilterPresets<TData, TPresets extends Record<string, QuickFilterPr
 
       return (
         preset.filters.every((presetFilter) =>
-          columnFilters.some((activeFilter: any) => activeFilter.id === presetFilter.id && activeFilter.value === presetFilter.value)
+          // filter values are objects (facets): compared by content, a deep link from another page builds them anew
+          columnFilters.some(
+            (activeFilter: any) =>
+              activeFilter.id === presetFilter.id && JSON.stringify(activeFilter.value) === JSON.stringify(presetFilter.value)
+          )
         ) && columnFilters.length === preset.filters.length
       );
     },

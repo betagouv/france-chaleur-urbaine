@@ -1,7 +1,7 @@
 import { useVirtualizer, type Virtualizer } from '@tanstack/react-virtual';
-import { type RefObject, useEffect } from 'react';
+import { type RefObject, useCallback, useEffect } from 'react';
 
-export function useTableVirtualization<T>({
+export function useTableVirtualization<T extends { id: string }>({
   rows,
   tableContainerRef,
   rowHeight,
@@ -12,15 +12,20 @@ export function useTableVirtualization<T>({
   rowHeight: number;
   virtualizerRef?: RefObject<Virtualizer<HTMLDivElement, Element> | null>;
 }) {
+  // Measured heights are cached by this key. Keyed by row identity, not by position: after a filter or
+  // a sort, a row that moves to another index keeps its own height. With the default (index) key, a
+  // row reused by React at a new index without changing size triggers no ResizeObserver event and
+  // inherits the stale height of whatever row was there before (rows then overlap / get clipped).
+  const getItemKey = useCallback((index: number) => rows[index].id, [rows]);
+
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     estimateSize: () => rowHeight,
+    getItemKey,
     getScrollElement: () => tableContainerRef.current,
-    // measure dynamic row height, except in firefox because it measures table border height incorrectly
-    measureElement:
-      typeof window !== 'undefined' && navigator.userAgent.indexOf('Firefox') === -1
-        ? (element) => element?.getBoundingClientRect().height
-        : undefined,
+    // Unrounded height (TanStack's default rounds the ResizeObserver size): rows are CSS grid, not
+    // table rows, so the historical Firefox border-measurement issue does not apply.
+    measureElement: (element) => element.getBoundingClientRect().height,
     overscan: 8, // The number of items to render above and below the visible area
   });
 

@@ -317,7 +317,7 @@ function MesDemandesPage(): React.ReactElement {
             onRowClick={onTableRowClick}
             scrollToRowRef={scrollToRowRef}
             loadingEmptyMessage="Vous n'avez pas encore de demandes"
-            height="calc(100dvh - 140px)"
+            height="viewport"
           />
         </ResizablePanel>
         <ResizableSeparator />

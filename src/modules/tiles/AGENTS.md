@@ -6,7 +6,6 @@ Ce module gère la génération de tuiles vectorielles pour les cartes de France
 
 - Génération de tuiles vectorielles à partir de bases de données, APIs ou fichiers
 - Gestion des géométries via interface d'administration
-- Synchronisation avec Airtable
 - Jobs en arrière-plan via tRPC
 
 ## Architecture
@@ -123,11 +122,6 @@ trpc.tiles.createBuildTilesJob.useMutation()
 // Appliquer les mises à jour de géométries 
 trpc.tiles.applyGeometriesUpdates.useMutation()
 
-// Synchroniser vers Airtable
-trpc.tiles.syncGeometriesToAirtable.useMutation()
-
-// Synchroniser depuis Airtable
-trpc.tiles.syncMetadataFromAirtable.useMutation()
 ```
 
 ## Gestion des géométries
