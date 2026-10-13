@@ -4,7 +4,7 @@ import bcrypt, { genSalt, hash } from 'bcryptjs';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
 
-import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
+import { buildRubriques, isSyncedRole, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
 import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
 import { businessRules } from '@/modules/app/business-rules';
 import { linkDemandsByEmail } from '@/modules/demands/server/account-linking';
@@ -16,7 +16,7 @@ import { findEtablissementBySiret } from '@/modules/users/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { BadRequestError } from '@/server/helpers/server';
-import type { UserRole } from '@/types/enum/UserRole';
+import type { UserRoleInscription } from '@/types/enum/UserRole';
 import { generateRandomToken } from '@/utils/random';
 
 export const register = async ({
@@ -30,7 +30,7 @@ export const register = async ({
 }: {
   email: string;
   password: string;
-  role: UserRole;
+  role: UserRoleInscription;
   first_name: string;
   last_name: string;
   structure?: string;
@@ -129,9 +129,11 @@ export const login = async (email: string, password: string) => {
     type: 'user_login',
   });
 
-  updateContact(user.email, { dateConnexion: dayjs().format('YYYY-MM-DDTHH:mm:ss') }).catch((error) =>
-    logger.error('ademe-connect updateContact failed on login', { error, user_id: user.id })
-  );
+  if (isSyncedRole(user.role)) {
+    updateContact(user.email, { dateConnexion: dayjs().format('YYYY-MM-DDTHH:mm:ss') }).catch((error) =>
+      logger.error('ademe-connect updateContact failed on login', { error, user_id: user.id })
+    );
+  }
 
   // Link demands by email on every login
   try {

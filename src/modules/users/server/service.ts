@@ -1,9 +1,10 @@
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
+import dayjs from 'dayjs';
 import type { z } from 'zod';
 
-import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
-import { createContact } from '@/modules/ademe-connect/server/client';
+import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
+import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { getAllPermissionsWithLabels } from '@/modules/permissions/server/search';
@@ -20,7 +21,6 @@ import { serverConfig } from '@/server/config';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { createBaseModel, type ListConfig } from '@/server/db/kysely/base-model';
 import { logger } from '@/server/helpers/logger';
-import { isOneOf } from '@/utils/array';
 import { fetchJSON } from '@/utils/network';
 
 /** Champs validés par le formulaire admin + champs internes acceptés (ex. provenance posée par les sync API). */
@@ -115,7 +115,7 @@ export const create = async (data: CreateUserInput, context: Context): Promise<D
     });
   }
 
-  if (isOneOf(data.role, ['gestionnaire', 'particulier', 'professionnel'] as const)) {
+  if (isSyncedRole(data.role)) {
     createContact({
       abonnementNewsletter: false,
       acceptationRGPD: false,
@@ -139,11 +139,15 @@ export const update = async (
 ): Promise<DB['users']> => {
   const { optin_at, entreprise, ...userUpdate } = data;
 
+  // The CRM contact is keyed by email: keep the one known before the update (an email change is not propagated).
+  const previous = await kdb.selectFrom('users').select(['email', 'optin_at']).where('id', '=', id).executeTakeFirstOrThrow();
+
   const updated = await baseModel.update(
     id,
     {
       ...userUpdate,
-      optin_at: optin_at ? new Date() : null,
+      // Clé absente du payload → on ne touche pas. true → on garde la date d'opt-in existante (sinon maintenant). false → on efface.
+      ...('optin_at' in data ? { optin_at: optin_at ? (previous.optin_at ?? new Date()) : null } : {}),
       // Clé absente du payload → on ne touche pas. Présente avec null → on efface. Présente avec un objet → on re-fetch via SIRET.
       ...('entreprise' in data
         ? { entreprise: entreprise ? toEntrepriseJsonb(await findEtablissementBySiret(entreprise.siret)) : null }
@@ -161,12 +165,39 @@ export const update = async (
     type: 'user_updated_by_admin',
   });
 
+  syncContactAfterAdminUpdate(id, previous).catch((error) =>
+    logger.error('ademe-connect updateContact failed on user.update', { error, user_id: id })
+  );
+
   return updated;
+};
+
+/** Resync of the CRM contact from the stored row: identity, phone, rubriques and newsletter consent (never `actif`). */
+const syncContactAfterAdminUpdate = async (id: string, previous: { email: string; optin_at: Date | null }) => {
+  const user = await kdb
+    .selectFrom('users')
+    .select(['role', 'first_name', 'last_name', 'phone', 'structure_type', 'optin_at'])
+    .where('id', '=', id)
+    .executeTakeFirstOrThrow();
+  if (!isSyncedRole(user.role)) {
+    return;
+  }
+  const today = dayjs().format('YYYY-MM-DD');
+  const newsletterChanged = !!previous.optin_at !== !!user.optin_at;
+  await updateContact(previous.email, {
+    abonnementNewsletter: !!user.optin_at,
+    nom: user.last_name ?? undefined,
+    prenom: user.first_name ?? undefined,
+    rubriques: buildRubriques(user.role, user.structure_type),
+    rubriquesASupprimer: ALL_FCU_RUBRIQUES,
+    telephone: user.phone ?? undefined,
+    typeOrganisme: ROLE_TYPE_ORGANISME[user.role],
+    ...(newsletterChanged ? (user.optin_at ? { dateNewsletter: today } : { dateFinNewsletter: today }) : {}),
+  });
 };
 
 /**
  * Supprime un utilisateur et toutes ses données associées en cascade.
- * Marque le contact comme inactif dans ADEME Connect.
  */
 export const remove = async (id: string, config: ListConfig<typeof tableName>, context: Context) => {
   const user = await kdb.selectFrom('users').select('email').where('id', '=', id).executeTakeFirstOrThrow();

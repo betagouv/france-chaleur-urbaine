@@ -6,6 +6,7 @@ import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/con
 import { createContact, getContact } from '@/modules/ademe-connect/server/client';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
+import { type UserRole, userRoles } from '@/types/enum/UserRole';
 import { isOneOf } from '@/utils/array';
 
 export function registerAdemeConnectCommands(parentProgram: Command) {
@@ -41,14 +42,17 @@ export function registerAdemeConnectCommands(parentProgram: Command) {
 
   program
     .command('contacts:bulk-create')
-    .description("Crée en masse tous les utilisateurs FCU dans ADEME Connect (reprise de l'existant)")
+    .description("Crée en masse tous les comptes FCU valides et actifs (hors admins) dans ADEME Connect (reprise de l'existant)")
     .option('--dry-run', "Affiche les contacts qui seraient créés sans appeler l'API", false)
-    .action(async ({ dryRun }) => {
+    .option('--role <role>', 'Limite la reprise à un rôle (ex. ccrt, collectivite)', (v) => z.enum(userRoles).parse(v))
+    .action(async ({ dryRun, role }) => {
       const users = await kdb
         .selectFrom('users')
         .select(['email', 'first_name', 'last_name', 'phone', 'role', 'structure_type', 'optin_at', 'created_at', 'last_connection'])
-        .where('role', 'in', ['particulier', 'professionnel', 'gestionnaire'])
+        .where((eb) => (role ? eb('role', '=', role) : eb('role', '<>', 'admin')))
         .where('status', '=', 'valid')
+        .where('active', '=', true)
+        .$narrowType<{ role: Exclude<UserRole, 'admin'> }>()
         .orderBy('created_at', 'asc')
         .execute();
 

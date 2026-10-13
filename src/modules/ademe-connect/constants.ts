@@ -1,7 +1,17 @@
 import type { StructureType } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
-export const ROLE_TYPE_ORGANISME: Partial<Record<UserRole, string>> = {
+/**
+ * Admin accounts belong to the FCU team: they are never synchronized to ADEME Connect.
+ * Every other role is (contact creation and updates).
+ */
+export const isSyncedRole = (role?: UserRole | null): role is Exclude<UserRole, 'admin'> => !!role && role !== 'admin';
+
+/** `typeOrganisme` expected by ADEME Connect (Particulier, Entreprise, Collectivité). ALEC and CCRT act on behalf of local authorities. */
+export const ROLE_TYPE_ORGANISME: Record<Exclude<UserRole, 'admin'>, string> = {
+  alec: 'Collectivité',
+  ccrt: 'Collectivité',
+  collectivite: 'Collectivité',
   gestionnaire: 'Entreprise',
   particulier: 'Particulier',
   professionnel: 'Entreprise',
@@ -14,7 +24,7 @@ const ROLE_RUBRIQUES: Partial<Record<UserRole, string>> = {
   gestionnaire: 'FCU - rôle gestionnaire',
   collectivite: 'FCU - rôle collectivité',
   alec: 'FCU - rôle ALEC',
-  ccrt: 'FCU - rôle ALEC', // FIXME pas encore existant côté Ademe Connect
+  ccrt: 'FCU - rôle CCRT',
 };
 
 const STRUCTURE_RUBRIQUES: Partial<Record<StructureType, string>> = {
@@ -22,7 +32,7 @@ const STRUCTURE_RUBRIQUES: Partial<Record<StructureType, string>> = {
   autre: 'FCU - structure Autre',
   bailleur_social: 'FCU - structure Bailleur social',
   bureau_etudes: "FCU - structure Bureau d'études",
-  ccrt: 'FCU - structure Autre', // FIXME pas encore existant côté Ademe Connect
+  ccrt: 'FCU - structure CCRT',
   collectivite: 'FCU - structure Collectivité',
   gestionnaire_parc_tertiaire: 'FCU - structure Gestionnaire de parc tertiaire',
   gestionnaire_reseaux: 'FCU - structure Gestionnaire de réseau de chaleur',

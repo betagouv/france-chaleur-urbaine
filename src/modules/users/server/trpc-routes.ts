@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
 import { z } from 'zod';
 
-import { ALL_FCU_RUBRIQUES, buildRubriques } from '@/modules/ademe-connect/constants';
+import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole } from '@/modules/ademe-connect/constants';
 import { updateContact } from '@/modules/ademe-connect/server/client';
 import { createUserEvent } from '@/modules/events/server/service';
 import { adminRoute } from '@/modules/trpc/server';
@@ -63,13 +63,15 @@ export const usersRouter = router({
       type: input.optin_newsletter ? 'user_newsletter_subscribed' : 'user_newsletter_unsubscribed',
     });
 
-    const now = dayjs().format('YYYY-MM-DD');
-    updateContact(ctx.user.email, {
-      abonnementNewsletter: input.optin_newsletter,
-      ...(input.optin_newsletter ? { dateNewsletter: now } : { dateFinNewsletter: now }),
-    }).catch((error) =>
-      logger.error('ademe-connect updateContact failed on updateNewsletterSubscription', { error, user_id: ctx.user.id })
-    );
+    if (isSyncedRole(ctx.user.role)) {
+      const now = dayjs().format('YYYY-MM-DD');
+      updateContact(ctx.user.email, {
+        abonnementNewsletter: input.optin_newsletter,
+        ...(input.optin_newsletter ? { dateNewsletter: now } : { dateFinNewsletter: now }),
+      }).catch((error) =>
+        logger.error('ademe-connect updateContact failed on updateNewsletterSubscription', { error, user_id: ctx.user.id })
+      );
+    }
   }),
 
   updateProfile: routeAuthenticated.input(zUpdateProfileSchema).mutation(async ({ ctx, input }) => {
@@ -79,13 +81,15 @@ export const usersRouter = router({
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Erreur lors de la mise à jour du profil' });
     }
 
-    updateContact(ctx.user.email, {
-      nom: input.last_name,
-      prenom: input.first_name,
-      rubriques: buildRubriques(ctx.user.role, input.structure_type),
-      rubriquesASupprimer: ALL_FCU_RUBRIQUES,
-      telephone: input.phone ?? undefined,
-    }).catch((error) => logger.error('ademe-connect updateContact failed on updateProfile', { error, user_id: ctx.user.id }));
+    if (isSyncedRole(ctx.user.role)) {
+      updateContact(ctx.user.email, {
+        nom: input.last_name,
+        prenom: input.first_name,
+        rubriques: buildRubriques(ctx.user.role, input.structure_type),
+        rubriquesASupprimer: ALL_FCU_RUBRIQUES,
+        telephone: input.phone ?? undefined,
+      }).catch((error) => logger.error('ademe-connect updateContact failed on updateProfile', { error, user_id: ctx.user.id }));
+    }
 
     await createUserEvent({
       author_id: ctx.user.id,
