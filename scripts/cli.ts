@@ -1,6 +1,6 @@
 import '@/load-env';
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 
 import { allDatabaseTables } from '@cli/bootstrap/tables';
 import { refreshStatistics } from '@cli/stats/refresh';
@@ -16,12 +16,10 @@ import { registerDataCommands } from '@/modules/data/commands';
 import { registerDocCommands } from '@/modules/doc/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
-import { syncEngieUsers } from '@/modules/partner-api/server/legacy/engie-users-sync';
 import { renderOpenApiYaml } from '@/modules/partner-api/server/openapi';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { registerEcoreseauCommand } from '@/modules/reseaux/commands/ecoreseau';
-import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { registerTilesCommands } from '@/modules/tiles/commands';
 import { serverConfig } from '@/server/config';
 import { aggregateMonthlyStats } from '@/server/cron/aggregateMonthlyStats';
@@ -189,14 +187,6 @@ program
   });
 
 program
-  .command('apply-geometry-updates')
-  .description("Applique les changements suite à l'import d'un dump et met à jour postgres (obsolète pour le moment)")
-  .option('--dry-run', 'Run the command in dry-run mode', false)
-  .action(async ({ dryRun }) => {
-    await applyGeometryUpdates(dryRun);
-  });
-
-program
   .command('update-simulateur')
   .description('Take AMORCE file and either create records in database or update them.')
   .argument('<filepath>', 'Path to the Amorce file')
@@ -225,31 +215,6 @@ program
   .description('Refresh the statistics')
   .action(async () => {
     await refreshStatistics();
-  });
-
-program
-  .command('debug:upsert-users-from-api')
-  .description("Upsert the organization's users from an API users file.")
-  .argument('<organizationName>', "Nom de l'organisation")
-  .argument('<file>', 'File with data')
-  .action(async (organizationName, file) => {
-    const org = await kdb.selectFrom('organizations').select(['id', 'name']).where('name', '=', organizationName).executeTakeFirst();
-
-    if (!org) {
-      logger.error(`Organisation ${organizationName} introuvable`);
-      process.exit(1);
-    }
-
-    const data = JSON.parse(await readFile(file, 'utf8'));
-
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli debug:upsert-users-from-api ...');
-      process.exit(1);
-    }
-
-    await syncEngieUsers(org, data);
   });
 
 program

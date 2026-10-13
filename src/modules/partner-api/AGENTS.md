@@ -70,4 +70,4 @@ credential (same token, hashed), so the org is resolved from the token — no ha
 - **`PUT /api/v1/users/{key}`** (`engie-users.ts` → `engie-users-sync.ts`): declarative user sync called weekly by ENGIE —
   creates/reactivates the feed's gestionnaire accounts (additive `reseau_de_chaleur` permissions resolved by SNCU id,
   `users.from_organization_id` provenance, FK to `organizations`) and deactivates active users absent from the feed. Emits `user_*_by_api` /
-  `user_permissions_synced_from_api` events. `syncEngieUsers` is shared with the CLI `debug:upsert-users-from-api`.
+  `user_permissions_synced_from_api` events.
