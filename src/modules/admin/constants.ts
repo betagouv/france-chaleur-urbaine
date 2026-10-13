@@ -10,7 +10,7 @@ export const adminDashboardIndicators = [
     description: "Demandes de raccordement dont l'affectation au réseau n'a pas encore été validée",
     href: tableLink('/admin/demandes', 'demands', [{ id: 'validated', value: { false: true, true: false } }]),
     key: 'demandsToValidate',
-    label: 'Demandes à valider',
+    label: 'Demandes réseau de chaleur à valider',
   },
   {
     description: 'Demandes de réaffectation formulées par une collectivité, ALEC, CCRT ou gestionnaire et non encore traitées',
