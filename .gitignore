@@ -99,16 +99,9 @@ scripts/simulateur/codes-insee.json
 # CLAUDE.md
 
 # =============================================================================
-# cursor - Auto-generated symlinks
-# ⚠️  Auto-generated - Do not edit manually
+# cursor
 # =============================================================================
 .cursor/
-
-# Local IDE configuration
-.ai/config.local.jsonc
-
-# Version check cache
-.ai/.version-check
 
 # Publicodes branch fetched at Scalingo build time (scripts/fetch-publicodes-branch.sh)
 /france-chaleur-urbaine-publicodes
