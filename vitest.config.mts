@@ -12,10 +12,10 @@ export default defineConfig({
   },
   test: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@/client-config': resolve(__dirname, 'src/client-config.ts'),
-      '@cli': resolve(__dirname, 'scripts'),
-      '@root': resolve(__dirname, '.'),
+      '@': resolve(import.meta.dirname, 'src'),
+      '@/client-config': resolve(import.meta.dirname, 'src/client-config.ts'),
+      '@cli': resolve(import.meta.dirname, 'scripts'),
+      '@root': resolve(import.meta.dirname, '.'),
     },
     coverage: {
       exclude: ['src/**/*.{d.ts,test.ts,spec.ts,test.tsx,spec.tsx}', 'src/{app,pages,tests}/**'],
