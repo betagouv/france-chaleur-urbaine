@@ -6,7 +6,8 @@ import { adminDashboardIndicators } from '../constants';
 
 /** « À traiter » section of the admin dashboard: one card per indicator, linking to the page where the items are handled. */
 function AdminDashboardIndicators() {
-  const { data: indicators, isLoading } = trpc.admin.getDashboardIndicators.useQuery(undefined, { refetchInterval: 60_000 });
+  // counters of things to do: refetched every time the dashboard is shown (the app caches queries forever), then every minute
+  const { data: indicators, isLoading } = trpc.admin.getDashboardIndicators.useQuery(undefined, { refetchInterval: 60_000, staleTime: 0 });
 
   return (
     <section>
