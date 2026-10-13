@@ -107,7 +107,7 @@ Depuis [Gestion des utilisateurs](/admin/users), un admin peut créer un compte 
     compte --> evtCreation["Événement « Création utilisateur (admin) »"]:::evt
     compte -- "Si compte actif et rôle gestionnaire" --> mailGest["Email « Ouverture de l'espace gestionnaire »"]:::email
     compte -- "Autres cas" --> noMail["Aucun email : l'admin prévient la personne"]
-    compte -- "Si rôle gestionnaire, particulier ou professionnel" --> crmContact["Contact créé dans ADEME Connect"]:::crm
+    compte -- "Sauf rôle admin" --> crmContact["Contact créé dans ADEME Connect"]:::crm
     click mailGest "/admin/emails?type=auth.gestionnaire.ouverture-espace" "Voir le modèle d'email"
     click evtCreation "/admin/events?types=user_created_by_admin" "Voir dans l'activité du site"
     classDef email fill:#feecc2,stroke:#b28a00,color:#161616
@@ -118,7 +118,7 @@ Depuis [Gestion des utilisateurs](/admin/users), un admin peut créer un compte 
 
 - Un mot de passe aléatoire est généré : la personne doit utiliser « Mot de passe oublié » pour définir le sien.
 - **Un seul cas déclenche un email** : compte créé **actif** avec le rôle **gestionnaire** → email [« Ouverture de l'espace gestionnaire »](/admin/emails?type=auth.gestionnaire.ouverture-espace). Tous les autres rôles ne reçoivent **aucun email** ; c'est à l'admin de prévenir la personne.
-- Le contact ADEME Connect n'est créé que pour les rôles gestionnaire, particulier et professionnel.
+- Le contact ADEME Connect est créé pour tous les rôles sauf admin (les comptes de l'équipe ne sont jamais synchronisés).
 - Pour un gestionnaire, l'admin choisit aussi ses options de notification : recevoir les nouvelles demandes, recevoir les rappels de demandes en attente (voir [Rôle : gestionnaire](/admin/doc/role-gestionnaire)).
 - Événement enregistré : [« Création utilisateur (admin) »](/admin/events?types=user_created_by_admin).
 
@@ -128,7 +128,15 @@ Données modifiées :
 | --- | --- | --- |
 | Compte complet | Base — `users` | Email (normalisé en minuscules), rôle, structure, statut « valide », mot de passe aléatoire |
 | Options de notification | Base — `users.receive_new_demands`, `users.receive_old_demands` | Choisies par l'admin dans le formulaire |
-| Contact CRM | ADEME Connect | Créé uniquement pour gestionnaire, particulier, professionnel |
+| Contact CRM | ADEME Connect | Créé pour tous les rôles sauf admin |
+
+### Modification et suppression par un admin
+
+Depuis la même page, un admin peut modifier n'importe quel compte (identité, téléphone, rôle, structure, abonnement à la newsletter, activation) ou le supprimer. Ces actions n'envoient aucun email.
+
+- **Modification** : le contact ADEME Connect est resynchronisé depuis le compte (nom, prénom, téléphone, rubriques du rôle et de la structure, consentement newsletter). **Le changement d'email n'est pas répercuté** : le contact reste connu sous l'ancien email dans le CRM. L'état actif ou inactif du compte n'est pas transmis.
+- **Suppression** : rien n'est envoyé à ADEME Connect, le contact y reste tel quel.
+- Événements enregistrés : [«&nbsp;Mise à jour utilisateur (admin)&nbsp;»](/admin/events?types=user_updated_by_admin), [«&nbsp;Suppression utilisateur (admin)&nbsp;»](/admin/events?types=user_deleted_by_admin).
 
 ## Parcours 3 — Création automatique via l'API partenaire
 
