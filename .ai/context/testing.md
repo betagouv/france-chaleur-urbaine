@@ -1,10 +1,10 @@
 # Testing
 
-> Load before writing the first test. Runner: **Vitest 5** (happy-dom, pinned `~20.11` — 20.12+ surfaces `AbortError: The animation was canceled` unhandled rejections on `Animation.cancel()` (motion), see happy-dom #2339 / #2412; lift the pin once fixed). Config `vitest.config.mts` = two projects: `unit` (parallel) + `integration` (sequential).
+> Load before writing the first test. Runner: **Vitest 5** (happy-dom, pinned `~20.11` — 20.12+ surfaces `AbortError: The animation was canceled` unhandled rejections on `Animation.cancel()` (motion), see happy-dom #2339 / #2412; lift the pin once fixed). Config `vitest.config.mts` = two projects: `unit` (parallel, happy-dom) + `integration` (parallel, node env, one database per worker).
 
 ## Kinds & layout
 - **Unit** `.spec.ts` — services, utils, validators (parallel).
-- **Integration** `.integration.spec.ts` — tRPC routes against a real DB (sequential).
+- **Integration** `.integration.spec.ts` — tRPC routes against a real DB (parallel, one database per worker).
 - Component tests with Testing Library (limited). No E2E (Playwright is accessibility-only).
 - Colocate tests next to source. Helpers in `src/tests/`: `trpc-helpers.ts` (`createTestCaller`, `testUsers`, `TestCase`, `TestCaseBoolean`, `forbiddenError`) and `setup-mocks.ts`.
 
@@ -26,6 +26,8 @@ it.each(cases)('%s', (_, input, expected) => expect(countWords(input)).toStrictE
 
 ## DB & PostGIS
 - Integration tests hit a separate Postgres (port 5433, docker-compose); migrate with `pnpm test:db:migrate`. Isolation via transactions / per-test cleanup.
+- Parallelism: `src/tests/integration-global-setup.ts` clones the migrated test DB (`fcu_test`, the template) into `fcu_test_1..N` (N = `maxWorkers`, min(8, CPUs)) on every run; `src/tests/integration-setup.ts` points each worker's `DATABASE_URL` at its clone and runs `cleanDatabase()` before every file, so no file depends on what the template or a previous file left. Files inside a worker run one at a time. Clones are kept after the run to inspect a failure. The clone fails fast if a session is connected to `fcu_test` (close psql / DB clients). Two `pnpm test` runs against the same Postgres at once are not supported.
+- Limits: `maxWorkers` × `DATABASE_POOL_MAX` (10 in tests, mocked in `setup-mocks.ts`) must stay under Postgres `max_connections` (100). `maxWorkers` is shared by both projects on purpose: per-project `maxWorkers` requires a `sequence.groupOrder`, and Vitest 5.0.1 then reuses a `VITEST_POOL_ID` still in use when switching groups (two files on one database).
 - Geometry in tests: `sql\`ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)\``. Reference point: Paris `{ lat: 48.8566, lon: 2.3522 }`.
 
 ## Test vs don't test

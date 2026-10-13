@@ -23,6 +23,7 @@ const serverConfigSchema = {
   DATA_GOUV_FR_API_KEY: z.string().optional(),
   DATA_GOUV_FR_API_URL: z.string().default('https://www.data.gouv.fr/api/1'),
   DATA_GOUV_FR_DATASET_ID: z.string().optional(),
+  DATABASE_POOL_MAX: z.number().default(60), // connections per process
   DATABASE_URL: z.string(),
   FILE_SCANNER: z.enum(['none', 'clamav']).default('none'), // antivirus applied to uploaded files: 'none' marks them as skipped (still downloadable by admins)
   GEOPLATEFORME_ALTIMETRY_API_BASE_URL: z.string().default('https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest'),

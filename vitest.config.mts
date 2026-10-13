@@ -1,3 +1,4 @@
+import { availableParallelism } from 'node:os';
 import { resolve } from 'node:path';
 
 import react from '@vitejs/plugin-react';
@@ -12,10 +13,10 @@ export default defineConfig({
   },
   test: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@/client-config': resolve(__dirname, 'src/client-config.ts'),
-      '@cli': resolve(__dirname, 'scripts'),
-      '@root': resolve(__dirname, '.'),
+      '@': resolve(import.meta.dirname, 'src'),
+      '@/client-config': resolve(import.meta.dirname, 'src/client-config.ts'),
+      '@cli': resolve(import.meta.dirname, 'scripts'),
+      '@root': resolve(import.meta.dirname, '.'),
     },
     coverage: {
       exclude: ['src/**/*.{d.ts,test.ts,spec.ts,test.tsx,spec.tsx}', 'src/{app,pages,tests}/**'],
@@ -26,6 +27,10 @@ export default defineConfig({
     },
     environment: 'happy-dom',
     exclude: ['**/{.git,node_modules,dist,.next}/**', 'src/tests/a11y/**', 'src/**/*.e2e.spec.{ts,tsx}'],
+    // Shared by both projects: a project with its own maxWorkers needs its own sequence.groupOrder, and Vitest 5.0.1
+    // then hands out a VITEST_POOL_ID still in use when switching groups (two integration files on the same database).
+    // 8 integration workers × DATABASE_POOL_MAX (10, see setup-mocks.ts) stay under the Postgres max_connections (100).
+    maxWorkers: Math.min(8, availableParallelism()),
     onConsoleLog: (log) => {
       // Suppress specific React warnings
       if (log.includes('React does not recognize')) {
@@ -43,13 +48,15 @@ export default defineConfig({
           name: 'unit',
         },
       },
-      // Tests d'intégration (BDD) - séquentiel pour éviter les conflits BDD
+      // Tests d'intégration (BDD) - parallèle, une base clonée par worker (voir integration-global-setup.ts)
       {
         extends: true,
         test: {
-          fileParallelism: false,
+          environment: 'node',
+          globalSetup: ['./src/tests/integration-global-setup.ts'],
           include: ['src/**/*.integration.spec.{ts,tsx}'],
           name: 'integration',
+          setupFiles: ['./src/tests/integration-setup.ts'],
         },
       },
     ],

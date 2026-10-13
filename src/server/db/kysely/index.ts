@@ -29,7 +29,7 @@ const dialect = new PostgresDialect({
     idleTimeoutMillis: 30_000,
     keepAlive: true,
     keepAliveInitialDelayMillis: 10_000,
-    max: 60,
+    max: serverConfig.DATABASE_POOL_MAX,
     min: 1,
   }),
 });

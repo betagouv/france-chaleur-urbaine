@@ -14,7 +14,7 @@ pnpm lint    # Biome check (pnpm lint:fix to auto-fix)
 pnpm ts      # TypeScript check
 pnpm test    # All tests (pnpm test <file>, pnpm test:watch, pnpm test:coverage)
 ```
-Unit tests (`.spec.ts`) run in parallel; integration tests (`.integration.spec.ts`) run sequentially.
+Unit tests (`.spec.ts`) run in parallel; integration tests (`.integration.spec.ts`) run in parallel, one cloned database per worker (see `testing.md`).
 
 ## Database
 ```bash
