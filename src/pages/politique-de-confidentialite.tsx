@@ -39,13 +39,6 @@ function PolitiqueDeConfidentialitePage() {
             policyUrl: 'https://scalingo.com/fr/informations-legales',
             serviceType: 'Base de données',
           },
-          {
-            country: 'États-Unis',
-            hostingCountry: 'États-Unis',
-            name: 'Airtable',
-            policyUrl: 'https://www.airtable.com/company/tos/fr',
-            serviceType: 'Base de données',
-          },
         ]}
       />
     </SimplePage>

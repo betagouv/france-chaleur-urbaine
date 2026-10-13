@@ -1,4 +1,4 @@
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import type { LegacyDemandValues } from '@/modules/demands/types';
 import { kdb } from '@/server/db/kysely';
 
 /**
@@ -17,7 +17,7 @@ export const buildDemandFeatures = async (properties: string[]) => {
       },
       properties: properties!.reduce(
         (acc: any, key) => {
-          const value = record.legacy_values[key as keyof AirtableLegacyRecord];
+          const value = record.legacy_values[key as keyof LegacyDemandValues];
           if (value) {
             acc[key] = value;
           }

@@ -118,7 +118,7 @@ function DemandEmailForm(props: Props) {
 
         void refetch();
 
-        //Add email in Airtable demands list
+        // Record the sent email in the demand's legacy values
         alreadySent.push(value.object);
         const updatedFields: any = {
           'Emails envoyés': alreadySent.join('\n'),

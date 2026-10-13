@@ -30,7 +30,7 @@ export const networkFieldSourceDefinitions: Record<NetworkFieldSource, { label: 
   },
   historique: {
     description:
-      "Valeur héritée du dernier import Airtable, plus alimentée par aucune source : à réaffecter ou supprimer lors de l'harmonisation.",
+      "Valeur héritée de l'ancien outil de gestion, plus alimentée par aucune source : à réaffecter ou supprimer lors de l'harmonisation.",
     label: 'Historique (plus alimenté)',
   },
   sdes: {

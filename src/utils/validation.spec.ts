@@ -3,7 +3,7 @@ import { type ZodType, z } from 'zod';
 
 import type { TestCase } from '@/tests/trpc-helpers';
 
-import { emailSchema, envBooleanSchema, getSchemaField, sanitizeEmail, zAirtableRecordId, zGeometry, zPassword } from './validation';
+import { emailSchema, envBooleanSchema, getSchemaField, sanitizeEmail, zGeometry, zPassword } from './validation';
 
 describe('getSchemaField()', () => {
   const zBase = z.object({
@@ -68,35 +68,6 @@ describe('zPassword', () => {
 
   it.each(testCases)('$label', ({ input, expectedOutput }) => {
     expect(zPassword.safeParse(input).success).toBe(expectedOutput);
-  });
-});
-
-describe('zAirtableRecordId', () => {
-  describe('IDs valides (17 caractères alphanumériques)', () => {
-    const testCases: TestCase<string, boolean>[] = [
-      { expectedOutput: true, input: 'rec6nCFUO7Nzj6M9n', label: 'accepte "rec6nCFUO7Nzj6M9n"' },
-      { expectedOutput: true, input: 'recABCDEF12345678', label: 'accepte "recABCDEF12345678"' },
-      { expectedOutput: true, input: 'abc1234567890abcd', label: 'accepte "abc1234567890abcd"' },
-      { expectedOutput: true, input: '12345678901234567', label: 'accepte "12345678901234567"' },
-    ];
-
-    it.each(testCases)('$label', ({ input, expectedOutput }) => {
-      expect(zAirtableRecordId.safeParse(input).success).toBe(expectedOutput);
-    });
-  });
-
-  describe('IDs invalides', () => {
-    const testCases: TestCase<string, boolean>[] = [
-      { expectedOutput: false, input: 'rec123456789012a', label: 'rejette un ID de 16 caractères (trop court)' },
-      { expectedOutput: false, input: 'rec123456789012abc', label: 'rejette un ID de 18 caractères (trop long)' },
-      { expectedOutput: false, input: 'rec6nCFUO7Nzj6M9!', label: 'rejette un ID avec caractères spéciaux' },
-      { expectedOutput: false, input: '', label: 'rejette une chaîne vide' },
-      { expectedOutput: false, input: 'rec-nCFUO7Nzj6M9n', label: 'rejette un ID avec des tirets' },
-    ];
-
-    it.each(testCases)('$label', ({ input, expectedOutput }) => {
-      expect(zAirtableRecordId.safeParse(input).success).toBe(expectedOutput);
-    });
   });
 });
 

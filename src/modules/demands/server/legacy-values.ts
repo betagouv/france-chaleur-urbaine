@@ -1,4 +1,4 @@
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import type { LegacyDemandValues } from '@/modules/demands/types';
 import { sql } from '@/server/db/kysely';
 
 /**
@@ -6,7 +6,7 @@ import { sql } from '@/server/db/kysely';
  * Toutes les clés sont optionnelles ; `null` efface explicitement la valeur JSONB.
  */
 export type LegacyValuesPatch = {
-  [K in keyof AirtableLegacyRecord]?: AirtableLegacyRecord[K] | null;
+  [K in keyof LegacyDemandValues]?: LegacyDemandValues[K] | null;
 };
 
 /**

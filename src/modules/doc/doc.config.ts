@@ -118,7 +118,7 @@ export const docPages = [
   {
     Content: GestionReseaux,
     description:
-      'Côté admin : édition des tracés et leurs effets en chaîne (Airtable, tuiles, éligibilité), PDP et obligation de raccordement, relances réseau, organisations et accès API.',
+      'Côté admin : édition des tracés et leurs effets en chaîne (tuiles, éligibilité), PDP et obligation de raccordement, relances réseau, organisations et accès API.',
     slug: 'gestion-reseaux',
     theme: 'parcours',
     title: 'Gestion des réseaux et PDP',

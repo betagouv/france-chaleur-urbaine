@@ -8,7 +8,7 @@ export enum STAT_METHOD {
   MAP_VISIT_SUMMARY = 'Actions.getPageUrl',
   ACTIONS = 'Events.getAction',
   ACTIONS_CATEGORY = 'Events.getCategory',
-  AIRTABLE = 'Airtable',
+  DEMANDS = 'Airtable', // value kept from when demands lived in Airtable: stored in every matomo_stats demands row
   GRIST = 'Grist',
   DATABASE = 'Database',
 }

@@ -1,5 +1,5 @@
 import { availableStructures, normalizeHeatingEnergy, normalizeHeatingType } from '@/modules/demands/constants';
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import type { LegacyDemandValues } from '@/modules/demands/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
 
 import { type DemandDTO, toDemandeStatut } from '../schema';
@@ -12,7 +12,7 @@ export type DemandRow = {
   network_id: number;
   network_type: NetworkType;
   comment_gestionnaire: string | null;
-  legacy_values: AirtableLegacyRecord;
+  legacy_values: LegacyDemandValues;
   network_name: string | null;
   network_sncu_id: string | null;
   network_gestionnaire: string | null;
@@ -38,7 +38,7 @@ const num = (value: unknown): number | null => {
   return Number.isFinite(n) ? n : null;
 };
 
-/** Mappe une demande interne (colonnes + `legacy_values` Airtable) vers le contrat partenaire `zDemande`. */
+/** Mappe une demande interne (colonnes + `legacy_values`) vers le contrat partenaire `zDemande`. */
 export const toDemandDTO = (row: DemandRow): DemandDTO => {
   const lv = row.legacy_values;
   return {

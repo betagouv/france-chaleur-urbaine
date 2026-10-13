@@ -167,7 +167,7 @@ const addStat =
   };
 
 const addStatFromDB = addStat(STAT_METHOD.DATABASE);
-const addStatFromAirtable = addStat(STAT_METHOD.AIRTABLE);
+const addStatFromDemands = addStat(STAT_METHOD.DEMANDS);
 const addStatFromGrist = addStat(STAT_METHOD.GRIST);
 const addStatFromActions = addStat(STAT_METHOD.ACTIONS);
 const addStatFromActionsCategory = addStat(STAT_METHOD.ACTIONS_CATEGORY);
@@ -237,21 +237,21 @@ const saveDemandsStats = async (startDate: string, endDate: string) => {
     }
   });
   await Promise.all([
-    addStatFromAirtable({
+    addStatFromDemands({
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
       stat_key: STAT_KEY.NB_CONTACTS,
       stat_label: STAT_LABEL.NB_ELIGIBLE,
       value: monthValue.nbEligible,
     }),
-    addStatFromAirtable({
+    addStatFromDemands({
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
       stat_key: STAT_KEY.NB_CONTACTS,
       stat_label: STAT_LABEL.NB_UNELIGIBLE,
       value: monthValue.nbUneligible,
     }),
-    addStatFromAirtable({
+    addStatFromDemands({
       date: startDate,
       period: STAT_PERIOD.MONTHLY,
       stat_key: STAT_KEY.NB_CONTACTS,
@@ -482,7 +482,7 @@ const saveCommunesSansReseauStats = async (startDate: string, endDate: string) =
 };
 
 /**
- * Agrège les stats du mois précédent (Matomo + Airtable + DB) dans la table `matomo_stats`.
+ * Agrège les stats du mois précédent (Matomo + DB) dans la table `matomo_stats`.
  * Par défaut, calcule sur le mois calendaire écoulé ; `start`/`end` permettent un rejeu manuel sur une autre période.
  */
 export const aggregateMonthlyStats = async (start?: string, end?: string) => {
@@ -499,17 +499,17 @@ export const aggregateMonthlyStats = async (start?: string, end?: string) => {
   const stringEndDate = formatAsISODate(endDate);
   console.info(`From ${stringStartDate} to ${stringEndDate}`);
 
-  const endAirtableDate = endDate;
-  endAirtableDate.setDate(endAirtableDate.getDate() + 1);
-  const stringEndAirtableDate = formatAsISODate(endAirtableDate);
+  const endDateExclusive = endDate;
+  endDateExclusive.setDate(endDateExclusive.getDate() + 1);
+  const stringEndDateExclusive = formatAsISODate(endDateExclusive);
 
   await Promise.all([
-    saveDemandsStats(stringStartDate, stringEndAirtableDate),
+    saveDemandsStats(stringStartDate, stringEndDateExclusive),
     saveActionsStats(stringStartDate, stringEndDate),
     saveVisitsStats(stringStartDate, stringEndDate),
     saveVisitsMapStats(stringStartDate, stringEndDate),
     saveBulkContactStats(stringStartDate, stringEndDate),
     saveComptesProCreatedStats(stringStartDate, stringEndDate),
-    saveCommunesSansReseauStats(stringStartDate, stringEndAirtableDate),
+    saveCommunesSansReseauStats(stringStartDate, stringEndDateExclusive),
   ]);
 };

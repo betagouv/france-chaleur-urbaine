@@ -16,8 +16,8 @@ export type PendingAssignmentChange = {
   requested_at: string;
   distance: number | null;
 };
-// Ce type permet de corriger le type Legacy existant avec ce que nous récupérons véritablement de Airtable
-export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status'>> & {
+// Ce type permet de corriger le type Legacy existant avec ce qui est réellement stocké dans `legacy_values`
+export type LegacyDemandValues = Partial<Omit<LegacyDemand, 'id' | 'Status'>> & {
   'Campagne keywords'?: string;
   'Campagne matomo'?: string;
   'Campagne source'?: string;
@@ -50,7 +50,7 @@ export type AirtableLegacyRecord = Partial<Omit<LegacyDemand, 'id' | 'Status'>> 
   Logement: number;
 };
 
-export type Demand = AirtableLegacyRecord & {
+export type Demand = LegacyDemandValues & {
   id: string;
   user_id: string | null;
   comment_gestionnaire?: string | null;

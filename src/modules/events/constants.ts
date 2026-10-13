@@ -49,6 +49,7 @@ export const eventTypes = [
   'pro_eligibility_test_updated',
   'pro_eligibility_test_deleted',
   'build_tiles',
+  // no longer emitted since Airtable was decommissioned: kept to display the existing events
   'sync_metadata_from_airtable',
   'sync_geometries_to_airtable',
   'network_reminder_created',

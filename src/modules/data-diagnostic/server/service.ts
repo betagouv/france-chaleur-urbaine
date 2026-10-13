@@ -309,7 +309,7 @@ const checkDemandMissingCoordinates: IssueBuilder = async () => {
 
   return {
     description:
-      'La latitude ou la longitude est absente dans les valeurs Airtable. La demande ne peut pas être affichée sur la carte et ne sera pas géoréférencée correctement.',
+      'La latitude ou la longitude est absente des données de la demande. La demande ne peut pas être affichée sur la carte et ne sera pas géoréférencée correctement.',
     items,
     severity: 'warning',
     title: 'Demande sans coordonnées GPS',

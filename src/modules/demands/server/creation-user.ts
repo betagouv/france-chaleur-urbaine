@@ -1,6 +1,6 @@
 import { businessRules } from '@/modules/app/business-rules';
-import { type CreateDemandInput, type DemandSubmissionResult, formatDataToLegacyAirtable } from '@/modules/demands/constants';
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import { type CreateDemandInput, type DemandSubmissionResult, formatDataToLegacyValues } from '@/modules/demands/constants';
+import type { LegacyDemandValues } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import { createEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
@@ -44,7 +44,7 @@ export const createDemand = async (
   }
 
   const { lat, lon } = values.coords;
-  const legacyValues = formatDataToLegacyAirtable(values);
+  const legacyValues = formatDataToLegacyValues(values);
 
   const [conso, nbLogement] = await Promise.all([
     getConsommationGazAdresse(lat, lon),
@@ -154,7 +154,7 @@ const findRecentDemandByEmailAndAddress = (email: string, address: string) =>
 
 /** Projette une demande (créée ou existante) sur le payload minimal attendu par la dialog de confirmation. */
 const toDemandSubmissionResult = (
-  demand: { id: string; legacy_values: AirtableLegacyRecord },
+  demand: { id: string; legacy_values: LegacyDemandValues },
   isExisting: boolean
 ): DemandSubmissionResult => ({
   address: demand.legacy_values.Adresse,
