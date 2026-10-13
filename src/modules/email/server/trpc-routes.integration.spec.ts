@@ -102,6 +102,57 @@ describe('email.deliverability', () => {
     });
   });
 
+  describe('listBlockedContacts', () => {
+    it('lists each blocked address with its account state (active, deactivated, none) and its demands', async () => {
+      const deactivatedEmail = `deactivated-${uuid(60)}@test.local`;
+      await seedTableUser([{ active: false, email: deactivatedEmail, id: uuid(60) }]);
+      const blockedAt = new Date('2026-10-01T10:00:00Z');
+      await kdb
+        .insertInto('email_blocked_contacts')
+        .values([
+          { blocked_at: blockedAt, email: blockedUserEmail, reason_code: 'hardBounce' },
+          { blocked_at: blockedAt, email: deactivatedEmail, reason_code: 'unsubscribedViaEmail' },
+          { blocked_at: blockedAt, email: 'nobody@test.local', reason_code: 'hardBounce' },
+        ])
+        .execute();
+      await kdb
+        .insertInto('demands')
+        .values({ id: uuid(61), legacy_values: JSON.stringify({ Mail: 'NOBODY@test.local' }) })
+        .execute();
+
+      const contacts = await createTestCaller(testUsers.admin).email.deliverability.listBlockedContacts();
+
+      expect(
+        contacts.map(({ synced_at: _syncedAt, ...contact }) => contact).sort((left, right) => left.email.localeCompare(right.email))
+      ).toStrictEqual([
+        {
+          blocked_at: blockedAt,
+          demands_count: 0,
+          email: blockedUserEmail,
+          reason_code: 'hardBounce',
+          user_active: true,
+          user_id: blockedUserId,
+        },
+        {
+          blocked_at: blockedAt,
+          demands_count: 0,
+          email: deactivatedEmail,
+          reason_code: 'unsubscribedViaEmail',
+          user_active: false,
+          user_id: uuid(60),
+        },
+        {
+          blocked_at: blockedAt,
+          demands_count: 1,
+          email: 'nobody@test.local',
+          reason_code: 'hardBounce',
+          user_active: null,
+          user_id: null,
+        },
+      ]);
+    });
+  });
+
   describe('syncBlockedContacts', () => {
     it('mirrors the Brevo blocklist and traces a blocked event dated with the Brevo date on the matching account', async () => {
       vi.mocked(listAllBlockedContacts).mockResolvedValue([brevoContact(blockedUserEmail)]);
