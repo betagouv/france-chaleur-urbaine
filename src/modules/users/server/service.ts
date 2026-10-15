@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
 import dayjs from 'dayjs';
+import type { Selectable } from 'kysely';
 import type { z } from 'zod';
 
 import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
@@ -108,6 +109,10 @@ export const create = async (data: CreateUserInput, context: Context): Promise<D
 
   if (data.active && data.role === 'gestionnaire') {
     await sendEmailTemplate('auth.gestionnaire.ouverture-espace', { email: data.email, id: (record as any).id });
+  }
+  if (data.active && data.role === 'ccrt') {
+    // The legacy base model returns a table definition type rather than its selectable row type.
+    await sendEmailTemplate('auth.ccrt.ouverture-espace', { email: data.email, id: (record as unknown as Selectable<DB['users']>).id });
   }
 
   // Hors contexte utilisateur (ex. sync API), le caller émet son propre événement.

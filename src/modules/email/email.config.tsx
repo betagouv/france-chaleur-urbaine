@@ -5,6 +5,7 @@ import type { EmailTrigger } from '@/modules/email/constants';
 import type { EmailScenarios } from '@/modules/email/scenarios';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
+import OuvertureEspaceCcrt, { scenarios as ouvertureEspaceCcrtScenarios } from './templates/auth/ccrt/ouverture-espace';
 import OuvertureEspaceGestionnaire, { scenarios as ouvertureEspaceScenarios } from './templates/auth/gestionnaire/ouverture-espace';
 import ConfirmationInscription, {
   scenarios as confirmationInscriptionScenarios,
@@ -83,6 +84,19 @@ function defineEmails<const T extends EmailRegistry<T>>(emails: T): T {
  * - les métadonnées affichées dans l'admin (`label`, `description`, `subject`, `preview`).
  */
 export const emails = defineEmails({
+  'auth.ccrt.ouverture-espace': {
+    Component: OuvertureEspaceCcrt,
+    description:
+      "Envoyé automatiquement à la création d'un compte CCRT actif. Présente les demandes d'accompagnement du territoire et explique comment définir son mot de passe lors de la première connexion.",
+    label: "Ouverture d'espace gestionnaire CCRT",
+    preview: "Votre espace gestionnaire est prêt - Accédez aux demandes d'accompagnement de votre territoire",
+    scenarios: ouvertureEspaceCcrtScenarios,
+    subject: "[France Chaleur Urbaine] Ouverture d'espace gestionnaire",
+    trigger: {
+      description: "À la création par un admin d'un compte CCRT actif.",
+      type: 'action',
+    },
+  },
   'auth.gestionnaire.ouverture-espace': {
     Component: OuvertureEspaceGestionnaire,
     description:
@@ -92,7 +106,7 @@ export const emails = defineEmails({
     scenarios: ouvertureEspaceScenarios,
     subject: '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire',
     trigger: {
-      description: "À la création par un admin d'un compte gestionnaire actif — les autres rôles ne reçoivent aucun email.",
+      description: "À la création d'un compte gestionnaire actif, par un admin ou via l'API partenaire.",
       type: 'action',
     },
   },
