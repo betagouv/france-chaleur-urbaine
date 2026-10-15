@@ -18,6 +18,11 @@ const cases: TestCase<{ department: string | null; housingType: TypeLogement | n
   },
   {
     expectedOutput: false,
+    input: { department: '92', housingType: 'immeuble_chauffage_collectif' },
+    label: 'France Rénov for a department removed from the operators export',
+  },
+  {
+    expectedOutput: false,
     input: { department: null, housingType: 'immeuble_chauffage_collectif' },
     label: 'France Rénov without a department',
   },
