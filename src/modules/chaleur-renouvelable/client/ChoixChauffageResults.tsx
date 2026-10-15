@@ -17,6 +17,7 @@ import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
 import { IS_CCRT_DEMAND_ENABLED, isCcrtExperimentationEligible } from '../constants';
+import { canProposeHeatNetwork } from '../heat-network-eligibility';
 import { getAlternativeHeatingSolutionLabels } from './heating-modes/selectors';
 import { ParamsForm } from './ParamsForm';
 
@@ -50,7 +51,11 @@ export default function ChoixChauffageResults() {
   const params = urlParams.params;
   const isCcrtExperimentationBuildingEligible =
     IS_CCRT_DEMAND_ENABLED && isCcrtExperimentationEligible(codeDepartement, effectiveTypeLogement);
-  const isHeatNetworkEligible = situation.eligibiliteReseauChaleur?.isEligible === true && !situation.hasAlreadyReceivedHeatNetworkRefusal;
+  const isHeatNetworkEligible = canProposeHeatNetwork({
+    hasAlreadyReceivedHeatNetworkRefusal: situation.hasAlreadyReceivedHeatNetworkRefusal,
+    heatNetworkEligibility: situation.eligibiliteReseauChaleur,
+    radiatorType: situation.typeRadiateur,
+  });
   const heatNetworkSolution = situation.eligibiliteReseauChaleur
     ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network')
     : undefined;

@@ -76,8 +76,8 @@ function ChaleurRenouvelableMethodologiePage() {
         informations utiles.
         <ul>
           <li>
-            La première (API FCU) permet de savoir si un réseau de chaleur passe à proximité (à moins de{' '}
-            {businessRules.fcrHeatNetworkMaxDistanceMeters.display}), ce qui indique si un raccordement est envisageable,
+            La première (API FCU) détermine l’éligibilité au réseau de chaleur selon la proximité et les périmètres de raccordement. Le
+            simulateur exige aussi une distance strictement inférieure à {businessRules.fcrHeatNetworkMaxDistanceMeters.display},
           </li>
           <li>
             La seconde (API Bat-ENR) fournit des informations sur les contraintes environnementales de la parcelle : possibilité ou non de
@@ -89,7 +89,11 @@ function ChaleurRenouvelableMethodologiePage() {
       <p>
         À partir de ces éléments, le simulateur propose les solutions les plus adaptées :
         <ul>
-          <li>Le raccordement au réseau de chaleur est recommandé s’il est proche et si le bâtiment dispose d’un chauffage collectif,</li>
+          <li>
+            Le raccordement au réseau de chaleur est recommandé si le bâtiment est en chauffage collectif, éligible selon FCU, équipé de
+            radiateurs à eau, à moins de {businessRules.fcrHeatNetworkMaxDistanceMeters.display} du réseau et sans refus de raccordement
+            identifié,
+          </li>
           <li>La géothermie n’est pas recommandée en zone défavorable,</li>
           <li>La biomasse est écartée en cas de plan de protection de l’atmosphère,</li>
           <li>Et les contraintes patrimoniales sont signalées, notamment si une pompe à chaleur aérothermique est envisagée.</li>
@@ -106,8 +110,9 @@ function ChaleurRenouvelableMethodologiePage() {
         Les solutions sont classées par ordre de pertinence, selon la logique “ENR choix” :
         <ol>
           <li>
-            <strong>Réseau de chaleur</strong> (si disponible à moins de {businessRules.fcrHeatNetworkMaxDistanceMeters.display}) : chaleur
-            produite à partir de biomasse, géothermie ou chaleur fatale (récupération de chaleur industrielle), distribuée via un réseau.
+            <strong>Réseau de chaleur</strong> (si le bâtiment est éligible à moins de{' '}
+            {businessRules.fcrHeatNetworkMaxDistanceMeters.display}, équipé de radiateurs à eau et sans refus identifié) : chaleur produite
+            à partir de biomasse, géothermie ou chaleur fatale (récupération de chaleur industrielle), distribuée via un réseau.
           </li>
           <li>
             <strong>Géothermie</strong> (si le sous-sol est adapté) : exploitation de la chaleur naturelle du sous-sol.
