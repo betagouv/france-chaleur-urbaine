@@ -37,6 +37,7 @@ import type { NetworkEntityType } from '@/modules/reseaux/constants';
 import trpc, { type RouterOutput } from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import { dayjs } from '@/utils/date';
 import { omitUndefinedValues } from '@/utils/objects';
 
 const tabIds = ['reseaux-de-chaleur', 'reseaux-de-froid', 'reseaux-en-construction', 'perimetres-de-developpement-prioritaire'] as const;
@@ -587,6 +588,11 @@ const GestionDesReseaux = () => {
           />
         ),
         enableSorting: true,
+        exportFn: (row) => {
+          const lastReminderDate = row.reminders?.[0]?.created_at;
+          return lastReminderDate ? dayjs(lastReminderDate).format('DD/MM/YYYY') : '';
+        },
+        exportHeader: 'Dernière relance',
         header: 'Relances',
         id: 'reminders',
         width: '250px',
@@ -1483,6 +1489,7 @@ const GestionDesReseaux = () => {
           rowIdKey="id_fcu"
           enableGlobalFilter
           rowSelection={selectedTab === 'reseaux-de-chaleur' ? rowSelection : {}}
+          export={{ fileName: 'reseaux-de-chaleur.xlsx', sheetName: 'Réseaux de chaleur' }}
           scrollToRowRef={scrollToRowRef}
           topRightActions={
             <div className="flex gap-2">
@@ -1539,6 +1546,7 @@ const GestionDesReseaux = () => {
           rowIdKey="id_fcu"
           enableGlobalFilter
           rowSelection={selectedTab === 'reseaux-de-froid' ? rowSelection : {}}
+          export={{ fileName: 'reseaux-de-froid.xlsx', sheetName: 'Réseaux de froid' }}
           scrollToRowRef={scrollToRowRef}
           topRightActions={
             <div className="flex gap-2">
@@ -1595,6 +1603,7 @@ const GestionDesReseaux = () => {
           rowIdKey="id_fcu"
           enableGlobalFilter
           rowSelection={selectedTab === 'reseaux-en-construction' ? rowSelection : {}}
+          export={{ fileName: 'reseaux-en-construction.xlsx', sheetName: 'Réseaux en construction' }}
           scrollToRowRef={scrollToRowRef}
           topRightActions={
             <div className="flex gap-2">
@@ -1650,6 +1659,7 @@ const GestionDesReseaux = () => {
           rowIdKey="id_fcu"
           enableGlobalFilter
           rowSelection={selectedTab === 'perimetres-de-developpement-prioritaire' ? rowSelection : {}}
+          export={{ fileName: 'perimetres-de-developpement-prioritaire.xlsx', sheetName: 'PDP' }}
           scrollToRowRef={scrollToRowRef}
           topRightActions={
             <div className="flex gap-2">

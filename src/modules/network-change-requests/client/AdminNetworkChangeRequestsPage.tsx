@@ -154,6 +154,7 @@ export default function AdminNetworkChangeRequestsPage() {
         padding="sm"
         loadingEmptyMessage="Aucune demande de modification de réseau"
         urlSyncKey="modifications_reseau"
+        export={{ fileName: 'modifications-reseau.xlsx', sheetName: 'Modifications réseau' }}
         enableGlobalFilter
         onRowClick={(rowId) => void setSelectedId(rowId)}
         rowIdKey="id"

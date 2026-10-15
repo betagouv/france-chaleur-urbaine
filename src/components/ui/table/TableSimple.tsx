@@ -38,6 +38,7 @@ import { useTableState } from '@/components/ui/table/useTableState';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+import { dayjs } from '@/utils/date';
 import type { FlattenKeys } from '@/utils/typescript';
 
 import TableCell, { type TableCellProps } from './TableCell';
@@ -164,6 +165,31 @@ export type ColumnDef<T, K = any> = ColumnDefOriginal<T, K> & {
    */
   exportOnly?: boolean;
 } & ({ flex?: number } | { width?: 'auto' | string });
+
+const dateExportFormats: Partial<Record<NonNullable<ColumnDef<any>['cellType']>, string>> = {
+  Date: 'DD/MM/YYYY',
+  DateTime: 'DD/MM/YYYY HH:mm',
+};
+
+/**
+ * Formats the values of `Date` / `DateTime` columns in the export (raw values are ISO strings), unless the column defines its own `exportFn`.
+ */
+const buildDateExportFn = <T,>(col: ColumnDef<T>): ((row: T) => string) | undefined => {
+  const format = col.cellType ? dateExportFormats[col.cellType] : undefined;
+  const getValue: ((row: T, index: number) => unknown) | undefined =
+    'accessorKey' in col
+      ? (row) => (row as Record<string, unknown>)[col.accessorKey as string]
+      : 'accessorFn' in col
+        ? col.accessorFn
+        : undefined;
+  if (!format || !getValue) {
+    return undefined;
+  }
+  return (row) => {
+    const value = getValue(row, 0);
+    return isDefined(value) && value !== '' ? dayjs(value as string | number | Date).format(format) : '';
+  };
+};
 
 const cellCustomClasses = cva('', {
   defaultVariants: {
@@ -764,9 +790,11 @@ const TableSimple = <T extends RowData>({
         const header = (col.exportHeader ??
           (typeof col.header === 'string' ? col.header : (col as AccessorKeyColumnDefBase<T, any>).accessorKey || col.id || '')) as string;
 
-        return isDefined(col.exportFn)
+        const exportFn = col.exportFn ?? buildDateExportFn(col);
+
+        return isDefined(exportFn)
           ? {
-              accessorFn: col.exportFn as (item: T) => string | number | boolean,
+              accessorFn: exportFn as (item: T) => string | number | boolean,
               name: header,
             }
           : 'accessorKey' in col
