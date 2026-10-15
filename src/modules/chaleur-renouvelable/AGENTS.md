@@ -6,11 +6,12 @@ Renewable heating guidance journey: collect building/context inputs, rank heatin
 
 ## Fast Map
 
-- `constants.ts` — shared domain constants, option lists, Zod schemas, CCRT statuses/project states, `zDemandeChaleurRenouvelable`, `isCcrtExperimentationEligible`.
+- `constants.ts` — shared domain constants, option lists, Zod schemas, CCRT statuses/project states, `zDemandeChaleurRenouvelable`.
 - `server/trpc-routes.ts` — thin tRPC routing only; business logic stays in `server/service.ts` and the focused `server/ccrt-*.ts` services.
 - `server/service.ts` — main server logic: BatEnR lookup, address eligibility context, France Rénov lookup, classic demand creation, CCRT demand creation/list/update.
 - `server/rnic.ts` reads RNIC housing lots for `batEnr.getSimulationPrefill`, falling back to BDNB on missing/invalid counts or API failure. Preserve explicit URL/user values, keep BDNB surface calculations scoped to BDNB building counts, and only fetch RNIC for the selected building.
 - `server/altimetry.ts`, `server/france-renov-spaces.ts`, `server/network-eligibility-coordinates.ts`, `server/rnic.ts` — focused external/geographic helpers used by `server/service.ts`.
+- `client/ccrt-experimentation.ts` — front-only pilot department list and collective-housing check, used solely to route public contact to CCRT or France Rénov. This list never grants access or filters assignment candidates, notifications or reminders.
 - `client/hooks/useChoixChauffageQueryParams.ts` — URL is the source of truth for simulation/result parameters, including `construction_id` and `originDemandId`.
 - `client/simulation-situation.ts` and `client/hooks/useChoixChauffageResults.ts` — convert URL/form state into ranked heating solutions.
 - `heat-network-eligibility.ts` — shared heat-network rule for the catalogue, contact form and classic-demand creation: FCU eligibility, a known distance strictly below `businessRules.fcrHeatNetworkMaxDistanceMeters`, no identified refusal, and water radiators. Unknown distances exclude the heat-network flow.
@@ -30,9 +31,10 @@ Renewable heating guidance journey: collect building/context inputs, rank heatin
 - **Result page state**: query params are parsed/serialized by `useChoixChauffageQueryParams`; avoid adding local state that can drift from the URL.
 - **Building selection**: BAN/RNB/BDNB/BatEnR logic is in `getBatEnrBatimentsSelectionContextByBanId`; multiple candidates trigger the client selector.
 - **Classic demand**: `createDemandeChaleurRenouvelable` first calls the classic demand path when the heat network is eligible and the user has not selected the public-advisor/refusal path. It reuses `@/modules/demands/server/creation-user` and patches FCR snapshot fields into `legacy_values`.
-- **Dedicated CCRT demand**: when no classic demand is created, `createCcrtExperimentationDemand` creates an unvalidated `demands_chaleur_renouvelable` row only if the resolved department is in `CCRT_EXPERIMENTATION_DEPARTMENT_CODES` and the housing type is `immeuble_chauffage_collectif`. Admin validation publishes it to the CCRT workspace and sends the CCRT notification email.
+- **Dedicated CCRT demand**: when no classic demand is created, `createCcrtExperimentationDemand` creates an unvalidated `demands_chaleur_renouvelable` row for `immeuble_chauffage_collectif`. The server resolves geographic scopes for classic permissions but does not reject a demand based on the front-only pilot department list. Admin validation publishes it to the CCRT workspace and sends the CCRT notification email.
 - **Refusal follow-up link**: `originDemandId` and `adresse` come from the “Raccordement non réalisable” email URL. On results, `originDemandId` suppresses the heat-network solution from compatible/recommended results, shows it as incompatible with a refusal reason, and bypasses classic demand creation; it is validated against an existing non-deleted `demands` row with status `Non réalisable` and the same email before being stored as `demands_chaleur_renouvelable.origin_demand_id`.
 - **CCRT permissions**: The list and all actions share `server/ccrt-access.ts`: admin or permission-bearing professional roles with a matching commune/EPCI/EPT/department/region permission; non-admins only see validated demands. Network/organization permissions do not apply because CCRT demands have no assigned network. Active admins are included in the access-holder list. Admins manage permissions using the existing user editor.
+- **CCRT notifications and reminders**: only active CCRT accounts receive them, matched through the classic territorial permissions (commune/EPCI/EPT/department/region). Pending counts and reminder lists use the same access matcher as classic demands without a network. Reminders require `receive_old_demands`. Assignment candidates remain CCRT-only and never grant access.
 - **Admin update**: project state is forced back to `En réflexion` unless status is `[Validation du projet] Etude de faisabilité votée en AG`.
 
 ## tRPC Routes
@@ -74,12 +76,12 @@ Renewable heating guidance journey: collect building/context inputs, rank heatin
 - Public form submit: `pnpm test src/modules/chaleur-renouvelable/client/DemandFCRForm.spec.tsx`.
 - Situation/result logic: `pnpm test src/modules/chaleur-renouvelable/client/simulation-situation.spec.ts src/modules/chaleur-renouvelable/client/modesChauffageData.spec.ts`.
 - Server helpers: run the focused `server/*.spec.ts` next to the touched helper.
-- CCRT integration tests that create dedicated demands need `seedCcrtExperimentationTerritory()` from `@/tests/fixtures`; otherwise `getLocationInfos` cannot resolve Marseille (`13055`) to department `13`.
+- CCRT integration tests use `seedCcrtExperimentationTerritory()` from `@/tests/fixtures` to resolve Marseille (`13055`) to department `13`; seed administrative scopes when testing permission matching.
 
 ## Gotchas
 
 - `cleanDatabase()` clears `ign_*` geography tables and demand tables, but not the static `communes`/`departements` tables; use idempotent seed helpers for those.
-- CCRT eligibility depends on the resolved department and `housingType`, not just on an address in PACA-looking text.
+- Public CCRT/France Rénov routing uses the front-only pilot departments and `housingType`; management and notifications use classic permissions, independently of the pilot list.
 - A public-advisor/refusal path with a heat-network-eligible address deliberately bypasses classic demand creation and can create a CCRT demand when the address/building is in the experimentation scope. The same applies to result URLs carrying `originDemandId`.
 - `originDemandId` is optional and must be treated as untrusted user input; keep validation server-side and do not lock a classic demand unless the stored link was validated.
 - `demands_chaleur_renouvelable.project_state` is meaningful only with the validation status; keep the reset behavior when adding statuses.

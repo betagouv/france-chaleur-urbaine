@@ -2,11 +2,20 @@ import { TRPCError } from '@trpc/server';
 import type { SelectQueryBuilder } from 'kysely';
 
 import type { Context } from '@/modules/config/server/context-builder';
-import { getUsersWithAccessToDemand } from '@/modules/permissions/server/demand-access';
+import { canUserAccessDemand, type DemandForAccess, getUsersWithAccessToDemand } from '@/modules/permissions/server/demand-access';
 import { type Permission, territoryPermissionToColumn } from '@/modules/permissions/types';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 
 import { selectDemandesChaleurRenouvelableForList } from './ccrt-demand-query';
+
+/**
+ * Matches classic territorial permissions for a renewable-heat demand without an assigned network.
+ */
+export const canUserAccessCcrtDemand = (
+  user: Parameters<typeof canUserAccessDemand>[0],
+  permissions: Permission[],
+  demand: Omit<DemandForAccess, 'network_id' | 'network_type' | 'network_organization_id'>
+) => canUserAccessDemand(user, permissions, { ...demand, network_id: null, network_organization_id: null, network_type: null });
 
 /**
  * Uses the same territorial scopes for the list and every individual action, including impersonation.
