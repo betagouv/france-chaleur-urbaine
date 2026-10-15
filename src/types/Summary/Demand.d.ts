@@ -52,6 +52,6 @@ export type Demand = DemandSummary &
   };
 
 export type AdminDemand = Demand & {
-  // airtable fields
+  // legacy_values fields
   'Relance à activer'?: boolean;
 };

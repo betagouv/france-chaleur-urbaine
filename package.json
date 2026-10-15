@@ -106,7 +106,6 @@
     "@turf/nearest-point": "^7.4.0",
     "@turf/nearest-point-on-line": "^7.4.0",
     "@uiw/react-color-colorful": "^2.10.3",
-    "airtable": "^0.12.2",
     "archiver": "^8.0.0",
     "base64-stream": "^1.0.0",
     "bcryptjs": "^3.0.3",

@@ -9,8 +9,6 @@ const serverConfigSchema = {
   ADEME_CONNECT_CLIENT_ID: z.string().optional(),
   ADEME_CONNECT_CLIENT_SECRET: z.string().optional(),
   ADEME_CONNECT_SOURCE: z.string().default('France Chaleur Urbaine'),
-  AIRTABLE_BASE: z.string(),
-  AIRTABLE_KEY_API: z.string(),
   APP: z.string().optional(), // injected by Scalingo (e.g. "france-chaleur-urbaine")
   BDNB_API_BASE_URL: z.string().default('https://api.bdnb.io/v1/bdnb/donnees'),
   BREVO_ALLOW_WRITES: z.boolean().default(false), // unblocking contacts modifies the shared Brevo account: enabled on production only

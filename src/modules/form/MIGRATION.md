@@ -107,8 +107,8 @@ Where to find each migrated form for a manual pass:
 | `BatchDemandMultiStepForm` | `/pro/tests-adresses` — expand a test, select addresses in the list, then "Être mis en relation" (admin: also the dedicated contact block) |
 | `ContactForm` (+ `DemandContactFields`) | `/` — run an address eligibility test then fill the contact form; also on `/reseaux/<id>` (test box), landing pages (`/professionnels`, `/infos-copro`…) and the chaleur-renouvelable results (`/chaleur-renouvelable/resultat`) |
 | `ContributionForm` | `/contribution` — check the per-type conditional fields and the zip upload validation |
-| `ModifierReseauxPage` | `/reseaux/modifier` — also with `?reseau=7501C` (network + files prefill); do not submit for real (creates an Airtable record) |
-| `DemandEmailForm` | `/pro/demandes` or `/admin/demandes` — click a contact email to open the modal; do not submit for real (sends an email + updates Airtable) |
+| `ModifierReseauxPage` | `/reseaux/modifier` — also with `?reseau=7501C` (network + files prefill); do not submit for real (creates a network change request) |
+| `DemandEmailForm` | `/pro/demandes` or `/admin/demandes` — click a contact email to open the modal; do not submit for real (sends an email + updates the demand) |
 | `EligibilityTestBox` | `/reseaux/7501C` — "Testez l'éligibilité de votre adresse" box; submitting a valid address only opens the contact modal (safe) |
 | `HeadSliceForm` | `/` (also `/professionnels`, `/infos-copro`…) — main banner funnel; also check the auto-validate URL `/?heating=collectif&address=1%20Rue%20de%20la%20Paix%2075002%20Paris` (opens the contact modal on load) |
 | `DemandFCRForm` | `/chaleur-renouvelable/resultat?adresse=20+Avenue+de+Ségur+75007+Paris&typeLogement=immeuble_chauffage_collectif&typeRadiateur=radiateur-eau&espaceExterieur=shared` — pick the building in the map dialog first; do not submit for real (creates a demand) |

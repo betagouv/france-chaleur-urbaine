@@ -159,7 +159,7 @@ const Statistics = () => {
     }
   });
 
-  //From Airtable
+  // From the demands table
   const {
     data: dataCountContact,
     error: errorCountContact,

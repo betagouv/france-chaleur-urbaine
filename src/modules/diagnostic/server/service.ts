@@ -2,10 +2,7 @@ import { access, constants, mkdtemp, readFile, rm, writeFile } from 'node:fs/pro
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { knownAirtableBases } from '@cli/airtable/bases';
-
 import { generateTilesFromGeoJSON, runTippecanoe } from '@/modules/tiles/server/generation-import';
-import { serverConfig } from '@/server/config';
 import { createLogger } from '@/server/helpers/logger';
 import { stringifySorted } from '@/utils/objects';
 import { ogr2ogrConvertToGeoJSON, runOgr2ogr } from '@/utils/ogr2ogr';
@@ -14,7 +11,6 @@ const logger = createLogger('diagnostic');
 
 export async function runDiagnostic() {
   return {
-    airtable: getAirtableBase(),
     geo: await checkGeoCommands(),
   };
 }
@@ -148,11 +144,4 @@ async function testTippecanoeFunctional(): Promise<CommandTestResult> {
     // cleanup
     await rm(tempDir, { force: true, recursive: true });
   }
-}
-
-function getAirtableBase(): string {
-  return (
-    Object.entries(knownAirtableBases).find(([_, value]) => value === serverConfig.AIRTABLE_BASE)?.[0] ||
-    `inconnu ${serverConfig.AIRTABLE_BASE}`
-  );
 }

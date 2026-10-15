@@ -18,7 +18,7 @@ type BatchDemandResolvedContact = BatchDemandContactInfo & {
 
 /**
  * users.structure_type (id technique) → valeurs du formulaire demande (structure + type de structure),
- * que formatDataToLegacyAirtable convertit ensuite en label canonique
+ * que formatDataToLegacyValues convertit ensuite en label canonique
  * (Copropriété, Maison individuelle, Tertiaire, Bailleur social, Autre).
  */
 const structureTypeToDemandContact: Record<StructureType, { structure: NonNullable<AvailableStructure>; companyType?: DemandCompanyType }> =

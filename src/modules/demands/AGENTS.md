@@ -15,7 +15,7 @@ Connection requests ("demandes de raccordement") lifecycle: creation, enrichment
 - `server/relances.ts` — demandeur satisfaction loop (J+30/J+45), `/satisfaction` token-based responses, post-creation survey.
 - `server/email-communication.ts` — gestionnaire → demandeur free-text emails, archived in `demand_emails`.
 - `server/account-linking.ts` — links anonymous demands to accounts by email on every login.
-- `server/eligibility.ts` — enrichment helpers, network auto-assignment, FCU team contact (Airtable).
+- `server/eligibility.ts` — enrichment helpers (territory, gas consumption, BDNB), network distance and auto-assignment, eligibility recalculation.
 - `server/helpers.ts` — access control (`ensureUserCanAccessDemand` vs `ensureUserCanProcessDemand`), query builder, anonymization.
 - `server/legacy-values.ts` — `legacy_values` JSONB merge helpers.
 

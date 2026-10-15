@@ -1,5 +1,5 @@
 import { businessRules } from '@/modules/app/business-rules';
-import type { formatHeatingTypeToAirtable } from '@/modules/demands/constants';
+import type { formatHeatingTypeToLegacy } from '@/modules/demands/constants';
 import { Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
 import type { AvailableStructure } from '@/types/AddressData';
@@ -9,7 +9,7 @@ import { isDefined } from '@/utils/core';
 type ConfirmationDemandeProps = {
   demand: Pick<Demand, 'Adresse' | 'Distance au réseau' | 'Structure' | 'Departement'> & {
     Structure: AvailableStructure;
-    'Type de chauffage': ReturnType<typeof formatHeatingTypeToAirtable>;
+    'Type de chauffage': ReturnType<typeof formatHeatingTypeToLegacy>;
   };
 };
 

@@ -37,7 +37,7 @@ const inactiveAccountsQuery = () =>
 
 /**
  * Demands closed (terminal status, or soft-deleted) for longer than the demands retention and not yet anonymized.
- * The closure date is not tracked and `updated_at` was reset by the Airtable migration, so the clock for closed demands is the
+ * The closure date is not tracked and `updated_at` was reset when demands were migrated to the database, so the clock for closed demands is the
  * request date: a demand requested more than N years ago and now closed has exhausted its purpose.
  */
 const closedDemandsQuery = () =>

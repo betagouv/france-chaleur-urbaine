@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import type { LegacyDemandValues } from '@/modules/demands/types';
 import type { TestCase } from '@/tests/trpc-helpers';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
@@ -31,7 +31,7 @@ const legacy = {
   Ville: 'Saint-Denis',
   Éligibilité: true,
   Établissement: null,
-} as unknown as AirtableLegacyRecord;
+} as unknown as LegacyDemandValues;
 
 const baseRow: DemandRow = {
   comment_gestionnaire: 'RDV planifié',

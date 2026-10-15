@@ -36,7 +36,7 @@ export const cronDefinitions = [
     scheduleLabel: 'Lundi, 10h05',
   },
   {
-    description: 'Agrège les statistiques du mois précédent (Matomo + Airtable + base) dans la table matomo_stats.',
+    description: 'Agrège les statistiques du mois précédent (Matomo + base) dans la table matomo_stats.',
     name: 'aggregateMonthlyStats',
     schedule: '15 08 1 * *',
     scheduleLabel: 'Le 1er du mois, 8h15',

@@ -1,6 +1,6 @@
 # network-change-requests module
 
-Change requests submitted for a network (modification of the public network page, new or updated trace, priority development perimeter, other), stored in the database and reviewed by an admin. Replaces the Airtable tables « FCU - Modifications réseau » and « FCU - Contribution ».
+Change requests submitted for a network (modification of the public network page, new or updated trace, priority development perimeter, other), stored in the database and reviewed by an admin.
 
 > Product documentation (French): `/admin/doc/modifications-reseau` (`src/modules/doc/content/modifications-reseau.mdx`). Update it and run `pnpm doc:build-search-index` for any behavior change.
 
@@ -42,6 +42,6 @@ Change requests submitted for a network (modification of the public network page
 
 ## Status of the migration
 
-- Both public forms write here; the Airtable tables « FCU - Modifications réseau » and « FCU - Contribution » are no longer fed (kept as read-only archives). Retention: `processed_network_change_requests` rule (retention module).
+- Both public forms write here. Retention: `processed_network_change_requests` rule (retention module).
 - Later: the same forms from the gestionnaire space (set `user_id`, restrict the network to the user's permissions).
 - Survey discrepancies (`enquete`, created by the FEDENE import) are not listed nor counted with the submitted requests and cannot be processed by `admin.accept`: they are decided field by field on the « Enquête FEDENE » page (`src/modules/fedene-survey`); `payload.decisions` keeps the decision of each field; a kept correction is not proposed again while the survey value is the same (`upsertSurveyDiscrepancyRequest`).

@@ -1256,8 +1256,8 @@ export const searchNetworks = async (search: string): Promise<NetworkSearchResul
 };
 
 /**
- * Every column of a heat or cold network as stored (geometries as WKT summaries), for the admin raw data viewer that
- * replaces the Airtable grid. Labels and sources come from the field registry on the client.
+ * Every column of a heat or cold network as stored (geometries as WKT summaries), for the admin raw data viewer.
+ * Labels and sources come from the field registry on the client.
  */
 const networkRawDataColumns = (Object.keys(networkFieldDefinitions) as (keyof DB['reseaux_de_chaleur'])[]).filter(
   (column) => column !== 'geom' && column !== 'geom_update'

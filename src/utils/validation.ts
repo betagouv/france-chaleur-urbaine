@@ -75,8 +75,6 @@ export const getSchemaField = (schema: ZodType, fieldPath: string): ZodType | un
   return currentSchema;
 };
 
-export const zAirtableRecordId = z.string().regex(/^[a-zA-Z0-9]{17}$/); // e.g. rec6nCFUO7Nzj6M9n
-
 // Length only, no composition rule (ANSSI: length beats forced character classes; a passphrase is encouraged in the UI hint)
 export const zPassword = z
   .string()

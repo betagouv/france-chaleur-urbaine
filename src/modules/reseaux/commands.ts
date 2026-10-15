@@ -16,8 +16,6 @@ import {
   updateEntityWithoutGeometry,
   updateNetworkHasPDP,
 } from './server/geometry-operations';
-import { registerImportAirtableDocumentsCommand } from './server/import-airtable-documents';
-import { registerImportAirtableNetworkMetadataCommand } from './server/import-airtable-network-metadata';
 import { syncLinkedNetworkFields } from './server/linked-fields-sync';
 
 const entityTypes = ['rdc', 'rdf', 'pdp', 'futur'] as const;
@@ -31,8 +29,6 @@ const entityTypeToTable = {
 } as const satisfies Record<EntityType, NetworkTable>;
 
 export function registerNetworkCommands(parentProgram: Command) {
-  registerImportAirtableDocumentsCommand(parentProgram);
-  registerImportAirtableNetworkMetadataCommand(parentProgram);
   parentProgram
     .command('reseaux:sync-linked-fields')
     .description('Resynchronise les champs dérivés des liens entre entités (SNCU des extensions, gestionnaire/MO des PDP)')

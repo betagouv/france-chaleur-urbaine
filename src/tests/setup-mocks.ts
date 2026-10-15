@@ -31,8 +31,6 @@ vi.mock('@/server/config', () => ({
     websiteOrigin: undefined,
   },
   serverConfig: {
-    // Required for tRPC tests that import modules using Airtable
-    AIRTABLE_KEY_API: 'test_airtable_key',
     // integration workers each open a pool: keep their total under the Postgres max_connections (100)
     DATABASE_POOL_MAX: 10,
     databaseUrl: process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test',

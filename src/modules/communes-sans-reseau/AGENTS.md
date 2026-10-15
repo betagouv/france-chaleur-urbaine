@@ -1,6 +1,6 @@
 # Module communes-sans-reseau
 
-> Support requests from municipalities without a heat network, submitted from the public page `/collectivites-et-exploitants/potentiel-creation-reseau` (and its `/iframe/potentiel-creation-reseau` variant). Records are stored in the FCU Grist doc « Formulaires », table `Communes_sans_reseau` (Airtable is no longer used for this form).
+> Support requests from municipalities without a heat network, submitted from the public page `/collectivites-et-exploitants/potentiel-creation-reseau` (and its `/iframe/potentiel-creation-reseau` variant). Records are stored in the FCU Grist doc « Formulaires », table `Communes_sans_reseau`.
 
 ## Structure
 

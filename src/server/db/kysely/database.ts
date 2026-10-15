@@ -18,7 +18,7 @@ import type {
   TypeRadiateur,
 } from '@/modules/chaleur-renouvelable/constants';
 import type { ConversionEventType, ConversionIpDisposition, ConversionSourceConfig } from '@/modules/conversion-tracking/constants';
-import type { AirtableLegacyRecord, PendingAssignmentChange } from '@/modules/demands/types';
+import type { LegacyDemandValues, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { FileScanStatus } from '@/modules/files/constants';
 import type {
@@ -321,7 +321,6 @@ export interface DemandsChaleurRenouvelable {
 }
 
 export interface DemandEmails {
-  airtable_id: string | null;
   body: string;
   cc: string | null;
   created_at: Generated<Timestamp>;
@@ -339,7 +338,6 @@ export interface DemandEmails {
 }
 
 export interface Demands {
-  airtable_id: string | null;
   comment_fcu: string | null;
   comment_gestionnaire: string | null;
   comment_user: string | null;
@@ -353,7 +351,7 @@ export interface Demands {
   origin_host: string | null;
   origin_page: string | null;
   origin_source: string | null;
-  legacy_values: JSONColumnType<AirtableLegacyRecord>;
+  legacy_values: JSONColumnType<LegacyDemandValues>;
   network_id: number | null;
   network_type: NetworkType | null;
   pending_assignment_change: JSONColumnType<PendingAssignmentChange> | null;

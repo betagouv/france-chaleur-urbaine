@@ -195,7 +195,7 @@ export type ModeDeChauffageLabel = (typeof modesDeChauffageLabels)[number];
 export const typesDeChauffageLabels = nonEmptyArray([...typesDeChauffage.map(({ label }) => label), 'Autre / Je ne sais pas' as const]);
 export type TypeDeChauffageLabel = (typeof typesDeChauffageLabels)[number];
 
-/** Canonical values stored in legacy_values "Structure" (see formatStructureToAirtable). */
+/** Canonical values stored in legacy_values "Structure" (see formatStructureToLegacy). */
 export const availableStructures = ['Tertiaire', 'Copropriété', 'Bailleur social', 'Maison individuelle', 'Autre'] as const;
 
 export const fieldLabelInformation = {
@@ -447,9 +447,9 @@ export const normalizeHeatingType = (value: string | null | undefined): TypeDeCh
   return null; // Valeur non reconnue
 };
 
-/************* Airtable Legacy *************/
+/************* Legacy values *************/
 
-const formatHeatingEnergyToAirtable = (heatingEnergy: string): ModeDeChauffageLabel => {
+const formatHeatingEnergyToLegacy = (heatingEnergy: string): ModeDeChauffageLabel => {
   switch (heatingEnergy) {
     case 'électricité':
       return 'Électricité';
@@ -461,7 +461,7 @@ const formatHeatingEnergyToAirtable = (heatingEnergy: string): ModeDeChauffageLa
       return 'Autre / Je ne sais pas';
   }
 };
-export const formatHeatingTypeToAirtable = (heatingType?: string): TypeDeChauffageLabel => {
+export const formatHeatingTypeToLegacy = (heatingType?: string): TypeDeChauffageLabel => {
   switch (heatingType) {
     case 'individuel':
       return 'Individuel';
@@ -471,7 +471,7 @@ export const formatHeatingTypeToAirtable = (heatingType?: string): TypeDeChauffa
       return 'Autre / Je ne sais pas';
   }
 };
-const formatStructureToAirtable: (structure: string, companyType?: string, demandCompanyType?: string) => string = (
+const formatStructureToLegacy: (structure: string, companyType?: string, demandCompanyType?: string) => string = (
   structure,
   companyType,
   demandCompanyType
@@ -499,7 +499,7 @@ const formatStructureToAirtable: (structure: string, companyType?: string, deman
   }
   return structure;
 };
-const formatEtablissementToAirtable: (
+const formatEtablissementToLegacy: (
   structure: string,
   company: string,
   companyType?: string,
@@ -516,7 +516,7 @@ const formatEtablissementToAirtable: (
   }
   return company;
 };
-const formatNomStructureAccompagnanteToAirtable: (structure: string, company: string, companyType?: string) => string = (
+const formatNomStructureAccompagnanteToLegacy: (structure: string, company: string, companyType?: string) => string = (
   structure,
   company,
   companyType
@@ -530,7 +530,7 @@ const formatNomStructureAccompagnanteToAirtable: (structure: string, company: st
   return '';
 };
 
-export const formatDataToLegacyAirtable = (values: CreateDemandInput) => {
+export const formatDataToLegacyValues = (values: CreateDemandInput) => {
   const {
     address,
     coords,
@@ -570,12 +570,12 @@ export const formatDataToLegacyAirtable = (values: CreateDemandInput) => {
     Logement: nbLogements,
     Longitude: coords.lon,
     Mail: email,
-    'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
+    'Mode de chauffage': formatHeatingEnergyToLegacy(heatingEnergy),
     Nom: lastName,
-    'Nom de la structure accompagnante': formatNomStructureAccompagnanteToAirtable(structure, company, companyType),
+    'Nom de la structure accompagnante': formatNomStructureAccompagnanteToLegacy(structure, company, companyType),
     Prénom: firstName,
     Region: region,
-    Structure: formatStructureToAirtable(structure, companyType, demandCompanyType),
+    Structure: formatStructureToLegacy(structure, companyType, demandCompanyType),
     'Structure accompagnante':
       structure === 'Tertiaire' &&
       (companyType === "Bureau d'études ou AMO" ||
@@ -584,11 +584,11 @@ export const formatDataToLegacyAirtable = (values: CreateDemandInput) => {
         ? companyType
         : undefined,
     'Surface en m2': demandArea,
-    'Type de chauffage': formatHeatingTypeToAirtable(heatingType),
+    'Type de chauffage': formatHeatingTypeToLegacy(heatingType),
     Téléphone: phone,
     Ville: city,
     Éligibilité: eligibility.isEligible,
-    Établissement: formatEtablissementToAirtable(structure, company, companyType, demandCompanyType, demandCompanyName),
+    Établissement: formatEtablissementToLegacy(structure, company, companyType, demandCompanyType, demandCompanyName),
   };
 };
 

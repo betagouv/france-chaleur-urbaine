@@ -34,7 +34,7 @@ const formatValue = (value: unknown): string =>
             ? JSON.stringify(value)
             : String(value);
 
-/** Every column of a network, raw, grouped by source: replaces the Airtable grid to check a value. */
+/** Every column of a network, raw, grouped by source, to check a value. */
 function NetworkRawDataDialog({ control }: NetworkRawDataDialogProps) {
   const target = control.data;
   const { data, isLoading } = trpc.reseaux.getNetworkRawData.useQuery(

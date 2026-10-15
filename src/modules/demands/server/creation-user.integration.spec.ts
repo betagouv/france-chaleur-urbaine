@@ -121,7 +121,7 @@ describe('creation-user', () => {
       const input = buildDemandInput({
         email: 'marie.martin@test.fr',
         firstName: 'Marie',
-        heatingEnergy: 'fioul', // lowercase to match formatHeatingEnergyToAirtable
+        heatingEnergy: 'fioul', // lowercase to match formatHeatingEnergyToLegacy
         lastName: 'Martin',
         structure: 'Tertiaire',
       });
@@ -198,7 +198,7 @@ describe('creation-user', () => {
 
     it('retourne haut_potentiel=true pour une demande Collectif avec >= 100 logements', async () => {
       const input = buildDemandInput({
-        heatingType: 'collectif', // lowercase to match formatHeatingTypeToAirtable
+        heatingType: 'collectif', // lowercase to match formatHeatingTypeToLegacy
         nbLogements: 150, // >= 100 satisfies the condition
       });
 

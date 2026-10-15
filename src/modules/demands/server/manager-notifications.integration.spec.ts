@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AirtableLegacyRecord } from '@/modules/demands/types';
+import type { LegacyDemandValues } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { type Demands, type Insertable, kdb, type UserPermissions } from '@/server/db/kysely';
 import { cleanDatabase, seedTableUser } from '@/tests/fixtures';
@@ -25,7 +25,7 @@ const userInactive = uuid(104); // perm matchante mais active=false → ne reço
 const userOptedOutNew = uuid(105); // perm matchante, receive_new=false, receive_old=true → reçoit unhandled, pas new
 
 type SeedDemandInput = Partial<Omit<Insertable<Demands>, 'legacy_values'>> & {
-  legacy?: Partial<AirtableLegacyRecord>;
+  legacy?: Partial<LegacyDemandValues>;
 };
 
 async function seedDemand({ legacy, ...overrides }: SeedDemandInput = {}) {

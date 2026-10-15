@@ -20,7 +20,6 @@ Le module diagnostic permet de :
 
 - **Vérifier les outils géographiques** : ogr2ogr et tippecanoe (Docker ou binaires)
 - **Tester fonctionnellement** : Conversion GeoJSON et génération de tuiles
-- **Contrôler la configuration** : Base Airtable et variables d'environnement
 - **Interface de monitoring** : Dashboard admin pour l'équipe technique
 
 ## API Serveur
@@ -40,8 +39,7 @@ const diagnosticResult = await runDiagnostic();
   geo: {
     ogr2ogr: { version: CommandResult, functional: CommandTestResult },
     tippecanoe: { version: CommandResult, functional: CommandTestResult }
-  },
-  airtable: string
+  }
 }
 */
 ```
@@ -51,10 +49,6 @@ const diagnosticResult = await runDiagnostic();
 1. **Configuration géographique** :
    - Disponibilité d'ogr2ogr et tippecanoe
    - Tests fonctionnels avec données réelles
-
-2. **Base Airtable** :
-   - Identification de l'environnement (prod/dev)
-   - Validation de la configuration
 
 ### Tests Fonctionnels
 
@@ -128,15 +122,6 @@ export default DiagnosticPage;
 
 ### Statuts Visuels
 
-#### Airtable
-```typescript
-const getAirtableBaseStatus = (base: string) => {
-  'prod' → '🟢 Production'
-  'dev' → '🟡 Développement' 
-  'inconnu' → '❌ Base inconnue'
-}
-```
-
 #### Outils Géographiques
 ```typescript
 const getCommandResultStatus = (result: CommandResult) => {
@@ -179,7 +164,6 @@ type DiagnosticResult = {
       functional: CommandTestResult;
     };
   };
-  airtable: string;
 };
 ```
 
@@ -213,7 +197,6 @@ const DiagnosticDashboard = () => {
       {/* Affichage des résultats */}
       <SystemStatus 
         geo={diagnostic.geo}
-        airtable={diagnostic.airtable}
       />
     </div>
   );
@@ -232,12 +215,6 @@ describe('Infrastructure Health', () => {
     
     expect(result.geo.ogr2ogr.functional.success).toBe(true);
     expect(result.geo.tippecanoe.functional.success).toBe(true);
-  });
-  
-  it('should have correct airtable configuration', async () => {
-    const result = await runDiagnostic();
-    
-    expect(result.airtable).toMatch(/^(prod|dev)$/);
   });
 });
 ```
@@ -281,13 +258,12 @@ export async function periodicHealthCheck() {
 ### Modules Dépendants
 - **tiles** : Test de génération de tuiles via `generateTilesFromGeoJSON`
 - **trpc** : Routes d'API et authentification admin
-- **config** : Configuration serveur pour Airtable et Docker
+- **config** : Configuration serveur pour Docker
 
 ### Outils Système
 - **ogr2ogr** : Conversion de formats géographiques
 - **tippecanoe** : Génération de tuiles vectorielles
 - **Docker** : Optionnel pour l'isolation des commandes
-- **Airtable** : Base de données externe
 
 ### Sécurité
 - **Accès admin uniquement** : Interface et API restreintes

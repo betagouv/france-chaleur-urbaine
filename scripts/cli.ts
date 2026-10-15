@@ -1,10 +1,10 @@
 import '@/load-env';
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 
 import { allDatabaseTables } from '@cli/bootstrap/tables';
 import { refreshStatistics } from '@cli/stats/refresh';
-import { createCommand, InvalidArgumentError } from '@commander-js/extra-typings';
+import { createCommand } from '@commander-js/extra-typings';
 import { genSalt, hash } from 'bcryptjs';
 import prompts from 'prompts';
 import { z } from 'zod';
@@ -16,12 +16,10 @@ import { registerDataCommands } from '@/modules/data/commands';
 import { registerDocCommands } from '@/modules/doc/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
-import { syncEngieUsers } from '@/modules/partner-api/server/legacy/engie-users-sync';
 import { renderOpenApiYaml } from '@/modules/partner-api/server/openapi';
 import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-tests/commands';
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { registerEcoreseauCommand } from '@/modules/reseaux/commands/ecoreseau';
-import { applyGeometryUpdates } from '@/modules/reseaux/server/geometry-updates';
 import { registerTilesCommands } from '@/modules/tiles/commands';
 import { serverConfig } from '@/server/config';
 import { aggregateMonthlyStats } from '@/server/cron/aggregateMonthlyStats';
@@ -35,8 +33,6 @@ import { runBash, runCommand } from '@/utils/system';
 import { sleep } from '@/utils/time';
 
 import { registerOpendataCommands } from '../src/modules/opendata/commands';
-import { type KnownAirtableBase, knownAirtableBases } from './airtable/bases';
-import { fetchBaseSchema } from './airtable/dump-schema';
 import { upsertFixedSimulateurData } from './simulateur/import';
 
 const program = createCommand();
@@ -86,13 +82,6 @@ program
   .action(async () => {
     await writeFile('public/openapi-schema.yaml', renderOpenApiYaml());
     logger.info('OpenAPI spec written to public/openapi-schema.yaml');
-  });
-
-program
-  .command('dump-schema')
-  .argument('<airtable_base>', 'Base Airtable', validateKnownAirtableBase)
-  .action(async (airtableBase) => {
-    await fetchBaseSchema(airtableBase);
   });
 
 type EPCI = {
@@ -198,14 +187,6 @@ program
   });
 
 program
-  .command('apply-geometry-updates')
-  .description("Applique les changements suite à l'import d'un dump et met à jour postgres et Airtable (obsolète pour le moment)")
-  .option('--dry-run', 'Run the command in dry-run mode', false)
-  .action(async ({ dryRun }) => {
-    await applyGeometryUpdates(dryRun);
-  });
-
-program
   .command('update-simulateur')
   .description('Take AMORCE file and either create records in database or update them.')
   .argument('<filepath>', 'Path to the Amorce file')
@@ -215,7 +196,7 @@ program
 
 program
   .command('stats:update-monthly')
-  .description('Update the table matomo_stats used by the stats page. Data come from Matomo and Airtable.')
+  .description('Update the table matomo_stats used by the stats page. Data come from Matomo and the database.')
   .argument('[start-date]', 'Format : YYYY-MM-DD')
   .argument('[end-date]', 'Format : YYYY-MM-DD')
   .action(async (startDate, endDate) => {
@@ -234,31 +215,6 @@ program
   .description('Refresh the statistics')
   .action(async () => {
     await refreshStatistics();
-  });
-
-program
-  .command('debug:upsert-users-from-api')
-  .description('Update Gestionnaires and Gestionnaires API airtables from file.')
-  .argument('<organizationName>', "Nom de l'organisation")
-  .argument('<file>', 'File with data')
-  .action(async (organizationName, file) => {
-    const org = await kdb.selectFrom('organizations').select(['id', 'name']).where('name', '=', organizationName).executeTakeFirst();
-
-    if (!org) {
-      logger.error(`Organisation ${organizationName} introuvable`);
-      process.exit(1);
-    }
-
-    const data = JSON.parse(await readFile(file, 'utf8'));
-
-    if (!process.env.DRY_RUN) {
-      logger.info('');
-      logger.info('USAGE:');
-      logger.info('⚠️ DRY_RUN is not set, use DRY_RUN=<true|false> pnpm cli debug:upsert-users-from-api ...');
-      process.exit(1);
-    }
-
-    await syncEngieUsers(org, data);
   });
 
 program
@@ -414,10 +370,3 @@ void (async () => {
     await kdb.destroy();
   }
 })();
-
-function validateKnownAirtableBase(value: string): KnownAirtableBase {
-  if (!(value in knownAirtableBases)) {
-    throw new InvalidArgumentError(`invalid base "${value}", expected any of ${Object.keys(knownAirtableBases)}.`);
-  }
-  return value as KnownAirtableBase;
-}

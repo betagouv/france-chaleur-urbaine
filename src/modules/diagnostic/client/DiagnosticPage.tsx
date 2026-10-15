@@ -50,10 +50,6 @@ const DiagnosticPage = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               <tr>
-                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Base Airtable</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{getAirtableBaseStatus(diagnosticData.airtable)}</td>
-              </tr>
-              <tr>
                 <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">ogr2ogr</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                   <div className="space-y-1 text-wrap">
@@ -87,17 +83,4 @@ const getCommandResultStatus = (commandResult: CommandResult) => {
 
 const getFunctionalTestStatus = (functionalResult: CommandTestResult) => {
   return functionalResult.success ? 'Test fonctionnel : ✅ Réussi' : `Test fonctionnel : ❌ ${functionalResult.error}`;
-};
-
-const getAirtableBaseStatus = (airtableBase: string) => {
-  if (airtableBase.startsWith('inconnu')) {
-    return `❌ ${airtableBase}`;
-  }
-
-  const statusMap = {
-    dev: '🟡 Développement',
-    prod: '🟢 Production',
-  } as const;
-
-  return statusMap[airtableBase as keyof typeof statusMap] || `❓ ${airtableBase}`;
 };
