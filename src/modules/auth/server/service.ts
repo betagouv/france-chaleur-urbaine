@@ -85,6 +85,7 @@ export const register = async ({
     nom: userData.last_name,
     prenom: userData.first_name,
     rubriques: buildRubriques(role, userData.structure_type),
+    siret: verifiedEntreprise?.siret,
     telephone: userData.phone ?? undefined,
     typeOrganisme: ROLE_TYPE_ORGANISME[role],
   }).catch((error) => logger.error('ademe-connect createContact failed on register', { error, user_id: insertedUser.id }));

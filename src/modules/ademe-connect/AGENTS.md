@@ -41,9 +41,11 @@ Without `CLIENT_ID` + `CLIENT_SECRET`, `createContact` / `updateContact` are no-
 - **Synced roles: every role except `admin`** (`isSyncedRole`). Callers must guard every call with it.
 - **The contact key is the email.** An email change is not propagated: admin updates keep targeting the email known before the update (see `users/server/service.ts` → `update`).
 - **`actif` is never sent**: deactivation, deletion and retention are not mirrored to the CRM.
-- Rubriques: one `FCU - rôle …` per role + one `FCU - structure …` per structure type (`buildRubriques`). `typeOrganisme` is derived from the role (`ROLE_TYPE_ORGANISME`); ALEC and CCRT are sent as `Collectivité`.
+- Rubriques: one `FCU - rôle …` per role + one `FCU - structure …` per structure type (`buildRubriques`). `typeOrganisme` is derived from the role (`ROLE_TYPE_ORGANISME`) and only set for particulier (`Particulier`), gestionnaire and professionnel (`Entreprise`); other roles are sent without it.
+- `siret` is sent from `users.entreprise` when the user has one (optional); clearing the entreprise does not clear the SIRET on the CRM side (empty fields are stripped).
 - On update, callers send `rubriquesASupprimer: ALL_FCU_RUBRIQUES` together with the new `rubriques` so the contact ends up with exactly the FCU rubriques of its current role/structure (non-FCU rubriques untouched).
 - Auth: `client_id` + `client_secret` headers on every request.
+- Logging: `info` lines carry only a pseudonymized email; the full request payload and the API response are logged at `debug` level (`LOG_LEVEL=debug`), which exposes personal data — never enable it durably in production.
 - Empty string / null / undefined fields are stripped before sending (API requirement); `false` booleans are kept (`abonnementNewsletter: false`).
 - Fields `ExternalID`, `federationId`, `ancienMail` are never sent.
 - Creation and update return a queue acknowledgment, not a direct CRM confirmation.

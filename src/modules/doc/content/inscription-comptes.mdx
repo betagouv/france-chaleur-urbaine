@@ -85,7 +85,7 @@ Données modifiées à l'inscription :
 | Acceptation des CGU | Base — `users.accepted_cgu_at` | Horodatée si cochée |
 | Abonnement à la newsletter | Base — `users.optin_at` | Horodaté si coché |
 | Entreprise | Base — `users.entreprise` | Fiche complète récupérée via le SIRET |
-| Contact CRM | ADEME Connect | Nom, prénom, email, téléphone, rubriques selon rôle et type de structure, consentement newsletter |
+| Contact CRM | ADEME Connect | Nom, prénom, email, téléphone, SIRET de l'entreprise si renseigné, rubriques selon rôle et type de structure, type d'organisme (uniquement pour les rôles particulier, gestionnaire et professionnel), consentement newsletter |
 
 Données modifiées à l'activation (clic sur le lien) :
 
@@ -134,7 +134,7 @@ Données modifiées :
 
 Depuis la même page, un admin peut modifier n'importe quel compte (identité, téléphone, rôle, structure, abonnement à la newsletter, activation) ou le supprimer. Ces actions n'envoient aucun email.
 
-- **Modification** : le contact ADEME Connect est resynchronisé depuis le compte (nom, prénom, téléphone, rubriques du rôle et de la structure, consentement newsletter). **Le changement d'email n'est pas répercuté** : le contact reste connu sous l'ancien email dans le CRM. L'état actif ou inactif du compte n'est pas transmis.
+- **Modification** : le contact ADEME Connect est resynchronisé depuis le compte (nom, prénom, téléphone, SIRET de l'entreprise si renseigné, rubriques du rôle et de la structure, type d'organisme pour les rôles particulier, gestionnaire et professionnel, consentement newsletter). **Le changement d'email n'est pas répercuté** : le contact reste connu sous l'ancien email dans le CRM. L'état actif ou inactif du compte n'est pas transmis.
 - **Suppression** : rien n'est envoyé à ADEME Connect, le contact y reste tel quel.
 - Événements enregistrés : [«&nbsp;Mise à jour utilisateur (admin)&nbsp;»](/admin/events?types=user_updated_by_admin), [«&nbsp;Suppression utilisateur (admin)&nbsp;»](/admin/events?types=user_deleted_by_admin).
 

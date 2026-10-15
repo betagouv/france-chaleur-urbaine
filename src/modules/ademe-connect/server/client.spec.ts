@@ -23,7 +23,7 @@ vi.mock('@/server/config', () => ({
 }));
 
 vi.mock('@/server/helpers/logger', () => ({
-  logger: { info: vi.fn() },
+  logger: { debug: vi.fn(), info: vi.fn() },
 }));
 
 vi.mock('@/utils/network', () => ({

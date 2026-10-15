@@ -87,6 +87,7 @@ export const usersRouter = router({
         prenom: input.first_name,
         rubriques: buildRubriques(ctx.user.role, input.structure_type),
         rubriquesASupprimer: ALL_FCU_RUBRIQUES,
+        siret: input.entreprise?.siret,
         telephone: input.phone ?? undefined,
       }).catch((error) => logger.error('ademe-connect updateContact failed on updateProfile', { error, user_id: ctx.user.id }));
     }

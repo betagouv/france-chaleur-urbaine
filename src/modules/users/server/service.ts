@@ -123,6 +123,7 @@ export const create = async (data: CreateUserInput, context: Context): Promise<D
       nom: data.last_name || undefined,
       prenom: data.first_name || undefined,
       rubriques: buildRubriques(data.role, data.structure_type as StructureType | null | undefined),
+      siret: entreprise?.siret,
       telephone: data.phone || undefined,
       typeOrganisme: ROLE_TYPE_ORGANISME[data.role],
     }).catch((error) => logger.error('ademe-connect createContact failed on user.invite', { error, user_id: record.id }));
@@ -172,11 +173,11 @@ export const update = async (
   return updated;
 };
 
-/** Resync of the CRM contact from the stored row: identity, phone, rubriques and newsletter consent (never `actif`). */
+/** Resync of the CRM contact from the stored row: identity, phone, SIRET, rubriques and newsletter consent (never `actif`). */
 const syncContactAfterAdminUpdate = async (id: string, previous: { email: string; optin_at: Date | null }) => {
   const user = await kdb
     .selectFrom('users')
-    .select(['role', 'first_name', 'last_name', 'phone', 'structure_type', 'optin_at'])
+    .select(['role', 'first_name', 'last_name', 'phone', 'structure_type', 'optin_at', 'entreprise'])
     .where('id', '=', id)
     .executeTakeFirstOrThrow();
   if (!isSyncedRole(user.role)) {
@@ -190,6 +191,7 @@ const syncContactAfterAdminUpdate = async (id: string, previous: { email: string
     prenom: user.first_name ?? undefined,
     rubriques: buildRubriques(user.role, user.structure_type),
     rubriquesASupprimer: ALL_FCU_RUBRIQUES,
+    siret: user.entreprise?.siret,
     telephone: user.phone ?? undefined,
     typeOrganisme: ROLE_TYPE_ORGANISME[user.role],
     ...(newsletterChanged ? (user.optin_at ? { dateNewsletter: today } : { dateFinNewsletter: today }) : {}),
