@@ -106,9 +106,11 @@ Depuis [Gestion des utilisateurs](/admin/users), un admin peut créer un compte 
     verif -- "Valide" --> compte["Compte créé, immédiatement valide, mot de passe aléatoire"]:::db
     compte --> evtCreation["Événement « Création utilisateur (admin) »"]:::evt
     compte -- "Si compte actif et rôle gestionnaire" --> mailGest["Email « Ouverture de l'espace gestionnaire »"]:::email
+    compte -- "Si compte actif et rôle CCRT" --> mailCcrt["Email « Ouverture d'espace gestionnaire » adapté à l'accompagnement"]:::email
     compte -- "Autres cas" --> noMail["Aucun email : l'admin prévient la personne"]
     compte -- "Sauf rôle admin" --> crmContact["Contact créé dans ADEME Connect"]:::crm
     click mailGest "/admin/emails?type=auth.gestionnaire.ouverture-espace" "Voir le modèle d'email"
+    click mailCcrt "/admin/emails?type=auth.ccrt.ouverture-espace" "Voir le modèle d'email CCRT"
     click evtCreation "/admin/events?types=user_created_by_admin" "Voir dans l'activité du site"
     classDef email fill:#feecc2,stroke:#b28a00,color:#161616
     classDef crm fill:#e3d9fd,stroke:#7c5cd9,color:#161616
@@ -117,7 +119,7 @@ Depuis [Gestion des utilisateurs](/admin/users), un admin peut créer un compte 
 />
 
 - Un mot de passe aléatoire est généré : la personne doit utiliser « Mot de passe oublié » pour définir le sien.
-- **Un seul cas déclenche un email** : compte créé **actif** avec le rôle **gestionnaire** → email [« Ouverture de l'espace gestionnaire »](/admin/emails?type=auth.gestionnaire.ouverture-espace). Tous les autres rôles ne reçoivent **aucun email** ; c'est à l'admin de prévenir la personne.
+- **Deux rôles reçoivent un email d'ouverture si le compte est créé actif** : le **gestionnaire** reçoit [«&nbsp;Ouverture de l'espace gestionnaire&nbsp;»](/admin/emails?type=auth.gestionnaire.ouverture-espace), le **CCRT** reçoit [«&nbsp;Ouverture d'espace gestionnaire&nbsp;»](/admin/emails?type=auth.ccrt.ouverture-espace), adapté aux demandes d'accompagnement vers un nouveau système de chauffage sur son territoire. Les deux emails proposent un bouton de connexion et expliquent comment définir son mot de passe via «&nbsp;Mot de passe oublié&nbsp;». Les autres rôles et les comptes créés inactifs ne reçoivent aucun email ; c'est à l'admin de prévenir la personne.
 - Le contact ADEME Connect est créé pour tous les rôles sauf admin (les comptes de l'équipe ne sont jamais synchronisés).
 - Pour un gestionnaire, l'admin choisit aussi ses notifications de demandes : fréquence des nouvelles demandes (quotidien par défaut, hebdomadaire ou aucun email) et rappel des demandes en attente. La personne peut ensuite les modifier elle-même dans « Mon compte » (voir [Rôle : gestionnaire](/admin/doc/role-gestionnaire) et [Relances et notifications](/admin/doc/relances-notifications)).
 - Événement enregistré : [« Création utilisateur (admin) »](/admin/events?types=user_created_by_admin).
@@ -212,6 +214,7 @@ Données modifiées :
 | --- | --- | --- |
 | [Confirmation d'inscription](/admin/emails?type=auth.utilisateur.confirmation-inscription) | Le nouvel inscrit | À l'inscription publique |
 | [Ouverture de l'espace gestionnaire](/admin/emails?type=auth.gestionnaire.ouverture-espace) | Le gestionnaire | Création par un admin ou via l'API partenaire, uniquement si compte actif et rôle gestionnaire |
+| [Ouverture d'espace gestionnaire — accompagnement](/admin/emails?type=auth.ccrt.ouverture-espace) | Le CCRT | Création par un admin, uniquement si compte actif et rôle CCRT |
 | [Réinitialisation du mot de passe](/admin/emails?type=auth.utilisateur.reinitialisation-mot-de-passe) | L'utilisateur | Demande « Mot de passe oublié » (compte actif uniquement) |
 
 Chaque lien ouvre le modèle correspondant dans [Emails automatiques](/admin/emails).
