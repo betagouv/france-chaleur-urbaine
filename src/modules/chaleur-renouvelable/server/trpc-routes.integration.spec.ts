@@ -289,10 +289,9 @@ describe('batEnrRouter', () => {
       expect(mockedFetchJSON).toHaveBeenCalledTimes(0);
     });
 
-    it('oriente vers France Rénov hors expérimentation quand le réseau de chaleur n’est pas éligible', async () => {
+    it.each([false, true])('does not use pilot departments as a server permission gate (refusal: %s)', async (isPublicAdvisorSelected) => {
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
         buildCcrtExperimentationDemandInput({
-          address: '10 rue du test 75001 Paris',
           geoAddress: {
             city: 'Paris',
             cityCode: '75056',
@@ -300,31 +299,18 @@ describe('batEnrRouter', () => {
             coordinates: [2.3522, 48.8566],
             postcode: '75001',
           },
-          heatNetworkEligibility: {
-            distance: 450,
-            inPDP: false,
-            isEligible: false,
-          },
+          heatNetworkEligibility: { distance: 450, inPDP: false, isEligible: false },
+          isPublicAdvisorSelected,
         })
       );
-
-      const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
-      const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
-
-      expect({
-        createdDemandesChaleurRenouvelable,
-        createdDemands,
-        result,
-        sentEmailCallCount: sentEmailTemplate.mock.calls.length,
-      }).toStrictEqual({
-        createdDemandesChaleurRenouvelable: [],
-        createdDemands: [],
-        result: {
-          demandSubmissionResult: null,
-          id: null,
-        },
-        sentEmailCallCount: 0,
-      });
+      expect(await kdb.selectFrom('demands').select('id').execute()).toStrictEqual([]);
+      expect(await kdb.selectFrom('demands_chaleur_renouvelable').select(['id', 'validated']).execute()).toStrictEqual([
+        { id: result.id, validated: false },
+      ]);
+      expect(result).toStrictEqual({ demandSubmissionResult: null, id: result.id });
+      expect(sentEmailTemplate.mock.calls.map(([key]) => key)).toStrictEqual([
+        'demands.demandeur.confirmation-demande-chaleur-renouvelable',
+      ]);
     });
 
     it('crée une demande classique en expérimentation pour un immeuble collectif éligible au réseau de chaleur', async () => {
@@ -355,41 +341,6 @@ describe('batEnrRouter', () => {
           id: null,
         },
         sentEmailKeys: ['demands.demandeur.confirmation-demande'],
-      });
-    });
-
-    it('oriente vers France Rénov hors expérimentation quand le réseau de chaleur est éligible mais déjà refusé', async () => {
-      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
-        buildCcrtExperimentationDemandInput({
-          geoAddress: {
-            city: 'Paris',
-            cityCode: '75056',
-            context: '75, Paris, Île-de-France',
-            coordinates: [2.3522, 48.8566],
-            postcode: '75001',
-          },
-          isPublicAdvisorSelected: true,
-          refusalPeriod: 'Il y a moins de 3 mois',
-          refusalReason: 'Coût du raccordement trop élevé',
-        })
-      );
-
-      const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
-      const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
-
-      expect({
-        createdDemandesChaleurRenouvelable,
-        createdDemands,
-        result,
-        sentEmailCallCount: sentEmailTemplate.mock.calls.length,
-      }).toStrictEqual({
-        createdDemandesChaleurRenouvelable: [],
-        createdDemands: [],
-        result: {
-          demandSubmissionResult: null,
-          id: null,
-        },
-        sentEmailCallCount: 0,
       });
     });
 
@@ -888,7 +839,7 @@ describe('batEnrRouter', () => {
           count: 0,
           items: [],
           trackingContext: {
-            departements: user?.id ? ['13'] : [],
+            departements: [],
             structure_ccrt: null,
           },
         });
@@ -982,7 +933,7 @@ describe('batEnrRouter', () => {
       });
     });
 
-    it('renvoie une liste vide pour un CCRT sans permission départementale', async () => {
+    it('renvoie une liste vide pour un CCRT sans permission territoriale', async () => {
       await seedTableUser([{ email: testUsers.ccrt.email, id: testUsers.ccrt.id, role: 'ccrt' }]);
       await kdb
         .insertInto('demands_chaleur_renouvelable')
@@ -1046,7 +997,7 @@ describe('batEnrRouter', () => {
         count: 0,
         items: [],
         trackingContext: {
-          departements: ['13'],
+          departements: [],
           structure_ccrt: null,
         },
       });

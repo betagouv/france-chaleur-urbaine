@@ -123,21 +123,21 @@ export const emails = defineEmails({
   'demands.ccrt.nouvelle-demande-chaleur-renouvelable': {
     Component: NouvelleDemandeChaleurRenouvelable,
     description:
-      "Notification envoyée aux CCRT ayant une permission sur le département concerné quand un admin valide une demande d'accompagnement chaleur renouvelable.",
+      "Notification envoyée aux CCRT dont les permissions territoriales classiques couvrent la demande quand un admin valide une demande d'accompagnement chaleur renouvelable.",
     label: "Nouvelle demande d'accompagnement CCRT",
     preview: "Une nouvelle demande d'accompagnement est à traiter",
     scenarios: nouvelleDemandeChaleurRenouvelableScenarios,
     subject: "[France Chaleur Urbaine] À traiter : Nouvelle demande d'accompagnement",
     trigger: {
       description:
-        "À la validation admin d'une demande d'accompagnement chaleur renouvelable sur un département couvert par l'expérimentation CCRT.",
+        "À la validation admin d'une demande d'accompagnement chaleur renouvelable ; destinataires déterminés par les permissions territoriales.",
       type: 'action',
     },
   },
   'demands.ccrt.rappel-demandes-en-attente': {
     Component: RappelDemandesEnAttenteCcrt,
     description:
-      "Relance envoyée aux CCRT ayant au moins une demande d'accompagnement validée encore au statut « À traiter » sur leurs départements.",
+      "Relance envoyée aux CCRT ayant au moins une demande d'accompagnement validée encore au statut « À traiter » dans le périmètre de leurs permissions territoriales.",
     label: 'Rappel demandes CCRT en attente',
     preview: "Des demandes d'accompagnement nécessitent votre attention",
     scenarios: rappelDemandesEnAttenteCcrtScenarios,

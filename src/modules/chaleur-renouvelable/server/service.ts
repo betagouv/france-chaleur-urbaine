@@ -16,16 +16,13 @@ import type {
   FranceRenovSpaceInput,
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
-import {
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
-  IS_CCRT_DEMAND_ENABLED,
-  isCcrtExperimentationEligible,
-} from '@/modules/chaleur-renouvelable/constants';
+import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, IS_CCRT_DEMAND_ENABLED } from '@/modules/chaleur-renouvelable/constants';
 import type { Context } from '@/modules/config/server/context-builder';
 import { type CreateDemandInput, type DemandSubmissionResult, fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { createDemand } from '@/modules/demands/server/creation-user';
 import { type LegacyValuesPatch, mergeLegacyValues } from '@/modules/demands/server/legacy-values';
 import { sendEmailTemplate } from '@/modules/email';
+import { getAllUsersWithPermissions } from '@/modules/permissions/server/service';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
@@ -39,7 +36,7 @@ import { stripDomainFromURL } from '@/utils/url';
 import { canProposeHeatNetwork } from '../heat-network-eligibility';
 import { getSimulationPrefillFromBatEnrBatiment } from '../simulation-prefill';
 import { getAltitudeByCoordinates } from './altimetry';
-import { applyCcrtAccessFilter, ensureCcrtDemandAccess, getCcrtTerritory } from './ccrt-access';
+import { applyCcrtAccessFilter, canUserAccessCcrtDemand, ensureCcrtDemandAccess, getCcrtTerritory } from './ccrt-access';
 import { selectDemandesChaleurRenouvelableForList, serializeDemandesChaleurRenouvelable } from './ccrt-demand-query';
 import { applyCcrtFollowUpUpdate } from './ccrt-demand-update';
 import { recordCcrtFollowUpChanges, recordCcrtPostHogEvent } from './ccrt-tracking';
@@ -685,9 +682,9 @@ const getRnicCoproprieteSafe = async (batimentConstructionId: string | null) => 
 };
 
 const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable) => {
-  const departmentCode = await getDemandeChaleurRenouvelableDepartmentCode(input);
+  const departmentCode = (await getDemandeChaleurRenouvelableDepartmentCode(input)) ?? null;
 
-  if (!departmentCode || !isCcrtExperimentationEligible(departmentCode, input.housingType)) {
+  if (input.housingType !== 'immeuble_chauffage_collectif') {
     return null;
   }
 
@@ -762,44 +759,44 @@ const getValidOriginDemandId = async (input: DemandeChaleurRenouvelable) => {
   return originDemand?.legacy_values.Status === DEMANDE_STATUS.UNREALISABLE && originDemandEmail === inputEmail ? originDemand.id : null;
 };
 
-const notifyCcrtOfNewDemandeChaleurRenouvelable = async ({
-  demand,
-  demandId,
-  departmentCode,
-}: {
-  demand: DemandeChaleurRenouvelable;
-  demandId: string;
-  departmentCode: string;
-}) => {
-  const recipients = await kdb
-    .selectFrom('users as u')
-    .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
-    .select(['u.email', 'u.id', 'u.structure_name'])
-    .where('u.active', '=', true)
-    .where('u.role', '=', 'ccrt')
-    .where('up.type', '=', 'departement')
-    .where('up.resource_id', '=', departmentCode)
+/** Lists the shared pending pool once; each recipient is matched through classic permissions. */
+const listPendingCcrtDemands = () =>
+  kdb
+    .selectFrom('demands_chaleur_renouvelable')
+    .select([
+      'id',
+      'address',
+      'created_at',
+      'housing_count',
+      'housing_type',
+      'commune_code',
+      'epci_code',
+      'ept_code',
+      'departement_code',
+      'region_code',
+      'validated',
+    ])
+    .where('validated', '=', true)
+    .where('status', '=', DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS)
+    .orderBy('created_at', 'asc')
     .execute();
 
-  const pendingDemandCount = (
-    await kdb
-      .selectFrom('demands_chaleur_renouvelable')
-      .select(kdb.fn.count<number>('id').as('count'))
-      .where('validated', '=', true)
-      .where('status', '=', DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS)
-      .where('departement_code', '=', departmentCode)
-      .executeTakeFirstOrThrow()
-  ).count;
+const notifyCcrtOfNewDemandeChaleurRenouvelable = async (demand: DemandeChaleurRenouvelableForCcrtNotification) => {
+  const [users, pendingDemands] = await Promise.all([getAllUsersWithPermissions(), listPendingCcrtDemands()]);
+  const recipients = users.filter((user) => user.role === 'ccrt' && canUserAccessCcrtDemand(user, user.permissions, demand));
 
   await Promise.all(
-    recipients.map(async (recipient) =>
-      Promise.all([
+    recipients.map(async (recipient) => {
+      const pendingDemandCount = pendingDemands.filter((pendingDemand) =>
+        canUserAccessCcrtDemand(recipient, recipient.permissions, pendingDemand)
+      ).length;
+      return Promise.all([
         sendEmailTemplate(
           'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
           { email: recipient.email, id: recipient.id },
           {
-            demand,
-            demandUrl: getCcrtDemandesUrl(demandId),
+            demand: toDemandeChaleurRenouvelableEmailPayload(demand),
+            demandUrl: getCcrtDemandesUrl(demand.id),
             pendingDemandCount,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
           }
@@ -808,14 +805,14 @@ const notifyCcrtOfNewDemandeChaleurRenouvelable = async ({
           distinctId: recipient.id,
           event: 'ccrt_demandes:demande_received',
           properties: getCcrtTrackingDemandProperties({
-            demandId,
-            departmentCode,
-            solution1: demand.alternativeHeatingSolutions?.[0],
+            demandId: demand.id,
+            departmentCode: demand.departement_code,
+            solution1: demand.alternative_heating_solutions[0],
             structureName: recipient.structure_name,
           }),
         }),
-      ])
-    )
+      ]);
+    })
   );
 };
 
@@ -830,6 +827,10 @@ const getDemandeChaleurRenouvelableForCcrtNotification = async (demandId: string
       'average_residents',
       'batiment_construction_id',
       'comments',
+      'commune_code',
+      'epci_code',
+      'ept_code',
+      'region_code',
       'demand_concern',
       'departement_code',
       'dpe',
@@ -907,12 +908,8 @@ export const validateDemandeChaleurRenouvelableAdmin = async ({ demandId }: Admi
 
   const demand = await getDemandeChaleurRenouvelableForCcrtNotification(demandId);
 
-  if (validationResult && demand.departement_code) {
-    await notifyCcrtOfNewDemandeChaleurRenouvelable({
-      demand: toDemandeChaleurRenouvelableEmailPayload(demand),
-      demandId: demand.id,
-      departmentCode: demand.departement_code,
-    });
+  if (validationResult) {
+    await notifyCcrtOfNewDemandeChaleurRenouvelable(demand);
   }
 
   return { id: demand.id, updated_at: demand.updated_at, validated: demand.validated };
@@ -931,13 +928,7 @@ export const listDemandesChaleurRenouvelableAdmin = async () => {
 
 export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
   const permissions = await ctx.getPermissions();
-  const departmentCodes = permissions.filter((permission) => permission.type === 'departement').map((permission) => permission.resource_id);
   const user = await kdb.selectFrom('users').select(['structure_name']).where('id', '=', ctx.user.id).executeTakeFirst();
-  const trackingContext = {
-    departements: departmentCodes,
-    structure_ccrt: user?.structure_name ?? null,
-  };
-
   const demandes = await selectDemandesChaleurRenouvelableForList()
     .$call((query) => applyCcrtAccessFilter(query, ctx.user, permissions))
     .where('validated', '=', true)
@@ -947,7 +938,10 @@ export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
   return {
     count: demandes.length,
     items: serializeDemandesChaleurRenouvelable(demandes),
-    trackingContext,
+    trackingContext: {
+      departements: [...new Set(demandes.map((demand) => demand.departement_code).filter((code) => code !== null))],
+      structure_ccrt: user?.structure_name ?? null,
+    },
   };
 };
 
@@ -971,27 +965,11 @@ export const updateDemandeChaleurRenouvelableCcrt = async (ctx: Context, input: 
 };
 
 export const notifyCcrtOfUnhandledDemandesChaleurRenouvelable = async (runDate = dayjs().tz('Europe/Paris')) => {
-  const recipients = await kdb
-    .selectFrom('users as u')
-    .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
-    .select(['u.email', 'u.id', 'u.structure_name'])
-    .select((eb) => [sql<string[]>`array_agg(distinct ${eb.ref('up.resource_id')})`.as('department_codes')])
-    .where('u.active', '=', true)
-    .where('u.role', '=', 'ccrt')
-    .where('u.receive_old_demands', '=', true)
-    .where('up.type', '=', 'departement')
-    .groupBy(['u.email', 'u.id', 'u.structure_name'])
-    .execute();
+  const [users, pendingDemands] = await Promise.all([getAllUsersWithPermissions(), listPendingCcrtDemands()]);
+  const recipients = users.filter((user) => user.role === 'ccrt' && user.receive_old_demands);
 
   await processInParallel(recipients, businessRules.emailSendConcurrency.value, async (recipient) => {
-    const demands = await kdb
-      .selectFrom('demands_chaleur_renouvelable')
-      .select(['address', 'created_at', 'housing_count', 'housing_type', 'id'])
-      .where('validated', '=', true)
-      .where('status', '=', DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS)
-      .where('departement_code', 'in', recipient.department_codes)
-      .orderBy('created_at', 'asc')
-      .execute();
+    const demands = pendingDemands.filter((demand) => canUserAccessCcrtDemand(recipient, recipient.permissions, demand));
 
     if (demands.length === 0) {
       return;
