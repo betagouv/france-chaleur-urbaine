@@ -33,9 +33,6 @@ export const hasCompatibleHotWaterMode = (situation: Situation, modes: ModeEauCh
 export const hasCompatibleRadiator = (situation: Situation, radiators: TypeRadiateur[]) =>
   situation.typeRadiateur ? radiators.includes(situation.typeRadiateur) : false;
 
-export const isNearHeatNetwork = (situation: Situation) =>
-  (situation.eligibiliteReseauChaleur?.distance ?? Number.POSITIVE_INFINITY) < HEAT_NETWORK_MAX_DISTANCE;
-
 export const isNearColdNetwork = (situation: Situation) =>
   (situation.eligibiliteReseauFroid?.distance ?? Number.POSITIVE_INFINITY) < COLD_NETWORK_MAX_DISTANCE;
 

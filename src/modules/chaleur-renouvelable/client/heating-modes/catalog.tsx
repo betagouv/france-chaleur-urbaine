@@ -16,12 +16,12 @@ import {
   hasSufficientSolarThermalCoverage,
   hotWaterStoragePrerequisite,
   isNearColdNetwork,
-  isNearHeatNetwork,
   outdoorPacPrerequisites,
   outdoorSinglePacPrerequisites,
   roofSolarCollectorsPrerequisite,
 } from '@/modules/chaleur-renouvelable/client/heating-mode-rules';
 import type { ModeDeChauffage, Situation, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import { canProposeHeatNetwork } from '@/modules/chaleur-renouvelable/heat-network-eligibility';
 
 export type {
   IncompatibleSolutionRow,
@@ -46,10 +46,11 @@ export const modesDeChauffage = {
         </>
       ),
       estPossible: (situation) =>
-        !situation.hasAlreadyReceivedHeatNetworkRefusal &&
-        (situation.eligibiliteReseauChaleur?.isEligible ?? false) &&
-        isNearHeatNetwork(situation) &&
-        hasCompatibleRadiator(situation, ['radiateur-eau']),
+        canProposeHeatNetwork({
+          hasAlreadyReceivedHeatNetworkRefusal: situation.hasAlreadyReceivedHeatNetworkRefusal,
+          heatNetworkEligibility: situation.eligibiliteReseauChaleur,
+          radiatorType: situation.typeRadiateur,
+        }),
       gainClasse: 1,
       icone: 'img/icon-rcu.webp',
       id: 'collective-heat-network',
