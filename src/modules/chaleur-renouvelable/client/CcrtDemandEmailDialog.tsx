@@ -8,12 +8,12 @@ import { dayjs } from '@/utils/date';
 import type { CcrtDemand } from '../types';
 import { CcrtDemandEmailForm } from './CcrtDemandEmailForm';
 
-type CcrtDemandEmailDialogProps = { demand: CcrtDemand; onClose: () => void; showHistory?: boolean };
+type CcrtDemandEmailDialogProps = { demand: CcrtDemand; onClose: () => void; showHistory?: boolean; onPhoneContact: () => void };
 
 /**
  * Displays the Figma contact dialog and the shared sent-message history below its form.
  */
-export function CcrtDemandEmailDialog({ demand, onClose, showHistory = false }: CcrtDemandEmailDialogProps) {
+export function CcrtDemandEmailDialog({ demand, onClose, showHistory = false, onPhoneContact }: CcrtDemandEmailDialogProps) {
   const { userPreferences } = useUserPreferences();
   const followUp = trpc.batEnr.ccrt.getFollowUp.useQuery({ demandId: demand.id });
   return (
@@ -31,7 +31,7 @@ export function CcrtDemandEmailDialog({ demand, onClose, showHistory = false }: 
       {demand.phone && (
         <p className="mb-6">
           OU par téléphone au{' '}
-          <a className="bg-none no-underline shadow-none" href={`tel:${demand.phone}`}>
+          <a className="bg-none no-underline shadow-none" href={`tel:${demand.phone}`} onClick={onPhoneContact}>
             {demand.phone}
           </a>
         </p>

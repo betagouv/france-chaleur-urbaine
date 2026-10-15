@@ -1,9 +1,12 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { type BatEnrBatiment, DEFAULT_SIMULATION_PARAMS } from '../constants';
 import type { ChoixChauffageParams } from './hooks/useChoixChauffageQueryParams';
 import { ParamsForm } from './ParamsForm';
+
+const prefill = vi.hoisted(() => vi.fn().mockResolvedValue({}));
+vi.mock('@/modules/trpc/client', () => ({ default: { useUtils: () => ({ batEnr: { getSimulationPrefill: { fetch: prefill } } }) } }));
 
 vi.mock('@/modules/analytics/client', () => ({ trackPostHogEvent: vi.fn() }));
 vi.mock('./BatEnrBatimentsMap', () => ({
@@ -33,6 +36,36 @@ const values = {
   typeLogement: 'immeuble_chauffage_individuel',
   typeRadiateur: 'radiateur-eau',
 } satisfies ChoixChauffageParams;
+
+const batiment = {
+  ac1: null,
+  ac2: null,
+  ac3: null,
+  ac4: null,
+  ac4bis: null,
+  adresse: values.adresse,
+  batiment_construction_id: 'BATIMENT-1',
+  batiment_groupe_id: 'GROUPE-1',
+  categorie_majoritaire: 'res col',
+  classe_bilan_dpe: 'C',
+  couv_sondes_200_2025: null,
+  couv_st_ecs_2025: null,
+  dpe_representatif_logement_surface_habitable_immeuble: 1_800,
+  etat_ppa: null,
+  ffo_bat_nb_log: 30,
+  geometry: null,
+  gis_geo_profonde: null,
+  gmi_nappe_200: null,
+  gmi_sonde_200: null,
+  place_nappe: null,
+  pot_nappe: null,
+  prod_st_mwh_an: null,
+  propri_uni: null,
+  type_energie_chauffage: null,
+  type_energie_ecs: null,
+  type_installation_chauffage: 'collectif',
+  type_installation_ecs: 'collectif',
+} satisfies BatEnrBatiment;
 
 describe('ParamsForm', () => {
   it.each([
@@ -128,35 +161,6 @@ describe('ParamsForm', () => {
   });
 
   it('tracks a building selection and saves its prefill without changing the heating mode', async () => {
-    const batiment = {
-      ac1: null,
-      ac2: null,
-      ac3: null,
-      ac4: null,
-      ac4bis: null,
-      adresse: values.adresse,
-      batiment_construction_id: 'BATIMENT-1',
-      batiment_groupe_id: 'GROUPE-1',
-      categorie_majoritaire: 'res col',
-      classe_bilan_dpe: 'C',
-      couv_sondes_200_2025: null,
-      couv_st_ecs_2025: null,
-      dpe_representatif_logement_surface_habitable_immeuble: 1_800,
-      etat_ppa: null,
-      ffo_bat_nb_log: 30,
-      geometry: null,
-      gis_geo_profonde: null,
-      gmi_nappe_200: null,
-      gmi_sonde_200: null,
-      place_nappe: null,
-      pot_nappe: null,
-      prod_st_mwh_an: null,
-      propri_uni: null,
-      type_energie_chauffage: null,
-      type_energie_ecs: null,
-      type_installation_chauffage: 'collectif',
-      type_installation_ecs: 'collectif',
-    } satisfies BatEnrBatiment;
     const onSave = vi.fn().mockResolvedValue(new URLSearchParams());
     render(
       <ParamsForm
@@ -170,6 +174,8 @@ describe('ParamsForm', () => {
       />
     );
     fireEvent.click(screen.getByRole('button', { name: 'Choisir BATIMENT-1' }));
+    await waitFor(() => expect(screen.getByLabelText('Nombre de logements')).toHaveValue(30));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Enregistrer et recalculer' })).toBeEnabled());
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et recalculer' }));
 
     await waitFor(() =>
@@ -186,6 +192,38 @@ describe('ParamsForm', () => {
         typeRadiateur: 'radiateur-eau',
       })
     );
+  });
+
+  it.each(['untouched', 'edited', 'cancelled'] as const)('handles delayed RNIC prefill when the form is %s', async (state) => {
+    const pending = Promise.withResolvers<{ nbLogements: number }>();
+    prefill.mockReturnValueOnce(pending.promise);
+    const setIsOpen = vi.fn();
+    render(
+      <ParamsForm
+        batiments={[batiment]}
+        isOpen
+        onSave={vi.fn()}
+        paramSources={{ isDpeExplicit: true, isModeEauChaudeSanitaireInferred: false }}
+        setGeoAddress={vi.fn()}
+        setIsOpen={setIsOpen}
+        values={values}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Choisir BATIMENT-1' }));
+    const count = screen.getByLabelText('Nombre de logements');
+    expect(screen.getByRole('button', { name: 'Enregistrer et recalculer' })).toBeDisabled();
+    if (state === 'edited') {
+      fireEvent.change(count, { target: { value: '42' } });
+    }
+    if (state === 'cancelled') {
+      fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
+    }
+    await act(async () => pending.resolve({ nbLogements: 78 }));
+    expect(count).toHaveValue(state === 'untouched' ? 78 : state === 'edited' ? 42 : values.nbLogements);
+    if (state === 'cancelled') {
+      expect(setIsOpen).toHaveBeenCalledWith(false);
+      expect(screen.getByRole('button', { name: 'Enregistrer et recalculer' })).toBeDisabled();
+    }
   });
 
   it('blocks an area below 9 m², focuses its error and allows saving after correction', async () => {

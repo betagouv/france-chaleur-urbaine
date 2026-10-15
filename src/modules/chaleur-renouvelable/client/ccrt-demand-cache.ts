@@ -14,5 +14,10 @@ export const invalidateCcrtDemand = (
     utils.batEnr.ccrt.listDemandesChaleurRenouvelable.invalidate(),
     utils.batEnr.admin.listDemandesChaleurRenouvelable.invalidate(),
     utils.batEnr.ccrt.getFollowUp.invalidate({ demandId }),
-    ...(options.buildingChanged ? [utils.batEnr.ccrt.getHeatNetworkEligibility.invalidate({ demandId })] : []),
+    ...(options.buildingChanged
+      ? [
+          utils.batEnr.ccrt.getHeatNetworkEligibility.invalidate({ demandId }),
+          utils.batEnr.admin.listAssignmentCandidates.invalidate({ demandId }),
+        ]
+      : []),
   ]);

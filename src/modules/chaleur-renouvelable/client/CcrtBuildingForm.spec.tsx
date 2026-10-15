@@ -10,7 +10,10 @@ const mocks = vi.hoisted(() => ({ eligibility: { distance: 96, isEligible: true 
 vi.mock('@/modules/trpc/client', () => {
   const utils = {
     batEnr: {
-      admin: { listDemandesChaleurRenouvelable: { invalidate: mocks.invalidate } },
+      admin: {
+        listAssignmentCandidates: { invalidate: mocks.invalidate },
+        listDemandesChaleurRenouvelable: { invalidate: mocks.invalidate },
+      },
       ccrt: {
         getFollowUp: { invalidate: mocks.invalidate },
         getHeatNetworkEligibility: { invalidate: mocks.invalidate },

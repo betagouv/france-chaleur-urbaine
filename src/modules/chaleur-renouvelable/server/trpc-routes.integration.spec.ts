@@ -178,6 +178,45 @@ describe('batEnrRouter', () => {
     mockedFetchJSON.mockReset();
   });
 
+  describe('batEnr.getSimulationPrefill', () => {
+    it.each([
+      { count: 78, expected: 78, label: 'RNIC count' },
+      { count: '78', expected: 78, label: 'RNIC numeric string' },
+      { count: null, expected: 30, label: 'missing count' },
+      { count: 0, expected: 30, label: 'zero count' },
+      { count: 'inconnu', expected: 30, label: 'invalid count' },
+      { count: 2.5, expected: 30, label: 'fractional count' },
+      { count: 'unavailable', expected: 30, label: 'unavailable RNIC' },
+    ])('prefills from $label and falls back to BDNB when needed', async ({ count, expected }) => {
+      await seedRnicLookupBuilding();
+      await kdb.deleteFrom('bdnb_batiments').where('batiment_groupe_id', '=', 'GROUPE-RNIC-123').execute();
+      await kdb
+        .insertInto('bdnb_batiments')
+        .values({
+          batiment_groupe_id: 'GROUPE-RNIC-123',
+          constructions: sql`${JSON.stringify([{ construction_id: 'CONSTRUCTION-123', rnb_id: '' }])}::jsonb`,
+          dpe_representatif_logement_surface_habitable_immeuble: 1800,
+          ffo_bat_nb_log: 30,
+        })
+        .execute();
+      if (count === 'unavailable') {
+        mockedFetchJSON.mockRejectedValue(new Error('RNIC unavailable'));
+      } else {
+        mockedFetchJSON.mockResolvedValue({
+          data: [{ latitude: 43.2965, longitude: 5.3698, nom_usage_copropriete: 'Copropriété test', nombre_lots_habitation: count }],
+        });
+      }
+      await expect(
+        createTestCaller(null).batEnr.getSimulationPrefill({ batiment_construction_id: 'CONSTRUCTION-123' })
+      ).resolves.toStrictEqual({
+        dpe: undefined,
+        modeEauChaudeSanitaire: undefined,
+        nbLogements: expected,
+        surfaceMoyenne: 60,
+      });
+    });
+  });
+
   describe('batEnr.createDemandeChaleurRenouvelable', () => {
     it.each([
       ['previous refusal', { isPublicAdvisorSelected: true }],
@@ -1174,6 +1213,9 @@ describe('batEnrRouter', () => {
         .returning(['id'])
         .executeTakeFirstOrThrow();
 
+      const beforeValidation = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
+      expect(beforeValidation.items).toStrictEqual([]);
+
       await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: demand.id });
 
       const updatedDemand = await kdb
@@ -1182,9 +1224,18 @@ describe('batEnrRouter', () => {
         .where('id', '=', demand.id)
         .executeTakeFirstOrThrow();
       const ccrtList = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
+      const otherDepartmentList = await createTestCaller({
+        ...testUsers.ccrt,
+        id: ccrtOtherDepartmentId,
+      }).batEnr.ccrt.listDemandesChaleurRenouvelable();
 
-      expect({ ccrtListCount: ccrtList.count, updatedDemand }).toStrictEqual({
-        ccrtListCount: 1,
+      expect({
+        demandIds: ccrtList.items.map((item) => item.id),
+        otherDepartmentItems: otherDepartmentList.items,
+        updatedDemand,
+      }).toStrictEqual({
+        demandIds: [demand.id],
+        otherDepartmentItems: [],
         updatedDemand: { validated: true },
       });
       expect(sentEmailTemplate).toHaveBeenCalledTimes(1);

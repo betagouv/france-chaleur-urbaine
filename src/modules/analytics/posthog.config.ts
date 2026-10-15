@@ -26,6 +26,9 @@ type CcrtDemandTrackingProperties = CcrtCommonTrackingProperties & {
   solution_1?: string | null;
 };
 
+export type CcrtTrackingPlacement = 'liste' | 'fiche';
+export type CcrtTrackingTab = 'a_traiter' | 'en_cours' | 'cloturees' | 'toutes';
+
 /**
  * Configuration des événements PostHog.
  *
@@ -258,29 +261,41 @@ export type PostHogEventMap = {
   'fcr_results:ccrt_contact_cta_clicked': never;
   'ccrt_demandes:demande_received': CcrtDemandTrackingProperties;
   'ccrt_demandes:list_viewed': CcrtCommonTrackingProperties & {
-    onglet: string;
+    onglet: CcrtTrackingTab;
   };
   'ccrt_demandes:demande_opened': CcrtDemandTrackingProperties & {
     premiere_ouverture: boolean;
   };
   'ccrt_demande:status_changed': CcrtDemandTrackingProperties & {
-    declenchement: 'admin' | 'contact' | 'manual';
+    declenchement: 'manuel' | 'auto';
     statut_apres: string;
     statut_avant: string | null;
-    type_statut: 'etat_projet' | 'statut';
+    type_statut: 'avancement' | 'suivi';
   };
   'ccrt_demande:contact_clicked': CcrtDemandTrackingProperties & {
-    emplacement: 'liste';
+    emplacement: CcrtTrackingPlacement;
   };
   'ccrt_demande:contact_email_clicked': CcrtDemandTrackingProperties & {
-    emplacement: 'liste';
+    emplacement: CcrtTrackingPlacement;
   };
   'ccrt_demande:contact_phone_clicked': CcrtDemandTrackingProperties & {
-    emplacement: 'liste';
+    emplacement: CcrtTrackingPlacement;
   };
   'ccrt_demande:simulation_viewed': CcrtDemandTrackingProperties & {
-    emplacement: 'liste';
+    emplacement: CcrtTrackingPlacement;
   };
+  'ccrt_demande:email_sent': CcrtDemandTrackingProperties;
+  'ccrt_demande:building_data_edited': CcrtDemandTrackingProperties & {
+    champs_modifies: string[];
+    nb_champs_modifies: number;
+  };
+  'ccrt_demande:internal_note_created': CcrtDemandTrackingProperties;
+  'ccrt_demande:map_opened': CcrtDemandTrackingProperties;
+  'ccrt_demande:access_managed': CcrtDemandTrackingProperties;
+  'ccrt_demandes:tab_clicked': CcrtCommonTrackingProperties & { onglet: CcrtTrackingTab };
+  'ccrt_demandes:search_used': CcrtCommonTrackingProperties;
+  'ccrt_demandes:filter_applied': CcrtCommonTrackingProperties & { type_filtre: 'statut' | 'date'; valeur: string };
+  'ccrt_demandes:export_clicked': CcrtCommonTrackingProperties;
   'fcr_results:tab_switched': {
     tab_value: 'chauffage_ecs' | 'ecs_uniquement';
   };

@@ -2,12 +2,15 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Fragment } from 'react';
 
 import Button from '@/components/ui/Button';
+import type { CcrtTrackingPlacement } from '@/modules/analytics/posthog.config';
 import cx from '@/utils/cx';
 import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
+import { CcrtAdminDemandAssignment } from './CcrtAdminDemandAssignment';
 import { CcrtDemandDetails } from './CcrtDemandDetails';
+import { CcrtDemandValidation } from './CcrtDemandValidation';
 import { CcrtHeatingEnergyTag } from './CcrtHeatingEnergyTag';
 import { getCcrtDemandTab } from './ccrt-workspace';
 
@@ -17,9 +20,12 @@ type CcrtDemandRowProps = {
   isUpdating: boolean;
   onToggle: () => void;
   onContact: (contactType: 'email' | 'phone') => void;
-  onSimulation: () => void;
-  onSendEmail: (showHistory?: boolean) => void;
+  onSimulation: (placement?: CcrtTrackingPlacement) => void;
+  onMap: () => void;
+  onManageAccess: () => void;
+  onSendEmail: (showHistory?: boolean, placement?: CcrtTrackingPlacement) => void;
   onUpdate: (values: CcrtDemandUpdate) => Promise<void>;
+  onValidate?: (demandId: string) => Promise<void>;
 };
 
 /**
@@ -34,6 +40,9 @@ export function CcrtDemandRow({
   onSimulation,
   onUpdate,
   onSendEmail,
+  onValidate,
+  onMap,
+  onManageAccess,
 }: CcrtDemandRowProps) {
   const isToProcess = demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS;
   const fullName = `${demand.first_name} ${demand.last_name}`;
@@ -120,7 +129,7 @@ export function CcrtDemandRow({
             href={demand.simulation_url}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={onSimulation}
+            onClick={() => onSimulation('liste')}
           >
             Voir la simulation
           </a>
@@ -145,15 +154,19 @@ export function CcrtDemandRow({
           )}
         </td>
         <td className="text-right!">
-          <Button
-            size="large"
-            priority={isToProcess ? 'primary' : 'secondary'}
-            iconId="fr-icon-mail-line"
-            iconPosition="right"
-            onClick={() => onSendEmail()}
-          >
-            {isToProcess ? 'Contacter' : 'Relancer'}
-          </Button>
+          {onValidate && !demand.validated ? (
+            <CcrtDemandValidation demandId={demand.id} onValidate={onValidate} />
+          ) : (
+            <Button
+              size="large"
+              priority={isToProcess ? 'primary' : 'secondary'}
+              iconId="fr-icon-mail-line"
+              iconPosition="right"
+              onClick={() => onSendEmail()}
+            >
+              {isToProcess ? 'Contacter' : 'Relancer'}
+            </Button>
+          )}
         </td>
       </tr>
       {isExpanded && (
@@ -163,9 +176,12 @@ export function CcrtDemandRow({
               demand={demand}
               isUpdating={isUpdating}
               onUpdate={onUpdate}
-              onContact={onSendEmail}
-              onSimulation={onSimulation}
+              onContact={(showHistory) => onSendEmail(showHistory, 'fiche')}
+              onSimulation={() => onSimulation('fiche')}
+              onMap={onMap}
+              onManageAccess={onManageAccess}
               onCollapse={onToggle}
+              adminControls={onValidate && <CcrtAdminDemandAssignment demand={demand} />}
             />
           </td>
         </tr>

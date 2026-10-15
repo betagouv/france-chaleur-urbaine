@@ -18,22 +18,17 @@ export const recordCcrtFollowUpChanges = async (
   ctx: Context,
   demand: Pick<Awaited<ReturnType<typeof ensureCcrtDemandAccess>>, 'id' | 'departement_code' | 'alternative_heating_solutions'>,
   changes: Awaited<ReturnType<typeof applyCcrtFollowUpUpdate>>['changes'],
-  trigger: CcrtUpdateDemandeChaleurRenouvelableInput['trigger']
+  trigger: CcrtUpdateDemandeChaleurRenouvelableInput['trigger'],
+  noteCreated = false
 ) => {
-  if (!changes.status && !changes.project_state) {
+  if (!changes.status && !changes.project_state && !noteCreated) {
     return;
   }
-  const user = await kdb.selectFrom('users').select('structure_name').where('id', '=', ctx.user.id).executeTakeFirst();
-  const declenchement = trigger === 'contact' ? 'contact' : ctx.user.role === 'admin' ? 'admin' : 'manual';
-  const properties = {
-    demande_id: demand.id,
-    departement: demand.departement_code,
-    solution_1: demand.alternative_heating_solutions[0] ?? null,
-    structure_ccrt: user?.structure_name ?? null,
-  };
+  const properties = await getCcrtServerTrackingProperties(ctx, demand);
+  const declenchement = trigger === 'contact' ? 'auto' : 'manuel';
   const transitions = [
-    { change: changes.status, type: 'statut' },
-    { change: changes.project_state, type: 'etat_projet' },
+    { change: changes.status, type: 'suivi' },
+    { change: changes.project_state, type: 'avancement' },
   ] as const;
   await Promise.all(
     transitions.flatMap((transition) =>
@@ -54,6 +49,25 @@ export const recordCcrtFollowUpChanges = async (
         : []
     )
   );
+  if (noteCreated) {
+    await recordCcrtPostHogEvent({ distinctId: ctx.user.id, event: 'ccrt_demande:internal_note_created', properties });
+  }
+};
+
+/**
+ * Builds the same non-personal demand context for every committed server action.
+ */
+export const getCcrtServerTrackingProperties = async (
+  ctx: Context,
+  demand: Pick<Awaited<ReturnType<typeof ensureCcrtDemandAccess>>, 'id' | 'departement_code' | 'alternative_heating_solutions'>
+) => {
+  const user = await kdb.selectFrom('users').select('structure_name').where('id', '=', ctx.user.id).executeTakeFirst();
+  return {
+    demande_id: demand.id,
+    departement: demand.departement_code,
+    solution_1: demand.alternative_heating_solutions[0] ?? null,
+    structure_ccrt: user?.structure_name ?? null,
+  };
 };
 
 /**

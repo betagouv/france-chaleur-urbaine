@@ -74,5 +74,5 @@ export const applyCcrtFollowUpUpdate = async (ctx: Context, input: ApplyCcrtFoll
   if (values.note) {
     await insertCcrtNote(ctx, { body: values.note, demandId: demand.id }, transaction);
   }
-  return { changes, demand };
+  return { changes, demand, noteCreated: Boolean(values.note) };
 };
