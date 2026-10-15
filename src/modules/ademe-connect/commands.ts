@@ -48,7 +48,18 @@ export function registerAdemeConnectCommands(parentProgram: Command) {
     .action(async ({ dryRun, role }) => {
       const users = await kdb
         .selectFrom('users')
-        .select(['email', 'first_name', 'last_name', 'phone', 'role', 'structure_type', 'optin_at', 'created_at', 'last_connection'])
+        .select([
+          'email',
+          'first_name',
+          'last_name',
+          'phone',
+          'role',
+          'structure_type',
+          'optin_at',
+          'created_at',
+          'last_connection',
+          'entreprise',
+        ])
         .where((eb) => (role ? eb('role', '=', role) : eb('role', '<>', 'admin')))
         .where('status', '=', 'valid')
         .where('active', '=', true)
@@ -78,6 +89,7 @@ export function registerAdemeConnectCommands(parentProgram: Command) {
             nom: user.last_name ?? undefined,
             prenom: user.first_name ?? undefined,
             rubriques: buildRubriques(user.role, user.structure_type),
+            siret: user.entreprise?.siret,
             telephone: user.phone ?? undefined,
             typeOrganisme: ROLE_TYPE_ORGANISME[user.role],
           });
