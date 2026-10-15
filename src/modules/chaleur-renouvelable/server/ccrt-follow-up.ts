@@ -68,7 +68,7 @@ export const getCcrtFollowUp = async (ctx: Context, input: z.infer<typeof zCcrtF
       .where('status', '=', 'sent')
       .orderBy('sent_at', 'desc')
       .execute(),
-    listCcrtUsersWithAccess(ctx, demand.id),
+    listCcrtUsersWithAccess(demand),
     historyQuery
       .select(['events.id', 'type', 'data', 'events.created_at', 'author.email', 'author.first_name', 'author.last_name'])
       .orderBy('events.created_at', 'desc')

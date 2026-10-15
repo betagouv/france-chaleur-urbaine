@@ -31,8 +31,9 @@ export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: Ccrt
     defaultValues: defaultValues.current,
     onSubmit: toastErrors(async ({ value }) => {
       await onUpdate({
-        status: value.status,
-        ...(value.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION && { projectState: value.projectState }),
+        ...(value.status !== defaultValues.current.status && { status: value.status }),
+        ...(value.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION &&
+          value.projectState !== defaultValues.current.projectState && { projectState: value.projectState }),
         ...(value.note.trim() && { note: value.note.trim() }),
       });
       defaultValues.current = { ...value, note: '' };
@@ -47,11 +48,11 @@ export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: Ccrt
 
   // Server refreshes update clean controls without discarding a note or status still being drafted.
   useEffect(() => {
-    if (!form.state.isDirty) {
+    if (!isDirty) {
       defaultValues.current = getFollowUpDefaultValues(demand);
       form.reset(defaultValues.current);
     }
-  }, [demand, form]);
+  }, [demand, form, isDirty]);
 
   return (
     <Form form={form} className="[&_.fr-label]:text-sm [&_.fr-label]:leading-6 [&_.fr-label]:text-(--text-default-grey)">

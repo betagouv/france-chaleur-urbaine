@@ -1,6 +1,6 @@
 import { type BatEnrBatiment, type DPE, type ModeEauChaudeSanitaire, zAverageHousingArea } from './constants';
 
-export type SimulationPrefillParams = {
+type SimulationPrefillParams = {
   dpe?: DPE;
   modeEauChaudeSanitaire?: ModeEauChaudeSanitaire;
   nbLogements?: number;
