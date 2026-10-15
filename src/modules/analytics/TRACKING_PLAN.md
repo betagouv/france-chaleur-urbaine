@@ -87,6 +87,30 @@ France Chaleur Urbaine utilise PostHog pour mesurer l'usage produit. Ce document
 | `comparator:cost_detail_posts_opened` | Règles Publicodes calculées | Ouverture du détail des postes de coûts |
 | `comparator:co2_emissions_tab_opened` | Règles Publicodes calculées | Ouverture de l'onglet émissions CO2 |
 
+### Espace CCRT
+
+All events include `structure_ccrt` and `departement`. Demand events (`ccrt_demande:*`, `demande_opened`, `demande_received`) also include `demande_id` and `solution_1`. Contact and simulation placements are `liste` or `fiche`. Tab values are `a_traiter`, `en_cours`, `cloturees`, `toutes`.
+
+| Event | Additional properties | Trigger |
+|---|---|---|
+| `ccrt_demandes:demande_received` | — | Admin publication, once per notified CCRT account |
+| `ccrt_demandes:list_viewed` | `onglet` | Authorized workspace group displayed |
+| `ccrt_demandes:demande_opened` | `premiere_ouverture` | Demand opened; first opening within this workspace visit |
+| `ccrt_demande:status_changed` | `type_statut` (`suivi` / `avancement`), `statut_avant`, `statut_apres`, `declenchement` (`manuel` / `auto`) | Committed status/project-state transition |
+| `ccrt_demande:contact_clicked` | `emplacement` | Integrated email composer opened |
+| `ccrt_demande:contact_email_clicked` | `emplacement` | External mailto link; no status update |
+| `ccrt_demande:contact_phone_clicked` | `emplacement` | External telephone link; no status update |
+| `ccrt_demande:email_sent` | — | Successfully persisted send; idempotent retries excluded |
+| `ccrt_demande:building_data_edited` | `champs_modifies`, `nb_champs_modifies` | Committed building correction, one event per save, no values |
+| `ccrt_demande:internal_note_created` | — | Committed note insertion, no note content |
+| `ccrt_demande:simulation_viewed` | `emplacement` | Saved simulation link clicked |
+| `ccrt_demande:map_opened` | — | Saved building map link clicked |
+| `ccrt_demande:access_managed` | — | Existing admin permission editor opened |
+| `ccrt_demandes:tab_clicked` | `onglet` | Group clicked |
+| `ccrt_demandes:search_used` | — | Settled live search or search submitted; never search text |
+| `ccrt_demandes:filter_applied` | `type_filtre` (`statut` / `date`), `valeur` | Status filter or date sort applied |
+| `ccrt_demandes:export_clicked` | — | Excel export requested |
+
 ### Chaleur renouvelable - landing
 
 | Événement | Propriétés | Description |

@@ -27,10 +27,19 @@ const getAverageHousingAreaFromBatEnr = (surfaceHabitable: number | null, nbLoge
   return zAverageHousingArea.safeParse(surfaceMoyenne).success ? surfaceMoyenne : undefined;
 };
 
-export function getSimulationPrefillFromBatEnrBatiment(batEnrBatiment: BatEnrBatiment): SimulationPrefillParams {
-  const nbLogements =
+export function getSimulationPrefillFromBatEnrBatiment(
+  batEnrBatiment: BatEnrBatiment,
+  rnicHousingCount?: number | null
+): SimulationPrefillParams {
+  const bdnbHousingCount =
     batEnrBatiment.ffo_bat_nb_log != null && batEnrBatiment.ffo_bat_nb_log > 0 ? batEnrBatiment.ffo_bat_nb_log : undefined;
-  const surfaceMoyenne = getAverageHousingAreaFromBatEnr(batEnrBatiment.dpe_representatif_logement_surface_habitable_immeuble, nbLogements);
+  // RNIC describes the co-ownership; BDNB's building surface must keep its own housing-count denominator.
+  const surfaceMoyenne = getAverageHousingAreaFromBatEnr(
+    batEnrBatiment.dpe_representatif_logement_surface_habitable_immeuble,
+    bdnbHousingCount
+  );
+  const nbLogements =
+    rnicHousingCount != null && Number.isSafeInteger(rnicHousingCount) && rnicHousingCount > 0 ? rnicHousingCount : bdnbHousingCount;
 
   return {
     dpe: batEnrBatiment.classe_bilan_dpe ?? undefined,

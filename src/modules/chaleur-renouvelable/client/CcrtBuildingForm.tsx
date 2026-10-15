@@ -7,32 +7,26 @@ import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
-import { dayjs } from '@/utils/date';
 
 import { MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE, zCcrtBuilding } from '../constants';
 import type { CcrtDemand } from '../types';
+import { CcrtBuildingIdentification } from './CcrtBuildingIdentification';
 import { CcrtDetailsSection } from './CcrtDetailsSection';
 import { CcrtProjectFields } from './CcrtProjectFields';
 import { CcrtSimulationFields } from './CcrtSimulationFields';
 import { invalidateCcrtDemand } from './ccrt-demand-cache';
 
-const identificationFields = [
-  { label: 'Adresse du bâtiment', name: 'address' },
-  { label: 'Syndicat de copropriété', name: 'rnic_nom_copropriete' },
-  { label: 'SIRET (source : RNIC)', name: 'rnic_siret_representant_legal' },
-  { label: 'Immatriculation de copropriété (source : RNIC)', name: 'rnic_numero_immatriculation' },
-] as const;
 const textFields = [
   { label: 'Date ou période du refus de raccordement', name: 'refusal_period' },
   { label: 'Motif du refus', name: 'refusal_reason' },
 ] as const;
 
-type CcrtBuildingFormProps = { demand: CcrtDemand; onSimulation?: () => void };
+type CcrtBuildingFormProps = { demand: CcrtDemand; onSimulation?: () => void; onMap?: () => void; buildingOnly?: boolean };
 
 /**
  * Edits the demand snapshot with the existing outdoor-space checkboxes and saves a recalculated simulation.
  */
-export function CcrtBuildingForm({ demand, onSimulation }: CcrtBuildingFormProps) {
+export function CcrtBuildingForm({ demand, onSimulation, onMap, buildingOnly = false }: CcrtBuildingFormProps) {
   const utils = trpc.useUtils();
   const mutation = trpc.batEnr.ccrt.updateBuilding.useMutation();
   const updatedAt = useRef(demand.updated_at);
@@ -64,16 +58,7 @@ export function CcrtBuildingForm({ demand, onSimulation }: CcrtBuildingFormProps
   return (
     <Form form={form} className="min-w-0 space-y-6">
       <fieldset disabled={isSubmitting} className="m-0 space-y-6 border-0 p-0">
-        <CcrtDetailsSection
-          title="Identification du bâtiment"
-          description={`Demande n° ${demand.id}, reçue le ${dayjs(demand.created_at).format('D MMM YYYY')}`}
-        >
-          {identificationFields.map((definition) => (
-            <p key={definition.name} className="mb-0 break-words text-sm leading-6 text-(--text-default-grey)">
-              {definition.label} : <span className="text-base font-medium">{demand[definition.name] || 'Non renseigné'}</span>
-            </p>
-          ))}
-        </CcrtDetailsSection>
+        {!buildingOnly && <CcrtBuildingIdentification demand={demand} onMap={onMap} />}
         <CcrtDetailsSection title="Bâtiment et chauffage">
           <CcrtSimulationFields
             form={form}
@@ -106,7 +91,7 @@ export function CcrtBuildingForm({ demand, onSimulation }: CcrtBuildingFormProps
             </div>
           )}
         </CcrtDetailsSection>
-        <CcrtProjectFields demand={demand} onSimulation={onSimulation} />
+        {!buildingOnly && <CcrtProjectFields demand={demand} onSimulation={onSimulation} />}
       </fieldset>
       <div className="mt-4 flex flex-wrap gap-3">
         <form.SubmitButton disabled={isSubmitting || !isDirty}>Enregistrer et recalculer</form.SubmitButton>

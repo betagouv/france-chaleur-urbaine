@@ -36,6 +36,7 @@ import { dayjs } from '@/utils/date';
 import { fetchJSON } from '@/utils/network';
 import { stripDomainFromURL } from '@/utils/url';
 
+import { getSimulationPrefillFromBatEnrBatiment } from '../simulation-prefill';
 import { getAltitudeByCoordinates } from './altimetry';
 import { applyCcrtAccessFilter, ensureCcrtDemandAccess, getCcrtTerritory } from './ccrt-access';
 import { selectDemandesChaleurRenouvelableForList, serializeDemandesChaleurRenouvelable } from './ccrt-demand-query';
@@ -323,6 +324,18 @@ export const getBatEnrBatimentsByConstructionIds = async (batimentConstructionId
   }
 
   return await selectBatEnrBatimentDetails().where('batiment_construction_id', 'in', uniqueBatimentConstructionIds).execute();
+};
+
+/**
+ * Prefills the selected building from RNIC housing lots first, retaining BDNB when RNIC cannot provide a valid count.
+ */
+export const getSimulationPrefill = async (input: GetBdnbConstructionInput) => {
+  const building = await getBatEnrBatimentDetails(input);
+  if (!building) {
+    return {};
+  }
+  const rnic = await getRnicCoproprieteSafe(building.batiment_construction_id);
+  return getSimulationPrefillFromBatEnrBatiment(building, rnic?.housingCount);
 };
 
 export const getBatEnrBatimentsSelectionContextByBanId = async ({
@@ -929,14 +942,16 @@ export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
 };
 
 export const updateDemandeChaleurRenouvelableAdmin = async (ctx: Context, input: AdminUpdateDemandeChaleurRenouvelableInput) => {
+  const demand = await ensureCcrtDemandAccess(ctx, input.demandId);
   const result = await kdb.transaction().execute((transaction) => applyCcrtFollowUpUpdate(ctx, input, transaction));
+  await recordCcrtFollowUpChanges(ctx, demand, result.changes, 'manual', result.noteCreated);
   return result.demand;
 };
 
 export const updateDemandeChaleurRenouvelableCcrt = async (ctx: Context, input: CcrtUpdateDemandeChaleurRenouvelableInput) => {
   const demand = await ensureCcrtDemandAccess(ctx, input.demandId);
   const result = await kdb.transaction().execute((transaction) => applyCcrtFollowUpUpdate(ctx, input, transaction));
-  await recordCcrtFollowUpChanges(ctx, demand, result.changes, input.trigger);
+  await recordCcrtFollowUpChanges(ctx, demand, result.changes, input.trigger, result.noteCreated);
   return {
     id: result.demand.id,
     project_state: result.demand.project_state,

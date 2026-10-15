@@ -14,6 +14,7 @@ type CcrtDemandsTableProps = {
   actions: ReturnType<typeof useCcrtDemandActions>;
   onToggle: (demand: CcrtDemand) => void;
   onSort: () => void;
+  onValidate?: (demandId: string) => Promise<void>;
 };
 
 /**
@@ -28,6 +29,7 @@ export function CcrtDemandsTable({
   actions,
   onToggle,
   onSort,
+  onValidate,
 }: CcrtDemandsTableProps) {
   return (
     <TableBasic
@@ -84,9 +86,12 @@ export function CcrtDemandsTable({
             isUpdating={actions.isUpdating}
             onToggle={() => onToggle(demand)}
             onContact={(contactType) => actions.trackContact(demand, contactType)}
-            onSendEmail={(showHistory) => actions.openEmail(demand, showHistory)}
-            onSimulation={() => actions.trackSimulation(demand)}
+            onSendEmail={(showHistory, placement) => actions.openEmail(demand, showHistory, placement)}
+            onSimulation={(placement) => actions.trackSimulation(demand, placement)}
+            onMap={() => actions.trackMap(demand)}
+            onManageAccess={() => actions.trackAccess(demand)}
             onUpdate={(values) => actions.updateDemand(demand, values)}
+            onValidate={onValidate}
           />
         ))}
         {demands.length === 0 && (
