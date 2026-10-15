@@ -19,11 +19,12 @@ type CcrtDemandHistoryProps = { followUp: CcrtFollowUp; offset: number; onPageCh
  * Read-only timeline with notes, expandable sent messages and territorial permission changes.
  */
 export function CcrtDemandHistory({ followUp, offset, onPageChange }: CcrtDemandHistoryProps) {
+  const history = followUp.history.filter((event) => event.type !== 'ccrt_demand_updated' || getVisibleChanges(event).length > 0);
   return (
     <section className="border-t border-(--border-default-grey) p-4">
-      {followUp.history.length === 0 && <p className="text-sm">Aucune action enregistrée.</p>}
+      {history.length === 0 && <p className="text-sm">Aucune action enregistrée.</p>}
       <ol className="m-0 list-none space-y-4 p-0 [&>li::marker]:content-none">
-        {followUp.history.map((event) => {
+        {history.map((event) => {
           const note = event.type === 'ccrt_demand_note_created' ? followUp.notes.find((item) => item.id === event.data.noteId) : undefined;
           const email =
             event.type === 'ccrt_demand_email_sent' ? followUp.emails.find((item) => item.id === event.data.messageId) : undefined;
@@ -55,9 +56,9 @@ export function CcrtDemandHistory({ followUp, offset, onPageChange }: CcrtDemand
               {event.type === 'ccrt_demand_note_created' && !note && <p className="mb-1">Note supprimée</p>}
               {event.type === 'ccrt_demand_updated' && (
                 <ul className="m-0 pl-4">
-                  {Object.entries(event.data.changes).map(([field, change]) => (
-                    <li key={field}>
-                      {fieldLabels[field] ?? field} : {formatFieldValue(field, change.from)} → {formatFieldValue(field, change.to)}
+                  {getVisibleChanges(event).map((change) => (
+                    <li key={change.field}>
+                      {fieldLabels[change.field] ?? change.field} : {change.from} → {change.to}
                     </li>
                   ))}
                 </ul>
@@ -115,7 +116,7 @@ const eventLabels: Record<string, string> = {
   user_permissions_updated: 'Accès',
 };
 const formatValue = (value: unknown): string =>
-  value === null || value === ''
+  value == null || (typeof value === 'string' && !value.trim())
     ? 'Non renseigné'
     : Array.isArray(value)
       ? value.join(', ') || 'Aucun'
@@ -165,3 +166,8 @@ const formatFieldValue = (field: string, value: unknown) => {
           : [];
   return options.find((option) => option.value === value)?.label ?? formatValue(value);
 };
+
+const getVisibleChanges = (event: Extract<CcrtFollowUp['history'][number], { type: 'ccrt_demand_updated' }>) =>
+  Object.entries(event.data.changes)
+    .map(([field, change]) => ({ field, from: formatFieldValue(field, change.from), to: formatFieldValue(field, change.to) }))
+    .filter((change) => change.from !== change.to);

@@ -30,6 +30,8 @@ export const updateCcrtBuilding = async (ctx: Context, input: z.infer<typeof zCc
     ...input.values,
     annual_heating_consumption: input.values.annual_heating_consumption ?? null,
     hot_water_system_type: hotWaterMode === MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE ? null : hotWaterMode,
+    refusal_period: input.values.refusal_period?.trim() || null,
+    refusal_reason: input.values.refusal_reason?.trim() || null,
     surface_area: input.values.surface_area ?? null,
   };
   const searchResult = await fetchJSON<{
@@ -74,8 +76,11 @@ export const updateCcrtBuilding = async (ctx: Context, input: z.infer<typeof zCc
     const changes = Object.fromEntries(
       ObjectKeys(values).flatMap((key) => {
         const value = values[key];
-        const previousValue = previousValues[key] ?? null;
-        return JSON.stringify(previousValue) === JSON.stringify(value) ? [] : [[key, { from: previousValue, to: value }]];
+        const previousValue = previousValues[key];
+        const normalizedPreviousValue = typeof previousValue === 'string' && !previousValue.trim() ? null : (previousValue ?? null);
+        return JSON.stringify(normalizedPreviousValue) === JSON.stringify(value)
+          ? []
+          : [[key, { from: normalizedPreviousValue, to: value }]];
       })
     );
     const updatedDemand = await transaction

@@ -609,6 +609,54 @@ describe('CCRT email delivery', () => {
 });
 
 describe('CCRT building corrections', () => {
+  it.each([
+    { next: '', previous: null },
+    { next: null, previous: '' },
+    { next: '\t', previous: '   ' },
+  ])('audits only real changes when missing refusal details change representation ($previous → $next)', async ({ previous, next }) => {
+    const demand = await seedWorkspace();
+    await kdb
+      .updateTable('demands_chaleur_renouvelable')
+      .set({ refusal_period: previous, refusal_reason: previous })
+      .where('id', '=', demand.id)
+      .execute();
+
+    await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateBuilding({
+      demandId: demand.id,
+      updatedAt: demand.updated_at.toISOString(),
+      values: { ...zCcrtBuilding.parse(demand), refusal_period: next, refusal_reason: next, surface_area: 145 },
+    });
+
+    const followUp = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    const current = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select(['refusal_period', 'refusal_reason', 'surface_area'])
+      .where('id', '=', demand.id)
+      .executeTakeFirstOrThrow();
+    expect({ changes: followUp.history.map((event) => event.data), current }).toStrictEqual({
+      changes: [{ changes: { surface_area: { from: null, to: 145 } } }],
+      current: { refusal_period: null, refusal_reason: null, surface_area: 145 },
+    });
+    expect(postFetchJSON).toHaveBeenCalledExactlyOnceWith(
+      'https://posthog.test/capture/',
+      expect.objectContaining({
+        properties: expect.objectContaining({ champs_modifies: ['surface_area'], nb_champs_modifies: 1 }),
+      })
+    );
+  });
+
+  it('does not create an audit or tracking event for equivalent missing refusal details alone', async () => {
+    const demand = await seedWorkspace();
+    await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateBuilding({
+      demandId: demand.id,
+      updatedAt: demand.updated_at.toISOString(),
+      values: { ...zCcrtBuilding.parse(demand), refusal_period: '', refusal_reason: '' },
+    });
+    const followUp = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    expect(followUp.history).toStrictEqual([]);
+    expect(postFetchJSON).not.toHaveBeenCalled();
+  });
+
   it('preserves read-only identification and original declarations even when submitted with a correction', async () => {
     const demand = await seedWorkspace();
     const readOnlyValues = {
