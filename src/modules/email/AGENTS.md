@@ -15,6 +15,8 @@ src/modules/email/
 │   └── components.tsx         # Composants atomiques réutilisables
 ├── templates/                 # Un fichier par template, organisés par <module>/<destinataire>/
 │   ├── auth/
+│   │   ├── ccrt/
+│   │   │   └── ouverture-espace.tsx
 │   │   ├── gestionnaire/
 │   │   │   └── ouverture-espace.tsx
 │   │   └── utilisateur/

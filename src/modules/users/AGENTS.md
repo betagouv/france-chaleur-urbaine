@@ -4,6 +4,10 @@
 
 Ce module est actuellement en cours de migration depuis l'architecture legacy vers la nouvelle architecture modulaire.
 
+## Account opening emails
+
+`server/service.ts#create` sends an opening email only when the new account is explicitly active: `auth.gestionnaire.ouverture-espace` for network managers, `auth.ccrt.ouverture-espace` for CCRT. Updates, including activation of an existing account, do not send an opening email. The CCRT template uses generic manager-space wording and explains how to set a password through the forgotten-password flow.
+
 ## User tags
 
 Cross-cutting metadata an admin can attach to any user (flags: attended a webinar, roadmap priority…).
