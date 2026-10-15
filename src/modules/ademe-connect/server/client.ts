@@ -64,7 +64,11 @@ export const createContact = async (data: ContactData): Promise<ContactResponse 
   }
   logger.info('ademe-connect createContact', { email: pseudonymizeEmail(data.email), type: data.typeOrganisme });
   const payload = stripEmpty({ dateCreation: nowIso(), ...data, source: serverConfig.ADEME_CONNECT_SOURCE ?? '' });
-  return postFetchJSON<ContactResponse>(`${serverConfig.ADEME_CONNECT_BASE_URL}/personnes`, payload, getAuthHeaders());
+  const url = `${serverConfig.ADEME_CONNECT_BASE_URL}/personnes`;
+  logger.debug('ademe-connect request', { method: 'POST', payload, url });
+  const response = await postFetchJSON<ContactResponse>(url, payload, getAuthHeaders());
+  logger.debug('ademe-connect response', { method: 'POST', response, url });
+  return response;
 };
 
 export const updateContact = async (mail: string, data: Partial<Omit<ContactData, 'email'>>): Promise<ContactResponse | null> => {
@@ -73,11 +77,11 @@ export const updateContact = async (mail: string, data: Partial<Omit<ContactData
   }
   logger.info('ademe-connect updateContact', { email: pseudonymizeEmail(mail) });
   const payload = stripEmpty({ dateModification: nowIso(), email: mail, source: serverConfig.ADEME_CONNECT_SOURCE ?? '', ...data });
-  return putFetchJSON<ContactResponse>(
-    `${serverConfig.ADEME_CONNECT_BASE_URL}/personnes/mail/${encodeURIComponent(mail)}`,
-    payload,
-    getAuthHeaders()
-  );
+  const url = `${serverConfig.ADEME_CONNECT_BASE_URL}/personnes/mail/${encodeURIComponent(mail)}`;
+  logger.debug('ademe-connect request', { method: 'PUT', payload, url });
+  const response = await putFetchJSON<ContactResponse>(url, payload, getAuthHeaders());
+  logger.debug('ademe-connect response', { method: 'PUT', response, url });
+  return response;
 };
 
 export const getContact = async (mail: string): Promise<unknown> => {
@@ -85,7 +89,9 @@ export const getContact = async (mail: string): Promise<unknown> => {
     throw new Error('ADEME Connect is not configured (missing ADEME_CONNECT_CLIENT_ID / ADEME_CONNECT_CLIENT_SECRET)');
   }
   logger.info('ademe-connect getContact', { email: pseudonymizeEmail(mail) });
-  return fetchJSON(`${serverConfig.ADEME_CONNECT_BASE_URL}/personnes/mail/${encodeURIComponent(mail)}`, {
-    headers: getAuthHeaders(),
-  });
+  const url = `${serverConfig.ADEME_CONNECT_BASE_URL}/personnes/mail/${encodeURIComponent(mail)}`;
+  logger.debug('ademe-connect request', { method: 'GET', url });
+  const response = await fetchJSON(url, { headers: getAuthHeaders() });
+  logger.debug('ademe-connect response', { method: 'GET', response, url });
+  return response;
 };
