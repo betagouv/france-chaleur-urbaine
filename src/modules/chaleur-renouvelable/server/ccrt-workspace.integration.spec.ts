@@ -1,13 +1,14 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
+import { serverConfig } from '@/server/config';
 import { kdb } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { cleanDatabase, seedCommune, seedDemandeChaleurRenouvelable, seedTableUser } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
 import { createTestCaller, forbiddenError, type TestCaseBoolean, testUsers } from '@/tests/trpc-helpers';
-import { fetchJSON } from '@/utils/network';
+import { fetchJSON, postFetchJSON } from '@/utils/network';
 
 import { EMPTY_BAT_ENR_INFO } from '../bat-enr';
 import {
@@ -23,7 +24,7 @@ import * as ccrtNotesService from './ccrt-notes';
 import { getAddressEligibilityContext } from './service';
 
 vi.mock('@/modules/email', () => ({ sendEmailTemplate: vi.fn() }));
-vi.mock('@/utils/network', () => ({ fetchJSON: vi.fn() }));
+vi.mock('@/utils/network', () => ({ fetchJSON: vi.fn(), postFetchJSON: vi.fn() }));
 vi.mock('@/server/services/addresseInformation', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/server/services/addresseInformation')>()),
   getEligilityStatus: vi.fn(),
@@ -69,6 +70,8 @@ const emailContent = {
   signature: 'Conseiller',
 };
 const notFound = { code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' };
+const originalTracking = serverConfig.tracking;
+afterEach(() => Object.assign(serverConfig, { tracking: originalTracking }));
 const seedWorkspace = async () => {
   await seedTableUser([testUsers.admin, testUsers.ccrt, testUsers.alec]);
   await seedCommune({ insee_com: '13055', insee_dep: '13', insee_reg: '93', siren_epci: 'EPCI-13' });
@@ -94,6 +97,8 @@ const seedWorkspace = async () => {
 beforeEach(async () => {
   await cleanDatabase();
   vi.clearAllMocks();
+  Object.assign(serverConfig, { tracking: { postHogApiHost: 'https://posthog.test', postHogKey: 'test' } });
+  vi.mocked(postFetchJSON).mockResolvedValue(undefined);
   vi.mocked(getEligilityStatus).mockResolvedValue(heatNetworkEligibility);
   vi.mocked(sendEmailTemplate).mockResolvedValue(undefined);
   vi.mocked(fetchJSON).mockResolvedValue({
@@ -146,6 +151,7 @@ describe('CCRT workspace access', () => {
     await kdb.deleteFrom('user_permissions').where('user_id', '=', testUsers.ccrt.id).execute();
     await kdb.insertInto('user_permissions').values({ resource_id, type, user_id: testUsers.ccrt.id }).execute();
     await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.getHeatNetworkEligibility({ demandId: demand.id })).resolves.toStrictEqual({
+      coordinates: { lat: 43.3, lon: 5.37 },
       distance: null,
       isEligible: false,
     });
@@ -173,11 +179,74 @@ describe('CCRT workspace access', () => {
   });
 });
 
+describe('CCRT assignment candidates', () => {
+  const permissionCases: TestCaseBoolean<(typeof testUsers)[keyof typeof testUsers] | null>[] = [
+    { expectedOutput: false, input: null },
+    ...Object.values(testUsers).map((user) => ({ expectedOutput: user.role === 'admin', input: user })),
+  ];
+  permissionCases.forEach(({ input: user, expectedOutput: allowed }) => {
+    it(`protects assignment candidates for ${user?.role ?? 'anonymous'}`, async () => {
+      const demand = await seedWorkspace();
+      const request = createTestCaller(user).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
+      if (allowed) {
+        expect((await request).map((candidate) => candidate.id)).toStrictEqual([testUsers.ccrt.id]);
+      } else {
+        await expect(request).rejects.toMatchObject(forbiddenError);
+      }
+    });
+  });
+
+  it.each([
+    ['commune', '13055'],
+    ['epci', 'EPCI-13'],
+    ['ept', 'EPT-13'],
+    ['departement', '13'],
+    ['region', '93'],
+  ] as const)('finds CCRT candidates covered by %s before publication', async (type, resource_id) => {
+    const demand = await seedWorkspace();
+    await kdb.updateTable('demands_chaleur_renouvelable').set({ validated: false }).where('id', '=', demand.id).execute();
+    await kdb.deleteFrom('user_permissions').where('user_id', '=', testUsers.ccrt.id).execute();
+    await kdb.insertInto('user_permissions').values({ resource_id, type, user_id: testUsers.ccrt.id }).execute();
+
+    const candidates = await createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
+    expect(candidates.map((candidate) => candidate.id)).toStrictEqual([testUsers.ccrt.id]);
+  });
+
+  it('deduplicates matching accounts and excludes inactive, unrelated and non-CCRT accounts', async () => {
+    const demand = await seedWorkspace();
+    await seedTableUser([
+      { active: false, email: 'inactive-ccrt@test.local', id: uuid(800), role: 'ccrt' },
+      { email: 'other-ccrt@test.local', id: uuid(801), role: 'ccrt' },
+      { email: 'network-ccrt@test.local', id: uuid(802), role: 'ccrt' },
+    ]);
+    await kdb
+      .insertInto('user_permissions')
+      .values([
+        { resource_id: '13055', type: 'commune', user_id: testUsers.ccrt.id },
+        { resource_id: '13', type: 'departement', user_id: uuid(800) },
+        { resource_id: '75', type: 'departement', user_id: uuid(801) },
+        { resource_id: '13', type: 'reseau_de_chaleur', user_id: uuid(802) },
+      ])
+      .execute();
+
+    const candidates = await createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
+    expect(candidates.map((candidate) => candidate.id)).toStrictEqual([testUsers.ccrt.id]);
+  });
+
+  it('rejects a missing demand', async () => {
+    await seedWorkspace();
+    await expect(createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: uuid(999) })).rejects.toMatchObject(
+      notFound
+    );
+  });
+});
+
 describe('CCRT heat-network eligibility', () => {
   it('reads eligibility at the address without changing saved simulation solutions', async () => {
     const demand = await seedWorkspace();
     vi.mocked(getEligilityStatus).mockResolvedValue({ ...heatNetworkEligibility, distance: 96, isEligible: true });
     await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.getHeatNetworkEligibility({ demandId: demand.id })).resolves.toStrictEqual({
+      coordinates: { lat: 43.3, lon: 5.37 },
       distance: 96,
       isEligible: true,
     });
@@ -219,6 +288,10 @@ describe('CCRT notes and shared history', () => {
           status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED },
         },
       },
+    ]);
+    expect(vi.mocked(postFetchJSON).mock.calls.map(([, payload]) => payload)).toStrictEqual([
+      expect.objectContaining({ properties: expect.objectContaining({ declenchement: 'manuel', type_statut: 'suivi' }) }),
+      expect.objectContaining({ properties: expect.objectContaining({ declenchement: 'manuel', type_statut: 'avancement' }) }),
     ]);
   });
 
@@ -262,6 +335,20 @@ describe('CCRT notes and shared history', () => {
       notes: ['Premier échange'],
       status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
     });
+    expect(vi.mocked(postFetchJSON).mock.calls.map(([, payload]) => payload)).toStrictEqual([
+      expect.objectContaining({
+        event: 'ccrt_demande:status_changed',
+        properties: expect.objectContaining({
+          declenchement: 'manuel',
+          demande_id: demand.id,
+          statut_apres: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
+          statut_avant: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+          type_statut: 'suivi',
+        }),
+      }),
+      expect.objectContaining({ event: 'ccrt_demande:internal_note_created' }),
+    ]);
+    expect(JSON.stringify(vi.mocked(postFetchJSON).mock.calls)).not.toContain('Premier échange');
   });
 
   it('rolls back the status and audit when the note cannot be inserted', async () => {
@@ -288,6 +375,7 @@ describe('CCRT notes and shared history', () => {
       notes: [],
       status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
     });
+    expect(postFetchJSON).not.toHaveBeenCalled();
   });
 
   it('adds a note without rewriting the demand or its concurrency token', async () => {
@@ -390,6 +478,18 @@ describe('CCRT email delivery', () => {
     expect(followUp.emails.map((email) => ({ body: email.body, id: email.id, to: email.to }))).toStrictEqual([
       { body: emailContent.body, id: input.messageId, to: demand.email },
     ]);
+    const captures = vi.mocked(postFetchJSON).mock.calls.map(([, payload]) => payload);
+    expect(captures).toHaveLength(updateStatusOnSend ? 2 : 1);
+    expect(captures).toContainEqual(expect.objectContaining({ event: 'ccrt_demande:email_sent' }));
+    if (updateStatusOnSend) {
+      expect(captures).toContainEqual(
+        expect.objectContaining({
+          event: 'ccrt_demande:status_changed',
+          properties: expect.objectContaining({ declenchement: 'auto', type_statut: 'suivi' }),
+        })
+      );
+    }
+    expect(JSON.stringify(captures)).not.toContain(demand.email);
   });
 
   it('preserves the status/history on SMTP failure and allows one explicit retry', async () => {
@@ -399,6 +499,7 @@ describe('CCRT email delivery', () => {
     await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail(input)).rejects.toMatchObject({ code: 'INTERNAL_SERVER_ERROR' });
     const failed = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect({ emails: failed.emails, history: failed.history }).toStrictEqual({ emails: [], history: [] });
+    expect(postFetchJSON).not.toHaveBeenCalled();
     await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail(input);
     expect(vi.mocked(sendEmailTemplate).mock.calls.length).toStrictEqual(2);
   });
@@ -460,6 +561,21 @@ describe('CCRT building corrections', () => {
       current: readOnlyValues,
     });
     expect(vi.mocked(fetchJSON).mock.calls[0][1]).toMatchObject({ params: { q: demand.address } });
+    expect(postFetchJSON).toHaveBeenCalledExactlyOnceWith('https://posthog.test/capture/', {
+      api_key: 'test',
+      distinct_id: testUsers.ccrt.id,
+      event: 'ccrt_demande:building_data_edited',
+      properties: {
+        $process_person_profile: false,
+        champs_modifies: ['dpe'],
+        demande_id: demand.id,
+        departement: '13',
+        nb_champs_modifies: 1,
+        solution_1: demand.alternative_heating_solutions[0] ?? null,
+        source: 'ccrt_workspace',
+        structure_ccrt: null,
+      },
+    });
   });
 
   it('keeps an eligible heat network out of the saved alternative solutions', async () => {
@@ -523,6 +639,7 @@ describe('CCRT building corrections', () => {
       mode: corrected.hot_water_system_type,
       queryMode: new URL(corrected.simulation_url, 'https://test.local').searchParams.get('modeEauChaudeSanitaire'),
     }).toStrictEqual({ mode: null, queryMode: 'nonRenseigne' });
+    expect(postFetchJSON).not.toHaveBeenCalled();
   });
 
   it('recomputes a coherent result URL/ranking, audits corrections and rejects a stale editor', async () => {
@@ -561,6 +678,7 @@ describe('CCRT building corrections', () => {
         values,
       })
     ).rejects.toMatchObject({ code: 'CONFLICT' });
+    expect(postFetchJSON).toHaveBeenCalledTimes(1);
     const followUp = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect(followUp.history.map((event) => event.data)).toStrictEqual([
       {

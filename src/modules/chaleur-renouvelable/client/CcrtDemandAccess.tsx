@@ -4,12 +4,12 @@ import { useAuthentication } from '@/modules/auth/client/hooks';
 
 import type { CcrtFollowUp } from '../types';
 
-type CcrtDemandAccessProps = { users: CcrtFollowUp['users'] };
+type CcrtDemandAccessProps = { users: CcrtFollowUp['users']; onManageAccess?: () => void };
 
 /**
  * Lists effective access holders; administrators keep the existing user-permission editor.
  */
-export function CcrtDemandAccess({ users }: CcrtDemandAccessProps) {
+export function CcrtDemandAccess({ users, onManageAccess }: CcrtDemandAccessProps) {
   const { hasRole } = useAuthentication();
   return (
     <section className="border-t border-(--border-default-grey) p-4">
@@ -20,7 +20,11 @@ export function CcrtDemandAccess({ users }: CcrtDemandAccessProps) {
               <span className="font-medium">{[user.first_name, user.last_name].filter(Boolean).join(' ') || user.email}</span>
               <span className="block">{user.structure_name || roleLabels[user.role]}</span>
               {hasRole('admin') && (
-                <Button size="small" priority="tertiary no outline" linkProps={{ href: `/admin/users?userId=${user.id}` }}>
+                <Button
+                  size="small"
+                  priority="tertiary no outline"
+                  linkProps={{ href: `/admin/users?userId=${user.id}`, onClick: onManageAccess }}
+                >
                   Gérer les accès
                 </Button>
               )}

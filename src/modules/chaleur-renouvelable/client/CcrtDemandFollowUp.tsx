@@ -19,12 +19,21 @@ type CcrtDemandFollowUpProps = {
   isUpdating: boolean;
   onUpdate: (values: CcrtDemandUpdate) => Promise<void>;
   onContact: (showHistory?: boolean) => void;
+  onManageAccess?: () => void;
+  showContactAction?: boolean;
 };
 
 /**
  * Contact action and existing status controls for a CCRT demand.
  */
-export function CcrtDemandFollowUp({ demand, isUpdating, onUpdate, onContact }: CcrtDemandFollowUpProps) {
+export function CcrtDemandFollowUp({
+  demand,
+  isUpdating,
+  onUpdate,
+  onContact,
+  onManageAccess,
+  showContactAction = true,
+}: CcrtDemandFollowUpProps) {
   const [offset, setOffset] = useState(0);
   const archive = useDialogState();
   const followUp = trpc.batEnr.ccrt.getFollowUp.useQuery({ demandId: demand.id, offset });
@@ -32,16 +41,18 @@ export function CcrtDemandFollowUp({ demand, isUpdating, onUpdate, onContact }: 
 
   return (
     <aside className="border border-(--border-default-grey) bg-(--background-default-grey)">
-      <div className={isToProcess ? 'bg-(--background-contrast-warning) p-4' : 'bg-(--background-contrast-info) p-4'}>
-        <Badge severity={isToProcess ? 'warning' : 'info'} small className="mb-3">
-          {isToProcess ? 'Action Attendue' : demand.status}
-        </Badge>
-        <h3 className="mb-2 text-lg">{isToProcess ? 'Contacter l’usager' : 'Relancer l’usager'}</h3>
-        {isToProcess && <p className="mb-4 leading-6">Depuis {Math.max(0, dayjs().diff(demand.created_at, 'day'))} jours</p>}
-        <Button full iconId="fr-icon-mail-line" iconPosition="right" onClick={() => onContact()}>
-          Contacter par email
-        </Button>
-      </div>
+      {showContactAction && (
+        <div className={isToProcess ? 'bg-(--background-contrast-warning) p-4' : 'bg-(--background-contrast-info) p-4'}>
+          <Badge severity={isToProcess ? 'warning' : 'info'} small className="mb-3">
+            {isToProcess ? 'Action Attendue' : demand.status}
+          </Badge>
+          <h3 className="mb-2 text-lg">{isToProcess ? 'Contacter l’usager' : 'Relancer l’usager'}</h3>
+          {isToProcess && <p className="mb-4 leading-6">Depuis {Math.max(0, dayjs().diff(demand.created_at, 'day'))} jours</p>}
+          <Button full iconId="fr-icon-mail-line" iconPosition="right" onClick={() => onContact()}>
+            Contacter par email
+          </Button>
+        </div>
+      )}
       <div>
         <div className="px-4 pt-4">
           <Button priority="tertiary no outline" size="small" iconId="fr-icon-mail-line" className="mb-4" onClick={() => onContact(true)}>
@@ -60,7 +71,7 @@ export function CcrtDemandFollowUp({ demand, isUpdating, onUpdate, onContact }: 
       ) : followUp.data ? (
         <>
           <CcrtDemandHistory followUp={followUp.data} offset={offset} onPageChange={setOffset} />
-          <CcrtDemandAccess users={followUp.data.users} />
+          <CcrtDemandAccess users={followUp.data.users} onManageAccess={onManageAccess} />
         </>
       ) : (
         <p className="p-4" role="status">

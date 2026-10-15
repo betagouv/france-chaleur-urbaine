@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
@@ -13,11 +13,15 @@ import { HOT_WATER_PARAMS_SECTION_ID } from '@/modules/chaleur-renouvelable/clie
 import { buildSimulationSituation } from '@/modules/chaleur-renouvelable/client/simulation-situation';
 import { DEFAULT_SIMULATION_PARAMS } from '@/modules/chaleur-renouvelable/constants';
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
+import { toastErrors } from '@/modules/notification';
+import trpc from '@/modules/trpc/client';
 
 export function useChoixChauffageResults() {
   const engine = useSimulatorEngine();
   const urlParams = useChoixChauffageQueryParams();
   const params = urlParams.params;
+  const utils = trpc.useUtils();
+  const selectionVersion = useRef(0);
 
   useRemoveHashOnScroll('#help-ademe');
 
@@ -38,6 +42,24 @@ export function useChoixChauffageResults() {
     selectBatEnrBatiment,
     selectedBatEnrBatiment,
   } = useAddressEligibility(params.adresse ?? null, params.constructionId);
+  const selectedConstructionId = selectedBatEnrBatiment?.batiment_construction_id;
+  const prefill = trpc.batEnr.getSimulationPrefill.useQuery(
+    { batiment_construction_id: selectedConstructionId ?? '' },
+    { enabled: Boolean(selectedConstructionId) }
+  );
+  // Preserve explicit URL/user values; RNIC only fills missing inputs for the current building.
+  useEffect(() => {
+    if (!prefill.data || isEligibilityLoading || geoAddress?.properties.label !== params.adresse) {
+      return;
+    }
+    const missing = {
+      ...(params.nbLogements === null && prefill.data.nbLogements !== undefined && { nbLogements: prefill.data.nbLogements }),
+      ...(params.surfaceMoyenne === null && prefill.data.surfaceMoyenne !== undefined && { surfaceMoyenne: prefill.data.surfaceMoyenne }),
+    };
+    if (Object.keys(missing).length > 0) {
+      void urlParams.setParams(missing);
+    }
+  }, [prefill.data, params.nbLogements, params.surfaceMoyenne, params.adresse, isEligibilityLoading, geoAddress, urlParams]);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [shouldScrollToHotWaterParams, setShouldScrollToHotWaterParams] = useState(false);
@@ -114,6 +136,7 @@ export function useChoixChauffageResults() {
 
   const handleSelectGeoAddress = useCallback(
     (geoAddress?: BANAddressFeature) => {
+      selectionVersion.current += 1;
       if (!geoAddress) {
         urlParams.setParams({ adresse: null, constructionId: null });
         resetEligibility();
@@ -127,18 +150,26 @@ export function useChoixChauffageResults() {
   );
 
   const handleSelectBatEnrBatiment = useCallback(
-    (batEnrBatiment: (typeof batEnrBatiments)[number]) => {
+    toastErrors(async (batEnrBatiment: (typeof batEnrBatiments)[number]) => {
       if (!batEnrBatiment.batiment_construction_id) {
         return;
       }
 
-      urlParams.setParams({
+      const version = ++selectionVersion.current;
+      const prefillParams = await utils.batEnr.getSimulationPrefill.fetch({
+        batiment_construction_id: batEnrBatiment.batiment_construction_id,
+      });
+      if (selectionVersion.current !== version) {
+        return;
+      }
+      await urlParams.setParams({
         ...getSimulationPrefillFromBatEnrBatiment(batEnrBatiment),
+        ...prefillParams,
         constructionId: batEnrBatiment.batiment_construction_id,
       });
       selectBatEnrBatiment(batEnrBatiment);
-    },
-    [selectBatEnrBatiment, urlParams]
+    }),
+    [selectBatEnrBatiment, urlParams, utils]
   );
 
   return {

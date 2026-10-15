@@ -29,5 +29,5 @@ export const getCcrtHeatNetworkEligibility = async (ctx: Context, input: z.infer
     building
   );
   const eligibility = await getEligilityStatus(coordinates.lat, coordinates.lon);
-  return { distance: eligibility.distance, isEligible: eligibility.isEligible };
+  return { coordinates, distance: eligibility.distance, isEligible: eligibility.isEligible };
 };

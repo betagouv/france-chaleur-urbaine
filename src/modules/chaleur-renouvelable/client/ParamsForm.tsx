@@ -1,5 +1,5 @@
 import { useStore } from '@tanstack/react-form';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
@@ -37,6 +37,8 @@ import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouv
 import { AddressField } from '@/modules/form/AddressField';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
+import { toastErrors } from '@/modules/notification';
+import trpc from '@/modules/trpc/client';
 import cx from '@/utils/cx';
 
 import { DpeField } from './DpeField';
@@ -77,6 +79,9 @@ export function ParamsForm({
   selectedBatiment,
   paramSources,
 }: ParamsFormProps) {
+  const utils = trpc.useUtils();
+  const prefillVersion = useRef(0);
+  const [isPrefilling, setIsPrefilling] = useState(false);
   const currentValues = useMemo(() => toParamsFormDraft(values, paramSources), [values, paramSources]);
   const form = useAppForm({
     ...schemaValidation(zParamsForm),
@@ -124,6 +129,8 @@ export function ParamsForm({
   };
 
   const handleClose = () => {
+    prefillVersion.current += 1;
+    setIsPrefilling(false);
     form.reset(currentValues);
     setHasPendingAddressChange(false);
     setIsOpen(false);
@@ -139,28 +146,50 @@ export function ParamsForm({
     handleClose();
   };
 
-  const handleSelectBatiment = (batiment: BatEnrBatiment) => {
-    const prefillParams = getSimulationPrefillFromBatEnrBatiment(batiment);
-
+  const handleSelectBatiment = toastErrors(async (batiment: BatEnrBatiment) => {
+    const version = ++prefillVersion.current;
+    setIsPrefilling(true);
     form.setFieldValue('constructionId', batiment.batiment_construction_id);
-    if (prefillParams.dpe) {
-      form.setFieldValue('dpe', prefillParams.dpe);
-      form.setFieldValue('isDpeExplicit', true);
+    const previous = form.state.values;
+    try {
+      const prefillParams = {
+        ...getSimulationPrefillFromBatEnrBatiment(batiment),
+        ...(batiment.batiment_construction_id
+          ? await utils.batEnr.getSimulationPrefill.fetch({ batiment_construction_id: batiment.batiment_construction_id })
+          : {}),
+      };
+      if (prefillVersion.current !== version || form.state.values.constructionId !== batiment.batiment_construction_id) {
+        return;
+      }
+      // Keep edits made while the remote prefill was loading.
+      const current = form.state.values;
+      if (prefillParams.dpe && current.dpe === previous.dpe) {
+        form.setFieldValue('dpe', prefillParams.dpe);
+        form.setFieldValue('isDpeExplicit', true);
+      }
+      if (
+        prefillParams.modeEauChaudeSanitaire &&
+        current.modeEauChaudeSanitaire === previous.modeEauChaudeSanitaire &&
+        current.typeLogement === previous.typeLogement
+      ) {
+        form.setFieldValue('isModeEauChaudeSanitaireInferred', false);
+        form.setFieldValue(
+          'modeEauChaudeSanitaire',
+          normalizeModeEauChaudeSanitaireForTypeLogement(prefillParams.modeEauChaudeSanitaire, current.typeLogement)
+        );
+      }
+      if (prefillParams.nbLogements !== undefined && current.nbLogements === previous.nbLogements) {
+        form.setFieldValue('nbLogements', String(prefillParams.nbLogements));
+      }
+      if (prefillParams.surfaceMoyenne !== undefined && current.surfaceMoyenne === previous.surfaceMoyenne) {
+        form.setFieldValue('surfaceMoyenne', String(prefillParams.surfaceMoyenne));
+      }
+    } finally {
+      if (prefillVersion.current === version) {
+        setIsPrefilling(false);
+      }
     }
-    if (prefillParams.modeEauChaudeSanitaire) {
-      form.setFieldValue('isModeEauChaudeSanitaireInferred', false);
-      form.setFieldValue(
-        'modeEauChaudeSanitaire',
-        normalizeModeEauChaudeSanitaireForTypeLogement(prefillParams.modeEauChaudeSanitaire, draft.typeLogement)
-      );
-    }
-    if (prefillParams.nbLogements !== undefined) {
-      form.setFieldValue('nbLogements', String(prefillParams.nbLogements));
-    }
-    if (prefillParams.surfaceMoyenne !== undefined) {
-      form.setFieldValue('surfaceMoyenne', String(prefillParams.surfaceMoyenne));
-    }
-  };
+  });
 
   return (
     <Form form={form} id="params-form" className={cx('border border-gray-200 bg-white p-4 shadow-sm', !isOpen && 'sticky top-0 z-20')}>
@@ -297,7 +326,7 @@ export function ParamsForm({
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="fr-icon-community-fill" aria-hidden="true" />
                 <h3 className="m-0 text-base font-bold">Bâtiment</h3>
-                <span className="text-xs text-gray-500">source : CSTB</span>
+                <span className="text-xs text-gray-500">sources : RNIC et CSTB</span>
               </div>
               <div className="mt-0 md:mt-3 grid grid-cols-1 gap-4 md:grid-cols-[minmax(190px,0.9fr)_minmax(0,2fr)]">
                 <BatEnrBatimentsMap
@@ -402,7 +431,7 @@ export function ParamsForm({
             </section>
           </div>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Button type="submit" iconId="fr-icon-save-line" disabled={!isModified}>
+            <Button type="submit" iconId="fr-icon-save-line" disabled={!isModified || isPrefilling}>
               Enregistrer et recalculer
             </Button>
             <Button priority="secondary" type="button" onClick={handleCancel}>
