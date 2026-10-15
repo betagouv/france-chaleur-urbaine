@@ -323,7 +323,7 @@ export const getBatEnrBatimentDetails = async (input: GetBdnbConstructionInput):
   return batiment;
 };
 
-export const getBatEnrBatimentsByConstructionIds = async (batimentConstructionIds: string[]): Promise<BatEnrBatiment[]> => {
+const getBatEnrBatimentsByConstructionIds = async (batimentConstructionIds: string[]): Promise<BatEnrBatiment[]> => {
   const uniqueBatimentConstructionIds = [...new Set(batimentConstructionIds)];
 
   if (uniqueBatimentConstructionIds.length === 0) {
@@ -707,7 +707,6 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
       comments: input.comments,
       created_at: new Date(),
       demand_concern: input.demandConcern,
-      departement_code: departmentCode,
       dpe: input.dpe,
       email: input.email,
       first_name: input.firstName,
@@ -917,13 +916,7 @@ export const validateDemandeChaleurRenouvelableAdmin = async ({ demandId }: Admi
 
 export const listDemandesChaleurRenouvelableAdmin = async () => {
   const demandes = await selectDemandesChaleurRenouvelableForList().orderBy('created_at', 'desc').execute();
-
-  const { count } = await kdb
-    .selectFrom('demands_chaleur_renouvelable')
-    .select(kdb.fn.count<number>('id').as('count'))
-    .executeTakeFirstOrThrow();
-
-  return { count, items: serializeDemandesChaleurRenouvelable(demandes) };
+  return { count: demandes.length, items: serializeDemandesChaleurRenouvelable(demandes) };
 };
 
 export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {

@@ -26,13 +26,13 @@ export function useCcrtDemandActions(structureName: string | null) {
     structure_ccrt: structureName,
   });
 
-  const updateDemand = async (demand: CcrtDemand, values: CcrtDemandUpdate, trigger: 'contact' | 'manual' = 'manual') => {
+  const updateDemand = async (demand: CcrtDemand, values: CcrtDemandUpdate) => {
     if (updatingDemands.current.has(demand.id)) {
       return;
     }
     updatingDemands.current.add(demand.id);
     try {
-      const updatedDemand = await mutation.mutateAsync({ demandId: demand.id, trigger, values });
+      const updatedDemand = await mutation.mutateAsync({ demandId: demand.id, values });
       utils.batEnr.ccrt.listDemandesChaleurRenouvelable.setData(
         undefined,
         (data) =>

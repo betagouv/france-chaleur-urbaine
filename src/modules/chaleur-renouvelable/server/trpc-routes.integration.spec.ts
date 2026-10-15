@@ -14,7 +14,7 @@ import { fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { kdb, sql } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
-import { cleanDatabase, seedCcrtExperimentationTerritory, seedTableUser } from '@/tests/fixtures';
+import { cleanDatabase, seedCcrtExperimentationTerritory, seedCommune, seedTableUser } from '@/tests/fixtures';
 import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
@@ -176,6 +176,30 @@ describe('batEnrRouter', () => {
     await seedCcrtExperimentationTerritory();
     vi.clearAllMocks();
     mockedFetchJSON.mockReset();
+  });
+
+  it('keeps the authoritative commune department when the fallback lookup is missing', async () => {
+    await seedCommune({ insee_com: '13055', insee_dep: '13', insee_reg: '93', siren_epci: 'EPCI-13' });
+    const input = buildCcrtExperimentationDemandInput({
+      geoAddress: {
+        city: 'Unknown city',
+        cityCode: '13055',
+        context: '75, Paris, Île-de-France',
+        coordinates: [5.3698, 43.2965],
+        postcode: '13001',
+      },
+      isPublicAdvisorSelected: true,
+    });
+    await kdb.deleteFrom('communes').where('id', '=', '13055').execute();
+
+    const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
+    const territory = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select(['commune_code', 'departement_code', 'epci_code', 'region_code'])
+      .where('id', '=', result.id ?? '')
+      .executeTakeFirstOrThrow();
+
+    expect(territory).toStrictEqual({ commune_code: '13055', departement_code: '13', epci_code: 'EPCI-13', region_code: '93' });
   });
 
   describe('batEnr.getSimulationPrefill', () => {

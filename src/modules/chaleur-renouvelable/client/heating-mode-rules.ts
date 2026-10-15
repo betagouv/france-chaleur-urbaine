@@ -9,9 +9,9 @@ import type {
 } from '@/modules/chaleur-renouvelable/constants';
 
 export const HEAT_NETWORK_MAX_DISTANCE = businessRules.fcrHeatNetworkMaxDistanceMeters.value;
-export const COLD_NETWORK_MAX_DISTANCE = businessRules.fcrColdNetworkMaxDistanceMeters.value;
-export const SOLAR_THERMAL_MIN_COVERAGE = businessRules.fcrSolarThermalMinCoveragePercent.value;
-export const HEATING_MODE_ALTITUDE_THRESHOLD_METERS = businessRules.fcrHeatingModeAltitudeThresholdMeters.value;
+const COLD_NETWORK_MAX_DISTANCE = businessRules.fcrColdNetworkMaxDistanceMeters.value;
+const SOLAR_THERMAL_MIN_COVERAGE = businessRules.fcrSolarThermalMinCoveragePercent.value;
+const HEATING_MODE_ALTITUDE_THRESHOLD_METERS = businessRules.fcrHeatingModeAltitudeThresholdMeters.value;
 
 const BIOMASS_BOILER_MODE_IDS: readonly ModeDeChauffageId[] = ['collective-biomass-boiler', 'house-biomass-boiler'];
 const AIR_WATER_HEAT_PUMP_MODE_IDS: readonly ModeDeChauffageId[] = [
@@ -42,12 +42,12 @@ export const hasSufficientSolarThermalCoverage = (situation: Situation) =>
 export const hasInsufficientSolarThermalCoverage = (situation: Situation) =>
   situation.solarThermalCoverage != null && situation.solarThermalCoverage < SOLAR_THERMAL_MIN_COVERAGE;
 
-export const hasFavorableGeothermalArea = (situation: Situation) =>
+const hasFavorableGeothermalArea = (situation: Situation) =>
   [1, 2].includes(situation.geothermalNappeGmi ?? 0) || [1, 2].includes(situation.geothermalSondeGmi ?? 0);
 
-export const hasSufficientGeothermalResource = (situation: Situation) => [7, 8, 9].includes(situation.geothermalNappePotential ?? 0);
+const hasSufficientGeothermalResource = (situation: Situation) => [7, 8, 9].includes(situation.geothermalNappePotential ?? 0);
 
-export const hasUnknownGeothermalResource = (situation: Situation) => [0, 1].includes(situation.geothermalNappePotential ?? 0);
+const hasUnknownGeothermalResource = (situation: Situation) => [0, 1].includes(situation.geothermalNappePotential ?? 0);
 
 export const hasCompatibleGeothermalPotential = (situation: Situation) =>
   situation.geothermalNappeGmi !== 3 &&
