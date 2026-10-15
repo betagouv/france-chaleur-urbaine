@@ -16,8 +16,9 @@ import { HeatNetworkRecommendedSolutionCard } from '@/modules/chaleur-renouvelab
 import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui/ResultsSection';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
-import { IS_CCRT_DEMAND_ENABLED, isCcrtExperimentationEligible } from '../constants';
+import { IS_CCRT_DEMAND_ENABLED } from '../constants';
 import { canProposeHeatNetwork } from '../heat-network-eligibility';
+import { isCcrtExperimentationEligible } from './ccrt-experimentation';
 import { getAlternativeHeatingSolutionLabels } from './heating-modes/selectors';
 import { ParamsForm } from './ParamsForm';
 

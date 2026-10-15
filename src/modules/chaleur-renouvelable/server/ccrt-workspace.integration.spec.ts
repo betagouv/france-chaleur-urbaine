@@ -21,7 +21,7 @@ import {
   zCcrtBuilding,
 } from '../constants';
 import * as ccrtNotesService from './ccrt-notes';
-import { getAddressEligibilityContext } from './service';
+import { getAddressEligibilityContext, notifyCcrtOfUnhandledDemandesChaleurRenouvelable } from './service';
 
 vi.mock('@/modules/email', () => ({ sendEmailTemplate: vi.fn() }));
 vi.mock('@/utils/network', () => ({ fetchJSON: vi.fn(), postFetchJSON: vi.fn() }));
@@ -176,6 +176,92 @@ describe('CCRT workspace access', () => {
     await expect(
       createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({ demandId: uuid(999), values: { note: 'Intrusion' } })
     ).rejects.toMatchObject(notFound);
+  });
+});
+
+describe('CCRT notifications through classic permissions', () => {
+  it.each([
+    ['commune', '13055'],
+    ['epci', 'EPCI-13'],
+    ['ept', 'EPT-13'],
+    ['departement', '13'],
+    ['region', '93'],
+  ] as const)('notifies and reminds only authorized active CCRT accounts through %s', async (type, resource_id) => {
+    const demand = await seedWorkspace();
+    await kdb.updateTable('demands_chaleur_renouvelable').set({ validated: false }).where('id', '=', demand.id).execute();
+    await kdb.updateTable('users').set({ receive_old_demands: true }).where('id', '=', testUsers.ccrt.id).execute();
+    await kdb.deleteFrom('user_permissions').where('user_id', '=', testUsers.ccrt.id).execute();
+    await seedTableUser([
+      { active: false, email: 'inactive@test.local', id: uuid(800), receive_old_demands: true, role: 'ccrt' },
+      { email: 'network-only@test.local', id: uuid(801), receive_old_demands: true, role: 'ccrt' },
+    ]);
+    await kdb
+      .insertInto('user_permissions')
+      .values([
+        { resource_id, type, user_id: testUsers.ccrt.id },
+        { resource_id: '93', type: 'region', user_id: uuid(800) },
+        { resource_id: '13', type: 'reseau_de_chaleur', user_id: uuid(801) },
+      ])
+      .execute();
+    const nearbyDemand = await seedDemandeChaleurRenouvelable({
+      commune_code: '13056',
+      created_at: new Date('2026-01-02T00:00:00.000Z'),
+      departement_code: '13',
+      epci_code: 'OTHER-EPCI',
+      ept_code: 'OTHER-EPT',
+      region_code: '93',
+      validated: true,
+    });
+    await seedDemandeChaleurRenouvelable({
+      commune_code: '75056',
+      departement_code: '75',
+      epci_code: 'PARIS-EPCI',
+      region_code: '11',
+      validated: true,
+    });
+    const pendingCount = type === 'region' || type === 'departement' ? 2 : 1;
+
+    await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: demand.id });
+    expect(
+      vi.mocked(sendEmailTemplate).mock.calls.map(([key, recipient, props]) => ({
+        count: props && 'pendingDemandCount' in props ? props.pendingDemandCount : null,
+        key,
+        recipient,
+      }))
+    ).toStrictEqual([
+      {
+        count: pendingCount,
+        key: 'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
+        recipient: { email: testUsers.ccrt.email, id: testUsers.ccrt.id },
+      },
+    ]);
+
+    vi.mocked(sendEmailTemplate).mockClear();
+    await notifyCcrtOfUnhandledDemandesChaleurRenouvelable();
+    expect(
+      vi.mocked(sendEmailTemplate).mock.calls.map(([key, recipient, props]) => ({
+        count: props && 'pendingDemandCount' in props ? props.pendingDemandCount : null,
+        key,
+        props,
+        recipient,
+      }))
+    ).toMatchObject([
+      {
+        count: pendingCount,
+        key: 'demands.ccrt.rappel-demandes-en-attente',
+        props: {
+          demands: (pendingCount === 2 ? [demand.id, nearbyDemand.id] : [demand.id]).map((id) => ({ id })),
+        },
+        recipient: { email: testUsers.ccrt.email, id: testUsers.ccrt.id },
+      },
+    ]);
+  });
+
+  it.each([false, null])('does not send reminders when the preference is %s', async (receiveOldDemands) => {
+    await seedWorkspace();
+    await kdb.updateTable('users').set({ receive_old_demands: receiveOldDemands }).where('id', '=', testUsers.ccrt.id).execute();
+    await notifyCcrtOfUnhandledDemandesChaleurRenouvelable();
+    expect(sendEmailTemplate).not.toHaveBeenCalled();
   });
 });
 
