@@ -42,7 +42,7 @@ type RnicCandidate = {
   row: RnicRow;
 };
 
-export type RnicCopropriete = {
+type RnicCopropriete = {
   housingCount: number | null;
   nomCopropriete: string;
   numeroImmatriculation: string | null;

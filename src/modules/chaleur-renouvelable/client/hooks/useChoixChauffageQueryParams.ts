@@ -43,7 +43,7 @@ export const choixChauffageQueryParsers = {
   originDemandId: parseAsString.withOptions(queryOptions),
 };
 
-export type ChoixChauffageSimulationParams = inferParserType<typeof simulationQueryParsers>;
+type ChoixChauffageSimulationParams = inferParserType<typeof simulationQueryParsers>;
 export type ChoixChauffageParams = ChoixChauffageSimulationParams & {
   constructionId: inferParserType<typeof choixChauffageQueryParsers>['construction_id'];
   originDemandId: inferParserType<typeof choixChauffageQueryParsers>['originDemandId'];
@@ -53,27 +53,6 @@ export type ChoixChauffageParamSources = {
   isModeEauChaudeSanitaireInferred: boolean;
 };
 export type SetChoixChauffageParams = (params: Partial<ChoixChauffageParams>) => Promise<URLSearchParams>;
-
-const getNullableQueryString = (value: string | null | undefined) => (value === '' ? null : (value ?? null));
-
-export function getNextEspaceExterieurQueryValue({
-  currentEspaceExterieur,
-  effectiveEspaceExterieur,
-  nextParams,
-}: {
-  currentEspaceExterieur: ChoixChauffageParams['espaceExterieur'];
-  effectiveEspaceExterieur: ChoixChauffageParams['espaceExterieur'];
-  nextParams: Partial<ChoixChauffageParams>;
-}) {
-  if (nextParams.typeLogement === undefined) {
-    return nextParams.espaceExterieur;
-  }
-
-  const candidateEspaceExterieur =
-    'espaceExterieur' in nextParams ? nextParams.espaceExterieur : (currentEspaceExterieur ?? effectiveEspaceExterieur);
-
-  return candidateEspaceExterieur;
-}
 
 export function useChoixChauffageQueryParams() {
   const [queryParams, setQueryParams] = useQueryStates(choixChauffageQueryParsers);
@@ -144,12 +123,8 @@ export function useChoixChauffageQueryParams() {
         adresse: nextParams.adresse,
         construction_id: nextParams.constructionId,
         dpe: nextParams.dpe,
-        espaceExterieur: getNextEspaceExterieurQueryValue({
-          currentEspaceExterieur: queryParams.espaceExterieur,
-          effectiveEspaceExterieur: espaceExterieur,
-          nextParams,
-        }),
-        habitantsMoyen: getNullableQueryString(nextParams.habitantsMoyen),
+        espaceExterieur: nextParams.espaceExterieur,
+        habitantsMoyen: nextParams.habitantsMoyen === '' ? null : nextParams.habitantsMoyen,
         modeEauChaudeSanitaire: nextModeEauChaudeSanitaire,
         nbLogements: nextParams.nbLogements,
         originDemandId: nextParams.originDemandId,
@@ -158,7 +133,7 @@ export function useChoixChauffageQueryParams() {
         typeRadiateur: nextParams.typeRadiateur,
       });
     },
-    [espaceExterieur, queryParams.espaceExterieur, queryParams.modeEauChaudeSanitaire, queryParams.typeLogement, setQueryParams]
+    [queryParams.modeEauChaudeSanitaire, queryParams.typeLogement, setQueryParams]
   );
 
   return useMemo(

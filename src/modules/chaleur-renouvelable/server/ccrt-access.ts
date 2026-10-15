@@ -83,8 +83,7 @@ export const getCcrtTerritory = async (cityCode: string | null, departmentCode: 
   };
 };
 
-export const listCcrtUsersWithAccess = async (ctx: Context, demandId: string) => {
-  const demand = await ensureCcrtDemandAccess(ctx, demandId);
+export const listCcrtUsersWithAccess = async (demand: Awaited<ReturnType<typeof ensureCcrtDemandAccess>>) => {
   const [users, admins] = await Promise.all([
     demand.validated ? getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null }) : [],
     kdb
