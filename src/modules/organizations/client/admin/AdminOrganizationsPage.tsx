@@ -47,6 +47,8 @@ const AdminOrganizationsPage = () => {
               {row.original.drifting_networks_count}
             </Badge>
           ) : null,
+        exportFn: (row) => row.drifting_networks_count,
+        exportHeader: 'Écart',
         header: () => (
           <span className="inline-flex items-center gap-1">
             Écart
@@ -116,7 +118,14 @@ const AdminOrganizationsPage = () => {
         <Text mb="2w">
           Gestionnaires de réseaux et leurs accès API. Rattachez les réseaux d'une organisation via l'action «&nbsp;Réseaux&nbsp;».
         </Text>
-        <TableSimple columns={columns} data={organizations || []} loading={isLoading} padding="sm" urlSyncKey="organizations" />
+        <TableSimple
+          columns={columns}
+          data={organizations || []}
+          loading={isLoading}
+          padding="sm"
+          urlSyncKey="organizations"
+          export={{ fileName: 'organisations.xlsx', sheetName: 'Organisations' }}
+        />
       </Box>
     </SimplePage>
   );
