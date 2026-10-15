@@ -159,8 +159,20 @@ const heatingModeCases: HeatingModeCase[] = [
         overrides: { eligibiliteReseauChaleur: createHeatNetwork({ isEligible: false }) },
       },
       {
-        description: 'quand le réseau est à 200 m',
+        description: 'quand le réseau éligible est à 200 m',
         overrides: { eligibiliteReseauChaleur: createHeatNetwork({ distance: 200 }) },
+      },
+      {
+        description: 'dans un PDP au-delà de 200 m',
+        overrides: { eligibiliteReseauChaleur: createHeatNetwork({ distance: 450, inPDP: true }) },
+      },
+      {
+        description: 'sans distance connue pour un réseau éligible',
+        overrides: { eligibiliteReseauChaleur: createHeatNetwork({ distance: null }) },
+      },
+      {
+        description: 'sans type de radiateur renseigné',
+        overrides: { typeRadiateur: null },
       },
       {
         description: 'sans radiateur à eau',

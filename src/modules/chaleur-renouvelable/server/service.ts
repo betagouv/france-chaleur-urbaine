@@ -36,6 +36,7 @@ import { dayjs } from '@/utils/date';
 import { fetchJSON } from '@/utils/network';
 import { stripDomainFromURL } from '@/utils/url';
 
+import { canProposeHeatNetwork } from '../heat-network-eligibility';
 import { getSimulationPrefillFromBatEnrBatiment } from '../simulation-prefill';
 import { getAltitudeByCoordinates } from './altimetry';
 import { applyCcrtAccessFilter, ensureCcrtDemandAccess, getCcrtTerritory } from './ccrt-access';
@@ -246,7 +247,16 @@ const patchDemandWithFcrSnapshot = async (demandId: string, legacyValues: Legacy
 };
 
 const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promise<DemandSubmissionResult | null> => {
-  if (input.isPublicAdvisorSelected || input.originDemandId || !input.geoAddress || input.heatNetworkEligibility?.isEligible !== true) {
+  if (
+    input.isPublicAdvisorSelected ||
+    !input.geoAddress ||
+    !input.heatNetworkEligibility ||
+    !canProposeHeatNetwork({
+      hasAlreadyReceivedHeatNetworkRefusal: Boolean(input.originDemandId),
+      heatNetworkEligibility: input.heatNetworkEligibility,
+      radiatorType: input.radiatorType,
+    })
+  ) {
     return null;
   }
 

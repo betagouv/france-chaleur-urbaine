@@ -221,6 +221,10 @@ describe('batEnrRouter', () => {
     it.each([
       ['previous refusal', { isPublicAdvisorSelected: true }],
       ['ineligible heat network', { heatNetworkEligibility: { distance: 450, inPDP: false, isEligible: false } }],
+      ['electric radiators', { radiatorType: 'radiateur-electrique' }],
+      ['unspecified radiators', { radiatorType: null }],
+      ['eligible network at 200 m', { heatNetworkEligibility: { distance: 200, inPDP: true, isEligible: true } }],
+      ['eligible network without distance', { heatNetworkEligibility: { distance: null, inPDP: false, isEligible: true } }],
     ] as const)('skips CCRT collection without side effects for %s when suspended', async (_, overrides) => {
       demandCollection.isEnabled = false;
 
@@ -464,7 +468,13 @@ describe('batEnrRouter', () => {
       });
     });
 
-    it('crée une demande chaleur renouvelable en expérimentation pour un immeuble collectif non éligible au réseau de chaleur', async () => {
+    it.each([
+      ['un réseau non éligible', { heatNetworkEligibility: { distance: 450, inPDP: false, isEligible: false } }],
+      ['des radiateurs électriques', { radiatorType: 'radiateur-electrique' }],
+      ['des radiateurs non renseignés', { radiatorType: null }],
+      ['un réseau éligible à 200 m', { heatNetworkEligibility: { distance: 200, inPDP: true, isEligible: true } }],
+      ['un réseau éligible sans distance', { heatNetworkEligibility: { distance: null, inPDP: false, isEligible: true } }],
+    ] as const)('crée une demande chaleur renouvelable en expérimentation avec %s', async (_, overrides) => {
       const ccrtMatchingId = testUsers.ccrt.id!;
       const ccrtOtherDepartmentId = '00000000-0000-0000-0000-000000000207';
       await seedTableUser([
@@ -486,13 +496,7 @@ describe('batEnrRouter', () => {
         ],
       });
 
-      const input = buildCcrtExperimentationDemandInput({
-        heatNetworkEligibility: {
-          distance: 450,
-          inPDP: false,
-          isEligible: false,
-        },
-      });
+      const input = buildCcrtExperimentationDemandInput(overrides);
 
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
 
