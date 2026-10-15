@@ -7,11 +7,11 @@ import type { UserRole } from '@/types/enum/UserRole';
  */
 export const isSyncedRole = (role?: UserRole | null): role is Exclude<UserRole, 'admin'> => !!role && role !== 'admin';
 
-/** `typeOrganisme` expected by ADEME Connect (Particulier, Entreprise, Collectivité). ALEC and CCRT act on behalf of local authorities. */
-export const ROLE_TYPE_ORGANISME: Record<Exclude<UserRole, 'admin'>, string> = {
-  alec: 'Collectivité',
-  ccrt: 'Collectivité',
-  collectivite: 'Collectivité',
+/**
+ * `typeOrganisme` expected by ADEME Connect. Only set for particulier, gestionnaire and professionnel;
+ * other roles (collectivité, ALEC, CCRT) are sent without `typeOrganisme`.
+ */
+export const ROLE_TYPE_ORGANISME: Partial<Record<Exclude<UserRole, 'admin'>, string>> = {
   gestionnaire: 'Entreprise',
   particulier: 'Particulier',
   professionnel: 'Entreprise',
