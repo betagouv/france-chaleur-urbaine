@@ -35,6 +35,7 @@ snake_case + French legacy names; some columns have spaces/caps (`nom_reseau`, `
 3. Commit the migration + updated `database.ts` together.
 4. One `sql` template block per direction (statements separated by `;`) — single round-trip.
 5. Always provide both `up` and `down`. Use raw `sql`, never the Kysely schema builder (`db.schema`), in migrations.
+6. A migration that creates a table must add it to `allDatabaseTables` in `src/modules/app/commands/db-bootstrap.ts` (`pnpm ts` fails and names the table until it is registered): pick the bundle (`fcu` business data, `fcu-volumineux`, `geo`, `tiles`, `externes-volumineux`) and keep every FK parent in the same bundle or in `fcu`; a child with an FK without `ON DELETE CASCADE/SET NULL` must be listed before its parent (DELETE order).
 
 Index patterns: `USING GIN (field jsonb_path_ops)` (JSONB), `USING GIST (geom)` (spatial), partial `… WHERE status = 'pending'`.
 
@@ -42,4 +43,4 @@ Index patterns: `USING GIN (field jsonb_path_ops)` (JSONB), `USING GIST (geom)` 
 When running SQL via MCP postgres for the user, always show the query at the end in a blockquote: `> **SQL**` + a code block.
 
 ## Seeding
-`pnpm db:bootstrap` (production snapshot via Scalingo CLI) — no seed file. **Always follow with `pnpm cli db:anonymize`** (`src/server/db/anonymize.ts`): pseudonymizes identities, contacts, comments, email contents, IPs and partner tokens, keeps addresses/geometries, admin accounts and every password hash; guarded against non-local hosts. Test users via `pnpm cli users:add`.
+`pnpm db:bootstrap` (production snapshot via Scalingo CLI, selected by bundle — `fcu` alone is the FK-closed business subset, ~250 MB) — no seed file. **Always follow with `pnpm cli db:anonymize`** (`src/server/db/anonymize.ts`): pseudonymizes identities, contacts, comments, email contents, IPs and partner tokens, keeps addresses/geometries, admin accounts and every password hash; guarded against non-local hosts. Test users via `pnpm cli users:add`.

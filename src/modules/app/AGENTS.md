@@ -9,6 +9,7 @@ App-wide constants and helpers that belong to no single business domain. This is
 - `types.ts` — shared app-level types.
 - `client/hooks/useUserInfo.tsx` — user info hook.
 - `commands.ts` — CLI commands under the `app` namespace.
+- `commands/db-bootstrap.ts` — table registry for `pnpm db:bootstrap` (`allDatabaseTables`, grouped in FK-closed `bootstrapBundles`) and the bundle/table selection prompt. **Every new table must be registered here**: a compile-time check (`UnregisteredTables`) makes `pnpm ts` fail with the missing table's name (see `database.md`, migrations rule 6). Type-only import of `DB`; CLI-only, never imported by app code.
 
 ## `business-rules.ts` contract (important)
 
