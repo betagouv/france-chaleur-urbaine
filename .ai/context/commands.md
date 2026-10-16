@@ -26,6 +26,12 @@ pnpm cli db:anonymize    # Pseudonymize personal data in the LOCAL db right afte
 ```
 Migration workflow: add `src/server/db/migrations/YYYYMMDDHHMMSS_description.ts` → `pnpm db:migrate` → `pnpm db:sync` → commit migration + regenerated types together.
 
+## Backup
+```bash
+pnpm backup:prod                 # Encrypted (age) off-Scalingo copy of production (DB backup, env vars, Grist, git bundle) — see scripts/backup/README.md
+pnpm backup:decrypt <src> <dest> # Verify checksums and decrypt a backup folder (secret key prompted)
+```
+
 ## CLI & jobs
 ```bash
 pnpm cli                                                 # List CLI commands

@@ -52,6 +52,8 @@
     "db:push:prod": "./scripts/copyLocalTableToRemote.sh prod",
     "db:drop:dev": "./scripts/dropRemoteTables.sh dev",
     "db:drop:prod": "./scripts/dropRemoteTables.sh prod",
+    "backup:prod": "./scripts/backup/backup-prod.sh",
+    "backup:decrypt": "./scripts/backup/decrypt-backup.sh",
     "db:sync": "pnpm cli db:sync",
     "db:verify": "pnpm db:introspect --verify",
     "publicodes:local": "pnpm -C ../france-chaleur-urbaine-publicodes run pack:local && pnpm add file:../france-chaleur-urbaine-publicodes/publicodes-local.tgz",

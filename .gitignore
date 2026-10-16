@@ -108,3 +108,6 @@ scripts/simulateur/codes-insee.json
 
 # maplibre-gl worker copied from node_modules by scripts/postinstall.mjs
 /public/maplibre
+
+# Backup config (scripts/backup/backup-prod.sh)
+scripts/backup/.env
