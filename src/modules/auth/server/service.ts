@@ -157,7 +157,6 @@ export const login = async (email: string, password: string) => {
     email: user.email,
     id: user.id,
     role: user.role,
-    signature: user.signature,
   };
 };
 

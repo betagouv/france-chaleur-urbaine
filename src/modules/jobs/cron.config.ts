@@ -18,13 +18,13 @@ export type CronDefinition = {
 export const cronDefinitions = [
   {
     description:
-      'Prévient les gestionnaires des nouvelles demandes validées affectées à un réseau de leur périmètre (option « recevoir les nouvelles demandes »). Marque les demandes comme notifiées seulement si au moins un destinataire existe.',
+      'Prévient les gestionnaires des nouvelles demandes validées affectées à un réseau de leur périmètre, selon leur préférence : chaque jour ouvré (quotidien) ou le lundi seulement, en un récapitulatif de la semaine (hebdomadaire). Marque les demandes comme notifiées seulement si au moins un destinataire existe.',
     name: 'notifyGestionnairesOfNewDemands',
     schedule: '00 10 * * 1-5',
     scheduleLabel: 'Lundi à vendredi, 10h00',
   },
   {
-    description: `Relance les gestionnaires sur les demandes « À traiter » notifiées depuis plus de ${businessRules.unhandledDemandReminderDays.display} (option « recevoir les rappels »).`,
+    description: `Relance les gestionnaires sur les demandes « À traiter » reçues depuis plus de ${businessRules.unhandledDemandReminderDays.display} (jour de la notification quotidienne, ou lundi du récapitulatif hebdomadaire), si la préférence « Rappel des demandes en attente » est activée.`,
     name: 'notifyGestionnairesOfUnhandledDemands',
     schedule: '55 9 * * 2',
     scheduleLabel: 'Mardi, 9h55',

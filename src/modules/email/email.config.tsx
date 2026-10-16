@@ -22,7 +22,8 @@ import RaccordementNonRealisable, {
   scenarios as raccordementNonRealisableScenarios,
 } from './templates/demands/demandeur/raccordement-non-realisable';
 import NouvellesDemandesATraiter, {
-  scenarios as nouvellesDemandesATraiterScenarios,
+  dailyScenarios as nouvellesDemandesATraiterDailyScenarios,
+  weeklyScenarios as nouvellesDemandesATraiterWeeklyScenarios,
 } from './templates/demands/gestionnaire/nouvelles-demandes-a-traiter';
 import RappelDemandesEnAttente, {
   scenarios as rappelDemandesEnAttenteScenarios,
@@ -179,16 +180,31 @@ export const emails = defineEmails({
       type: 'action',
     },
   },
-  'demands.gestionnaire.nouvelles-demandes-a-traiter': {
+  'demands.gestionnaire.nouvelles-demandes-a-traiter-daily': {
     Component: NouvellesDemandesATraiter,
-    description: 'Envoyé périodiquement aux gestionnaires de réseau ayant une ou plusieurs nouvelles demandes dans leur espace.',
-    label: 'Nouvelles demandes à traiter',
+    description:
+      'Envoyé chaque jour ouvré aux gestionnaires de réseau ayant une ou plusieurs nouvelles demandes dans leur espace (préférence « Nouvelles demandes » : quotidien).',
+    label: 'Nouvelles demandes à traiter (quotidien)',
     preview: 'Nouvelles demandes de raccordement à traiter dans votre espace',
-    scenarios: nouvellesDemandesATraiterScenarios,
+    scenarios: nouvellesDemandesATraiterDailyScenarios,
     subject: '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire',
     trigger: {
       description:
-        "Cron du lundi au vendredi 10h — demandes validées, affectées à un réseau du gestionnaire et non encore notifiées ; nécessite l'option « recevoir les nouvelles demandes ».",
+        'Cron du lundi au vendredi 10h — demandes validées, affectées à un réseau du gestionnaire et non encore notifiées ; comptes ayant choisi la notification quotidienne.',
+      type: 'cron',
+    },
+  },
+  'demands.gestionnaire.nouvelles-demandes-a-traiter-weekly': {
+    Component: NouvellesDemandesATraiter,
+    description:
+      'Récapitulatif hebdomadaire envoyé le lundi aux gestionnaires de réseau ayant choisi la notification hebdomadaire : toutes les nouvelles demandes de la semaine écoulée, tous réseaux confondus.',
+    label: 'Nouvelles demandes à traiter (hebdomadaire)',
+    preview: 'Nouvelles demandes de raccordement cette semaine dans votre espace',
+    scenarios: nouvellesDemandesATraiterWeeklyScenarios,
+    subject: '[France Chaleur Urbaine] Nouvelle(s) demande(s) cette semaine dans votre espace gestionnaire',
+    trigger: {
+      description:
+        'Cron du lundi 10h — demandes validées, affectées à un réseau du gestionnaire, non encore notifiées ou notifiées au cours des 7 derniers jours ; comptes ayant choisi la notification hebdomadaire.',
       type: 'cron',
     },
   },
@@ -200,7 +216,7 @@ export const emails = defineEmails({
     scenarios: rappelDemandesEnAttenteScenarios,
     subject: '[France Chaleur Urbaine] Vous avez des demandes en attente de prise en charge',
     trigger: {
-      description: `Cron du mardi 9h55 — demandes « À traiter » notifiées depuis plus de ${businessRules.unhandledDemandReminderDays.display} ; nécessite l'option « recevoir les rappels ».`,
+      description: `Cron du mardi 9h55 — demandes « À traiter » reçues depuis plus de ${businessRules.unhandledDemandReminderDays.display} (jour de la notification quotidienne, ou lundi du récapitulatif hebdomadaire) ; nécessite la préférence « Rappel des demandes en attente ».`,
       type: 'cron',
     },
   },

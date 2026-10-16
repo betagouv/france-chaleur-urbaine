@@ -33,7 +33,7 @@ import type {
 import type { Permission } from '@/modules/permissions/types';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { EcoreseauLabel } from '@/modules/reseaux/types';
-import type { Entreprise, StructureType, UserTagColor } from '@/modules/users/constants';
+import type { Entreprise, StructureType, UserPreferences, UserTagColor } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export type Generated<T> =
@@ -951,11 +951,9 @@ export interface Users {
   optin_at: Date | null;
   password: string;
   phone: string | null;
-  receive_new_demands: boolean | null;
-  receive_old_demands: boolean | null;
+  preferences: Generated<JSONColumnType<UserPreferences>>;
   reset_token: string | null;
   role: UserRole;
-  signature: string | null;
   status: 'pending_email_confirmation' | 'valid';
   structure_name: string | null;
   structure_other: string | null;
