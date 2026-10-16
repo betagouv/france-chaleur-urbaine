@@ -1,10 +1,12 @@
 import dynamic from 'next/dynamic';
 
 import ProfileForm from '@/components/connexion/ProfileForm';
-import ProfileNewsletterForm from '@/components/connexion/ProfileNewsletterForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
 import { useAuthentication } from '@/modules/auth/client/hooks';
+import EmailSignatureForm from '@/modules/users/client/preferences/EmailSignatureForm';
+import NewsletterForm from '@/modules/users/client/preferences/NewsletterForm';
+import NotificationPreferencesForm from '@/modules/users/client/preferences/NotificationPreferencesForm';
 import { withAuthentication } from '@/server/authentication';
 import { userRolesWithPermissions } from '@/types/enum/UserRole';
 
@@ -13,6 +15,8 @@ const PermissionsView = dynamic(() => import('@/modules/permissions/client/Permi
 export default function MonComptePage() {
   const { hasRole } = useAuthentication();
   const showPermissions = userRolesWithPermissions.some((role) => hasRole(role));
+  // signature and demand notifications relate to /pro/demandes (roles with permissions + admin)
+  const showDemandSections = showPermissions || hasRole('admin');
 
   return (
     <SimplePage title="Mon compte" mode="authenticated">
@@ -27,12 +31,28 @@ export default function MonComptePage() {
             </Heading>
             <ProfileForm />
           </section>
+          {showDemandSections && (
+            <section>
+              <Heading as="h2" size="h5">
+                Signature des emails
+              </Heading>
+              <EmailSignatureForm />
+            </section>
+          )}
           <section>
             <Heading as="h2" size="h5">
               Newsletter
             </Heading>
-            <ProfileNewsletterForm />
+            <NewsletterForm />
           </section>
+          {showDemandSections && (
+            <section>
+              <Heading as="h2" size="h5">
+                Notifications
+              </Heading>
+              <NotificationPreferencesForm />
+            </section>
+          )}
         </div>
 
         {showPermissions && (

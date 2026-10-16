@@ -3,18 +3,25 @@ import { defineEmailScenarios } from '@/modules/email/scenarios';
 
 type NouvellesDemandesATraiterProps = {
   nbDemands: number;
+  /** préférence `notifications.new_demands` : chaque jour ouvré, ou récapitulatif du lundi */
+  frequency: 'daily' | 'weekly';
 };
 
-const NouvellesDemandesATraiter = ({ nbDemands }: NouvellesDemandesATraiterProps) => {
+const NouvellesDemandesATraiter = ({ nbDemands, frequency }: NouvellesDemandesATraiterProps) => {
+  const weekly = frequency === 'weekly';
+  const campaign = `demands.gestionnaire.nouvelles-demandes-a-traiter-${frequency}`;
   return (
     <Layout>
       <Text>Bonjour,</Text>
       {nbDemands > 1 ? (
         <>
-          <Text>De nouvelles demandes ont été déposées sur France Chaleur Urbaine à proximité de votre réseau de chaleur.</Text>
+          <Text>
+            {weekly ? 'Cette semaine, de nouvelles demandes' : 'De nouvelles demandes'} ont été déposées sur France Chaleur Urbaine à
+            proximité de votre réseau de chaleur.
+          </Text>
           <Text>
             Pour retrouver les demandes, rendez-vous dans votre{' '}
-            <Link href="/pro/demandes" campaign="demands.gestionnaire.nouvelles-demandes-a-traiter">
+            <Link href="/pro/demandes" campaign={campaign}>
               espace gestionnaire
             </Link>
             .
@@ -25,10 +32,13 @@ const NouvellesDemandesATraiter = ({ nbDemands }: NouvellesDemandesATraiterProps
         </>
       ) : (
         <>
-          <Text>Une nouvelle demande a été déposée sur France Chaleur Urbaine à proximité de votre réseau de chaleur.</Text>
+          <Text>
+            {weekly ? 'Cette semaine, une nouvelle demande' : 'Une nouvelle demande'} a été déposée sur France Chaleur Urbaine à proximité
+            de votre réseau de chaleur.
+          </Text>
           <Text>
             Pour retrouver la demande, rendez-vous dans votre{' '}
-            <Link href="/pro/demandes" campaign="demands.gestionnaire.nouvelles-demandes-a-traiter">
+            <Link href="/pro/demandes" campaign={campaign}>
               espace gestionnaire
             </Link>
             .
@@ -51,14 +61,25 @@ const NouvellesDemandesATraiter = ({ nbDemands }: NouvellesDemandesATraiterProps
   );
 };
 
-export const scenarios = defineEmailScenarios<typeof NouvellesDemandesATraiter>({
+export const dailyScenarios = defineEmailScenarios<typeof NouvellesDemandesATraiter>({
   plusieurs_demandes: {
     label: 'Plusieurs nouvelles demandes',
-    props: { nbDemands: 5 },
+    props: { frequency: 'daily', nbDemands: 5 },
   },
   une_demande: {
     label: 'Une seule nouvelle demande',
-    props: { nbDemands: 1 },
+    props: { frequency: 'daily', nbDemands: 1 },
+  },
+});
+
+export const weeklyScenarios = defineEmailScenarios<typeof NouvellesDemandesATraiter>({
+  plusieurs_demandes: {
+    label: 'Plusieurs nouvelles demandes dans la semaine',
+    props: { frequency: 'weekly', nbDemands: 5 },
+  },
+  une_demande: {
+    label: 'Une seule nouvelle demande dans la semaine',
+    props: { frequency: 'weekly', nbDemands: 1 },
   },
 });
 

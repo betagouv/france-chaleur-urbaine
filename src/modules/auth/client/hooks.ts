@@ -6,9 +6,7 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 
-import { useFetch, usePost } from '@/hooks/useApi';
 import useCookie from '@/hooks/useCookie';
-import type { UserPreferences, UserPreferencesInput } from '@/pages/api/user/preferences';
 import type { UserRole } from '@/types/enum/UserRole';
 import { stripDomainFromURL } from '@/utils/url';
 
@@ -61,16 +59,4 @@ export const useAuthentication = () => {
     signOut,
     user: session?.user ?? null,
   };
-};
-
-/**
- * Returns the user preferences.
- */
-export const useUserPreferences = () => {
-  const { isAuthenticated } = useAuthentication();
-  const { data: userPreferences } = useFetch<UserPreferences>('/api/user/preferences', undefined, { enabled: isAuthenticated });
-  const { mutateAsync: updateUserPreferences } = usePost<UserPreferencesInput>('/api/user/preferences', {
-    invalidate: ['/api/user/preferences'],
-  });
-  return { updateUserPreferences, userPreferences };
 };
