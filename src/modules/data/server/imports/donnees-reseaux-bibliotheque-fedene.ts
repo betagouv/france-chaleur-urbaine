@@ -332,7 +332,7 @@ async function processFiliere(config: FiliereConfig, reseaux: ExcelRowBrute[], {
           'Identifiant reseau': sncu,
           id_fcu: sql<number>`(SELECT COALESCE(MAX(id_fcu), 0) + 1 FROM ${sql.table(config.table)})`,
           'reseaux classes': false,
-          ...(config.table === 'reseaux_de_chaleur' ? { ouvert_aux_raccordements: false } : {}),
+          ...(config.table === 'reseaux_de_chaleur' ? { ouvert_aux_raccordements: true } : {}),
         })
         .execute();
     }

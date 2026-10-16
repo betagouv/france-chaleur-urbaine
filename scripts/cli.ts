@@ -2,7 +2,6 @@ import '@/load-env';
 
 import { writeFile } from 'node:fs/promises';
 
-import { allDatabaseTables } from '@cli/bootstrap/tables';
 import { refreshStatistics } from '@cli/stats/refresh';
 import { createCommand } from '@commander-js/extra-typings';
 import { genSalt, hash } from 'bcryptjs';
@@ -11,6 +10,7 @@ import { z } from 'zod';
 
 import { registerAdemeConnectCommands } from '@/modules/ademe-connect/commands';
 import { registerAppCommands } from '@/modules/app/commands';
+import { type BootstrapBundle, bootstrapBundleNames, selectBootstrapTables } from '@/modules/app/commands/db-bootstrap';
 import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { registerDataCommands } from '@/modules/data/commands';
 import { registerDocCommands } from '@/modules/doc/commands';
@@ -243,22 +243,17 @@ program
 
 program
   .command('db:bootstrap')
-  .description('Initialise la base de données avec les tables depuis la production')
+  .description('Initialise la base de données avec les tables depuis la production, par bundles ou table par table')
   .option('--sequential', 'Télécharge les tables une par une', false)
-  .action(async ({ sequential }) => {
-    const { selectedTables } = (await prompts({
-      choices: allDatabaseTables.map((table) => ({
-        selected: true,
-        title: `${table.name} - ${table.description}`,
-        value: table.name,
-      })),
-      hint: '- Espace pour sélectionner/désélectionner, Entrée pour valider',
-      message: 'Sélectionnez les tables à télécharger :',
-      name: 'selectedTables',
-      type: 'multiselect',
-    })) as { selectedTables: string[] };
+  .option(
+    '--bundle <bundles...>',
+    `Bundles à télécharger sans prompt (${bootstrapBundleNames.join(', ')})`,
+    (value: string, previous: BootstrapBundle[] = []) => [...previous, z.enum(bootstrapBundleNames).parse(value)]
+  )
+  .action(async ({ sequential, bundle }) => {
+    const selectedTables = await selectBootstrapTables(bundle ?? []);
 
-    if (!selectedTables || selectedTables.length === 0) {
+    if (selectedTables.length === 0) {
       console.warn('Aucune table sélectionnée. Opération annulée.');
       return;
     }
@@ -269,6 +264,9 @@ program
       }
     else {
       await runBash(`pnpm db:pull:prod --data-only ${selectedTables.map((t) => `"${t}"`).join(' ')}`);
+    }
+    if (selectedTables.includes('users')) {
+      console.info('Données personnelles importées : lancer `pnpm cli db:anonymize` pour pseudonymiser la base locale.');
     }
   });
 
