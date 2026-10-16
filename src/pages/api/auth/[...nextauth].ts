@@ -4,6 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { withLoginRateLimit } from '@/modules/auth/server/login-rate-limit';
 import { login } from '@/modules/auth/server/service';
 import { getUserSession } from '@/modules/auth/server/session';
+import { serverConfig } from '@/server/config';
 import { stripDomainFromURL } from '@/utils/url';
 
 export const nextAuthOptions: AuthOptions = {
@@ -18,12 +19,19 @@ export const nextAuthOptions: AuthOptions = {
     },
     redirect: ({ url, baseUrl }) => stripDomainFromURL(url) ?? baseUrl,
     async session({ session, token }) {
-      const user = token?.sub ? await getUserSession(token.sub) : null;
+      // full-profile impersonation (dev only): the session is the target account's; ignored entirely once the flag is off
+      const impersonatedUserId = token?.impersonatedProfile?.userId;
+      if (impersonatedUserId && !serverConfig.allowFullImpersonation) {
+        token.impersonatedProfile = undefined;
+      }
+      const sessionUserId = token?.impersonatedProfile?.userId ?? token?.sub;
+      const user = sessionUserId ? await getUserSession(sessionUserId) : null;
 
       if (token) {
         const {
           permissions: impersonatedPermissions,
           anonymize: impersonatedAnonymize,
+          userId: _impersonatedUserId,
           ...impersonatedProfileRest
         } = token.impersonatedProfile ?? {};
         return {

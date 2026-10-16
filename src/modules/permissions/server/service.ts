@@ -24,8 +24,6 @@ type UserWithPermissions = {
   email: string;
   role: UserRole;
   permissions: Permission[];
-  receive_new_demands: boolean;
-  receive_old_demands: boolean;
 };
 
 // ─── Read ────────────────────────────────────────────────────────────────────
@@ -38,7 +36,7 @@ export const getAllUsersWithPermissions = async (): Promise<UserWithPermissions[
   const rows = await kdb
     .selectFrom('users as u')
     .leftJoin('user_permissions as up', 'up.user_id', 'u.id')
-    .select(['u.id', 'u.email', 'u.role', 'u.receive_new_demands', 'u.receive_old_demands'])
+    .select(['u.id', 'u.email', 'u.role'])
     .select(
       sql<
         Permission[]
@@ -48,15 +46,13 @@ export const getAllUsersWithPermissions = async (): Promise<UserWithPermissions[
     )
     .where('u.active', '=', true)
     .where('u.role', 'in', [...userRolesWithPermissions])
-    .groupBy(['u.id', 'u.email', 'u.role', 'u.receive_new_demands', 'u.receive_old_demands'])
+    .groupBy(['u.id', 'u.email', 'u.role'])
     .execute();
 
   return rows.map((row) => ({
     email: row.email,
     id: row.id,
     permissions: row.permissions,
-    receive_new_demands: row.receive_new_demands ?? true,
-    receive_old_demands: row.receive_old_demands ?? true,
     role: row.role,
   }));
 };

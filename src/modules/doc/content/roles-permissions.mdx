@@ -92,4 +92,6 @@ Le flux historique ENGIE synchronise aussi les **comptes gestionnaires** (créat
 
 Depuis [Impostures](/admin/impostures), un admin peut endosser n'importe quel rôle non-admin avec des **permissions simulées**, pour voir l'application exactement comme l'utilisateur ciblé. L'imposture ne prend pas l'identité d'un compte : l'admin reste l'auteur de tout ce qu'il fait, et le début comme la fin sont tracés dans [Activité du site](/admin/events?types=user_impersonation_started,user_impersonation_stopped) (rôle, nombre de permissions, anonymisation). Un bandeau rouge «&nbsp;Imposture en cours&nbsp;» reste affiché.
 
+En développement local uniquement (variable `NEXT_PUBLIC_IMPERSONATION_ALLOW_FULL_PROFILE`, jamais définie sur un environnement déployé), [Gestion des utilisateurs](/admin/users) propose en plus «&nbsp;Prendre le profil complet&nbsp;» : l'admin devient réellement le compte ciblé (identité, email, permissions, préférences), ce qui permet de reproduire exactement ce que voit une personne. Jamais disponible en production pour des raisons légales.
+
 L'option **«&nbsp;Anonymiser les données personnelles&nbsp;»** (pour les démonstrations) masque nom, email et téléphone des demandeurs dans les listes (email → `utilisateur…@exemple.fr`, nom → première lettre + `***`, téléphone → `06 ** ** ** **`).

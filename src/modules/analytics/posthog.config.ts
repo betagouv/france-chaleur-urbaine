@@ -363,6 +363,11 @@ export type PostHogEventMap = {
   };
 
   'account:created': never;
+  /** réglage modifié sur /pro/mon-compte ; `value` absent pour la signature (texte libre personnel) */
+  'account:preference_updated': {
+    preference: 'newsletter' | 'notifications.new_demands' | 'notifications.pending_demands_reminder' | 'email_signature';
+    value?: string | boolean;
+  };
   'global:footer_link_clicked': { link_name: string };
   'global:login_cta_clicked': { is_auth: boolean };
   'consent:cookie_choice_made': { consent: FinalityConsent<string> };

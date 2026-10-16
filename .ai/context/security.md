@@ -29,7 +29,7 @@ enum USER_ROLE {
 }
 ```
 
-Admin can impersonate any role from `/admin/impostures`, optionally anonymizing PII (stored in the impersonation JWT). See `src/modules/config/server/context-builder.ts`.
+Admin can impersonate any role from `/admin/impostures`, optionally anonymizing PII (stored in the impersonation JWT). See `src/modules/config/server/context-builder.ts`. Full-profile impersonation (the session becomes the target account: id, email, DB permissions) exists for local development only: `NEXT_PUBLIC_IMPERSONATION_ALLOW_FULL_PROFILE=true` (`clientConfig.allowFullImpersonation`, read server-side through `serverConfig`, never set on a deployed environment), triggered from `/admin/users`; the JWT carries `impersonatedProfile.userId` and the NextAuth session callback drops it when the flag is off.
 
 ### Permissions system
 

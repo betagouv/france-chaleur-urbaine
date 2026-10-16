@@ -6,7 +6,7 @@ Trois automatismes quotidiens ou hebdomadaires entourent les demandes. Ils parta
 
 <Mermaid
   chart={`flowchart TD
-    validee["Demande validée, affectée à un réseau"]:::db --> notif["Lundi à vendredi, 10h : « Nouvelles demandes à traiter » aux gestionnaires"]:::email
+    validee["Demande validée, affectée à un réseau"]:::db --> notif["Lundi à vendredi, 10h : « Nouvelles demandes à traiter » aux gestionnaires (quotidien), ou récapitulatif du lundi (hebdomadaire)"]:::email
     notif --> marque["Demande marquée comme notifiée"]:::db
     marque --> attente{"Toujours « À traiter » après ${businessRules.unhandledDemandReminderDays.display} ?"}
     attente -- "Oui" --> rappel["Mardi, 9h55 : « Rappel demandes en attente »"]:::email
@@ -15,7 +15,7 @@ Trois automatismes quotidiens ou hebdomadaires entourent les demandes. Ils parta
     relance1 --> reponse["Le demandeur répond : recontacté oui/non + commentaire"]
     relance2 --> reponse
     reponse --> trace["Réponse enregistrée, visible de l'équipe FCU"]:::evt
-    click notif "/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter" "Voir le modèle d'email"
+    click notif "/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter-daily" "Voir le modèle d'email"
     click rappel "/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente" "Voir le modèle d'email"
     click relance1 "/admin/emails?type=demands.demandeur.enquete-satisfaction" "Voir le modèle d'email"
     click trace "/admin/events?types=demand_satisfaction_submitted" "Voir dans l'activité du site"
@@ -26,15 +26,21 @@ Trois automatismes quotidiens ou hebdomadaires entourent les demandes. Ils parta
 
 ## 1. Notification des nouvelles demandes — lundi à vendredi, 10h
 
-Email [« Nouvelles demandes à traiter »](/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter). Conditions précises :
+Chaque compte choisit la fréquence dans « Mon compte », section Notifications (réglage « Nouvelles demandes de raccordement », aussi modifiable par un admin dans [Gestion des utilisateurs](/admin/users)) :
 
-- Demande **validée**, non supprimée, **affectée à un réseau**, pas encore notifiée, et dont le statut n'est pas « Non réalisable ».
-- Destinataires : tout compte **actif** ayant une **permission sur le réseau** de la demande et l'option « recevoir les nouvelles demandes » activée. Le rôle n'est pas filtré : une collectivité avec une permission réseau les recevrait aussi. À l'inverse, **les permissions territoire ou organisation ne déclenchent jamais ces emails**.
-- La demande n'est marquée comme notifiée **que si au moins un destinataire existe** : une demande sur un réseau sans gestionnaire sera signalée dès qu'une permission sera ajoutée ([événement « Notification gestionnaires »](/admin/events?types=demand_notification_sent)).
+- **Quotidien** (valeur par défaut) : email [« Nouvelles demandes à traiter »](/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter-daily) chaque jour ouvré à 10h, dès qu'une demande pas encore notifiée est affectée à l'un de ses réseaux.
+- **Hebdomadaire** : un seul email [« Nouvelles demandes à traiter (hebdomadaire) »](/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter-weekly) le lundi à 10h, tous réseaux confondus, couvrant les demandes pas encore notifiées **et** celles notifiées à un collègue quotidien depuis le lundi précédent. Chaque demande apparaît dans un seul récapitulatif. Aucun email les autres jours.
+- **Aucun email** : le compte n'est pas prévenu. À utiliser en connaissance de cause : si personne n'est abonné sur un réseau, les demandes y restent sans suite tant que le gestionnaire ne consulte pas son espace.
+
+Conditions communes :
+
+- Demande **validée**, non supprimée, **affectée à un réseau**, et dont le statut n'est pas « Non réalisable ».
+- Destinataires : tout compte **actif** ayant une **permission sur le réseau** de la demande. Le rôle n'est pas filtré : une collectivité avec une permission réseau les recevrait aussi. À l'inverse, **les permissions territoire ou organisation ne déclenchent jamais ces emails**.
+- La demande est marquée comme notifiée à sa première notification, **et seulement si au moins un destinataire existe** : une demande sur un réseau sans gestionnaire sera signalée dès qu'une permission sera ajoutée ([événement « Notification gestionnaires »](/admin/events?types=demand_notification_sent)).
 
 ## 2. Rappel des demandes en attente — mardi, 9h55
 
-Email [« Rappel demandes en attente »](/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente) : pour les demandes restées « À traiter » (ou sans statut) plus de <Rule id="unhandledDemandReminderDays" /> **après leur notification**. Nécessite l'option « recevoir les rappels » sur le compte.
+Email [« Rappel demandes en attente »](/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente) : pour les demandes restées « À traiter » (ou sans statut) plus de <Rule id="unhandledDemandReminderDays" /> **après leur réception** par le compte : le jour de la notification pour un compte en quotidien, le lundi du récapitulatif pour un compte en hebdomadaire (une demande reçue un lundi n'est donc jamais rappelée le lendemain). Nécessite le réglage « Rappel des demandes en attente » sur le compte, indépendant du choix précédent.
 
 ## 3. Relance des demandeurs — lundi, 10h05
 

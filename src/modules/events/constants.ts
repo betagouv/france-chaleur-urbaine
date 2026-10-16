@@ -11,6 +11,7 @@ export const eventTypes = [
   'user_newsletter_unsubscribed',
   'user_password_reset_requested',
   'user_profile_updated',
+  'user_preferences_updated',
   'user_created_by_admin',
   'user_created_by_api',
   'user_deactivated_by_api',
@@ -150,6 +151,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_password_reset_requested: 'Demande réinitialisation mot de passe',
   user_permissions_synced_from_api: 'Synchronisation permissions (API)',
   user_permissions_updated: 'Modification permissions',
+  user_preferences_updated: 'Mise à jour préférences',
   user_profile_updated: 'Mise à jour profil',
   user_registered: 'Inscription utilisateur',
   user_tag_created: "Création d'étiquette utilisateur",
@@ -344,6 +346,7 @@ export type EventDataMap = {
     added: Array<{ type: string; resource_id: string | null }>;
     removed: Array<{ type: string; resource_id: string | null }>;
   };
+  user_preferences_updated: { changes: Record<string, unknown> };
   user_profile_updated: { changes: Record<string, unknown> };
   user_updated_by_admin: { user_email: string; changes: Record<string, unknown> };
   user_tag_created: { tag_id: string; name: string; color: string };

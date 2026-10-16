@@ -13,6 +13,7 @@ import {
   zSetUserTags,
   zUpdateNewsletterSchema,
   zUpdateProfileSchema,
+  zUpdateUserPreferences,
   zUpdateUserTag,
 } from '@/modules/users/constants';
 import * as usersService from '@/modules/users/server/service';
@@ -43,15 +44,9 @@ export const usersRouter = router({
       .mutation(({ ctx, input }) => tagsService.updateTag(input.id, { color: input.color, name: input.name }, ctx.user.id)),
   },
 
-  getProfile: routeAuthenticated.query(async ({ ctx }) => {
-    const user = await usersService.getProfile(ctx.user.id);
+  getPreferences: routeAuthenticated.query(({ ctx }) => usersService.getUserPreferences(ctx.user.id)),
 
-    if (!user) {
-      throw new TRPCError({ code: 'NOT_FOUND', message: 'Utilisateur non trouvé' });
-    }
-
-    return user;
-  }),
+  getProfile: routeAuthenticated.query(({ ctx }) => usersService.getProfile(ctx.user.id)),
 
   updateNewsletterSubscription: routeAuthenticated.input(zUpdateNewsletterSchema).mutation(async ({ ctx, input }) => {
     await usersService.updateNewsletterSubscription(ctx.user.id, input.optin_newsletter);
@@ -73,6 +68,11 @@ export const usersRouter = router({
       );
     }
   }),
+
+  /** Mise à jour partielle de `users.preferences` (signature d'email, notifications de demandes). Événement tracé par le service. */
+  updatePreferences: routeAuthenticated
+    .input(zUpdateUserPreferences)
+    .mutation(({ ctx, input }) => usersService.updateUserPreferences(ctx.user.id, input)),
 
   updateProfile: routeAuthenticated.input(zUpdateProfileSchema).mutation(async ({ ctx, input }) => {
     const success = await usersService.updateProfile(ctx.user.id, input);

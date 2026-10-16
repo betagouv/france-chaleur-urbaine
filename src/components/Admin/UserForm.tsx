@@ -4,7 +4,6 @@ import type { z } from 'zod';
 
 import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
-import Tooltip from '@/components/ui/Tooltip';
 import { EntrepriseField } from '@/modules/form/EntrepriseField';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
@@ -14,7 +13,14 @@ import type { Permission } from '@/modules/permissions/types';
 import { permissionTypes } from '@/modules/permissions/types';
 import TagsCombobox from '@/modules/users/client/admin/TagsCombobox';
 import TagsEditor from '@/modules/users/client/admin/TagsEditor';
-import { createUserAdminSchema, roles as roleLabels, structureTypesFormLabels, updateUserAdminSchema } from '@/modules/users/constants';
+import { NotificationPreferencesFields } from '@/modules/users/client/preferences/NotificationPreferencesFields';
+import {
+  createUserAdminSchema,
+  defaultUserPreferences,
+  roles as roleLabels,
+  structureTypesFormLabels,
+  updateUserAdminSchema,
+} from '@/modules/users/constants';
 import type { User } from '@/modules/users/server/service';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { type UserRole, userRoles, userRolesWithPermissions } from '@/types/enum/UserRole';
@@ -67,10 +73,9 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
     entreprise: user?.entreprise ?? null,
     first_name: user?.first_name ?? '',
     last_name: user?.last_name ?? '',
+    notifications: user?.preferences.notifications ?? defaultUserPreferences.notifications,
     optin_at: !!user?.optin_at,
     phone: user?.phone ?? '',
-    receive_new_demands: user?.receive_new_demands ?? true,
-    receive_old_demands: user?.receive_old_demands ?? true,
     role: user?.role || 'gestionnaire',
     status: user?.status || 'pending_email_confirmation',
     structure_name: user?.structure_name ?? '',
@@ -233,38 +238,9 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
               <PermissionsEditor userId={user!.id} />
             ))}
 
-          <div>
-            Notifications email (si permission réseau) :
-            <form.AppField name="receive_new_demands">
-              {(field) => (
-                <field.CheckboxField
-                  label={
-                    <>
-                      Nouvelles demandes
-                      <Tooltip
-                        title="Notifications quotidiennes pour les nouvelles demandes déposées sur France Chaleur Urbaine"
-                        iconProps={{ className: 'ml-1 mb-2' }}
-                      />
-                    </>
-                  }
-                />
-              )}
-            </form.AppField>
-            <form.AppField name="receive_old_demands">
-              {(field) => (
-                <field.CheckboxField
-                  label={
-                    <>
-                      Demandes en attente de prise en charge
-                      <Tooltip
-                        title="Notifications hebdomadaires si des demandes sont en attente de prise en charge depuis plus de 7 jours"
-                        iconProps={{ className: 'ml-1 mb-2' }}
-                      />
-                    </>
-                  }
-                />
-              )}
-            </form.AppField>
+          <div className="space-y-3">
+            <label className="fr-label">Notifications email (si permission réseau)</label>
+            <NotificationPreferencesFields form={form} fields="notifications" />
           </div>
         </div>
 
