@@ -230,7 +230,7 @@ describe('FEDENE import', () => {
       nb_pdl: 42,
       nom_reseau: 'Nouveau réseau',
       nom_reseau_fcu: null,
-      ouvert_aux_raccordements: false,
+      ouvert_aux_raccordements: true,
       'reseaux classes': false,
     });
   });

@@ -649,7 +649,7 @@ const createReseauDeChaleur = async (id: string | undefined, finalGeometry: RawB
       fichiers: [],
       geom: null,
       geom_update: finalGeometry,
-      ouvert_aux_raccordements: false,
+      ouvert_aux_raccordements: true,
       'reseaux classes': false,
       reseaux_techniques: false,
     })
@@ -671,7 +671,7 @@ const createReseauEnConstruction = async (finalGeometry: RawBuilder<any>) => {
       geom_update: sql`ST_ForcePolygonCCW(${finalGeometry})`,
       id_fcu: nextIdFcuSQL('zones_et_reseaux_en_construction'),
       nom_reseau: sql<string>`'Nouveau réseau en construction ' || ${nextIdFcuSQL('zones_et_reseaux_en_construction')}`,
-      ouvert_aux_raccordements: false,
+      ouvert_aux_raccordements: true,
     })
     .returningAll()
     .executeTakeFirstOrThrow();
