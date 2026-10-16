@@ -11,7 +11,7 @@ Connection requests ("demandes de raccordement") lifecycle: creation, enrichment
 - `server/creation-batch.ts` — batch creation from pro eligibility tests (max 50 addresses, contact from user profile, admin can provide a dedicated contact).
 - `server/admin-operations.ts` — validation gate (`validated`), admin update (`comment_fcu`, relance flags), soft delete, direct assignment change, reject assignment request, recalculate eligibility.
 - `server/gestionnaire-operations.ts` — permission-filtered list (with PII anonymization for impersonation), responsible-only update (Status, comment, surface/conso/logements), assignment change request/cancel.
-- `server/manager-notifications.ts` — crons: new demands notification + unhandled demands reminder (network permissions only, `receive_new_demands` / `receive_old_demands` flags).
+- `server/manager-notifications.ts` — crons: new demands notification + pending demands reminder (network permissions only, driven by `users.preferences.notifications`: `new_demands` = `daily` | `weekly` (Monday digest: not-yet-notified demands + demands notified to a daily colleague since the previous Monday, marking only the former) | `none`, `pending_demands_reminder` boolean — the reminder delay counts from the day the account actually received the demand, i.e. the Monday digest for a weekly account). Tests freeze `Date` with `vi.useFakeTimers({ toFake: ['Date'] })` to pick the weekday.
 - `server/relances.ts` — demandeur satisfaction loop (J+30/J+45), `/satisfaction` token-based responses, post-creation survey.
 - `server/email-communication.ts` — gestionnaire → demandeur free-text emails, archived in `demand_emails`.
 - `server/account-linking.ts` — links anonymous demands to accounts by email on every login.

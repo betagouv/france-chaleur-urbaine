@@ -3,6 +3,7 @@ import { z } from 'zod';
 import cliConfig from '@/cli-config';
 import { createEvent } from '@/modules/events/server/service';
 import type { NetworkPermission } from '@/modules/permissions/types';
+import { defaultUserPreferences } from '@/modules/users/constants';
 import { create } from '@/modules/users/server/service';
 import { kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
@@ -80,9 +81,8 @@ export const syncEngieUsers = async (org: { id: string; name: string }, data: un
             active: true,
             email,
             from_organization_id: org.id,
+            notifications: defaultUserPreferences.notifications,
             optin_at: null,
-            receive_new_demands: true,
-            receive_old_demands: true,
             role: 'gestionnaire',
             structure_name: org.name,
           },

@@ -553,6 +553,7 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
+  user_preferences_updated: () => <span>a mis à jour ses préférences</span>,
   user_profile_updated: () => <span>a mis à jour son profil</span>,
   user_registered: () => 'a créé un compte',
   user_tag_created: (event, updateFilters) => (

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { LegacyDemandValues } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
+import { defaultUserPreferences, type NotificationPreferences } from '@/modules/users/constants';
 import { type Demands, type Insertable, kdb, type UserPermissions } from '@/server/db/kysely';
 import { cleanDatabase, seedTableUser } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
@@ -18,11 +19,26 @@ const sentMail = vi.mocked(sendEmailTemplate);
 const NETWORK_ID = 7501;
 const OTHER_NETWORK_ID = 9999;
 
-const userMatching = uuid(101); // perm reseau_de_chaleur:7501, actif, receive_*=true → reçoit tout
+const userMatching = uuid(101); // perm reseau_de_chaleur:7501, actif, daily + rappel → reçoit tout
 const userTerritoryOnly = uuid(102); // perm territoire (commune) → ne reçoit rien
 const userWrongNetwork = uuid(103); // perm reseau_de_chaleur:9999 → ne reçoit rien
 const userInactive = uuid(104); // perm matchante mais active=false → ne reçoit rien
-const userOptedOutNew = uuid(105); // perm matchante, receive_new=false, receive_old=true → reçoit unhandled, pas new
+const userOptedOutNew = uuid(105); // perm matchante, new_demands=none, rappel=true → reçoit unhandled, pas new
+const userWeekly = uuid(106); // perm matchante, new_demands=weekly, rappel=true → récapitulatif du lundi
+
+// Monday 2026-10-19 10:00 Europe/Paris and the following Tuesday 09:55 / Wednesday 10:00 (cron times)
+const MONDAY_10H = new Date('2026-10-19T08:00:00.000Z');
+const TUESDAY_9H55 = new Date('2026-10-20T07:55:00.000Z');
+const WEDNESDAY_10H = new Date('2026-10-21T08:00:00.000Z');
+
+/** Freezes `Date` only (not the timers, which the pg pool relies on) so the cron sees the given moment. */
+const runAt = (date: Date) => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(date);
+};
+
+const preferences = (notifications: Partial<NotificationPreferences>) =>
+  JSON.stringify({ ...defaultUserPreferences, notifications: { ...defaultUserPreferences.notifications, ...notifications } });
 
 type SeedDemandInput = Partial<Omit<Insertable<Demands>, 'legacy_values'>> & {
   legacy?: Partial<LegacyDemandValues>;
@@ -49,18 +65,21 @@ async function seedPermission(permission: Insertable<UserPermissions>) {
 }
 
 const recipientIds = () => sentMail.mock.calls.map((c) => (c[1] as { id: string }).id).sort();
+const callsFor = (userId: string) => sentMail.mock.calls.filter((c) => (c[1] as { id: string }).id === userId);
 
 const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 60 * 60 * 1000).toDateString();
+/** 'Notification envoyé' value for a calendar day (same format as the cron: `Date#toDateString`). */
+const notifiedOn = (isoDay: string) => new Date(`${isoDay}T12:00:00`).toDateString();
 
 describe('manager-notifications', () => {
   beforeEach(async () => {
     await cleanDatabase();
     await seedTableUser([
-      { id: userMatching, receive_new_demands: true, receive_old_demands: true, role: 'gestionnaire' },
-      { id: userTerritoryOnly, receive_new_demands: true, receive_old_demands: true, role: 'collectivite' },
-      { id: userWrongNetwork, receive_new_demands: true, receive_old_demands: true, role: 'gestionnaire' },
-      { active: false, id: userInactive, receive_new_demands: true, receive_old_demands: true, role: 'gestionnaire' },
-      { id: userOptedOutNew, receive_new_demands: false, receive_old_demands: true, role: 'gestionnaire' },
+      { id: userMatching, preferences: preferences({ new_demands: 'daily' }), role: 'gestionnaire' },
+      { id: userTerritoryOnly, preferences: preferences({ new_demands: 'daily' }), role: 'collectivite' },
+      { id: userWrongNetwork, preferences: preferences({ new_demands: 'daily' }), role: 'gestionnaire' },
+      { active: false, id: userInactive, preferences: preferences({ new_demands: 'daily' }), role: 'gestionnaire' },
+      { id: userOptedOutNew, preferences: preferences({ new_demands: 'none' }), role: 'gestionnaire' },
     ]);
     await Promise.all([
       seedPermission({ resource_id: String(NETWORK_ID), type: 'reseau_de_chaleur', user_id: userMatching }),
@@ -71,24 +90,35 @@ describe('manager-notifications', () => {
     ]);
   });
 
-  afterEach(() => vi.clearAllMocks());
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.useRealTimers();
+  });
+
+  const seedWeeklyUser = async () => {
+    await seedTableUser([{ id: userWeekly, preferences: preferences({ new_demands: 'weekly' }), role: 'gestionnaire' }]);
+    await seedPermission({ resource_id: String(NETWORK_ID), type: 'reseau_de_chaleur', user_id: userWeekly });
+  };
 
   describe('notifyGestionnairesOfNewDemands', () => {
-    it('notifie uniquement les users avec perm réseau matchante, actifs, et receive_new_demands=true', async () => {
+    it('notifie uniquement les users avec perm réseau matchante, actifs, et new_demands=daily', async () => {
       await seedDemand();
 
+      runAt(WEDNESDAY_10H);
       await notifyGestionnairesOfNewDemands();
 
       expect(recipientIds()).toStrictEqual([userMatching]);
+      expect(sentMail.mock.calls[0][0]).toBe('demands.gestionnaire.nouvelles-demandes-a-traiter-daily');
     });
 
     it('passe le vrai compte de demandes par destinataire dans nbDemands', async () => {
       await Promise.all([seedDemand(), seedDemand(), seedDemand()]);
 
+      runAt(WEDNESDAY_10H);
       await notifyGestionnairesOfNewDemands();
 
       expect(sentMail).toHaveBeenCalledTimes(1);
-      expect(sentMail.mock.calls[0][2]).toStrictEqual({ nbDemands: 3 });
+      expect(sentMail.mock.calls[0][2]).toStrictEqual({ frequency: 'daily', nbDemands: 3 });
     });
 
     it('ignore les demandes sans réseau, UNREALISABLE, déjà notifiées, supprimées ou non validées', async () => {
@@ -100,6 +130,7 @@ describe('manager-notifications', () => {
         seedDemand({ validated: false }),
       ]);
 
+      runAt(WEDNESDAY_10H);
       await notifyGestionnairesOfNewDemands();
 
       expect(sentMail).not.toHaveBeenCalled();
@@ -111,19 +142,53 @@ describe('manager-notifications', () => {
         seedDemand({ network_id: 8888 }), // aucun user n'a de perm sur 8888
       ]);
 
+      runAt(WEDNESDAY_10H);
       await notifyGestionnairesOfNewDemands();
 
       const after = await kdb.selectFrom('demands').select(['id', 'legacy_values']).execute();
       const matchedAfter = after.find((d) => d.id === matched.id)!;
       const orphanAfter = after.find((d) => d.id === orphan.id)!;
 
-      expect(matchedAfter.legacy_values['Notification envoyé']).toBeTruthy();
+      expect(matchedAfter.legacy_values['Notification envoyé']).toBe(WEDNESDAY_10H.toDateString());
       expect(orphanAfter.legacy_values['Notification envoyé']).toBeUndefined();
+    });
+
+    it('hebdomadaire : rien en dehors du lundi, même pour une demande non notifiée', async () => {
+      await seedWeeklyUser();
+      await seedDemand();
+
+      runAt(WEDNESDAY_10H);
+      await notifyGestionnairesOfNewDemands();
+
+      expect(recipientIds()).toStrictEqual([userMatching]);
+    });
+
+    it('hebdomadaire : le lundi, récapitulatif des demandes de la semaine (non notifiées ou notifiées depuis le dernier lundi), sans re-marquer celles déjà notifiées', async () => {
+      await seedWeeklyUser();
+      const [fresh, midWeek, previousDigest] = await Promise.all([
+        seedDemand(),
+        seedDemand({ legacy: { 'Notification envoyé': notifiedOn('2026-10-14') } }), // notifiée mercredi à un collègue quotidien
+        seedDemand({ legacy: { 'Notification envoyé': notifiedOn('2026-10-12') } }), // déjà dans le récapitulatif du lundi précédent
+      ]);
+
+      runAt(MONDAY_10H);
+      await notifyGestionnairesOfNewDemands();
+
+      expect(recipientIds()).toStrictEqual([userMatching, userWeekly].sort());
+      expect(callsFor(userWeekly)[0][0]).toBe('demands.gestionnaire.nouvelles-demandes-a-traiter-weekly');
+      expect(callsFor(userWeekly)[0][2]).toStrictEqual({ frequency: 'weekly', nbDemands: 2 });
+      expect(callsFor(userMatching)[0][2]).toStrictEqual({ frequency: 'daily', nbDemands: 1 });
+
+      const after = await kdb.selectFrom('demands').select(['id', 'legacy_values']).execute();
+      const notifiedDateOf = (id: string) => after.find((d) => d.id === id)!.legacy_values['Notification envoyé'];
+      expect(notifiedDateOf(fresh.id)).toBe(MONDAY_10H.toDateString());
+      expect(notifiedDateOf(midWeek.id)).toBe(notifiedOn('2026-10-14'));
+      expect(notifiedDateOf(previousDigest.id)).toBe(notifiedOn('2026-10-12'));
     });
   });
 
   describe('notifyGestionnairesOfUnhandledDemands', () => {
-    it('notifie tous les users matchants avec receive_old_demands=true sur une demande > 7j', async () => {
+    it('notifie tous les users matchants avec pending_demands_reminder=true sur une demande > 7j', async () => {
       await seedDemand({ legacy: { 'Notification envoyé': daysAgo(10) } });
 
       await notifyGestionnairesOfUnhandledDemands();
@@ -161,6 +226,28 @@ describe('manager-notifications', () => {
 
       expect(recipientIds()).toStrictEqual([userMatching, userOptedOutNew].sort());
       expect(recipientIds().length).toBe(2); // 1 par user, pas 6 (3 demandes × 2 users)
+    });
+
+    it('hebdomadaire : le délai court depuis le lundi du récapitulatif, pas depuis le marquage par un collègue quotidien', async () => {
+      await seedWeeklyUser();
+      // marquée le mardi 13 → reçue par l'hebdo dans le récapitulatif du lundi 19, la veille du rappel
+      await seedDemand({ legacy: { 'Notification envoyé': notifiedOn('2026-10-13') } });
+
+      runAt(TUESDAY_9H55);
+      await notifyGestionnairesOfUnhandledDemands();
+
+      expect(recipientIds()).toStrictEqual([userMatching, userOptedOutNew].sort());
+    });
+
+    it('hebdomadaire : rappelé une fois le récapitulatif vieux de plus de 7 jours', async () => {
+      await seedWeeklyUser();
+      // marquée le lundi 12 → récapitulatif du lundi 12, 8 jours avant le rappel du mardi 20
+      await seedDemand({ legacy: { 'Notification envoyé': notifiedOn('2026-10-12') } });
+
+      runAt(TUESDAY_9H55);
+      await notifyGestionnairesOfUnhandledDemands();
+
+      expect(recipientIds()).toStrictEqual([userMatching, userOptedOutNew, userWeekly].sort());
     });
   });
 });

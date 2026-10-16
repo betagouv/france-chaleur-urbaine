@@ -136,8 +136,8 @@ const applyRule = async (rule: RetentionRule): Promise<number> => {
           optin_at: null,
           password: unusablePassword,
           phone: null,
+          preferences: sql`preferences || '{"email_signature": null}'::jsonb`,
           reset_token: null,
-          signature: null,
         })
         .where('id', 'in', inactiveAccountsQuery().select('id'))
         .executeTakeFirst();
