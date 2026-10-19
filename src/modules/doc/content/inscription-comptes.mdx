@@ -140,7 +140,7 @@ Depuis la même page, un admin peut modifier n'importe quel compte (identité, t
 
 ## Parcours 3 — Création automatique via l'API partenaire
 
-Certains partenaires (ENGIE) synchronisent leurs comptes gestionnaires via l'API. La synchronisation est **déclarative** : le partenaire envoie la liste complète de ses contacts par réseau ; les comptes absents de la liste sont désactivés. Les permissions réseau sont **additives** : la synchronisation en ajoute, mais n'en retire jamais (y compris celles attribuées manuellement par un admin).
+Seul ENGIE synchronise ses comptes gestionnaires via l'API : la synchronisation est réservée à l'organisation nommée exactement « ENGIE », le jeton d'une autre organisation est refusé (renommer l'organisation ENGIE coupe donc la synchronisation). La synchronisation est **déclarative** : le partenaire envoie la liste complète de ses contacts par réseau ; les comptes absents de la liste sont désactivés. Les permissions réseau sont **additives** : la synchronisation en ajoute, mais n'en retire jamais (y compris celles attribuées manuellement par un admin).
 
 <Mermaid
   chart={`flowchart TD
@@ -182,7 +182,7 @@ Chaque connexion réussie a des effets de bord :
 Cas de refus :
 
 - Email non confirmé → message explicite demandant de confirmer.
-- Compte désactivé par un admin → message générique « Mauvais login/mot de passe », **identique à un mauvais mot de passe**. La personne ne sait pas que son compte est désactivé.
+- Compte désactivé par un admin → message générique « Mauvais login/mot de passe », **identique à un mauvais mot de passe**. La personne ne sait pas que son compte est désactivé. Une personne déjà connectée perd aussi l'accès dès la désactivation (en une minute au plus) : sa session n'est plus reconnue.
 - Trop de tentatives depuis une même adresse IP : au-delà de <Rule id="loginAttemptsLimit" /> sur <Rule id="loginAttemptsWindowMinutes" /> (réussies ou non), la connexion est refusée avec le message «&nbsp;Trop de tentatives de connexion&nbsp;» jusqu'à la fin de la fenêtre. Les demandes de «&nbsp;mot de passe oublié&nbsp;» et les inscriptions ont leur propre plafond. Chaque échec de connexion est tracé dans les journaux techniques (sans l'email en clair), pas dans les événements.
 
 Données modifiées :
