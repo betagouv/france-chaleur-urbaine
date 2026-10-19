@@ -31,6 +31,7 @@ import {
   requestDemandAssignmentChange,
   updateDemandByGestionnaire,
 } from './gestionnaire-operations';
+import { ensureUserCanAccessDemand } from './helpers';
 import { updateCommentFromRelanceId } from './relances';
 import { getReseauxStats } from './stats';
 import { listByUser } from './user-tracking';
@@ -100,7 +101,8 @@ export const demandsRouter = router({
           networkType: z.enum(networkTypes),
         })
       )
-      .query(async ({ input }) => {
+      .query(async ({ input, ctx }) => {
+        await ensureUserCanAccessDemand(ctx, input.demandId);
         return await computeNetworkDistance(input.demandId, input.networkIdFcu, input.networkType);
       }),
     list: demandAccessRoute.query(async ({ ctx }) => listDemands(ctx)),
@@ -108,6 +110,7 @@ export const demandsRouter = router({
       return await listDemandEmails(ctx, { demandId: input.demand_id });
     }),
     requestAssignmentChange: demandAccessRoute.input(zRequestAssignmentChangeInput).mutation(async ({ input, ctx }) => {
+      await ensureUserCanAccessDemand(ctx, input.demandId);
       await requestDemandAssignmentChange(input.demandId, input.networkIdFcu, input.networkType, input.comment, ctx.user.id);
     }),
     sendEmail: demandAccessRoute.input(zSendEmailInput).mutation(async ({ input, ctx }) => {

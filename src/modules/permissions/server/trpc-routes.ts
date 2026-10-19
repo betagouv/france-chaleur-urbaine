@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { anonymizeEmail, anonymizeName } from '@/modules/demands/server/helpers';
+import { anonymizeEmail, anonymizeName, ensureUserCanAccessDemand } from '@/modules/demands/server/helpers';
 import { searchNetworks } from '@/modules/reseaux/server/service';
 import { adminRoute, demandAccessRoute, router } from '@/modules/trpc/server';
 
@@ -36,6 +36,7 @@ export const permissionsRouter = router({
   },
 
   listUsersWithAccessToDemand: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).query(async ({ input, ctx }) => {
+    await ensureUserCanAccessDemand(ctx, input.demandId);
     const demand = await getDemandForAccessCheck(input.demandId);
     if (!demand) return [];
     const users = await getUsersWithAccessToDemand(demand);

@@ -303,6 +303,18 @@ describe('désaffectation / réaffectation flow', () => {
       await setupNetwork(100);
       const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
       demandId = demand.id;
+      // Demande dans le périmètre des rôles territoriaux : validée et réseau 100 dans leurs permissions.
+      await kdb.updateTable('demands').set({ validated: true }).where('id', '=', demandId).execute();
+      await kdb
+        .insertInto('user_permissions')
+        .values(
+          [testUsers.collectivite.id, testUsers.alec.id, testUsers.ccrt.id].map((user_id) => ({
+            resource_id: '100',
+            type: 'reseau_de_chaleur' as const,
+            user_id,
+          }))
+        )
+        .execute();
     });
 
     const requestUnassignment = (user: Partial<User>, comment: string | null = null) =>
@@ -325,6 +337,29 @@ describe('désaffectation / réaffectation flow', () => {
 
     it('gestionnaire.requestAssignmentChange: refuse un particulier (FORBIDDEN)', async () => {
       await expect(requestUnassignment(testUsers.particulier)).rejects.toMatchObject(forbiddenError);
+    });
+
+    // Le gestionnaire n'a aucune permission sur le réseau 100 : la demande est hors de son périmètre.
+    const outOfScopeCalls = [
+      [
+        'demands.gestionnaire.computeNetworkDistance',
+        (user: Partial<User>) =>
+          createTestCaller(user).demands.gestionnaire.computeNetworkDistance({
+            demandId,
+            networkIdFcu: 100,
+            networkType: 'reseau_de_chaleur',
+          }),
+      ],
+      ['demands.gestionnaire.requestAssignmentChange', (user: Partial<User>) => requestUnassignment(user)],
+      [
+        'permissions.listUsersWithAccessToDemand',
+        (user: Partial<User>) => createTestCaller(user).permissions.listUsersWithAccessToDemand({ demandId }),
+      ],
+    ] as const;
+
+    it.each(outOfScopeCalls)('%s: refuse une demande hors du périmètre (FORBIDDEN)', async (_route, call) => {
+      await expect(call(testUsers.gestionnaire)).rejects.toMatchObject({ code: 'FORBIDDEN', message: 'Demande hors de votre périmètre' });
+      expect(await getPending(demandId)).toBeNull();
     });
 
     it('gestionnaire.cancelAssignmentChangeRequest: collectivite peut annuler son propre pending', async () => {
