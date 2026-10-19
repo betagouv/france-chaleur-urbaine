@@ -2,7 +2,7 @@ import type { User } from 'next-auth';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { kdb } from '@/server/db/kysely';
-import { cleanDatabase, seedEligibilityTestsData, seedProEligibilityTestsAddress } from '@/tests/fixtures';
+import { cleanDatabase, seedEligibilityTestsData, seedProEligibilityTestsAddress, seedTableUser } from '@/tests/fixtures';
 import { eligibilityFixtures } from '@/tests/fixtures/eligibility';
 import { uuid } from '@/tests/helpers';
 import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
@@ -252,6 +252,61 @@ describe('demandsRouter', () => {
         } else {
           await expect(callRoute).rejects.toMatchObject(forbiddenError);
         }
+      });
+
+      describe('propriété des adresses', () => {
+        const testId = uuid(10);
+        let addressId: string;
+        let demandId: string;
+
+        beforeEach(async () => {
+          await cleanDatabase();
+          await seedTableUser([
+            { id: testUsers.admin.id, role: 'admin' },
+            { id: testUsers.professionnel.id, role: 'professionnel' },
+            { id: testUsers.particulier.id, role: 'particulier' },
+          ]);
+          await kdb
+            .insertInto('pro_eligibility_tests')
+            .values({ has_unseen_results: false, id: testId, name: 'Test pro', user_id: testUsers.professionnel.id })
+            .execute();
+          // Adresse déjà liée à une demande : createBatch renvoie la demande existante sans en créer
+          const [demand] = await kdb
+            .insertInto('demands')
+            .values({ legacy_values: JSON.stringify({}) })
+            .returning('id')
+            .execute();
+          demandId = demand.id;
+          const address = await seedProEligibilityTestsAddress({
+            demand_id: demandId,
+            source_address: '1 Rue de Rivoli 75001 Paris',
+            test_id: testId,
+          });
+          addressId = address.id;
+        });
+
+        const createBatchFrom = (user: Partial<User>, ids: string[]) =>
+          createTestCaller(user).demands.user.createBatch({
+            addresses: ids.map((id) => ({ addressId: id, heatingEnergy: 'gaz', heatingType: 'collectif' })),
+            termOfUse: true,
+          });
+
+        it.each([
+          ['le propriétaire du test', testUsers.professionnel],
+          ['un admin', testUsers.admin],
+        ] as const)('accepte %s', async (_label, user) => {
+          expect(await createBatchFrom(user, [addressId])).toStrictEqual([{ addressId, demandId }]);
+        });
+
+        it.each([
+          ["l'adresse du test d'un autre utilisateur", () => [addressId]],
+          ['une adresse inconnue', () => [uuid(999)]],
+        ] as const)('refuse %s (NOT_FOUND)', async (_label, ids) => {
+          await expect(createBatchFrom(testUsers.particulier, ids())).rejects.toMatchObject({
+            code: 'NOT_FOUND',
+            message: 'Adresse de test introuvable',
+          });
+        });
       });
     });
 
