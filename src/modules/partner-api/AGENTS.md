@@ -61,7 +61,9 @@ unchanged (role `gestionnaire`), so the partner sees/edits exactly the demands o
 Two single-tenant ENGIE endpoints, kept until its CRM migrates to v2. Logic lives under `server/legacy/`; the
 `src/pages/api/v1/...` pages only re-export it (thin, like the v2 routes). **Auth = `authenticatePartner`** (same Bearer →
 `organization_api_credentials` lookup as v2); the `[key]` in the URL is ignored. The ENGIE legacy token is imported as an org
-credential (same token, hashed), so the org is resolved from the token — no hardcoded `'ENGIE'`.
+credential (same token, hashed), so the org is resolved from the token. `GET /demands` needs nothing more (org-scoped);
+`PUT /users` is additionally restricted to the org named `ENGIE_ORGANIZATION_NAME` (`ensureEngieOrganization`, 403 otherwise),
+since the sync creates gestionnaires and grants permissions on any SNCU id.
 
 - **`GET /api/v1/demands/{key}`** (`engie-demands.ts`): resolves the org from the token, then **reuses**
   `baseDemandQuery` + `buildDemandAccessFilter` (org scope) + `toDemandDTO`, reprojected to the flat v1 shape (`address`,
