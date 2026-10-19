@@ -16,6 +16,8 @@ export const eventTypes = [
   'user_deactivated_by_api',
   'user_updated_by_admin',
   'user_deleted_by_admin',
+  'user_impersonation_started',
+  'user_impersonation_stopped',
   'user_tag_created',
   'user_tag_updated',
   'user_tag_deleted',
@@ -140,6 +142,8 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_deleted_by_admin: 'Suppression utilisateur (admin)',
   user_email_blocked: 'Emails bloqués (compte)',
   user_email_unblocked: 'Emails réactivés (compte)',
+  user_impersonation_started: "Début d'imposture (admin)",
+  user_impersonation_stopped: "Fin d'imposture (admin)",
   user_login: 'Connexion utilisateur',
   user_newsletter_subscribed: 'Abonnement newsletter',
   user_newsletter_unsubscribed: 'Désabonnement newsletter',
@@ -326,6 +330,8 @@ export type EventDataMap = {
   user_deactivated_by_api: { api_name: string; user_email: string };
   user_deleted_by_admin: { user_email: string };
   user_registered: null;
+  user_impersonation_started: { role: UserRole; permissions_count: number; anonymize: boolean };
+  user_impersonation_stopped: { role: UserRole };
   user_login: null;
   user_password_reset_requested: null;
   user_permissions_synced_from_api: {

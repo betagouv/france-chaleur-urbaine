@@ -529,6 +529,22 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       <span> ({emailUnblockSourceLabels[event.data.source]})</span>
     </>
   ),
+  user_impersonation_started: (event) => (
+    <>
+      <span>a pris le rôle </span>
+      <UserRoleBadge role={event.data.role} />
+      <span>
+        {' '}
+        avec <strong>{event.data.permissions_count}</strong> permission(s){event.data.anonymize ? ', données anonymisées' : ''}
+      </span>
+    </>
+  ),
+  user_impersonation_stopped: (event) => (
+    <>
+      <span>a quitté le rôle </span>
+      <UserRoleBadge role={event.data.role} />
+    </>
+  ),
   user_login: () => "s'est connecté",
   user_newsletter_subscribed: () => "s'est abonné à la newsletter",
   user_newsletter_unsubscribed: () => "s'est désabonné de la newsletter",
