@@ -16,9 +16,12 @@ type ServerSessionContext = {
 /**
  * Get the session from the server.
  * If using getServerSideProps, use withServerSession instead.
+ * A deactivated (or deleted) account gets no session, even with a still-valid JWT: every server-side
+ * entry point (tRPC context, REST routes, page guards) goes through this function.
  */
 export const getServerSession = async ({ req, res }: Pick<ServerSessionContext, 'req' | 'res'>) => {
-  return getNextAuthServerSession(req, res, nextAuthOptions) as Promise<Session>;
+  const session = (await getNextAuthServerSession(req, res, nextAuthOptions)) as Session | null;
+  return (session?.user?.active ? session : null) as Session;
 };
 
 /**
