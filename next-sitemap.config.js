@@ -65,6 +65,9 @@ const excludedPages = [
   '/server-sitemap.xml',
 ];
 
+// Only the production site (identified by its public URL) may be crawled; keep in sync with next.config.ts
+const isProductionSite = process.env.NEXT_PUBLIC_SITE_URL === 'https://france-chaleur-urbaine.beta.gouv.fr';
+
 /** @type {import('next-sitemap').IConfig} */
 export default {
   exclude: excludedPages,
@@ -72,6 +75,7 @@ export default {
   robotsTxtOptions: {
     // the network pages are rendered on request: their sitemap is served by the app
     additionalSitemaps: [`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://france-chaleur-urbaine.beta.gouv.fr'}/server-sitemap.xml`],
+    policies: [isProductionSite ? { allow: '/', userAgent: '*' } : { disallow: '/', userAgent: '*' }],
   },
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://france-chaleur-urbaine.beta.gouv.fr',
   transform: (config, path) => {
