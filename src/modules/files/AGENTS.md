@@ -8,7 +8,7 @@ Storage of the files of the network change requests (public forms) and of the do
 - `server/file-type.ts` — `detectFileType(filename, head)`: extension must be allowed and the first bytes (`FILE_TYPE_PROBE_LENGTH`) must match it (PDF, zip, SQLite, shapefile, dBase, text/JSON/XML probes). The browser MIME type is never used.
 - `server/zip-inspection.ts` — `listZipEntries(reader)` reads the central directory by random access (buffer or file descriptor) without inflating nor loading the archive: entry names (a plain `.zip` may only contain accepted types) and uncompressed size cap (zip bomb).
 - `server/scanner.ts` — `FILE_SCANNER=none|clamav`; clamd INSTREAM client, `parseClamdResponse`. Errors are returned, never thrown.
-- `server/service.ts` — `prepareUploadedFile` (validation on the temporary file: head bytes, archive directory, sha256 computed by formidable while streaming) + `storeUploadedFiles` (one file in memory at a time: `bytea` cannot be streamed; `pending` + `scan_file` job when the scanner is enabled, `skipped` otherwise), `getFileForDownload`, `getFilesMetadata`, `markFileScanResult`, `purgeFileContents`, `purgeOrphanFiles`.
+- `server/service.ts` — `prepareUploadedFile` (validation on the temporary file: head bytes, archive directory, sha256 computed by formidable while streaming) + `storeUploadedFiles` (one file in memory at a time: `bytea` cannot be streamed; `pending` + `scan_file` job when the scanner is enabled, `skipped` otherwise), `getFileForDownload`, `getFilesMetadata`, `markFileScanResult`, `fileOwnerTables` (tables holding a FK to `files`, checked against the database by `service.integration.spec.ts`), `purgeUnownedFileContents` (content dropped unless another owner still references the file), `purgeOrphanFiles`.
 - `server/jobs.ts` — `scan_file` job handler (registered in `jobs.config.ts`).
 
 ## Routes (REST, binary — the tRPC exception)
@@ -18,6 +18,6 @@ Storage of the files of the network change requests (public forms) and of the do
 
 ## Lifecycle
 
-- A file never attached to a request is deleted by the `purgeOrphanFiles` cron after `businessRules.uploadedFileOrphanRetentionHours`.
+- A file referenced by no owner table is deleted by the `purgeOrphanFiles` cron after `businessRules.uploadedFileOrphanRetentionHours`.
 - The content is kept after processing (downloadable from the request) and purged by the retention rule (row kept); published PDF documents are linked to the network (`network_files`) and keep their content.
-- Retention: the `processed_network_change_requests` rule purges the remaining contents of the files of reviewed requests (except published documents).
+- Retention: the `processed_network_change_requests` rule purges the remaining contents of the files of reviewed requests, except those another owner still references (published documents). Adding an owner table = adding it to `fileOwnerTables`, nothing else.

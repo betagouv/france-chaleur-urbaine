@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { sql } from 'kysely';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
-import { getFilesMetadata, purgeFileContents } from '@/modules/files/server/service';
+import { getFilesMetadata, purgeUnownedFileContents } from '@/modules/files/server/service';
 import { kdb } from '@/server/db/kysely';
 
 import { MAX_NETWORK_DOCUMENTS, type NetworkEntityType } from '../constants';
@@ -79,7 +79,7 @@ export const assertNetworkDocumentsPublishable = async (fileIds: string[]) => {
   }
 };
 
-/** Unpublishes a document; its content is dropped when no other network publishes it. */
+/** Unpublishes a document; its content is dropped when nothing references it any more (another network, the request it came from). */
 export const removeNetworkDocument = async (networkType: DocumentedNetworkType, networkId: number, fileId: string) => {
   const deleted = await kdb
     .deleteFrom('network_files')
@@ -90,10 +90,7 @@ export const removeNetworkDocument = async (networkType: DocumentedNetworkType, 
   if (Number(deleted.numDeletedRows) === 0) {
     throw new TRPCError({ code: 'NOT_FOUND', message: 'Document introuvable' });
   }
-  const otherLinks = await kdb.selectFrom('network_files').select('file_id').where('file_id', '=', fileId).executeTakeFirst();
-  if (!otherLinks) {
-    await purgeFileContents([fileId]);
-  }
+  await purgeUnownedFileContents([fileId]);
 };
 
 /** A document of a heat or cold network identified by its SNCU id, for the public download route. */

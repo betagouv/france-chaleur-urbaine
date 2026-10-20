@@ -2,10 +2,11 @@ import { open, readFile, unlink } from 'node:fs/promises';
 import { extname } from 'node:path';
 
 import { TRPCError } from '@trpc/server';
+import type { ExpressionBuilder } from 'kysely';
 import type { Logger } from 'winston';
 
 import { businessRules } from '@/modules/app/business-rules';
-import { kdb } from '@/server/db/kysely';
+import { type DB, kdb } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { formatFileSize } from '@/utils/strings';
 
@@ -172,8 +173,26 @@ export const markFileScanResult = async (fileId: string, result: FileScanResult 
     .execute();
 };
 
-/** Drops the content of files that are no longer needed; the rows stay so references and history remain intact. */
-export const purgeFileContents = async (fileIds: string[]) => {
+/**
+ * Tables that own a file (foreign key to `files.id`). The purges below rely on this list, which must stay complete:
+ * `service.integration.spec.ts` compares it to the foreign keys of the database.
+ */
+export const fileOwnerTables = ['network_change_request_files', 'network_files'] as const satisfies readonly (keyof DB)[];
+export type FileOwnerTable = (typeof fileOwnerTables)[number];
+
+/** `files` rows referenced by no owner table (every table, or every table but `except`). */
+const whereFileHasNoOwner = (eb: ExpressionBuilder<DB, 'files'>, except?: FileOwnerTable) =>
+  eb.and(
+    fileOwnerTables
+      .filter((table) => table !== except)
+      .map((table) => eb.not(eb.exists(eb.selectFrom(table).select('file_id').whereRef('file_id', '=', 'files.id'))))
+  );
+
+/**
+ * Drops the content of the given files, unless an owner other than `except` still references them (e.g. the document of a
+ * processed request published on a network page belongs to the network now). The rows stay so references and history remain intact.
+ */
+export const purgeUnownedFileContents = async (fileIds: string[], except?: FileOwnerTable) => {
   if (fileIds.length === 0) {
     return;
   }
@@ -182,23 +201,17 @@ export const purgeFileContents = async (fileIds: string[]) => {
     .set({ content: null, purged_at: new Date() })
     .where('id', 'in', fileIds)
     .where('purged_at', 'is', null)
+    .where((eb) => whereFileHasNoOwner(eb, except))
     .execute();
 };
 
-/** Deletes files uploaded by an abandoned form (attached neither to a request nor to a network) once the retention delay is over. */
+/** Deletes files uploaded by an abandoned form (referenced by no owner table) once the retention delay is over. */
 export const purgeOrphanFiles = async () => {
   const cutoff = new Date(Date.now() - businessRules.uploadedFileOrphanRetentionHours.value * 3600 * 1000);
   const result = await kdb
     .deleteFrom('files')
     .where('created_at', '<', cutoff)
-    .where((eb) =>
-      eb.not(
-        eb.exists(
-          eb.selectFrom('network_change_request_files').select('file_id').whereRef('network_change_request_files.file_id', '=', 'files.id')
-        )
-      )
-    )
-    .where((eb) => eb.not(eb.exists(eb.selectFrom('network_files').select('file_id').whereRef('network_files.file_id', '=', 'files.id'))))
+    .where((eb) => whereFileHasNoOwner(eb))
     .executeTakeFirst();
   parentLogger.info('orphan files purged', { count: Number(result.numDeletedRows) });
 };

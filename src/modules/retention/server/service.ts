@@ -4,7 +4,7 @@ import { genSalt, hash } from 'bcryptjs';
 
 import { businessRules } from '@/modules/app/business-rules';
 import { createUserEvent } from '@/modules/events/server/service';
-import { purgeFileContents } from '@/modules/files/server/service';
+import { purgeUnownedFileContents } from '@/modules/files/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
@@ -173,12 +173,8 @@ const applyRule = async (rule: RetentionRule): Promise<number> => {
       const fileIds = (
         await kdb.selectFrom('network_change_request_files').select('file_id').where('request_id', 'in', requestIds).execute()
       ).map((file) => file.file_id);
-      // documents published on a network page keep their content: they belong to the network now
-      const publishedFileIds =
-        fileIds.length === 0
-          ? []
-          : (await kdb.selectFrom('network_files').select('file_id').where('file_id', 'in', fileIds).execute()).map((file) => file.file_id);
-      await purgeFileContents(fileIds.filter((fileId) => !publishedFileIds.includes(fileId)));
+      // a document published on a network page keeps its content: it belongs to the network now
+      await purgeUnownedFileContents(fileIds, 'network_change_request_files');
       const updated = await kdb
         .updateTable('network_change_requests')
         .set({
