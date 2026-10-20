@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server';
 import type { User } from 'next-auth';
 
 import type { BatchDemandContactInfo, CreateBatchDemandInput, DemandCompanyType } from '@/modules/demands/constants';
@@ -60,6 +61,25 @@ const getBatchDemandContactFromUser = async (userId: string): Promise<BatchDeman
 };
 
 /**
+ * Every address must come from a (non-deleted) test of the current user; an admin may use any test,
+ * e.g. to create demands from its own bulk test on behalf of another contact.
+ */
+const ensureAddressesBelongToUserTests = async (addressIds: string[], currentUser: Pick<User, 'id' | 'role'>) => {
+  const uniqueAddressIds = [...new Set(addressIds)];
+  const allowedAddresses = await kdb
+    .selectFrom('pro_eligibility_tests_addresses')
+    .innerJoin('pro_eligibility_tests', 'pro_eligibility_tests.id', 'pro_eligibility_tests_addresses.test_id')
+    .select('pro_eligibility_tests_addresses.id')
+    .where('pro_eligibility_tests_addresses.id', 'in', uniqueAddressIds)
+    .where('pro_eligibility_tests.deleted_at', 'is', null)
+    .$if(currentUser.role !== 'admin', (qb) => qb.where('pro_eligibility_tests.user_id', '=', currentUser.id))
+    .execute();
+  if (allowedAddresses.length !== uniqueAddressIds.length) {
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'Adresse de test introuvable' });
+  }
+};
+
+/**
  * Create multiple demands from test addresses
  * User info is fetched from the users table, unless an admin provides explicit contact data.
  * @param input - Batch demand creation input with addresses, optional contact data and heating type
@@ -71,6 +91,10 @@ export const createBatchDemands = async (
   currentUser: Pick<User, 'id' | 'role'>
 ): Promise<Array<{ addressId: string; demandId: string }>> => {
   const { addresses } = input;
+  await ensureAddressesBelongToUserTests(
+    addresses.map((address) => address.addressId),
+    currentUser
+  );
   const demandOwnerUserId = currentUser.role === 'admin' && input.contact ? undefined : currentUser.id;
   const contact = currentUser.role === 'admin' && input.contact ? input.contact : await getBatchDemandContactFromUser(currentUser.id);
 

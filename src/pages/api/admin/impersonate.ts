@@ -2,8 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { decode, encode, type JWT } from 'next-auth/jwt';
 import { z } from 'zod';
 
+import { createUserEvent } from '@/modules/events/server/service';
 import { zPermissionInput } from '@/modules/permissions/types';
-import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors, invalidPermissionsError, requireAuthentication, validateObjectSchema } from '@/server/helpers/server';
 import type { UserRole } from '@/types/enum/UserRole';
 import type { NonEmptyArray } from '@/utils/typescript';
@@ -17,6 +17,14 @@ const DELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   // remove the impersonation
   const { impersonatedProfile: _, ...jwt } = await getSessionJWT(req);
   await generateSessionJWT(req, res, jwt);
+  // req.user keeps the admin id, its role is the impersonated one
+  await createUserEvent({
+    author_id: req.user.id,
+    context_id: req.user.id,
+    context_type: 'user',
+    data: { role: req.user.role },
+    type: 'user_impersonation_stopped',
+  });
   return;
 };
 
@@ -29,10 +37,16 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
     role: z.enum(['gestionnaire', 'collectivite', 'alec', 'ccrt', 'professionnel', 'particulier'] as NonEmptyArray<UserRole>),
   });
 
-  logger.info('impersonating', {
-    anonymize: impersonatedProfile.anonymize ?? false,
-    permissionsCount: impersonatedProfile.permissions?.length ?? 0,
-    role: impersonatedProfile.role,
+  await createUserEvent({
+    author_id: req.user.id,
+    context_id: req.user.id,
+    context_type: 'user',
+    data: {
+      anonymize: impersonatedProfile.anonymize ?? false,
+      permissions_count: impersonatedProfile.permissions?.length ?? 0,
+      role: impersonatedProfile.role,
+    },
+    type: 'user_impersonation_started',
   });
 
   const jwt = await getSessionJWT(req);
