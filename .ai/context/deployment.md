@@ -29,7 +29,7 @@ Scalingo spawns a review app per PR. Staging→prod is ideally a fast-forward `d
 - Off-Scalingo encrypted copy, run manually: `pnpm backup:prod` (`scripts/backup/`, README there) — latest Scalingo DB backup, env vars + deployed git ref, all Grist docs of the org, git bundle; `age` encryption to the public key in `scripts/backup/.env`, secret key kept in a password manager and prompted only by `pnpm backup:decrypt`.
 
 ## Monitoring
-- **Sentry** (errors, sentry.incubateur.net, betagouv/fcu-prod), **Matomo** (stats.beta.gouv.fr), **PostHog** (product analytics, tunneled via Next rewrites), **Winston** (structured logs via the tRPC context logger — no PII).
+- **Sentry** (errors, sentry.incubateur.net, betagouv/fcu-prod): init options shared by the 3 runtimes in `src/config/sentry.ts`; `environment` is `production` only on the production site (`clientConfig.isProductionSite`, derived from `NEXT_PUBLIC_SITE_URL`), `development` everywhere else. **Matomo** (stats.beta.gouv.fr), **PostHog** (product analytics, tunneled via Next rewrites), **Winston** (structured logs via the tRPC context logger — no PII).
 - Local SQL logging: `LOG_SQL_QUERIES=true` (+ `LOG_SQL_QUERIES_PRETTY=true`).
 
 ## Troubleshooting

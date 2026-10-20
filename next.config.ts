@@ -1,14 +1,11 @@
 import createMDX from '@next/mdx';
 import type { NextConfig } from 'next';
 
+import { clientConfig } from './src/client-config';
 import withSecurityHeaders from './src/config/withSecurityHeaders';
 import withSentry from './src/config/withSentry';
 
 const isGithubCI = process.env.NODE_ENV === 'production' && process.env.GITHUB_CI === 'true';
-
-// Only the production site (identified by its public URL) may be indexed; staging, review apps and local must stay out of search engines.
-// Keep in sync with next-sitemap.config.js
-const isProductionSite = process.env.NEXT_PUBLIC_SITE_URL === 'https://france-chaleur-urbaine.beta.gouv.fr';
 
 const configFunctions = [
   createMDX({
@@ -24,9 +21,6 @@ const configFunctions = [
     // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
     // side errors will fail.
     // tunnelRoute: "/monitoring",
-
-    // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
 
     // do not exit if the build fails to interact with the sentry server
     errorHandler: (err) => {
@@ -46,6 +40,9 @@ const configFunctions = [
 
     // For all available options, see:
     // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+
+    // Automatically tree-shake Sentry logger statements to reduce bundle size
+    webpack: { treeshake: { removeDebugLogging: true } },
 
     // Upload a larger set of source maps for prettier stack traces (increases build time)
     widenClientFileUpload: true,
@@ -116,7 +113,8 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
-      ...(isProductionSite
+      // Only the production site may be indexed; staging, review apps and local must stay out of search engines.
+      ...(clientConfig.isProductionSite
         ? []
         : [
             {
