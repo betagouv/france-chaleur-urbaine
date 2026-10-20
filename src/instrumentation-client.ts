@@ -5,16 +5,9 @@
 import * as Sentry from '@sentry/nextjs';
 import posthog from 'posthog-js';
 
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+import { sentryOptions } from '@/config/sentry';
 
-  // Never send PII (IP, cookies, headers): errors are correlated by stack trace only, users are never identified in Sentry
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
-  sendDefaultPii: false,
-
-  // Performance monitoring / tracing disabled: we only report errors with stack traces.
-  tracesSampleRate: 0,
-});
+Sentry.init(sentryOptions);
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
 

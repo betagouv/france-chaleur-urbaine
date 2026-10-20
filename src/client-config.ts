@@ -5,6 +5,9 @@ export const clientConfig = {
   banApiBaseUrl: process.env.NEXT_PUBLIC_BAN_API_BASE_URL ?? 'https://data.geopf.fr/geocodage/',
   // Adresse de contact de l'équipe FCU (affichée publiquement et destinataire des notifications internes)
   contactEmail: 'france.chaleur.urbaine@ademe.fr',
+  // Site de production (identifié par son URL publique) : seul environnement indexable et remonté comme "production" dans Sentry.
+  // Staging, review apps et local sont tous hors production. Dupliqué dans next-sitemap.config.js (JS pur)
+  isProductionSite: process.env.NEXT_PUBLIC_SITE_URL === 'https://france-chaleur-urbaine.beta.gouv.fr',
   linkedInUrl: 'https://fr.linkedin.com/company/france-chaleur-urbaine',
   networkInfoFieldMaxCharacters: 700,
   networkSearchMinimumCharactersThreshold: 3,
@@ -13,6 +16,7 @@ export const clientConfig = {
   publicodesDocumentationURL:
     process.env.NEXT_PUBLIC_PUBLICODES_DOCUMENTATION_URL ?? 'https://betagouv.github.io/france-chaleur-urbaine-publicodes',
   rechercheEntreprisesApiUrl: process.env.NEXT_PUBLIC_RECHERCHE_ENTREPRISES_API_URL ?? 'https://recherche-entreprises.api.gouv.fr',
+  sentryDsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
   summaryAreaSizeLimit: 5, // km²
   tracking: {
     googleTagIds: (process.env.NEXT_PUBLIC_GOOGLE_TAG_ID ?? '').split(',').filter(Boolean),
