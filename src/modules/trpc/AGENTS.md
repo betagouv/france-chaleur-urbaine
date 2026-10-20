@@ -153,9 +153,9 @@ export const contactRouter = router({
 The `rateLimit` meta property accepts:
 
 ```typescript
-{
-  windowMs?: number;    // Time window in milliseconds (default: 15 minutes)
-  limit?: number;         // Maximum requests per window (default: 20)
+false | {
+  windowMs?: number;    // Time window in milliseconds (default: 10 minutes)
+  limit?: number;       // Maximum requests per window (default: 100)
   message?: string;     // Custom error message for TRPCError
 }
 ```
@@ -169,19 +169,21 @@ The `rateLimit` meta property accepts:
 - **Auth endpoints**: 5 attempts/15 minutes
 - **Upload endpoints**: 10 uploads/hour
 
-**Note**: If no `rateLimit` is specified in meta, no rate limiting is applied to the route.
+**Default behaviour**: every procedure is rate-limited, even without `meta.rateLimit` — the default is **100 requests / 10 minutes, per IP and per procedure path**. Set `rateLimit: false` to disable it explicitly (e.g. a polled, authenticated, cheap read). The 20 req / 15 min defaults of `createRateLimiter` (security module) never apply to tRPC: the middleware always passes explicit values.
+
+**Batching**: a batched HTTP call (`/api/trpc/a.list,a.get`) runs the middleware once per procedure, so each procedure consumes its own counter.
 
 ### Implementation Details
 
 Rate limiting uses `express-rate-limit` from the security module:
 
-- **Shared Store**: Un `MemoryStore` global partagé entre toutes les routes
+- **Shared Store**: Un `MemoryStore` global partagé entre toutes les routes (en mémoire, par processus — non partagé entre containers, remis à zéro au redéploiement)
 - **Isolation**: Clés préfixées par `path:ip` pour isoler les compteurs par route
 - **IPv6 Support**: Utilise `ipKeyGenerator` pour support IPv6
 - **Automatic**: Le middleware lit automatiquement `meta.rateLimit` et applique les limites
 
 Le middleware tRPC (`src/modules/trpc/server/middlewares/rate-limit.ts`) :
-1. Vérifie si `meta.rateLimit` est défini
+1. Lit `meta.rateLimit` : `false` → aucun rate limiting ; `undefined` → défaut 100 req / 10 min ; objet → surcharge le défaut
 2. Crée un rate limiter avec `createRateLimiter({ ...config, path })`
 3. Le path tRPC est automatiquement ajouté pour isoler les compteurs
 4. Rejette avec `TRPCError` code `TOO_MANY_REQUESTS` si limite atteinte
@@ -192,7 +194,7 @@ Le type `Meta['rateLimit']` est défini dans `src/modules/trpc/server/context.ts
 
 ```typescript
 {
-  rateLimit?: Omit<RateLimiterOptions, 'path'> & { message?: string };
+  rateLimit?: false | (Omit<RateLimiterOptions, 'path'> & { message?: string });
 }
 ```
 

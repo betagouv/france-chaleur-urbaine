@@ -19,7 +19,9 @@ export const proEligibilityTestsRouter = router({
   get: authRoute.input(z.object({ id: z.string() })).query(async ({ input, ctx }) => {
     return await proEligibilityTestsService.get(input.id, {}, ctx);
   }),
-  list: authRoute.query(async ({ ctx }) => {
+  // Polled every 15s by the client while jobs are pending: the default 100 req / 10 min
+  // would be hit by a few users or tabs behind a shared corporate IP.
+  list: authRoute.meta({ rateLimit: { limit: 600, windowMs: 10 * 60 * 1000 } }).query(async ({ ctx }) => {
     return await proEligibilityTestsService.list({}, ctx);
   }),
   listAdmin: adminRoute.query(async () => {
