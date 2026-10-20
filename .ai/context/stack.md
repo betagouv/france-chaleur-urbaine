@@ -7,7 +7,7 @@ Versions live in `package.json` (authoritative) — this file captures the choic
 - **pnpm 10** only — never `npm` / `npx` / `yarn`. CI uses `--frozen-lockfile`. Dependency overrides and `peerDependencyRules` live in `pnpm-workspace.yaml` only, each with a comment naming the advisory or the reason; pnpm ignores the workspace overrides as soon as `package.json` declares `resolutions` / `pnpm.overrides`, so never put them in both.
 
 ## Data & API
-- **PostgreSQL 16 + PostGIS 3.5**. **Kysely** query builder (not Prisma) — types generated from the live schema via `pnpm db:sync`.
+- **PostgreSQL 16 + PostGIS 3.5**. **Kysely** query builder (not Prisma) — types generated from the live schema table by table (`pnpm cli db:sync --single <table>`, merged by hand — see database.md).
 - **tRPC 11** + **Zod 4** (validation, shared client/server) + **TanStack React Query 5** (server state).
 - **NextAuth v4**, credentials provider, JWT sessions. Roles: `admin`, `gestionnaire`, `collectivite`, `alec`, `professionnel`, `particulier`.
 
