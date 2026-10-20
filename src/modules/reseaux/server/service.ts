@@ -109,7 +109,7 @@ export const getNetwork = async (id: string) =>
       'website_gestionnaire',
       'reseaux classes',
       'informationsComplementaires',
-      networkDocumentsJsonAgg('reseaux_de_chaleur', 'reseau_de_chaleur').as('fichiers'),
+      networkDocumentsJsonAgg('reseaux_de_chaleur', 'reseau_de_chaleur').as('documents'),
       'region',
       'ouvert_aux_raccordements',
     ])
@@ -148,7 +148,7 @@ export const getColdNetwork = async (id: string) =>
       sql<number>`ST_Y(ST_Transform(ST_Centroid(geom), 4326))`.as('lat'),
       'website_gestionnaire',
       'informationsComplementaires',
-      networkDocumentsJsonAgg('reseaux_de_froid', 'reseau_de_froid').as('fichiers'),
+      networkDocumentsJsonAgg('reseaux_de_froid', 'reseau_de_froid').as('documents'),
       'Rend%',
     ])
     .where('Identifiant reseau', '=', id)
@@ -646,7 +646,6 @@ const createReseauDeChaleur = async (id: string | undefined, finalGeometry: RawB
       ...(id_sncu
         ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id }
         : { id_fcu: id ? parseInt(id, 10) : maxIdResult.next_id }),
-      fichiers: [],
       geom: null,
       geom_update: finalGeometry,
       ouvert_aux_raccordements: true,
@@ -706,7 +705,6 @@ const createReseauDeFroid = async (id: string | undefined, finalGeometry: RawBui
       ...(id_sncu
         ? { 'Identifiant reseau': id_sncu, id_fcu: maxIdResult.next_id }
         : { id_fcu: id ? parseInt(id, 10) : maxIdResult.next_id }),
-      fichiers: [],
       geom: null,
       geom_update: finalGeometry,
       'reseaux classes': false,

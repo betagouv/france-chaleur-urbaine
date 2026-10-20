@@ -20,8 +20,8 @@ export const networkDocumentsJsonAgg = (table: 'reseaux_de_chaleur' | 'reseaux_d
       // correlated with the outer network row
       .where('network_file.network_id', '=', sql.ref<number>(`${table}.id_fcu`))
       .where('network_file.network_type', '=', networkType)
-      .orderBy('network_file.position')
       .orderBy('network_file.created_at')
+      .orderBy('file.filename')
   );
 
 /** Documents published on a network page (admin editor). */
@@ -32,16 +32,16 @@ export const listNetworkDocuments = async (networkType: DocumentedNetworkType, n
     .select(['files.id', 'files.filename', 'files.size', 'files.content_type as type'])
     .where('network_files.network_type', '=', networkType)
     .where('network_files.network_id', '=', networkId)
-    .orderBy('network_files.position')
     .orderBy('network_files.created_at')
+    .orderBy('files.filename')
     .execute();
 
 /** Content types a network page can publish: PDF, or a zip archive of documents (schémas directeurs en plusieurs parties). */
 export const networkDocumentContentTypes = ['application/pdf', 'application/zip'] as const;
 
 /**
- * Publishes files on a network page. The files must be PDF or zip, scanned (or scanning disabled), not purged, and either
- * unused or attached to a change request (acceptance flow). At most `MAX_NETWORK_DOCUMENTS` documents per network.
+ * Publishes files on a network page, listed in publication order. The files must be PDF or zip, scanned (or scanning
+ * disabled) and not purged; a file already published on another network is shared (stored once). At most `MAX_NETWORK_DOCUMENTS` documents per network.
  */
 export const addNetworkDocuments = async (networkType: DocumentedNetworkType, networkId: number, fileIds: string[]) => {
   if (fileIds.length === 0) {
@@ -60,14 +60,7 @@ export const addNetworkDocuments = async (networkType: DocumentedNetworkType, ne
   }
   await kdb
     .insertInto('network_files')
-    .values(
-      newFileIds.map((fileId, index) => ({
-        file_id: fileId,
-        network_id: networkId,
-        network_type: networkType,
-        position: existing.length + index,
-      }))
-    )
+    .values(newFileIds.map((fileId) => ({ file_id: fileId, network_id: networkId, network_type: networkType })))
     .execute();
 };
 

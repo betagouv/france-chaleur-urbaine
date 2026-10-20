@@ -628,7 +628,6 @@ export interface NetworkFiles {
   file_id: string;
   network_id: number;
   network_type: NetworkEntityType;
-  position: Generated<number>;
 }
 
 export interface NetworkReminders {
@@ -751,7 +750,6 @@ export interface ReseauxDeChaleur {
   eau_chaude: string | null;
   eau_surchauffee: string | null;
   ecoreseau: EcoreseauLabel | null;
-  fichiers: Json | null;
   geom: string | null;
   geom_update: string | null;
   /** displayed value: `coalesce(gestionnaire_fcu, gestionnaire_fedene)`, maintained by Postgres */
@@ -855,7 +853,6 @@ export interface ReseauxDeFroid {
   CP_MO: string | null;
   date_actualisation_trace: Timestamp | null;
   departement: string | null;
-  fichiers: Json | null;
   geom: string | null;
   geom_update: string | null;
   /** displayed value: `coalesce(gestionnaire_fcu, gestionnaire_fedene)`, maintained by Postgres */

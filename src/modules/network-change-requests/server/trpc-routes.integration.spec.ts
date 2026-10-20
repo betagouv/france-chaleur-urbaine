@@ -339,7 +339,7 @@ describe('networkChangeRequests', () => {
       await seedFile(uuid(27), { scan_status: 'pending' });
       await kdb
         .insertInto('network_files')
-        .values({ file_id: uuid(24), network_id: 1, network_type: 'reseau_de_chaleur', position: 0 })
+        .values({ file_id: uuid(24), network_id: 1, network_type: 'reseau_de_chaleur' })
         .execute();
       const { id } = await createTestCaller(null).networkChangeRequests.create({
         ...ficheInput,
@@ -365,8 +365,8 @@ describe('networkChangeRequests', () => {
       await kdb
         .insertInto('network_files')
         .values([
-          { file_id: uuid(24), network_id: 1, network_type: 'reseau_de_chaleur', position: 0 },
-          { file_id: uuid(25), network_id: 1, network_type: 'reseau_de_chaleur', position: 1 },
+          { file_id: uuid(24), network_id: 1, network_type: 'reseau_de_chaleur' },
+          { file_id: uuid(25), network_id: 1, network_type: 'reseau_de_chaleur' },
         ])
         .execute();
       const { id } = await createTestCaller(null).networkChangeRequests.create({
@@ -391,9 +391,9 @@ describe('networkChangeRequests', () => {
       await kdb
         .insertInto('network_files')
         .values([
-          { file_id: uuid(24), network_id: 1, network_type: 'reseau_de_chaleur', position: 0 },
-          { file_id: uuid(25), network_id: 1, network_type: 'reseau_de_chaleur', position: 1 },
-          { file_id: uuid(26), network_id: 1, network_type: 'reseau_de_chaleur', position: 2 },
+          { file_id: uuid(24), network_id: 1, network_type: 'reseau_de_chaleur' },
+          { file_id: uuid(25), network_id: 1, network_type: 'reseau_de_chaleur' },
+          { file_id: uuid(26), network_id: 1, network_type: 'reseau_de_chaleur' },
         ])
         .execute();
       const caller = createTestCaller(null);

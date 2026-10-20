@@ -1,6 +1,6 @@
 # files module
 
-Storage of files uploaded by public forms, in the database (`files` table, `content` bytea), with type detection, antivirus status and content purge. No S3: the volume is small and the content is dropped as soon as it is no longer needed.
+Storage of the files of the network change requests (public forms) and of the documents published on the network pages (admin editor, request acceptance), in the database (`files` table, `content` bytea), with type detection, antivirus status and content purge. No S3: the volume is small and the content is dropped as soon as it is no longer needed.
 
 ## Structure
 

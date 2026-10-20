@@ -41,8 +41,7 @@ type NetworkTableColumns = {
 const networkTables: NetworkTableColumns = {
   reseaux_de_chaleur: {
     additionalFields: (id_sncu?: string) => (id_sncu ? { 'Identifiant reseau': id_sncu } : {}),
-    createFields: (eb) => ({
-      fichiers: eb.val([]),
+    createFields: () => ({
       'reseaux classes': false,
       reseaux_techniques: false,
     }),
@@ -53,8 +52,7 @@ const networkTables: NetworkTableColumns = {
   },
   reseaux_de_froid: {
     additionalFields: (id_sncu?: string) => (id_sncu ? { 'Identifiant reseau': id_sncu } : {}),
-    createFields: (eb) => ({
-      fichiers: eb.val([]),
+    createFields: () => ({
       'reseaux classes': false,
     }),
     geomDependentFields: (eb) => ({
