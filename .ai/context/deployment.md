@@ -6,9 +6,15 @@
 | Local | any | local Docker Postgres |
 | Review app | PR | **shared dev DB, migrations disabled** |
 | Staging | `dev` | dedicated staging DB |
+| Publicodes dev (`france-chaleur-urbaine-dev-publicodes`) | `dev` + `PUBLICODES_BRANCH=dev` | **shared staging DB, migrations disabled** (`IS_REVIEW_APP=true`) |
 | Production | `main` | production DB (france-chaleur-urbaine.beta.gouv.fr) |
 
 Scalingo spawns a review app per PR. Staging→prod is ideally a fast-forward `dev`→`main`. (Flow + CI: see git-workflow.md.)
+
+## Publicodes dependency
+- `@betagouv/france-chaleur-urbaine-publicodes` is pinned to a published npm version in `package.json`; that is what prod and staging ship.
+- `scripts/fetch-publicodes-branch.sh` (run by `scalingo-postbuild` and CI before `pnpm build`) swaps it for a publicodes branch built from source when: `PUBLICODES_BRANCH` is set (build fails if the branch does not exist), or a publicodes branch has the same name as the current fcu branch (CI and review apps; `dev`/`main` excluded). Otherwise no-op.
+- The publicodes dev app deploys fcu `dev` with `PUBLICODES_BRANCH=dev`: redeployed on every fcu `dev` push (Scalingo SCM link) and on every publicodes `dev` push (`build.yaml` of the publicodes repo triggers a Scalingo deployment of fcu `dev`). Never deploy it from a dedicated fcu branch: it would lag behind the staging DB schema.
 
 ## Hosting: Scalingo (osc-fr1, app `france-chaleur-urbaine`)
 - **Buildpacks, order matters**: `apt-buildpack` (GDAL) → `france-chaleur-urbaine-scalingo-buildpack` (Tippecanoe) → `nodejs-buildpack`.
