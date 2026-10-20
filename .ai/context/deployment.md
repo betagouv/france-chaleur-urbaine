@@ -13,7 +13,7 @@ Scalingo spawns a review app per PR. Staging→prod is ideally a fast-forward `d
 
 ## Publicodes dependency
 - `@betagouv/france-chaleur-urbaine-publicodes` is pinned to a published npm version in `package.json`; that is what prod and staging ship.
-- `scripts/fetch-publicodes-branch.sh` (run by `scalingo-postbuild` and CI before `pnpm build`) swaps it for a publicodes branch built from source when: `PUBLICODES_BRANCH` is set (build fails if the branch does not exist), or a publicodes branch has the same name as the current fcu branch (CI and review apps; `dev`/`main` excluded). Otherwise no-op.
+- `scripts/fetch-publicodes-branch.sh` (run by `scalingo-postbuild` and CI before `pnpm build`) swaps it for a publicodes branch built from source when: `PUBLICODES_BRANCH` is set (build fails if the branch does not exist), or a publicodes branch has the same name as the current fcu branch (CI and review apps; `dev`/`main` excluded). Otherwise no-op: PR builds stay on the npm version, so CI is deterministic and matches staging/prod. A fcu PR that needs unreleased rules opts in by creating a publicodes branch with the same name (even empty, branched from `dev`); to preview publicodes `dev` on a single review app, set `PUBLICODES_BRANCH=dev` by hand on that app.
 - The publicodes dev app deploys fcu `dev` with `PUBLICODES_BRANCH=dev`: redeployed on every fcu `dev` push (Scalingo SCM link) and on every publicodes `dev` push (`build.yaml` of the publicodes repo triggers a Scalingo deployment of fcu `dev`). Never deploy it from a dedicated fcu branch: it would lag behind the staging DB schema.
 
 ## Hosting: Scalingo (osc-fr1, app `france-chaleur-urbaine`)
