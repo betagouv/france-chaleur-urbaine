@@ -100,7 +100,6 @@ export const networkFieldDefinitions = {
   eau_chaude: { label: 'Eau chaude', source: 'historique', tables: chaleurOnly },
   eau_surchauffee: { label: 'Eau surchauffée', source: 'historique', tables: chaleurOnly },
   ecoreseau: { label: 'Label Écoréseau', source: 'ecoreseau', tables: chaleurOnly },
-  fichiers: { label: 'Fichiers (remplacé par les documents publiés)', source: 'historique' },
   Gestionnaire: {
     canonicalName: 'gestionnaire',
     label: 'Gestionnaire (affiché : correction FCU sinon enquête)',

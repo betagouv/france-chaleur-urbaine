@@ -15,4 +15,4 @@ Branch names: descriptive, no prefix convention. Commits: no strict format — e
 ## Protected files
 - **Never commit**: `.env.local`, credentials, API keys (pre-commit hook: Husky + Talisman in `.husky/pre-commit`; `.gitguardian.yaml` configures GitGuardian scanning).
 - **Review carefully**: `src/server/db/migrations/`, `package.json`, CI config.
-- **Auto-generated (don't edit)**: `pnpm-lock.yaml`, `src/server/db/kysely/database.ts` (from `pnpm db:sync`).
+- **Auto-generated (don't edit)**: `pnpm-lock.yaml`. `src/server/db/kysely/database.ts` is generated per table (`pnpm cli db:sync --single <table>`) then merged by hand to keep its type refinements — see database.md.

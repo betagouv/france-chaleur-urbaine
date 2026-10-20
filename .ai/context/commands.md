@@ -20,11 +20,11 @@ Unit tests (`.spec.ts`) run in parallel; integration tests (`.integration.spec.t
 ```bash
 pnpm db:migrate          # Apply pending Kysely migrations
 pnpm db:migrate:down     # Rollback last migration
-pnpm db:sync             # Regenerate Kysely types from DB (--single for one table)
+pnpm cli db:sync --single <table>   # Print the regenerated Kysely interface of one table, to merge by hand into database.ts (never `pnpm db:sync` alone, see database.md)
 pnpm db:bootstrap        # Init local DB from production data, by bundle (fcu, fcu-volumineux, geo, tiles, externes-volumineux) then optionally table by table; `--bundle fcu` skips the prompts
 pnpm cli db:anonymize    # Pseudonymize personal data in the LOCAL db right after bootstrap (refuses remote hosts); non-admin accounts become <role>-<id>@fcu.local, admins and passwords untouched
 ```
-Migration workflow: add `src/server/db/migrations/YYYYMMDDHHMMSS_description.ts` → `pnpm db:migrate` → `pnpm db:sync` → commit migration + regenerated types together. A migration that creates a table must also register it in `src/modules/app/commands/db-bootstrap.ts` (right bundle, FK-aware position).
+Migration workflow: add `src/server/db/migrations/YYYYMMDDHHMMSS_description.ts` → `pnpm db:migrate` → `pnpm cli db:sync --single <table>` and merge the printed interface into `database.ts` by hand (the file keeps manual refinements: TS enums, `JSONColumnType<…>`) → commit migration + types together. A migration that creates a table must also register it in `src/modules/app/commands/db-bootstrap.ts` (right bundle, FK-aware position).
 
 ## Backup
 ```bash

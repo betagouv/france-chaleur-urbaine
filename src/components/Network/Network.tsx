@@ -502,7 +502,7 @@ const NetworkPanel = ({
             )}
 
             {(!displayBlocks || displayBlocks.includes('informations')) &&
-              (network.informationsComplementaires || network.fichiers.length > 0) && (
+              (network.informationsComplementaires || network.documents.length > 0) && (
                 <InformationsComplementairesBox>
                   <Heading as="h3" color="blue-france">
                     Informations complémentaires
@@ -510,20 +510,20 @@ const NetworkPanel = ({
                   {network.informationsComplementaires
                     ?.split('\n')
                     .map((line, index) => (line === '' ? <br key={index} /> : <Text key={index}>{line}</Text>))}
-                  {network.fichiers.length > 0 && (
+                  {network.documents.length > 0 && (
                     <Box mt="2w">
-                      {network.fichiers.map((fichier, index) => (
+                      {network.documents.map((document, index) => (
                         <Link
                           key={index}
-                          href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
+                          href={`/api/networks/${network['Identifiant reseau']}/files/${document.id}`}
                           className="fr-mr-1w"
                           isExternal
                           eventKey="Téléchargement|Schéma directeur"
-                          eventPayload={`${network['Identifiant reseau']},${fichier.filename}`}
+                          eventPayload={`${network['Identifiant reseau']},${document.filename}`}
                           postHogEventKey="link:click"
                           postHogEventProps={{ link_name: 'schema_directeur', source: 'fiche-reseau' }}
                         >
-                          {fichier.filename}
+                          {document.filename}
                         </Link>
                       ))}
                     </Box>
