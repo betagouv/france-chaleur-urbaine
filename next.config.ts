@@ -6,6 +6,10 @@ import withSentry from './src/config/withSentry';
 
 const isGithubCI = process.env.NODE_ENV === 'production' && process.env.GITHUB_CI === 'true';
 
+// Only the production site (identified by its public URL) may be indexed; staging, review apps and local must stay out of search engines.
+// Keep in sync with next-sitemap.config.js
+const isProductionSite = process.env.NEXT_PUBLIC_SITE_URL === 'https://france-chaleur-urbaine.beta.gouv.fr';
+
 const configFunctions = [
   createMDX({
     options: {
@@ -112,6 +116,14 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      ...(isProductionSite
+        ? []
+        : [
+            {
+              headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }],
+              source: '/:path*',
+            },
+          ]),
       {
         headers: [
           {
