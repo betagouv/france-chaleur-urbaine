@@ -5,11 +5,11 @@ import { useKeyboardEvent, useThrottledCallback } from '@react-hookz/web';
 import turfArea from '@turf/area';
 import { atom, useAtom } from 'jotai';
 import type { GeoJSONSource } from 'maplibre-gl';
-import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import { clientConfig } from '@/client-config';
+import Link from '@/components/ui/Link';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import { validatePolygonGeometry } from '@/modules/geo/client/helpers';
 import trpc from '@/modules/trpc/client';

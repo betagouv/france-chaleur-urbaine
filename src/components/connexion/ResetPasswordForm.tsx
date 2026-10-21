@@ -1,10 +1,10 @@
-import Link from 'next/link';
 import { useState } from 'react';
 import { z } from 'zod';
 
 import CenterLayout from '@/components/shared/page/CenterLayout';
 import Alert from '@/components/ui/Alert';
 import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
