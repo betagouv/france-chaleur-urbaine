@@ -1,6 +1,4 @@
-import Link from 'next/link';
-
-import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
+import Link from '@/components/ui/Link';
 
 import { Guide } from './CoproGuide.styles';
 
@@ -12,12 +10,10 @@ const CoproGuide = ({ guideClassName }: { guideClassName?: string }) => {
         <div className="fr-btn fr-mt-2w fr-ml-4w">
           <Link
             href="/documentation/guide-france-chaleur-urbaine.pdf"
-            target="_blank"
-            rel="noreferrer noopener"
-            onClick={() => {
-              trackEvent('Téléchargement|Guide FCU|coproprietaire');
-              trackPostHogEvent('content:click', { content_name: 'Guide Copropriétés', content_type: 'guide', source: 'page-ville' });
-            }}
+            isExternal
+            eventKey="Téléchargement|Guide FCU|coproprietaire"
+            postHogEventKey="content:click"
+            postHogEventProps={{ content_name: 'Guide Copropriétés', content_type: 'guide', source: 'page-ville' }}
           >
             Télécharger notre guide
           </Link>

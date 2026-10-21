@@ -2,7 +2,6 @@ import DSFRBadge from '@codegouvfr/react-dsfr/Badge';
 import Tag from '@codegouvfr/react-dsfr/Tag';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import dayjs from 'dayjs';
-import NextLink from 'next/link';
 import { type ReactNode, useMemo } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -11,6 +10,7 @@ import { useCopy } from '@/components/ui/ButtonCopy';
 import CallOut from '@/components/ui/CallOut';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 import TimeAgo from '@/components/ui/TimeAgo';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
@@ -431,14 +431,14 @@ const DemandStatsCell = ({
   periodMonths?: number;
 }) => (
   <span className="inline-flex items-baseline gap-1">
-    <NextLink
+    <Link
       href={buildAdminDemandsUrl(buildDemandFilters(networkId, networkType, periodMonths, true))}
       className={cx('text-xl font-bold', pending > 0 ? 'text-red-600' : 'text-gray-900')}
     >
       {pending}
-    </NextLink>
+    </Link>
     <span className="text-xs">/</span>
-    <NextLink href={buildAdminDemandsUrl(buildDemandFilters(networkId, networkType, periodMonths, false))}>{total}</NextLink>
+    <Link href={buildAdminDemandsUrl(buildDemandFilters(networkId, networkType, periodMonths, false))}>{total}</Link>
   </span>
 );
 

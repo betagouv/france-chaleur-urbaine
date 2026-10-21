@@ -1,10 +1,9 @@
-import Link from 'next/link';
-
 import { CartoImage } from '@/components/CollectivitesExploitantsPage.style';
 import IframeCodeBlock from '@/components/IFrame/IframeCodeBlock';
 import IFrameMapIntegrationForm from '@/components/IFrame/Map/IFrameMapIntegrationForm';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import { buildFormIframeCode } from '@/modules/map/client/admin/iframeGenerator';
 

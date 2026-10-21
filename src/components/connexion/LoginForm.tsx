@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { z } from 'zod';
 
 import Button from '@/components/ui/Button';
+import Link from '@/components/ui/Link';
 import { useAuthentication, useRedirectionAfterLogin } from '@/modules/auth/client/hooks';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';

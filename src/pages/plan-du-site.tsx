@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
-import Link from 'next/link';
 
 import SimplePage, { publicNavigationMenu } from '@/components/shared/page/SimplePage';
+import Link from '@/components/ui/Link';
 
 const PlanDuSite: NextPage = () => {
   return (
@@ -11,13 +11,13 @@ const PlanDuSite: NextPage = () => {
         <ul className="list-disc pl-6">
           {publicNavigationMenu.map(({ text, linkProps, menuLinks }) => (
             <li key={(linkProps?.href as string) ?? text}>
-              <Link href={linkProps?.href ?? '#'}>{text}</Link>
+              <Link href={(linkProps?.href as string) ?? '#'}>{text}</Link>
 
               {menuLinks && menuLinks.length > 0 && (
                 <ul className="list-disc pl-6">
                   {(menuLinks || []).map((subItem) => (
                     <li key={(subItem?.linkProps?.href as string) ?? subItem.text}>
-                      <Link href={subItem?.linkProps?.href ?? '#'}>{subItem.text}</Link>
+                      <Link href={(subItem?.linkProps?.href as string) ?? '#'}>{subItem.text}</Link>
                     </li>
                   ))}
                 </ul>

@@ -23,6 +23,8 @@ type LinkProps<Event extends PostHogEvent = PostHogEvent> = SpacingProperties &
     className?: string;
     variant?: keyof typeof linkVariantToClass;
     isExternal?: boolean;
+    /** Opens the link in a new tab without flagging it as an external site (no external-link tracking). */
+    openInNewTab?: boolean;
     stopPropagation?: boolean;
     title?: string;
     style?: React.CSSProperties;
@@ -47,6 +49,7 @@ function Link<Event extends PostHogEvent = PostHogEvent>({
   className = '',
   variant = 'text',
   isExternal = false,
+  openInNewTab = isExternal,
   stopPropagation = false,
   title,
   prefetch = false,
@@ -87,8 +90,8 @@ function Link<Event extends PostHogEvent = PostHogEvent>({
         onClick?.(e);
       }}
       className={`${className} ${linkVariantToClass[variant]} ${spacingsToClasses(props)}`}
-      target={isExternal ? '_blank' : undefined}
-      rel={isExternal ? 'noopener noreferrer' : undefined}
+      target={openInNewTab ? '_blank' : undefined}
+      rel={openInNewTab ? 'noopener noreferrer' : undefined}
       {...(Tag === 'a' ? {} : { prefetch })}
       {...props}
     >

@@ -1,7 +1,6 @@
-import Link from 'next/link';
-
 import Box from '@/components/ui/Box';
 import Divider from '@/components/ui/Divider';
+import Link from '@/components/ui/Link';
 
 const ClassedNetwork = ({ externalLinks }: { externalLinks?: boolean }) => {
   return (
@@ -17,11 +16,7 @@ const ClassedNetwork = ({ externalLinks }: { externalLinks?: boolean }) => {
         Une obligation de raccordement s'applique
         <br />
         pour certains bâtiments (
-        <Link
-          href="/ressources/qu-est-ce-qu-un-reseau-de-chaleur-classe#contenu"
-          target={externalLinks ? '_blank' : undefined}
-          rel={externalLinks ? 'noopener noreferrer' : undefined}
-        >
+        <Link href="/ressources/qu-est-ce-qu-un-reseau-de-chaleur-classe#contenu" openInNewTab={externalLinks}>
           En savoir plus
         </Link>
         )
