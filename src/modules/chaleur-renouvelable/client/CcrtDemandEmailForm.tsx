@@ -1,5 +1,4 @@
 import { useStore } from '@tanstack/react-form';
-import { useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
@@ -7,12 +6,13 @@ import Button from '@/components/ui/Button';
 import CrudDropdown from '@/components/ui/CrudDropdown';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
+import { useAuthentication } from '@/modules/auth/client/hooks';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
+import type { UserPreferences } from '@/modules/users/constants';
 import type { EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
-import type { UserPreferences } from '@/pages/api/user/preferences';
 import { isUUID } from '@/utils/core';
 
 import { zCcrtEmailForm } from '../constants';
@@ -26,7 +26,7 @@ type CcrtDemandEmailFormProps = { demand: CcrtDemand; onClose: () => void; prefe
  * Reuses site email templates and personal signatures with an idempotent SMTP send.
  */
 export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemandEmailFormProps) {
-  const queryClient = useQueryClient();
+  const { user } = useAuthentication();
   const messageId = useRef(crypto.randomUUID());
   const utils = trpc.useUtils();
   const mutation = trpc.batEnr.ccrt.sendEmail.useMutation();
@@ -37,10 +37,10 @@ export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemand
     ...schemaValidation(zCcrtEmailForm),
     defaultValues: {
       body: '',
-      cc: preferences.email ?? '',
+      cc: user?.email ?? '',
       object: `Votre demande d’accompagnement — ${demand.address}`,
-      replyTo: preferences.email ?? '',
-      signature: preferences.signature ?? '',
+      replyTo: user?.email ?? '',
+      signature: preferences.email_signature ?? '',
       updateStatusOnSend: true,
     },
     onSubmit: toastErrors(async ({ value }) => {
@@ -51,7 +51,7 @@ export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemand
         messageId: messageId.current,
         updateStatusOnSend,
       });
-      await Promise.all([queryClient.invalidateQueries({ queryKey: ['/api/user/preferences'] }), invalidateCcrtDemand(utils, demand.id)]);
+      await Promise.all([utils.users.getPreferences.invalidate(), invalidateCcrtDemand(utils, demand.id)]);
       onClose();
     }),
   });
@@ -115,7 +115,7 @@ export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemand
           />
         </div>
         <form.AppField name="signature">
-          {(field) => <field.CustomField Component={CcrtEmailSignature} savedSignature={preferences.signature ?? ''} />}
+          {(field) => <field.CustomField Component={CcrtEmailSignature} savedSignature={preferences.email_signature ?? ''} />}
         </form.AppField>
         <form.AppField name="updateStatusOnSend">
           {(field) => <field.CheckboxField label="Passer la demande à « En cours » à l’envoi" />}

@@ -959,7 +959,7 @@ export const updateDemandeChaleurRenouvelableCcrt = async (ctx: Context, input: 
 
 export const notifyCcrtOfUnhandledDemandesChaleurRenouvelable = async (runDate = dayjs().tz('Europe/Paris')) => {
   const [users, pendingDemands] = await Promise.all([getAllUsersWithPermissions(), listPendingCcrtDemands()]);
-  const recipients = users.filter((user) => user.role === 'ccrt' && user.receive_old_demands);
+  const recipients = users.filter((user) => user.role === 'ccrt' && user.preferences.notifications.pending_demands_reminder);
 
   await processInParallel(recipients, businessRules.emailSendConcurrency.value, async (recipient) => {
     const demands = pendingDemands.filter((demand) => canUserAccessCcrtDemand(recipient, recipient.permissions, demand));

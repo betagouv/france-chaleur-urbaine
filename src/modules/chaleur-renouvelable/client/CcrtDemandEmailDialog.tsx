@@ -1,7 +1,6 @@
 import Accordion from '@/components/ui/Accordion';
 import Dialog from '@/components/ui/Dialog';
 import Icon from '@/components/ui/Icon';
-import { useUserPreferences } from '@/modules/auth/client/hooks';
 import trpc from '@/modules/trpc/client';
 import { dayjs } from '@/utils/date';
 
@@ -14,7 +13,7 @@ type CcrtDemandEmailDialogProps = { demand: CcrtDemand; onClose: () => void; sho
  * Displays the Figma contact dialog and the shared sent-message history below its form.
  */
 export function CcrtDemandEmailDialog({ demand, onClose, showHistory = false, onPhoneContact }: CcrtDemandEmailDialogProps) {
-  const { userPreferences } = useUserPreferences();
+  const preferences = trpc.users.getPreferences.useQuery();
   const followUp = trpc.batEnr.ccrt.getFollowUp.useQuery({ demandId: demand.id });
   return (
     <Dialog
@@ -36,8 +35,10 @@ export function CcrtDemandEmailDialog({ demand, onClose, showHistory = false, on
           </a>
         </p>
       )}
-      {userPreferences ? (
-        <CcrtDemandEmailForm demand={demand} onClose={onClose} preferences={userPreferences} />
+      {preferences.isError ? (
+        <p role="alert">Impossible de charger les préférences d’envoi.</p>
+      ) : preferences.data ? (
+        <CcrtDemandEmailForm demand={demand} onClose={onClose} preferences={preferences.data} />
       ) : (
         <p role="status">Chargement des préférences d’envoi…</p>
       )}
