@@ -4,6 +4,7 @@ import type { z } from 'zod';
 import type { Context } from '@/modules/config/server/context-builder';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
+import { updateUserPreferences } from '@/modules/users/server/service';
 import { kdb } from '@/server/db/kysely';
 import { escapeHtml } from '@/utils/html';
 
@@ -104,7 +105,7 @@ export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSen
           transaction
         )
       : undefined;
-    await transaction.updateTable('users').set({ signature: emailContent.signature }).where('id', '=', ctx.user.id).execute();
+    await updateUserPreferences(ctx.user.id, { email_signature: emailContent.signature }, transaction);
     return result;
   });
   if (followUp) {

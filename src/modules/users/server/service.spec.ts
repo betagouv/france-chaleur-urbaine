@@ -57,7 +57,7 @@ describe('create user opening email', () => {
 
   it.each(cases)('$label', async ({ input, expectedOutput }) => {
     await expect(
-      create({ ...input, email, optin_at: null, receive_new_demands: false, receive_old_demands: false }, context)
+      create({ ...input, email, notifications: { new_demands: 'none', pending_demands_reminder: false }, optin_at: null }, context)
     ).resolves.toStrictEqual(record);
 
     expect(vi.mocked(sendEmailTemplate).mock.calls).toStrictEqual(expectedOutput ? [[expectedOutput, { email, id: record.id }]] : []);
@@ -67,7 +67,10 @@ describe('create user opening email', () => {
     mocks.findExistingUser.mockResolvedValue(record);
 
     await expect(
-      create({ active: true, email, optin_at: null, receive_new_demands: false, receive_old_demands: false, role: 'ccrt' }, context)
+      create(
+        { active: true, email, notifications: { new_demands: 'none', pending_demands_reminder: false }, optin_at: null, role: 'ccrt' },
+        context
+      )
     ).rejects.toMatchObject({ code: 'CONFLICT' });
 
     expect(mocks.createRecord).not.toHaveBeenCalled();

@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
 import dayjs from 'dayjs';
-import type { Selectable } from 'kysely';
+import type { Kysely, Selectable } from 'kysely';
 import type { z } from 'zod';
 
 import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
@@ -277,27 +277,38 @@ export const getUserPreferences = async (userId: string): Promise<UserPreference
  * Fusionne une mise à jour partielle dans `users.preferences` (validée en objet complet) et trace l'événement.
  * Retourne les préférences résultantes.
  */
-export const updateUserPreferences = async (userId: string, changes: UpdateUserPreferences): Promise<UserPreferences> => {
-  const current = await getUserPreferences(userId);
+export const updateUserPreferences = async (
+  userId: string,
+  changes: UpdateUserPreferences,
+  database: Kysely<DB> = kdb
+): Promise<UserPreferences> => {
+  if (!database.isTransaction) {
+    return database.transaction().execute((transaction) => updateUserPreferences(userId, changes, transaction));
+  }
+  const row = await database.selectFrom('users').select('preferences').where('id', '=', userId).forUpdate().executeTakeFirstOrThrow();
+  const current = parseUserPreferences(row.preferences);
   const preferences = parseUserPreferences({
     ...current,
     ...changes,
     notifications: { ...current.notifications, ...changes.notifications },
   });
 
-  await kdb
+  await database
     .updateTable('users')
     .set({ preferences: JSON.stringify(preferences) })
     .where('id', '=', userId)
     .executeTakeFirstOrThrow();
 
-  await createUserEvent({
-    author_id: userId,
-    context_id: userId,
-    context_type: 'user',
-    data: { changes },
-    type: 'user_preferences_updated',
-  });
+  await createUserEvent(
+    {
+      author_id: userId,
+      context_id: userId,
+      context_type: 'user',
+      data: { changes },
+      type: 'user_preferences_updated',
+    },
+    database
+  );
 
   return preferences;
 };

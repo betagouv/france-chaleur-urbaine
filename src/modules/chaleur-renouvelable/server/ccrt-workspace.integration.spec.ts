@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
+import { defaultUserPreferences } from '@/modules/users/constants';
+import { getUserPreferences, updateUserPreferences } from '@/modules/users/server/service';
 import { serverConfig } from '@/server/config';
 import { kdb } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
@@ -189,11 +191,11 @@ describe('CCRT notifications through classic permissions', () => {
   ] as const)('notifies and reminds only authorized active CCRT accounts through %s', async (type, resource_id) => {
     const demand = await seedWorkspace();
     await kdb.updateTable('demands_chaleur_renouvelable').set({ validated: false }).where('id', '=', demand.id).execute();
-    await kdb.updateTable('users').set({ receive_old_demands: true }).where('id', '=', testUsers.ccrt.id).execute();
+    await updateUserPreferences(testUsers.ccrt.id, { notifications: { pending_demands_reminder: true } });
     await kdb.deleteFrom('user_permissions').where('user_id', '=', testUsers.ccrt.id).execute();
     await seedTableUser([
-      { active: false, email: 'inactive@test.local', id: uuid(800), receive_old_demands: true, role: 'ccrt' },
-      { email: 'network-only@test.local', id: uuid(801), receive_old_demands: true, role: 'ccrt' },
+      { active: false, email: 'inactive@test.local', id: uuid(800), role: 'ccrt' },
+      { email: 'network-only@test.local', id: uuid(801), role: 'ccrt' },
     ]);
     await kdb
       .insertInto('user_permissions')
@@ -257,9 +259,9 @@ describe('CCRT notifications through classic permissions', () => {
     ]);
   });
 
-  it.each([false, null])('does not send reminders when the preference is %s', async (receiveOldDemands) => {
+  it.each(['daily', 'weekly', 'none'] as const)('does not send reminders when disabled, with new demands set to %s', async (frequency) => {
     await seedWorkspace();
-    await kdb.updateTable('users').set({ receive_old_demands: receiveOldDemands }).where('id', '=', testUsers.ccrt.id).execute();
+    await updateUserPreferences(testUsers.ccrt.id, { notifications: { new_demands: frequency, pending_demands_reminder: false } });
     await notifyCcrtOfUnhandledDemandesChaleurRenouvelable();
     expect(sendEmailTemplate).not.toHaveBeenCalled();
   });
@@ -541,6 +543,12 @@ describe('CCRT notes and shared history', () => {
 describe('CCRT email delivery', () => {
   it.each([true, false])('sends once, archives the message and honors updateStatusOnSend=%s', async (updateStatusOnSend) => {
     const demand = await seedWorkspace();
+    const preferences = { ...defaultUserPreferences, notifications: { new_demands: 'weekly', pending_demands_reminder: false } } as const;
+    await kdb
+      .updateTable('users')
+      .set({ preferences: JSON.stringify(preferences) })
+      .where('id', '=', testUsers.ccrt.id)
+      .execute();
     const input = { demandId: demand.id, emailContent, messageId: uuid(510), updateStatusOnSend };
     await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail(input);
     await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail(input);
@@ -576,6 +584,14 @@ describe('CCRT email delivery', () => {
       );
     }
     expect(JSON.stringify(captures)).not.toContain(demand.email);
+    await expect(getUserPreferences(testUsers.ccrt.id)).resolves.toStrictEqual({ ...preferences, email_signature: emailContent.signature });
+    const preferenceEvents = await kdb
+      .selectFrom('events')
+      .select('data')
+      .where('context_id', '=', testUsers.ccrt.id)
+      .where('type', '=', 'user_preferences_updated')
+      .execute();
+    expect(preferenceEvents).toStrictEqual([{ data: { changes: { email_signature: emailContent.signature } } }]);
   });
 
   it('preserves the status/history on SMTP failure and allows one explicit retry', async () => {
@@ -586,6 +602,7 @@ describe('CCRT email delivery', () => {
     const failed = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect({ emails: failed.emails, history: failed.history }).toStrictEqual({ emails: [], history: [] });
     expect(postFetchJSON).not.toHaveBeenCalled();
+    await expect(getUserPreferences(testUsers.ccrt.id)).resolves.toStrictEqual(defaultUserPreferences);
     await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail(input);
     expect(vi.mocked(sendEmailTemplate).mock.calls.length).toStrictEqual(2);
   });
