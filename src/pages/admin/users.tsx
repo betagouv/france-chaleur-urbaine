@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import { useQueryState } from 'nuqs';
 import { useCallback, useMemo, useState } from 'react';
 
+import { clientConfig } from '@/client-config';
 import UserForm from '@/components/Admin/UserForm';
 import UserRoleBadge from '@/components/Admin/UserRoleBadge';
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -27,7 +28,11 @@ import type { Permission, PermissionType, PermissionWithLabel } from '@/modules/
 import trpc from '@/modules/trpc/client';
 import BulkTagDialog from '@/modules/users/client/admin/BulkTagDialog';
 import UserTagBadge from '@/modules/users/client/admin/UserTagBadge';
-import { structureTypesLabels } from '@/modules/users/constants';
+import {
+  type NewDemandsNotificationFrequency,
+  newDemandsNotificationFrequencyLabels,
+  structureTypesLabels,
+} from '@/modules/users/constants';
 import type { User } from '@/modules/users/server/service';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { withAuthentication } from '@/server/authentication';
@@ -126,11 +131,16 @@ function PermissionTooltipContent({ permissions }: { permissions: PermissionWith
 }
 
 const startImpersonation = toastErrors(
-  async (impersonateConfig: { role: UserRole; permissions?: Pick<Permission, 'type' | 'resource_id'>[] }) => {
-    await postFetchJSON('/api/admin/impersonate', {
-      role: impersonateConfig.role,
-      ...(impersonateConfig.permissions?.length ? { permissions: impersonateConfig.permissions } : {}),
-    });
+  async (impersonateConfig: { role: UserRole; permissions?: Pick<Permission, 'type' | 'resource_id'>[] } | { userId: string }) => {
+    await postFetchJSON(
+      '/api/admin/impersonate',
+      'userId' in impersonateConfig
+        ? { userId: impersonateConfig.userId }
+        : {
+            role: impersonateConfig.role,
+            ...(impersonateConfig.permissions?.length ? { permissions: impersonateConfig.permissions } : {}),
+          }
+    );
     saveImpostureReturnPath();
     location.href = '/pro/tableau-de-bord';
   }
@@ -295,18 +305,24 @@ export default function ManageUsers() {
           compareFrenchStrings(rowA.original.tags.map((tag) => tag.name).join(', '), rowB.original.tags.map((tag) => tag.name).join(', ')),
       },
       {
-        accessorKey: 'receive_new_demands',
+        accessorFn: (row) => row.preferences.notifications.new_demands,
         align: 'center',
-        cellType: 'Boolean',
+        cell: (info) => newDemandsNotificationFrequencyLabels[info.getValue<NewDemandsNotificationFrequency>()],
+        exportFn: (row) => newDemandsNotificationFrequencyLabels[row.preferences.notifications.new_demands],
+        filterProps: {
+          Component: ({ value }) => <>{newDemandsNotificationFrequencyLabels[value as NewDemandsNotificationFrequency] ?? value}</>,
+        },
         filterType: 'Facets',
-        header: 'Notif nouvelle demande',
+        header: 'Notif nouvelles demandes',
+        id: 'notif_new_demands',
       },
       {
-        accessorKey: 'receive_old_demands',
+        accessorFn: (row) => row.preferences.notifications.pending_demands_reminder,
         align: 'center',
         cellType: 'Boolean',
         filterType: 'Facets',
-        header: 'Notif relance',
+        header: 'Rappel demandes en attente',
+        id: 'notif_pending_demands_reminder',
       },
       {
         accessorKey: 'last_connection',
@@ -371,6 +387,16 @@ export default function ManageUsers() {
                   role: row.original.role,
                 }),
             },
+            ...(clientConfig.allowFullImpersonation
+              ? [
+                  {
+                    icon: 'ri-spy-fill',
+                    id: 'impersonate-full',
+                    label: 'Prendre le profil complet (dev)',
+                    onClick: () => startImpersonation({ userId: row.original.id }),
+                  } satisfies HamburgerMenuItem,
+                ]
+              : []),
             {
               icon: row.original.active ? 'ri-delete-back-2-line' : 'ri-refresh-line',
               id: '',

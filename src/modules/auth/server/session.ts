@@ -112,8 +112,4 @@ export const getUserSession = async (userId: string) => {
 };
 
 const getUserInfos = (userId: string) =>
-  kdb
-    .selectFrom('users')
-    .select(['id', 'email', 'role', 'receive_new_demands', 'receive_old_demands', 'active', 'created_at', 'signature'])
-    .where('id', '=', userId)
-    .executeTakeFirst();
+  kdb.selectFrom('users').select(['id', 'email', 'role', 'active', 'created_at']).where('id', '=', userId).executeTakeFirst();

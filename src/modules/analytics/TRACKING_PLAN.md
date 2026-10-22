@@ -189,6 +189,7 @@ Ces événements n'utilisent pas `posthog-js` dans le widget : le navigateur app
 | `global:login_cta_clicked` | `is_auth` | Clic sur le CTA de connexion |
 | `consent:cookie_choice_made` | `consent` | Choix de consentement cookies |
 | `account:created` | _(aucune)_ | Création de compte |
+| `account:preference_updated` | `preference` (`newsletter`, `notifications.new_demands`, `notifications.pending_demands_reminder`, `email_signature`), `value?` | Réglage modifié sur « Mon compte » : `value` = `true`/`false` pour la newsletter et le rappel, `daily`/`weekly`/`none` pour les nouvelles demandes, absente pour la signature |
 
 ### Accueil
 

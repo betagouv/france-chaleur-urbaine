@@ -3,6 +3,7 @@ import type { Insertable } from 'kysely';
 import type { Context } from '@/modules/config/server/context-builder';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
+import { getUserPreferences, updateUserPreferences } from '@/modules/users/server/service';
 import { type DemandEmails, kdb } from '@/server/db/kysely';
 
 import { ensureUserCanAccessDemand, ensureUserCanProcessDemand } from './helpers';
@@ -60,8 +61,9 @@ export const sendDemandEmail = async (
     user_email: user.email,
   });
 
-  if (user.signature !== emailContent.signature) {
-    await kdb.updateTable('users').set({ signature: emailContent.signature }).where('email', '=', user.email).execute();
+  const preferences = await getUserPreferences(user.id);
+  if (preferences.email_signature !== emailContent.signature) {
+    await updateUserPreferences(user.id, { email_signature: emailContent.signature });
   }
 
   await sendEmailTemplate(

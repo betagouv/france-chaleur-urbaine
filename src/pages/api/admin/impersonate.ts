@@ -4,7 +4,16 @@ import { z } from 'zod';
 
 import { createUserEvent } from '@/modules/events/server/service';
 import { zPermissionInput } from '@/modules/permissions/types';
-import { handleRouteErrors, invalidPermissionsError, requireAuthentication, validateObjectSchema } from '@/server/helpers/server';
+import { serverConfig } from '@/server/config';
+import { kdb } from '@/server/db/kysely';
+import { logger } from '@/server/helpers/logger';
+import {
+  BadRequestError,
+  handleRouteErrors,
+  invalidPermissionsError,
+  requireAuthentication,
+  validateObjectSchema,
+} from '@/server/helpers/server';
 import type { UserRole } from '@/types/enum/UserRole';
 import type { NonEmptyArray } from '@/utils/typescript';
 
@@ -30,6 +39,23 @@ const DELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   requireAuthentication(req.user, ['admin']);
+
+  // full-profile mode (dev only): the whole session is built from the target account
+  if (req.body?.userId) {
+    if (!serverConfig.allowFullImpersonation) {
+      throw invalidPermissionsError;
+    }
+    const { userId } = await validateObjectSchema(req.body, { userId: z.string().uuid() });
+    const target = await kdb
+      .selectFrom('users')
+      .select(['id', 'role'])
+      .where('id', '=', userId)
+      .executeTakeFirstOrThrow(() => new BadRequestError('Utilisateur introuvable'));
+    logger.warn('impersonating full profile', { admin_id: req.user.id, target_user_id: target.id });
+    const jwt = await getSessionJWT(req);
+    await generateSessionJWT(req, res, { ...jwt, impersonatedProfile: { role: target.role, userId: target.id } });
+    return;
+  }
 
   const impersonatedProfile = await validateObjectSchema(req.body, {
     anonymize: z.boolean().optional(),
