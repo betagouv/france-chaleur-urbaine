@@ -31,7 +31,7 @@ Cas particuliers à connaître :
 - **Les rôles territoriaux n'ont pas de tableau de bord** : la page les redirige vers «&nbsp;Demandes&nbsp;» (provisoire, en attendant un tableau de bord dédié).
 - **La page «&nbsp;Aide&nbsp;» est réservée aux rôles territoriaux** : un admin qui veut la consulter doit passer par une [imposture](/admin/impostures).
 - **L'admin peut ouvrir la vue «&nbsp;Demandes&nbsp;» des gestionnaires** (`/pro/demandes`) par l'URL, mais son menu l'oriente vers [Gestion des demandes](/admin/demandes) : les deux vues coexistent.
-- **Les demandes chaleur renouvelable CCRT** sont un cas dédié du parcours chaleur renouvelable : seul le rôle CCRT a l'onglet dans le menu, et la liste contient les demandes validées filtrées sur ses permissions départementales.
+- **Les demandes chaleur renouvelable CCRT** sont un cas dédié du parcours chaleur renouvelable : seul le rôle CCRT a l'onglet dans le menu, et la liste contient les demandes validées filtrées sur ses permissions territoriales classiques (commune, EPCI, EPT, département ou région). Le périmètre pilote du formulaire public ne donne aucun droit de gestion.
 
 ## Les permissions
 
@@ -91,5 +91,7 @@ Le flux historique ENGIE synchronise aussi les **comptes gestionnaires** (créat
 ## Les impostures
 
 Depuis [Impostures](/admin/impostures), un admin peut endosser n'importe quel rôle non-admin avec des **permissions simulées**, pour voir l'application exactement comme l'utilisateur ciblé. L'imposture ne prend pas l'identité d'un compte : l'admin reste l'auteur de tout ce qu'il fait, et le début comme la fin sont tracés dans [Activité du site](/admin/events?types=user_impersonation_started,user_impersonation_stopped) (rôle, nombre de permissions, anonymisation). Un bandeau rouge «&nbsp;Imposture en cours&nbsp;» reste affiché.
+
+En développement local uniquement (variable `NEXT_PUBLIC_IMPERSONATION_ALLOW_FULL_PROFILE`, jamais définie sur un environnement déployé), [Gestion des utilisateurs](/admin/users) propose en plus «&nbsp;Prendre le profil complet&nbsp;» : l'admin devient réellement le compte ciblé (identité, email, permissions, préférences), ce qui permet de reproduire exactement ce que voit une personne. Jamais disponible en production pour des raisons légales.
 
 L'option **«&nbsp;Anonymiser les données personnelles&nbsp;»** (pour les démonstrations) masque nom, email et téléphone des demandeurs dans les listes (email → `utilisateur…@exemple.fr`, nom → première lettre + `***`, téléphone → `06 ** ** ** **`).

@@ -1,9 +1,11 @@
-import { type SubmitEvent, useEffect, useId, useState } from 'react';
+import { useStore } from '@tanstack/react-form';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
 import Button from '@/components/ui/Button';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { businessRules } from '@/modules/app/business-rules';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { BatEnrBatimentsMap } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentsMap';
 import type {
@@ -12,19 +14,16 @@ import type {
   SetChoixChauffageParams,
 } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import {
-  areParamsFormDraftsEqual,
   getParamsFormCompletion,
   normalizeDecimalString,
   normalizeDraftNumbers,
   parseIntegerOrNull,
   toChoixChauffageParamsPatch,
   toParamsFormDraft,
+  zParamsForm,
 } from '@/modules/chaleur-renouvelable/client/params-form-draft';
-import { DpeTag } from '@/modules/chaleur-renouvelable/client/results/ui/DpeTag';
 import {
   type BatEnrBatiment,
-  type DPE,
-  DPE_VALUES,
   getModeEauChaudeSanitaireOptions,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type ModeEauChaudeSanitaireQueryParam,
@@ -36,8 +35,14 @@ import {
 } from '@/modules/chaleur-renouvelable/constants';
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 import { AddressField } from '@/modules/form/AddressField';
+import { Form } from '@/modules/form/Form';
+import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
+import { toastErrors } from '@/modules/notification';
+import trpc from '@/modules/trpc/client';
 import cx from '@/utils/cx';
 
+import { DpeField } from './DpeField';
+import { InputWithSuffix } from './InputWithSuffix';
 import { OutdoorSpaceCheckboxes } from './OutdoorSpaceCheckboxes';
 
 export const HOT_WATER_PARAMS_SECTION_ID = 'choix-chauffage-hot-water-params';
@@ -74,32 +79,47 @@ export function ParamsForm({
   selectedBatiment,
   paramSources,
 }: ParamsFormProps) {
-  const currentValues = toParamsFormDraft(values, paramSources);
-  const [draft, setDraft] = useState(currentValues);
-  const [hasPendingLocalChange, setHasPendingLocalChange] = useState(false);
+  const utils = trpc.useUtils();
+  const prefillVersion = useRef(0);
+  const [isPrefilling, setIsPrefilling] = useState(false);
+  const currentValues = useMemo(() => toParamsFormDraft(values, paramSources), [values, paramSources]);
+  const form = useAppForm({
+    ...schemaValidation(zParamsForm),
+    defaultValues: currentValues,
+    onSubmit: async ({ value }) => {
+      const nextValues = toChoixChauffageParamsPatch(value);
+
+      trackPostHogEvent('fcr_simulator:parameters_saved', {
+        dpe: value.dpe,
+        ecs_mode: value.modeEauChaudeSanitaire,
+        emitter_type: nextValues.typeRadiateur,
+        habitants: nextValues.habitantsMoyen ? Number(nextValues.habitantsMoyen) : undefined,
+        heating_mode: nextValues.typeLogement,
+        nb_logements: nextValues.nbLogements ?? undefined,
+        surface_m2: nextValues.surfaceMoyenne ?? undefined,
+      });
+      await onSave(nextValues);
+
+      form.reset(normalizeDraftNumbers(value));
+      setHasPendingAddressChange(false);
+      setIsOpen(false);
+    },
+  });
+  const draft = useStore(form.store, (state) => state.values);
+  const isDefaultValue = useStore(form.store, (state) => state.isDefaultValue);
+  // Address selection also updates the URL and eligibility context before submission.
+  const [hasPendingAddressChange, setHasPendingAddressChange] = useState(false);
   const draftSelectedBatiment =
     draft.constructionId === null
       ? null
       : (batiments.find((batiment) => batiment.batiment_construction_id === draft.constructionId) ?? selectedBatiment);
 
   useEffect(() => {
-    setDraft(currentValues);
-  }, [
-    currentValues.adresse,
-    currentValues.constructionId,
-    currentValues.dpe,
-    currentValues.espaceExterieur,
-    currentValues.habitantsMoyen,
-    currentValues.modeEauChaudeSanitaire,
-    currentValues.nbLogements,
-    currentValues.surfaceMoyenne,
-    currentValues.typeLogement,
-    currentValues.typeRadiateur,
-    currentValues.isDpeExplicit,
-    currentValues.isModeEauChaudeSanitaireInferred,
-  ]);
+    // Reflect saved URL parameters, including building-prefill updates, in the editable draft.
+    form.reset(currentValues);
+  }, [form, currentValues]);
 
-  const isModified = hasPendingLocalChange || !areParamsFormDraftsEqual(draft, currentValues);
+  const isModified = hasPendingAddressChange || !isDefaultValue;
   const completion = getParamsFormCompletion(draft);
   const modeEauChaudeSanitaireOptions = getModeEauChaudeSanitaireOptions(draft.typeLogement);
 
@@ -109,8 +129,10 @@ export function ParamsForm({
   };
 
   const handleClose = () => {
-    setDraft(currentValues);
-    setHasPendingLocalChange(false);
+    prefillVersion.current += 1;
+    setIsPrefilling(false);
+    form.reset(currentValues);
+    setHasPendingAddressChange(false);
     setIsOpen(false);
   };
 
@@ -124,53 +146,53 @@ export function ParamsForm({
     handleClose();
   };
 
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const nextValues = toChoixChauffageParamsPatch(draft);
-
-    trackPostHogEvent('fcr_simulator:parameters_saved', {
-      dpe: draft.dpe,
-      ecs_mode: draft.modeEauChaudeSanitaire,
-      emitter_type: nextValues.typeRadiateur,
-      habitants: nextValues.habitantsMoyen ? Number(nextValues.habitantsMoyen) : undefined,
-      heating_mode: nextValues.typeLogement,
-      nb_logements: nextValues.nbLogements ?? undefined,
-      surface_m2: nextValues.surfaceMoyenne ?? undefined,
-    });
-    onSave(nextValues);
-
-    setDraft(normalizeDraftNumbers(draft));
-    setHasPendingLocalChange(false);
-    setIsOpen(false);
-  };
-
-  const handleSelectBatiment = (batiment: BatEnrBatiment) => {
-    const prefillParams = getSimulationPrefillFromBatEnrBatiment(batiment);
-
-    setHasPendingLocalChange(true);
-    setDraft((previousDraft) => {
-      return {
-        ...previousDraft,
-        constructionId: batiment.batiment_construction_id,
-        dpe: prefillParams.dpe ?? previousDraft.dpe,
-        isDpeExplicit: prefillParams.dpe ? true : previousDraft.isDpeExplicit,
-        isModeEauChaudeSanitaireInferred: prefillParams.modeEauChaudeSanitaire ? false : previousDraft.isModeEauChaudeSanitaireInferred,
-        modeEauChaudeSanitaire: prefillParams.modeEauChaudeSanitaire
-          ? normalizeModeEauChaudeSanitaireForTypeLogement(prefillParams.modeEauChaudeSanitaire, previousDraft.typeLogement)
-          : previousDraft.modeEauChaudeSanitaire,
-        nbLogements: prefillParams.nbLogements === undefined ? previousDraft.nbLogements : String(prefillParams.nbLogements),
-        surfaceMoyenne: prefillParams.surfaceMoyenne === undefined ? previousDraft.surfaceMoyenne : String(prefillParams.surfaceMoyenne),
+  const handleSelectBatiment = toastErrors(async (batiment: BatEnrBatiment) => {
+    const version = ++prefillVersion.current;
+    setIsPrefilling(true);
+    form.setFieldValue('constructionId', batiment.batiment_construction_id);
+    const previous = form.state.values;
+    try {
+      const prefillParams = {
+        ...getSimulationPrefillFromBatEnrBatiment(batiment),
+        ...(batiment.batiment_construction_id
+          ? await utils.batEnr.getSimulationPrefill.fetch({ batiment_construction_id: batiment.batiment_construction_id })
+          : {}),
       };
-    });
-  };
+      if (prefillVersion.current !== version || form.state.values.constructionId !== batiment.batiment_construction_id) {
+        return;
+      }
+      // Keep edits made while the remote prefill was loading.
+      const current = form.state.values;
+      if (prefillParams.dpe && current.dpe === previous.dpe) {
+        form.setFieldValue('dpe', prefillParams.dpe);
+        form.setFieldValue('isDpeExplicit', true);
+      }
+      if (
+        prefillParams.modeEauChaudeSanitaire &&
+        current.modeEauChaudeSanitaire === previous.modeEauChaudeSanitaire &&
+        current.typeLogement === previous.typeLogement
+      ) {
+        form.setFieldValue('isModeEauChaudeSanitaireInferred', false);
+        form.setFieldValue(
+          'modeEauChaudeSanitaire',
+          normalizeModeEauChaudeSanitaireForTypeLogement(prefillParams.modeEauChaudeSanitaire, current.typeLogement)
+        );
+      }
+      if (prefillParams.nbLogements !== undefined && current.nbLogements === previous.nbLogements) {
+        form.setFieldValue('nbLogements', String(prefillParams.nbLogements));
+      }
+      if (prefillParams.surfaceMoyenne !== undefined && current.surfaceMoyenne === previous.surfaceMoyenne) {
+        form.setFieldValue('surfaceMoyenne', String(prefillParams.surfaceMoyenne));
+      }
+    } finally {
+      if (prefillVersion.current === version) {
+        setIsPrefilling(false);
+      }
+    }
+  });
 
   return (
-    <form
-      id="params-form"
-      className={cx('border border-gray-200 bg-white p-4 shadow-sm', !isOpen && 'sticky top-0 z-20')}
-      onSubmit={handleSubmit}
-    >
+    <Form form={form} id="params-form" className={cx('border border-gray-200 bg-white p-4 shadow-sm', !isOpen && 'sticky top-0 z-20')}>
       {isOpen ? (
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 flex-1 items-start gap-2 mb-5">
@@ -182,8 +204,9 @@ export function ParamsForm({
               nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
               onlyAddress
               onClear={() => {
-                setHasPendingLocalChange(true);
-                setDraft((previousDraft) => ({ ...previousDraft, adresse: '', constructionId: null }));
+                setHasPendingAddressChange(true);
+                form.setFieldValue('adresse', '');
+                form.setFieldValue('constructionId', null);
                 setGeoAddress(undefined);
                 onSelectGeoAddress?.(undefined);
               }}
@@ -197,12 +220,9 @@ export function ParamsForm({
                     source: 'result',
                   });
                 }
-                setHasPendingLocalChange(true);
-                setDraft((previousDraft) => ({
-                  ...previousDraft,
-                  adresse: nextAddressLabel,
-                  constructionId: null,
-                }));
+                setHasPendingAddressChange(true);
+                form.setFieldValue('adresse', nextAddressLabel);
+                form.setFieldValue('constructionId', null);
                 setGeoAddress(nextAddress);
                 onSelectGeoAddress?.(nextAddress);
               }}
@@ -250,15 +270,14 @@ export function ParamsForm({
                       if (nextTypeLogement) {
                         trackPostHogEvent('fcr_simulator:heating_mode_selected', { heating_mode: nextTypeLogement });
                       }
-                      setDraft((previousDraft) => ({
-                        ...previousDraft,
-                        espaceExterieur: previousDraft.espaceExterieur ?? 'none',
-                        isModeEauChaudeSanitaireInferred: false,
-                        modeEauChaudeSanitaire:
-                          normalizeModeEauChaudeSanitaireForTypeLogement(previousDraft.modeEauChaudeSanitaire, nextTypeLogement) ??
-                          MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
-                        typeLogement: nextTypeLogement,
-                      }));
+                      form.setFieldValue('espaceExterieur', draft.espaceExterieur ?? 'none');
+                      form.setFieldValue('isModeEauChaudeSanitaireInferred', false);
+                      form.setFieldValue(
+                        'modeEauChaudeSanitaire',
+                        normalizeModeEauChaudeSanitaireForTypeLogement(draft.modeEauChaudeSanitaire, nextTypeLogement) ??
+                          MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE
+                      );
+                      form.setFieldValue('typeLogement', nextTypeLogement);
                     },
                     value: draft.typeLogement ?? undefined,
                   }}
@@ -272,10 +291,7 @@ export function ParamsForm({
                       if (nextTypeRadiateur) {
                         trackPostHogEvent('fcr_simulator:emitter_type_selected', { emitter_type: nextTypeRadiateur });
                       }
-                      setDraft((previousDraft) => ({
-                        ...previousDraft,
-                        typeRadiateur: nextTypeRadiateur,
-                      }));
+                      form.setFieldValue('typeRadiateur', nextTypeRadiateur);
                     },
                     value: draft.typeRadiateur ?? undefined,
                   }}
@@ -291,21 +307,15 @@ export function ParamsForm({
                         return;
                       }
 
-                      setDraft((previousDraft) => ({
-                        ...previousDraft,
-                        isModeEauChaudeSanitaireInferred: false,
-                      }));
+                      form.setFieldValue('isModeEauChaudeSanitaireInferred', false);
                     },
                     onChange: (event) => {
                       const nextModeEauChaudeSanitaire = event.target.value as ModeEauChaudeSanitaireQueryParam;
                       if (nextModeEauChaudeSanitaire) {
                         trackPostHogEvent('fcr_simulator:ecs_mode_changed', { ecs_mode: nextModeEauChaudeSanitaire });
                       }
-                      setDraft((previousDraft) => ({
-                        ...previousDraft,
-                        isModeEauChaudeSanitaireInferred: false,
-                        modeEauChaudeSanitaire: nextModeEauChaudeSanitaire,
-                      }));
+                      form.setFieldValue('isModeEauChaudeSanitaireInferred', false);
+                      form.setFieldValue('modeEauChaudeSanitaire', nextModeEauChaudeSanitaire);
                     },
                     value: draft.modeEauChaudeSanitaire ?? undefined,
                   }}
@@ -316,7 +326,7 @@ export function ParamsForm({
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="fr-icon-community-fill" aria-hidden="true" />
                 <h3 className="m-0 text-base font-bold">Bâtiment</h3>
-                <span className="text-xs text-gray-500">source : CSTB</span>
+                <span className="text-xs text-gray-500">sources : RNIC et CSTB</span>
               </div>
               <div className="mt-0 md:mt-3 grid grid-cols-1 gap-4 md:grid-cols-[minmax(190px,0.9fr)_minmax(0,2fr)]">
                 <BatEnrBatimentsMap
@@ -328,24 +338,26 @@ export function ParamsForm({
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="[&_.fr-label]:text-sm">
-                    <InputWithSuffix
-                      label="Surface habitable par logement (moy)"
-                      suffix="m²"
-                      value={draft.surfaceMoyenne}
-                      placeholder="70"
-                      inputMode="numeric"
-                      min="0"
-                      step="1"
-                      state={completion.isSurfaceMoyenneIncomplete ? 'error' : 'default'}
-                      stateRelatedMessage={INCOMPLETE_FIELD_MESSAGE}
-                      onChange={(value) => setDraft((previousDraft) => ({ ...previousDraft, surfaceMoyenne: value }))}
-                      onBlur={() => {
-                        const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
-                        if (surfaceM2 !== null) {
-                          trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
-                        }
-                      }}
-                    />
+                    <form.AppField name="surfaceMoyenne">
+                      {(field) => (
+                        <field.CustomField
+                          Component={InputWithSuffix}
+                          label="Surface habitable par logement (moy)"
+                          suffix="m²"
+                          placeholder="70"
+                          inputMode="numeric"
+                          min={String(businessRules.fcrMinimumAverageHousingArea.value)}
+                          step="1"
+                          onBlur={() => {
+                            field.handleBlur();
+                            const surfaceM2 = parseIntegerOrNull(draft.surfaceMoyenne);
+                            if (surfaceM2 !== null) {
+                              trackPostHogEvent('fcr_simulator:surface_changed', { surface_m2: surfaceM2 });
+                            }
+                          }}
+                        />
+                      )}
+                    </form.AppField>
                     <InputWithSuffix
                       label="Habitants par logement (moy)"
                       suffix="personnes"
@@ -362,15 +374,12 @@ export function ParamsForm({
                         if (normalizedHabitantsMoyen) {
                           trackPostHogEvent('fcr_simulator:habitants_changed', { habitants: Number(normalizedHabitantsMoyen) });
                         }
-                        setDraft((previousDraft) => ({
-                          ...previousDraft,
-                          habitantsMoyen: normalizedHabitantsMoyen,
-                        }));
+                        form.setFieldValue('habitantsMoyen', normalizedHabitantsMoyen);
                       }}
                       onChange={(value) => {
                         if (!(value === '' || /^[0-9]+([.,][0-9]*)?$/.test(value))) return;
 
-                        setDraft((previousDraft) => ({ ...previousDraft, habitantsMoyen: value }));
+                        form.setFieldValue('habitantsMoyen', value);
                       }}
                     />
                     <Input
@@ -388,7 +397,7 @@ export function ParamsForm({
                             trackPostHogEvent('fcr_simulator:nb_logements_changed', { nb_logements: nbLogements });
                           }
                         },
-                        onChange: (event) => setDraft((previousDraft) => ({ ...previousDraft, nbLogements: event.target.value })),
+                        onChange: (event) => form.setFieldValue('nbLogements', event.target.value),
                         placeholder: '25',
                         type: 'number',
                         value: draft.nbLogements,
@@ -401,7 +410,8 @@ export function ParamsForm({
                       hasError={completion.isDpeIncomplete}
                       onChange={(value) => {
                         trackPostHogEvent('fcr_simulator:dpe_changed', { dpe: value });
-                        setDraft((previousDraft) => ({ ...previousDraft, dpe: value, isDpeExplicit: true }));
+                        form.setFieldValue('dpe', value);
+                        form.setFieldValue('isDpeExplicit', true);
                       }}
                     />
                     <OutdoorSpaceCheckboxes
@@ -412,7 +422,7 @@ export function ParamsForm({
                         if (value) {
                           trackPostHogEvent('fcr_simulator:outdoor_space_selected', { outdoor_space: value });
                         }
-                        setDraft((previousDraft) => ({ ...previousDraft, espaceExterieur: value }));
+                        form.setFieldValue('espaceExterieur', value);
                       }}
                     />
                   </div>
@@ -421,7 +431,7 @@ export function ParamsForm({
             </section>
           </div>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Button type="submit" iconId="fr-icon-save-line" disabled={!isModified}>
+            <Button type="submit" iconId="fr-icon-save-line" disabled={!isModified || isPrefilling}>
               Enregistrer et recalculer
             </Button>
             <Button priority="secondary" type="button" onClick={handleCancel}>
@@ -444,7 +454,7 @@ export function ParamsForm({
           <ParamsNotificationBadge count={completion.incompleteCount} />
         </Button>
       )}
-    </form>
+    </Form>
   );
 }
 
@@ -474,100 +484,5 @@ function ParamsIncompleteAlert({ count }: ParamsIncompleteAlertProps) {
       <span className="fr-icon-warning-fill mr-2" aria-hidden="true" />
       {count} information{count > 1 ? 's' : ''} à compléter ou vérifier <span className="font-normal">pour affiner vos résultats.</span>
     </p>
-  );
-}
-
-type DpeFieldProps = {
-  hasError: boolean;
-  onChange: (value: DPE) => void;
-  value: DPE;
-};
-
-function DpeField({ hasError, value, onChange }: DpeFieldProps) {
-  return (
-    <div className={cx('fr-input-group fr-mb-0', hasError && 'fr-input-group--error')}>
-      <div className="mb-2 text-sm">Étiquette DPE</div>
-      <div className="flex flex-wrap gap-1">
-        {DPE_VALUES.map((dpeValue) => (
-          <DpeTag key={dpeValue} letter={dpeValue} isSelected={value === dpeValue} onClick={() => onChange(dpeValue)} size="md" />
-        ))}
-      </div>
-      {hasError && <p className="fr-error-text">{INCOMPLETE_FIELD_MESSAGE}</p>}
-    </div>
-  );
-}
-
-type InputWithSuffixProps = {
-  label: string;
-  onBlur?: () => void;
-  onChange: (value: string) => void;
-  placeholder: string;
-  suffix: string;
-  state?: 'default' | 'error';
-  stateRelatedMessage?: string;
-  type?: 'number' | 'text';
-  value: string;
-  inputMode: 'search' | 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | undefined;
-  min: string;
-  step: string;
-};
-
-function InputWithSuffix({
-  label,
-  onChange,
-  onBlur,
-  placeholder,
-  suffix,
-  state = 'default',
-  stateRelatedMessage,
-  type = 'number',
-  value,
-  inputMode,
-  min,
-  step,
-}: InputWithSuffixProps) {
-  const inputId = useId();
-  const suffixDescriptionId = `${inputId}-suffix`;
-  const suffixAnchorText = value || placeholder;
-  const hasError = state === 'error';
-
-  return (
-    <div className={cx('fr-input-group w-full', hasError && 'fr-input-group--error')}>
-      <label className="fr-label mb-2" htmlFor={inputId}>
-        {label}
-      </label>
-      <div className="relative">
-        <input
-          aria-describedby={suffixDescriptionId}
-          aria-invalid={hasError}
-          className="fr-input"
-          id={inputId}
-          inputMode={inputMode}
-          min={min}
-          step={step}
-          onBlur={onBlur}
-          onChange={(event) => onChange(event.target.value)}
-          onWheel={(event) => {
-            if (event.currentTarget.type === 'number') {
-              event.currentTarget.blur();
-            }
-          }}
-          placeholder={placeholder}
-          type={type}
-          value={value}
-        />
-        <span id={suffixDescriptionId} className="sr-only">
-          Unité : {suffix}
-        </span>
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-4 right-12 flex items-center overflow-hidden whitespace-pre text-base leading-6"
-        >
-          <span className={value ? 'invisible' : 'invisible italic'}>{suffixAnchorText}</span>
-          <span className="ml-1 text-gray-500">{suffix}</span>
-        </span>
-      </div>
-      {hasError && <p className="fr-error-text">{stateRelatedMessage}</p>}
-    </div>
   );
 }

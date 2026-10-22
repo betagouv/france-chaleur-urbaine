@@ -116,21 +116,7 @@ function App({ Component, pageProps: { session, ...pageProps } }) {
 }
 ```
 
-#### `useUserPreferences()`
-
-Manages user preferences.
-
-```typescript
-import { useUserPreferences } from '@/modules/auth/client/hooks';
-
-function Settings() {
-  const { userPreferences, updateUserPreferences } = useUserPreferences();
-  
-  const handleUpdate = async () => {
-    await updateUserPreferences({ theme: 'dark' });
-  };
-}
-```
+User preferences (email signature, demand notifications) are not part of this module: see `trpc.users.getPreferences` / `trpc.users.updatePreferences` (`src/modules/users/AGENTS.md`).
 
 ## NextAuth Integration
 

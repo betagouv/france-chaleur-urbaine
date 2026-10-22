@@ -1,7 +1,10 @@
 import type { User } from 'next-auth';
 import { describe, expect, it } from 'vitest';
 
+import { seedTableUser } from '@/tests/fixtures';
 import { createTestCaller, testUsers } from '@/tests/trpc-helpers';
+
+import { getUserSession } from './session';
 
 type PermissionTestCase = {
   label: string;
@@ -10,6 +13,18 @@ type PermissionTestCase = {
 };
 
 describe('authRouter', () => {
+  it('loads a CCRT session from the schema with JSONB user preferences', async () => {
+    const createdAt = new Date('2026-01-01T00:00:00.000Z');
+    await seedTableUser([{ ...testUsers.ccrt, created_at: createdAt }]);
+    await expect(getUserSession(testUsers.ccrt.id)).resolves.toStrictEqual({
+      active: true,
+      created_at: createdAt,
+      email: testUsers.ccrt.email,
+      id: testUsers.ccrt.id,
+      role: 'ccrt',
+    });
+  });
+
   describe('auth.resetPassword', () => {
     // Route publique - tout le monde peut demander un reset
     const permissionTests: PermissionTestCase[] = [

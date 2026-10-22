@@ -5,6 +5,7 @@ import type { EmailTrigger } from '@/modules/email/constants';
 import type { EmailScenarios } from '@/modules/email/scenarios';
 import { ObjectEntries, ObjectKeys } from '@/utils/typescript';
 
+import OuvertureEspaceCcrt, { scenarios as ouvertureEspaceCcrtScenarios } from './templates/auth/ccrt/ouverture-espace';
 import OuvertureEspaceGestionnaire, { scenarios as ouvertureEspaceScenarios } from './templates/auth/gestionnaire/ouverture-espace';
 import ConfirmationInscription, {
   scenarios as confirmationInscriptionScenarios,
@@ -15,14 +16,21 @@ import ReinitialisationMotDePasse, {
 import NouvelleDemandeChaleurRenouvelable, {
   scenarios as nouvelleDemandeChaleurRenouvelableScenarios,
 } from './templates/demands/ccrt/nouvelle-demande-chaleur-renouvelable';
+import RappelDemandesEnAttenteCcrt, {
+  scenarios as rappelDemandesEnAttenteCcrtScenarios,
+} from './templates/demands/ccrt/rappel-demandes-en-attente';
 import ConfirmationDemande, { scenarios as confirmationDemandeScenarios } from './templates/demands/demandeur/confirmation-demande';
+import ConfirmationDemandeChaleurRenouvelable, {
+  scenarios as confirmationDemandeChaleurRenouvelableScenarios,
+} from './templates/demands/demandeur/confirmation-demande-chaleur-renouvelable';
 import EnqueteSatisfaction, { scenarios as enqueteSatisfactionScenarios } from './templates/demands/demandeur/enquete-satisfaction';
 import MessageGestionnaire, { scenarios as messageGestionnaireScenarios } from './templates/demands/demandeur/message-gestionnaire';
 import RaccordementNonRealisable, {
   scenarios as raccordementNonRealisableScenarios,
 } from './templates/demands/demandeur/raccordement-non-realisable';
 import NouvellesDemandesATraiter, {
-  scenarios as nouvellesDemandesATraiterScenarios,
+  dailyScenarios as nouvellesDemandesATraiterDailyScenarios,
+  weeklyScenarios as nouvellesDemandesATraiterWeeklyScenarios,
 } from './templates/demands/gestionnaire/nouvelles-demandes-a-traiter';
 import RappelDemandesEnAttente, {
   scenarios as rappelDemandesEnAttenteScenarios,
@@ -76,6 +84,19 @@ function defineEmails<const T extends EmailRegistry<T>>(emails: T): T {
  * - les métadonnées affichées dans l'admin (`label`, `description`, `subject`, `preview`).
  */
 export const emails = defineEmails({
+  'auth.ccrt.ouverture-espace': {
+    Component: OuvertureEspaceCcrt,
+    description:
+      "Envoyé automatiquement à la création d'un compte CCRT actif. Présente les demandes d'accompagnement du territoire et explique comment définir son mot de passe lors de la première connexion.",
+    label: "Ouverture d'espace gestionnaire CCRT",
+    preview: "Votre espace gestionnaire est prêt - Accédez aux demandes d'accompagnement de votre territoire",
+    scenarios: ouvertureEspaceCcrtScenarios,
+    subject: "[France Chaleur Urbaine] Ouverture d'espace gestionnaire",
+    trigger: {
+      description: "À la création par un admin d'un compte CCRT actif.",
+      type: 'action',
+    },
+  },
   'auth.gestionnaire.ouverture-espace': {
     Component: OuvertureEspaceGestionnaire,
     description:
@@ -85,7 +106,7 @@ export const emails = defineEmails({
     scenarios: ouvertureEspaceScenarios,
     subject: '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire',
     trigger: {
-      description: "À la création par un admin d'un compte gestionnaire actif — les autres rôles ne reçoivent aucun email.",
+      description: "À la création d'un compte gestionnaire actif, par un admin ou via l'API partenaire.",
       type: 'action',
     },
   },
@@ -117,15 +138,29 @@ export const emails = defineEmails({
   'demands.ccrt.nouvelle-demande-chaleur-renouvelable': {
     Component: NouvelleDemandeChaleurRenouvelable,
     description:
-      'Notification envoyée aux CCRT ayant une permission sur le département concerné quand un admin valide une demande d’accompagnement chaleur renouvelable.',
-    label: 'Nouvelle demande chaleur renouvelable CCRT',
-    preview: 'Une nouvelle demande chaleur renouvelable est à traiter',
+      "Notification envoyée aux CCRT dont les permissions territoriales classiques couvrent la demande quand un admin valide une demande d'accompagnement chaleur renouvelable.",
+    label: "Nouvelle demande d'accompagnement CCRT",
+    preview: "Une nouvelle demande d'accompagnement est à traiter",
     scenarios: nouvelleDemandeChaleurRenouvelableScenarios,
-    subject: '[France Chaleur Urbaine] Nouvelle demande chaleur renouvelable à traiter',
+    subject: "[France Chaleur Urbaine] À traiter : Nouvelle demande d'accompagnement",
     trigger: {
       description:
-        "À la validation admin d'une demande d'accompagnement chaleur renouvelable sur un département couvert par l'expérimentation CCRT.",
+        "À la validation admin d'une demande d'accompagnement chaleur renouvelable ; destinataires déterminés par les permissions territoriales.",
       type: 'action',
+    },
+  },
+  'demands.ccrt.rappel-demandes-en-attente': {
+    Component: RappelDemandesEnAttenteCcrt,
+    description:
+      "Relance envoyée aux CCRT ayant au moins une demande d'accompagnement validée encore au statut « À traiter » dans le périmètre de leurs permissions territoriales.",
+    label: 'Rappel demandes CCRT en attente',
+    preview: "Des demandes d'accompagnement nécessitent votre attention",
+    scenarios: rappelDemandesEnAttenteCcrtScenarios,
+    subject: "[France Chaleur Urbaine] {{n}} demande(s) d'accompagnement en attente de traitement",
+    trigger: {
+      description:
+        "Cron un lundi sur deux 9h45 — demandes d'accompagnement CCRT validées encore au statut « À traiter » ; nécessite l'option « recevoir les rappels ».",
+      type: 'cron',
     },
   },
   'demands.demandeur.confirmation-demande': {
@@ -138,6 +173,20 @@ export const emails = defineEmails({
     subject: '[France Chaleur Urbaine] Votre demande de contact',
     trigger: {
       description: "Au dépôt d'une demande de raccordement (formulaire public ou espace connecté).",
+      type: 'action',
+    },
+  },
+  'demands.demandeur.confirmation-demande-chaleur-renouvelable': {
+    Component: ConfirmationDemandeChaleurRenouvelable,
+    description:
+      "Accusé de réception envoyé au demandeur juste après dépôt d'une demande d'accompagnement chaleur renouvelable dédiée CCRT.",
+    label: "Confirmation demande d'accompagnement chaleur renouvelable",
+    preview: "Votre demande d'accompagnement a bien été envoyée",
+    scenarios: confirmationDemandeChaleurRenouvelableScenarios,
+    subject: "[France Chaleur Urbaine] Votre demande d'accompagnement",
+    trigger: {
+      description:
+        "Au dépôt d'une demande d'accompagnement chaleur renouvelable dédiée CCRT ; les demandes classiques de raccordement gardent l'accusé de réception habituel.",
       type: 'action',
     },
   },
@@ -179,16 +228,31 @@ export const emails = defineEmails({
       type: 'action',
     },
   },
-  'demands.gestionnaire.nouvelles-demandes-a-traiter': {
+  'demands.gestionnaire.nouvelles-demandes-a-traiter-daily': {
     Component: NouvellesDemandesATraiter,
-    description: 'Envoyé périodiquement aux gestionnaires de réseau ayant une ou plusieurs nouvelles demandes dans leur espace.',
-    label: 'Nouvelles demandes à traiter',
+    description:
+      'Envoyé chaque jour ouvré aux gestionnaires de réseau ayant une ou plusieurs nouvelles demandes dans leur espace (préférence « Nouvelles demandes » : quotidien).',
+    label: 'Nouvelles demandes à traiter (quotidien)',
     preview: 'Nouvelles demandes de raccordement à traiter dans votre espace',
-    scenarios: nouvellesDemandesATraiterScenarios,
+    scenarios: nouvellesDemandesATraiterDailyScenarios,
     subject: '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire',
     trigger: {
       description:
-        "Cron du lundi au vendredi 10h — demandes validées, affectées à un réseau du gestionnaire et non encore notifiées ; nécessite l'option « recevoir les nouvelles demandes ».",
+        'Cron du lundi au vendredi 10h — demandes validées, affectées à un réseau du gestionnaire et non encore notifiées ; comptes ayant choisi la notification quotidienne.',
+      type: 'cron',
+    },
+  },
+  'demands.gestionnaire.nouvelles-demandes-a-traiter-weekly': {
+    Component: NouvellesDemandesATraiter,
+    description:
+      'Récapitulatif hebdomadaire envoyé le lundi aux gestionnaires de réseau ayant choisi la notification hebdomadaire : toutes les nouvelles demandes de la semaine écoulée, tous réseaux confondus.',
+    label: 'Nouvelles demandes à traiter (hebdomadaire)',
+    preview: 'Nouvelles demandes de raccordement cette semaine dans votre espace',
+    scenarios: nouvellesDemandesATraiterWeeklyScenarios,
+    subject: '[France Chaleur Urbaine] Nouvelle(s) demande(s) cette semaine dans votre espace gestionnaire',
+    trigger: {
+      description:
+        'Cron du lundi 10h — demandes validées, affectées à un réseau du gestionnaire, non encore notifiées ou notifiées au cours des 7 derniers jours ; comptes ayant choisi la notification hebdomadaire.',
       type: 'cron',
     },
   },
@@ -200,7 +264,7 @@ export const emails = defineEmails({
     scenarios: rappelDemandesEnAttenteScenarios,
     subject: '[France Chaleur Urbaine] Vous avez des demandes en attente de prise en charge',
     trigger: {
-      description: `Cron du mardi 9h55 — demandes « À traiter » notifiées depuis plus de ${businessRules.unhandledDemandReminderDays.display} ; nécessite l'option « recevoir les rappels ».`,
+      description: `Cron du mardi 9h55 — demandes « À traiter » reçues depuis plus de ${businessRules.unhandledDemandReminderDays.display} (jour de la notification quotidienne, ou lundi du récapitulatif hebdomadaire) ; nécessite la préférence « Rappel des demandes en attente ».`,
       type: 'cron',
     },
   },

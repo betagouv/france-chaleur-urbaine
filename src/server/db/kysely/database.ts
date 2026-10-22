@@ -33,7 +33,7 @@ import type {
 import type { Permission } from '@/modules/permissions/types';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { EcoreseauLabel } from '@/modules/reseaux/types';
-import type { Entreprise, StructureType, UserTagColor } from '@/modules/users/constants';
+import type { Entreprise, StructureType, UserPreferences, UserTagColor } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
 export type Generated<T> =
@@ -281,6 +281,7 @@ export interface ConversionSources {
 
 export interface DemandsChaleurRenouvelable {
   address: string;
+  alternative_heating_solutions: Generated<string[]>;
   annual_heating_consumption: number | null;
   assigned_to: string | null;
   average_area: number;
@@ -289,6 +290,10 @@ export interface DemandsChaleurRenouvelable {
   comments: string | null;
   created_at: Generated<Timestamp>;
   demand_concern: DemandConcern | null;
+  commune_code: string | null;
+  epci_code: string | null;
+  ept_code: string | null;
+  region_code: string | null;
   departement_code: string | null;
   dpe: DPE;
   email: string;
@@ -318,6 +323,30 @@ export interface DemandsChaleurRenouvelable {
   surface_area: number | null;
   updated_at: Generated<Timestamp>;
   validated: Generated<boolean>;
+}
+
+export interface CcrtDemandNotes {
+  id: Generated<string>;
+  demand_id: string;
+  author_id: string | null;
+  body: string;
+  created_at: Generated<Timestamp>;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface CcrtDemandEmails {
+  id: string;
+  demand_id: string;
+  author_id: string | null;
+  body: string;
+  cc: string;
+  object: string;
+  reply_to: string;
+  signature: string;
+  to: string;
+  status: Generated<'pending' | 'sent' | 'failed'>;
+  sent_at: Timestamp | null;
+  created_at: Generated<Timestamp>;
 }
 
 export interface DemandEmails {
@@ -951,11 +980,9 @@ export interface Users {
   optin_at: Date | null;
   password: string;
   phone: string | null;
-  receive_new_demands: boolean | null;
-  receive_old_demands: boolean | null;
+  preferences: Generated<JSONColumnType<UserPreferences>>;
   reset_token: string | null;
   role: UserRole;
-  signature: string | null;
   status: 'pending_email_confirmation' | 'valid';
   structure_name: string | null;
   structure_other: string | null;
@@ -1147,6 +1174,8 @@ export interface DB {
   conversion_ip_rules: ConversionIpRules;
   conversion_sources: ConversionSources;
   demands_chaleur_renouvelable: DemandsChaleurRenouvelable;
+  ccrt_demand_notes: CcrtDemandNotes;
+  ccrt_demand_emails: CcrtDemandEmails;
   demand_emails: DemandEmails;
   demands: Demands;
   departements: Departements;

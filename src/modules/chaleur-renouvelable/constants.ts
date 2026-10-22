@@ -2,10 +2,14 @@ import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import type { ReactNode } from 'react';
 import { z } from 'zod';
 
+import { businessRules } from '@/modules/app/business-rules';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
-// Pause dedicated CCRT demands while preserving classic connection requests.
-export const IS_CCRT_DEMAND_ENABLED = false;
+export const MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE = `La surface doit être d’au moins ${businessRules.fcrMinimumAverageHousingArea.display} par logement.`;
+export const zAverageHousingArea = z.number().min(businessRules.fcrMinimumAverageHousingArea.value, MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE);
+
+// Controls dedicated CCRT collection independently of classic connection requests.
+export const IS_CCRT_DEMAND_ENABLED = true;
 
 export type ModeDeChauffageUsage = 'heatingAndHotWater' | 'hotWaterOnly';
 export type ModeDeChauffageId =
@@ -97,7 +101,6 @@ export type Situation = {
   architecturalProtectionAc4bis: boolean;
   espaceExterieur: EspaceExterieur;
   planProtectionAtmosphere: boolean;
-  geothermiePossible: boolean;
   dpe: DPE;
   adresse: string | null;
   nbLogements: number;
@@ -147,7 +150,7 @@ type ExtractModeRoot<Rule> = Rule extends `${infer Root} . bilan . total sans in
 /**
  * Racines des modes publicodes exposant un bilan annuel, dérivées des noms de règles du modèle.
  */
-export type PublicodesModeKey = ExtractModeRoot<RuleName>;
+type PublicodesModeKey = ExtractModeRoot<RuleName>;
 
 export const COOLING_POSSIBLE_ADVANTAGE = 'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs';
 
@@ -196,45 +199,6 @@ export const typeLogementOptions = [
   value: TypeLogement;
 }[];
 
-export const CCRT_EXPERIMENTATION_DEPARTMENT_CODES = [
-  '01',
-  '03',
-  '04',
-  '05',
-  '06',
-  '07',
-  '13',
-  '15',
-  '22',
-  '26',
-  '29',
-  '35',
-  '38',
-  '42',
-  '56',
-  '61',
-  '63',
-  '69',
-  '73',
-  '74',
-  '77',
-  '78',
-  '83',
-  '84',
-  '91',
-  '92',
-  '93',
-  '94',
-  '95',
-] as const;
-
-export function isCcrtExperimentationEligible(departmentCode: string | null | undefined, housingType: TypeLogement | null | undefined) {
-  return (
-    housingType === 'immeuble_chauffage_collectif' &&
-    CCRT_EXPERIMENTATION_DEPARTMENT_CODES.some((experimentationDepartmentCode) => experimentationDepartmentCode === departmentCode)
-  );
-}
-
 export const ESPACE_EXTERIEUR_VALUES = ['terrasseBalcon', 'jardinCours', 'terrasseBalconEtJardinCours', 'none'] as const;
 export type EspaceExterieur = (typeof ESPACE_EXTERIEUR_VALUES)[number];
 
@@ -245,7 +209,7 @@ const espaceExterieurLabels = {
   terrasseBalconEtJardinCours: 'Cour/jardin et terrasse/balcon disponibles',
 } satisfies Record<EspaceExterieur, string>;
 
-export type EspaceExterieurCheckboxState = {
+type EspaceExterieurCheckboxState = {
   hasGarden: boolean;
   hasTerrace: boolean;
 };
@@ -279,9 +243,9 @@ export function getEspaceExterieurFromCheckboxState(checkboxState: EspaceExterie
         : 'none';
 }
 
-export const MODE_EAU_CHAUDE_SANITAIRE_IMMEUBLE_VALUES = ['Individuel', 'Collectif'] as const;
-export const MODE_EAU_CHAUDE_SANITAIRE_MAISON_VALUES = ['Couplé au chauffage', 'Indépendant'] as const;
-export const MODE_EAU_CHAUDE_SANITAIRE_VALUES = [
+const MODE_EAU_CHAUDE_SANITAIRE_IMMEUBLE_VALUES = ['Individuel', 'Collectif'] as const;
+const MODE_EAU_CHAUDE_SANITAIRE_MAISON_VALUES = ['Couplé au chauffage', 'Indépendant'] as const;
+const MODE_EAU_CHAUDE_SANITAIRE_VALUES = [
   ...MODE_EAU_CHAUDE_SANITAIRE_IMMEUBLE_VALUES,
   ...MODE_EAU_CHAUDE_SANITAIRE_MAISON_VALUES,
 ] as const;
@@ -361,7 +325,7 @@ export const typeRadiateurOptions = [
   value: TypeRadiateur;
 }[];
 
-export const OCCUPANT_STATUS_VALUES = [
+const OCCUPANT_STATUS_VALUES = [
   'Copropriétaire',
   'Propriétaire de maison individuelle',
   'Syndicat de copropriété',
@@ -374,20 +338,15 @@ export const OCCUPANT_STATUS_VALUES = [
 export type OccupantStatus = (typeof OCCUPANT_STATUS_VALUES)[number];
 export const occupantStatusOptions = OCCUPANT_STATUS_VALUES.map((value) => ({ label: value, value }));
 
-export const DEMAND_CONCERN_VALUES = [
-  'Une copropriété',
-  'Une maison individuelle',
-  'Un bâtiment tertiaire',
-  'Plusieurs bâtiments',
-] as const;
+const DEMAND_CONCERN_VALUES = ['Une copropriété', 'Une maison individuelle', 'Un bâtiment tertiaire', 'Plusieurs bâtiments'] as const;
 export type DemandConcern = (typeof DEMAND_CONCERN_VALUES)[number];
 export const demandConcernOptions = DEMAND_CONCERN_VALUES.map((value) => ({ label: value, value }));
 
-export const HEATING_ENERGY_VALUES = ['Électricité', 'Gaz', 'Fioul', 'Bois', 'Réseau de chaleur', 'Autre'];
+const HEATING_ENERGY_VALUES = ['Électricité', 'Gaz', 'Fioul', 'Bois', 'Réseau de chaleur', 'Autre'];
 export type HeatingEnergy = (typeof HEATING_ENERGY_VALUES)[number];
 export const heatingEnergyOptions = HEATING_ENERGY_VALUES.map((value) => ({ label: value, value }));
 
-export const PROJECT_STATUS_VALUES = [
+const PROJECT_STATUS_VALUES = [
   'Début de réflexion',
   'DPE déjà réalisé',
   'Audit énergétique déjà réalisé',
@@ -412,8 +371,11 @@ export const demandeChaleurRenouvelableStatuses = [
   { label: '[Validation du projet] Etude de faisabilité votée en AG', value: 'project_validation_feasibility_study_voted' },
   { label: 'Premier conseil téléphonique réalisé', value: 'phone_contact_realised' },
   { label: 'Projet abandonné par le prospect', value: 'abandoned_by_prospect' },
+  { label: 'Clôturées', value: 'closed' },
 ] as const;
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS = demandeChaleurRenouvelableStatuses[0].label;
+export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT = demandeChaleurRenouvelableStatuses[1].label;
+export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED = demandeChaleurRenouvelableStatuses[9].label;
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION = demandeChaleurRenouvelableStatuses[6].label;
 export type DemandeChaleurRenouvelableStatus = (typeof demandeChaleurRenouvelableStatuses)[number]['label'];
 
@@ -537,6 +499,58 @@ export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
     .partial(),
 });
 export type AdminUpdateDemandeChaleurRenouvelableInput = z.infer<typeof zAdminUpdateDemandeChaleurRenouvelableInput>;
+
+const zCcrtNote = z.object({ body: z.string().trim().min(1, 'Veuillez saisir une note').max(250) });
+export const zCcrtUpdateDemandeChaleurRenouvelableInput = z.object({
+  demandId: z.string(),
+  trigger: z.enum(['manual', 'contact']).default('manual'),
+  values: z
+    .object({
+      note: zCcrtNote.shape.body.optional(),
+      projectState: z.enum(demandeChaleurRenouvelableProjectStates.map((projectState) => projectState.label)),
+      status: z.enum(demandeChaleurRenouvelableStatuses.map((status) => status.label)),
+    })
+    .partial(),
+});
+export type CcrtUpdateDemandeChaleurRenouvelableInput = z.infer<typeof zCcrtUpdateDemandeChaleurRenouvelableInput>;
+export const zCcrtFollowUpForm = zCcrtUpdateDemandeChaleurRenouvelableInput.shape.values.extend({
+  note: z.string().trim().max(250),
+});
+
+export const zCcrtDemandId = z.object({ demandId: z.uuid() });
+export const zCcrtFollowUpInput = zCcrtDemandId.extend({ offset: z.number().int().nonnegative().default(0) });
+export const zCcrtBuilding = z.object({
+  annual_heating_consumption: z.number().positive().nullish(),
+  average_area: z.number().int().positive(),
+  average_residents: z.number().nonnegative('Veuillez renseigner un nombre d’habitants supérieur ou égal à 0'),
+  dpe: z.enum(DPE_VALUES),
+  heating_energy: z.enum(HEATING_ENERGY_VALUES),
+  hot_water_system_type: z.enum(MODE_EAU_CHAUDE_SANITAIRE_QUERY_VALUES).nullable(),
+  housing_count: z.number().int().positive(),
+  housing_type: z.enum(TYPE_LOGEMENT_VALUES),
+  is_public_advisor_selected: z.boolean(),
+  outdoor_space: z.enum(ESPACE_EXTERIEUR_VALUES),
+  radiator_type: z.enum(TYPE_RADIATEUR_VALUES).nullable(),
+  refusal_period: z.string().max(500).nullable(),
+  refusal_reason: z.string().max(5000).nullable(),
+  surface_area: z.number().positive().nullish(),
+});
+export const zCcrtUpdateBuilding = zCcrtDemandId.extend({ updatedAt: z.iso.datetime(), values: zCcrtBuilding });
+const zCcrtEmailContent = z.object({
+  body: z.string().trim().min(1, 'Veuillez saisir un message').max(20000),
+  cc: z.string().refine((value) => !value || value.split(',').every((email) => z.email().safeParse(email.trim()).success), {
+    message: 'Les adresses email doivent être valides et séparées par des virgules',
+  }),
+  object: z.string().trim().min(1, 'Veuillez saisir un objet').max(250),
+  replyTo: z.email('Veuillez saisir une adresse email valide'),
+  signature: z.string().trim().min(1, 'Veuillez saisir une signature').max(2000),
+});
+export const zCcrtEmailForm = zCcrtEmailContent.extend({ updateStatusOnSend: z.boolean() });
+export const zCcrtSendEmail = zCcrtDemandId.extend({
+  emailContent: zCcrtEmailContent,
+  messageId: z.uuid(),
+  updateStatusOnSend: z.boolean().default(true),
+});
 
 export const zAdminValidateDemandeChaleurRenouvelableInput = z.object({
   demandId: z.string(),

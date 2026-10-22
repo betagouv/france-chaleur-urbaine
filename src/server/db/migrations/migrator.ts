@@ -4,6 +4,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { sql } from 'kysely';
 import { type Migration, type MigrationProvider, Migrator } from 'kysely/migration';
 
 import { kdb } from '@/server/db/kysely';
@@ -11,17 +12,21 @@ import { parentLogger } from '@/server/helpers/logger';
 
 const logger = parentLogger.child({ module: 'migrator' });
 
+const migrationTableName = 'kysely_migrations';
+
 // On doit surcharger cette classe car FileMigrationProvider gère mal les chemins windows
 class UrlFileMigrationProvider implements MigrationProvider {
   constructor(
     private readonly options: {
       migrationFolder: string;
       excludeFile?: string;
+      /** Register a no-op stub for every migration already applied in DB but absent from the folder (e.g. branch behind a shared DB) */
+      ignoreMissing?: boolean;
     }
   ) {}
 
   async getMigrations(): Promise<Record<string, Migration>> {
-    const { migrationFolder, excludeFile } = this.options;
+    const { migrationFolder, excludeFile, ignoreMissing } = this.options;
 
     const entries = await fs.readdir(migrationFolder, { withFileTypes: true });
 
@@ -47,11 +52,34 @@ class UrlFileMigrationProvider implements MigrationProvider {
       migrations[migrationName] = { down, up };
     }
 
+    if (ignoreMissing) {
+      for (const name of await getExecutedMigrationNames()) {
+        if (!migrations[name]) {
+          logger.warn(`migration "${name}" is applied in DB but missing from the code, ignoring it`);
+          migrations[name] = {
+            down: async () => {
+              throw new Error(`cannot roll back migration "${name}": its code is missing`);
+            },
+            up: async () => {},
+          };
+        }
+      }
+    }
+
     return migrations;
   }
 }
 
-function createMigrator() {
+async function getExecutedMigrationNames(): Promise<string[]> {
+  const { rows: tables } = await sql<{ exists: boolean }>`select to_regclass(${migrationTableName}) is not null as exists`.execute(kdb);
+  if (!tables[0]?.exists) {
+    return [];
+  }
+  const { rows } = await sql<{ name: string }>`select name from ${sql.table(migrationTableName)}`.execute(kdb);
+  return rows.map((row) => row.name);
+}
+
+function createMigrator(options: { ignoreMissing: boolean }) {
   const thisFilePath = fileURLToPath(import.meta.url);
   const migrationFolder = path.dirname(thisFilePath);
   const excludeFile = path.basename(thisFilePath);
@@ -59,8 +87,8 @@ function createMigrator() {
   return new Migrator({
     allowUnorderedMigrations: true,
     db: kdb,
-    migrationTableName: 'kysely_migrations',
-    provider: new UrlFileMigrationProvider({ excludeFile, migrationFolder }),
+    migrationTableName,
+    provider: new UrlFileMigrationProvider({ excludeFile, ignoreMissing: options.ignoreMissing, migrationFolder }),
   });
 }
 
@@ -74,8 +102,8 @@ function logMigrationResults(results: Awaited<ReturnType<Migrator['migrateToLate
   }
 }
 
-async function migrateToLatest() {
-  const migrator = createMigrator();
+async function migrateToLatest(options: { ignoreMissing: boolean }) {
+  const migrator = createMigrator(options);
   const { error, results } = await migrator.migrateToLatest();
 
   logMigrationResults(results, 'executed');
@@ -87,8 +115,8 @@ async function migrateToLatest() {
   logger.info('migrations completed successfully');
 }
 
-async function migrateDown() {
-  const migrator = createMigrator();
+async function migrateDown(options: { ignoreMissing: boolean }) {
+  const migrator = createMigrator(options);
   const { error, results } = await migrator.migrateDown();
 
   logMigrationResults(results, 'rolled back');
@@ -101,19 +129,20 @@ async function migrateDown() {
 }
 
 async function main() {
-  const command = process.argv[2];
+  const [command, ...flags] = process.argv.slice(2);
+  const options = { ignoreMissing: flags.includes('--ignore-missing') };
 
   try {
     switch (command) {
       case 'up':
       case 'latest':
-        await migrateToLatest();
+        await migrateToLatest(options);
         break;
       case 'down':
-        await migrateDown();
+        await migrateDown(options);
         break;
       default:
-        logger.error('Usage: tsx migrator.ts [up|latest|down]');
+        logger.error('Usage: tsx migrator.ts [up|latest|down] [--ignore-missing]');
         process.exit(1);
     }
   } catch (error) {

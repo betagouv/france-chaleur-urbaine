@@ -48,6 +48,60 @@ export const roles: Record<UserRole, string> = {
   professionnel: 'Professionnel',
 };
 
+// ─── User preferences (users.preferences JSONB) ──────────────────────────────
+
+export const newDemandsNotificationFrequencies = ['daily', 'weekly', 'none'] as const;
+export type NewDemandsNotificationFrequency = (typeof newDemandsNotificationFrequencies)[number];
+
+export const newDemandsNotificationFrequencyLabels: Record<NewDemandsNotificationFrequency, string> = {
+  daily: 'Quotidien',
+  none: 'Aucune',
+  weekly: 'Hebdomadaire',
+};
+
+/** Notifications liées aux demandes de raccordement (effectives seulement avec une permission réseau). */
+export const zNotificationPreferences = z.object({
+  /** email « Nouvelles demandes à traiter » : chaque jour ouvré, récapitulatif du lundi, ou jamais */
+  new_demands: z.enum(newDemandsNotificationFrequencies),
+  /** email « Rappel demandes en attente » du mardi */
+  pending_demands_reminder: z.boolean(),
+});
+export type NotificationPreferences = z.infer<typeof zNotificationPreferences>;
+
+/** Schéma complet de `users.preferences`. Toute nouvelle clé doit avoir une valeur dans `defaultUserPreferences`. */
+export const zUserPreferences = z.object({
+  /** signature pré-remplie dans les emails envoyés aux demandeurs */
+  email_signature: z.string().nullable(),
+  notifications: zNotificationPreferences,
+});
+export type UserPreferences = z.infer<typeof zUserPreferences>;
+
+/** Must stay in sync with the column default (migration 20261016100000_users_preferences). */
+export const defaultUserPreferences: UserPreferences = {
+  email_signature: null,
+  notifications: {
+    new_demands: 'daily',
+    pending_demands_reminder: true,
+  },
+};
+
+/** Mise à jour partielle : chaque formulaire n'envoie que ce qu'il change. */
+export const zUpdateUserPreferences = z.object({
+  email_signature: z.string().trim().nullable().optional(),
+  notifications: zNotificationPreferences.partial().optional(),
+});
+export type UpdateUserPreferences = z.infer<typeof zUpdateUserPreferences>;
+
+/** Applies the defaults to a stored object (missing keys after a schema extension) and validates it. */
+export const parseUserPreferences = (raw: unknown): UserPreferences => {
+  const stored = (raw ?? {}) as Partial<UserPreferences>;
+  return zUserPreferences.parse({
+    ...defaultUserPreferences,
+    ...stored,
+    notifications: { ...defaultUserPreferences.notifications, ...stored.notifications },
+  });
+};
+
 export const zCredentialsSchema = z.object({
   accept_cgu: z.boolean().refine((val) => val === true, {
     message: "Veuillez accepter les conditions générales d'utilisation",
@@ -109,10 +163,9 @@ export const createUserAdminSchema = z.object({
   entreprise: zEntreprise.nullable().optional(),
   first_name: z.string().optional().nullable(),
   last_name: z.string().optional().nullable(),
+  notifications: zNotificationPreferences,
   optin_at: z.boolean().nullable(),
   phone: z.string().optional().nullable(),
-  receive_new_demands: z.boolean(),
-  receive_old_demands: z.boolean(),
   role: z.enum(userRoles),
   structure_name: z.string().optional().nullable(),
   structure_other: z.string().optional().nullable(),
@@ -126,10 +179,9 @@ export const updateUserAdminSchema = z
     entreprise: zEntreprise.nullable().optional(),
     first_name: z.string().optional(),
     last_name: z.string().optional(),
+    notifications: zNotificationPreferences.optional(),
     optin_at: z.boolean().optional(),
     phone: z.string().optional(),
-    receive_new_demands: z.boolean().optional(),
-    receive_old_demands: z.boolean().optional(),
     role: z.enum(userRoles).optional(),
     status: z.enum(['pending_email_confirmation', 'valid']),
     structure_name: z.string().optional(),

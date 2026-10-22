@@ -107,7 +107,6 @@ const createSituation = (overrides: SituationOverrides = {}): Situation => ({
   geothermalNappeGmi: 1,
   geothermalNappePotential: 7,
   geothermalSondeGmi: 1,
-  geothermiePossible: true,
   habitantsMoyen: 2,
   hasAlreadyReceivedHeatNetworkRefusal: false,
   hasGeothermalProbeSpace: true,
@@ -160,8 +159,20 @@ const heatingModeCases: HeatingModeCase[] = [
         overrides: { eligibiliteReseauChaleur: createHeatNetwork({ isEligible: false }) },
       },
       {
-        description: 'quand le réseau est à 200 m',
+        description: 'quand le réseau éligible est à 200 m',
         overrides: { eligibiliteReseauChaleur: createHeatNetwork({ distance: 200 }) },
+      },
+      {
+        description: 'dans un PDP au-delà de 200 m',
+        overrides: { eligibiliteReseauChaleur: createHeatNetwork({ distance: 450, inPDP: true }) },
+      },
+      {
+        description: 'sans distance connue pour un réseau éligible',
+        overrides: { eligibiliteReseauChaleur: createHeatNetwork({ distance: null }) },
+      },
+      {
+        description: 'sans type de radiateur renseigné',
+        overrides: { typeRadiateur: null },
       },
       {
         description: 'sans radiateur à eau',
@@ -183,6 +194,10 @@ const heatingModeCases: HeatingModeCase[] = [
         description: 'quand la ressource géothermique est inconnue',
         overrides: { geothermalNappePotential: 0, modeEauChaudeSanitaire: 'Collectif' },
       },
+      {
+        description: 'même quand la donnée indique un manque de place pour les sondes',
+        overrides: { hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Collectif' },
+      },
     ],
     impossibleCases: [
       {
@@ -194,8 +209,8 @@ const heatingModeCases: HeatingModeCase[] = [
         overrides: { modeEauChaudeSanitaire: 'Collectif', typeRadiateur: 'radiateur-electrique' },
       },
       {
-        description: 'quand la géothermie est impossible',
-        overrides: { geothermiePossible: false, modeEauChaudeSanitaire: 'Collectif' },
+        description: 'sans zone favorable au forage',
+        overrides: { geothermalNappeGmi: null, geothermalSondeGmi: null, modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'en zone défavorable au forage',
@@ -204,10 +219,6 @@ const heatingModeCases: HeatingModeCase[] = [
       {
         description: 'avec une ressource énergétique insuffisante',
         overrides: { geothermalNappePotential: 5, modeEauChaudeSanitaire: 'Collectif' },
-      },
-      {
-        description: 'sans place pour les sondes',
-        overrides: { hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Collectif' },
       },
     ],
     label: 'PAC géothermique',
@@ -464,11 +475,22 @@ const heatingModeCases: HeatingModeCase[] = [
         overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 0, modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
       {
-        description: 'même quand la géothermie est impossible',
-        overrides: { espaceExterieur: 'jardinCours', geothermiePossible: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
+        description: 'même quand la donnée indique un manque de place pour les sondes',
+        overrides: { espaceExterieur: 'jardinCours', hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
+      },
+    ],
+    impossibleCases: [
+      {
+        description: 'sans zone favorable au forage',
+        overrides: {
+          espaceExterieur: 'jardinCours',
+          geothermalNappeGmi: null,
+          geothermalSondeGmi: null,
+          modeEauChaudeSanitaire: 'Couplé au chauffage',
+        },
       },
       {
-        description: 'même en zone défavorable au forage',
+        description: 'en zone défavorable au forage',
         overrides: {
           espaceExterieur: 'jardinCours',
           geothermalNappeGmi: 3,
@@ -477,15 +499,9 @@ const heatingModeCases: HeatingModeCase[] = [
         },
       },
       {
-        description: 'même avec une ressource énergétique insuffisante',
+        description: 'avec une ressource énergétique insuffisante',
         overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 5, modeEauChaudeSanitaire: 'Couplé au chauffage' },
       },
-      {
-        description: 'même sans place pour les sondes',
-        overrides: { espaceExterieur: 'jardinCours', hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
-      },
-    ],
-    impossibleCases: [
       {
         description: 'sans espace extérieur adapté aux équipements',
         overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Couplé au chauffage' },
@@ -668,14 +684,6 @@ const incompatibilityCases: IncompatibilityCase[] = [
     usage: 'heatingAndHotWater',
   },
   {
-    label: 'PAC géothermique',
-    overrides: { hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Collectif' },
-    reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
-    source: 'BRGM',
-    typeLogement: 'immeuble_chauffage_collectif',
-    usage: 'heatingAndHotWater',
-  },
-  {
     label: 'Chaudière à bois',
     overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
     reason: 'Vous ne disposez pas d’espace extérieur pour le stockage de combustible',
@@ -767,14 +775,6 @@ const incompatibilityCases: IncompatibilityCase[] = [
     label: 'PAC géothermique',
     overrides: { espaceExterieur: 'jardinCours', geothermalNappePotential: 5, modeEauChaudeSanitaire: 'Couplé au chauffage' },
     reason: 'La ressource énergétique de la parcelle est insuffisante',
-    source: 'BRGM',
-    typeLogement: 'maison_individuelle',
-    usage: 'heatingAndHotWater',
-  },
-  {
-    label: 'PAC géothermique',
-    overrides: { espaceExterieur: 'jardinCours', hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
-    reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
     source: 'BRGM',
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
@@ -1009,7 +1009,8 @@ describe('modesDeChauffage', () => {
   });
 
   it.each(incompatibilityCases)('$typeLogement / $label / $usage returns the expected incompatibility for $reason', (testCase) => {
-    const rows = getIncompatibleSolutionRows(createSituation(testCase.overrides), testCase.typeLogement);
+    const situation = createSituation(testCase.overrides);
+    const rows = getIncompatibleSolutionRows(situation, testCase.typeLogement);
     const heatingMode = getMode(testCase.typeLogement, testCase.label, testCase.usage);
 
     expect(rows).toContainEqual({
@@ -1017,7 +1018,24 @@ describe('modesDeChauffage', () => {
       label: testCase.label,
       reasons: [{ reason: testCase.reason, source: testCase.source }],
     });
+
+    expect(getModesDeChauffage(testCase.typeLogement, situation).map((mode) => mode.id)).not.toContain(heatingMode.id);
   });
+
+  it.each(['maison_individuelle', 'immeuble_chauffage_collectif'] as const)(
+    'keeps geothermal compatible regardless of probe space data for %s',
+    (typeLogement) => {
+      const situation = createSituation({
+        espaceExterieur: 'jardinCours',
+        hasGeothermalProbeSpace: false,
+        modeEauChaudeSanitaire: typeLogement === 'maison_individuelle' ? 'Couplé au chauffage' : 'Collectif',
+      });
+      const heatingMode = getMode(typeLogement, 'PAC géothermique', 'heatingAndHotWater');
+
+      expect(getModesDeChauffage(typeLogement, situation).map((mode) => mode.id)).toContain(heatingMode.id);
+      expect(getIncompatibleSolutionRows(situation, typeLogement).map((row) => row.id)).not.toContain(heatingMode.id);
+    }
+  );
 
   it('does not return a solar thermal incompatibility when coverage equals the threshold', () => {
     const rows = getIncompatibleSolutionRows(

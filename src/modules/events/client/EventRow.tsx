@@ -104,6 +104,15 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       a reconstruit les tuiles <strong>{event.data.name}</strong>
     </span>
   ),
+  ccrt_demand_email_sent: (event) => (
+    <span>
+      a envoyé un email CCRT : <strong>{event.data.object}</strong>
+    </span>
+  ),
+  ccrt_demand_note_created: () => <span>a ajouté une note à une demande CCRT</span>,
+  ccrt_demand_note_deleted: () => <span>a supprimé une note d'une demande CCRT</span>,
+  ccrt_demand_note_updated: () => <span>a modifié une note d'une demande CCRT</span>,
+  ccrt_demand_updated: (event) => <span>a modifié une demande CCRT ({Object.keys(event.data.changes).join(', ')})</span>,
   conversion_source_archived: (event) => (
     <span>
       a archivé l'intégration iframe <strong>{event.data.label}</strong> (source <strong>{event.data.key}</strong>)
@@ -569,6 +578,7 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       </FilterButton>
     </>
   ),
+  user_preferences_updated: () => <span>a mis à jour ses préférences</span>,
   user_profile_updated: () => <span>a mis à jour son profil</span>,
   user_registered: () => 'a créé un compte',
   user_tag_created: (event, updateFilters) => (

@@ -1,13 +1,11 @@
-import type { BatEnrBatiment, DPE, ModeEauChaudeSanitaire } from '@/modules/chaleur-renouvelable/constants';
+import { type BatEnrBatiment, type DPE, type ModeEauChaudeSanitaire, zAverageHousingArea } from './constants';
 
-export type SimulationPrefillParams = {
+type SimulationPrefillParams = {
   dpe?: DPE;
   modeEauChaudeSanitaire?: ModeEauChaudeSanitaire;
   nbLogements?: number;
   surfaceMoyenne?: number;
 };
-
-const MINIMUM_AVERAGE_HOUSING_AREA = 9;
 
 const getModeEauChaudeSanitaireFromBatEnr = (typeInstallationEcs: string | null): ModeEauChaudeSanitaire | undefined => {
   const normalizedTypeInstallationEcs = typeInstallationEcs?.trim().toLowerCase();
@@ -26,13 +24,22 @@ const getAverageHousingAreaFromBatEnr = (surfaceHabitable: number | null, nbLoge
 
   const surfaceMoyenne = Math.round(surfaceHabitable / nbLogements);
 
-  return surfaceMoyenne >= MINIMUM_AVERAGE_HOUSING_AREA ? surfaceMoyenne : undefined;
+  return zAverageHousingArea.safeParse(surfaceMoyenne).success ? surfaceMoyenne : undefined;
 };
 
-export function getSimulationPrefillFromBatEnrBatiment(batEnrBatiment: BatEnrBatiment): SimulationPrefillParams {
-  const nbLogements =
+export function getSimulationPrefillFromBatEnrBatiment(
+  batEnrBatiment: BatEnrBatiment,
+  rnicHousingCount?: number | null
+): SimulationPrefillParams {
+  const bdnbHousingCount =
     batEnrBatiment.ffo_bat_nb_log != null && batEnrBatiment.ffo_bat_nb_log > 0 ? batEnrBatiment.ffo_bat_nb_log : undefined;
-  const surfaceMoyenne = getAverageHousingAreaFromBatEnr(batEnrBatiment.dpe_representatif_logement_surface_habitable_immeuble, nbLogements);
+  // RNIC describes the co-ownership; BDNB's building surface must keep its own housing-count denominator.
+  const surfaceMoyenne = getAverageHousingAreaFromBatEnr(
+    batEnrBatiment.dpe_representatif_logement_surface_habitable_immeuble,
+    bdnbHousingCount
+  );
+  const nbLogements =
+    rnicHousingCount != null && Number.isSafeInteger(rnicHousingCount) && rnicHousingCount > 0 ? rnicHousingCount : bdnbHousingCount;
 
   return {
     dpe: batEnrBatiment.classe_bilan_dpe ?? undefined,

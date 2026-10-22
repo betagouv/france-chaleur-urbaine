@@ -4,6 +4,16 @@
 
 Ce module est actuellement en cours de migration depuis l'architecture legacy vers la nouvelle architecture modulaire.
 
+## User preferences (`users.preferences` JSONB)
+
+Single JSONB column validated by `zUserPreferences` (`constants.ts`): `email_signature` (pre-filled in emails sent to demand contacts, also saved on each send) and `notifications` (`new_demands`: `daily` | `weekly` | `none`, `pending_demands_reminder`: boolean — classic demand notifications require a network permission and are consumed by `demands/server/manager-notifications.ts`; CCRT reminders use the same reminder preference with territorial permissions). The column default equals `defaultUserPreferences` (keep both in sync); every read goes through `parseUserPreferences` so a key added later gets its default without a migration. `updateUserPreferences(userId, partial)` deep-merges, validates the full object, writes and emits `user_preferences_updated`. tRPC: `users.getPreferences` / `users.updatePreferences` (partial input). UI (all in `client/preferences/`): `NotificationPreferencesFields.tsx` is the shared TanStack field group (admin `UserForm` with `fields="notifications"`), `NotificationPreferencesForm.tsx` (demand notifications section of `/pro/mon-compte`, each change saves immediately, info notice without a network permission), `NewsletterForm.tsx` (newsletter section, `optin_at` + ADEME Connect sync) and `EmailSignatureForm.tsx` (signature section); all track PostHog `account:preference_updated`. The admin create/update inputs carry `notifications` (replaces the whole block, keeps the signature). Newsletter opt-in stays in `optin_at` (consent date synced to ADEME Connect).
+
+Preference writes use `updateUserPreferences(userId, changes, database?)`: a transaction and user-row lock serialize partial updates; callers such as CCRT email delivery can pass their transaction to keep the preferences and audit event atomic with their own changes.
+
+## Account opening emails
+
+`server/service.ts#create` sends an opening email only when the new account is explicitly active: `auth.gestionnaire.ouverture-espace` for network managers, `auth.ccrt.ouverture-espace` for CCRT. Updates, including activation of an existing account, do not send an opening email. The CCRT template uses generic manager-space wording and explains how to set a password through the forgotten-password flow.
+
 ## User tags
 
 Cross-cutting metadata an admin can attach to any user (flags: attended a webinar, roadmap priority…).
@@ -33,7 +43,6 @@ Cross-cutting metadata an admin can attach to any user (flags: attended a webina
 ### 🚧 Ce qui reste à migrer
 
 **API Routes (actuellement dans `/src/pages/api/`):**
-- `/user/preferences` - Préférences utilisateur
 - `/admin/users-stats` - Statistiques admin
 - `/admin/exportObsoleteUsers` - Export utilisateurs obsolètes
 - `/v1/users/[key]` - API publique utilisateurs
@@ -62,7 +71,7 @@ users/
 3. 🚧 Créer `server/trpc-routes.ts` pour remplacer les API routes
 
 ### Phase 2 : API Routes
-1. Migrer `/api/user/preferences` vers TRPC
+1. ✅ Migrer `/api/user/preferences` vers TRPC (`users.getPreferences` / `users.updatePreferences`)
 2. Migrer `/api/admin/users-stats` vers TRPC
 3. Migrer `/api/admin/exportObsoleteUsers` vers TRPC
 

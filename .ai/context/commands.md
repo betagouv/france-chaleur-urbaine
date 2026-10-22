@@ -18,7 +18,7 @@ Unit tests (`.spec.ts`) run in parallel; integration tests (`.integration.spec.t
 
 ## Database
 ```bash
-pnpm db:migrate          # Apply pending Kysely migrations
+pnpm db:migrate          # Apply pending Kysely migrations (add `--ignore-missing` to skip migrations applied in DB but absent from the code, e.g. branch behind a shared DB)
 pnpm db:migrate:down     # Rollback last migration
 pnpm cli db:sync --single <table>   # Print the regenerated Kysely interface of one table, to merge by hand into database.ts (never `pnpm db:sync` alone, see database.md)
 pnpm db:bootstrap        # Init local DB from production data, by bundle (fcu, fcu-volumineux, geo, tiles, externes-volumineux) then optionally table by table; `--bundle fcu` skips the prompts

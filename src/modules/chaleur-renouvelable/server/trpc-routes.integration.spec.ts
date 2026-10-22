@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
   type DemandeChaleurRenouvelable,
@@ -13,7 +14,7 @@ import { fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { kdb, sql } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
-import { cleanDatabase, seedCcrtExperimentationTerritory, seedTableUser } from '@/tests/fixtures';
+import { cleanDatabase, seedCcrtExperimentationTerritory, seedCommune, seedTableUser } from '@/tests/fixtures';
 import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
@@ -177,10 +178,77 @@ describe('batEnrRouter', () => {
     mockedFetchJSON.mockReset();
   });
 
+  it('keeps the authoritative commune department when the fallback lookup is missing', async () => {
+    await seedCommune({ insee_com: '13055', insee_dep: '13', insee_reg: '93', siren_epci: 'EPCI-13' });
+    const input = buildCcrtExperimentationDemandInput({
+      geoAddress: {
+        city: 'Unknown city',
+        cityCode: '13055',
+        context: '75, Paris, Île-de-France',
+        coordinates: [5.3698, 43.2965],
+        postcode: '13001',
+      },
+      isPublicAdvisorSelected: true,
+    });
+    await kdb.deleteFrom('communes').where('id', '=', '13055').execute();
+
+    const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
+    const territory = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select(['commune_code', 'departement_code', 'epci_code', 'region_code'])
+      .where('id', '=', result.id ?? '')
+      .executeTakeFirstOrThrow();
+
+    expect(territory).toStrictEqual({ commune_code: '13055', departement_code: '13', epci_code: 'EPCI-13', region_code: '93' });
+  });
+
+  describe('batEnr.getSimulationPrefill', () => {
+    it.each([
+      { count: 78, expected: 78, label: 'RNIC count' },
+      { count: '78', expected: 78, label: 'RNIC numeric string' },
+      { count: null, expected: 30, label: 'missing count' },
+      { count: 0, expected: 30, label: 'zero count' },
+      { count: 'inconnu', expected: 30, label: 'invalid count' },
+      { count: 2.5, expected: 30, label: 'fractional count' },
+      { count: 'unavailable', expected: 30, label: 'unavailable RNIC' },
+    ])('prefills from $label and falls back to BDNB when needed', async ({ count, expected }) => {
+      await seedRnicLookupBuilding();
+      await kdb.deleteFrom('bdnb_batiments').where('batiment_groupe_id', '=', 'GROUPE-RNIC-123').execute();
+      await kdb
+        .insertInto('bdnb_batiments')
+        .values({
+          batiment_groupe_id: 'GROUPE-RNIC-123',
+          constructions: sql`${JSON.stringify([{ construction_id: 'CONSTRUCTION-123', rnb_id: '' }])}::jsonb`,
+          dpe_representatif_logement_surface_habitable_immeuble: 1800,
+          ffo_bat_nb_log: 30,
+        })
+        .execute();
+      if (count === 'unavailable') {
+        mockedFetchJSON.mockRejectedValue(new Error('RNIC unavailable'));
+      } else {
+        mockedFetchJSON.mockResolvedValue({
+          data: [{ latitude: 43.2965, longitude: 5.3698, nom_usage_copropriete: 'Copropriété test', nombre_lots_habitation: count }],
+        });
+      }
+      await expect(
+        createTestCaller(null).batEnr.getSimulationPrefill({ batiment_construction_id: 'CONSTRUCTION-123' })
+      ).resolves.toStrictEqual({
+        dpe: undefined,
+        modeEauChaudeSanitaire: undefined,
+        nbLogements: expected,
+        surfaceMoyenne: 60,
+      });
+    });
+  });
+
   describe('batEnr.createDemandeChaleurRenouvelable', () => {
     it.each([
       ['previous refusal', { isPublicAdvisorSelected: true }],
       ['ineligible heat network', { heatNetworkEligibility: { distance: 450, inPDP: false, isEligible: false } }],
+      ['electric radiators', { radiatorType: 'radiateur-electrique' }],
+      ['unspecified radiators', { radiatorType: null }],
+      ['eligible network at 200 m', { heatNetworkEligibility: { distance: 200, inPDP: true, isEligible: true } }],
+      ['eligible network without distance', { heatNetworkEligibility: { distance: null, inPDP: false, isEligible: true } }],
     ] as const)('skips CCRT collection without side effects for %s when suspended', async (_, overrides) => {
       demandCollection.isEnabled = false;
 
@@ -245,10 +313,9 @@ describe('batEnrRouter', () => {
       expect(mockedFetchJSON).toHaveBeenCalledTimes(0);
     });
 
-    it('oriente vers France Rénov hors expérimentation quand le réseau de chaleur n’est pas éligible', async () => {
+    it.each([false, true])('does not use pilot departments as a server permission gate (refusal: %s)', async (isPublicAdvisorSelected) => {
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
         buildCcrtExperimentationDemandInput({
-          address: '10 rue du test 75001 Paris',
           geoAddress: {
             city: 'Paris',
             cityCode: '75056',
@@ -256,31 +323,18 @@ describe('batEnrRouter', () => {
             coordinates: [2.3522, 48.8566],
             postcode: '75001',
           },
-          heatNetworkEligibility: {
-            distance: 450,
-            inPDP: false,
-            isEligible: false,
-          },
+          heatNetworkEligibility: { distance: 450, inPDP: false, isEligible: false },
+          isPublicAdvisorSelected,
         })
       );
-
-      const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
-      const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
-
-      expect({
-        createdDemandesChaleurRenouvelable,
-        createdDemands,
-        result,
-        sentEmailCallCount: sentEmailTemplate.mock.calls.length,
-      }).toStrictEqual({
-        createdDemandesChaleurRenouvelable: [],
-        createdDemands: [],
-        result: {
-          demandSubmissionResult: null,
-          id: null,
-        },
-        sentEmailCallCount: 0,
-      });
+      expect(await kdb.selectFrom('demands').select('id').execute()).toStrictEqual([]);
+      expect(await kdb.selectFrom('demands_chaleur_renouvelable').select(['id', 'validated']).execute()).toStrictEqual([
+        { id: result.id, validated: false },
+      ]);
+      expect(result).toStrictEqual({ demandSubmissionResult: null, id: result.id });
+      expect(sentEmailTemplate.mock.calls.map(([key]) => key)).toStrictEqual([
+        'demands.demandeur.confirmation-demande-chaleur-renouvelable',
+      ]);
     });
 
     it('crée une demande classique en expérimentation pour un immeuble collectif éligible au réseau de chaleur', async () => {
@@ -311,41 +365,6 @@ describe('batEnrRouter', () => {
           id: null,
         },
         sentEmailKeys: ['demands.demandeur.confirmation-demande'],
-      });
-    });
-
-    it('oriente vers France Rénov hors expérimentation quand le réseau de chaleur est éligible mais déjà refusé', async () => {
-      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
-        buildCcrtExperimentationDemandInput({
-          geoAddress: {
-            city: 'Paris',
-            cityCode: '75056',
-            context: '75, Paris, Île-de-France',
-            coordinates: [2.3522, 48.8566],
-            postcode: '75001',
-          },
-          isPublicAdvisorSelected: true,
-          refusalPeriod: 'Il y a moins de 3 mois',
-          refusalReason: 'Coût du raccordement trop élevé',
-        })
-      );
-
-      const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
-      const createdDemands = await kdb.selectFrom('demands').select(['id']).execute();
-
-      expect({
-        createdDemandesChaleurRenouvelable,
-        createdDemands,
-        result,
-        sentEmailCallCount: sentEmailTemplate.mock.calls.length,
-      }).toStrictEqual({
-        createdDemandesChaleurRenouvelable: [],
-        createdDemands: [],
-        result: {
-          demandSubmissionResult: null,
-          id: null,
-        },
-        sentEmailCallCount: 0,
       });
     });
 
@@ -386,7 +405,7 @@ describe('batEnrRouter', () => {
           demandSubmissionResult: null,
           id: result.id,
         },
-        sentEmailKeys: [],
+        sentEmailKeys: ['demands.demandeur.confirmation-demande-chaleur-renouvelable'],
       });
     });
 
@@ -424,7 +443,13 @@ describe('batEnrRouter', () => {
       });
     });
 
-    it('crée une demande chaleur renouvelable en expérimentation pour un immeuble collectif non éligible au réseau de chaleur', async () => {
+    it.each([
+      ['un réseau non éligible', { heatNetworkEligibility: { distance: 450, inPDP: false, isEligible: false } }],
+      ['des radiateurs électriques', { radiatorType: 'radiateur-electrique' }],
+      ['des radiateurs non renseignés', { radiatorType: null }],
+      ['un réseau éligible à 200 m', { heatNetworkEligibility: { distance: 200, inPDP: true, isEligible: true } }],
+      ['un réseau éligible sans distance', { heatNetworkEligibility: { distance: null, inPDP: false, isEligible: true } }],
+    ] as const)('crée une demande chaleur renouvelable en expérimentation avec %s', async (_, overrides) => {
       const ccrtMatchingId = testUsers.ccrt.id!;
       const ccrtOtherDepartmentId = '00000000-0000-0000-0000-000000000207';
       await seedTableUser([
@@ -446,13 +471,7 @@ describe('batEnrRouter', () => {
         ],
       });
 
-      const input = buildCcrtExperimentationDemandInput({
-        heatNetworkEligibility: {
-          distance: 450,
-          inPDP: false,
-          isEligible: false,
-        },
-      });
+      const input = buildCcrtExperimentationDemandInput(overrides);
 
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
 
@@ -460,6 +479,7 @@ describe('batEnrRouter', () => {
         .selectFrom('demands_chaleur_renouvelable')
         .select([
           'address',
+          'alternative_heating_solutions',
           'annual_heating_consumption',
           'departement_code',
           'email',
@@ -487,6 +507,7 @@ describe('batEnrRouter', () => {
       }).toStrictEqual({
         createdDemandeChaleurRenouvelable: {
           address: '10 rue du test 13001 Marseille',
+          alternative_heating_solutions: ['PAC géothermique', 'Chaudière à bois', 'PAC air-eau collective'],
           annual_heating_consumption: 820.5,
           departement_code: '13',
           email: 'contact@example.com',
@@ -509,7 +530,12 @@ describe('batEnrRouter', () => {
           id: result.id,
         },
       });
-      expect(sentEmailTemplate).toHaveBeenCalledTimes(0);
+      expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
+      expect(sentEmailTemplate).toHaveBeenCalledWith(
+        'demands.demandeur.confirmation-demande-chaleur-renouvelable',
+        { email: 'contact@example.com' },
+        { demand: input }
+      );
     });
 
     it('enregistre la demande chaleur renouvelable même si le RNIC est indisponible', async () => {
@@ -562,7 +588,12 @@ describe('batEnrRouter', () => {
         },
       });
       expect(mockedFetchJSON).toHaveBeenCalledTimes(1);
-      expect(sentEmailTemplate).toHaveBeenCalledTimes(0);
+      expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
+      expect(sentEmailTemplate).toHaveBeenCalledWith(
+        'demands.demandeur.confirmation-demande-chaleur-renouvelable',
+        { email: 'contact@example.com' },
+        { demand: expect.objectContaining({ email: 'contact@example.com' }) }
+      );
     });
 
     it('oriente vers France Rénov en expérimentation si le bâtiment n’est pas un immeuble au chauffage collectif', async () => {
@@ -765,10 +796,16 @@ describe('batEnrRouter', () => {
         items: [
           {
             ...newerDemandInput,
+            alternative_heating_solutions: [],
             assigned_to: null,
+            commune_code: null,
             created_at: newerDate.toISOString(),
+            epci_code: null,
+            ept_code: null,
             id: newerDemand.id,
+            origin_demand_id: null,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+            region_code: null,
             rnic_nom_copropriete: null,
             rnic_numero_immatriculation: null,
             rnic_siret_representant_legal: null,
@@ -778,10 +815,16 @@ describe('batEnrRouter', () => {
           },
           {
             ...olderDemandInput,
+            alternative_heating_solutions: [],
             assigned_to: null,
+            commune_code: null,
             created_at: olderDate.toISOString(),
+            epci_code: null,
+            ept_code: null,
             id: olderDemand.id,
+            origin_demand_id: null,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+            region_code: null,
             rnic_nom_copropriete: null,
             rnic_numero_immatriculation: null,
             rnic_siret_representant_legal: null,
@@ -799,7 +842,9 @@ describe('batEnrRouter', () => {
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
       { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
       { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
-      { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
+      { allowed: true, label: 'autorise gestionnaire', user: testUsers.gestionnaire },
+      { allowed: true, label: 'autorise collectivité', user: testUsers.collectivite },
+      { allowed: true, label: 'autorise ALEC', user: testUsers.alec },
       { allowed: true, label: 'autorise admin', user: testUsers.admin },
       { allowed: true, label: 'autorise CCRT', user: testUsers.ccrt },
     ];
@@ -814,7 +859,14 @@ describe('batEnrRouter', () => {
       const callRoute = () => caller.batEnr.ccrt.listDemandesChaleurRenouvelable();
 
       if (allowed) {
-        await expect(callRoute()).resolves.toStrictEqual({ count: 0, items: [] });
+        await expect(callRoute()).resolves.toStrictEqual({
+          count: 0,
+          items: [],
+          trackingContext: {
+            departements: [],
+            structure_ccrt: null,
+          },
+        });
       } else {
         await expect(callRoute).rejects.toMatchObject(forbiddenError);
       }
@@ -871,18 +923,24 @@ describe('batEnrRouter', () => {
         items: [
           {
             ...matchingDemandInput,
+            alternative_heating_solutions: [],
             assigned_to: null,
             batiment_construction_id: null,
             comments: null,
+            commune_code: null,
             created_at: matchingDate.toISOString(),
             demand_concern: null,
+            epci_code: null,
+            ept_code: null,
             hot_water_system_type: null,
             id: matchingDemand.id,
             organization_name: null,
+            origin_demand_id: null,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
             radiator_type: null,
             refusal_period: null,
             refusal_reason: null,
+            region_code: null,
             rnic_nom_copropriete: null,
             rnic_numero_immatriculation: null,
             rnic_siret_representant_legal: null,
@@ -892,10 +950,14 @@ describe('batEnrRouter', () => {
             validated: true,
           },
         ],
+        trackingContext: {
+          departements: ['13'],
+          structure_ccrt: null,
+        },
       });
     });
 
-    it('renvoie une liste vide pour un CCRT sans permission départementale', async () => {
+    it('renvoie une liste vide pour un CCRT sans permission territoriale', async () => {
       await seedTableUser([{ email: testUsers.ccrt.email, id: testUsers.ccrt.id, role: 'ccrt' }]);
       await kdb
         .insertInto('demands_chaleur_renouvelable')
@@ -922,6 +984,10 @@ describe('batEnrRouter', () => {
       await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable()).resolves.toStrictEqual({
         count: 0,
         items: [],
+        trackingContext: {
+          departements: [],
+          structure_ccrt: null,
+        },
       });
     });
 
@@ -954,7 +1020,88 @@ describe('batEnrRouter', () => {
       await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable()).resolves.toStrictEqual({
         count: 0,
         items: [],
+        trackingContext: {
+          departements: [],
+          structure_ccrt: null,
+        },
       });
+    });
+  });
+
+  describe('batEnr.ccrt.updateDemandeChaleurRenouvelable', () => {
+    it('permet à un CCRT de mettre à jour une demande validée sur son département', async () => {
+      await seedTableUser([{ email: testUsers.ccrt.email, id: testUsers.ccrt.id, role: 'ccrt' }]);
+      await seedDepartmentPermission(testUsers.ccrt.id!, '13');
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          departement_code: '13',
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+          validated: true,
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+        demandId: demand.id,
+        trigger: 'contact',
+        values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT },
+      });
+
+      expect(result).toMatchObject({
+        id: demand.id,
+        project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+        status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
+      });
+    });
+
+    it('refuse la mise à jour CCRT hors permission départementale', async () => {
+      await seedTableUser([{ email: testUsers.ccrt.email, id: testUsers.ccrt.id, role: 'ccrt' }]);
+      await seedDepartmentPermission(testUsers.ccrt.id!, '75');
+      const demand = await kdb
+        .insertInto('demands_chaleur_renouvelable')
+        .values({
+          address: '1 rue du test',
+          average_area: 70,
+          average_residents: 2,
+          departement_code: '13',
+          dpe: 'E',
+          email: 'test@example.com',
+          first_name: 'Test',
+          heating_energy: 'Gaz',
+          housing_count: 12,
+          housing_type: 'immeuble_chauffage_collectif',
+          last_name: 'Contact',
+          occupant_status: 'Copropriétaire',
+          outdoor_space: 'jardinCours',
+          phone: '',
+          project_status: ['Début de réflexion'],
+          simulation_url: 'https://example.com/test',
+          validated: true,
+        })
+        .returning(['id'])
+        .executeTakeFirstOrThrow();
+
+      await expect(
+        createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+          demandId: demand.id,
+          values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT },
+        })
+      ).rejects.toMatchObject({ code: 'NOT_FOUND' });
     });
   });
 
@@ -1045,6 +1192,9 @@ describe('batEnrRouter', () => {
         .returning(['id'])
         .executeTakeFirstOrThrow();
 
+      const beforeValidation = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
+      expect(beforeValidation.items).toStrictEqual([]);
+
       await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: demand.id });
 
       const updatedDemand = await kdb
@@ -1053,9 +1203,18 @@ describe('batEnrRouter', () => {
         .where('id', '=', demand.id)
         .executeTakeFirstOrThrow();
       const ccrtList = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
+      const otherDepartmentList = await createTestCaller({
+        ...testUsers.ccrt,
+        id: ccrtOtherDepartmentId,
+      }).batEnr.ccrt.listDemandesChaleurRenouvelable();
 
-      expect({ ccrtListCount: ccrtList.count, updatedDemand }).toStrictEqual({
-        ccrtListCount: 1,
+      expect({
+        demandIds: ccrtList.items.map((item) => item.id),
+        otherDepartmentItems: otherDepartmentList.items,
+        updatedDemand,
+      }).toStrictEqual({
+        demandIds: [demand.id],
+        otherDepartmentItems: [],
         updatedDemand: { validated: true },
       });
       expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
@@ -1064,7 +1223,7 @@ describe('batEnrRouter', () => {
         { email: testUsers.ccrt.email, id: ccrtMatchingId },
         expect.objectContaining({
           demand: expect.objectContaining({ email: 'test@example.com' }),
-          demandId: demand.id,
+          demandUrl: `/pro/demandes-chaleur-renouvelable?demandes_chaleur_renouvelable_ccrt_search=${demand.id}`,
           status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
         })
       );
@@ -1109,6 +1268,9 @@ describe('batEnrRouter', () => {
   });
 
   describe('batEnr.admin.updateDemandeChaleurRenouvelable', () => {
+    beforeEach(async () => {
+      await seedTableUser([testUsers.admin]);
+    });
     const permissionTests: PermissionTestCase[] = [
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
       { allowed: false, label: 'refuse particulier', user: testUsers.particulier },

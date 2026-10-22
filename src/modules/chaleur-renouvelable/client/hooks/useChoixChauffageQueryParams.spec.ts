@@ -1,5 +1,8 @@
+import { act, renderHook } from '@testing-library/react';
 import { createSerializer } from 'nuqs';
-import { describe, expect, it } from 'vitest';
+import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
+import { createElement, type ReactNode } from 'react';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
   getModeEauChaudeSanitaireOptions,
@@ -7,71 +10,50 @@ import {
   normalizeModeEauChaudeSanitaireForTypeLogement,
 } from '@/modules/chaleur-renouvelable/constants';
 
-import { choixChauffageQueryParsers, getNextEspaceExterieurQueryValue } from './useChoixChauffageQueryParams';
+import { type ChoixChauffageParams, choixChauffageQueryParsers, useChoixChauffageQueryParams } from './useChoixChauffageQueryParams';
 
-describe('getNextEspaceExterieurQueryValue', () => {
-  it('keeps an explicit outdoor space update without requiring a housing type', () => {
-    expect(
-      getNextEspaceExterieurQueryValue({
-        currentEspaceExterieur: null,
-        effectiveEspaceExterieur: null,
-        nextParams: {
-          espaceExterieur: 'jardinCours',
-        },
-      })
-    ).toStrictEqual('jardinCours');
-  });
+vi.mock('next/navigation', () => ({ useSearchParams: () => new URLSearchParams() }));
 
-  it('keeps the URL outdoor space when a selected building adds a compatible housing type', () => {
-    expect(
-      getNextEspaceExterieurQueryValue({
-        currentEspaceExterieur: 'jardinCours',
-        effectiveEspaceExterieur: null,
-        nextParams: {
-          constructionId: 'BATIMENT-1',
-          typeLogement: 'maison_individuelle',
-        },
-      })
-    ).toStrictEqual('jardinCours');
-  });
-
-  it('keeps the garden/courtyard outdoor space when a selected building adds another housing type', () => {
-    expect(
-      getNextEspaceExterieurQueryValue({
-        currentEspaceExterieur: 'jardinCours',
-        effectiveEspaceExterieur: null,
-        nextParams: {
-          constructionId: 'BATIMENT-1',
-          typeLogement: 'immeuble_chauffage_collectif',
-        },
-      })
-    ).toStrictEqual('jardinCours');
-  });
-
-  it('uses the explicit next outdoor space when the housing type changes', () => {
-    expect(
-      getNextEspaceExterieurQueryValue({
-        currentEspaceExterieur: 'jardinCours',
-        effectiveEspaceExterieur: null,
-        nextParams: {
-          espaceExterieur: 'jardinCours',
-          typeLogement: 'immeuble_chauffage_collectif',
-        },
-      })
-    ).toStrictEqual('jardinCours');
-  });
-
-  it('keeps the combined outdoor space when the housing type changes', () => {
-    expect(
-      getNextEspaceExterieurQueryValue({
-        currentEspaceExterieur: 'terrasseBalconEtJardinCours',
-        effectiveEspaceExterieur: null,
-        nextParams: {
-          constructionId: 'BATIMENT-1',
-          typeLogement: 'maison_individuelle',
-        },
-      })
-    ).toStrictEqual('terrasseBalconEtJardinCours');
+describe('useChoixChauffageQueryParams', () => {
+  it.each([
+    {
+      label: 'housing type',
+      outdoorSpace: 'jardinCours',
+      patch: { constructionId: 'BATIMENT-1', typeLogement: 'maison_individuelle' },
+      residents: '2.5',
+    },
+    { label: 'DPE', outdoorSpace: 'jardinCours', patch: { dpe: 'C' }, residents: '2.5' },
+    {
+      label: 'explicit outdoor space',
+      outdoorSpace: 'terrasseBalconEtJardinCours',
+      patch: { espaceExterieur: 'terrasseBalconEtJardinCours' },
+      residents: '2.5',
+    },
+    { label: 'cleared outdoor space', outdoorSpace: null, patch: { espaceExterieur: null }, residents: '2.5' },
+    { label: 'cleared residents', outdoorSpace: 'jardinCours', patch: { habitantsMoyen: null }, residents: null },
+    { label: 'empty residents', outdoorSpace: 'jardinCours', patch: { habitantsMoyen: '' }, residents: null },
+    { label: 'explicit residents', outdoorSpace: 'jardinCours', patch: { habitantsMoyen: '3.5' }, residents: '3.5' },
+  ] satisfies {
+    label: string;
+    patch: Partial<ChoixChauffageParams>;
+    outdoorSpace: ChoixChauffageParams['espaceExterieur'];
+    residents: string | null;
+  }[])('updates $label without clearing omitted simulation parameters', async ({ patch, outdoorSpace, residents }) => {
+    const { result } = renderHook(() => useChoixChauffageQueryParams(), {
+      wrapper: ({ children }: { children: ReactNode }) =>
+        createElement(NuqsTestingAdapter, {
+          children,
+          hasMemory: true,
+          searchParams: '?espaceExterieur=jardinCours&habitantsMoyen=2.5&typeLogement=immeuble_chauffage_collectif',
+        }),
+    });
+    await act(async () => {
+      await result.current.setParams(patch);
+    });
+    expect({ outdoorSpace: result.current.params.espaceExterieur, residents: result.current.params.habitantsMoyen }).toStrictEqual({
+      outdoorSpace,
+      residents,
+    });
   });
 });
 
@@ -103,6 +85,18 @@ describe('mode eau chaude sanitaire par type de logement', () => {
 });
 
 describe('choixChauffageQueryParsers', () => {
+  it.each([
+    ['5', null],
+    ['8', null],
+    ['0', null],
+    ['-1', null],
+    ['invalid', null],
+    ['9', 9],
+    ['60', 60],
+  ])('validates the average housing area in shared links: %s', (value, expected) => {
+    expect(choixChauffageQueryParsers.surfaceMoyenne.parse(String(value))).toStrictEqual(expected);
+  });
+
   it('keeps DPE E in URL when it is explicitly submitted', () => {
     const serializeChoixChauffageQueryParams = createSerializer(choixChauffageQueryParsers);
 

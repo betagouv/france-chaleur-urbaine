@@ -16,7 +16,10 @@ import { HeatNetworkRecommendedSolutionCard } from '@/modules/chaleur-renouvelab
 import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui/ResultsSection';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
-import { IS_CCRT_DEMAND_ENABLED, isCcrtExperimentationEligible } from '../constants';
+import { IS_CCRT_DEMAND_ENABLED } from '../constants';
+import { canProposeHeatNetwork } from '../heat-network-eligibility';
+import { isCcrtExperimentationEligible } from './ccrt-experimentation';
+import { getAlternativeHeatingSolutionLabels } from './heating-modes/selectors';
 import { ParamsForm } from './ParamsForm';
 
 export default function ChoixChauffageResults() {
@@ -49,14 +52,18 @@ export default function ChoixChauffageResults() {
   const params = urlParams.params;
   const isCcrtExperimentationBuildingEligible =
     IS_CCRT_DEMAND_ENABLED && isCcrtExperimentationEligible(codeDepartement, effectiveTypeLogement);
-  const isHeatNetworkEligible = situation.eligibiliteReseauChaleur?.isEligible === true && !situation.hasAlreadyReceivedHeatNetworkRefusal;
+  const isHeatNetworkEligible = canProposeHeatNetwork({
+    hasAlreadyReceivedHeatNetworkRefusal: situation.hasAlreadyReceivedHeatNetworkRefusal,
+    heatNetworkEligibility: situation.eligibiliteReseauChaleur,
+    radiatorType: situation.typeRadiateur,
+  });
   const heatNetworkSolution = situation.eligibiliteReseauChaleur
     ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network')
     : undefined;
   const displayedSolutions = heatNetworkSolution
     ? modesEnriched.filter((modeDeChauffage) => modeDeChauffage.id !== heatNetworkSolution.id)
     : modesEnriched;
-  const alternativeHeatingSolutionLabels = displayedSolutions.map((modeDeChauffage) => modeDeChauffage.label).slice(0, 3);
+  const alternativeHeatingSolutionLabels = getAlternativeHeatingSolutionLabels(modesEnriched);
 
   const handleSelectContactRecipient = (recipientId: ContactRecipientId) => {
     if (recipientId === 'public-advisor') {

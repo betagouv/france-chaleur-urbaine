@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
 import dayjs from 'dayjs';
+import type { Kysely, Selectable } from 'kysely';
 import type { z } from 'zod';
 
 import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
@@ -8,11 +9,16 @@ import { createContact, updateContact } from '@/modules/ademe-connect/server/cli
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { getAllPermissionsWithLabels } from '@/modules/permissions/server/search';
+import { networkTypes } from '@/modules/reseaux/constants';
 import {
   createUserAdminSchema,
+  defaultUserPreferences,
   type Entreprise,
+  parseUserPreferences,
   type StructureType,
   type UpdateProfileSchema,
+  type UpdateUserPreferences,
+  type UserPreferences,
   updateUserAdminSchema,
 } from '@/modules/users/constants';
 import { getAllUserTags } from '@/modules/users/server/tags-service';
@@ -55,8 +61,7 @@ export const list = async () => {
         'created_at',
         'last_connection',
         'from_organization_id',
-        sql<boolean>`coalesce(receive_new_demands, false)`.as('receive_new_demands'),
-        sql<boolean>`coalesce(receive_old_demands, false)`.as('receive_old_demands'),
+        'preferences',
         'ebc.reason_code as email_blocked_reason',
       ])
       .orderBy('users.id')
@@ -68,6 +73,7 @@ export const list = async () => {
   const items = records.map((record) => ({
     ...record,
     permissions: permissionsByUser[record.id] ?? [],
+    preferences: parseUserPreferences(record.preferences),
     tags: tagsByUser[record.id] ?? [],
   }));
 
@@ -79,7 +85,7 @@ export const list = async () => {
 export type User = Awaited<ReturnType<typeof list>>['items'][number];
 
 export const create = async (data: CreateUserInput, context: Context): Promise<DB['users']> => {
-  const { optin_at, entreprise, ...rest } = data;
+  const { optin_at, entreprise, notifications, ...rest } = data;
 
   const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', data.email).executeTakeFirst();
   if (existingUser) {
@@ -95,6 +101,7 @@ export const create = async (data: CreateUserInput, context: Context): Promise<D
       entreprise: entreprise ? toEntrepriseJsonb(await findEtablissementBySiret(entreprise.siret)) : null,
       optin_at: optin_at ? new Date() : null,
       password,
+      preferences: JSON.stringify({ ...defaultUserPreferences, notifications } satisfies UserPreferences),
       status: 'valid',
     },
     context
@@ -102,6 +109,10 @@ export const create = async (data: CreateUserInput, context: Context): Promise<D
 
   if (data.active && data.role === 'gestionnaire') {
     await sendEmailTemplate('auth.gestionnaire.ouverture-espace', { email: data.email, id: (record as any).id });
+  }
+  if (data.active && data.role === 'ccrt') {
+    // The legacy base model returns a table definition type rather than its selectable row type.
+    await sendEmailTemplate('auth.ccrt.ouverture-espace', { email: data.email, id: (record as unknown as Selectable<DB['users']>).id });
   }
 
   // Hors contexte utilisateur (ex. sync API), le caller émet son propre événement.
@@ -138,7 +149,7 @@ export const update = async (
   config: ListConfig<typeof tableName>,
   context: Context
 ): Promise<DB['users']> => {
-  const { optin_at, entreprise, ...userUpdate } = data;
+  const { optin_at, entreprise, notifications, ...userUpdate } = data;
 
   // The CRM contact is keyed by email: keep the one known before the update (an email change is not propagated).
   const previous = await kdb.selectFrom('users').select(['email', 'optin_at']).where('id', '=', id).executeTakeFirstOrThrow();
@@ -153,6 +164,8 @@ export const update = async (
       ...('entreprise' in data
         ? { entreprise: entreprise ? toEntrepriseJsonb(await findEtablissementBySiret(entreprise.siret)) : null }
         : {}),
+      // Clé absente du payload → on ne touche pas. Présente → remplace le bloc notifications, le reste des préférences est conservé.
+      ...(notifications ? { preferences: sql`preferences || ${JSON.stringify({ notifications })}::jsonb` } : {}),
     },
     config,
     context
@@ -222,7 +235,7 @@ export const validation = {
 };
 
 export const getProfile = async (userId: string) => {
-  return kdb
+  const user = await kdb
     .selectFrom('users')
     .select([
       'id',
@@ -236,9 +249,68 @@ export const getProfile = async (userId: string) => {
       'structure_other',
       'entreprise',
       'optin_at',
+      'preferences',
     ])
+    // the demand notifications only apply to accounts holding a network permission
+    .select((eb) =>
+      eb
+        .exists(
+          eb
+            .selectFrom('user_permissions as up')
+            .select(sql`1`.as('one'))
+            .whereRef('up.user_id', '=', 'users.id')
+            .where('up.type', 'in', [...networkTypes])
+        )
+        .as('has_network_permission')
+    )
     .where('id', '=', userId)
-    .executeTakeFirst();
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Utilisateur non trouvé' }));
+  return { ...user, preferences: parseUserPreferences(user.preferences) };
+};
+
+export const getUserPreferences = async (userId: string): Promise<UserPreferences> => {
+  const row = await kdb.selectFrom('users').select('preferences').where('id', '=', userId).executeTakeFirstOrThrow();
+  return parseUserPreferences(row.preferences);
+};
+
+/**
+ * Fusionne une mise à jour partielle dans `users.preferences` (validée en objet complet) et trace l'événement.
+ * Retourne les préférences résultantes.
+ */
+export const updateUserPreferences = async (
+  userId: string,
+  changes: UpdateUserPreferences,
+  database: Kysely<DB> = kdb
+): Promise<UserPreferences> => {
+  if (!database.isTransaction) {
+    return database.transaction().execute((transaction) => updateUserPreferences(userId, changes, transaction));
+  }
+  const row = await database.selectFrom('users').select('preferences').where('id', '=', userId).forUpdate().executeTakeFirstOrThrow();
+  const current = parseUserPreferences(row.preferences);
+  const preferences = parseUserPreferences({
+    ...current,
+    ...changes,
+    notifications: { ...current.notifications, ...changes.notifications },
+  });
+
+  await database
+    .updateTable('users')
+    .set({ preferences: JSON.stringify(preferences) })
+    .where('id', '=', userId)
+    .executeTakeFirstOrThrow();
+
+  await createUserEvent(
+    {
+      author_id: userId,
+      context_id: userId,
+      context_type: 'user',
+      data: { changes },
+      type: 'user_preferences_updated',
+    },
+    database
+  );
+
+  return preferences;
 };
 
 export const updateProfile = async (userId: string, data: UpdateProfileSchema) => {
