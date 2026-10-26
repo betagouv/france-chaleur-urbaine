@@ -60,6 +60,9 @@ const configFunctions = [
         'https://*.google-analytics.com', // Google Analytics / Ads (after consent)
         'https://*.analytics.google.com',
         'https://*.googletagmanager.com',
+        'https://www.google.com', // Google Ads conversion pings (ccm/collect)
+        'https://ad.doubleclick.net',
+        'https://stats.g.doubleclick.net',
       ],
       'font-src': ["'self'", 'https:', 'data:'],
       'frame-src': ['https://td.doubleclick.net', 'https://www.youtube.com/', 'https://cloud.contact.ademe.fr'],
