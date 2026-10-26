@@ -15,7 +15,8 @@ describe('CcrtFollowUpForm', () => {
         onSaved={vi.fn()}
       />
     );
-    expect(screen.queryByRole('button', { name: 'Enregistrer le suivi' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Enregistrer le suivi' })).toBeDisabled();
+    expect(screen.getByRole('option', { name: 'À traiter' })).toHaveValue('A traiter');
     expect(screen.getByText('Note')).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Où en êtes-vous du suivi de la demande ?'), {
       target: { value: 'Premier conseil téléphonique réalisé' },
@@ -23,7 +24,7 @@ describe('CcrtFollowUpForm', () => {
     if (note) {
       fireEvent.change(screen.getByRole('textbox', { name: /Ajouter une note/ }), { target: { value: note } });
     }
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter au suivi' }));
+    fireEvent.click(screen.getByRole('button', { name: note ? 'Ajouter au suivi' : 'Enregistrer le suivi' }));
 
     await waitFor(() =>
       expect(onUpdate).toHaveBeenCalledExactlyOnceWith({
@@ -63,7 +64,7 @@ describe('CcrtFollowUpForm', () => {
       />
     );
     fireEvent.change(screen.getByLabelText('État du projet'), { target: { value: 'Installation ENR votée en AG' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter au suivi' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le suivi' }));
 
     await waitFor(() => expect(onUpdate).toHaveBeenCalledExactlyOnceWith({ projectState: 'Installation ENR votée en AG' }));
   });

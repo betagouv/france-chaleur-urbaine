@@ -9,7 +9,7 @@ import { toastErrors } from '@/modules/notification';
 import {
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
   demandeChaleurRenouvelableProjectStates,
-  demandeChaleurRenouvelableStatuses,
+  demandeChaleurRenouvelableStatusOptions,
   zCcrtFollowUpForm,
 } from '../constants';
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
@@ -62,7 +62,7 @@ export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: Ccrt
             <field.SelectField
               label="Où en êtes-vous du suivi de la demande ?"
               hideOptionalLabel
-              options={demandeChaleurRenouvelableStatuses.map((status) => ({ label: status.label, value: status.label }))}
+              options={demandeChaleurRenouvelableStatusOptions}
             />
           )}
         </form.AppField>
@@ -105,7 +105,7 @@ export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: Ccrt
             {note.length}/250
           </span>
           <form.SubmitButton priority="secondary" size="large" disabled={isUpdating || isSubmitting || !isDirty}>
-            Ajouter au suivi
+            {note.trim() ? 'Ajouter au suivi' : 'Enregistrer le suivi'}
           </form.SubmitButton>
         </div>
       </fieldset>

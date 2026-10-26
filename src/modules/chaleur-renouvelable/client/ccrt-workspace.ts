@@ -4,6 +4,11 @@ import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, demandeChaleurRenouvela
 import type { CcrtDemand } from '../types';
 import type { CcrtDemandTab } from './CcrtDemandTabs';
 
+/**
+ * Separates the postal locality from the street without rewriting the saved address.
+ */
+export const formatCcrtAddress = (address: string): string => address.replace(/(?:,\s*|\s+)(\d{5}\s+\S.*)$/, ', $1');
+
 const closedStatuses = new Set<string>(
   demandeChaleurRenouvelableStatuses
     .filter((status) => ['irrelevant', 'redirected_france_renov', 'abandoned_by_prospect', 'closed'].includes(status.value))

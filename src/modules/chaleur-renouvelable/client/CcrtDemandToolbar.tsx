@@ -57,8 +57,12 @@ export function CcrtDemandToolbar({
       <Select
         className="mb-0 w-full lg:w-72"
         label="Statut"
-        options={[{ label: 'Tous les statuts', value: '' }, ...statusOptions]}
-        nativeSelectProps={{ onChange: (event) => onStatusChange(event.target.value), value: status }}
+        options={statusOptions.length === 1 ? statusOptions : [{ label: 'Tous les statuts', value: '' }, ...statusOptions]}
+        nativeSelectProps={{
+          disabled: statusOptions.length === 1,
+          onChange: (event) => onStatusChange(event.target.value),
+          value: statusOptions.length === 1 ? statusOptions[0].value : status,
+        }}
       />
       <ButtonExport
         filename="demandes-chaleur-renouvelable-ccrt.xlsx"
@@ -72,7 +76,7 @@ export function CcrtDemandToolbar({
           return [{ columns: ccrtDemandExportColumns, data: demands, name: 'Demandes' }];
         }}
       >
-        Télécharger (excel)
+        Télécharger (.xlsx)
       </ButtonExport>
     </div>
   );

@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => ({
   invalidateCcrt: vi.fn(),
   invalidateFollowUp: vi.fn(),
   isMobile: false,
+  openEmail: vi.fn(),
   track: vi.fn(),
   trackOpening: vi.fn(),
   validate: vi.fn(),
@@ -47,7 +48,12 @@ vi.mock('@/components/shared/page/SimplePage', () => ({ default: ({ children }: 
 vi.mock('@/modules/analytics/client', () => ({ trackPostHogEvent: mocks.track }));
 vi.mock('@/hooks/useIsMobile', () => ({ default: () => mocks.isMobile }));
 vi.mock('./hooks/useCcrtDemandActions', () => ({
-  useCcrtDemandActions: () => ({ isUpdating: false, trackContact: mocks.contact, trackOpening: mocks.trackOpening }),
+  useCcrtDemandActions: () => ({
+    isUpdating: false,
+    openEmail: mocks.openEmail,
+    trackContact: mocks.contact,
+    trackOpening: mocks.trackOpening,
+  }),
 }));
 vi.mock('./CcrtDemandToolbar', () => ({
   CcrtDemandToolbar: ({ search, onSearchChange }: ComponentProps<typeof CcrtDemandToolbar>) => (
@@ -146,6 +152,41 @@ describe('CcrtDemandsWorkspace', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Replier la demande' }));
     await waitFor(() => expect(screen.queryByText(/Fiche bâtiment/)).toBeNull());
+  });
+
+  it('toggles the sheet from a summary cell while contact links and buttons keep their own action', async () => {
+    renderWorkspace(false);
+    fireEvent.click(screen.getByText('25 logements'));
+    expect(await screen.findByText(/Fiche bâtiment/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('link', { name: demand.email }));
+    expect(screen.getByText(/Fiche bâtiment/)).toBeInTheDocument();
+    expect(mocks.contact).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Contacter' }));
+    expect(screen.getByText(/Fiche bâtiment/)).toBeInTheDocument();
+    expect(mocks.openEmail).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByText('25 logements'));
+    await waitFor(() => expect(screen.queryByText(/Fiche bâtiment/)).toBeNull());
+  });
+
+  it('sorts statuses alphabetically in both directions without changing the active tab', async () => {
+    mocks.adminQuery.mockReturnValue({
+      data: {
+        items: [
+          { ...demand, status: 'Recontacté pour premier échange' },
+          { ...demand, first_name: 'Paul', id: uuid(2), status: 'Clôturée' },
+          { ...demand, first_name: 'Claire', id: uuid(3), status: 'A traiter' },
+        ],
+      },
+      isError: false,
+      isLoading: false,
+    });
+    renderWorkspace();
+    const getNames = () => screen.getAllByRole('button', { name: /^(Joëlle|Paul|Claire) Martini$/ }).map((button) => button.textContent);
+    fireEvent.click(screen.getByRole('button', { name: 'Trier les statuts de A à Z' }));
+    await waitFor(() => expect(getNames()).toStrictEqual(['Claire Martini', 'Paul Martini', 'Joëlle Martini']));
+    expect(screen.getByRole('button', { name: /Toutes les demandes/ })).toHaveAttribute('aria-current', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'Trier les statuts de Z à A' }));
+    await waitFor(() => expect(getNames()).toStrictEqual(['Joëlle Martini', 'Paul Martini', 'Claire Martini']));
   });
 
   it.each([false, true])('replaces contact with publication and refreshes shared views with mobile mode %s', async (isMobile) => {

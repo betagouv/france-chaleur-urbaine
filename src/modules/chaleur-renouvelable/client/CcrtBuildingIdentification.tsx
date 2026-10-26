@@ -1,9 +1,9 @@
-import Button from '@/components/ui/Button';
 import trpc from '@/modules/trpc/client';
 import { dayjs } from '@/utils/date';
 
 import type { CcrtDemand } from '../types';
 import { CcrtDetailsSection } from './CcrtDetailsSection';
+import { formatCcrtAddress } from './ccrt-workspace';
 
 const identificationFields = [
   { label: 'Adresse du bâtiment', name: 'address' },
@@ -27,25 +27,22 @@ export function CcrtBuildingIdentification({ demand, onMap }: CcrtBuildingIdenti
     >
       {identificationFields.map((definition) => (
         <p key={definition.name} className="mb-0 break-words text-sm leading-6 text-(--text-default-grey)">
-          {definition.label} : <span className="text-base font-medium">{demand[definition.name] || 'Non renseigné'}</span>
+          {definition.label} :{' '}
+          <span className="text-base font-medium">
+            {(definition.name === 'address' ? formatCcrtAddress(demand.address) : demand[definition.name]) || 'Non renseigné'}
+          </span>
         </p>
       ))}
       {coordinates && (
-        <Button
-          priority="tertiary no outline"
-          size="small"
-          iconId="fr-icon-external-link-line"
-          iconPosition="right"
-          className="mt-2"
-          linkProps={{
-            href: `/carte?coord=${coordinates.lon},${coordinates.lat}&zoom=17&address=${encodeURIComponent(demand.address)}`,
-            onClick: onMap,
-            rel: 'noopener noreferrer',
-            target: '_blank',
-          }}
+        <a
+          className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line mt-2 self-start"
+          href={`/carte?coord=${coordinates.lon},${coordinates.lat}&zoom=17&address=${encodeURIComponent(demand.address)}`}
+          onClick={onMap}
+          rel="noopener noreferrer"
+          target="_blank"
         >
           Afficher dans la carte
-        </Button>
+        </a>
       )}
     </CcrtDetailsSection>
   );

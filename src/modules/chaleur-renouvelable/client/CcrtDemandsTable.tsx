@@ -11,9 +11,10 @@ type CcrtDemandsTableProps = {
   isLoading: boolean;
   hasDemands: boolean;
   order: 'asc' | 'desc';
+  sort: 'date' | 'status';
   actions: ReturnType<typeof useCcrtDemandActions>;
   onToggle: (demand: CcrtDemand) => void;
-  onSort: () => void;
+  onSort: (sort: 'date' | 'status') => void;
   onValidate?: (demandId: string) => Promise<void>;
 };
 
@@ -26,6 +27,7 @@ export function CcrtDemandsTable({
   isLoading,
   hasDemands,
   order,
+  sort,
   actions,
   onToggle,
   onSort,
@@ -41,12 +43,12 @@ export function CcrtDemandsTable({
       <caption className="sr-only">Demandes d’accompagnement CCRT</caption>
       <colgroup>
         <col className="w-12" />
-        <col className="w-[197px]" />
-        <col className="w-[269px]" />
-        <col className="w-[269px]" />
+        <col className="w-[237px]" />
+        <col className="w-[229px]" />
+        <col className="w-[249px]" />
         <col className="w-[123px]" />
-        <col className="w-[139px]" />
-        <col className="w-[195px]" />
+        <col className="w-[179px]" />
+        <col className="w-[175px]" />
       </colgroup>
       <thead>
         <tr>
@@ -58,20 +60,36 @@ export function CcrtDemandsTable({
           <th scope="col">
             <span className="whitespace-nowrap">Résultats de la simulation</span>
           </th>
-          <th scope="col" aria-sort={order === 'desc' ? 'descending' : 'ascending'}>
-            <Button
-              priority="tertiary no outline"
-              size="small"
-              iconId="fr-icon-arrow-up-down-line"
-              iconPosition="right"
-              title={order === 'desc' ? 'Trier de la plus ancienne à la plus récente' : 'Trier de la plus récente à la plus ancienne'}
-              className="px-0! font-bold text-(--text-default-grey)! uppercase after:text-(--text-action-high-blue-france)"
-              onClick={onSort}
-            >
-              Date
-            </Button>
+          <th scope="col" aria-sort={sort === 'date' ? (order === 'desc' ? 'descending' : 'ascending') : 'none'}>
+            <div className="flex items-center justify-between gap-2">
+              <span>Date</span>
+              <Button
+                priority="tertiary no outline"
+                size="small"
+                iconId="fr-icon-arrow-up-down-line"
+                title={
+                  sort === 'date' && order === 'desc'
+                    ? 'Trier de la plus ancienne à la plus récente'
+                    : 'Trier de la plus récente à la plus ancienne'
+                }
+                className="shrink-0 text-(--text-action-high-blue-france)!"
+                onClick={() => onSort('date')}
+              />
+            </div>
           </th>
-          <th scope="col">Statut</th>
+          <th scope="col" aria-sort={sort === 'status' ? (order === 'desc' ? 'descending' : 'ascending') : 'none'}>
+            <div className="flex items-center justify-between gap-2">
+              <span>Statut</span>
+              <Button
+                priority="tertiary no outline"
+                size="small"
+                iconId="fr-icon-arrow-up-down-line"
+                title={sort === 'status' && order === 'asc' ? 'Trier les statuts de Z à A' : 'Trier les statuts de A à Z'}
+                className="shrink-0 text-(--text-action-high-blue-france)!"
+                onClick={() => onSort('status')}
+              />
+            </div>
+          </th>
           <th scope="col" className="text-center!">
             Action
           </th>

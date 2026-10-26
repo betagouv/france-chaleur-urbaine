@@ -2,7 +2,19 @@ import { describe, expect, it } from 'vitest';
 
 import { uuid } from '@/tests/helpers';
 
-import { getCcrtDemandTab, matchesCcrtDemandSearch } from './ccrt-workspace';
+import { formatCcrtAddress, getCcrtDemandTab, matchesCcrtDemandSearch } from './ccrt-workspace';
+
+describe('formatCcrtAddress', () => {
+  it.each([
+    ['15 Rue des Fleurs 44300 Nantes', '15 Rue des Fleurs, 44300 Nantes'],
+    ['15 Rue des Fleurs, 44300 Nantes', '15 Rue des Fleurs, 44300 Nantes'],
+    ['15 Rue des Fleurs,44300 Nantes', '15 Rue des Fleurs, 44300 Nantes'],
+    ['44300 Nantes', '44300 Nantes'],
+    ['15 Rue des Fleurs', '15 Rue des Fleurs'],
+  ])('formats %s as %s', (address, expected) => {
+    expect(formatCcrtAddress(address)).toStrictEqual(expected);
+  });
+});
 
 describe('getCcrtDemandTab', () => {
   it.each([
@@ -11,11 +23,11 @@ describe('getCcrtDemandTab', () => {
     ['Premier conseil téléphonique réalisé', 'in_progress'],
     ['Etude d’opportunité en cours', 'in_progress'],
     ['Etude d’opportunité réalisée', 'in_progress'],
-    ['[Validation du projet] Etude de faisabilité votée en AG', 'in_progress'],
+    ['Étude de faisabilité votée en AG', 'in_progress'],
     ['Non pertinent', 'closed'],
     ['Réorienté vers France Rénov’', 'closed'],
     ['Projet abandonné par le prospect', 'closed'],
-    ['Clôturées', 'closed'],
+    ['Clôturée', 'closed'],
   ])('groups %s in %s', (status, expected) => {
     expect(getCcrtDemandTab({ status })).toStrictEqual(expected);
   });

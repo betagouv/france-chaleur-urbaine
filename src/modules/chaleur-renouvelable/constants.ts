@@ -368,11 +368,15 @@ export const demandeChaleurRenouvelableStatuses = [
   { label: 'Réorienté vers France Rénov’', value: 'redirected_france_renov' },
   { label: 'Etude d’opportunité en cours', value: 'opportunity_study_in_progress' },
   { label: 'Etude d’opportunité réalisée', value: 'opportunity_study_done' },
-  { label: '[Validation du projet] Etude de faisabilité votée en AG', value: 'project_validation_feasibility_study_voted' },
+  { label: 'Étude de faisabilité votée en AG', value: 'project_validation_feasibility_study_voted' },
   { label: 'Premier conseil téléphonique réalisé', value: 'phone_contact_realised' },
   { label: 'Projet abandonné par le prospect', value: 'abandoned_by_prospect' },
-  { label: 'Clôturées', value: 'closed' },
+  { label: 'Clôturée', value: 'closed' },
 ] as const;
+export const demandeChaleurRenouvelableStatusOptions = demandeChaleurRenouvelableStatuses.map((status) => ({
+  label: status.value === 'to_process' ? 'À traiter' : status.label,
+  value: status.label,
+}));
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS = demandeChaleurRenouvelableStatuses[0].label;
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT = demandeChaleurRenouvelableStatuses[1].label;
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED = demandeChaleurRenouvelableStatuses[9].label;

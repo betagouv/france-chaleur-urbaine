@@ -8,7 +8,7 @@ import useIsMobile from '@/hooks/useIsMobile';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
-import { demandeChaleurRenouvelableStatuses } from '../constants';
+import { demandeChaleurRenouvelableStatusOptions } from '../constants';
 import { CcrtDemandEmailDialog } from './CcrtDemandEmailDialog';
 import { CcrtDemandsMobile } from './CcrtDemandsMobile';
 import { CcrtDemandsTable } from './CcrtDemandsTable';
@@ -24,6 +24,7 @@ const queryParsers = {
   demandId: parseAsString,
   order: parseAsStringLiteral(['asc', 'desc']).withDefault('desc'),
   search: parseAsString.withDefault(''),
+  sort: parseAsStringLiteral(['date', 'status']).withDefault('date'),
   status: parseAsString.withDefault(''),
   tab: parseAsStringLiteral(ccrtDemandTabs.map((tab) => tab.value)),
 };
@@ -42,6 +43,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
       demandId: `${queryPrefix}_demand`,
       order: `${queryPrefix}_order`,
       search: `${queryPrefix}_search`,
+      sort: `${queryPrefix}_sort`,
       status: `${queryPrefix}_status`,
       tab: `${queryPrefix}_tab`,
     },
@@ -64,9 +66,11 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
   const demandsInTab = demands.filter((demand) => activeTab === 'all' || getCcrtDemandTab(demand) === activeTab);
   const visibleDemands = demandsInTab
     .filter((demand) => (!filters.status || demand.status === filters.status) && matchesCcrtDemandSearch(demand, filters.search))
-    .toSorted((first, second) =>
-      filters.order === 'desc' ? second.created_at.localeCompare(first.created_at) : first.created_at.localeCompare(second.created_at)
-    );
+    .toSorted((first, second) => {
+      const comparison =
+        filters.sort === 'status' ? first.status.localeCompare(second.status, 'fr') : first.created_at.localeCompare(second.created_at);
+      return (filters.order === 'desc' ? -comparison : comparison) || second.created_at.localeCompare(first.created_at);
+    });
 
   const description = isAdmin ? 'Toutes les demandes, y compris celles à valider' : 'Immeubles en chauffage collectif de votre territoire';
   const isMobileDetails = isMobile && visibleDemands.some((demand) => demand.id === filters.demandId);
@@ -81,9 +85,9 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
       search={filters.search}
       status={filters.status}
       demands={visibleDemands}
-      statusOptions={demandeChaleurRenouvelableStatuses
-        .filter((status) => activeTab === 'all' || getCcrtDemandTab({ status: status.label }) === activeTab)
-        .map((status) => ({ label: status.label, value: status.label }))}
+      statusOptions={demandeChaleurRenouvelableStatusOptions.filter(
+        (status) => activeTab === 'all' || getCcrtDemandTab({ status: status.value }) === activeTab
+      )}
       onSearchChange={(search) => void setFilters({ search, tab: activeTab })}
       onSearch={tracking.trackSearch}
       onStatusChange={(status) => {
@@ -160,12 +164,13 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
               isLoading={query.isLoading}
               hasDemands={demands.length > 0}
               order={filters.order}
+              sort={filters.sort}
               actions={actions}
               onValidate={isAdmin ? validateDemand : undefined}
-              onSort={() => {
-                const order = filters.order === 'desc' ? 'asc' : 'desc';
-                tracking.trackFilter('date', order);
-                void setFilters({ order });
+              onSort={(sort) => {
+                const order = filters.sort === sort ? (filters.order === 'desc' ? 'asc' : 'desc') : sort === 'date' ? 'desc' : 'asc';
+                tracking.trackFilter(sort === 'date' ? 'date' : 'statut', order);
+                void setFilters({ order, sort });
               }}
               onToggle={toggleDemand}
             />

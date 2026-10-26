@@ -3,6 +3,7 @@ import type { ExportColumn } from '@/utils/export';
 
 import { getEspaceExterieurLabel, modeEauChaudeSanitaireOptions, typeLogementOptions, typeRadiateurOptions } from '../constants';
 import type { CcrtDemand } from '../types';
+import { formatCcrtAddress } from './ccrt-workspace';
 
 export const ccrtDemandExportColumns = [
   { accessorKey: 'id', name: 'N° de demande' },
@@ -11,7 +12,7 @@ export const ccrtDemandExportColumns = [
   { accessorKey: 'last_name', name: 'Nom' },
   { accessorKey: 'email', name: 'Email' },
   { accessorKey: 'phone', name: 'Téléphone' },
-  { accessorKey: 'address', name: 'Adresse' },
+  { accessorFn: (demand) => formatCcrtAddress(demand.address), name: 'Adresse' },
   { accessorKey: 'status', name: 'Statut' },
   { accessorKey: 'project_state', name: 'État du projet' },
   {

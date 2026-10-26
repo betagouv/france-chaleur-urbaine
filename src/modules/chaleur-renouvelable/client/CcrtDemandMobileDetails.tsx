@@ -13,7 +13,7 @@ import { CcrtBuildingIdentification } from './CcrtBuildingIdentification';
 import { CcrtDemandFollowUp } from './CcrtDemandFollowUp';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
 import { CcrtProjectFields } from './CcrtProjectFields';
-import { getCcrtDemandTab } from './ccrt-workspace';
+import { formatCcrtAddress, getCcrtDemandTab } from './ccrt-workspace';
 import type { useCcrtDemandActions } from './hooks/useCcrtDemandActions';
 
 type CcrtDemandMobileDetailsProps = {
@@ -44,7 +44,7 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
           {demand.first_name} {demand.last_name}
         </h1>
         <p className="mb-0 break-words font-medium leading-6">
-          {demand.occupant_status} · {demand.address}
+          {demand.occupant_status} · {formatCcrtAddress(demand.address)}
         </p>
       </header>
       <div className="space-y-2 border border-(--background-default-grey-active) bg-(--background-default-grey) p-4">

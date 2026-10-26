@@ -6,6 +6,7 @@ import { dayjs } from '@/utils/date';
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand } from '../types';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
+import { formatCcrtAddress } from './ccrt-workspace';
 
 type CcrtDemandMobileCardProps = {
   demand: CcrtDemand;
@@ -37,7 +38,7 @@ export function CcrtDemandMobileCard({ demand, onOpen, onContact, onValidate }: 
           {fullName}
         </button>
       </h2>
-      <p className="mb-0 break-words font-medium leading-6">{demand.address}</p>
+      <p className="mb-0 break-words font-medium leading-6">{formatCcrtAddress(demand.address)}</p>
       <p className="mb-0 text-sm leading-6">
         {demand.alternative_heating_solutions[0] ? `Reco n°1 : ${demand.alternative_heating_solutions[0]}` : 'Aucune solution enregistrée'}
       </p>

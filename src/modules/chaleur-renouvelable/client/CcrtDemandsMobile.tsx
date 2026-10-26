@@ -4,7 +4,7 @@ import { CcrtDemandMobileCard } from './CcrtDemandMobileCard';
 import { CcrtDemandMobileDetails } from './CcrtDemandMobileDetails';
 import type { CcrtDemandsTable } from './CcrtDemandsTable';
 
-type CcrtDemandsMobileProps = Omit<ComponentProps<typeof CcrtDemandsTable>, 'order' | 'onSort'> & { onClose: () => void };
+type CcrtDemandsMobileProps = Omit<ComponentProps<typeof CcrtDemandsTable>, 'order' | 'sort' | 'onSort'> & { onClose: () => void };
 
 /**
  * Switches the mobile list to a single demand sheet using the existing URL selection.
