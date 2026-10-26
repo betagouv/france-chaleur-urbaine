@@ -41,6 +41,10 @@ export function useCcrtDemandActions(structureName: string | null) {
             items: data.items.map((item) => (item.id === demand.id ? { ...item, ...updatedDemand } : item)),
           }
       );
+      utils.batEnr.admin.listDemandesChaleurRenouvelable.setData(
+        undefined,
+        (data) => data && { ...data, items: data.items.map((item) => (item.id === demand.id ? { ...item, ...updatedDemand } : item)) }
+      );
       await invalidateCcrtDemand(utils, demand.id);
     } finally {
       updatingDemands.current.delete(demand.id);

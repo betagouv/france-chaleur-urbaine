@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import Accordion from '@/components/ui/Accordion';
 import Dialog from '@/components/ui/Dialog';
 import Icon from '@/components/ui/Icon';
@@ -13,6 +15,7 @@ type CcrtDemandEmailDialogProps = { demand: CcrtDemand; onClose: () => void; sho
  * Displays the Figma contact dialog and the shared sent-message history below its form.
  */
 export function CcrtDemandEmailDialog({ demand, onClose, showHistory = false, onPhoneContact }: CcrtDemandEmailDialogProps) {
+  const [activePanel, setActivePanel] = useState<string | null>(showHistory ? 'history' : 'message');
   const preferences = trpc.users.getPreferences.useQuery();
   const followUp = trpc.batEnr.ccrt.getFollowUp.useQuery({ demandId: demand.id });
   return (
@@ -23,26 +26,37 @@ export function CcrtDemandEmailDialog({ demand, onClose, showHistory = false, on
         </>
       }
       size="lg"
-      className="max-w-[960px]!"
+      className="max-w-[960px]! [&_.fr-modal__title]:mb-0"
       open
       onOpenChange={(open) => !open && onClose()}
     >
       {demand.phone && (
-        <p className="mb-6">
+        <p className="mb-4">
           OU par téléphone au{' '}
           <a className="bg-none no-underline shadow-none" href={`tel:${demand.phone}`} onClick={onPhoneContact}>
             {demand.phone}
           </a>
         </p>
       )}
-      {preferences.isError ? (
-        <p role="alert">Impossible de charger les préférences d’envoi.</p>
-      ) : preferences.data ? (
-        <CcrtDemandEmailForm demand={demand} onClose={onClose} preferences={preferences.data} />
-      ) : (
-        <p role="status">Chargement des préférences d’envoi…</p>
-      )}
-      <Accordion label={`Historique des messages (${followUp.data?.emails.length ?? 0})`} defaultExpanded={showHistory} className="mt-8">
+      <Accordion
+        label="Nouveau message"
+        expanded={activePanel === 'message'}
+        onExpandedChange={(expanded) => setActivePanel(expanded ? 'message' : null)}
+      >
+        {preferences.isError ? (
+          <p role="alert">Impossible de charger les préférences d’envoi.</p>
+        ) : preferences.data ? (
+          <CcrtDemandEmailForm demand={demand} onClose={onClose} preferences={preferences.data} isActive={activePanel === 'message'} />
+        ) : (
+          <p role="status">Chargement des préférences d’envoi…</p>
+        )}
+      </Accordion>
+      <Accordion
+        label={`Historique des messages (${followUp.data?.emails.length ?? 0})`}
+        expanded={activePanel === 'history'}
+        onExpandedChange={(expanded) => setActivePanel(expanded ? 'history' : null)}
+        className="mt-4"
+      >
         {followUp.isError ? (
           <p role="alert">Impossible de charger les messages.</p>
         ) : followUp.isLoading ? (

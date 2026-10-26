@@ -15,17 +15,17 @@ import type { UserPreferences } from '@/modules/users/constants';
 import type { EmailTemplatesResponse } from '@/pages/api/user/email-templates/[[...slug]]';
 import { isUUID } from '@/utils/core';
 
-import { zCcrtEmailForm } from '../constants';
+import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, zCcrtEmailForm } from '../constants';
 import type { CcrtDemand } from '../types';
 import { CcrtEmailSignature } from './CcrtEmailSignature';
 import { invalidateCcrtDemand } from './ccrt-demand-cache';
 
-type CcrtDemandEmailFormProps = { demand: CcrtDemand; onClose: () => void; preferences: UserPreferences };
+type CcrtDemandEmailFormProps = { demand: CcrtDemand; onClose: () => void; preferences: UserPreferences; isActive?: boolean };
 
 /**
  * Reuses site email templates and personal signatures with an idempotent SMTP send.
  */
-export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemandEmailFormProps) {
+export function CcrtDemandEmailForm({ demand, onClose, preferences, isActive = true }: CcrtDemandEmailFormProps) {
   const { user } = useAuthentication();
   const messageId = useRef(crypto.randomUUID());
   const utils = trpc.useUtils();
@@ -41,7 +41,7 @@ export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemand
       object: `Votre demande d’accompagnement — ${demand.address}`,
       replyTo: user?.email ?? '',
       signature: preferences.email_signature ?? '',
-      updateStatusOnSend: true,
+      updateStatusOnSend: demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
     },
     onSubmit: toastErrors(async ({ value }) => {
       const { updateStatusOnSend, ...emailContent } = value;
@@ -58,8 +58,8 @@ export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemand
   const content = useStore(form.store, (state) => ({ body: state.values.body, subject: state.values.object }));
 
   return (
-    <Form form={form}>
-      <fieldset disabled={mutation.isPending} className="m-0 border-0 p-0">
+    <Form form={form} className="[&_.fr-input-group]:mb-4 [&_.fr-checkbox-group]:mb-4">
+      <fieldset disabled={mutation.isPending || !isActive} className="m-0 border-0 p-0">
         <legend className="sr-only">Nouveau message</legend>
         <Input label="Destinataire" hideOptionalLabel disabled nativeInputProps={{ type: 'email', value: demand.email }} />
         <form.AppField name="replyTo">{(field) => <field.EmailField label="De" />}</form.AppField>
@@ -77,7 +77,7 @@ export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemand
         <form.AppField name="body">
           {(field) => <field.TextareaField label="Message" nativeTextAreaProps={{ maxLength: 20000, rows: 3 }} />}
         </form.AppField>
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
           <Tooltip
             title={
               <>
@@ -95,7 +95,7 @@ export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemand
               </>
             }
           >
-            <button type="button" className="flex items-center gap-1 text-xs text-(--text-mention-grey) underline">
+            <button type="button" className="mr-auto flex items-center gap-1 text-xs text-(--text-mention-grey) underline">
               <Icon name="fr-icon-information-line" size="sm" /> Utiliser des variables
             </button>
           </Tooltip>
@@ -117,9 +117,11 @@ export function CcrtDemandEmailForm({ demand, onClose, preferences }: CcrtDemand
         <form.AppField name="signature">
           {(field) => <field.CustomField Component={CcrtEmailSignature} savedSignature={preferences.email_signature ?? ''} />}
         </form.AppField>
-        <form.AppField name="updateStatusOnSend">
-          {(field) => <field.CheckboxField label="Passer la demande à « En cours » à l’envoi" />}
-        </form.AppField>
+        {demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS && (
+          <form.AppField name="updateStatusOnSend">
+            {(field) => <field.CheckboxField label="Passer la demande à « Recontacté pour premier échange » à l’envoi" />}
+          </form.AppField>
+        )}
       </fieldset>
       <div className="mt-6 flex justify-end gap-4 border-t border-(--border-default-grey) pt-6">
         <Button priority="secondary" size="large" disabled={mutation.isPending} onClick={onClose}>
