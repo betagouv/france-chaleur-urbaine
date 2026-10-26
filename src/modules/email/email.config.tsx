@@ -93,7 +93,8 @@ export const emails = defineEmails({
     scenarios: ouvertureEspaceCcrtScenarios,
     subject: "[France Chaleur Urbaine] Ouverture d'espace gestionnaire",
     trigger: {
-      description: "À la création par un admin d'un compte CCRT actif.",
+      description:
+        "À la création par un admin d'un compte CCRT actif, si les emails automatiques CCRT sont activés (actuellement suspendus).",
       type: 'action',
     },
   },
@@ -145,7 +146,7 @@ export const emails = defineEmails({
     subject: "[France Chaleur Urbaine] À traiter : Nouvelle demande d'accompagnement",
     trigger: {
       description:
-        "À la validation admin d'une demande d'accompagnement chaleur renouvelable ; destinataires déterminés par les permissions territoriales.",
+        "À la validation admin d'une demande d'accompagnement chaleur renouvelable ; permissions territoriales correspondantes et emails automatiques CCRT activés (actuellement suspendus).",
       type: 'action',
     },
   },
@@ -159,7 +160,7 @@ export const emails = defineEmails({
     subject: "[France Chaleur Urbaine] {{n}} demande(s) d'accompagnement en attente de traitement",
     trigger: {
       description:
-        "Cron un lundi sur deux 9h45 — demandes d'accompagnement CCRT validées encore au statut « À traiter » ; nécessite l'option « recevoir les rappels ».",
+        "Cron un lundi sur deux 9h45 — demandes d'accompagnement CCRT validées encore au statut « À traiter » ; nécessite l'option « recevoir les rappels » et les emails automatiques CCRT activés (actuellement suspendus).",
       type: 'cron',
     },
   },

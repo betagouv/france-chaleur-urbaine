@@ -25,6 +25,15 @@ import {
 import * as ccrtNotesService from './ccrt-notes';
 import { getAddressEligibilityContext, notifyCcrtOfUnhandledDemandesChaleurRenouvelable } from './service';
 
+const ccrtEmail = vi.hoisted(() => ({ isEnabled: true }));
+
+vi.mock('@/modules/chaleur-renouvelable/constants', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/modules/chaleur-renouvelable/constants')>()),
+  get IS_CCRT_EMAIL_ENABLED() {
+    return ccrtEmail.isEnabled;
+  },
+}));
+
 vi.mock('@/modules/email', () => ({ sendEmailTemplate: vi.fn() }));
 vi.mock('@/utils/network', () => ({ fetchJSON: vi.fn(), postFetchJSON: vi.fn() }));
 vi.mock('@/server/services/addresseInformation', async (importOriginal) => ({
@@ -98,6 +107,7 @@ const seedWorkspace = async () => {
 };
 
 beforeEach(async () => {
+  ccrtEmail.isEnabled = true;
   await cleanDatabase();
   vi.clearAllMocks();
   Object.assign(serverConfig, { tracking: { postHogApiHost: 'https://posthog.test', postHogKey: 'test' } });
@@ -183,6 +193,30 @@ describe('CCRT workspace access', () => {
 });
 
 describe('CCRT notifications through classic permissions', () => {
+  it('skips reminders even for an opted-in CCRT account while automated emails are suspended', async () => {
+    ccrtEmail.isEnabled = false;
+    await seedWorkspace();
+    await updateUserPreferences(testUsers.ccrt.id, { notifications: { pending_demands_reminder: true } });
+
+    await notifyCcrtOfUnhandledDemandesChaleurRenouvelable();
+
+    expect(sendEmailTemplate).not.toHaveBeenCalled();
+  });
+
+  it('publishes the demand without notifying CCRT accounts when automated emails are suspended', async () => {
+    ccrtEmail.isEnabled = false;
+    const demand = await seedWorkspace();
+    await kdb.updateTable('demands_chaleur_renouvelable').set({ validated: false }).where('id', '=', demand.id).execute();
+
+    const result = await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: demand.id });
+    const visibleDemands = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
+
+    expect(result).toStrictEqual({ id: demand.id, updated_at: expect.any(Date), validated: true });
+    expect(visibleDemands.items.map((item) => item.id)).toStrictEqual([demand.id]);
+    expect(sendEmailTemplate).not.toHaveBeenCalled();
+    expect(postFetchJSON).not.toHaveBeenCalled();
+  });
+
   it.each([
     ['commune', '13055'],
     ['epci', 'EPCI-13'],

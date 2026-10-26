@@ -6,6 +6,7 @@ import type { z } from 'zod';
 
 import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
 import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
+import { IS_CCRT_EMAIL_ENABLED } from '@/modules/chaleur-renouvelable/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { getAllPermissionsWithLabels } from '@/modules/permissions/server/search';
@@ -110,7 +111,7 @@ export const create = async (data: CreateUserInput, context: Context): Promise<D
   if (data.active && data.role === 'gestionnaire') {
     await sendEmailTemplate('auth.gestionnaire.ouverture-espace', { email: data.email, id: (record as any).id });
   }
-  if (data.active && data.role === 'ccrt') {
+  if (IS_CCRT_EMAIL_ENABLED && data.active && data.role === 'ccrt') {
     // The legacy base model returns a table definition type rather than its selectable row type.
     await sendEmailTemplate('auth.ccrt.ouverture-espace', { email: data.email, id: (record as unknown as Selectable<DB['users']>).id });
   }

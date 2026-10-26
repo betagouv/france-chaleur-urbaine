@@ -12,7 +12,7 @@ Preference writes use `updateUserPreferences(userId, changes, database?)`: a tra
 
 ## Account opening emails
 
-`server/service.ts#create` sends an opening email only when the new account is explicitly active: `auth.gestionnaire.ouverture-espace` for network managers, `auth.ccrt.ouverture-espace` for CCRT. Updates, including activation of an existing account, do not send an opening email. The CCRT template uses generic manager-space wording and explains how to set a password through the forgotten-password flow.
+`server/service.ts#create` sends an opening email only when the new account is explicitly active: `auth.gestionnaire.ouverture-espace` for network managers, `auth.ccrt.ouverture-espace` for CCRT only when `IS_CCRT_EMAIL_ENABLED` (`chaleur-renouvelable/constants.ts`) is enabled (currently `false`). Account creation remains available, with no automatic backfill of skipped opening emails when re-enabled. Updates, including activation of an existing account, do not send an opening email. The CCRT template uses generic manager-space wording and explains how to set a password through the forgotten-password flow.
 
 ## User tags
 

@@ -16,7 +16,7 @@ import type {
   FranceRenovSpaceInput,
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
-import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '@/modules/chaleur-renouvelable/constants';
+import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, IS_CCRT_EMAIL_ENABLED } from '@/modules/chaleur-renouvelable/constants';
 import type { Context } from '@/modules/config/server/context-builder';
 import { type CreateDemandInput, type DemandSubmissionResult, fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { createDemand } from '@/modules/demands/server/creation-user';
@@ -795,6 +795,10 @@ const listPendingCcrtDemands = () =>
     .execute();
 
 const notifyCcrtOfNewDemandeChaleurRenouvelable = async (demand: DemandeChaleurRenouvelableForCcrtNotification) => {
+  if (!IS_CCRT_EMAIL_ENABLED) {
+    return;
+  }
+
   const [users, pendingDemands] = await Promise.all([getAllUsersWithPermissions(), listPendingCcrtDemands()]);
   const recipients = users.filter((user) => user.role === 'ccrt' && canUserAccessCcrtDemand(user, user.permissions, demand));
 
@@ -972,6 +976,10 @@ export const updateDemandeChaleurRenouvelableCcrt = async (ctx: Context, input: 
 };
 
 export const notifyCcrtOfUnhandledDemandesChaleurRenouvelable = async (runDate = dayjs().tz('Europe/Paris')) => {
+  if (!IS_CCRT_EMAIL_ENABLED) {
+    return;
+  }
+
   const [users, pendingDemands] = await Promise.all([getAllUsersWithPermissions(), listPendingCcrtDemands()]);
   const recipients = users.filter((user) => user.role === 'ccrt' && user.preferences.notifications.pending_demands_reminder);
 
