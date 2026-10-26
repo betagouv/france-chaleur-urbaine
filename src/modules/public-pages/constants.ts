@@ -5,6 +5,10 @@ export const PUBLIC_PAGE_SOURCES = ['home', 'fcr_landing'] as const;
 /** Analytics source of a public page: prefixes the PostHog events emitted by the shared sections. */
 export type PublicPageSource = (typeof PUBLIC_PAGE_SOURCES)[number];
 
+export const HOME_FORM_MODES = ['raccordement', 'comparateur'] as const;
+/** What the visitor wants from the home address test: heat network eligibility or the heating comparator. */
+export type HomeFormMode = (typeof HOME_FORM_MODES)[number];
+
 export const BENEFITS = [
   {
     description: 'Prix du gaz et fioul : instables. Énergies renouvelables locales : stables sur le long terme.',

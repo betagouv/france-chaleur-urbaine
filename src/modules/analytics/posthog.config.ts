@@ -14,6 +14,7 @@ import type {
 } from '@/modules/chaleur-renouvelable/constants';
 import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import type { SimulateurPacEventProperties } from '@/modules/pac/constants';
+import type { HomeFormMode } from '@/modules/public-pages/constants';
 import type { TypeCommune } from '@/server/services/communeAPotentiel';
 
 type CcrtCommonTrackingProperties = {
@@ -403,6 +404,13 @@ export type PostHogEventMap = {
   'home:testimonial_carousel_clicked': { action: string; testimonial_index: number };
   'home:bottom_cta_clicked': never;
   'home:tools_tab_selected': { tab: string };
+  'home:mode_selected': { mode: HomeFormMode };
+  'home:simulation_started': {
+    address_filled: boolean;
+    emitter_type?: TypeRadiateur | null;
+    heating_mode?: TypeLogement | null;
+    outdoor_space?: EspaceExterieur | null;
+  };
   'home:faq_item_opened': {
     faq_question: string;
   };

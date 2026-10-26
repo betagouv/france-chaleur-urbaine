@@ -56,7 +56,8 @@ export type HeroProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof heroContainerVariants> & {
     image?: string;
     imageClassName?: string;
-    imageType?: 'floating' | 'inline' | 'inline-cover';
+    /** `cover`: full-bleed background photo behind the content, on every screen size. */
+    imageType?: 'floating' | 'inline' | 'inline-cover' | 'cover';
     imagePosition?: 'left' | 'right';
     imageRatio?: string;
   };
@@ -94,7 +95,7 @@ const Hero = ({
   variant,
   ...props
 }: HeroProps) => {
-  const bigTitle = !image || imageType === 'inline' || imageType === 'inline-cover';
+  const bigTitle = !image || imageType !== 'floating';
 
   const ratio = imageRatio ?? (bigTitle ? '1/3' : '1/2');
 
@@ -104,6 +105,11 @@ const Hero = ({
   return (
     <HeroContext.Provider value={{ bigTitle, size, variant }}>
       <section className={cx(heroContainerVariants({ variant }), className)} {...props}>
+        {image && imageType === 'cover' && (
+          <div className="absolute inset-0">
+            <Image src={image} alt="" className={cx('object-cover', imageClassName)} sizes="100vw" priority fill fetchPriority="high" />
+          </div>
+        )}
         {image && imageType === 'floating' && (
           <div className="absolute top-0 left-0 right-0 bottom-0 hidden lg:block">
             <Image
@@ -121,7 +127,7 @@ const Hero = ({
         <div
           className={cx('fr-container flex relative', heroVariants({ size }), imagePosition === 'right' ? 'flex-row-reverse' : 'flex-row')}
         >
-          {image && (
+          {image && imageType !== 'cover' && (
             <div className={cx('hidden lg:block', `flex-${imageFlex}`)}>
               {['inline', 'inline-cover'].includes(imageType) && (
                 <div className={cx('relative h-full')}>
