@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button';
 import cx from '@/utils/cx';
 
 type CarouselProps<T> = {
-  items: T[];
+  items: readonly T[];
   getItemKey: (item: T, index: number) => string;
   renderItem: (item: T) => ReactNode;
   previousLabel: string;

@@ -401,6 +401,14 @@ export type PostHogEventMap = {
   'home:pedagogic_section_clicked': ElementType;
   'home:partner_logo_clicked': { partner_name: string; target_url: string };
   'home:testimonial_carousel_clicked': { action: string; testimonial_index: number };
+  'home:bottom_cta_clicked': never;
+  'home:tools_tab_selected': { tab: string };
+  'home:faq_item_opened': {
+    faq_question: string;
+  };
+  'home:testimonial_clicked': ElementType & {
+    testimonial_title?: string;
+  };
 
   'nav:menu_item_clicked': {
     item: string;

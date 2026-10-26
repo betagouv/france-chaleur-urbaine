@@ -90,6 +90,7 @@ allowed_patterns:
 - token
 - value
 - (?i)https:\/\/docs\.google\.com\/.*
+- (?i)https:\/\/www\.calameo\.com\/read\/.*
 - resetPasswordSchema
 threshold: medium
 version: "1.0"
