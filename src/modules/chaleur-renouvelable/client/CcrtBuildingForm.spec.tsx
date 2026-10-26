@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { uuid } from '@/tests/helpers';
@@ -7,7 +7,8 @@ import type { CcrtDemand } from '../types';
 import { CcrtBuildingForm } from './CcrtBuildingForm';
 
 const mocks = vi.hoisted(() => ({ eligibility: { distance: 96, isEligible: true }, invalidate: vi.fn(), mutateAsync: vi.fn() }));
-vi.mock('@/modules/trpc/client', () => {
+vi.mock('@/modules/trpc/client', async () => {
+  const { useState } = await import('react');
   const utils = {
     batEnr: {
       admin: {
@@ -26,7 +27,25 @@ vi.mock('@/modules/trpc/client', () => {
       batEnr: {
         ccrt: {
           getHeatNetworkEligibility: { useQuery: () => ({ data: mocks.eligibility, isPending: false }) },
-          updateBuilding: { useMutation: () => ({ mutateAsync: mocks.mutateAsync }) },
+          updateBuilding: {
+            useMutation: () => {
+              const [error, setError] = useState<Error | null>(null);
+              return {
+                error,
+                isError: error !== null,
+                mutateAsync: async (input: unknown) => {
+                  setError(null);
+                  try {
+                    return await mocks.mutateAsync(input);
+                  } catch (caughtError) {
+                    setError(caughtError instanceof Error ? caughtError : new Error(String(caughtError)));
+                    throw caughtError;
+                  }
+                },
+                reset: () => setError(null),
+              };
+            },
+          },
         },
       },
       useUtils: () => utils,
@@ -86,6 +105,66 @@ describe('CcrtBuildingForm', () => {
     mocks.mutateAsync.mockResolvedValue({ id: demand.id, updatedAt: '2026-10-08T10:01:00.000Z' });
   });
 
+  it('automatically saves a valid edit after typing stops without submitting a button', async () => {
+    render(<CcrtBuildingForm demand={demand} />);
+    fireEvent.change(screen.getByLabelText('Surface moyenne'), { target: { value: '85' } });
+    expect(screen.getByRole('status')).toHaveTextContent('Modifications en attente d’enregistrement');
+
+    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1), { timeout: 3000 });
+    expect(mocks.mutateAsync.mock.calls[0][0]).toMatchObject({ updatedAt: demand.updated_at, values: { average_area: 85 } });
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Toutes les modifications sont enregistrées.'));
+    expect(mocks.invalidate).toHaveBeenCalledWith({ demandId: demand.id });
+  });
+
+  it.each([false, true])('keeps edits made during a save with the new server version when closing the sheet: %s', async (closeSheet) => {
+    let resolveSave = (_result: { id: string; updatedAt: string }) => {};
+    mocks.mutateAsync.mockImplementationOnce(
+      () =>
+        new Promise<{ id: string; updatedAt: string }>((resolve) => {
+          resolveSave = resolve;
+        })
+    );
+    const { unmount } = render(<CcrtBuildingForm demand={demand} />);
+    fireEvent.change(screen.getByLabelText('Surface moyenne'), { target: { value: '80' } });
+    fireEvent.blur(screen.getByLabelText('Surface moyenne'));
+    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1));
+    fireEvent.change(screen.getByLabelText('Surface moyenne'), { target: { value: '90' } });
+    fireEvent.blur(screen.getByLabelText('Surface moyenne'));
+    expect(mocks.mutateAsync).toHaveBeenCalledTimes(1);
+
+    if (closeSheet) {
+      unmount();
+    }
+
+    await act(async () => resolveSave({ id: demand.id, updatedAt: '2026-10-08T10:01:00.000Z' }));
+    if (!closeSheet) {
+      expect(screen.getByLabelText('Surface moyenne')).toHaveValue(90);
+    }
+    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(2), { timeout: 3000 });
+    expect(
+      mocks.mutateAsync.mock.calls.map(([input]) => ({ surface: input.values.average_area, updatedAt: input.updatedAt }))
+    ).toStrictEqual([
+      { surface: 80, updatedAt: demand.updated_at },
+      { surface: 90, updatedAt: '2026-10-08T10:01:00.000Z' },
+    ]);
+  });
+
+  it('keeps a failed draft visible and retries only when requested', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mocks.mutateAsync.mockRejectedValueOnce(new Error('Connexion indisponible'));
+    render(<CcrtBuildingForm demand={demand} />);
+    fireEvent.change(screen.getByLabelText('Surface moyenne'), { target: { value: '80' } });
+    fireEvent.blur(screen.getByLabelText('Surface moyenne'));
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Connexion indisponible'));
+    expect(screen.getByLabelText('Surface moyenne')).toHaveValue(80);
+    fireEvent.blur(screen.getByLabelText('Surface moyenne'));
+    expect(mocks.mutateAsync).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
+    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Toutes les modifications sont enregistrées.'));
+    consoleError.mockRestore();
+  });
+
   it('saves decimal residents with the selected energy label and reuses the saved version for a second edit', async () => {
     render(<CcrtBuildingForm demand={demand} />);
     expect(screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent)).toStrictEqual([
@@ -93,23 +172,23 @@ describe('CcrtBuildingForm', () => {
       'Bâtiment et chauffage',
       'Avancement déclaré par l’usager',
     ]);
-    const submit = screen.getByRole('button', { name: 'Enregistrer et recalculer' });
+    expect(screen.queryByRole('button', { name: 'Enregistrer et recalculer' })).toBeNull();
     expect(screen.queryByLabelText('Adresse du bâtiment')).toBeNull();
     expect(screen.getByText(demand.address)).toBeInTheDocument();
     expect(screen.getByText('Syndicat de copropriété :')).toHaveTextContent('Non renseigné');
-    expect(submit).toBeDisabled();
+    expect(screen.getByRole('status')).toHaveTextContent('Toutes les modifications sont enregistrées.');
     fireEvent.change(screen.getByLabelText('Habitants moyens'), { target: { value: '2.5' } });
     fireEvent.change(screen.getByLabelText('DPE'), { target: { value: 'E' } });
-    fireEvent.click(submit);
+    fireEvent.blur(screen.getByLabelText('DPE'));
 
     await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1));
     expect(mocks.mutateAsync.mock.calls[0][0]).toMatchObject({
       updatedAt: demand.updated_at,
       values: { average_residents: 2.5, dpe: 'E', hot_water_system_type: 'nonRenseigne' },
     });
-    await waitFor(() => expect(submit).toBeDisabled());
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Toutes les modifications sont enregistrées.'));
     fireEvent.change(screen.getByLabelText('DPE'), { target: { value: 'F' } });
-    fireEvent.click(submit);
+    fireEvent.blur(screen.getByLabelText('DPE'));
 
     await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(2));
     expect(mocks.mutateAsync.mock.calls[1][0]).toMatchObject({
@@ -127,7 +206,7 @@ describe('CcrtBuildingForm', () => {
     expect(screen.getByText('DPE déjà réalisé', { selector: '.fr-tag' })).toBeInTheDocument();
     expect(screen.getByText(`« ${comments} »`, { selector: 'blockquote' })).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Surface moyenne'), { target: { value: '80' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et recalculer' }));
+    fireEvent.blur(screen.getByLabelText('Surface moyenne'));
 
     await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1));
     const savedValues = mocks.mutateAsync.mock.calls[0][0].values;
@@ -149,7 +228,7 @@ describe('CcrtBuildingForm', () => {
     fireEvent.change(screen.getByLabelText('Surface moyenne'), { target: { value: '80' } });
     rerender(<CcrtBuildingForm demand={{ ...demand, average_area: 90, updated_at: '2026-10-08T10:02:00.000Z' }} />);
     expect(screen.getByLabelText('Surface moyenne')).toHaveValue(80);
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et recalculer' }));
+    fireEvent.blur(screen.getByLabelText('Surface moyenne'));
 
     await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1));
     expect(mocks.mutateAsync.mock.calls[0][0]).toMatchObject({ updatedAt: demand.updated_at, values: { average_area: 80 } });
@@ -159,15 +238,15 @@ describe('CcrtBuildingForm', () => {
     render(<CcrtBuildingForm demand={demand} />);
     expect(screen.queryByLabelText('Date ou période du refus de raccordement')).toBeNull();
     expect(screen.queryByLabelText('Motif du refus')).toBeNull();
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Refus de raccordement' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Refus de raccordement au réseau de chaleur' }));
     fireEvent.change(screen.getByLabelText('Date ou période du refus de raccordement'), { target: { value: '2022' } });
     fireEvent.change(screen.getByLabelText('Motif du refus'), { target: { value: 'Distance trop importante' } });
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Refus de raccordement' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Refus de raccordement au réseau de chaleur' }));
     expect(screen.queryByLabelText('Motif du refus')).toBeNull();
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Refus de raccordement' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Refus de raccordement au réseau de chaleur' }));
     expect(screen.getByLabelText('Date ou période du refus de raccordement')).toHaveValue('2022');
     expect(screen.getByLabelText('Motif du refus')).toHaveValue('Distance trop importante');
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et recalculer' }));
+    fireEvent.blur(screen.getByLabelText('Surface moyenne'));
     await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1));
     expect(mocks.mutateAsync.mock.calls[0][0].values).toMatchObject({
       is_public_advisor_selected: true,
@@ -198,7 +277,7 @@ describe('CcrtBuildingForm', () => {
   ])('rejects invalid %s before saving', async (label, value) => {
     render(<CcrtBuildingForm demand={demand} />);
     fireEvent.change(screen.getByLabelText(label), { target: { value } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et recalculer' }));
+    fireEvent.blur(screen.getByLabelText(label));
 
     await waitFor(() => expect(screen.getByLabelText(label).closest('.fr-input-group')).toHaveClass('fr-input-group--error'));
     expect(mocks.mutateAsync).not.toHaveBeenCalled();

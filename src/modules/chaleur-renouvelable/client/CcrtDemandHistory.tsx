@@ -137,7 +137,7 @@ const fieldLabels: Record<string, string> = {
   hot_water_system_type: 'Eau chaude',
   housing_count: 'Nombre de logements',
   housing_type: 'Type de logement',
-  is_public_advisor_selected: 'Refus de raccordement',
+  is_public_advisor_selected: 'Refus de raccordement au réseau de chaleur',
   outdoor_space: 'Espaces extérieurs',
   project_state: 'État du projet',
   project_status: 'Avancement déclaré',

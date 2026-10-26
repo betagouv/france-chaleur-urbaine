@@ -43,7 +43,7 @@ describe('CcrtDemandHistory', () => {
 
     expect(screen.getByText('Surface totale (m²) : Non renseigné → 145')).toBeInTheDocument();
     expect(screen.getByText('Habitants moyens : 0 → 2')).toBeInTheDocument();
-    expect(screen.getByText('Refus de raccordement : Non → Oui')).toBeInTheDocument();
+    expect(screen.getByText('Refus de raccordement au réseau de chaleur : Non → Oui')).toBeInTheDocument();
     expect(screen.queryByText(/Période du refus|Motif du refus/)).toBeNull();
   });
 
