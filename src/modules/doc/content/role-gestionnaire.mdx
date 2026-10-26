@@ -32,7 +32,7 @@ La réaffectation n'est **jamais directe** : le gestionnaire propose, l'équipe 
 
 <Mermaid
   chart={`flowchart TD
-    depot["Une demande validée est affectée à l'un de ses réseaux"]:::db --> notif["Lundi à vendredi, 10h : email « Nouvelles demandes à traiter »"]:::email
+    depot["Une demande validée est affectée à l'un de ses réseaux"]:::db --> notif["Email « Nouvelles demandes à traiter » : chaque jour ouvré à 10h, ou récapitulatif du lundi, selon son choix"]:::email
     notif --> traite{"Le gestionnaire traite ?"}
     traite -- "Oui" --> statut["Suivi mis à jour, demandeur recontacté"]:::db
     statut --> nonReal{"Statut « Non réalisable » ?"}
@@ -41,7 +41,7 @@ La réaffectation n'est **jamais directe** : le gestionnaire propose, l'équipe 
     statut -.-> relance["${businessRules.firstRelanceDelayMonths.display} puis ${businessRules.secondRelanceDelayDays.display} : FCU demande au demandeur s'il a été recontacté"]:::email
     rappel -.-> relance
     relance --> satisfaction["La réponse du demandeur (recontacté ou non, commentaire) est enregistrée et visible de l'équipe FCU"]:::evt
-    click notif "/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter" "Voir le modèle d'email"
+    click notif "/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter-daily" "Voir le modèle d'email"
     click rappel "/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente" "Voir le modèle d'email"
     click relance "/admin/emails?type=demands.demandeur.enquete-satisfaction" "Voir le modèle d'email"
     click mailNonReal "/admin/emails?type=demands.demandeur.raccordement-non-realisable" "Voir le modèle d'email"
@@ -52,14 +52,14 @@ La réaffectation n'est **jamais directe** : le gestionnaire propose, l'équipe 
 
 Détail des quatre automatismes :
 
-- **Notification des nouvelles demandes** (lundi à vendredi, 10h) : envoyée si l'option « recevoir les nouvelles demandes » est activée. Ne concerne que les demandes validées, affectées à un réseau de son périmètre, non encore notifiées et dont le statut n'est pas « Non réalisable ». Si aucun gestionnaire n'a de permission sur le réseau, la demande n'est **pas** marquée comme notifiée — elle sera signalée dès qu'une permission sera ajoutée.
-- **Rappel des demandes en attente** (mardi, 9h55) : envoyé si l'option « recevoir les rappels » est activée, pour les demandes restées « À traiter » (ou sans statut) plus de <Rule id="unhandledDemandReminderDays" /> après leur notification.
+- **Notification des nouvelles demandes** : selon le réglage « Nouvelles demandes de raccordement » qu'il choisit dans « Mon compte » (un admin peut aussi le modifier) — **quotidien** (chaque jour ouvré à 10h, valeur par défaut), **hebdomadaire** (un récapitulatif le lundi à 10h, tous réseaux confondus) ou **aucun email**. Ne concerne que les demandes validées, affectées à un réseau de son périmètre et dont le statut n'est pas « Non réalisable ». Si aucun gestionnaire n'a de permission sur le réseau, la demande n'est **pas** marquée comme notifiée — elle sera signalée dès qu'une permission sera ajoutée. Détail dans [Relances et notifications](/admin/doc/relances-notifications).
+- **Rappel des demandes en attente** (mardi, 9h55) : envoyé si le réglage « Rappel des demandes en attente » est activé, pour les demandes restées « À traiter » (ou sans statut) plus de <Rule id="unhandledDemandReminderDays" /> après leur réception (jour de la notification quotidienne, ou lundi du récapitulatif).
 - **Email au demandeur si le raccordement est refusé** : quand le gestionnaire classe une demande en «&nbsp;Non réalisable&nbsp;», le demandeur reçoit l'email [«&nbsp;Raccordement non réalisable&nbsp;»](/admin/emails?type=demands.demandeur.raccordement-non-realisable), qui réoriente vers le simulateur de modes de chauffage alternatifs. La demande reste conservée. Si le demandeur crée ensuite une demande d'accompagnement chaleur renouvelable depuis ce lien, la demande de raccordement est grisée dans l'espace gestionnaire et ses actions de suivi deviennent indisponibles.
 - **Relance des demandeurs** (lundi, 10h05) : à <Rule id="firstRelanceDelayMonths" /> puis <Rule id="secondRelanceDelayDays" /> après la demande, FCU demande directement au demandeur s'il a été recontacté — uniquement pour les demandes éligibles en chauffage collectif. **La réponse du demandeur est visible de l'équipe FCU** : l'inaction d'un gestionnaire finit donc par se voir.
 
 ## Déroulé type
 
-1. Lundi 10h, il reçoit « 3 nouvelles demandes à traiter » et ouvre son espace.
+1. Lundi 10h, il reçoit « 3 nouvelles demandes à traiter » (le récapitulatif de la semaine s'il a choisi la fréquence hebdomadaire) et ouvre son espace.
 2. Il consulte les demandes (adresse, chauffage, distance au réseau), met le statut à jour et recontacte le demandeur — par téléphone, ou via l'email intégré qui garde une trace.
 3. S'il ne fait rien : rappel le mardi suivant ; après <Rule id="firstRelanceDelayMonths" /> le demandeur est interrogé par FCU, et sa réponse (« je n'ai pas été recontacté ») remonte à l'équipe.
 4. Si la demande ne relève pas de lui (mauvais réseau, hors périmètre), il demande une réaffectation que l'équipe FCU arbitre.
@@ -77,8 +77,9 @@ Détail des quatre automatismes :
 | Email | Sens | Quand |
 | --- | --- | --- |
 | [Ouverture de l'espace gestionnaire](/admin/emails?type=auth.gestionnaire.ouverture-espace) | Reçu | À la création de son compte par un admin (si compte actif) |
-| [Nouvelles demandes à traiter](/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter) | Reçu | Lundi à vendredi 10h, selon option et conditions ci-dessus |
-| [Rappel des demandes en attente](/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente) | Reçu | Mardi 9h55, selon option |
+| [Nouvelles demandes à traiter (quotidien)](/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter-daily) | Reçu | Lundi à vendredi 10h, s'il a choisi la fréquence quotidienne |
+| [Nouvelles demandes à traiter (hebdomadaire)](/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter-weekly) | Reçu | Lundi 10h, s'il a choisi la fréquence hebdomadaire |
+| [Rappel des demandes en attente](/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente) | Reçu | Mardi 9h55, selon réglage |
 | [Message du gestionnaire](/admin/emails?type=demands.demandeur.message-gestionnaire) | Envoyé par lui | Quand il contacte un demandeur depuis la plateforme |
 | [Raccordement non réalisable](/admin/emails?type=demands.demandeur.raccordement-non-realisable) | Envoyé automatiquement au demandeur | Quand il classe une demande en «&nbsp;Non réalisable&nbsp;» |
 

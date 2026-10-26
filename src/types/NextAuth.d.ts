@@ -15,7 +15,6 @@ declare module 'next-auth' {
     role: UserRole;
     email: string;
     active: boolean;
-    signature: string | null;
   }
 }
 
@@ -32,6 +31,8 @@ declare module 'next-auth/jwt' {
       role: UserRole;
       permissions?: { type: string; resource_id: string | null }[];
       anonymize?: boolean;
+      /** full-profile impersonation (dev only): the session is built from this account instead of the admin's */
+      userId?: string;
     };
   }
 }

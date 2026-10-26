@@ -10,7 +10,7 @@ import CrudDropdown from '@/components/ui/CrudDropdown';
 import Icon from '@/components/ui/Icon';
 import Tooltip, { TooltipIcon } from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
-import { useUserPreferences } from '@/modules/auth/client/hooks';
+import { useAuthentication } from '@/modules/auth/client/hooks';
 import EmailHistory from '@/modules/demands/client/EmailHistory';
 import type { Demand } from '@/modules/demands/types';
 import { Form } from '@/modules/form/Form';
@@ -72,15 +72,17 @@ function processPlaceholders(value: string, demand: Demand): string {
 }
 
 function DemandEmailForm(props: Props) {
-  const { userPreferences, updateUserPreferences } = useUserPreferences();
+  const { user } = useAuthentication();
+  const { data: preferences } = trpc.users.getPreferences.useQuery();
+  const utils = trpc.useUtils();
 
   const getDefaultEmailContent = (): EmailContent => {
     return {
       body: '',
-      cc: userPreferences?.email || '',
+      cc: user?.email || '',
       object: '',
-      replyTo: userPreferences?.email || '',
-      signature: userPreferences?.signature || '',
+      replyTo: user?.email || '',
+      signature: preferences?.email_signature || '',
     };
   };
 
@@ -130,10 +132,8 @@ function DemandEmailForm(props: Props) {
         }
         await props.updateDemand(props.currentDemand.id, updatedFields);
 
-        //Update the current user signature
-        if (userPreferences && userPreferences.signature !== value.signature) {
-          void updateUserPreferences({ signature: value.signature });
-        }
+        // the server saves the signature along with the email (users.preferences.email_signature)
+        void utils.users.getPreferences.invalidate();
 
         setSent(true);
       } catch (_err: any) {
@@ -147,12 +147,12 @@ function DemandEmailForm(props: Props) {
   const formValues = useStore(form.store, (state) => state.values);
 
   useEffect(() => {
-    if (userPreferences) {
+    if (preferences) {
       const defaultContent = getDefaultEmailContent();
       initialContentRef.current = defaultContent;
       form.reset(defaultContent);
     }
-  }, [userPreferences]);
+  }, [preferences, user?.email]);
 
   const isDirty = !sent && !sentError && ObjectKeys(formValues).some((key) => formValues[key] !== initialContentRef.current[key]);
 

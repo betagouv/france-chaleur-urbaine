@@ -7,7 +7,7 @@
     }
   },
   "formation": {
-    "cron": {
+    "clock": {
       "amount": 0,
       "size": "S"
     },

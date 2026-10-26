@@ -38,8 +38,8 @@ export const anonymizeDatabase = async (databaseUrl: string): Promise<Anonymizat
         first_name: 'Prénom',
         last_name: sql<string>`'Nom ' || left(id::text, 8)`,
         phone: null,
+        preferences: sql`preferences || '{"email_signature": null}'::jsonb`,
         reset_token: null,
-        signature: null,
       })
       .where('role', '<>', 'admin')
       .where('email', 'not like', `%${LOCAL_ACCOUNT_DOMAIN}`)

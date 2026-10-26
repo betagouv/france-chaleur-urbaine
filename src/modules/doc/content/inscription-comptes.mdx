@@ -119,7 +119,7 @@ Depuis [Gestion des utilisateurs](/admin/users), un admin peut créer un compte 
 - Un mot de passe aléatoire est généré : la personne doit utiliser « Mot de passe oublié » pour définir le sien.
 - **Un seul cas déclenche un email** : compte créé **actif** avec le rôle **gestionnaire** → email [« Ouverture de l'espace gestionnaire »](/admin/emails?type=auth.gestionnaire.ouverture-espace). Tous les autres rôles ne reçoivent **aucun email** ; c'est à l'admin de prévenir la personne.
 - Le contact ADEME Connect est créé pour tous les rôles sauf admin (les comptes de l'équipe ne sont jamais synchronisés).
-- Pour un gestionnaire, l'admin choisit aussi ses options de notification : recevoir les nouvelles demandes, recevoir les rappels de demandes en attente (voir [Rôle : gestionnaire](/admin/doc/role-gestionnaire)).
+- Pour un gestionnaire, l'admin choisit aussi ses notifications de demandes : fréquence des nouvelles demandes (quotidien par défaut, hebdomadaire ou aucun email) et rappel des demandes en attente. La personne peut ensuite les modifier elle-même dans « Mon compte » (voir [Rôle : gestionnaire](/admin/doc/role-gestionnaire) et [Relances et notifications](/admin/doc/relances-notifications)).
 - Événement enregistré : [« Création utilisateur (admin) »](/admin/events?types=user_created_by_admin).
 
 Données modifiées :
@@ -127,7 +127,7 @@ Données modifiées :
 | Donnée | Où | Détail |
 | --- | --- | --- |
 | Compte complet | Base — `users` | Email (normalisé en minuscules), rôle, structure, statut « valide », mot de passe aléatoire |
-| Options de notification | Base — `users.receive_new_demands`, `users.receive_old_demands` | Choisies par l'admin dans le formulaire |
+| Préférences de notification | Base — `users.preferences.notifications` | Choisies par l'admin dans le formulaire, modifiables ensuite par la personne dans « Mon compte » |
 | Contact CRM | ADEME Connect | Créé pour tous les rôles sauf admin |
 
 ### Modification et suppression par un admin
@@ -168,7 +168,7 @@ Seul ENGIE synchronise ses comptes gestionnaires via l'API : la synchronisation 
 Règles à connaître :
 
 - Un compte créé via l'API suit le même circuit qu'une création par un admin avec le rôle gestionnaire : il reçoit l'email [« Ouverture de l'espace gestionnaire »](/admin/emails?type=auth.gestionnaire.ouverture-espace) et un contact est créé dans ADEME Connect. La désactivation et la réactivation, elles, n'envoient aucun email.
-- Les notifications de demandes (nouvelles demandes et rappels) sont activées d'office pour ces comptes.
+- Les notifications de demandes sont activées d'office pour ces comptes (nouvelles demandes en quotidien, rappel des demandes en attente), modifiables ensuite par la personne dans « Mon compte ».
 - Un mot de passe aléatoire est généré : la personne passe par « Mot de passe oublié » pour définir le sien.
 
 ## Ce qui se passe à la connexion
