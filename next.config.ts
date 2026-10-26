@@ -110,6 +110,12 @@ const nextConfig: NextConfig = {
     // https://nextjs.org/docs/app/api-reference/config/next-config-js/optimizePackageImports
     // disabled because it adds 480 MB to the Scalingo image size by putting lots of .map files in .next ...
     // optimizePackageImports,
+
+    // Default since Next 16.4: shares the Turbopack runtime across routes in a single runtime.js, but it bootstraps the
+    // chunks with an inline <script> whose content changes on every build, so our hash-based CSP cannot allow it
+    // (nonces would require dynamic rendering of every page). Disabled to keep the <script src> chunk loading.
+    // Vercel plans to remove this flag and the non-shared code path: when that happens, the CSP will have to change.
+    turbopackSharedRuntime: false,
   },
   async headers() {
     return [
