@@ -1,18 +1,9 @@
-import { render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 import DemandFCRForm from './DemandFCRForm';
-
-const demandCollection = vi.hoisted(() => ({ isEnabled: true }));
-
-vi.mock('@/modules/chaleur-renouvelable/constants', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/modules/chaleur-renouvelable/constants')>()),
-  get IS_CCRT_DEMAND_ENABLED() {
-    return demandCollection.isEnabled;
-  },
-}));
 
 vi.mock('@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams', () => ({
   useChoixChauffageQueryParams: () => ({
@@ -32,12 +23,14 @@ vi.mock('@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParam
   }),
 }));
 
+const { submitDemand } = vi.hoisted(() => ({ submitDemand: vi.fn() }));
+
 vi.mock('@/modules/trpc/client', () => ({
   default: {
     batEnr: {
       createDemandeChaleurRenouvelable: {
         useMutation: () => ({
-          mutateAsync: vi.fn(),
+          mutateAsync: submitDemand,
         }),
       },
       getFranceRenovSpace: {
@@ -67,45 +60,77 @@ const eligibleHeatNetwork = {
 } satisfies HeatNetwork;
 
 describe('DemandFCRForm', () => {
-  beforeEach(() => {
-    demandCollection.isEnabled = true;
+  it.each([false, true])('shows the CCRT form in a covered territory (heat network eligible: %s)', (isHeatNetworkEligible) => {
+    const { container } = render(
+      <DemandFCRForm
+        alternativeHeatingSolutionLabels={[]}
+        eligibiliteReseauChaleur={isHeatNetworkEligible ? eligibleHeatNetwork : null}
+        isCcrtDemandEligible
+        isHeatNetworkEligible={isHeatNetworkEligible}
+        selectedRecipientId="public-advisor"
+        onSelectedRecipientChange={vi.fn()}
+        topSolution="PAC géothermique"
+      />
+    );
+
+    expect(screen.getByText('Faites-vous recontacter par un·e conseiller·ère')).toBeInTheDocument();
+    expect(container.querySelector('form')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Afficher les coordonnées' })).not.toBeInTheDocument();
   });
 
   it.each([
-    ['CCRT experimentation', false, true, 'public-advisor'],
-    ['previous refusal', true, true, 'public-advisor'],
-    ['outside experimentation', false, false, 'network-manager'],
-  ] as const)(
-    'directs %s to France Rénov when collection is suspended',
-    (_, isHeatNetworkEligible, isCcrtExperimentationBuildingEligible, selectedRecipientId) => {
-      demandCollection.isEnabled = false;
+    ['ineligible heat network', false, 'network-manager'],
+    ['previous refusal', true, 'public-advisor'],
+  ] as const)('directs %s to France Rénov without CCRT coverage', (_, isHeatNetworkEligible, selectedRecipientId) => {
+    const { container } = render(
+      <DemandFCRForm
+        alternativeHeatingSolutionLabels={[]}
+        eligibiliteReseauChaleur={isHeatNetworkEligible ? eligibleHeatNetwork : null}
+        isCcrtDemandEligible={false}
+        isHeatNetworkEligible={isHeatNetworkEligible}
+        selectedRecipientId={selectedRecipientId}
+        onSelectedRecipientChange={vi.fn()}
+        topSolution="Réseau de chaleur"
+      />
+    );
 
-      const { container } = render(
-        <DemandFCRForm
-          alternativeHeatingSolutionLabels={[]}
-          eligibiliteReseauChaleur={isHeatNetworkEligible ? eligibleHeatNetwork : null}
-          isCcrtExperimentationBuildingEligible={isCcrtExperimentationBuildingEligible}
-          isHeatNetworkEligible={isHeatNetworkEligible}
-          selectedRecipientId={selectedRecipientId}
-          onSelectedRecipientChange={vi.fn()}
-          topSolution="Réseau de chaleur"
-        />
-      );
+    expect(container.querySelector('#help-ademe')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Afficher les coordonnées' })).toBeInTheDocument();
+    expect(container.querySelector('form')).toBeNull();
+  });
 
-      expect(container.querySelector('#help-ademe')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Afficher les coordonnées' })).toBeInTheDocument();
-      expect(container.querySelector('form')).toBeNull();
-    }
-  );
+  it('shows France Rénov without confirming success when coverage disappears before submission', async () => {
+    submitDemand.mockResolvedValueOnce({ demandSubmissionResult: null, id: null });
+    const { container } = render(
+      <DemandFCRForm
+        alternativeHeatingSolutionLabels={[]}
+        eligibiliteReseauChaleur={null}
+        isCcrtDemandEligible
+        isHeatNetworkEligible={false}
+        selectedRecipientId="public-advisor"
+        onSelectedRecipientChange={vi.fn()}
+        topSolution="PAC géothermique"
+      />
+    );
 
-  it('keeps the classic connection form available when CCRT collection is suspended', () => {
-    demandCollection.isEnabled = false;
+    fireEvent.change(screen.getByRole('textbox', { name: /^Nom/ }), { target: { value: 'Test' } });
+    fireEvent.change(screen.getByRole('textbox', { name: /^Prénom/ }), { target: { value: 'Claire' } });
+    fireEvent.change(screen.getByRole('textbox', { name: /^Email/ }), { target: { value: 'claire@example.com' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: /J’accepte/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' }));
 
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Afficher les coordonnées' })).toBeInTheDocument());
+    expect(submitDemand).toHaveBeenCalledTimes(1);
+    expect(container.querySelector('form')).toBeNull();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('keeps the classic connection form available without CCRT coverage', () => {
     const { container } = render(
       <DemandFCRForm
         alternativeHeatingSolutionLabels={[]}
         eligibiliteReseauChaleur={eligibleHeatNetwork}
-        isCcrtExperimentationBuildingEligible
+        isCcrtDemandEligible={false}
         isHeatNetworkEligible
         selectedRecipientId="network-manager"
         onSelectedRecipientChange={vi.fn()}
@@ -123,7 +148,7 @@ describe('DemandFCRForm', () => {
       <DemandFCRForm
         alternativeHeatingSolutionLabels={[]}
         eligibiliteReseauChaleur={eligibleHeatNetwork}
-        isCcrtExperimentationBuildingEligible={false}
+        isCcrtDemandEligible={false}
         isHeatNetworkEligible
         selectedRecipientId="public-advisor"
         onSelectedRecipientChange={vi.fn()}

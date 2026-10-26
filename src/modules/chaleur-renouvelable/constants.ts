@@ -8,9 +8,6 @@ import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 export const MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE = `La surface doit être d’au moins ${businessRules.fcrMinimumAverageHousingArea.display} par logement.`;
 export const zAverageHousingArea = z.number().min(businessRules.fcrMinimumAverageHousingArea.value, MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE);
 
-// Controls dedicated CCRT collection independently of classic connection requests.
-export const IS_CCRT_DEMAND_ENABLED = true;
-
 export type ModeDeChauffageUsage = 'heatingAndHotWater' | 'hotWaterOnly';
 export type ModeDeChauffageId =
   | 'collective-heat-network'

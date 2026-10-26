@@ -16,7 +16,7 @@ import type {
   FranceRenovSpaceInput,
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
-import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, IS_CCRT_DEMAND_ENABLED } from '@/modules/chaleur-renouvelable/constants';
+import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '@/modules/chaleur-renouvelable/constants';
 import type { Context } from '@/modules/config/server/context-builder';
 import { type CreateDemandInput, type DemandSubmissionResult, fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { createDemand } from '@/modules/demands/server/creation-user';
@@ -36,7 +36,13 @@ import { stripDomainFromURL } from '@/utils/url';
 import { canProposeHeatNetwork } from '../heat-network-eligibility';
 import { getSimulationPrefillFromBatEnrBatiment } from '../simulation-prefill';
 import { getAltitudeByCoordinates } from './altimetry';
-import { applyCcrtAccessFilter, canUserAccessCcrtDemand, ensureCcrtDemandAccess, getCcrtTerritory } from './ccrt-access';
+import {
+  applyCcrtAccessFilter,
+  canUserAccessCcrtDemand,
+  ensureCcrtDemandAccess,
+  getCcrtTerritory,
+  hasCcrtTerritoryCoverage,
+} from './ccrt-access';
 import { selectDemandesChaleurRenouvelableForList, serializeDemandesChaleurRenouvelable } from './ccrt-demand-query';
 import { applyCcrtFollowUpUpdate } from './ccrt-demand-update';
 import { recordCcrtFollowUpChanges, recordCcrtPostHogEvent } from './ccrt-tracking';
@@ -564,7 +570,11 @@ export const getAddressEligibilityContext = async (input: AddressEligibilityCont
     getBatEnrAltitudeCoordinates(batEnrLookup.selectedBatEnrBatiment?.batiment_construction_id),
   ]);
   const altitudeCoordinates = batEnrAltitudeCoordinates ?? networkEligibilityCoordinates;
-  const altitude = (await getAltitudeByCoordinates(altitudeCoordinates)) ?? infos?.altitude_moyenne ?? null;
+  const [altitudeAtCoordinates, isCcrtCovered] = await Promise.all([
+    getAltitudeByCoordinates(altitudeCoordinates),
+    getCcrtTerritory(input.cityCode, infos?.departement_id ?? null).then(hasCcrtTerritoryCoverage),
+  ]);
+  const altitude = altitudeAtCoordinates ?? infos?.altitude_moyenne ?? null;
 
   return {
     altitude,
@@ -573,6 +583,7 @@ export const getAddressEligibilityContext = async (input: AddressEligibilityCont
     codeDepartement: infos?.departement_id ?? '',
     eligibiliteReseauChaleur,
     eligibiliteReseauFroid,
+    isCcrtCovered,
     selectedBatEnrBatiment: batEnrLookup.selectedBatEnrBatiment,
     shouldSelectBatEnrBatiment: batEnrLookup.shouldSelectBatEnrBatiment,
     temperatureRef: infos?.temperature_ref_altitude_moyenne != null ? Number(infos.temperature_ref_altitude_moyenne) : null,
@@ -665,7 +676,7 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
     };
   }
 
-  const ccrtDemandId = IS_CCRT_DEMAND_ENABLED ? await createCcrtExperimentationDemand(input) : null;
+  const ccrtDemandId = await createCcrtDemand(input);
 
   return {
     demandSubmissionResult: null,
@@ -681,10 +692,14 @@ const getRnicCoproprieteSafe = async (batimentConstructionId: string | null) => 
   }
 };
 
-const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable) => {
-  const departmentCode = (await getDemandeChaleurRenouvelableDepartmentCode(input)) ?? null;
-
+const createCcrtDemand = async (input: DemandeChaleurRenouvelable) => {
   if (input.housingType !== 'immeuble_chauffage_collectif') {
+    return null;
+  }
+
+  const departmentCode = (await getDemandeChaleurRenouvelableDepartmentCode(input)) ?? null;
+  const territory = await getCcrtTerritory(input.geoAddress?.cityCode ?? null, departmentCode);
+  if (!(await hasCcrtTerritoryCoverage(territory))) {
     return null;
   }
 
@@ -693,7 +708,6 @@ const createCcrtExperimentationDemand = async (input: DemandeChaleurRenouvelable
     getRnicCoproprieteSafe(input.batimentConstructionId),
   ]);
 
-  const territory = await getCcrtTerritory(input.geoAddress?.cityCode ?? null, departmentCode);
   const createdCcrtDemand = await kdb
     .insertInto('demands_chaleur_renouvelable')
     .values({

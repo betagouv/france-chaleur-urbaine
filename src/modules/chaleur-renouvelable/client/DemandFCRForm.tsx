@@ -16,7 +16,6 @@ import {
   ESPACE_EXTERIEUR_VALUES,
   type HeatingEnergy,
   heatingEnergyOptions,
-  IS_CCRT_DEMAND_ENABLED,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type OccupantStatus,
   occupantStatusOptions,
@@ -189,7 +188,7 @@ type DemandFCRFormProps = {
   alternativeHeatingSolutionLabels: string[];
   eligibiliteReseauChaleur: HeatNetwork | null;
   geoAddress?: BANAddressFeature;
-  isCcrtExperimentationBuildingEligible: boolean;
+  isCcrtDemandEligible: boolean;
   isHeatNetworkEligible: boolean;
   selectedRecipientId: ContactRecipientId;
   onSelectedRecipientChange: (recipientId: ContactRecipientId) => void;
@@ -203,22 +202,23 @@ export default function DemandFCRForm({
   alternativeHeatingSolutionLabels,
   eligibiliteReseauChaleur,
   geoAddress,
-  isCcrtExperimentationBuildingEligible,
+  isCcrtDemandEligible,
   isHeatNetworkEligible,
   selectedRecipientId,
   onSelectedRecipientChange,
   topSolution,
 }: DemandFCRFormProps) {
-  if (!isHeatNetworkEligible && (!IS_CCRT_DEMAND_ENABLED || !isCcrtExperimentationBuildingEligible)) {
+  if (!isHeatNetworkEligible && !isCcrtDemandEligible) {
     return <FranceRenovAdvisorCallout />;
   }
 
   return (
     <HeatNetworkDemandForm
+      key={geoAddress?.properties.citycode}
       alternativeHeatingSolutionLabels={alternativeHeatingSolutionLabels}
       eligibiliteReseauChaleur={eligibiliteReseauChaleur}
       geoAddress={geoAddress}
-      isCcrtExperimentationBuildingEligible={isCcrtExperimentationBuildingEligible}
+      isCcrtDemandEligible={isCcrtDemandEligible}
       isHeatNetworkEligible={isHeatNetworkEligible}
       selectedRecipientId={selectedRecipientId}
       onSelectedRecipientChange={onSelectedRecipientChange}
@@ -236,13 +236,14 @@ function HeatNetworkDemandForm({
   alternativeHeatingSolutionLabels,
   eligibiliteReseauChaleur,
   geoAddress,
-  isCcrtExperimentationBuildingEligible,
+  isCcrtDemandEligible,
   isHeatNetworkEligible,
   selectedRecipientId,
   onSelectedRecipientChange,
   topSolution,
 }: HeatNetworkDemandFormProps) {
   const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
+  const [isCcrtUnavailable, setIsCcrtUnavailable] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
   const [refusalPeriod, setRefusalPeriod] = useState('');
   const [refusalReason, setRefusalReason] = useState('');
@@ -339,6 +340,11 @@ function HeatNetworkDemandForm({
       surfaceArea,
     });
 
+    if (!result.demandSubmissionResult && !result.id) {
+      setIsCcrtUnavailable(true);
+      return;
+    }
+
     setSubmissionResult(
       result.demandSubmissionResult ?? {
         address: params.adresse ?? '',
@@ -378,8 +384,8 @@ function HeatNetworkDemandForm({
   const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
   const networkManager = eligibiliteReseauChaleur?.gestionnaire?.trim() || null;
   const isCcrtDemand = isPublicAdvisorSelected || !isHeatNetworkEligible;
-  const nextStepsContext = isCcrtExperimentationBuildingEligible && isCcrtDemand ? 'renewable-advisor' : 'heat-network';
-  const shouldShowFranceRenovAdvisor = isPublicAdvisorSelected && (!IS_CCRT_DEMAND_ENABLED || !isCcrtExperimentationBuildingEligible);
+  const nextStepsContext = isCcrtDemandEligible && isCcrtDemand ? 'renewable-advisor' : 'heat-network';
+  const shouldShowFranceRenovAdvisor = isCcrtDemand && (!isCcrtDemandEligible || isCcrtUnavailable);
 
   return (
     <section id="help-ademe" className="mt-6 scroll-mt-4 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">

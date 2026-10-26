@@ -1,6 +1,6 @@
 import type { Insertable } from 'kysely';
 import type { User } from 'next-auth';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
@@ -12,21 +12,14 @@ import {
 import { getBatEnrBatimentsSelectionContextByBanId } from '@/modules/chaleur-renouvelable/server/service';
 import { fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
+import type { Permission } from '@/modules/permissions/types';
 import { kdb, sql } from '@/server/db/kysely';
 import type { DB } from '@/server/db/kysely/database';
-import { cleanDatabase, seedCcrtExperimentationTerritory, seedCommune, seedTableUser } from '@/tests/fixtures';
-import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
+import { cleanDatabase, seedCcrtExperimentationTerritory, seedCommune, seedDepartement, seedRegion, seedTableUser } from '@/tests/fixtures';
+import { createTestCaller, forbiddenError, type TestCase, testUsers } from '@/tests/trpc-helpers';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import type { UserRole } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
-
-const demandCollection = vi.hoisted(() => ({ isEnabled: true }));
-
-vi.mock('@/modules/chaleur-renouvelable/constants', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/modules/chaleur-renouvelable/constants')>()),
-  get IS_CCRT_DEMAND_ENABLED() {
-    return demandCollection.isEnabled;
-  },
-}));
 
 vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
@@ -171,7 +164,6 @@ function buildCcrtExperimentationDemandInput(overrides: Partial<DemandeChaleurRe
 
 describe('batEnrRouter', () => {
   beforeEach(async () => {
-    demandCollection.isEnabled = true;
     await cleanDatabase();
     await seedCcrtExperimentationTerritory();
     vi.clearAllMocks();
@@ -179,6 +171,8 @@ describe('batEnrRouter', () => {
   });
 
   it('keeps the authoritative commune department when the fallback lookup is missing', async () => {
+    await seedTableUser([testUsers.ccrt]);
+    await seedDepartmentPermission(testUsers.ccrt.id!, '13');
     await seedCommune({ insee_com: '13055', insee_dep: '13', insee_reg: '93', siren_epci: 'EPCI-13' });
     const input = buildCcrtExperimentationDemandInput({
       geoAddress: {
@@ -241,6 +235,95 @@ describe('batEnrRouter', () => {
     });
   });
 
+  describe('CCRT territorial coverage', () => {
+    afterEach(async () => {
+      await kdb.deleteFrom('ept').where('code', '=', 'EPT-13').execute();
+    });
+
+    const defaultAccount = { active: true, role: 'ccrt' as const };
+    const departmentPermission = { resource_id: '13', type: 'departement' as const };
+    const cases: TestCase<{ active: boolean; role: UserRole; permission: Permission | null }, boolean>[] = [
+      { expectedOutput: true, input: { ...defaultAccount, permission: departmentPermission }, label: 'department permission' },
+      {
+        expectedOutput: true,
+        input: { ...defaultAccount, permission: { resource_id: 'EPCI-13', type: 'epci' } },
+        label: 'EPCI permission',
+      },
+      {
+        expectedOutput: true,
+        input: { ...defaultAccount, permission: { resource_id: '13055', type: 'commune' } },
+        label: 'commune permission',
+      },
+      { expectedOutput: true, input: { ...defaultAccount, permission: { resource_id: 'EPT-13', type: 'ept' } }, label: 'EPT permission' },
+      { expectedOutput: true, input: { ...defaultAccount, permission: { resource_id: '93', type: 'region' } }, label: 'region permission' },
+      {
+        expectedOutput: false,
+        input: { ...defaultAccount, permission: { resource_id: '75', type: 'departement' } },
+        label: 'another department',
+      },
+      {
+        expectedOutput: false,
+        input: { ...defaultAccount, permission: { resource_id: 'OTHER-EPCI-13', type: 'epci' } },
+        label: 'another EPCI in the department',
+      },
+      {
+        expectedOutput: false,
+        input: { ...defaultAccount, permission: { resource_id: '13', type: 'reseau_de_chaleur' } },
+        label: 'network permission',
+      },
+      {
+        expectedOutput: false,
+        input: { ...defaultAccount, permission: { resource_id: '13', type: 'organization' } },
+        label: 'organization permission',
+      },
+      { expectedOutput: false, input: { ...defaultAccount, permission: null }, label: 'no permission' },
+      { expectedOutput: false, input: { active: false, permission: departmentPermission, role: 'ccrt' }, label: 'inactive CCRT' },
+      { expectedOutput: false, input: { active: true, permission: departmentPermission, role: 'alec' }, label: 'ALEC account' },
+      { expectedOutput: false, input: { active: true, permission: departmentPermission, role: 'admin' }, label: 'admin account' },
+    ];
+
+    it.each(cases)('uses the same coverage for public results and submission: $label', async ({ input, expectedOutput }) => {
+      await seedDepartement({ insee_dep: '13', insee_reg: '93', nom: 'Bouches-du-Rhône' });
+      await seedRegion({ insee_reg: '93', nom: 'Provence-Alpes-Côte d’Azur' });
+      await seedCommune({ insee_com: '13055', insee_dep: '13', insee_reg: '93', siren_epci: 'EPCI-13' });
+      await kdb
+        .insertInto('ept')
+        .values({ code: 'EPT-13', membres: JSON.stringify([{ code: '13055', nom: 'Marseille' }]), nom: 'Test EPT', type: 'EPT' })
+        .execute();
+      await seedTableUser([{ ...testUsers.ccrt, active: input.active, role: input.role }]);
+      if (input.permission) {
+        await kdb
+          .insertInto('user_permissions')
+          .values({ ...input.permission, user_id: testUsers.ccrt.id! })
+          .execute();
+      }
+      mockedFetchJSON.mockImplementation(async (url) =>
+        String(url).includes('/buildings/address/') ? { results: [] } : String(url).includes('/elevation.json') ? { elevations: [0] } : []
+      );
+
+      const context = await createTestCaller(null).batEnr.getAddressEligibilityContext({
+        banId: 'BAN-TEST',
+        city: 'Marseille',
+        cityCode: '13055',
+        lat: 43.2965,
+        lon: 5.3698,
+      });
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
+        buildCcrtExperimentationDemandInput({ isPublicAdvisorSelected: true })
+      );
+
+      expect(context.isCcrtCovered).toStrictEqual(expectedOutput);
+      expect(result).toStrictEqual({ demandSubmissionResult: null, id: expectedOutput ? expect.any(String) : null });
+      expect(await kdb.selectFrom('demands_chaleur_renouvelable').select(['id', 'validated']).execute()).toStrictEqual(
+        expectedOutput ? [{ id: result.id, validated: false }] : []
+      );
+      expect(await kdb.selectFrom('demands').select('id').execute()).toStrictEqual([]);
+      expect(sentEmailTemplate.mock.calls.map(([emailKey]) => emailKey)).toStrictEqual(
+        expectedOutput ? ['demands.demandeur.confirmation-demande-chaleur-renouvelable'] : []
+      );
+    });
+  });
+
   describe('batEnr.createDemandeChaleurRenouvelable', () => {
     it.each([
       ['previous refusal', { isPublicAdvisorSelected: true }],
@@ -249,9 +332,7 @@ describe('batEnrRouter', () => {
       ['unspecified radiators', { radiatorType: null }],
       ['eligible network at 200 m', { heatNetworkEligibility: { distance: 200, inPDP: true, isEligible: true } }],
       ['eligible network without distance', { heatNetworkEligibility: { distance: null, inPDP: false, isEligible: true } }],
-    ] as const)('skips CCRT collection without side effects for %s when suspended', async (_, overrides) => {
-      demandCollection.isEnabled = false;
-
+    ] as const)('skips CCRT collection without side effects for %s without a covering CCRT account', async (_, overrides) => {
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(buildCcrtExperimentationDemandInput(overrides));
 
       expect(result).toStrictEqual({ demandSubmissionResult: null, id: null });
@@ -262,8 +343,7 @@ describe('batEnrRouter', () => {
       expect(mockedFetchJSON).not.toHaveBeenCalled();
     });
 
-    it('crée une demande classique hors expérimentation quand le réseau de chaleur est éligible', async () => {
-      demandCollection.isEnabled = false;
+    it('crée une demande classique sans compte CCRT couvrant le territoire quand le réseau est éligible', async () => {
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
         buildCcrtExperimentationDemandInput({
           address: '10 rue du test 75001 Paris',
@@ -313,32 +393,37 @@ describe('batEnrRouter', () => {
       expect(mockedFetchJSON).toHaveBeenCalledTimes(0);
     });
 
-    it.each([false, true])('does not use pilot departments as a server permission gate (refusal: %s)', async (isPublicAdvisorSelected) => {
-      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
-        buildCcrtExperimentationDemandInput({
-          geoAddress: {
-            city: 'Paris',
-            cityCode: '75056',
-            context: '75, Paris, Île-de-France',
-            coordinates: [2.3522, 48.8566],
-            postcode: '75001',
-          },
-          heatNetworkEligibility: { distance: 450, inPDP: false, isEligible: false },
-          isPublicAdvisorSelected,
-        })
-      );
-      expect(await kdb.selectFrom('demands').select('id').execute()).toStrictEqual([]);
-      expect(await kdb.selectFrom('demands_chaleur_renouvelable').select(['id', 'validated']).execute()).toStrictEqual([
-        { id: result.id, validated: false },
-      ]);
-      expect(result).toStrictEqual({ demandSubmissionResult: null, id: result.id });
-      expect(sentEmailTemplate.mock.calls.map(([key]) => key)).toStrictEqual([
-        'demands.demandeur.confirmation-demande-chaleur-renouvelable',
-      ]);
-    });
+    it.each([false, true])(
+      'accepts a covered territory outside the former pilot departments (refusal: %s)',
+      async (isPublicAdvisorSelected) => {
+        await seedCommune({ insee_com: '75056', insee_dep: '75', insee_reg: '11', siren_epci: 'EPCI-75' });
+        await seedTableUser([testUsers.ccrt]);
+        await seedDepartmentPermission(testUsers.ccrt.id!, '75');
+        const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
+          buildCcrtExperimentationDemandInput({
+            geoAddress: {
+              city: 'Paris',
+              cityCode: '75056',
+              context: '75, Paris, Île-de-France',
+              coordinates: [2.3522, 48.8566],
+              postcode: '75001',
+            },
+            heatNetworkEligibility: { distance: 450, inPDP: false, isEligible: false },
+            isPublicAdvisorSelected,
+          })
+        );
+        expect(await kdb.selectFrom('demands').select('id').execute()).toStrictEqual([]);
+        expect(await kdb.selectFrom('demands_chaleur_renouvelable').select(['id', 'validated']).execute()).toStrictEqual([
+          { id: result.id, validated: false },
+        ]);
+        expect(result).toStrictEqual({ demandSubmissionResult: null, id: result.id });
+        expect(sentEmailTemplate.mock.calls.map(([key]) => key)).toStrictEqual([
+          'demands.demandeur.confirmation-demande-chaleur-renouvelable',
+        ]);
+      }
+    );
 
     it('crée une demande classique en expérimentation pour un immeuble collectif éligible au réseau de chaleur', async () => {
-      demandCollection.isEnabled = false;
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(buildCcrtExperimentationDemandInput());
 
       const createdDemandesChaleurRenouvelable = await kdb.selectFrom('demands_chaleur_renouvelable').select(['id']).execute();
@@ -410,6 +495,8 @@ describe('batEnrRouter', () => {
     });
 
     it('crée une demande chaleur renouvelable liée depuis le lien email même quand le réseau est éligible', async () => {
+      await seedTableUser([testUsers.ccrt]);
+      await seedDepartmentPermission(testUsers.ccrt.id!, '13');
       const originDemand = await seedOriginDemand();
 
       const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
@@ -539,6 +626,8 @@ describe('batEnrRouter', () => {
     });
 
     it('enregistre la demande chaleur renouvelable même si le RNIC est indisponible', async () => {
+      await seedTableUser([testUsers.ccrt]);
+      await seedDepartmentPermission(testUsers.ccrt.id!, '13');
       await seedRnicLookupBuilding();
       mockedFetchJSON.mockRejectedValue(new Error('RNIC unavailable'));
 

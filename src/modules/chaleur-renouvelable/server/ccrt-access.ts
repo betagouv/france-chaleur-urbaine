@@ -83,6 +83,20 @@ export const getCcrtTerritory = async (cityCode: string | null, departmentCode: 
   };
 };
 
+/**
+ * Opens public accompaniment only where an active CCRT account has territorial access.
+ */
+export const hasCcrtTerritoryCoverage = async (territory: Awaited<ReturnType<typeof getCcrtTerritory>>) => {
+  const users = await getUsersWithAccessToDemand({
+    ...territory,
+    network_id: null,
+    network_organization_id: null,
+    network_type: null,
+    validated: false,
+  });
+  return users.some((user) => user.role === 'ccrt');
+};
+
 export const listCcrtUsersWithAccess = async (demand: Awaited<ReturnType<typeof ensureCcrtDemandAccess>>) => {
   const [users, admins] = await Promise.all([
     demand.validated ? getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null }) : [],

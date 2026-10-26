@@ -59,6 +59,7 @@ const addressEligibilityContext = {
   codeDepartement: '13',
   eligibiliteReseauChaleur: heatNetworkEligibility,
   eligibiliteReseauFroid: null,
+  isCcrtCovered: true,
   selectedBatEnrBatiment: undefined,
   shouldSelectBatEnrBatiment: false,
   temperatureRef: 0,

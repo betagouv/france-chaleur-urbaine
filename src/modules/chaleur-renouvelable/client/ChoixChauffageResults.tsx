@@ -16,9 +16,7 @@ import { HeatNetworkRecommendedSolutionCard } from '@/modules/chaleur-renouvelab
 import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui/ResultsSection';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
-import { IS_CCRT_DEMAND_ENABLED } from '../constants';
 import { canProposeHeatNetwork } from '../heat-network-eligibility';
-import { isCcrtExperimentationEligible } from './ccrt-experimentation';
 import { getAlternativeHeatingSolutionLabels } from './heating-modes/selectors';
 import { ParamsForm } from './ParamsForm';
 
@@ -27,7 +25,7 @@ export default function ChoixChauffageResults() {
   const [selectedContactRecipientId, setSelectedContactRecipientId] = useState<ContactRecipientId>('network-manager');
   const {
     batEnrBatiments,
-    codeDepartement,
+    isCcrtCovered,
     contactForm,
     coutParAnGaz,
     coutParAnGazHotWaterOnly,
@@ -50,8 +48,7 @@ export default function ChoixChauffageResults() {
     urlParams,
   } = useChoixChauffageResults();
   const params = urlParams.params;
-  const isCcrtExperimentationBuildingEligible =
-    IS_CCRT_DEMAND_ENABLED && isCcrtExperimentationEligible(codeDepartement, effectiveTypeLogement);
+  const isCcrtDemandEligible = isCcrtCovered && effectiveTypeLogement === 'immeuble_chauffage_collectif';
   const isHeatNetworkEligible = canProposeHeatNetwork({
     hasAlreadyReceivedHeatNetworkRefusal: situation.hasAlreadyReceivedHeatNetworkRefusal,
     heatNetworkEligibility: situation.eligibiliteReseauChaleur,
@@ -125,7 +122,7 @@ export default function ChoixChauffageResults() {
                 selectedBatiment={selectedBatEnrBatiment}
                 situation={situation}
               />
-              <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />
+              <HeatNetworkContactSteps isCcrtDemandEligible={isCcrtDemandEligible} onSelectRecipient={handleSelectContactRecipient} />
             </>
           )}
           <ResultsSection
@@ -146,7 +143,7 @@ export default function ChoixChauffageResults() {
             alternativeHeatingSolutionLabels={alternativeHeatingSolutionLabels}
             eligibiliteReseauChaleur={situation.eligibiliteReseauChaleur}
             geoAddress={geoAddress}
-            isCcrtExperimentationBuildingEligible={isCcrtExperimentationBuildingEligible}
+            isCcrtDemandEligible={isCcrtDemandEligible}
             isHeatNetworkEligible={isHeatNetworkEligible}
             selectedRecipientId={selectedContactRecipientId}
             onSelectedRecipientChange={setSelectedContactRecipientId}

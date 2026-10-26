@@ -15,6 +15,7 @@ type EligibilityState = {
   batEnrBatiments: BatEnrBatiment[];
   selectedBatEnrBatiment?: BatEnrBatiment;
   codeDepartement: string;
+  isCcrtCovered: boolean;
   temperatureRef: number | null;
   eligibiliteReseauChaleur: HeatNetwork | null;
   eligibiliteReseauFroid: ColdNetworkEligibility | null;
@@ -29,6 +30,7 @@ const emptyState: EligibilityState = {
   eligibiliteReseauChaleur: null,
   eligibiliteReseauFroid: null,
   geoAddress: undefined,
+  isCcrtCovered: false,
   selectedBatEnrBatiment: undefined,
   shouldSelectBatEnrBatiment: false,
   temperatureRef: null,
@@ -76,6 +78,7 @@ export function useAddressEligibility(
           eligibiliteReseauChaleur: addressEligibilityContext.eligibiliteReseauChaleur,
           eligibiliteReseauFroid: addressEligibilityContext.eligibiliteReseauFroid,
           geoAddress,
+          isCcrtCovered: addressEligibilityContext.isCcrtCovered,
           selectedBatEnrBatiment: addressEligibilityContext.selectedBatEnrBatiment,
           shouldSelectBatEnrBatiment: addressEligibilityContext.shouldSelectBatEnrBatiment,
           temperatureRef: addressEligibilityContext.temperatureRef,
