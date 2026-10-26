@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'motion/react';
-import Link from 'next/link';
 import { useQueryState } from 'nuqs';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -9,6 +8,7 @@ import Box from '@/components/ui/Box';
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import Section, { SectionContent, SectionSubtitle, SectionTitle } from '@/components/ui/Section';
 import { trackPostHogEvent } from '@/modules/analytics/client';

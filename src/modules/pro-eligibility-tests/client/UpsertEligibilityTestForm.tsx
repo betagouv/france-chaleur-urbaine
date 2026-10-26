@@ -4,6 +4,7 @@ import type { z } from 'zod';
 
 import DSFRSelect from '@/components/form/dsfr/Select';
 import Upload from '@/components/form/dsfr/Upload';
+import Link from '@/components/ui/Link';
 import Notice, { type NoticeProps } from '@/components/ui/Notice';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { Form } from '@/modules/form/Form';
@@ -12,15 +13,16 @@ import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { parseUnknownCharsetText } from '@/utils/strings';
 
-import {
-  allowedExtensions,
-  FormErrorMessage,
-  NO_SEPARATOR_VALUE,
-  zCreateEligibilityTestInput,
-  zUpdateEligibilityTestInput,
-} from '../constants';
+import { allowedExtensions, NO_SEPARATOR_VALUE, zCreateEligibilityTestInput, zUpdateEligibilityTestInput } from '../constants';
 import { analyzeCSV, type ColumnMapping } from '../utils/csvColumnDetection';
 import CSVImportTable from './CSVImportTable';
+
+const FormErrorMessage = () => (
+  <span>
+    Une erreur est survenue. Veuillez réessayer plus tard, si le problème persiste contactez-nous via le{' '}
+    <Link href="/contact">formulaire de contact</Link>
+  </span>
+);
 
 // create + update inputs merged; the runtime values stay mode-consistent (name only when
 // creating, id only when updating) so each mode's strict schema validates its own shape

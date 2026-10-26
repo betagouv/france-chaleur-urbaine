@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import * as jsxRuntime from 'react/jsx-runtime';
@@ -10,6 +9,8 @@ import remarkDirectiveRehype from 'remark-directive-rehype';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
+
+import Link from '@/components/ui/Link';
 
 /**
  * MarkdownWrapper - A React component that processes markdown with custom directives
@@ -30,14 +31,7 @@ import { unified } from 'unified';
 
 import { isExternalLink, MarkdownWrapperStyled } from './MarkdownWrapper.style';
 
-export const RoutedLink = (props: any) => {
-  const { href, target } = props;
-  const extProps = {
-    rel: href && isExternalLink(href) ? ['nofollow', 'noopener', 'noreferrer'].join(' ') : '',
-    target: target || (href && isExternalLink(href) ? '_blank' : undefined),
-  };
-  return <Link {...props} {...extProps} />;
-};
+export const RoutedLink = ({ href = '', ...props }: any) => <Link href={href} isExternal={!!isExternalLink(href)} {...props} />;
 
 const processor = (extender: Record<string, unknown> = {}) =>
   unified()

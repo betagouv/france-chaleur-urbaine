@@ -1,8 +1,6 @@
 import SEO from '@/components/SEO';
 import './globals.css';
 
-import Link from 'next/link';
-
 type LinkCardProps = {
   href: string;
   title: string;
@@ -11,7 +9,7 @@ type LinkCardProps = {
 
 function LinkCard({ href, title, description }: LinkCardProps) {
   return (
-    <Link
+    <a
       href={href}
       className="flex-1 bg-gray-100 p-4 rounded-lg no-underline text-inherit border border-gray-200 hover:border-primary hover:bg-blue-50 transition-all group"
     >
@@ -20,7 +18,7 @@ function LinkCard({ href, title, description }: LinkCardProps) {
         <span className="text-primary text-xl transition-transform group-hover:translate-x-1">→</span>
       </div>
       <p className="text-sm text-faded leading-snug">{description}</p>
-    </Link>
+    </a>
   );
 }
 

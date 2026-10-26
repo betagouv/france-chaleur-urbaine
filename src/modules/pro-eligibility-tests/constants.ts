@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { z } from 'zod';
 
 import { businessRules } from '@/modules/app/business-rules';
@@ -103,13 +102,6 @@ export const zRenameProEligibilityTestRequest = z.strictObject({
   name: z.string().min(1, 'Le nom ne peut pas être vide').max(200, 'Le nom ne peut pas contenir plus de 200 caractères'),
 });
 export type RenameProEligibilityTestRequest = z.infer<typeof zRenameProEligibilityTestRequest>;
-
-export const FormErrorMessage = () => (
-  <span>
-    Une erreur est survenue. Veuillez réessayer plus tard, si le problème persiste contactez-nous via le{' '}
-    <Link href="/contact">formulaire de contact</Link>
-  </span>
-);
 
 /**
  * Labels des types de transition d'éligibilité

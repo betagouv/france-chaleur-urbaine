@@ -1,9 +1,9 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import Link from 'next/link';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';
 import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 import { dataSourcesVersions } from '@/modules/app/constants';
 import { withAuthentication } from '@/server/authentication';
 
