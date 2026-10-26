@@ -8,7 +8,8 @@ import { stopPropagation } from '@/utils/events';
 
 export type DialogProps = PropsWithChildren<{
   trigger?: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
+  className?: string;
   description?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   open?: boolean;
@@ -48,7 +49,7 @@ const focusFirstField = (event: Event) => {
  * Layout titre + bouton « Fermer » alignés sur la même ligne, animations motion intégrées,
  * tailles `sm`/`md`/`lg`, et `useDialog()` pour fermer depuis le contenu.
  */
-const Dialog = ({ children, trigger, title, description, size = 'md', open, onOpenChange, hideCloseButton }: DialogProps) => {
+const Dialog = ({ children, trigger, title, description, size = 'md', open, onOpenChange, hideCloseButton, className }: DialogProps) => {
   const handleClose = () => {
     onOpenChange?.(false);
   };
@@ -83,7 +84,8 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
               size === 'sm' && 'max-w-sm',
               size === 'md' && 'max-w-lg',
               size === 'lg' && 'max-w-4xl',
-              size === 'xl' && 'max-w-6xl'
+              size === 'xl' && 'max-w-6xl',
+              className
             )}
             initial={{ opacity: 0, translateY: '-50%', x: '-50%', y: -10 }}
             animate={{ opacity: 1, translateY: '-50%', x: '-50%', y: 0 }}

@@ -17,7 +17,7 @@ L'équipe France Chaleur Urbaine. Un admin voit tout et pilote l'ensemble — ut
 | Réseaux | [Gestion des réseaux](/admin/reseaux) | Gérer les réseaux de chaleur et de froid |
 | Organisations | [Gestion des organisations](/admin/organizations) | Rattacher les réseaux à un exploitant, gérer les accès API |
 | Pilotage | [Activité du site](/admin/events), [Conversion](/admin/conversion) (et son [contrôle des abus](/admin/conversion/abus)), [Tests d'adresses](/admin/tests-adresses) | Suivre l'activité, l'entonnoir de conversion et les tests |
-| Emails | [Modèles d'emails](/admin/emails), [Délivrabilité des emails](/admin/email-delivery) | Prévisualiser les modèles, repérer les adresses bloquées côté Brevo et les débloquer (voir [Relances et notifications](/admin/doc/relances-notifications)) |
+| Emails | [Emails automatiques](/admin/emails), [Délivrabilité des emails](/admin/email-delivery) | Prévisualiser les modèles, repérer les adresses bloquées côté Brevo et les débloquer (voir [Relances et notifications](/admin/doc/relances-notifications)) |
 | Système | [Suivi des tâches](/admin/jobs), [Diagnostic système](/admin/diagnostic), [Diagnostic des données](/admin/data-diagnostic) | Surveiller les tâches et crons, repérer les incohérences |
 
 ## Ses actions sur une demande
@@ -38,7 +38,7 @@ Points à retenir :
 
 - **La validation est le geste clé de l'admin** : une demande reste invisible des gestionnaires tant qu'il ne l'a pas validée (voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande)).
 - Il peut **changer le statut** de n'importe quelle demande directement, mais le suivi courant reste au gestionnaire responsable : ce pouvoir sert à corriger ou clôturer, pas à traiter.
-- Créer un **compte gestionnaire actif** déclenche le seul email lié à une action admin ([« Ouverture d'espace gestionnaire »](/admin/emails?type=auth.gestionnaire.ouverture-espace)) ; créer un compte d'un autre rôle n'envoie **aucun** email — c'est à l'admin de prévenir la personne (voir [Inscription et comptes](/admin/doc/inscription-comptes)).
+- Créer un **compte gestionnaire actif** déclenche l'email [«&nbsp;Ouverture d'espace gestionnaire&nbsp;»](/admin/emails?type=auth.gestionnaire.ouverture-espace). L'envoi de la [version CCRT adaptée aux demandes d'accompagnement](/admin/emails?type=auth.ccrt.ouverture-espace) est temporairement suspendu par `IS_CCRT_EMAIL_ENABLED = false`, sans empêcher la création d'un compte CCRT actif. Les comptes créés inactifs et les autres rôles ne reçoivent aucun email d'ouverture ; c'est à l'admin de prévenir la personne (voir [Inscription et comptes](/admin/doc/inscription-comptes)).
 - Toute création ou modification d'un compte (hors admin) est répercutée sur le contact correspondant dans ADEME Connect, le CRM de l'ADEME. La désactivation et la suppression ne le sont pas.
 
 ## Outils spécifiques

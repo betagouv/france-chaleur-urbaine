@@ -16,7 +16,8 @@ import { HeatNetworkRecommendedSolutionCard } from '@/modules/chaleur-renouvelab
 import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui/ResultsSection';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
-import { IS_CCRT_DEMAND_ENABLED, isCcrtExperimentationEligible } from '../constants';
+import { canProposeHeatNetwork } from '../heat-network-eligibility';
+import { getAlternativeHeatingSolutionLabels } from './heating-modes/selectors';
 import { ParamsForm } from './ParamsForm';
 
 export default function ChoixChauffageResults() {
@@ -24,7 +25,7 @@ export default function ChoixChauffageResults() {
   const [selectedContactRecipientId, setSelectedContactRecipientId] = useState<ContactRecipientId>('network-manager');
   const {
     batEnrBatiments,
-    codeDepartement,
+    isCcrtCovered,
     contactForm,
     coutParAnGaz,
     coutParAnGazHotWaterOnly,
@@ -47,16 +48,19 @@ export default function ChoixChauffageResults() {
     urlParams,
   } = useChoixChauffageResults();
   const params = urlParams.params;
-  const isCcrtExperimentationBuildingEligible =
-    IS_CCRT_DEMAND_ENABLED && isCcrtExperimentationEligible(codeDepartement, effectiveTypeLogement);
-  const isHeatNetworkEligible = situation.eligibiliteReseauChaleur?.isEligible === true && !situation.hasAlreadyReceivedHeatNetworkRefusal;
+  const isCcrtDemandEligible = isCcrtCovered && effectiveTypeLogement === 'immeuble_chauffage_collectif';
+  const isHeatNetworkEligible = canProposeHeatNetwork({
+    hasAlreadyReceivedHeatNetworkRefusal: situation.hasAlreadyReceivedHeatNetworkRefusal,
+    heatNetworkEligibility: situation.eligibiliteReseauChaleur,
+    radiatorType: situation.typeRadiateur,
+  });
   const heatNetworkSolution = situation.eligibiliteReseauChaleur
     ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network')
     : undefined;
   const displayedSolutions = heatNetworkSolution
     ? modesEnriched.filter((modeDeChauffage) => modeDeChauffage.id !== heatNetworkSolution.id)
     : modesEnriched;
-  const alternativeHeatingSolutionLabels = displayedSolutions.map((modeDeChauffage) => modeDeChauffage.label).slice(0, 3);
+  const alternativeHeatingSolutionLabels = getAlternativeHeatingSolutionLabels(modesEnriched);
 
   const handleSelectContactRecipient = (recipientId: ContactRecipientId) => {
     if (recipientId === 'public-advisor') {
@@ -118,7 +122,7 @@ export default function ChoixChauffageResults() {
                 selectedBatiment={selectedBatEnrBatiment}
                 situation={situation}
               />
-              <HeatNetworkContactSteps onSelectRecipient={handleSelectContactRecipient} />
+              <HeatNetworkContactSteps isCcrtDemandEligible={isCcrtDemandEligible} onSelectRecipient={handleSelectContactRecipient} />
             </>
           )}
           <ResultsSection
@@ -139,7 +143,7 @@ export default function ChoixChauffageResults() {
             alternativeHeatingSolutionLabels={alternativeHeatingSolutionLabels}
             eligibiliteReseauChaleur={situation.eligibiliteReseauChaleur}
             geoAddress={geoAddress}
-            isCcrtExperimentationBuildingEligible={isCcrtExperimentationBuildingEligible}
+            isCcrtDemandEligible={isCcrtDemandEligible}
             isHeatNetworkEligible={isHeatNetworkEligible}
             selectedRecipientId={selectedContactRecipientId}
             onSelectedRecipientChange={setSelectedContactRecipientId}

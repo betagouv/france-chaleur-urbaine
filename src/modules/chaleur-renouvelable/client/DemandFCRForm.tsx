@@ -1,8 +1,7 @@
 import { useStore } from '@tanstack/react-form';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { z } from 'zod';
 
-import FieldWrapper from '@/components/form/dsfr/FieldWrapper';
 import Dialog from '@/components/ui/Dialog';
 import Link from '@/components/ui/Link';
 import RichSelect from '@/components/ui/RichSelect';
@@ -17,12 +16,10 @@ import {
   ESPACE_EXTERIEUR_VALUES,
   type HeatingEnergy,
   heatingEnergyOptions,
-  IS_CCRT_DEMAND_ENABLED,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type OccupantStatus,
   occupantStatusOptions,
   type ProjectStatus,
-  projectStatusOptions,
   zContactFormChaleurRenouvelable,
 } from '@/modules/chaleur-renouvelable/constants';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
@@ -35,6 +32,8 @@ import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
+
+import { ProjectStatusSelect } from './ProjectStatusSelect';
 
 const contactRecipients = [
   {
@@ -155,152 +154,6 @@ function ContactRecipientSelector({
   );
 }
 
-function ProjectStatusSelect({
-  isPublicAdvisorSelected,
-  onChange,
-  placeholder = 'Sélectionner une ou plusieurs étapes',
-  value,
-}: {
-  isPublicAdvisorSelected: boolean;
-  onChange: (value: ProjectStatus[]) => void;
-  placeholder?: string;
-  value: ProjectStatus[];
-}) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const triggerLabel = getProjectStatusTriggerLabel(value, placeholder);
-
-  const handleToggleOption = (optionValue: ProjectStatus) => {
-    const nextValue = value.includes(optionValue)
-      ? value.filter((selectedValue) => selectedValue !== optionValue)
-      : [...value, optionValue];
-
-    onChange(nextValue);
-
-    if (nextValue.length > 0) {
-      trackPostHogEvent('fcr_contact:project_stage_selected', {
-        is_raccordable: !isPublicAdvisorSelected,
-        stages: nextValue,
-      });
-    }
-  };
-
-  const handleTriggerClick = () => {
-    setIsOpen((currentIsOpen) => !currentIsOpen);
-  };
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handleDocumentPointerDown = (event: PointerEvent) => {
-      if (event.target instanceof Node && !containerRef.current?.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('pointerdown', handleDocumentPointerDown);
-
-    return () => {
-      document.removeEventListener('pointerdown', handleDocumentPointerDown);
-    };
-  }, [isOpen]);
-
-  return (
-    <div ref={containerRef}>
-      <FieldWrapper
-        label={
-          <>
-            Où en êtes-vous de votre projet ?<small> (Optionnel)</small>
-          </>
-        }
-        className="mb-0"
-      >
-        <div className="relative">
-          <button
-            type="button"
-            className="fr-select w-full cursor-pointer bg-white text-left"
-            aria-expanded={isOpen}
-            aria-haspopup="listbox"
-            onClick={handleTriggerClick}
-            onKeyDown={(event) => {
-              if (event.key === 'Escape') {
-                setIsOpen(false);
-              }
-            }}
-          >
-            <span className={cx('block truncate whitespace-nowrap overflow-hidden text-left', value.length === 0 && 'text-gray-500')}>
-              {triggerLabel}
-            </span>
-          </button>
-
-          {isOpen && (
-            <ProjectStatusOptionList selectedValues={value} onClose={() => setIsOpen(false)} onToggleOption={handleToggleOption} />
-          )}
-        </div>
-      </FieldWrapper>
-    </div>
-  );
-}
-
-function ProjectStatusOptionList({
-  onClose,
-  onToggleOption,
-  selectedValues,
-}: {
-  onClose: () => void;
-  onToggleOption: (optionValue: ProjectStatus) => void;
-  selectedValues: ProjectStatus[];
-}) {
-  return (
-    <div className="absolute top-full right-0 left-0 z-50 mt-1 border border-gray-200 bg-white shadow-lg">
-      <div className="flex justify-end border-b border-gray-200 px-2 py-1">
-        <button type="button" className="fr-icon-close-line text-sm" aria-label="Fermer la liste" onClick={onClose} />
-      </div>
-
-      <ul className="max-h-64 overflow-auto p-0" role="listbox" aria-multiselectable="true">
-        {projectStatusOptions.map((option) => {
-          const optionValue = option.nativeInputProps.value;
-          const isSelected = selectedValues.includes(optionValue);
-
-          return (
-            <li key={optionValue} className="p-0">
-              <button
-                type="button"
-                className={cx('flex w-full cursor-pointer items-start gap-3 px-4 py-2 text-left', isSelected && 'bg-blue-50')}
-                aria-selected={isSelected}
-                role="option"
-                onClick={() => onToggleOption(optionValue)}
-                onMouseDown={(event) => event.preventDefault()}
-              >
-                <span
-                  className={cx(
-                    'mt-1 flex h-4 w-4 p-2 shrink-0 items-center justify-center border border-blue',
-                    isSelected && 'bg-blue text-white'
-                  )}
-                  aria-hidden="true"
-                >
-                  {isSelected && <span className="fr-icon-check-line" />}
-                </span>
-                <span>{option.label}</span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
-
-function getProjectStatusTriggerLabel(value: ProjectStatus[], placeholder: string) {
-  if (value.length === 0) {
-    return placeholder;
-  }
-
-  return value.length === 1 ? value[0] : `${value.length} étapes sélectionnées`;
-}
-
 function getFormTitle(isHeatNetworkEligible: boolean) {
   return isHeatNetworkEligible
     ? 'Faites-vous recontacter par le gestionnaire de réseau'
@@ -335,7 +188,7 @@ type DemandFCRFormProps = {
   alternativeHeatingSolutionLabels: string[];
   eligibiliteReseauChaleur: HeatNetwork | null;
   geoAddress?: BANAddressFeature;
-  isCcrtExperimentationBuildingEligible: boolean;
+  isCcrtDemandEligible: boolean;
   isHeatNetworkEligible: boolean;
   selectedRecipientId: ContactRecipientId;
   onSelectedRecipientChange: (recipientId: ContactRecipientId) => void;
@@ -349,22 +202,23 @@ export default function DemandFCRForm({
   alternativeHeatingSolutionLabels,
   eligibiliteReseauChaleur,
   geoAddress,
-  isCcrtExperimentationBuildingEligible,
+  isCcrtDemandEligible,
   isHeatNetworkEligible,
   selectedRecipientId,
   onSelectedRecipientChange,
   topSolution,
 }: DemandFCRFormProps) {
-  if (!isHeatNetworkEligible && (!IS_CCRT_DEMAND_ENABLED || !isCcrtExperimentationBuildingEligible)) {
+  if (!isHeatNetworkEligible && !isCcrtDemandEligible) {
     return <FranceRenovAdvisorCallout />;
   }
 
   return (
     <HeatNetworkDemandForm
+      key={geoAddress?.properties.citycode}
       alternativeHeatingSolutionLabels={alternativeHeatingSolutionLabels}
       eligibiliteReseauChaleur={eligibiliteReseauChaleur}
       geoAddress={geoAddress}
-      isCcrtExperimentationBuildingEligible={isCcrtExperimentationBuildingEligible}
+      isCcrtDemandEligible={isCcrtDemandEligible}
       isHeatNetworkEligible={isHeatNetworkEligible}
       selectedRecipientId={selectedRecipientId}
       onSelectedRecipientChange={onSelectedRecipientChange}
@@ -382,13 +236,14 @@ function HeatNetworkDemandForm({
   alternativeHeatingSolutionLabels,
   eligibiliteReseauChaleur,
   geoAddress,
-  isCcrtExperimentationBuildingEligible,
+  isCcrtDemandEligible,
   isHeatNetworkEligible,
   selectedRecipientId,
   onSelectedRecipientChange,
   topSolution,
 }: HeatNetworkDemandFormProps) {
   const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
+  const [isCcrtUnavailable, setIsCcrtUnavailable] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
   const [refusalPeriod, setRefusalPeriod] = useState('');
   const [refusalReason, setRefusalReason] = useState('');
@@ -485,6 +340,11 @@ function HeatNetworkDemandForm({
       surfaceArea,
     });
 
+    if (!result.demandSubmissionResult && !result.id) {
+      setIsCcrtUnavailable(true);
+      return;
+    }
+
     setSubmissionResult(
       result.demandSubmissionResult ?? {
         address: params.adresse ?? '',
@@ -524,8 +384,8 @@ function HeatNetworkDemandForm({
   const shouldShowOrganizationName = hasOrganizationNameField(selectedOccupantStatus);
   const networkManager = eligibiliteReseauChaleur?.gestionnaire?.trim() || null;
   const isCcrtDemand = isPublicAdvisorSelected || !isHeatNetworkEligible;
-  const nextStepsContext = isCcrtExperimentationBuildingEligible && isCcrtDemand ? 'renewable-advisor' : 'heat-network';
-  const shouldShowFranceRenovAdvisor = isPublicAdvisorSelected && (!IS_CCRT_DEMAND_ENABLED || !isCcrtExperimentationBuildingEligible);
+  const nextStepsContext = isCcrtDemandEligible && isCcrtDemand ? 'renewable-advisor' : 'heat-network';
+  const shouldShowFranceRenovAdvisor = isCcrtDemand && (!isCcrtDemandEligible || isCcrtUnavailable);
 
   return (
     <section id="help-ademe" className="mt-6 scroll-mt-4 rounded-sm bg-[#FFF7D7] p-6 text-(--text-title-grey)">
@@ -641,23 +501,11 @@ function HeatNetworkDemandForm({
                   {(field) => {
                     const projectStatus = field.state.value ?? [];
                     return (
-                      <>
-                        <ProjectStatusSelect
-                          value={projectStatus}
-                          onChange={field.handleChange}
-                          isPublicAdvisorSelected={isPublicAdvisorSelected || !isHeatNetworkEligible}
-                        />
-
-                        {projectStatus.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {projectStatus.map((status) => (
-                              <span key={status} className="rounded-full bg-[#E3E3FD] px-3 py-1 text-xs font-medium text-blue">
-                                {status}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </>
+                      <ProjectStatusSelect
+                        value={projectStatus}
+                        onChange={field.handleChange}
+                        isPublicAdvisorSelected={isPublicAdvisorSelected || !isHeatNetworkEligible}
+                      />
                     );
                   }}
                 </form.AppField>

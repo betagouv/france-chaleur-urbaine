@@ -16,12 +16,12 @@ import {
   hasSufficientSolarThermalCoverage,
   hotWaterStoragePrerequisite,
   isNearColdNetwork,
-  isNearHeatNetwork,
   outdoorPacPrerequisites,
   outdoorSinglePacPrerequisites,
   roofSolarCollectorsPrerequisite,
 } from '@/modules/chaleur-renouvelable/client/heating-mode-rules';
 import type { ModeDeChauffage, Situation, TypeLogement } from '@/modules/chaleur-renouvelable/constants';
+import { canProposeHeatNetwork } from '@/modules/chaleur-renouvelable/heat-network-eligibility';
 
 export type {
   IncompatibleSolutionRow,
@@ -46,10 +46,11 @@ export const modesDeChauffage = {
         </>
       ),
       estPossible: (situation) =>
-        !situation.hasAlreadyReceivedHeatNetworkRefusal &&
-        (situation.eligibiliteReseauChaleur?.isEligible ?? false) &&
-        isNearHeatNetwork(situation) &&
-        hasCompatibleRadiator(situation, ['radiateur-eau']),
+        canProposeHeatNetwork({
+          hasAlreadyReceivedHeatNetworkRefusal: situation.hasAlreadyReceivedHeatNetworkRefusal,
+          heatNetworkEligibility: situation.eligibiliteReseauChaleur,
+          radiatorType: situation.typeRadiateur,
+        }),
       gainClasse: 1,
       icone: 'img/icon-rcu.webp',
       id: 'collective-heat-network',
@@ -126,11 +127,6 @@ export const modesDeChauffage = {
         {
           isIncompatible: (situation) => situation.geothermalNappePotential === 5 || situation.geothermalNappePotential === 6,
           reason: 'La ressource énergétique de la parcelle est insuffisante',
-          source: 'BRGM',
-        },
-        {
-          isIncompatible: (situation) => situation.hasGeothermalProbeSpace === false,
-          reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
           source: 'BRGM',
         },
       ],
@@ -679,7 +675,8 @@ export const modesDeChauffage = {
       estPossible: (situation) =>
         hasEspaceShared(situation) &&
         hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
-        hasCompatibleRadiator(situation, ['radiateur-eau']),
+        hasCompatibleRadiator(situation, ['radiateur-eau']) &&
+        hasCompatibleGeothermalPotential(situation),
       gainClasse: 2,
       icone: 'img/icon-geothermie.webp',
       id: 'house-geothermal-heat-pump',
@@ -697,11 +694,6 @@ export const modesDeChauffage = {
         {
           isIncompatible: (situation) => situation.geothermalNappePotential === 5 || situation.geothermalNappePotential === 6,
           reason: 'La ressource énergétique de la parcelle est insuffisante',
-          source: 'BRGM',
-        },
-        {
-          isIncompatible: (situation) => situation.hasGeothermalProbeSpace === false,
-          reason: 'Place insuffisante pour l’implantation de sondes géothermiques',
           source: 'BRGM',
         },
         {

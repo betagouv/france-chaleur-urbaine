@@ -39,7 +39,6 @@ export const getNetwork = async (id: string) =>
       'id_fcu',
       'Taux EnR&R',
       sql<string>`"Identifiant reseau"`.as('Identifiant reseau'),
-      'communes',
       'has_trace',
       'Gestionnaire',
       'gestionnaire_fcu',
@@ -113,6 +112,7 @@ export const getNetwork = async (id: string) =>
       'region',
       'ouvert_aux_raccordements',
     ])
+    .select((eb) => eb.fn.coalesce('communes', sql<string[]>`ARRAY[]::text[]`).as('communes'))
     .where('Identifiant reseau', '=', id)
     .executeTakeFirst();
 
@@ -125,7 +125,6 @@ export const getColdNetwork = async (id: string) =>
       'id_fcu',
       'Taux EnR&R',
       sql<string>`"Identifiant reseau"`.as('Identifiant reseau'),
-      'communes',
       'Gestionnaire',
       'gestionnaire_fcu',
       'contenu CO2',
@@ -151,6 +150,7 @@ export const getColdNetwork = async (id: string) =>
       networkDocumentsJsonAgg('reseaux_de_froid', 'reseau_de_froid').as('documents'),
       'Rend%',
     ])
+    .select((eb) => eb.fn.coalesce('communes', sql<string[]>`ARRAY[]::text[]`).as('communes'))
     .where('Identifiant reseau', '=', id)
     .executeTakeFirst();
 

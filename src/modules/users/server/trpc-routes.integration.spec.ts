@@ -1,8 +1,12 @@
 import type { User } from 'next-auth';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import { cleanDatabase } from '@/tests/fixtures';
+import { kdb } from '@/server/db/kysely';
+import { cleanDatabase, seedTableUser } from '@/tests/fixtures';
 import { createTestCaller, testUsers, unauthorizedError } from '@/tests/trpc-helpers';
+
+import { defaultUserPreferences } from '../constants';
+import { getUserPreferences, updateUserPreferences } from './service';
 
 type PermissionTestCase = {
   label: string;
@@ -63,6 +67,49 @@ describe('usersRouter', () => {
       } else {
         await expect(callRoute).rejects.toMatchObject(unauthorizedError);
       }
+    });
+  });
+
+  describe('user preferences', () => {
+    beforeEach(async () => {
+      await cleanDatabase();
+      await seedTableUser([testUsers.ccrt]);
+    });
+
+    it('reads and updates CCRT preferences through the authenticated routes', async () => {
+      await expect(createTestCaller(null).users.getPreferences()).rejects.toMatchObject(unauthorizedError);
+      await expect(createTestCaller(null).users.updatePreferences({ email_signature: 'Signature' })).rejects.toMatchObject(
+        unauthorizedError
+      );
+      await expect(createTestCaller(testUsers.ccrt).users.getPreferences()).resolves.toStrictEqual(defaultUserPreferences);
+      await expect(createTestCaller(testUsers.ccrt).users.updatePreferences({ email_signature: 'Signature' })).resolves.toStrictEqual({
+        ...defaultUserPreferences,
+        email_signature: 'Signature',
+      });
+    });
+
+    it('preserves both changes when the signature and notifications are updated concurrently', async () => {
+      await Promise.all([
+        updateUserPreferences(testUsers.ccrt.id, { email_signature: 'Conseiller CCRT' }),
+        updateUserPreferences(testUsers.ccrt.id, { notifications: { pending_demands_reminder: false } }),
+      ]);
+      await expect(getUserPreferences(testUsers.ccrt.id)).resolves.toStrictEqual({
+        email_signature: 'Conseiller CCRT',
+        notifications: { new_demands: 'daily', pending_demands_reminder: false },
+      });
+    });
+
+    it('rolls back preferences and their audit event with the caller transaction', async () => {
+      const failure = new Error('Caller transaction failed');
+      await expect(
+        kdb.transaction().execute(async (transaction) => {
+          await updateUserPreferences(testUsers.ccrt.id, { email_signature: 'Signature' }, transaction);
+          throw failure;
+        })
+      ).rejects.toThrow(failure);
+      await expect(getUserPreferences(testUsers.ccrt.id)).resolves.toStrictEqual(defaultUserPreferences);
+      const events = await kdb.selectFrom('events').select('id').where('type', '=', 'user_preferences_updated').execute();
+      expect(events).toStrictEqual([]);
     });
   });
 });

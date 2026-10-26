@@ -127,6 +127,16 @@ export const allDatabaseTables = [
   },
   {
     bundle: 'fcu',
+    description: "Emails envoyés pour les demandes d'accompagnement CCRT",
+    name: 'ccrt_demand_emails',
+  },
+  {
+    bundle: 'fcu',
+    description: "Notes de suivi des demandes d'accompagnement CCRT",
+    name: 'ccrt_demand_notes',
+  },
+  {
+    bundle: 'fcu',
     description: "Événements pour le suivi de l'activité des utilisateurs",
     name: 'events',
   },

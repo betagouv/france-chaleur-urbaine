@@ -1,10 +1,12 @@
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
 import dayjs from 'dayjs';
+import type { Kysely, Selectable } from 'kysely';
 import type { z } from 'zod';
 
 import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
 import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
+import { IS_CCRT_EMAIL_ENABLED } from '@/modules/chaleur-renouvelable/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { getAllPermissionsWithLabels } from '@/modules/permissions/server/search';
@@ -108,6 +110,10 @@ export const create = async (data: CreateUserInput, context: Context): Promise<D
 
   if (data.active && data.role === 'gestionnaire') {
     await sendEmailTemplate('auth.gestionnaire.ouverture-espace', { email: data.email, id: (record as any).id });
+  }
+  if (IS_CCRT_EMAIL_ENABLED && data.active && data.role === 'ccrt') {
+    // The legacy base model returns a table definition type rather than its selectable row type.
+    await sendEmailTemplate('auth.ccrt.ouverture-espace', { email: data.email, id: (record as unknown as Selectable<DB['users']>).id });
   }
 
   // Hors contexte utilisateur (ex. sync API), le caller émet son propre événement.
@@ -272,27 +278,38 @@ export const getUserPreferences = async (userId: string): Promise<UserPreference
  * Fusionne une mise à jour partielle dans `users.preferences` (validée en objet complet) et trace l'événement.
  * Retourne les préférences résultantes.
  */
-export const updateUserPreferences = async (userId: string, changes: UpdateUserPreferences): Promise<UserPreferences> => {
-  const current = await getUserPreferences(userId);
+export const updateUserPreferences = async (
+  userId: string,
+  changes: UpdateUserPreferences,
+  database: Kysely<DB> = kdb
+): Promise<UserPreferences> => {
+  if (!database.isTransaction) {
+    return database.transaction().execute((transaction) => updateUserPreferences(userId, changes, transaction));
+  }
+  const row = await database.selectFrom('users').select('preferences').where('id', '=', userId).forUpdate().executeTakeFirstOrThrow();
+  const current = parseUserPreferences(row.preferences);
   const preferences = parseUserPreferences({
     ...current,
     ...changes,
     notifications: { ...current.notifications, ...changes.notifications },
   });
 
-  await kdb
+  await database
     .updateTable('users')
     .set({ preferences: JSON.stringify(preferences) })
     .where('id', '=', userId)
     .executeTakeFirstOrThrow();
 
-  await createUserEvent({
-    author_id: userId,
-    context_id: userId,
-    context_type: 'user',
-    data: { changes },
-    type: 'user_preferences_updated',
-  });
+  await createUserEvent(
+    {
+      author_id: userId,
+      context_id: userId,
+      context_type: 'user',
+      data: { changes },
+      type: 'user_preferences_updated',
+    },
+    database
+  );
 
   return preferences;
 };
