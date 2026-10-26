@@ -253,6 +253,17 @@ if (typeof window !== 'undefined') {
   });
 }
 
+// HACK: happy-dom's Animation.cancel() rejects `finished` without marking it as handled (the Web Animations spec does),
+// so every motion exit animation surfaces an unhandled AbortError. Remove once
+// https://github.com/capricorn86/happy-dom/issues/2412 is fixed.
+if (typeof Animation !== 'undefined') {
+  const originalCancel = Animation.prototype.cancel;
+  Animation.prototype.cancel = function (this: Animation) {
+    this.finished.catch(() => undefined);
+    originalCancel.call(this);
+  };
+}
+
 // Mock window.open and other window methods
 global.open = vi.fn();
 

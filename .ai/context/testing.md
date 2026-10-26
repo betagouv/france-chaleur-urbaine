@@ -1,6 +1,6 @@
 # Testing
 
-> Load before writing the first test. Runner: **Vitest 5** (happy-dom, pinned `~20.11` — 20.12+ surfaces `AbortError: The animation was canceled` unhandled rejections on `Animation.cancel()` (motion), see happy-dom #2339 / #2412; lift the pin once fixed). Config `vitest.config.mts` = two projects: `unit` (parallel, happy-dom) + `integration` (parallel, node env, one database per worker).
+> Load before writing the first test. Runner: **Vitest 5** (happy-dom 21 — its `Animation.cancel()` rejects `finished` without marking it handled, so motion exit animations would surface unhandled `AbortError`s; `src/tests/setup-mocks.ts` patches `Animation.prototype.cancel` as a HACK, drop it once happy-dom #2339 / #2412 is fixed). Config `vitest.config.mts` = two projects: `unit` (parallel, happy-dom) + `integration` (parallel, node env, one database per worker).
 
 ## Kinds & layout
 - **Unit** `.spec.ts` — services, utils, validators (parallel).
