@@ -51,20 +51,15 @@ const configFunctions = [
     csp: {
       'connect-src': [
         "'self'",
-        'https://api-adresse.data.gouv.fr',
-        'https://openmaptiles.geo.data.gouv.fr',
-        'https://openmaptiles.data.gouv.fr',
-        'https://openmaptiles.github.io',
-        'https://france-chaleur-urbaine.beta.gouv.fr/',
-        'https://france-chaleur-urbaine-dev.osc-fr1.scalingo.io/',
-        'https://data.geopf.fr/',
-        'https://stats.beta.gouv.fr',
-        'https://google.com/',
-        'https://data.geopf.fr',
-        'https://recherche-entreprises.api.gouv.fr',
-        'https://api.mapbox.com/',
+        'https://data.geopf.fr', // BAN geocoding (address search) + altimetry
+        'https://openmaptiles.data.gouv.fr', // OSM vector tiles
+        'https://openmaptiles.geo.data.gouv.fr', // cadastre + découpage administratif sources (satellite style)
+        'https://recherche-entreprises.api.gouv.fr', // EntrepriseField autocomplete
+        'https://stats.beta.gouv.fr', // Matomo
         'https://sentry.incubateur.net',
-        'https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com',
+        'https://*.google-analytics.com', // Google Analytics / Ads (after consent)
+        'https://*.analytics.google.com',
+        'https://*.googletagmanager.com',
       ],
       'font-src': ["'self'", 'https:', 'data:'],
       'frame-src': ['https://td.doubleclick.net', 'https://www.youtube.com/', 'https://cloud.contact.ademe.fr'],
@@ -74,13 +69,11 @@ const configFunctions = [
         "'sha256-Ny4QAH1g1FWyqlgrnIVWh1mj+jM8c6SjgqJ2i6c2REU='", // GoogleTagsScript - dataLayer/gtag bootstrap (after consent)
         "'sha256-8r71P9EINuYzK2mdhvMfZG0nDrKZhY5rvxXNAgVD45g='", // GoogleTagsScript - loader for Google Ads AW-16641573937
         "'sha256-/To7QTI1yR8LpZjhrqYdP21zirnpAwwI4s7M8TwKxnI='", // GoogleTagsScript - loader for Google Analytics G-B35Q28PSV8
-        'https://stats.beta.gouv.fr',
-        'https://static.axept.io',
-        'https://www.gstatic.com/',
-        'https://www.googletagmanager.com https://*.googletagmanager.com',
-        'https://www.googleadservices.com',
+        'https://stats.beta.gouv.fr', // Matomo
+        'https://www.gstatic.com/', // react-google-charts loader
+        'https://*.googletagmanager.com', // gtag (Google Analytics / Ads, after consent)
+        'https://www.googleadservices.com', // Google Ads conversion scripts
         'https://googleads.g.doubleclick.net',
-        'https://api.mapbox.com/',
         'https://www.ssa.gov/accessibility/', // Nécessaire pour faire fonctionner le bookmarklet ANDI
         'https://ajax.googleapis.com/', // Nécessaire pour faire fonctionner le bookmarklet ANDI
       ],
