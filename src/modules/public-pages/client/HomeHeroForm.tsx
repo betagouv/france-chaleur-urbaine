@@ -1,5 +1,5 @@
 import { useStore } from '@tanstack/react-form';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { useQueryState } from 'nuqs';
 import type { ReactNode } from 'react';
 
