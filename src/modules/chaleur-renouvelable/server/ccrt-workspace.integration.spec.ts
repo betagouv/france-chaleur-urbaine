@@ -422,7 +422,7 @@ describe('CCRT notes and shared history', () => {
     });
   });
 
-  it('lists all effective users and exposes only relevant permission changes in the audit', async () => {
+  it('lists territorial access holders without admins and exposes only relevant permission changes in the audit', async () => {
     const demand = await seedWorkspace();
     await seedTableUser([{ ...testUsers.gestionnaire, active: false }, testUsers.particulier]);
     await kdb
@@ -447,7 +447,7 @@ describe('CCRT notes and shared history', () => {
       type: 'user_permissions_updated',
     });
     const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
-    expect(result.users.map((user) => user.id).sort()).toStrictEqual([testUsers.admin.id, testUsers.alec.id, testUsers.ccrt.id].sort());
+    expect(result.users.map((user) => user.id).sort()).toStrictEqual([testUsers.alec.id, testUsers.ccrt.id].sort());
     expect(result.history.map((event) => ({ data: event.data, type: event.type }))).toStrictEqual([
       {
         data: { added: [{ resource_id: 'EPCI-13', type: 'epci' }], removed: [], user_email: testUsers.alec.email },

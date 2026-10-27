@@ -9,7 +9,6 @@ export function CcrtDemandValidation({ demandId, full, onValidate }: CcrtDemandV
   return (
     <AsyncButton
       priority="primary"
-      size="large"
       full={full}
       iconId="fr-icon-check-line"
       iconPosition="right"

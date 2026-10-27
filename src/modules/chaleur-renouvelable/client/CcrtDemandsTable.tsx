@@ -42,13 +42,13 @@ export function CcrtDemandsTable({
     >
       <caption className="sr-only">Demandes d’accompagnement CCRT</caption>
       <colgroup>
-        <col className="w-12" />
-        <col className="w-[237px]" />
-        <col className="w-[229px]" />
+        <col className="w-8" />
+        <col className="w-[270px]" />
+        <col className="w-[219px]" />
         <col className="w-[249px]" />
-        <col className="w-[123px]" />
-        <col className="w-[179px]" />
-        <col className="w-[175px]" />
+        <col className="w-[125px]" />
+        <col className="w-[178px]" />
+        <col className="w-[165px]" />
       </colgroup>
       <thead>
         <tr>

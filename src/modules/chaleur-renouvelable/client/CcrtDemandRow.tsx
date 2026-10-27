@@ -8,7 +8,6 @@ import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
-import { CcrtAdminDemandAssignment } from './CcrtAdminDemandAssignment';
 import { CcrtDemandDetails } from './CcrtDemandDetails';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
 import { CcrtHeatingEnergyTag } from './CcrtHeatingEnergyTag';
@@ -62,7 +61,7 @@ export function CcrtDemandRow({
           onToggle();
         }}
       >
-        <td className="w-12 px-2!">
+        <td className="w-8">
           <Button
             priority="tertiary no outline"
             size="small"
@@ -115,7 +114,7 @@ export function CcrtDemandRow({
           {demand.alternative_heating_solutions.length === 0 && <p className="mb-1 text-sm leading-6">Aucune solution enregistrée</p>}
           <ol className="m-0 mb-1 list-none p-0">
             {demand.alternative_heating_solutions.slice(0, 3).map((solution, index) => (
-              <li key={solution} className="flex items-center gap-2 p-0 leading-6">
+              <li key={solution} className="flex items-center gap-2 p-0 text-sm leading-6">
                 <span
                   className={cx(
                     'flex size-4 shrink-0 items-center justify-center rounded-full text-xs',
@@ -159,12 +158,11 @@ export function CcrtDemandRow({
             </p>
           )}
         </td>
-        <td className="text-right!">
+        <td className="text-center!">
           {onValidate && !demand.validated ? (
             <CcrtDemandValidation demandId={demand.id} onValidate={onValidate} />
           ) : (
             <Button
-              size="large"
               priority={isToProcess ? 'primary' : 'secondary'}
               iconId="fr-icon-mail-line"
               iconPosition="right"
@@ -187,7 +185,6 @@ export function CcrtDemandRow({
               onMap={onMap}
               onManageAccess={onManageAccess}
               onCollapse={onToggle}
-              adminControls={onValidate && <CcrtAdminDemandAssignment demand={demand} />}
             />
           </td>
         </tr>

@@ -7,7 +7,6 @@ import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand } from '../types';
-import { CcrtAdminDemandAssignment } from './CcrtAdminDemandAssignment';
 import { CcrtBuildingForm } from './CcrtBuildingForm';
 import { CcrtBuildingIdentification } from './CcrtBuildingIdentification';
 import { CcrtDemandFollowUp } from './CcrtDemandFollowUp';
@@ -104,7 +103,6 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
           lazy
           className="border-t border-(--border-default-grey)"
         >
-          {onValidate && <CcrtAdminDemandAssignment demand={demand} />}
           <CcrtDemandFollowUp
             demand={demand}
             isUpdating={actions.isUpdating}
