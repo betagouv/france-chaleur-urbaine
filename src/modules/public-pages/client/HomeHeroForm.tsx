@@ -170,12 +170,12 @@ export function HomeHeroForm() {
         >
           {/* horizontal padding + negative margin: keeps the focus outlines out of the overflow clipping */}
           <div className="-mx-1 min-h-0 overflow-hidden px-1">
-            <div className="grid gap-4 pt-4 pb-1 md:grid-cols-2 md:min-h-[128px]">
+            <div className="grid gap-4 pt-4 pb-1 md:grid-cols-2 md:min-h-[120px]">
               <form.AppField name="typeRadiateur">
                 {(field) => (
                   <field.SelectField
                     label="Type de radiateurs"
-                    className="mb-0!"
+                    className="mb-0! [&>.fr-error-text]:mt-2!" // condensed error line, its height is reserved by the row
                     options={[...typeRadiateurOptions]}
                     placeholder="Indiquez votre type de radiateurs"
                     nativeSelectProps={{ required: true }} // required only in this branch: the schema marker cannot know
@@ -183,7 +183,9 @@ export function HomeHeroForm() {
                 )}
               </form.AppField>
               <form.AppField name="espaceExterieur">
-                {(field) => <field.CustomField Component={OutdoorSpaceCheckboxes} layout="row" />}
+                {(field) => (
+                  <field.CustomField Component={OutdoorSpaceCheckboxes} layout="row" className="[&>div]:min-h-10 [&>div]:items-center" />
+                )}
               </form.AppField>
             </div>
           </div>
