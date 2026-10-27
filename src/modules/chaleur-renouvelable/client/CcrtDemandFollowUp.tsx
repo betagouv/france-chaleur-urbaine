@@ -18,7 +18,7 @@ type CcrtDemandFollowUpProps = {
   demand: CcrtDemand;
   isUpdating: boolean;
   onUpdate: (values: CcrtDemandUpdate) => Promise<void>;
-  onContact: (showHistory?: boolean) => void;
+  onContact: (showHistory?: boolean, emailId?: string) => void;
   onManageAccess?: () => void;
   showContactAction?: boolean;
 };
@@ -51,14 +51,22 @@ export function CcrtDemandFollowUp({
           <Button full iconId="fr-icon-mail-line" iconPosition="right" onClick={() => onContact()}>
             Contacter par email
           </Button>
+          {followUp.data && followUp.data.emails.length > 0 && (
+            <div>
+              <Button
+                priority="tertiary no outline"
+                size="small"
+                iconId="fr-icon-mail-line"
+                className="mt-2"
+                onClick={() => onContact(true)}
+              >
+                Voir l’historique des messages
+              </Button>
+            </div>
+          )}
         </div>
       )}
-      <div>
-        <div className="px-4 pt-4">
-          <Button priority="tertiary no outline" size="small" iconId="fr-icon-mail-line" className="mb-4" onClick={() => onContact(true)}>
-            Voir l’historique des messages
-          </Button>
-        </div>
+      <div className="pt-2">
         <CcrtFollowUpForm key={demand.id} demand={demand} isUpdating={isUpdating} onUpdate={onUpdate} onSaved={() => setOffset(0)} />
       </div>
       {followUp.isError ? (
@@ -70,7 +78,12 @@ export function CcrtDemandFollowUp({
         </div>
       ) : followUp.data ? (
         <>
-          <CcrtDemandHistory followUp={followUp.data} offset={offset} onPageChange={setOffset} />
+          <CcrtDemandHistory
+            followUp={followUp.data}
+            offset={offset}
+            onPageChange={setOffset}
+            onEmailClick={(emailId) => onContact(true, emailId)}
+          />
           <CcrtDemandAccess users={followUp.data.users} onManageAccess={onManageAccess} />
         </>
       ) : (
@@ -94,7 +107,7 @@ export function CcrtDemandFollowUp({
         confirmLabel="Archiver"
         onConfirm={() => onUpdate({ status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED })}
       >
-        La demande passera dans « Clôturées » pour toutes les personnes autorisées. Elle restera consultable et pourra être rouverte en
+        La demande passera à « Clôturées » pour toutes les personnes autorisées. Elle restera consultable et pourra être rouverte en
         changeant son statut.
       </ConfirmDialog>
     </aside>

@@ -366,10 +366,10 @@ export const demandeChaleurRenouvelableStatuses = [
   { label: 'Recontacté pour premier échange', value: 'recontacted_first_exchange' },
   { label: 'Non pertinent', value: 'irrelevant' },
   { label: 'Réorienté vers France Rénov’', value: 'redirected_france_renov' },
+  { label: 'Premier conseil téléphonique réalisé', value: 'phone_contact_realised' },
   { label: 'Etude d’opportunité en cours', value: 'opportunity_study_in_progress' },
   { label: 'Etude d’opportunité réalisée', value: 'opportunity_study_done' },
   { label: 'Étude de faisabilité votée en AG', value: 'project_validation_feasibility_study_voted' },
-  { label: 'Premier conseil téléphonique réalisé', value: 'phone_contact_realised' },
   { label: 'Projet abandonné par le prospect', value: 'abandoned_by_prospect' },
   { label: 'Clôturée', value: 'closed' },
 ] as const;

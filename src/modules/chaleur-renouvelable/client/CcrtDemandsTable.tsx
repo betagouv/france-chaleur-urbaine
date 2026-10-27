@@ -104,7 +104,7 @@ export function CcrtDemandsTable({
             isUpdating={actions.isUpdating}
             onToggle={() => onToggle(demand)}
             onContact={(contactType) => actions.trackContact(demand, contactType)}
-            onSendEmail={(showHistory, placement) => actions.openEmail(demand, showHistory, placement)}
+            onSendEmail={(showHistory, placement, emailId) => actions.openEmail(demand, showHistory, placement, emailId)}
             onSimulation={(placement) => actions.trackSimulation(demand, placement)}
             onMap={() => actions.trackMap(demand)}
             onManageAccess={() => actions.trackAccess(demand)}

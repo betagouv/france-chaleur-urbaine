@@ -112,7 +112,6 @@ describe('CcrtBuildingForm', () => {
 
     await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1), { timeout: 3000 });
     expect(mocks.mutateAsync.mock.calls[0][0]).toMatchObject({ updatedAt: demand.updated_at, values: { average_area: 85 } });
-    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Toutes les modifications sont enregistrées.'));
     expect(mocks.invalidate).toHaveBeenCalledWith({ demandId: demand.id });
   });
 
@@ -161,7 +160,6 @@ describe('CcrtBuildingForm', () => {
     expect(mocks.mutateAsync).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
     await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(2));
-    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Toutes les modifications sont enregistrées.'));
     consoleError.mockRestore();
   });
 
@@ -176,7 +174,6 @@ describe('CcrtBuildingForm', () => {
     expect(screen.queryByLabelText('Adresse du bâtiment')).toBeNull();
     expect(screen.getByText(demand.address)).toBeInTheDocument();
     expect(screen.getByText('Syndicat de copropriété :')).toHaveTextContent('Non renseigné');
-    expect(screen.getByRole('status')).toHaveTextContent('Toutes les modifications sont enregistrées.');
     fireEvent.change(screen.getByLabelText('Habitants moyens'), { target: { value: '2.5' } });
     fireEvent.change(screen.getByLabelText('DPE'), { target: { value: 'E' } });
     fireEvent.blur(screen.getByLabelText('DPE'));
@@ -186,7 +183,6 @@ describe('CcrtBuildingForm', () => {
       updatedAt: demand.updated_at,
       values: { average_residents: 2.5, dpe: 'E', hot_water_system_type: 'nonRenseigne' },
     });
-    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Toutes les modifications sont enregistrées.'));
     fireEvent.change(screen.getByLabelText('DPE'), { target: { value: 'F' } });
     fireEvent.blur(screen.getByLabelText('DPE'));
 

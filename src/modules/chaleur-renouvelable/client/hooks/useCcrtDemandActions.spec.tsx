@@ -70,4 +70,19 @@ describe('CCRT contact tracking', () => {
     expect(mocks.track).toHaveBeenCalledTimes(1);
     expect(mocks.mutate).not.toHaveBeenCalled();
   });
+
+  it('selects the historical email and clears that selection when opening a new message', () => {
+    const { result } = renderHook(() => useCcrtDemandActions('CCRT 44'));
+    act(() => result.current.openEmail(demand, true, 'fiche', uuid(2)));
+
+    expect(result.current.selectedEmailId).toStrictEqual(uuid(2));
+    expect(result.current.showEmailHistory).toStrictEqual(true);
+    expect(mocks.track).not.toHaveBeenCalled();
+
+    act(() => result.current.closeEmail());
+    act(() => result.current.openEmail(demand));
+
+    expect(result.current.selectedEmailId).toStrictEqual(undefined);
+    expect(result.current.showEmailHistory).toStrictEqual(false);
+  });
 });

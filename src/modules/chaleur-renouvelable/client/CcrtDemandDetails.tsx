@@ -8,7 +8,7 @@ type CcrtDemandDetailsProps = {
   demand: CcrtDemand;
   isUpdating: boolean;
   onUpdate: React.ComponentProps<typeof CcrtDemandFollowUp>['onUpdate'];
-  onContact: (showHistory?: boolean) => void;
+  onContact: React.ComponentProps<typeof CcrtDemandFollowUp>['onContact'];
   onSimulation: () => void;
   onCollapse: () => void;
   onMap?: () => void;

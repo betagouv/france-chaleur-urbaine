@@ -181,6 +181,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
         <CcrtDemandEmailDialog
           demand={actions.emailDemand}
           showHistory={actions.showEmailHistory}
+          initialEmailId={actions.selectedEmailId}
           onClose={actions.closeEmail}
           onPhoneContact={() => actions.emailDemand && actions.trackContact(actions.emailDemand, 'phone', actions.emailPlacement)}
         />

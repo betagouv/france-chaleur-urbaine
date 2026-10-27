@@ -22,7 +22,7 @@ type CcrtDemandRowProps = {
   onSimulation: (placement?: CcrtTrackingPlacement) => void;
   onMap: () => void;
   onManageAccess: () => void;
-  onSendEmail: (showHistory?: boolean, placement?: CcrtTrackingPlacement) => void;
+  onSendEmail: (showHistory?: boolean, placement?: CcrtTrackingPlacement, emailId?: string) => void;
   onUpdate: (values: CcrtDemandUpdate) => Promise<void>;
   onValidate?: (demandId: string) => Promise<void>;
 };
@@ -180,7 +180,7 @@ export function CcrtDemandRow({
               demand={demand}
               isUpdating={isUpdating}
               onUpdate={onUpdate}
-              onContact={(showHistory) => onSendEmail(showHistory, 'fiche')}
+              onContact={(showHistory, emailId) => onSendEmail(showHistory, 'fiche', emailId)}
               onSimulation={() => onSimulation('fiche')}
               onMap={onMap}
               onManageAccess={onManageAccess}
