@@ -341,6 +341,8 @@ fcr_landing:simulation_started
 
 L'intégration PostHog est initialisée avant React, puis pilotée par le consentement DSFR. Sans consentement, PostHog reste en persistance mémoire et ne capture pas durablement l'utilisateur ; avec consentement, la persistance `localStorage+cookie` permet de conserver le `distinct_id` entre les sessions.
 
+Les `$pageview` sont capturés automatiquement par posthog-js en mode `history_change` : un événement au chargement de la page, puis un à chaque changement de pathname (liens `next/link`, `router.push`). Les changements de query string seuls (`?mode=`, `?coord=`…) n'en génèrent pas. Ne pas remplacer cette valeur par un booléen : `capture_pageview: true` ne capture que le chargement initial et rend les navigations client invisibles.
+
 Lorsqu'un utilisateur connecté a donné son consentement, `posthog.identify()` associe son `id`, son `email` et son `role` au profil PostHog. Les utilisateurs publics restent identifiés par le `distinct_id` anonyme de PostHog.
 
 Les propriétés potentiellement personnelles comme `address` ou `email` ne doivent être envoyées que pour les événements où le consentement PostHog est actif et où la donnée est utile à l'analyse produit.
