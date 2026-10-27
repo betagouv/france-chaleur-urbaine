@@ -13,7 +13,7 @@ export function HomeHero() {
       imageType="cover"
       variant="transparent"
       size="lg"
-      className="lg:min-h-[758px] 2xl:min-h-[790px]"
+      className="lg:min-h-[766px] 2xl:min-h-[798px]"
     >
       <div className="mx-auto w-full max-w-4xl">
         <HeroTitle>Le chauffage écologique, à prix maîtrisé&nbsp;: testez votre adresse</HeroTitle>

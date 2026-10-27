@@ -50,7 +50,8 @@ const MODE_OPTIONS: { hintText: string; label: ReactNode; value: HomeFormMode }[
 ];
 
 // Label and control on one line from the md breakpoint, DSFR stacks them by default
-const INLINE_FIELD_CLASSES = 'mb-0! md:flex md:items-center md:gap-3 [&>label]:mb-0! [&>label]:shrink-0 [&>label]:text-lg';
+const INLINE_FIELD_CLASSES =
+  'mb-0! md:flex md:items-center md:gap-3 [&>label]:mb-0! [&>label]:shrink-0 [&>label]:text-lg md:[&>select]:mt-0!';
 
 /**
  * Home page address test: one address and housing type, then either the heat network
@@ -167,8 +168,9 @@ export function HomeHeroForm() {
           )}
           inert={!isComparator}
         >
-          <div className="min-h-0 overflow-hidden">
-            <div className="grid gap-4 pt-4 md:grid-cols-2">
+          {/* horizontal padding + negative margin: keeps the focus outlines out of the overflow clipping */}
+          <div className="-mx-1 min-h-0 overflow-hidden px-1">
+            <div className="grid gap-4 pt-4 pb-1 md:grid-cols-2 md:min-h-[128px]">
               <form.AppField name="typeRadiateur">
                 {(field) => (
                   <field.SelectField
@@ -181,7 +183,7 @@ export function HomeHeroForm() {
                 )}
               </form.AppField>
               <form.AppField name="espaceExterieur">
-                {(field) => <field.CustomField Component={OutdoorSpaceCheckboxes} layout="stacked" />}
+                {(field) => <field.CustomField Component={OutdoorSpaceCheckboxes} layout="row" />}
               </form.AppField>
             </div>
           </div>
