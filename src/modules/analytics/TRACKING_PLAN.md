@@ -115,7 +115,8 @@ All events include `structure_ccrt` and `departement`. Demand events (`ccrt_dema
 
 | Événement | Propriétés | Description |
 |---|---|---|
-| `fcr_landing:address_typed` | _(aucune)_ | Première saisie dans le champ adresse |
+| `fcr_landing:address_typed` | _(aucune)_ | Premier caractère saisi ou collé dans le champ adresse, une seule fois par affichage de la page, sans transmettre le texte |
+| `fcr_landing:address_selected` | _(aucune)_ | Adresse sélectionné dans le champ adresse |
 | `fcr_landing:heating_mode_selected` | `heating_mode` | Sélection du type de logement / chauffage |
 | `fcr_landing:emitter_type_selected` | `emitter_type` | Sélection du type d'émetteurs |
 | `fcr_landing:outdoor_space_selected` | `outdoor_space` | Sélection des espaces extérieurs |
@@ -149,7 +150,7 @@ All events include `structure_ccrt` and `departement`. Demand events (`ccrt_dema
 |---|---|---|
 | `chaleur-renouvelable:accordeon` | `name` | Ouverture d'un accordéon du parcours |
 | `fcr_results:no_solution_displayed` | `heating_mode?`, `outdoor_space?` | Affichage sans solution compatible |
-| `fcr_results:recommended_solution_displayed` | `solution_type` | Affichage de la solution recommandée |
+| `fcr_results:recommended_solution_displayed` | `solution_type` | Affichage après chargement ; les recalculs conservant la même adresse, le même bâtiment et la même solution ne renvoient pas l’événement |
 | `fcr_results:recommended_solution_expanded` | `solution_type` | Dépliage du détail de la solution recommandée |
 | `fcr_results:recommended_solution_cta_clicked` | `solution_type` | Clic sur "Bénéficier d'un accompagnement gratuit" depuis la solution recommandée |
 | `fcr_results:ccrt_contact_cta_clicked` | _(aucune)_ | Clic sur un CTA d'accès au formulaire CCRT |
@@ -177,7 +178,7 @@ All events include `structure_ccrt` and `departement`. Demand events (`ccrt_dema
 | `fcr_contact:non_raccordable_reason_selected` | `reason` | Sélection du motif de non-raccordabilité |
 | `fcr_contact:map_viewed` | _(aucune)_ | Consultation de la carte dans le résultat réseau de chaleur |
 | `fcr_contact:cgu_accepted` | `is_raccordable` | Acceptation des CGU |
-| `fcr_contact:form_submitted` | `profile`, `energy`, `nb_logements?`, `top_solution?`, `project_stages`, `phone_filled`, `is_raccordable`, `non_raccordable_reason?` | Soumission du formulaire |
+| `fcr_contact:form_submitted` | `form` (`demand_rc` / `demand_fcr`), `profile`, `energy`, `nb_logements?`, `top_solution?`, `project_stages`, `phone_filled`, `is_raccordable`, `non_raccordable_reason?` | Soumission du formulaire |
 
 ### Simulateur PAC embarqué
 
