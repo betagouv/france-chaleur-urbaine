@@ -14,6 +14,7 @@ import type {
 } from '@/modules/chaleur-renouvelable/constants';
 import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import type { SimulateurPacEventProperties } from '@/modules/pac/constants';
+import type { HomeFormMode } from '@/modules/public-pages/constants';
 import type { TypeCommune } from '@/server/services/communeAPotentiel';
 
 type CcrtCommonTrackingProperties = {
@@ -392,15 +393,26 @@ export type PostHogEventMap = {
 
   // Home
   'home:tool_tile_clicked': ElementType;
-  'home:comparator_tile_clicked': never;
   'home:bulk_test_cta_clicked': never;
-  'home:guide_download_clicked': { filename: string };
-  'home:fcr_tile_clicked': never;
   'home:article_clicked': ElementType;
   'home:news_clicked': ElementType;
-  'home:pedagogic_section_clicked': ElementType;
   'home:partner_logo_clicked': { partner_name: string; target_url: string };
   'home:testimonial_carousel_clicked': { action: string; testimonial_index: number };
+  'home:bottom_cta_clicked': never;
+  'home:tools_tab_selected': { tab: string };
+  'home:mode_selected': { mode: HomeFormMode };
+  'home:simulation_started': {
+    address_filled: boolean;
+    emitter_type?: TypeRadiateur | null;
+    heating_mode?: TypeLogement | null;
+    outdoor_space?: EspaceExterieur | null;
+  };
+  'home:faq_item_opened': {
+    faq_question: string;
+  };
+  'home:testimonial_clicked': ElementType & {
+    testimonial_title?: string;
+  };
 
   'nav:menu_item_clicked': {
     item: string;

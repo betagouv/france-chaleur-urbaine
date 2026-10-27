@@ -220,13 +220,15 @@ Ces événements n'utilisent pas `posthog-js` dans le widget : le navigateur app
 | Événement | Propriétés | Description |
 |---|---|---|
 | `home:tool_tile_clicked` | `element_name` | Clic sur une tuile outil |
-| `home:comparator_tile_clicked` | _(aucune)_ | Clic sur la tuile comparateur |
+| `home:tools_tab_selected` | `tab` | Sélection d'un onglet d'outils (réseau de chaleur / toutes les ENR) |
+| `home:mode_selected` | `mode` | Choix du mode du test d'adresse (raccordement / comparateur) |
+| `home:simulation_started` | `address_filled`, `heating_mode?`, `emitter_type?`, `outdoor_space?` | Lancement du comparateur depuis la page d'accueil |
+| `home:bottom_cta_clicked` | _(aucune)_ | Clic sur un CTA « Comparer les solutions » des sections |
+| `home:testimonial_clicked` | `element_name`, `testimonial_title?` | Clic sur un témoignage |
+| `home:faq_item_opened` | `faq_question` | Ouverture d'une question FAQ |
 | `home:bulk_test_cta_clicked` | _(aucune)_ | Clic vers le test d'adresses en masse |
-| `home:guide_download_clicked` | `filename` | Téléchargement d'un guide |
-| `home:fcr_tile_clicked` | _(aucune)_ | Clic vers Chaleur renouvelable |
-| `home:article_clicked` | `element_name` | Clic sur un article |
+| `home:article_clicked` | `element_name`, `article_title?` | Clic sur un article |
 | `home:news_clicked` | `element_name` | Clic sur une actualité |
-| `home:pedagogic_section_clicked` | `element_name` | Clic sur une section pédagogique |
 | `home:partner_logo_clicked` | `partner_name`, `target_url` | Clic sur un logo partenaire |
 | `home:testimonial_carousel_clicked` | `action`, `testimonial_index` | Interaction avec le carrousel témoignages |
 
