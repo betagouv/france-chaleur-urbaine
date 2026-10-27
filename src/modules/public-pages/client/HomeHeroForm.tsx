@@ -11,6 +11,7 @@ import { OutdoorSpaceCheckboxes } from '@/modules/chaleur-renouvelable/client/Ou
 import { typeLogementOptions, typeRadiateurOptions } from '@/modules/chaleur-renouvelable/constants';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
+import cx from '@/utils/cx';
 
 import type { HomeFormMode } from '../constants';
 import { EligibilityContactModal } from './EligibilityContactModal';
@@ -54,11 +55,13 @@ const INLINE_FIELD_CLASSES = 'mb-0! md:flex md:items-center md:gap-3 [&>label]:m
 /**
  * Home page address test: one address and housing type, then either the heat network
  * eligibility test (contact modal) or the renewable heating comparator (result page).
- * The branch is the `?mode=` parameter; it is not a form field.
+ * The branch is the `?mode=` parameter; it is not a form field. The comparator fields stay
+ * mounted and unfold with a transition; they are inert while folded.
  */
 export function HomeHeroForm() {
   const router = useRouter();
   const [mode, setMode] = useQueryState('mode', homeFormModeParser);
+  const isComparator = mode === 'comparateur';
   const { userInfo, setUserInfo } = useUserInfo();
   const initialValues = useHomeFormInitialValues();
   const eligibilityTest = useEligibilityTest();
@@ -67,7 +70,7 @@ export function HomeHeroForm() {
     ...schemaValidation(getHomeFormSchema(mode)),
     defaultValues: initialValues.defaultValues,
     onSubmit: async ({ value }) => {
-      if (mode === 'comparateur') {
+      if (isComparator) {
         const data = zHomeComparatorForm.parse(value);
         trackPostHogEvent('home:simulation_started', {
           address_filled: true,
@@ -135,9 +138,6 @@ export function HomeHeroForm() {
               />
             )}
           </form.AppField>
-          <span aria-hidden className="hidden md:inline">
-            .
-          </span>
         </div>
         <Radio
           label="Je veux…"
@@ -160,24 +160,32 @@ export function HomeHeroForm() {
             },
           }))}
         />
-        {mode === 'comparateur' && (
-          <div className="grid gap-4 md:grid-cols-2">
-            <form.AppField name="typeRadiateur">
-              {(field) => (
-                <field.SelectField
-                  label="Type de radiateurs"
-                  className="mb-0!"
-                  options={[...typeRadiateurOptions]}
-                  placeholder="Indiquez votre type de radiateurs"
-                  nativeSelectProps={{ required: true }} // required only in this branch: the schema marker cannot know
-                />
-              )}
-            </form.AppField>
-            <form.AppField name="espaceExterieur">
-              {(field) => <field.CustomField Component={OutdoorSpaceCheckboxes} layout="stacked" />}
-            </form.AppField>
+        <div
+          className={cx(
+            '-mt-4 grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none',
+            isComparator ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+          )}
+          inert={!isComparator}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div className="grid gap-4 pt-4 md:grid-cols-2">
+              <form.AppField name="typeRadiateur">
+                {(field) => (
+                  <field.SelectField
+                    label="Type de radiateurs"
+                    className="mb-0!"
+                    options={[...typeRadiateurOptions]}
+                    placeholder="Indiquez votre type de radiateurs"
+                    nativeSelectProps={{ required: true }} // required only in this branch: the schema marker cannot know
+                  />
+                )}
+              </form.AppField>
+              <form.AppField name="espaceExterieur">
+                {(field) => <field.CustomField Component={OutdoorSpaceCheckboxes} layout="stacked" />}
+              </form.AppField>
+            </div>
           </div>
-        )}
+        </div>
         {eligibilityTest.hasError && (
           <p className="fr-error-text mb-0">
             Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
