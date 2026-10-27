@@ -305,6 +305,7 @@ export interface DemandsChaleurRenouvelable {
   id: Generated<string>;
   is_public_advisor_selected: Generated<boolean>;
   last_name: string;
+  notified_at: Timestamp | null;
   occupant_status: OccupantStatus;
   origin_demand_id: string | null;
   outdoor_space: EspaceExterieur;

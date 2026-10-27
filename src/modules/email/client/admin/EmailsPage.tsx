@@ -14,6 +14,7 @@ const viewModes = ['html', 'text'] as const;
 
 const renewableHeatEmailTypes = new Set([
   'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
+  'demands.ccrt.nouvelles-demandes-a-traiter-weekly',
   'demands.ccrt.rappel-demandes-en-attente',
   'demands.demandeur.confirmation-demande-chaleur-renouvelable',
 ]);

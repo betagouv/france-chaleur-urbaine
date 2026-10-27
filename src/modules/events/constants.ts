@@ -9,6 +9,7 @@ export const eventTypes = [
   'ccrt_demand_note_updated',
   'ccrt_demand_note_deleted',
   'ccrt_demand_email_sent',
+  'ccrt_demand_notification_sent',
 
   'user_login',
   'user_activated',
@@ -97,6 +98,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   ccrt_demand_note_created: 'Note ajoutée (CCRT)',
   ccrt_demand_note_deleted: 'Note supprimée (CCRT)',
   ccrt_demand_note_updated: 'Note modifiée (CCRT)',
+  ccrt_demand_notification_sent: 'Notification CCRT',
   ccrt_demand_updated: 'Modification de demande CCRT',
   conversion_source_archived: "Archivage d'intégration iframe",
   conversion_source_created: "Création d'intégration iframe",
@@ -221,6 +223,7 @@ export type EventDataMap = {
   ccrt_demand_note_updated: { noteId: string };
   ccrt_demand_note_deleted: { noteId: string };
   ccrt_demand_email_sent: { messageId: string; object: string; to: string };
+  ccrt_demand_notification_sent: null;
   build_tiles: { name: string };
   conversion_source_archived: { key: string; label: string };
   conversion_source_created: { key: string; label: string };

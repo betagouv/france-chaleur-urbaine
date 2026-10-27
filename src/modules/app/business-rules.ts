@@ -32,6 +32,13 @@ export const businessRules = {
     label: 'Demandes groupées : maximum',
     value: 50,
   },
+  ccrtReminderListedDemands: {
+    description:
+      "Nombre de demandes d'accompagnement les plus anciennes détaillées dans le rappel CCRT ; les autres sont seulement comptées.",
+    display: '5 demandes',
+    label: 'Demandes détaillées dans le rappel CCRT',
+    value: 5,
+  },
   comparateurNetworkSearchRadiusMeters: {
     description: "Distance maximale à laquelle le comparateur recherche un réseau autour de l'adresse saisie.",
     display: '1 km',

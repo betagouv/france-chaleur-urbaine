@@ -1250,7 +1250,7 @@ describe('batEnrRouter', () => {
       }
     });
 
-    it('valide la demande et notifie le CCRT du département correspondant', async () => {
+    it("valide la demande et la publie au CCRT du département sans envoyer d'email (notification par cron)", async () => {
       const ccrtMatchingId = testUsers.ccrt.id!;
       const ccrtOtherDepartmentId = '00000000-0000-0000-0000-000000000208';
       await seedTableUser([
@@ -1317,16 +1317,7 @@ describe('batEnrRouter', () => {
         otherDepartmentItems: [],
         updatedDemand: { validated: true },
       });
-      expect(sentEmailTemplate).toHaveBeenCalledTimes(1);
-      expect(sentEmailTemplate).toHaveBeenCalledWith(
-        'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
-        { email: testUsers.ccrt.email, id: ccrtMatchingId },
-        expect.objectContaining({
-          demand: expect.objectContaining({ email: 'test@example.com' }),
-          demandUrl: `/pro/demandes-chaleur-renouvelable?demandes_chaleur_renouvelable_ccrt_search=${demand.id}`,
-          status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
-        })
-      );
+      expect(sentEmailTemplate).not.toHaveBeenCalled();
     });
 
     it('ne notifie pas deux fois une demande déjà validée', async () => {

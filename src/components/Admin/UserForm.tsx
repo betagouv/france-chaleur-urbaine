@@ -239,8 +239,10 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
             ))}
 
           <div className="space-y-3">
-            <label className="fr-label">Notifications email (si permission réseau)</label>
-            <NotificationPreferencesFields form={form} fields="notifications" />
+            <label className="fr-label">
+              {role === 'ccrt' ? 'Notifications email (si permission territoriale)' : 'Notifications email (si permission réseau)'}
+            </label>
+            <NotificationPreferencesFields form={form} fields="notifications" scope={role === 'ccrt' ? 'ccrt' : 'network'} />
           </div>
         </div>
 

@@ -23,6 +23,7 @@ src/modules/email/
 │   │       ├── confirmation-inscription.tsx
 │   │       └── reinitialisation-mot-de-passe.tsx
 │   └── demands/
+│       ├── ccrt/
 │       ├── demandeur/
 │       └── gestionnaire/
 ├── server/

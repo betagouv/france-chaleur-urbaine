@@ -16,6 +16,9 @@ import ReinitialisationMotDePasse, {
 import NouvelleDemandeChaleurRenouvelable, {
   scenarios as nouvelleDemandeChaleurRenouvelableScenarios,
 } from './templates/demands/ccrt/nouvelle-demande-chaleur-renouvelable';
+import NouvellesDemandesATraiterCcrtWeekly, {
+  scenarios as nouvellesDemandesATraiterCcrtWeeklyScenarios,
+} from './templates/demands/ccrt/nouvelles-demandes-a-traiter-weekly';
 import RappelDemandesEnAttenteCcrt, {
   scenarios as rappelDemandesEnAttenteCcrtScenarios,
 } from './templates/demands/ccrt/rappel-demandes-en-attente';
@@ -139,15 +142,29 @@ export const emails = defineEmails({
   'demands.ccrt.nouvelle-demande-chaleur-renouvelable': {
     Component: NouvelleDemandeChaleurRenouvelable,
     description:
-      "Notification envoyée aux CCRT dont les permissions territoriales classiques couvrent la demande quand un admin valide une demande d'accompagnement chaleur renouvelable.",
-    label: "Nouvelle demande d'accompagnement CCRT",
+      "Envoyé chaque jour ouvré aux CCRT dont une permission territoriale couvre une demande d'accompagnement validée et pas encore notifiée (préférence « Nouvelles demandes » : quotidien) : un email détaillé par demande.",
+    label: "Nouvelle demande d'accompagnement CCRT (quotidien)",
     preview: "Une nouvelle demande d'accompagnement est à traiter",
     scenarios: nouvelleDemandeChaleurRenouvelableScenarios,
     subject: "[France Chaleur Urbaine] À traiter : Nouvelle demande d'accompagnement",
     trigger: {
       description:
-        "À la validation admin d'une demande d'accompagnement chaleur renouvelable ; permissions territoriales correspondantes et emails automatiques CCRT activés (actuellement suspendus).",
-      type: 'action',
+        "Cron du lundi au vendredi 10h10 — demandes d'accompagnement validées, sur un territoire du CCRT et non encore notifiées ; comptes ayant choisi la notification quotidienne ; emails automatiques CCRT activés (actuellement suspendus).",
+      type: 'cron',
+    },
+  },
+  'demands.ccrt.nouvelles-demandes-a-traiter-weekly': {
+    Component: NouvellesDemandesATraiterCcrtWeekly,
+    description:
+      "Récapitulatif hebdomadaire envoyé le lundi aux CCRT ayant choisi la notification hebdomadaire : toutes les nouvelles demandes d'accompagnement de la semaine écoulée sur leur territoire.",
+    label: "Nouvelles demandes d'accompagnement CCRT (hebdomadaire)",
+    preview: "Nouvelles demandes d'accompagnement cette semaine dans votre espace",
+    scenarios: nouvellesDemandesATraiterCcrtWeeklyScenarios,
+    subject: "[France Chaleur Urbaine] Nouvelle(s) demande(s) d'accompagnement cette semaine",
+    trigger: {
+      description:
+        "Cron du lundi 10h10 — demandes d'accompagnement validées, sur un territoire du CCRT, non encore notifiées ou notifiées au cours des 7 derniers jours ; comptes ayant choisi la notification hebdomadaire ; emails automatiques CCRT activés (actuellement suspendus).",
+      type: 'cron',
     },
   },
   'demands.ccrt.rappel-demandes-en-attente': {
@@ -159,8 +176,7 @@ export const emails = defineEmails({
     scenarios: rappelDemandesEnAttenteCcrtScenarios,
     subject: "[France Chaleur Urbaine] {{n}} demande(s) d'accompagnement en attente de traitement",
     trigger: {
-      description:
-        "Cron un lundi sur deux 9h45 — demandes d'accompagnement CCRT validées encore au statut « À traiter » ; nécessite l'option « recevoir les rappels » et les emails automatiques CCRT activés (actuellement suspendus).",
+      description: `Cron du mardi 9h50 — demandes d'accompagnement « À traiter » reçues depuis plus de ${businessRules.unhandledDemandReminderDays.display} (jour de la notification quotidienne, ou lundi du récapitulatif hebdomadaire) ; nécessite la préférence « Rappel des demandes en attente » et les emails automatiques CCRT activés (actuellement suspendus).`,
       type: 'cron',
     },
   },

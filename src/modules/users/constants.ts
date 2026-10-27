@@ -59,7 +59,14 @@ export const newDemandsNotificationFrequencyLabels: Record<NewDemandsNotificatio
   weekly: 'Hebdomadaire',
 };
 
-/** Notifications liées aux demandes de raccordement (effectives seulement avec une permission réseau). */
+/**
+ * Demandes concernées par les notifications d'un compte : demandes de raccordement (permission réseau)
+ * ou demandes d'accompagnement chaleur renouvelable (rôle CCRT avec une permission territoriale). Null : aucun email.
+ */
+export const notificationScopes = ['network', 'ccrt'] as const;
+export type NotificationScope = (typeof notificationScopes)[number];
+
+/** Notifications liées aux demandes (effectives seulement avec une permission réseau, ou territoriale pour un CCRT). */
 export const zNotificationPreferences = z.object({
   /** email « Nouvelles demandes à traiter » : chaque jour ouvré, récapitulatif du lundi, ou jamais */
   new_demands: z.enum(newDemandsNotificationFrequencies),

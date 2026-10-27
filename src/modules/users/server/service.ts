@@ -10,11 +10,13 @@ import { IS_CCRT_EMAIL_ENABLED } from '@/modules/chaleur-renouvelable/constants'
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { getAllPermissionsWithLabels } from '@/modules/permissions/server/search';
+import { territoryPermissionResourceTypes } from '@/modules/permissions/types';
 import { networkTypes } from '@/modules/reseaux/constants';
 import {
   createUserAdminSchema,
   defaultUserPreferences,
   type Entreprise,
+  type NotificationScope,
   parseUserPreferences,
   type StructureType,
   type UpdateProfileSchema,
@@ -252,7 +254,8 @@ export const getProfile = async (userId: string) => {
       'optin_at',
       'preferences',
     ])
-    // the demand notifications only apply to accounts holding a network permission
+    // the demand notifications only apply to accounts holding a network permission (classic demands)
+    // or, for a CCRT, a territorial permission (renewable heat demands)
     .select((eb) =>
       eb
         .exists(
@@ -264,9 +267,23 @@ export const getProfile = async (userId: string) => {
         )
         .as('has_network_permission')
     )
+    .select((eb) =>
+      eb
+        .exists(
+          eb
+            .selectFrom('user_permissions as up')
+            .select(sql`1`.as('one'))
+            .whereRef('up.user_id', '=', 'users.id')
+            .where('up.type', 'in', [...territoryPermissionResourceTypes])
+        )
+        .as('has_territory_permission')
+    )
     .where('id', '=', userId)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Utilisateur non trouvé' }));
-  return { ...user, preferences: parseUserPreferences(user.preferences) };
+  const { has_network_permission, has_territory_permission, ...profile } = user;
+  const notification_scope: NotificationScope | null =
+    profile.role === 'ccrt' && has_territory_permission ? 'ccrt' : has_network_permission ? 'network' : null;
+  return { ...profile, notification_scope, preferences: parseUserPreferences(user.preferences) };
 };
 
 export const getUserPreferences = async (userId: string): Promise<UserPreferences> => {

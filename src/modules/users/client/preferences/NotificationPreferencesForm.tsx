@@ -17,7 +17,8 @@ const zNotificationPreferencesForm = z.object({
 
 /**
  * Demand notification settings of the authenticated user (`users.preferences.notifications`),
- * saved as soon as a choice changes (no submit button). Only meaningful with a network permission.
+ * saved as soon as a choice changes (no submit button). Only meaningful with a network permission
+ * (classic demands) or, for a CCRT, a territorial permission (renewable heat demands).
  */
 function NotificationPreferencesForm() {
   const { data: profile, isLoading } = trpc.users.getProfile.useQuery();
@@ -42,11 +43,12 @@ function NotificationPreferencesForm() {
     return <Loader variant="section" />;
   }
 
-  if (!profile.has_network_permission) {
+  if (!profile.notification_scope) {
     return (
       <Notice size="sm" variant="info">
-        Les notifications concernent les demandes de raccordement affectées à un réseau : elles s'activent dès qu'une permission sur un
-        réseau est attribuée à votre compte.
+        {profile.role === 'ccrt'
+          ? "Les notifications concernent les demandes d'accompagnement chaleur renouvelable de votre territoire : elles s'activent dès qu'une permission territoriale est attribuée à votre compte."
+          : "Les notifications concernent les demandes de raccordement affectées à un réseau : elles s'activent dès qu'une permission sur un réseau est attribuée à votre compte."}
       </Notice>
     );
   }
@@ -56,6 +58,7 @@ function NotificationPreferencesForm() {
       <NotificationPreferencesFields
         form={form}
         fields="notifications"
+        scope={profile.notification_scope}
         onFieldChange={(field, value) => {
           updatePreferences.mutate({ notifications: { [field]: value } });
           trackPostHogEvent('account:preference_updated', { preference: `notifications.${field}`, value });

@@ -16,36 +16,26 @@ import type {
   FranceRenovSpaceInput,
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
-import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, IS_CCRT_EMAIL_ENABLED } from '@/modules/chaleur-renouvelable/constants';
 import type { Context } from '@/modules/config/server/context-builder';
 import { type CreateDemandInput, type DemandSubmissionResult, fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { createDemand } from '@/modules/demands/server/creation-user';
 import { type LegacyValuesPatch, mergeLegacyValues } from '@/modules/demands/server/legacy-values';
 import { sendEmailTemplate } from '@/modules/email';
-import { getAllUsersWithPermissions } from '@/modules/permissions/server/service';
 import type { GetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import { processInParallel } from '@/utils/async';
-import { dayjs } from '@/utils/date';
 import { fetchJSON } from '@/utils/network';
 import { stripDomainFromURL } from '@/utils/url';
 
 import { canProposeHeatNetwork } from '../heat-network-eligibility';
 import { getSimulationPrefillFromBatEnrBatiment } from '../simulation-prefill';
 import { getAltitudeByCoordinates } from './altimetry';
-import {
-  applyCcrtAccessFilter,
-  canUserAccessCcrtDemand,
-  ensureCcrtDemandAccess,
-  getCcrtTerritory,
-  hasCcrtTerritoryCoverage,
-} from './ccrt-access';
+import { applyCcrtAccessFilter, ensureCcrtDemandAccess, getCcrtTerritory, hasCcrtTerritoryCoverage } from './ccrt-access';
 import { selectDemandesChaleurRenouvelableForList, serializeDemandesChaleurRenouvelable } from './ccrt-demand-query';
 import { applyCcrtFollowUpUpdate } from './ccrt-demand-update';
-import { recordCcrtFollowUpChanges, recordCcrtPostHogEvent } from './ccrt-tracking';
+import { recordCcrtFollowUpChanges } from './ccrt-tracking';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
 import { getNetworkEligibilityCoordinates, type NetworkEligibilityCoordinates } from './network-eligibility-coordinates';
 import { getRnicCoproprieteByBatimentConstructionId } from './rnic';
@@ -79,7 +69,6 @@ const batEnrBatimentColumns = [
 
 const BAT_ENR_PRESELECTED_BUILDING_RADIUS_METERS = businessRules.fcrBuildingCandidatesRadiusMeters.value;
 const CHALEUR_RENOUVELABLE_RESULTS_PATH = '/chaleur-renouvelable/resultat';
-const CCRT_DEMANDES_PATH = '/pro/demandes-chaleur-renouvelable';
 
 type BanAddressSearchResponse = {
   features: {
@@ -216,26 +205,6 @@ const getFcrDemandLegacyValues = (input: DemandeChaleurRenouvelable) => {
     ...(simulationPath && { [fcrLegacyValueKeys.simulationUrl]: simulationPath }),
   } satisfies LegacyValuesPatch;
 };
-
-const getCcrtDemandesUrl = (demandId?: string) =>
-  demandId ? `${CCRT_DEMANDES_PATH}?demandes_chaleur_renouvelable_ccrt_search=${encodeURIComponent(demandId)}` : CCRT_DEMANDES_PATH;
-
-const getCcrtTrackingDemandProperties = ({
-  demandId,
-  departmentCode,
-  solution1,
-  structureName,
-}: {
-  demandId: string;
-  departmentCode: string | null;
-  solution1?: string | null;
-  structureName?: string | null;
-}) => ({
-  demande_id: demandId,
-  departement: departmentCode,
-  solution_1: solution1 ?? null,
-  structure_ccrt: structureName ?? null,
-});
 
 const patchDemandWithFcrSnapshot = async (demandId: string, legacyValues: LegacyValuesPatch) => {
   if (Object.keys(legacyValues).length === 0) {
@@ -772,147 +741,8 @@ const getValidOriginDemandId = async (input: DemandeChaleurRenouvelable) => {
   return originDemand?.legacy_values.Status === DEMANDE_STATUS.UNREALISABLE && originDemandEmail === inputEmail ? originDemand.id : null;
 };
 
-/** Lists the shared pending pool once; each recipient is matched through classic permissions. */
-const listPendingCcrtDemands = () =>
-  kdb
-    .selectFrom('demands_chaleur_renouvelable')
-    .select([
-      'id',
-      'address',
-      'created_at',
-      'housing_count',
-      'housing_type',
-      'commune_code',
-      'epci_code',
-      'ept_code',
-      'departement_code',
-      'region_code',
-      'validated',
-    ])
-    .where('validated', '=', true)
-    .where('status', '=', DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS)
-    .orderBy('created_at', 'asc')
-    .execute();
-
-const notifyCcrtOfNewDemandeChaleurRenouvelable = async (demand: DemandeChaleurRenouvelableForCcrtNotification) => {
-  if (!IS_CCRT_EMAIL_ENABLED) {
-    return;
-  }
-
-  const [users, pendingDemands] = await Promise.all([getAllUsersWithPermissions(), listPendingCcrtDemands()]);
-  const recipients = users.filter((user) => user.role === 'ccrt' && canUserAccessCcrtDemand(user, user.permissions, demand));
-
-  await Promise.all(
-    recipients.map(async (recipient) => {
-      const pendingDemandCount = pendingDemands.filter((pendingDemand) =>
-        canUserAccessCcrtDemand(recipient, recipient.permissions, pendingDemand)
-      ).length;
-      return Promise.all([
-        sendEmailTemplate(
-          'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
-          { email: recipient.email, id: recipient.id },
-          {
-            demand: toDemandeChaleurRenouvelableEmailPayload(demand),
-            demandUrl: getCcrtDemandesUrl(demand.id),
-            pendingDemandCount,
-            status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
-          }
-        ),
-        recordCcrtPostHogEvent({
-          distinctId: recipient.id,
-          event: 'ccrt_demandes:demande_received',
-          properties: getCcrtTrackingDemandProperties({
-            demandId: demand.id,
-            departmentCode: demand.departement_code,
-            solution1: demand.alternative_heating_solutions[0],
-            structureName: recipient.structure_name,
-          }),
-        }),
-      ]);
-    })
-  );
-};
-
-const getDemandeChaleurRenouvelableForCcrtNotification = async (demandId: string) => {
-  return await kdb
-    .selectFrom('demands_chaleur_renouvelable')
-    .select([
-      'address',
-      'alternative_heating_solutions',
-      'annual_heating_consumption',
-      'average_area',
-      'average_residents',
-      'batiment_construction_id',
-      'comments',
-      'commune_code',
-      'epci_code',
-      'ept_code',
-      'region_code',
-      'demand_concern',
-      'departement_code',
-      'dpe',
-      'email',
-      'first_name',
-      'heating_energy',
-      'hot_water_system_type',
-      'housing_count',
-      'housing_type',
-      'id',
-      'is_public_advisor_selected',
-      'last_name',
-      'occupant_status',
-      'organization_name',
-      'origin_demand_id',
-      'outdoor_space',
-      'phone',
-      'project_status',
-      'radiator_type',
-      'refusal_period',
-      'refusal_reason',
-      'simulation_url',
-      'surface_area',
-      'updated_at',
-      'validated',
-    ])
-    .where('id', '=', demandId)
-    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
-};
-
-type DemandeChaleurRenouvelableForCcrtNotification = Awaited<ReturnType<typeof getDemandeChaleurRenouvelableForCcrtNotification>>;
-
-const toDemandeChaleurRenouvelableEmailPayload = (demand: DemandeChaleurRenouvelableForCcrtNotification): DemandeChaleurRenouvelable => ({
-  address: demand.address,
-  alternativeHeatingSolutions: demand.alternative_heating_solutions,
-  annualHeatingConsumption: demand.annual_heating_consumption,
-  averageArea: demand.average_area,
-  averageResidents: demand.average_residents,
-  batimentConstructionId: demand.batiment_construction_id,
-  comments: demand.comments,
-  demandConcern: demand.demand_concern,
-  dpe: demand.dpe,
-  email: demand.email,
-  firstName: demand.first_name,
-  heatingEnergy: demand.heating_energy,
-  hotWaterSystemType: demand.hot_water_system_type,
-  housingCount: demand.housing_count,
-  housingType: demand.housing_type,
-  isPublicAdvisorSelected: demand.is_public_advisor_selected,
-  lastName: demand.last_name,
-  occupantStatus: demand.occupant_status,
-  organizationName: demand.organization_name,
-  originDemandId: demand.origin_demand_id,
-  outdoorSpace: demand.outdoor_space,
-  phone: demand.phone,
-  projectStatus: demand.project_status,
-  radiatorType: demand.radiator_type,
-  refusalPeriod: demand.refusal_period,
-  refusalReason: demand.refusal_reason,
-  simulationUrl: demand.simulation_url,
-  surfaceArea: demand.surface_area,
-});
-
 export const validateDemandeChaleurRenouvelableAdmin = async ({ demandId }: AdminValidateDemandeChaleurRenouvelableInput) => {
-  const validationResult = await kdb
+  await kdb
     .updateTable('demands_chaleur_renouvelable')
     .set({
       updated_at: new Date(),
@@ -920,16 +750,16 @@ export const validateDemandeChaleurRenouvelableAdmin = async ({ demandId }: Admi
     })
     .where('id', '=', demandId)
     .where('validated', '=', false)
-    .returning(['id'])
-    .executeTakeFirst();
+    .execute();
 
-  const demand = await getDemandeChaleurRenouvelableForCcrtNotification(demandId);
+  // the CCRT notification is sent by the cron notifyCcrtOfNewDemands (ccrt-notifications.ts), not here
+  const demand = await kdb
+    .selectFrom('demands_chaleur_renouvelable')
+    .select(['id', 'updated_at', 'validated'])
+    .where('id', '=', demandId)
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
 
-  if (validationResult) {
-    await notifyCcrtOfNewDemandeChaleurRenouvelable(demand);
-  }
-
-  return { id: demand.id, updated_at: demand.updated_at, validated: demand.validated };
+  return demand;
 };
 
 export const listDemandesChaleurRenouvelableAdmin = async () => {
@@ -973,42 +803,4 @@ export const updateDemandeChaleurRenouvelableCcrt = async (ctx: Context, input: 
     status: result.demand.status,
     updated_at: result.demand.updated_at,
   };
-};
-
-export const notifyCcrtOfUnhandledDemandesChaleurRenouvelable = async (runDate = dayjs().tz('Europe/Paris')) => {
-  if (!IS_CCRT_EMAIL_ENABLED) {
-    return;
-  }
-
-  const [users, pendingDemands] = await Promise.all([getAllUsersWithPermissions(), listPendingCcrtDemands()]);
-  const recipients = users.filter((user) => user.role === 'ccrt' && user.preferences.notifications.pending_demands_reminder);
-
-  await processInParallel(recipients, businessRules.emailSendConcurrency.value, async (recipient) => {
-    const demands = pendingDemands.filter((demand) => canUserAccessCcrtDemand(recipient, recipient.permissions, demand));
-
-    if (demands.length === 0) {
-      return;
-    }
-
-    await sendEmailTemplate(
-      'demands.ccrt.rappel-demandes-en-attente',
-      { email: recipient.email, id: recipient.id },
-      {
-        demandListUrl: CCRT_DEMANDES_PATH,
-        demands: demands.slice(0, 5).map((demand) => ({
-          address: demand.address,
-          housingCount: demand.housing_count,
-          housingType: demand.housing_type,
-          id: demand.id,
-          waitingDays: Math.max(0, runDate.diff(dayjs(demand.created_at), 'day')),
-        })),
-        pendingDemandCount: demands.length,
-      },
-      {
-        subject: `[France Chaleur Urbaine] ${demands.length} demande(s) d'accompagnement en attente de traitement`,
-      }
-    );
-  });
-
-  console.info(`${recipients.length} CCRT vérifié(s) pour les demandes chaleur renouvelable à traiter.`);
 };
