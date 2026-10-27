@@ -10,7 +10,7 @@ export const usePostHog = (enable: boolean) => {
     if (enable) {
       posthog.set_config({
         autocapture: true,
-        capture_pageview: true,
+        capture_pageview: 'history_change',
         disable_session_recording: false,
         persistence: 'localStorage+cookie',
       });

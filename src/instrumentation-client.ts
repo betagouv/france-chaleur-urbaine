@@ -32,7 +32,7 @@ if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
     api_host: '/ph',
     autocapture: consentGiven,
-    capture_pageview: consentGiven,
+    capture_pageview: consentGiven ? 'history_change' : false,
     cross_subdomain_cookie: false,
     defaults: '2026-01-30',
     disable_session_recording: true,
