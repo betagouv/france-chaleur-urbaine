@@ -3,7 +3,14 @@ import { describe, expect, it } from 'vitest';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import type { TestCase } from '@/tests/trpc-helpers';
 
-import { buildComparatorResultUrl, heatingTypeToTypeLogement, parseHeatingParam, typeLogementToHeatingType, zHomeForm } from './home-form';
+import {
+  buildComparatorResultUrl,
+  heatingTypeToTypeLogement,
+  parseHeatingParam,
+  typeLogementToHeatingType,
+  zHomeComparatorForm,
+  zHomeEligibilityForm,
+} from './home-form';
 
 const geoAddress = {
   geometry: { coordinates: [2.3522, 48.8566], type: 'Point' },
@@ -45,42 +52,36 @@ describe('typeLogementToHeatingType', () => {
   });
 });
 
-describe('zHomeForm', () => {
-  it('strips the comparator fields when testing the heat network eligibility', () => {
-    const result = zHomeForm.parse({
+describe('zHomeEligibilityForm', () => {
+  it('keeps only the eligibility fields', () => {
+    const result = zHomeEligibilityForm.parse({
       espaceExterieur: 'none',
       geoAddress,
-      mode: 'raccordement',
       typeLogement: 'immeuble_chauffage_collectif',
       typeRadiateur: '',
     });
 
-    expect(result).toStrictEqual({ geoAddress, mode: 'raccordement', typeLogement: 'immeuble_chauffage_collectif' });
+    expect(result).toStrictEqual({ geoAddress, typeLogement: 'immeuble_chauffage_collectif' });
   });
 
-  it('requires the radiator type for the comparator', () => {
-    const result = zHomeForm.safeParse({
+  it('rejects a missing address and housing type', () => {
+    const result = zHomeEligibilityForm.safeParse({ espaceExterieur: 'none', geoAddress: undefined, typeLogement: '', typeRadiateur: '' });
+
+    expect(result.error?.issues.map((issue) => issue.path)).toStrictEqual([['geoAddress'], ['typeLogement']]);
+  });
+});
+
+describe('zHomeComparatorForm', () => {
+  it('requires the radiator type', () => {
+    const result = zHomeComparatorForm.safeParse({
       espaceExterieur: 'none',
       geoAddress,
-      mode: 'comparateur',
       typeLogement: 'immeuble_chauffage_collectif',
       typeRadiateur: '',
     });
 
     expect(result.success).toStrictEqual(false);
     expect(result.error?.issues.map((issue) => issue.path)).toStrictEqual([['typeRadiateur']]);
-  });
-
-  it('rejects a missing address and housing type', () => {
-    const result = zHomeForm.safeParse({
-      espaceExterieur: 'none',
-      geoAddress: undefined,
-      mode: 'raccordement',
-      typeLogement: '',
-      typeRadiateur: '',
-    });
-
-    expect(result.error?.issues.map((issue) => issue.path)).toStrictEqual([['geoAddress'], ['typeLogement']]);
   });
 });
 
@@ -89,7 +90,6 @@ describe('buildComparatorResultUrl', () => {
     const url = buildComparatorResultUrl({
       espaceExterieur: 'terrasseBalcon',
       geoAddress,
-      mode: 'comparateur',
       typeLogement: 'immeuble_chauffage_collectif',
       typeRadiateur: 'radiateur-eau',
     });

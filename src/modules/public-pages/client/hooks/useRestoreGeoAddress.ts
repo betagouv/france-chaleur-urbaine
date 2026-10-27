@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { searchBANAddresses } from '@/modules/ban/client';
 import type { BANAddressFeature } from '@/modules/ban/types';
@@ -14,13 +14,17 @@ type UseRestoreGeoAddressParams = {
 /**
  * Rebuilds the BAN feature of an address only known by its label (page reload, partner
  * iframe hand-off): the text is prefilled in the input but the form needs the feature.
+ * Runs once per label, so clearing the field afterwards does not restore it again.
  */
 export function useRestoreGeoAddress({ addressLabel, geoAddress, onRestore }: UseRestoreGeoAddressParams) {
-  // Looks the label up in the BAN once per label, aborted if the component unmounts first
+  const attemptedLabelRef = useRef<string>(undefined);
+
+  // BAN lookup of the label, aborted if the component unmounts first
   useEffect(() => {
-    if (!addressLabel || geoAddress) {
+    if (!addressLabel || geoAddress || attemptedLabelRef.current === addressLabel) {
       return;
     }
+    attemptedLabelRef.current = addressLabel;
     const controller = new AbortController();
     searchBANAddresses({ query: addressLabel, signal: controller.signal })
       .then((features) => {

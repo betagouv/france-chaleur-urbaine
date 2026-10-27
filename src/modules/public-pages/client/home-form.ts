@@ -15,43 +15,36 @@ import {
 
 import { HOME_FORM_MODES, type HomeFormMode } from '../constants';
 
-/** `?mode=` URL parameter: lets a CTA or a deep link preselect the comparator branch of the form. */
+/** `?mode=` URL parameter, single source of truth of the selected branch (radio, CTA, deep link). */
 export const homeFormModeParser = parseAsStringLiteral(HOME_FORM_MODES)
   .withDefault('raccordement')
   .withOptions({ clearOnDefault: true, history: 'replace', scroll: false });
 
-const zHomeFormBase = z.object({
+/** Heat network eligibility test: an address picked from the BAN and a housing type. */
+export const zHomeEligibilityForm = z.object({
   geoAddress: z.custom<BANAddressFeature>((value) => !!value, "N'oubliez pas de sélectionner votre adresse dans la liste."),
   typeLogement: z.enum(TYPE_LOGEMENT_VALUES, { error: "N'oubliez pas d'indiquer votre type de bâtiment." }),
 });
 
-/**
- * Home address test: a heat network eligibility test, or the renewable heating comparator
- * which additionally needs the radiator type and the available outdoor spaces.
- */
-export const zHomeForm = z.discriminatedUnion('mode', [
-  zHomeFormBase.extend({ mode: z.literal('raccordement') }),
-  zHomeFormBase.extend({
-    espaceExterieur: z.enum(ESPACE_EXTERIEUR_VALUES),
-    mode: z.literal('comparateur'),
-    typeRadiateur: z.enum(TYPE_RADIATEUR_VALUES, { error: "N'oubliez pas d'indiquer votre type de radiateurs." }),
-  }),
-]);
+/** Renewable heating comparator: the eligibility fields plus the radiator type and the outdoor spaces. */
+export const zHomeComparatorForm = zHomeEligibilityForm.extend({
+  espaceExterieur: z.enum(ESPACE_EXTERIEUR_VALUES),
+  typeRadiateur: z.enum(TYPE_RADIATEUR_VALUES, { error: "N'oubliez pas d'indiquer votre type de radiateurs." }),
+});
 
-export type HomeFormData = z.infer<typeof zHomeForm>;
-export type HomeComparatorFormData = Extract<HomeFormData, { mode: 'comparateur' }>;
+export type HomeComparatorFormData = z.infer<typeof zHomeComparatorForm>;
 
 /** Flat superset of both branches: the form store keeps every field whatever the selected mode. */
 export type HomeFormValues = {
   espaceExterieur: EspaceExterieur;
   geoAddress: BANAddressFeature | undefined;
-  mode: HomeFormMode;
   typeLogement: TypeLogement | '';
   typeRadiateur: TypeRadiateur | '';
 };
 
-// the union validates the flat runtime values of the selected branch; unify its type for TanStack
-export const zHomeFormValues = zHomeForm as unknown as z.ZodType<HomeFormValues, HomeFormValues>;
+// both branch schemas validate the same flat runtime values; unify their type for TanStack
+export const getHomeFormSchema = (mode: HomeFormMode) =>
+  (mode === 'comparateur' ? zHomeComparatorForm : zHomeEligibilityForm) as unknown as z.ZodType<HomeFormValues, HomeFormValues>;
 
 /** `?heating=` URL parameter of the partner iframes: anything else than the two known values is ignored. */
 export const parseHeatingParam = (value: string | null): NonNullable<AvailableHeating> | undefined =>
