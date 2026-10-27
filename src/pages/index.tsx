@@ -25,6 +25,7 @@ export default function HomePage() {
   return (
     <SimplePage
       title="Développer le chauffage urbain"
+      contentWidth="narrow"
       description="Vérifiez si votre bâtiment est raccordable à un réseau de chaleur ou comparez les solutions de chauffage écologique adaptées à votre logement."
     >
       <HomeHero />

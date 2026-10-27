@@ -17,7 +17,7 @@ export function ToolsTabsSection() {
   const selectedTab = TOOL_TABS.find((tab) => tab.id === selectedTabId) ?? TOOL_TABS[0];
 
   return (
-    <Section variant="light">
+    <Section variant="light" size="compact">
       <h2 className="fr-h2 mb-4 font-bold">Tous vos outils sont ici</h2>
       <div role="tablist" aria-label="Catégories d’outils" className="mb-6 flex flex-wrap gap-2">
         {TOOL_TABS.map((tab) => (

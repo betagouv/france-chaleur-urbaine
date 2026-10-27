@@ -183,9 +183,7 @@ export function HomeHeroForm() {
                 )}
               </form.AppField>
               <form.AppField name="espaceExterieur">
-                {(field) => (
-                  <field.CustomField Component={OutdoorSpaceCheckboxes} layout="row" className="[&>div]:min-h-10 [&>div]:items-center" />
-                )}
+                {(field) => <field.CustomField Component={OutdoorSpaceCheckboxes} layout="row" className="[&>div]:min-h-10" />}
               </form.AppField>
             </div>
           </div>

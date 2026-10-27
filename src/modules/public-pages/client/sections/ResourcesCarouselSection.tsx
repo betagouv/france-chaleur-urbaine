@@ -17,7 +17,7 @@ export function ResourcesCarouselSection({ variant }: ResourcesCarouselSectionPr
   const { source } = usePublicPage();
 
   return (
-    <Section variant={variant}>
+    <Section variant={variant} size="compact">
       <SectionIntro eyebrow="Ressources pédagogiques" title="Tout comprendre avant de se lancer" />
       <Carousel
         items={publicPageResources}

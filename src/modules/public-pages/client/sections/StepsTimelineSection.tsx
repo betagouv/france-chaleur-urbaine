@@ -12,7 +12,7 @@ type StepsTimelineSectionProps = Pick<SectionProps, 'variant'>;
  */
 export function StepsTimelineSection({ variant }: StepsTimelineSectionProps) {
   return (
-    <Section variant={variant}>
+    <Section variant={variant} size="compact">
       <SectionIntro eyebrow="Le parcours" title="De la simulation à l’installation : 7 étapes" />
 
       <div className="mt-8 space-y-6 md:hidden">
@@ -51,7 +51,7 @@ export function StepsTimelineSection({ variant }: StepsTimelineSectionProps) {
 }
 
 // Horizontal position of each step on the desktop timeline, matching the wave SVG
-const STEP_LEFT_CLASSES = ['left-[6%]', 'left-[19%]', 'left-[32%]', 'left-[45%]', 'left-[58%]', 'left-[71%]', 'left-[84%]'];
+const STEP_LEFT_CLASSES = ['left-[11%]', 'left-[24%]', 'left-[37%]', 'left-[50%]', 'left-[63%]', 'left-[76%]', 'left-[89%]'];
 
 type StepCardProps = {
   stepNumber: number;

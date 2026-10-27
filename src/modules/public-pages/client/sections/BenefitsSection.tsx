@@ -13,7 +13,7 @@ type BenefitsSectionProps = Pick<SectionProps, 'variant'>;
  */
 export function BenefitsSection({ variant }: BenefitsSectionProps) {
   return (
-    <Section variant={variant}>
+    <Section variant={variant} size="compact">
       <SectionIntro eyebrow="Pourquoi choisir un chauffage écologique" title="Des arguments concrets, bien au-delà de l’environnement" />
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         {BENEFITS.map((benefit) => (

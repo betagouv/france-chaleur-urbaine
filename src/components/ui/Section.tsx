@@ -12,6 +12,7 @@ const sectionVariants = cva('', {
   },
   variants: {
     size: {
+      compact: 'py-4w md:py-6w',
       lg: '',
       md: 'py-6w md:py-10w',
       sm: 'py-1w md:py-2w',
@@ -97,6 +98,7 @@ const subtitleVariants = cva('text-center max-w-[640px] mx-auto', {
   },
   variants: {
     size: {
+      compact: 'text-base',
       lg: 'text-lg',
       md: 'text-base',
       sm: 'text-sm',
@@ -137,6 +139,7 @@ const contentVariants = cva('', {
   },
   variants: {
     size: {
+      compact: 'mt-4w',
       lg: 'mt-8w',
       md: 'mt-6w',
       sm: 'mt-2w',
@@ -159,6 +162,7 @@ const twoColumnsVariants = cva('flex flex-col lg:flex-row *:flex-1', {
   },
   variants: {
     size: {
+      compact: 'gap-8',
       lg: '',
       md: 'gap-8',
       sm: '',

@@ -13,7 +13,7 @@ type SolutionsIllustrationSectionProps = Pick<SectionProps, 'variant'>;
  */
 export function SolutionsIllustrationSection({ variant }: SolutionsIllustrationSectionProps) {
   return (
-    <Section variant={variant}>
+    <Section variant={variant} size="compact">
       <SectionIntro eyebrow="Les différentes énergies renouvelables (ENR)" title="Quelles solutions concrètes pour votre copropriété ?">
         Le réseau de chaleur est à privilégier quand il passe près de chez vous. Sinon, d’autres solutions renouvelables existent : notre
         simulateur les compare pour votre bâtiment.

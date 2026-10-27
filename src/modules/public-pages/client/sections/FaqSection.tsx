@@ -16,7 +16,7 @@ export function FaqSection({ variant }: FaqSectionProps) {
   const { source } = usePublicPage();
 
   return (
-    <Section variant={variant}>
+    <Section variant={variant} size="compact">
       <SectionIntro eyebrow="FAQ" title="Questions fréquentes sur mon changement de chauffage" />
       <div className="mt-8">
         {FAQS.map((faq) => (

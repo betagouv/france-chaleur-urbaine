@@ -7,7 +7,7 @@ Public showcase pages: the home page (`src/pages/index.tsx`) and the renewable h
 - `constants.ts` — static content: benefits, steps, FAQ, testimonials, tool tiles (`TOOL_TABS`), analytics sources.
 - `client/PublicPageContext.tsx` — `PublicPageProvider` / `usePublicPage()`: the analytics `source` (`home` | `fcr_landing`) that prefixes the PostHog events of the shared sections, and the behaviour of the "Comparer les solutions" CTA (scroll to top by default).
 - `client/PublicPageSections.tsx` — the six editorial sections in their reference order; rendered by both pages.
-- `client/sections/*` — one section per file (benefits, solutions illustration, steps timeline, resources carousel, FAQ, testimonials). Each accepts a `variant` from `@/components/ui/Section` to alternate backgrounds.
+- `client/sections/*` — one section per file (benefits, solutions illustration, steps timeline, resources carousel, FAQ, testimonials). Each accepts a `variant` from `@/components/ui/Section` to alternate backgrounds and uses the `compact` section size (48px vertical padding on desktop). The home page renders them with `SimplePage` `contentWidth="narrow"` (960px containers); the desktop timeline (step positions + `public/img/chaleur-renouvelable-timeline.svg` wave) is centred for that width.
 - `client/ui/*` — `SectionIntro` (eyebrow + title + lede), `CardFrame`, `CardImage`, `CompareSolutionsButton`.
 - `client/resources.ts` — articles of the resources carousel, read from the legacy `@/components/Ressources/config`.
 - `client/HomeHero.tsx` — full-bleed photo (`public/img/bandeau_accueil.webp`, source WebP q90, derivatives served by the Next image optimizer) + `HomeHeroForm`. The home "Comparer les solutions" CTA sets `?mode=comparateur` and scrolls to the top.

@@ -34,6 +34,8 @@ type SimplePageProps = {
   currentPage?: string;
   includeFooter?: boolean;
   layout?: 'center' | 'fluid' | 'large';
+  /** `narrow`: every DSFR container of the page content is capped at 960px instead of 1200px. */
+  contentWidth?: 'default' | 'narrow';
   className?: string;
 } & SEOProps;
 
@@ -44,6 +46,7 @@ const SimplePage = ({
   noIndex,
   includeFooter = true,
   layout = 'fluid',
+  contentWidth = 'default',
   className,
   ...props
 }: SimplePageProps) => {
@@ -65,6 +68,7 @@ const SimplePage = ({
         id="main-content"
         className={cx(
           layout === 'center' ? 'fr-container fr-my-2w' : layout === 'large' ? 'fr-mx-4w fr-my-2w flex flex-col items-start' : '',
+          contentWidth === 'narrow' && NARROW_CONTAINER_CLASSES,
           className
         )}
       >
@@ -74,6 +78,9 @@ const SimplePage = ({
     </>
   );
 };
+
+// 960px of content + the 1.5rem DSFR container padding on each side; fluid containers (modals) keep their width
+const NARROW_CONTAINER_CLASSES = '[&_.fr-container:not(.fr-container--fluid)]:max-w-[63rem]';
 
 const MainNavigation = styled(UnstyledMainNavigation)<{ $compact?: boolean }>`
   ${({ $compact, theme }) => theme.media.lg`

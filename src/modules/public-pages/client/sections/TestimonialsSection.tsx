@@ -17,7 +17,7 @@ export function TestimonialsSection({ variant }: TestimonialsSectionProps) {
   const { source } = usePublicPage();
 
   return (
-    <Section variant={variant}>
+    <Section variant={variant} size="compact">
       <SectionIntro eyebrow="Témoignages" title="Ces copropriétés ont fait l’expérience de l’ENR" />
       <Carousel
         items={TESTIMONIALS}
