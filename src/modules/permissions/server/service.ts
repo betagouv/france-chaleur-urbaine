@@ -1,10 +1,6 @@
-import { sql } from 'kysely';
-
 import { createUserEvent } from '@/modules/events/server/service';
 import type { NetworkType } from '@/modules/reseaux/constants';
-import { parseUserPreferences, type UserPreferences } from '@/modules/users/constants';
 import { kdb } from '@/server/db/kysely';
-import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
 
 import { MAX_PERMISSIONS_PER_USER, type Permission } from '../types';
 
@@ -18,49 +14,7 @@ export {
   isUserResponsibleForDemand,
 } from './demand-access';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-type UserWithPermissions = {
-  id: string;
-  email: string;
-  role: UserRole;
-  structure_name: string | null;
-  permissions: Permission[];
-  preferences: UserPreferences;
-};
-
 // ─── Read ────────────────────────────────────────────────────────────────────
-
-/**
- * Loads all active users with permissions in a single query.
- * Used by crons to avoid N+1 when matching demands to users.
- */
-export const getAllUsersWithPermissions = async (): Promise<UserWithPermissions[]> => {
-  const rows = await kdb
-    .selectFrom('users as u')
-    .leftJoin('user_permissions as up', 'up.user_id', 'u.id')
-    .select(['u.id', 'u.email', 'u.role', 'u.structure_name', 'u.preferences'])
-    .select(
-      sql<
-        Permission[]
-      >`coalesce(json_agg(json_build_object('type', ${sql.ref('up.type')}, 'resource_id', ${sql.ref('up.resource_id')})) filter (where ${sql.ref('up.user_id')} is not null), '[]'::json)`.as(
-        'permissions'
-      )
-    )
-    .where('u.active', '=', true)
-    .where('u.role', 'in', [...userRolesWithPermissions])
-    .groupBy(['u.id', 'u.email', 'u.role', 'u.structure_name', 'u.preferences'])
-    .execute();
-
-  return rows.map((row) => ({
-    email: row.email,
-    id: row.id,
-    permissions: row.permissions,
-    preferences: parseUserPreferences(row.preferences),
-    role: row.role,
-    structure_name: row.structure_name,
-  }));
-};
 
 export const getUserPermissions = async (userId: string): Promise<Permission[]> => {
   const rows = await kdb.selectFrom('user_permissions').select(['type', 'resource_id']).where('user_id', '=', userId).execute();

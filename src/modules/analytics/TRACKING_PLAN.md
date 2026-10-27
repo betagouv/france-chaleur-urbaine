@@ -93,7 +93,7 @@ All events include `structure_ccrt` and `departement`. Demand events (`ccrt_dema
 
 | Event | Additional properties | Trigger |
 |---|---|---|
-| `ccrt_demandes:demande_received` | — | Admin publication, once per notified CCRT account |
+| `ccrt_demandes:demande_received` | — | Cron notification (`notifyCcrtOfNewDemands`), once per notified CCRT account and demand |
 | `ccrt_demandes:list_viewed` | `onglet` | Authorized workspace group displayed |
 | `ccrt_demandes:demande_opened` | `premiere_ouverture` | Demand opened; first opening within this workspace visit |
 | `ccrt_demande:status_changed` | `type_statut` (`suivi` / `avancement`), `statut_avant`, `statut_apres`, `declenchement` (`manuel` / `auto`) | Committed status/project-state transition |

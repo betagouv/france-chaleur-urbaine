@@ -487,7 +487,7 @@ const PageHeader = (props: PageHeaderProps) => {
         ...authenticatedNavigationMenu,
         ...(hasRole('admin') ? adminNavigationMenu : []),
         ...(hasRole('gestionnaire') || hasRole('collectivite') || hasRole('alec') || hasRole('ccrt') ? gestionnaireNavigationMenu : []),
-        ...(['admin', 'ccrt', 'gestionnaire', 'collectivite', 'alec'].includes(session?.user.role ?? '') ? ccrtNavigationMenu : []),
+        ...(hasRole('ccrt') ? ccrtNavigationMenu : []),
         ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
       ];
     }

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { defaultUserPreferences } from '@/modules/users/constants';
-import { getUserPreferences, updateUserPreferences } from '@/modules/users/server/service';
+import { getUserPreferences } from '@/modules/users/server/service';
 import { serverConfig } from '@/server/config';
 import { kdb } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
@@ -23,16 +23,7 @@ import {
   zCcrtBuilding,
 } from '../constants';
 import * as ccrtNotesService from './ccrt-notes';
-import { getAddressEligibilityContext, notifyCcrtOfUnhandledDemandesChaleurRenouvelable } from './service';
-
-const ccrtEmail = vi.hoisted(() => ({ isEnabled: true }));
-
-vi.mock('@/modules/chaleur-renouvelable/constants', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/modules/chaleur-renouvelable/constants')>()),
-  get IS_CCRT_EMAIL_ENABLED() {
-    return ccrtEmail.isEnabled;
-  },
-}));
+import { getAddressEligibilityContext } from './service';
 
 vi.mock('@/modules/email', () => ({ sendEmailTemplate: vi.fn() }));
 vi.mock('@/utils/network', () => ({ fetchJSON: vi.fn(), postFetchJSON: vi.fn() }));
@@ -107,7 +98,6 @@ const seedWorkspace = async () => {
 };
 
 beforeEach(async () => {
-  ccrtEmail.isEnabled = true;
   await cleanDatabase();
   vi.clearAllMocks();
   Object.assign(serverConfig, { tracking: { postHogApiHost: 'https://posthog.test', postHogKey: 'test' } });
@@ -192,113 +182,24 @@ describe('CCRT workspace access', () => {
   });
 });
 
-describe('CCRT notifications through classic permissions', () => {
-  it('skips reminders even for an opted-in CCRT account while automated emails are suspended', async () => {
-    ccrtEmail.isEnabled = false;
-    await seedWorkspace();
-    await updateUserPreferences(testUsers.ccrt.id, { notifications: { pending_demands_reminder: true } });
-
-    await notifyCcrtOfUnhandledDemandesChaleurRenouvelable();
-
-    expect(sendEmailTemplate).not.toHaveBeenCalled();
-  });
-
-  it('publishes the demand without notifying CCRT accounts when automated emails are suspended', async () => {
-    ccrtEmail.isEnabled = false;
+describe('CCRT demand publication', () => {
+  it('publishes the demand without sending any email nor marking it as notified (the cron notifyCcrtOfNewDemands does)', async () => {
     const demand = await seedWorkspace();
     await kdb.updateTable('demands_chaleur_renouvelable').set({ validated: false }).where('id', '=', demand.id).execute();
 
     const result = await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: demand.id });
     const visibleDemands = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
+    const { notified_at } = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select('notified_at')
+      .where('id', '=', demand.id)
+      .executeTakeFirstOrThrow();
 
     expect(result).toStrictEqual({ id: demand.id, updated_at: expect.any(Date), validated: true });
     expect(visibleDemands.items.map((item) => item.id)).toStrictEqual([demand.id]);
+    expect(notified_at).toBeNull();
     expect(sendEmailTemplate).not.toHaveBeenCalled();
     expect(postFetchJSON).not.toHaveBeenCalled();
-  });
-
-  it.each([
-    ['commune', '13055'],
-    ['epci', 'EPCI-13'],
-    ['ept', 'EPT-13'],
-    ['departement', '13'],
-    ['region', '93'],
-  ] as const)('notifies and reminds only authorized active CCRT accounts through %s', async (type, resource_id) => {
-    const demand = await seedWorkspace();
-    await kdb.updateTable('demands_chaleur_renouvelable').set({ validated: false }).where('id', '=', demand.id).execute();
-    await updateUserPreferences(testUsers.ccrt.id, { notifications: { pending_demands_reminder: true } });
-    await kdb.deleteFrom('user_permissions').where('user_id', '=', testUsers.ccrt.id).execute();
-    await seedTableUser([
-      { active: false, email: 'inactive@test.local', id: uuid(800), role: 'ccrt' },
-      { email: 'network-only@test.local', id: uuid(801), role: 'ccrt' },
-    ]);
-    await kdb
-      .insertInto('user_permissions')
-      .values([
-        { resource_id, type, user_id: testUsers.ccrt.id },
-        { resource_id: '93', type: 'region', user_id: uuid(800) },
-        { resource_id: '13', type: 'reseau_de_chaleur', user_id: uuid(801) },
-      ])
-      .execute();
-    const nearbyDemand = await seedDemandeChaleurRenouvelable({
-      commune_code: '13056',
-      created_at: new Date('2026-01-02T00:00:00.000Z'),
-      departement_code: '13',
-      epci_code: 'OTHER-EPCI',
-      ept_code: 'OTHER-EPT',
-      region_code: '93',
-      validated: true,
-    });
-    await seedDemandeChaleurRenouvelable({
-      commune_code: '75056',
-      departement_code: '75',
-      epci_code: 'PARIS-EPCI',
-      region_code: '11',
-      validated: true,
-    });
-    const pendingCount = type === 'region' || type === 'departement' ? 2 : 1;
-
-    await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: demand.id });
-    expect(
-      vi.mocked(sendEmailTemplate).mock.calls.map(([key, recipient, props]) => ({
-        count: props && 'pendingDemandCount' in props ? props.pendingDemandCount : null,
-        key,
-        recipient,
-      }))
-    ).toStrictEqual([
-      {
-        count: pendingCount,
-        key: 'demands.ccrt.nouvelle-demande-chaleur-renouvelable',
-        recipient: { email: testUsers.ccrt.email, id: testUsers.ccrt.id },
-      },
-    ]);
-
-    vi.mocked(sendEmailTemplate).mockClear();
-    await notifyCcrtOfUnhandledDemandesChaleurRenouvelable();
-    expect(
-      vi.mocked(sendEmailTemplate).mock.calls.map(([key, recipient, props]) => ({
-        count: props && 'pendingDemandCount' in props ? props.pendingDemandCount : null,
-        key,
-        props,
-        recipient,
-      }))
-    ).toMatchObject([
-      {
-        count: pendingCount,
-        key: 'demands.ccrt.rappel-demandes-en-attente',
-        props: {
-          demands: (pendingCount === 2 ? [demand.id, nearbyDemand.id] : [demand.id]).map((id) => ({ id })),
-        },
-        recipient: { email: testUsers.ccrt.email, id: testUsers.ccrt.id },
-      },
-    ]);
-  });
-
-  it.each(['daily', 'weekly', 'none'] as const)('does not send reminders when disabled, with new demands set to %s', async (frequency) => {
-    await seedWorkspace();
-    await updateUserPreferences(testUsers.ccrt.id, { notifications: { new_demands: frequency, pending_demands_reminder: false } });
-    await notifyCcrtOfUnhandledDemandesChaleurRenouvelable();
-    expect(sendEmailTemplate).not.toHaveBeenCalled();
   });
 });
 

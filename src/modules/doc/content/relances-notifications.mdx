@@ -2,7 +2,7 @@ import { businessRules } from '@/modules/app/business-rules';
 
 # Relances et notifications
 
-Quatre automatismes quotidiens, hebdomadaires ou toutes les deux semaines entourent les demandes. Ils partagent un objectif : qu'aucune demande validée ne reste sans suite, et que l'inaction soit visible. Leur état d'exécution est consultable dans [Suivi des tâches](/admin/jobs), leur inventaire complet dans [Références](/admin/doc/references).
+Cinq automatismes quotidiens ou hebdomadaires entourent les demandes de raccordement et d'accompagnement. Ils partagent un objectif : qu'aucune demande validée ne reste sans suite, et que l'inaction soit visible. Leur état d'exécution est consultable dans [Suivi des tâches](/admin/jobs), leur inventaire complet dans [Références](/admin/doc/references).
 
 <Mermaid
   chart={`flowchart TD
@@ -12,12 +12,16 @@ Quatre automatismes quotidiens, hebdomadaires ou toutes les deux semaines entour
     attente -- "Oui" --> rappel["Mardi, 9h55 : « Rappel demandes en attente »"]:::email
     relanceCheck{"Éligible + chauffage collectif + pas recontacté ?"} -- "Oui, ${businessRules.firstRelanceDelayMonths.display} après le dépôt" --> relance1["Lundi, 10h05 : « Enquête de satisfaction » (1re relance)"]:::email
     relance1 -- "Toujours rien à ${businessRules.secondRelanceDelayDays.display} du dépôt" --> relance2["Seconde relance"]:::email
-    ccrtCheck["Demande chaleur renouvelable CCRT validée, encore « À traiter »"]:::db -- "Si emails CCRT activés (suspendus actuellement)" --> ccrtRappel["Un lundi sur deux, 9h45 : « Rappel demandes CCRT en attente »"]:::email
+    ccrtValidee["Demande d'accompagnement CCRT validée"]:::db -- "Si emails CCRT activés (suspendus actuellement)" --> ccrtNotif["Lundi à vendredi, 10h10 : « Nouvelle demande d'accompagnement CCRT » (quotidien, un email par demande), ou récapitulatif du lundi (hebdomadaire)"]:::email
+    ccrtNotif --> ccrtMarque["Demande marquée comme notifiée"]:::db
+    ccrtMarque --> ccrtAttente{"Toujours « À traiter » après ${businessRules.unhandledDemandReminderDays.display} ?"}
+    ccrtAttente -- "Oui" --> ccrtRappel["Mardi, 9h50 : « Rappel demandes CCRT en attente »"]:::email
     relance1 --> reponse["Le demandeur répond : recontacté oui/non + commentaire"]
     relance2 --> reponse
     reponse --> trace["Réponse enregistrée, visible de l'équipe FCU"]:::evt
     click notif "/admin/emails?type=demands.gestionnaire.nouvelles-demandes-a-traiter-daily" "Voir le modèle d'email"
     click rappel "/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente" "Voir le modèle d'email"
+    click ccrtNotif "/admin/emails?type=demands.ccrt.nouvelle-demande-chaleur-renouvelable" "Voir le modèle d'email"
     click ccrtRappel "/admin/emails?type=demands.ccrt.rappel-demandes-en-attente" "Voir le modèle d'email"
     click relance1 "/admin/emails?type=demands.demandeur.enquete-satisfaction" "Voir le modèle d'email"
     click trace "/admin/events?types=demand_satisfaction_submitted" "Voir dans l'activité du site"
@@ -44,11 +48,14 @@ Conditions communes :
 
 Email [« Rappel demandes en attente »](/admin/emails?type=demands.gestionnaire.rappel-demandes-en-attente) : pour les demandes restées « À traiter » (ou sans statut) plus de <Rule id="unhandledDemandReminderDays" /> **après leur réception** par le compte : le jour de la notification pour un compte en quotidien, le lundi du récapitulatif pour un compte en hebdomadaire (une demande reçue un lundi n'est donc jamais rappelée le lendemain). Nécessite le réglage « Rappel des demandes en attente » sur le compte, indépendant du choix précédent.
 
-## 3. Rappel des demandes CCRT en attente — un lundi sur deux, 9h45
+## 3. Demandes d'accompagnement CCRT — lundi à vendredi 10h10, et mardi 9h50
 
-**Envoi temporairement suspendu** : `IS_CCRT_EMAIL_ENABLED = false` dans `src/modules/chaleur-renouvelable/constants.ts` bloque les relances CCRT, même si le compte a activé les rappels. Le même flag suspend les emails d'ouverture de compte CCRT et les notifications de publication de nouvelles demandes. Le cron reste planifié ; repasser le flag à `true` réactive les prochains rappels sur les demandes encore en attente.
+**Envoi temporairement suspendu** : `IS_CCRT_EMAIL_ENABLED = false` dans `src/modules/chaleur-renouvelable/constants.ts` bloque les deux crons CCRT et l'email d'ouverture de compte CCRT. Les crons restent planifiés mais ne marquent rien : à la réactivation, toutes les demandes validées pas encore notifiées partent au premier passage (rattrapage automatique, y compris celles validées pendant la suspension).
 
-Email [«&nbsp;Rappel demandes CCRT en attente&nbsp;»](/admin/emails?type=demands.ccrt.rappel-demandes-en-attente) : pour les demandes d'accompagnement chaleur renouvelable dédiées à l'expérimentation CCRT, **validées** et encore «&nbsp;À traiter&nbsp;» accessibles au compte CCRT actif avec ses permissions territoriales classiques (commune, EPCI, EPT, département ou région). Nécessite le réglage «&nbsp;Rappel des demandes en attente&nbsp;» dans les préférences de notification du compte (`users.preferences.notifications.pending_demands_reminder`), modifiable par un admin dans [Gestion des utilisateurs](/admin/users). La fréquence des nouvelles demandes de raccordement ne modifie pas les notifications CCRT envoyées à la publication d'une demande. L'email liste les cinq plus anciennes demandes et renvoie vers [Demandes chaleur renouvelable](/pro/demandes-chaleur-renouvelable).
+Les comptes CCRT ont les mêmes réglages que les gestionnaires (« Mon compte », section Notifications, ou [Gestion des utilisateurs](/admin/users)), appliqués aux demandes d'accompagnement chaleur renouvelable **validées** sur un territoire couvert par une de leurs permissions classiques (commune, EPCI, EPT, département ou région). Seul le rôle CCRT est destinataire : une collectivité avec la même permission territoriale ne reçoit rien.
+
+- **Nouvelles demandes** (cron `notifyCcrtOfNewDemands`, lundi à vendredi 10h10) : en **quotidien**, un email détaillé [« Nouvelle demande d'accompagnement CCRT (quotidien) »](/admin/emails?type=demands.ccrt.nouvelle-demande-chaleur-renouvelable) par demande pas encore notifiée (synthèse, solutions, nombre de demandes « À traiter » du territoire) ; en **hebdomadaire**, un seul récapitulatif [« Nouvelles demandes d'accompagnement CCRT (hebdomadaire) »](/admin/emails?type=demands.ccrt.nouvelles-demandes-a-traiter-weekly) le lundi, listant les demandes de la semaine (adresse, type, logements, première solution, date de dépôt). Même règle de marquage que pour les gestionnaires : la demande est marquée notifiée seulement si au moins un CCRT la reçoit ([événement « Notification CCRT »](/admin/events?types=ccrt_demand_notification_sent)) ; sinon elle sera signalée dès qu'une permission territoriale sera ajoutée. La validation par un admin ne déclenche plus d'email directement.
+- **Rappel des demandes en attente** (cron `notifyCcrtOfUnhandledDemands`, mardi 9h50) : email [« Rappel demandes CCRT en attente »](/admin/emails?type=demands.ccrt.rappel-demandes-en-attente) pour les demandes encore « À traiter » plus de <Rule id="unhandledDemandReminderDays" /> après leur réception (même calcul qu'au §2), si le réglage « Rappel des demandes en attente » est actif. L'email détaille les <Rule id="ccrtReminderListedDemands" /> les plus anciennes et compte les autres.
 
 ## 4. Relance des demandeurs — lundi, 10h05
 
