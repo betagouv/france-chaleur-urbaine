@@ -393,13 +393,9 @@ export type PostHogEventMap = {
 
   // Home
   'home:tool_tile_clicked': ElementType;
-  'home:comparator_tile_clicked': never;
   'home:bulk_test_cta_clicked': never;
-  'home:guide_download_clicked': { filename: string };
-  'home:fcr_tile_clicked': never;
   'home:article_clicked': ElementType;
   'home:news_clicked': ElementType;
-  'home:pedagogic_section_clicked': ElementType;
   'home:partner_logo_clicked': { partner_name: string; target_url: string };
   'home:testimonial_carousel_clicked': { action: string; testimonial_index: number };
   'home:bottom_cta_clicked': never;

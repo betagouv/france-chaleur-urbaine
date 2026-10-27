@@ -226,13 +226,9 @@ Ces événements n'utilisent pas `posthog-js` dans le widget : le navigateur app
 | `home:bottom_cta_clicked` | _(aucune)_ | Clic sur un CTA « Comparer les solutions » des sections |
 | `home:testimonial_clicked` | `element_name`, `testimonial_title?` | Clic sur un témoignage |
 | `home:faq_item_opened` | `faq_question` | Ouverture d'une question FAQ |
-| `home:comparator_tile_clicked` | _(aucune)_ | Clic sur la tuile comparateur |
 | `home:bulk_test_cta_clicked` | _(aucune)_ | Clic vers le test d'adresses en masse |
-| `home:guide_download_clicked` | `filename` | Téléchargement d'un guide |
-| `home:fcr_tile_clicked` | _(aucune)_ | Clic vers Chaleur renouvelable |
 | `home:article_clicked` | `element_name`, `article_title?` | Clic sur un article |
 | `home:news_clicked` | `element_name` | Clic sur une actualité |
-| `home:pedagogic_section_clicked` | `element_name` | Clic sur une section pédagogique |
 | `home:partner_logo_clicked` | `partner_name`, `target_url` | Clic sur un logo partenaire |
 | `home:testimonial_carousel_clicked` | `action`, `testimonial_index` | Interaction avec le carrousel témoignages |
 
