@@ -13,6 +13,11 @@ function ChaleurRenouvelableMethodologiePage() {
       className="fr-my-5w"
     >
       <h1>Simulateur de chauffage écologique et économique : comment ça marche ?</h1>
+      <div className="flex justify-center fr-mb-4w">
+        <Button priority="primary" href="/chaleur-renouvelable">
+          Accéder au simulateur
+        </Button>
+      </div>
       <h2>1. Pourquoi un simulateur pour le chauffage écologique ?</h2>
       <p>
         Changer de système de chauffage est un projet complexe :{' '}
