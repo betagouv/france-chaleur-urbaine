@@ -1,4 +1,4 @@
-import Hero, { HeroContent, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
+import { HeroContent, HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 
 import { HomeHeroForm } from './HomeHeroForm';
 
@@ -8,7 +8,7 @@ import { HomeHeroForm } from './HomeHeroForm';
 export function HomeHero() {
   return (
     // min height = banner with the comparator fields unfolded, so the cover photo does not jump when they appear
-    <Hero image="/img/banner_simulateur.webp" imageType="cover" variant="transparent" size="lg">
+    <div className="fr-p-1w md:fr-p-5w w-full bg-[#C3E4E2] bg-[url('/img/banner_simulateur.webp')] bg-no-repeat bg-cover bg-left-center">
       <div className="mx-auto w-full max-w-4xl">
         <HeroTitle>
           <span className="text-white">Le chauffage écologique, à prix maîtrisé&nbsp;: testez votre adresse</span>
@@ -22,6 +22,6 @@ export function HomeHero() {
           </div>
         </HeroContent>
       </div>
-    </Hero>
+    </div>
   );
 }
