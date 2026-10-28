@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { EligibilityFormContact } from '@/components/EligibilityForm';
 import CallOut from '@/components/ui/CallOut';
 import Dialog from '@/components/ui/Dialog';
-import Link from '@/components/ui/Link';
 import useIsMobile from '@/hooks/useIsMobile';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { BatEnrBatimentSelection } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentSelection';
 import DemandeFCRForm, { type ContactRecipientId } from '@/modules/chaleur-renouvelable/client/DemandFCRForm';
 import { useChoixChauffageResults } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageResults';
+import { MethodologyContent } from '@/modules/chaleur-renouvelable/client/MethodologyContent';
 import { HeatNetworkContactSteps } from '@/modules/chaleur-renouvelable/client/results/ui/HeatNetworkContactSteps';
 import { IncompatibleSolutionsSection } from '@/modules/chaleur-renouvelable/client/results/ui/IncompatibleSolutionsSection';
 import { NoResultSection } from '@/modules/chaleur-renouvelable/client/results/ui/NoResultSection';
@@ -164,9 +164,18 @@ export default function ChoixChauffageResults() {
             DPE, disponibilité d’espaces extérieurs… Ces critères permettent d’estimer les coûts et contraintes techniques propres à votre
             situation.
             <div className="fr-mt-3w">
-              <Link href="/chaleur-renouvelable/methodologie" postHogEventKey="fcr_results:methodology_link_clicked" isExternal>
-                En savoir plus
-              </Link>
+              <Dialog
+                title="Simulateur de chauffage écologique et économique : comment ça marche ?"
+                size="xl"
+                trigger={
+                  <button type="button" className="fr-link" onClick={() => trackPostHogEvent('fcr_results:methodology_link_clicked')}>
+                    En savoir plus
+                    <span className="fr-icon--sm fr-icon-arrow-right-up-line" />
+                  </button>
+                }
+              >
+                <MethodologyContent />
+              </Dialog>
             </div>
           </CallOut>
           <Dialog
