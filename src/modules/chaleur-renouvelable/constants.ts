@@ -380,7 +380,6 @@ export const demandeChaleurRenouvelableStatusOptions = demandeChaleurRenouvelabl
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS = demandeChaleurRenouvelableStatuses[0].label;
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT = demandeChaleurRenouvelableStatuses[1].label;
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED = demandeChaleurRenouvelableStatuses[9].label;
-export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION = demandeChaleurRenouvelableStatuses[6].label;
 export type DemandeChaleurRenouvelableStatus = (typeof demandeChaleurRenouvelableStatuses)[number]['label'];
 
 export const demandeChaleurRenouvelableProjectStates = [

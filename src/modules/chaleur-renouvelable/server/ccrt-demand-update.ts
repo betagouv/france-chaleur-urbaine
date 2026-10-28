@@ -9,7 +9,6 @@ import {
   type AdminUpdateDemandeChaleurRenouvelableInput,
   type CcrtUpdateDemandeChaleurRenouvelableInput,
   DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
 } from '../constants';
 import { insertCcrtNote } from './ccrt-notes';
@@ -34,20 +33,12 @@ export const applyCcrtFollowUpUpdate = async (ctx: Context, input: ApplyCcrtFoll
   const isContactSkipped = input.trigger === 'contact' && current.status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS;
   const values = isContactSkipped ? {} : input.values;
   const status = values.status ?? current.status;
-  if (values.projectState !== undefined && status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION) {
-    throw new TRPCError({
-      code: 'BAD_REQUEST',
-      message: "L'état du projet ne peut être modifié qu'après validation de l'étude de faisabilité en AG.",
-    });
-  }
   const nextValues = {
     assigned_to: values.assignedTo === undefined ? current.assigned_to : values.assignedTo,
     project_state:
       values.status === undefined && values.projectState === undefined
         ? current.project_state
-        : status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION
-          ? (values.projectState ?? current.project_state)
-          : DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+        : DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
     status,
   };
   const changes = {

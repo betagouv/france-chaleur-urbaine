@@ -6,12 +6,7 @@ import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 
-import {
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
-  demandeChaleurRenouvelableProjectStates,
-  demandeChaleurRenouvelableStatusOptions,
-  zCcrtFollowUpForm,
-} from '../constants';
+import { demandeChaleurRenouvelableStatusOptions, zCcrtFollowUpForm } from '../constants';
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
 
 type CcrtFollowUpFormProps = {
@@ -77,17 +72,6 @@ export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: Ccrt
             />
           )}
         </form.AppField>
-        {selectedStatus === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION && (
-          <form.AppField name="projectState" listeners={{ onChange: ({ value }) => void handleSelectionChange({ projectState: value }) }}>
-            {(field) => (
-              <field.SelectField
-                label="État du projet"
-                hideOptionalLabel
-                options={demandeChaleurRenouvelableProjectStates.map((state) => ({ label: state.label, value: state.label }))}
-              />
-            )}
-          </form.AppField>
-        )}
       </fieldset>
       {isSaving && (
         <p role="status" className="px-4 text-sm">

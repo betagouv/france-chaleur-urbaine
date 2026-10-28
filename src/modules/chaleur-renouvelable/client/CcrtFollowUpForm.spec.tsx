@@ -1,7 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION } from '../constants';
 import { CcrtFollowUpForm } from './CcrtFollowUpForm';
 
 describe('CcrtFollowUpForm', () => {
@@ -33,7 +32,7 @@ describe('CcrtFollowUpForm', () => {
     expect(screen.getByRole('textbox', { name: /Ajouter une note/ })).toHaveValue('');
   });
 
-  it.each(['A traiter', DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION] as const)(
+  it.each(['A traiter'] as const)(
     'preserves a drafted note and refreshes the saved status after a concurrent change from %s',
     async (status) => {
       const props = { isUpdating: false, onSaved: vi.fn(), onUpdate: vi.fn().mockResolvedValue(undefined) };
@@ -49,21 +48,6 @@ describe('CcrtFollowUpForm', () => {
       await waitFor(() => expect(props.onUpdate).toHaveBeenCalledExactlyOnceWith({ note: 'Note en cours' }));
     }
   );
-
-  it('autosaves only the project state when the validation status is unchanged', async () => {
-    const onUpdate = vi.fn().mockResolvedValue(undefined);
-    render(
-      <CcrtFollowUpForm
-        demand={{ project_state: 'En réflexion', status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION }}
-        isUpdating={false}
-        onUpdate={onUpdate}
-        onSaved={vi.fn()}
-      />
-    );
-    fireEvent.change(screen.getByLabelText('État du projet'), { target: { value: 'Installation ENR votée en AG' } });
-
-    await waitFor(() => expect(onUpdate).toHaveBeenCalledExactlyOnceWith({ projectState: 'Installation ENR votée en AG' }));
-  });
 
   it('locks follow-up actions until the automatic save finishes', async () => {
     let finishSave = () => {};

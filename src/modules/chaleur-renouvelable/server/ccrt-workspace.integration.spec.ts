@@ -14,12 +14,9 @@ import { fetchJSON, postFetchJSON } from '@/utils/network';
 
 import { EMPTY_BAT_ENR_INFO } from '../bat-enr';
 import {
-  DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
-  demandeChaleurRenouvelableProjectStates,
   zCcrtBuilding,
 } from '../constants';
 import * as ccrtNotesService from './ccrt-notes';
@@ -288,35 +285,6 @@ describe('CCRT heat-network eligibility', () => {
     vi.mocked(fetchJSON).mockResolvedValue({ features: [] });
     await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.getHeatNetworkEligibility({ demandId: demand.id })).resolves.toBeNull();
     expect(getEligilityStatus).not.toHaveBeenCalled();
-  });
-});
-
-describe('CCRT notes and shared history', () => {
-  it.each(['admin', 'ccrt'] as const)('applies the same project-state reset and audit from %s', async (role) => {
-    const demand = await seedWorkspace();
-    const projectState = demandeChaleurRenouvelableProjectStates[1].label;
-    await kdb
-      .updateTable('demands_chaleur_renouvelable')
-      .set({ project_state: projectState, status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION })
-      .where('id', '=', demand.id)
-      .execute();
-    await createTestCaller(testUsers[role]).batEnr[role].updateDemandeChaleurRenouvelable({
-      demandId: demand.id,
-      values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED },
-    });
-    const followUp = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
-    expect(followUp.history.map((event) => event.data)).toStrictEqual([
-      {
-        changes: {
-          project_state: { from: projectState, to: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION },
-          status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED },
-        },
-      },
-    ]);
-    expect(vi.mocked(postFetchJSON).mock.calls.map(([, payload]) => payload)).toStrictEqual([
-      expect.objectContaining({ properties: expect.objectContaining({ declenchement: 'manuel', type_statut: 'suivi' }) }),
-      expect.objectContaining({ properties: expect.objectContaining({ declenchement: 'manuel', type_statut: 'avancement' }) }),
-    ]);
   });
 
   it('keeps an automatic contact from overwriting a closed demand or adding a misleading audit', async () => {

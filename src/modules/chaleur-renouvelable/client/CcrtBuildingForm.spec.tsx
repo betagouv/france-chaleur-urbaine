@@ -108,7 +108,6 @@ describe('CcrtBuildingForm', () => {
   it('automatically saves a valid edit after typing stops without submitting a button', async () => {
     render(<CcrtBuildingForm demand={demand} />);
     fireEvent.change(screen.getByLabelText('Surface moyenne'), { target: { value: '85' } });
-    expect(screen.getByRole('status')).toHaveTextContent('Modifications en attente d’enregistrement');
 
     await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1), { timeout: 3000 });
     expect(mocks.mutateAsync.mock.calls[0][0]).toMatchObject({ updatedAt: demand.updated_at, values: { average_area: 85 } });

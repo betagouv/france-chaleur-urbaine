@@ -1,5 +1,6 @@
 import { useStore } from '@tanstack/react-form';
 
+import Button from '@/components/ui/Button';
 import { Form } from '@/modules/form/Form';
 
 import type { CcrtDemand } from '../types';
@@ -77,6 +78,23 @@ export function CcrtBuildingForm({ demand, onSimulation, onMap, buildingOnly = f
         </CcrtDetailsSection>
         {!buildingOnly && <CcrtProjectFields demand={demand} onSimulation={onSimulation} />}
       </fieldset>
+      {autosave.error && (
+        <div className="border border-(--border-default-grey) bg-(--background-default-grey) p-4">
+          <p className="mb-0 text-sm" role="alert">
+            Échec de l’enregistrement : {autosave.error.message}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            {autosave.error.data?.code !== 'CONFLICT' && (
+              <Button priority="secondary" size="small" disabled={autosave.isSaving} onClick={autosave.save}>
+                Réessayer
+              </Button>
+            )}
+            <Button priority="tertiary" size="small" disabled={autosave.isSaving} onClick={autosave.reset}>
+              {autosave.error.data?.code === 'CONFLICT' ? 'Abandonner mes modifications et recharger' : 'Annuler les modifications'}
+            </Button>
+          </div>
+        </div>
+      )}
     </Form>
   );
 }
