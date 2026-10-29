@@ -728,6 +728,31 @@ describe('batEnrRouter', () => {
   });
 
   describe('batEnr.getBatEnrBatimentsSelectionContextByBanId', () => {
+    it('keeps the explicit building when a corrected address has no matching building candidates', async () => {
+      await seedDepartement({ insee_dep: '13', insee_reg: '93', nom: 'Bouches-du-Rhône' });
+      await seedRegion({ insee_reg: '93', nom: 'Provence-Alpes-Côte d’Azur' });
+      await seedCommune({ insee_com: '13055', insee_dep: '13', insee_reg: '93', nom: 'Marseille' });
+      await insertBatEnrRow({ address: '16 rue du test', constructionId: 'CONFIRMED-BUILDING', coordinateX: 5_000, coordinateY: 5_000 });
+      mockedFetchJSON.mockImplementation(async (url) =>
+        String(url).includes('/buildings/address/') ? { results: [] } : String(url).includes('/elevation.json') ? { elevations: [0] } : []
+      );
+
+      const context = await createTestCaller(null).batEnr.getAddressEligibilityContext({
+        banId: 'CORRECTED-ADDRESS',
+        city: 'Marseille',
+        cityCode: '13055',
+        lat: 43.2965,
+        lon: 5.3698,
+        selectedBatimentConstructionId: 'CONFIRMED-BUILDING',
+      });
+
+      expect({
+        candidates: context.batEnrBatiments.map((building) => building.batiment_construction_id),
+        selected: context.selectedBatEnrBatiment?.batiment_construction_id,
+        shouldSelect: context.shouldSelectBatEnrBatiment,
+      }).toStrictEqual({ candidates: [], selected: 'CONFIRMED-BUILDING', shouldSelect: false });
+    });
+
     it('préselectionne le premier bâtiment BDNB et charge ses voisins à 200 m sans référence RNB', async () => {
       const constructionIds = ['CONSTRUCTION-REFERENCE', 'CONSTRUCTION-NEAR', 'CONSTRUCTION-FAR'];
       await kdb.deleteFrom('bdnb_batenr').where('batiment_construction_id', 'in', constructionIds).execute();

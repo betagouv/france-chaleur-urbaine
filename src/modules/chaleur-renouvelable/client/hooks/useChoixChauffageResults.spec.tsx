@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -6,20 +6,28 @@ import { useChoixChauffageResults } from './useChoixChauffageResults';
 
 const mocks = vi.hoisted(() => ({
   address: '14 Rue Lecourbe 75015 Paris',
+  buildingAddress: '16 Rue Lecourbe',
   constructionId: 'building-1',
   isAddressMissing: false,
   isEligibilityLoading: false,
   isPrefillLoading: false,
   recommendation: 'PAC géothermique',
+  resolveBuildingAddress: vi.fn(),
+  setGeoAddress: vi.fn(),
+  setParams: vi.fn(),
   shouldSelectBuilding: false,
   track: vi.fn(),
 }));
+vi.mock('../building-address', () => ({ getBuildingAddress: mocks.resolveBuildingAddress }));
 vi.mock('@/modules/analytics/client', () => ({ trackPostHogEvent: mocks.track }));
 vi.mock('@/components/ComparateurPublicodes/useSimulatorEngine', () => ({ default: () => ({}) }));
 vi.mock('@/hooks/useContactFormFCU', () => ({ default: () => ({}) }));
 vi.mock('./useRemoveHashOnScroll', () => ({ useRemoveHashOnScroll: () => {} }));
 vi.mock('./useChoixChauffageQueryParams', () => ({
-  useChoixChauffageQueryParams: () => ({ params: { adresse: mocks.address, constructionId: mocks.constructionId } }),
+  useChoixChauffageQueryParams: () => ({
+    params: { adresse: mocks.address, constructionId: mocks.constructionId },
+    setParams: mocks.setParams,
+  }),
 }));
 vi.mock('./useAddressEligibility', () => ({
   useAddressEligibility: () => ({
@@ -27,10 +35,64 @@ vi.mock('./useAddressEligibility', () => ({
     codeDepartement: '75',
     geoAddress: mocks.isAddressMissing ? undefined : { properties: { label: mocks.address } },
     isEligibilityLoading: mocks.isEligibilityLoading,
-    selectedBatEnrBatiment: { batiment_construction_id: mocks.constructionId },
+    selectedBatEnrBatiment: { adresse: mocks.buildingAddress, batiment_construction_id: mocks.constructionId },
+    setGeoAddress: mocks.setGeoAddress,
     shouldSelectBatEnrBatiment: mocks.shouldSelectBuilding,
   }),
 }));
+
+describe('selected building address correction', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.resolveBuildingAddress.mockReset();
+    mocks.address = '14 Rue Lecourbe 75015 Paris';
+    mocks.constructionId = 'building-1';
+    mocks.isAddressMissing = false;
+    mocks.shouldSelectBuilding = false;
+  });
+
+  it('updates the address and BAN coordinates while preserving the confirmed building', async () => {
+    const address = { geometry: { coordinates: [2.31, 48.81] }, properties: { label: '16 Rue Lecourbe 75015 Paris' } };
+    mocks.resolveBuildingAddress.mockResolvedValue(address);
+    renderHook(() => useChoixChauffageResults());
+
+    await waitFor(() =>
+      expect(mocks.setParams).toHaveBeenCalledExactlyOnceWith({ adresse: address.properties.label, constructionId: 'building-1' })
+    );
+    expect(mocks.setGeoAddress).toHaveBeenCalledExactlyOnceWith(address);
+  });
+
+  it('keeps the entered address when no reliable address is found', async () => {
+    mocks.resolveBuildingAddress.mockResolvedValue(undefined);
+    renderHook(() => useChoixChauffageResults());
+
+    await waitFor(() => expect(mocks.resolveBuildingAddress).toHaveBeenCalled());
+    expect(mocks.setParams).not.toHaveBeenCalled();
+    expect(mocks.setGeoAddress).not.toHaveBeenCalled();
+  });
+
+  it('waits until the building is confirmed', () => {
+    mocks.shouldSelectBuilding = true;
+    renderHook(() => useChoixChauffageResults());
+    expect(mocks.resolveBuildingAddress).not.toHaveBeenCalled();
+  });
+
+  it('ignores a correction if the user changes the address before the lookup finishes', async () => {
+    let finishLookup = (_address: unknown) => {};
+    mocks.resolveBuildingAddress.mockReturnValueOnce(
+      new Promise((resolve) => {
+        finishLookup = resolve;
+      })
+    );
+    const { rerender } = renderHook(() => useChoixChauffageResults());
+    mocks.address = 'Nouvelle adresse';
+    rerender();
+    await act(async () => finishLookup({ properties: { label: '16 Rue Lecourbe 75015 Paris' } }));
+
+    expect(mocks.setParams).not.toHaveBeenCalled();
+    expect(mocks.setGeoAddress).not.toHaveBeenCalled();
+  });
+});
 vi.mock('../simulation-situation', () => ({ buildSimulationSituation: () => ({}) }));
 vi.mock('../modesChauffageData', () => ({ getIncompatibleSolutionRows: () => [], getModesDeChauffage: () => [] }));
 vi.mock('../heatingModeCosts', () => ({

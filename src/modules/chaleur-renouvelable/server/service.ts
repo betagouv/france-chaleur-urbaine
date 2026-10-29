@@ -450,7 +450,9 @@ const getBatEnrLookupResult = async ({
   const batEnrBatiments = selectionContext.batiments;
 
   if (selectedBatimentConstructionId) {
-    const selectedBatEnrBatiment = batEnrBatiments.find((batiment) => batiment.batiment_construction_id === selectedBatimentConstructionId);
+    const selectedBatEnrBatiment =
+      batEnrBatiments.find((batiment) => batiment.batiment_construction_id === selectedBatimentConstructionId) ??
+      (await getBatEnrBatimentDetails({ batiment_construction_id: selectedBatimentConstructionId }));
 
     if (selectedBatEnrBatiment) {
       return {

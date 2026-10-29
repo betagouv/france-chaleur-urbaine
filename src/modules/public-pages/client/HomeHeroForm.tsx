@@ -2,7 +2,7 @@ import { useResizeObserver } from '@react-hookz/web';
 import { useStore } from '@tanstack/react-form';
 import { useRouter } from 'next/router';
 import { useQueryState } from 'nuqs';
-import { type ReactNode, useRef } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 
 import Radio from '@/components/form/dsfr/Radio';
 import Link from '@/components/ui/Link';
@@ -96,6 +96,11 @@ export function HomeHeroForm() {
   });
 
   const geoAddress = useStore(form.store, (state) => state.values.geoAddress);
+  // Switching branches must recheck an address that was selected before the switch.
+  useEffect(() => {
+    void form.validateField('geoAddress', 'change');
+  }, [form, mode]);
+
   useRestoreGeoAddress({
     addressLabel: initialValues.addressLabel,
     geoAddress,
@@ -111,11 +116,17 @@ export function HomeHeroForm() {
   return (
     <div ref={containerRef}>
       <Form form={form} id={AnalyticsFormId.form_test_adresse} className="flex flex-col gap-4 rounded-lg bg-white p-6 shadow-sm">
-        <form.AppField name="geoAddress">
+        <form.AppField
+          name="geoAddress"
+          validators={{
+            onChange: ({ value }) =>
+              isComparator && value ? zHomeComparatorForm.shape.geoAddress.safeParse(value).error?.issues[0]?.message : undefined,
+          }}
+        >
           {(field) => (
             <field.AddressSelectField
               label="Mon bâtiment est au"
-              className={`${INLINE_FIELD_CLASSES} [&>div]:flex-1`}
+              className="mb-0! md:grid md:grid-cols-[auto_minmax(0,1fr)] md:items-center md:gap-x-3 [&>label]:mb-0! [&>label]:text-lg [&>.fr-error-text]:mt-2! md:[&>.fr-error-text]:col-start-2"
               defaultValue={initialValues.addressLabel}
               nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
               onClear={() => setUserInfo({ address: '' })}
