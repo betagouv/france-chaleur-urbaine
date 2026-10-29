@@ -72,6 +72,25 @@ describe('zHomeEligibilityForm', () => {
 });
 
 describe('zHomeComparatorForm', () => {
+  it.each(['street', 'municipality', 'locality'] as const)('rejects a %s only in comparator mode', (type) => {
+    const values = {
+      espaceExterieur: 'none',
+      geoAddress: { ...geoAddress, properties: { ...geoAddress.properties, type } },
+      typeLogement: 'immeuble_chauffage_collectif',
+      typeRadiateur: 'radiateur-eau',
+    };
+
+    expect(zHomeEligibilityForm.safeParse(values).success).toStrictEqual(true);
+    expect(
+      zHomeComparatorForm.safeParse(values).error?.issues.map((issue) => ({ message: issue.message, path: issue.path }))
+    ).toStrictEqual([
+      {
+        message: 'Une adresse précise est nécessaire pour identifier votre bâtiment et proposer des solutions pertinentes',
+        path: ['geoAddress'],
+      },
+    ]);
+  });
+
   it('requires the radiator type', () => {
     const result = zHomeComparatorForm.safeParse({
       espaceExterieur: 'none',

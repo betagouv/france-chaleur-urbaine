@@ -29,6 +29,9 @@ export const zHomeEligibilityForm = z.object({
 /** Renewable heating comparator: the eligibility fields plus the radiator type and the outdoor spaces. */
 export const zHomeComparatorForm = zHomeEligibilityForm.extend({
   espaceExterieur: z.enum(ESPACE_EXTERIEUR_VALUES),
+  geoAddress: zHomeEligibilityForm.shape.geoAddress.refine((address) => address.properties.type === 'housenumber', {
+    message: 'Une adresse précise est nécessaire pour identifier votre bâtiment et proposer des solutions pertinentes',
+  }),
   typeRadiateur: z.enum(TYPE_RADIATEUR_VALUES, { error: "N'oubliez pas d'indiquer votre type de radiateurs." }),
 });
 
