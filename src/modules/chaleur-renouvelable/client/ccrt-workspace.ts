@@ -1,6 +1,10 @@
 import { normalize } from '@/utils/strings';
 
-import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, demandeChaleurRenouvelableStatuses } from '../constants';
+import {
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+  demandeChaleurRenouvelableStatuses,
+} from '../constants';
 import type { CcrtDemand } from '../types';
 import type { CcrtDemandTab } from './CcrtDemandTabs';
 
@@ -11,7 +15,7 @@ export const formatCcrtAddress = (address: string): string => address.replace(/(
 
 const closedStatuses = new Set<string>(
   demandeChaleurRenouvelableStatuses
-    .filter((status) => ['irrelevant', 'redirected_france_renov', 'abandoned_by_prospect', 'closed'].includes(status.value))
+    .filter((status) => ['irrelevant', 'redirected_france_renov', 'abandoned_by_prospect'].includes(status.value))
     .map((status) => status.label)
 );
 
@@ -21,9 +25,11 @@ const closedStatuses = new Set<string>(
 export function getCcrtDemandTab(demand: Pick<CcrtDemand, 'status'>): Exclude<CcrtDemandTab, 'all'> {
   return demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS
     ? 'to_process'
-    : closedStatuses.has(demand.status)
-      ? 'closed'
-      : 'in_progress';
+    : demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED
+      ? 'completed'
+      : closedStatuses.has(demand.status)
+        ? 'closed'
+        : 'in_progress';
 }
 
 /**

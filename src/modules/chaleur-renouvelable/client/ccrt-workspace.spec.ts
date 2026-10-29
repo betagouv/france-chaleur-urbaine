@@ -27,7 +27,7 @@ describe('getCcrtDemandTab', () => {
     ['Non pertinent', 'closed'],
     ['Réorienté vers France Rénov’', 'closed'],
     ['Projet abandonné par le prospect', 'closed'],
-    ['Clôturée', 'closed'],
+    ['Installation réalisée', 'completed'],
   ])('groups %s in %s', (status, expected) => {
     expect(getCcrtDemandTab({ status })).toStrictEqual(expected);
   });

@@ -10,7 +10,7 @@ import { demandeChaleurRenouvelableStatusOptions, zCcrtFollowUpForm } from '../c
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
 
 type CcrtFollowUpFormProps = {
-  demand: Pick<CcrtDemand, 'status' | 'project_state'>;
+  demand: Pick<CcrtDemand, 'status'>;
   isUpdating: boolean;
   onUpdate: (values: CcrtDemandUpdate) => Promise<void>;
   onSaved: () => void;
@@ -34,15 +34,13 @@ export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: Ccrt
       onSaved();
     }),
   });
-  const selectedStatus = useStore(form.store, (state) => state.values.status);
   const note = useStore(form.store, (state) => state.values.note);
   const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
 
   // Refresh saved selections independently so a drafted note survives background updates.
   useEffect(() => {
     form.setFieldValue('status', defaultValues.status, { dontRunListeners: true, dontUpdateMeta: true });
-    form.setFieldValue('projectState', defaultValues.projectState, { dontRunListeners: true, dontUpdateMeta: true });
-  }, [defaultValues.status, defaultValues.projectState, form]);
+  }, [defaultValues.status, form]);
 
   const handleSelectionChange = toastErrors(async (values: CcrtDemandUpdate) => {
     setIsSaving(true);
@@ -51,7 +49,6 @@ export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: Ccrt
       onSaved();
     } catch (error) {
       form.setFieldValue('status', defaultValues.status, { dontRunListeners: true });
-      form.setFieldValue('projectState', defaultValues.projectState, { dontRunListeners: true });
       throw error;
     } finally {
       setIsSaving(false);
@@ -113,5 +110,4 @@ export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: Ccrt
   );
 }
 
-const getFollowUpDefaultValues = (demand: CcrtFollowUpFormProps['demand']) =>
-  zCcrtFollowUpForm.parse({ note: '', projectState: demand.project_state, status: demand.status });
+const getFollowUpDefaultValues = (demand: CcrtFollowUpFormProps['demand']) => zCcrtFollowUpForm.parse({ note: '', status: demand.status });

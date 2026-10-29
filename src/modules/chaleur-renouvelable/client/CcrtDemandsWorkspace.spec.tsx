@@ -172,7 +172,7 @@ describe('CcrtDemandsWorkspace', () => {
       data: {
         items: [
           { ...demand, status: 'Recontacté pour premier échange' },
-          { ...demand, first_name: 'Paul', id: uuid(2), status: 'Clôturée' },
+          { ...demand, first_name: 'Paul', id: uuid(2), status: 'Non pertinent' },
           { ...demand, first_name: 'Claire', id: uuid(3), status: 'A traiter' },
         ],
       },
@@ -221,6 +221,27 @@ describe('CcrtDemandsWorkspace', () => {
     expect(screen.getByRole('button', { name: 'Joëlle Martini' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Toutes les demandes/ })).toHaveAttribute('aria-current', 'true');
     expect(screen.getByRole('button', { name: 'Valider' })).toBeInTheDocument();
+  });
+
+  it.each([true, false])('separates completed installations from ongoing and closed demands with admin mode %s', async (isAdmin) => {
+    const items = [
+      { ...demand, status: 'Installation réalisée' },
+      { ...demand, first_name: 'Paul', id: uuid(2), status: 'Recontacté pour premier échange' },
+      { ...demand, first_name: 'Claire', id: uuid(3), status: 'Non pertinent' },
+    ];
+    mocks.adminQuery.mockReturnValue({ data: { items }, isError: false, isLoading: false });
+    mocks.ccrtQuery.mockReturnValue({ data: { items }, isError: false, isLoading: false });
+    renderWorkspace(isAdmin);
+
+    fireEvent.click(screen.getByRole('button', { name: /Réalisées/ }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Joëlle Martini' })).toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: 'Paul Martini' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Claire Martini' })).toBeNull();
+    expect(screen.getByRole('button', { name: /Réalisées/ })).toHaveTextContent('1');
+
+    fireEvent.click(screen.getByRole('button', { name: /Clôturées/ }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Claire Martini' })).toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: 'Joëlle Martini' })).toBeNull();
   });
   it.each([true, false])('opens the mobile sheet and preserves admin controls with admin mode %s', async (isAdmin) => {
     mocks.isMobile = true;

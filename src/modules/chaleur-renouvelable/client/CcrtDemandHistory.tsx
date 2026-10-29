@@ -21,7 +21,7 @@ type CcrtDemandHistoryProps = {
 };
 
 /**
- * Read-only timeline with notes, links to sent messages and territorial permission changes.
+ * Read-only timeline with demand changes, notes and links to sent messages.
  */
 export function CcrtDemandHistory({ followUp, offset, onPageChange, onEmailClick }: CcrtDemandHistoryProps) {
   const history = followUp.history.filter((event) => event.type !== 'ccrt_demand_updated' || getVisibleChanges(event).length > 0);
@@ -115,8 +115,6 @@ const eventLabels: Record<string, string> = {
   ccrt_demand_note_created: 'Note interne',
   ccrt_demand_note_deleted: 'Note supprimée',
   ccrt_demand_note_updated: 'Note modifiée',
-  user_permissions_synced_from_api: 'Accès',
-  user_permissions_updated: 'Accès',
 };
 const formatValue = (value: unknown): string =>
   value == null || (typeof value === 'string' && !value.trim())

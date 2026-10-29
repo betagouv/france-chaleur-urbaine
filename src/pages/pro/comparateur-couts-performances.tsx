@@ -10,7 +10,7 @@ import { withAuthentication } from '@/server/authentication';
 
 const ComparateurPublicodes = dynamic(() => import('@/components/ComparateurPublicodes'), {
   loading: () => <Placeholder advancedMode={true} />,
-  // Publicode engine takes 2s to load and is unnecessary on the server side
+  // Building the publicodes engine takes a few hundred milliseconds and is unnecessary on the server side
   ssr: false,
 });
 

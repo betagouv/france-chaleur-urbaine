@@ -5,15 +5,19 @@ export const ccrtDemandTabs = [
   { description: 'Aucun contact engagé', label: 'À traiter', value: 'to_process' },
   { description: 'Contact ou étude engagés', label: 'En cours', value: 'in_progress' },
   { description: 'Réorientées ou abandonnées', label: 'Clôturées', value: 'closed' },
+  { description: 'Installation réalisée', label: 'Réalisées', value: 'completed' },
   { description: 'Historique complet', label: 'Toutes les demandes', value: 'all' },
 ] as const;
 
 export type CcrtDemandTab = (typeof ccrtDemandTabs)[number]['value'];
 
-export const ccrtTrackingTabs = { all: 'toutes', closed: 'cloturees', in_progress: 'en_cours', to_process: 'a_traiter' } satisfies Record<
-  CcrtDemandTab,
-  CcrtTrackingTab
->;
+export const ccrtTrackingTabs = {
+  all: 'toutes',
+  closed: 'cloturees',
+  completed: 'realisees',
+  in_progress: 'en_cours',
+  to_process: 'a_traiter',
+} satisfies Record<CcrtDemandTab, CcrtTrackingTab>;
 
 type CcrtDemandTabsProps = {
   activeTab: CcrtDemandTab;
@@ -36,6 +40,7 @@ export function CcrtDemandTabs({ activeTab, counts, isLoading, onTabChange }: Cc
           className={cx(
             'flex items-center gap-1 rounded-2xl border px-2.5 py-1 text-sm leading-6 lg:flex-col lg:items-start lg:gap-0 lg:rounded-none lg:px-4 lg:py-2 lg:text-base lg:text-left',
             tab.value === 'closed' && 'order-4 lg:order-none',
+            tab.value === 'completed' && 'order-5 lg:order-none',
             tab.value === 'all' && 'order-3 lg:order-none',
             activeTab === tab.value
               ? 'border-(--border-active-blue-france) bg-(--background-action-high-blue-france) text-(--text-inverted-blue-france) lg:bg-(--background-default-grey) lg:text-(--text-active-blue-france) lg:shadow-[inset_0_-3px_0_var(--border-active-blue-france)]'
