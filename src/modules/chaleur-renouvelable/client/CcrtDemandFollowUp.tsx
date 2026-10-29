@@ -3,12 +3,10 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import { useState } from 'react';
 
 import Button from '@/components/ui/Button';
-import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import { useDialogState } from '@/hooks/useDialogState';
 import trpc from '@/modules/trpc/client';
 import { dayjs } from '@/utils/date';
 
-import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED, DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
+import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
 import { CcrtDemandAccess } from './CcrtDemandAccess';
 import { CcrtDemandHistory } from './CcrtDemandHistory';
@@ -35,7 +33,6 @@ export function CcrtDemandFollowUp({
   showContactAction = true,
 }: CcrtDemandFollowUpProps) {
   const [offset, setOffset] = useState(0);
-  const archive = useDialogState();
   const followUp = trpc.batEnr.ccrt.getFollowUp.useQuery({ demandId: demand.id, offset });
   const isToProcess = demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS;
 
@@ -91,25 +88,6 @@ export function CcrtDemandFollowUp({
           Chargement du suivi…
         </p>
       )}
-      <div className="p-4">
-        <Button
-          full
-          priority="tertiary"
-          disabled={isUpdating || demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED}
-          onClick={() => archive.open()}
-        >
-          Archiver la demande
-        </Button>
-      </div>
-      <ConfirmDialog
-        control={archive}
-        title="Archiver cette demande ?"
-        confirmLabel="Archiver"
-        onConfirm={() => onUpdate({ status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED })}
-      >
-        La demande passera à « Clôturées » pour toutes les personnes autorisées. Elle restera consultable et pourra être rouverte en
-        changeant son statut.
-      </ConfirmDialog>
     </aside>
   );
 }
