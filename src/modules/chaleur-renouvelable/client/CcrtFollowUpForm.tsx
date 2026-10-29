@@ -1,17 +1,12 @@
 import { useStore } from '@tanstack/react-form';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 import Tag from '@/components/ui/Tag';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 
-import {
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION,
-  demandeChaleurRenouvelableProjectStates,
-  demandeChaleurRenouvelableStatusOptions,
-  zCcrtFollowUpForm,
-} from '../constants';
+import { demandeChaleurRenouvelableStatusOptions, zCcrtFollowUpForm } from '../constants';
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
 
 type CcrtFollowUpFormProps = {
@@ -22,42 +17,53 @@ type CcrtFollowUpFormProps = {
 };
 
 /**
- * Saves status, project state and an optional note together through the single follow-up action.
+ * Autosaves follow-up selections while keeping note submission explicit and independent.
  */
 export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: CcrtFollowUpFormProps) {
-  const defaultValues = useRef(getFollowUpDefaultValues(demand));
+  const [isSaving, setIsSaving] = useState(false);
+  const defaultValues = getFollowUpDefaultValues(demand);
   const form = useAppForm({
     ...schemaValidation(zCcrtFollowUpForm),
-    defaultValues: defaultValues.current,
+    defaultValues,
     onSubmit: toastErrors(async ({ value }) => {
-      await onUpdate({
-        ...(value.status !== defaultValues.current.status && { status: value.status }),
-        ...(value.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION &&
-          value.projectState !== defaultValues.current.projectState && { projectState: value.projectState }),
-        ...(value.note.trim() && { note: value.note.trim() }),
-      });
-      defaultValues.current = { ...value, note: '' };
-      form.reset(defaultValues.current);
+      if (!value.note.trim() || isSaving || isUpdating) {
+        return;
+      }
+      await onUpdate({ note: value.note.trim() });
+      form.resetField('note');
       onSaved();
     }),
   });
   const selectedStatus = useStore(form.store, (state) => state.values.status);
   const note = useStore(form.store, (state) => state.values.note);
   const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
-  const isDirty = useStore(form.store, (state) => state.isDirty);
 
-  // Server refreshes update clean controls without discarding a note or status still being drafted.
+  // Refresh saved selections independently so a drafted note survives background updates.
   useEffect(() => {
-    if (!isDirty) {
-      defaultValues.current = getFollowUpDefaultValues(demand);
-      form.reset(defaultValues.current);
+    form.setFieldValue('status', defaultValues.status, { dontRunListeners: true, dontUpdateMeta: true });
+    form.setFieldValue('projectState', defaultValues.projectState, { dontRunListeners: true, dontUpdateMeta: true });
+  }, [defaultValues.status, defaultValues.projectState, form]);
+
+  const handleSelectionChange = toastErrors(async (values: CcrtDemandUpdate) => {
+    setIsSaving(true);
+    try {
+      await onUpdate(values);
+      onSaved();
+    } catch (error) {
+      form.setFieldValue('status', defaultValues.status, { dontRunListeners: true });
+      form.setFieldValue('projectState', defaultValues.projectState, { dontRunListeners: true });
+      throw error;
+    } finally {
+      setIsSaving(false);
     }
-  }, [demand, form, isDirty]);
+  });
+
+  const isDisabled = isUpdating || isSubmitting || isSaving;
 
   return (
     <Form form={form} className="[&_.fr-label]:text-sm [&_.fr-label]:leading-6 [&_.fr-label]:text-(--text-default-grey)">
-      <fieldset disabled={isUpdating || isSubmitting} className="m-0 border-0 px-4 pb-4 pt-0">
-        <form.AppField name="status">
+      <fieldset disabled={isDisabled} className="m-0 border-0 px-4 pb-4 pt-0">
+        <form.AppField name="status" listeners={{ onChange: ({ value }) => void handleSelectionChange({ status: value }) }}>
           {(field) => (
             <field.SelectField
               label="Où en êtes-vous du suivi de la demande ?"
@@ -66,20 +72,14 @@ export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: Ccrt
             />
           )}
         </form.AppField>
-        {selectedStatus === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_PROJECT_VALIDATION && (
-          <form.AppField name="projectState">
-            {(field) => (
-              <field.SelectField
-                label="État du projet"
-                hideOptionalLabel
-                options={demandeChaleurRenouvelableProjectStates.map((state) => ({ label: state.label, value: state.label }))}
-              />
-            )}
-          </form.AppField>
-        )}
       </fieldset>
+      {isSaving && (
+        <p role="status" className="px-4 text-sm">
+          Enregistrement du suivi…
+        </p>
+      )}
       <fieldset
-        disabled={isUpdating || isSubmitting}
+        disabled={isDisabled}
         className="m-0 border-0 border-t border-(--border-contrast-grey) bg-(--background-alt-grey) px-4 py-6"
       >
         <Tag className="mb-4 bg-(--background-action-high-blue-france)! px-3! py-1! text-sm! leading-6! font-normal text-(--text-inverted-blue-france)!">
@@ -104,8 +104,8 @@ export function CcrtFollowUpForm({ demand, isUpdating, onUpdate, onSaved }: Ccrt
           <span className="text-xs leading-5" aria-live="polite">
             {note.length}/250
           </span>
-          <form.SubmitButton priority="secondary" size="large" disabled={isUpdating || isSubmitting || !isDirty}>
-            {note.trim() ? 'Ajouter au suivi' : 'Enregistrer le suivi'}
+          <form.SubmitButton priority="secondary" size="large" disabled={isDisabled || !note.trim()}>
+            Ajouter au suivi
           </form.SubmitButton>
         </div>
       </fieldset>

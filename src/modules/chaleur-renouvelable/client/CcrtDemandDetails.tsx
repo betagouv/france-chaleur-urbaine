@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 import Button from '@/components/ui/Button';
 
 import type { CcrtDemand } from '../types';
@@ -10,10 +8,9 @@ type CcrtDemandDetailsProps = {
   demand: CcrtDemand;
   isUpdating: boolean;
   onUpdate: React.ComponentProps<typeof CcrtDemandFollowUp>['onUpdate'];
-  onContact: (showHistory?: boolean) => void;
+  onContact: React.ComponentProps<typeof CcrtDemandFollowUp>['onContact'];
   onSimulation: () => void;
   onCollapse: () => void;
-  adminControls?: ReactNode;
   onMap?: () => void;
   onManageAccess?: () => void;
 };
@@ -28,7 +25,6 @@ export function CcrtDemandDetails({
   onContact,
   onSimulation,
   onCollapse,
-  adminControls,
   onMap,
   onManageAccess,
 }: CcrtDemandDetailsProps) {
@@ -37,7 +33,6 @@ export function CcrtDemandDetails({
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
         <CcrtBuildingForm demand={demand} onSimulation={onSimulation} onMap={onMap} />
         <div>
-          {adminControls}
           <CcrtDemandFollowUp
             demand={demand}
             isUpdating={isUpdating}

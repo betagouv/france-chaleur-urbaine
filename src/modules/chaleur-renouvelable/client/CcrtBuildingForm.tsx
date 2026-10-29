@@ -78,34 +78,23 @@ export function CcrtBuildingForm({ demand, onSimulation, onMap, buildingOnly = f
         </CcrtDetailsSection>
         {!buildingOnly && <CcrtProjectFields demand={demand} onSimulation={onSimulation} />}
       </fieldset>
-      <div className="sticky bottom-0 border border-(--border-default-grey) bg-(--background-default-grey) p-4">
-        <p className="mb-0 text-sm" role={autosave.error ? 'alert' : 'status'}>
-          {autosave.isSaving
-            ? 'Enregistrement en cours…'
-            : autosave.error
-              ? `Échec de l’enregistrement : ${autosave.error.message}`
-              : autosave.hasChanges
-                ? autosave.isValid
-                  ? 'Modifications en attente d’enregistrement…'
-                  : 'Corrigez les informations invalides pour les enregistrer.'
-                : 'Toutes les modifications sont enregistrées.'}
-        </p>
-        <p className="mb-0 mt-1 text-xs text-(--text-mention-grey)">
-          Les modifications sont enregistrées automatiquement et les solutions de chauffage sont recalculées.
-        </p>
-        {autosave.hasChanges && (
+      {autosave.error && (
+        <div className="border border-(--border-default-grey) bg-(--background-default-grey) p-4">
+          <p className="mb-0 text-sm" role="alert">
+            Échec de l’enregistrement : {autosave.error.message}
+          </p>
           <div className="mt-3 flex flex-wrap gap-3">
-            {autosave.error && autosave.error.data?.code !== 'CONFLICT' && (
+            {autosave.error.data?.code !== 'CONFLICT' && (
               <Button priority="secondary" size="small" disabled={autosave.isSaving} onClick={autosave.save}>
                 Réessayer
               </Button>
             )}
             <Button priority="tertiary" size="small" disabled={autosave.isSaving} onClick={autosave.reset}>
-              {autosave.error?.data?.code === 'CONFLICT' ? 'Abandonner mes modifications et recharger' : 'Annuler les modifications'}
+              {autosave.error.data?.code === 'CONFLICT' ? 'Abandonner mes modifications et recharger' : 'Annuler les modifications'}
             </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </Form>
   );
 }

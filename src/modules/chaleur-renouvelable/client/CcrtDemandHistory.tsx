@@ -13,12 +13,17 @@ import {
 } from '../constants';
 import type { CcrtFollowUp } from '../types';
 
-type CcrtDemandHistoryProps = { followUp: CcrtFollowUp; offset: number; onPageChange: (offset: number) => void };
+type CcrtDemandHistoryProps = {
+  followUp: CcrtFollowUp;
+  offset: number;
+  onPageChange: (offset: number) => void;
+  onEmailClick: (emailId: string) => void;
+};
 
 /**
- * Read-only timeline with notes, expandable sent messages and territorial permission changes.
+ * Read-only timeline with notes, links to sent messages and territorial permission changes.
  */
-export function CcrtDemandHistory({ followUp, offset, onPageChange }: CcrtDemandHistoryProps) {
+export function CcrtDemandHistory({ followUp, offset, onPageChange, onEmailClick }: CcrtDemandHistoryProps) {
   const history = followUp.history.filter((event) => event.type !== 'ccrt_demand_updated' || getVisibleChanges(event).length > 0);
   return (
     <section className="border-t border-(--border-default-grey) p-4">
@@ -29,7 +34,7 @@ export function CcrtDemandHistory({ followUp, offset, onPageChange }: CcrtDemand
           const email =
             event.type === 'ccrt_demand_email_sent' ? followUp.emails.find((item) => item.id === event.data.messageId) : undefined;
           return (
-            <li key={event.id} className="relative pl-7 text-base leading-6 text-(--text-default-grey)">
+            <li key={event.id} className="relative pl-7 text-base leading-6 text-(--text-default-grey) pt-1">
               <Image
                 src={event.type === 'ccrt_demand_email_sent' ? '/icons/ccrt-timeline-email-dot.svg' : '/icons/ccrt-timeline-dot.svg'}
                 alt=""
@@ -64,17 +69,15 @@ export function CcrtDemandHistory({ followUp, offset, onPageChange }: CcrtDemand
                 </ul>
               )}
               {email && (
-                <details className="my-2">
-                  <summary className="cursor-pointer text-(--text-action-high-blue-france)">Voir le message : {email.object}</summary>
-                  <p className="mb-1">À : {email.to}</p>
-                  {email.cc && <p className="mb-1">Copie à : {email.cc}</p>}
-                  <p className="mb-1">Répondre à : {email.reply_to}</p>
-                  <p className="whitespace-pre-wrap">{email.body}</p>
-                  <p className="whitespace-pre-wrap">{email.signature}</p>
-                </details>
-              )}
-              {(event.type === 'user_permissions_updated' || event.type === 'user_permissions_synced_from_api') && (
-                <p className="mb-1">Permissions modifiées pour {event.data.user_email}</p>
+                <>
+                  <p>
+                    Email envoyé par {[event.first_name, event.last_name].filter(Boolean).join(' ') || event.email} à {email.to}
+                    <br />
+                  </p>
+                  <button type="button" className="fr-link my-2" aria-haspopup="dialog" onClick={() => onEmailClick(email.id)}>
+                    Voir le message
+                  </button>
+                </>
               )}
               <p className="mb-0 mt-1 text-sm leading-6">
                 {[event.first_name, event.last_name].filter(Boolean).join(' ') || event.email || 'Équipe FCU'} · le{' '}

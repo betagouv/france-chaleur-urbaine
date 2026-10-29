@@ -284,6 +284,7 @@ function HeatNetworkDemandForm({
 
     trackPostHogEvent('fcr_contact:form_submitted', {
       energy: value.heatingEnergy,
+      form: isCcrtDemand ? 'demand_fcr' : 'demand_rc',
       is_raccordable: !isPublicAdvisorSelected && isHeatNetworkEligible,
       nb_logements: housingCount,
       non_raccordable_reason: isPublicAdvisorSelected ? refusalReason || undefined : undefined,

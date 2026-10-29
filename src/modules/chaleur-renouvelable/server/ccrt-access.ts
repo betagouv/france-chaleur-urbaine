@@ -97,16 +97,5 @@ export const hasCcrtTerritoryCoverage = async (territory: Awaited<ReturnType<typ
   return users.some((user) => user.role === 'ccrt');
 };
 
-export const listCcrtUsersWithAccess = async (demand: Awaited<ReturnType<typeof ensureCcrtDemandAccess>>) => {
-  const [users, admins] = await Promise.all([
-    demand.validated ? getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null }) : [],
-    kdb
-      .selectFrom('users')
-      .select(['id', 'email', 'role', 'first_name', 'last_name', 'structure_name'])
-      .where('active', '=', true)
-      .where('role', '=', 'admin')
-      .orderBy('email')
-      .execute(),
-  ]);
-  return [...users, ...admins];
-};
+export const listCcrtUsersWithAccess = async (demand: Awaited<ReturnType<typeof ensureCcrtDemandAccess>>) =>
+  demand.validated ? getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null }) : [];

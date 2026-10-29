@@ -22,6 +22,7 @@ export function useChoixChauffageResults() {
   const params = urlParams.params;
   const utils = trpc.useUtils();
   const selectionVersion = useRef(0);
+  const lastTrackedRecommendation = useRef<string | null>(null);
 
   useRemoveHashOnScroll('#help-ademe');
 
@@ -95,14 +96,42 @@ export function useChoixChauffageResults() {
   );
 
   const [recommended, ...otherModes] = modesEnriched;
+  const recommendedLabel = recommended?.label;
+  const addressLabel = geoAddress?.properties.label;
+  const isPrefillPending =
+    prefill.isLoading ||
+    (params.nbLogements === null && prefill.data?.nbLogements !== undefined) ||
+    (params.surfaceMoyenne === null && prefill.data?.surfaceMoyenne !== undefined);
 
+  // Track the displayed solution, not new object identities produced by asynchronous recalculations.
   useEffect(() => {
-    if (!recommended) {
+    if (
+      !recommendedLabel ||
+      isEligibilityLoading ||
+      isPrefillPending ||
+      shouldSelectBatEnrBatiment ||
+      (params.constructionId && selectedConstructionId !== params.constructionId) ||
+      (params.adresse && addressLabel !== params.adresse)
+    ) {
       return;
     }
 
-    trackPostHogEvent('fcr_results:recommended_solution_displayed', { solution_type: recommended.label });
-  }, [recommended]);
+    const recommendationKey = JSON.stringify([params.adresse, params.constructionId, recommendedLabel]);
+    if (lastTrackedRecommendation.current === recommendationKey) {
+      return;
+    }
+    lastTrackedRecommendation.current = recommendationKey;
+    trackPostHogEvent('fcr_results:recommended_solution_displayed', { solution_type: recommendedLabel });
+  }, [
+    recommendedLabel,
+    isEligibilityLoading,
+    isPrefillPending,
+    shouldSelectBatEnrBatiment,
+    selectedConstructionId,
+    params.adresse,
+    params.constructionId,
+    addressLabel,
+  ]);
 
   useEffect(() => {
     if (modesEnriched.length > 0) {

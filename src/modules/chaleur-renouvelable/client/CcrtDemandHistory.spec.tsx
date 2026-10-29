@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { uuid } from '@/tests/helpers';
@@ -39,7 +39,7 @@ describe('CcrtDemandHistory', () => {
       users: [],
     };
 
-    render(<CcrtDemandHistory followUp={followUp} offset={0} onPageChange={vi.fn()} />);
+    render(<CcrtDemandHistory followUp={followUp} offset={0} onPageChange={vi.fn()} onEmailClick={vi.fn()} />);
 
     expect(screen.getByText('Surface totale (m²) : Non renseigné → 145')).toBeInTheDocument();
     expect(screen.getByText('Habitants moyens : 0 → 2')).toBeInTheDocument();
@@ -66,10 +66,47 @@ describe('CcrtDemandHistory', () => {
       users: [],
     };
 
-    render(<CcrtDemandHistory followUp={followUp} offset={0} onPageChange={vi.fn()} />);
+    render(<CcrtDemandHistory followUp={followUp} offset={0} onPageChange={vi.fn()} onEmailClick={vi.fn()} />);
 
     expect(screen.queryByRole('heading', { name: 'Information du bâtiment modifiée' })).toBeNull();
     expect(screen.getByText('Aucune action enregistrée.')).toBeInTheDocument();
+  });
+
+  it('opens the selected email in the message dialog instead of showing its body inline', () => {
+    const onEmailClick = vi.fn();
+    const email = {
+      body: 'Message envoyé',
+      cc: '',
+      id: uuid(2),
+      object: 'Votre projet',
+      reply_to: 'advisor@example.test',
+      sent_at: '2026-10-01T10:00:00.000Z',
+      signature: 'Claire',
+      to: 'applicant@example.test',
+    };
+    const followUp: CcrtFollowUp = {
+      emails: [email],
+      history: [
+        {
+          created_at: email.sent_at,
+          data: { messageId: email.id, object: email.object, to: email.to },
+          email: email.reply_to,
+          first_name: 'Claire',
+          id: uuid(1),
+          last_name: 'Gérard',
+          type: 'ccrt_demand_email_sent',
+        },
+      ],
+      notes: [],
+      total: 1,
+      users: [],
+    };
+    render(<CcrtDemandHistory followUp={followUp} offset={0} onPageChange={vi.fn()} onEmailClick={onEmailClick} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Voir le message' }));
+
+    expect(onEmailClick).toHaveBeenCalledExactlyOnceWith(email.id);
+    expect(screen.queryByText(email.body)).toBeNull();
   });
 
   it('displays notes as read-only entries with the author and date without the time', () => {
@@ -85,7 +122,7 @@ describe('CcrtDemandHistory', () => {
       users: [],
     };
 
-    render(<CcrtDemandHistory followUp={followUp} offset={0} onPageChange={vi.fn()} />);
+    render(<CcrtDemandHistory followUp={followUp} offset={0} onPageChange={vi.fn()} onEmailClick={vi.fn()} />);
 
     expect(screen.getByRole('heading', { name: 'Note interne' })).toBeInTheDocument();
     expect(screen.getByText(followUp.notes[0].body)).toBeInTheDocument();

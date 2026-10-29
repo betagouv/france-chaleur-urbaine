@@ -25,25 +25,29 @@ export function CcrtBuildingIdentification({ demand, onMap }: CcrtBuildingIdenti
       title="Identification du bâtiment"
       description={`Demande n° ${demand.id}, reçue le ${dayjs(demand.created_at).format('D MMM YYYY')}`}
     >
-      {identificationFields.map((definition) => (
-        <p key={definition.name} className="mb-0 break-words text-sm leading-6 text-(--text-default-grey)">
-          {definition.label} :{' '}
-          <span className="text-base font-medium">
-            {(definition.name === 'address' ? formatCcrtAddress(demand.address) : demand[definition.name]) || 'Non renseigné'}
-          </span>
-        </p>
-      ))}
-      {coordinates && (
-        <a
-          className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line mt-2 self-start"
-          href={`/carte?coord=${coordinates.lon},${coordinates.lat}&zoom=17&address=${encodeURIComponent(demand.address)}`}
-          onClick={onMap}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Afficher dans la carte
-        </a>
-      )}
+      <div className="flex justify-between">
+        <div>
+          {identificationFields.map((definition) => (
+            <p key={definition.name} className="mb-0 break-words text-sm leading-6 text-(--text-default-grey)">
+              {definition.label} :{' '}
+              <span className="text-base font-medium">
+                {(definition.name === 'address' ? formatCcrtAddress(demand.address) : demand[definition.name]) || 'Non renseigné'}
+              </span>
+            </p>
+          ))}
+        </div>
+        {coordinates && (
+          <a
+            className="text-right fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line mt-2 self-start"
+            href={`/carte?coord=${coordinates.lon},${coordinates.lat}&zoom=17&address=${encodeURIComponent(demand.address)}`}
+            onClick={onMap}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Afficher dans la carte
+          </a>
+        )}
+      </div>
     </CcrtDetailsSection>
   );
 }

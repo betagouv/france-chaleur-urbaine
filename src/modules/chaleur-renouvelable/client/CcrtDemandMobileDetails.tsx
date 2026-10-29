@@ -7,7 +7,6 @@ import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand } from '../types';
-import { CcrtAdminDemandAssignment } from './CcrtAdminDemandAssignment';
 import { CcrtBuildingForm } from './CcrtBuildingForm';
 import { CcrtBuildingIdentification } from './CcrtBuildingIdentification';
 import { CcrtDemandFollowUp } from './CcrtDemandFollowUp';
@@ -30,7 +29,7 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
   const isToProcess = demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS;
   const isClosed = getCcrtDemandTab(demand) === 'closed';
   const followUp = trpc.batEnr.ccrt.getFollowUp.useQuery({ demandId: demand.id, offset: 0 });
-  const onContact = (showHistory = false) => actions.openEmail(demand, showHistory, 'fiche');
+  const onContact = (showHistory = false, emailId?: string) => actions.openEmail(demand, showHistory, 'fiche', emailId);
   return (
     <section className="min-w-0 space-y-4 pb-24" aria-label={`Demande de ${demand.first_name} ${demand.last_name}`}>
       <Button priority="tertiary no outline" size="small" iconId="fr-icon-arrow-left-line" onClick={onClose}>
@@ -104,7 +103,6 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
           lazy
           className="border-t border-(--border-default-grey)"
         >
-          {onValidate && <CcrtAdminDemandAssignment demand={demand} />}
           <CcrtDemandFollowUp
             demand={demand}
             isUpdating={actions.isUpdating}

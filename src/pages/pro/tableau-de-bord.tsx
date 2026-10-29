@@ -34,7 +34,7 @@ export const getServerSideProps = withAuthentication(undefined, ({ session }) =>
   ) {
     return {
       redirect: {
-        destination: '/pro/demandes',
+        destination: session.user.role === 'ccrt' ? '/pro/demandes-chaleur-renouvelable' : '/pro/demandes',
         permanent: false,
       },
     };

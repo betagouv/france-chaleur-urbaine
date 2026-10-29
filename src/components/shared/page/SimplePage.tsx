@@ -378,7 +378,14 @@ const ccrtNavigationMenu: MainNavigationProps.Item[] = [
       href: '/pro/demandes-chaleur-renouvelable',
       onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'ccrt_demandes_chaleur_renouvelable', menu_level: 1 }),
     },
-    text: 'Demandes chaleur renouvelable',
+    text: 'Demandes',
+  },
+  {
+    linkProps: {
+      href: '/pro/comparateur-couts-performances',
+      onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'ccrt_comparateur', menu_level: 1 }),
+    },
+    text: 'Comparateur de coûts et CO2',
   },
 ];
 
@@ -493,7 +500,7 @@ const PageHeader = (props: PageHeaderProps) => {
       return [
         ...authenticatedNavigationMenu,
         ...(hasRole('admin') ? adminNavigationMenu : []),
-        ...(hasRole('gestionnaire') || hasRole('collectivite') || hasRole('alec') || hasRole('ccrt') ? gestionnaireNavigationMenu : []),
+        ...(hasRole('gestionnaire') || hasRole('collectivite') || hasRole('alec') ? gestionnaireNavigationMenu : []),
         ...(hasRole('ccrt') ? ccrtNavigationMenu : []),
         ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
       ];

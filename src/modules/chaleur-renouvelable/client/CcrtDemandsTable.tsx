@@ -42,13 +42,13 @@ export function CcrtDemandsTable({
     >
       <caption className="sr-only">Demandes d’accompagnement CCRT</caption>
       <colgroup>
-        <col className="w-12" />
-        <col className="w-[237px]" />
-        <col className="w-[229px]" />
+        <col className="w-8" />
+        <col className="w-[270px]" />
+        <col className="w-[219px]" />
         <col className="w-[249px]" />
-        <col className="w-[123px]" />
-        <col className="w-[179px]" />
-        <col className="w-[175px]" />
+        <col className="w-[125px]" />
+        <col className="w-[178px]" />
+        <col className="w-[165px]" />
       </colgroup>
       <thead>
         <tr>
@@ -104,7 +104,7 @@ export function CcrtDemandsTable({
             isUpdating={actions.isUpdating}
             onToggle={() => onToggle(demand)}
             onContact={(contactType) => actions.trackContact(demand, contactType)}
-            onSendEmail={(showHistory, placement) => actions.openEmail(demand, showHistory, placement)}
+            onSendEmail={(showHistory, placement, emailId) => actions.openEmail(demand, showHistory, placement, emailId)}
             onSimulation={(placement) => actions.trackSimulation(demand, placement)}
             onMap={() => actions.trackMap(demand)}
             onManageAccess={() => actions.trackAccess(demand)}

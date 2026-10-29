@@ -23,7 +23,9 @@ vi.mock('@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParam
   }),
 }));
 
-const { submitDemand } = vi.hoisted(() => ({ submitDemand: vi.fn() }));
+const { submitDemand, track } = vi.hoisted(() => ({ submitDemand: vi.fn(), track: vi.fn() }));
+
+vi.mock('@/modules/analytics/client', () => ({ trackPostHogEvent: track }));
 
 vi.mock('@/modules/trpc/client', () => ({
   default: {
@@ -60,6 +62,51 @@ const eligibleHeatNetwork = {
 } satisfies HeatNetwork;
 
 describe('DemandFCRForm', () => {
+  it.each([
+    { form: 'demand_rc', isHeatNetworkEligible: true, selectedRecipientId: 'network-manager' },
+    { form: 'demand_fcr', isHeatNetworkEligible: false, selectedRecipientId: 'public-advisor' },
+    { form: 'demand_fcr', isHeatNetworkEligible: true, selectedRecipientId: 'public-advisor' },
+  ] as const)(
+    'tracks $form with heat network eligibility $isHeatNetworkEligible',
+    async ({ isHeatNetworkEligible, selectedRecipientId, form }) => {
+      submitDemand.mockResolvedValueOnce({ demandSubmissionResult: null, id: null });
+      render(
+        <DemandFCRForm
+          alternativeHeatingSolutionLabels={[]}
+          eligibiliteReseauChaleur={isHeatNetworkEligible ? eligibleHeatNetwork : null}
+          isCcrtDemandEligible
+          isHeatNetworkEligible={isHeatNetworkEligible}
+          selectedRecipientId={selectedRecipientId}
+          onSelectedRecipientChange={vi.fn()}
+          topSolution="PAC géothermique"
+        />
+      );
+      fireEvent.change(screen.getByRole('textbox', { name: /^Nom/ }), { target: { value: 'Test' } });
+      fireEvent.change(screen.getByRole('textbox', { name: /^Prénom/ }), { target: { value: 'Claire' } });
+      fireEvent.change(screen.getByRole('textbox', { name: /^Email/ }), { target: { value: 'claire@example.com' } });
+      fireEvent.click(screen.getByRole('checkbox', { name: /J’accepte/ }));
+      fireEvent.click(screen.getByRole('button', { name: 'Envoyer' }));
+
+      await waitFor(() => expect(submitDemand).toHaveBeenCalledTimes(1));
+      expect(track.mock.calls.filter(([event]) => event === 'fcr_contact:form_submitted')).toStrictEqual([
+        [
+          'fcr_contact:form_submitted',
+          {
+            energy: 'Électricité',
+            form,
+            is_raccordable: form === 'demand_rc',
+            nb_logements: 25,
+            non_raccordable_reason: undefined,
+            phone_filled: false,
+            profile: 'Copropriétaire',
+            project_stages: [],
+            top_solution: 'PAC géothermique',
+          },
+        ],
+      ]);
+    }
+  );
+
   it.each([false, true])('shows the CCRT form in a covered territory (heat network eligible: %s)', (isHeatNetworkEligible) => {
     const { container } = render(
       <DemandFCRForm

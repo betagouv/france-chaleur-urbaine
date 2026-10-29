@@ -124,6 +124,7 @@ export type PostHogEventMap = {
     rows_total: number;
   };
   'fcr_landing:address_typed': never;
+  'fcr_landing:address_selected': never;
   'fcr_landing:heating_mode_selected': {
     heating_mode: TypeLogement;
   };
@@ -348,6 +349,7 @@ export type PostHogEventMap = {
   };
   'fcr_contact:form_submitted': {
     energy: HeatingEnergy;
+    form: 'demand_rc' | 'demand_fcr';
     is_raccordable: boolean;
     nb_logements?: number;
     non_raccordable_reason?: string;

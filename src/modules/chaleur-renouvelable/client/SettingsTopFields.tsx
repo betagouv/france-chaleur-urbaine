@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 import Select from '@/components/form/dsfr/Select';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
@@ -36,13 +38,24 @@ export function SettingsTopFields({
   typeRadiateur,
   setParams,
 }: SettingsTopFieldsProps) {
+  const hasTypedAddress = useRef(false);
+
   return (
     <div className="fr-p-3w grid grid-cols-1 gap-4 md:grid-cols-3 bg-[#fbf6ed]">
       <AddressField
         label="Adresse"
         className="fr-mb-0"
         value={adresse ?? ''}
-        nativeInputProps={{ placeholder: 'Tapez votre adresse ici' }}
+        nativeInputProps={{
+          onInput: (event) => {
+            if (hasTypedAddress.current || event.currentTarget.value.length === 0) {
+              return;
+            }
+            hasTypedAddress.current = true;
+            trackPostHogEvent('fcr_landing:address_typed');
+          },
+          placeholder: 'Tapez votre adresse ici',
+        }}
         onlyAddress
         onClear={() => {
           if (adresse !== null) void setParams({ adresse: null });
@@ -52,7 +65,7 @@ export function SettingsTopFields({
         onSelect={(next?: BANAddressFeature) => {
           const nextLabel = next?.properties?.label ?? '';
           if ((adresse ?? '') === nextLabel) return;
-          trackPostHogEvent('fcr_landing:address_typed');
+          trackPostHogEvent('fcr_landing:address_selected');
           setParams({ adresse: nextLabel });
           setGeoAddress(next);
           onSelectGeoAddress?.(next);

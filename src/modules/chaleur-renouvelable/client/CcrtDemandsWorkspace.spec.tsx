@@ -64,7 +64,6 @@ vi.mock('./CcrtBuildingForm', () => ({
   CcrtBuildingForm: ({ demand }: ComponentProps<typeof CcrtBuildingForm>) => <p>Fiche bâtiment : {demand.address}</p>,
 }));
 vi.mock('./CcrtDemandFollowUp', () => ({ CcrtDemandFollowUp: () => <p>Suivi de la demande</p> }));
-vi.mock('./CcrtAdminDemandAssignment', () => ({ CcrtAdminDemandAssignment: () => <p>Affecté à</p> }));
 vi.mock('./CcrtBuildingIdentification', () => ({ CcrtBuildingIdentification: () => <p>Identification du bâtiment</p> }));
 vi.mock('./CcrtProjectFields', () => ({ CcrtProjectFields: () => <p>Projet initial</p> }));
 vi.mock('./CcrtDemandEmailDialog', () => ({ CcrtDemandEmailDialog: () => null }));
@@ -144,7 +143,7 @@ describe('CcrtDemandsWorkspace', () => {
     fireEvent.click(expand);
     expect(await screen.findByText(/Fiche bâtiment/)).toBeInTheDocument();
     expect(screen.getByText('Suivi de la demande')).toBeInTheDocument();
-    expect(screen.queryByText('Affecté à') !== null).toStrictEqual(isAdmin);
+    expect(screen.queryByText('Affecté à')).toBeNull();
     expect(mocks.trackOpening).toHaveBeenCalledExactlyOnceWith(isAdmin ? demand : { ...demand, validated: true });
     expect(mocks.adminQuery).toHaveBeenCalledWith(undefined, { enabled: isAdmin });
     expect(mocks.ccrtQuery).toHaveBeenCalledWith(undefined, { enabled: !isAdmin });
@@ -236,6 +235,9 @@ describe('CcrtDemandsWorkspace', () => {
     const buildingAccordion = screen.getByRole('button', { name: 'Bâtiment et chauffage' });
     fireEvent.click(buildingAccordion);
     expect(await screen.findByText(/Fiche bâtiment/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Suivi de la demande (1)' }));
+    expect(await screen.findByText('Suivi de la demande')).toBeInTheDocument();
+    expect(screen.queryByText('Affecté à')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Retour aux demandes' }));
     expect(await screen.findByRole('button', { name: 'Ouvrir la demande de Joëlle Martini' })).toBeInTheDocument();
   });

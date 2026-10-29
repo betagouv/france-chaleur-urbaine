@@ -13,6 +13,7 @@ import { invalidateCcrtDemand } from '../ccrt-demand-cache';
 export function useCcrtDemandActions(structureName: string | null) {
   const [emailDemand, setEmailDemand] = useState<CcrtDemand | null>(null);
   const [showEmailHistory, setShowEmailHistory] = useState(false);
+  const [selectedEmailId, setSelectedEmailId] = useState<string>();
   const [emailPlacement, setEmailPlacement] = useState<CcrtTrackingPlacement>('liste');
   const utils = trpc.useUtils();
   const mutation = trpc.batEnr.ccrt.updateDemandeChaleurRenouvelable.useMutation();
@@ -70,11 +71,12 @@ export function useCcrtDemandActions(structureName: string | null) {
     trackPostHogEvent('ccrt_demande:simulation_viewed', { ...getTrackingProperties(demand), emplacement });
   };
 
-  const openEmail = (demand: CcrtDemand, showHistory = false, emplacement: CcrtTrackingPlacement = 'liste') => {
+  const openEmail = (demand: CcrtDemand, showHistory = false, emplacement: CcrtTrackingPlacement = 'liste', emailId?: string) => {
     if (!showHistory) {
       trackPostHogEvent('ccrt_demande:contact_clicked', { ...getTrackingProperties(demand), emplacement });
     }
     setShowEmailHistory(showHistory);
+    setSelectedEmailId(emailId);
     setEmailPlacement(emplacement);
     setEmailDemand(demand);
   };
@@ -85,6 +87,7 @@ export function useCcrtDemandActions(structureName: string | null) {
     emailPlacement,
     isUpdating: mutation.isPending,
     openEmail,
+    selectedEmailId,
     showEmailHistory,
     trackAccess: (demand: CcrtDemand) => trackPostHogEvent('ccrt_demande:access_managed', getTrackingProperties(demand)),
     trackContact,
