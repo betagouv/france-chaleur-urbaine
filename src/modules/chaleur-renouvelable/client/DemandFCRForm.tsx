@@ -283,8 +283,8 @@ function HeatNetworkDemandForm({
     const surfaceArea = occupantStatusDetailField === 'surfaceArea' ? (value.surfaceArea ?? null) : null;
 
     trackPostHogEvent('fcr_contact:form_submitted', {
+      destinataire: isCcrtDemand ? 'fcr' : 'rcu',
       energy: value.heatingEnergy,
-      form: isCcrtDemand ? 'demand_fcr' : 'demand_rc',
       is_raccordable: !isPublicAdvisorSelected && isHeatNetworkEligible,
       nb_logements: housingCount,
       non_raccordable_reason: isPublicAdvisorSelected ? refusalReason || undefined : undefined,

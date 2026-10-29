@@ -63,12 +63,12 @@ const eligibleHeatNetwork = {
 
 describe('DemandFCRForm', () => {
   it.each([
-    { form: 'demand_rc', isHeatNetworkEligible: true, selectedRecipientId: 'network-manager' },
-    { form: 'demand_fcr', isHeatNetworkEligible: false, selectedRecipientId: 'public-advisor' },
-    { form: 'demand_fcr', isHeatNetworkEligible: true, selectedRecipientId: 'public-advisor' },
+    { destinataire: 'rcu', isHeatNetworkEligible: true, selectedRecipientId: 'network-manager' },
+    { destinataire: 'fcr', isHeatNetworkEligible: false, selectedRecipientId: 'public-advisor' },
+    { destinataire: 'fcr', isHeatNetworkEligible: true, selectedRecipientId: 'public-advisor' },
   ] as const)(
     'tracks $form with heat network eligibility $isHeatNetworkEligible',
-    async ({ isHeatNetworkEligible, selectedRecipientId, form }) => {
+    async ({ isHeatNetworkEligible, selectedRecipientId, destinataire }) => {
       submitDemand.mockResolvedValueOnce({ demandSubmissionResult: null, id: null });
       render(
         <DemandFCRForm
@@ -92,9 +92,9 @@ describe('DemandFCRForm', () => {
         [
           'fcr_contact:form_submitted',
           {
+            destinataire,
             energy: 'Électricité',
-            form,
-            is_raccordable: form === 'demand_rc',
+            is_raccordable: destinataire === 'rcu',
             nb_logements: 25,
             non_raccordable_reason: undefined,
             phone_filled: false,

@@ -349,7 +349,7 @@ export type PostHogEventMap = {
   };
   'fcr_contact:form_submitted': {
     energy: HeatingEnergy;
-    form: 'demand_rc' | 'demand_fcr';
+    destinataire: 'rcu' | 'fcr';
     is_raccordable: boolean;
     nb_logements?: number;
     non_raccordable_reason?: string;
