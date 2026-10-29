@@ -178,7 +178,7 @@ All events include `structure_ccrt` and `departement`. Demand events (`ccrt_dema
 | `fcr_contact:non_raccordable_reason_selected` | `reason` | Sélection du motif de non-raccordabilité |
 | `fcr_contact:map_viewed` | _(aucune)_ | Consultation de la carte dans le résultat réseau de chaleur |
 | `fcr_contact:cgu_accepted` | `is_raccordable` | Acceptation des CGU |
-| `fcr_contact:form_submitted` | `form` (`demand_rc` / `demand_fcr`), `profile`, `energy`, `nb_logements?`, `top_solution?`, `project_stages`, `phone_filled`, `is_raccordable`, `non_raccordable_reason?` | Soumission du formulaire |
+| `fcr_contact:form_submitted` | `destinataire` (`rcu` / `fcr`), `profile`, `energy`, `nb_logements?`, `top_solution?`, `project_stages`, `phone_filled`, `is_raccordable`, `non_raccordable_reason?` | Soumission du formulaire |
 
 ### Simulateur PAC embarqué
 
