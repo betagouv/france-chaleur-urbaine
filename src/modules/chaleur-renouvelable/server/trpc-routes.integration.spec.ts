@@ -750,7 +750,7 @@ describe('batEnrRouter', () => {
         candidates: context.batEnrBatiments.map((building) => building.batiment_construction_id),
         selected: context.selectedBatEnrBatiment?.batiment_construction_id,
         shouldSelect: context.shouldSelectBatEnrBatiment,
-      }).toStrictEqual({ candidates: ['CONFIRMED-BUILDING'], selected: 'CONFIRMED-BUILDING', shouldSelect: false });
+      }).toStrictEqual({ candidates: [], selected: 'CONFIRMED-BUILDING', shouldSelect: false });
     });
 
     it('préselectionne le premier bâtiment BDNB et charge ses voisins à 200 m sans référence RNB', async () => {
