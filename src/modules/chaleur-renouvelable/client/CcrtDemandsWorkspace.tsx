@@ -120,6 +120,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
               counts={{
                 all: demands.length,
                 closed: demands.filter((demand) => getCcrtDemandTab(demand) === 'closed').length,
+                completed: demands.filter((demand) => getCcrtDemandTab(demand) === 'completed').length,
                 in_progress: demands.filter((demand) => getCcrtDemandTab(demand) === 'in_progress').length,
                 to_process: demands.filter((demand) => getCcrtDemandTab(demand) === 'to_process').length,
               }}

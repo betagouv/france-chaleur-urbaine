@@ -21,34 +21,24 @@ export const recordCcrtFollowUpChanges = async (
   trigger: CcrtUpdateDemandeChaleurRenouvelableInput['trigger'],
   noteCreated = false
 ) => {
-  if (!changes.status && !changes.project_state && !noteCreated) {
+  if (!changes.status && !noteCreated) {
     return;
   }
   const properties = await getCcrtServerTrackingProperties(ctx, demand);
   const declenchement = trigger === 'contact' ? 'auto' : 'manuel';
-  const transitions = [
-    { change: changes.status, type: 'suivi' },
-    { change: changes.project_state, type: 'avancement' },
-  ] as const;
-  await Promise.all(
-    transitions.flatMap((transition) =>
-      transition.change
-        ? [
-            recordCcrtPostHogEvent({
-              distinctId: ctx.user.id,
-              event: 'ccrt_demande:status_changed',
-              properties: {
-                ...properties,
-                declenchement,
-                statut_apres: transition.change.to,
-                statut_avant: transition.change.from,
-                type_statut: transition.type,
-              },
-            }),
-          ]
-        : []
-    )
-  );
+  if (changes.status) {
+    await recordCcrtPostHogEvent({
+      distinctId: ctx.user.id,
+      event: 'ccrt_demande:status_changed',
+      properties: {
+        ...properties,
+        declenchement,
+        statut_apres: changes.status.to,
+        statut_avant: changes.status.from,
+        type_statut: 'suivi',
+      },
+    });
+  }
   if (noteCreated) {
     await recordCcrtPostHogEvent({ distinctId: ctx.user.id, event: 'ccrt_demande:internal_note_created', properties });
   }

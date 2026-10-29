@@ -8,7 +8,6 @@ import type { DB } from '@/server/db/kysely';
 import {
   type AdminUpdateDemandeChaleurRenouvelableInput,
   type CcrtUpdateDemandeChaleurRenouvelableInput,
-  DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
 } from '../constants';
 import { insertCcrtNote } from './ccrt-notes';
@@ -35,17 +34,10 @@ export const applyCcrtFollowUpUpdate = async (ctx: Context, input: ApplyCcrtFoll
   const status = values.status ?? current.status;
   const nextValues = {
     assigned_to: values.assignedTo === undefined ? current.assigned_to : values.assignedTo,
-    project_state:
-      values.status === undefined && values.projectState === undefined
-        ? current.project_state
-        : DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
     status,
   };
   const changes = {
     ...(current.assigned_to !== nextValues.assigned_to && { assigned_to: { from: current.assigned_to, to: nextValues.assigned_to } }),
-    ...(current.project_state !== nextValues.project_state && {
-      project_state: { from: current.project_state, to: nextValues.project_state },
-    }),
     ...(current.status !== nextValues.status && { status: { from: current.status, to: nextValues.status } }),
   };
   const demand = Object.keys(changes).length

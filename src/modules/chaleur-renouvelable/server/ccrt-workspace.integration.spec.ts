@@ -14,7 +14,7 @@ import { fetchJSON, postFetchJSON } from '@/utils/network';
 
 import { EMPTY_BAT_ENR_INFO } from '../bat-enr';
 import {
-  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED,
+  DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
   zCcrtBuilding,
@@ -127,7 +127,10 @@ describe('CCRT workspace access', () => {
           route.updateBuilding({ demandId: demand.id, updatedAt: demand.updated_at.toISOString(), values: zCcrtBuilding.parse(demand) }),
         () => route.sendEmail({ demandId: demand.id, emailContent, messageId: uuid(502) }),
         () =>
-          route.updateDemandeChaleurRenouvelable({ demandId: demand.id, values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED } }),
+          route.updateDemandeChaleurRenouvelable({
+            demandId: demand.id,
+            values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED },
+          }),
       ];
       await calls.reduce(async (previous, call) => {
         await previous;
@@ -287,11 +290,11 @@ describe('CCRT heat-network eligibility', () => {
     expect(getEligilityStatus).not.toHaveBeenCalled();
   });
 
-  it('keeps an automatic contact from overwriting a closed demand or adding a misleading audit', async () => {
+  it('keeps an automatic contact from overwriting a completed demand or adding a misleading audit', async () => {
     const demand = await seedWorkspace();
     await createTestCaller(testUsers.alec).batEnr.ccrt.updateDemandeChaleurRenouvelable({
       demandId: demand.id,
-      values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED },
+      values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED },
     });
     const before = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
@@ -302,7 +305,7 @@ describe('CCRT heat-network eligibility', () => {
     const after = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect({ history: after.history, status: result.status }).toStrictEqual({
       history: before.history,
-      status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED,
+      status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED,
     });
   });
 
@@ -390,7 +393,7 @@ describe('CCRT heat-network eligibility', () => {
     });
   });
 
-  it('lists territorial access holders without admins and exposes only relevant permission changes in the audit', async () => {
+  it('lists territorial access holders without including permission updates or synchronizations in demand history', async () => {
     const demand = await seedWorkspace();
     await seedTableUser([{ ...testUsers.gestionnaire, active: false }, testUsers.particulier]);
     await kdb
@@ -414,32 +417,45 @@ describe('CCRT heat-network eligibility', () => {
       },
       type: 'user_permissions_updated',
     });
+    await createUserEvent({
+      author_id: testUsers.admin.id,
+      context_id: testUsers.alec.id,
+      context_type: 'user',
+      data: {
+        added: [{ resource_id: 'EPCI-13', type: 'epci' }],
+        api_name: 'Test API',
+        user_email: testUsers.alec.email,
+      },
+      type: 'user_permissions_synced_from_api',
+    });
+    await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+      demandId: demand.id,
+      values: { note: 'Note de suivi' },
+    });
     const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect(result.users.map((user) => user.id).sort()).toStrictEqual([testUsers.alec.id, testUsers.ccrt.id].sort());
-    expect(result.history.map((event) => ({ data: event.data, type: event.type }))).toStrictEqual([
-      {
-        data: { added: [{ resource_id: 'EPCI-13', type: 'epci' }], removed: [], user_email: testUsers.alec.email },
-        type: 'user_permissions_updated',
-      },
-    ]);
+    expect({ history: result.history.map((event) => event.type), total: result.total }).toStrictEqual({
+      history: ['ccrt_demand_note_created'],
+      total: 1,
+    });
   });
 
-  it('shares archive/reopening and records changes made from the existing admin screen', async () => {
+  it('shares completion/reopening and records changes made from the existing admin screen', async () => {
     const demand = await seedWorkspace();
     await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
       demandId: demand.id,
-      values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED },
+      values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED },
     });
     const list = await createTestCaller(testUsers.alec).batEnr.ccrt.listDemandesChaleurRenouvelable();
-    expect(list.items.map((item) => item.status)).toStrictEqual([DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED]);
+    expect(list.items.map((item) => item.status)).toStrictEqual([DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED]);
     await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
       demandId: demand.id,
       values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS },
     });
     const followUp = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect(followUp.history.map((event) => event.data)).toStrictEqual([
-      { changes: { status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } } },
-      { changes: { status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED } } },
+      { changes: { status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } } },
+      { changes: { status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED } } },
     ]);
   });
 });
@@ -516,7 +532,7 @@ describe('CCRT email delivery', () => {
     vi.mocked(sendEmailTemplate).mockImplementationOnce(async () => {
       await createTestCaller(testUsers.alec).batEnr.ccrt.updateDemandeChaleurRenouvelable({
         demandId: demand.id,
-        values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED },
+        values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED },
       });
     });
     await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail({ demandId: demand.id, emailContent, messageId: uuid(512) });
@@ -525,7 +541,7 @@ describe('CCRT email delivery', () => {
       .select('status')
       .where('id', '=', demand.id)
       .executeTakeFirstOrThrow();
-    expect(current).toStrictEqual({ status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED });
+    expect(current).toStrictEqual({ status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED });
   });
 });
 

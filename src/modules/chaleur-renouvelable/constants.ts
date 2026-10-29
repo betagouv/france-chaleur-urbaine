@@ -371,7 +371,7 @@ export const demandeChaleurRenouvelableStatuses = [
   { label: 'Etude d’opportunité réalisée', value: 'opportunity_study_done' },
   { label: 'Étude de faisabilité votée en AG', value: 'project_validation_feasibility_study_voted' },
   { label: 'Projet abandonné par le prospect', value: 'abandoned_by_prospect' },
-  { label: 'Clôturée', value: 'closed' },
+  { label: 'Installation réalisée', value: 'installation_done' },
 ] as const;
 export const demandeChaleurRenouvelableStatusOptions = demandeChaleurRenouvelableStatuses.map((status) => ({
   label: status.value === 'to_process' ? 'À traiter' : status.label,
@@ -379,7 +379,7 @@ export const demandeChaleurRenouvelableStatusOptions = demandeChaleurRenouvelabl
 }));
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS = demandeChaleurRenouvelableStatuses[0].label;
 export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT = demandeChaleurRenouvelableStatuses[1].label;
-export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_CLOSED = demandeChaleurRenouvelableStatuses[9].label;
+export const DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED = demandeChaleurRenouvelableStatuses[9].label;
 export type DemandeChaleurRenouvelableStatus = (typeof demandeChaleurRenouvelableStatuses)[number]['label'];
 
 export const demandeChaleurRenouvelableProjectStates = [
@@ -496,7 +496,6 @@ export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
   values: z
     .object({
       assignedTo: z.string().nullable(),
-      projectState: z.enum(demandeChaleurRenouvelableProjectStates.map((projectState) => projectState.label)),
       status: z.enum(demandeChaleurRenouvelableStatuses.map((status) => status.label)),
     })
     .partial(),
@@ -510,7 +509,6 @@ export const zCcrtUpdateDemandeChaleurRenouvelableInput = z.object({
   values: z
     .object({
       note: zCcrtNote.shape.body.optional(),
-      projectState: z.enum(demandeChaleurRenouvelableProjectStates.map((projectState) => projectState.label)),
       status: z.enum(demandeChaleurRenouvelableStatuses.map((status) => status.label)),
     })
     .partial(),
