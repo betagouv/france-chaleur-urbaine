@@ -1,12 +1,15 @@
 import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 
 import Dialog from '@/components/ui/Dialog';
 
-import { buildReferenceNode, buildRuleExplanation, type FCUEngine, getRuleUsages } from '../explanation-model';
+import { buildReferenceNode, buildRuleExplanation, type FCUEngine, getRuleAnnotation, getRuleUsages } from '../explanation-model';
 import { formatNodeValue } from '../format';
 import { ExplanationNodeView } from './ExplanationNodeView';
 import { ExplanationNavigationContext } from './explanation-navigation';
+import { FlatExplanationView } from './FlatExplanationView';
+import { RuleNote } from './RuleNote';
 
 type RuleExplanationDialogProps = {
   engine: FCUEngine;
@@ -22,6 +25,7 @@ type RuleExplanationDialogProps = {
  */
 export function RuleExplanationDialog({ engine, dottedName, open, onOpenChange }: RuleExplanationDialogProps) {
   const [history, setHistory] = useState<RuleName[]>([dottedName]);
+  const [view, setView] = useState<'tree' | 'flat'>('tree');
   const currentRule = history.at(-1) ?? dottedName;
 
   // Réinitialise la navigation à chaque (ré)ouverture ou changement de règle racine
@@ -31,6 +35,7 @@ export function RuleExplanationDialog({ engine, dottedName, open, onOpenChange }
 
   const explanation = useMemo(() => (open ? buildRuleExplanation(engine, currentRule) : null), [engine, currentRule, open]);
   const usages = useMemo(() => (open ? getRuleUsages(engine, currentRule) : []), [engine, currentRule, open]);
+  const annotation = useMemo(() => (open ? getRuleAnnotation(engine, currentRule) : { sources: [] }), [engine, currentRule, open]);
 
   const navigateToRule = (rule: RuleName) => {
     if (rule !== currentRule) {
@@ -80,13 +85,32 @@ export function RuleExplanationDialog({ engine, dottedName, open, onOpenChange }
             </div>
 
             {explanation.description && <p className="mb-0 text-sm text-gray-600">{explanation.description}</p>}
+            {(annotation.sources.length > 0 || annotation.remark) && (
+              <p className="mb-0 text-sm text-gray-600">
+                <RuleNote annotation={annotation} withLabel fallback={null} className="text-sm!" />
+              </p>
+            )}
 
             {explanation.formula ? (
               <div className="overflow-x-auto rounded border border-gray-200 bg-gray-50 p-3">
-                <div className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500">Comment cette valeur est calculée</div>
-                <div className="min-w-fit">
-                  <ExplanationNodeView node={explanation.formula} engine={engine} />
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <span className="text-xs font-medium uppercase tracking-wide text-gray-500">Comment cette valeur est calculée</span>
+                  <SegmentedControl
+                    hideLegend
+                    small
+                    segments={[
+                      { label: 'Arbre', nativeInputProps: { checked: view === 'tree', onChange: () => setView('tree') } },
+                      { label: 'À plat', nativeInputProps: { checked: view === 'flat', onChange: () => setView('flat') } },
+                    ]}
+                  />
                 </div>
+                {view === 'tree' ? (
+                  <div className="min-w-fit">
+                    <ExplanationNodeView node={explanation.formula} engine={engine} />
+                  </div>
+                ) : (
+                  <FlatExplanationView engine={engine} dottedName={currentRule} />
+                )}
               </div>
             ) : (
               <p className="mb-0 text-sm text-gray-600">
