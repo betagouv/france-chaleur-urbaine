@@ -11,7 +11,11 @@
 - Update the relevant `AGENTS.md` / `.ai/context/*.md` when a change alters a module's high-level behavior or integration points (high-level only).
 - Any change to business behavior (emails sent, demand statuses, crons, permissions, eligibility rules…) MUST update the product documentation in `src/modules/doc/content/*.mdx` (French, rendered at `/admin/doc`) in the same PR — see `src/modules/doc/AGENTS.md`.
 - Deliver with a 4-5 sentence overview, then one line per file changed.
+- Whenever a change involved a design choice, the delivery includes a recap of the options considered: the one chosen with its justification, each discarded one with the reason.
 - Before proposing: is it the minimal solution? Does it duplicate or reintroduce something? Would a senior reviewer object?
+- Simplest and most robust solution first: lean on what the platform already does (browser, DB, framework, typed model) rather than hand-rolled logic, helpers or string sniffing grafted onto existing code. A smaller diff is not the criterion if it adds a complexity point to maintain. "Simplest" is judged against the real constraints read in the code (which elements are rendered, which layout model, which data shapes), never assumed from how an approach sounds ("native", "the browser handles it").
+- When a solution is challenged: re-check the code and constraints first, then say what still holds and what the actual flaw is. Fix a flaw in place (string sniffing, a cast, a duplicated helper) without changing approach, and never switch approach without new evidence.
+- Any layout or rendering change (wrapping, alignment, overflow) is verified in a real browser before delivery: throwaway Playwright script against the dev server, several viewport widths, screenshot read back, control run on the previous version. Analysis alone is not proof.
 
 ## Developer profile
 

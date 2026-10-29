@@ -431,3 +431,268 @@ const extractChildNodes = (node: PublicodesNode): PublicodesNode[] => {
     (candidate): candidate is PublicodesNode => !!candidate && typeof candidate === 'object' && 'nodeKind' in candidate
   );
 };
+
+// Flat view: the formula as one line of terms (active branches only) and the list of inputs that actually fed the value
+
+export type FlatToken =
+  | Extract<ExplanationNode, { kind: 'reference' }>
+  | { kind: 'constant'; value: NodeValue; unit: string }
+  | { kind: 'symbol'; text: string }
+  /** Opening bracket, labelled by the inlined rule (navigable) or the mechanism name, bare for a sub-operation */
+  | { kind: 'open'; dottedName?: RuleName; label?: string }
+  | { kind: 'close' };
+
+export type FlatInput = Extract<ExplanationNode, { kind: 'reference' }>;
+
+const FLAT_OPERATOR_SYMBOLS: Record<string, string> = { '-': '−', '*': '×', '**': '^', '/': '÷', '//': '÷' };
+
+/** A reference the reader can act on: a user input (situation / par défaut) or a model constant — never inlined further */
+const isLeafReference = (node: Extract<ExplanationNode, { kind: 'reference' }>): boolean =>
+  node.provenance !== 'computed' || !node.hasFormula;
+
+export type FlattenOptions = {
+  /** Inline computed references that many levels down (their name labels the bracket); inputs are never inlined */
+  depth: number;
+  /** Drop the terms worth 0 from sums and differences (an aid not granted, a cooling post without cooling, fold seeds…) */
+  hideZeroTerms?: boolean;
+};
+
+const ADDITIVE_OPERATORS = ['+', '-'];
+
+const isZeroTerm = (node: ExplanationNode) => node.value === 0;
+
+const flattenNode = (engine: FCUEngine, node: ExplanationNode, options: FlattenOptions, parentOperator: string | null): FlatToken[] => {
+  switch (node.kind) {
+    case 'constant':
+      return [node];
+    case 'reference': {
+      if (options.depth <= 0 || isLeafReference(node)) {
+        return [node];
+      }
+      const formula = buildRuleExplanation(engine, node.dottedName).formula;
+      return formula
+        ? [
+            { dottedName: node.dottedName, kind: 'open', label: node.label },
+            ...flattenNode(engine, formula, { ...options, depth: options.depth - 1 }, null),
+            { kind: 'close' },
+          ]
+        : [node];
+    }
+    case 'operation': {
+      const hideZeros = options.hideZeroTerms && ADDITIVE_OPERATORS.includes(node.operator);
+      const operands = hideZeros ? node.operands.filter((operand) => !isZeroTerm(operand)) : node.operands;
+      if (operands.length === 0) {
+        return [{ kind: 'constant', unit: node.unit, value: node.value }];
+      }
+      // A difference whose first term was dropped keeps its leading minus: « − aides »
+      const leadsWithOperator = hideZeros && node.operator === '-' && operands[0] !== node.operands[0];
+      const needsParentheses = parentOperator !== null && parentOperator !== node.operator;
+      const inner = operands.flatMap((operand, operandIndex) => [
+        ...(operandIndex > 0 || leadsWithOperator
+          ? [{ kind: 'symbol' as const, text: FLAT_OPERATOR_SYMBOLS[node.operator] ?? node.operator }]
+          : []),
+        ...flattenNode(engine, operand, options, node.operator),
+      ]);
+      return needsParentheses ? [{ kind: 'open' }, ...inner, { kind: 'close' }] : inner;
+    }
+    case 'condition':
+      return flattenNode(engine, node.result, options, parentOperator);
+    case 'variations': {
+      const activeCase = node.cases.find((variationCase) => variationCase.isActive);
+      return activeCase
+        ? flattenNode(engine, activeCase.result, options, parentOperator)
+        : [{ kind: 'constant', unit: node.unit, value: node.value }];
+    }
+    case 'test':
+      return [{ kind: 'symbol', text: node.keyword }, ...flattenNode(engine, node.operand, options, null)];
+    case 'mecanism':
+      return [
+        { kind: 'open', label: node.name },
+        ...node.children.flatMap((child, childIndex) => [
+          ...(childIndex > 0 ? [{ kind: 'symbol' as const, text: ';' }] : []),
+          ...flattenNode(engine, child, options, null),
+        ]),
+        { kind: 'close' },
+      ];
+  }
+};
+
+/** Linearizes a rule formula: only the branches that were actually taken, operators as symbols, references kept as terms */
+export const flattenRuleFormula = (engine: FCUEngine, dottedName: RuleName, options: FlattenOptions): FlatToken[] => {
+  const formula = buildRuleExplanation(engine, dottedName).formula;
+  return formula ? flattenNode(engine, formula, options, null) : [];
+};
+
+export type CalculationStep = {
+  dottedName: RuleName;
+  tokens: FlatToken[];
+  value: NodeValue;
+  unit: string;
+};
+
+/**
+ * The calculation as a chain of one-level formulas, top-down: the rule itself, then every computed rule its formula
+ * names, then theirs… each line stays flat (no nesting) and each intermediate rule appears once, where it is first needed.
+ */
+export const buildCalculationChain = (
+  engine: FCUEngine,
+  dottedName: RuleName,
+  options: Pick<FlattenOptions, 'hideZeroTerms'>
+): CalculationStep[] => {
+  const steps: CalculationStep[] = [];
+  const queued = new Set<RuleName>([dottedName]);
+  const queue: RuleName[] = [dottedName];
+  while (queue.length > 0) {
+    const rule = queue.shift() as RuleName;
+    const explanation = buildRuleExplanation(engine, rule);
+    if (!explanation.formula) {
+      continue;
+    }
+    const tokens = flattenNode(engine, explanation.formula, { ...options, depth: 0 }, null);
+    steps.push({ dottedName: rule, tokens, unit: explanation.unit, value: explanation.value });
+    tokens.forEach((token) => {
+      if (token.kind === 'reference' && !isLeafReference(token) && !queued.has(token.dottedName)) {
+        queued.add(token.dottedName);
+        queue.push(token.dottedName);
+      }
+    });
+  }
+  return steps;
+};
+
+/**
+ * Every input that contributed to the value: user inputs and model constants reached through the active branches only
+ * (a DPE class or a fuel that the situation rules out never shows up). Deduplicated, user inputs first.
+ */
+export const collectContributingInputs = (engine: FCUEngine, dottedName: RuleName): FlatInput[] => {
+  const inputs = new Map<RuleName, FlatInput>();
+  const visited = new Set<RuleName>([dottedName]);
+  const visit = (node: ExplanationNode) => {
+    switch (node.kind) {
+      case 'reference':
+        if (isLeafReference(node)) {
+          inputs.set(node.dottedName, node);
+        } else if (!visited.has(node.dottedName)) {
+          visited.add(node.dottedName);
+          const formula = buildRuleExplanation(engine, node.dottedName).formula;
+          if (formula) {
+            visit(formula);
+          }
+        }
+        return;
+      case 'operation':
+        node.operands.forEach(visit);
+        return;
+      case 'condition':
+        visit(node.result);
+        return;
+      case 'variations':
+        node.cases.filter((variationCase) => variationCase.isActive).forEach((variationCase) => visit(variationCase.result));
+        return;
+      case 'test':
+        visit(node.operand);
+        return;
+      case 'mecanism':
+        node.children.forEach(visit);
+        return;
+      case 'constant':
+        return;
+    }
+  };
+  const rootFormula = buildRuleExplanation(engine, dottedName).formula;
+  if (rootFormula) {
+    visit(rootFormula);
+  }
+  const provenanceOrder: Record<Provenance, number> = { computed: 2, default: 1, situation: 0 };
+  return [...inputs.values()].sort(
+    (inputA, inputB) =>
+      provenanceOrder[inputA.provenance] - provenanceOrder[inputB.provenance] || inputA.dottedName.localeCompare(inputB.dottedName, 'fr')
+  );
+};
+
+// Sources: where a rule value comes from. Structured `références` first, then the free-text `note` written as « Source : … — URL ».
+
+export type RuleSource = {
+  label: string;
+  url?: string;
+  /** The note as written in the model, for tooltips */
+  raw: string;
+  /** Set when the rule has no source of its own and only re-exposes another rule (« valeur: autre règle »): the rule that holds it */
+  inheritedFrom?: RuleName;
+};
+
+const URL_PATTERN = /https?:\/\/[^\s)]+/g;
+const SOURCE_PREFIX = /^\s*sources?\s*[:：]\s*/i;
+const TRAILING_SEPARATORS = /[\s—–\-|,;:(]+$/;
+
+/**
+ * Reads a source out of a free-text note. A note is a source when it starts with « Source : » or contains a URL;
+ * anything else is a remark and yields nothing. The label is the text without the URL and without the prefix.
+ */
+export const parseSourceNote = (note: string): RuleSource | undefined => {
+  const urls = note.match(URL_PATTERN) ?? [];
+  if (urls.length === 0 && !SOURCE_PREFIX.test(note)) {
+    return undefined;
+  }
+  // The label is what precedes the first URL; what follows (edition, remarks) stays in `raw` for the tooltip
+  const label = (urls[0] ? note.slice(0, note.indexOf(urls[0])) : note).replace(SOURCE_PREFIX, '').replace(TRAILING_SEPARATORS, '').trim();
+  return { label: label || (urls[0] ?? note), raw: note, ...(urls[0] ? { url: urls[0] } : {}) };
+};
+
+const getOwnRuleSources = (engine: FCUEngine, dottedName: RuleName): RuleSource[] => {
+  try {
+    const rawNode = engine.getRule(dottedName).rawNode;
+    const references = rawNode.références;
+    if (references && Object.keys(references).length > 0) {
+      return Object.entries(references).map(([label, url]) => ({ label, raw: `${label} — ${url}`, url }));
+    }
+    const source = rawNode.note ? parseSourceNote(rawNode.note) : undefined;
+    return source ? [source] : [];
+  } catch {
+    return [];
+  }
+};
+
+/** The rule this one merely re-exposes (its active formula is a bare reference), if any — undefined once a situation value overrides it */
+const getAliasTarget = (engine: FCUEngine, dottedName: RuleName): RuleName | undefined => {
+  const formula = buildRuleExplanation(engine, dottedName).formula;
+  return formula?.kind === 'reference' ? formula.dottedName : undefined;
+};
+
+/**
+ * Sources of a rule: its `références` entries, else its parsed `note`, else the sources of the rule it is an alias of
+ * (transitively, so a user parameter defaulting to an address-derived value shows the survey that value comes from).
+ */
+export const getRuleSources = (engine: FCUEngine, dottedName: RuleName, visited: ReadonlySet<RuleName> = new Set()): RuleSource[] => {
+  const own = getOwnRuleSources(engine, dottedName);
+  if (own.length > 0) {
+    return own;
+  }
+  const target = getAliasTarget(engine, dottedName);
+  return target && !visited.has(target)
+    ? getRuleSources(engine, target, new Set([...visited, dottedName])).map((source) => ({
+        ...source,
+        inheritedFrom: source.inheritedFrom ?? target,
+      }))
+    : [];
+};
+
+export type RuleAnnotation = {
+  sources: RuleSource[];
+  /** The rule's own note when it is not a source: a justification of the formula or of the value */
+  remark?: string;
+};
+
+/** What justifies a rule: its sources, or else its free-text note (a justification of the formula, a caveat…) */
+export const getRuleAnnotation = (engine: FCUEngine, dottedName: RuleName): RuleAnnotation => {
+  const sources = getRuleSources(engine, dottedName);
+  if (sources.length > 0) {
+    return { sources };
+  }
+  try {
+    const note = engine.getRule(dottedName).rawNode.note;
+    return note ? { remark: note, sources } : { sources };
+  } catch {
+    return { sources };
+  }
+};
