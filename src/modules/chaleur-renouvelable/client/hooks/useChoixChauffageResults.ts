@@ -16,6 +16,8 @@ import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouv
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
+import { getBuildingAddress } from '../building-address';
+
 export function useChoixChauffageResults() {
   const engine = useSimulatorEngine();
   const urlParams = useChoixChauffageQueryParams();
@@ -45,6 +47,40 @@ export function useChoixChauffageResults() {
     selectedBatEnrBatiment,
   } = useAddressEligibility(params.adresse ?? null, params.constructionId);
   const selectedConstructionId = selectedBatEnrBatiment?.batiment_construction_id;
+  // Correct only a confirmed selection, preserving its identifier when the address context reloads.
+  useEffect(() => {
+    if (
+      !selectedBatEnrBatiment ||
+      !params.constructionId ||
+      selectedConstructionId !== params.constructionId ||
+      shouldSelectBatEnrBatiment ||
+      !geoAddress ||
+      geoAddress.properties.label !== params.adresse
+    ) {
+      return;
+    }
+    let isCurrent = true;
+    void toastErrors(async () => {
+      const address = await getBuildingAddress(selectedBatEnrBatiment.adresse, geoAddress);
+      if (!isCurrent || !address || address.properties.label === params.adresse) {
+        return;
+      }
+      setGeoAddress(address);
+      await urlParams.setParams({ adresse: address.properties.label, constructionId: params.constructionId });
+    })();
+    return () => {
+      isCurrent = false;
+    };
+  }, [
+    selectedBatEnrBatiment,
+    selectedConstructionId,
+    params.constructionId,
+    params.adresse,
+    shouldSelectBatEnrBatiment,
+    geoAddress,
+    setGeoAddress,
+    urlParams.setParams,
+  ]);
   const prefill = trpc.batEnr.getSimulationPrefill.useQuery(
     { batiment_construction_id: selectedConstructionId ?? '' },
     { enabled: Boolean(selectedConstructionId) }
