@@ -7,7 +7,6 @@ import { HomeHeroForm } from './HomeHeroForm';
  */
 export function HomeHero() {
   return (
-    // min height = banner with the comparator fields unfolded, so the cover photo does not jump when they appear
     <div className="fr-p-1w md:fr-p-5w w-full bg-[#C3E4E2] bg-[url('/img/banner_simulateur.webp')] bg-no-repeat bg-cover bg-left-center">
       <div className="mx-auto w-full max-w-4xl">
         <HeroTitle>
@@ -19,9 +18,7 @@ export function HomeHero() {
           France Chaleur Urbaine, un service public gratuit, fiable et neutre.
         </HeroSubtitle>
         <HeroContent className="mt-6">
-          <div className="rounded-lg bg-white p-6 shadow-sm">
-            <HomeHeroForm />
-          </div>
+          <HomeHeroForm />
         </HeroContent>
       </div>
     </div>

@@ -1,7 +1,8 @@
+import { useResizeObserver } from '@react-hookz/web';
 import { useStore } from '@tanstack/react-form';
 import { useRouter } from 'next/router';
 import { useQueryState } from 'nuqs';
-import type { ReactNode } from 'react';
+import { type ReactNode, useRef } from 'react';
 
 import Radio from '@/components/form/dsfr/Radio';
 import Link from '@/components/ui/Link';
@@ -57,7 +58,7 @@ const INLINE_FIELD_CLASSES =
  * Home page address test: one address and housing type, then either the heat network
  * eligibility test (contact modal) or the renewable heating comparator (result page).
  * The branch is the `?mode=` parameter; it is not a form field. The comparator fields stay
- * mounted and unfold with a transition; they are inert while folded.
+ * mounted and unfold while the space below the card shrinks; they are inert while folded.
  */
 export function HomeHeroForm() {
   const router = useRouter();
@@ -66,6 +67,13 @@ export function HomeHeroForm() {
   const { userInfo, setUserInfo } = useUserInfo();
   const initialValues = useHomeFormInitialValues();
   const eligibilityTest = useEligibilityTest();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const comparatorFieldsRef = useRef<HTMLDivElement>(null);
+
+  // Reserve the fields' actual height below the card, including responsive wrapping.
+  useResizeObserver(comparatorFieldsRef, (entry) => {
+    containerRef.current?.style.setProperty('--comparator-height', `${entry.target.getBoundingClientRect().height}px`);
+  });
 
   const form = useAppForm({
     ...schemaValidation(getHomeFormSchema(mode)),
@@ -101,8 +109,8 @@ export function HomeHeroForm() {
   });
 
   return (
-    <>
-      <Form form={form} id={AnalyticsFormId.form_test_adresse} className="flex flex-col gap-4">
+    <div ref={containerRef}>
+      <Form form={form} id={AnalyticsFormId.form_test_adresse} className="flex flex-col gap-4 rounded-lg bg-white p-6 shadow-sm">
         <form.AppField name="geoAddress">
           {(field) => (
             <field.AddressSelectField
@@ -170,12 +178,12 @@ export function HomeHeroForm() {
         >
           {/* horizontal padding + negative margin: keeps the focus outlines out of the overflow clipping */}
           <div className="-mx-1 min-h-0 overflow-hidden px-1">
-            <div className="grid gap-4 pt-4 pb-1 md:grid-cols-2 md:min-h-[120px]">
+            <div ref={comparatorFieldsRef} className="grid gap-4 pt-4 md:grid-cols-2">
               <form.AppField name="typeRadiateur">
                 {(field) => (
                   <field.SelectField
                     label="Type de radiateurs"
-                    className="mb-0! [&>.fr-error-text]:mt-2!" // condensed error line, its height is reserved by the row
+                    className="mb-0! [&>.fr-error-text]:mt-2!"
                     options={[...typeRadiateurOptions]}
                     placeholder="Indiquez votre type de radiateurs"
                     nativeSelectProps={{ required: true }} // required only in this branch: the schema marker cannot know
@@ -183,7 +191,14 @@ export function HomeHeroForm() {
                 )}
               </form.AppField>
               <form.AppField name="espaceExterieur">
-                {(field) => <field.CustomField Component={OutdoorSpaceCheckboxes} layout="row" className="[&>div]:min-h-10" />}
+                {(field) => (
+                  <field.CustomField
+                    Component={OutdoorSpaceCheckboxes}
+                    label="Espaces extérieurs disponibles"
+                    layout="row"
+                    className="[&>div]:min-h-10 [&>span]:text-base"
+                  />
+                )}
               </form.AppField>
             </div>
           </div>
@@ -199,7 +214,14 @@ export function HomeHeroForm() {
           </form.SubmitButton>
         </div>
       </Form>
+      <div
+        aria-hidden="true"
+        className={cx(
+          'transition-[height] duration-300 ease-out motion-reduce:transition-none',
+          isComparator ? 'h-0' : 'h-(--comparator-height)'
+        )}
+      />
       <EligibilityContactModal {...eligibilityTest} />
-    </>
+    </div>
   );
 }
