@@ -28,7 +28,7 @@ type CcrtDemandTrackingProperties = CcrtCommonTrackingProperties & {
 };
 
 export type CcrtTrackingPlacement = 'liste' | 'fiche';
-export type CcrtTrackingTab = 'a_traiter' | 'en_cours' | 'cloturees' | 'toutes';
+export type CcrtTrackingTab = 'a_traiter' | 'en_cours' | 'cloturees' | 'realisees' | 'toutes';
 
 /**
  * Configuration des événements PostHog.

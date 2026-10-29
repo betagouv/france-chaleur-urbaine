@@ -1451,7 +1451,7 @@ describe('batEnrRouter', () => {
       });
     });
 
-    it("réinitialise l'état du projet quand le statut sort de la validation", async () => {
+    it("conserve l'ancien état du projet lors d’un changement de statut", async () => {
       const demand = await kdb
         .insertInto('demands_chaleur_renouvelable')
         .values({
@@ -1488,7 +1488,7 @@ describe('batEnrRouter', () => {
         .executeTakeFirstOrThrow();
 
       expect(updatedDemand).toStrictEqual({
-        project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
+        project_state: ADMIN_UPDATED_PROJECT_STATE,
         status: ADMIN_UPDATED_STATUS,
       });
     });

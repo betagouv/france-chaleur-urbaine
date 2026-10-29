@@ -14,7 +14,6 @@ export const ccrtDemandExportColumns = [
   { accessorKey: 'phone', name: 'Téléphone' },
   { accessorFn: (demand) => formatCcrtAddress(demand.address), name: 'Adresse' },
   { accessorKey: 'status', name: 'Statut' },
-  { accessorKey: 'project_state', name: 'État du projet' },
   {
     accessorFn: (demand) => typeLogementOptions.find((option) => option.value === demand.housing_type)?.label ?? demand.housing_type,
     name: 'Type de logement',
