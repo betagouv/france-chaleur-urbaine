@@ -12,12 +12,11 @@ export async function getBuildingAddress(
   if (!buildingAddress?.trim()) {
     return undefined;
   }
-  const normalizedAddress = normalizeAddress(buildingAddress);
+  const normalizedAddress = normalize(buildingAddress);
   const matchesBuildingAddress = (address: BANAddressFeature) =>
     address.properties.type === 'housenumber' &&
-    (normalizeAddress(address.properties.label) === normalizedAddress ||
-      (address.properties.citycode === currentAddress.properties.citycode &&
-        normalizeAddress(address.properties.name) === normalizedAddress));
+    (normalize(address.properties.label) === normalizedAddress ||
+      (address.properties.citycode === currentAddress.properties.citycode && normalize(address.properties.name) === normalizedAddress));
 
   if (matchesBuildingAddress(currentAddress)) {
     return currentAddress;
@@ -32,8 +31,3 @@ export async function getBuildingAddress(
   const matches = features.filter(matchesBuildingAddress);
   return matches.length === 1 ? matches[0] : undefined;
 }
-
-const normalizeAddress = (address: string) =>
-  normalize(address)
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
-    .trim();
