@@ -1,5 +1,8 @@
 import Image from '@/components/ui/Image';
+import Link from '@/components/ui/Link';
 import { businessRules } from '@/modules/app/business-rules';
+
+import { MethodologySolutionsSection } from './MethodologySolutionsSection';
 
 /**
  * Shared methodology copy for the standalone page and the results dialog.
@@ -25,135 +28,97 @@ export function MethodologyContent() {
         passer à l’action en vous outillant d’informations claires.
       </p>
       <hr />
-      <h2>2. Comment fonctionne le simulateur ? 3 questions pour des réponses sur mesure</h2>
+      <h2>2. Comment fonctionne le simulateur ? 4 questions pour des réponses sur mesure</h2>
       <p>
-        Le simulateur vous pose <strong>3 questions simples</strong> pour affiner ses propositions :
-        <ol>
-          <li>
-            <strong>Votre adresse</strong> : Pour connaître les contraintes locales (distance au réseau de chaleur, réglementation, etc.).
-          </li>
-          <li>
-            <strong>Votre type de bâtiment</strong> :
-            <ul className="fr-my-0">
-              <li>Immeuble à chauffage collectif</li>
-              <li>Immeuble à chauffage individuel</li>
-              <li>Maison individuelle</li>
-            </ul>
-          </li>
-          <li>
-            <strong>Votre espace extérieur disponible</strong> : Jardin, cour, balcon, terrasse…
-          </li>
-        </ol>
+        Le simulateur vous pose <strong>4 questions simples</strong> pour affiner ses propositions :
       </p>
+      <ol>
+        <li>
+          <strong>Votre adresse</strong> : Pour connaître les contraintes locales (distance au réseau de chaleur, réglementation, etc.).
+        </li>
+        <li>
+          <strong>Votre type de bâtiment</strong> :
+          <ul className="fr-my-0">
+            <li>Immeuble à chauffage collectif</li>
+            <li>Immeuble à chauffage individuel</li>
+            <li>Maison individuelle</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Votre type de radiateur</strong> :
+          <ul className="fr-my-0">
+            <li>à eau</li>
+            <li>électriques</li>
+            <li>autre</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Votre espace extérieur disponible</strong> : balcon ou terrasse / jardin ou cour
+        </li>
+      </ol>
+
+      <p className="my-3">À partir de ces informations, le simulateur :</p>
+      <ul className="mt-0">
+        <li>
+          <strong>Exclut les solutions incompatibles</strong> (ex. : pas de pompe à chaleur sans espace extérieur).
+        </li>
+        <li>
+          <strong>Classe les solutions par ordre de pertinence</strong>, en suivant les recommandations de l’ADEME et la logique “ENR
+          choix”.
+        </li>
+        <li>
+          <strong>Estime le coût d’installation, les économies réalisables et le gain sur votre DPE</strong>.
+        </li>
+      </ul>
       <p>
-        À partir de ces informations, le simulateur :
-        <ul>
-          <li>
-            <strong>Exclut les solutions incompatibles</strong> (ex. : pas de pompe à chaleur sans espace extérieur).
-          </li>
-          <li>
-            <strong>Classe les solutions par ordre de pertinence</strong>, en suivant les recommandations de l’ADEME et la logique “ENR
-            choix”.
-          </li>
-          <li>
-            <strong>Estime le coût d’installation, les économies réalisables et le gain sur votre DPE</strong>.
-          </li>
-        </ul>
+        L’usager peut ensuite affiner ces résultats via l’onglet "Compléter mes paramètres" : mode d'eau chaude sanitaire, classe DPE,
+        surface moyenne, habitants par logement, nombre de logements et recalculer les résultats. Le coût du chauffage et de l’installation
+        sont alors recalculés.
       </p>
       <hr />
       <h2>3. Quelles données sont utilisées pour personnaliser les résultats ?</h2>
-      <p>
+      <p className="my-3">
         À partir de l’adresse du bâtiment, le simulateur interroge automatiquement deux bases de données officielles pour récupérer des
         informations utiles.
-        <ul>
-          <li>
-            La première (API FCU) détermine l’éligibilité au réseau de chaleur selon la proximité et les périmètres de raccordement. Le
-            simulateur exige aussi une distance strictement inférieure à {businessRules.fcrHeatNetworkMaxDistanceMeters.display},
-          </li>
-          <li>
-            La seconde (API Bat-ENR) fournit des informations sur les contraintes environnementales de la parcelle : possibilité ou non de
-            faire de la géothermie (zone favorable, intermédiaire ou défavorable), existence d’un plan de protection de l’atmosphère, ou
-            encore présence de contraintes patrimoniales.
-          </li>
-        </ul>
       </p>
-      <p>
-        À partir de ces éléments, le simulateur propose les solutions les plus adaptées :
-        <ul>
-          <li>
-            Le raccordement au réseau de chaleur est recommandé si le bâtiment est en chauffage collectif, éligible selon FCU, équipé de
-            radiateurs à eau, à moins de {businessRules.fcrHeatNetworkMaxDistanceMeters.display} du réseau et sans refus de raccordement
-            identifié,
-          </li>
-          <li>La géothermie n’est pas recommandée en zone défavorable,</li>
-          <li>La biomasse est écartée en cas de plan de protection de l’atmosphère,</li>
-          <li>Et les contraintes patrimoniales sont signalées, notamment si une pompe à chaleur aérothermique est envisagée.</li>
-        </ul>
-      </p>
-      <hr />
-      <h2>4. Quelles solutions écologiques sont proposées ?</h2>
-      <p>
-        Le simulateur ne propose <strong>que des solutions écologiques</strong> (pas de gaz, fioul ou radiateurs électriques). Voici les
-        principales options, détaillées et classées selon votre type de logement :
-      </p>
-      <h3>🏢 Immeuble avec chauffage collectif</h3>
-      <p>
-        Les solutions sont classées par ordre de pertinence, selon la logique “ENR choix” :
-        <ol>
-          <li>
-            <strong>Réseau de chaleur</strong> (si le bâtiment est éligible à moins de{' '}
-            {businessRules.fcrHeatNetworkMaxDistanceMeters.display}, équipé de radiateurs à eau et sans refus identifié) : chaleur produite
-            à partir de biomasse, géothermie ou chaleur fatale (récupération de chaleur industrielle), distribuée via un réseau.
-          </li>
-          <li>
-            <strong>Géothermie</strong> (si le sous-sol est adapté) : exploitation de la chaleur naturelle du sous-sol.
-          </li>
-          <li>
-            <strong>Solaire thermique</strong> utilisation du rayonnement solaire pour produire de la chaleur (eau chaude sanitaire).
-          </li>
-          <li>
-            <strong>Biomasse</strong> (si pas de plan de protection de l’atmosphère) : combustion ou transformation de matières organiques
-            (déchets forestiers, agricoles…).
-          </li>
-          <li>
-            <strong>Pompe à chaleur aérothermique</strong> (si espace extérieur disponible) : récupération de la chaleur présente dans l’air
-            extérieur.
-          </li>
-          <li>
-            <strong>Solution hybride</strong> (pompe à chaleur air/eau collective et chaudière au gaz)
-          </li>
-        </ol>
-      </p>
-      <h3>🏠 Maison individuelle</h3>
-      <p>
-        Les solutions sont classées par ordre de pertinence :
-        <ol>
-          <li>
-            <strong>Pompe à chaleur eau/eau géothermique</strong> (si le terrain le permet)
-          </li>
-          <li>
-            <strong>Solaire thermique</strong> (pour l’eau chaude et/ou le chauffage)
-          </li>
-          <li>
-            <strong>Poêle, insert, foyer fermé ou chaudière</strong> (à bûches ou à granulés)
-          </li>
-          <li>
-            <strong>Pompe à chaleur air/eau</strong> (si espace extérieur)
-          </li>
-          <li>
-            <strong>Pompe à chaleur air/air</strong> (si espace extérieur)
-          </li>
-        </ol>
-      </p>
-      <h3>🏢 Immeuble avec chauffage individuel</h3>
-      <ul>
+      <ul className="mt-0">
         <li>
-          <strong>Pompe à chaleur air/eau</strong> (si espace extérieur)
+          La première (
+          <Link href="https://www.data.gouv.fr/fr/dataservices/api-france-chaleur-urbaine/" isExternal>
+            API FCU
+          </Link>
+          ) détermine l’éligibilité au réseau de chaleur selon la proximité et les périmètres de raccordement. Le simulateur exige aussi une
+          distance strictement inférieure à {businessRules.fcrHeatNetworkMaxDistanceMeters.display}.
         </li>
         <li>
-          <strong>Pompe à chaleur air/air</strong> (si espace extérieur)
+          La seconde (
+          <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/batenr" isExternal>
+            API Bat-ENR
+          </Link>
+          ) fournit des informations sur les contraintes environnementales de la parcelle : possibilité ou non de faire de la géothermie
+          (zone de forage et ressource du sous-sol, BRGM), existence d’un plan de protection de l’atmosphère, présence de contraintes
+          patrimoniales ou encore la couverture solaire des toitures (CEREMA)
         </li>
       </ul>
+      <p className="my-3">À partir de ces éléments, le simulateur propose les solutions les plus adaptées :</p>
+      <ul className="mt-0">
+        <li>
+          Le raccordement au réseau de chaleur est recommandé si le bâtiment est en chauffage collectif, éligible selon FCU, équipé de
+          radiateurs à eau, à moins de {businessRules.fcrHeatNetworkMaxDistanceMeters.display} du réseau et sans refus de raccordement
+          identifié,
+        </li>
+        <li>La géothermie n’est pas recommandée en zone défavorable,</li>
+        <li>
+          En zone de protection de l'atmosphère, la chaudière à bois reste proposée, mais cette contrainte est signalée dans ses prérequis,
+        </li>
+        <li>
+          Les contraintes patrimoniales sont signalées, si une pompe à chaleur aérothermique, une chaudière bois ou le solaire thermique
+          sont envisagés,
+        </li>
+        <li>Si un réseau de froid est située à moins de 50 m, la solution réseau de chaleur affiche « rafraîchissement possible.</li>
+      </ul>
+      <hr />
+      <MethodologySolutionsSection />
       <Image
         src="/img/demarche_enr_choix.webp"
         caption="Démarche ENR Choix : Hiérarchie des solutions"
@@ -162,46 +127,63 @@ export function MethodologyContent() {
         height={474}
       />
       <h2 className="fr-mt-3w">5. Que vous dit le simulateur pour chaque solution ?</h2>
+      <p className="my-3">Pour chaque option compatible, vous obtiendrez :</p>
+      <ul className="mt-0">
+        <li>
+          <strong>Un coût estimé d’installation</strong> (par logement, fourchette non contractuelle).
+        </li>
+        <li>
+          <strong>Une estimation de votre facture annuelle</strong> (le coût annuel inclut l'abonnement, l'énergie, l'entretien courant et
+          le gros entretien, hors investissement et hors aides).
+        </li>
+        <li>
+          <strong>Le gain attendu sur votre DPE</strong> (ex. : passage de D à C).
+        </li>
+        <li>
+          <strong>Les avantages et inconvénients</strong> (entretien, espace nécessaire, réglementation…).
+        </li>
+      </ul>
       <p>
-        Pour chaque option compatible, vous obtiendrez :
-        <ul>
-          <li>
-            <strong>Un coût estimé d’installation</strong> (par logement, fourchette non contractuelle).
-          </li>
-          <li>
-            <strong>Une estimation de votre facture annuelle</strong> (comparée au gaz, hors abonnement).
-          </li>
-          <li>
-            <strong>Le gain attendu sur votre DPE</strong> (ex. : passage de D à C).
-          </li>
-          <li>
-            <strong>Les avantages et inconvénients</strong> (entretien, espace nécessaire, réglementation…).
-          </li>
-        </ul>
+        Quand votre bâtiment est identifié, le simulateur préremplit le DPE, la surface et le nombre de logements à partir des bases
+        nationales (BDNB, RNIC). À défaut, il utilise des valeurs par défaut (DPE E, 70 m², 2 personnes, 25 logements). Vous pouvez les
+        ajuster pour affiner les résultats.
       </p>
       <p>
-        <strong>Les calculs sont basés sur des données par défaut (DPE E, 70 m², 2 personnes par logement)</strong>, mais vous pouvez les
-        ajuster pour affiner les résultats.
+        <strong>Coût annuel par logement et gain par rapport au gaz :</strong>
+        <br /> <br /> Ils sont calculés avec le moteur du comparateur de coûts et d'émissions de CO₂, réalisé par France Chaleur Urbaine
+        avec le concours de l'association AMORCE et du bureau d'études Elcimaï. Le coût annuel additionne l'abonnement, la consommation
+        d'énergie, l'entretien courant et le gros entretien, hors investissement et hors aides. Le gain affiché compare ce coût à celui d'un
+        chauffage au gaz dans la même situation (ou d'une production d'eau chaude au gaz pour les solutions « eau chaude seulement »). Les
+        prix des réseaux de chaleur proviennent de l'enquête FEDENE/AMORCE ; les données économiques des autres modes de chauffage sont
+        mises à jour chaque année. Consulter la note méthodologique du comparateur.
+      </p>
+      <p>
+        <strong>Coût d'installation par logement :</strong>
+        <br /> <br />
+        Les fourchettes proviennent d'une analyse réalisée par le bureau d'études Pouget Consultants sur un ensemble d'installations. Deux
+        solutions font exception : pour le réseau de chaleur, le coût de raccordement par logement diminue avec le nombre de logements du
+        bâtiment ; pour le solaire thermique, il dépend de la surface de capteurs nécessaire. Ces montants sont indicatifs et ne remplacent
+        pas un devis.
       </p>
       <hr />
       <h2>6. Pourquoi ce classement des solutions ?</h2>
-      <p>
+      <p className="my-3">
         Le simulateur suit la logique <strong>"ENR choix"</strong>, qui privilégie :
-        <ul>
-          <li>
-            <strong>Les énergies renouvelables les plus durables</strong> (géothermie, solaire, biomasse).
-          </li>
-          <li>
-            <strong>Les solutions collectives</strong> quand c’est possible (réseaux de chaleur, géothermie collective).
-          </li>
-          <li>
-            <strong>Les économies d’échelle</strong> (meilleur rapport coût/efficacité pour les immeubles).
-          </li>
-          <li>
-            <strong>L’adéquation avec les contraintes locales</strong> (réglementation, espace, ressources disponibles).
-          </li>
-        </ul>
       </p>
+      <ul className="mt-0">
+        <li>
+          <strong>Les énergies renouvelables les plus durables</strong> (géothermie, solaire, biomasse).
+        </li>
+        <li>
+          <strong>Les solutions collectives</strong> quand c’est possible (réseaux de chaleur, géothermie collective).
+        </li>
+        <li>
+          <strong>Les économies d’échelle</strong> (meilleur rapport coût/efficacité pour les immeubles).
+        </li>
+        <li>
+          <strong>L’adéquation avec les contraintes locales</strong> (réglementation, espace, ressources disponibles).
+        </li>
+      </ul>
       <p>
         <strong>Attention</strong> : Le simulateur donne une première estimation, mais la faisabilité technique et économique réelle devra
         être étudiée plus finement avec un professionnel. Certaines solutions peuvent être exclues en raison de contraintes d’intégration
@@ -211,18 +193,18 @@ export function MethodologyContent() {
       <h2>7. Et après ? Comment concrétiser votre projet ?</h2>
       <p>
         Le simulateur vous donne une <strong>première estimation</strong>, mais chaque projet est unique. Pour aller plus loin :
-        <ul>
-          <li>
-            <strong>Contactez un·e conseiller·ère France Rénov’</strong> pour une étude personnalisée et neutre.
-          </li>
-          <li>
-            <strong>Comparez les devis</strong> de plusieurs professionnels qualifiés RGE.
-          </li>
-          <li>
-            <strong>Vérifiez les aides financières</strong> disponibles (MaPrimeRénov’, CEE, primes locales…).
-          </li>
-        </ul>
       </p>
+      <ul>
+        <li>
+          <strong>Contactez un·e conseiller·ère France Rénov’</strong> pour une étude personnalisée et neutre.
+        </li>
+        <li>
+          <strong>Comparez les devis</strong> de plusieurs professionnels qualifiés RGE.
+        </li>
+        <li>
+          <strong>Vérifiez les aides financières</strong> disponibles (MaPrimeRénov’, CEE, primes locales…).
+        </li>
+      </ul>
     </>
   );
 }
