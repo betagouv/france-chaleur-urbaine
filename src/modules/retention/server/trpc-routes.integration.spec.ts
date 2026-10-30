@@ -29,6 +29,7 @@ const seedNetworkChangeRequest = (id: string, label: string, review: { processed
       contact_structure: 'Ville',
       contact_type: 'collectivite',
       id,
+      internal_comment: 'Rappeler Marie Dupont',
       kind: 'autre',
       network_label: label,
       payload: JSON.stringify({ dansCadreDemandeADEME: false, emailReferentCommercial: 'referent@exploitant.fr', precisions: 'x' }),
@@ -222,7 +223,7 @@ describe('retention', () => {
     expect(result).toStrictEqual({ count: 1, rule: 'processed_network_change_requests' });
     const rows = await kdb
       .selectFrom('network_change_requests')
-      .select(['id', 'contact_email', 'contact_last_name', 'contact_structure', 'network_label', 'status'])
+      .select(['id', 'contact_email', 'contact_last_name', 'contact_structure', 'internal_comment', 'network_label', 'status'])
       .orderBy('id')
       .execute();
     expect(rows).toStrictEqual([
@@ -231,6 +232,7 @@ describe('retention', () => {
         contact_last_name: 'Anonymisé',
         contact_structure: null,
         id: uuid(20),
+        internal_comment: null,
         network_label: 'Réseau ancien',
         status: 'processed',
       },
@@ -239,6 +241,7 @@ describe('retention', () => {
         contact_last_name: 'Dupont',
         contact_structure: 'Ville',
         id: uuid(21),
+        internal_comment: 'Rappeler Marie Dupont',
         network_label: 'Réseau récent',
         status: 'processed',
       },
@@ -247,6 +250,7 @@ describe('retention', () => {
         contact_last_name: 'Dupont',
         contact_structure: 'Ville',
         id: uuid(22),
+        internal_comment: 'Rappeler Marie Dupont',
         network_label: 'Réseau en attente',
         status: 'pending',
       },

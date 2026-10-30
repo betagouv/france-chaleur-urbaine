@@ -7,7 +7,7 @@
 
 ## Page shell (`SimplePage`)
 - Every page renders inside `SimplePage` (`@/components/shared/page/SimplePage`): SEO, header, footer, theme. Props: `title`, `description`, `noIndex`, `mode` (`public` | `public-fullscreen` | `authenticated`, the latter forces `noIndex` and requires a session), `includeFooter`, `currentPage`.
-- **Horizontal layout is a `SimplePage` concern, never a wrapper `div`**: `layout="center"` = DSFR container with vertical margins (the usual page), `layout="large"` = wide with side margins, default `fluid` = full width (maps, full-screen tools). Never add your own `<div className="fr-container …">` around the page content — pass `layout` instead.
+- **Horizontal layout is a `SimplePage` concern, never a wrapper `div`**: `layout="center"` = DSFR container with vertical margins (the usual page), `layout="wide"` = centered and capped at 1440px (admin pages with a wide table), `layout="large"` = full width with side margins, default `fluid` = full width (maps, full-screen tools). Never add your own `<div className="fr-container …">` around the page content — pass `layout` instead.
 - Heavy client-only content (publicodes engine, maps, charts) is loaded with `next/dynamic` + `ssr: false`; its `loading` placeholder and any in-component loading state use a visible `<Loader size="xl" variant="section" />` (centered, tall), not the default small `<Loader />`.
 
 ## Data fetching

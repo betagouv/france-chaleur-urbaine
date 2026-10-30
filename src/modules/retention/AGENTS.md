@@ -5,7 +5,7 @@ Manual application of the personal-data retention rules published in the privacy
 ## Structure
 
 - `constants.ts` — `retentionRules` and their client-safe definitions (title, description, action, list shortcut, business rule id). Durations live in `businessRules.retention*` so the admin page, the product doc and the code cannot drift.
-- `server/service.ts` — one query per rule (`pending_accounts`: delete never-activated accounts; `inactive_accounts`: deactivate + anonymize non-admin accounts, demands stay linked; `closed_demands`: anonymize identity, contact and comments of demands in a terminal status or soft-deleted; `processed_network_change_requests`: anonymize the submitter of processed network change requests and purge the content of their files, except documents published on a network page). `previewRetention` returns counts + a sample, `applyRetentionRule` runs the rule and logs.
+- `server/service.ts` — one query per rule (`pending_accounts`: delete never-activated accounts; `inactive_accounts`: deactivate + anonymize non-admin accounts, demands stay linked; `closed_demands`: anonymize identity, contact and comments of demands in a terminal status or soft-deleted; `processed_network_change_requests`: anonymize the submitter of processed network change requests, clear their `internal_comment` and purge the content of their files, except documents published on a network page). `previewRetention` returns counts + a sample, `applyRetentionRule` runs the rule and logs.
 - `server/trpc-routes.ts` — `retention.preview` (query), `retention.apply` (mutation), both `adminRoute`.
 - `client/AdminRetentionPage.tsx` — `/admin/retention`: a card per rule, preview dialog (transformations + full list), confirmed run.
 
