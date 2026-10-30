@@ -309,15 +309,14 @@ const getBatEnrBatimentsByConstructionIds = async (batimentConstructionIds: stri
 };
 
 /**
- * Prefills the selected building from RNIC housing lots first, retaining BDNB when RNIC cannot provide a valid count.
+ * Prefills simulation values from the selected building, using BDNB for housing count and area.
  */
 export const getSimulationPrefill = async (input: GetBdnbConstructionInput) => {
   const building = await getBatEnrBatimentDetails(input);
   if (!building) {
     return {};
   }
-  const rnic = await getRnicCoproprieteSafe(building.batiment_construction_id);
-  return getSimulationPrefillFromBatEnrBatiment(building, rnic?.housingCount);
+  return getSimulationPrefillFromBatEnrBatiment(building);
 };
 
 export const getBatEnrBatimentsSelectionContextByBanId = async ({

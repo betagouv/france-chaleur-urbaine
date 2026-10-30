@@ -194,7 +194,7 @@ describe('ParamsForm', () => {
     );
   });
 
-  it.each(['untouched', 'edited', 'cancelled'] as const)('handles delayed RNIC prefill when the form is %s', async (state) => {
+  it.each(['untouched', 'edited', 'cancelled'] as const)('handles delayed building prefill when the form is %s', async (state) => {
     const pending = Promise.withResolvers<{ nbLogements: number }>();
     prefill.mockReturnValueOnce(pending.promise);
     const setIsOpen = vi.fn();

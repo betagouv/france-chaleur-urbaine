@@ -61,19 +61,12 @@ describe('getSimulationPrefillFromBatEnrBatiment', () => {
       surfaceMoyenne: undefined,
     });
   });
-  it.each([
-    [78, 78],
-    [null, 30],
-    [undefined, 30],
-    [0, 30],
-    [-3, 30],
-    [2.5, 30],
-  ])('prefers RNIC count %s with BDNB fallback %s without changing the building surface', (rnicCount, expectedCount) => {
-    expect(getSimulationPrefillFromBatEnrBatiment(createBatiment(), rnicCount)).toStrictEqual({
+  it.each([null, 0, -3])('does not infer a housing count or average area from invalid BDNB count %s', (housingCount) => {
+    expect(getSimulationPrefillFromBatEnrBatiment(createBatiment({ ffo_bat_nb_log: housingCount }))).toStrictEqual({
       dpe: 'C',
       modeEauChaudeSanitaire: 'Collectif',
-      nbLogements: expectedCount,
-      surfaceMoyenne: 60,
+      nbLogements: undefined,
+      surfaceMoyenne: undefined,
     });
   });
 });

@@ -86,13 +86,19 @@ export function useChoixChauffageResults() {
     setGeoAddress,
     urlParams.setParams,
   ]);
+  const shouldPrefill =
+    Boolean(selectedConstructionId) &&
+    !shouldSelectBatEnrBatiment &&
+    !isEligibilityLoading &&
+    geoAddress?.properties.label === params.adresse &&
+    (!params.constructionId || selectedConstructionId === params.constructionId);
   const prefill = trpc.batEnr.getSimulationPrefill.useQuery(
     { batiment_construction_id: selectedConstructionId ?? '' },
-    { enabled: Boolean(selectedConstructionId) }
+    { enabled: shouldPrefill }
   );
-  // Preserve explicit URL/user values; RNIC only fills missing inputs for the current building.
+  // Only a confirmed building may fill missing inputs, including when its data is already cached.
   useEffect(() => {
-    if (!prefill.data || isEligibilityLoading || geoAddress?.properties.label !== params.adresse) {
+    if (!shouldPrefill || !prefill.data) {
       return;
     }
     const missing = {
@@ -102,7 +108,7 @@ export function useChoixChauffageResults() {
     if (Object.keys(missing).length > 0) {
       void urlParams.setParams(missing);
     }
-  }, [prefill.data, params.nbLogements, params.surfaceMoyenne, params.adresse, isEligibilityLoading, geoAddress, urlParams]);
+  }, [shouldPrefill, prefill.data, params.nbLogements, params.surfaceMoyenne, urlParams]);
 
   const [isParamsOpen, setIsParamsOpen] = useState(false);
   const [shouldScrollToHotWaterParams, setShouldScrollToHotWaterParams] = useState(false);

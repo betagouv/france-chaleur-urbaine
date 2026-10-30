@@ -8,11 +8,17 @@ import { useChoixChauffageResults } from './useChoixChauffageResults';
 
 const mocks = vi.hoisted(() => ({
   address: '14 Rue Lecourbe 75015 Paris',
+  averageHousingArea: null as number | null,
   buildingAddress: '16 Rue Lecourbe',
   constructionId: 'building-1',
+  hasConstructionId: true,
+  hasDifferentBuilding: false,
+  housingCount: null as number | null,
   isAddressMissing: false,
   isEligibilityLoading: false,
+  isPrefillAvailable: false,
   isPrefillLoading: false,
+  queryPrefill: vi.fn(),
   recommendation: 'PAC géothermique',
   resolveBuildingAddress: vi.fn(),
   setGeoAddress: vi.fn(),
@@ -30,7 +36,12 @@ vi.mock('@/hooks/useContactFormFCU', () => ({ default: () => ({}) }));
 vi.mock('./useRemoveHashOnScroll', () => ({ useRemoveHashOnScroll: () => {} }));
 vi.mock('./useChoixChauffageQueryParams', () => ({
   useChoixChauffageQueryParams: () => ({
-    params: { adresse: mocks.address, constructionId: mocks.constructionId },
+    params: {
+      adresse: mocks.address,
+      constructionId: mocks.hasConstructionId ? mocks.constructionId : null,
+      nbLogements: mocks.housingCount,
+      surfaceMoyenne: mocks.averageHousingArea,
+    },
     setParams: mocks.setParams,
   }),
 }));
@@ -42,11 +53,22 @@ vi.mock('./useAddressEligibility', () => ({
     isAddressNotFound: mocks.isAddressMissing,
     isCcrtCovered: false,
     isEligibilityLoading: mocks.isEligibilityLoading,
-    selectedBatEnrBatiment: { adresse: mocks.buildingAddress, batiment_construction_id: mocks.constructionId },
+    selectedBatEnrBatiment: {
+      adresse: mocks.buildingAddress,
+      batiment_construction_id: mocks.hasDifferentBuilding ? 'previous-building' : mocks.constructionId,
+    },
     setGeoAddress: mocks.setGeoAddress,
     shouldSelectBatEnrBatiment: mocks.shouldSelectBuilding,
   }),
 }));
+
+beforeEach(() => {
+  mocks.hasConstructionId = true;
+  mocks.hasDifferentBuilding = false;
+  mocks.housingCount = null;
+  mocks.averageHousingArea = null;
+  mocks.isPrefillAvailable = false;
+});
 
 describe('selected building address correction', () => {
   beforeEach(() => {
@@ -108,12 +130,68 @@ vi.mock('../heatingModeCosts', () => ({
 }));
 vi.mock('@/modules/trpc/client', () => ({
   default: {
-    batEnr: { getSimulationPrefill: { useQuery: () => ({ isLoading: mocks.isPrefillLoading }) } },
+    batEnr: {
+      getSimulationPrefill: {
+        useQuery: (input: unknown, options: unknown) => {
+          mocks.queryPrefill(input, options);
+          return {
+            data: mocks.isPrefillAvailable ? { nbLogements: 24, surfaceMoyenne: 98 } : undefined,
+            isLoading: mocks.isPrefillLoading,
+          };
+        },
+      },
+    },
     useUtils: () => ({
       client: { simulationTracking: { create: { mutate: mocks.simulationCreate }, update: { mutate: mocks.simulationUpdate } } },
     }),
   },
 }));
+
+describe('selected building simulation prefill', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.resolveBuildingAddress.mockResolvedValue(undefined);
+    mocks.address = '14 Rue Lecourbe 75015 Paris';
+    mocks.constructionId = 'building-1';
+    mocks.isAddressMissing = false;
+    mocks.isEligibilityLoading = false;
+    mocks.isPrefillLoading = false;
+    mocks.shouldSelectBuilding = false;
+    mocks.isPrefillAvailable = true;
+  });
+
+  it.each(['shouldSelectBuilding', 'isEligibilityLoading', 'isAddressMissing', 'hasDifferentBuilding'] as const)(
+    'does not apply cached building data while %s is unresolved',
+    (pendingState) => {
+      mocks[pendingState] = true;
+      const { rerender } = renderHook(() => useChoixChauffageResults());
+
+      expect(mocks.queryPrefill).toHaveBeenLastCalledWith({ batiment_construction_id: expect.any(String) }, { enabled: false });
+      expect(mocks.setParams).not.toHaveBeenCalled();
+
+      mocks[pendingState] = false;
+      rerender();
+
+      expect(mocks.queryPrefill).toHaveBeenLastCalledWith({ batiment_construction_id: 'building-1' }, { enabled: true });
+      expect(mocks.setParams).toHaveBeenCalledExactlyOnceWith({ nbLogements: 24, surfaceMoyenne: 98 });
+    }
+  );
+
+  it('prefills a single automatically selected building without requiring a construction id in the URL', () => {
+    mocks.hasConstructionId = false;
+    renderHook(() => useChoixChauffageResults());
+
+    expect(mocks.setParams).toHaveBeenCalledExactlyOnceWith({ nbLogements: 24, surfaceMoyenne: 98 });
+  });
+
+  it('preserves housing count and area already entered by the user or supplied in the URL', () => {
+    mocks.housingCount = 42;
+    mocks.averageHousingArea = 80;
+    renderHook(() => useChoixChauffageResults());
+
+    expect(mocks.setParams).not.toHaveBeenCalled();
+  });
+});
 
 describe('recommended solution tracking', () => {
   beforeEach(() => {
