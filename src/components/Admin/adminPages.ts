@@ -63,6 +63,12 @@ export const adminPages = [
     label: 'Conversion par source',
   },
   {
+    desc: 'Flux des simulations : page d’arrivée → contact proposé → issue',
+    group: 'analytics',
+    href: '/admin/conversion/chaleur-renouvelable',
+    label: 'Conversion — simulateur chaleur renouvelable',
+  },
+  {
     desc: 'Détecter et bannir les IP polluant les stats de conversion',
     group: 'analytics',
     href: '/admin/conversion/abus',

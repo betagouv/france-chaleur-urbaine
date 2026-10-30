@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
@@ -12,8 +13,11 @@ import { getIncompatibleSolutionRows, getModesDeChauffage } from '@/modules/chal
 import { HOT_WATER_PARAMS_SECTION_ID } from '@/modules/chaleur-renouvelable/client/ParamsForm';
 import { buildSimulationSituation } from '@/modules/chaleur-renouvelable/client/simulation-situation';
 import { DEFAULT_SIMULATION_PARAMS } from '@/modules/chaleur-renouvelable/constants';
+import { canProposeHeatNetwork } from '@/modules/chaleur-renouvelable/heat-network-eligibility';
 import { getSimulationPrefillFromBatEnrBatiment } from '@/modules/chaleur-renouvelable/simulation-prefill';
 import { toastErrors } from '@/modules/notification';
+import { useSimulationTracking } from '@/modules/simulation-tracking/client/useSimulationTracking';
+import type { SimulationSnapshot } from '@/modules/simulation-tracking/constants';
 import trpc from '@/modules/trpc/client';
 
 import { getBuildingAddress } from '../building-address';
@@ -38,6 +42,7 @@ export function useChoixChauffageResults() {
     isCcrtCovered,
     eligibiliteReseauChaleur,
     eligibiliteReseauFroid,
+    isAddressNotFound,
     isEligibilityLoading,
     shouldSelectBatEnrBatiment,
     temperatureRef,
@@ -139,11 +144,66 @@ export function useChoixChauffageResults() {
 
   const [recommended, ...otherModes] = modesEnriched;
   const recommendedLabel = recommended?.label;
+  const recommendedId = recommended?.id;
   const addressLabel = geoAddress?.properties.label;
   const isPrefillPending =
     prefill.isLoading ||
     (params.nbLogements === null && prefill.data?.nbLogements !== undefined) ||
     (params.surfaceMoyenne === null && prefill.data?.surfaceMoyenne !== undefined);
+  const isCcrtDemandEligible = isCcrtCovered && effectiveTypeLogement === 'immeuble_chauffage_collectif';
+  const isHeatNetworkEligible = canProposeHeatNetwork({
+    hasAlreadyReceivedHeatNetworkRefusal: situation.hasAlreadyReceivedHeatNetworkRefusal,
+    heatNetworkEligibility: situation.eligibiliteReseauChaleur,
+    radiatorType: situation.typeRadiateur,
+  });
+
+  // First-party simulation tracking from each stable snapshot (address, building and prefill resolved): the hook creates,
+  // updates, or chains a new simulation on an address change. Same readiness guard as the PostHog recommendation event.
+  const simulationTracking = useSimulationTracking();
+  const router = useRouter(); // statically optimized page: the query string is empty until `isReady`
+  const communeCode = geoAddress?.properties.citycode;
+  const simulationSnapshot = useMemo<SimulationSnapshot>(
+    () => ({
+      address: params.adresse ?? null,
+      addressResolved: addressLabel !== undefined,
+      batimentConstructionId: selectedConstructionId ?? null,
+      ccrtDemandAvailable: isCcrtDemandEligible,
+      communeCode: communeCode ?? null,
+      departementCode: codeDepartement || null,
+      heatNetworkAvailable: isHeatNetworkEligible,
+      housingType: effectiveTypeLogement,
+      outdoorSpace: params.espaceExterieur ?? null,
+      radiatorType: params.typeRadiateur ?? null,
+      recommendedSolution: recommendedId ?? null,
+      refusalAlreadyKnown: situation.hasAlreadyReceivedHeatNetworkRefusal,
+    }),
+    [
+      params.adresse,
+      addressLabel,
+      selectedConstructionId,
+      isCcrtDemandEligible,
+      communeCode,
+      codeDepartement,
+      isHeatNetworkEligible,
+      effectiveTypeLogement,
+      params.espaceExterieur,
+      params.typeRadiateur,
+      recommendedId,
+      situation.hasAlreadyReceivedHeatNetworkRefusal,
+    ]
+  );
+  const isSimulationReady =
+    router.isReady &&
+    !isEligibilityLoading &&
+    !isPrefillPending &&
+    !shouldSelectBatEnrBatiment &&
+    !(params.constructionId && selectedConstructionId !== params.constructionId) &&
+    !(params.adresse && addressLabel !== params.adresse && !isAddressNotFound); // an unrecognized address is a result too
+  useEffect(() => {
+    if (isSimulationReady) {
+      simulationTracking.track(simulationSnapshot);
+    }
+  }, [isSimulationReady, simulationSnapshot, simulationTracking]);
 
   // Track the displayed solution, not new object identities produced by asynchronous recalculations.
   useEffect(() => {
@@ -258,7 +318,9 @@ export function useChoixChauffageResults() {
     handleSelectGeoAddress,
     incompatibleSolutionRows,
     isCcrtCovered,
+    isCcrtDemandEligible,
     isEligibilityLoading,
+    isHeatNetworkEligible,
     isParamsOpen,
     modesEnriched,
     openAccordionId,
@@ -268,6 +330,7 @@ export function useChoixChauffageResults() {
     setGeoAddress,
     setIsParamsOpen,
     shouldSelectBatEnrBatiment,
+    simulationId: simulationTracking.simulationId,
     situation,
     urlParams,
   };

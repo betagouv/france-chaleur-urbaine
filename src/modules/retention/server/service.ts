@@ -184,6 +184,8 @@ const applyRule = async (rule: RetentionRule): Promise<number> => {
           contact_last_name: 'Anonymisé',
           contact_structure: null,
           contact_type_other: null,
+          // the admins' follow-up note may name the people called or emailed
+          internal_comment: null,
           // the commercial referent of a trace request is a person too
           payload: sql`payload - 'emailReferentCommercial'`,
           updated_at: new Date(),

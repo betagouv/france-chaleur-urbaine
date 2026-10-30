@@ -6,6 +6,7 @@ import { type ConversionEvents, type DB, type Insertable, kdb, sql } from '@/ser
 import {
   CONVERSION_IP_RETENTION_DAYS,
   type ConversionChannel,
+  type ConversionEventType,
   type ConversionIpDisposition,
   type ConversionSourceConfig,
   type ConversionStatsGranularity,
@@ -270,7 +271,7 @@ async function normalizeInet(value: string): Promise<string> {
  * aucune règle → non exclu. La sous-requête est buildée (colonnes/enum type-checkés) ; seuls `<<=`, `masklen`
  * et `coalesce` (absents de Kysely) restent en SQL brut.
  */
-const mostSpecificRuleExcludes = (ip: Expression<string | null>) => {
+export const mostSpecificRuleExcludes = (ip: Expression<string | null>) => {
   const rule = expressionBuilder<DB, never>()
     .selectFrom('conversion_ip_rules as r')
     .select((eb) => eb('r.disposition', '=', sql.lit<ConversionIpDisposition>('exclude')).as('is_exclude'))
@@ -281,19 +282,32 @@ const mostSpecificRuleExcludes = (ip: Expression<string | null>) => {
 };
 
 /**
- * Réconcilie `conversion_events.excluded` sur les events d'une plage après une modif de règle : recalcule le
- * flag = « couvert par un `exclude` le plus spécifique ». Ne met à jour que les lignes qui basculent (renvoie
- * leur nombre). Gère uniformément ban / keep / suppression. Les events purgés (IP nulle) restent figés.
+ * Tables portant les colonnes anti-abus partagées (`ip`, `user_agent`, `excluded`) : les règles IP et la purge
+ * s'appliquent uniformément aux events de conversion et aux simulations chaleur renouvelable.
  */
-async function reconcileExcludedForRange(trx: typeof kdb, cidr: string): Promise<number> {
-  const shouldExclude = mostSpecificRuleExcludes(expressionBuilder<DB, 'conversion_events'>().ref('conversion_events.ip'));
+const ANTI_ABUSE_TABLES = ['conversion_events', 'simulations_chaleur_renouvelable'] as const;
+type AntiAbuseTable = (typeof ANTI_ABUSE_TABLES)[number];
+
+/**
+ * Réconcilie `excluded` sur les lignes d'une plage après une modif de règle : recalcule le flag = « couvert par
+ * un `exclude` le plus spécifique ». Ne met à jour que les lignes qui basculent (renvoie leur nombre). Gère
+ * uniformément ban / keep / suppression. Les lignes purgées (IP nulle) restent figées.
+ */
+async function reconcileExcludedForTable(trx: typeof kdb, table: AntiAbuseTable, cidr: string): Promise<number> {
+  const shouldExclude = mostSpecificRuleExcludes(expressionBuilder<DB, AntiAbuseTable>().ref('ip'));
   const result = await trx
-    .updateTable('conversion_events')
+    .updateTable(table)
     .set({ excluded: shouldExclude })
     .where((eb) => sql<SqlBool>`${eb.ref('ip')} <<= ${cidr}::inet`)
     .where((eb) => sql<SqlBool>`${eb.ref('excluded')} is distinct from ${shouldExclude}`)
     .executeTakeFirst();
   return Number(result.numUpdatedRows ?? 0);
+}
+
+/** Réconcilie `excluded` sur toutes les tables anti-abus ; renvoie le nombre total de lignes qui ont basculé. */
+async function reconcileExcludedForRange(trx: typeof kdb, cidr: string): Promise<number> {
+  const changedRows = await Promise.all(ANTI_ABUSE_TABLES.map((table) => reconcileExcludedForTable(trx, table, cidr)));
+  return changedRows.reduce((total, count) => total + count, 0);
 }
 
 export type SuspiciousIpRow = {
@@ -302,6 +316,8 @@ export type SuspiciousIpRow = {
   displays: number;
   tests: number;
   demands: number;
+  /** Simulations chaleur renouvelable (page de résultats) : le spam du simulateur n'émet aucun `address_test`. */
+  simulations: number;
   /** tests / affichages (null si aucun affichage). Un ratio élevé (≫ 1) signale du spam d'`address_test`. */
   testPerDisplay: number | null;
   distinctRoutes: number;
@@ -317,10 +333,16 @@ export type SuspiciousIpRow = {
   hasExactRule: boolean;
 };
 
+/** Nature d'une action suivie : les types d'événements de conversion plus les simulations chaleur renouvelable. */
+type TrackedActionKind = ConversionEventType | 'simulation';
+/** Actions comptées pour le seuil `minTests` et le tri : tests d'adresse et simulations, les deux formes de spam. */
+const SUSPICION_KINDS: TrackedActionKind[] = ['address_test', 'simulation'];
+
 /**
- * IP suspectes sur une période : agrégat par IP trié par nb de tests, avec les signaux d'abus
- * (ratio tests/affichages, nb de routes/jours, demandes) et la règle courante. Filtrable par
- * `source` / `route` / `host` (identifier les IP derrière une source pourrie ; passer `minTests: 0`).
+ * IP suspectes sur une période : agrégat par IP des événements de conversion **et** des simulations chaleur
+ * renouvelable, trié par nb de tests + simulations, avec les signaux d'abus (ratio tests/affichages, simulations,
+ * nb de routes/jours, demandes) et la règle courante. Filtrable par `source` / `route` / `host` (identifier les IP
+ * derrière une source pourrie ; passer `minTests: 0`).
  * Query builder (colonnes/enum type-checkés) ; seuls `<<=` et `masklen` (absents de Kysely) restent en SQL brut.
  */
 export async function getSuspiciousIps(params: {
@@ -334,55 +356,68 @@ export async function getSuspiciousIps(params: {
 }): Promise<SuspiciousIpRow[]> {
   const { dateFrom, dateTo, minTests, limit, source, route, host } = params;
 
+  // Les deux tables anti-abus réunies en un flux (ip, kind, route, source, host, created_at) : une IP qui ne fait que
+  // des simulations est détectée comme une IP qui ne fait que des tests.
   const rows = await kdb
-    .selectFrom('conversion_events as ce')
-    .where('ce.ip', 'is not', null)
-    .where('ce.created_at', '>=', dateFrom)
-    .where('ce.created_at', '<=', dateTo)
-    .$if(source !== undefined, (qb) => qb.where('ce.source', '=', source!))
-    .$if(route !== undefined, (qb) => qb.where('ce.route', '=', route!))
-    .$if(host !== undefined, (qb) => qb.where('ce.host', '=', host!))
-    .groupBy('ce.ip')
-    .having((eb) => eb.fn.countAll().filterWhere('ce.type', '=', 'address_test'), '>=', minTests)
+    .with('tracked_actions', (db) =>
+      db
+        .selectFrom('conversion_events')
+        .select((eb) => ['ip', eb.ref('type').$castTo<TrackedActionKind>().as('kind'), 'route', 'source', 'host', 'created_at'])
+        .unionAll(
+          db
+            .selectFrom('simulations_chaleur_renouvelable')
+            .select(['ip', sql.lit<TrackedActionKind>('simulation').as('kind'), 'route', 'source', 'host', 'created_at'])
+        )
+    )
+    .selectFrom('tracked_actions as ta')
+    .where('ta.ip', 'is not', null)
+    .where('ta.created_at', '>=', dateFrom)
+    .where('ta.created_at', '<=', dateTo)
+    .$if(source !== undefined, (qb) => qb.where('ta.source', '=', source!))
+    .$if(route !== undefined, (qb) => qb.where('ta.route', '=', route!))
+    .$if(host !== undefined, (qb) => qb.where('ta.host', '=', host!))
+    .groupBy('ta.ip')
+    .having((eb) => eb.fn.countAll().filterWhere('ta.kind', 'in', SUSPICION_KINDS), '>=', minTests)
     .select((eb) => [
       // Sélection directe de l'inet hôte → rendu nu (1.2.3.4) ; seul un ::text ajouterait un /32.
-      sql<string>`${eb.ref('ce.ip')}`.as('ip'),
-      eb.fn.countAll<number>().as('events'),
-      eb.fn.countAll<number>().filterWhere('ce.type', '=', 'display').as('displays'),
-      eb.fn.countAll<number>().filterWhere('ce.type', '=', 'address_test').as('tests'),
-      eb.fn.countAll<number>().filterWhere('ce.type', '=', 'demand').as('demands'),
-      eb.fn.count<number>('ce.route').distinct().as('distinct_routes'),
+      sql<string>`${eb.ref('ta.ip')}`.as('ip'),
+      eb.fn.countAll<number>().filterWhere('ta.kind', '!=', 'simulation').as('events'),
+      eb.fn.countAll<number>().filterWhere('ta.kind', '=', 'display').as('displays'),
+      eb.fn.countAll<number>().filterWhere('ta.kind', '=', 'address_test').as('tests'),
+      eb.fn.countAll<number>().filterWhere('ta.kind', '=', 'demand').as('demands'),
+      eb.fn.countAll<number>().filterWhere('ta.kind', '=', 'simulation').as('simulations'),
+      eb.fn.count<number>('ta.route').distinct().as('distinct_routes'),
       eb.fn
-        .count<number>(sql`date_trunc('day', ${eb.ref('ce.created_at')})`)
+        .count<number>(sql`date_trunc('day', ${eb.ref('ta.created_at')})`)
         .distinct()
         .as('distinct_days'),
-      eb.fn.min('ce.created_at').as('first_seen'),
-      eb.fn.max('ce.created_at').as('last_seen'),
+      eb.fn.min('ta.created_at').as('first_seen'),
+      eb.fn.max('ta.created_at').as('last_seen'),
       eb
         .selectFrom('conversion_ip_rules as r')
         .select('r.disposition')
-        .where((sub) => sql<SqlBool>`${sub.ref('ce.ip')} <<= ${sub.ref('r.ip')}`)
+        .where((sub) => sql<SqlBool>`${sub.ref('ta.ip')} <<= ${sub.ref('r.ip')}`)
         .orderBy((eb) => sql`masklen(${eb.ref('r.ip')}) desc`)
         .limit(1)
         .as('rule_disposition'),
       eb
         .selectFrom('conversion_ip_rules as r')
         .select('r.reason')
-        .where((sub) => sql<SqlBool>`${sub.ref('ce.ip')} <<= ${sub.ref('r.ip')}`)
+        .where((sub) => sql<SqlBool>`${sub.ref('ta.ip')} <<= ${sub.ref('r.ip')}`)
         .orderBy((eb) => sql`masklen(${eb.ref('r.ip')}) desc`)
         .limit(1)
         .as('rule_reason'),
       eb
         .selectFrom('conversion_ip_rules as r')
         .select((sub) => sql<string>`${sub.ref('r.ip')}::text`.as('ip'))
-        .where((sub) => sql<SqlBool>`${sub.ref('ce.ip')} <<= ${sub.ref('r.ip')}`)
+        .where((sub) => sql<SqlBool>`${sub.ref('ta.ip')} <<= ${sub.ref('r.ip')}`)
         .orderBy((eb) => sql`masklen(${eb.ref('r.ip')}) desc`)
         .limit(1)
         .as('rule_ip'),
       // Règle portant exactement sur l'IP : égalité `inet` (adresse + masklen), insensible au format texte.
-      eb.exists(eb.selectFrom('conversion_ip_rules as r').select('r.ip').whereRef('r.ip', '=', 'ce.ip')).as('has_exact_rule'),
+      eb.exists(eb.selectFrom('conversion_ip_rules as r').select('r.ip').whereRef('r.ip', '=', 'ta.ip')).as('has_exact_rule'),
     ])
-    .orderBy((eb) => eb.fn.countAll().filterWhere('ce.type', '=', 'address_test'), 'desc')
+    .orderBy((eb) => eb.fn.countAll().filterWhere('ta.kind', 'in', SUSPICION_KINDS), 'desc')
     .limit(limit)
     .execute();
 
@@ -400,6 +435,7 @@ export async function getSuspiciousIps(params: {
     ruleDisposition: r.rule_disposition,
     ruleIp: r.rule_ip,
     ruleReason: r.rule_reason,
+    simulations: r.simulations,
     testPerDisplay: r.displays > 0 ? r.tests / r.displays : null,
     tests: r.tests,
   }));
@@ -464,15 +500,26 @@ export async function removeIpRule(rawIp: string) {
 }
 
 /**
- * Purge les données d'anti-abus (IP/UA) des événements plus vieux que `retentionDays`.
+ * Purge les données d'anti-abus (IP/UA) des événements et des simulations plus vieux que `retentionDays`, ainsi
+ * que l'adresse et l'identifiant de bâtiment des simulations (données indirectement identifiantes, gardées le temps du
+ * débogage).
  * `host` est de l'analytics → conservé. Les compteurs restent intacts.
  */
 export async function purgeOldConversionEventIps(retentionDays = CONVERSION_IP_RETENTION_DAYS): Promise<number> {
-  const result = await kdb
-    .updateTable('conversion_events')
-    .set({ ip: null, user_agent: null })
-    .where('ip', 'is not', null)
-    .where('created_at', '<', sql<Date>`now() - ${sql.lit(`${retentionDays} days`)}::interval`)
-    .executeTakeFirst();
-  return Number(result.numUpdatedRows ?? 0);
+  const retentionLimit = sql<Date>`now() - ${sql.lit(`${retentionDays} days`)}::interval`;
+  const [events, simulations] = await Promise.all([
+    kdb
+      .updateTable('conversion_events')
+      .set({ ip: null, user_agent: null })
+      .where('ip', 'is not', null)
+      .where('created_at', '<', retentionLimit)
+      .executeTakeFirst(),
+    kdb
+      .updateTable('simulations_chaleur_renouvelable')
+      .set({ address: null, batiment_construction_id: null, ip: null, user_agent: null })
+      .where('ip', 'is not', null)
+      .where('created_at', '<', retentionLimit)
+      .executeTakeFirst(),
+  ]);
+  return Number(events.numUpdatedRows ?? 0) + Number(simulations.numUpdatedRows ?? 0);
 }

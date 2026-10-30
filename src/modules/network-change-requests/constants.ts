@@ -214,6 +214,13 @@ export const zLinkNetworkChangeRequestInput = z.object({
 });
 export type LinkNetworkChangeRequestInput = z.infer<typeof zLinkNetworkChangeRequestInput>;
 
+/** Follow-up note of the admins on a request (any status); an empty text clears it. */
+export const zUpdateNetworkChangeRequestInternalCommentInput = z.object({
+  id: z.uuid(),
+  internalComment: z.string().trim().max(5000),
+});
+export type UpdateNetworkChangeRequestInternalCommentInput = z.infer<typeof zUpdateNetworkChangeRequestInternalCommentInput>;
+
 /** An admin replaces the uploaded files of a role (a PDF trace, an unreadable file) by a GeoJSON they converted themselves. */
 export const zReplaceNetworkChangeRequestGeometryFileInput = z.object({
   fileId: z.uuid(),

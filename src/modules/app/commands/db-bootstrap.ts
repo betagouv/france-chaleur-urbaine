@@ -127,6 +127,11 @@ export const allDatabaseTables = [
   },
   {
     bundle: 'fcu',
+    description: 'Suivi des simulations du parcours chaleur renouvelable',
+    name: 'simulations_chaleur_renouvelable',
+  },
+  {
+    bundle: 'fcu',
     description: "Emails envoyés pour les demandes d'accompagnement CCRT",
     name: 'ccrt_demand_emails',
   },

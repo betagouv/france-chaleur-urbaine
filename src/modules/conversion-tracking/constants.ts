@@ -68,9 +68,9 @@ export const zGetSuspiciousIpsInput = z.object({
   dateTo: z.coerce.date(),
   /** Filtre : site embarquant (drill iframe). */
   host: z.string().trim().min(1).max(2000).optional(),
-  /** Nombre max d'IP renvoyées (tri par tests décroissant). */
+  /** Nombre max d'IP renvoyées (tri par tests + simulations décroissant). */
   limit: z.number().int().min(1).max(500).default(50),
-  /** Seuil de tests (`address_test`) au-delà duquel une IP est listée. `0` (source ciblée) = toutes les IP. */
+  /** Seuil de tests (`address_test`) + simulations chaleur renouvelable au-delà duquel une IP est listée. `0` (source ciblée) = toutes les IP. */
   minTests: z.number().int().min(0).default(50),
   /** Filtre : pattern de route Next (ex. `/villes/[ville]`). */
   route: z.string().trim().min(1).max(2000).optional(),

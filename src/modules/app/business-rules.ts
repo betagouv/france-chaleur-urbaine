@@ -46,7 +46,8 @@ export const businessRules = {
     value: 1000,
   },
   conversionIpRetentionDays: {
-    description: 'Durée de conservation des IP et user-agents des événements de conversion (anti-abus) avant effacement.',
+    description:
+      "Durée de conservation des IP et user-agents des événements de conversion et des simulations chaleur renouvelable (anti-abus), ainsi que de l'adresse et de l'identifiant de bÃ¢timent des simulations, avant effacement.",
     display: '90 jours',
     label: 'Rétention des IP de conversion',
     value: 90,
@@ -128,6 +129,20 @@ export const businessRules = {
     display: '9 m²',
     label: 'Chaleur renouvelable : surface minimale par logement',
     value: 9,
+  },
+  fcrSimulationMaxRevisions: {
+    description:
+      "Nombre maximal de modifications de paramètres enregistrées sur une simulation chaleur renouvelable (anti-abus) ; au-delà, l'état courant n'est plus mis à jour.",
+    display: '30 modifications',
+    label: 'Révisions maximales d’une simulation',
+    value: 30,
+  },
+  fcrSimulationUpdateWindowHours: {
+    description:
+      "Délai après la création d'une simulation chaleur renouvelable pendant lequel ses paramètres et son issue peuvent encore être mis à jour.",
+    display: '24 heures',
+    label: 'Fenêtre de mise à jour d’une simulation',
+    value: 24,
   },
   fcrSolarThermalMinCoveragePercent: {
     description:

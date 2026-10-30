@@ -33,6 +33,7 @@ import type {
 import type { Permission } from '@/modules/permissions/types';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
 import type { EcoreseauLabel } from '@/modules/reseaux/types';
+import type { SimulationOutcome } from '@/modules/simulation-tracking/constants';
 import type { Entreprise, StructureType, UserPreferences, UserTagColor } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
@@ -638,6 +639,8 @@ export interface NetworkChangeRequests {
   contact_type_other: string | null;
   created_at: Generated<Timestamp>;
   id: Generated<string>;
+  /** follow-up note written by the admins, never shown to the submitter */
+  internal_comment: string | null;
   kind: NetworkChangeRequestKind;
   network_id: number | null;
   network_label: string;
@@ -938,6 +941,36 @@ export interface RessourcesGeothermalesNappesTiles {
   z: Int8;
 }
 
+export interface SimulationsChaleurRenouvelable {
+  address: string | null;
+  address_resolved: Generated<boolean>;
+  batiment_construction_id: string | null;
+  ccrt_demand_available: boolean;
+  commune_code: string | null;
+  created_at: Generated<Timestamp>;
+  demand_id: string | null;
+  departement_code: string | null;
+  excluded: Generated<boolean>;
+  heat_network_available: boolean;
+  host: string | null;
+  housing_type: TypeLogement;
+  id: string;
+  ip: string | null;
+  outcome: SimulationOutcome | null;
+  outcome_at: Timestamp | null;
+  outdoor_space: EspaceExterieur | null;
+  page: string;
+  previous_simulation_id: string | null;
+  radiator_type: TypeRadiateur | null;
+  recommended_solution: string | null;
+  refusal_already_known: Generated<boolean>;
+  revisions: Generated<number>;
+  route: string;
+  source: string | null;
+  updated_at: Generated<Timestamp>;
+  user_agent: string | null;
+}
+
 export interface TilesMetadata {
   source_id: string;
   last_modified_at: Generated<Timestamp>;
@@ -1225,6 +1258,7 @@ export interface DB {
   reseaux_de_froid: ReseauxDeFroid;
   reseaux_de_froid_tiles: ReseauxDeFroidTiles;
   ressources_geothermales_nappes_tiles: RessourcesGeothermalesNappesTiles;
+  simulations_chaleur_renouvelable: SimulationsChaleurRenouvelable;
   tiles_metadata: TilesMetadata;
   user_permissions: UserPermissions;
   user_tag_assignments: UserTagAssignments;

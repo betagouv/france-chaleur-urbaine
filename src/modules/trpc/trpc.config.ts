@@ -21,6 +21,7 @@ import { permissionsRouter } from '@/modules/permissions/server/trpc-routes';
 import { proEligibilityTestsRouter } from '@/modules/pro-eligibility-tests/server/trpc-routes';
 import { reseauxRouter } from '@/modules/reseaux/server/trpc-routes';
 import { retentionRouter } from '@/modules/retention/server/trpc-routes';
+import { simulationTrackingRouter } from '@/modules/simulation-tracking/server/trpc-routes';
 import { tilesRouter } from '@/modules/tiles/server/trpc-routes';
 import { usersRouter } from '@/modules/users/server/trpc-routes';
 
@@ -75,6 +76,7 @@ export const appRouter = router({
   proEligibilityTests: proEligibilityTestsRouter,
   reseaux: reseauxRouter,
   retention: retentionRouter,
+  simulationTracking: simulationTrackingRouter,
   tiles: tilesRouter,
   users: usersRouter,
 });

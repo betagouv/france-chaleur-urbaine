@@ -54,7 +54,7 @@ export const retentionRuleDefinitions: Record<RetentionRule, RetentionRuleDefini
   },
   processed_network_change_requests: {
     action:
-      'Anonymisation du déposant (identité, coordonnées, structure) et suppression du contenu des fichiers joints ; valeurs proposées, réseau et décision conservés',
+      'Anonymisation du déposant (identité, coordonnées, structure), effacement du commentaire interne et suppression du contenu des fichiers joints ; valeurs proposées, réseau et décision conservés',
     description: `Demandes de modification de réseau traitées depuis plus de ${businessRules.retentionNetworkChangeRequestsYears.display}`,
     ruleId: 'retentionNetworkChangeRequestsYears',
     title: 'Demandes de modification de réseau traitées',
@@ -63,6 +63,7 @@ export const retentionRuleDefinitions: Record<RetentionRule, RetentionRuleDefini
       { after: 'vide', field: 'Prénom, structure, fonction, précision du type de déposant' },
       { after: 'anonymise-<identifiant>@anonymise.invalid', field: 'Email' },
       { after: 'supprimé (nom, taille et type conservés)', field: 'Contenu des fichiers joints' },
+      { after: 'vide', field: 'Commentaire interne' },
       { after: 'conservés', field: 'Type de demande, réseau, valeurs proposées, statut, commentaire et date de décision' },
     ],
   },

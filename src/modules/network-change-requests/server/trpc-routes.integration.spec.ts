@@ -220,6 +220,7 @@ describe('networkChangeRequests', () => {
           expect(await caller.networkChangeRequests.admin.countPending()).toStrictEqual(1);
           await expect(caller.networkChangeRequests.admin.getReviewContext({ id })).resolves.toBeDefined();
           await expect(caller.networkChangeRequests.admin.retryGeometryConversion({ id })).rejects.toMatchObject({ code: 'BAD_REQUEST' }); // no geo file
+          await expect(caller.networkChangeRequests.admin.updateInternalComment({ id, internalComment: 'ok' })).resolves.toBeUndefined();
           await expect(caller.networkChangeRequests.admin.accept({ id, included: [] })).resolves.toBeUndefined();
           await expect(caller.networkChangeRequests.admin.accept({ id })).rejects.toMatchObject({ code: 'BAD_REQUEST' }); // already rejected
         } else {
@@ -227,9 +228,34 @@ describe('networkChangeRequests', () => {
           await expect(caller.networkChangeRequests.admin.countPending()).rejects.toMatchObject(forbiddenError);
           await expect(caller.networkChangeRequests.admin.getReviewContext({ id })).rejects.toMatchObject(forbiddenError);
           await expect(caller.networkChangeRequests.admin.retryGeometryConversion({ id })).rejects.toMatchObject(forbiddenError);
+          await expect(caller.networkChangeRequests.admin.updateInternalComment({ id, internalComment: 'ok' })).rejects.toMatchObject(
+            forbiddenError
+          );
           await expect(caller.networkChangeRequests.admin.accept({ id, included: [] })).rejects.toMatchObject(forbiddenError);
           await expect(caller.networkChangeRequests.admin.accept({ id })).rejects.toMatchObject(forbiddenError);
         }
+      });
+    });
+  });
+
+  describe('admin.updateInternalComment', () => {
+    it('saves the follow-up note whatever the status, clears it when emptied and rejects an unknown request', async () => {
+      const { id } = await createTestCaller(null).networkChangeRequests.create(ficheInput);
+      const caller = createTestCaller(testUsers.admin);
+
+      await caller.networkChangeRequests.admin.updateInternalComment({ id, internalComment: '  Rappeler la collectivité  ' });
+      expect((await caller.networkChangeRequests.admin.list())[0].internal_comment).toStrictEqual('Rappeler la collectivité');
+
+      // the note stays editable once the request is decided
+      await caller.networkChangeRequests.admin.accept({ id, included: [] });
+      await caller.networkChangeRequests.admin.updateInternalComment({ id, internalComment: 'Doublon de la demande précédente' });
+      expect((await caller.networkChangeRequests.admin.list())[0].internal_comment).toStrictEqual('Doublon de la demande précédente');
+
+      await caller.networkChangeRequests.admin.updateInternalComment({ id, internalComment: '   ' });
+      expect((await caller.networkChangeRequests.admin.list())[0].internal_comment).toBeNull();
+
+      await expect(caller.networkChangeRequests.admin.updateInternalComment({ id: uuid(99), internalComment: 'x' })).rejects.toMatchObject({
+        code: 'NOT_FOUND',
       });
     });
   });

@@ -116,6 +116,26 @@ Le formulaire public d'accompagnement exige deux conditions : le bâtiment est u
 
 Si le bâtiment n'est pas un immeuble au chauffage collectif ou si aucun compte CCRT actif ne dispose d'une permission territoriale correspondante, aucun formulaire CCRT n'est affiché et aucune demande dédiée n'est créée par le parcours public. L'usager est orienté vers l'**Espace Conseil France Rénov'** de sa commune quand le réseau de chaleur n'est pas éligible, ou quand il indique avoir déjà reçu un refus ou une réponse négative.
 
+## Le suivi des simulations
+
+Chaque adresse testée sur la page de résultats est une **simulation** suivie côté serveur, sans cookie ni consentement : l'arrivée sur la page en crée une, un changement de bâtiment (ou d'adresse quand aucun bâtiment n'est connu) en crée une nouvelle reliée à la précédente, et aucun identifiant n'est conservé dans le navigateur (un rechargement ou un lien partagé compte une nouvelle simulation). La simulation enregistre d'où l'usager vient (page d'accueil, landing chaleur renouvelable, arrivée directe, email de refus de raccordement, ou l'intégration iframe si l'URL porte une source), ses paramètres (type de logement, radiateurs, espace extérieur, adresse, bâtiment, commune, département), ce qui lui a été proposé (réseau de chaleur, accompagnement CCRT, solution recommandée) et son **issue** : demande de raccordement, demande d'accompagnement CCRT ou clic «&nbsp;Prendre rendez-vous avec un·e conseiller·ère&nbsp;» France Rénov'. Une demande n'est comptée qu'une fois créée par le serveur, et la simulation conserve l'identifiant de la demande créée ; une demande de raccordement dédoublonnée ne compte pas. Une adresse que la Base Adresse Nationale ne reconnaît pas (voie sans numéro, adresse introuvable) est tracée comme une simulation «&nbsp;adresse non reconnue&nbsp;», sans bâtiment ni éligibilité. Modifier les autres paramètres met la simulation à jour (au plus <Rule id="fcrSimulationMaxRevisions" />, pendant <Rule id="fcrSimulationUpdateWindowHours" /> après la création) : c'est l'état courant qui est conservé.
+
+<Mermaid
+  chart={`flowchart LR
+    accueil["Page d'accueil"] --> simu
+    landing["Landing chaleur renouvelable"] --> simu
+    direct["Arrivée directe / email de refus"] --> simu["Simulation : réseau proposé ? accompagnement proposé ?"]:::db
+    simu --> rc["Demande réseau de chaleur"]:::db
+    simu --> ccrt["Demande CCRT"]:::db
+    simu --> fr["Orientation France Rénov'"]
+    simu --> rien["Sans suite"]
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616`}
+/>
+
+L'écran [Conversion — simulateur chaleur renouvelable](/admin/conversion/chaleur-renouvelable) présente ce flux (page d'arrivée → contact proposé → issue, chaque lien portant sa part de la case de départ) et quatre indicateurs : simulations, taux de demande de raccordement rapporté aux simulations où le réseau était proposé, taux de demande d'accompagnement rapporté à celles où il était proposé, orientations France Rénov'. Il se filtre par période, type de logement, radiateurs, espace extérieur et département. Le bouton «&nbsp;Comprendre les étapes&nbsp;» ouvre la liste des valeurs possibles de chaque colonne (page d'arrivée, contact proposé, issue) avec leur signification et la lecture des couleurs. Les affichages des pages restent dans [Conversion par source](/admin/conversion).
+
+**Vie privée** : l'adresse et l'identifiant du bâtiment sont des données indirectement identifiantes ; ils ne servent qu'au débogage d'une simulation par un admin et sont **effacés après <Rule id="conversionIpRetentionDays" />**, en même temps que l'IP et le navigateur (anti-abus). Les robots sont ignorés et les règles d'IP de [Conversion — contrôle des abus](/admin/conversion/abus) s'appliquent aussi aux simulations.
+
 ## Mesure du parcours public
 
 La première saisie ou le premier collage dans le champ d’adresse de la page d’accueil déclenche `fcr_landing:address_typed`, une seule fois pendant cet affichage de la page, sans transmettre le texte saisi. L’événement `fcr_results:recommended_solution_displayed` attend le chargement de l’adresse, la sélection du bâtiment et le chargement des données de préremplissage. Les recalculs qui conservent la même adresse, le même bâtiment et la même recommandation ne le renvoient pas. Un changement de recommandation ou de bâtiment peut produire un nouvel événement. À la soumission, `fcr_contact:form_submitted` contient la propriété `destinataire` : `rcu` pour une demande de raccordement au réseau de chaleur, `fcr` pour une demande d’accompagnement chaleur renouvelable, y compris après un refus de raccordement.

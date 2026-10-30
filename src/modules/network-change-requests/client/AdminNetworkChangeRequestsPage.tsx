@@ -57,15 +57,15 @@ export default function AdminNetworkChangeRequestsPage() {
       {
         accessorFn: (row) => networkChangeRequestKindLabels[row.kind],
         filterType: 'Facets',
+        flex: 1,
         header: 'Demande',
         id: 'kind',
-        width: '240px',
       },
       {
         accessorKey: 'network_label',
         cell: ({ row }) => <span className="font-medium">{row.original.network_label}</span>,
+        flex: 1,
         header: 'Réseau',
-        width: '240px',
       },
       {
         accessorFn: (row) =>
@@ -88,18 +88,9 @@ export default function AdminNetworkChangeRequestsPage() {
           </div>
         ),
         enableSorting: false,
+        flex: 1,
         header: 'Contact',
         id: 'Contact',
-        width: '240px',
-      },
-      {
-        accessorFn: (row) => row.files.length,
-        align: 'center',
-        cellType: 'Number',
-        enableGlobalFilter: false,
-        header: 'Fichiers',
-        id: 'Fichiers',
-        width: '90px',
       },
       {
         accessorFn: (row) => networkChangeRequestStatusLabels[row.status],
@@ -108,6 +99,15 @@ export default function AdminNetworkChangeRequestsPage() {
         header: 'Statut',
         id: 'status',
         width: '110px',
+      },
+      {
+        accessorKey: 'internal_comment',
+        cell: ({ row }) => (
+          <span className="line-clamp-3 whitespace-pre-line wrap-break-word text-sm">{row.original.internal_comment}</span>
+        ),
+        enableSorting: false,
+        flex: 1,
+        header: 'Commentaire interne',
       },
       {
         cell: ({ row }) => (
@@ -129,7 +129,7 @@ export default function AdminNetworkChangeRequestsPage() {
       title="Demandes de modification de réseau"
       description="Traitement des demandes déposées par les collectivités et exploitants"
       mode="authenticated"
-      layout="center"
+      layout="wide"
     >
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <QuickFilterPresets
@@ -149,7 +149,6 @@ export default function AdminNetworkChangeRequestsPage() {
         loading={isLoading}
         initialSortingState={[{ desc: true, id: 'created_at' }]}
         columnFilters={columnFilters}
-        fluid
         controlsLayout="block"
         padding="sm"
         loadingEmptyMessage="Aucune demande de modification de réseau"

@@ -27,6 +27,8 @@ import type { DemandSubmissionResult } from '@/modules/demands/constants';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
+import { useRecordSimulationOutcome } from '@/modules/simulation-tracking/client/useSimulationTracking';
+import type { SimulationOutcomeDeclaration } from '@/modules/simulation-tracking/constants';
 import trpc from '@/modules/trpc/client';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -192,6 +194,8 @@ type DemandFCRFormProps = {
   isHeatNetworkEligible: boolean;
   selectedRecipientId: ContactRecipientId;
   onSelectedRecipientChange: (recipientId: ContactRecipientId) => void;
+  /** Current simulation: a created demand (or the France Rénov' click) is recorded as its outcome. */
+  simulationId: string;
   topSolution: string;
 };
 
@@ -206,10 +210,11 @@ export default function DemandFCRForm({
   isHeatNetworkEligible,
   selectedRecipientId,
   onSelectedRecipientChange,
+  simulationId,
   topSolution,
 }: DemandFCRFormProps) {
   if (!isHeatNetworkEligible && !isCcrtDemandEligible) {
-    return <FranceRenovAdvisorCallout />;
+    return <FranceRenovAdvisorCallout simulationId={simulationId} />;
   }
 
   return (
@@ -222,6 +227,7 @@ export default function DemandFCRForm({
       isHeatNetworkEligible={isHeatNetworkEligible}
       selectedRecipientId={selectedRecipientId}
       onSelectedRecipientChange={onSelectedRecipientChange}
+      simulationId={simulationId}
       topSolution={topSolution}
     />
   );
@@ -240,9 +246,11 @@ function HeatNetworkDemandForm({
   isHeatNetworkEligible,
   selectedRecipientId,
   onSelectedRecipientChange,
+  simulationId,
   topSolution,
 }: HeatNetworkDemandFormProps) {
   const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
+  const recordSimulationOutcome = useRecordSimulationOutcome();
   const [isCcrtUnavailable, setIsCcrtUnavailable] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
   const [refusalPeriod, setRefusalPeriod] = useState('');
@@ -346,6 +354,18 @@ function HeatNetworkDemandForm({
       return;
     }
 
+    // Outcome of the simulation, only for a demand actually created (a deduplicated classic demand counts for nothing).
+    const simulationOutcome: SimulationOutcomeDeclaration | null = result.demandSubmissionResult
+      ? result.demandSubmissionResult.isExisting
+        ? null
+        : { demandId: result.demandSubmissionResult.id, outcome: 'heat_network_demand' }
+      : result.id
+        ? { demandId: result.id, outcome: 'ccrt_demand' }
+        : null;
+    if (simulationOutcome) {
+      recordSimulationOutcome(simulationId, simulationOutcome);
+    }
+
     setSubmissionResult(
       result.demandSubmissionResult ?? {
         address: params.adresse ?? '',
@@ -402,7 +422,7 @@ function HeatNetworkDemandForm({
       </p>
       {isHeatNetworkEligible && <ContactRecipientSelector selectedRecipientId={selectedRecipientId} onSelect={handleSelectRecipient} />}
       {shouldShowFranceRenovAdvisor ? (
-        <FranceRenovAdvisorCallout variant="inline" />
+        <FranceRenovAdvisorCallout simulationId={simulationId} variant="inline" />
       ) : (
         <>
           <div className="mb-4 flex items-center gap-3 border-l-4 border-[#F6C23E] bg-[#FFEBA3] px-4 py-3">
