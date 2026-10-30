@@ -5,7 +5,7 @@ import { createUserEvent } from '@/modules/events/server/service';
 import { defaultUserPreferences } from '@/modules/users/constants';
 import { getUserPreferences } from '@/modules/users/server/service';
 import { serverConfig } from '@/server/config';
-import { kdb } from '@/server/db/kysely';
+import { kdb, sql } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { cleanDatabase, seedCommune, seedDemandeChaleurRenouvelable, seedTableUser } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
@@ -711,6 +711,40 @@ describe('CCRT building corrections', () => {
       queryMode: new URL(corrected.simulation_url, 'https://test.local').searchParams.get('modeEauChaudeSanitaire'),
     }).toStrictEqual({ mode: null, queryMode: 'nonRenseigne' });
     expect(postFetchJSON).not.toHaveBeenCalled();
+  });
+
+  it('preserves territorial access after correcting a building with an arrondissement address', async () => {
+    const demand = await seedWorkspace();
+    await kdb
+      .updateTable('ign_communes')
+      .set({ geom: sql`ST_Multi(ST_Buffer(ST_Transform(ST_SetSRID(ST_MakePoint(5.37, 43.3), 4326), 2154), 100))` })
+      .where('insee_com', '=', '13055')
+      .execute();
+    vi.mocked(fetchJSON).mockResolvedValue({
+      features: [{ geometry: { coordinates: [5.37, 43.3] }, properties: { city: 'MARSEILLE', citycode: '13201', id: '13201_test' } }],
+    });
+
+    await createTestCaller(testUsers.alec).batEnr.ccrt.updateBuilding({
+      demandId: demand.id,
+      updatedAt: demand.updated_at.toISOString(),
+      values: { ...zCcrtBuilding.parse(demand), average_residents: 2.5 },
+    });
+
+    const territory = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select(['commune_code', 'departement_code', 'epci_code', 'ept_code', 'region_code'])
+      .where('id', '=', demand.id)
+      .executeTakeFirstOrThrow();
+    expect(territory).toStrictEqual({
+      commune_code: '13055',
+      departement_code: '13',
+      epci_code: 'EPCI-13',
+      ept_code: null,
+      region_code: '93',
+    });
+    expect(
+      (await createTestCaller(testUsers.alec).batEnr.ccrt.listDemandesChaleurRenouvelable()).items.map((item) => item.id)
+    ).toStrictEqual([demand.id]);
   });
 
   it('recomputes a coherent result URL/ranking, audits corrections and rejects a stale editor', async () => {

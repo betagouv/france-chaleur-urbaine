@@ -543,7 +543,7 @@ export const getAddressEligibilityContext = async (input: AddressEligibilityCont
   const altitudeCoordinates = batEnrAltitudeCoordinates ?? networkEligibilityCoordinates;
   const [altitudeAtCoordinates, isCcrtCovered] = await Promise.all([
     getAltitudeByCoordinates(altitudeCoordinates),
-    getCcrtTerritory(input.cityCode, infos?.departement_id ?? null).then(hasCcrtTerritoryCoverage),
+    getCcrtTerritory(input.cityCode, infos?.departement_id ?? null, { lat: input.lat, lon: input.lon }).then(hasCcrtTerritoryCoverage),
   ]);
   const altitude = altitudeAtCoordinates ?? infos?.altitude_moyenne ?? null;
 
@@ -669,7 +669,11 @@ const createCcrtDemand = async (input: DemandeChaleurRenouvelable) => {
   }
 
   const departmentCode = (await getDemandeChaleurRenouvelableDepartmentCode(input)) ?? null;
-  const territory = await getCcrtTerritory(input.geoAddress?.cityCode ?? null, departmentCode);
+  const territory = await getCcrtTerritory(
+    input.geoAddress?.cityCode ?? null,
+    departmentCode,
+    input.geoAddress ? { lat: input.geoAddress.coordinates[1], lon: input.geoAddress.coordinates[0] } : undefined
+  );
   if (!(await hasCcrtTerritoryCoverage(territory))) {
     return null;
   }

@@ -70,7 +70,10 @@ export const updateCcrtBuilding = async (ctx: Context, input: z.infer<typeof zCc
       query.set(key, String(value));
     }
   });
-  const territory = await getCcrtTerritory(address.properties.citycode, context.codeDepartement || demand.departement_code);
+  const territory = await getCcrtTerritory(address.properties.citycode, context.codeDepartement || demand.departement_code, {
+    lat: address.geometry.coordinates[1],
+    lon: address.geometry.coordinates[0],
+  });
   const result = await kdb.transaction().execute(async (transaction) => {
     const previousValues = zCcrtBuilding.parse(demand);
     const changes = Object.fromEntries(
