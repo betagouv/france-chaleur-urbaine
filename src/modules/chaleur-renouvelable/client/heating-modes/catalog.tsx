@@ -90,12 +90,7 @@ export const modesDeChauffage = {
       usage: 'heatingAndHotWater',
     },
     {
-      avantages: [
-        'Faibles émissions de CO₂',
-        'Coût de la chaleur compétitif',
-        'Possibilité de couvrir les besoins en froid si associée à des ventilo-convecteurs',
-        'Aucune unité extérieure visible',
-      ],
+      avantages: ['Faibles émissions de CO₂', 'Coût de la chaleur compétitif', 'Aucune unité extérieure visible'],
       description: (
         <>
           Votre bâtiment est <strong>situé en zone favorable à la géothermie</strong>.<br /> La pompe à chaleur géothermique capte la

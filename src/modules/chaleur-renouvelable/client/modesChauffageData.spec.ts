@@ -1071,7 +1071,7 @@ describe('modesDeChauffage', () => {
     ]);
   });
 
-  it('keeps catalog base cooling advantages scoped to geothermal collective heat pump', () => {
+  it('keeps cooling advantages out of the static catalog', () => {
     const coolingCatalogAdvantages = TYPE_LOGEMENT_VALUES.flatMap((typeLogement) =>
       modesDeChauffage[typeLogement]
         .filter((modeDeChauffage) => modeDeChauffage.avantages.includes(COOLING_POSSIBLE_ADVANTAGE))
@@ -1083,26 +1083,21 @@ describe('modesDeChauffage', () => {
         }))
     );
 
-    expect(coolingCatalogAdvantages).toStrictEqual([
-      {
-        id: 'collective-geothermal-heat-pump',
-        label: 'PAC géothermique',
-        typeLogement: 'immeuble_chauffage_collectif',
-        usage: 'heatingAndHotWater',
-      },
-    ]);
+    expect(coolingCatalogAdvantages).toStrictEqual([]);
   });
 
-  it('adds cooling advantage when a heating mode enables cooling', () => {
+  it.each(['PAC air-eau collective', 'PAC géothermique'])('adds cooling advantage exactly once for %s', (label) => {
     const heatingMode = getResolvedMode(
       'immeuble_chauffage_collectif',
-      'PAC air-eau collective',
+      label,
       'heatingAndHotWater',
       createSituation({ modeEauChaudeSanitaire: 'Collectif' })
     );
 
     expect(heatingMode.rafraichissementPossible).toStrictEqual(true);
-    expect(heatingMode.avantages.includes(COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual(true);
+    expect(heatingMode.avantages.filter((advantage) => advantage === COOLING_POSSIBLE_ADVANTAGE)).toStrictEqual([
+      COOLING_POSSIBLE_ADVANTAGE,
+    ]);
   });
 
   it('uses the reviewed house geothermal ranking and advantages', () => {
