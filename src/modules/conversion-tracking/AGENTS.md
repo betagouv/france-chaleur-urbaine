@@ -18,6 +18,8 @@ conversion-tracking/
 │   ├── ConversionStatsPage.tsx     # écran admin « conversion par source » (/admin/conversion) + lien anti-abus
 │   └── ConversionAbusePage.tsx     # écran admin « Contrôle des abus » (/admin/conversion/abus)
 └── server/
+    ├── request-context.ts # getTrackingRequestContext(ctx) : IP validée, user-agent, détection de bot — partagé avec
+    │                      # les routes publiques du module `simulation-tracking`
     ├── service.ts        # logique métier (insert event, CRUD sources, agrégat stats, purge IP, anti-abus IP)
     └── trpc-routes.ts    # routeur `conversionTracking`
 ```
@@ -64,6 +66,12 @@ conversion-tracking/
   (id erroné, intégration non enregistrée). Posé par `getStats`, signalé par un badge dans `/admin/conversion`.
 - **Ne fait pas** : pas de tracking client tiers (PostHog/Matomo restent dans `analytics` ; le
   `ContactFormContext` de `useContactFormFCU` ne sert plus qu'à eux).
+- **Primitives partagées** avec le module `simulation-tracking` (table
+  `simulations_chaleur_renouvelable`, mêmes colonnes `ip` / `user_agent` / `excluded`) : `getTrackingRequestContext`,
+  `mostSpecificRuleExcludes` (exporté), la réconciliation des règles IP et la purge s'appliquent aux deux tables
+  (`ANTI_ABUSE_TABLES` dans `service.ts`). `getSuspiciousIps` compte aussi les simulations par IP (colonne
+  `simulations`, seuil `minTests` = tests + simulations : un seul écran anti-abus) ; elles ne sont **pas** comptées
+  dans `getStats`, leur écran est `/admin/conversion/chaleur-renouvelable`.
 - `ip` / `user_agent` = **anti-abus uniquement**, purgés (~90 j) par cron. `host` = analytics **retenu**. Base
   légale : intérêt légitime. Les IP ne sont exposées **que** dans l'écran anti-abus admin (`/admin/conversion/abus`),
   avec un lien d'investigation externe (ipinfo.io — le serveur n'appelle aucun tiers ; l'admin ouvre).
@@ -73,7 +81,7 @@ conversion-tracking/
   (un `keep` /32 gagne sur un `exclude` /24). Toute modif de règle **réconcilie** `excluded` sur la plage
   (`reconcileExcludedForRange` : nettoie les stats **et** fige l'exclusion avant la purge des IP) ; `recordEvent`
   repose le flag à l'insert (règle « collante »), `getStats` ne lit que `excluded = false`. Matching par `<<=`
-  (inclusion inet, cross-famille v4/v6 = `false`). Détection : `getSuspiciousIps` (ratio tests/affichages,
+  (inclusion inet, cross-famille v4/v6 = `false`). Détection : `getSuspiciousIps` (ratio tests/affichages, simulations,
   routes, jours ; filtrable `source`/`route`/`host` pour remonter les IP d'une source pourrie).
 
 ## Routes tRPC (`conversionTracking`)
@@ -82,7 +90,7 @@ conversion-tracking/
 |---|---|---|---|
 | `recordEvent` | mutation | public (rate-limité 60/min) | Enregistre un event (`source?`, `route`, `page`, `host?`, `eligible?`). IP/UA ajoutés serveur ; **bots ignorés** (`isbot` sur l'UA, drop silencieux — fiabilise les affichages). |
 | `getStats` | query | admin | Funnel niveau 1 (`source ?? route`) × période (+ drills `groupByPage`/`groupByHost`, filtres `source`/`channel`). Lignes à zéro incluses. **Exclut `excluded = true`.** |
-| `getSuspiciousIps` | query | admin | IP suspectes de la période (≥ `minTests` tests), triées par volume, avec signaux d'abus + règle courante. Filtres `source`/`route`/`host` (`minTests: 0` → toutes les IP du périmètre). |
+| `getSuspiciousIps` | query | admin | IP suspectes de la période (≥ `minTests` tests + simulations chaleur renouvelable), triées par volume, avec signaux d'abus + règle courante. Filtres `source`/`route`/`host` (`minTests: 0` → toutes les IP du périmètre). |
 | `ipRules.list` | query | admin | Règles IP/CIDR (`exclude`/`keep`) + motif + e-mail de l'admin auteur. |
 | `ipRules.upsert` | mutation | admin | Crée/met à jour une règle (`ip`, `disposition`, `reason`) puis réconcilie `excluded` sur la plage. |
 | `ipRules.remove` | mutation | admin | Supprime la règle d'une IP/CIDR puis réconcilie `excluded` (events non couverts par une autre règle). |
@@ -112,7 +120,7 @@ Chaque mutation `sources.*` émet un event d'audit `conversion_source_created` /
 
 - `@/server/db/kysely` (kdb, sql), `@/modules/trpc/server` (route/adminRoute/router),
   `@/modules/events` (audit `conversion_source_*`).
-- Cron `purgeOldConversionEventIps` enregistré dans `src/server/cron/cron.ts`.
+- Cron `purgeOldConversionEventIps` enregistré dans `src/server/cron/cron.ts` (purge aussi `ip` / `user_agent` / `address` / `batiment_construction_id` des simulations chaleur renouvelable).
 
 ## Usage
 

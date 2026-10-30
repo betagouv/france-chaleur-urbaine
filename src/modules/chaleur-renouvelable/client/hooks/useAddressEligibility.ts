@@ -14,6 +14,8 @@ type EligibilityState = {
   batEnr: BatEnrInfo;
   batEnrBatiments: BatEnrBatiment[];
   selectedBatEnrBatiment?: BatEnrBatiment;
+  /** The BAN returned no house number for the typed address: the results are computed without any address context. */
+  isAddressNotFound: boolean;
   codeDepartement: string;
   isCcrtCovered: boolean;
   temperatureRef: number | null;
@@ -30,6 +32,7 @@ const emptyState: EligibilityState = {
   eligibiliteReseauChaleur: null,
   eligibiliteReseauFroid: null,
   geoAddress: undefined,
+  isAddressNotFound: false,
   isCcrtCovered: false,
   selectedBatEnrBatiment: undefined,
   shouldSelectBatEnrBatiment: false,
@@ -78,6 +81,7 @@ export function useAddressEligibility(
           eligibiliteReseauChaleur: addressEligibilityContext.eligibiliteReseauChaleur,
           eligibiliteReseauFroid: addressEligibilityContext.eligibiliteReseauFroid,
           geoAddress,
+          isAddressNotFound: false,
           isCcrtCovered: addressEligibilityContext.isCcrtCovered,
           selectedBatEnrBatiment: addressEligibilityContext.selectedBatEnrBatiment,
           shouldSelectBatEnrBatiment: addressEligibilityContext.shouldSelectBatEnrBatiment,
@@ -105,14 +109,14 @@ export function useAddressEligibility(
       const geoAddress = getBANAddressFeatureByLabel(features, adresseToTest);
 
       if (!geoAddress) {
-        resetEligibility();
+        setState({ ...emptyState, isAddressNotFound: true });
         onAddressNotFound?.();
         return;
       }
 
       await computeEligibilityFromSuggestion(geoAddress, batimentConstructionId);
     }),
-    [computeEligibilityFromSuggestion, onAddressNotFound, resetEligibility]
+    [computeEligibilityFromSuggestion, onAddressNotFound]
   );
 
   useEffect(() => {

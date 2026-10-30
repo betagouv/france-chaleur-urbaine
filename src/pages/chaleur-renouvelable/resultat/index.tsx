@@ -1,6 +1,5 @@
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
 import dynamic from 'next/dynamic';
-import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import Share from '@/components/Share';
@@ -10,6 +9,7 @@ import Link from '@/components/ui/Link';
 import Modal from '@/components/ui/Modal';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
+import { useSimulationStartRoute } from '@/modules/simulation-tracking/client/useSimulationTracking';
 
 const ChoixChauffageResults = dynamic(() => import('@/modules/chaleur-renouvelable/client/ChoixChauffageResults'), {
   //loading: () => <Placeholder advancedMode={false} />,
@@ -24,7 +24,9 @@ const shareModal = createModal({
 
 export default function ChaleurRenouvelableResultatPage() {
   useTrackPageView();
-  const searchParams = useSearchParams();
+  // Back to the form the visitor came from, in the right mode; the address will be typed again anyway.
+  const startRoute = useSimulationStartRoute();
+  const backHref = startRoute === '/' ? '/?mode=comparateur' : '/chaleur-renouvelable';
   const [openShareModal, setOpenShareModal] = useState(false);
   return (
     <SimplePage
@@ -35,7 +37,7 @@ export default function ChaleurRenouvelableResultatPage() {
     >
       <div className="fr-container">
         <div className="flex justify-between fr-mb-3w">
-          <Link variant="secondary" href={`/chaleur-renouvelable?${searchParams?.toString() ?? ''}`}>
+          <Link variant="secondary" href={backHref}>
             <span className="fr-icon-arrow-left-line fr-mr-1w" /> Retour
           </Link>
           <Button
