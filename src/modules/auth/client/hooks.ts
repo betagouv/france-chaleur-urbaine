@@ -53,7 +53,7 @@ export const useAuthentication = () => {
   const [session] = useAtom(authenticationAtom);
   return {
     hasRole: (role: UserRole) => session?.user && session?.user.role === role,
-    isAuthenticated: !!session,
+    isAuthenticated: !!session?.user, // a session pending the admin second factor carries no user
     session: session ?? null,
     signIn,
     signOut,

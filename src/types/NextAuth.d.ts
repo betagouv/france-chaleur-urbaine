@@ -8,6 +8,8 @@ declare module 'next-auth' {
     impersonating?: true;
     impersonatedPermissions?: { type: string; resource_id: string | null }[];
     anonymize?: true;
+    /** password accepted but the admin second factor is missing or expired: no user until `signIn('mfa')` succeeds */
+    mfaPending?: true;
   }
 
   interface User {
@@ -27,6 +29,8 @@ declare module 'next' {
 
 declare module 'next-auth/jwt' {
   interface JWT {
+    /** epoch ms of the last successful admin second-factor check on this browser (see businessRules.adminMfaValidityHours) */
+    mfaVerifiedAt?: number;
     impersonatedProfile?: {
       role: UserRole;
       permissions?: { type: string; resource_id: string | null }[];

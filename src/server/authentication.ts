@@ -1,5 +1,6 @@
 import type { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import type { Session } from 'next-auth';
+import { getToken } from 'next-auth/jwt';
 import { getServerSession as getNextAuthServerSession } from 'next-auth/next';
 
 import { nextAuthOptions } from '@/pages/api/auth/[...nextauth]';
@@ -20,9 +21,25 @@ type ServerSessionContext = {
  * entry point (tRPC context, REST routes, page guards) goes through this function.
  */
 export const getServerSession = async ({ req, res }: Pick<ServerSessionContext, 'req' | 'res'>) => {
-  const session = (await getNextAuthServerSession(req, res, nextAuthOptions)) as Session | null;
+  const session = await getRawServerSession({ req, res });
   return (session?.user?.active ? session : null) as Session;
 };
+
+/**
+ * Id of the account whose password was accepted but whose admin second factor is missing or expired, `null` otherwise.
+ * Such a session exposes no user (see the NextAuth session callback): the person has to go through `/connexion/verification`.
+ */
+export const getPendingMfaUserId = async ({ req, res }: Pick<ServerSessionContext, 'req' | 'res'>): Promise<string | null> => {
+  const session = await getRawServerSession({ req, res });
+  if (session?.mfaPending !== true) {
+    return null;
+  }
+  const token = await getToken({ req });
+  return token?.sub ?? null;
+};
+
+const getRawServerSession = async ({ req, res }: Pick<ServerSessionContext, 'req' | 'res'>) =>
+  (await getNextAuthServerSession(req, res, nextAuthOptions)) as Session | null;
 
 /**
  * Retrieve the session from the server and pass it to the page props
@@ -82,9 +99,12 @@ export const withServerSession = (handler: WithServerSessionProps) => async (con
 export const withAuthentication = (requiredRoles?: UserRole[], handler?: WithServerSessionProps): GetServerSideProps<AuthSSRPageProps> => {
   return withServerSession(async ({ context, session }) => {
     if (!session) {
+      const callbackUrl = encodeURIComponent(context.resolvedUrl);
       return {
         redirect: {
-          destination: `/connexion?callbackUrl=${encodeURIComponent(context.resolvedUrl)}&notify=error:${encodeURIComponent('Vous devez être connecté pour accéder à cette page')}`,
+          destination: (await getPendingMfaUserId(context))
+            ? `/connexion/verification?callbackUrl=${callbackUrl}`
+            : `/connexion?callbackUrl=${callbackUrl}&notify=error:${encodeURIComponent('Vous devez être connecté pour accéder à cette page')}`,
           permanent: false,
         },
       };

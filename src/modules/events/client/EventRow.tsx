@@ -563,6 +563,19 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
     </>
   ),
   user_login: () => "s'est connecté",
+  user_mfa_enrolled: () => 'a activé la double authentification',
+  user_mfa_failed: (event) =>
+    event.data.locked
+      ? 'a saisi un code de double authentification incorrect, vérification bloquée'
+      : 'a saisi un code de double authentification incorrect',
+  user_mfa_reset: (event, updateFilters) => (
+    <>
+      <span>a réinitialisé la double authentification de </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>
+        {event.data.user_email}
+      </FilterButton>
+    </>
+  ),
   user_newsletter_subscribed: () => "s'est abonné à la newsletter",
   user_newsletter_unsubscribed: () => "s'est désabonné de la newsletter",
   user_password_reset_requested: () => 'a demandé une réinitialisation de mot de passe',

@@ -26,6 +26,9 @@ export const eventTypes = [
   'user_deleted_by_admin',
   'user_impersonation_started',
   'user_impersonation_stopped',
+  'user_mfa_enrolled',
+  'user_mfa_failed',
+  'user_mfa_reset',
   'user_tag_created',
   'user_tag_updated',
   'user_tag_deleted',
@@ -159,6 +162,9 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_impersonation_started: "Début d'imposture (admin)",
   user_impersonation_stopped: "Fin d'imposture (admin)",
   user_login: 'Connexion utilisateur',
+  user_mfa_enrolled: 'Double authentification activée',
+  user_mfa_failed: 'Code de double authentification refusé',
+  user_mfa_reset: 'Double authentification réinitialisée (admin)',
   user_newsletter_subscribed: 'Abonnement newsletter',
   user_newsletter_unsubscribed: 'Désabonnement newsletter',
   user_password_reset_requested: 'Demande réinitialisation mot de passe',
@@ -356,6 +362,9 @@ export type EventDataMap = {
   user_impersonation_started: { role: UserRole; permissions_count: number; anonymize: boolean };
   user_impersonation_stopped: { role: UserRole };
   user_login: null;
+  user_mfa_enrolled: null;
+  user_mfa_failed: { locked: boolean };
+  user_mfa_reset: { user_email: string };
   user_password_reset_requested: null;
   user_permissions_synced_from_api: {
     api_name: string;

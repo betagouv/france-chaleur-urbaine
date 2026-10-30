@@ -1021,6 +1021,11 @@ export interface Users {
   structure_name: string | null;
   structure_other: string | null;
   structure_type: StructureType | null;
+  totp_enrolled_at: Timestamp | null;
+  totp_failed_attempts: Generated<number>;
+  totp_last_used_step: Int8 | null;
+  totp_locked_until: Timestamp | null;
+  totp_secret: string | null;
 }
 
 export interface ZoneAPotentielChaud {
