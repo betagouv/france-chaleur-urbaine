@@ -48,6 +48,7 @@ import {
   networkChangeRequestPayloadSchemas,
   notifiedNetworkChangeRequestKinds,
   type ReplaceNetworkChangeRequestGeometryFileInput,
+  type UpdateNetworkChangeRequestInternalCommentInput,
 } from '../constants';
 
 export type NetworkChangeRequestContext = { logger: Logger; userId: string | null };
@@ -272,6 +273,7 @@ export const listNetworkChangeRequests = async () =>
       'request.contact_structure',
       'request.contact_function',
       'request.payload',
+      'request.internal_comment',
       'request.processed_at',
       'request.notified',
       'request.created_at',
@@ -518,6 +520,16 @@ export const linkNetworkChangeRequest = async (input: LinkNetworkChangeRequestIn
     .set({ network_id: input.network?.id ?? null, network_type: input.network?.type ?? null, updated_at: new Date() })
     .where('id', '=', request.id)
     .execute();
+};
+
+/** Saves the admins' follow-up note on a request, whatever its status; an empty note is stored as null. */
+export const updateNetworkChangeRequestInternalComment = async (input: UpdateNetworkChangeRequestInternalCommentInput) => {
+  await kdb
+    .updateTable('network_change_requests')
+    .set({ internal_comment: input.internalComment || null, updated_at: new Date() })
+    .where('id', '=', input.id)
+    .returning('id')
+    .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
 };
 
 type AcceptableRequest = {

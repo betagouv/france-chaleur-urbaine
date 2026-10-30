@@ -638,6 +638,8 @@ export interface NetworkChangeRequests {
   contact_type_other: string | null;
   created_at: Generated<Timestamp>;
   id: Generated<string>;
+  /** follow-up note written by the admins, never shown to the submitter */
+  internal_comment: string | null;
   kind: NetworkChangeRequestKind;
   network_id: number | null;
   network_label: string;

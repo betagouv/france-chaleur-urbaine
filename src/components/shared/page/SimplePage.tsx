@@ -33,7 +33,8 @@ type SimplePageProps = {
   mode?: PageMode;
   currentPage?: string;
   includeFooter?: boolean;
-  layout?: 'center' | 'fluid' | 'large';
+  /** `center`: DSFR container (1200px); `wide`: centered, capped at 1440px (wide tables); `large`: full width with 2rem margins; `fluid`: no wrapper. */
+  layout?: 'center' | 'wide' | 'fluid' | 'large';
   /** `narrow`: every DSFR container of the page content is capped at 960px instead of 1200px. */
   contentWidth?: 'default' | 'narrow';
   className?: string;
@@ -67,7 +68,13 @@ const SimplePage = ({
       <main
         id="main-content"
         className={cx(
-          layout === 'center' ? 'fr-container fr-my-2w' : layout === 'large' ? 'fr-mx-4w fr-my-2w flex flex-col items-start' : '',
+          layout === 'center'
+            ? 'fr-container fr-my-2w'
+            : layout === 'wide'
+              ? 'mx-auto w-full max-w-[90rem] px-6 fr-my-2w'
+              : layout === 'large'
+                ? 'fr-mx-4w fr-my-2w flex flex-col items-start'
+                : '',
           contentWidth === 'narrow' && NARROW_CONTAINER_CLASSES,
           className
         )}

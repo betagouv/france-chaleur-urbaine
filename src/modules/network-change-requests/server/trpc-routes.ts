@@ -8,6 +8,7 @@ import {
   zCreateNetworkChangeRequestInput,
   zLinkNetworkChangeRequestInput,
   zReplaceNetworkChangeRequestGeometryFileInput,
+  zUpdateNetworkChangeRequestInternalCommentInput,
 } from '../constants';
 import {
   acceptNetworkChangeRequest,
@@ -21,6 +22,7 @@ import {
   reopenNetworkChangeRequest,
   replaceNetworkChangeRequestGeometryFile,
   retryNetworkChangeRequestGeometryConversion,
+  updateNetworkChangeRequestInternalComment,
 } from './service';
 
 export const networkChangeRequestsRouter = router({
@@ -56,6 +58,10 @@ export const networkChangeRequestsRouter = router({
     retryGeometryConversion: adminRoute
       .input(z.object({ id: z.uuid() }))
       .mutation(({ input }) => retryNetworkChangeRequestGeometryConversion(input.id)),
+    /** Saves the admins' follow-up note on a request (any status). */
+    updateInternalComment: adminRoute
+      .input(zUpdateNetworkChangeRequestInternalCommentInput)
+      .mutation(({ input }) => updateNetworkChangeRequestInternalComment(input)),
   },
   /** Public forms (modification de fiche, contribution de tracé…), rate-limited; the files were uploaded beforehand via /api/files/upload. */
   create: route

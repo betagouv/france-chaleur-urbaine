@@ -19,6 +19,9 @@
 - Canonical classes: `shrink-0` not `flex-shrink-0`, `grow` not `flex-grow`. No `@apply`. Follow IDE Tailwind diagnostics.
 - Reusable components accept a `className` prop.
 
+## Tables (`TableSimple`)
+- **A table must never overflow its container**: no horizontal scrollbar, at any viewport width. Size text columns with `flex` (fr units) and keep fixed `width` for short, fixed-size columns only (date, status, actions); the table then always fits its wrapper. `fluid` (table at its max width) forces fixed `width` columns to add up and is what creates the scrollbar: avoid it. Before adding a column, remove or shrink a useless one; adding a column that creates a scrollbar is a regression. Verify in a real browser at 1280 / 1440 / 1920 (`scrollWidth` vs `clientWidth` of the table wrapper).
+
 ## Responsive (DSFR breakpoints, not Tailwind defaults)
 `xs` 320 · `sm` 576 · `md` 768 · `lg` 992 · `xl` 1200. Mobile-first.
 

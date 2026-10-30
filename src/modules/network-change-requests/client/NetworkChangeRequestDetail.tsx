@@ -22,6 +22,7 @@ import {
 import { documentChangeKey } from '../document-change-keys';
 import { buildChangeRows } from './buildChangeRows';
 import { DetailRow, DetailSection } from './DetailLayout';
+import InternalCommentField from './InternalCommentField';
 import LinkNetworkField from './LinkNetworkField';
 import RenameFileDialog, { type RenameFileData } from './RenameFileDialog';
 import RequestChangesTable, { changeKeys, formatValue, type RequestChangeFile } from './RequestChangesTable';
@@ -312,6 +313,13 @@ function NetworkChangeRequestDetail({ request }: NetworkChangeRequestDetailProps
           </>
         )}
       </DetailSection>
+
+      <section>
+        <Heading as="h3" size="h6" className="mb-2">
+          Commentaire interne
+        </Heading>
+        <InternalCommentField requestId={request.id} initialValue={request.internal_comment} />
+      </section>
 
       {rows.length > 0 && (
         <section>
