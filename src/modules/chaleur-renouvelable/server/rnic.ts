@@ -8,7 +8,6 @@ import { fetchJSON } from '@/utils/network';
 const RNIC_RESOURCE_DATA_URL = 'https://tabular-api.data.gouv.fr/api/resources/3ea8e2c3-0038-464a-b17e-cd5c91f65ce2/data/';
 const RNIC_RESULT_COLUMNS = [
   'numero_immatriculation',
-  'nombre_lots_habitation',
   'nom_usage_copropriete',
   'siret_representant_legal',
   'longitude',
@@ -20,7 +19,6 @@ const zRnicRow = z.object({
   latitude: z.number().nullable().optional(),
   longitude: z.number().nullable().optional(),
   nom_usage_copropriete: z.string().nullable().optional(),
-  nombre_lots_habitation: z.union([z.number(), z.string()]).nullable().optional(),
   numero_immatriculation: z.string().nullable().optional(),
   siret_representant_legal: z.string().nullable().optional(),
 });
@@ -43,7 +41,6 @@ type RnicCandidate = {
 };
 
 type RnicCopropriete = {
-  housingCount: number | null;
   nomCopropriete: string;
   numeroImmatriculation: string | null;
   siretRepresentantLegal: string | null;
@@ -152,17 +149,11 @@ const getBestRnicMatch = (rows: RnicRow[], buildingCoordinates: Coordinates): Rn
 
   return bestCandidate
     ? {
-        housingCount: getRnicHousingCount(bestCandidate.row.nombre_lots_habitation),
         nomCopropriete: bestCandidate.nomCopropriete,
         numeroImmatriculation: getCleanString(bestCandidate.row.numero_immatriculation),
         siretRepresentantLegal: getCleanString(bestCandidate.row.siret_representant_legal),
       }
     : null;
-};
-
-const getRnicHousingCount = (value: RnicRow['nombre_lots_habitation']) => {
-  const count = Number(value);
-  return Number.isSafeInteger(count) && count > 0 ? count : null;
 };
 
 function compareRnicCandidates(leftCandidate: RnicCandidate, rightCandidate: RnicCandidate) {

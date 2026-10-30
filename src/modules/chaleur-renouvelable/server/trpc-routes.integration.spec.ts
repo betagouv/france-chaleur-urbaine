@@ -207,14 +207,9 @@ describe('batEnrRouter', () => {
 
   describe('batEnr.getSimulationPrefill', () => {
     it.each([
-      { count: 78, expected: 78, label: 'RNIC count' },
-      { count: '78', expected: 78, label: 'RNIC numeric string' },
-      { count: null, expected: 30, label: 'missing count' },
-      { count: 0, expected: 30, label: 'zero count' },
-      { count: 'inconnu', expected: 30, label: 'invalid count' },
-      { count: 2.5, expected: 30, label: 'fractional count' },
-      { count: 'unavailable', expected: 30, label: 'unavailable RNIC' },
-    ])('prefills from $label and falls back to BDNB when needed', async ({ count, expected }) => {
+      { count: 24, expectedArea: 75, expectedCount: 24 },
+      { count: null, expectedArea: undefined, expectedCount: undefined },
+    ])('uses only BDNB housing count $count without querying RNIC', async ({ count, expectedArea, expectedCount }) => {
       await seedRnicLookupBuilding();
       await kdb.deleteFrom('bdnb_batiments').where('batiment_groupe_id', '=', 'GROUPE-RNIC-123').execute();
       await kdb
@@ -223,24 +218,21 @@ describe('batEnrRouter', () => {
           batiment_groupe_id: 'GROUPE-RNIC-123',
           constructions: sql`${JSON.stringify([{ construction_id: 'CONSTRUCTION-123', rnb_id: '' }])}::jsonb`,
           dpe_representatif_logement_surface_habitable_immeuble: 1800,
-          ffo_bat_nb_log: 30,
+          ffo_bat_nb_log: count,
         })
         .execute();
-      if (count === 'unavailable') {
-        mockedFetchJSON.mockRejectedValue(new Error('RNIC unavailable'));
-      } else {
-        mockedFetchJSON.mockResolvedValue({
-          data: [{ latitude: 43.2965, longitude: 5.3698, nom_usage_copropriete: 'Copropriété test', nombre_lots_habitation: count }],
-        });
-      }
+      mockedFetchJSON.mockResolvedValue({
+        data: [{ latitude: 43.2965, longitude: 5.3698, nom_usage_copropriete: 'Copropriété test', nombre_lots_habitation: 37 }],
+      });
       await expect(
         createTestCaller(null).batEnr.getSimulationPrefill({ batiment_construction_id: 'CONSTRUCTION-123' })
       ).resolves.toStrictEqual({
         dpe: undefined,
         modeEauChaudeSanitaire: undefined,
-        nbLogements: expected,
-        surfaceMoyenne: 60,
+        nbLogements: expectedCount,
+        surfaceMoyenne: expectedArea,
       });
+      expect(mockedFetchJSON).not.toHaveBeenCalled();
     });
   });
 
