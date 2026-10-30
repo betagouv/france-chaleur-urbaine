@@ -12,6 +12,7 @@ import { OutdoorSpaceCheckboxes } from '@/modules/chaleur-renouvelable/client/Ou
 import { typeLogementOptions, typeRadiateurOptions } from '@/modules/chaleur-renouvelable/constants';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
+import { useStartSimulation } from '@/modules/simulation-tracking/client/useSimulationTracking';
 import cx from '@/utils/cx';
 
 import type { HomeFormMode } from '../constants';
@@ -67,6 +68,7 @@ export function HomeHeroForm() {
   const { userInfo, setUserInfo } = useUserInfo();
   const initialValues = useHomeFormInitialValues();
   const eligibilityTest = useEligibilityTest();
+  const startSimulation = useStartSimulation();
   const containerRef = useRef<HTMLDivElement>(null);
   const comparatorFieldsRef = useRef<HTMLDivElement>(null);
 
@@ -87,6 +89,7 @@ export function HomeHeroForm() {
           heating_mode: data.typeLogement,
           outdoor_space: data.espaceExterieur,
         });
+        startSimulation();
         router.push(buildComparatorResultUrl(data));
         return;
       }

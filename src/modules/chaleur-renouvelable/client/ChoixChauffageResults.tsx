@@ -16,7 +16,6 @@ import { HeatNetworkRecommendedSolutionCard } from '@/modules/chaleur-renouvelab
 import { ResultsSection } from '@/modules/chaleur-renouvelable/client/results/ui/ResultsSection';
 import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSubmittedPanel';
 
-import { canProposeHeatNetwork } from '../heat-network-eligibility';
 import { getAlternativeHeatingSolutionLabels } from './heating-modes/selectors';
 import { ParamsForm } from './ParamsForm';
 
@@ -25,7 +24,6 @@ export default function ChoixChauffageResults() {
   const [selectedContactRecipientId, setSelectedContactRecipientId] = useState<ContactRecipientId>('network-manager');
   const {
     batEnrBatiments,
-    isCcrtCovered,
     contactForm,
     coutParAnGaz,
     coutParAnGazHotWaterOnly,
@@ -36,7 +34,9 @@ export default function ChoixChauffageResults() {
     handleSelectBatEnrBatiment,
     handleSelectGeoAddress,
     incompatibleSolutionRows,
+    isCcrtDemandEligible,
     isEligibilityLoading,
+    isHeatNetworkEligible,
     isParamsOpen,
     modesEnriched,
     openAccordionId,
@@ -44,16 +44,11 @@ export default function ChoixChauffageResults() {
     setIsParamsOpen,
     selectedBatEnrBatiment,
     shouldSelectBatEnrBatiment,
+    simulationId,
     situation,
     urlParams,
   } = useChoixChauffageResults();
   const params = urlParams.params;
-  const isCcrtDemandEligible = isCcrtCovered && effectiveTypeLogement === 'immeuble_chauffage_collectif';
-  const isHeatNetworkEligible = canProposeHeatNetwork({
-    hasAlreadyReceivedHeatNetworkRefusal: situation.hasAlreadyReceivedHeatNetworkRefusal,
-    heatNetworkEligibility: situation.eligibiliteReseauChaleur,
-    radiatorType: situation.typeRadiateur,
-  });
   const heatNetworkSolution = situation.eligibiliteReseauChaleur
     ? modesEnriched.find((modeDeChauffage) => modeDeChauffage.id === 'collective-heat-network')
     : undefined;
@@ -147,6 +142,7 @@ export default function ChoixChauffageResults() {
             isHeatNetworkEligible={isHeatNetworkEligible}
             selectedRecipientId={selectedContactRecipientId}
             onSelectedRecipientChange={setSelectedContactRecipientId}
+            simulationId={simulationId}
             topSolution={heatNetworkSolution?.label ?? modesEnriched[0]?.label ?? ''}
           />
           <CallOut
@@ -203,7 +199,7 @@ export default function ChoixChauffageResults() {
           </Dialog>
         </>
       ) : (
-        <NoResultSection />
+        <NoResultSection simulationId={simulationId} />
       )}
     </>
   );

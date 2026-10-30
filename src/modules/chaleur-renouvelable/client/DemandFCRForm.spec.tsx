@@ -23,7 +23,13 @@ vi.mock('@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParam
   }),
 }));
 
-const { submitDemand, track } = vi.hoisted(() => ({ submitDemand: vi.fn(), track: vi.fn() }));
+const { recordOutcome, submitDemand, track } = vi.hoisted(() => ({
+  recordOutcome: vi.fn().mockResolvedValue(undefined),
+  submitDemand: vi.fn(),
+  track: vi.fn(),
+}));
+
+const simulationId = '11111111-2222-4333-8444-555555555555';
 
 vi.mock('@/modules/analytics/client', () => ({ trackPostHogEvent: track }));
 
@@ -42,6 +48,7 @@ vi.mock('@/modules/trpc/client', () => ({
         }),
       },
     },
+    useUtils: () => ({ client: { simulationTracking: { recordOutcome: { mutate: recordOutcome } } } }),
   },
 }));
 
@@ -78,6 +85,7 @@ describe('DemandFCRForm', () => {
           isHeatNetworkEligible={isHeatNetworkEligible}
           selectedRecipientId={selectedRecipientId}
           onSelectedRecipientChange={vi.fn()}
+          simulationId={simulationId}
           topSolution="PAC géothermique"
         />
       );
@@ -116,6 +124,7 @@ describe('DemandFCRForm', () => {
         isHeatNetworkEligible={isHeatNetworkEligible}
         selectedRecipientId="public-advisor"
         onSelectedRecipientChange={vi.fn()}
+        simulationId={simulationId}
         topSolution="PAC géothermique"
       />
     );
@@ -137,6 +146,7 @@ describe('DemandFCRForm', () => {
         isHeatNetworkEligible={isHeatNetworkEligible}
         selectedRecipientId={selectedRecipientId}
         onSelectedRecipientChange={vi.fn()}
+        simulationId={simulationId}
         topSolution="Réseau de chaleur"
       />
     );
@@ -156,6 +166,7 @@ describe('DemandFCRForm', () => {
         isHeatNetworkEligible={false}
         selectedRecipientId="public-advisor"
         onSelectedRecipientChange={vi.fn()}
+        simulationId={simulationId}
         topSolution="PAC géothermique"
       />
     );
@@ -181,6 +192,7 @@ describe('DemandFCRForm', () => {
         isHeatNetworkEligible
         selectedRecipientId="network-manager"
         onSelectedRecipientChange={vi.fn()}
+        simulationId={simulationId}
         topSolution="Réseau de chaleur"
       />
     );
@@ -199,6 +211,7 @@ describe('DemandFCRForm', () => {
         isHeatNetworkEligible
         selectedRecipientId="public-advisor"
         onSelectedRecipientChange={vi.fn()}
+        simulationId={simulationId}
         topSolution="Réseau de chaleur"
       />
     );
@@ -206,5 +219,82 @@ describe('DemandFCRForm', () => {
     expect(screen.getByText('Je n’ai pas encore contacté le gestionnaire')).toBeInTheDocument();
     expect(screen.getByText('J’ai déjà reçu un refus ou une réponse négative')).toBeInTheDocument();
     expect(screen.getByText('Échangez avec un·e conseiller·ère neutre et gratuit·e du service public')).toBeInTheDocument();
+  });
+});
+
+describe('DemandFCRForm simulation outcome', () => {
+  const fillAndSubmit = () => {
+    fireEvent.change(screen.getByRole('textbox', { name: /^Nom/ }), { target: { value: 'Test' } });
+    fireEvent.change(screen.getByRole('textbox', { name: /^Prénom/ }), { target: { value: 'Claire' } });
+    fireEvent.change(screen.getByRole('textbox', { name: /^Email/ }), { target: { value: 'claire@example.com' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: /J’accepte/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' }));
+  };
+
+  const submittedDemand = {
+    address: '',
+    createdAt: '',
+    distance: null,
+    email: '',
+    id: 'demand-1',
+    isEligible: true,
+    networkName: null,
+    status: '',
+  };
+
+  it.each([
+    [
+      'a created classic demand → heat network demand',
+      { demandSubmissionResult: { ...submittedDemand, isExisting: false }, id: null },
+      { demandId: 'demand-1', outcome: 'heat_network_demand' },
+    ],
+    ['a deduplicated classic demand → nothing', { demandSubmissionResult: { ...submittedDemand, isExisting: true }, id: null }, null],
+    ['a created CCRT demand → CCRT demand', { demandSubmissionResult: null, id: 'ccrt-1' }, { demandId: 'ccrt-1', outcome: 'ccrt_demand' }],
+    ['no demand created → nothing', { demandSubmissionResult: null, id: null }, null],
+  ] as const)('records %s', async (_, result, expectedOutcome) => {
+    recordOutcome.mockClear();
+    submitDemand.mockResolvedValueOnce(result);
+    render(
+      <DemandFCRForm
+        alternativeHeatingSolutionLabels={[]}
+        eligibiliteReseauChaleur={eligibleHeatNetwork}
+        isCcrtDemandEligible
+        isHeatNetworkEligible
+        selectedRecipientId="network-manager"
+        onSelectedRecipientChange={vi.fn()}
+        simulationId={simulationId}
+        topSolution="Réseau de chaleur"
+      />
+    );
+    fillAndSubmit();
+
+    await waitFor(() => expect(submitDemand).toHaveBeenCalledTimes(1));
+    if (expectedOutcome) {
+      await waitFor(() => expect(recordOutcome).toHaveBeenCalledExactlyOnceWith({ ...expectedOutcome, id: simulationId }));
+    } else {
+      expect(recordOutcome).not.toHaveBeenCalled();
+    }
+  });
+
+  it('records the France Rénov orientation when the appointment link is clicked', () => {
+    recordOutcome.mockClear();
+    render(
+      <DemandFCRForm
+        alternativeHeatingSolutionLabels={[]}
+        eligibiliteReseauChaleur={null}
+        isCcrtDemandEligible={false}
+        isHeatNetworkEligible={false}
+        selectedRecipientId="network-manager"
+        onSelectedRecipientChange={vi.fn()}
+        simulationId={simulationId}
+        topSolution="PAC géothermique"
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher les coordonnées' }));
+    expect(recordOutcome).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('link', { name: /Prendre rendez-vous/ }));
+
+    expect(recordOutcome).toHaveBeenCalledExactlyOnceWith({ id: simulationId, outcome: 'france_renov_orientation' });
   });
 });

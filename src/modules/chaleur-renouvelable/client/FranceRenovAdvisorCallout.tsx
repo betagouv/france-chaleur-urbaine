@@ -4,13 +4,21 @@ import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import type { FranceRenovSpace } from '@/modules/chaleur-renouvelable/constants';
+import { useRecordSimulationOutcome } from '@/modules/simulation-tracking/client/useSimulationTracking';
 import trpc from '@/modules/trpc/client';
+
+type FranceRenovAdvisorCalloutProps = {
+  /** Current simulation: the appointment click is recorded as its outcome. */
+  simulationId: string;
+  variant?: 'callout' | 'inline';
+};
 
 /**
  * Renders the France Rénov' advisor callout for non heat-network recommendations.
  */
-export function FranceRenovAdvisorCallout({ variant = 'callout' }: { variant?: 'callout' | 'inline' }) {
+export function FranceRenovAdvisorCallout({ simulationId, variant = 'callout' }: FranceRenovAdvisorCalloutProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const recordSimulationOutcome = useRecordSimulationOutcome();
   const chauffageQuery = useChoixChauffageQueryParams();
   const params = chauffageQuery.params;
   const hasLocationInput = Boolean(params.constructionId || params.adresse);
@@ -31,6 +39,7 @@ export function FranceRenovAdvisorCallout({ variant = 'callout' }: { variant?: '
       isLoading={hasLocationInput && franceRenovSpaceQuery.isLoading}
       isOpen={isOpen}
       variant={variant}
+      onAppointmentClick={() => recordSimulationOutcome(simulationId, { outcome: 'france_renov_orientation' })}
       onToggle={() => setIsOpen((currentIsOpen) => !currentIsOpen)}
     />
   );
@@ -55,10 +64,18 @@ type FranceRenovAdvisorContentProps = {
   isLoading: boolean;
   isOpen: boolean;
   variant: string;
+  onAppointmentClick: () => void;
   onToggle: () => void;
 };
 
-function FranceRenovAdvisorContent({ franceRenovSpace, isLoading, isOpen, variant, onToggle }: FranceRenovAdvisorContentProps) {
+function FranceRenovAdvisorContent({
+  franceRenovSpace,
+  isLoading,
+  isOpen,
+  variant,
+  onAppointmentClick,
+  onToggle,
+}: FranceRenovAdvisorContentProps) {
   return (
     <div>
       {variant !== 'inline' && (
@@ -86,7 +103,7 @@ function FranceRenovAdvisorContent({ franceRenovSpace, isLoading, isOpen, varian
           {isLoading ? (
             <p>Recherche de votre conseiller·ère France Rénov’ de votre commune…</p>
           ) : (
-            <FranceRenovAdvisorDetails franceRenovSpace={franceRenovSpace} />
+            <FranceRenovAdvisorDetails franceRenovSpace={franceRenovSpace} onAppointmentClick={onAppointmentClick} />
           )}
         </div>
       )}
@@ -94,7 +111,12 @@ function FranceRenovAdvisorContent({ franceRenovSpace, isLoading, isOpen, varian
   );
 }
 
-function FranceRenovAdvisorDetails({ franceRenovSpace }: { franceRenovSpace: FranceRenovSpace | null }) {
+type FranceRenovAdvisorDetailsProps = {
+  franceRenovSpace: FranceRenovSpace | null;
+  onAppointmentClick: () => void;
+};
+
+function FranceRenovAdvisorDetails({ franceRenovSpace, onAppointmentClick }: FranceRenovAdvisorDetailsProps) {
   if (!franceRenovSpace) {
     return (
       <>
@@ -108,6 +130,7 @@ function FranceRenovAdvisorDetails({ franceRenovSpace }: { franceRenovSpace: Fra
           className="fr-btn--icon-right fr-icon-arrow-right-line"
           isExternal
           postHogEventKey="fcr_results:france_renov_cta_clicked"
+          onClick={onAppointmentClick}
         >
           Prendre rendez-vous avec un·e conseiller·ère
         </Link>
@@ -172,6 +195,7 @@ function FranceRenovAdvisorDetails({ franceRenovSpace }: { franceRenovSpace: Fra
         className="fr-btn--icon-right fr-icon-arrow-right-line"
         isExternal={Boolean(franceRenovSpace.website) || !franceRenovSpace.email}
         postHogEventKey="fcr_results:france_renov_cta_clicked"
+        onClick={onAppointmentClick}
       >
         Prendre rendez-vous avec un·e conseiller·ère
       </Link>

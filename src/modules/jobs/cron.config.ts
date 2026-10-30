@@ -62,7 +62,7 @@ export const cronDefinitions = [
     scheduleLabel: 'Toutes les heures de 7h à 21h',
   },
   {
-    description: `Purge les IP et user-agents des événements de conversion de plus de ${businessRules.conversionIpRetentionDays.display} (anti-abus, rétention courte ; le domaine est conservé).`,
+    description: `Purge les IP et user-agents des événements de conversion et des simulations chaleur renouvelable de plus de ${businessRules.conversionIpRetentionDays.display}, ainsi que l'adresse et l'identifiant de bâtiment de ces simulations (anti-abus et débogage, rétention courte ; le domaine est conservé).`,
     name: 'purgeOldConversionEventIps',
     schedule: '30 03 * * *',
     scheduleLabel: 'Tous les jours, 3h30',

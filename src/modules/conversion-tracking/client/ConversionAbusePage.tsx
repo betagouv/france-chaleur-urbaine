@@ -123,13 +123,16 @@ const ConversionAbusePage = () => {
       ip: ruleForm.ip.trim(),
       reason: ruleForm.reason.trim(),
     });
-    notify('success', `Règle « ${result.disposition} » enregistrée pour ${result.ip} — ${result.changedEvents} événement(s) recomptés.`);
+    notify(
+      'success',
+      `Règle « ${result.disposition} » enregistrée pour ${result.ip} — ${result.changedEvents} enregistrement(s) recomptés (événements et simulations).`
+    );
   };
   const confirmRemove = async () => {
     const target = removeDialog.data;
     if (!target) return;
     const result = await removeMutation.mutateAsync({ ip: target.ip });
-    notify('success', `Règle retirée pour ${result.ip} — ${result.changedEvents} événement(s) recomptés.`);
+    notify('success', `Règle retirée pour ${result.ip} — ${result.changedEvents} enregistrement(s) recomptés (événements et simulations).`);
   };
 
   const suspiciousColumns: ColumnDef<SuspiciousRow>[] = useMemo(
@@ -154,6 +157,7 @@ const ConversionAbusePage = () => {
         id: 'tests',
         width: '80px',
       },
+      { accessorFn: (row) => row.simulations, align: 'right', header: 'Simulations', id: 'simulations', width: '92px' },
       {
         accessorFn: (row) => row.testPerDisplay ?? undefined,
         align: 'right',
@@ -198,7 +202,7 @@ const ConversionAbusePage = () => {
         },
         header: 'Statut',
         id: 'status',
-        width: '130px',
+        width: '100px',
       },
       {
         cell: ({ row }) => {
@@ -374,10 +378,10 @@ const ConversionAbusePage = () => {
           }}
         />
         <Input
-          label="Tests min."
+          label="Actions min."
           className="mb-0"
           disabled={scopeActive}
-          hintText={scopeActive ? 'Toutes les IP (source ciblée)' : undefined}
+          hintText={scopeActive ? 'Toutes les IP (source ciblée)' : 'Tests d’adresse + simulations'}
           nativeInputProps={{
             min: 0,
             onChange: (event) => setFilters({ minTests: Number(event.target.value) || 0 }),
@@ -392,9 +396,10 @@ const ConversionAbusePage = () => {
           IP suspectes
         </Heading>
         <p className="fr-hint-text mb-0">
-          Un ratio Test/Affichage élevé, une seule route et 0 demande signalent un robot. « Bannir » retire des statistiques les événements
-          de l'IP des {CONVERSION_IP_RETENTION_DAYS} derniers jours ; « Conserver » marque une IP légitime connue (elle ne sera plus
-          proposée au bannissement). Le globe ouvre le détail de l'IP (pays, hébergeur/ASN) sur ipinfo.io.
+          Un ratio Test/Affichage élevé, des simulations en rafale, une seule route et 0 demande signalent un robot. « Bannir » retire des
+          statistiques les événements et simulations de l'IP des {CONVERSION_IP_RETENTION_DAYS} derniers jours ; « Conserver » marque une IP
+          légitime connue (elle ne sera plus proposée au bannissement). Le globe ouvre le détail de l'IP (pays, hébergeur/ASN) sur
+          ipinfo.io.
         </p>
         <TableSimple
           columns={suspiciousColumns}

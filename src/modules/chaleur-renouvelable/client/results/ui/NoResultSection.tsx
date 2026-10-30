@@ -1,7 +1,15 @@
 import Link from '@/components/ui/Link';
 import { FranceRenovAdvisorCallout } from '@/modules/chaleur-renouvelable/client/FranceRenovAdvisorCallout';
 
-export function NoResultSection() {
+type NoResultSectionProps = {
+  /** Current simulation, for the France Rénov' outcome tracking. */
+  simulationId: string;
+};
+
+/**
+ * Shown when no alternative heating solution fits: sobriety actions, then the France Rénov' advisor callout.
+ */
+export function NoResultSection({ simulationId }: NoResultSectionProps) {
   const renovationActions = [
     {
       description: 'toiture, murs, fenêtres, planchers, c’est souvent le geste le plus efficace',
@@ -56,7 +64,7 @@ export function NoResultSection() {
           </Link>
         </p>
       </section>
-      <FranceRenovAdvisorCallout />
+      <FranceRenovAdvisorCallout simulationId={simulationId} />
     </>
   );
 }

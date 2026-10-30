@@ -1,10 +1,5 @@
-import { isIP } from 'node:net';
-
-import { isbot } from 'isbot';
-
 import { createUserEvent } from '@/modules/events/server/service';
 import { adminRoute, route, router } from '@/modules/trpc/server';
-import { getClientIp } from '@/server/helpers/request-ip';
 
 import {
   zArchiveConversionSourceInput,
@@ -17,6 +12,7 @@ import {
   zUpdateConversionSourceInput,
   zUpsertIpRuleInput,
 } from '../constants';
+import { getTrackingRequestContext } from './request-context';
 import {
   archiveConversionSource,
   createConversionSource,
@@ -47,17 +43,16 @@ export const conversionTrackingRouter = router({
     .meta({ rateLimit: { limit: 60, windowMs: 60 * 1000 } })
     .input(zRecordConversionEventInput)
     .mutation(async ({ input, ctx }) => {
-      const userAgent = ctx.headers['user-agent'];
+      const requestContext = getTrackingRequestContext(ctx);
       // Crawlers (Googlebot…) : ils exécutent le JS des pages internes et gonfleraient les affichages.
-      if (typeof userAgent === 'string' && isbot(userAgent)) {
+      if (requestContext.isBot) {
         return;
       }
-      const ip = getClientIp(ctx.req);
       await recordConversionEvent({
         ...input,
-        ip: ip && isIP(ip) ? ip : null,
+        ip: requestContext.ip,
         source: input.source ?? null,
-        user_agent: typeof userAgent === 'string' ? userAgent : null,
+        user_agent: requestContext.userAgent,
       });
     }),
 

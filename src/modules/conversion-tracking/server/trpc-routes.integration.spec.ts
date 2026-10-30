@@ -4,6 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appRouter } from '@/modules/trpc/trpc.config';
 import { type ConversionEvents, type Insertable, kdb, sql } from '@/server/db/kysely';
 import { cleanDatabase, seedTableUser } from '@/tests/fixtures';
+import { uuid } from '@/tests/helpers';
 import type { TestCaseBoolean } from '@/tests/trpc-helpers';
 import { createMockContext, createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
 import { formatAsISODate } from '@/utils/date';
@@ -44,6 +45,24 @@ const seedEvents = (events: ConversionEventSeed[]) =>
     .values(events.map((event) => ({ page: '/page', route: '/page', ...event })))
     .execute();
 
+/** Simulations chaleur renouvelable d'une IP (une par id), pour la détection partagée avec les events. */
+const seedSimulations = (ip: string, ids: number[]) =>
+  kdb
+    .insertInto('simulations_chaleur_renouvelable')
+    .values(
+      ids.map((id) => ({
+        ccrt_demand_available: false,
+        created_at: daysAgo(2),
+        heat_network_available: false,
+        housing_type: 'maison_individuelle',
+        id: uuid(id),
+        ip: sql<string>`${ip}::inet`,
+        page: '/page',
+        route: '/page',
+      }))
+    )
+    .execute();
+
 /** Ligne de stats attendue, complète (défauts à zéro) — à utiliser avec `toStrictEqual`. */
 const statRow = (row: Partial<ConversionStatRow> & Pick<ConversionStatRow, 'channel' | 'label'>): ConversionStatRow => ({
   demandRate: null,
@@ -78,6 +97,7 @@ const suspiciousRow = (row: Partial<SuspiciousIpRow> & Pick<SuspiciousIpRow, 'ip
   ruleDisposition: null,
   ruleIp: null,
   ruleReason: null,
+  simulations: 0,
   testPerDisplay: null,
   tests: 0,
   ...row,
@@ -106,6 +126,7 @@ describe('conversionTrackingRouter', () => {
       kdb.deleteFrom('conversion_sources').execute(),
       kdb.deleteFrom('demands').execute(),
       kdb.deleteFrom('events').execute(),
+      kdb.deleteFrom('simulations_chaleur_renouvelable').execute(),
     ]);
   });
 
@@ -439,6 +460,18 @@ describe('conversionTrackingRouter', () => {
       const result = await createTestCaller(testUsers.admin).conversionTracking.getSuspiciousIps(suspiciousInput);
 
       expect(result).toStrictEqual([suspiciousRow({ displays: 1, events: 4, ip: '1.1.1.1', testPerDisplay: 3, tests: 3 })]);
+    });
+
+    it('compte les simulations chaleur renouvelable dans le seuil et les signaux, sans les mêler aux événements', async () => {
+      await Promise.all([
+        seedEvents([{ created_at: daysAgo(2), ip: '3.3.3.3', type: 'display' }]),
+        seedSimulations('3.3.3.3', [1, 2]),
+        seedSimulations('4.4.4.4', [3]), // 1 simulation < seuil (2)
+      ]);
+
+      const result = await createTestCaller(testUsers.admin).conversionTracking.getSuspiciousIps(suspiciousInput);
+
+      expect(result).toStrictEqual([suspiciousRow({ displays: 1, events: 1, ip: '3.3.3.3', simulations: 2, testPerDisplay: 0 })]);
     });
 
     it('bannir (exclude) retire les events de l’IP des stats et renvoie le nombre recompté', async () => {

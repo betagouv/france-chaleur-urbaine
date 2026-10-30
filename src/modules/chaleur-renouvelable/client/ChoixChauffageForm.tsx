@@ -7,9 +7,11 @@ import type { BANAddressFeature } from '@/modules/ban/types';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
 import { SettingsTopFields } from '@/modules/chaleur-renouvelable/client/SettingsTopFields';
+import { useStartSimulation } from '@/modules/simulation-tracking/client/useSimulationTracking';
 
 export default function ChoixChauffageForm() {
   const router = useRouter();
+  const startSimulation = useStartSimulation();
   const chauffageQuery = useChoixChauffageQueryParams();
   const params = chauffageQuery.params;
   const handleAddressNotFound = useCallback(() => {
@@ -60,6 +62,7 @@ export default function ChoixChauffageForm() {
               heating_mode: params.typeLogement,
               outdoor_space: params.espaceExterieur,
             });
+            startSimulation();
             const search = window.location.search;
             router.push(`/chaleur-renouvelable/resultat${search}`);
           }}
