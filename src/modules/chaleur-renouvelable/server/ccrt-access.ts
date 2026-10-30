@@ -54,20 +54,29 @@ export const listCcrtAssignmentCandidates = async (ctx: Context, demandId: strin
 /**
  * Resolves administrative scopes from authoritative geographic tables, never from an address context string.
  */
-export const getCcrtTerritory = async (cityCode: string | null, departmentCode: string | null) => {
-  const [commune, ept, department] = await Promise.all([
-    cityCode
-      ? kdb
-          .selectFrom('ign_communes')
-          .select(['insee_com', 'insee_dep', 'insee_reg', 'siren_epci'])
-          .where('insee_com', '=', cityCode)
-          .executeTakeFirst()
-      : undefined,
-    cityCode
+export const getCcrtTerritory = async (
+  cityCode: string | null,
+  departmentCode: string | null,
+  coordinates?: { lon: number; lat: number }
+) => {
+  const communeQuery = kdb.selectFrom('ign_communes').select(['insee_com', 'insee_dep', 'insee_reg', 'siren_epci']);
+  // Like classic demands, resolve the municipality spatially: BAN may return a municipal arrondissement code.
+  const spatialCommune = coordinates
+    ? await communeQuery
+        .where(
+          (expression) => sql<boolean>`ST_Contains(${expression.ref('geom')},
+            ST_Transform(ST_SetSRID(ST_MakePoint(${coordinates.lon}, ${coordinates.lat}), 4326), 2154))`
+        )
+        .executeTakeFirst()
+    : undefined;
+  const commune = spatialCommune ?? (cityCode ? await communeQuery.where('insee_com', '=', cityCode).executeTakeFirst() : undefined);
+  const communeCode = commune?.insee_com ?? cityCode;
+  const [ept, department] = await Promise.all([
+    communeCode
       ? kdb
           .selectFrom('ept')
           .select('code')
-          .where((expression) => sql<boolean>`${expression.ref('membres')} @> ${JSON.stringify([{ code: cityCode }])}::jsonb`)
+          .where((expression) => sql<boolean>`${expression.ref('membres')} @> ${JSON.stringify([{ code: communeCode }])}::jsonb`)
           .executeTakeFirst()
       : undefined,
     departmentCode
@@ -75,9 +84,9 @@ export const getCcrtTerritory = async (cityCode: string | null, departmentCode: 
       : undefined,
   ]);
   return {
-    commune_code: commune?.insee_com ?? cityCode,
+    commune_code: communeCode,
     departement_code: commune?.insee_dep ?? departmentCode,
-    epci_code: commune?.siren_epci ?? null,
+    epci_code: commune?.siren_epci?.split('/')[0] ?? null, // IGN encodes some Grand Paris memberships as EPCI/EPT.
     ept_code: ept?.code ?? null,
     region_code: commune?.insee_reg ?? department?.insee_reg ?? null,
   };

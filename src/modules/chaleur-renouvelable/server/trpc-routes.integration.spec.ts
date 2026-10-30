@@ -294,12 +294,18 @@ describe('batEnrRouter', () => {
     it.each(cases)('uses the same coverage for public results and submission: $label', async ({ input, expectedOutput }) => {
       await seedDepartement({ insee_dep: '13', insee_reg: '93', nom: 'Bouches-du-Rhône' });
       await seedRegion({ insee_reg: '93', nom: 'Provence-Alpes-Côte d’Azur' });
-      await seedCommune({ insee_com: '13055', insee_dep: '13', insee_reg: '93', siren_epci: 'EPCI-13' });
+      await seedCommune({
+        geom: sql`ST_Multi(ST_Buffer(ST_Transform(ST_SetSRID(ST_MakePoint(5.3698, 43.2965), 4326), 2154), 100))`,
+        insee_com: '13055',
+        insee_dep: '13',
+        insee_reg: '93',
+        siren_epci: 'EPCI-13',
+      });
       await kdb
         .insertInto('ept')
         .values({ code: 'EPT-13', membres: JSON.stringify([{ code: '13055', nom: 'Marseille' }]), nom: 'Test EPT', type: 'EPT' })
         .execute();
-      await seedTableUser([{ ...testUsers.ccrt, active: input.active, role: input.role }]);
+      await seedTableUser([testUsers.admin, { ...testUsers.ccrt, active: input.active, role: input.role }]);
       if (input.permission) {
         await kdb
           .insertInto('user_permissions')
@@ -313,13 +319,13 @@ describe('batEnrRouter', () => {
       const context = await createTestCaller(null).batEnr.getAddressEligibilityContext({
         banId: 'BAN-TEST',
         city: 'Marseille',
-        cityCode: '13055',
+        cityCode: '13201',
         lat: 43.2965,
         lon: 5.3698,
       });
-      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
-        buildCcrtExperimentationDemandInput({ isPublicAdvisorSelected: true })
-      );
+      const demandInput = buildCcrtExperimentationDemandInput({ isPublicAdvisorSelected: true });
+      demandInput.geoAddress.cityCode = '13201';
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(demandInput);
 
       expect(context.isCcrtCovered).toStrictEqual(expectedOutput);
       expect(result).toStrictEqual({ demandSubmissionResult: null, id: expectedOutput ? expect.any(String) : null });
@@ -330,6 +336,13 @@ describe('batEnrRouter', () => {
       expect(sentEmailTemplate.mock.calls.map(([emailKey]) => emailKey)).toStrictEqual(
         expectedOutput ? ['demands.demandeur.confirmation-demande-chaleur-renouvelable'] : []
       );
+      if (expectedOutput && result.id) {
+        const workspace = createTestCaller(testUsers.ccrt).batEnr.ccrt;
+        expect((await workspace.listDemandesChaleurRenouvelable()).items).toStrictEqual([]);
+        await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: result.id });
+        expect((await workspace.listDemandesChaleurRenouvelable()).items.map((demand) => demand.id)).toStrictEqual([result.id]);
+        await expect(workspace.getFollowUp({ demandId: result.id })).resolves.toEqual(expect.any(Object));
+      }
     });
   });
 
