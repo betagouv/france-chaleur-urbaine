@@ -9,6 +9,7 @@ const serverConfigSchema = {
   ADEME_CONNECT_CLIENT_ID: z.string().optional(),
   ADEME_CONNECT_CLIENT_SECRET: z.string().optional(),
   ADEME_CONNECT_SOURCE: z.string().default('France Chaleur Urbaine'),
+  ADMIN_MFA_ENCRYPTION_KEY: z.string().optional(), // base64 32-byte key encrypting admin TOTP secrets at rest; set = second factor required for admins, unset = disabled
   APP: z.string().optional(), // injected by Scalingo (e.g. "france-chaleur-urbaine")
   BDNB_API_BASE_URL: z.string().default('https://api.bdnb.io/v1/bdnb/donnees'),
   BREVO_ALLOW_WRITES: z.boolean().default(false), // unblocking contacts modifies the shared Brevo account: enabled on production only
@@ -56,5 +57,10 @@ export const serverConfig = {
   ...clientConfig,
   ...onlyServerConfig,
 };
+
+// the admin second factor is a security measure of the deployed environments: forgetting the key must not silently disable it
+if (serverConfig.APP && !serverConfig.IS_REVIEW_APP && !serverConfig.ADMIN_MFA_ENCRYPTION_KEY) {
+  throw new Error('ADMIN_MFA_ENCRYPTION_KEY is required on deployed environments (staging, production)');
+}
 
 export type ServerConfig = z.infer<z.ZodObject<typeof serverConfigSchema>>;

@@ -20,6 +20,26 @@ export type BusinessRule = {
 };
 
 export const businessRules = {
+  adminMfaFailedAttemptsLimit: {
+    description:
+      "Nombre de codes de double authentification incorrects consécutifs à partir duquel la vérification d'un compte admin est bloquée temporairement.",
+    display: '5 codes',
+    label: 'Double authentification admin : codes incorrects',
+    value: 5,
+  },
+  adminMfaLockMinutes: {
+    description: 'Durée du blocage de la vérification du second facteur après trop de codes incorrects.',
+    display: '15 minutes',
+    label: 'Double authentification admin : blocage',
+    value: 15,
+  },
+  adminMfaValidityHours: {
+    description:
+      "Durée pendant laquelle le code de l'application d'authentification d'un admin reste valable sur un navigateur ; au-delà, un nouveau code est demandé à la prochaine action.",
+    display: '12 heures',
+    label: 'Double authentification admin : validité',
+    value: 12,
+  },
   autoAssignMaxDistance: {
     description: "Au-delà, une demande n'est pas affectée automatiquement au réseau le plus proche.",
     display: '500 m',

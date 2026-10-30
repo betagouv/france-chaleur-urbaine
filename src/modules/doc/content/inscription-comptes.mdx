@@ -1,3 +1,5 @@
+import { businessRules } from '@/modules/app/business-rules';
+
 # Inscription et comptes
 
 Cette page décrit comment les comptes utilisateurs sont créés et activés, ce qui se passe à la connexion, les emails envoyés et les données modifiées à chaque étape.
@@ -196,6 +198,50 @@ Données modifiées :
 | Rattachement des demandes | Base — `demands.user_id` | Toute demande portant le même email est reliée au compte |
 | Date de connexion | ADEME Connect | Mise à jour à chaque connexion |
 
+## Double authentification des admins
+
+Les comptes **admin** ont un second facteur obligatoire, en plus du mot de passe (mesure d'homologation, en attendant une connexion via ProConnect). Il est piloté par la clé `ADMIN_MFA_ENCRYPTION_KEY` : absente en local (second facteur désactivé), obligatoire sur les environnements déployés, où l'application refuse de démarrer sans elle.
+
+<Mermaid
+  chart={`flowchart TD
+    mdp["Email + mot de passe acceptés"] --> admin{"Compte admin ?"}
+    admin -- non --> ok["Session ouverte"]
+    admin -- oui --> enrole{"Application déjà enregistrée ?"}
+    enrole -- non --> qr["Page de vérification : QR code à scanner avec une application d'authentification"]:::db
+    enrole -- oui --> code["Page de vérification : saisie du code à 6 chiffres"]
+    qr --> code
+    code -- code valide --> ok2["Session ouverte, second facteur valable ${businessRules.adminMfaValidityHours.display} sur ce navigateur"]:::evt
+    code -- code faux ou déjà utilisé --> code
+    click ok2 "/admin/events?types=user_mfa_enrolled" "Voir dans l'activité du site"
+    classDef db fill:#d3f4d3,stroke:#3f9a3f,color:#161616
+    classDef evt fill:#cfe3fd,stroke:#3a7bd5,color:#161616`}
+/>
+
+- **Premier passage** : la page affiche un QR code (et la clé en clair pour une saisie manuelle). L'admin le scanne avec l'application de son choix (FreeOTP, Aegis, Google Authenticator, Microsoft Authenticator…) et saisit le code affiché, ce qui enregistre l'application. Événement : [«&nbsp;Double authentification activée&nbsp;»](/admin/events?types=user_mfa_enrolled), et email [«&nbsp;Double authentification activée&nbsp;»](/admin/emails?type=auth.utilisateur.double-authentification-activee) au compte, pour qu'un enregistrement fait par quelqu'un d'autre soit repéré.
+- **Ensuite** : le code est redemandé quand le dernier contrôle sur ce navigateur date de plus de <Rule id="adminMfaValidityHours" />, et à chaque nouvelle connexion par mot de passe. Chaque navigateur a son propre compteur.
+- Tant que le code n'est pas validé, la personne n'a **aucun accès** : ni aux pages, ni aux données. Un bouton «&nbsp;Se déconnecter&nbsp;» permet de quitter cette étape.
+- **Codes refusés** : un code déjà utilisé est refusé. Chaque code incorrect est tracé ([«&nbsp;Code de double authentification refusé&nbsp;»](/admin/events?types=user_mfa_failed)) ; au bout de <Rule id="adminMfaFailedAttemptsLimit" /> incorrects consécutifs, la vérification du compte est bloquée <Rule id="adminMfaLockMinutes" />, même avec un code valide. Les tentatives comptent aussi dans le plafond par adresse IP des tentatives de connexion.
+- **Téléphone perdu** : un autre admin réinitialise la double authentification depuis [Gestion des utilisateurs](/admin/users) (menu de l'utilisateur, visible seulement si une application est enregistrée). La personne enregistre une nouvelle application à sa prochaine connexion. Événement : [«&nbsp;Double authentification réinitialisée (admin)&nbsp;»](/admin/events?types=user_mfa_reset), et email [«&nbsp;Double authentification réinitialisée&nbsp;»](/admin/emails?type=auth.utilisateur.double-authentification-reinitialisee) à la personne concernée.
+
+Limites à connaître :
+
+- **Entre le mot de passe et l'enregistrement de l'application**, le compte n'est protégé que par le mot de passe : c'est le cas d'un admin pas encore enrôlé ou qui vient d'être réinitialisé. D'où la règle : tous les admins s'enrôlent le jour de la mise en service, et un admin réinitialisé se reconnecte dans la foulée. Les emails ci-dessus servent à détecter un enregistrement non sollicité.
+- Le secret de l'application est **chiffré en base** : cela protège une fuite de sauvegarde ou d'export, pas une compromission du serveur lui-même, qui détient aussi la clé.
+
+Procédure de secours (dossier d'exploitation) :
+
+- **Dernier admin sans téléphone** : réinitialisation directe en base, `UPDATE users SET totp_secret = NULL, totp_enrolled_at = NULL, totp_last_used_step = NULL, totp_failed_attempts = 0, totp_locked_until = NULL WHERE email = '…'`, puis nouvel enrôlement à la connexion suivante.
+- **Clé `ADMIN_MFA_ENCRYPTION_KEY` perdue** : tous les secrets enregistrés deviennent illisibles. Générer une nouvelle clé, la poser sur l'environnement, vider les colonnes `totp_*` de tous les admins avec la requête ci-dessus ; chacun se ré-enrôle. La clé doit donc être sauvegardée avec les autres secrets de l'environnement.
+
+Données modifiées :
+
+| Donnée | Où | Détail |
+| --- | --- | --- |
+| Secret de l'application | Base — `users.totp_secret` | Chiffré, créé à l'affichage du QR code, effacé par une réinitialisation |
+| Date d'enregistrement | Base — `users.totp_enrolled_at` | Posée au premier code valide |
+| Dernier code accepté | Base — `users.totp_last_used_step` | Empêche la réutilisation d'un code |
+| Codes incorrects et blocage | Base — `users.totp_failed_attempts`, `users.totp_locked_until` | Compteur remis à zéro par un code valide ; date de fin de blocage |
+
 ## Mot de passe oublié
 
 - Si l'email ne correspond à aucun compte actif, **rien n'est envoyé et rien n'est affiché** (protection contre l'énumération d'emails). Une personne au compte désactivé ne recevra donc jamais l'email.
@@ -218,9 +264,11 @@ Données modifiées :
 | [Ouverture de l'espace gestionnaire](/admin/emails?type=auth.gestionnaire.ouverture-espace) | Le gestionnaire | Création par un admin ou via l'API partenaire, uniquement si compte actif et rôle gestionnaire |
 | [Ouverture d'espace gestionnaire — accompagnement](/admin/emails?type=auth.ccrt.ouverture-espace) | Le CCRT | Création par un admin, uniquement si compte actif, rôle CCRT et emails CCRT activés (actuellement suspendus) |
 | [Réinitialisation du mot de passe](/admin/emails?type=auth.utilisateur.reinitialisation-mot-de-passe) | L'utilisateur | Demande « Mot de passe oublié » (compte actif uniquement) |
+| [Double authentification activée](/admin/emails?type=auth.utilisateur.double-authentification-activee) | L'admin | Enregistrement d'une application d'authentification sur son compte |
+| [Double authentification réinitialisée](/admin/emails?type=auth.utilisateur.double-authentification-reinitialisee) | L'admin concerné | Réinitialisation de son second facteur par un autre admin |
 
 Chaque lien ouvre le modèle correspondant dans [Emails automatiques](/admin/emails).
 
 ## Traçabilité
 
-Chaque étape émet un événement consultable dans [Activité du site](/admin/events) : [« Inscription utilisateur »](/admin/events?types=user_registered), [« Activation utilisateur »](/admin/events?types=user_activated), [« Connexion utilisateur »](/admin/events?types=user_login), [« Création utilisateur (admin) »](/admin/events?types=user_created_by_admin), [« Création utilisateur (API) »](/admin/events?types=user_created_by_api), [« Désactivation utilisateur (API) »](/admin/events?types=user_deactivated_by_api), [« Synchronisation permissions (API) »](/admin/events?types=user_permissions_synced_from_api), [« Demande réinitialisation mot de passe »](/admin/events?types=user_password_reset_requested).
+Chaque étape émet un événement consultable dans [Activité du site](/admin/events) : [« Inscription utilisateur »](/admin/events?types=user_registered), [« Activation utilisateur »](/admin/events?types=user_activated), [« Connexion utilisateur »](/admin/events?types=user_login), [« Création utilisateur (admin) »](/admin/events?types=user_created_by_admin), [« Création utilisateur (API) »](/admin/events?types=user_created_by_api), [« Désactivation utilisateur (API) »](/admin/events?types=user_deactivated_by_api), [« Synchronisation permissions (API) »](/admin/events?types=user_permissions_synced_from_api), [« Demande réinitialisation mot de passe »](/admin/events?types=user_password_reset_requested), [« Double authentification activée »](/admin/events?types=user_mfa_enrolled), [« Code de double authentification refusé »](/admin/events?types=user_mfa_failed), [« Double authentification réinitialisée (admin) »](/admin/events?types=user_mfa_reset).

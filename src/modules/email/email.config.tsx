@@ -10,6 +10,12 @@ import OuvertureEspaceGestionnaire, { scenarios as ouvertureEspaceScenarios } fr
 import ConfirmationInscription, {
   scenarios as confirmationInscriptionScenarios,
 } from './templates/auth/utilisateur/confirmation-inscription';
+import DoubleAuthentificationActivee, {
+  scenarios as doubleAuthentificationActiveeScenarios,
+} from './templates/auth/utilisateur/double-authentification-activee';
+import DoubleAuthentificationReinitialisee, {
+  scenarios as doubleAuthentificationReinitialiseeScenarios,
+} from './templates/auth/utilisateur/double-authentification-reinitialisee';
 import ReinitialisationMotDePasse, {
   scenarios as reinitialisationMotDePasseScenarios,
 } from './templates/auth/utilisateur/reinitialisation-mot-de-passe';
@@ -124,6 +130,31 @@ export const emails = defineEmails({
     subject: '[France Chaleur Urbaine] Confirmez votre email',
     trigger: {
       description: "À l'inscription publique sur /inscription (particulier ou professionnel).",
+      type: 'action',
+    },
+  },
+  'auth.utilisateur.double-authentification-activee': {
+    Component: DoubleAuthentificationActivee,
+    description:
+      "Envoyé à un admin quand une application d'authentification est enregistrée sur son compte, pour détecter un enregistrement qu'il n'aurait pas fait.",
+    label: 'Double authentification activée',
+    preview: "Une application d'authentification a été enregistrée sur votre compte",
+    scenarios: doubleAuthentificationActiveeScenarios,
+    subject: '[France Chaleur Urbaine] Double authentification activée sur votre compte',
+    trigger: {
+      description: "Au premier code valide saisi par l'admin sur la page de vérification (enregistrement de l'application).",
+      type: 'action',
+    },
+  },
+  'auth.utilisateur.double-authentification-reinitialisee': {
+    Component: DoubleAuthentificationReinitialisee,
+    description: "Envoyé à un admin dont la double authentification vient d'être réinitialisée par un autre admin.",
+    label: 'Double authentification réinitialisée',
+    preview: 'Votre double authentification a été réinitialisée par un administrateur',
+    scenarios: doubleAuthentificationReinitialiseeScenarios,
+    subject: '[France Chaleur Urbaine] Double authentification réinitialisée',
+    trigger: {
+      description: 'Quand un admin clique sur « Réinitialiser la double authentification » dans la gestion des utilisateurs.',
       type: 'action',
     },
   },

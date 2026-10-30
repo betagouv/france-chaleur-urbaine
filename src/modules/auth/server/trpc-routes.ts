@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 
+import { resetUserMfa } from '@/modules/auth/server/mfa';
 import { changePasswordWithResetToken, requestPassword } from '@/modules/auth/server/service';
-import { route, router } from '@/modules/trpc/server';
+import { adminRoute, route, router } from '@/modules/trpc/server';
 import { zPassword } from '@/utils/validation';
 
 export const authRouter = router({
@@ -43,4 +44,6 @@ export const authRouter = router({
     })
     .input(z.object({ email: z.email() }))
     .mutation(async ({ input }) => await requestPassword(input.email)),
+  /** Drops the second factor of a user (lost phone): a new enrollment is required at their next login. */
+  resetUserMfa: adminRoute.input(z.object({ userId: z.uuidv4() })).mutation(({ ctx, input }) => resetUserMfa(input.userId, ctx.user.id)),
 });
