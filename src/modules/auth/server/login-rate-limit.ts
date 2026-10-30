@@ -13,14 +13,16 @@ const loginRateLimiter = createNextApiRateLimiter({
   windowMs: businessRules.loginAttemptsWindowMinutes.value * 60 * 1000,
 });
 
-/** NextAuth credentials sign-in requests are POSTs on `/api/auth/callback/credentials`. */
+/** Providers whose sign-in POST (`/api/auth/callback/<provider>`) is rate limited: password, then the admin 6-digit code. */
+const rateLimitedProviders = ['credentials', 'mfa'];
+
 const isCredentialsSignInRequest = (req: NextApiRequest): boolean => {
   const segments = req.query.nextauth;
-  return req.method === 'POST' && Array.isArray(segments) && segments[0] === 'callback' && segments[1] === 'credentials';
+  return req.method === 'POST' && Array.isArray(segments) && segments[0] === 'callback' && rateLimitedProviders.includes(segments[1]);
 };
 
 /**
- * Wraps the NextAuth handler to rate limit credentials sign-in attempts per client IP.
+ * Wraps the NextAuth handler to rate limit credentials and second-factor sign-in attempts per client IP.
  * Successful and failed attempts both count: NextAuth answers both with a redirect, so they cannot be told apart here.
  * When the limit is hit, the response mimics NextAuth's shape (`{ url }`) so the client (`signIn` with redirect, the only usage) navigates to the login page with the error.
  */

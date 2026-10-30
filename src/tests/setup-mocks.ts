@@ -31,6 +31,7 @@ vi.mock('@/server/config', () => ({
     websiteOrigin: undefined,
   },
   serverConfig: {
+    ADMIN_MFA_ENCRYPTION_KEY: 'dGVzdC1rZXktdGVzdC1rZXktdGVzdC1rZXktdGVzdCE=', // 32 bytes, admin second factor enabled in tests
     // integration workers each open a pool: keep their total under the Postgres max_connections (100)
     DATABASE_POOL_MAX: 10,
     databaseUrl: process.env.DATABASE_URL ?? 'postgres://fcu_test:fcu_test_pass@localhost:5433/fcu_test',

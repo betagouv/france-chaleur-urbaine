@@ -195,6 +195,13 @@ export default function ManageUsers() {
     },
   });
 
+  const resetUserMfa = trpc.auth.resetUserMfa.useMutation({
+    onSuccess: () => {
+      notify('success', 'Double authentification réinitialisée : un nouvel enrôlement sera demandé à la prochaine connexion');
+      void refetchUsers();
+    },
+  });
+
   const handleUpdateUser = (userId: string) =>
     toastErrors(async (userUpdate: UsersResponse['updateInput']) => {
       await updateUser(userId, userUpdate);
@@ -394,6 +401,24 @@ export default function ManageUsers() {
                     id: 'impersonate-full',
                     label: 'Prendre le profil complet (dev)',
                     onClick: () => startImpersonation({ userId: row.original.id }),
+                  } satisfies HamburgerMenuItem,
+                ]
+              : []),
+            ...(row.original.totp_enrolled_at
+              ? [
+                  {
+                    icon: 'ri-shield-keyhole-line',
+                    id: 'reset-mfa',
+                    label: 'Réinitialiser la double authentification',
+                    onClick: () => {
+                      if (
+                        window.confirm(
+                          'Réinitialiser la double authentification de cet utilisateur ? Il devra enregistrer à nouveau son application à sa prochaine connexion.'
+                        )
+                      ) {
+                        void toastErrors(() => resetUserMfa.mutateAsync({ userId: row.original.id }))();
+                      }
+                    },
                   } satisfies HamburgerMenuItem,
                 ]
               : []),

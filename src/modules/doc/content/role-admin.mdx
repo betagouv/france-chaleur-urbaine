@@ -45,6 +45,7 @@ Points à retenir :
 
 - **Impostures** : endosser n'importe quel rôle avec des permissions simulées pour voir l'application comme l'utilisateur ciblé, avec une option d'anonymisation des données personnelles pour les démonstrations. Voir [Rôles et permissions](/admin/doc/roles-permissions).
 - **Étiquettes utilisateurs** : marquage libre des comptes (nom + couleur), posé depuis la fiche d'un utilisateur ou en masse (collage d'une liste d'emails), filtrable et exportable dans [Gestion des utilisateurs](/admin/users). Purement informatif : aucun effet sur les permissions, et invisible des utilisateurs eux-mêmes. Opérations tracées ([création](/admin/events?types=user_tag_created), [modification](/admin/events?types=user_tag_updated), [suppression](/admin/events?types=user_tag_deleted) d'étiquette).
+- **Double authentification** : un compte admin exige un code d'application d'authentification en plus du mot de passe (voir [Inscription et comptes](/admin/doc/inscription-comptes)). En cas de téléphone perdu, un autre admin réinitialise le second facteur depuis [Gestion des utilisateurs](/admin/users) ; l'opération est tracée ([réinitialisation](/admin/events?types=user_mfa_reset)).
 - **Diagnostic des données** : repère les incohérences entre utilisateurs, permissions et demandes.
 - **Suivi des tâches** : état des tâches asynchrones et des crons (voir [Références](/admin/doc/references)).
 
