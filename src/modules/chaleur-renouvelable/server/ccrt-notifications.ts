@@ -10,7 +10,7 @@ import { processInParallel } from '@/utils/async';
 import { dayjs } from '@/utils/date';
 import { ObjectEntries } from '@/utils/typescript';
 
-import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, type DemandeChaleurRenouvelable } from '../constants';
+import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, type DemandeChaleurRenouvelable, IS_CCRT_EMAIL_ENABLED } from '../constants';
 import { recordCcrtPostHogEvent } from './ccrt-tracking';
 
 /** Day of the week (0 = Sunday) of the weekly digest, matching the cron (Monday). */
@@ -151,8 +151,12 @@ const countPendingDemandsByRecipient = async (recipientIds: string[]) => {
  *   quotidien) au cours des 7 derniers jours — chaque demande tombe ainsi dans un seul récapitulatif.
  * Marque la demande comme notifiée seulement si au moins un destinataire a été trouvé — sinon on attend
  * qu'une permission territoriale soit ajoutée (idempotent, pas de boucle).
+ * Suspendu tant que `IS_CCRT_EMAIL_ENABLED` est faux : rien n'est marqué, le rattrapage se fait à la réactivation.
  */
 export const notifyCcrtOfNewDemands = async () => {
+  if (!IS_CCRT_EMAIL_ENABLED) {
+    return;
+  }
   const now = new Date();
   const today = dayjs(now).tz('Europe/Paris');
   const isWeeklyDigestDay = today.day() === WEEKLY_DIGEST_DAY;
@@ -255,6 +259,9 @@ export const notifyCcrtOfNewDemands = async () => {
  * quotidiennement, le lundi du récapitulatif suivant le marquage pour un compte hebdomadaire.
  */
 export const notifyCcrtOfUnhandledDemands = async () => {
+  if (!IS_CCRT_EMAIL_ENABLED) {
+    return;
+  }
   const now = new Date();
   const today = dayjs(now).tz('Europe/Paris');
   // first Monday on or after the marking date: + ((8 - dow) % 7) days, dow 0 = Sunday, 1 = Monday
