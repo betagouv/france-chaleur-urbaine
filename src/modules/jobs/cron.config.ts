@@ -31,13 +31,13 @@ export const cronDefinitions = [
   },
   {
     description:
-      "Prévient les CCRT des nouvelles demandes d'accompagnement chaleur renouvelable validées sur un territoire de leur périmètre, selon leur préférence : chaque jour ouvré (quotidien, un email détaillé par demande) ou le lundi seulement, en un récapitulatif de la semaine (hebdomadaire). Marque les demandes comme notifiées seulement si au moins un destinataire existe. Suspendu tant que les emails automatiques CCRT sont désactivés.",
+      "Prévient les CCRT des nouvelles demandes d'accompagnement chaleur renouvelable validées sur un territoire de leur périmètre, selon leur préférence : chaque jour ouvré (quotidien, un email détaillé par demande) ou le lundi seulement, en un récapitulatif de la semaine (hebdomadaire). Marque les demandes comme notifiées seulement si au moins un destinataire existe.",
     name: 'notifyCcrtOfNewDemands',
     schedule: '10 10 * * 1-5',
     scheduleLabel: 'Lundi à vendredi, 10h10',
   },
   {
-    description: `Relance les CCRT sur les demandes d'accompagnement « À traiter » reçues depuis plus de ${businessRules.unhandledDemandReminderDays.display} (jour de la notification quotidienne, ou lundi du récapitulatif hebdomadaire), si la préférence « Rappel des demandes en attente » est activée. Suspendu tant que les emails automatiques CCRT sont désactivés.`,
+    description: `Relance les CCRT sur les demandes d'accompagnement « À traiter » reçues depuis plus de ${businessRules.unhandledDemandReminderDays.display} (jour de la notification quotidienne, ou lundi du récapitulatif hebdomadaire), si la préférence « Rappel des demandes en attente » est activée.`,
     name: 'notifyCcrtOfUnhandledDemands',
     schedule: '50 9 * * 2',
     scheduleLabel: 'Mardi, 9h50',

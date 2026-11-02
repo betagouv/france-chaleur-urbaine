@@ -12,7 +12,7 @@ Cinq automatismes quotidiens ou hebdomadaires entourent les demandes de raccorde
     attente -- "Oui" --> rappel["Mardi, 9h55 : « Rappel demandes en attente »"]:::email
     relanceCheck{"Éligible + chauffage collectif + pas recontacté ?"} -- "Oui, ${businessRules.firstRelanceDelayMonths.display} après le dépôt" --> relance1["Lundi, 10h05 : « Enquête de satisfaction » (1re relance)"]:::email
     relance1 -- "Toujours rien à ${businessRules.secondRelanceDelayDays.display} du dépôt" --> relance2["Seconde relance"]:::email
-    ccrtValidee["Demande d'accompagnement CCRT validée"]:::db -- "Si emails CCRT activés (suspendus actuellement)" --> ccrtNotif["Lundi à vendredi, 10h10 : « Nouvelle demande d'accompagnement CCRT » (quotidien, un email par demande), ou récapitulatif du lundi (hebdomadaire)"]:::email
+    ccrtValidee["Demande d'accompagnement CCRT validée"]:::db -- "Selon les préférences de notification" --> ccrtNotif["Lundi à vendredi, 10h10 : « Nouvelle demande d'accompagnement CCRT » (quotidien, un email par demande), ou récapitulatif du lundi (hebdomadaire)"]:::email
     ccrtNotif --> ccrtMarque["Demande marquée comme notifiée"]:::db
     ccrtMarque --> ccrtAttente{"Toujours « À traiter » après ${businessRules.unhandledDemandReminderDays.display} ?"}
     ccrtAttente -- "Oui" --> ccrtRappel["Mardi, 9h50 : « Rappel demandes CCRT en attente »"]:::email
@@ -50,7 +50,7 @@ Email [« Rappel demandes en attente »](/admin/emails?type=demands.gestionnaire
 
 ## 3. Demandes d'accompagnement CCRT — lundi à vendredi 10h10, et mardi 9h50
 
-**Envoi temporairement suspendu** : `IS_CCRT_EMAIL_ENABLED = false` dans `src/modules/chaleur-renouvelable/constants.ts` bloque les deux crons CCRT et l'email d'ouverture de compte CCRT. Les crons restent planifiés mais ne marquent rien : à la réactivation, toutes les demandes validées pas encore notifiées partent au premier passage (rattrapage automatique, y compris celles validées pendant la suspension).
+**Envois actifs** : les notifications de nouvelles demandes et les rappels CCRT suivent les horaires et préférences ci-dessous. Les demandes validées pas encore notifiées, y compris celles validées pendant la suspension, sont prises en compte au prochain passage du cron correspondant (quotidien ou récapitulatif du lundi). Les emails d'ouverture des comptes créés pendant la suspension ne sont pas renvoyés automatiquement.
 
 Les comptes CCRT ont les mêmes réglages que les gestionnaires (« Mon compte », section Notifications, ou [Gestion des utilisateurs](/admin/users)), appliqués aux demandes d'accompagnement chaleur renouvelable **validées** sur un territoire couvert par une de leurs permissions classiques (commune, EPCI, EPT, département ou région). Seul le rôle CCRT est destinataire : une collectivité avec la même permission territoriale ne reçoit rien.
 

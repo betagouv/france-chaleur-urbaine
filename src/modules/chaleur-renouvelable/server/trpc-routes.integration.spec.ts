@@ -20,15 +20,6 @@ import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import type { UserRole } from '@/types/enum/UserRole';
 import { fetchJSON } from '@/utils/network';
 
-const ccrtEmail = vi.hoisted(() => ({ isEnabled: true }));
-
-vi.mock('@/modules/chaleur-renouvelable/constants', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/modules/chaleur-renouvelable/constants')>()),
-  get IS_CCRT_EMAIL_ENABLED() {
-    return ccrtEmail.isEnabled;
-  },
-}));
-
 vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
 }));
@@ -172,7 +163,6 @@ function buildCcrtExperimentationDemandInput(overrides: Partial<DemandeChaleurRe
 
 describe('batEnrRouter', () => {
   beforeEach(async () => {
-    ccrtEmail.isEnabled = true;
     await cleanDatabase();
     await seedCcrtExperimentationTerritory();
     vi.clearAllMocks();
@@ -467,8 +457,7 @@ describe('batEnrRouter', () => {
       });
     });
 
-    it.each([false, true])('creates a dedicated demand and confirms it to the applicant with CCRT emails enabled=%s', async (isEnabled) => {
-      ccrtEmail.isEnabled = isEnabled;
+    it('creates a dedicated demand and confirms it to the applicant', async () => {
       const ccrtMatchingId = testUsers.ccrt.id!;
       await seedTableUser([{ email: testUsers.ccrt.email, id: ccrtMatchingId, role: 'ccrt' }]);
       await seedDepartmentPermission(ccrtMatchingId, '13');

@@ -96,8 +96,7 @@ export const emails = defineEmails({
     scenarios: ouvertureEspaceCcrtScenarios,
     subject: "[France Chaleur Urbaine] Ouverture d'espace gestionnaire",
     trigger: {
-      description:
-        "À la création par un admin d'un compte CCRT actif, si les emails automatiques CCRT sont activés (actuellement suspendus).",
+      description: "À la création par un admin d'un compte CCRT actif.",
       type: 'action',
     },
   },
@@ -149,7 +148,7 @@ export const emails = defineEmails({
     subject: "[France Chaleur Urbaine] À traiter : Nouvelle demande d'accompagnement",
     trigger: {
       description:
-        "Cron du lundi au vendredi 10h10 — demandes d'accompagnement validées, sur un territoire du CCRT et non encore notifiées ; comptes ayant choisi la notification quotidienne ; emails automatiques CCRT activés (actuellement suspendus).",
+        "Cron du lundi au vendredi 10h10 — demandes d'accompagnement validées, sur un territoire du CCRT et non encore notifiées ; comptes ayant choisi la notification quotidienne.",
       type: 'cron',
     },
   },
@@ -163,7 +162,7 @@ export const emails = defineEmails({
     subject: "[France Chaleur Urbaine] Nouvelle(s) demande(s) d'accompagnement cette semaine",
     trigger: {
       description:
-        "Cron du lundi 10h10 — demandes d'accompagnement validées, sur un territoire du CCRT, non encore notifiées ou notifiées au cours des 7 derniers jours ; comptes ayant choisi la notification hebdomadaire ; emails automatiques CCRT activés (actuellement suspendus).",
+        "Cron du lundi 10h10 — demandes d'accompagnement validées, sur un territoire du CCRT, non encore notifiées ou notifiées au cours des 7 derniers jours ; comptes ayant choisi la notification hebdomadaire.",
       type: 'cron',
     },
   },
@@ -176,7 +175,7 @@ export const emails = defineEmails({
     scenarios: rappelDemandesEnAttenteCcrtScenarios,
     subject: "[France Chaleur Urbaine] {{n}} demande(s) d'accompagnement en attente de traitement",
     trigger: {
-      description: `Cron du mardi 9h50 — demandes d'accompagnement « À traiter » reçues depuis plus de ${businessRules.unhandledDemandReminderDays.display} (jour de la notification quotidienne, ou lundi du récapitulatif hebdomadaire) ; nécessite la préférence « Rappel des demandes en attente » et les emails automatiques CCRT activés (actuellement suspendus).`,
+      description: `Cron du mardi 9h50 — demandes d'accompagnement « À traiter » reçues depuis plus de ${businessRules.unhandledDemandReminderDays.display} (jour de la notification quotidienne, ou lundi du récapitulatif hebdomadaire) ; nécessite la préférence « Rappel des demandes en attente ».`,
       type: 'cron',
     },
   },

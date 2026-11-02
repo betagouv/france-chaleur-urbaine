@@ -8,14 +8,6 @@ import { uuid } from '@/tests/helpers';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT, DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 
-const ccrtEmail = vi.hoisted(() => ({ isEnabled: true }));
-
-vi.mock('@/modules/chaleur-renouvelable/constants', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/modules/chaleur-renouvelable/constants')>()),
-  get IS_CCRT_EMAIL_ENABLED() {
-    return ccrtEmail.isEnabled;
-  },
-}));
 vi.mock('@/modules/email', () => ({ sendEmailTemplate: vi.fn().mockResolvedValue(undefined) }));
 vi.mock('@/utils/network', () => ({ fetchJSON: vi.fn(), postFetchJSON: vi.fn() }));
 
@@ -66,7 +58,6 @@ const notifiedAtOf = async (demandId: string) =>
 
 describe('ccrt-notifications', () => {
   beforeEach(async () => {
-    ccrtEmail.isEnabled = true;
     await cleanDatabase();
     await seedTableUser([
       { id: ccrtMatching, preferences: preferences({ new_demands: 'daily' }), role: 'ccrt', structure_name: 'CCRT 13' },
@@ -210,17 +201,6 @@ describe('ccrt-notifications', () => {
       expect(await notifiedAtOf(midWeek.id)).toStrictEqual(notifiedOn('2026-10-14'));
       expect(await notifiedAtOf(previousDigest.id)).toStrictEqual(notifiedOn('2026-10-12'));
     });
-
-    it("n'envoie ni ne marque rien tant que les emails CCRT sont suspendus", async () => {
-      ccrtEmail.isEnabled = false;
-      const demand = await seedDemand();
-
-      runAt(WEDNESDAY_10H);
-      await notifyCcrtOfNewDemands();
-
-      expect(sentMail).not.toHaveBeenCalled();
-      expect(await notifiedAtOf(demand.id)).toBeNull();
-    });
   });
 
   describe('notifyCcrtOfUnhandledDemands', () => {
@@ -293,15 +273,6 @@ describe('ccrt-notifications', () => {
       await notifyCcrtOfUnhandledDemands();
 
       expect(recipientIds()).toStrictEqual([ccrtMatching, ccrtOptedOutNew, ccrtWeekly].sort());
-    });
-
-    it("n'envoie rien tant que les emails CCRT sont suspendus", async () => {
-      ccrtEmail.isEnabled = false;
-      await seedDemand({ notified_at: daysAgo(10) });
-
-      await notifyCcrtOfUnhandledDemands();
-
-      expect(sentMail).not.toHaveBeenCalled();
     });
   });
 });
