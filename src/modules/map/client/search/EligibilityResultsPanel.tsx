@@ -52,6 +52,9 @@ export function EligibilityResultsPanel({
     <Accordion
       small
       simple
+      // Flex column so the DSFR collapse (already `overflow-y: auto` when expanded) shrinks to the
+      // height left in the overlay instead of overflowing the map.
+      className="flex flex-col min-h-0"
       label={
         <>
           {addresses.length} adresse{addresses.length > 1 ? 's' : ''} recherchée{addresses.length > 1 ? 's' : ''}
@@ -61,7 +64,7 @@ export function EligibilityResultsPanel({
       onExpandedChange={setVisible}
       onClose={onReset}
     >
-      <div className="flex flex-col gap-2 max-h-[50dvh] overflow-auto">
+      <div className="flex flex-col gap-2">
         {addresses.map((address, index) => (
           <CardSearchDetails
             key={address.id}
