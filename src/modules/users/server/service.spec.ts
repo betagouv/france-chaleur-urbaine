@@ -9,16 +9,8 @@ import { type UserRole, userRoles } from '@/types/enum/UserRole';
 import { create } from './service';
 
 const mocks = vi.hoisted(() => ({
-  ccrtEmailEnabled: false,
   createRecord: vi.fn(),
   findExistingUser: vi.fn(),
-}));
-
-vi.mock('@/modules/chaleur-renouvelable/constants', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/modules/chaleur-renouvelable/constants')>()),
-  get IS_CCRT_EMAIL_ENABLED() {
-    return mocks.ccrtEmailEnabled;
-  },
 }));
 
 vi.mock('@/server/db/kysely', () => ({
@@ -49,28 +41,21 @@ describe('create user opening email', () => {
     particulier: null,
     professionnel: null,
   };
-  const cases: TestCase<{ active: boolean | undefined; role: UserRole; ccrtEmailEnabled: boolean }, string | null>[] = [
-    true,
-    false,
-  ].flatMap((ccrtEmailEnabled) =>
-    userRoles.flatMap((role) =>
-      [true, false, undefined].map((active) => ({
-        expectedOutput: active && (role !== 'ccrt' || ccrtEmailEnabled) ? openingEmails[role] : null,
-        input: { active, ccrtEmailEnabled, role },
-        label: `${role}, active=${active}, CCRT emails=${ccrtEmailEnabled}`,
-      }))
-    )
+  const cases: TestCase<{ active: boolean | undefined; role: UserRole }, string | null>[] = userRoles.flatMap((role) =>
+    [true, false, undefined].map((active) => ({
+      expectedOutput: active ? openingEmails[role] : null,
+      input: { active, role },
+      label: `${role}, active=${active}`,
+    }))
   );
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.ccrtEmailEnabled = false;
     mocks.findExistingUser.mockResolvedValue(undefined);
     mocks.createRecord.mockResolvedValue(record);
   });
 
   it.each(cases)('$label', async ({ input, expectedOutput }) => {
-    mocks.ccrtEmailEnabled = input.ccrtEmailEnabled;
     await expect(
       create(
         {
