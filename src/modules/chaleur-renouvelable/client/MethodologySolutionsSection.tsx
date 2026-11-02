@@ -123,6 +123,16 @@ const getApartmentHotWaterSolutions = (solarOutdoorSpace: string): SolutionsTabl
   },
 ];
 
+type SolutionGroup = {
+  title: string;
+  heating: SolutionsTableProps['rows'];
+  heatingNote: string;
+  hotWater: SolutionsTableProps['rows'];
+  hotWaterNote: string | null;
+  showAltitudeRule: boolean;
+  showHeatingRank: boolean;
+};
+
 const SOLUTION_GROUPS = [
   {
     heating: [
@@ -280,4 +290,4 @@ const SOLUTION_GROUPS = [
     showHeatingRank: true,
     title: 'Maison individuelle',
   },
-];
+] as const satisfies readonly SolutionGroup[];
