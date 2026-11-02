@@ -11,14 +11,14 @@ export function MethodologySolutionsSection() {
     <>
       <h2>4. Quelles solutions écologiques sont proposées ?</h2>
       <p>
-        Les solutions sont présentées par type de logement et par usage : « Chauffage + eau chaude » et « Eau chaude seulement ». Elles sont
+        Les solutions sont présentées par type de logement et par usage : « Chauffage + Eau chaude » et « Eau chaude seulement ». Elles sont
         classées par ordre de pertinence, selon la logique « ENR choix ».
       </p>
       {SOLUTION_GROUPS.map((group) => (
         <section key={group.title}>
           <h3>{group.title}</h3>
-          <h4>Chauffage + eau chaude</h4>
-          <SolutionsTable caption={`${group.title} : chauffage + eau chaude`} rows={group.heating} showRank={group.showHeatingRank} />
+          <h4>Chauffage + Eau chaude</h4>
+          <SolutionsTable caption={`${group.title} : Chauffage + Eau chaude`} rows={group.heating} showRank={group.showHeatingRank} />
           <p>{group.heatingNote}</p>
           {group.showAltitudeRule && <p>{ALTITUDE_RULE}</p>}
           <h4>Eau chaude seulement</h4>

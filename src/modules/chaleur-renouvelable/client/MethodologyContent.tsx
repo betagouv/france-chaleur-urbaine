@@ -45,7 +45,7 @@ export function MethodologyContent() {
           </ul>
         </li>
         <li>
-          <strong>Votre type de radiateur</strong> :
+          <strong>Votre type de radiateurs</strong> :
           <ul className="fr-my-0">
             <li>à eau</li>
             <li>électriques</li>
@@ -93,11 +93,11 @@ export function MethodologyContent() {
         <li>
           La seconde (
           <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/batenr" isExternal>
-            API Bat-ENR
+            Bat-ENR
           </Link>
-          ) fournit des informations sur les contraintes environnementales de la parcelle : possibilité ou non de faire de la géothermie
-          (zone de forage et ressource du sous-sol, BRGM), existence d’un plan de protection de l’atmosphère, présence de contraintes
-          patrimoniales ou encore la couverture solaire des toitures (CEREMA)
+          , l’outil réalisé par le Cerema) fournit des informations sur les contraintes environnementales de la parcelle : possibilité ou
+          non de faire de la géothermie (zone de forage et ressource du sous-sol, BRGM), existence d’un plan de protection de l’atmosphère,
+          présence de contraintes patrimoniales ou encore la couverture solaire des toitures (CYTHELIA).
         </li>
       </ul>
       <p className="my-3">À partir de ces éléments, le simulateur propose les solutions les plus adaptées :</p>
@@ -115,7 +115,7 @@ export function MethodologyContent() {
           Les contraintes patrimoniales sont signalées, si une pompe à chaleur aérothermique, une chaudière bois ou le solaire thermique
           sont envisagés,
         </li>
-        <li>Si un réseau de froid est située à moins de 50 m, la solution réseau de chaleur affiche « rafraîchissement possible.</li>
+        <li>Si un réseau de froid est situé à moins de 50 m, la solution réseau de chaleur affiche « rafraîchissement possible ».</li>
       </ul>
       <hr />
       <MethodologySolutionsSection />
@@ -150,12 +150,14 @@ export function MethodologyContent() {
       </p>
       <p>
         <strong>Coût annuel par logement et gain par rapport au gaz :</strong>
-        <br /> <br /> Ils sont calculés avec le moteur du comparateur de coûts et d'émissions de CO₂, réalisé par France Chaleur Urbaine
+        <br /> <br /> Ils sont calculés avec le moteur du{' '}
+        <Link href="/comparateur-couts-performances">comparateur de coûts et d'émissions de CO₂</Link>, réalisé par France Chaleur Urbaine
         avec le concours de l'association AMORCE et du bureau d'études Elcimaï. Le coût annuel additionne l'abonnement, la consommation
         d'énergie, l'entretien courant et le gros entretien, hors investissement et hors aides. Le gain affiché compare ce coût à celui d'un
         chauffage au gaz dans la même situation (ou d'une production d'eau chaude au gaz pour les solutions « eau chaude seulement »). Les
         prix des réseaux de chaleur proviennent de l'enquête FEDENE/AMORCE ; les données économiques des autres modes de chauffage sont
-        mises à jour chaque année. Consulter la note méthodologique du comparateur.
+        mises à jour chaque année.{' '}
+        <Link href="/documentation/Note_methodologique_comparateur.pdf">Consulter la note méthodologique du comparateur</Link>.
       </p>
       <p>
         <strong>Coût d'installation par logement :</strong>
