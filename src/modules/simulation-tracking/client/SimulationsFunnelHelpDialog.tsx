@@ -1,14 +1,7 @@
 import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 
-import { FUNNEL_LEGEND, type FunnelColumn, type FunnelLegendItem } from './simulation-funnel';
-
-const COLUMN_TITLES: Record<FunnelColumn, string> = {
-  entry: '1. Page d’arrivée',
-  outcome: '3. Issue',
-  situation: '2. Contact proposé',
-};
-const COLUMNS: FunnelColumn[] = ['entry', 'situation', 'outcome'];
+import { FUNNEL_COLUMN_LABELS, FUNNEL_COLUMNS, FUNNEL_LEGEND, type FunnelLegendItem } from './simulation-funnel';
 
 /**
  * Self-documentation of the simulations flow: every possible value of each column with its meaning, how to read the
@@ -31,11 +24,14 @@ export function SimulationsFunnelHelpDialog() {
           bâtiment connu, ouvre une nouvelle simulation reliée à la précédente, modifier les autres paramètres met à jour la même simulation
           et c’est son état courant qui compte. Le diagramme la fait passer par trois colonnes ; l’épaisseur d’un lien est le nombre de
           simulations, le pourcentage inscrit dessus est sa part de la case de départ (masqué sur les liens trop fins), le survol donne les
-          deux.
+          deux. Un clic sur une case filtre le flux et les indicateurs sur cette valeur (une par colonne, cumulables) ; les filtres actifs
+          s’affichent au-dessus du diagramme et se retirent d’un clic.
         </p>
-        {COLUMNS.map((column) => (
+        {FUNNEL_COLUMNS.map((column, index) => (
           <section key={column}>
-            <h3 className="mb-2 text-base font-bold">{COLUMN_TITLES[column]}</h3>
+            <h3 className="mb-2 text-base font-bold">
+              {index + 1}. {FUNNEL_COLUMN_LABELS[column]}
+            </h3>
             <dl className="mb-0 flex flex-col gap-2">
               {FUNNEL_LEGEND[column].map((item) => (
                 <LegendRow key={item.label} item={item} />

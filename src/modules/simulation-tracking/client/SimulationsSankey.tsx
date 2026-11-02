@@ -5,6 +5,8 @@ import type { FunnelColumn, FunnelLink, FunnelNode, SimulationSankeyData } from 
 
 type SimulationsSankeyProps = {
   data: SimulationSankeyData;
+  /** Called with the clicked node: the page filters the flow on it. */
+  onNodeClick: (node: FunnelNode) => void;
 };
 
 /** Wide nodes: the label and the volume are written inside, never over the links. */
@@ -35,9 +37,9 @@ type HoveredLink = { x: number; y: number; source: LabeledNode; target: LabeledN
  * node is too short), so identity never relies on color alone; share labels sit at the start of their link, where the
  * links of a node are still stacked and never cross. The chart keeps a minimum width and scrolls horizontally below it,
  * and grows in height with the fullest column. The tooltip is ours: the Recharts one hides on every mouse move over a
- * Sankey link.
+ * Sankey link. A click on a node hands it to the page, which filters the flow on it.
  */
-export function SimulationsSankey({ data }: SimulationsSankeyProps) {
+export function SimulationsSankey({ data, onNodeClick }: SimulationsSankeyProps) {
   const [hoveredLink, setHoveredLink] = useState<HoveredLink | null>(null);
   const height = useMemo(() => chartHeight(data), [data]);
   const handleMouseEnter = useCallback((item: SankeyNodeProps | SankeyLinkProps, type: 'node' | 'link') => {
@@ -54,6 +56,15 @@ export function SimulationsSankey({ data }: SimulationsSankeyProps) {
     });
   }, []);
   const handleMouseLeave = useCallback(() => setHoveredLink(null), []);
+  const handleClick = useCallback(
+    (item: SankeyNodeProps | SankeyLinkProps, type: 'node' | 'link') => {
+      if (type !== 'node' || 'sourceX' in item) {
+        return;
+      }
+      onNodeClick(item.payload as typeof item.payload & FunnelNode);
+    },
+    [onNodeClick]
+  );
 
   return (
     <div className="overflow-x-auto">
@@ -69,6 +80,7 @@ export function SimulationsSankey({ data }: SimulationsSankeyProps) {
             iterations={64}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            onClick={handleClick}
           />
         </ResponsiveContainer>
         {hoveredLink && <LinkTooltip link={hoveredLink} />}
@@ -131,8 +143,9 @@ function SankeyNode({ x, y, width, height, payload }: SankeyNodeProps) {
     ? [...lines, String(node.value)]
     : lines.map((line, index) => (index === lines.length - 1 ? `${line} · ${node.value}` : line));
   return (
-    <Layer>
-      <Rectangle x={x} y={y} width={width} height={height} fill={node.fill} radius={3} />
+    <Layer className="group cursor-pointer">
+      <title>Filtrer sur « {node.name} »</title>
+      <Rectangle x={x} y={y} width={width} height={height} fill={node.fill} radius={3} className="group-hover:brightness-125" />
       {fitsCompact ? (
         <text
           x={x + width / 2}

@@ -11,6 +11,12 @@ import type { SimulationOutcome } from '../constants';
 export type SimulationFunnelRow = RouterOutput['simulationTracking']['getFunnel'][number];
 
 export type FunnelColumn = 'entry' | 'situation' | 'outcome';
+export const FUNNEL_COLUMNS: FunnelColumn[] = ['entry', 'situation', 'outcome'];
+export const FUNNEL_COLUMN_LABELS: Record<FunnelColumn, string> = {
+  entry: 'Page d’arrivée',
+  outcome: 'Issue',
+  situation: 'Contact proposé',
+};
 
 export type FunnelNode = {
   column: FunnelColumn;
@@ -37,7 +43,7 @@ const HEAT_NETWORK_MAX_DISTANCE = businessRules.fcrHeatNetworkMaxDistanceMeters.
  * Contact proposed on the results page, decided by three flags: heat network proposable, CCRT accompaniment available,
  * at least one compatible heating solution. France Rénov' alone is split by the reason it is the only proposal.
  */
-const SITUATION_KEYS = [
+export const SITUATION_KEYS = [
   'heat_network_ccrt',
   'heat_network_france_renov',
   'ccrt',
@@ -56,7 +62,12 @@ const SITUATION_LABELS: Record<SituationKey, string> = {
 };
 
 type OutcomeKey = SimulationOutcome | 'none';
-const OUTCOME_KEYS = ['heat_network_demand', 'ccrt_demand', 'france_renov_orientation', 'none'] as const satisfies readonly OutcomeKey[];
+export const OUTCOME_KEYS = [
+  'heat_network_demand',
+  'ccrt_demand',
+  'france_renov_orientation',
+  'none',
+] as const satisfies readonly OutcomeKey[];
 export const OUTCOME_LABELS: Record<OutcomeKey, string> = {
   ccrt_demand: 'Demande CCRT',
   france_renov_orientation: 'Orientation France Rénov’',
@@ -195,6 +206,28 @@ const situationKey = (row: SimulationFunnelRow): SituationKey =>
             : 'france_renov_no_solution';
 
 const outcomeKey = (row: SimulationFunnelRow): OutcomeKey => row.outcome ?? 'none';
+
+/** Key of the node a row belongs to in the given column. */
+const nodeKey = (column: FunnelColumn, row: SimulationFunnelRow): string =>
+  column === 'entry' ? entryKey(row) : column === 'situation' ? situationKey(row) : outcomeKey(row);
+
+/** Display name of a node from its column and key, for the active filter tags (the chart gets it through its nodes). */
+export const funnelNodeName = (column: FunnelColumn, key: string, sourceLabels: Record<string, string> = {}): string =>
+  column === 'entry'
+    ? entryLabel(key, sourceLabels)
+    : column === 'situation'
+      ? (SITUATION_LABELS[key as SituationKey] ?? key)
+      : (OUTCOME_LABELS[key as OutcomeKey] ?? key);
+
+/** At most one node key per column; `null` / `undefined` = no filter on that column (the shape nuqs hands over). */
+export type FunnelFilters = Partial<Record<FunnelColumn, string | null>>;
+
+/**
+ * Keeps the rows that belong to every filtered node: the rows of `getFunnel` are grouped by the very dimensions of the
+ * three columns, so a node filter is exact on the aggregated rows and needs no new query.
+ */
+export const filterSimulationRows = (rows: SimulationFunnelRow[], filters: FunnelFilters): SimulationFunnelRow[] =>
+  rows.filter((row) => FUNNEL_COLUMNS.every((column) => !filters[column] || nodeKey(column, row) === filters[column]));
 
 const sumBy = <Key extends string>(rows: SimulationFunnelRow[], keyOf: (row: SimulationFunnelRow) => Key) =>
   rows.reduce((totals, row) => totals.set(keyOf(row), (totals.get(keyOf(row)) ?? 0) + row.simulations), new Map<Key, number>());

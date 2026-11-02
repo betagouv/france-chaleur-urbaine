@@ -1,6 +1,7 @@
+import Tag from '@codegouvfr/react-dsfr/Tag';
 import { keepPreviousData } from '@tanstack/react-query';
 import { parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import Select from '@/components/form/dsfr/Select';
@@ -23,7 +24,20 @@ import { formatAsISODate } from '@/utils/date';
 
 import { SimulationsFunnelHelpDialog } from './SimulationsFunnelHelpDialog';
 import { SimulationsSankey } from './SimulationsSankey';
-import { buildSimulationSankey, computeSimulationIndicators, type SimulationIndicators } from './simulation-funnel';
+import {
+  buildSimulationSankey,
+  computeSimulationIndicators,
+  FUNNEL_COLUMN_LABELS,
+  FUNNEL_COLUMNS,
+  type FunnelColumn,
+  type FunnelFilters,
+  type FunnelNode,
+  filterSimulationRows,
+  funnelNodeName,
+  OUTCOME_KEYS,
+  SITUATION_KEYS,
+  type SimulationIndicators,
+} from './simulation-funnel';
 
 const today = new Date();
 const defaultTo = formatAsISODate(today);
@@ -33,17 +47,24 @@ const filtersParsers = {
   dateFrom: parseAsString.withDefault(defaultFrom),
   dateTo: parseAsString.withDefault(defaultTo),
   departementCode: parseAsString,
+  // node filters, set by clicking a node of the flow (entry keys are open: routes, `source:<id>`, `refusal_email`)
+  entry: parseAsString,
   housingType: parseAsStringLiteral(TYPE_LOGEMENT_VALUES),
+  outcome: parseAsStringLiteral(OUTCOME_KEYS),
   outdoorSpace: parseAsStringLiteral(ESPACE_EXTERIEUR_VALUES),
   radiatorType: parseAsStringLiteral(TYPE_RADIATEUR_VALUES),
+  situation: parseAsStringLiteral(SITUATION_KEYS),
 };
 
 /**
  * Admin view of the renewable heating simulations: headline indicators and the entry → situation → outcome flow,
- * filterable by period and simulation inputs. Reads `simulationTracking.getFunnel`.
+ * filterable by period and simulation inputs (query) and by clicking the nodes of the flow (on the aggregated rows).
+ * Reads `simulationTracking.getFunnel`.
  */
 const SimulationsConversionPage = () => {
-  const [{ dateFrom, dateTo, departementCode, housingType, outdoorSpace, radiatorType }, setFilters] = useQueryStates(filtersParsers);
+  const [{ dateFrom, dateTo, departementCode, housingType, outdoorSpace, radiatorType, entry, situation, outcome }, setFilters] =
+    useQueryStates(filtersParsers);
+  const nodeFilters: FunnelFilters = { entry, outcome, situation };
 
   const { data: rows = [], isLoading } = trpc.simulationTracking.getFunnel.useQuery(
     {
@@ -57,12 +78,20 @@ const SimulationsConversionPage = () => {
     { placeholderData: keepPreviousData }
   );
   const { data: integrations = [] } = trpc.conversionTracking.sources.list.useQuery({ includeArchived: true });
-
-  const sankeyData = useMemo(
-    () => buildSimulationSankey(rows, Object.fromEntries(integrations.map((integration) => [integration.id, integration.label]))),
-    [rows, integrations]
+  const sourceLabels = useMemo(
+    () => Object.fromEntries(integrations.map((integration) => [integration.id, integration.label])),
+    [integrations]
   );
-  const indicators = useMemo(() => computeSimulationIndicators(rows), [rows]);
+
+  const filteredRows = useMemo(() => filterSimulationRows(rows, { entry, outcome, situation }), [rows, entry, outcome, situation]);
+  const sankeyData = useMemo(() => buildSimulationSankey(filteredRows, sourceLabels), [filteredRows, sourceLabels]);
+  const indicators = useMemo(() => computeSimulationIndicators(filteredRows), [filteredRows]);
+
+  // a second click on the filtered node releases its column
+  const handleNodeClick = useCallback(
+    (node: FunnelNode) => setFilters({ [node.column]: nodeFilters[node.column] === node.key ? null : node.key }),
+    [setFilters, nodeFilters.entry, nodeFilters.situation, nodeFilters.outcome]
+  );
 
   return (
     <SimplePage
@@ -85,8 +114,8 @@ const SimulationsConversionPage = () => {
       </div>
       <p className="mb-0 text-sm text-(--text-mention-grey)">
         Une simulation par adresse testée sur la page de résultats. Les demandes sont rapportées aux seules simulations où elles étaient
-        proposées ; les simulations des IP bannies sont exclues. Les affichages des pages restent sur{' '}
-        <Link href="/admin/conversion">Conversion par source</Link>.
+        proposées ; les simulations des IP bannies sont exclues. Un clic sur une case du flux filtre sur cette valeur. Les affichages des
+        pages restent sur <Link href="/admin/conversion">Conversion par source</Link>.
       </p>
 
       <div className="flex flex-wrap items-end gap-4">
@@ -142,14 +171,16 @@ const SimulationsConversionPage = () => {
         />
       </div>
 
+      <FunnelFilterTags filters={nodeFilters} sourceLabels={sourceLabels} onRemove={(column) => setFilters({ [column]: null })} />
+
       <SimulationIndicatorTiles indicators={indicators} />
 
       {isLoading ? (
         <p className="mb-0 text-(--text-mention-grey)">Chargement…</p>
-      ) : rows.length === 0 ? (
+      ) : filteredRows.length === 0 ? (
         <p className="mb-0 text-(--text-mention-grey)">Aucune simulation sur cette période.</p>
       ) : (
-        <SimulationsSankey data={sankeyData} />
+        <SimulationsSankey data={sankeyData} onNodeClick={handleNodeClick} />
       )}
     </SimplePage>
   );
@@ -158,6 +189,34 @@ const SimulationsConversionPage = () => {
 export default SimulationsConversionPage;
 
 const formatRate = (numerator: number, denominator: number) => (denominator > 0 ? `${Math.round((numerator / denominator) * 100)} %` : '—');
+
+type FunnelFilterTagsProps = {
+  filters: FunnelFilters;
+  sourceLabels: Record<string, string>;
+  onRemove: (column: FunnelColumn) => void;
+};
+
+/** Active node filters, one dismissible tag per filtered column; nothing when the flow is unfiltered. */
+function FunnelFilterTags({ filters, sourceLabels, onRemove }: FunnelFilterTagsProps) {
+  const activeFilters = FUNNEL_COLUMNS.flatMap((column) => {
+    const key = filters[column];
+    return key ? [{ column, key }] : [];
+  });
+  if (activeFilters.length === 0) {
+    return null;
+  }
+  return (
+    <ul className="mb-0 flex list-none flex-wrap gap-2 p-0">
+      {activeFilters.map(({ column, key }) => (
+        <li key={column} className="p-0">
+          <Tag dismissible small nativeButtonProps={{ onClick: () => onRemove(column), title: 'Retirer ce filtre' }}>
+            {FUNNEL_COLUMN_LABELS[column]} : {funnelNodeName(column, key, sourceLabels)}
+          </Tag>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 type SimulationIndicatorTilesProps = { indicators: SimulationIndicators };
 
