@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildSimulationSankey, computeSimulationIndicators, type SimulationFunnelRow } from './simulation-funnel';
+import type { TestCase } from '@/tests/trpc-helpers';
+
+import {
+  buildSimulationSankey,
+  computeSimulationIndicators,
+  type FunnelColumn,
+  type FunnelFilters,
+  filterSimulationRows,
+  funnelNodeName,
+  type SimulationFunnelRow,
+} from './simulation-funnel';
 
 const row = (overrides: Partial<SimulationFunnelRow>): SimulationFunnelRow => ({
   addressResolved: true,
@@ -90,4 +100,42 @@ describe('computeSimulationIndicators', () => {
       withoutOutcome: 11,
     });
   });
+});
+
+describe('filterSimulationRows', () => {
+  const cases: TestCase<FunnelFilters, SimulationFunnelRow[]>[] = [
+    { expectedOutput: rows, input: {}, label: 'no filter → every row' },
+    { expectedOutput: rows, input: { entry: null, outcome: null, situation: null }, label: 'null filters → every row' },
+    { expectedOutput: [rows[0], rows[1], rows[5]], input: { entry: '/' }, label: 'entry route' },
+    { expectedOutput: [rows[4]], input: { entry: 'source:bf7714ba-5aeb-4877-be73-35c6ba65a837' }, label: 'entry source' },
+    { expectedOutput: [rows[3]], input: { entry: 'refusal_email' }, label: 'entry refusal email, before the route' },
+    { expectedOutput: [rows[0], rows[1]], input: { situation: 'heat_network_france_renov' }, label: 'situation' },
+    { expectedOutput: [rows[1], rows[4], rows[5]], input: { outcome: 'none' }, label: 'outcome « none »' },
+    { expectedOutput: [rows[1], rows[5]], input: { entry: '/', outcome: 'none' }, label: 'filters of two columns combine' },
+    { expectedOutput: [], input: { situation: 'unknown' }, label: 'unknown key → nothing' },
+  ];
+  it.each(cases)('$label', ({ input, expectedOutput }) => expect(filterSimulationRows(rows, input)).toStrictEqual(expectedOutput));
+});
+
+describe('funnelNodeName', () => {
+  const sourceLabels = { 'bf7714ba-5aeb-4877-be73-35c6ba65a837': 'Partenaire test' };
+  const cases: TestCase<{ column: FunnelColumn; key: string }, string>[] = [
+    { expectedOutput: 'Landing chaleur renouvelable', input: { column: 'entry', key: '/chaleur-renouvelable' }, label: 'entry route' },
+    {
+      expectedOutput: 'Partenaire test',
+      input: { column: 'entry', key: 'source:bf7714ba-5aeb-4877-be73-35c6ba65a837' },
+      label: 'entry registered source',
+    },
+    { expectedOutput: 'Email de refus de raccordement', input: { column: 'entry', key: 'refusal_email' }, label: 'entry refusal email' },
+    {
+      expectedOutput: 'France Rénov’ (aucune solution)',
+      input: { column: 'situation', key: 'france_renov_no_solution' },
+      label: 'situation',
+    },
+    { expectedOutput: 'Demande CCRT', input: { column: 'outcome', key: 'ccrt_demand' }, label: 'outcome' },
+    { expectedOutput: 'unknown', input: { column: 'outcome', key: 'unknown' }, label: 'unknown key → the key itself' },
+  ];
+  it.each(cases)('$label', ({ input, expectedOutput }) =>
+    expect(funnelNodeName(input.column, input.key, sourceLabels)).toStrictEqual(expectedOutput)
+  );
 });
