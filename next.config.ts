@@ -65,7 +65,7 @@ const configFunctions = [
         'https://stats.g.doubleclick.net',
       ],
       'font-src': ["'self'", 'https:', 'data:'],
-      'frame-src': ['https://td.doubleclick.net', 'https://www.youtube.com/', 'https://cloud.contact.ademe.fr'],
+      'frame-src': ["'self'", 'https://td.doubleclick.net', 'https://www.youtube.com/', 'https://cloud.contact.ademe.fr'],
       'img-src': ["'self'", 'https:', 'data:'],
       'script-src': [
         "'self'",
