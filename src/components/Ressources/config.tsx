@@ -4,6 +4,7 @@ import AvantagePac from '@/components/Ressources/Contents/AvantagePac';
 import ChoosePac from '@/components/Ressources/Contents/ChoosePac';
 import ObligationCopro from '@/components/Ressources/Contents/ObligationCopro';
 import PacImmeubleUsage from '@/components/Ressources/Contents/PacImmeubleUsage';
+import { heatingSolutions } from '@/modules/heating-solutions/constants';
 
 import Actors from './Contents/Actors';
 import Advantages from './Contents/Advantages';
@@ -303,6 +304,17 @@ export const otherHeatingSystem: Record<string, Document> = {
 };
 
 export const articlesBySlug: Record<string, Document> = {
+  ...Object.fromEntries(
+    heatingSolutions.map((solution) => [
+      solution.slug,
+      {
+        description: solution.subtitle,
+        image: solution.image.replace(/^img\//, ''),
+        seoDescription: solution.subtitle,
+        title: solution.title,
+      } satisfies Document,
+    ])
+  ),
   ...issues,
   ...understandings,
   ...growths,
@@ -312,7 +324,7 @@ export const articlesBySlug: Record<string, Document> = {
 
 export const articleSections = [
   {
-    slugs: ['reseau', 'energies-vertes', 'pacImmeubleUsage'],
+    slugs: [...heatingSolutions.map((solution) => solution.slug), 'reseau', 'energies-vertes', 'pacImmeubleUsage'],
     title: '1. Comprendre les différentes solutions de chauffage écologique',
     variant: undefined,
   },

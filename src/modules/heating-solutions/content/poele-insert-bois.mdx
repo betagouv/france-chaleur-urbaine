@@ -1,0 +1,201 @@
+import { SolutionSection } from "../client/SolutionSection";
+
+import { SolutionSummaryCard } from "../client/SolutionSummaryCard";
+
+import { SolutionTestCallout } from "../client/SolutionTestCallout";
+
+import { SolutionFlow } from "../client/SolutionFlow";
+
+import { SolutionFaqItem } from "../client/SolutionFaqItem";
+
+<SolutionTestCallout />
+
+<SolutionSection id="en-quelques-mots" title="En quelques mots" iconId="fr-icon-lightbulb-line">
+
+<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+
+<SolutionSummaryCard title="Pour quels bâtiments ?" tone="building">
+
+Tous, dès lors qu’ils comportent une évacuation des fumées
+
+</SolutionSummaryCard>
+
+<SolutionSummaryCard title="Coût de l'investissement ?" tone="cost">
+
+Environ 4 **000 à 6 000**, avant déduction des aides financières.
+
+</SolutionSummaryCard>
+
+<SolutionSummaryCard title="Faisabilité ?" tone="feasibility">
+
+Nécessite :
+
+- un espace suffisant pour stocker le combustible
+- un accès permettant les livraisons de bois
+- un conduit d'évacuation des fumées adapté
+
+</SolutionSummaryCard>
+
+<SolutionSummaryCard title="Pourquoi choisir cette solution ?" tone="benefits">
+
+Pour chauffer une partie de son espace par une solution renouvelable et économique.
+
+</SolutionSummaryCard>
+
+</div>
+
+</SolutionSection>
+
+<SolutionSection id="de-quoi-sagit-il" title="De quoi s’agit-il ?" iconId="fr-icon-search-line" photo="/img/heating-solutions/wood-stove.svg">
+
+Un poêle, insert ou foyer fermé est un système de chauffage qui utilise le bois comme combustible, **sous forme de bûches ou de granulés selon le type d’appareil**.
+
+La combustion du bois produit de la chaleur, qui est diffusée directement dans la pièce.
+
+Ce type d’équipement permet de chauffer une partie ou l’ensemble du logement selon sa configuration et ses performances énergétiques. **Il ne produit pas d’eau chaude sanitaire et peut nécessiter un système de chauffage complémentaire.**
+
+</SolutionSection>
+
+
+<SolutionSection id="fonctionnement" title="Comment ça marche ?" iconId="fr-icon-settings-5-line">
+
+Un poêle, insert ou foyer fermé est principalement composé d’un **foyer dans lequel le bois, sous forme de bûches ou de granulés selon l’appareil, est brûlé**. La chaleur produite est ensuite diffusée directement dans la pièce.
+
+**Un conduit d’évacuation des fumées est nécessaire** pour évacuer les produits issus de la combustion.
+
+<SolutionFlow steps={["Bois (bûches ou granulés)", "Combustion dans le foyer", "Diffusion de la chaleur dans la pièce"]} />
+
+</SolutionSection>
+
+
+<SolutionSection id="conditions" title="Dans quels cas cette solution est-elle adaptée ?" iconId="fr-icon-home-4-line">
+
+**Pré-requis :**
+
+Avant d’engager le projet, il est recommandé de vérifier le niveau de performance énergétique du logement. **Un logement bien isolé permet de limiter les besoins de chauffage et de dimensionner l’appareil au plus près des besoins.**
+
+Cette solution est particulièrement adaptée lorsque :
+
+- le logement dispose d’un conduit de fumée adapté ou qu’il est possible d’en créer un ;
+- un emplacement est disponible pour installer l’appareil ;
+- le stockage du combustible est possible ;
+- la configuration du logement permet une bonne diffusion de la chaleur.
+
+**Le poêle, l’insert ou le foyer fermé peut constituer le chauffage principal ou un chauffage d’appoint**, selon la configuration du logement, ses performances énergétiques et les besoins de ses occupants.
+
+</SolutionSection>
+
+
+<SolutionTestCallout />
+
+<SolutionSection id="avantages" title="Les principaux avantages" iconId="fr-icon-star-line" illustration="advantages">
+
+- Utilise une énergie renouvelable pouvant être produite localement
+- Prix de l’énergie stable et économique
+- Réduit les émissions de gaz à effet de serre liées au chauffage
+- Repose sur une technologie simple, mature et éprouvée.
+
+</SolutionSection>
+
+
+<SolutionSection id="vigilance" title="Les points à vérifier" iconId="fr-icon-warning-line" illustration="vigilance">
+
+- l’existence ou la possibilité de créer un **conduit d’évacuation des fumées adapté** ;
+- l’espace disponible pour installer l’appareil et **stocker le combustible** ;
+- les possibilités d’approvisionnement en **bûches ou granulés**, selon le type d’appareil ;
+- les éventuelles contraintes locales liées aux émissions atmosphériques ;
+- les conditions d’**entretien de l’appareil et de ramonage du conduit**.
+
+</SolutionSection>
+
+
+<SolutionSection id="etapes" title="Les étapes du projet" iconId="fr-icon-list-ordered" illustration="steps">
+
+-  Étude des besoins de chauffage du logement et vérification de la faisabilité de l’installation
+- Choix de l’appareil et du combustible (bûches ou granulés)
+- Dimensionnement de l’appareil
+- Recherche des financements mobilisables
+- Installation de l’appareil et, si nécessaire, création ou adaptation du conduit de fumée
+- Mise en service et entretien
+
+Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de l’installation dans le temps.
+
+</SolutionSection>
+
+
+<SolutionSection id="questions" title="Questions fréquentes" iconId="fr-icon-question-line">
+
+<SolutionFaqItem question={"Un poêle à bois peut-il chauffer toute une maison ?"}>
+
+Oui, dans certains cas. Cela dépend notamment de la performance énergétique du logement, de sa configuration et de la puissance de l’appareil. Selon les situations, un système de chauffage complémentaire peut rester nécessaire.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"Quelle est la différence entre un poêle, un insert et un foyer fermé ?"}>
+
+Le poêle est un appareil de chauffage indépendant. L’insert est installé dans une cheminée existante, tandis que le foyer fermé est intégré à une cheminée conçue autour de l’appareil. Dans les trois cas, la chaleur produite par la combustion du bois est diffusée directement dans le logement.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"Faut-il obligatoirement disposer d’un conduit de fumée ?"}>
+
+Oui. L’appareil doit être raccordé à un conduit permettant l’évacuation des fumées. Si le logement n’en dispose pas, la création d’un conduit peut être envisagée sous réserve de la faisabilité technique et des règles applicables.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"Bûches ou granulés : que choisir ?"}>
+
+Les deux solutions présentent des caractéristiques différentes. Les appareils à granulés permettent généralement une alimentation automatisée et une régulation plus précise, tandis que les appareils à bûches nécessitent un chargement manuel. Le choix dépend de l’usage souhaité, de l’espace disponible pour stocker le combustible et des possibilités d’approvisionnement.
+
+</SolutionFaqItem>
+
+</SolutionSection>
+
+
+<SolutionSection id="cout" title="Combien ça coûte ?" iconId="fr-icon-money-euro-circle-line" illustration="cost">
+
+Le coût dépend notamment du type d’appareil choisi, de sa puissance, du combustible utilisé, de la configuration du logement et des éventuels travaux nécessaires pour le conduit de fumée.
+
+À titre indicatif, le coût d’installation est généralement compris entre **4 000 et 6 000 €**, avant déduction des aides financières.
+
+Une étude de faisabilité est indispensable pour obtenir un chiffrage précis et dimensionner correctement l'installation.
+
+Pour en savoir plus sur l’estimation budgétaire, utilisez le simulateur réalisé par **France Chaleur Urbaine**
+
+[Tester le simulateur](https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable)
+
+</SolutionSection>
+
+
+<SolutionSection id="aides" title="Quelles aides possibles ?" iconId="fr-icon-money-euro-circle-line" illustration="funding">
+
+L'installation peut bénéficier de plusieurs dispositifs d'aide, sous réserve de respecter les critères d'éligibilité.
+
+Selon les projets, il est notamment possible de mobiliser :
+
+- les **Certificats d'économies d'énergie (CEE)**
+-  dans certains cas, des **aides locales**
+
+Pour en savoir plus sur les aides mobilisables, utilisez le simulateur de **France Chaleur Urbaine**, qui vous oriente vers les dispositifs adaptés
+
+[Tester le simulateur](https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable)
+
+</SolutionSection>
+
+
+<SolutionTestCallout />
+
+<SolutionSection id="aller-plus-loin" title="Pour aller plus loin" iconId="fr-icon-arrow-right-line">
+
+**1. Tester cette solution et préparer votre projet**
+
+Le simulateur réalisé par France Chaleur Urbaine vous permet d'évaluer la pertinence.
+
+Vous y trouverez :
+
+- une estimation des coûts de consommation et du prix de l’installation
+- une mise en lien avec un conseiller du service public capable de vous accompagner dans votre projet
+
+[Tester le simulateur](https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable)
+
+</SolutionSection>
