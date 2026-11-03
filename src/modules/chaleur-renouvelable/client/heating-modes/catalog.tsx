@@ -52,7 +52,7 @@ export const modesDeChauffage = {
           radiatorType: situation.typeRadiateur,
         }),
       gainClasse: 1,
-      icone: 'img/icon-rcu.webp',
+      icone: 'img/heating-solutions/network.svg',
       id: 'collective-heat-network',
       incompatibilites: [
         {
@@ -106,7 +106,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']) &&
         hasCompatibleGeothermalPotential(situation),
       gainClasse: 2,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/geothermal-collective.svg',
       id: 'collective-geothermal-heat-pump',
       incompatibilites: [
         {
@@ -171,7 +171,7 @@ export const modesDeChauffage = {
         hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
-      icone: 'img/icon-biomasse.webp',
+      icone: 'img/heating-solutions/biomass-boiler.svg',
       id: 'collective-biomass-boiler',
       incompatibilites: [
         {
@@ -275,7 +275,7 @@ export const modesDeChauffage = {
         hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 1,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/hybrid.svg',
       id: 'collective-hybrid-air-water-heat-pump-gas',
       incompatibilites: [
         {
@@ -492,7 +492,7 @@ export const modesDeChauffage = {
         hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
         hasCompatibleRadiator(situation, ['radiateur-electrique', 'none']),
       gainClasse: 2,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/air-air.svg',
       id: 'individual-apartment-air-air-heat-pump',
       incompatibilites: [
         {
@@ -673,7 +673,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']) &&
         hasCompatibleGeothermalPotential(situation),
       gainClasse: 2,
-      icone: 'img/icon-geothermie.webp',
+      icone: 'img/heating-solutions/geothermal-house.svg',
       id: 'house-geothermal-heat-pump',
       incompatibilites: [
         {
@@ -732,7 +732,7 @@ export const modesDeChauffage = {
         hasCompatibleHotWaterMode(situation, ['Couplé au chauffage', 'Indépendant']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
-      icone: 'img/icon-biomasse.webp',
+      icone: 'img/heating-solutions/biomass-boiler.svg',
       id: 'house-biomass-boiler',
       incompatibilites: [
         {
@@ -833,7 +833,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Indépendant']),
       gainClasse: 1,
-      icone: 'img/icon-biomasse.webp',
+      icone: 'img/heating-solutions/wood-stove.svg',
       id: 'house-wood-stove',
       incompatibilites: [
         {
@@ -874,7 +874,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) => situation.espaceExterieur !== 'none' && hasCompatibleHotWaterMode(situation, ['Indépendant']),
       gainClasse: 1,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/air-air.svg',
       id: 'house-air-air-heat-pump',
       incompatibilites: [
         {
