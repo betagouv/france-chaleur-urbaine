@@ -16,7 +16,7 @@ export const heatingSolutions = [
     slug: 'pac-air-eau-individuelle',
     sourceUrl: 'https://app.notion.com/3976523d57d78092b21deafdf5051db6',
     subtitle: 'La PAC air/eau individuelle puise une partie de la chaleur dans l’air. Elle peut remplacer une chaudière gaz ou fioul.',
-    title: 'PAC air/eau individuelle (appartement) + maison',
+    title: 'PAC air/eau individuelle (appartement + maison)',
   },
   {
     image: 'img/heating-solutions/air-air.svg',
@@ -40,8 +40,8 @@ export const heatingSolutions = [
     slug: 'pac-geothermique-individuelle',
     sourceUrl: 'https://app.notion.com/3e96523d57d78035bf8bf3b9c98ea18b',
     subtitle:
-      'La PAC géothermique individuelle puise une partie de la chaleur dans le sous-sol (eau d’une nappe ou sol). Elle peut remplacer une chaudière gaz ou fioul.',
-    title: 'PAC géothermique eau/eau individuelle (maison)',
+      'La PAC géothermique individuelle puise une partie de la chaleur dans le sous-sol (eau d’une nappe souterraine ou sol). Elle peut remplacer une chaudière gaz ou fioul.',
+    title: 'PAC géothermique eau/eau individuelle (maison) ou glycolée/eau individuelle',
   },
   {
     image: 'img/heating-solutions/biomass-boiler.svg',
@@ -49,7 +49,7 @@ export const heatingSolutions = [
     slug: 'chaudiere-biomasse-individuelle',
     sourceUrl: 'https://app.notion.com/3ea6523d57d7802ebd31d6197c7280e5',
     subtitle:
-      'La chaudière à bois ou biomasse utilise le bois comme combustible pour chauffer la maison et, selon l’installation, produire l’eau chaude sanitaire.',
+      'La chaudière à bois ou biomasse utilise le bois comme combustible pour chauffer l’ensemble de la maison et, selon l’installation, produire l’eau chaude sanitaire.',
     title: 'Chaudière à bois ou biomasse (individuelle)',
   },
   {
@@ -57,7 +57,7 @@ export const heatingSolutions = [
     modeIds: ['house-wood-stove'],
     slug: 'poele-insert-bois',
     sourceUrl: 'https://app.notion.com/3ea6523d57d7804eb1f8d652487b5677',
-    subtitle: 'Chauffe une partie du logement grâce à la combustion de bois, sous forme de bûches ou de granulés',
+    subtitle: 'Chauffe un logement grâce à la combustion de bois, sous forme de bûches ou de granulés',
     title: 'Poêle, insert ou foyer fermé au bois (individuel)',
   },
   {
@@ -99,6 +99,34 @@ export const heatingSolutions = [
     sourceUrl: 'https://app.notion.com/3ea6523d57d780ca8d82e73a9f3153eb',
     subtitle: "Produit l'eau chaude sanitaire et du chauffage grâce à des capteurs installés généralement sur la toiture.",
     title: 'Solaire thermique - système solaire combiné (maison)',
+  },
+  {
+    image: 'img/heating-solutions/network.svg',
+    modeIds: ['collective-heat-network'],
+    slug: 'reseau-de-chaleur',
+    sourceUrl: 'https://app.notion.com/p/3e56523d57d780e59b1ac7f04c640940?pvs=204',
+    subtitle: "Réseau de canalisations souterraines qui achemine la chaleur jusqu'à l'immeuble.",
+    title: 'Réseau de chaleur',
+  },
+  {
+    image: 'img/heating-solutions/geothermal-collective.svg',
+    modeIds: ['collective-geothermal-heat-pump'],
+    slug: 'pac-geothermique-collective',
+    sourceUrl: 'https://app.notion.com/p/3d46523d57d7808d81faeec04d95af24?pvs=204',
+    subtitle: 'La PAC géothermique collective puise une partie de la chaleur dans le sous-sol (eau d’une nappe souterraine ou sol).',
+    title: 'PAC géothermique eau/eau ou eau/glycolée eau collective',
+  },
+  {
+    image: 'img/icon-pac.webp',
+    modeIds: [
+      'collective-thermodynamic-water-heater',
+      'individual-apartment-thermodynamic-water-heater',
+      'house-thermodynamic-water-heater',
+    ],
+    slug: 'chauffe-eau-thermodynamique',
+    sourceUrl: 'https://app.notion.com/p/3ea6523d57d78065836aceb4096d963f?pvs=204',
+    subtitle: 'Le chauffe-eau thermodynamique utilise les calories de l’air pour produire l’eau chaude sanitaire.',
+    title: 'Chauffe-eau thermodynamique ECS uniquement',
   },
 ] as const satisfies readonly {
   image: string;

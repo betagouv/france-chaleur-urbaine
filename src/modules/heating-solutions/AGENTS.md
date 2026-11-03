@@ -7,8 +7,10 @@ Static educational articles for validated renewable heating solutions, published
 - `constants.ts` — validated article metadata and exact simulator-mode mappings. Only solutions marked `Validé` in the source Notion database are published; missing articles have no simulator link.
 - `content/*.mdx` — French editorial content copied from the validated Notion properties, with the source URL recorded in metadata. Preserve approved wording and figures; do not silently resolve editorial inconsistencies.
 - `content.ts` — static MDX imports for server-rendered, indexable article bodies.
+- Fifteen validated articles are published, including the heat network, collective geothermal heat pump and individual thermodynamic water heater. All three thermodynamic-water-heater catalogue IDs describe individual hot-water production, including the one grouped under collective heating.
 - `client/HeatingSolutionArticle.tsx` — common Figma article layout, section navigation and browser print/PDF action.
 - `client/Solution*.tsx` — reusable sections, summary cards, flow diagrams, FAQ and the three comparator calls to action.
+- The heat-network article embeds the existing `/iframe/form` address test, hidden when printing. The recommended heat-network card also links to its article.
 - Illustrations live in `public/img/heating-solutions/`. Figma sources: file `t3chbwPeNK6ZulaWs4Rn4S`, web template `3745:19077`, autumn 2026 illustration section `3782:10324`. Existing PAC air/water and solar illustrations remain in use when no replacement was provided.
 
 ## Boundaries

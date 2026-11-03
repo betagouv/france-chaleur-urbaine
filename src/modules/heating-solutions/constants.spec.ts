@@ -9,9 +9,9 @@ import { modesDeChauffage } from '@/modules/chaleur-renouvelable/client/heating-
 import { getHeatingSolution, getHeatingSolutionHref, heatingSolutions } from './constants';
 
 describe('validated heating solution publication', () => {
-  it('publishes exactly the twelve validated source pages with unique routes and mode mappings', () => {
-    expect(heatingSolutions.length).toStrictEqual(12);
-    expect(new Set(heatingSolutions.map((solution) => solution.slug)).size).toStrictEqual(12);
+  it('publishes exactly the fifteen validated source pages with unique routes and mode mappings', () => {
+    expect(heatingSolutions.length).toStrictEqual(15);
+    expect(new Set(heatingSolutions.map((solution) => solution.slug)).size).toStrictEqual(15);
     const modeIds = heatingSolutions.flatMap((solution) => [...solution.modeIds]);
     expect(new Set(modeIds).size).toStrictEqual(modeIds.length);
   });
@@ -30,15 +30,12 @@ describe('validated heating solution publication', () => {
     solution.modeIds.forEach((modeId) => expect(getHeatingSolutionHref(modeId)).toStrictEqual(`/ressources/${solution.slug}`));
   });
 
-  it.each([
-    'collective-heat-network',
-    'collective-geothermal-heat-pump',
-    'collective-thermodynamic-water-heater',
-    'collective-solar-atmospheric-heat-pump-hot-water',
-    'house-thermodynamic-water-heater',
-  ] as const)('does not link %s to an unvalidated or unrelated article', (modeId) => {
-    expect(getHeatingSolutionHref(modeId)).toStrictEqual(undefined);
-  });
+  it.each(['collective-solar-atmospheric-heat-pump-hot-water', 'individual-apartment-solar-atmospheric-heat-pump-hot-water'] as const)(
+    'does not link %s to an unvalidated or unrelated article',
+    (modeId) => {
+      expect(getHeatingSolutionHref(modeId)).toStrictEqual(undefined);
+    }
+  );
 
   it('keeps every simulator illustration available after the autumn illustration update', () => {
     Object.values(modesDeChauffage)

@@ -96,7 +96,7 @@ const mdxComponents: MDXComponents = {
   a: ({ href = '', children }) => {
     const target = href.replace('https://france-chaleur-urbaine.beta.gouv.fr', '');
     return (
-      <Link href={target} variant="link" isExternal={target.startsWith('http')}>
+      <Link href={target} variant="link" isExternal={target.startsWith('http')} className="wrap-anywhere">
         {children}
       </Link>
     );
