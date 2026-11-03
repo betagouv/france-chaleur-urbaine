@@ -146,12 +146,12 @@ export const zIdentitySchema = z
     path: ['structure_other'],
     when: () => true,
   })
-  .refine((data) => data.role === 'particulier' || !!data.structure_name, {
+  .refine((data) => !!data.structure_name, {
     message: 'La structure est obligatoire',
     path: ['structure_name'],
     when: () => true,
   })
-  .refine((data) => data.role === 'particulier' || !!data.structure_type, {
+  .refine((data) => !!data.structure_type, {
     message: 'Le type de structure est obligatoire',
     path: ['structure_type'],
     when: () => true,

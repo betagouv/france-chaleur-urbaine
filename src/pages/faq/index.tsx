@@ -6,6 +6,7 @@ import Accordion from '@/components/ui/Accordion';
 import CallOut from '@/components/ui/CallOut';
 import Link from '@/components/ui/Link';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { DEMAND_TRACKING_PAGE_PATH } from '@/modules/demand-tracking/constants';
 import { slugify } from '@/utils/strings';
 
 const FAQ_ACCORDION_SCROLL_DELAY_MS = 300;
@@ -41,6 +42,22 @@ const FAQS: FaqCategory[] = [
           </>
         ),
         question: 'Comment savoir si mon bâtiment est raccordable à un réseau ?',
+      },
+      {
+        answer: (
+          <>
+            <p>
+              Plus besoin de compte : indiquez l’adresse email utilisée lors de votre demande sur la page{' '}
+              <Link href={DEMAND_TRACKING_PAGE_PATH}>Suivre ma demande</Link>. Vous recevez en quelques minutes un email récapitulant
+              chacune de vos demandes (raccordement ou accompagnement) et son état d’avancement.
+            </p>
+            <p>
+              Vous ne recevez rien ? Vérifiez vos courriers indésirables et l’adresse saisie. Si vous n’avez pas été recontacté depuis plus
+              d’un mois, écrivez-nous via <Link href="/contact">le formulaire de contact</Link> en précisant l’adresse du bâtiment concerné.
+            </p>
+          </>
+        ),
+        question: 'Comment suivre ma demande ?',
       },
       {
         answer: (

@@ -1,4 +1,5 @@
 import type { DemandeChaleurRenouvelable } from '@/modules/chaleur-renouvelable/constants';
+import { DEMAND_TRACKING_PAGE_PATH } from '@/modules/demand-tracking/constants';
 import { Button, Layout, Link, Section, SummaryTable, Text, Title } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
 
@@ -78,6 +79,13 @@ const ConfirmationDemandeChaleurRenouvelable = ({ demand }: ConfirmationDemandeC
         </Button>
       </Section>
 
+      <Text>
+        Pour connaître à tout moment l'avancement de votre demande, rendez-vous sur{' '}
+        <Link href={DEMAND_TRACKING_PAGE_PATH} campaign={EMAIL_CAMPAIGN} content="suivre-ma-demande">
+          Suivre ma demande
+        </Link>
+        .
+      </Text>
       <Text>
         Une question ? Vous pouvez contacter l'équipe France Chaleur Urbaine via le{' '}
         <Link href="/contact" campaign={EMAIL_CAMPAIGN} content="contact">

@@ -12,6 +12,7 @@ import type {
   TypeLogement,
   TypeRadiateur,
 } from '@/modules/chaleur-renouvelable/constants';
+import type { DemandTrackingPlacement } from '@/modules/demand-tracking/constants';
 import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import type { SimulateurPacEventProperties } from '@/modules/pac/constants';
 import type { HomeFormMode } from '@/modules/public-pages/constants';
@@ -433,6 +434,11 @@ export type PostHogEventMap = {
     value?: string | boolean;
   };
   'global:footer_link_clicked': { link_name: string };
+
+  // Suivi de demande sans compte (page « Suivre ma demande » + bloc accueil)
+  'suivi_demande:form_submitted': { emplacement: DemandTrackingPlacement };
+  /** clic sur « Nous contacter » dans l'email de suivi, mesuré à l'arrivée sur /contact */
+  'suivi_demande:contact_clicked': never;
   'global:login_cta_clicked': { is_auth: boolean };
   'consent:cookie_choice_made': { consent: FinalityConsent<string> };
 

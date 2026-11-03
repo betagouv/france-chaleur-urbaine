@@ -3,9 +3,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import type { z } from 'zod';
 
-import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
-import Highlight from '@/components/ui/Highlight';
 import Link from '@/components/ui/Link';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { EntrepriseField } from '@/modules/form/EntrepriseField';
@@ -13,9 +11,7 @@ import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
 import { structureTypesFormLabels, zCredentialsSchema, zIdentitySchema } from '@/modules/users/constants';
-import { userRolesInscription } from '@/types/enum/UserRole';
 import { postFetchJSON } from '@/utils/network';
-import { upperCaseFirstChar } from '@/utils/strings';
 import { ObjectEntries } from '@/utils/typescript';
 import { passwordHint } from '@/utils/validation';
 
@@ -108,10 +104,6 @@ function CredentialsStep({ connexionHref, defaultValues, onSubmit }: Credentials
         </li>
         {/* <br />- Envoyez des <strong>demandes d'informations groupées</strong> TODO à remettre quand la fonctionnalité sera dispo */}
       </ul>
-      <Highlight variant="blue" size="sm" className="my-5">
-        <strong>Vous êtes maître d'ouvrage ou gestionnaire d'un réseau de chaleur ?</strong> Retrouvez l'ensemble des demandes déposées à
-        proximité de votre réseau. Pour paramétrer vos accès, merci de <Link href="/contact">nous contacter</Link>.
-      </Highlight>
       <Form form={form}>
         <div className="flex flex-col gap-4">
           <form.AppField name="email">
@@ -157,13 +149,6 @@ function CredentialsStep({ connexionHref, defaultValues, onSubmit }: Credentials
 
 const structureTypeOptions = ObjectEntries(structureTypesFormLabels).map(([key, label]) => ({ label, value: key }));
 
-const roleOptions = userRolesInscription.map((role) => ({
-  label: upperCaseFirstChar(role),
-  nativeInputProps: {
-    value: role,
-  },
-}));
-
 type IdentityStepProps = {
   defaultValues: IdentityValues;
   onBack: (values: IdentityValues) => void;
@@ -171,7 +156,7 @@ type IdentityStepProps = {
 };
 
 /**
- * Second registration step: identity, role and structure (professionals only).
+ * Second registration step: identity and structure (the role is always professionnel, set in the default values).
  * `onBack` receives the current values so edits survive a round-trip to step one.
  */
 function IdentityStep({ defaultValues, onBack, onSubmit }: IdentityStepProps) {
@@ -181,7 +166,6 @@ function IdentityStep({ defaultValues, onBack, onSubmit }: IdentityStepProps) {
     onSubmit: ({ value }) => onSubmit(value),
   });
 
-  const role = useStore(form.store, (state) => state.values.role);
   const structureType = useStore(form.store, (state) => state.values.structure_type);
 
   return (
@@ -190,34 +174,20 @@ function IdentityStep({ defaultValues, onBack, onSubmit }: IdentityStepProps) {
         <form.AppField name="first_name">{(field) => <field.TextField label="Prénom" />}</form.AppField>
         <form.AppField name="last_name">{(field) => <field.TextField label="Nom de famille" />}</form.AppField>
         <form.AppField name="phone">{(field) => <field.PhoneField label="Téléphone" />}</form.AppField>
-        <form.AppField name="role">{(field) => <field.RadioField label="Vous êtes :" options={roleOptions} />}</form.AppField>
-        {role === 'particulier' ? (
-          <Alert variant="info" className="mb-5">
-            L'espace connecté est principalement dédié aux professionnels ! L'utilisation du mode avancé du comparateur nécessite une bonne
-            connaissance des contraintes inhérentes à chaque mode de chauffage, qui ne sont pas prises en compte dans les simulations.
-          </Alert>
-        ) : (
-          <>
-            <form.AppField name="structure_type">
-              {/* only rendered for non-particulier roles, where the schema refine makes it required */}
-              {(field) => (
-                <field.SelectField label="Type de structure" options={structureTypeOptions} nativeSelectProps={{ required: true }} />
-              )}
-            </form.AppField>
-            {structureType === 'autre' && (
-              <form.AppField name="structure_other">
-                {/* only rendered when "autre" is selected, where the schema refine makes it required */}
-                {(field) => <field.TextField label="Renseignez le type de structure" nativeInputProps={{ required: true }} />}
-              </form.AppField>
-            )}
-            <form.AppField name="structure_name">
-              {(field) => <field.TextField label="Nom de la structure" hideOptionalLabel />}
-            </form.AppField>
-            <form.AppField name="entreprise">
-              {(field) => <field.CustomField Component={EntrepriseField} label="Entreprise" />}
-            </form.AppField>
-          </>
+        <form.AppField name="structure_type">
+          {/* required through a schema refine, so the marker is set explicitly */}
+          {(field) => <field.SelectField label="Type de structure" options={structureTypeOptions} nativeSelectProps={{ required: true }} />}
+        </form.AppField>
+        {structureType === 'autre' && (
+          <form.AppField name="structure_other">
+            {/* only rendered when "autre" is selected, where the schema refine makes it required */}
+            {(field) => <field.TextField label="Renseignez le type de structure" nativeInputProps={{ required: true }} />}
+          </form.AppField>
         )}
+        <form.AppField name="structure_name">
+          {(field) => <field.TextField label="Nom de la structure" hideOptionalLabel nativeInputProps={{ required: true }} />}
+        </form.AppField>
+        <form.AppField name="entreprise">{(field) => <field.CustomField Component={EntrepriseField} label="Entreprise" />}</form.AppField>
         <div className="flex justify-between text-sm mb-8 items-center">
           <Button priority="secondary" onClick={() => onBack(form.state.values)}>
             Précedent

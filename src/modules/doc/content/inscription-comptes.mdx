@@ -26,7 +26,7 @@ Dans les diagrammes de cette documentation, les couleurs indiquent le type d'eff
 
 | Rôle | Qui | Comment le compte est créé |
 | --- | --- | --- |
-| Particulier | Citoyen qui teste son adresse et suit ses demandes | Inscription publique ou admin |
+| Particulier | Citoyen — **rôle en cours de suppression** : plus d'inscription publique, le suivi des demandes se fait [par email sans compte](/admin/doc/cycle-de-vie-demande#suivi-par-le-demandeur) | Admin uniquement (comptes existants jusqu'à leur suppression) |
 | Professionnel | Bureau d'études, bailleur, syndic… | Inscription publique ou admin |
 | Gestionnaire | Exploitant de réseau (ENGIE, Dalkia…) — voir [Rôle : gestionnaire](/admin/doc/role-gestionnaire) | Admin ou API partenaire |
 | Collectivité | Commune ou EPCI qui suit son territoire | Admin |
@@ -38,7 +38,7 @@ Gestionnaire, collectivité, ALEC et CCRT sont des rôles « territoriaux » : c
 
 ## Parcours 1 — Inscription publique
 
-Accessible sur [/inscription](/inscription), réservée aux rôles **particulier** et **professionnel**. Il est impossible de s'inscrire soi-même comme gestionnaire ou collectivité.
+Accessible sur [/inscription](/inscription), réservée au rôle **professionnel** (un encart rappelle qu'une demande se suit sans compte). Il est impossible de s'inscrire soi-même comme gestionnaire ou collectivité.
 
 <Mermaid
   chart={`flowchart TD
@@ -181,7 +181,7 @@ Sans lien de retour explicite, un compte CCRT arrive sur les demandes d'accompag
 
 Chaque connexion réussie a des effets de bord :
 
-- Les **demandes déposées avec le même email** (y compris sans compte, via le formulaire public) sont automatiquement rattachées au compte. C'est ce qui permet à un particulier de retrouver une demande faite avant son inscription.
+- Les **demandes déposées avec le même email** (y compris sans compte, via le formulaire public) sont automatiquement rattachées au compte, ce qui les fait apparaître dans «&nbsp;Mes demandes&nbsp;».
 - La date de connexion est mise à jour dans ADEME Connect.
 - Événement enregistré : [« Connexion utilisateur »](/admin/events?types=user_login).
 
@@ -272,3 +272,12 @@ Chaque lien ouvre le modèle correspondant dans [Emails automatiques](/admin/ema
 ## Traçabilité
 
 Chaque étape émet un événement consultable dans [Activité du site](/admin/events) : [« Inscription utilisateur »](/admin/events?types=user_registered), [« Activation utilisateur »](/admin/events?types=user_activated), [« Connexion utilisateur »](/admin/events?types=user_login), [« Création utilisateur (admin) »](/admin/events?types=user_created_by_admin), [« Création utilisateur (API) »](/admin/events?types=user_created_by_api), [« Désactivation utilisateur (API) »](/admin/events?types=user_deactivated_by_api), [« Synchronisation permissions (API) »](/admin/events?types=user_permissions_synced_from_api), [« Demande réinitialisation mot de passe »](/admin/events?types=user_password_reset_requested), [« Double authentification activée »](/admin/events?types=user_mfa_enrolled), [« Code de double authentification refusé »](/admin/events?types=user_mfa_failed), [« Double authentification réinitialisée (admin) »](/admin/events?types=user_mfa_reset).
+
+## Suppression des comptes particuliers
+
+Le compte particulier n'avait qu'un usage propre : «&nbsp;Mes demandes&nbsp;», un suivi en lecture seule. Il est remplacé par le [suivi par email sans compte](/admin/doc/cycle-de-vie-demande#suivi-par-le-demandeur). Déroulé :
+
+1. Le formulaire d'inscription ne propose plus que le rôle professionnel ; les pages de connexion et d'inscription affichent un encart «&nbsp;Compte professionnel&nbsp;» et renvoient vers [Suivre ma demande](/suivre-ma-demande). Un échec de connexion et la demande de réinitialisation de mot de passe affichent le même rappel, pour tout email, sans révéler si un compte existe.
+2. Au moins 15 jours avant la date choisie, l'équipe technique envoie à chaque compte particulier actif l'email [«&nbsp;Suppression du compte particulier (annonce)&nbsp;»](/admin/emails?type=auth.utilisateur.suppression-compte-particulier) avec la commande `pnpm cli users particulier:announce-deletion <AAAA-MM-JJ>` (option `--dry-run` pour lister les destinataires). Chaque envoi est tracé par l'événement [«&nbsp;Annonce de suppression du compte particulier&nbsp;»](/admin/events?types=user_particulier_deletion_announced) sur le compte, et un compte déjà prévenu n'est pas recontacté : relancer la commande après un incident reprend là où elle s'est arrêtée.
+3. À la date annoncée, `pnpm cli users particulier:delete` supprime les comptes (identifiant, mot de passe, préférences). Les demandes sont **conservées** et restent visibles et traitables par les gestionnaires et CCRT : elles sont simplement détachées du compte. Événement : [«&nbsp;Suppression des comptes particuliers&nbsp;»](/admin/events?types=user_particulier_accounts_deleted).
+

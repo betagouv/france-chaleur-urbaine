@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import Box from '@/components/ui/Box';
 import Image from '@/components/ui/Image';
 import Link from '@/components/ui/Link';
+import { DEMAND_TRACKING_PAGE_PATH } from '@/modules/demand-tracking/constants';
 import type { ContactFormInfos } from '@/modules/demands/constants';
 import { getReadableDistance } from '@/modules/geo/client/helpers';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
@@ -165,7 +166,12 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit, className }: 
                 className="fr-mt-2w"
                 severity="success"
                 small
-                description="Merci, votre demande a bien été envoyée. Notre équipe reviendra vers vous prochainement."
+                description={
+                  <>
+                    Merci, votre demande a bien été envoyée. Notre équipe reviendra vers vous prochainement. Pour connaître à tout moment
+                    l'avancement de votre demande, rendez-vous sur <Link href={DEMAND_TRACKING_PAGE_PATH}>Suivre ma demande</Link>.
+                  </>
+                }
               />
             )}
           </ContactFormContentWrapper>
