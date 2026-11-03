@@ -64,6 +64,7 @@ export const list = async () => {
         'last_connection',
         'from_organization_id',
         'preferences',
+        'totp_enrolled_at',
         'ebc.reason_code as email_blocked_reason',
       ])
       .orderBy('users.id')

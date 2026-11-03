@@ -52,6 +52,22 @@ describe('withLoginRateLimit', () => {
     expect(otherIp.statusCode).toStrictEqual(200);
   });
 
+  it('counts the admin second-factor attempts (mfa provider) in the same bucket as the password', async () => {
+    const nextAuthHandler = vi.fn(async (_req: NextApiRequest, res: NextApiResponse) => {
+      res.status(200).end();
+    });
+    const handler = withLoginRateLimit(nextAuthHandler);
+
+    await callHandler(handler, '10.0.0.5', ['callback', 'credentials']);
+    for (let attempt = 1; attempt < businessRules.loginAttemptsLimit.value; attempt++) {
+      await callHandler(handler, '10.0.0.5', ['callback', 'mfa']);
+    }
+    const blocked = await callHandler(handler, '10.0.0.5', ['callback', 'mfa']);
+
+    expect(nextAuthHandler).toHaveBeenCalledTimes(businessRules.loginAttemptsLimit.value);
+    expect(blocked.statusCode).toStrictEqual(429);
+  });
+
   it('does not count other NextAuth requests (session, csrf, GET)', async () => {
     const nextAuthHandler = vi.fn(async (_req: NextApiRequest, res: NextApiResponse) => {
       res.status(200).end();

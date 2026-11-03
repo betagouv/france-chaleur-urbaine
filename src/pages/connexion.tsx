@@ -5,7 +5,7 @@ import CenterLayout from '@/components/shared/page/CenterLayout';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
 import { activateUser } from '@/modules/auth/server/service';
-import { withServerSession } from '@/server/authentication';
+import { getPendingMfaUserId, withServerSession } from '@/server/authentication';
 import { logger } from '@/server/helpers/logger';
 import { stripDomainFromURL } from '@/utils/url';
 
@@ -66,9 +66,19 @@ export const getServerSideProps = withServerSession(async ({ context, session })
     };
   }
 
+  const callbackUrl = stripDomainFromURL(context.query.callbackUrl as string) || '/pro/tableau-de-bord';
+  if (await getPendingMfaUserId(context)) {
+    return {
+      redirect: {
+        destination: `/connexion/verification?callbackUrl=${encodeURIComponent(callbackUrl)}`,
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
-      callbackUrl: stripDomainFromURL(context.query.callbackUrl as string) || '/pro/tableau-de-bord',
+      callbackUrl,
     },
   };
 });
