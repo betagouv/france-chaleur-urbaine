@@ -1,0 +1,249 @@
+import { SolutionSection } from "../client/SolutionSection";
+
+import { SolutionSummaryCard } from "../client/SolutionSummaryCard";
+
+import { SolutionTestCallout } from "../client/SolutionTestCallout";
+
+import { SolutionFlow } from "../client/SolutionFlow";
+
+import { SolutionFaqItem } from "../client/SolutionFaqItem";
+
+<SolutionTestCallout />
+
+<SolutionSection id="en-quelques-mots" title="En quelques mots" iconId="fr-icon-lightbulb-line">
+
+<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+
+<SolutionSummaryCard title="Pour quels bâtiments ?" tone="building">
+
+Bâtiments comprenant des logements équipés d’un chauffage individuel ou maisons individuelles.
+
+</SolutionSummaryCard>
+
+<SolutionSummaryCard title="Coût de l’investissement ?" tone="cost">
+
+3 000–5 000 €
+
+</SolutionSummaryCard>
+
+<SolutionSummaryCard title="Faisabilité ?" tone="feasibility">
+
+Nécessite :
+
+- un emplacement adapté pour installer l’unité extérieure
+- la possibilité d’installer une ou plusieurs unités intérieures dans le logement
+- une installation compatible avec les règles de la copropriété ou de l’urbanisme
+- de prendre en compte les contraintes acoustiques et architecturales.
+
+</SolutionSummaryCard>
+
+<SolutionSummaryCard title="Pourquoi choisir cette solution ?" tone="benefits">
+
+Pour remplacer ou réduire l’utilisation d’un chauffage individuel au gaz ou électrique par une solution plus performante, sans avoir à créer de réseau de chauffage à eau.
+
+La PAC air/air permet également de rafraîchir le logement en été.
+
+</SolutionSummaryCard>
+
+</div>
+
+</SolutionSection>
+
+<SolutionSection id="de-quoi-sagit-il" title="De quoi s’agit-il ?" iconId="fr-icon-search-line" photo="/img/heating-solutions/air-air.svg">
+
+Une pompe à chaleur (PAC) air/air capte les calories présentes dans l’air extérieur pour chauffer directement l’air du logement.
+
+Elle est composée d’une unité extérieure et d’une ou plusieurs unités intérieures qui diffusent la chaleur dans les pièces.
+
+Selon la configuration, elle peut chauffer une seule pièce (monosplit) ou plusieurs pièces (multisplit).
+
+La PAC air/air est réversible : elle peut également rafraîchir le logement en été.
+
+En revanche, elle ne produit généralement pas l’eau chaude sanitaire, qui doit être assurée par un autre équipement.
+
+</SolutionSection>
+
+
+<SolutionSection id="fonctionnement" title="Comment ça marche ?" iconId="fr-icon-settings-5-line">
+
+L’unité extérieure capte les calories présentes dans l’air. La pompe à chaleur augmente leur niveau de température avec de l’électricité avant de diffuser la chaleur directement dans le logement grâce aux unités intérieures.
+
+Contrairement à une PAC air/eau, la chaleur n’est pas transmise à un circuit d’eau : elle est directement diffusée dans l’air des pièces.
+
+Selon l’installation :
+
+- un système monosplit dessert une pièce
+- un système multisplit peut desservir plusieurs pièces
+- le fonctionnement peut être inversé pour rafraîchir le logement en été.
+
+<SolutionFlow steps={["Air extérieur", "Unité extérieure", "Pompe à chaleur", "Unité(s) intérieure(s)", "Air chaud en hiver/air frais en été"]} />
+
+</SolutionSection>
+
+
+<SolutionSection id="conditions" title="Dans quels cas cette solution est-elle adaptée ?" iconId="fr-icon-home-4-line">
+
+**Pré-requis :**
+
+La PAC air/air est particulièrement adaptée lorsque :
+
+- le logement dispose d’un **chauffage individuel**
+-  il est actuellement chauffé à l’électricité (pas de réseau d’eau centralisé)
+- un emplacement adapté est disponible pour installer l’unité extérieure
+- la puissance électrique du contrat électrique est adapté
+- l’installation est compatible avec les règles de la copropriété ou de l’urbanisme
+- les contraintes acoustiques et architecturales permettent son installation.
+
+Elle est particulièrement adaptée aux logements chauffés à l’électricité, puisqu’elle ne nécessite pas de créer un réseau hydraulique dans le logement.
+
+</SolutionSection>
+
+
+<SolutionTestCallout />
+
+<SolutionSection id="avantages" title="Les principaux avantages" iconId="fr-icon-star-line" illustration="advantages">
+
+-  Faibles émissions de CO₂
+- Permet de réduire les consommations liées à un chauffage électrique
+- Ne nécessite pas de créer un réseau de chauffage à eau
+- Peut chauffer une ou plusieurs pièces selon la configuration
+- Permet également de rafraîchir le logement en été
+
+</SolutionSection>
+
+
+<SolutionSection id="vigilance" title="Les points à vérifier" iconId="fr-icon-warning-line" illustration="vigilance">
+
+**Bruit :** les unités intérieures et extérieures peuvent générer des nuisances sonores
+
+**Impact esthétique :** l’unité extérieure peut modifier l’aspect du bâtiment
+
+**Copropriété et urbanisme :** le règlement doit être vérifié et une autorisation peut être nécessaire lorsque l’installation affecte les parties communes ou l’aspect extérieur
+
+**Contraintes architecturales :** des règles particulières peuvent s’appliquer dans certaines zones protégées
+
+**Raccordement électrique :** la capacité de l’installation électrique doit être vérifiée
+
+**Eau chaude sanitaire :** la PAC air/air ne la produit généralement pas ; un autre équipement doit donc être prévu
+
+</SolutionSection>
+
+
+<SolutionSection id="etapes" title="Les étapes du projet" iconId="fr-icon-list-ordered" illustration="steps">
+
+1\. **Étudier la faisabilité**
+
+Évaluer les besoins de chauffage et vérifier les possibilités d’implantation des équipements.
+
+2. **Vérifier les règles de la copropriété et de l’urbanisme**
+
+Consulter les éventuels règlements et identifier les autorisations nécessaires.
+
+3. **Dimensionner l’installation**
+
+Déterminer la puissance nécessaire et choisir une configuration monosplit ou multisplit selon les pièces à chauffer.
+
+4. **Choisir l’emplacement des équipements**
+
+Déterminer l’implantation de l’unité extérieure et des unités intérieures en tenant compte des contraintes acoustiques et architecturales.
+
+5. **Installer les équipements**
+
+Installer l’unité extérieure et les unités intérieures et réaliser les raccordements nécessaires.
+
+6. **Mettre en service et entretenir l’installation**
+
+Régler l’équipement et assurer son entretien régulier.
+
+Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de l’installation dans le temps.
+
+</SolutionSection>
+
+
+<SolutionSection id="questions" title="Questions fréquentes" iconId="fr-icon-question-line">
+
+<SolutionFaqItem question={"Une PAC air/air peut-elle chauffer tout mon logement ?"}>
+
+Oui, selon la configuration. Un système monosplit chauffe une pièce, tandis qu’un système multisplit peut chauffer plusieurs pièces du logement.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"Peut-elle rafraîchir mon logement en été ?"}>
+
+Oui. La PAC air/air est réversible et peut également produire du froid.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"Peut-elle produire l’eau chaude sanitaire ?"}>
+
+Généralement non. L’eau chaude sanitaire doit être assurée par un autre équipement, par exemple un ballon électrique ou thermodynamique.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"Est-elle adaptée si mon logement est chauffé avec des radiateurs électriques ?"}>
+
+Oui. C’est l’une des configurations particulièrement adaptées à la PAC air/air puisqu’elle permet de changer de système sans créer de réseau de chauffage à eau.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"Faut-il l’autorisation de la copropriété ?"}>
+
+Dans la majorité des cas, l’installation doit être vérifiée au regard du règlement de copropriété et peut nécessiter une autorisation, notamment lorsqu’elle affecte les parties communes ou l’aspect extérieur du bâtiment.
+
+</SolutionFaqItem>
+
+</SolutionSection>
+
+
+<SolutionSection id="cout" title="Combien ça coûte ?" iconId="fr-icon-money-euro-circle-line" illustration="cost">
+
+Le coût d’investissement est estimé à :
+
+**6 000 à 8 000 €**
+
+Le coût réel dépend notamment de la puissance nécessaire, du nombre d’unités intérieures et des contraintes d’installation.
+
+Pour en savoir plus sur l’estimation budgétaire, utilisez le simulateur réalisé par **France Chaleur Urbaine**
+
+[Tester le simulateur](https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable)
+
+</SolutionSection>
+
+
+<SolutionSection id="aides" title="Quelles aides possibles ?" iconId="fr-icon-money-euro-circle-line" illustration="funding">
+
+La PAC air/air peut bénéficier des **Certificats d’économies d’énergie (CEE)**, sous certaines conditions.
+
+La fiche CEE **BAR-TH-129** concerne spécifiquement les pompes à chaleur air/air.
+
+Elle prévoit notamment des critères liés à la performance de l’équipement et au logement concerné.
+
+Le montant de l’aide dépend du projet et de la situation du ménage.
+
+[Vérifier les aides disponibles pour une PAC air/air](https://mesaides.france-renov.gouv.fr/aides/cee/BAR-TH-129/Pompe%20%C3%A0%20chaleur%20air%2Fair)
+
+</SolutionSection>
+
+
+<SolutionTestCallout />
+
+<SolutionSection id="aller-plus-loin" title="Pour aller plus loin" iconId="fr-icon-arrow-right-line">
+
+**1. Tester cette solution et préparer votre projet**
+
+Le simulateur réalisé par France Chaleur Urbaine vous permet d’évaluer la pertinence d’une PAC air/air pour votre logement et de la comparer aux autres solutions adaptées à votre situation.
+
+[Tester le simulateur](https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable)
+
+Vous y trouverez :
+
+- une estimation des coûts de consommation et du prix de l’installation
+- une mise en lien avec un conseiller du service public capable de vous accompagner dans votre projet
+
+**2. En savoir plus sur la PAC air/air**
+
+[Se chauffer avec une pompe à chaleur ](https://agirpourlatransition.ademe.fr/particuliers/amenager-maison/chauffer/pompe-chaleur)
+
+[Comment choisir sa climatisation](https://agirpourlatransition.ademe.fr/particuliers/amenager-maison/climatiser-rafraichir/bien-choisir-climatisation)
+
+</SolutionSection>
