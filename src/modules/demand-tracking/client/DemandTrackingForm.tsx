@@ -3,17 +3,17 @@ import { useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import Alert from '@/components/ui/Alert';
-import { trackPostHogEvent } from '@/modules/analytics/client';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
+import { useFormTracking } from '@/modules/form/useFormTracking';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
-import { type DemandTrackingPlacement, zRequestDemandTrackingInput } from '../constants';
+import { type DemandTrackingFormSource, zRequestDemandTrackingInput } from '../constants';
 
 type DemandTrackingFormProps = {
-  /** Where the form is embedded, reported to PostHog (`emplacement`). */
-  placement: DemandTrackingPlacement;
+  /** Where the form is embedded, reported to PostHog (`source`). */
+  source: DemandTrackingFormSource;
 };
 
 const isRateLimitError = (error: unknown) => error instanceof TRPCClientError && error.data?.code === 'TOO_MANY_REQUESTS';
@@ -22,7 +22,7 @@ const isRateLimitError = (error: unknown) => error instanceof TRPCClientError &&
  * Email field + "Suivre ma demande" button. After submit, the same confirmation is shown whether or not
  * a demand matches the address, and even when the hourly cap is reached: nothing is revealed on screen.
  */
-export function DemandTrackingForm({ placement }: DemandTrackingFormProps) {
+export function DemandTrackingForm({ source }: DemandTrackingFormProps) {
   const { mutateAsync: requestDemandTracking } = trpc.demandTracking.request.useMutation();
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
 
@@ -37,10 +37,10 @@ export function DemandTrackingForm({ placement }: DemandTrackingFormProps) {
           throw error;
         }
       }
-      trackPostHogEvent('suivi_demande:form_submitted', { emplacement: placement });
       setSubmittedEmail(value.email);
     }),
   });
+  useFormTracking(form, { formName: 'suivi_demande', source });
 
   if (submittedEmail) {
     return (

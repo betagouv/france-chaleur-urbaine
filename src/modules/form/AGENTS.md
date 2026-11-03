@@ -37,6 +37,17 @@ Recurring patterns:
 - **Conditionally required fields** (required via a schema `refine`, so statically optional): the refine MUST set `when: () => true` — zod skips a schema's checks when the base parse has an aborting issue (e.g. a required enum/boolean/array still `undefined`), which would otherwise hide the conditional error until every other field is fixed. The schema-derived marker cannot know either — override at the call site with `nativeInputProps={{ required: true }}` when the field is only rendered in the branch where it is required (see `structure_other` in RegisterForm/ProfileForm/UserForm, `emailReferentCommercial` in ContributionForm).
 - **Shared field groups across forms**: `withFieldGroup` with an explicitly named render function (`render: MyGroupRender` — an inline `render()` method breaks the hooks lint) typed via `Parameters<Parameters<typeof withFieldGroup<…>>[0]['render']>[0]`; mount with `fields` as a subtree prefix (`"contact"`) or an identity map for root-level values. Reference implementation: `components/EligibilityForm/components/DemandContactFields.tsx`.
 
+## Tracking (`useFormTracking`)
+
+Generic PostHog tracking of a form, driven by the form store only — no code in the fields, no event call in `onSubmit`:
+
+```tsx
+const form = useAppForm({ ... });
+useFormTracking(form, { formName: 'suivi_demande', source: 'homepage', getSubmittedProperties: (values) => ({ ... }) });
+```
+
+Events (typed in `posthog.config.ts`, documented in `analytics/TRACKING_PLAN.md`): `form:started` (first dirty field), `form:field_filled` (first modification of each field — blur is not used: `isBlurred` is sticky and a field can be left before being filled), `form:submitted` (`isSubmitSuccessful`), `form:submit_failed` (`reason` `validation` when the form is invalid after the attempt, `server` when `onSubmit` threw — an error swallowed by `toastErrors` counts as a success). Values are never sent; `getSubmittedProperties` must stay non-personal. Add the `formName` to the `FormName` union when wiring a form. It is a separate hook rather than a `useAppForm` option because the generic signature of the hook returned by `createFormHook` cannot be extended without losing the inference of `onSubmit` values.
+
 ## Purpose
 
 Provides a generic autocomplete system and BAN-specific address autocomplete components, designed to be:

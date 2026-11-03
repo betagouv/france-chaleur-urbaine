@@ -61,7 +61,7 @@ export default function SuivreMaDemandePage() {
       <Section variant="lightaccent" className="bg-(--background-alt-blue-france)! py-2w! md:pt-2w! md:pb-4w!">
         <Breadcrumb currentPageLabel="Suivi de votre demande" homeLinkProps={{ href: '/' }} segments={[]} className="mt-0! mb-2!" />
         <h1 className="fr-h2 mb-4">Suivre ma demande</h1>
-        <DemandTrackingCard placement="page_suivi" />
+        <DemandTrackingCard source="page_suivi" />
       </Section>
 
       <Section size="compact">

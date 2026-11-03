@@ -9,9 +9,8 @@ export const zRequestDemandTrackingInput = z.object({
 });
 export type RequestDemandTrackingInput = z.infer<typeof zRequestDemandTrackingInput>;
 
-/** Where the "Suivre ma demande" form is embedded (PostHog `emplacement`). */
-export const demandTrackingPlacements = ['homepage', 'page_suivi'] as const;
-export type DemandTrackingPlacement = (typeof demandTrackingPlacements)[number];
+/** Where the "Suivre ma demande" form is embedded (PostHog `source` of the generic form events). */
+export type DemandTrackingFormSource = 'homepage' | 'page_suivi';
 
 export const DEMAND_TRACKING_PAGE_PATH = '/suivre-ma-demande';
 
@@ -46,7 +45,8 @@ export const RACCORDEMENT_NOT_VALIDATED_DISPLAY: DemandTrackingStatusDisplay = {
 
 export const raccordementStatusDisplays: Record<DEMANDE_STATUS, DemandTrackingStatusDisplay> = {
   [DEMANDE_STATUS.TO_PROCESS]: {
-    explanation: 'Votre demande a été transmise au gestionnaire du réseau de chaleur, qui reviendra vers vous pour étudier votre projet.',
+    explanation:
+      'Votre demande est bien enregistrée. Elle va être transmise au gestionnaire du réseau de chaleur, qui reviendra vers vous pour étudier votre projet. Si aucun gestionnaire de réseau n’est référencé à proximité de votre bâtiment, nous informerons l’éventuel futur gestionnaire si un réseau est créé à proximité de cette adresse.',
     label: 'En attente de prise en charge',
     phase: 'en_cours',
   },

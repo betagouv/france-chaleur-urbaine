@@ -6,7 +6,7 @@ Account-less tracking of demands: a visitor types the email used when submitting
 
 ## Structure
 
-- `constants.ts` — `zRequestDemandTrackingInput`, the public status wording tables (`raccordementStatusDisplays`, `accompagnementStatusDisplays`, `RACCORDEMENT_NOT_VALIDATED_DISPLAY`: label + explanation + phase `en_cours` / `cloturee`), PostHog placements (one per embedding: `homepage`, `page_suivi`), `DEMAND_TRACKING_PAGE_PATH`.
+- `constants.ts` — `zRequestDemandTrackingInput`, the public status wording tables (`raccordementStatusDisplays`, `accompagnementStatusDisplays`, `RACCORDEMENT_NOT_VALIDATED_DISPLAY`: label + explanation + phase `en_cours` / `cloturee`), `DemandTrackingFormSource` (one per embedding: `homepage`, `page_suivi`), `DEMAND_TRACKING_PAGE_PATH`.
 - `server/service.ts` — `requestDemandTracking(email)`: lookup in `demands` (by `legacy_values->>'Mail'`, non deleted) and `demands_chaleur_renouvelable` (by `email`), sort (open first, then closed, most recent first), email.
 - `server/trpc-routes.ts` — `demandTracking.request` (public mutation, tRPC rate limit `businessRules.demandTrackingEmailsPerHour` per IP per hour).
 - `client/DemandTrackingForm.tsx` — email field + button, same info alert whatever the outcome, `TOO_MANY_REQUESTS` included. `client/DemandTrackingCard.tsx` — "Vous avez déjà déposé une demande ?" card (home tools section + hero of `src/pages/suivre-ma-demande.tsx`). `client/DemandTrackingEmailPreview.tsx` — static illustration of the email on the page.
@@ -17,7 +17,7 @@ Account-less tracking of demands: a visitor types the email used when submitting
 - Never reveals anything on screen: no demand → no email, cap reached → no email, same confirmation in every case.
 - Status wording: the public label and explanation come from the tables in `constants.ts`, never from the internal status. A raccordement demand still « À traiter » and not validated by the admin gets the dedicated "not yet forwarded" wording. Multi-ENR statuses outside the product ticket (France Rénov’, études…) are provisional.
 - Reads the demand tables of `demands` and `chaleur-renouvelable` directly (read-only); does not write to them.
-- Only client analytics (`suivi_demande:form_submitted`); logs carry an email fingerprint (`@/utils/email-fingerprint`), never the address.
+- Analytics: the generic form events of `useFormTracking` (`form_name: 'suivi_demande'`, `source` = embedding); the email links only carry UTM parameters. Logs carry an email fingerprint (`@/utils/email-fingerprint`), never the address.
 
 ## tRPC routes
 

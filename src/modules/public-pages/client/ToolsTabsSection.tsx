@@ -54,7 +54,7 @@ export function ToolsTabsSection() {
           <ToolTile key={tool.name} {...tool} />
         ))}
       </div>
-      <DemandTrackingCard placement="homepage" className="mt-6" />
+      <DemandTrackingCard source="homepage" className="mt-6" />
     </Section>
   );
 }
