@@ -2,17 +2,17 @@ import { useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import Alert from '@/components/ui/Alert';
-import { trackPostHogEvent } from '@/modules/analytics/client';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
+import { useFormTracking } from '@/modules/form/useFormTracking';
 import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
-import { type DemandTrackingPlacement, zRequestDemandTrackingInput } from '../constants';
+import { type DemandTrackingFormSource, zRequestDemandTrackingInput } from '../constants';
 
 type DemandTrackingFormProps = {
-  /** Where the form is embedded, reported to PostHog (`emplacement`). */
-  placement: DemandTrackingPlacement;
+  /** Where the form is embedded, reported to PostHog (`source`). */
+  source: DemandTrackingFormSource;
 };
 
 /**
@@ -20,7 +20,7 @@ type DemandTrackingFormProps = {
  * a demand matches the address: nothing is revealed on screen. Beyond the hourly cap, the tRPC link
  * toasts the `TOO_MANY_REQUESTS` error and the form stays displayed.
  */
-export function DemandTrackingForm({ placement }: DemandTrackingFormProps) {
+export function DemandTrackingForm({ source }: DemandTrackingFormProps) {
   const { mutateAsync: requestDemandTracking } = trpc.demandTracking.request.useMutation();
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
 
@@ -29,10 +29,10 @@ export function DemandTrackingForm({ placement }: DemandTrackingFormProps) {
     defaultValues: { email: '' },
     onSubmit: toastErrors(async ({ value }) => {
       await requestDemandTracking({ email: value.email });
-      trackPostHogEvent('suivi_demande:form_submitted', { emplacement: placement });
       setSubmittedEmail(value.email);
     }),
   });
+  useFormTracking(form, { formName: 'suivi_demande', source });
 
   if (submittedEmail) {
     return (

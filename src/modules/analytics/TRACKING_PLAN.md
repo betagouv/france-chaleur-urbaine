@@ -216,12 +216,18 @@ Ces événements n'utilisent pas `posthog-js` dans le widget : le navigateur app
 | `account:created` | _(aucune)_ | Création de compte |
 | `account:preference_updated` | `preference` (`newsletter`, `notifications.new_demands`, `notifications.pending_demands_reminder`, `email_signature`), `value?` | Réglage modifié sur « Mon compte » : `value` = `true`/`false` pour la newsletter et le rappel, `daily`/`weekly`/`none` pour les nouvelles demandes, absente pour la signature |
 
-### Suivi de demande sans compte
+### Formulaires (générique)
+
+Émis automatiquement par `useFormTracking` (module `form`) pour tout formulaire `useAppForm` qui y est branché ; aucune valeur saisie n'est envoyée. `form_name` identifie le formulaire (`suivi_demande`…), `source` la page ou l'emplacement quand le même formulaire existe à plusieurs endroits (`homepage`, `page_suivi`…).
 
 | Événement | Propriétés | Description |
 |---|---|---|
-| `suivi_demande:form_submitted` | `emplacement` (`homepage`, `page_suivi`) | Soumission du formulaire « Suivre ma demande » (bloc de la page d'accueil ou page dédiée), plafond atteint compris |
-| `suivi_demande:contact_clicked` | _(aucune)_ | Clic sur « Nous contacter » dans l'email de suivi (mesuré à l'arrivée sur `/contact` via l'UTM de l'email) |
+| `form:started` | `form_name`, `source?`, `field_name` | Première modification d'un champ du formulaire (`field_name` = ce premier champ) |
+| `form:field_filled` | `form_name`, `source?`, `field_name` | Première modification de chaque champ (saisie, sélection, case cochée…) ; un champ sans cet événement a été laissé intact |
+| `form:submitted` | `form_name`, `source?`, propriétés propres au formulaire | Soumission acceptée (le `onSubmit` a abouti) |
+| `form:submit_failed` | `form_name`, `source?`, `reason` (`validation` / `server`), `fields_in_error` | Soumission refusée : erreurs de saisie, ou `onSubmit` en échec (les erreurs avalées par `toastErrors` comptent comme un succès) |
+
+Formulaires branchés : `suivi_demande` (bloc accueil `source=homepage`, page dédiée `source=page_suivi`). Les liens des emails transactionnels ne génèrent pas d'événement : ils portent des paramètres `utm_*` (`utm_campaign` = modèle, `utm_content` = lien) que PostHog rattache à la session à l'arrivée.
 
 ### Accueil
 

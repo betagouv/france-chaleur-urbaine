@@ -46,6 +46,9 @@ export const NotifierContainer = ({ children }: any) => {
   );
 };
 
+/** Replaces the generic message of an error toast, for errors that are not validation errors. */
+export type ClientErrorMessage = (err: Error) => Renderable;
+
 /**
  * Wraps an asynchronous function to handle errors with toast notifications.
  *
@@ -55,10 +58,7 @@ export const NotifierContainer = ({ children }: any) => {
  * @returns A function that takes an asynchronous function (`func`), executes it,
  * and shows a toast notification with the error message if an error occurs.
  */
-export const toastErrors = <Func extends (...args: any[]) => void | Promise<void>>(
-  func: Func,
-  customError?: (err: Error) => Renderable
-) => {
+export const toastErrors = <Func extends (...args: any[]) => void | Promise<void>>(func: Func, customError?: ClientErrorMessage) => {
   return async (...args: Parameters<Func>): Promise<void> => {
     try {
       await func(...args);
@@ -76,7 +76,7 @@ let errorToastCounter = 0;
  * Handles client errors and shows a toast notification: the message of a validation error (zod, 400) as is, else
  * the generic message (or `customError`) followed by the error message. See `getUserFacingErrorMessage`.
  */
-export function handleClientError(err: any, customError?: (err: Error) => Renderable) {
+export function handleClientError(err: any, customError?: ClientErrorMessage) {
   const userFacingMessage = getUserFacingErrorMessage(err);
   const detail: string = err?.message || String(err);
   console.error('client error', userFacingMessage ?? detail, err);

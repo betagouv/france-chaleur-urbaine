@@ -12,7 +12,6 @@ import type {
   TypeLogement,
   TypeRadiateur,
 } from '@/modules/chaleur-renouvelable/constants';
-import type { DemandTrackingPlacement } from '@/modules/demand-tracking/constants';
 import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import type { SimulateurPacEventProperties } from '@/modules/pac/constants';
 import type { HomeFormMode } from '@/modules/public-pages/constants';
@@ -435,10 +434,11 @@ export type PostHogEventMap = {
   };
   'global:footer_link_clicked': { link_name: string };
 
-  // Suivi de demande sans compte (page « Suivre ma demande » + bloc accueil)
-  'suivi_demande:form_submitted': { emplacement: DemandTrackingPlacement };
-  /** clic sur « Nous contacter » dans l'email de suivi, mesuré à l'arrivée sur /contact */
-  'suivi_demande:contact_clicked': never;
+  // Formulaires (tracking générique de la couche useAppForm, voir useFormTracking)
+  'form:started': FormEventProperties & { field_name: string };
+  'form:field_filled': FormEventProperties & { field_name: string };
+  'form:submitted': FormEventProperties & FormSubmittedProperties;
+  'form:submit_failed': FormEventProperties & { reason: 'validation' | 'server'; fields_in_error: string[] };
   'global:login_cta_clicked': { is_auth: boolean };
   'consent:cookie_choice_made': { consent: FinalityConsent<string> };
 
@@ -464,6 +464,13 @@ export type PostHogEventMap = {
 type ElementType = {
   element_name: string;
 };
+
+/** Forms wired to `useFormTracking`: add a name here when wiring a new form. */
+export type FormName = 'suivi_demande';
+type FormEventProperties = { form_name: FormName; source?: string };
+/** Extra `form:submitted` properties, non-personal only (never a typed value). */
+export type FormSubmittedProperties = Record<string, string | number | boolean | undefined>;
+
 export type PostHogEvent = keyof PostHogEventMap;
 
 export type PostHogTrackingProps<Event extends PostHogEvent = PostHogEvent> = {

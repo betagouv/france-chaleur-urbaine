@@ -8,9 +8,8 @@ export const zRequestDemandTrackingInput = z.object({
 });
 export type RequestDemandTrackingInput = z.infer<typeof zRequestDemandTrackingInput>;
 
-/** Where the "Suivre ma demande" form is embedded (PostHog `emplacement`). */
-export const demandTrackingPlacements = ['homepage', 'page_suivi'] as const;
-export type DemandTrackingPlacement = (typeof demandTrackingPlacements)[number];
+/** Where the "Suivre ma demande" form is embedded (PostHog `source` of the generic form events). */
+export type DemandTrackingFormSource = 'homepage' | 'page_suivi';
 
 export const DEMAND_TRACKING_PAGE_PATH = '/suivre-ma-demande';
 
