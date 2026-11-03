@@ -16,6 +16,7 @@ import {
   zUpdateUserPreferences,
   zUpdateUserTag,
 } from '@/modules/users/constants';
+import { announceParticulierDeletion, getParticulierPhaseOutStatus } from '@/modules/users/server/particulier-phase-out';
 import * as usersService from '@/modules/users/server/service';
 import * as tagsService from '@/modules/users/server/tags-service';
 import { logger } from '@/server/helpers/logger';
@@ -47,6 +48,14 @@ export const usersRouter = router({
   getPreferences: routeAuthenticated.query(({ ctx }) => usersService.getUserPreferences(ctx.user.id)),
 
   getProfile: routeAuthenticated.query(({ ctx }) => usersService.getProfile(ctx.user.id)),
+
+  // Temporary (particulier accounts phase-out): announcement of the deletion from /admin/suppression-comptes-particuliers.
+  particulierPhaseOut: {
+    announceDeletion: adminRoute
+      .input(z.object({ deletionDate: z.iso.date() }))
+      .mutation(({ ctx, input }) => announceParticulierDeletion(input.deletionDate, ctx.user.id)),
+    getStatus: adminRoute.query(() => getParticulierPhaseOutStatus()),
+  },
 
   updateNewsletterSubscription: routeAuthenticated.input(zUpdateNewsletterSchema).mutation(async ({ ctx, input }) => {
     await usersService.updateNewsletterSubscription(ctx.user.id, input.optin_newsletter);

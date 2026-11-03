@@ -1,6 +1,6 @@
-# Rôle : particulier et professionnel
+# Rôle : professionnel (et particulier)
 
-Les deux rôles « demandeurs » — les seuls ouverts à l'[inscription publique](/admin/doc/inscription-comptes). Un **particulier** teste son adresse et suit sa demande ; un **professionnel** (bureau d'études, bailleur, syndic…) travaille sur des parcs d'adresses. Leurs espaces sont **identiques** : mêmes menus, mêmes fonctionnalités — la seule différence tient à l'inscription (structure obligatoire pour le professionnel).
+Les deux rôles « demandeurs ». Le **professionnel** (bureau d'études, bailleur, syndic…) est le seul rôle ouvert à l'[inscription publique](/admin/doc/inscription-comptes) et travaille sur des parcs d'adresses. Le **particulier** est en cours de suppression : son seul usage propre, le suivi de ses demandes, est remplacé par le [suivi par email sans compte](/admin/doc/cycle-de-vie-demande#suivi-par-le-demandeur) ; les comptes existants gardent un espace identique jusqu'à leur suppression (voir [Inscription et comptes](/admin/doc/inscription-comptes#suppression-des-comptes-particuliers)).
 
 ## Son espace
 
@@ -8,9 +8,9 @@ Menu : **Tableau de bord**, **Mes demandes**, **Comparateur de coûts et CO2**, 
 
 ## Déposer et suivre une demande
 
-- Le dépôt peut se faire **sans compte** (formulaire public). À la première connexion avec le même email, les demandes anonymes sont **automatiquement rattachées** au compte — c'est ce qui permet de retrouver dans « Mes demandes » une demande faite avant l'inscription.
+- Le dépôt se fait le plus souvent **sans compte** (formulaire public), et le suivi aussi : la page [Suivre ma demande](/suivre-ma-demande) envoie par email l'état de chaque demande associée à l'adresse saisie. À la première connexion avec le même email, les demandes anonymes sont **automatiquement rattachées** au compte — c'est ce qui les fait apparaître dans « Mes demandes ».
 - Au dépôt : email [« Confirmation de demande »](/admin/emails?type=demands.demandeur.confirmation-demande) avec analyse d'éligibilité personnalisée. Redéposer une demande pour la même adresse avec le même email sous <Rule id="demandDedupWindowDays" /> n'en crée **pas** une nouvelle : l'écran de confirmation réaffiche la demande existante (voir [Cycle de vie d'une demande](/admin/doc/cycle-de-vie-demande)).
-- **« Mes demandes » est en lecture seule** : statut (« À traiter » y est affiché « En cours de traitement »), réseau affecté, mises à jour d'éligibilité, date. Le demandeur n'y voit **pas** les coordonnées du gestionnaire et ne peut rien y modifier.
+- **« Mes demandes » est en lecture seule** : statut (libellé usager, jamais le statut interne — « À traiter » devient « En attente de prise en charge »), réseau affecté, mises à jour d'éligibilité, date. Le demandeur n'y voit **pas** les coordonnées du gestionnaire et ne peut rien y modifier.
 
 ## La boucle de satisfaction — son seul canal de retour
 

@@ -28,7 +28,7 @@ describe('getCcrtDemandTab', () => {
     ['Réorienté vers France Rénov’', 'closed'],
     ['Projet abandonné par le prospect', 'closed'],
     ['Installation réalisée', 'completed'],
-  ])('groups %s in %s', (status, expected) => {
+  ] as const)('groups %s in %s', (status, expected) => {
     expect(getCcrtDemandTab({ status })).toStrictEqual(expected);
   });
 });

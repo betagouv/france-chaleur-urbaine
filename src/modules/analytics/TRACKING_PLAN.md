@@ -216,6 +216,13 @@ Ces événements n'utilisent pas `posthog-js` dans le widget : le navigateur app
 | `account:created` | _(aucune)_ | Création de compte |
 | `account:preference_updated` | `preference` (`newsletter`, `notifications.new_demands`, `notifications.pending_demands_reminder`, `email_signature`), `value?` | Réglage modifié sur « Mon compte » : `value` = `true`/`false` pour la newsletter et le rappel, `daily`/`weekly`/`none` pour les nouvelles demandes, absente pour la signature |
 
+### Suivi de demande sans compte
+
+| Événement | Propriétés | Description |
+|---|---|---|
+| `suivi_demande:form_submitted` | `emplacement` (`homepage`, `page_suivi`) | Soumission du formulaire « Suivre ma demande » (bloc de la page d'accueil ou page dédiée), plafond atteint compris |
+| `suivi_demande:contact_clicked` | _(aucune)_ | Clic sur « Nous contacter » dans l'email de suivi (mesuré à l'arrivée sur `/contact` via l'UTM de l'email) |
+
 ### Accueil
 
 | Événement | Propriétés | Description |

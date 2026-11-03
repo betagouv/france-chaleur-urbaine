@@ -41,14 +41,16 @@ type DemandStatusBadgeProps = {
   status: DemandStatus;
   /** `demandeur` neutralise les statuts internes destinés aux gestionnaires (« À traiter » → « En cours de traitement ») en badge info. */
   audience?: 'gestionnaire' | 'demandeur';
+  /** Vue demandeur : une demande non validée par l'équipe FCU est « En attente de prise en charge » quel que soit son statut. */
+  validated?: boolean;
 };
 
-const DemandStatusBadge = ({ status, audience = 'gestionnaire' }: DemandStatusBadgeProps) => {
+const DemandStatusBadge = ({ status, audience = 'gestionnaire', validated }: DemandStatusBadgeProps) => {
   // Vue demandeur : couleur métier des gestionnaires masquée, badge info neutre pour tous les statuts.
   if (audience === 'demandeur') {
     return (
       <Badge small severity="info" noIcon>
-        {upperCaseFirstChar(getDemandeurStatusLabel(status || demandStatusDefault))}
+        {upperCaseFirstChar(getDemandeurStatusLabel(status || demandStatusDefault, validated))}
       </Badge>
     );
   }

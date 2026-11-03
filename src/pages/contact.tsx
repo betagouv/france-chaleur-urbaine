@@ -1,9 +1,21 @@
+import { useEffect } from 'react';
+
 import SimplePage from '@/components/shared/page/SimplePage';
 import Alert from '@/components/ui/Alert';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 
-function contact() {
+const DEMAND_TRACKING_EMAIL_CAMPAIGN = 'demands.demandeur.suivi-demande';
+
+function ContactPage() {
+  // the "Nous contacter" button of the tracking email cannot be measured from the mailbox: its UTM is read on landing
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('utm_campaign') === DEMAND_TRACKING_EMAIL_CAMPAIGN) {
+      trackPostHogEvent('suivi_demande:contact_clicked');
+    }
+  }, []);
+
   return (
     <SimplePage title="Contactez-nous" description="Une question sur les réseaux de chaleur et de froid ? N'hésitez pas à nous contacter.">
       <Hero variant="ressource">
@@ -41,4 +53,4 @@ function contact() {
   );
 }
 
-export default contact;
+export default ContactPage;

@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { type DemandSubmissionResult, demandStatusDefault } from '@/modules/demands/constants';
+import type { TestCase } from '@/tests/trpc-helpers';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
 import DemandSubmittedPanel from './DemandSubmittedPanel';
 
@@ -27,9 +29,30 @@ const submissionResult = {
   isExisting: false,
   networkName: null,
   status: demandStatusDefault,
+  validated: false,
 } satisfies DemandSubmissionResult;
 
+const existingDemandCases: TestCase<Pick<DemandSubmissionResult, 'status' | 'validated'>, string>[] = [
+  {
+    expectedOutput: 'En attente de prise en charge',
+    input: { status: DEMANDE_STATUS.UNREALISABLE, validated: false },
+    label: 'not validated yet → waiting wording whatever the internal status',
+  },
+  {
+    expectedOutput: 'Raccordement non envisageable à ce jour',
+    input: { status: DEMANDE_STATUS.UNREALISABLE, validated: true },
+    label: 'validated → public wording of the status',
+  },
+];
+
 describe('DemandSubmittedPanel', () => {
+  it.each(existingDemandCases)('existing demand: $label', ({ input, expectedOutput }) => {
+    render(<DemandSubmittedPanel submissionResult={{ ...submissionResult, ...input, isExisting: true }} />);
+
+    expect(screen.getByText('Demande déjà enregistrée')).toBeInTheDocument();
+    expect(screen.getByText(expectedOutput)).toBeInTheDocument();
+  });
+
   it('shows the confirmation email notice by default', () => {
     render(<DemandSubmittedPanel submissionResult={submissionResult} />);
 

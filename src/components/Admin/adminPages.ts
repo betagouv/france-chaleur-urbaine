@@ -135,6 +135,13 @@ export const adminPages = [
     label: 'Diagnostic système',
   },
   {
+    // temporary page, to remove with the particulier role once the accounts are deleted
+    desc: "Envoyez l'annonce de suppression aux titulaires d'un compte particulier",
+    group: 'system',
+    href: '/admin/suppression-comptes-particuliers',
+    label: 'Suppression des comptes particuliers',
+  },
+  {
     desc: 'Identifiez les incohérences (utilisateurs, permissions, demandes)',
     group: 'system',
     href: '/admin/data-diagnostic',

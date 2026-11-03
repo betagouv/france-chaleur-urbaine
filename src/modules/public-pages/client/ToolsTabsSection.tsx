@@ -4,6 +4,7 @@ import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Section from '@/components/ui/Section';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { DemandTrackingCard } from '@/modules/demand-tracking/client/DemandTrackingCard';
 import cx from '@/utils/cx';
 
 import { type PublicPageTool, TOOL_TABS, type ToolTabId } from '../constants';
@@ -53,6 +54,7 @@ export function ToolsTabsSection() {
           <ToolTile key={tool.name} {...tool} />
         ))}
       </div>
+      <DemandTrackingCard placement="homepage" className="mt-6" />
     </Section>
   );
 }

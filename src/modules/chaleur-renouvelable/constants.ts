@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { z } from 'zod';
 
 import { businessRules } from '@/modules/app/business-rules';
+import { CLOSED_DEMAND_STATUS_DISPLAY, type DemandStatusDisplay } from '@/modules/demands/constants';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 
 export const MINIMUM_AVERAGE_HOUSING_AREA_MESSAGE = `La surface doit être d’au moins ${businessRules.fcrMinimumAverageHousingArea.display} par logement.`;
@@ -387,6 +388,65 @@ export const demandeChaleurRenouvelableProjectStates = [
 ] as const;
 export const DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION = demandeChaleurRenouvelableProjectStates[0].label;
 export type DemandeChaleurRenouvelableProjectState = (typeof demandeChaleurRenouvelableProjectStates)[number]['label'];
+
+/** Support demand not yet validated by the FCU team: nothing has been sent to the adviser yet, whatever the internal status. */
+export const DEMANDE_CHALEUR_RENOUVELABLE_NOT_VALIDATED_STATUS_DISPLAY: DemandStatusDisplay = {
+  explanation:
+    'Votre demande va être transmise au conseiller chaleur renouvelable de votre territoire. Ce conseiller du service public, neutre et gratuit, vous recontactera pour faire le point sur votre projet.',
+  label: 'En attente de prise en charge',
+  phase: 'en_cours',
+};
+
+/**
+ * Public wording of the support demand statuses, shown to the requester (recap email). The first three wordings come from the product
+ * ticket; the others are provisional until the CCRT workspace ticket settles them.
+ */
+export const demandeChaleurRenouvelableStatusDisplays: Record<DemandeChaleurRenouvelableStatus, DemandStatusDisplay> = {
+  'A traiter': {
+    explanation:
+      'Votre demande a été transmise au conseiller chaleur renouvelable de votre territoire. Ce conseiller du service public, neutre et gratuit, vous recontactera pour faire le point sur votre projet.',
+    label: 'En attente de prise en charge',
+    phase: 'en_cours',
+  },
+  'Etude d’opportunité en cours': {
+    explanation: "Une étude d'opportunité est en cours pour identifier les solutions de chauffage renouvelable adaptées à votre bâtiment.",
+    label: "Étude d'opportunité en cours",
+    phase: 'en_cours',
+  },
+  'Etude d’opportunité réalisée': {
+    explanation: "L'étude d'opportunité de votre projet a été réalisée.",
+    label: "Étude d'opportunité réalisée",
+    phase: 'en_cours',
+  },
+  'Installation réalisée': {
+    explanation: "L'installation de votre nouvelle solution de chauffage est réalisée.",
+    label: 'Installation réalisée',
+    phase: 'cloturee',
+  },
+  'Non pertinent': CLOSED_DEMAND_STATUS_DISPLAY,
+  'Premier conseil téléphonique réalisé': {
+    explanation: 'Votre conseiller chaleur renouvelable vous a apporté un premier conseil par téléphone sur votre projet.',
+    label: 'Premier conseil réalisé',
+    phase: 'en_cours',
+  },
+  'Projet abandonné par le prospect': CLOSED_DEMAND_STATUS_DISPLAY,
+  'Recontacté pour premier échange': {
+    explanation: 'Votre conseiller chaleur renouvelable a pris contact avec vous pour faire le point sur votre projet.',
+    label: 'Prise en charge par votre conseiller chaleur renouvelable',
+    phase: 'en_cours',
+  },
+  'Réorienté vers France Rénov’': {
+    explanation:
+      "Votre projet relève de l'accompagnement France Rénov’ : votre conseiller vous a orienté vers l'Espace Conseil France Rénov’ de votre territoire.",
+    label: 'Demande réorientée vers France Rénov’',
+    phase: 'cloturee',
+  },
+  'Étude de faisabilité votée en AG': {
+    explanation: "Votre copropriété a voté en assemblée générale la réalisation d'une étude de faisabilité.",
+    label: 'Étude de faisabilité votée en assemblée générale',
+    phase: 'en_cours',
+  },
+};
 
 export const DEFAULT_SIMULATION_PARAMS = {
   espaceExterieur: 'none',

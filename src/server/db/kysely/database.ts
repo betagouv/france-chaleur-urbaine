@@ -8,6 +8,7 @@ import type { ColumnType, GeneratedAlways, JSONColumnType } from 'kysely';
 import type {
   DemandConcern,
   DemandeChaleurRenouvelableProjectState,
+  DemandeChaleurRenouvelableStatus,
   DPE,
   EspaceExterieur,
   HeatingEnergy,
@@ -321,7 +322,7 @@ export interface DemandsChaleurRenouvelable {
   rnic_numero_immatriculation: string | null;
   rnic_siret_representant_legal: string | null;
   simulation_url: string;
-  status: Generated<string>;
+  status: Generated<DemandeChaleurRenouvelableStatus>;
   surface_area: number | null;
   updated_at: Generated<Timestamp>;
   validated: Generated<boolean>;

@@ -381,6 +381,7 @@ describe('batEnrRouter', () => {
             isExisting: false,
             networkName: result.demandSubmissionResult?.networkName,
             status: DEMANDE_STATUS.TO_PROCESS,
+            validated: false,
           },
           id: null,
         },
@@ -450,6 +451,7 @@ describe('batEnrRouter', () => {
             isExisting: false,
             networkName: result.demandSubmissionResult?.networkName,
             status: DEMANDE_STATUS.TO_PROCESS,
+            validated: false,
           },
           id: null,
         },
@@ -1490,7 +1492,6 @@ describe('batEnrRouter', () => {
           project_state: ADMIN_UPDATED_PROJECT_STATE,
           project_status: ['Début de réflexion'],
           simulation_url: 'https://example.com/test',
-          status: '',
         })
         .returning(['id'])
         .executeTakeFirstOrThrow();

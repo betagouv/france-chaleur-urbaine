@@ -10,6 +10,10 @@ Single JSONB column validated by `zUserPreferences` (`constants.ts`): `email_sig
 
 Preference writes use `updateUserPreferences(userId, changes, database?)`: a transaction and user-row lock serialize partial updates; callers such as CCRT email delivery can pass their transaction to keep the preferences and audit event atomic with their own changes.
 
+## Particulier accounts phase-out (`commands.ts`)
+
+Temporary admin page `/admin/suppression-comptes-particuliers` (`client/admin/ParticulierPhaseOutPanel.tsx`, tRPC `users.particulierPhaseOut.getStatus` / `announceDeletion`, service `server/particulier-phase-out.ts`): lists active particulier accounts with their announcement state and Brevo block, and sends `auth.utilisateur.suppression-compte-particulier` to those without a `user_particulier_deletion_announced` event yet (one event per sent email, author = admin, so a rerun resumes). `pnpm cli users particulier:delete [--dry-run]` (`commands.ts`) deletes them on the announced date (demands are kept, `demands.user_id` becomes NULL through the FK; bulk tests and jobs cascade) and records a `user_particulier_accounts_deleted` event. Everything here is to be removed with the role. Registration no longer offers the role (`userRolesInscription`); demand follow-up is handled by `src/modules/demand-tracking/`.
+
 ## Account opening emails
 
 `server/service.ts#create` sends an opening email only when the new account is explicitly active: `auth.gestionnaire.ouverture-espace` for network managers, `auth.ccrt.ouverture-espace` for CCRT. Opening emails skipped during the temporary suspension are not automatically replayed. Updates, including activation of an existing account, do not send an opening email. The CCRT template uses generic manager-space wording and explains how to set a password through the forgotten-password flow.
