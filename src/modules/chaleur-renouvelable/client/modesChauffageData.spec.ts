@@ -670,7 +670,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   {
     label: 'PAC géothermique',
     overrides: { geothermalNappeGmi: 3, geothermalSondeGmi: 3, modeEauChaudeSanitaire: 'Collectif' },
-    reason: 'Votre bâtiment n’est pas situé dans une zone identifiée comme favorable au forage',
+    reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
     source: 'BRGM',
     typeLogement: 'immeuble_chauffage_collectif',
     usage: 'heatingAndHotWater',
@@ -779,7 +779,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
       geothermalSondeGmi: 3,
       modeEauChaudeSanitaire: 'Couplé au chauffage',
     },
-    reason: 'Votre bâtiment n’est pas situé dans une zone identifiée comme favorable au forage',
+    reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
     source: 'BRGM',
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',

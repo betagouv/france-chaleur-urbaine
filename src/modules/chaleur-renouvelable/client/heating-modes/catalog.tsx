@@ -119,7 +119,7 @@ export const modesDeChauffage = {
         },
         {
           isIncompatible: (situation) => !hasFavorableGeothermalArea(situation),
-          reason: 'Votre bâtiment n’est pas situé dans une zone identifiée comme favorable au forage',
+          reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
           source: 'BRGM',
         },
       ],
@@ -682,7 +682,7 @@ export const modesDeChauffage = {
         },
         {
           isIncompatible: (situation) => !hasFavorableGeothermalArea(situation),
-          reason: 'Votre bâtiment n’est pas situé dans une zone identifiée comme favorable au forage',
+          reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
           source: 'BRGM',
         },
         {
