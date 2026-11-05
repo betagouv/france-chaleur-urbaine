@@ -179,11 +179,7 @@ export const buildDemandQuery = () => {
         )
         .innerJoin('users as u', 'u.id', 'up.user_id')
         .where('u.active', '=', true)
-        .where(
-          'u.role',
-          'in',
-          userRolesWithPermissions.filter((role) => role !== 'ccrt')
-        )
+        .where('u.role', 'in', userRolesWithPermissions)
         .groupBy('d.id')
         .select((eb) => [
           eb.ref('d.id').as('demand_id'),
