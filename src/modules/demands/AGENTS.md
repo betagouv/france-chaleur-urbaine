@@ -24,6 +24,7 @@ Connection requests ("demandes de raccordement") lifecycle: creation, enrichment
 - Owns DB tables: `demands`, `demand_emails`.
 - State is split between typed columns (`validated`, `network_id`, `network_type`, `comment_gestionnaire`, `comment_fcu`, `pending_assignment_change`, `deleted_at`) and the `legacy_values` JSONB (Status, Mail/Nom/Prénom, relance and notification flags…). Always merge legacy values with `mergeLegacyValues`, never overwrite the blob.
 - Access rules live in `@/modules/permissions` (`isUserResponsibleForDemand`): view = any matching permission; process = network/organization permission (assigned demand) or territory permission (unassigned demand only). Admin is never "responsible" — it has its own operations.
+- Connection-demand access counters and the access-holder dialog list gestionnaires, collectivités and ALEC only. CCRT accounts appear in the dedicated renewable-heat demand access lists, not in these classic-demand views.
 
 ## tRPC routers (`server/trpc-routes.ts`)
 

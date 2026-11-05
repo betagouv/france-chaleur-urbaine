@@ -69,7 +69,6 @@ export type AccessCounts = {
   gestionnaire: number;
   collectivite: number;
   alec: number;
-  ccrt: number;
 };
 
 export type { ReseauxStats } from './server/stats';

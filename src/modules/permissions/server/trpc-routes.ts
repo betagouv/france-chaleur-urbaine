@@ -39,7 +39,7 @@ export const permissionsRouter = router({
     await ensureUserCanAccessDemand(ctx, input.demandId);
     const demand = await getDemandForAccessCheck(input.demandId);
     if (!demand) return [];
-    const users = await getUsersWithAccessToDemand(demand);
+    const users = (await getUsersWithAccessToDemand(demand)).filter((user) => user.role !== 'ccrt');
     if (!ctx.anonymize) return users;
     return users.map((u) => ({
       ...u,
