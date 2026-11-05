@@ -13,7 +13,7 @@ describe('simulator solution article links', () => {
     ['house-thermodynamic-water-heater', 'chauffe-eau-thermodynamique'],
   ] as const)('opens the validated article for %s in a new tab while preserving the current simulation', (modeId, slug) => {
     render(<SolutionArticleLink modeId={modeId} solutionName="Solution" />);
-    const link = screen.getByRole('link', { exact: true, name: 'En savoir plus' });
+    const link = screen.getByRole('link', { name: 'En savoir plus' });
     expect(link).toHaveAttribute('href', `/ressources/${slug}`);
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
