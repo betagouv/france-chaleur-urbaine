@@ -139,6 +139,8 @@ Legacy `src/pages/api/` routes not yet migrated: wrap with `handleRouteErrors` f
 
 Configured in `next.config.ts`: CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, plus `helmet` middleware.
 
+- CSP `frame-src` allows the site's own origin for embedded tools such as `/iframe/form` in the heat-network solution article, alongside the explicitly allowed external providers.
+
 - CSP `script-src` is **hash-based**: no `'unsafe-inline'`, no nonce (most pages are static). Every inline script needs its sha256 listed in `next.config.ts`, with a comment saying what it is. Dead hashes must be removed.
 - `experimental.turbopackSharedRuntime` is disabled for that reason: its inline bootstrap script changes on every build and would be blocked (breaks hydration site-wide).
 

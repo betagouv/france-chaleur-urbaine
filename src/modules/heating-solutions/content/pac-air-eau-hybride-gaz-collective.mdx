@@ -1,0 +1,256 @@
+import { SolutionSection } from "../client/SolutionSection";
+
+import { SolutionSummaryCard } from "../client/SolutionSummaryCard";
+
+import { SolutionTestCallout } from "../client/SolutionTestCallout";
+
+import { SolutionFlow } from "../client/SolutionFlow";
+
+import { SolutionFaqItem } from "../client/SolutionFaqItem";
+
+<SolutionTestCallout />
+
+<SolutionSection id="en-quelques-mots" title="En quelques mots" iconId="fr-icon-lightbulb-line">
+
+<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+
+<SolutionSummaryCard title="Pour quels bâtiments ?" tone="building">
+
+Bâtiments équipés d’un chauffage collectif à eau, notamment lorsque les besoins du bâtiment rendent difficile l’installation d’une PAC air/eau seule.
+
+</SolutionSummaryCard>
+
+<SolutionSummaryCard title="Coût de l’investissement ?" tone="cost">
+
+**3 000 à 5 000 € par logement**
+
+</SolutionSummaryCard>
+
+<SolutionSummaryCard title="Faisabilité ?" tone="feasibility">
+
+Nécessite :
+
+- un chauffage collectif avec réseau d’eau
+- un espace extérieur suffisant pour installer les unités de PAC
+- un local technique adapté
+- un raccordement électrique adapté
+- de conserver une chaudière gaz pour assurer l’appoint
+
+</SolutionSummaryCard>
+
+<SolutionSummaryCard title="Pourquoi choisir cette solution ?" tone="benefits">
+
+Pour réduire l’utilisation du gaz tout en limitant la puissance de PAC à installer
+
+La PAC couvre la majorité des besoins et la chaudière gaz prend le relais lorsque les besoins sont les plus importants, notamment lors des périodes les plus froides.
+
+Cette configuration permet de réduire l’investissement et les contraintes d’intégration par rapport à une installation 100 % PAC, mais le bâtiment reste partiellement dépendant du gaz.
+
+</SolutionSummaryCard>
+
+</div>
+
+</SolutionSection>
+
+<SolutionSection id="de-quoi-sagit-il" title="De quoi s’agit-il ?" iconId="fr-icon-search-line" photo="/img/heating-solutions/hybrid.svg">
+
+Une solution hybride associe une **pompe à chaleur air/eau collective** et une **chaudière gaz**.
+
+La PAC capte les calories présentes dans l’air extérieur pour chauffer l’eau qui circule dans le réseau de chauffage du bâtiment. Elle assure la production de chaleur en fonctionnement courant.
+
+La chaudière gaz intervient en complément lorsque la PAC ne suffit plus à couvrir les besoins, notamment lors des périodes de grand froid ou lorsque des températures d’eau élevées sont nécessaires.
+
+L’objectif est donc de bénéficier des performances d’une PAC tout en conservant la chaudière gaz comme appoint.
+
+Cette configuration permet d’installer une PAC moins puissante qu'avec une solution 100 % thermodynamique.
+
+</SolutionSection>
+
+
+<SolutionSection id="fonctionnement" title="Comment ça marche ?" iconId="fr-icon-settings-5-line">
+
+La PAC air/eau utilise les calories présentes dans l’air extérieur pour chauffer l’eau du réseau de chauffage.
+
+Elle fonctionne en priorité et couvre la majorité des besoins.
+
+Lorsque les besoins deviennent trop importants ou que les conditions extérieures réduisent ses performances, la chaudière gaz assure l’appoint.
+
+Deux configurations sont possibles :
+
+- la PAC et la chaudière gaz assurent ensemble **le chauffage et l’eau chaude sanitaire**
+-  la PAC et la chaudière assurent **le chauffage**, tandis que l’eau chaude sanitaire est produite par un autre système
+
+<SolutionFlow steps={["Air extérieur", "PAC air/eau", "Production principale de chaleur", "Chaudière gaz en appoint", "Réseau d’eau du bâtiment", "Radiateurs / plancher chauffant"]} />
+
+</SolutionSection>
+
+
+<SolutionSection id="conditions" title="Dans quels cas cette solution est-elle adaptée ?" iconId="fr-icon-home-4-line">
+
+**Pré-requis :**
+
+La solution hybride est particulièrement adaptée lorsque :
+
+- le bâtiment dispose d’un **chauffage collectif à eau**
+-  il est actuellement chauffé avec une énergie fossile
+- l’espace disponible ne permet pas facilement d’installer la puissance nécessaire pour une solution 100 % PAC
+- le bâtiment présente des besoins importants lors des périodes les plus froides
+- les émetteurs nécessitent ponctuellement des températures d’eau élevées
+- un espace extérieur permet d’installer les unités de PAC
+- le raccordement électrique peut supporter la puissance nécessaire en 100% PAC.
+
+L’hybridation permet notamment de réduire la puissance de PAC à installer et donc les contraintes de place, d’acoustique et de raccordement électrique.
+
+En revanche, elle nécessite d’installer 2 appareils.
+
+</SolutionSection>
+
+
+<SolutionTestCallout />
+
+<SolutionSection id="avantages" title="Les principaux avantages" iconId="fr-icon-star-line" illustration="advantages">
+
+- Réduit la consommation de gaz en faisant fonctionner prioritairement la PAC
+- Réduit les émissions de CO₂ par rapport à une solution fonctionnant uniquement au gaz
+- Permet d’installer une PAC moins puissante, donc moins coûteuse et plus facile à intégrer
+- Limite les contraintes liées à l’espace disponible, au raccordement électrique et à l’acoustique
+- La chaudière gaz permet de couvrir les pointes de besoins en hiver
+- Peut être adaptée à des bâtiments nécessitant ponctuellement des températures d’eau élevées
+- Peut permettre le rafraîchissement lorsque la PAC et les émetteurs sont adaptés
+
+</SolutionSection>
+
+
+<SolutionSection id="vigilance" title="Les points à vérifier" iconId="fr-icon-warning-line" illustration="vigilance">
+
+**Le gaz reste nécessaire :** contrairement à une solution 100 % PAC, le bâtiment reste partiellement dépendant d’une énergie fossile.
+
+**Émissions de CO₂ :** elles restent supérieures à celles d’une installation 100 % thermodynamique.
+
+**Double système :** la présence d’une PAC et d’une chaudière implique deux équipements à exploiter et entretenir.
+
+**Coûts d’exploitation :** deux énergies restent utilisées, avec les abonnements associés.
+
+**Espace extérieur :** il faut disposer d’un emplacement suffisant pour les unités extérieures de la PAC.
+
+**Acoustique :** l’implantation des unités extérieures doit tenir compte des nuisances sonores.
+
+**Raccordement électrique :** la capacité du réseau électrique doit être vérifiée.
+
+</SolutionSection>
+
+
+<SolutionSection id="etapes" title="Les étapes du projet" iconId="fr-icon-list-ordered" illustration="steps">
+
+**1. Se faire accompagner**
+
+Il est recommandé de faire appel à un **AMO** pour accompagner la copropriété dans la définition et le suivi du projet.
+
+**2. Réaliser une étude de faisabilité**
+
+Analyser les besoins de chauffage du bâtiment, les équipements existants et les possibilités d’implantation de la PAC.
+
+**3. Dimensionner la solution hybride**
+
+Déterminer la puissance de la PAC et les conditions dans lesquelles la chaudière gaz intervient en appoint.
+
+**4. Vérifier les contraintes techniques**
+
+Étudier l’espace disponible, l’acoustique, le raccordement électrique, le local technique et la compatibilité avec le réseau de chauffage existant.
+
+**5. Définir le financement et faire voter les travaux**
+
+Identifier les aides mobilisables, établir le plan de financement et soumettre le projet au vote de la copropriété.
+
+**6. Réaliser les travaux**
+
+Installer la PAC et adapter la chaufferie et les équipements existants.
+
+**7. Mettre en service et suivre l'installation**
+
+Régler le pilotage entre la PAC et la chaudière afin de privilégier le fonctionnement de la PAC et assurer le suivi des performances.
+
+Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de l’installation dans le temps.
+
+</SolutionSection>
+
+
+<SolutionSection id="questions" title="Questions fréquentes" iconId="fr-icon-question-line">
+
+<SolutionFaqItem question={"Pourquoi conserver une chaudière gaz avec une PAC ?"}>
+
+La chaudière permet d’assurer l’appoint lorsque les besoins de chauffage sont importants, notamment pendant les périodes les plus froides. Cela permet de limiter la puissance de PAC à installer.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"La PAC fonctionne-t-elle en priorité ?"}>
+
+Oui. Dans le principe retenu pour cette solution, la PAC assure la production de chaleur en base et la chaudière gaz intervient en appoint.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"Pourquoi ne pas installer uniquement une PAC ?"}>
+
+Une installation 100 % PAC peut nécessiter davantage de puissance électrique et d’espace extérieur pas toujours disponible. L’hybridation permet de réduire ces contraintes et peut donc faciliter l’installation dans certains bâtiments.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"La solution peut-elle produire l’eau chaude sanitaire ?"}>
+
+Oui, selon la configuration. La PAC et la chaudière peuvent assurer ensemble le chauffage et l’ECS. Il est également possible de les utiliser uniquement pour le chauffage et de produire l’ECS avec un autre système.
+
+</SolutionFaqItem>
+
+<SolutionFaqItem question={"Est-ce une solution entièrement renouvelable ?"}>
+
+Non. La PAC utilise principalement les calories présentes dans l’air extérieur et de l’électricité, mais la chaudière d’appoint continue à consommer du gaz. Le bâtiment reste donc partiellement dépendant d'une énergie fossile.
+
+</SolutionFaqItem>
+
+</SolutionSection>
+
+
+<SolutionSection id="cout" title="Combien ça coûte ?" iconId="fr-icon-money-euro-circle-line" illustration="cost">
+
+Le coût d’investissement :
+
+**3 000 à 5 000 €**
+
+Le coût réel dépend notamment de la puissance de PAC nécessaire, des équipements existants et des contraintes d’intégration au bâtiment.
+
+Pour en savoir plus sur l’estimation budgétaire, utilisez le simulateur réalisé par **France Chaleur Urbaine**
+
+[Tester le simulateur](https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable)
+
+</SolutionSection>
+
+
+<SolutionSection id="aides" title="Quelles aides possibles ?" iconId="fr-icon-money-euro-circle-line" illustration="funding">
+
+Les aides mobilisables dépendent de la configuration de l’installation, des équipements installés et du projet global de rénovation.
+
+Une solution hybride associant une pompe à chaleur et une chaudière ne bénéficie pas nécessairement des mêmes dispositifs qu’une PAC fonctionnant seule.
+
+Il est donc recommandé de vérifier les aides disponibles pour le projet avant d’engager les travaux.
+
+[Estimer les aides disponibles](https://mesaides.france-renov.gouv.fr)
+
+</SolutionSection>
+
+
+<SolutionTestCallout />
+
+<SolutionSection id="aller-plus-loin" title="Pour aller plus loin" iconId="fr-icon-arrow-right-line">
+
+**1. Tester cette solution et préparer votre projet**
+
+Le simulateur réalisé par France Chaleur Urbaine vous permet d'évaluer la pertinence d'une solution hybride associant une PAC air/eau collective et une chaudière gaz pour votre bâtiment.
+
+Vous y trouverez :
+
+- une estimation des coûts de consommation et du prix de l’installation
+- une mise en lien avec un conseiller du service public capable de vous accompagner dans votre projet
+
+[Tester le simulateur](https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable)
+
+</SolutionSection>

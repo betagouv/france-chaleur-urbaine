@@ -59,6 +59,12 @@ fileignoreconfig:
   checksum: 54403c92867852fb5afabd8ca59ab8c70093fcb554a197c922e252cc6e0959db
 - filename: src/modules/email/react-email/templates/reset-password.tsx
   checksum: ce24c239f7ded12411bc26d68dee01a10be5878b092415b3ee30a9094591ee5d
+- filename: src/modules/heating-solutions/constants.ts
+  checksum: 620ec75643be8e681ba0cfda38d45973bac75117140583d1a9dc1a036fd8d158
+- filename: src/modules/heating-solutions/content/chaudiere-biomasse-collective.mdx
+  checksum: 9674fe7c0cbf67d77e93b6481064f8c3becbf0e48aa2a4953ca53924f647b5dd
+- filename: src/modules/heating-solutions/content/chaudiere-biomasse-individuelle.mdx
+  checksum: 33efa5d2541d54fdb68acbcb19289011a16d847289517329c3bf67a277c0fc87
 - filename: src/modules/opendata/OPENDATA.md
   checksum: 478651bb1b40e3adfd6100d9dd91c8fd80e30b6b9d03cefd4657b80709216447
 - filename: src/modules/tiles/server/generation-config.ts
