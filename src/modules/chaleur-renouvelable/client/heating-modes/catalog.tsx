@@ -225,7 +225,7 @@ export const modesDeChauffage = {
         hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/air-water.svg',
       id: 'collective-air-water-heat-pump',
       incompatibilites: [
         {
@@ -321,7 +321,7 @@ export const modesDeChauffage = {
         hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation) && hasSufficientSolarThermalCoverage(situation),
       gainClasse: 1,
       gainVsGaz: -50,
-      icone: 'img/icon-solaire.webp',
+      icone: 'img/heating-solutions/solar-thermal.svg',
       id: 'collective-solar-thermal-hot-water',
       incompatibilites: [
         {
@@ -357,7 +357,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
       gainClasse: 1,
-      icone: 'img/icon-solaire.webp',
+      icone: 'img/heating-solutions/solar-atmospheric-heat-pump.svg',
       id: 'collective-solar-atmospheric-heat-pump-hot-water',
       inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment'],
       label: 'PAC sur capteurs solaires atmosphériques',
@@ -386,7 +386,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Individuel']) && hasEspacePrivate(situation),
       gainClasse: 1,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/thermodynamic-water-heater.svg',
       id: 'collective-thermodynamic-water-heater',
       inconvenients: [
         'Nuisance sonore à prendre en compte',
@@ -410,7 +410,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
       gainClasse: 1,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/air-water.svg',
       id: 'collective-air-water-heat-pump-hot-water',
       inconvenients: ['Nuisances sonores', 'Étude acoustique nécessaire', "Impact esthétique de l'unité extérieure"],
       label: 'PAC air-eau collective',
@@ -444,7 +444,7 @@ export const modesDeChauffage = {
         hasCompatibleHotWaterMode(situation, ['Individuel']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 1,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/air-water.svg',
       id: 'individual-apartment-air-water-heat-pump',
       incompatibilites: [
         {
@@ -547,7 +547,7 @@ export const modesDeChauffage = {
         hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspacePrivate(situation) && hasSufficientSolarThermalCoverage(situation),
       gainClasse: 1,
       gainVsGaz: -50,
-      icone: 'img/icon-solaire.webp',
+      icone: 'img/heating-solutions/solar-thermal.svg',
       id: 'individual-apartment-solar-thermal-hot-water',
       incompatibilites: [
         {
@@ -583,7 +583,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
       gainClasse: 1,
-      icone: 'img/icon-solaire.webp',
+      icone: 'img/heating-solutions/solar-atmospheric-heat-pump.svg',
       id: 'individual-apartment-solar-atmospheric-heat-pump-hot-water',
       inconvenients: ['Travaux modérés mais complexes selon structure du bâtiment'],
       label: 'PAC sur capteurs solaires atmosphériques',
@@ -612,7 +612,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Individuel']) && hasEspacePrivate(situation),
       gainClasse: 1,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/thermodynamic-water-heater.svg',
       id: 'individual-apartment-thermodynamic-water-heater',
       inconvenients: [
         'Nuisance sonore à prendre en compte',
@@ -636,7 +636,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
       gainClasse: 1,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/air-water.svg',
       id: 'individual-apartment-collective-air-water-heat-pump-hot-water',
       inconvenients: ['Nuisances sonores', 'Étude acoustique nécessaire', "Impact esthétique de l'unité extérieure"],
       label: 'PAC air-eau collective',
@@ -927,7 +927,7 @@ export const modesDeChauffage = {
         hasSufficientSolarThermalCoverage(situation),
       gainClasse: 1,
       gainVsGaz: -50,
-      icone: 'img/icon-solaire.webp',
+      icone: 'img/heating-solutions/solar-thermal.svg',
       id: 'house-solar-thermal-hot-water',
       incompatibilites: [
         {
@@ -973,7 +973,7 @@ export const modesDeChauffage = {
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
       gainVsGaz: -50,
-      icone: 'img/icon-solaire.webp',
+      icone: 'img/heating-solutions/solar-thermal.svg',
       id: 'house-combined-solar-system',
       inconvenients: ['Investissement initial important', "Nécessite un système d'appoint (gaz, bois ou électricité)"],
       label: 'Système solaire combiné',
@@ -1007,7 +1007,7 @@ export const modesDeChauffage = {
       ),
       estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Indépendant']) && hasEspacePrivate(situation),
       gainClasse: 1,
-      icone: 'img/icon-pac.webp',
+      icone: 'img/heating-solutions/thermodynamic-water-heater.svg',
       id: 'house-thermodynamic-water-heater',
       inconvenients: [
         'Nuisance sonore à prendre en compte',
