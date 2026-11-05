@@ -275,7 +275,6 @@ const GestionDesReseaux = () => {
   const isPointAllowed = tabInfo.type === 'reseaux_de_chaleur' || tabInfo.type === 'reseaux_de_froid';
 
   const { mutateAsync: createReminder } = trpc.reseaux.networkReminders.create.useMutation({
-    onError: (error) => notify('error', `Erreur lors de l'enregistrement de la relance : ${error.message}`),
     onSuccess: () => {
       void tabInfo.refetch();
       notify('success', 'Relance enregistrée');
@@ -283,7 +282,6 @@ const GestionDesReseaux = () => {
   });
 
   const { mutateAsync: updateReminder } = trpc.reseaux.networkReminders.update.useMutation({
-    onError: (error) => notify('error', `Erreur lors de la mise à jour de la relance : ${error.message}`),
     onSuccess: () => {
       void tabInfo.refetch();
       notify('success', 'Relance mise à jour');
@@ -291,7 +289,6 @@ const GestionDesReseaux = () => {
   });
 
   const { mutateAsync: deleteReminder } = trpc.reseaux.networkReminders.delete.useMutation({
-    onError: (error) => notify('error', `Erreur lors de la suppression de la relance : ${error.message}`),
     onSuccess: () => {
       void tabInfo.refetch();
       notify('success', 'Relance supprimée');
@@ -299,7 +296,6 @@ const GestionDesReseaux = () => {
   });
 
   const { mutateAsync: updateNotes } = trpc.reseaux.networkReminders.updateNotes.useMutation({
-    onError: (error) => notify('error', `Erreur lors de la mise à jour des notes : ${error.message}`),
     onSuccess: () => void tabInfo.refetch(),
   });
 

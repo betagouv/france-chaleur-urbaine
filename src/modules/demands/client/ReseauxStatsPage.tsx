@@ -37,36 +37,24 @@ export default function ReseauxStatsPage() {
   const utils = trpc.useUtils();
   const { data: reseauxStats, isLoading } = trpc.demands.admin.getReseauxStats.useQuery();
   const { mutateAsync: createReminder } = trpc.reseaux.networkReminders.create.useMutation({
-    onError: (error) => {
-      notify('error', `Erreur lors de l'enregistrement de la relance : ${error.message}`);
-    },
     onSuccess: () => {
       void utils.demands.admin.getReseauxStats.invalidate();
       notify('success', 'Relance enregistrée');
     },
   });
   const { mutateAsync: updateReminder } = trpc.reseaux.networkReminders.update.useMutation({
-    onError: (error) => {
-      notify('error', `Erreur lors de la mise à jour de la relance : ${error.message}`);
-    },
     onSuccess: () => {
       void utils.demands.admin.getReseauxStats.invalidate();
       notify('success', 'Relance mise à jour');
     },
   });
   const { mutateAsync: deleteReminder } = trpc.reseaux.networkReminders.delete.useMutation({
-    onError: (error) => {
-      notify('error', `Erreur lors de la suppression de la relance : ${error.message}`);
-    },
     onSuccess: () => {
       void utils.demands.admin.getReseauxStats.invalidate();
       notify('success', 'Relance supprimée');
     },
   });
   const { mutateAsync: updateNotes } = trpc.reseaux.networkReminders.updateNotes.useMutation({
-    onError: (error) => {
-      notify('error', `Erreur lors de la mise à jour des notes : ${error.message}`);
-    },
     onSuccess: () => {
       void utils.demands.admin.getReseauxStats.invalidate();
     },

@@ -1,10 +1,9 @@
 import { type ReactNode, useEffect, useRef } from 'react';
 
 import { clientConfig } from '@/client-config';
-import Button from '@/components/ui/Button';
 import Link from '@/components/ui/Link';
 import { businessRules } from '@/modules/app/business-rules';
-import { useAuthentication } from '@/modules/auth/client/hooks';
+import { DEMAND_TRACKING_PAGE_PATH } from '@/modules/demand-tracking/constants';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import type { DemandSubmissionResult } from '@/modules/demands/constants';
 
@@ -42,11 +41,7 @@ function DemandSubmittedPanel({
   return (
     <div ref={containerRef}>
       {submissionResult.isExisting ? (
-        <ExistingDemandPanel
-          showEmailNotice={showEmailNotice}
-          showHeatNetworkActions={showHeatNetworkActions}
-          submissionResult={submissionResult}
-        />
+        <ExistingDemandPanel showEmailNotice={showEmailNotice} submissionResult={submissionResult} />
       ) : (
         <NewDemandPanel
           nextStepsContext={nextStepsContext}
@@ -105,7 +100,7 @@ function NewDemandPanel({ nextStepsContext, showEmailNotice, showHeatNetworkActi
         <strong>Inutile de renvoyer votre demande.</strong> Elle est enregistrée, vous serez recontacté·e directement.
       </InfoCallout>
 
-      {showHeatNetworkActions && <PersonalSpaceButton />}
+      <DemandTrackingNotice />
 
       {showHeatNetworkActions && (
         <div className="flex items-center gap-3 border border-(--border-default-grey) p-4">
@@ -155,11 +150,10 @@ function RenewableAdvisorNextSteps() {
 
 type ExistingDemandPanelProps = {
   showEmailNotice: boolean;
-  showHeatNetworkActions: boolean;
   submissionResult: DemandSubmissionResult;
 };
 
-function ExistingDemandPanel({ showEmailNotice, showHeatNetworkActions, submissionResult }: ExistingDemandPanelProps) {
+function ExistingDemandPanel({ showEmailNotice, submissionResult }: ExistingDemandPanelProps) {
   return (
     <div className="flex flex-col gap-5">
       <PanelHeader iconClassName="fr-icon-info-fill text-(--text-action-high-blue-france)" title="Demande déjà enregistrée" />
@@ -189,17 +183,7 @@ function ExistingDemandPanel({ showEmailNotice, showHeatNetworkActions, submissi
         </EmailNotice>
       )}
 
-      {showHeatNetworkActions && (
-        <>
-          <InfoCallout>
-            <strong>Suivez l'évolution de votre demande depuis votre espace personnel France Chaleur Urbaine.</strong>
-            <br />
-            Toujours pas de réponse du gestionnaire sous 30 jours ? Signalez-le nous directement depuis votre espace personnel.
-          </InfoCallout>
-
-          <PersonalSpaceButton />
-        </>
-      )}
+      <DemandTrackingNotice />
     </div>
   );
 }
@@ -278,13 +262,11 @@ function RecapTable({ title, rows }: RecapTableProps) {
   );
 }
 
-function PersonalSpaceButton() {
-  const { isAuthenticated } = useAuthentication();
-  const href = isAuthenticated ? '/pro/mes-demandes' : '/connexion?callbackUrl=/pro/mes-demandes';
-
+function DemandTrackingNotice() {
   return (
-    <Button href={href} iconId="fr-icon-arrow-right-line" iconPosition="right" className="self-start">
-      Accéder à mon espace personnel
-    </Button>
+    <InfoCallout>
+      Pour connaître à tout moment l'avancement de votre demande, rendez-vous sur{' '}
+      <Link href={DEMAND_TRACKING_PAGE_PATH}>Suivre ma demande</Link>.
+    </InfoCallout>
   );
 }

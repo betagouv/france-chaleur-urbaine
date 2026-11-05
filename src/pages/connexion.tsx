@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { LoginForm, type LoginFormProps } from '@/components/connexion/LoginForm';
+import { ProfessionalAccountNotice } from '@/components/connexion/ProfessionalAccountNotice';
 import CenterLayout from '@/components/shared/page/CenterLayout';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
@@ -14,8 +15,9 @@ function ConnectionPage(props: LoginFormProps): JSX.Element {
     <SimplePage title="Espace connecté" description="Connectez-vous à votre compte France Chaleur Urbaine.">
       <CenterLayout maxWidth="500px">
         <Heading as="h1" size="h2" color="blue-france">
-          Connectez-vous
+          Connexion au compte professionnel
         </Heading>
+        <ProfessionalAccountNotice />
         <LoginForm {...props} />
       </CenterLayout>
     </SimplePage>
@@ -79,6 +81,8 @@ export const getServerSideProps = withServerSession(async ({ context, session })
   return {
     props: {
       callbackUrl,
+      // a failed sign-in lands here with ?notify=error:… (see the redirect above)
+      hasLoginError: typeof context.query.notify === 'string' && context.query.notify.startsWith('error:'),
     },
   };
 });

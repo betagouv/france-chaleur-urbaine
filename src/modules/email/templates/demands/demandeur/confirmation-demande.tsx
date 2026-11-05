@@ -1,4 +1,5 @@
 import { businessRules } from '@/modules/app/business-rules';
+import { DEMAND_TRACKING_PAGE_PATH } from '@/modules/demand-tracking/constants';
 import type { formatHeatingTypeToLegacy } from '@/modules/demands/constants';
 import { Layout, Link, Section, Table, TableColumn, TableRow, Text, Title } from '@/modules/email/react-email/components';
 import { defineEmailScenarios } from '@/modules/email/scenarios';
@@ -259,6 +260,13 @@ const ConfirmationDemande = ({ demand }: ConfirmationDemandeProps) => {
         </>
       )}
 
+      <Text>
+        Pour connaître à tout moment l'avancement de votre demande, rendez-vous sur{' '}
+        <Link href={DEMAND_TRACKING_PAGE_PATH} campaign="demands.demandeur.confirmation-demande" content="suivre-ma-demande">
+          Suivre ma demande
+        </Link>
+        .
+      </Text>
       <Text>
         Pour toute question sur votre demande, vous pouvez utiliser le{' '}
         <Link href="/contact" campaign="demands.demandeur.confirmation-demande" content="contact">

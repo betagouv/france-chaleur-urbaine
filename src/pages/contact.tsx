@@ -3,7 +3,7 @@ import Alert from '@/components/ui/Alert';
 import Hero, { HeroSubtitle, HeroTitle } from '@/components/ui/Hero';
 import Link from '@/components/ui/Link';
 
-function contact() {
+function ContactPage() {
   return (
     <SimplePage title="Contactez-nous" description="Une question sur les réseaux de chaleur et de froid ? N'hésitez pas à nous contacter.">
       <Hero variant="ressource">
@@ -41,4 +41,4 @@ function contact() {
   );
 }
 
-export default contact;
+export default ContactPage;

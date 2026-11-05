@@ -578,6 +578,18 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   ),
   user_newsletter_subscribed: () => "s'est abonné à la newsletter",
   user_newsletter_unsubscribed: () => "s'est désabonné de la newsletter",
+  user_particulier_accounts_deleted: (event) => (
+    <span>
+      a supprimé <strong>{event.data.count}</strong> compte(s) particulier(s)
+    </span>
+  ),
+  user_particulier_deletion_announced: (event, updateFilters) => (
+    <>
+      <span>a prévenu un </span>
+      <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>compte particulier</FilterButton>
+      <span> de sa suppression le {event.data.deletion_date}</span>
+    </>
+  ),
   user_password_reset_requested: () => 'a demandé une réinitialisation de mot de passe',
   user_permissions_synced_from_api: (event, updateFilters) => (
     <>

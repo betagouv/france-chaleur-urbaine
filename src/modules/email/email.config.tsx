@@ -19,6 +19,9 @@ import DoubleAuthentificationReinitialisee, {
 import ReinitialisationMotDePasse, {
   scenarios as reinitialisationMotDePasseScenarios,
 } from './templates/auth/utilisateur/reinitialisation-mot-de-passe';
+import SuppressionCompteParticulier, {
+  scenarios as suppressionCompteParticulierScenarios,
+} from './templates/auth/utilisateur/suppression-compte-particulier';
 import NouvelleDemandeChaleurRenouvelable, {
   scenarios as nouvelleDemandeChaleurRenouvelableScenarios,
 } from './templates/demands/ccrt/nouvelle-demande-chaleur-renouvelable';
@@ -37,6 +40,7 @@ import MessageGestionnaire, { scenarios as messageGestionnaireScenarios } from '
 import RaccordementNonRealisable, {
   scenarios as raccordementNonRealisableScenarios,
 } from './templates/demands/demandeur/raccordement-non-realisable';
+import SuiviDemande, { scenarios as suiviDemandeScenarios } from './templates/demands/demandeur/suivi-demande';
 import NouvellesDemandesATraiter, {
   dailyScenarios as nouvellesDemandesATraiterDailyScenarios,
   weeklyScenarios as nouvellesDemandesATraiterWeeklyScenarios,
@@ -169,6 +173,19 @@ export const emails = defineEmails({
       type: 'action',
     },
   },
+  'auth.utilisateur.suppression-compte-particulier': {
+    Component: SuppressionCompteParticulier,
+    description:
+      "Annonce envoyée aux titulaires d'un compte particulier au moins 15 jours avant la suppression de ces comptes : les demandes sont conservées et restent suivables par email sans compte.",
+    label: 'Suppression du compte particulier (annonce)',
+    preview: 'Votre compte particulier sera supprimé',
+    scenarios: suppressionCompteParticulierScenarios,
+    subject: '[France Chaleur Urbaine] Votre compte particulier sera supprimé',
+    trigger: {
+      description: "Commande `pnpm cli users particulier:announce-deletion <date>` lancée par l'équipe technique.",
+      type: 'action',
+    },
+  },
   'demands.ccrt.nouvelle-demande-chaleur-renouvelable': {
     Component: NouvelleDemandeChaleurRenouvelable,
     description:
@@ -272,6 +289,20 @@ export const emails = defineEmails({
     subject: '[France Chaleur Urbaine] Votre demande de raccordement',
     trigger: {
       description: 'Au changement manuel du statut d’une demande vers « Non réalisable » par un gestionnaire ou un admin.',
+      type: 'action',
+    },
+  },
+  'demands.demandeur.suivi-demande': {
+    Component: SuiviDemande,
+    description:
+      'Récapitulatif « Où en est votre demande ? » envoyé sur demande, sans compte, à toute adresse email associée à au moins une demande (raccordement ou accompagnement chaleur renouvelable). Une ligne par demande (adresse, libellé usager, explication), jamais le statut interne.',
+    label: 'Suivi de demande (récapitulatif par email)',
+    preview: 'Voici où en est votre demande sur France Chaleur Urbaine',
+    scenarios: suiviDemandeScenarios,
+    subject: '[France Chaleur Urbaine] Où en est votre demande ?',
+    trigger: {
+      description:
+        "Saisie d'un email sur la page « Suivre ma demande » ou le bloc de la page d'accueil, si au moins une demande correspond à l'email et que le plafond horaire n'est pas atteint.",
       type: 'action',
     },
   },

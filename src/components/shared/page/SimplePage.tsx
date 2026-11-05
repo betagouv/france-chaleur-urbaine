@@ -20,6 +20,7 @@ import { useHeaderHeightVar } from '@/hooks/useHeaderHeightVar';
 import useRouterReady from '@/hooks/useRouterReady';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
+import { DEMAND_TRACKING_PAGE_PATH } from '@/modules/demand-tracking/constants';
 import cx from '@/utils/cx';
 import { popImpostureReturnPath } from '@/utils/imposture';
 import { deleteFetchJSON } from '@/utils/network';
@@ -181,6 +182,13 @@ export const publicNavigationMenu: MainNavigationProps.Item[] = [
           onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'outils', menu_level: 2 }),
         },
         text: 'Outils',
+      },
+      {
+        linkProps: {
+          href: DEMAND_TRACKING_PAGE_PATH,
+          onClick: () => trackPostHogEvent('nav:menu_item_clicked', { item: 'suivre_ma_demande', menu_level: 2 }),
+        },
+        text: 'Suivre ma demande',
       },
     ],
     text: 'Ressources et outils',
@@ -700,6 +708,13 @@ const PageFooter = () => (
           onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'contact' }),
         },
         text: 'Contact',
+      },
+      {
+        linkProps: {
+          href: DEMAND_TRACKING_PAGE_PATH,
+          onClick: () => trackPostHogEvent('global:footer_link_clicked', { link_name: 'suivre_ma_demande' }),
+        },
+        text: 'Suivre ma demande',
       },
       {
         linkProps: {

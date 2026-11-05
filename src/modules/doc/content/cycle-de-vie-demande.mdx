@@ -72,8 +72,35 @@ Huit statuts, du dépôt à la clôture — liste et descriptions dans [Référe
 - Le statut est modifié par le **responsable** de la demande (gestionnaire, ou collectivité pour une demande non affectée — voir [Rôles et permissions](/admin/doc/roles-permissions)). Un **admin** peut aussi changer le statut de n'importe quelle demande depuis sa page, en plus de la validation, de l'affectation et du recalcul d'éligibilité.
 - Quand un gestionnaire ou un admin change explicitement le statut vers « Non réalisable », l'email [« Raccordement non réalisable »](/admin/emails?type=demands.demandeur.raccordement-non-realisable) est envoyé au demandeur et renvoie vers le simulateur de modes de chauffage alternatifs. Ce lien transporte l'identifiant de la demande refusée : la page de saisie préremplit l'adresse depuis cette demande, et la page de résultats ne repropose pas le réseau de chaleur dans les solutions compatibles, même si l'adresse reste techniquement éligible, puis l'affiche dans les solutions non compatibles avec une raison dédiée. La demande reste conservée : elle n'est pas supprimée par ce changement de statut.
 - Si le demandeur utilise ce lien d'email pour créer une demande d'accompagnement chaleur renouvelable, cette nouvelle demande est liée à la demande de raccordement refusée. La demande de raccordement reste visible mais devient grisée et non modifiable dans l'espace gestionnaire ; un admin conserve la possibilité d'agir depuis l'interface admin.
-- Côté demandeur, le statut « À traiter » est affiché **« En cours de traitement »** (dans son suivi et sur l'écran de confirmation) ; les autres statuts sont affichés tels quels.
+- Côté demandeur, le statut interne n'est jamais affiché tel quel : le suivi se fait par email, sans compte, avec un libellé usager et une explication (voir [Suivi par le demandeur](#suivi-par-le-demandeur) ci-dessous). Sur l'écran de confirmation d'une demande déjà déposée, «&nbsp;À traiter&nbsp;» est affiché «&nbsp;En cours de traitement&nbsp;».
 - L'**API partenaire** peut aussi modifier le statut et le commentaire gestionnaire — rien d'autre ([événement « Mise à jour demande (API) »](/admin/events?types=api_demand_updated)).
+
+## Suivi par le demandeur
+
+Le demandeur n'a plus besoin de compte pour suivre ses demandes : sur la page publique [Suivre ma demande](/suivre-ma-demande) (accessible aussi depuis un bloc de la page d'accueil, le menu «&nbsp;Ressources et outils&nbsp;», le pied de page, la FAQ, les écrans et emails de confirmation de dépôt), il saisit l'adresse email utilisée lors du dépôt et reçoit l'email [«&nbsp;Suivi de demande&nbsp;»](/admin/emails?type=demands.demandeur.suivi-demande) : une ligne par demande (raccordement et accompagnement chaleur renouvelable confondus, demandes en cours d'abord puis clôturées), avec l'adresse, un libellé usager et une explication. Aucune autre donnée de la demande n'y figure (ni réseau, ni gestionnaire, ni coordonnées).
+
+Règles :
+
+- Le message affiché à l'écran est **le même** qu'une demande existe ou non pour cet email ; rien n'est révélé à l'écran, tout passe par l'email. Sans demande associée, aucun email n'est envoyé.
+- Au-delà de <Rule id="demandTrackingEmailsPerHour" /> depuis une même adresse IP (plafond en mémoire du serveur, comme les autres formulaires publics), aucun nouvel email n'est envoyé et le formulaire affiche une erreur «&nbsp;Trop de requêtes&nbsp;». Rien n'est enregistré : ni l'adresse saisie, ni le résultat.
+- Les demandes supprimées ne sont pas listées ; une demande non encore validée par l'équipe FCU l'est, avec un libellé dédié.
+- Le bouton «&nbsp;Nous contacter&nbsp;» de l'email renvoie vers le formulaire de contact.
+
+Correspondance des statuts internes des demandes de raccordement :
+
+| Statut interne | Libellé usager |
+| --- | --- |
+| «&nbsp;À traiter&nbsp;» non validée par l'admin | En attente de prise en charge (demande enregistrée, pas encore transmise) |
+| À traiter | En attente de prise en charge (transmise au gestionnaire) |
+| Recontacté pour étude | Prise en charge par le gestionnaire du réseau |
+| Proposition commerciale envoyée | Proposition de raccordement transmise |
+| Voté en AG | Raccordement voté en assemblée générale |
+| Travaux en cours | Travaux de raccordement en cours |
+| Réalisé | Raccordement réalisé (clôturée) |
+| Non réalisable | Raccordement non envisageable à ce jour (clôturée, avec un lien vers le simulateur de solutions) |
+| Projet abandonné par le prospect | Demande clôturée |
+
+Pour les demandes d'accompagnement chaleur renouvelable : «&nbsp;A traiter&nbsp;» → En attente de prise en charge, «&nbsp;Recontacté pour premier échange&nbsp;» → Prise en charge par votre conseiller chaleur renouvelable, «&nbsp;Non pertinent&nbsp;» et «&nbsp;Projet abandonné par le prospect&nbsp;» → Demande clôturée ; les autres statuts CCRT ont un libellé provisoire, reprenant leur intitulé, en attendant leur validation produit. Les libellés exacts et explications sont définis dans `src/modules/demand-tracking/constants.ts`.
 
 ## Qui modifie quoi
 
@@ -81,7 +108,7 @@ Huit statuts, du dépôt à la clôture — liste et descriptions dans [Référe
 | --- | --- |
 | Responsable (gestionnaire…) | Statut, nb logements, surface, conso gaz, son commentaire ; contacter le demandeur par email ; proposer une réaffectation, sauf si la demande est verrouillée par une demande chaleur renouvelable liée |
 | Admin | Validation, affectation, statut, recalcul d'éligibilité, marqueurs de relance, « Recontacté par le gestionnaire », commentaires internes FCU, suppression |
-| Demandeur | Rien directement : son suivi est en lecture seule ; il répond via la boucle de satisfaction (recontacté oui/non + commentaire) |
+| Demandeur | Rien directement : il suit ses demandes par email (voir ci-dessus) et répond via la boucle de satisfaction (recontacté oui/non + commentaire) |
 | API partenaire | Statut et commentaire gestionnaire uniquement, sur les demandes de ses réseaux |
 
 Chaque email envoyé au demandeur par un gestionnaire depuis la plateforme est **archivé** et consultable sur la demande ([événement « Email envoyé (demande) »](/admin/events?types=demand_email_sent)).

@@ -5,6 +5,7 @@ import CenterLayout from '@/components/shared/page/CenterLayout';
 import Alert from '@/components/ui/Alert';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
+import { DEMAND_TRACKING_PAGE_PATH } from '@/modules/demand-tracking/constants';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { toastErrors } from '@/modules/notification';
@@ -35,6 +36,10 @@ const ResetPasswordForm = () => {
       <Alert variant="success" className="max-w-lg mx-auto my-12">
         Un email pour réinitialiser votre mot de passe vous a été envoyé, pensez à vérifier vos spams. Si vous ne recevez pas de mail de
         réinitialisation, merci de nous contacter via le <Link href="/contact">formulaire de contact</Link>.
+        <br />
+        <br />
+        Vous avez déposé une demande ? Plus besoin de compte pour la suivre :{' '}
+        <Link href={DEMAND_TRACKING_PAGE_PATH}>Où en est ma demande ?</Link>
       </Alert>
     );
   }

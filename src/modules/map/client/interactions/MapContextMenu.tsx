@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { reverseGeocodeBANAddress } from '@/modules/ban/client';
-import { notify } from '@/modules/notification';
+import { handleClientError } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
@@ -95,7 +95,7 @@ export function MapContextMenu() {
     setMenu(null);
 
     if (eligibilityResult.status === 'rejected') {
-      notify('error', 'Impossible de tester ce point. Réessayez ou contactez le support.');
+      handleClientError(eligibilityResult.reason, () => 'Impossible de tester ce point. Réessayez ou contactez le support.');
       return;
     }
 
