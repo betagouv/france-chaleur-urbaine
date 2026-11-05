@@ -578,16 +578,17 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
   ),
   user_newsletter_subscribed: () => "s'est abonné à la newsletter",
   user_newsletter_unsubscribed: () => "s'est désabonné de la newsletter",
+  // no author: both events are recorded by the `users particulier:*` CLI commands
   user_particulier_accounts_deleted: (event) => (
     <span>
-      a supprimé <strong>{event.data.count}</strong> compte(s) particulier(s)
+      Les <strong>{event.data.count}</strong> comptes particuliers ont été supprimés
     </span>
   ),
   user_particulier_deletion_announced: (event, updateFilters) => (
     <>
-      <span>a prévenu un </span>
+      <span>Le </span>
       <FilterButton onClick={() => updateFilters({ contextId: event.context_id, contextType: 'user' })}>compte particulier</FilterButton>
-      <span> de sa suppression le {event.data.deletion_date}</span>
+      <span> a été prévenu de sa suppression le {event.data.deletion_date}</span>
     </>
   ),
   user_password_reset_requested: () => 'a demandé une réinitialisation de mot de passe',

@@ -26,6 +26,7 @@ events/
 
 - **Admin-only access**: all tRPC routes are protected by `routeRole('admin')`.
 - **Event types**: defined in `constants.ts` (`eventTypes` array + `EventType` union). Adding a new type requires updating `eventTypeLabels` and `EventDataMap` too.
+- **Label wording** (`eventLabelRenderers` in `client/EventRow.tsx`): the row prefixes the label with the author's email, so a label of an event with an author starts with the verb (« a supprimé… »). An event without author (cron, CLI command, public form, API sync) has nothing before its label: it must be a full sentence with the subject (« La demande a été supprimée automatiquement », « Le compte a été prévenu… »), never a verb that reads as if the author were missing.
 - **`EventDataMap`**: maps each `EventType` to its `data` type — enables strongly-typed `AdminEvent`.
 - **Service**: exposes `listEvents`, `getEventsStats`, `createEvent`, `createUserEvent`, `searchAuthors`, `getAuthorsByIds`. All queries go through Kysely.
 - **Client dashboard**: URL-persisted filters (nuqs), time series + type distribution chart, cursor-based pagination.
