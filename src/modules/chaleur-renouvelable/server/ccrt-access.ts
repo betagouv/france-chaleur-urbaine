@@ -2,20 +2,12 @@ import { TRPCError } from '@trpc/server';
 import type { SelectQueryBuilder } from 'kysely';
 
 import type { Context } from '@/modules/config/server/context-builder';
-import { canUserAccessDemand, type DemandForAccess, getUsersWithAccessToDemand } from '@/modules/permissions/server/demand-access';
+import { getUsersWithAccessToDemand } from '@/modules/permissions/server/demand-access';
 import { type Permission, territoryPermissionToColumn } from '@/modules/permissions/types';
 import { type DB, kdb, sql } from '@/server/db/kysely';
+import { userRolesWithPermissionsRenewableHeat } from '@/types/enum/UserRole';
 
 import { selectDemandesChaleurRenouvelableForList } from './ccrt-demand-query';
-
-/**
- * Matches classic territorial permissions for a renewable-heat demand without an assigned network.
- */
-export const canUserAccessCcrtDemand = (
-  user: Parameters<typeof canUserAccessDemand>[0],
-  permissions: Permission[],
-  demand: Omit<DemandForAccess, 'network_id' | 'network_type' | 'network_organization_id'>
-) => canUserAccessDemand(user, permissions, { ...demand, network_id: null, network_organization_id: null, network_type: null });
 
 /**
  * Uses the same territorial scopes for the list and every individual action, including impersonation.
@@ -27,6 +19,9 @@ export const applyCcrtAccessFilter = <Output>(
 ) => {
   if (user.role === 'admin') {
     return query;
+  }
+  if (!userRolesWithPermissionsRenewableHeat.some((role) => role === user.role)) {
+    return query.where(sql.lit(false));
   }
   const territories = Object.entries(territoryPermissionToColumn);
   return query.where('validated', '=', true).where((expression) => {
@@ -47,11 +42,7 @@ export const ensureCcrtDemandAccess = async (ctx: Context, demandId: string) =>
  */
 export const listCcrtAssignmentCandidates = async (ctx: Context, demandId: string) => {
   const demand = await ensureCcrtDemandAccess(ctx, demandId);
-  const users = await getUsersWithAccessToDemand(
-    { ...demand, network_id: null, network_organization_id: null, network_type: null },
-    'renewableHeat'
-  );
-  return users.filter((user) => user.role === 'ccrt');
+  return getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null }, 'renewableHeat');
 };
 
 /**
@@ -109,7 +100,7 @@ export const hasCcrtTerritoryCoverage = async (territory: Awaited<ReturnType<typ
     },
     'renewableHeat'
   );
-  return users.some((user) => user.role === 'ccrt');
+  return users.length > 0;
 };
 
 export const listCcrtUsersWithAccess = async (demand: Awaited<ReturnType<typeof ensureCcrtDemandAccess>>) =>

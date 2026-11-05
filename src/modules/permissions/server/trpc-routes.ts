@@ -2,10 +2,10 @@ import { z } from 'zod';
 
 import { anonymizeEmail, anonymizeName, ensureUserCanAccessDemand } from '@/modules/demands/server/helpers';
 import { searchNetworks } from '@/modules/reseaux/server/service';
-import { adminRoute, demandAccessRoute, router } from '@/modules/trpc/server';
+import { adminRoute, demandAccessRoute, permissionAccessRoute, router } from '@/modules/trpc/server';
 
 import { zPermissionInput } from '../types';
-import { getDemandForAccessCheck, getUsersWithAccessToDemand } from './demand-access';
+import { getUsersWithAccessToDemand } from './demand-access';
 import { getPermissionsMapData } from './map-data';
 import {
   findReseauxDeChaleurBySncuIds,
@@ -36,10 +36,8 @@ export const permissionsRouter = router({
   },
 
   listUsersWithAccessToDemand: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).query(async ({ input, ctx }) => {
-    await ensureUserCanAccessDemand(ctx, input.demandId);
-    const demand = await getDemandForAccessCheck(input.demandId);
-    if (!demand) return [];
-    const users = await getUsersWithAccessToDemand(demand, 'connection');
+    const demand = await ensureUserCanAccessDemand(ctx, input.demandId);
+    const users = await getUsersWithAccessToDemand(demand, 'heatNetwork');
     if (!ctx.anonymize) return users;
     return users.map((u) => ({
       ...u,
@@ -50,13 +48,13 @@ export const permissionsRouter = router({
     }));
   }),
 
-  mine: demandAccessRoute.query(({ ctx }) => ctx.getPermissions()),
+  mine: permissionAccessRoute.query(({ ctx }) => ctx.getPermissions()),
 
-  mineWithLabels: demandAccessRoute.query(async ({ ctx }) => resolvePermissionsWithLabels(await ctx.getPermissions())),
+  mineWithLabels: permissionAccessRoute.query(async ({ ctx }) => resolvePermissionsWithLabels(await ctx.getPermissions())),
 
-  myMapData: demandAccessRoute.query(async ({ ctx }) => getPermissionsMapData(await ctx.getPermissions())),
+  myMapData: permissionAccessRoute.query(async ({ ctx }) => getPermissionsMapData(await ctx.getPermissions())),
 
-  resolveLabels: demandAccessRoute.input(zPermissionInput).query(({ input }) => resolvePermissionLabels(input)),
+  resolveLabels: permissionAccessRoute.input(zPermissionInput).query(({ input }) => resolvePermissionLabels(input)),
 
   searchNetworks: adminRoute.input(z.object({ search: z.string().min(2).max(100) })).query(({ input }) => searchNetworks(input.search)),
 

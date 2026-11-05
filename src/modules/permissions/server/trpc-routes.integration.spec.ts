@@ -46,7 +46,7 @@ describe('demand access-holder lists', () => {
 
     const users = await createTestCaller(testUsers.admin).permissions.listUsersWithAccessToDemand({ demandId });
     const demand = await buildDemandQuery().where('demands.id', '=', demandId).executeTakeFirstOrThrow();
-    const serviceUsers = await getUsersWithAccessToDemand(demand, 'connection');
+    const serviceUsers = await getUsersWithAccessToDemand(demand, 'heatNetwork');
 
     expect(users).toStrictEqual(testCase.expectedOutput);
     expect(serviceUsers).toStrictEqual(testCase.expectedOutput);
@@ -64,11 +64,37 @@ describe('demand access-holder lists', () => {
     expect(demand.access_counts).toStrictEqual({ alec: 0, collectivite: 0, gestionnaire: 0 });
   });
 
+  const missingDemandCases: TestCase<'missing' | 'deleted', { code: 'NOT_FOUND' }>[] = [
+    { expectedOutput: { code: 'NOT_FOUND' }, input: 'missing', label: 'missing demand' },
+    { expectedOutput: { code: 'NOT_FOUND' }, input: 'deleted', label: 'deleted demand' },
+  ];
+
+  it.each(missingDemandCases)('rejects access-holder requests for a $label', async ({ input, expectedOutput }) => {
+    const demandId = input === 'deleted' ? await seedConnectionDemand(true) : uuid(999);
+    if (input === 'deleted') {
+      await kdb.updateTable('demands').set({ deleted_at: new Date() }).where('id', '=', demandId).execute();
+    }
+
+    await expect(createTestCaller(testUsers.admin).permissions.listUsersWithAccessToDemand({ demandId })).rejects.toMatchObject(
+      expectedOutput
+    );
+  });
+
+  it('rejects access-holder requests outside the caller territory', async () => {
+    const demandId = await seedConnectionDemand(true);
+    await kdb.updateTable('user_permissions').set({ resource_id: '13' }).where('user_id', '=', testUsers.alec.id).execute();
+
+    await expect(createTestCaller(testUsers.alec).permissions.listUsersWithAccessToDemand({ demandId })).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+    });
+  });
+
   it('lists only CCRT as access holders of renewable-heat demands', async () => {
     const demand = await seedDemandeChaleurRenouvelable({ departement_code: '75', validated: true });
 
     const followUp = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
 
     expect(followUp.users).toStrictEqual([{ ...testUsers.ccrt, first_name: null, last_name: null, structure_name: null }]);
+    expect(await createTestCaller(testUsers.ccrt).permissions.mine()).toStrictEqual([{ resource_id: '75', type: 'departement' }]);
   });
 });

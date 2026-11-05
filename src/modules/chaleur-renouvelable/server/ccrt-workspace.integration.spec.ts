@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
+import type { Permission } from '@/modules/permissions/types';
 import { defaultUserPreferences } from '@/modules/users/constants';
 import { getUserPreferences } from '@/modules/users/server/service';
 import { serverConfig } from '@/server/config';
@@ -9,7 +10,7 @@ import { kdb, sql } from '@/server/db/kysely';
 import { getEligilityStatus } from '@/server/services/addresseInformation';
 import { cleanDatabase, seedCommune, seedDemandeChaleurRenouvelable, seedTableUser } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
-import { createTestCaller, forbiddenError, type TestCaseBoolean, testUsers } from '@/tests/trpc-helpers';
+import { createMockContext, createTestCaller, forbiddenError, type TestCase, type TestCaseBoolean, testUsers } from '@/tests/trpc-helpers';
 import { fetchJSON, postFetchJSON } from '@/utils/network';
 
 import { EMPTY_BAT_ENR_INFO } from '../bat-enr';
@@ -20,7 +21,7 @@ import {
   zCcrtBuilding,
 } from '../constants';
 import * as ccrtNotesService from './ccrt-notes';
-import { getAddressEligibilityContext } from './service';
+import { getAddressEligibilityContext, listDemandesChaleurRenouvelableCcrt } from './service';
 
 vi.mock('@/modules/email', () => ({ sendEmailTemplate: vi.fn() }));
 vi.mock('@/utils/network', () => ({ fetchJSON: vi.fn(), postFetchJSON: vi.fn() }));
@@ -72,14 +73,16 @@ const emailContent = {
 const notFound = { code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' };
 const originalTracking = serverConfig.tracking;
 afterEach(() => Object.assign(serverConfig, { tracking: originalTracking }));
+const otherCcrtUser = { ...testUsers.ccrt, email: 'colleague-ccrt@test.local', id: uuid(107) };
 const seedWorkspace = async () => {
-  await seedTableUser([testUsers.admin, testUsers.ccrt, testUsers.alec]);
+  await seedTableUser([testUsers.admin, testUsers.ccrt, testUsers.alec, otherCcrtUser]);
   await seedCommune({ insee_com: '13055', insee_dep: '13', insee_reg: '93', siren_epci: 'EPCI-13' });
   await kdb
     .insertInto('user_permissions')
     .values([
       { resource_id: '13', type: 'departement', user_id: testUsers.ccrt.id },
       { resource_id: 'EPCI-13', type: 'epci', user_id: testUsers.alec.id },
+      { resource_id: 'EPCI-13', type: 'epci', user_id: otherCcrtUser.id },
     ])
     .execute();
   return seedDemandeChaleurRenouvelable({
@@ -110,7 +113,7 @@ beforeEach(async () => {
 describe('CCRT workspace access', () => {
   const permissionCases: TestCaseBoolean<(typeof testUsers)[keyof typeof testUsers] | null>[] = [
     { expectedOutput: false, input: null },
-    ...Object.values(testUsers).map((user) => ({ expectedOutput: !['particulier', 'professionnel'].includes(user.role), input: user })),
+    ...Object.values(testUsers).map((user) => ({ expectedOutput: ['admin', 'ccrt'].includes(user.role), input: user })),
   ];
   permissionCases.forEach(({ input: user, expectedOutput: allowed }) => {
     it(`protects every workspace operation for ${user?.role ?? 'anonymous'}`, async () => {
@@ -118,6 +121,10 @@ describe('CCRT workspace access', () => {
       if (user && ![testUsers.admin.id, testUsers.ccrt.id, testUsers.alec.id].includes(user.id)) {
         await seedTableUser([user]);
         await kdb.insertInto('user_permissions').values({ resource_id: '13', type: 'departement', user_id: user.id }).execute();
+      }
+      if (user) {
+        const visibleDemands = await listDemandesChaleurRenouvelableCcrt(createMockContext(user));
+        expect(visibleDemands.items.map((item) => item.id)).toStrictEqual(allowed ? [demand.id] : []);
       }
       const route = createTestCaller(user).batEnr.ccrt;
       const calls = [
@@ -168,7 +175,32 @@ describe('CCRT workspace access', () => {
     ).resolves.toMatchObject({ id: demand.id });
   });
 
-  it('denies all actions outside the territory or on unpublished demands', async () => {
+  const deniedPermissionCases: TestCase<Permission[], typeof notFound>[] = [
+    { expectedOutput: notFound, input: [{ resource_id: '75056', type: 'commune' }], label: 'another territory' },
+    { expectedOutput: notFound, input: [{ resource_id: '13', type: 'reseau_de_chaleur' }], label: 'network only' },
+    { expectedOutput: notFound, input: [{ resource_id: 'operator', type: 'organization' }], label: 'organization only' },
+    { expectedOutput: notFound, input: [], label: 'no permissions' },
+  ];
+
+  it.each(deniedPermissionCases)('denies access with $label', async ({ input, expectedOutput }) => {
+    const demand = await seedWorkspace();
+    await kdb.deleteFrom('user_permissions').where('user_id', '=', testUsers.ccrt.id).execute();
+    if (input.length > 0) {
+      await kdb
+        .insertInto('user_permissions')
+        .values(input.map((permission) => ({ ...permission, user_id: testUsers.ccrt.id })))
+        .execute();
+    }
+
+    const list = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
+    expect(list.items).toStrictEqual([]);
+    await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id })).rejects.toMatchObject(expectedOutput);
+    await expect(
+      createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({ demandId: demand.id, values: { note: 'Intrusion' } })
+    ).rejects.toMatchObject(expectedOutput);
+  });
+
+  it('denies actions on unpublished or missing demands', async () => {
     const demand = await seedWorkspace();
     await kdb.updateTable('demands_chaleur_renouvelable').set({ validated: false }).where('id', '=', demand.id).execute();
     await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id })).rejects.toMatchObject(notFound);
@@ -213,7 +245,7 @@ describe('CCRT assignment candidates', () => {
       const demand = await seedWorkspace();
       const request = createTestCaller(user).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
       if (allowed) {
-        expect((await request).map((candidate) => candidate.id)).toStrictEqual([testUsers.ccrt.id]);
+        expect((await request).map((candidate) => candidate.id).sort()).toStrictEqual([testUsers.ccrt.id, otherCcrtUser.id].sort());
       } else {
         await expect(request).rejects.toMatchObject(forbiddenError);
       }
@@ -233,7 +265,7 @@ describe('CCRT assignment candidates', () => {
     await kdb.insertInto('user_permissions').values({ resource_id, type, user_id: testUsers.ccrt.id }).execute();
 
     const candidates = await createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
-    expect(candidates.map((candidate) => candidate.id)).toStrictEqual([testUsers.ccrt.id]);
+    expect(candidates.map((candidate) => candidate.id).sort()).toStrictEqual([testUsers.ccrt.id, otherCcrtUser.id].sort());
   });
 
   it('deduplicates matching accounts and excludes inactive, unrelated and non-CCRT accounts', async () => {
@@ -254,7 +286,7 @@ describe('CCRT assignment candidates', () => {
       .execute();
 
     const candidates = await createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
-    expect(candidates.map((candidate) => candidate.id)).toStrictEqual([testUsers.ccrt.id]);
+    expect(candidates.map((candidate) => candidate.id).sort()).toStrictEqual([testUsers.ccrt.id, otherCcrtUser.id].sort());
   });
 
   it('rejects a missing demand', async () => {
@@ -292,17 +324,17 @@ describe('CCRT heat-network eligibility', () => {
 
   it('keeps an automatic contact from overwriting a completed demand or adding a misleading audit', async () => {
     const demand = await seedWorkspace();
-    await createTestCaller(testUsers.alec).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+    await createTestCaller(otherCcrtUser).batEnr.ccrt.updateDemandeChaleurRenouvelable({
       demandId: demand.id,
       values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED },
     });
-    const before = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    const before = await createTestCaller(otherCcrtUser).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
       demandId: demand.id,
       trigger: 'contact',
       values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT },
     });
-    const after = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    const after = await createTestCaller(otherCcrtUser).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect({ history: after.history, status: result.status }).toStrictEqual({
       history: before.history,
       status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED,
@@ -379,7 +411,7 @@ describe('CCRT heat-network eligibility', () => {
       demandId: demand.id,
       values: { note: 'Première note', status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS },
     });
-    const followUp = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    const followUp = await createTestCaller(otherCcrtUser).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect({
       history: followUp.history.map((event) => event.type),
       notes: followUp.notes.map((note) => note.body),
@@ -433,7 +465,7 @@ describe('CCRT heat-network eligibility', () => {
       values: { note: 'Note de suivi' },
     });
     const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
-    expect(result.users.map((user) => user.id)).toStrictEqual([testUsers.ccrt.id]);
+    expect(result.users.map((user) => user.id).sort()).toStrictEqual([testUsers.ccrt.id, otherCcrtUser.id].sort());
     expect({ history: result.history.map((event) => event.type), total: result.total }).toStrictEqual({
       history: ['ccrt_demand_note_created'],
       total: 1,
@@ -446,13 +478,13 @@ describe('CCRT heat-network eligibility', () => {
       demandId: demand.id,
       values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED },
     });
-    const list = await createTestCaller(testUsers.alec).batEnr.ccrt.listDemandesChaleurRenouvelable();
+    const list = await createTestCaller(otherCcrtUser).batEnr.ccrt.listDemandesChaleurRenouvelable();
     expect(list.items.map((item) => item.status)).toStrictEqual([DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED]);
     await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
       demandId: demand.id,
       values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS },
     });
-    const followUp = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    const followUp = await createTestCaller(otherCcrtUser).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect(followUp.history.map((event) => event.data)).toStrictEqual([
       { changes: { status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } } },
       { changes: { status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED } } },
@@ -488,7 +520,7 @@ describe('CCRT email delivery', () => {
     expect(current).toStrictEqual({
       status: updateStatusOnSend ? DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT : DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
     });
-    const followUp = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    const followUp = await createTestCaller(otherCcrtUser).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect(followUp.emails.map((email) => ({ body: email.body, id: email.id, to: email.to }))).toStrictEqual([
       { body: emailContent.body, id: input.messageId, to: demand.email },
     ]);
@@ -519,7 +551,7 @@ describe('CCRT email delivery', () => {
     const input = { demandId: demand.id, emailContent, messageId: uuid(511) };
     vi.mocked(sendEmailTemplate).mockRejectedValueOnce(new Error('SMTP failure'));
     await expect(createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail(input)).rejects.toMatchObject({ code: 'INTERNAL_SERVER_ERROR' });
-    const failed = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    const failed = await createTestCaller(otherCcrtUser).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect({ emails: failed.emails, history: failed.history }).toStrictEqual({ emails: [], history: [] });
     expect(postFetchJSON).not.toHaveBeenCalled();
     await expect(getUserPreferences(testUsers.ccrt.id)).resolves.toStrictEqual(defaultUserPreferences);
@@ -530,7 +562,7 @@ describe('CCRT email delivery', () => {
   it('does not overwrite a concurrently closed demand when sending', async () => {
     const demand = await seedWorkspace();
     vi.mocked(sendEmailTemplate).mockImplementationOnce(async () => {
-      await createTestCaller(testUsers.alec).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+      await createTestCaller(otherCcrtUser).batEnr.ccrt.updateDemandeChaleurRenouvelable({
         demandId: demand.id,
         values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED },
       });
@@ -626,7 +658,7 @@ describe('CCRT building corrections', () => {
       ])
       .where('id', '=', demand.id)
       .executeTakeFirstOrThrow();
-    const followUp = await createTestCaller(testUsers.alec).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+    const followUp = await createTestCaller(otherCcrtUser).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect({ changes: followUp.history.map((event) => event.data), current }).toStrictEqual({
       changes: [{ changes: { dpe: { from: 'E', to: 'D' } } }],
       current: readOnlyValues,
@@ -724,7 +756,7 @@ describe('CCRT building corrections', () => {
       features: [{ geometry: { coordinates: [5.37, 43.3] }, properties: { city: 'MARSEILLE', citycode: '13201', id: '13201_test' } }],
     });
 
-    await createTestCaller(testUsers.alec).batEnr.ccrt.updateBuilding({
+    await createTestCaller(otherCcrtUser).batEnr.ccrt.updateBuilding({
       demandId: demand.id,
       updatedAt: demand.updated_at.toISOString(),
       values: { ...zCcrtBuilding.parse(demand), average_residents: 2.5 },
@@ -743,7 +775,7 @@ describe('CCRT building corrections', () => {
       region_code: '93',
     });
     expect(
-      (await createTestCaller(testUsers.alec).batEnr.ccrt.listDemandesChaleurRenouvelable()).items.map((item) => item.id)
+      (await createTestCaller(otherCcrtUser).batEnr.ccrt.listDemandesChaleurRenouvelable()).items.map((item) => item.id)
     ).toStrictEqual([demand.id]);
   });
 
@@ -777,7 +809,7 @@ describe('CCRT building corrections', () => {
       typeLogement: params.get('typeLogement'),
     }).toStrictEqual({ dpe: 'D', espaceExterieur: 'jardinCours', nbLogements: '1', typeLogement: 'maison_individuelle' });
     await expect(
-      createTestCaller(testUsers.alec).batEnr.ccrt.updateBuilding({
+      createTestCaller(otherCcrtUser).batEnr.ccrt.updateBuilding({
         demandId: demand.id,
         updatedAt: demand.updated_at.toISOString(),
         values,

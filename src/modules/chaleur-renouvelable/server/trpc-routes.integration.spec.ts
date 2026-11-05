@@ -960,9 +960,9 @@ describe('batEnrRouter', () => {
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
       { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
       { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
-      { allowed: true, label: 'autorise gestionnaire', user: testUsers.gestionnaire },
-      { allowed: true, label: 'autorise collectivité', user: testUsers.collectivite },
-      { allowed: true, label: 'autorise ALEC', user: testUsers.alec },
+      { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
+      { allowed: false, label: 'refuse collectivité', user: testUsers.collectivite },
+      { allowed: false, label: 'refuse ALEC', user: testUsers.alec },
       { allowed: true, label: 'autorise admin', user: testUsers.admin },
       { allowed: true, label: 'autorise CCRT', user: testUsers.ccrt },
     ];

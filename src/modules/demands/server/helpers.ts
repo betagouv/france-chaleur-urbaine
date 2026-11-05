@@ -16,7 +16,7 @@ import { canUserAccessDemand, type DemandForAccess, isUserResponsibleForDemand }
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import { type Demands, kdb, type ProEligibilityTestsAddresses, sql } from '@/server/db/kysely';
-import { userRolesWithPermissions } from '@/types/enum/UserRole';
+import { userRolesWithPermissionsHeatNetwork } from '@/types/enum/UserRole';
 
 import type { AccessCounts } from '../types';
 import { getEntityFromEligibilityType } from './eligibility';
@@ -90,16 +90,18 @@ const loadDemandForProcessOrThrow = async (demandId: string): Promise<DemandForP
 /**
  * Garantit que la demande existe ET que l'utilisateur peut la **consulter** (lecture, historique mail, etc.).
  * Lève NOT_FOUND si introuvable, FORBIDDEN si pas d'accès. Admin : NOT_FOUND uniquement (bypass auth).
+ * Retourne la demande chargée pour éviter une seconde lecture après le contrôle d'accès.
  */
-export const ensureUserCanAccessDemand = async (ctx: Context, demandId: string): Promise<void> => {
+export const ensureUserCanAccessDemand = async (ctx: Context, demandId: string): Promise<DemandForAccess> => {
   const demand = await loadDemandForAccessOrThrow(demandId);
   if (ctx.user.role === 'admin') {
-    return;
+    return demand;
   }
   const permissions = await ctx.getPermissions();
   if (!canUserAccessDemand(ctx.user, permissions, demand)) {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'Demande hors de votre périmètre' });
   }
+  return demand;
 };
 
 /**
@@ -179,7 +181,7 @@ export const buildDemandQuery = () => {
         )
         .innerJoin('users as u', 'u.id', 'up.user_id')
         .where('u.active', '=', true)
-        .where('u.role', 'in', userRolesWithPermissions)
+        .where('u.role', 'in', userRolesWithPermissionsHeatNetwork)
         .groupBy('d.id')
         .select((eb) => [
           eb.ref('d.id').as('demand_id'),
