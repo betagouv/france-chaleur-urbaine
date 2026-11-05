@@ -2,7 +2,7 @@ import type { ModeDeChauffageId } from '@/modules/chaleur-renouvelable/constants
 
 export const heatingSolutions = [
   {
-    image: 'img/icon-pac.webp',
+    image: 'img/heating-solutions/air-water.svg',
     modeIds: ['collective-air-water-heat-pump'],
     slug: 'pac-air-eau-collective',
     sourceUrl: 'https://app.notion.com/3876523d57d78029866be5adc593a680',
@@ -61,7 +61,7 @@ export const heatingSolutions = [
     title: 'Poêle, insert ou foyer fermé au bois (individuel)',
   },
   {
-    image: 'img/icon-pac.webp',
+    image: 'img/heating-solutions/air-water.svg',
     modeIds: ['collective-air-water-heat-pump-hot-water', 'individual-apartment-collective-air-water-heat-pump-hot-water'],
     slug: 'pac-air-eau-collective-eau-chaude-sanitaire',
     sourceUrl: 'https://app.notion.com/3ea6523d57d780c59f19d0435cb52118',
@@ -77,7 +77,7 @@ export const heatingSolutions = [
     title: 'Solution hybride PAC air/eau + gaz pour chauffage collectif',
   },
   {
-    image: 'img/icon-solaire.webp',
+    image: 'img/heating-solutions/solar-thermal.svg',
     modeIds: ['house-solar-thermal-hot-water'],
     slug: 'solaire-thermique-eau-chaude-maison',
     sourceUrl: 'https://app.notion.com/3d46523d57d78092a24cda91a78af394',
@@ -85,7 +85,7 @@ export const heatingSolutions = [
     title: 'Solaire thermique - ECS uniquement (maison)',
   },
   {
-    image: 'img/icon-solaire.webp',
+    image: 'img/heating-solutions/solar-thermal.svg',
     modeIds: ['collective-solar-thermal-hot-water', 'individual-apartment-solar-thermal-hot-water'],
     slug: 'solaire-thermique-eau-chaude-collective',
     sourceUrl: 'https://app.notion.com/3ea6523d57d78074aa22f60eb160dc6c',
@@ -93,7 +93,7 @@ export const heatingSolutions = [
     title: 'Solaire thermique - ECS uniquement (collective)',
   },
   {
-    image: 'img/icon-solaire.webp',
+    image: 'img/heating-solutions/solar-thermal.svg',
     modeIds: ['house-combined-solar-system'],
     slug: 'systeme-solaire-combine',
     sourceUrl: 'https://app.notion.com/3ea6523d57d780ca8d82e73a9f3153eb',
@@ -117,7 +117,7 @@ export const heatingSolutions = [
     title: 'PAC géothermique eau/eau ou eau/glycolée eau collective',
   },
   {
-    image: 'img/icon-pac.webp',
+    image: 'img/heating-solutions/thermodynamic-water-heater.svg',
     modeIds: [
       'collective-thermodynamic-water-heater',
       'individual-apartment-thermodynamic-water-heater',

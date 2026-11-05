@@ -11,7 +11,7 @@ Static educational articles for validated renewable heating solutions, published
 - `client/HeatingSolutionArticle.tsx` — common Figma article layout, section navigation and browser print/PDF action.
 - `client/Solution*.tsx` — reusable sections, summary cards, flow diagrams, FAQ and the three comparator calls to action.
 - The heat-network article embeds the existing `/iframe/form` address test, hidden when printing. The recommended heat-network card also links to its article.
-- Illustrations live in `public/img/heating-solutions/`. Figma sources: file `t3chbwPeNK6ZulaWs4Rn4S`, web template `3745:19077`, autumn 2026 illustration section `3782:10324`. Existing PAC air/water and solar illustrations remain in use when no replacement was provided.
+- Illustrations live in `public/img/heating-solutions/`. Figma sources: file `t3chbwPeNK6ZulaWs4Rn4S`, web template `3745:19077`, autumn 2026 illustration section `3782:10324`. The eleven autumn illustrations include four page-level frames outside the section hierarchy: collective air/water (`3783:1120`), solar thermal (`3783:1373`), thermodynamic water heater (`3783:920`) and solar atmospheric heat pump (`3783:951`). Individual air/water modes keep their existing illustration.
 
 ## Boundaries
 
