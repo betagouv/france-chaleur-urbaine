@@ -12,6 +12,7 @@ import {
   getUserPermissionsWithLabels,
   resolvePermissionLabels,
   resolvePermissionsWithLabels,
+  searchCustomTerritories,
   searchOrganizations,
   searchTerritories,
 } from './search';
@@ -57,6 +58,10 @@ export const permissionsRouter = router({
   myMapData: demandAccessRoute.query(async ({ ctx }) => getPermissionsMapData(await ctx.getPermissions())),
 
   resolveLabels: demandAccessRoute.input(zPermissionInput).query(({ input }) => resolvePermissionLabels(input)),
+
+  searchCustomTerritories: adminRoute
+    .input(z.object({ search: z.string().min(2).max(100) }))
+    .query(({ input }) => searchCustomTerritories(input.search)),
 
   searchNetworks: adminRoute.input(z.object({ search: z.string().min(2).max(100) })).query(({ input }) => searchNetworks(input.search)),
 

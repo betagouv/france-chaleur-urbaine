@@ -8,6 +8,7 @@ import { canUserAccessCcrtDemand } from './ccrt-access';
 
 const demand = {
   commune_code: '13055',
+  custom_territory_ids: [],
   departement_code: '13',
   epci_code: 'EPCI-13',
   ept_code: 'EPT-13',

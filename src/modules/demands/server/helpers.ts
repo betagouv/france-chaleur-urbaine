@@ -12,6 +12,7 @@ import {
   normalizeHeatingEnergy,
   normalizeHeatingType,
 } from '@/modules/demands/constants';
+import { permissionMatchesCustomTerritoryIds } from '@/modules/permissions/server/demand-access';
 import { canUserAccessDemand, type DemandForAccess, isUserResponsibleForDemand } from '@/modules/permissions/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -71,6 +72,7 @@ const buildDemandForAccessCheckQuery = (demandId: string) =>
       'demands.ept_code',
       'demands.departement_code',
       'demands.region_code',
+      'demands.custom_territory_ids',
     ])
     .select((eb) => eb.fn.coalesce('rdc.organization_id', 'zrc.organization_id').as('network_organization_id'))
     .where('demands.id', '=', demandId)
@@ -174,6 +176,10 @@ export const buildDemandQuery = () => {
               eb.and([eb('up.type', '=', 'ept'), eb('up.resource_id', '=', eb.ref('d.ept_code'))]),
               eb.and([eb('up.type', '=', 'departement'), eb('up.resource_id', '=', eb.ref('d.departement_code'))]),
               eb.and([eb('up.type', '=', 'region'), eb('up.resource_id', '=', eb.ref('d.region_code'))]),
+              eb.and([
+                eb('up.type', '=', 'custom_territory'),
+                permissionMatchesCustomTerritoryIds(eb.ref('up.resource_id'), eb.ref('d.custom_territory_ids')),
+              ]),
             ])
           )
         )

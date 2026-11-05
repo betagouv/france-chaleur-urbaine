@@ -66,6 +66,8 @@ const formatPermission = (p: PermissionWithLabel): string => {
       return `dans la région ${p.label}`;
     case 'organization':
       return `sur l'ensemble des réseaux de l'organisation ${p.label}`;
+    case 'custom_territory':
+      return `sur le territoire ${p.label}`;
     case 'reseau_de_chaleur':
       return `liées au réseau existant ${p.label}`;
     case 'reseau_en_construction':

@@ -12,6 +12,7 @@ import { registerAdemeConnectCommands } from '@/modules/ademe-connect/commands';
 import { registerAppCommands } from '@/modules/app/commands';
 import { type BootstrapBundle, bootstrapBundleNames, selectBootstrapTables } from '@/modules/app/commands/db-bootstrap';
 import { registerBdnbCommands } from '@/modules/bdnb/commands';
+import { refreshDemandsCustomTerritoryIds } from '@/modules/custom-territories/server/service';
 import { registerDataCommands } from '@/modules/data/commands';
 import { registerDocCommands } from '@/modules/doc/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
@@ -134,6 +135,16 @@ type EPT = {
     populationMunicipale: number;
   }[];
 };
+
+program
+  .command('custom-territories:refresh')
+  .description('Recompute custom_territory_ids on every demand from its commune (run after an IGN communes / EPCI update)')
+  .action(async () => {
+    const result = await refreshDemandsCustomTerritoryIds();
+    console.info(
+      `${result.demands} demande(s) de raccordement et ${result.demands_chaleur_renouvelable} demande(s) chaleur renouvelable mises à jour`
+    );
+  });
 
 program
   .command('import:ept')

@@ -18,6 +18,7 @@ import type {
   TypeRadiateur,
 } from '@/modules/chaleur-renouvelable/constants';
 import type { ConversionEventType, ConversionIpDisposition, ConversionSourceConfig } from '@/modules/conversion-tracking/constants';
+import type { CustomTerritoryRecipe } from '@/modules/custom-territories/constants';
 import type { LegacyDemandValues, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { FileScanStatus } from '@/modules/files/constants';
@@ -280,6 +281,15 @@ export interface ConversionSources {
   updated_at: Generated<Timestamp>;
 }
 
+export interface CustomTerritories {
+  commune_codes: Generated<string[]>;
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  recipe: JSONColumnType<CustomTerritoryRecipe>;
+  updated_at: Generated<Timestamp>;
+}
+
 export interface DemandsChaleurRenouvelable {
   address: string;
   alternative_heating_solutions: Generated<string[]>;
@@ -292,6 +302,7 @@ export interface DemandsChaleurRenouvelable {
   created_at: Generated<Timestamp>;
   demand_concern: DemandConcern | null;
   commune_code: string | null;
+  custom_territory_ids: Generated<string[]>;
   epci_code: string | null;
   ept_code: string | null;
   region_code: string | null;
@@ -374,6 +385,7 @@ export interface Demands {
   comment_user: string | null;
   commune_code: string | null;
   created_at: Generated<Timestamp>;
+  custom_territory_ids: Generated<string[]>;
   deleted_at: Timestamp | null;
   departement_code: string | null;
   epci_code: string | null;
@@ -1212,6 +1224,7 @@ export interface DB {
   conversion_events: ConversionEvents;
   conversion_ip_rules: ConversionIpRules;
   conversion_sources: ConversionSources;
+  custom_territories: CustomTerritories;
   demands_chaleur_renouvelable: DemandsChaleurRenouvelable;
   ccrt_demand_notes: CcrtDemandNotes;
   ccrt_demand_emails: CcrtDemandEmails;

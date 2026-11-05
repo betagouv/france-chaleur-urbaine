@@ -3,7 +3,8 @@ import { sendEmailTemplate } from '@/modules/email';
 import type { CcrtNewDemandDigestItem } from '@/modules/email/templates/demands/ccrt/nouvelles-demandes-a-traiter-weekly';
 import type { CcrtPendingDemandReminder } from '@/modules/email/templates/demands/ccrt/rappel-demandes-en-attente';
 import { createEvent } from '@/modules/events/server/service';
-import { territoryPermissionToColumn } from '@/modules/permissions/types';
+import { permissionMatchesCustomTerritoryIds } from '@/modules/permissions/server/demand-access';
+import { customTerritoryPermissionType, territoryPermissionToColumn } from '@/modules/permissions/types';
 import type { NewDemandsNotificationFrequency } from '@/modules/users/constants';
 import { kdb, sql } from '@/server/db/kysely';
 import { processInParallel } from '@/utils/async';
@@ -39,11 +40,15 @@ const baseNotifiableQuery = () =>
     .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
     .innerJoin('demands_chaleur_renouvelable as d', (join) =>
       join.on((eb) =>
-        eb.or(
-          ObjectEntries(territoryPermissionToColumn).map(([type, column]) =>
+        eb.or([
+          ...ObjectEntries(territoryPermissionToColumn).map(([type, column]) =>
             eb.and([eb('up.type', '=', type), eb('up.resource_id', '=', eb.ref(`d.${column}`))])
-          )
-        )
+          ),
+          eb.and([
+            eb('up.type', '=', customTerritoryPermissionType),
+            permissionMatchesCustomTerritoryIds(eb.ref('up.resource_id'), eb.ref('d.custom_territory_ids')),
+          ]),
+        ])
       )
     )
     .where('u.active', '=', true)

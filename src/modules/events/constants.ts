@@ -89,6 +89,9 @@ export const eventTypes = [
   'organization_created',
   'organization_updated',
   'organization_deleted',
+  'custom_territory_created',
+  'custom_territory_updated',
+  'custom_territory_deleted',
 ] as const;
 
 export type EventType = (typeof eventTypes)[number];
@@ -106,6 +109,9 @@ export const eventTypeLabels: Record<EventType, string> = {
   conversion_source_archived: "Archivage d'intégration iframe",
   conversion_source_created: "Création d'intégration iframe",
   conversion_source_updated: "Mise à jour d'intégration iframe",
+  custom_territory_created: 'Création territoire personnalisé',
+  custom_territory_deleted: 'Suppression territoire personnalisé',
+  custom_territory_updated: 'Mise à jour territoire personnalisé',
   data_retention_applied: "Application d'une règle de conservation",
   demand_assignment_change_request_cancelled: 'Annulation de demande de réaffectation',
   demand_assignment_change_request_rejected: 'Rejet de demande de réaffectation',
@@ -350,6 +356,9 @@ export type EventDataMap = {
     note: string | null;
     created_at: string;
   };
+  custom_territory_created: { custom_territory_id: string; name: string; communes_count: number };
+  custom_territory_updated: { custom_territory_id: string; name: string; communes_count: number };
+  custom_territory_deleted: { custom_territory_id: string; name: string; communes_count: number };
   organization_created: { organization_id: string; name: string };
   organization_updated: { organization_id: string; name: string };
   organization_deleted: { organization_id: string; name: string };

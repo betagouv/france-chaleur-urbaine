@@ -2,8 +2,14 @@ import { TRPCError } from '@trpc/server';
 import type { SelectQueryBuilder } from 'kysely';
 
 import type { Context } from '@/modules/config/server/context-builder';
-import { canUserAccessDemand, type DemandForAccess, getUsersWithAccessToDemand } from '@/modules/permissions/server/demand-access';
-import { type Permission, territoryPermissionToColumn } from '@/modules/permissions/types';
+import { resolveCustomTerritoryIds } from '@/modules/custom-territories/server/service';
+import {
+  canUserAccessDemand,
+  customTerritoryIdsContain,
+  type DemandForAccess,
+  getUsersWithAccessToDemand,
+} from '@/modules/permissions/server/demand-access';
+import { customTerritoryPermissionType, type Permission, territoryPermissionToColumn } from '@/modules/permissions/types';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 
 import { selectDemandesChaleurRenouvelableForList } from './ccrt-demand-query';
@@ -30,9 +36,14 @@ export const applyCcrtAccessFilter = <Output>(
   }
   const territories = Object.entries(territoryPermissionToColumn);
   return query.where('validated', '=', true).where((expression) => {
-    const conditions = territories.flatMap(([type, column]) =>
-      permissions.filter((permission) => permission.type === type).map((permission) => expression(column, '=', permission.resource_id))
-    );
+    const conditions = [
+      ...territories.flatMap(([type, column]) =>
+        permissions.filter((permission) => permission.type === type).map((permission) => expression(column, '=', permission.resource_id))
+      ),
+      ...permissions
+        .filter((permission) => permission.type === customTerritoryPermissionType)
+        .map((permission) => customTerritoryIdsContain(expression.ref('custom_territory_ids'), permission.resource_id)),
+    ];
     return conditions.length ? expression.or(conditions) : sql.lit(false);
   });
 };
@@ -85,6 +96,7 @@ export const getCcrtTerritory = async (
   ]);
   return {
     commune_code: communeCode,
+    custom_territory_ids: await resolveCustomTerritoryIds(communeCode),
     departement_code: commune?.insee_dep ?? departmentCode,
     epci_code: commune?.siren_epci?.split('/')[0] ?? null, // IGN encodes some Grand Paris memberships as EPCI/EPT.
     ept_code: ept?.code ?? null,

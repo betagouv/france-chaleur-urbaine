@@ -95,6 +95,7 @@ const getTerritoryGeometries = async (
   const regionCodes = territoryPerms.filter((p) => p.type === 'region').map((p) => p.resource_id!);
   const epciCodes = territoryPerms.filter((p) => p.type === 'epci').map((p) => p.resource_id!);
   const eptCodes = territoryPerms.filter((p) => p.type === 'ept').map((p) => p.resource_id!);
+  const customTerritoryIds = territoryPerms.filter((p) => p.type === 'custom_territory').map((p) => p.resource_id);
 
   // Build UNION ALL parts — only include types that have permissions
   const parts: RawBuilder<TerritoryGeomRow>[] = [];
@@ -168,6 +169,17 @@ const getTerritoryGeometries = async (
     `);
   }
 
+  if (customTerritoryIds.length > 0) {
+    parts.push(sql<TerritoryGeomRow>`
+      SELECT ${sql.lit<PermissionType>('custom_territory')} AS type, t.id::text AS code, t.name AS label,
+        ST_AsGeoJSON(ST_Simplify(ST_Transform(ST_Union(c.geom), 4326), 0.001))::json AS geometry
+      FROM custom_territories t
+      JOIN ign_communes c ON c.insee_com = ANY(t.commune_codes)
+      WHERE t.id IN (${sql.join(customTerritoryIds)})
+      GROUP BY t.id, t.name
+    `);
+  }
+
   if (parts.length === 0) {
     return { features: [], type: 'FeatureCollection' };
   }
@@ -206,6 +218,7 @@ const buildPermissionGeomParts = (permissions: Permission[]): RawBuilder<Permiss
   const regionCodes = territoryPerms.filter((p) => p.type === 'region').map((p) => p.resource_id!);
   const epciCodes = territoryPerms.filter((p) => p.type === 'epci').map((p) => p.resource_id!);
   const eptCodes = territoryPerms.filter((p) => p.type === 'ept').map((p) => p.resource_id!);
+  const customTerritoryIds = territoryPerms.filter((p) => p.type === 'custom_territory').map((p) => p.resource_id);
   const reseauxExistantsIds = networkPerms.filter((p) => p.type === 'reseau_de_chaleur').map((p) => Number(p.resource_id));
   const reseauxEnConstructionIds = networkPerms.filter((p) => p.type === 'reseau_en_construction').map((p) => Number(p.resource_id));
 
@@ -266,6 +279,14 @@ const buildPermissionGeomParts = (permissions: Permission[]): RawBuilder<Permiss
       CROSS JOIN LATERAL jsonb_array_elements(e.membres) AS m
       JOIN ign_communes c ON c.insee_com = m->>'code'
       WHERE e.code IN (${sql.join(eptCodes.map(sql.lit))})
+    `);
+  }
+  if (customTerritoryIds.length > 0) {
+    parts.push(sql<PermissionGeomRow>`
+      SELECT ${sql.lit<PermissionType>('custom_territory')} AS type, t.id::text AS code, ST_Transform(c.geom, 4326) AS geom
+      FROM custom_territories t
+      JOIN ign_communes c ON c.insee_com = ANY(t.commune_codes)
+      WHERE t.id IN (${sql.join(customTerritoryIds)})
     `);
   }
   if (reseauxExistantsIds.length > 0) {

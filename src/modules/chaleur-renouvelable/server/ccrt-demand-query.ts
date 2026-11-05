@@ -13,6 +13,7 @@ export const selectDemandesChaleurRenouvelableForList = () =>
       'batiment_construction_id',
       'comments',
       'commune_code',
+      'custom_territory_ids',
       'epci_code',
       'ept_code',
       'region_code',
