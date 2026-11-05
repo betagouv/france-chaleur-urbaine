@@ -12,7 +12,7 @@ describe('buildSimulationSituation', () => {
       batEnr: {
         ...EMPTY_BAT_ENR_INFO,
         architecturalProtectionAc1: true,
-        geothermalNappePotential: 7,
+        geothermalCoverage: 42,
       },
       eligibiliteReseauChaleur: null,
       eligibiliteReseauFroid: null,
@@ -42,8 +42,8 @@ describe('buildSimulationSituation', () => {
       eligibiliteReseauChaleur: null,
       eligibiliteReseauFroid: null,
       espaceExterieur: DEFAULT_SIMULATION_PARAMS.espaceExterieur,
+      geothermalCoverage: 42,
       geothermalNappeGmi: null,
-      geothermalNappePotential: 7,
       geothermalSondeGmi: null,
       habitantsMoyen: 3,
       hasAlreadyReceivedHeatNetworkRefusal: false,

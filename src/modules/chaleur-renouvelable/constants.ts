@@ -54,7 +54,6 @@ export type BatEnrBatiment = {
   gmi_nappe_200: number | null;
   gmi_sonde_200: number | null;
   place_nappe: boolean | null;
-  pot_nappe: number | null;
   prod_st_mwh_an: number | null;
   propri_uni: string | null;
   type_energie_chauffage: string | null;
@@ -106,8 +105,8 @@ export type Situation = {
   hasAlreadyReceivedHeatNetworkRefusal: boolean;
   eligibiliteReseauChaleur: HeatNetwork | null;
   eligibiliteReseauFroid: ColdNetworkEligibility | null;
+  geothermalCoverage: number | null;
   geothermalNappeGmi: number | null;
-  geothermalNappePotential: number | null;
   geothermalSondeGmi: number | null;
   hasGeothermalProbeSpace: boolean | null;
   modeEauChaudeSanitaire: ModeEauChaudeSanitaireQueryParam | null;

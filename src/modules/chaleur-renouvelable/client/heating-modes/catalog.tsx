@@ -1,5 +1,6 @@
 import {
   collectiveHotWaterPrerequisite,
+  geothermalCoverageIncompatibilities,
   getArchitecturalProtectionPrerequisites,
   getColdNetworkPrerequisite,
   getGeothermalPrerequisites,
@@ -11,6 +12,7 @@ import {
   hasCompatibleRadiator,
   hasEspacePrivate,
   hasEspaceShared,
+  hasFavorableGeothermalArea,
   hasHighAltitudeWithoutAirProtectionPlan,
   hasInsufficientSolarThermalCoverage,
   hasSufficientSolarThermalCoverage,
@@ -109,19 +111,15 @@ export const modesDeChauffage = {
       icone: 'img/icon-pac.webp',
       id: 'collective-geothermal-heat-pump',
       incompatibilites: [
+        ...geothermalCoverageIncompatibilities,
         {
           isIncompatible: (situation) => !hasEspaceShared(situation),
           reason: 'Vous ne disposez pas d’espace extérieur pour disposer les sondes',
           source: 'Formulaire',
         },
         {
-          isIncompatible: (situation) => situation.geothermalNappeGmi === 3 || situation.geothermalSondeGmi === 3,
-          reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
-          source: 'BRGM',
-        },
-        {
-          isIncompatible: (situation) => situation.geothermalNappePotential === 5 || situation.geothermalNappePotential === 6,
-          reason: 'La ressource énergétique de la parcelle est insuffisante',
+          isIncompatible: (situation) => !hasFavorableGeothermalArea(situation),
+          reason: 'Votre bâtiment n’est pas situé dans une zone identifiée comme favorable au forage',
           source: 'BRGM',
         },
       ],
@@ -676,19 +674,15 @@ export const modesDeChauffage = {
       icone: 'img/icon-geothermie.webp',
       id: 'house-geothermal-heat-pump',
       incompatibilites: [
+        ...geothermalCoverageIncompatibilities,
         {
           isIncompatible: (situation) => !hasEspaceShared(situation),
           reason: 'Vous ne disposez pas d’espace extérieur pour disposer les sondes',
           source: 'Formulaire',
         },
         {
-          isIncompatible: (situation) => situation.geothermalNappeGmi === 3 || situation.geothermalSondeGmi === 3,
-          reason: 'Votre bâtiment est situé dans une zone défavorable au forage',
-          source: 'BRGM',
-        },
-        {
-          isIncompatible: (situation) => situation.geothermalNappePotential === 5 || situation.geothermalNappePotential === 6,
-          reason: 'La ressource énergétique de la parcelle est insuffisante',
+          isIncompatible: (situation) => !hasFavorableGeothermalArea(situation),
+          reason: 'Votre bâtiment n’est pas situé dans une zone identifiée comme favorable au forage',
           source: 'BRGM',
         },
         {

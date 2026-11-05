@@ -26,7 +26,6 @@ const createBatiment = (overrides: Partial<BatEnrBatiment> = {}) =>
     gmi_nappe_200: null,
     gmi_sonde_200: null,
     place_nappe: null,
-    pot_nappe: null,
     prod_st_mwh_an: null,
     propri_uni: null,
     type_energie_chauffage: null,
