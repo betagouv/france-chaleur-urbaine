@@ -21,9 +21,6 @@ function ProfileForm() {
   const utils = trpc.useUtils();
 
   const updateProfile = trpc.users.updateProfile.useMutation({
-    onError: (error) => {
-      notify('error', error.message || 'Erreur lors de la mise à jour du profil');
-    },
     onSuccess: () => {
       notify('success', 'Profil mis à jour avec succès');
       utils.users.getProfile.invalidate();

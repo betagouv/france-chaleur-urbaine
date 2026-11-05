@@ -15,7 +15,7 @@ import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 const form = useAppForm({
   ...schemaValidation(zMyForm),
   defaultValues: { email: '' },  // annotate with z.input<typeof zMyForm> when the schema has optional fields
-  onSubmit: toastErrors(async ({ value }) => { ... }),
+  onSubmit: async ({ value }) => { ... },  // throws on failure, never wrapped in toastErrors
 });
 
 <Form form={form}>
@@ -23,6 +23,8 @@ const form = useAppForm({
   <form.SubmitButton>Envoyer</form.SubmitButton>
 </Form>
 ```
+
+**Errors of `onSubmit` are handled by `<Form>`, not by the callback**: `onSubmit` throws (or lets the tRPC error propagate) and `<Form>` toasts it once — deduplicated with the tRPC link's toast — and never rejects the submit event. Pass `errorMessage` to `<Form>` for a custom message. Never wrap `onSubmit` in `toastErrors`: a swallowed error makes TanStack record a *successful* submission (`isSubmitSuccessful`), which lies to `useFormTracking` and to any other reader of the form state. Code that calls `form.handleSubmit()` programmatically (outside a `<Form>` submit) must catch its rejection itself.
 
 Key files: `form-contexts.ts` (contexts, kept separate to avoid an import cycle), `useAppForm.tsx` (hook wiring + `schemaValidation`), `Form.tsx`, `SubmitButton.tsx`, `fields/` (one component per file, bound via `useFieldContext`; `fields/useFieldStatus.ts` centralizes error display + schema-derived `required`). Behavior is locked by `useAppForm.spec.tsx`.
 
@@ -46,7 +48,7 @@ const form = useAppForm({ ... });
 useFormTracking(form, { formName: 'suivi_demande', source: 'homepage', getSubmittedProperties: (values) => ({ ... }) });
 ```
 
-Events (typed in `posthog.config.ts`, documented in `analytics/TRACKING_PLAN.md`): `form:started` (first dirty field), `form:field_filled` (first modification of each field — blur is not used: `isBlurred` is sticky and a field can be left before being filled), `form:submitted` (`isSubmitSuccessful`), `form:submit_failed` (`reason` `validation` when the form is invalid after the attempt, `server` when `onSubmit` threw — an error swallowed by `toastErrors` counts as a success). Values are never sent; `getSubmittedProperties` must stay non-personal. Add the `formName` to the `FormName` union when wiring a form. It is a separate hook rather than a `useAppForm` option because the generic signature of the hook returned by `createFormHook` cannot be extended without losing the inference of `onSubmit` values.
+Events (typed in `posthog.config.ts`, documented in `analytics/TRACKING_PLAN.md`): `form:started` (first dirty field), `form:field_filled` (first modification of each field — blur is not used: `isBlurred` is sticky and a field can be left before being filled), `form:submitted` (`isSubmitSuccessful`), `form:submit_failed` (`reason` `validation` when the form is invalid after the attempt, `server` when `onSubmit` threw — hence the rule above: an `onSubmit` that swallows its errors would report every failure as a success). Values are never sent; `getSubmittedProperties` must stay non-personal. Add the `formName` to the `FormName` union when wiring a form. It is a separate hook rather than a `useAppForm` option because the generic signature of the hook returned by `createFormHook` cannot be extended without losing the inference of `onSubmit` values.
 
 ## Purpose
 

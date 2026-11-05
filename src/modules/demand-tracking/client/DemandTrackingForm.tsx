@@ -5,7 +5,6 @@ import Alert from '@/components/ui/Alert';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
 import { useFormTracking } from '@/modules/form/useFormTracking';
-import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
 import { type DemandTrackingFormSource, zRequestDemandTrackingInput } from '../constants';
@@ -27,10 +26,10 @@ export function DemandTrackingForm({ source }: DemandTrackingFormProps) {
   const form = useAppForm({
     ...schemaValidation(zRequestDemandTrackingInput),
     defaultValues: { email: '' },
-    onSubmit: toastErrors(async ({ value }) => {
+    onSubmit: async ({ value }) => {
       await requestDemandTracking({ email: value.email });
       setSubmittedEmail(value.email);
-    }),
+    },
   });
   useFormTracking(form, { formName: 'suivi_demande', source });
 

@@ -225,7 +225,7 @@ Ces événements n'utilisent pas `posthog-js` dans le widget : le navigateur app
 | `form:started` | `form_name`, `source?`, `field_name` | Première modification d'un champ du formulaire (`field_name` = ce premier champ) |
 | `form:field_filled` | `form_name`, `source?`, `field_name` | Première modification de chaque champ (saisie, sélection, case cochée…) ; un champ sans cet événement a été laissé intact |
 | `form:submitted` | `form_name`, `source?`, propriétés propres au formulaire | Soumission acceptée (le `onSubmit` a abouti) |
-| `form:submit_failed` | `form_name`, `source?`, `reason` (`validation` / `server`), `fields_in_error` | Soumission refusée : erreurs de saisie, ou `onSubmit` en échec (les erreurs avalées par `toastErrors` comptent comme un succès) |
+| `form:submit_failed` | `form_name`, `source?`, `reason` (`validation` / `server`), `fields_in_error` | Soumission refusée : erreurs de saisie, ou `onSubmit` en échec (erreur levée, toastée par `<Form>` ; un `onSubmit` qui avalerait ses erreurs serait compté en `form:submitted`) |
 
 Formulaires branchés : `suivi_demande` (bloc accueil `source=homepage`, page dédiée `source=page_suivi`). Les liens des emails transactionnels ne génèrent pas d'événement : ils portent des paramètres `utm_*` (`utm_campaign` = modèle, `utm_content` = lien) que PostHog rattache à la session à l'arrivée.
 

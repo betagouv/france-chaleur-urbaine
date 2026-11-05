@@ -5,7 +5,7 @@ import { type CSSProperties, type RefObject, useCallback, useEffect, useRef, use
 
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { trackPostHogEvent } from '@/modules/analytics/client';
-import { notify } from '@/modules/notification';
+import { handleClientError } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import type { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 import type { Point } from '@/types/Point';
@@ -160,8 +160,8 @@ function MapImplInner({
         ? await trpcUtils.client.reseaux.cityNetwork.query({ city: result.feature.properties.city })
         : await trpcUtils.client.reseaux.eligibilityStatus.query({ lat, lon: lng });
       setNetworkSearchMarker({ coordinates: result.coordinates, eligibility, label: result.label });
-    } catch {
-      notify('error', 'Impossible de tester cette adresse. Réessayez ou contactez le support.');
+    } catch (error) {
+      handleClientError(error, () => 'Impossible de tester cette adresse. Réessayez ou contactez le support.');
     }
   };
 
@@ -192,8 +192,8 @@ function MapImplInner({
       }
       setResultsVisible(true);
       trackPostHogEvent('map:address_searched');
-    } catch {
-      notify('error', 'Impossible de tester cette adresse. Réessayez ou contactez le support.');
+    } catch (error) {
+      handleClientError(error, () => 'Impossible de tester cette adresse. Réessayez ou contactez le support.');
     }
   };
 

@@ -79,9 +79,11 @@ let errorToastCounter = 0;
 export function handleClientError(err: any, customError?: ClientErrorMessage) {
   const userFacingMessage = getUserFacingErrorMessage(err);
   const detail: string = err?.message || String(err);
-  console.error('client error', userFacingMessage ?? detail, err);
   const isErrorObject = typeof err === 'object' && err !== null;
   const alreadyNotified = isErrorObject && errorToastIds.has(err);
+  if (!alreadyNotified) {
+    console.error('client error', userFacingMessage ?? detail, err);
+  }
   let toastId = isErrorObject ? errorToastIds.get(err) : undefined;
   if (isErrorObject && !toastId) {
     toastId = `client-error-${++errorToastCounter}`;

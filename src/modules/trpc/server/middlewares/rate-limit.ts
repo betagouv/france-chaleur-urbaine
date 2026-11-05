@@ -1,13 +1,10 @@
 import { TRPCError } from '@trpc/server';
 
 import { createRateLimiter, type RateLimiterOptions, rateLimitError } from '@/modules/security/server/rate-limit';
-import { createLogger } from '@/server/helpers/logger';
 
 import type { TRoot } from '../context';
 
 export type { RateLimiterOptions };
-
-const logger = createLogger('rate-limit');
 
 type RateLimitConfig = Omit<RateLimiterOptions, 'path'> & { message?: string };
 
@@ -59,7 +56,6 @@ export function createRateLimitMiddleware(t: TRoot) {
     await new Promise<void>((resolve, reject) => {
       rateLimiter(ctx.req as any, ctx.res as any, (error?: Error) => {
         if (error === rateLimitError) {
-          logger.warn('rate limit exceeded', { path });
           reject(
             new TRPCError({
               code: 'TOO_MANY_REQUESTS',

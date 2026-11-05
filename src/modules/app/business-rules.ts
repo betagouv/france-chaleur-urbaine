@@ -80,7 +80,7 @@ export const businessRules = {
   },
   demandTrackingEmailsPerHour: {
     description:
-      "Nombre maximal de demandes de suivi « Où en est votre demande ? » acceptées en une heure depuis une même adresse IP ; au-delà, aucun email n'est envoyé et le message affiché reste identique.",
+      "Nombre maximal de demandes de suivi « Où en est votre demande ? » acceptées en une heure depuis une même adresse IP ; au-delà, aucun email n'est envoyé et le formulaire affiche une erreur « Trop de requêtes ».",
     display: '3 envois par heure',
     label: 'Suivi de demande : plafond d’envois',
     value: 3,

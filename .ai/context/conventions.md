@@ -112,7 +112,7 @@
 ## Error handling patterns
 
 - Services throw `TRPCError` with appropriate codes: `BAD_REQUEST`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `INTERNAL_SERVER_ERROR`.
-- Client code wraps async calls with `toastErrors()` helper for automatic error display.
+- Client code wraps async calls with `toastErrors()` helper for automatic error display. tRPC errors are already toasted by the client link: never `notify('error')` them by hand (`onError`, `catch`); for a contextual message use `handleClientError(error, () => 'message')`, deduplicated with the link's toast — see `src/modules/notification/AGENTS.md`.
 - Never swallow exceptions. Never expose raw DB errors to client.
 - Log errors server-side with contextualized logger (no PII in logs).
 

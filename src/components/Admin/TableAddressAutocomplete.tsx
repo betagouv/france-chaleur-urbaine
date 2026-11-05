@@ -46,8 +46,7 @@ export default function TableAddressAutocomplete({ demand }: TableAddressAutocom
               notify('success', 'Adresse mise à jour avec succès');
               await utils.demands.admin.list.invalidate();
               setIsEditing(false);
-            } catch (error) {
-              notify('error', "Erreur lors de la mise à jour de l'adresse");
+            } catch {
               setIsEditing(false);
             } finally {
               setIsLoading(false);

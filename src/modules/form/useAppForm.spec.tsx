@@ -3,7 +3,11 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
-import { Form } from './Form';
+vi.mock('@/modules/notification', () => ({ handleClientError: vi.fn() }));
+
+import { handleClientError } from '@/modules/notification';
+
+import { Form, type FormProps } from './Form';
 import { schemaValidation, useAppForm } from './useAppForm';
 
 const zTestForm = z
@@ -19,12 +23,13 @@ type TestFormValues = z.input<typeof zTestForm>;
 
 type TestFormProps = {
   onSubmit: (value: TestFormValues) => void;
+  errorMessage?: FormProps['errorMessage'];
 };
 
 // annotating with z.input aligns the inferred form data with the schema (optional fields)
 const defaultValues: z.input<typeof zTestForm> = { email: '', newsletter: false, nickname: '', reason: '' };
 
-function TestForm({ onSubmit }: TestFormProps) {
+function TestForm({ onSubmit, errorMessage }: TestFormProps) {
   const form = useAppForm({
     ...schemaValidation(zTestForm),
     defaultValues,
@@ -33,7 +38,7 @@ function TestForm({ onSubmit }: TestFormProps) {
   const newsletter = useStore(form.store, (state) => state.values.newsletter);
 
   return (
-    <Form form={form}>
+    <Form form={form} errorMessage={errorMessage}>
       <form.AppField name="email">{(field) => <field.EmailField label="Email" />}</form.AppField>
       <form.AppField name="nickname">{(field) => <field.TextField label="Pseudo" />}</form.AppField>
       <form.AppField name="newsletter">{(field) => <field.CheckboxField label="Newsletter" />}</form.AppField>
@@ -223,6 +228,26 @@ describe('useAppForm', () => {
     });
 
     expect(screen.queryByText('Email invalide')).toBeNull();
+  });
+
+  it('toasts an onSubmit error once, with the form message, without rejecting the submit', async () => {
+    const error = new Error('boom');
+    const errorMessage = () => 'Impossible d’enregistrer';
+    render(
+      <TestForm
+        onSubmit={() => {
+          throw error;
+        }}
+        errorMessage={errorMessage}
+      />
+    );
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText(/Email/), { target: { value: 'marie@example.fr' } });
+    });
+
+    await submitForm();
+
+    expect(vi.mocked(handleClientError).mock.calls).toStrictEqual([[error, errorMessage]]);
   });
 
   it('reveals errors on the first submit attempt and does not call onSubmit', async () => {
