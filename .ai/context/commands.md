@@ -40,6 +40,8 @@ pnpm start:clock                                         # Job processor (crons 
 pnpm cli openapi:generate                                    # Regenerate public/openapi-schema.yaml from zod (partner-api). Run after editing the contract.
 pnpm cli data arrete-dpe:html-to-csv <page.html> <out.csv>   # Extract the arrêté DPE annex (saved Légifrance page) to a CSV to version in src/data/arrete-dpe/
 pnpm cli data import arrete-dpe --file <csv> [--dry-run]     # Apply regulatory values (CO2, EnR&R, reference year) to networks, then regenerate tiles. Runbook: docs/import_arrete_dpe.md
+pnpm cli import:epci                                          # Reload the full EPCI list (decoupage-administratif); required for the EPCI autocomplete of permissions / custom territories
+pnpm cli custom-territories:refresh                           # Recompute custom_territory_ids on every demand (after an IGN communes / EPCI update)
 ```
 
 ## Email

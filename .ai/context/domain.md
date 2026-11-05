@@ -31,6 +31,7 @@ The platform serves several audiences:
 | DPE | `Moyenne-annee-DPE` | Diagnostic de Performance Énergétique: building energy rating |
 | Commune | `ign_communes` | French municipality |
 | EPCI | `ign_epci` | Intercommunal cooperation establishment (group of municipalities) |
+| Territoire personnalisé | `custom_territories` | Admin-defined set of communes (e.g. a département minus its métropole) usable as a permission; see `src/modules/custom-territories/AGENTS.md` |
 | Publicodes | publicodes library | French rule engine for regulatory/financial calculations |
 
 ## Domain rules
@@ -39,6 +40,7 @@ The platform serves several audiences:
 - Demands are automatically matched to the nearest network based on address geolocation.
 - Gestionnaires only see demands related to their assigned networks.
 - Admin manages demand routing via permissions (user_permissions table).
+- CCRT (and collectivité / ALEC) territories that do not follow administrative boundaries are modelled as custom territories (`/admin/territoires`): a recipe « included territories minus excluded ones » resolved to communes, denormalized as `custom_territory_ids` on every demand.
 - Eligibility is determined by geographic proximity: distance from address to nearest network trace.
 - Networks have an energy mix (solar, geothermal, biomass, gas, etc.) and an EnR&R percentage.
 - EnR&R rate, CO2 contents and reference year (`Moyenne-annee-DPE`) are regulatory values imported yearly from the arrêté DPE annex (`pnpm cli data import arrete-dpe`, CSV versioned in `src/data/arrete-dpe/`, runbook `docs/import_arrete_dpe.md`), networks absent from the arrêté are reset to null. Survey figures come from the yearly FEDENE library and SDES imports (`data import donnees-reseaux-*`), written directly in the base; the survey's name / gestionnaire / MO go to `*_fedene` columns, the admin corrections to `*_fcu`, and the historical columns (`nom_reseau`, `Gestionnaire`, `MO`) are Postgres generated columns `coalesce(fcu, fedene)` read by everything (see `reseaux/field-sources.ts`); the import clears a correction matched by the survey and turns a remaining difference into an `enquete` survey discrepancy, decided field by field on the admin « Enquête FEDENE » page (keep the FCU correction, or restore the survey value).

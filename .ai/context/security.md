@@ -47,8 +47,9 @@ Stored in the `user_permissions` table (**not** in session/JWT). Each row links 
 | `region` | collectivite, alec | Region code | `demands.region_code` |
 | `national` | collectivite, alec | NULL | No filter (all validated) |
 | `organization` | gestionnaire (national/pilote) | Organization id (uuid) | Demands whose network's `organization_id` matches (derived via subquery, not a `demands` column) |
+| `custom_territory` | collectivite, alec, ccrt | `custom_territories.id` (uuid) | `demands.custom_territory_ids` (uuid[] denormalized from `commune_code`, see `src/modules/custom-territories/AGENTS.md`) |
 
-`buildDemandAccessFilter` partitions permissions in **3 buckets** (network / organization / territory): an `organization` perm grants access to all demands of the org's networks (1 perm instead of N). In-memory matchers compare `demand.network_organization_id` (resolved by join). Deleting an org must call `removeOrganizationPermissionFromAllUsers` (no FK on `user_permissions.resource_id`).
+`buildDemandAccessFilter` partitions permissions in **4 buckets** (network / organization / custom territory / territory): an `organization` perm grants access to all demands of the org's networks (1 perm instead of N). In-memory matchers compare `demand.network_organization_id` (resolved by join). Deleting an org or a custom territory must call `removePermissionFromAllUsers` (no FK on `user_permissions.resource_id`). A `custom_territory` perm behaves like a territory perm (triage on unassigned demands) and is matched with `custom_territory_ids @> ARRAY[id]::uuid[]` in list filters and `resource_id = ANY(custom_territory_ids::text[])` in joins on `user_permissions` — never cast `resource_id` to uuid in an `OR` with other permission types (no short-circuit in Postgres).
 
 Access check flow:
 1. `getUserPermissions(userId)` loads from DB — or `ctx.getPermissions()` for impersonation-aware access.
