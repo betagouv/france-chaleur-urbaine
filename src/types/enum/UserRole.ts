@@ -5,4 +5,5 @@ export type UserRole = (typeof userRoles)[number];
 export const userRolesInscription = ['particulier', 'professionnel'] as const satisfies UserRole[];
 export type UserRoleInscription = (typeof userRolesInscription)[number];
 
-export const userRolesWithPermissions = ['gestionnaire', 'collectivite', 'alec', 'ccrt'] as const satisfies UserRole[];
+export const userRolesWithPermissions = ['gestionnaire', 'collectivite', 'alec'] as const satisfies UserRole[];
+export const userRolesWithPermissionsCcrt = ['ccrt'] as const satisfies UserRole[];

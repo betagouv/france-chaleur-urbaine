@@ -2,7 +2,7 @@ import { type Expression, type Selectable, type SelectQueryBuilder, type SqlBool
 
 import type { DB, Demands } from '@/server/db/kysely';
 import { kdb } from '@/server/db/kysely';
-import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
+import { type UserRole, userRolesWithPermissions, userRolesWithPermissionsCcrt } from '@/types/enum/UserRole';
 
 import { type NetworkPermission, type Permission, type TerritoryPermissionType, territoryPermissionToColumn } from '../types';
 import { isNetworkPermissionType, isOrganizationPermissionType, isRoleWithPermissions } from './helpers';
@@ -167,8 +167,7 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess, demand
     .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
     .select(['u.id', 'u.email', 'u.role', 'u.first_name', 'u.last_name', 'u.structure_name'])
     .where('u.active', '=', true)
-    .where('u.role', 'in', [...userRolesWithPermissions])
-    .$if(demandType === 'connection', (query) => query.where('u.role', '!=', 'ccrt'))
+    .where('u.role', 'in', demandType === 'connection' ? [...userRolesWithPermissions] : [...userRolesWithPermissionsCcrt])
     .where((eb) => {
       const conditions: Expression<SqlBool>[] = [];
 

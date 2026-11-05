@@ -102,10 +102,10 @@ describe('canUserAccessDemand', () => {
     { expectedOutput: true, input: { demand: baseDemand, permissions: [epci200054781], user: alec } },
     { expectedOutput: true, input: { demand: constructionDemand, permissions: [networkConstruction], user: alec } },
 
-    // CCRT — same logic
-    { expectedOutput: true, input: { demand: baseDemand, permissions: [dept75], user: ccrt } },
-    { expectedOutput: true, input: { demand: baseDemand, permissions: [epci200054781], user: ccrt } },
-    { expectedOutput: true, input: { demand: constructionDemand, permissions: [networkConstruction], user: ccrt } },
+    // CCRT — no access to connection demands
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [dept75], user: ccrt } },
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [epci200054781], user: ccrt } },
+    { expectedOutput: false, input: { demand: constructionDemand, permissions: [networkConstruction], user: ccrt } },
 
     // Multiple permissions — one match is enough
     {

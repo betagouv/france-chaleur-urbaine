@@ -433,7 +433,7 @@ describe('CCRT heat-network eligibility', () => {
       values: { note: 'Note de suivi' },
     });
     const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
-    expect(result.users.map((user) => user.id).sort()).toStrictEqual([testUsers.alec.id, testUsers.ccrt.id].sort());
+    expect(result.users.map((user) => user.id)).toStrictEqual([testUsers.ccrt.id]);
     expect({ history: result.history.map((event) => event.type), total: result.total }).toStrictEqual({
       history: ['ccrt_demand_note_created'],
       total: 1,

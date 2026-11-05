@@ -64,13 +64,11 @@ describe('demand access-holder lists', () => {
     expect(demand.access_counts).toStrictEqual({ alec: 0, collectivite: 0, gestionnaire: 0 });
   });
 
-  it('keeps CCRT in the access holders of renewable-heat demands', async () => {
+  it('lists only CCRT as access holders of renewable-heat demands', async () => {
     const demand = await seedDemandeChaleurRenouvelable({ departement_code: '75', validated: true });
 
     const followUp = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
 
-    expect(followUp.users).toStrictEqual(
-      territorialUsers.map((user) => ({ ...user, first_name: null, last_name: null, structure_name: null }))
-    );
+    expect(followUp.users).toStrictEqual([{ ...testUsers.ccrt, first_name: null, last_name: null, structure_name: null }]);
   });
 });
