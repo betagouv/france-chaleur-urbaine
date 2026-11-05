@@ -58,7 +58,6 @@ const batEnrBatimentColumns = [
   'gmi_nappe_200',
   'gmi_sonde_200',
   'place_nappe',
-  'pot_nappe',
   'prod_st_mwh_an',
   'propri_uni',
   'type_energie_chauffage',

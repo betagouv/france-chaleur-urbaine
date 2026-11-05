@@ -6,7 +6,7 @@ export type BatEnrInfo = {
   architecturalProtectionAc3: boolean;
   architecturalProtectionAc4: boolean;
   architecturalProtectionAc4bis: boolean;
-  geothermalNappePotential: number | null;
+  geothermalCoverage: number | null;
   geothermalNappeGmi: number | null;
   geothermalSondeGmi: number | null;
   hasGeothermalProbeSpace: boolean | null;
@@ -20,8 +20,8 @@ export const EMPTY_BAT_ENR_INFO = {
   architecturalProtectionAc3: false,
   architecturalProtectionAc4: false,
   architecturalProtectionAc4bis: false,
+  geothermalCoverage: null,
   geothermalNappeGmi: null,
-  geothermalNappePotential: null,
   geothermalSondeGmi: null,
   hasGeothermalProbeSpace: null,
   planProtectionAtmosphere: false,
@@ -34,8 +34,8 @@ export const getBatEnrInfoFromBatiment = (batEnrDetails?: BatEnrBatiment | null)
   architecturalProtectionAc3: batEnrDetails?.ac3 ?? false,
   architecturalProtectionAc4: batEnrDetails?.ac4 ?? false,
   architecturalProtectionAc4bis: batEnrDetails?.ac4bis ?? false,
+  geothermalCoverage: batEnrDetails?.couv_sondes_200_2025 ?? null,
   geothermalNappeGmi: batEnrDetails?.gmi_nappe_200 != null ? Number(batEnrDetails.gmi_nappe_200) : null,
-  geothermalNappePotential: batEnrDetails?.pot_nappe != null ? Number(batEnrDetails.pot_nappe) : null,
   geothermalSondeGmi: batEnrDetails?.gmi_sonde_200 != null ? Number(batEnrDetails.gmi_sonde_200) : null,
   hasGeothermalProbeSpace: batEnrDetails?.place_nappe ?? null,
   planProtectionAtmosphere: batEnrDetails?.etat_ppa === 'PPA Validés',

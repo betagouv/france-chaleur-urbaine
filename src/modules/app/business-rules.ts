@@ -129,6 +129,13 @@ export const businessRules = {
     label: 'Chaleur renouvelable : distance réseau de froid maximale',
     value: 50,
   },
+  fcrGeothermalMinCoveragePercent: {
+    description:
+      'Taux de couverture des besoins en chaleur par des sondes géothermiques au-dessus duquel la PAC géothermique peut être proposée dans le simulateur chaleur renouvelable.',
+    display: '30 %',
+    label: 'Chaleur renouvelable : couverture géothermique minimale',
+    value: 30,
+  },
   fcrHeatingModeAltitudeThresholdMeters: {
     description:
       "Altitude du bâtiment à partir de laquelle la pertinence et l'ordre des chaudières biomasse et PAC air-eau sont adaptés dans le simulateur chaleur renouvelable.",

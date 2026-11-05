@@ -1,5 +1,6 @@
 import { businessRules } from '@/modules/app/business-rules';
 import type {
+  ModeDeChauffage,
   ModeDeChauffageId,
   ModeEauChaudeSanitaire,
   PrerequisiteRow,
@@ -42,18 +43,30 @@ export const hasSufficientSolarThermalCoverage = (situation: Situation) =>
 export const hasInsufficientSolarThermalCoverage = (situation: Situation) =>
   situation.solarThermalCoverage != null && situation.solarThermalCoverage < SOLAR_THERMAL_MIN_COVERAGE;
 
-const hasFavorableGeothermalArea = (situation: Situation) =>
+export const hasFavorableGeothermalArea = (situation: Situation) =>
   [1, 2].includes(situation.geothermalNappeGmi ?? 0) || [1, 2].includes(situation.geothermalSondeGmi ?? 0);
 
-const hasSufficientGeothermalResource = (situation: Situation) => [7, 8, 9].includes(situation.geothermalNappePotential ?? 0);
+const hasSufficientGeothermalCoverage = (situation: Situation) =>
+  situation.geothermalCoverage != null && situation.geothermalCoverage > businessRules.fcrGeothermalMinCoveragePercent.value;
 
-const hasUnknownGeothermalResource = (situation: Situation) => [0, 1].includes(situation.geothermalNappePotential ?? 0);
+export const geothermalCoverageIncompatibilities = [
+  {
+    isIncompatible: (situation) =>
+      situation.hasGeothermalProbeSpace !== true &&
+      situation.geothermalCoverage != null &&
+      situation.geothermalCoverage <= businessRules.fcrGeothermalMinCoveragePercent.value,
+    reason: `Place insuffisante pour l’implantation de sondes ou de puits géothermiques`,
+    source: 'BRGM',
+  },
+  {
+    isIncompatible: (situation) => situation.hasGeothermalProbeSpace !== true && situation.geothermalCoverage == null,
+    reason: 'Le taux de couverture des besoins en chaleur par les sondes géothermiques est inconnu',
+    source: 'BRGM',
+  },
+] satisfies NonNullable<ModeDeChauffage['incompatibilites']>;
 
 export const hasCompatibleGeothermalPotential = (situation: Situation) =>
-  situation.geothermalNappeGmi !== 3 &&
-  situation.geothermalSondeGmi !== 3 &&
-  hasFavorableGeothermalArea(situation) &&
-  (hasUnknownGeothermalResource(situation) || hasSufficientGeothermalResource(situation));
+  hasFavorableGeothermalArea(situation) && (hasSufficientGeothermalCoverage(situation) || situation.hasGeothermalProbeSpace === true);
 
 export const hasHighAltitudeWithoutAirProtectionPlan = (situation: Situation) =>
   situation.altitude != null && situation.altitude > HEATING_MODE_ALTITUDE_THRESHOLD_METERS && !situation.planProtectionAtmosphere;
@@ -142,6 +155,15 @@ export const getPpaPrerequisite = (situation: Situation, modeChauffage?: string)
     : [];
 
 export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRow[] => [
+  ...(hasSufficientGeothermalCoverage(situation)
+    ? [
+        {
+          label: 'La ressource énergétique de la parcelle est suffisante',
+          source: 'BRGM',
+          status: 'favorable' as const,
+        },
+      ]
+    : []),
   ...(hasFavorableGeothermalArea(situation)
     ? [
         {
@@ -151,28 +173,10 @@ export const getGeothermalPrerequisites = (situation: Situation): PrerequisiteRo
         },
       ]
     : []),
-  ...(hasSufficientGeothermalResource(situation)
-    ? [
-        {
-          label: 'La ressource énergétique de la parcelle est suffisante',
-          source: 'BRGM',
-          status: 'favorable' as const,
-        },
-      ]
-    : []),
-  ...(hasUnknownGeothermalResource(situation)
-    ? [
-        {
-          label: 'La ressource énergétique de la parcelle est inconnue',
-          source: 'BRGM',
-          status: 'averifier' as const,
-        },
-      ]
-    : []),
   ...(situation.hasGeothermalProbeSpace
     ? [
         {
-          label: 'Place suffisante pour l’implantation de sondes géothermiques',
+          label: 'Place suffisante pour l’implantation de sondes ou de puits géothermiques',
           source: 'BRGM',
           status: 'favorable' as const,
         },
