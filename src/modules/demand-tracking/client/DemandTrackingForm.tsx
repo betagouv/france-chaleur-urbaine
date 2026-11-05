@@ -1,4 +1,3 @@
-import { TRPCClientError } from '@trpc/client';
 import { useState } from 'react';
 
 import { clientConfig } from '@/client-config';
@@ -16,11 +15,10 @@ type DemandTrackingFormProps = {
   source: DemandTrackingFormSource;
 };
 
-const isRateLimitError = (error: unknown) => error instanceof TRPCClientError && error.data?.code === 'TOO_MANY_REQUESTS';
-
 /**
  * Email field + "Suivre ma demande" button. After submit, the same confirmation is shown whether or not
- * a demand matches the address, and even when the hourly cap is reached: nothing is revealed on screen.
+ * a demand matches the address: nothing is revealed on screen. Beyond the hourly cap, the tRPC link
+ * toasts the `TOO_MANY_REQUESTS` error and the form stays displayed.
  */
 export function DemandTrackingForm({ source }: DemandTrackingFormProps) {
   const { mutateAsync: requestDemandTracking } = trpc.demandTracking.request.useMutation();
@@ -30,13 +28,7 @@ export function DemandTrackingForm({ source }: DemandTrackingFormProps) {
     ...schemaValidation(zRequestDemandTrackingInput),
     defaultValues: { email: '' },
     onSubmit: toastErrors(async ({ value }) => {
-      try {
-        await requestDemandTracking({ email: value.email });
-      } catch (error) {
-        if (!isRateLimitError(error)) {
-          throw error;
-        }
-      }
+      await requestDemandTracking({ email: value.email });
       setSubmittedEmail(value.email);
     }),
   });
