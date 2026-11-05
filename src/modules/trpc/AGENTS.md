@@ -75,12 +75,14 @@ export const moduleNamesRouter = router({
 
 ### Procédures pré-configurées par groupe de rôles
 
-Trois helpers centralisés dans `@/modules/trpc/server` couvrent tous les besoins. **À utiliser systématiquement** — plus de `routeRole([...])` inline pour éviter la redondance et les incohérences (ex. `admin` oublié dans un tableau).
+Cinq helpers centralisés dans `@/modules/trpc/server` couvrent tous les besoins. **À utiliser systématiquement** — plus de `routeRole([...])` inline pour éviter la redondance et les incohérences (ex. `admin` oublié dans un tableau).
 
 | Helper | Rôles autorisés | Usage |
 | --- | --- | --- |
 | `adminRoute` | `admin` uniquement | Administration (listes globales, stats, suppressions) |
-| `demandAccessRoute` | `admin`, `gestionnaire`, `collectivite`, `alec` | Tout ce qui manipule une demande avec filtrage territorial |
+| `demandAccessRoute` | `admin`, `gestionnaire`, `collectivite`, `alec` | Connection demands with territorial filtering |
+| `renewableHeatAccessRoute` | `admin`, `ccrt` | Renewable-heat demands with territorial filtering |
+| `permissionAccessRoute` | `admin`, `gestionnaire`, `collectivite`, `alec`, `ccrt` | Shared permission queries |
 | `authRoute` | tous les rôles (`userRoles`) | Utilisateur authentifié quelconque |
 
 Pour les routes publiques (non authentifiées), utiliser `route` directement (pas de `.meta.auth`). Pour un simple "authentifié, rôle indifférent", `routeAuthenticated` est disponible mais `authRoute` est préféré pour rester homogène avec les autres groupes.

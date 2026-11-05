@@ -385,8 +385,7 @@ function DemandesAdmin(): React.ReactElement {
         width: '300px',
       },
       {
-        accessorFn: (row) =>
-          row.access_counts.gestionnaire + row.access_counts.collectivite + row.access_counts.alec + row.access_counts.ccrt,
+        accessorFn: (row) => row.access_counts.gestionnaire + row.access_counts.collectivite + row.access_counts.alec,
         cell: ({ row }) => (
           <div onClick={stopPropagation} onDoubleClick={stopPropagation}>
             <AccessCountsCell demandId={row.original.id} accessCounts={row.original.access_counts} />

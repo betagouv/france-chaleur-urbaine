@@ -34,6 +34,8 @@ Admin can impersonate any role from `/admin/impostures`, optionally anonymizing 
 
 ### Permissions system
 
+`userRolesWithPermissions` is the generic group for permission-bearing accounts, including CCRT (user editing, impersonation and account preferences). Connection-demand checks use `userRolesWithPermissionsHeatNetwork`; renewable-heat checks use `userRolesWithPermissionsRenewableHeat`. Do not use the generic group to authorize either demand workspace.
+
 Stored in the `user_permissions` table (**not** in session/JWT). Each row links a user to a resource. Key module: `src/modules/permissions/` (types, server service, tRPC routes, client editor).
 
 | Permission type | Roles | resource_id | Demand column matched |
@@ -73,13 +75,11 @@ Territory holders (collectivité/ALEC) **see** demands in their area but only **
 
 | Helper | Use when |
 |--------|----------|
-| `ensureUserCanAccessDemand(ctx, demand)` | demand loaded ; check view access |
-| `ensureUserCanAccessDemandById(ctx, demandId)` | only id ; check view access |
-| `ensureUserCanProcessDemand(ctx, demand)` | demand loaded ; check responsibility |
-| `ensureUserCanProcessDemandById(ctx, demandId)` | only id ; check responsibility |
+| `ensureUserCanAccessDemand(ctx, demandId)` | load and return the demand after checking view access |
+| `ensureUserCanProcessDemand(ctx, demandId)` | load and return the demand after checking responsibility and locks |
 
 ```ts
-await ensureUserCanProcessDemand(ctx, demand); // one line, semantics in the name
+const demand = await ensureUserCanProcessDemand(ctx, demandId); // reuse the checked demand
 ```
 
 Apply in the **service layer** (not routes) so every entry point is protected.
@@ -109,6 +109,7 @@ Pre-conditions (admin / role / validated) collapse into one guard line at the to
 ### tRPC authorization — gate twice
 
 - **Route level** = role gate (e.g. `demandAccessRoute` restricts to admin + gestionnaire/collectivite/alec).
+- **Renewable heat** uses `renewableHeatAccessRoute`: only admins and CCRT accounts may access this workspace. Non-admins need a validated demand and matching territorial permissions; gestionnaire, collectivite and alec accounts are denied even with matching permissions. Enforce the role restriction on the page, tRPC routes and service filters. Shared permission queries use `permissionAccessRoute` for both permission-bearing role groups; connection-demand routes keep `demandAccessRoute`.
 - **Service level** = resource ownership / responsibility gate (`ensureUserCan*` on the loaded resource).
 - **Always do both.** Load the resource (throws `NOT_FOUND`) then `ensure*` (throws `FORBIDDEN`) before mutating.
 

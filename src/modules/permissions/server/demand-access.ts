@@ -2,10 +2,10 @@ import { type Expression, type Selectable, type SelectQueryBuilder, type SqlBool
 
 import type { DB, Demands } from '@/server/db/kysely';
 import { kdb } from '@/server/db/kysely';
-import { type UserRole, userRolesWithPermissions } from '@/types/enum/UserRole';
+import { type UserRole, userRolesWithPermissionsHeatNetwork, userRolesWithPermissionsRenewableHeat } from '@/types/enum/UserRole';
 
 import { type NetworkPermission, type Permission, type TerritoryPermissionType, territoryPermissionToColumn } from '../types';
-import { isNetworkPermissionType, isOrganizationPermissionType, isRoleWithPermissions } from './helpers';
+import { isHeatNetworkDemandRole, isNetworkPermissionType, isOrganizationPermissionType } from './helpers';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -39,7 +39,7 @@ export const buildDemandAccessFilter = (
       return qb;
     }
 
-    if (!isRoleWithPermissions(user.role)) {
+    if (!isHeatNetworkDemandRole(user.role)) {
       return qb.where(sql.lit(false));
     }
 
@@ -134,7 +134,7 @@ const matchesOrganization =
  */
 export const canUserAccessDemand = (user: UserWithRole, permissions: Permission[], demand: DemandForAccess): boolean => {
   if (user.role === 'admin') return true;
-  if (!isRoleWithPermissions(user.role) || !demand.validated) return false;
+  if (!isHeatNetworkDemandRole(user.role) || !demand.validated) return false;
 
   return permissions.some((p) => matchesNetworkAffectation(demand)(p) || matchesOrganization(demand)(p) || matchesTerritory(demand)(p));
 };
@@ -146,7 +146,7 @@ export const canUserAccessDemand = (user: UserWithRole, permissions: Permission[
  * - demande sans réseau : toute perm territoire matchante suffit (rôle de triage)
  */
 export const isUserResponsibleForDemand = (user: UserWithRole, permissions: Permission[], demand: DemandForAccess): boolean => {
-  if (user.role === 'admin' || !isRoleWithPermissions(user.role) || !demand.validated) return false;
+  if (user.role === 'admin' || !isHeatNetworkDemandRole(user.role) || !demand.validated) return false;
 
   // Demande affectée à un réseau : une perm réseau matchante OU une perm org couvrant ce réseau donne la responsabilité.
   // Demande sans réseau : org ne s'applique pas (scope opérateur = réseaux), seul le territoire (triage) suffit.
@@ -158,15 +158,16 @@ export const isUserResponsibleForDemand = (user: UserWithRole, permissions: Perm
 
 /**
  * Retourne les utilisateurs qui ont accès à une demande.
+ * Le type de demande détermine les rôles pertinents ; les CCRT ne sont listés que pour la chaleur renouvelable.
  * N'applique pas le filtre `validated` pour permettre l'affichage « qui verra cette demande ».
  */
-export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
+export const getUsersWithAccessToDemand = async (demand: DemandForAccess, demandType: 'heatNetwork' | 'renewableHeat') => {
   const query = kdb
     .selectFrom('users as u')
     .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
     .select(['u.id', 'u.email', 'u.role', 'u.first_name', 'u.last_name', 'u.structure_name'])
     .where('u.active', '=', true)
-    .where('u.role', 'in', [...userRolesWithPermissions])
+    .where('u.role', 'in', demandType === 'heatNetwork' ? userRolesWithPermissionsHeatNetwork : userRolesWithPermissionsRenewableHeat)
     .where((eb) => {
       const conditions: Expression<SqlBool>[] = [];
 

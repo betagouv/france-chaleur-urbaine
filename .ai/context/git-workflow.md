@@ -2,6 +2,7 @@
 
 - **Repo**: https://github.com/betagouv/france-chaleur-urbaine
 - **Branches**: `main` = production, `dev` = integration (default). Feature branches off `dev`.
+- **Explicit authorization**: never create a commit or edit a pull request unless the user explicitly requests that action. A request to implement or fix code does not authorize either action.
 
 ## Flow
 1. Branch from `dev`.
