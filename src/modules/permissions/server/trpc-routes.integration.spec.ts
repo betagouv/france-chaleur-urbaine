@@ -6,6 +6,8 @@ import { cleanDatabase, seedDemandeChaleurRenouvelable, seedProEligibilityTestsA
 import { uuid } from '@/tests/helpers';
 import { createTestCaller, type TestCase, testUsers } from '@/tests/trpc-helpers';
 
+import { getUsersWithAccessToDemand } from './demand-access';
+
 const territorialUsers = [testUsers.alec, testUsers.ccrt, testUsers.collectivite, testUsers.gestionnaire];
 const expectedConnectionAccessUsers = [testUsers.alec, testUsers.collectivite, testUsers.gestionnaire].map((user) => ({
   ...user,
@@ -44,8 +46,10 @@ describe('demand access-holder lists', () => {
 
     const users = await createTestCaller(testUsers.admin).permissions.listUsersWithAccessToDemand({ demandId });
     const demand = await buildDemandQuery().where('demands.id', '=', demandId).executeTakeFirstOrThrow();
+    const serviceUsers = await getUsersWithAccessToDemand(demand, 'connection');
 
     expect(users).toStrictEqual(testCase.expectedOutput);
+    expect(serviceUsers).toStrictEqual(testCase.expectedOutput);
     expect(demand.access_counts).toStrictEqual({ alec: 1, collectivite: 1, gestionnaire: 1 });
   });
 

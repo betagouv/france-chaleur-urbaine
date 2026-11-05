@@ -47,7 +47,10 @@ export const ensureCcrtDemandAccess = async (ctx: Context, demandId: string) =>
  */
 export const listCcrtAssignmentCandidates = async (ctx: Context, demandId: string) => {
   const demand = await ensureCcrtDemandAccess(ctx, demandId);
-  const users = await getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null });
+  const users = await getUsersWithAccessToDemand(
+    { ...demand, network_id: null, network_organization_id: null, network_type: null },
+    'renewableHeat'
+  );
   return users.filter((user) => user.role === 'ccrt');
 };
 
@@ -96,15 +99,20 @@ export const getCcrtTerritory = async (
  * Opens public accompaniment only where an active CCRT account has territorial access.
  */
 export const hasCcrtTerritoryCoverage = async (territory: Awaited<ReturnType<typeof getCcrtTerritory>>) => {
-  const users = await getUsersWithAccessToDemand({
-    ...territory,
-    network_id: null,
-    network_organization_id: null,
-    network_type: null,
-    validated: false,
-  });
+  const users = await getUsersWithAccessToDemand(
+    {
+      ...territory,
+      network_id: null,
+      network_organization_id: null,
+      network_type: null,
+      validated: false,
+    },
+    'renewableHeat'
+  );
   return users.some((user) => user.role === 'ccrt');
 };
 
 export const listCcrtUsersWithAccess = async (demand: Awaited<ReturnType<typeof ensureCcrtDemandAccess>>) =>
-  demand.validated ? getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null }) : [];
+  demand.validated
+    ? getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null }, 'renewableHeat')
+    : [];

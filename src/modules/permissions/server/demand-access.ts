@@ -158,15 +158,17 @@ export const isUserResponsibleForDemand = (user: UserWithRole, permissions: Perm
 
 /**
  * Retourne les utilisateurs qui ont accès à une demande.
+ * Le type de demande détermine les rôles pertinents ; les CCRT ne sont listés que pour la chaleur renouvelable.
  * N'applique pas le filtre `validated` pour permettre l'affichage « qui verra cette demande ».
  */
-export const getUsersWithAccessToDemand = async (demand: DemandForAccess) => {
+export const getUsersWithAccessToDemand = async (demand: DemandForAccess, demandType: 'connection' | 'renewableHeat') => {
   const query = kdb
     .selectFrom('users as u')
     .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
     .select(['u.id', 'u.email', 'u.role', 'u.first_name', 'u.last_name', 'u.structure_name'])
     .where('u.active', '=', true)
     .where('u.role', 'in', [...userRolesWithPermissions])
+    .$if(demandType === 'connection', (query) => query.where('u.role', '!=', 'ccrt'))
     .where((eb) => {
       const conditions: Expression<SqlBool>[] = [];
 
