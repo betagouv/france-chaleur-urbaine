@@ -20,7 +20,6 @@ function EmailSignatureForm() {
   const utils = trpc.useUtils();
 
   const updatePreferences = trpc.users.updatePreferences.useMutation({
-    onError: (error) => notify('error', error.message || 'Erreur lors de la mise à jour de la signature'),
     onSuccess: () => {
       notify('success', 'Signature enregistrée');
       void utils.users.getPreferences.invalidate();

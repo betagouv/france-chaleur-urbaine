@@ -72,6 +72,12 @@ a single toast): the first issue of a tRPC input validation error (any depth), e
 (REST `FetchError` or tRPC `BAD_REQUEST`) or of an error raised by the client code; for any other error (401, 403, 404,
 429, 5xx) the generic message, followed by the error message as detail.
 
+**Never toast a tRPC error by hand** (`notify('error', …)` in `useMutation({ onError })` or in a `catch`, after a tRPC
+call): the tRPC link already toasts every error, a manual toast is a second one. The link, `toastErrors` and
+`handleClientError` share one toast per error object, so to add context (e.g. « Impossible de tester cette adresse »)
+call `handleClientError(error, () => 'message')` in the `catch`: it updates the toast of the link instead of adding one.
+A manual `onError` that only reformats the message brings nothing: drop it.
+
 ### URL-based Notifications
 
 The module supports URL-based notifications through query parameters:

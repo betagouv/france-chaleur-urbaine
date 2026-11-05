@@ -5,7 +5,6 @@ import Notice from '@/components/ui/Notice';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
-import { notify } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 import { defaultUserPreferences, zNotificationPreferences } from '@/modules/users/constants';
 
@@ -25,7 +24,6 @@ function NotificationPreferencesForm() {
   const utils = trpc.useUtils();
 
   const updatePreferences = trpc.users.updatePreferences.useMutation({
-    onError: (error) => notify('error', error.message || 'Erreur lors de la mise à jour des notifications'),
     onSuccess: () => {
       void utils.users.getProfile.invalidate();
       void utils.users.getPreferences.invalidate();
