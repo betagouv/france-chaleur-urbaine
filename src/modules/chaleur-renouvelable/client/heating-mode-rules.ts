@@ -55,13 +55,13 @@ export const geothermalCoverageIncompatibilities = [
       situation.hasGeothermalProbeSpace !== true &&
       situation.geothermalCoverage != null &&
       situation.geothermalCoverage <= businessRules.fcrGeothermalMinCoveragePercent.value,
-    reason: `Le taux de couverture des besoins en chaleur par les sondes géothermiques est inférieur ou égal à ${businessRules.fcrGeothermalMinCoveragePercent.display}`,
-    source: 'CEREMA',
+    reason: `Place insuffisante pour l’implantation de sondes ou de puits géothermiques`,
+    source: 'BRGM',
   },
   {
     isIncompatible: (situation) => situation.hasGeothermalProbeSpace !== true && situation.geothermalCoverage == null,
     reason: 'Le taux de couverture des besoins en chaleur par les sondes géothermiques est inconnu',
-    source: 'CEREMA',
+    source: 'BRGM',
   },
 ] satisfies NonNullable<ModeDeChauffage['incompatibilites']>;
 

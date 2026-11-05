@@ -646,8 +646,8 @@ const incompatibilityCases: IncompatibilityCase[] = [
   {
     label: 'PAC géothermique',
     overrides: { geothermalCoverage: 30, hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Collectif' },
-    reason: 'Le taux de couverture des besoins en chaleur par les sondes géothermiques est inférieur ou égal à 30 %',
-    source: 'CEREMA',
+    reason: 'Place insuffisante pour l’implantation de sondes ou de puits géothermiques',
+    source: 'BRGM',
     typeLogement: 'immeuble_chauffage_collectif',
     usage: 'heatingAndHotWater',
   },
@@ -750,8 +750,8 @@ const incompatibilityCases: IncompatibilityCase[] = [
   {
     label: 'PAC géothermique',
     overrides: { geothermalCoverage: 30, hasGeothermalProbeSpace: false, modeEauChaudeSanitaire: 'Couplé au chauffage' },
-    reason: 'Le taux de couverture des besoins en chaleur par les sondes géothermiques est inférieur ou égal à 30 %',
-    source: 'CEREMA',
+    reason: 'Place insuffisante pour l’implantation de sondes ou de puits géothermiques',
+    source: 'BRGM',
     typeLogement: 'maison_individuelle',
     usage: 'heatingAndHotWater',
   },
