@@ -167,11 +167,7 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess, demand
     .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
     .select(['u.id', 'u.email', 'u.role', 'u.first_name', 'u.last_name', 'u.structure_name'])
     .where('u.active', '=', true)
-    .where(
-      'u.role',
-      'in',
-      demandType === 'heatNetwork' ? [...userRolesWithPermissionsHeatNetwork] : [...userRolesWithPermissionsRenewableHeat]
-    )
+    .where('u.role', 'in', demandType === 'heatNetwork' ? userRolesWithPermissionsHeatNetwork : userRolesWithPermissionsRenewableHeat)
     .where((eb) => {
       const conditions: Expression<SqlBool>[] = [];
 
