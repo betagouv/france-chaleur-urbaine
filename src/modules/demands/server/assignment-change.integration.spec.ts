@@ -13,7 +13,7 @@ import {
   seedTableUser,
 } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
-import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helpers';
+import { createTestCaller, forbiddenError, type TestCase, testUsers } from '@/tests/trpc-helpers';
 
 vi.mock('@/modules/email', () => ({
   sendEmailTemplate: vi.fn().mockResolvedValue(undefined),
@@ -290,7 +290,7 @@ describe('désaffectation / réaffectation flow', () => {
     });
   });
 
-  describe('routes territoire (collectivite / alec / ccrt)', () => {
+  describe('routes territoire (collectivite / alec)', () => {
     let demandId: string;
 
     beforeEach(async () => {
@@ -328,15 +328,19 @@ describe('désaffectation / réaffectation flow', () => {
     it.each([
       ['collectivite', testUsers.collectivite],
       ['alec', testUsers.alec],
-      ['ccrt', testUsers.ccrt],
     ] as const)('gestionnaire.requestAssignmentChange: %s peut demander une désaffectation', async (_role, user) => {
       await requestUnassignment(user, 'mauvaise affectation');
 
       expect(await getPending(demandId)).toMatchObject({ author_id: user.id, comment: 'mauvaise affectation' });
     });
 
-    it('gestionnaire.requestAssignmentChange: refuse un particulier (FORBIDDEN)', async () => {
-      await expect(requestUnassignment(testUsers.particulier)).rejects.toMatchObject(forbiddenError);
+    const forbiddenRoles: TestCase<Partial<User>, typeof forbiddenError>[] = [
+      { expectedOutput: forbiddenError, input: testUsers.particulier, label: 'particulier' },
+      { expectedOutput: forbiddenError, input: testUsers.ccrt, label: 'ccrt' },
+    ];
+
+    it.each(forbiddenRoles)('gestionnaire.requestAssignmentChange: refuse $label (FORBIDDEN)', async ({ input, expectedOutput }) => {
+      await expect(requestUnassignment(input)).rejects.toMatchObject(expectedOutput);
     });
 
     // Le gestionnaire n'a aucune permission sur le réseau 100 : la demande est hors de son périmètre.

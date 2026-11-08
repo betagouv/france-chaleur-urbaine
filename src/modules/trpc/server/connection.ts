@@ -1,4 +1,9 @@
-import { userRoles, userRolesWithPermissions } from '@/types/enum/UserRole';
+import {
+  userRoles,
+  userRolesWithPermissions,
+  userRolesWithPermissionsHeatNetwork,
+  userRolesWithPermissionsRenewableHeat,
+} from '@/types/enum/UserRole';
 
 import { type AuthConfig, type Context, t } from './context';
 import { createAuthMiddleware } from './middlewares/auth';
@@ -36,9 +41,13 @@ export const routeAuthenticated = route.meta({ auth: { authenticated: true } });
  * Procédures pré-configurées par groupe de rôles — à utiliser systématiquement plutôt que `routeRole([...])` inline.
  *
  * - `adminRoute` : admin uniquement.
- * - `demandAccessRoute` : admin + rôles avec permissions territoriales (gestionnaire, collectivite, alec, ccrt).
+ * - `demandAccessRoute` : admin + rôles des demandes de raccordement (gestionnaire, collectivite, alec).
+ * - `renewableHeatAccessRoute` : admin + CCRT, avec filtrage territorial dans les services.
+ * - `permissionAccessRoute` : admin + tous les rôles avec permissions, dont les CCRT.
  * - `authRoute` : tout utilisateur authentifié (tous les rôles).
  */
 export const adminRoute = routeRole(['admin']);
-export const demandAccessRoute = routeRole(['admin', ...userRolesWithPermissions]);
+export const demandAccessRoute = routeRole(['admin', ...userRolesWithPermissionsHeatNetwork]);
+export const renewableHeatAccessRoute = routeRole(['admin', ...userRolesWithPermissionsRenewableHeat]);
+export const permissionAccessRoute = routeRole(['admin', ...userRolesWithPermissions]);
 export const authRoute = routeRole([...userRoles]);

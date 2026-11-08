@@ -31,7 +31,7 @@ Cas particuliers à connaître :
 - **Les rôles territoriaux n'ont pas de tableau de bord** : la page les redirige vers «&nbsp;Demandes&nbsp;» (provisoire, en attendant un tableau de bord dédié).
 - **La page «&nbsp;Aide&nbsp;» est réservée aux rôles territoriaux** : un admin qui veut la consulter doit passer par une [imposture](/admin/impostures).
 - **L'admin peut ouvrir la vue «&nbsp;Demandes&nbsp;» des gestionnaires** (`/pro/demandes`) par l'URL, mais son menu l'oriente vers [Gestion des demandes](/admin/demandes) : les deux vues coexistent.
-- **Les demandes chaleur renouvelable CCRT** sont un cas dédié du parcours chaleur renouvelable : seul le rôle CCRT a l'onglet dans le menu, et la liste contient les demandes validées filtrées sur ses permissions territoriales classiques (commune, EPCI, EPT, département ou région). Le périmètre pilote du formulaire public ne donne aucun droit de gestion.
+- **Les demandes chaleur renouvelable CCRT** sont un cas dédié du parcours chaleur renouvelable : l’espace est réservé aux CCRT et aux administrateurs. Seul le rôle CCRT a l'onglet dans le menu, et la liste contient les demandes validées filtrées sur ses permissions territoriales classiques (commune, EPCI, EPT, département ou région). Le périmètre pilote du formulaire public ne donne aucun droit de gestion.
 
 ## Les permissions
 
@@ -43,7 +43,11 @@ Les rôles territoriaux ne voient rien par défaut : leur périmètre est défin
 | Territoire | Commune, EPCI, EPT, département, région | Les demandes situées sur ce territoire |
 | Organisation | Organisation | Les demandes de **tous** les réseaux de l'organisation |
 
+L’administrateur peut attribuer et modifier les permissions d’un CCRT depuis la gestion des utilisateurs, et simuler ce rôle avec des permissions depuis [Impostures](/admin/impostures). Dans «&nbsp;Mon compte&nbsp;», le CCRT dispose des sections «&nbsp;Mes permissions&nbsp;», «&nbsp;Signature des emails&nbsp;» et «&nbsp;Notifications&nbsp;».
+
 ## Accès aux demandes : consulter ou traiter
+
+Dans les compteurs d'accès et la liste «&nbsp;Utilisateurs avec accès à la demande&nbsp;» d'une demande de raccordement à un réseau de chaleur, les comptes CCRT ne sont pas affichés, même si leurs permissions territoriales correspondent à l'adresse. Si seuls des CCRT couvrent l'adresse, la colonne affiche «&nbsp;Aucun accès&nbsp;». Les CCRT conservent l’accès aux demandes dédiées de [chaleur renouvelable](/admin/doc/chaleur-renouvelable) validées et couvertes par leurs permissions territoriales, ainsi qu’à la consultation de leurs permissions. Ils restent affichés dans la liste des personnes ayant accès à ces demandes dédiées.
 
 Pour un rôle territorial, l'accès à une demande **validée** ne dépend que de deux choses : la demande est-elle **affectée à un réseau**, et quelles **permissions** du compte correspondent. Trois issues possibles : invisible, lecture seule, ou traitable. **Traiter** = changer le statut, prendre contact, commenter.
 

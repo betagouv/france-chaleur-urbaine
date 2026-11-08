@@ -28,7 +28,7 @@ import {
   validateDemandeChaleurRenouvelableAdmin,
 } from '@/modules/chaleur-renouvelable/server/service';
 import { zGetBdnbConstructionInput } from '@/modules/tiles/constants';
-import { demandAccessRoute, route, routeRole, router } from '@/modules/trpc/server';
+import { renewableHeatAccessRoute, route, routeRole, router } from '@/modules/trpc/server';
 
 import { listCcrtAssignmentCandidates } from './ccrt-access';
 import { updateCcrtBuilding } from './ccrt-building';
@@ -50,12 +50,14 @@ export const batEnrRouter = router({
       .mutation(async ({ input }) => await validateDemandeChaleurRenouvelableAdmin(input)),
   },
   ccrt: {
-    getFollowUp: demandAccessRoute.input(zCcrtFollowUpInput).query(({ ctx, input }) => getCcrtFollowUp(ctx, input)),
-    getHeatNetworkEligibility: demandAccessRoute.input(zCcrtDemandId).query(({ ctx, input }) => getCcrtHeatNetworkEligibility(ctx, input)),
-    listDemandesChaleurRenouvelable: demandAccessRoute.query(async ({ ctx }) => await listDemandesChaleurRenouvelableCcrt(ctx)),
-    sendEmail: demandAccessRoute.input(zCcrtSendEmail).mutation(({ ctx, input }) => sendCcrtEmail(ctx, input)),
-    updateBuilding: demandAccessRoute.input(zCcrtUpdateBuilding).mutation(({ ctx, input }) => updateCcrtBuilding(ctx, input)),
-    updateDemandeChaleurRenouvelable: demandAccessRoute
+    getFollowUp: renewableHeatAccessRoute.input(zCcrtFollowUpInput).query(({ ctx, input }) => getCcrtFollowUp(ctx, input)),
+    getHeatNetworkEligibility: renewableHeatAccessRoute
+      .input(zCcrtDemandId)
+      .query(({ ctx, input }) => getCcrtHeatNetworkEligibility(ctx, input)),
+    listDemandesChaleurRenouvelable: renewableHeatAccessRoute.query(async ({ ctx }) => await listDemandesChaleurRenouvelableCcrt(ctx)),
+    sendEmail: renewableHeatAccessRoute.input(zCcrtSendEmail).mutation(({ ctx, input }) => sendCcrtEmail(ctx, input)),
+    updateBuilding: renewableHeatAccessRoute.input(zCcrtUpdateBuilding).mutation(({ ctx, input }) => updateCcrtBuilding(ctx, input)),
+    updateDemandeChaleurRenouvelable: renewableHeatAccessRoute
       .input(zCcrtUpdateDemandeChaleurRenouvelableInput)
       .mutation(async ({ ctx, input }) => await updateDemandeChaleurRenouvelableCcrt(ctx, input)),
   },

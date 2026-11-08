@@ -4,15 +4,13 @@ import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import trpc from '@/modules/trpc/client';
-import type { UserRole } from '@/types/enum/UserRole';
+import { userRolesWithPermissionsHeatNetwork } from '@/types/enum/UserRole';
 
 type AccessDetailDialogProps = {
   demandId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
-
-const roleOrder: readonly UserRole[] = ['gestionnaire', 'collectivite', 'alec', 'ccrt'] as const;
 
 /**
  * Dialog listant les utilisateurs ayant (ou qui auront) accès à une demande, groupés par rôle.
@@ -26,7 +24,7 @@ export default function AccessDetailDialog({ demandId, open, onOpenChange }: Acc
     { enabled: open, staleTime: 60_000 }
   );
 
-  const grouped = roleOrder.map((role) => ({
+  const grouped = userRolesWithPermissionsHeatNetwork.map((role) => ({
     role,
     users: (users ?? []).filter((u) => u.role === role),
   }));

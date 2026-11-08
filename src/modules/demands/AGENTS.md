@@ -16,7 +16,7 @@ Connection requests ("demandes de raccordement") lifecycle: creation, enrichment
 - `server/email-communication.ts` — gestionnaire → demandeur free-text emails, archived in `demand_emails`.
 - `server/account-linking.ts` — links anonymous demands to accounts by email on every login.
 - `server/eligibility.ts` — enrichment helpers (territory, gas consumption, BDNB), network distance and auto-assignment, eligibility recalculation.
-- `server/helpers.ts` — access control (`ensureUserCanAccessDemand` vs `ensureUserCanProcessDemand`), query builder, anonymization.
+- `server/helpers.ts` — access control (`ensureUserCanAccessDemand` vs `ensureUserCanProcessDemand`), query builder, anonymization. Both access helpers return the loaded demand; callers must reuse it instead of loading it again.
 - `server/legacy-values.ts` — `legacy_values` JSONB merge helpers.
 
 ## Purpose & boundaries
@@ -24,13 +24,15 @@ Connection requests ("demandes de raccordement") lifecycle: creation, enrichment
 - Owns DB tables: `demands`, `demand_emails`.
 - State is split between typed columns (`validated`, `network_id`, `network_type`, `comment_gestionnaire`, `comment_fcu`, `pending_assignment_change`, `deleted_at`) and the `legacy_values` JSONB (Status, Mail/Nom/Prénom, relance and notification flags…). Always merge legacy values with `mergeLegacyValues`, never overwrite the blob.
 - Access rules live in `@/modules/permissions` (`isUserResponsibleForDemand`): view = any matching permission; process = network/organization permission (assigned demand) or territory permission (unassigned demand only). Admin is never "responsible" — it has its own operations.
+- Connection-demand access counters and the access-holder dialog list gestionnaires, collectivités and ALEC only. CCRT accounts appear in the dedicated renewable-heat demand access lists, not in these classic-demand views.
+- `getUsersWithAccessToDemand` requires the demand type (`heatNetwork` or `renewableHeat`) and filters relevant roles in SQL; callers must not infer the type from a null network assignment.
 
 ## tRPC routers (`server/trpc-routes.ts`)
 
 | Router | Auth | Procedures |
 | --- | --- | --- |
 | `demands.admin.*` | admin | list, update, validate, delete, changeAssignment, rejectAssignmentChangeRequest, recalculateEligibility, getReseauxStats |
-| `demands.gestionnaire.*` | admin + gestionnaire/collectivité/ALEC/CCRT | list, update, sendEmail, listEmails, requestAssignmentChange, cancelAssignmentChangeRequest, computeNetworkDistance |
+| `demands.gestionnaire.*` | admin + gestionnaire/collectivité/ALEC | list, update, sendEmail, listEmails, requestAssignmentChange, cancelAssignmentChangeRequest, computeNetworkDistance |
 | `demands.user.*` | public or authenticated | create (public), createBatch (auth), createFCUTeamContact (public), list (auth), submitSurvey (public), addRelanceComment (public, token-based) |
 
 ## Key invariants
