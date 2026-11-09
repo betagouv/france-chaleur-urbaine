@@ -25,17 +25,20 @@ export const applyCcrtAccessFilter = <Output>(
     return query.where(sql.lit(false));
   }
   const territories = Object.entries(territoryPermissionToColumn);
-  return query.where('archived_at', 'is', null).where('validated', '=', true).where((expression) => {
-    const conditions = [
-      ...territories.flatMap(([type, column]) =>
-        permissions.filter((permission) => permission.type === type).map((permission) => expression(column, '=', permission.resource_id))
-      ),
-      ...permissions
-        .filter((permission) => permission.type === customTerritoryPermissionType)
-        .map((permission) => customTerritoryIdsContain(expression.ref('custom_territory_ids'), permission.resource_id)),
-    ];
-    return conditions.length ? expression.or(conditions) : sql.lit(false);
-  });
+  return query
+    .where('archived_at', 'is', null)
+    .where('validated', '=', true)
+    .where((expression) => {
+      const conditions = [
+        ...territories.flatMap(([type, column]) =>
+          permissions.filter((permission) => permission.type === type).map((permission) => expression(column, '=', permission.resource_id))
+        ),
+        ...permissions
+          .filter((permission) => permission.type === customTerritoryPermissionType)
+          .map((permission) => customTerritoryIdsContain(expression.ref('custom_territory_ids'), permission.resource_id)),
+      ];
+      return conditions.length ? expression.or(conditions) : sql.lit(false);
+    });
 };
 
 export const ensureCcrtDemandAccess = async (ctx: Context, demandId: string) =>

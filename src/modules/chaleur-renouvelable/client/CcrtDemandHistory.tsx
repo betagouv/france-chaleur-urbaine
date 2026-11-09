@@ -111,7 +111,9 @@ const getEventLabel = (event: CcrtFollowUp['history'][number]) =>
       : 'Information du bâtiment modifiée'
     : (eventLabels[event.type] ?? 'Suivi');
 const eventLabels: Record<string, string> = {
+  ccrt_demand_admin_comment_updated: 'Commentaire interne FCU modifié',
   ccrt_demand_email_sent: 'Mail envoyé',
+  ccrt_demand_moderated: 'Modération de la demande',
   ccrt_demand_note_created: 'Note interne',
   ccrt_demand_note_deleted: 'Note supprimée',
   ccrt_demand_note_updated: 'Note modifiée',

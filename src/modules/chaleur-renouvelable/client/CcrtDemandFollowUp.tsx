@@ -3,11 +3,13 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import { useState } from 'react';
 
 import Button from '@/components/ui/Button';
+import { useAuthentication } from '@/modules/auth/client/hooks';
 import trpc from '@/modules/trpc/client';
 import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
+import { CcrtAdminComment } from './CcrtAdminComment';
 import { CcrtDemandAccess } from './CcrtDemandAccess';
 import { CcrtDemandHistory } from './CcrtDemandHistory';
 import { CcrtFollowUpForm } from './CcrtFollowUpForm';
@@ -33,12 +35,13 @@ export function CcrtDemandFollowUp({
   showContactAction = true,
 }: CcrtDemandFollowUpProps) {
   const [offset, setOffset] = useState(0);
+  const { hasRole } = useAuthentication();
   const followUp = trpc.batEnr.ccrt.getFollowUp.useQuery({ demandId: demand.id, offset });
   const isToProcess = demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS;
 
   return (
     <aside className="border border-(--border-default-grey) bg-(--background-default-grey)">
-      {showContactAction && (
+      {showContactAction && demand.archived_at === null && (
         <div className={isToProcess ? 'bg-(--background-contrast-warning) p-4' : 'bg-(--background-contrast-info) p-4'}>
           <Badge severity={isToProcess ? 'warning' : 'info'} small className="mb-3">
             {isToProcess ? 'Action Attendue' : demand.status}
@@ -63,9 +66,12 @@ export function CcrtDemandFollowUp({
           )}
         </div>
       )}
-      <div className="pt-2">
-        <CcrtFollowUpForm key={demand.id} demand={demand} isUpdating={isUpdating} onUpdate={onUpdate} onSaved={() => setOffset(0)} />
-      </div>
+      {demand.archived_at === null && (
+        <div className="pt-2">
+          <CcrtFollowUpForm key={demand.id} demand={demand} isUpdating={isUpdating} onUpdate={onUpdate} onSaved={() => setOffset(0)} />
+        </div>
+      )}
+      {hasRole('admin') && <CcrtAdminComment demandId={demand.id} />}
       {followUp.isError ? (
         <div className="p-4">
           <Alert severity="error" small description="Impossible de charger le suivi" />

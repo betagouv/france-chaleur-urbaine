@@ -37,18 +37,19 @@ export function CcrtDemandsTable({
     <TableBasic
       className="m-0! [&>div::after]:hidden!"
       layoutFixed
-      tableClassName="w-full min-w-[1240px] table-fixed leading-6 text-(--text-default-grey) [&_th]:h-16 [&_th]:bg-(--background-default-grey)! [&_th]:py-2! [&_th]:text-sm [&_th]:font-bold [&_th]:uppercase [&_td]:bg-transparent! [&_td]:px-4! [&_td]:py-3! [&_td]:text-base [&_td:first-child]:px-2!"
+      tableClassName="w-full table-fixed leading-6 text-(--text-default-grey) [&_th]:h-16 [&_th]:bg-(--background-default-grey)! [&_th]:py-2! [&_th]:text-sm [&_th]:font-bold [&_th]:uppercase [&_td]:bg-transparent! [&_td]:px-2! [&_td]:py-3! [&_td]:text-base [&_td]:break-words [&_td:first-child]:px-2!"
       tableProps={{ 'aria-busy': isLoading }}
     >
       <caption className="sr-only">Demandes d’accompagnement CCRT</caption>
       <colgroup>
         <col className="w-8" />
-        <col className="w-[270px]" />
-        <col className="w-[219px]" />
-        <col className="w-[249px]" />
-        <col className="w-[125px]" />
-        <col className="w-[178px]" />
-        <col className="w-[165px]" />
+        <col />
+        <col />
+        <col />
+        <col className="w-24" />
+        <col className="w-32" />
+        {onValidate && <col className="w-32" />}
+        <col className="w-36" />
       </colgroup>
       <thead>
         <tr>
@@ -58,7 +59,7 @@ export function CcrtDemandsTable({
           <th scope="col">Usager</th>
           <th scope="col">Bâtiment</th>
           <th scope="col">
-            <span className="whitespace-nowrap">Résultats de la simulation</span>
+            <span>Résultats de la simulation</span>
           </th>
           <th scope="col" aria-sort={sort === 'date' ? (order === 'desc' ? 'descending' : 'ascending') : 'none'}>
             <div className="flex items-center justify-between gap-2">
@@ -90,6 +91,7 @@ export function CcrtDemandsTable({
               />
             </div>
           </th>
+          {onValidate && <th scope="col">Accès</th>}
           <th scope="col" className="text-center!">
             Action
           </th>
@@ -114,7 +116,7 @@ export function CcrtDemandsTable({
         ))}
         {demands.length === 0 && (
           <tr>
-            <td colSpan={7} className="py-12! text-center!">
+            <td colSpan={onValidate ? 8 : 7} className="py-12! text-center!">
               <span role="status">
                 {isLoading
                   ? 'Chargement des demandes…'

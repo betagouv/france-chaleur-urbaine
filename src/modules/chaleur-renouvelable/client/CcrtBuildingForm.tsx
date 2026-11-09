@@ -42,7 +42,7 @@ export function CcrtBuildingForm({ demand, onSimulation, onMap, buildingOnly = f
         }
       }}
     >
-      <fieldset className="m-0 space-y-6 border-0 p-0">
+      <fieldset disabled={demand.archived_at !== null} className="m-0 space-y-6 border-0 p-0">
         {!buildingOnly && <CcrtBuildingIdentification demand={demand} onMap={onMap} />}
         <CcrtDetailsSection title="Bâtiment et chauffage">
           <CcrtSimulationFields

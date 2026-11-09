@@ -1,6 +1,7 @@
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
-import { territoryPermissionToColumn } from '@/modules/permissions/types';
+import { permissionMatchesCustomTerritoryIds } from '@/modules/permissions/server/demand-access';
+import { customTerritoryPermissionType, territoryPermissionToColumn } from '@/modules/permissions/types';
 import { sql } from '@/server/db/kysely';
 import { ObjectEntries } from '@/utils/typescript';
 
@@ -38,8 +39,8 @@ export const selectCcrtDemandsForAdmin = () =>
               .select('access_permission.id')
               .whereRef('access_permission.user_id', '=', 'access_user.id')
               .where((permissionExpression) =>
-                permissionExpression.or(
-                  ObjectEntries(territoryPermissionToColumn).map(([type, column]) =>
+                permissionExpression.or([
+                  ...ObjectEntries(territoryPermissionToColumn).map(([type, column]) =>
                     permissionExpression.and([
                       permissionExpression('access_permission.type', '=', type),
                       permissionExpression(
@@ -48,8 +49,15 @@ export const selectCcrtDemandsForAdmin = () =>
                         permissionExpression.ref(`demands_chaleur_renouvelable.${column}`)
                       ),
                     ])
-                  )
-                )
+                  ),
+                  permissionExpression.and([
+                    permissionExpression('access_permission.type', '=', customTerritoryPermissionType),
+                    permissionMatchesCustomTerritoryIds(
+                      permissionExpression.ref('access_permission.resource_id'),
+                      permissionExpression.ref('demands_chaleur_renouvelable.custom_territory_ids')
+                    ),
+                  ]),
+                ])
               )
           )
         )
