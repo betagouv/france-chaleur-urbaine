@@ -90,7 +90,9 @@ describe('demand access-holder lists', () => {
 
     const followUp = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
 
-    expect(followUp.users).toStrictEqual([{ ...testUsers.ccrt, first_name: null, last_name: null, structure_name: null }]);
+    expect(followUp.users).toStrictEqual([
+      { ...testUsers.ccrt, first_name: null, last_connection: null, last_name: null, structure_name: null },
+    ]);
     expect(await createTestCaller(testUsers.ccrt).permissions.mine()).toStrictEqual([{ resource_id: '75', type: 'departement' }]);
   });
 });

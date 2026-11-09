@@ -19,6 +19,7 @@ export const getAdminDashboardIndicators = async (): Promise<AdminDashboardIndic
       .executeTakeFirstOrThrow(),
     kdb
       .selectFrom('demands_chaleur_renouvelable')
+      .where('archived_at', 'is', null)
       .select((eb) => eb.fn.countAll<number>().as('count'))
       .where('validated', '=', false)
       .executeTakeFirstOrThrow(),

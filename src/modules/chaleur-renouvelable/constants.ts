@@ -515,6 +515,24 @@ export const zCcrtFollowUpForm = zCcrtUpdateDemandeChaleurRenouvelableInput.shap
 });
 
 export const zCcrtDemandId = z.object({ demandId: z.uuid() });
+export const ccrtArchiveReasons = [
+  { label: 'Maison individuelle', value: 'individual_house' },
+  { label: 'Chauffage individuel', value: 'individual_heating' },
+  { label: 'Département non couvert', value: 'uncovered_department' },
+  { label: 'Test', value: 'test' },
+  { label: 'Autre', value: 'other' },
+] as const;
+export const zCcrtArchiveReason = z.enum(ccrtArchiveReasons.map((reason) => reason.value));
+export type CcrtArchiveReason = z.infer<typeof zCcrtArchiveReason>;
+export const zCcrtArchiveForm = z.object({
+  comment: z.string().trim().max(2000).default(''),
+  reason: z.string().min(1, 'Choisissez un motif d’archivage').pipe(zCcrtArchiveReason),
+  sendEmail: z.boolean().default(true),
+});
+export const zCcrtArchiveDemand = zCcrtArchiveForm.extend({ demandId: z.uuid() });
+export const zCcrtTransferNetwork = zCcrtDemandId.extend({ networkId: z.number().int().positive().optional() });
+export const zCcrtTransferDemand = zCcrtDemandId.extend({ networkId: z.number().int().positive() });
+export const zCcrtAdminComment = zCcrtDemandId.extend({ comment: z.string().trim().max(10000) });
 export const zCcrtFollowUpInput = zCcrtDemandId.extend({ offset: z.number().int().nonnegative().default(0) });
 export const zCcrtBuilding = z.object({
   annual_heating_consumption: z.number().positive().nullish(),

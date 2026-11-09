@@ -4,6 +4,8 @@ import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/res
 import type { UserRole } from '@/types/enum/UserRole';
 
 export const eventTypes = [
+  'ccrt_demand_moderated',
+  'ccrt_demand_admin_comment_updated',
   'ccrt_demand_updated',
   'ccrt_demand_note_created',
   'ccrt_demand_note_updated',
@@ -97,7 +99,9 @@ export const eventTypeLabels: Record<EventType, string> = {
   api_demand_updated: 'Mise à jour demande (API)',
   api_demands_listed: 'Récupération demandes (API)',
   build_tiles: 'Reconstruction tuiles',
+  ccrt_demand_admin_comment_updated: 'Commentaire interne FCU modifié',
   ccrt_demand_email_sent: 'Email envoyé (CCRT)',
+  ccrt_demand_moderated: 'Modération de demande chaleur renouvelable',
   ccrt_demand_note_created: 'Note ajoutée (CCRT)',
   ccrt_demand_note_deleted: 'Note supprimée (CCRT)',
   ccrt_demand_note_updated: 'Note modifiée (CCRT)',
@@ -209,6 +213,13 @@ type NetworkChangeRequestEventData = {
 type NetworkChangeRequestSource = { request_id?: string; request_kind?: NetworkChangeRequestKind };
 
 export type EventDataMap = {
+  ccrt_demand_moderated: {
+    action: 'archive' | 'transfer' | 'restore';
+    reason?: string;
+    transferredDemandId?: string;
+    networkName?: string;
+  };
+  ccrt_demand_admin_comment_updated: null;
   network_change_request_created: NetworkChangeRequestEventData;
   /** `applied: false`: closed without changing anything */
   network_change_request_processed: NetworkChangeRequestEventData & { applied?: boolean };

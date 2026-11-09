@@ -33,6 +33,7 @@ import { canProposeHeatNetwork } from '../heat-network-eligibility';
 import { getSimulationPrefillFromBatEnrBatiment } from '../simulation-prefill';
 import { getAltitudeByCoordinates } from './altimetry';
 import { applyCcrtAccessFilter, ensureCcrtDemandAccess, getCcrtTerritory, hasCcrtTerritoryCoverage } from './ccrt-access';
+import { selectCcrtDemandsForAdmin } from './ccrt-admin-access';
 import { selectDemandesChaleurRenouvelableForList, serializeDemandesChaleurRenouvelable } from './ccrt-demand-query';
 import { applyCcrtFollowUpUpdate } from './ccrt-demand-update';
 import { recordCcrtFollowUpChanges } from './ccrt-tracking';
@@ -121,7 +122,7 @@ const getDemandeChaleurRenouvelableDepartmentCode = async (input: DemandeChaleur
   return locationInfos?.departement_id;
 };
 
-const getDemandHeatingEnergy = (heatingEnergy: DemandeChaleurRenouvelable['heatingEnergy']): CreateDemandInput['heatingEnergy'] => {
+export const getDemandHeatingEnergy = (heatingEnergy: DemandeChaleurRenouvelable['heatingEnergy']): CreateDemandInput['heatingEnergy'] => {
   switch (heatingEnergy) {
     case 'Électricité':
       return 'électricité';
@@ -134,11 +135,11 @@ const getDemandHeatingEnergy = (heatingEnergy: DemandeChaleurRenouvelable['heati
   }
 };
 
-const getDemandHeatingType = (housingType: DemandeChaleurRenouvelable['housingType']): CreateDemandInput['heatingType'] =>
+export const getDemandHeatingType = (housingType: DemandeChaleurRenouvelable['housingType']): CreateDemandInput['heatingType'] =>
   housingType === 'immeuble_chauffage_collectif' ? 'collectif' : 'individuel';
 
-const getDemandStructure = (
-  input: DemandeChaleurRenouvelable
+export const getDemandStructure = (
+  input: Pick<DemandeChaleurRenouvelable, 'demandConcern' | 'occupantStatus'>
 ): Pick<CreateDemandInput, 'companyType' | 'demandCompanyType' | 'structure'> => {
   if (input.demandConcern === 'Une maison individuelle' || input.occupantStatus === 'Propriétaire de maison individuelle') {
     return { companyType: '', demandCompanyType: '', structure: 'Maison individuelle' };
@@ -754,20 +755,24 @@ export const validateDemandeChaleurRenouvelableAdmin = async ({ demandId }: Admi
     })
     .where('id', '=', demandId)
     .where('validated', '=', false)
+    .where('archived_at', 'is', null)
     .execute();
 
   // the CCRT notification is sent by the cron notifyCcrtOfNewDemands (ccrt-notifications.ts), not here
   const demand = await kdb
     .selectFrom('demands_chaleur_renouvelable')
-    .select(['id', 'updated_at', 'validated'])
+    .select(['id', 'updated_at', 'validated', 'archived_at'])
     .where('id', '=', demandId)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
 
-  return demand;
+  if (demand.archived_at) {
+    throw new TRPCError({ code: 'CONFLICT', message: 'Cette demande a été archivée ou transférée. Actualisez la liste.' });
+  }
+  return { id: demand.id, updated_at: demand.updated_at, validated: demand.validated };
 };
 
 export const listDemandesChaleurRenouvelableAdmin = async () => {
-  const demandes = await selectDemandesChaleurRenouvelableForList().orderBy('created_at', 'desc').execute();
+  const demandes = await selectCcrtDemandsForAdmin().orderBy('created_at', 'desc').execute();
   return { count: demandes.length, items: serializeDemandesChaleurRenouvelable(demandes) };
 };
 

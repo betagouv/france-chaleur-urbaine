@@ -1,10 +1,15 @@
-import { kdb } from '@/server/db/kysely';
+import type { Kysely } from 'kysely';
 
-export const selectDemandesChaleurRenouvelableForList = () =>
-  kdb
+import { type DB, kdb } from '@/server/db/kysely';
+
+export const selectDemandesChaleurRenouvelableForList = (database: Kysely<DB> = kdb) =>
+  database
     .selectFrom('demands_chaleur_renouvelable')
     .select([
       'address',
+      'archive_comment',
+      'archive_reason',
+      'archived_at',
       'alternative_heating_solutions',
       'annual_heating_consumption',
       'assigned_to',
@@ -45,13 +50,18 @@ export const selectDemandesChaleurRenouvelableForList = () =>
       'simulation_url',
       'status',
       'surface_area',
+      'transferred_demand_id',
+      'transferred_network_name',
       'updated_at',
       'validated',
     ]);
 
-export const serializeDemandesChaleurRenouvelable = <T extends { created_at: Date; updated_at: Date }>(demandes: T[]) =>
-  demandes.map(({ created_at, updated_at, ...demande }) => ({
+export const serializeDemandesChaleurRenouvelable = <T extends { created_at: Date; updated_at: Date; archived_at: Date | null }>(
+  demandes: T[]
+) =>
+  demandes.map(({ created_at, updated_at, archived_at, ...demande }) => ({
     ...demande,
+    archived_at: archived_at?.toISOString() ?? null,
     created_at: created_at.toISOString(),
     updated_at: updated_at.toISOString(),
   }));

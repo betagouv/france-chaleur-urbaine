@@ -57,6 +57,9 @@ const demand: CcrtDemand = {
   address: '5 avenue Carnot, 44000 Nantes',
   alternative_heating_solutions: [],
   annual_heating_consumption: null,
+  archive_comment: null,
+  archive_reason: null,
+  archived_at: null,
   assigned_to: null,
   average_area: 70,
   average_residents: 2,
@@ -95,6 +98,8 @@ const demand: CcrtDemand = {
   simulation_url: '/chaleur-renouvelable/resultat',
   status: 'A traiter',
   surface_area: null,
+  transferred_demand_id: null,
+  transferred_network_name: null,
   updated_at: '2026-10-08T10:00:00.000Z',
   validated: true,
 };
