@@ -61,11 +61,20 @@ const configFunctions = [
         'https://*.analytics.google.com',
         'https://*.googletagmanager.com',
         'https://www.google.com', // Google Ads conversion pings (ccm/collect)
+        'https://www.google.fr',
+        'https://www.googleadservices.com',
+        'https://googleads.g.doubleclick.net',
+        'https://pagead2.googlesyndication.com',
         'https://ad.doubleclick.net',
         'https://stats.g.doubleclick.net',
       ],
       'font-src': ["'self'", 'https:', 'data:'],
-      'frame-src': ['https://td.doubleclick.net', 'https://www.youtube.com/', 'https://cloud.contact.ademe.fr'],
+      'frame-src': [
+        'https://td.doubleclick.net',
+        'https://www.googletagmanager.com',
+        'https://www.youtube.com/',
+        'https://cloud.contact.ademe.fr',
+      ],
       'img-src': ["'self'", 'https:', 'data:'],
       'script-src': [
         "'self'",
@@ -75,6 +84,8 @@ const configFunctions = [
         'https://stats.beta.gouv.fr', // Matomo
         'https://www.gstatic.com/', // react-google-charts loader
         'https://*.googletagmanager.com', // gtag (Google Analytics / Ads, after consent)
+        'https://tagmanager.google.com', // GTM preview
+        'https://www.google.com',
         'https://www.googleadservices.com', // Google Ads conversion scripts
         'https://googleads.g.doubleclick.net',
         'https://www.ssa.gov/accessibility/', // Nécessaire pour faire fonctionner le bookmarklet ANDI

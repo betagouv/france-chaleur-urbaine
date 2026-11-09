@@ -27,10 +27,12 @@ const mocks = vi.hoisted(() => ({
   simulationCreate: vi.fn().mockResolvedValue(undefined),
   simulationUpdate: vi.fn().mockResolvedValue(undefined),
   track: vi.fn(),
+  trackConversion: vi.fn(),
 }));
 vi.mock('../building-address', () => ({ getBuildingAddress: mocks.resolveBuildingAddress }));
 vi.mock('next/router', () => ({ useRouter: () => ({ isReady: true, pathname: '/chaleur-renouvelable/resultat' }) }));
 vi.mock('@/modules/analytics/client', () => ({ trackPostHogEvent: mocks.track }));
+vi.mock('@/modules/analytics/useMultiEnrConversion', () => ({ useMultiEnrConversion: () => mocks.trackConversion }));
 vi.mock('@/components/ComparateurPublicodes/useSimulatorEngine', () => ({ default: () => ({}) }));
 vi.mock('@/hooks/useContactFormFCU', () => ({ default: () => ({}) }));
 vi.mock('./useRemoveHashOnScroll', () => ({ useRemoveHashOnScroll: () => {} }));
@@ -332,11 +334,16 @@ describe('simulation tracking', () => {
       mocks[pendingState] = true;
       const { rerender } = renderHook(() => useChoixChauffageResults());
       expect(mocks.simulationCreate).not.toHaveBeenCalled();
+      expect(mocks.trackConversion).not.toHaveBeenCalled();
 
       mocks[pendingState] = false;
       rerender();
 
       expect(mocks.simulationCreate).toHaveBeenCalledTimes(1);
+      expect(mocks.trackConversion).toHaveBeenCalledWith({
+        event: 'multienr_simulation_completed',
+        simulation_id: mocks.simulationCreate.mock.calls[0][0].id,
+      });
     }
   );
 

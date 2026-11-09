@@ -2,6 +2,7 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Fragment } from 'react';
 
 import Button from '@/components/ui/Button';
+import { AcquisitionDetails } from '@/modules/analytics/AcquisitionDetails';
 import type { CcrtTrackingPlacement } from '@/modules/analytics/posthog.config';
 import cx from '@/utils/cx';
 import { dayjs } from '@/utils/date';
@@ -100,6 +101,7 @@ export function CcrtDemandRow({
             >
               {demand.email}
             </a>
+            <AcquisitionDetails acquisition={demand.acquisition} />
           </div>
         </td>
         <td className="align-top!">

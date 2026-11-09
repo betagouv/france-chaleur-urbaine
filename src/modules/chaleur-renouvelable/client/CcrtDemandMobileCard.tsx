@@ -1,6 +1,7 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 
 import Button from '@/components/ui/Button';
+import { AcquisitionDetails } from '@/modules/analytics/AcquisitionDetails';
 import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
@@ -38,6 +39,7 @@ export function CcrtDemandMobileCard({ demand, onOpen, onContact, onValidate }: 
           {fullName}
         </button>
       </h2>
+      <AcquisitionDetails acquisition={demand.acquisition} />
       <p className="mb-0 break-words font-medium leading-6">{formatCcrtAddress(demand.address)}</p>
       <p className="mb-0 text-sm leading-6">
         {demand.alternative_heating_solutions[0] ? `Reco n°1 : ${demand.alternative_heating_solutions[0]}` : 'Aucune solution enregistrée'}

@@ -4,11 +4,12 @@ import dynamic from 'next/dynamic';
 import Select from '@/components/form/dsfr/Select';
 
 import type { CcrtDemand } from '../types';
-import { ccrtDemandExportColumns } from './ccrt-demand-export';
+import { ccrtDemandAcquisitionExportColumns, ccrtDemandExportColumns } from './ccrt-demand-export';
 
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 type CcrtDemandToolbarProps = {
+  isAdmin?: boolean;
   search: string;
   status: string;
   statusOptions: { label: string; value: string }[];
@@ -23,6 +24,7 @@ type CcrtDemandToolbarProps = {
  * Search, status filter and spreadsheet export for the visible demand list.
  */
 export function CcrtDemandToolbar({
+  isAdmin = false,
   search,
   status,
   statusOptions,
@@ -47,7 +49,7 @@ export function CcrtDemandToolbar({
               className={className}
               type={type}
               value={search}
-              placeholder="Nom, adresse, n° de demande…"
+              placeholder={isAdmin ? 'Nom, adresse, campagne…' : 'Nom, adresse, n° de demande…'}
               onChange={(event) => onSearchChange(event.target.value)}
             />
           )}
@@ -73,7 +75,13 @@ export function CcrtDemandToolbar({
         disabled={demands.length === 0}
         sheets={() => {
           onExport();
-          return [{ columns: ccrtDemandExportColumns, data: demands, name: 'Demandes' }];
+          return [
+            {
+              columns: [...ccrtDemandExportColumns, ...(isAdmin ? ccrtDemandAcquisitionExportColumns : [])],
+              data: demands,
+              name: 'Demandes',
+            },
+          ];
         }}
       >
         Télécharger (.xlsx)

@@ -7,19 +7,20 @@ import { clientConfig } from '@/client-config';
 import { usePostHog } from '@/components/ConsentBanner/usePostHog';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 
+import { GoogleTagManagerScript } from './GoogleTagManagerScript';
 import GoogleTagsScript from './GoogleTagsScript';
 
 type FinalityDescription = Parameters<typeof createConsentManagement>[0]['finalityDescription'];
 
-const googleEnabled = clientConfig.tracking.googleTagIds.length > 0;
+const googleEnabled = clientConfig.tracking.googleTagIds.length > 0 || !!clientConfig.tracking.googleTagManagerId;
 const posthogEnabled = !!(clientConfig.tracking.postHogApiHost && clientConfig.tracking.postHogKey);
 
 const consentConfig: FinalityDescription = {};
 
 if (googleEnabled) {
   consentConfig.google_analytics = {
-    description: "Mesure d'audience",
-    title: 'Google Analytics (gtag.js)',
+    description: 'Mesure d’audience et des conversions publicitaires',
+    title: 'Google Analytics et Google Ads',
   };
 }
 if (posthogEnabled) {
@@ -33,7 +34,10 @@ export const { ConsentBannerAndConsentManagement, FooterConsentManagementItem, F
   createConsentManagement({
     consentCallback: async ({ finalityConsent_prev, finalityConsent }) => {
       trackPostHogEvent('consent:cookie_choice_made', { consent: finalityConsent });
-      if (finalityConsent_prev === undefined && !finalityConsent.isFullConsent) {
+      if (
+        (finalityConsent_prev === undefined && !finalityConsent.isFullConsent) ||
+        (finalityConsent_prev?.google_analytics && !finalityConsent.google_analytics)
+      ) {
         location.reload();
       }
     },
@@ -55,6 +59,9 @@ export const ConsentBanner = () => {
           <ConsentBannerAndConsentManagement />
 
           {googleEnabled && finalityConsent?.google_analytics && <GoogleTagsScript tagIds={clientConfig.tracking.googleTagIds} />}
+          {!router.pathname.startsWith('/admin') && clientConfig.tracking.googleTagManagerId && finalityConsent?.google_analytics && (
+            <GoogleTagManagerScript containerId={clientConfig.tracking.googleTagManagerId} />
+          )}
         </>
       )}
     </>

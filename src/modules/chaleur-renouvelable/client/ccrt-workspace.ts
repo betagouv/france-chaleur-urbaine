@@ -1,3 +1,4 @@
+import { getAcquisitionSource } from '@/modules/analytics/constants';
 import { normalize } from '@/utils/strings';
 
 import {
@@ -36,10 +37,21 @@ export function getCcrtDemandTab(demand: Pick<CcrtDemand, 'status'>): Exclude<Cc
  * Matches a demand by its contact, address or identifier, ignoring accents.
  */
 export function matchesCcrtDemandSearch(
-  demand: Pick<CcrtDemand, 'id' | 'first_name' | 'last_name' | 'email' | 'phone' | 'address'>,
+  demand: Pick<CcrtDemand, 'id' | 'first_name' | 'last_name' | 'email' | 'phone' | 'address' | 'acquisition'>,
   search: string
 ): boolean {
-  const searchableText = normalize([demand.id, demand.first_name, demand.last_name, demand.email, demand.phone, demand.address].join(' '));
+  const searchableText = normalize(
+    [
+      demand.id,
+      demand.first_name,
+      demand.last_name,
+      demand.email,
+      demand.phone,
+      demand.address,
+      demand.acquisition && getAcquisitionSource(demand.acquisition),
+      demand.acquisition?.campaign,
+    ].join(' ')
+  );
   return normalize(search)
     .trim()
     .split(/\s+/)

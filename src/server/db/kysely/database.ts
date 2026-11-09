@@ -5,6 +5,7 @@
 
 import type { ColumnType, GeneratedAlways, JSONColumnType } from 'kysely';
 
+import type { Acquisition } from '@/modules/analytics/constants';
 import type {
   DemandConcern,
   DemandeChaleurRenouvelableProjectState,
@@ -282,6 +283,7 @@ export interface ConversionSources {
 }
 
 export interface DemandsChaleurRenouvelable {
+  acquisition: JSONColumnType<Acquisition> | null;
   address: string;
   alternative_heating_solutions: Generated<string[]>;
   annual_heating_consumption: number | null;

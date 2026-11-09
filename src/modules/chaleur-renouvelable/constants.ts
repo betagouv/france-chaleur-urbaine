@@ -2,6 +2,7 @@ import type { RuleName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import type { ReactNode } from 'react';
 import { z } from 'zod';
 
+import { zAcquisition } from '@/modules/analytics/constants';
 import { businessRules } from '@/modules/app/business-rules';
 import { CLOSED_DEMAND_STATUS_DISPLAY, type DemandStatusDisplay } from '@/modules/demands/constants';
 import type { HeatNetwork } from '@/types/HeatNetworksResponse';
@@ -500,6 +501,7 @@ const zDemandeChaleurRenouvelableHeatNetworkEligibility = z.object({
 });
 
 export const zDemandeChaleurRenouvelable = z.object({
+  acquisition: zAcquisition.nullish(),
   address: z.string(),
   alternativeHeatingSolutions: z.array(z.string().trim().min(1).max(120)).max(3).optional(),
   annualHeatingConsumption: z

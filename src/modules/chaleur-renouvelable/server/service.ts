@@ -1,5 +1,6 @@
 import { TRPCError } from '@trpc/server';
 
+import { getAcquisitionSource } from '@/modules/analytics/constants';
 import { businessRules } from '@/modules/app/business-rules';
 import { EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
 import type {
@@ -254,6 +255,8 @@ const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promi
       heatingEnergy: getDemandHeatingEnergy(input.heatingEnergy),
       heatingType: getDemandHeatingType(input.housingType),
       lastName: input.lastName,
+      mtm_campaign: input.acquisition?.campaign ?? undefined,
+      mtm_source: input.acquisition ? (getAcquisitionSource(input.acquisition) ?? undefined) : undefined,
       nbLogements: input.housingCount,
       phone: input.phone,
       postcode: input.geoAddress.postcode,
@@ -685,6 +688,7 @@ const createCcrtDemand = async (input: DemandeChaleurRenouvelable) => {
     .insertInto('demands_chaleur_renouvelable')
     .values({
       ...territory,
+      acquisition: input.acquisition ? JSON.stringify(input.acquisition) : null,
       address: input.address,
       alternative_heating_solutions: input.alternativeHeatingSolutions ?? [],
       annual_heating_consumption: input.annualHeatingConsumption,
@@ -767,7 +771,7 @@ export const validateDemandeChaleurRenouvelableAdmin = async ({ demandId }: Admi
 };
 
 export const listDemandesChaleurRenouvelableAdmin = async () => {
-  const demandes = await selectDemandesChaleurRenouvelableForList().orderBy('created_at', 'desc').execute();
+  const demandes = await selectDemandesChaleurRenouvelableForList().select('acquisition').orderBy('created_at', 'desc').execute();
   return { count: demandes.length, items: serializeDemandesChaleurRenouvelable(demandes) };
 };
 

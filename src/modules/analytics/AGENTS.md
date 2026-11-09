@@ -15,6 +15,9 @@ analytics/
 
 ## Supported Platforms
 
+- **Google Tag Manager / Google Ads (multi-energy simulator)** — `google-tag-manager.ts` queues typed `multienr_simulation_completed` / `multienr_accompaniment_submitted` events; `useMultiEnrConversion` checks Google consent and configuration. `components/ConsentBanner/GoogleTagManagerScript.tsx` loads the configured container after consent. Demand events occur only after successful creation and distinguish CCRT from heat-network demands. No new Matomo events. Setup, agency handoff, consent boundaries, event contract and acceptance checks: [docs/google-ads-multienr.md](../../../docs/google-ads-multienr.md).
+- **First-party campaign attribution** — `acquisition.ts` captures the latest UTM-tagged arrival in memory across internal navigation, independently of Google consent; no browser storage or raw click identifiers. `constants.ts` owns the bounded server-validated schema and source label. Never overload conversion-tracking's `?source=` integration identifier. CCRT stores acquisition for admins only; classic demands reuse existing campaign fields. `AcquisitionDetails.tsx` renders the admin summary.
+
 - **PostHog** - Product analytics (nouvelle plateforme principale). Voir [TRACKING_PLAN.md](./TRACKING_PLAN.md) pour le plan de tracking complet, les conventions de nommage, le consentement et l'identification.
 - **Matomo** - Analytics historique (en cours de remplacement par PostHog, migration progressive). Ne pas ajouter de nouveaux events Matomo : utiliser PostHog.
 - **Google Analytics 4** - Conversion tracking

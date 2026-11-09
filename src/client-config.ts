@@ -22,6 +22,7 @@ export const clientConfig = {
   summaryAreaSizeLimit: 5, // km²
   tracking: {
     googleTagIds: (process.env.NEXT_PUBLIC_GOOGLE_TAG_ID ?? '').split(',').filter(Boolean),
+    googleTagManagerId: process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID ?? '',
     matomoServerURL: process.env.NEXT_PUBLIC_MATOMO_URL,
     matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
     postHogApiHost: process.env.NEXT_PUBLIC_POSTHOG_HOST,
