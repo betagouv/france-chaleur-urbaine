@@ -159,7 +159,7 @@ function ContactRecipientSelector({
 function getFormTitle(isHeatNetworkEligible: boolean) {
   return isHeatNetworkEligible
     ? 'Faites-vous recontacter par le gestionnaire de réseau'
-    : 'Faites-vous recontacter par un·e conseiller·ère';
+    : 'Faites-vous recontacter par un·e conseiller·ère du service public';
 }
 
 function getFormDescription(isHeatNetworkEligible: boolean) {
