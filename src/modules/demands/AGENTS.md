@@ -8,6 +8,7 @@ Connection requests ("demandes de raccordement") lifecycle: creation, enrichment
 
 - `constants.ts` — Zod schemas (creation, gestionnaire/admin update values), `demandStatuses` display order, survey `referrers`.
 - `server/creation-user.ts` — single demand creation: enrichments (gas consumption, BDNB, territory), auto-assignment to nearest network (eligible OR < 500 m), initial status, confirmation email, `demand_created` event.
+- `server/creation-transfer.ts` — creates a validated classic demand, its address point and audit inside the CCRT moderation transaction; shares only classic contact/building fields and the user comment, sends no public confirmation. Manager notifications follow the existing cron.
 - `server/creation-batch.ts` — batch creation from pro eligibility tests (max 50 addresses, contact from user profile, admin can provide a dedicated contact).
 - `server/admin-operations.ts` — validation gate (`validated`), admin update (`comment_fcu`, relance flags), soft delete, direct assignment change, reject assignment request, recalculate eligibility.
 - `server/gestionnaire-operations.ts` — permission-filtered list (with PII anonymization for impersonation), responsible-only update (Status, comment, surface/conso/logements), assignment change request/cancel.

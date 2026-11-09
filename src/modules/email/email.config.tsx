@@ -31,6 +31,9 @@ import NouvellesDemandesATraiterCcrtWeekly, {
 import RappelDemandesEnAttenteCcrt, {
   scenarios as rappelDemandesEnAttenteCcrtScenarios,
 } from './templates/demands/ccrt/rappel-demandes-en-attente';
+import ArchivageChaleurRenouvelable, {
+  scenarios as archivageChaleurRenouvelableScenarios,
+} from './templates/demands/demandeur/archivage-chaleur-renouvelable';
 import ConfirmationDemande, { scenarios as confirmationDemandeScenarios } from './templates/demands/demandeur/confirmation-demande';
 import ConfirmationDemandeChaleurRenouvelable, {
   scenarios as confirmationDemandeChaleurRenouvelableScenarios,
@@ -41,6 +44,9 @@ import RaccordementNonRealisable, {
   scenarios as raccordementNonRealisableScenarios,
 } from './templates/demands/demandeur/raccordement-non-realisable';
 import SuiviDemande, { scenarios as suiviDemandeScenarios } from './templates/demands/demandeur/suivi-demande';
+import TransfertChaleurRenouvelable, {
+  scenarios as transfertChaleurRenouvelableScenarios,
+} from './templates/demands/demandeur/transfert-chaleur-renouvelable';
 import NouvellesDemandesATraiter, {
   dailyScenarios as nouvellesDemandesATraiterDailyScenarios,
   weeklyScenarios as nouvellesDemandesATraiterWeeklyScenarios,
@@ -227,6 +233,15 @@ export const emails = defineEmails({
       type: 'cron',
     },
   },
+  'demands.demandeur.archivage-chaleur-renouvelable': {
+    Component: ArchivageChaleurRenouvelable,
+    description: 'Oriente le demandeur vers France Rénov’ après un archivage par l’équipe FCU.',
+    label: 'Archivage d’une demande chaleur renouvelable',
+    preview: 'Les prochaines étapes de votre demande d’accompagnement',
+    scenarios: archivageChaleurRenouvelableScenarios,
+    subject: '[France Chaleur Urbaine] Votre demande d’accompagnement : les prochaines étapes',
+    trigger: { description: 'Archivage par un admin, sauf si l’envoi est décoché.', type: 'action' },
+  },
   'demands.demandeur.confirmation-demande': {
     Component: ConfirmationDemande,
     description:
@@ -305,6 +320,15 @@ export const emails = defineEmails({
         "Saisie d'un email sur la page « Suivre ma demande » ou le bloc de la page d'accueil, si au moins une demande correspond à l'email et que le plafond horaire n'est pas atteint.",
       type: 'action',
     },
+  },
+  'demands.demandeur.transfert-chaleur-renouvelable': {
+    Component: TransfertChaleurRenouvelable,
+    description: 'Informe le demandeur du transfert vers le gestionnaire d’un réseau de chaleur.',
+    label: 'Transfert d’une demande chaleur renouvelable',
+    preview: 'Votre demande a été transmise au gestionnaire du réseau de chaleur',
+    scenarios: transfertChaleurRenouvelableScenarios,
+    subject: '[France Chaleur Urbaine] Votre demande a été transmise au gestionnaire du réseau de chaleur',
+    trigger: { description: 'Transfert confirmé par un admin vers un réseau de chaleur.', type: 'action' },
   },
   'demands.gestionnaire.nouvelles-demandes-a-traiter-daily': {
     Component: NouvellesDemandesATraiter,

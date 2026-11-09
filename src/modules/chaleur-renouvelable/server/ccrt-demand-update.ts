@@ -25,10 +25,13 @@ type ApplyCcrtFollowUpUpdateInput = {
 export const applyCcrtFollowUpUpdate = async (ctx: Context, input: ApplyCcrtFollowUpUpdateInput, transaction: Transaction<DB>) => {
   const current = await transaction
     .selectFrom('demands_chaleur_renouvelable')
-    .select(['id', 'assigned_to', 'status', 'project_state', 'updated_at'])
+    .select(['id', 'assigned_to', 'status', 'project_state', 'updated_at', 'validated', 'archived_at'])
     .where('id', '=', input.demandId)
     .forUpdate()
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
+  if (current.archived_at || (ctx.user.role !== 'admin' && !current.validated)) {
+    throw new TRPCError({ code: 'CONFLICT', message: 'Cette demande n’est plus disponible pour le suivi. Actualisez la liste.' });
+  }
   const isContactSkipped = input.trigger === 'contact' && current.status !== DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS;
   const values = isContactSkipped ? {} : input.values;
   const status = values.status ?? current.status;

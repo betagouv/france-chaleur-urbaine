@@ -25,7 +25,7 @@ export const applyCcrtAccessFilter = <Output>(
     return query.where(sql.lit(false));
   }
   const territories = Object.entries(territoryPermissionToColumn);
-  return query.where('validated', '=', true).where((expression) => {
+  return query.where('archived_at', 'is', null).where('validated', '=', true).where((expression) => {
     const conditions = [
       ...territories.flatMap(([type, column]) =>
         permissions.filter((permission) => permission.type === type).map((permission) => expression(column, '=', permission.resource_id))

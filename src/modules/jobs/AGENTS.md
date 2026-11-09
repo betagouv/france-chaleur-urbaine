@@ -22,6 +22,7 @@ jobs/
 
 Définis dans `constants.ts` :
 
+- `ccrt_moderation_email` — transactional archive/transfer notices for renewable-heat accompaniment demands (`chaleur-renouvelable/server/ccrt-moderation-email.ts`); delivery reservations live in job data and uncertain sends require reconciliation before replay.
 - `build_tiles` - Génération de tuiles cartographiques vectorielles
 - `pro_eligibility_test` - Tests d'éligibilité pour les professionnels  
 - `scan_file` - Analyse antivirus d'un fichier déposé (module `files`, si `FILE_SCANNER=clamav`)

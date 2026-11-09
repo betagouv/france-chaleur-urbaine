@@ -3,9 +3,13 @@ import {
   zAdminUpdateDemandeChaleurRenouvelableInput,
   zAdminValidateDemandeChaleurRenouvelableInput,
   zBatEnrByBanIdInput,
+  zCcrtAdminComment,
+  zCcrtArchiveDemand,
   zCcrtDemandId,
   zCcrtFollowUpInput,
   zCcrtSendEmail,
+  zCcrtTransferDemand,
+  zCcrtTransferNetwork,
   zCcrtUpdateBuilding,
   zCcrtUpdateDemandeChaleurRenouvelableInput,
   zDemandeChaleurRenouvelable,
@@ -35,13 +39,33 @@ import { updateCcrtBuilding } from './ccrt-building';
 import { sendCcrtEmail } from './ccrt-emails';
 import { getCcrtFollowUp } from './ccrt-follow-up';
 import { getCcrtHeatNetworkEligibility } from './ccrt-heat-network';
+import { archiveCcrtDemand, getCcrtAdminComment, restoreCcrtDemand, transferCcrtDemand, updateCcrtAdminComment } from './ccrt-moderation';
+import { getCcrtTransferNetwork } from './ccrt-transfer-network';
 
 export const batEnrRouter = router({
   admin: {
+    archiveDemand: routeRole(['admin'])
+      .input(zCcrtArchiveDemand)
+      .mutation(({ ctx, input }) => archiveCcrtDemand(ctx, input)),
+    getAdminComment: routeRole(['admin'])
+      .input(zCcrtDemandId)
+      .query(({ input }) => getCcrtAdminComment(input)),
+    getTransferNetwork: routeRole(['admin'])
+      .input(zCcrtTransferNetwork)
+      .query(({ ctx, input }) => getCcrtTransferNetwork(ctx, input)),
     listAssignmentCandidates: routeRole(['admin'])
       .input(zCcrtDemandId)
       .query(({ ctx, input }) => listCcrtAssignmentCandidates(ctx, input.demandId)),
     listDemandesChaleurRenouvelable: routeRole(['admin']).query(async () => await listDemandesChaleurRenouvelableAdmin()),
+    restoreDemand: routeRole(['admin'])
+      .input(zCcrtDemandId)
+      .mutation(({ ctx, input }) => restoreCcrtDemand(ctx, input)),
+    transferDemand: routeRole(['admin'])
+      .input(zCcrtTransferDemand)
+      .mutation(({ ctx, input }) => transferCcrtDemand(ctx, input)),
+    updateAdminComment: routeRole(['admin'])
+      .input(zCcrtAdminComment)
+      .mutation(({ ctx, input }) => updateCcrtAdminComment(ctx, input)),
     updateDemandeChaleurRenouvelable: routeRole(['admin'])
       .input(zAdminUpdateDemandeChaleurRenouvelableInput)
       .mutation(async ({ ctx, input }) => await updateDemandeChaleurRenouvelableAdmin(ctx, input)),

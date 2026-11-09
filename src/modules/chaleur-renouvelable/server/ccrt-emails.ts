@@ -18,6 +18,9 @@ import { getCcrtServerTrackingProperties, recordCcrtFollowUpChanges, recordCcrtP
  */
 export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSendEmail>) => {
   const demand = await ensureCcrtDemandAccess(ctx, input.demandId);
+  if (demand.archived_at) {
+    throw new TRPCError({ code: 'CONFLICT', message: 'Cette demande est archivée. Aucun message ne peut être envoyé depuis son suivi.' });
+  }
   const emailContent = input.emailContent;
   const message = {
     body: emailContent.body,
