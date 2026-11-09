@@ -5,6 +5,7 @@ import { useCallback } from 'react';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import { EventsDashboardHeader } from '@/modules/events/client/EventsDashboardHeader';
 import { EventsFiltersBar } from '@/modules/events/client/EventsFiltersBar';
@@ -138,6 +139,10 @@ export default function AdminEventsPage() {
           </Heading>
           {isFetchingStats && <Loader size="sm" />}
         </div>
+        <p className="mb-4 text-sm">
+          Les types d'événements sont décrits dans la{' '}
+          <Link href="/admin/doc/references#evenements">documentation, section « Événements de traçabilité »</Link>.
+        </p>
 
         <div className="flex flex-col gap-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
