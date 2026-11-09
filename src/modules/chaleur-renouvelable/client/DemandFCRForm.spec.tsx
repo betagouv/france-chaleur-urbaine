@@ -131,7 +131,7 @@ describe('DemandFCRForm', () => {
       />
     );
 
-    expect(screen.getByText('Faites-vous recontacter par un·e conseiller·ère')).toBeInTheDocument();
+    expect(screen.getByText('Faites-vous recontacter par un·e conseiller·ère du service public')).toBeInTheDocument();
     expect(container.querySelector('form')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Afficher les coordonnées' })).not.toBeInTheDocument();
   });
