@@ -266,8 +266,20 @@ describe('CcrtBuildingForm', () => {
     fireEvent.change(screen.getByLabelText('Type de logement'), { target: { value: 'maison_individuelle' } });
 
     expect(screen.getByLabelText('Mode eau chaude')).toHaveValue('nonRenseigne');
+    expect(screen.getByLabelText('Nombre de logements')).toHaveValue(1);
     expect(screen.queryByRole('option', { name: 'Collectif' })).toBeNull();
     expect(screen.getByRole('option', { name: 'Couplé au chauffage' })).toBeInTheDocument();
+  });
+
+  it('saves one dwelling when switching to a house and keeps it when switching back', async () => {
+    render(<CcrtBuildingForm demand={demand} />);
+    fireEvent.change(screen.getByLabelText('Type de logement'), { target: { value: 'maison_individuelle' } });
+    fireEvent.blur(screen.getByLabelText('Type de logement'));
+
+    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1));
+    expect(mocks.mutateAsync.mock.calls[0][0].values).toMatchObject({ housing_count: 1, housing_type: 'maison_individuelle' });
+    fireEvent.change(screen.getByLabelText('Type de logement'), { target: { value: 'immeuble_chauffage_collectif' } });
+    expect(screen.getByLabelText('Nombre de logements')).toHaveValue(1);
   });
 
   it.each([

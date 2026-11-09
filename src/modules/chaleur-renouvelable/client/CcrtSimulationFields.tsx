@@ -59,6 +59,9 @@ function CcrtSimulationFieldsRender({ group }: CcrtSimulationFieldsRenderProps) 
         name="housing_type"
         listeners={{
           onChange: ({ value }) => {
+            if (value === 'maison_individuelle') {
+              group.setFieldValue('housing_count', 1);
+            }
             group.setFieldValue(
               'hot_water_system_type',
               normalizeModeEauChaudeSanitaireForTypeLogement(group.getFieldValue('hot_water_system_type'), value),

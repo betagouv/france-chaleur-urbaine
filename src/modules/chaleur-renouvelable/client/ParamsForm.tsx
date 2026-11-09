@@ -278,6 +278,9 @@ export function ParamsForm({
                           MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE
                       );
                       form.setFieldValue('typeLogement', nextTypeLogement);
+                      if (nextTypeLogement === 'maison_individuelle') {
+                        form.setFieldValue('nbLogements', '1');
+                      }
                     },
                     value: draft.typeLogement ?? undefined,
                   }}
