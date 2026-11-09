@@ -124,7 +124,7 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
             </Button>
           )}
           {onValidate && !demand.validated ? (
-            <CcrtDemandValidation demandId={demand.id} full onValidate={onValidate} />
+            <CcrtDemandValidation demand={demand} full onValidate={onValidate} />
           ) : (
             <Button full iconId="fr-icon-mail-line" iconPosition="right" onClick={() => onContact()}>
               Contacter par email

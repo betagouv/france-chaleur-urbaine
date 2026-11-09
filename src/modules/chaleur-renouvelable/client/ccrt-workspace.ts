@@ -32,6 +32,20 @@ export function getCcrtDemandTab(demand: Pick<CcrtDemand, 'status'>): Exclude<Cc
         : 'in_progress';
 }
 
+/** Keeps moderation groups independent from the CCRT follow-up status. */
+export const matchesCcrtAdminTab = (demand: Pick<CcrtDemand, 'archived_at' | 'validated'>, tab: CcrtDemandTab): boolean =>
+  tab === 'archived' ? demand.archived_at !== null : demand.archived_at === null && (tab !== 'awaiting_validation' || !demand.validated);
+
+/** Warns about absent or never-connected CCRT accounts without blocking publication. */
+export const getCcrtAccessWarning = (users: CcrtDemand['access_users']): string | null =>
+  users === undefined
+    ? null
+    : users.length === 0
+      ? 'Aucun compte CCRT'
+      : users.every((user) => user.last_connection === null)
+        ? 'Aucun CCRT ne s’est connecté'
+        : null;
+
 /**
  * Matches a demand by its contact, address or identifier, ignoring accents.
  */

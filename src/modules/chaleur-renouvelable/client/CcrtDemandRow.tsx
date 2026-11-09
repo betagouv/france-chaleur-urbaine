@@ -8,6 +8,7 @@ import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
+import { CcrtDemandAccessColumn } from './CcrtDemandAccessColumn';
 import { CcrtDemandDetails } from './CcrtDemandDetails';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
 import { CcrtHeatingEnergyTag } from './CcrtHeatingEnergyTag';
@@ -145,6 +146,11 @@ export function CcrtDemandRow({
           </time>
         </td>
         <td>
+          {onValidate && !demand.validated && (
+            <Badge small severity="info" className="mb-2">
+              {demand.archived_at ? 'Archivée' : 'À valider'}
+            </Badge>
+          )}
           <Badge
             severity={isToProcess || getCcrtDemandTab(demand) === 'closed' ? 'warning' : 'info'}
             noIcon={!isToProcess}
@@ -158,9 +164,10 @@ export function CcrtDemandRow({
             </p>
           )}
         </td>
+        {onValidate && <td>{demand.access_users && <CcrtDemandAccessColumn users={demand.access_users} />}</td>}
         <td className="text-center!">
           {onValidate && !demand.validated ? (
-            <CcrtDemandValidation demandId={demand.id} onValidate={onValidate} />
+            <CcrtDemandValidation demand={demand} onValidate={onValidate} />
           ) : (
             <Button
               priority={isToProcess ? 'primary' : 'secondary'}
@@ -175,7 +182,7 @@ export function CcrtDemandRow({
       </tr>
       {isExpanded && (
         <tr className="border-l-4 border-(--border-active-blue-france) bg-(--background-alt-blue-france)!">
-          <td colSpan={7} className="p-0!">
+          <td colSpan={onValidate ? 8 : 7} className="p-0!">
             <CcrtDemandDetails
               demand={demand}
               isUpdating={isUpdating}

@@ -5,6 +5,7 @@ import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand } from '../types';
+import { CcrtDemandAccessColumn } from './CcrtDemandAccessColumn';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
 import { formatCcrtAddress } from './ccrt-workspace';
 
@@ -24,6 +25,11 @@ export function CcrtDemandMobileCard({ demand, onOpen, onContact, onValidate }: 
   return (
     <article className="space-y-2 border border-(--background-default-grey-active) bg-(--background-default-grey) p-4">
       <div className="flex items-start justify-between gap-2">
+        {onValidate && !demand.validated && (
+          <Badge small severity="info">
+            {demand.archived_at ? 'Archivée' : 'À valider'}
+          </Badge>
+        )}
         <Badge severity={isToProcess ? 'warning' : 'info'} noIcon={!isToProcess}>
           {isToProcess ? 'À traiter' : demand.status}
         </Badge>
@@ -42,9 +48,10 @@ export function CcrtDemandMobileCard({ demand, onOpen, onContact, onValidate }: 
       <p className="mb-0 text-sm leading-6">
         {demand.alternative_heating_solutions[0] ? `Reco n°1 : ${demand.alternative_heating_solutions[0]}` : 'Aucune solution enregistrée'}
       </p>
+      {onValidate && demand.access_users && <CcrtDemandAccessColumn users={demand.access_users} />}
       <div className="flex items-stretch gap-2">
         {onValidate && !demand.validated ? (
-          <CcrtDemandValidation demandId={demand.id} full onValidate={onValidate} />
+          <CcrtDemandValidation demand={demand} full onValidate={onValidate} />
         ) : (
           <Button full iconId="fr-icon-mail-line" iconPosition="right" onClick={onContact}>
             Contacter par email

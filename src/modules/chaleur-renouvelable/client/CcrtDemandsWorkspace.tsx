@@ -14,8 +14,9 @@ import { CcrtDemandsMobile } from './CcrtDemandsMobile';
 import { CcrtDemandsTable } from './CcrtDemandsTable';
 import { CcrtDemandTabs, ccrtDemandTabs } from './CcrtDemandTabs';
 import { CcrtDemandToolbar } from './CcrtDemandToolbar';
-import { invalidateCcrtDemand } from './ccrt-demand-cache';
-import { getCcrtDemandTab, matchesCcrtDemandSearch } from './ccrt-workspace';
+import { CcrtModerationIndicators } from './CcrtModerationIndicators';
+import { invalidateCcrtModeration } from './ccrt-demand-cache';
+import { getCcrtDemandTab, matchesCcrtAdminTab, matchesCcrtDemandSearch } from './ccrt-workspace';
 import { useCcrtDemandActions } from './hooks/useCcrtDemandActions';
 import { useCcrtWorkspaceTracking } from './hooks/useCcrtWorkspaceTracking';
 
@@ -56,14 +57,23 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
   const validation = trpc.batEnr.admin.validateDemandeChaleurRenouvelable.useMutation();
   const validateDemand = toastErrors(async (demandId: string) => {
     await validation.mutateAsync({ demandId });
-    await invalidateCcrtDemand(utils, demandId);
+    await invalidateCcrtModeration(utils, demandId);
   });
   const demands = query.data?.items ?? [];
   // Notification links already use the search key, so search defaults to the full list.
-  const activeTab = filters.tab ?? (isAdmin || filters.search ? 'all' : 'to_process');
+  const selectedTab = filters.tab ?? (filters.search ? 'all' : isAdmin ? 'awaiting_validation' : 'to_process');
+  const activeTab = isAdmin
+    ? ['all', 'archived', 'awaiting_validation'].includes(selectedTab)
+      ? selectedTab
+      : 'awaiting_validation'
+    : selectedTab === 'archived' || selectedTab === 'awaiting_validation'
+      ? 'to_process'
+      : selectedTab;
   const actions = useCcrtDemandActions(trackingContext?.structure_ccrt ?? null);
   const tracking = useCcrtWorkspaceTracking(trackingContext, activeTab, filters.search);
-  const demandsInTab = demands.filter((demand) => activeTab === 'all' || getCcrtDemandTab(demand) === activeTab);
+  const demandsInTab = demands.filter((demand) =>
+    isAdmin ? matchesCcrtAdminTab(demand, activeTab) : activeTab === 'all' || getCcrtDemandTab(demand) === activeTab
+  );
   const visibleDemands = demandsInTab
     .filter((demand) => (!filters.status || demand.status === filters.status) && matchesCcrtDemandSearch(demand, filters.search))
     .toSorted((first, second) => {
@@ -86,7 +96,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
       status={filters.status}
       demands={visibleDemands}
       statusOptions={demandeChaleurRenouvelableStatusOptions.filter(
-        (status) => activeTab === 'all' || getCcrtDemandTab({ status: status.value }) === activeTab
+        (status) => isAdmin || activeTab === 'all' || getCcrtDemandTab({ status: status.value }) === activeTab
       )}
       onSearchChange={(search) => void setFilters({ search, tab: activeTab })}
       onSearch={tracking.trackSearch}
@@ -114,11 +124,15 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
               <span className="hidden lg:inline">Demandes d’accompagnement</span>
             </h1>
             <p className="mb-6 hidden lg:block">{description}</p>
+            {isAdmin && <CcrtModerationIndicators demands={demands} />}
             <CcrtDemandTabs
+              isAdmin={isAdmin}
               activeTab={activeTab}
               isLoading={query.isLoading}
               counts={{
-                all: demands.length,
+                all: demands.filter((demand) => !isAdmin || demand.archived_at === null).length,
+                archived: demands.filter((demand) => demand.archived_at !== null).length,
+                awaiting_validation: demands.filter((demand) => !demand.validated && demand.archived_at === null).length,
                 closed: demands.filter((demand) => getCcrtDemandTab(demand) === 'closed').length,
                 completed: demands.filter((demand) => getCcrtDemandTab(demand) === 'completed').length,
                 in_progress: demands.filter((demand) => getCcrtDemandTab(demand) === 'in_progress').length,
