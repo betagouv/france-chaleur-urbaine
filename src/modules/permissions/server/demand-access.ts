@@ -249,10 +249,11 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess, demand
 };
 
 /**
- * Loads a demand with the fields needed for access checks.
+ * Query selecting the `DemandForAccess` fields of one non-deleted demand. Single source of the access-check
+ * projection: callers extend it (`.select(...)`) rather than rebuilding it, so a new access field cannot be forgotten.
  */
-export const getDemandForAccessCheck = async (demandId: string): Promise<DemandForAccess | null> => {
-  const result = await kdb
+export const buildDemandForAccessQuery = (demandId: string) =>
+  kdb
     .selectFrom('demands')
     .leftJoin('reseaux_de_chaleur as rdc', (j) =>
       j.onRef('rdc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'reseau_de_chaleur')
@@ -273,7 +274,10 @@ export const getDemandForAccessCheck = async (demandId: string): Promise<DemandF
     ])
     .select((eb) => eb.fn.coalesce('rdc.organization_id', 'zrc.organization_id').as('network_organization_id'))
     .where('demands.id', '=', demandId)
-    .where('demands.deleted_at', 'is', null)
-    .executeTakeFirst();
-  return result ?? null;
-};
+    .where('demands.deleted_at', 'is', null);
+
+/**
+ * Loads a demand with the fields needed for access checks.
+ */
+export const getDemandForAccessCheck = async (demandId: string): Promise<DemandForAccess | null> =>
+  (await buildDemandForAccessQuery(demandId).executeTakeFirst()) ?? null;

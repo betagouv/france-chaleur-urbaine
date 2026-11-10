@@ -16,7 +16,7 @@ Connection requests ("demandes de raccordement") lifecycle: creation, enrichment
 - `server/email-communication.ts` — gestionnaire → demandeur free-text emails, archived in `demand_emails`.
 - `server/account-linking.ts` — links anonymous demands to accounts by email on every login.
 - `server/eligibility.ts` — enrichment helpers (territory incl. `custom_territory_ids`, gas consumption, BDNB), network distance and auto-assignment, eligibility recalculation.
-- `server/helpers.ts` — access control (`ensureUserCanAccessDemand` vs `ensureUserCanProcessDemand`), query builder, anonymization. Both access helpers return the loaded demand; callers must reuse it instead of loading it again.
+- `server/helpers.ts` — access control (`ensureUserCanAccessDemand` vs `ensureUserCanProcessDemand`), query builder, anonymization. Both access helpers return the loaded demand; callers must reuse it instead of loading it again. The fields read for the check come from `buildDemandForAccessQuery` (`permissions/server/demand-access.ts`), the single access projection shared with the partner API: extend that query, never rebuild it.
 - `server/legacy-values.ts` — `legacy_values` JSONB merge helpers.
 
 ## Purpose & boundaries
