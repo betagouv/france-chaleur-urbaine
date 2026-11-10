@@ -85,9 +85,9 @@ Données modifiées à l'inscription :
 | Statut du compte | Base — `users.status` | « En attente de confirmation de l'email » |
 | Jeton d'activation | Base — `users.activation_token` | Généré, intégré au lien de l'email |
 | Acceptation des CGU | Base — `users.accepted_cgu_at` | Horodatée si cochée |
-| Abonnement à la newsletter | Base — `users.optin_at` | Horodaté si coché |
+| Abonnement à la newsletter | Base — `users.newsletter_optin_at` | Horodaté si coché |
 | Entreprise | Base — `users.entreprise` | Fiche complète récupérée via le SIRET |
-| Contact CRM | ADEME Connect | Nom, prénom, email, téléphone, SIRET de l'entreprise si renseigné, rubriques selon rôle et type de structure, type d'organisme (uniquement pour les rôles particulier, gestionnaire et professionnel), consentement newsletter |
+| Contact CRM | ADEME Connect | Nom, prénom, email, téléphone, SIRET de l'entreprise si renseigné, rubriques selon rôle et type de structure, type d'organisme (uniquement pour les rôles particulier, gestionnaire et professionnel), consentement newsletter avec la date d'abonnement du jour si la case est cochée |
 
 Données modifiées à l'activation (clic sur le lien) :
 
@@ -96,6 +96,10 @@ Données modifiées à l'activation (clic sur le lien) :
 | Statut du compte | Base — `users.status` | Passe à « valide » |
 | Date d'activation | Base — `users.activated_at` | Horodatée |
 | Jeton d'activation | Base — `users.activation_token` | Effacé (usage unique) |
+
+### Abonnement à la newsletter depuis « Mon compte »
+
+La personne peut s'abonner ou se désabonner à tout moment depuis « Mon compte ». Si le choix change, `users.newsletter_optin_at` est renseigné ou effacé, un événement [«&nbsp;Abonnement newsletter&nbsp;»](/admin/events?types=user_newsletter_subscribed) ou [«&nbsp;Désabonnement newsletter&nbsp;»](/admin/events?types=user_newsletter_unsubscribed) est enregistré et le contact ADEME Connect reçoit le nouveau consentement avec la date d'abonnement ou de désabonnement du jour. Si le choix est identique à celui déjà enregistré, rien n'est modifié ni transmis.
 
 ## Parcours 2 — Création par un admin
 
@@ -136,9 +140,9 @@ Données modifiées :
 
 ### Modification et suppression par un admin
 
-Depuis la même page, un admin peut modifier n'importe quel compte (identité, téléphone, rôle, structure, abonnement à la newsletter, activation) ou le supprimer. Ces actions n'envoient aucun email.
+Depuis la même page, un admin peut modifier n'importe quel compte (identité, téléphone, rôle, structure, abonnement à la newsletter, activation) ou le supprimer. Ces actions n'envoient aucun email. L'acceptation des CGU et sa date y sont affichées en lecture seule : seule l'inscription publique la recueille, un admin ne peut pas la poser.
 
-- **Modification** : le contact ADEME Connect est resynchronisé depuis le compte (nom, prénom, téléphone, SIRET de l'entreprise si renseigné, rubriques du rôle et de la structure, type d'organisme pour les rôles particulier, gestionnaire et professionnel, consentement newsletter). **Le changement d'email n'est pas répercuté** : le contact reste connu sous l'ancien email dans le CRM. L'état actif ou inactif du compte n'est pas transmis.
+- **Modification** : le contact ADEME Connect est resynchronisé depuis le compte (nom, prénom, téléphone, SIRET de l'entreprise si renseigné, rubriques du rôle et de la structure, type d'organisme pour les rôles particulier, gestionnaire et professionnel). Le consentement newsletter n'est transmis que s'il change, avec la date d'abonnement ou de désabonnement du jour. **Le changement d'email n'est pas répercuté** : le contact reste connu sous l'ancien email dans le CRM. L'état actif ou inactif du compte n'est pas transmis.
 - **Suppression** : rien n'est envoyé à ADEME Connect, le contact y reste tel quel.
 - Événements enregistrés : [«&nbsp;Mise à jour utilisateur (admin)&nbsp;»](/admin/events?types=user_updated_by_admin), [«&nbsp;Suppression utilisateur (admin)&nbsp;»](/admin/events?types=user_deleted_by_admin).
 

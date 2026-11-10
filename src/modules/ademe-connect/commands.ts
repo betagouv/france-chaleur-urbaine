@@ -7,7 +7,6 @@ import { createContact, getContact } from '@/modules/ademe-connect/server/client
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { type UserRole, userRoles } from '@/types/enum/UserRole';
-import { isOneOf } from '@/utils/array';
 
 export function registerAdemeConnectCommands(parentProgram: Command) {
   const program = parentProgram.command('ademe-connect').description('Commandes pour le CRM ADEME Connect');
@@ -49,13 +48,14 @@ export function registerAdemeConnectCommands(parentProgram: Command) {
       const users = await kdb
         .selectFrom('users')
         .select([
+          'accepted_cgu_at',
           'email',
           'first_name',
           'last_name',
           'phone',
           'role',
           'structure_type',
-          'optin_at',
+          'newsletter_optin_at',
           'created_at',
           'last_connection',
           'entreprise',
@@ -80,11 +80,12 @@ export function registerAdemeConnectCommands(parentProgram: Command) {
 
         try {
           await createContact({
-            abonnementNewsletter: !!user.optin_at,
-            acceptationRGPD: isOneOf(user.role, ['particulier', 'professionnel']),
+            abonnementNewsletter: !!user.newsletter_optin_at,
+            // Only the public registration form collects the CGU acceptance; admin or partner-created accounts never do.
+            acceptationRGPD: !!user.accepted_cgu_at,
             dateConnexion: user.last_connection ? dayjs(user.last_connection).format('YYYY-MM-DDTHH:mm:ss') : undefined,
             dateCreation: user.created_at ? dayjs(user.created_at).format('YYYY-MM-DDTHH:mm:ss') : undefined,
-            dateNewsletter: user.optin_at ? dayjs(user.optin_at).format('YYYY-MM-DD') : undefined,
+            dateNewsletter: user.newsletter_optin_at ? dayjs(user.newsletter_optin_at).format('YYYY-MM-DD') : undefined,
             email: user.email,
             nom: user.last_name ?? undefined,
             prenom: user.first_name ?? undefined,

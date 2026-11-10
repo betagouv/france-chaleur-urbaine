@@ -1012,7 +1012,7 @@ export interface Users {
   id: Generated<string>;
   last_connection: Date | null;
   last_name: string | null;
-  optin_at: Date | null;
+  newsletter_optin_at: Date | null;
   password: string;
   phone: string | null;
   preferences: Generated<JSONColumnType<UserPreferences>>;

@@ -59,7 +59,7 @@ export const register = async ({
       activation_token: activationToken,
       email: lowerCaseEmail,
       entreprise: verifiedEntreprise ? sql<string | null>`${JSON.stringify(verifiedEntreprise)}::jsonb` : null,
-      optin_at: optin_newsletter ? new Date() : null,
+      newsletter_optin_at: optin_newsletter ? new Date() : null,
       password: await hash(password, await genSalt(10)),
       role,
       status: 'pending_email_confirmation',
@@ -81,6 +81,7 @@ export const register = async ({
   createContact({
     abonnementNewsletter: optin_newsletter,
     acceptationRGPD: true,
+    dateNewsletter: optin_newsletter ? dayjs().format('YYYY-MM-DD') : undefined,
     email: insertedUser.email,
     nom: userData.last_name,
     prenom: userData.first_name,

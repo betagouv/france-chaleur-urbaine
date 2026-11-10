@@ -1,8 +1,7 @@
 import { TRPCError } from '@trpc/server';
-import dayjs from 'dayjs';
 import { z } from 'zod';
 
-import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole } from '@/modules/ademe-connect/constants';
+import { ALL_FCU_RUBRIQUES, buildNewsletterFields, buildRubriques, isSyncedRole } from '@/modules/ademe-connect/constants';
 import { updateContact } from '@/modules/ademe-connect/server/client';
 import { createUserEvent } from '@/modules/events/server/service';
 import { adminRoute } from '@/modules/trpc/server';
@@ -58,7 +57,10 @@ export const usersRouter = router({
   },
 
   updateNewsletterSubscription: routeAuthenticated.input(zUpdateNewsletterSchema).mutation(async ({ ctx, input }) => {
-    await usersService.updateNewsletterSubscription(ctx.user.id, input.optin_newsletter);
+    const changed = await usersService.updateNewsletterSubscription(ctx.user.id, input.optin_newsletter);
+    if (!changed) {
+      return;
+    }
 
     await createUserEvent({
       author_id: ctx.user.id,
@@ -68,11 +70,7 @@ export const usersRouter = router({
     });
 
     if (isSyncedRole(ctx.user.role)) {
-      const now = dayjs().format('YYYY-MM-DD');
-      updateContact(ctx.user.email, {
-        abonnementNewsletter: input.optin_newsletter,
-        ...(input.optin_newsletter ? { dateNewsletter: now } : { dateFinNewsletter: now }),
-      }).catch((error) =>
+      updateContact(ctx.user.email, buildNewsletterFields(input.optin_newsletter)).catch((error) =>
         logger.error('ademe-connect updateContact failed on updateNewsletterSubscription', { error, user_id: ctx.user.id })
       );
     }

@@ -133,7 +133,7 @@ const applyRule = async (rule: RetentionRule): Promise<number> => {
           email: sql<string>`${ANONYMIZED_EMAIL_PREFIX} || id::text || ${ANONYMIZED_EMAIL_DOMAIN}`,
           first_name: null,
           last_name: null,
-          optin_at: null,
+          newsletter_optin_at: null,
           password: unusablePassword,
           phone: null,
           preferences: sql`preferences || '{"email_signature": null}'::jsonb`,

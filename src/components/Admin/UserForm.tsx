@@ -2,6 +2,7 @@ import { useStore } from '@tanstack/react-form';
 import { useState } from 'react';
 import type { z } from 'zod';
 
+import Checkbox from '@/components/form/dsfr/Checkbox';
 import Badge from '@/components/ui/Badge';
 import Tag from '@/components/ui/Tag';
 import { EntrepriseField } from '@/modules/form/EntrepriseField';
@@ -25,6 +26,7 @@ import type { User } from '@/modules/users/server/service';
 import type { UsersResponse } from '@/pages/api/admin/users/[[...slug]]';
 import { type UserRole, userRoles, userRolesWithPermissions } from '@/types/enum/UserRole';
 import cx from '@/utils/cx';
+import { formatFrenchDate } from '@/utils/date';
 import { ObjectEntries } from '@/utils/typescript';
 
 export type OnCreate = (data: UsersResponse['createInput'], permissions?: Permission[], tagIds?: string[]) => Promise<void> | void;
@@ -73,8 +75,8 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
     entreprise: user?.entreprise ?? null,
     first_name: user?.first_name ?? '',
     last_name: user?.last_name ?? '',
+    newsletter_optin_at: !!user?.newsletter_optin_at,
     notifications: user?.preferences.notifications ?? defaultUserPreferences.notifications,
-    optin_at: !!user?.optin_at,
     phone: user?.phone ?? '',
     role: user?.role || 'gestionnaire',
     status: user?.status || 'pending_email_confirmation',
@@ -214,9 +216,22 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
             )}
           </form.AppField>
           {!isNew && (
-            <form.AppField name="optin_at">
-              {(field) => <field.CheckboxField label={<>A accepté les conditions d'utilisation</>} />}
+            <form.AppField name="newsletter_optin_at">
+              {(field) => <field.CheckboxField label="Abonné à la newsletter France Chaleur Urbaine" />}
             </form.AppField>
+          )}
+          {!isNew && (
+            // Read-only: only the public registration form collects the CGU acceptance, an admin must not set it.
+            <Checkbox
+              small
+              label="A accepté les conditions générales d'utilisation"
+              hintText={
+                user?.accepted_cgu_at
+                  ? `Acceptées le ${formatFrenchDate(new Date(user.accepted_cgu_at))} lors de l'inscription`
+                  : "Non recueillies : seule l'inscription publique les demande"
+              }
+              nativeInputProps={{ checked: !!user?.accepted_cgu_at, disabled: true, name: 'accepted_cgu_at', readOnly: true }}
+            />
           )}
         </div>
 

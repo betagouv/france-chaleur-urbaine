@@ -7,7 +7,7 @@
 ```
 src/modules/ademe-connect/
   AGENTS.md
-  constants.ts        # isSyncedRole, UserRole → typeOrganisme, role/structure → rubriques, ALL_FCU_RUBRIQUES
+  constants.ts        # isSyncedRole, UserRole → typeOrganisme, role/structure → rubriques, ALL_FCU_RUBRIQUES, buildNewsletterFields
   constants.spec.ts
   commands.ts         # CLI commands (contact:get, contact:create, contacts:bulk-create)
   server/
@@ -46,6 +46,8 @@ Without `CLIENT_ID` + `CLIENT_SECRET`, `createContact` / `updateContact` are no-
 - On update, callers send `rubriquesASupprimer: ALL_FCU_RUBRIQUES` together with the new `rubriques` so the contact ends up with exactly the FCU rubriques of its current role/structure (non-FCU rubriques untouched).
 - Auth: `client_id` + `client_secret` headers on every request.
 - Logging: `info` lines carry only a pseudonymized email; the full request payload and the API response are logged at `debug` level (`LOG_LEVEL=debug`), which exposes personal data — never enable it durably in production.
+- `acceptationRGPD` mirrors `users.accepted_cgu_at`, which only the public registration form sets: `true` on register, `false` for admin or partner-created accounts, read from the row in the bulk backfill.
+- Newsletter consent: on creation `abonnementNewsletter` mirrors `users.newsletter_optin_at`, with `dateNewsletter` = today (`YYYY-MM-DD`) when opted in. On updates (self-service toggle, admin edit) the consent is sent **only when it actually changes**, through `buildNewsletterFields(subscribed)`: `abonnementNewsletter` + `dateNewsletter` (subscribe) or `dateFinNewsletter` (unsubscribe) = today. An unchanged consent sends no newsletter field, so the CRM dates stay meaningful.
 - Empty string / null / undefined fields are stripped before sending (API requirement); `false` booleans are kept (`abonnementNewsletter: false`).
 - Fields `ExternalID`, `federationId`, `ancienMail` are never sent.
 - Creation and update return a queue acknowledgment, not a direct CRM confirmation.
@@ -58,9 +60,9 @@ Without `CLIENT_ID` + `CLIENT_SECRET`, `createContact` / `updateContact` are no-
 | `modules/auth/server/service.ts` → `register` | `createContact` | Public self-registration (particulier, professionnel) |
 | `modules/auth/server/service.ts` → `login` | `updateContact` | Login: update `dateConnexion` |
 | `modules/users/server/service.ts` → `create` | `createContact` | Admin or partner API (ENGIE feed) creates a user, any synced role |
-| `modules/users/server/service.ts` → `update` | `updateContact` | Admin edits a user: identity, phone, rubriques, newsletter (resync from the stored row, under the previous email) |
+| `modules/users/server/service.ts` → `update` | `updateContact` | Admin edits a user: identity, phone, rubriques (resync from the stored row, under the previous email); newsletter consent only when it changed |
 | `modules/users/server/trpc-routes.ts` → `updateProfile` | `updateContact` | Profile update: first/last name, phone, rubriques |
-| `modules/users/server/trpc-routes.ts` → `updateNewsletterSubscription` | `updateContact` | Newsletter opt-in/out |
+| `modules/users/server/trpc-routes.ts` → `updateNewsletterSubscription` | `updateContact` | Newsletter opt-in/out from « Mon compte », only when the stored consent changes (no event nor sync otherwise) |
 | `modules/ademe-connect/commands.ts` → CLI | `createContact`, `getContact` | Manual commands / bulk backfill |
 
 All calls are fire-and-forget: errors are logged but not propagated to the caller.
@@ -79,4 +81,4 @@ pnpm cli ademe-connect contacts:bulk-create [--dry-run] [--role <role>]
 
 ## Dependencies
 
-`constants.ts` imports the `UserRole` / `StructureType` types only. `commands.ts` reads the `users` table.
+`constants.ts` imports the `UserRole` / `StructureType` types and `dayjs` only. `commands.ts` reads the `users` table.
