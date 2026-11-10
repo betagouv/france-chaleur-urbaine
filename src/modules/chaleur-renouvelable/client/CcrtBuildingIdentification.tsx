@@ -15,7 +15,7 @@ const identificationFields = [
 type CcrtBuildingIdentificationProps = { demand: CcrtDemand; onMap?: () => void };
 
 /**
- * Read-only building identity and a map link at the saved building coordinates.
+ * Read-only building identity and a map link highlighting the saved building.
  */
 export function CcrtBuildingIdentification({ demand, onMap }: CcrtBuildingIdentificationProps) {
   const eligibility = trpc.batEnr.ccrt.getHeatNetworkEligibility.useQuery({ demandId: demand.id });
@@ -39,7 +39,7 @@ export function CcrtBuildingIdentification({ demand, onMap }: CcrtBuildingIdenti
         {coordinates && (
           <a
             className="text-right fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line mt-2 self-start"
-            href={`/carte?coord=${coordinates.lon},${coordinates.lat}&zoom=17&address=${encodeURIComponent(demand.address)}`}
+            href={`/carte?coord=${coordinates.lon},${coordinates.lat}&zoom=17${demand.batiment_construction_id ? `&construction_id=${encodeURIComponent(demand.batiment_construction_id)}` : ''}`}
             onClick={onMap}
             rel="noopener noreferrer"
             target="_blank"

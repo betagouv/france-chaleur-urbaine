@@ -6,7 +6,11 @@ import { uuid } from '@/tests/helpers';
 import type { CcrtDemand } from '../types';
 import { CcrtBuildingForm } from './CcrtBuildingForm';
 
-const mocks = vi.hoisted(() => ({ eligibility: { distance: 96, isEligible: true }, invalidate: vi.fn(), mutateAsync: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  eligibility: { coordinates: { lat: 47.2, lon: -1.55 }, distance: 96, isEligible: true },
+  invalidate: vi.fn(),
+  mutateAsync: vi.fn(),
+}));
 vi.mock('@/modules/trpc/client', async () => {
   const { useState } = await import('react');
   const utils = {
@@ -108,6 +112,19 @@ describe('CcrtBuildingForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.mutateAsync.mockResolvedValue({ id: demand.id, updatedAt: '2026-10-08T10:01:00.000Z' });
+  });
+
+  it.each([null, 'BATIMENT-1'])('links to the saved building on the national map with construction id %s', (constructionId) => {
+    render(<CcrtBuildingForm demand={{ ...demand, batiment_construction_id: constructionId }} />);
+    const link = screen.getByRole('link', { name: 'Afficher dans la carte' });
+    const url = new URL(link.getAttribute('href')!, 'http://localhost');
+
+    expect(url.pathname).toStrictEqual('/carte');
+    expect(Object.fromEntries(url.searchParams)).toStrictEqual({
+      ...(constructionId ? { construction_id: constructionId } : {}),
+      coord: '-1.55,47.2',
+      zoom: '17',
+    });
   });
 
   it('automatically saves a valid edit after typing stops without submitting a button', async () => {
