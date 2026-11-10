@@ -1,5 +1,6 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
+import { SolutionFlow } from '../client/SolutionFlow';
 import { SolutionFundingCard } from '../client/SolutionFundingCard';
 import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
@@ -112,7 +113,14 @@ function OperationSection() {
         <SolutionListItem>un ballon de stockage, dans lequel l’eau est chauffée et conservée</SolutionListItem>
         <SolutionListItem>un système d’appoint, qui prend le relais lorsque la production solaire est insuffisante</SolutionListItem>
       </ul>
-      <p>Soleil → capteurs solaires thermiques → ballon de stockage → eau chaude sanitaire</p>
+      <SolutionFlow
+        steps={[
+          { label: 'Soleil' },
+          { label: 'Capteurs solaires thermiques' },
+          { label: 'Ballon de stockage' },
+          { label: 'Eau chaude sanitaire' },
+        ]}
+      />
       <p>L’appoint complète la production lorsque cela est nécessaire.</p>
     </SolutionSection>
   );
