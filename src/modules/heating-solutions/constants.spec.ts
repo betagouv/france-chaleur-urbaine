@@ -3,13 +3,15 @@ import { join } from 'node:path';
 
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { articleSections, articlesBySlug } from '@/components/Ressources/config';
 import { modesDeChauffage } from '@/modules/chaleur-renouvelable/client/heating-modes/catalog';
 
 import { getHeatingSolution, getHeatingSolutionHref, heatingSolutions } from './constants';
 import { heatingSolutionContent } from './content';
+
+vi.mock('@root/public/icons/arrow-down-line.svgr', () => ({ default: 'svg' }));
 
 describe('validated heating solution publication', () => {
   it('publishes exactly the fifteen validated source pages with unique routes and mode mappings', () => {
