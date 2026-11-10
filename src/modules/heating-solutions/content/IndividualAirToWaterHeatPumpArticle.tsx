@@ -89,7 +89,7 @@ function OverviewSection() {
  */
 function DefinitionSection() {
   return (
-    <SolutionSection id="de-quoi-sagit-il" photo="/img/icon-pac.webp">
+    <SolutionSection id="de-quoi-sagit-il" photo="/img/heating-solutions/air-water.svg">
       <p>
         Une pompe à chaleur (PAC) air/eau individuelle utilise les calories présentes dans l’air pour produire de la chaleur et alimenter le
         chauffage d’un logement et, selon les modèles, produire l’eau chaude sanitaire.

@@ -15,7 +15,7 @@ export const heatingSolutions = [
   },
   {
     buildingLabel: 'logement',
-    image: 'img/icon-pac.webp',
+    image: 'img/heating-solutions/air-water.svg',
     modeIds: ['individual-apartment-air-water-heat-pump', 'house-air-water-heat-pump'],
     slug: 'pac-air-eau-individuelle',
     sourceUrl: 'https://app.notion.com/3976523d57d78092b21deafdf5051db6',
