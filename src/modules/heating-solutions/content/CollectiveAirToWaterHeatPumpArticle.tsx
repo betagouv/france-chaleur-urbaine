@@ -363,7 +363,7 @@ function ResourcesSection() {
           Le simulateur réalisé par <strong>France Chaleur Urbaine</strong> vous permet d'évaluer la pertinence d'une PAC air/eau collective
           pour votre bâtiment.
         </p>
-        <p>Vous y trouverez :</p>
+        <p className="mb-0">Vous y trouverez :</p>
         <ul>
           <SolutionListItem>des ressources pour vous accompagner dans votre projet</SolutionListItem>
           <SolutionListItem>des ressources pour identifier les aides financières et les interlocuteurs adaptés</SolutionListItem>

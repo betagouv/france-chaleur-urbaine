@@ -319,7 +319,7 @@ function ResourcesSection() {
           Le simulateur réalisé par France Chaleur Urbaine vous permet d'évaluer la pertinence d'une PAC air/eau collective dédiée à la
           production d'eau chaude sanitaire pour votre bâtiment.
         </p>
-        <p>Vous y trouverez :</p>
+        <p className="mb-0">Vous y trouverez :</p>
         <ul>
           <SolutionListItem>une estimation des coûts de consommation et du prix de l’installation</SolutionListItem>
           <SolutionListItem>

@@ -348,7 +348,7 @@ function ResourcesSection() {
           Le simulateur réalisé par <strong>France Chaleur Urbaine</strong> vous permet d'évaluer la pertinence d'une PAC air/eau
           individuelle pour votre logement.
         </p>
-        <p>Vous y trouverez :</p>
+        <p className="mb-0">Vous y trouverez :</p>
         <ul>
           <SolutionListItem>une estimation des coûts de consommation et du prix de l’installation</SolutionListItem>
           <SolutionListItem>

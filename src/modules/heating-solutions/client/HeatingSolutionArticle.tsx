@@ -44,16 +44,13 @@ export function HeatingSolutionArticle({ solution }: HeatingSolutionArticleProps
               className="hidden h-26 w-32 shrink-0 object-contain sm:block"
             />
           </header>
-          <Button
-            priority="secondary"
-            size="small"
-            iconId="fr-icon-download-line"
-            className="mt-4 print:hidden"
-            onClick={() => window.print()}
-          >
+          <Button priority="secondary" iconId="fr-icon-download-line" className="mt-4 print:hidden" onClick={() => window.print()}>
             Exporter la fiche en PDF
           </Button>
           <Content />
+          <Button priority="secondary" iconId="fr-icon-download-line" className="mt-4 print:hidden" onClick={() => window.print()}>
+            Exporter la fiche en PDF
+          </Button>
         </article>
       </div>
     </SolutionBuildingContext.Provider>

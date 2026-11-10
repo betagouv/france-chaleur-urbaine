@@ -68,7 +68,7 @@ function OverviewSection() {
           </p>
         </SolutionSummaryCard>
         <SolutionSummaryCard tone="feasibility">
-          <p>Nécessite :</p>
+          <p className="mb-0">Nécessite :</p>
           <ul>
             <SolutionListItem>
               un terrain ou une ressource en eau souterraine compatible avec le système de captage envisagé
@@ -404,7 +404,7 @@ function ResourcesSection() {
           Le simulateur réalisé par <strong>France Chaleur</strong> <strong>Urbaine</strong> vous permet d'évaluer la pertinence d'une PAC
           géothermique pour votre bâtiment.
         </p>
-        <p>Vous y trouverez :</p>
+        <p className="mb-0">Vous y trouverez :</p>
         <ul>
           <SolutionListItem>une estimation des coûts de consommation et du prix de l’installation</SolutionListItem>
           <SolutionListItem>

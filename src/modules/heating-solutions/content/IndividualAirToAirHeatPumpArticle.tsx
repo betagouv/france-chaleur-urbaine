@@ -59,7 +59,7 @@ function OverviewSection() {
           <p>3 000–5 000 €</p>
         </SolutionSummaryCard>
         <SolutionSummaryCard tone="feasibility">
-          <p>Nécessite :</p>
+          <p className="mb-0">Nécessite :</p>
           <ul>
             <SolutionListItem>un emplacement adapté pour installer l’unité extérieure</SolutionListItem>
             <SolutionListItem>la possibilité d’installer une ou plusieurs unités intérieures dans le logement</SolutionListItem>
@@ -190,25 +190,27 @@ function BenefitsSection() {
 function CautionsSection() {
   return (
     <SolutionSection id="vigilance">
-      <p>
-        <strong>Bruit :</strong> les unités intérieures et extérieures peuvent générer des nuisances sonores
-      </p>
-      <p>
-        <strong>Impact esthétique :</strong> l’unité extérieure peut modifier l’aspect du bâtiment
-      </p>
-      <p>
-        <strong>Copropriété et urbanisme :</strong> le règlement doit être vérifié et une autorisation peut être nécessaire lorsque
-        l’installation affecte les parties communes ou l’aspect extérieur
-      </p>
-      <p>
-        <strong>Contraintes architecturales :</strong> des règles particulières peuvent s’appliquer dans certaines zones protégées
-      </p>
-      <p>
-        <strong>Raccordement électrique :</strong> la capacité de l’installation électrique doit être vérifiée
-      </p>
-      <p>
-        <strong>Eau chaude sanitaire :</strong> la PAC air/air ne la produit généralement pas ; un autre équipement doit donc être prévu
-      </p>
+      <ul>
+        <SolutionListItem>
+          <strong>Bruit :</strong> les unités intérieures et extérieures peuvent générer des nuisances sonores
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Impact esthétique :</strong> l’unité extérieure peut modifier l’aspect du bâtiment
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Copropriété et urbanisme :</strong> le règlement doit être vérifié et une autorisation peut être nécessaire lorsque
+          l’installation affecte les parties communes ou l’aspect extérieur
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Contraintes architecturales :</strong> des règles particulières peuvent s’appliquer dans certaines zones protégées
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Raccordement électrique :</strong> la capacité de l’installation électrique doit être vérifiée
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Eau chaude sanitaire :</strong> la PAC air/air ne la produit généralement pas ; un autre équipement doit donc être prévu
+        </SolutionListItem>
+      </ul>
     </SolutionSection>
   );
 }
@@ -362,7 +364,7 @@ function ResourcesSection() {
           Le simulateur réalisé par France Chaleur Urbaine vous permet d’évaluer la pertinence d’une PAC air/air pour votre logement et de
           la comparer aux autres solutions adaptées à votre situation.
         </p>
-        <p>Vous y trouverez :</p>
+        <p className="mb-0">Vous y trouverez :</p>
         <ul>
           <SolutionListItem>une estimation des coûts de consommation et du prix de l’installation</SolutionListItem>
           <SolutionListItem>

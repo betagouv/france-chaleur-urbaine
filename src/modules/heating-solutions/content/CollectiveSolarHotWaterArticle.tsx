@@ -63,7 +63,7 @@ function OverviewSection() {
           <p>2000 à 3000 €/logement</p>
         </SolutionSummaryCard>
         <SolutionSummaryCard tone="feasibility">
-          <p>Nécessite :</p>
+          <p className="mb-0">Nécessite :</p>
           <ul>
             <SolutionListItem>une surface suffisante pour installer les capteurs solaires</SolutionListItem>
             <SolutionListItem>une exposition adaptée et peu ombragée</SolutionListItem>
@@ -160,26 +160,28 @@ function BenefitsSection() {
 function CautionsSection() {
   return (
     <SolutionSection id="vigilance">
-      <p>
-        <strong>Surface et exposition</strong> : les performances dépendent de l’implantation des capteurs et de l’ombrage.
-      </p>
-      <p>
-        <strong>Dimensionnement</strong> : la surface de capteurs et le volume du ballon doivent être adaptés aux besoins du foyer.
-      </p>
-      <p>
-        <strong>Emplacement du ballon</strong> : il est préférable de limiter la distance entre les capteurs et le ballon afin de réduire
-        les pertes de chaleur.
-      </p>
-      <p>
-        <strong>Surchauffe</strong> : l’installation doit prévoir une gestion des périodes où la production solaire est importante mais les
-        besoins faibles.
-      </p>
-      <p>
-        <strong>Appoint</strong> : un autre système reste nécessaire lorsque l’énergie solaire est insuffisante.
-      </p>
-      <p>
-        <strong>Entretien</strong> : un suivi régulier permet de vérifier le bon fonctionnement et les performances de l’installation.
-      </p>
+      <ul>
+        <SolutionListItem>
+          <strong>Surface et exposition</strong> : les performances dépendent de l’implantation des capteurs et de l’ombrage.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Dimensionnement</strong> : la surface de capteurs et le volume du ballon doivent être adaptés aux besoins du foyer.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Emplacement du ballon</strong> : il est préférable de limiter la distance entre les capteurs et le ballon afin de réduire
+          les pertes de chaleur.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Surchauffe</strong> : l’installation doit prévoir une gestion des périodes où la production solaire est importante mais
+          les besoins faibles.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Appoint</strong> : un autre système reste nécessaire lorsque l’énergie solaire est insuffisante.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Entretien</strong> : un suivi régulier permet de vérifier le bon fonctionnement et les performances de l’installation.
+        </SolutionListItem>
+      </ul>
     </SolutionSection>
   );
 }
@@ -326,7 +328,7 @@ function ResourcesSection() {
           Le simulateur réalisé par France Chaleur Urbaine vous permet d’évaluer la pertinence du solaire thermique pour votre bâtiment et
           de le comparer aux autres solutions adaptées à votre situation.
         </p>
-        <p>Vous y trouverez :</p>
+        <p className="mb-0">Vous y trouverez :</p>
         <ul>
           <SolutionListItem>une estimation des coûts de consommation et du prix de l’installation</SolutionListItem>
           <SolutionListItem>

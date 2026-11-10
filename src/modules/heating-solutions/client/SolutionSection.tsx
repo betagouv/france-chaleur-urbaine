@@ -33,9 +33,9 @@ export function SolutionSection({ id, photo, children }: SolutionSectionProps) {
       <div
         className={cx(
           'gap-5 [&_p]:leading-6 [&_li]:leading-6 [&_a:not(.fr-btn)]:text-(--text-action-high-blue-france) [&_h3]:text-lg [&_h3]:leading-7 [&_strong]:font-bold',
-          (illustration || photo) && 'md:flex md:items-start',
+          (illustration || photo) && 'md:flex md:items-center',
           id === 'conditions' &&
-            '[&_ul]:grid [&_ul]:list-none [&_ul]:gap-3 [&_ul]:pl-0 [&_ul]:sm:grid-cols-2 [&_ul]:lg:grid-cols-4 [&_li]:min-h-28 [&_li]:rounded-2xl [&_li]:bg-[#f3f6fe] [&_li]:px-4 [&_li]:py-4',
+            '[&_ul]:grid [&_ul]:list-none [&_ul]:gap-3 [&_ul]:pl-0 [&_ul]:sm:grid-cols-2 [&_ul]:lg:grid-cols-4 [&_ul:has(>li:nth-child(3):last-child)]:lg:grid-cols-3 [&_li]:min-h-28 [&_li]:rounded-2xl [&_li]:bg-[#f3f6fe] [&_li]:px-4 [&_li]:py-4',
           illustration === 'advantages' && '[&_li]:mb-2 [&_li]:rounded-2xl [&_li]:bg-[#e3fdeb] [&_li]:px-4 [&_li]:py-2',
           illustration === 'vigilance' && '[&_li]:mb-2 [&_li]:rounded-2xl [&_li]:bg-[#fef7da] [&_li]:px-4 [&_li]:py-2',
           illustration === 'cost' && 'rounded-2xl bg-[#fde2b5] p-4'
@@ -63,7 +63,12 @@ export function SolutionSection({ id, photo, children }: SolutionSectionProps) {
             className="mx-auto mb-4 h-auto w-full max-w-72 rounded-2xl object-contain md:order-2 md:mb-0 md:w-1/3"
           />
         )}
-        <div className={cx('min-w-0 flex-1 [&>p:last-child]:mb-0', id === 'aller-plus-loin' && 'grid gap-4 md:grid-cols-2')}>
+        <div
+          className={cx(
+            'min-w-0 flex-1 [&>p:last-child]:mb-0',
+            id === 'aller-plus-loin' && 'grid gap-4 md:grid-cols-2 [&>:only-child]:col-span-full'
+          )}
+        >
           <SolutionSectionContext.Provider value={id}>{children}</SolutionSectionContext.Provider>
         </div>
       </div>
