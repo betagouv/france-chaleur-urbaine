@@ -83,7 +83,7 @@ type BatEnrBatimentFeatureProperties = {
 type BatEnrBatimentSelectorProps = {
   batiments: SelectableBatEnrBatiment[];
   value: string | null;
-  onSelect: (batimentConstructionId: string) => void;
+  onSelect?: (batimentConstructionId: string) => void;
 };
 
 export function BatEnrBatimentSelector({ batiments, value, onSelect }: BatEnrBatimentSelectorProps) {
@@ -96,7 +96,7 @@ export function BatEnrBatimentSelector({ batiments, value, onSelect }: BatEnrBat
   const sources = useMemo(() => [{ data: featureCollection, id: SOURCE_ID, promoteId: 'batimentConstructionId' }], [featureCollection]);
 
   useMapLayers({ layers: BAT_ENR_SELECTOR_LAYERS, sources });
-  useMapClickCapture(featureCollection.features.length > 0);
+  useMapClickCapture(onSelect !== undefined && featureCollection.features.length > 0);
 
   useEffect(() => {
     if (!mapReady || !value || !map.getSource(SOURCE_ID)) {
@@ -192,7 +192,7 @@ export function BatEnrBatimentSelector({ batiments, value, onSelect }: BatEnrBat
       const batimentConstructionId = getFeatureBatimentConstructionId(event.features?.[0]);
 
       if (batimentConstructionId) {
-        onSelectRef.current(batimentConstructionId);
+        onSelectRef.current?.(batimentConstructionId);
       }
     };
 

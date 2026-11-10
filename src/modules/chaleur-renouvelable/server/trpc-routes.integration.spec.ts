@@ -963,8 +963,8 @@ describe('batEnrRouter', () => {
         items: [
           {
             ...newerDemandInput,
-            acquisition: null,
             access_users: [],
+            acquisition: null,
             alternative_heating_solutions: [],
             archive_comment: null,
             archive_reason: null,
@@ -990,8 +990,8 @@ describe('batEnrRouter', () => {
           },
           {
             ...olderDemandInput,
-            acquisition: null,
             access_users: [],
+            acquisition: null,
             alternative_heating_solutions: [],
             archive_comment: null,
             archive_reason: null,
