@@ -63,7 +63,7 @@ function OverviewSection() {
           </p>
         </SolutionSummaryCard>
         <SolutionSummaryCard tone="feasibility">
-          <p>Sa mise en œuvre nécessite :</p>
+          <p className="mb-0">Sa mise en œuvre nécessite :</p>
           <ul>
             <SolutionListItem>un emplacement adapté pour l’installation de l’équipement ;</SolutionListItem>
             <SolutionListItem>de prendre en compte les éventuelles contraintes acoustiques et architecturales.</SolutionListItem>
@@ -283,15 +283,6 @@ function FundingSection() {
         <SolutionFundingCard kind="cee">les Certificats d’économies d’énergie (CEE), sous conditions</SolutionFundingCard>
         <SolutionFundingCard kind="local">des aides locales, selon le territoire.</SolutionFundingCard>
       </SolutionFundingList>
-      <p>Pour connaître les aides mobilisables selon votre situation, utilisez le simulateur d’aides</p>
-      <p>
-        Pour en savoir plus sur les aides mobilisables, utilisez le simulateur <strong>France Chaleur Urbaine :</strong>
-      </p>
-      <p>
-        <SolutionContentLink href="https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable">
-          Tester le simulateur
-        </SolutionContentLink>
-      </p>
     </SolutionSection>
   );
 }

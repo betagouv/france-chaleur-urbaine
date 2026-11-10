@@ -316,15 +316,6 @@ function FundingSection() {
           </SolutionContentLink>
         </SolutionFundingCard>
       </SolutionFundingList>
-      <p>
-        Pour en savoir plus sur les aides mobilisables, utilisez le simulateur de <strong>France Chaleur Urbaine</strong>, qui vous oriente
-        vers les dispositifs adaptés
-      </p>
-      <p>
-        <SolutionContentLink href="https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable">
-          Tester le simulateur
-        </SolutionContentLink>
-      </p>
     </SolutionSection>
   );
 }

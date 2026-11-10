@@ -310,11 +310,6 @@ function FundingSection() {
         <SolutionFundingCard kind="local">Aides locales, selon le territoire.</SolutionFundingCard>
       </SolutionFundingList>
       <p>Le montant des aides dépend notamment de la situation du ménage et du projet.</p>
-      <p>
-        <SolutionContentLink href="https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable">
-          Tester le simulateur
-        </SolutionContentLink>
-      </p>
     </SolutionSection>
   );
 }
