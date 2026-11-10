@@ -4,6 +4,7 @@ import { SolutionFlow } from '../client/SolutionFlow';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -218,43 +219,41 @@ function CautionsSection() {
 function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
-      <p>
-        1. <strong>Étudier la faisabilité</strong>
-      </p>
-      <p>Évaluer les besoins de chauffage et vérifier les possibilités d’implantation des équipements.</p>
-      <ol start={2}>
-        <SolutionListItem>
-          <strong>Vérifier les règles de la copropriété et de l’urbanisme</strong>
-        </SolutionListItem>
-      </ol>
-      <p>Consulter les éventuels règlements et identifier les autorisations nécessaires.</p>
-      <ol start={3}>
-        <SolutionListItem>
-          <strong>Dimensionner l’installation</strong>
-        </SolutionListItem>
-      </ol>
-      <p>Déterminer la puissance nécessaire et choisir une configuration monosplit ou multisplit selon les pièces à chauffer.</p>
-      <ol start={4}>
-        <SolutionListItem>
-          <strong>Choisir l’emplacement des équipements</strong>
-        </SolutionListItem>
-      </ol>
-      <p>
-        Déterminer l’implantation de l’unité extérieure et des unités intérieures en tenant compte des contraintes acoustiques et
-        architecturales.
-      </p>
-      <ol start={5}>
-        <SolutionListItem>
-          <strong>Installer les équipements</strong>
-        </SolutionListItem>
-      </ol>
-      <p>Installer l’unité extérieure et les unités intérieures et réaliser les raccordements nécessaires.</p>
-      <ol start={6}>
-        <SolutionListItem>
-          <strong>Mettre en service et entretenir l’installation</strong>
-        </SolutionListItem>
-      </ol>
-      <p>Régler l’équipement et assurer son entretien régulier.</p>
+      <SolutionSteps
+        steps={[
+          {
+            description: <p>Évaluer les besoins de chauffage et vérifier les possibilités d’implantation des équipements.</p>,
+            title: 'Étudier la faisabilité',
+          },
+          {
+            description: <p>Consulter les éventuels règlements et identifier les autorisations nécessaires.</p>,
+            title: 'Vérifier les règles de la copropriété et de l’urbanisme',
+          },
+          {
+            description: (
+              <p>Déterminer la puissance nécessaire et choisir une configuration monosplit ou multisplit selon les pièces à chauffer.</p>
+            ),
+            title: 'Dimensionner l’installation',
+          },
+          {
+            description: (
+              <p>
+                Déterminer l’implantation de l’unité extérieure et des unités intérieures en tenant compte des contraintes acoustiques et
+                architecturales.
+              </p>
+            ),
+            title: 'Choisir l’emplacement des équipements',
+          },
+          {
+            description: <p>Installer l’unité extérieure et les unités intérieures et réaliser les raccordements nécessaires.</p>,
+            title: 'Installer les équipements',
+          },
+          {
+            description: <p>Régler l’équipement et assurer son entretien régulier.</p>,
+            title: 'Mettre en service et entretenir l’installation',
+          },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.

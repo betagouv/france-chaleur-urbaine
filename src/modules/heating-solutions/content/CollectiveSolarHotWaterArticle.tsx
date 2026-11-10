@@ -1,8 +1,11 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -187,33 +190,37 @@ function CautionsSection() {
 function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
-      <p>
-        <strong>1. Évaluer les besoins en eau chaude</strong>
-      </p>
-      <p>Prendre en compte le nombre d’occupants et les besoins en eau chaude du bâtiment.</p>
-      <p>
-        <strong>2. Vérifier la faisabilité de l’installation</strong>
-      </p>
-      <p>Étudier la surface disponible, l’exposition, l’inclinaison, les éventuels ombrages et l’emplacement du ballon.</p>
-      <p>
-        <strong>3. Dimensionner l’installation</strong>
-      </p>
-      <p>Déterminer la surface de capteurs et le volume de stockage adaptés aux besoins.</p>
-      <p>
-        <strong>4. Définir le système d’appoint</strong>
-      </p>
-      <p>Prévoir le système qui complètera la production solaire lorsqu’elle sera insuffisante.</p>
-      <p>
-        <strong>5. Identifier les aides et établir le financement</strong>
-      </p>
-      <p>
-        <strong>6. Installer et mettre en service les équipements</strong>
-      </p>
-      <p>Installation des capteurs, du ballon, du circuit et de la régulation.</p>
-      <p>
-        <strong>7. Entretenir l’installation</strong>
-      </p>
-      <p>Contrôler régulièrement son fonctionnement et ses performances.</p>
+      <SolutionSteps
+        steps={[
+          {
+            description: <p>Prendre en compte le nombre d’occupants et les besoins en eau chaude du bâtiment.</p>,
+            title: 'Évaluer les besoins en eau chaude',
+          },
+          {
+            description: (
+              <p>Étudier la surface disponible, l’exposition, l’inclinaison, les éventuels ombrages et l’emplacement du ballon.</p>
+            ),
+            title: 'Vérifier la faisabilité de l’installation',
+          },
+          {
+            description: <p>Déterminer la surface de capteurs et le volume de stockage adaptés aux besoins.</p>,
+            title: 'Dimensionner l’installation',
+          },
+          {
+            description: <p>Prévoir le système qui complètera la production solaire lorsqu’elle sera insuffisante.</p>,
+            title: 'Définir le système d’appoint',
+          },
+          { title: 'Identifier les aides et établir le financement' },
+          {
+            description: <p>Installation des capteurs, du ballon, du circuit et de la régulation.</p>,
+            title: 'Installer et mettre en service les équipements',
+          },
+          {
+            description: <p>Contrôler régulièrement son fonctionnement et ses performances.</p>,
+            title: 'Entretenir l’installation',
+          },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.
@@ -292,12 +299,11 @@ function FundingSection() {
   return (
     <SolutionSection id="aides">
       <p>Plusieurs aides peuvent contribuer au financement d’une installation solaire thermique collective, sous conditions</p>
-      <p>**</p>
-      <ul>
-        <SolutionListItem funding="heatFund">Fonds Chaleur :** le chauffe-eau solaire collectif est éligible</SolutionListItem>
-        <SolutionListItem funding="cee">**Certificats d’économies d’énergie (CEE)</SolutionListItem>
-        <SolutionListItem funding="local">Aides locales**, selon le territoire.</SolutionListItem>
-      </ul>
+      <SolutionFundingList>
+        <SolutionFundingCard kind="heatFund">Fonds Chaleur : le chauffe-eau solaire collectif est éligible</SolutionFundingCard>
+        <SolutionFundingCard kind="cee">Certificats d’économies d’énergie (CEE)</SolutionFundingCard>
+        <SolutionFundingCard kind="local">Aides locales, selon le territoire.</SolutionFundingCard>
+      </SolutionFundingList>
       <p>Le montant des aides dépend notamment des caractéristiques du bâtiment et du projet.</p>
     </SolutionSection>
   );

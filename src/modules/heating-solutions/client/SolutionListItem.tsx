@@ -2,34 +2,17 @@ import { type ReactNode, useContext } from 'react';
 
 import cx from '@/utils/cx';
 
-import { SolutionPictogram } from './SolutionPictogram';
 import { SolutionSectionContext } from './SolutionSection';
 
 type SolutionListItemProps = {
   children?: ReactNode;
-  funding?: keyof typeof fundingIcons;
 };
 
 /**
- * Renders funding pictograms, checklist icons for conditions and benefits, and crosses for cautions.
+ * Uses checklist icons for conditions and benefits, and crosses for cautions.
  */
-export function SolutionListItem({ children, funding }: SolutionListItemProps) {
+export function SolutionListItem({ children }: SolutionListItemProps) {
   const sectionId = useContext(SolutionSectionContext);
-  if (funding) {
-    return (
-      <li className="flex list-none items-center gap-2 [&::marker]:content-none">
-        <SolutionPictogram icon={fundingIcons[funding]} />
-        <div className="min-w-0 [&>p:last-child]:mb-0">{children}</div>
-      </li>
-    );
-  }
-  if (sectionId === 'etapes') {
-    return (
-      <li>
-        <div className="min-w-0 [&>p:last-child]:mb-0">{children}</div>
-      </li>
-    );
-  }
   if (sectionId !== 'conditions' && sectionId !== 'avantages' && sectionId !== 'vigilance') {
     return <li>{children}</li>;
   }
@@ -45,11 +28,3 @@ export function SolutionListItem({ children, funding }: SolutionListItemProps) {
     </li>
   );
 }
-
-const fundingIcons = {
-  cee: '🎟️',
-  financing: '🏦',
-  heatFund: '🔥',
-  local: '📍',
-  renovation: '🏠',
-} as const;

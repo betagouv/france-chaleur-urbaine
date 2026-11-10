@@ -1,9 +1,12 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
 import { SolutionFlow } from '../client/SolutionFlow';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -207,20 +210,21 @@ function CautionsSection() {
 function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
-      <ul>
-        <SolutionListItem>
-          Étude des besoins de chauffage du logement et vérification de la faisabilité de l’installation ;
-        </SolutionListItem>
-        <SolutionListItem>Choix de l’appareil et du combustible (bûches ou granulés), du modèle et de sa puissance ;</SolutionListItem>
-        <SolutionListItem>Recherche des financements mobilisables ;</SolutionListItem>
-        <SolutionListItem>
-          Installation de l’appareil par un professionnel qualifié et, si nécessaire, création ou adaptation du conduit de fumée ;
-        </SolutionListItem>
-        <SolutionListItem>
-          Mise en service de l'installation, puis entretien annuel par un professionnel qualifié et ramonage du conduit conformément aux
-          obligations réglementaires.
-        </SolutionListItem>
-      </ul>
+      <SolutionSteps
+        steps={[
+          { title: 'Étude des besoins de chauffage du logement et vérification de la faisabilité de l’installation ;' },
+          { title: 'Choix de l’appareil et du combustible (bûches ou granulés), du modèle et de sa puissance ;' },
+          { title: 'Recherche des financements mobilisables ;' },
+          {
+            title:
+              'Installation de l’appareil par un professionnel qualifié et, si nécessaire, création ou adaptation du conduit de fumée ;',
+          },
+          {
+            title:
+              "Mise en service de l'installation, puis entretien annuel par un professionnel qualifié et ramonage du conduit conformément aux obligations réglementaires.",
+          },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.
@@ -301,17 +305,17 @@ function FundingSection() {
     <SolutionSection id="aides">
       <p>L'installation peut bénéficier de plusieurs dispositifs d'aide, sous réserve de respecter les critères d'éligibilité.</p>
       <p>Selon les projets, il est notamment possible de mobiliser :</p>
-      <ul>
-        <SolutionListItem funding="cee">
+      <SolutionFundingList>
+        <SolutionFundingCard kind="cee">
           les <strong>Certificats d'économies d'énergie (CEE)</strong>
-        </SolutionListItem>
-        <SolutionListItem funding="local">
+        </SolutionFundingCard>
+        <SolutionFundingCard kind="local">
           dans certains cas, des <strong>aides locales,</strong> en particulier{' '}
           <SolutionContentLink href="https://agirpourlatransition.ademe.fr/particuliers/amenager-maison/renover/aide-fonds-air-bois">
             les Primes Air Bois
           </SolutionContentLink>
-        </SolutionListItem>
-      </ul>
+        </SolutionFundingCard>
+      </SolutionFundingList>
       <p>
         Pour en savoir plus sur les aides mobilisables, utilisez le simulateur de <strong>France Chaleur Urbaine</strong>, qui vous oriente
         vers les dispositifs adaptés

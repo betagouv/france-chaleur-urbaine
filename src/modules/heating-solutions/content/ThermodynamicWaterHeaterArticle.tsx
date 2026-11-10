@@ -1,9 +1,12 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
 import { SolutionFlow } from '../client/SolutionFlow';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -197,13 +200,15 @@ function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
       <p>Un projet de chauffe-eau thermodynamique comprend plusieurs étapes :</p>
-      <ol>
-        <SolutionListItem>Vérification de la faisabilité de l’installation</SolutionListItem>
-        <SolutionListItem>Choix et dimensionnement de l’équipement en fonction des besoins en eau chaude sanitaire</SolutionListItem>
-        <SolutionListItem>Recherche des financements mobilisables</SolutionListItem>
-        <SolutionListItem>Installation et mise en service</SolutionListItem>
-        <SolutionListItem>Exploitation et maintenance</SolutionListItem>
-      </ol>
+      <SolutionSteps
+        steps={[
+          { title: 'Vérification de la faisabilité de l’installation' },
+          { title: 'Choix et dimensionnement de l’équipement en fonction des besoins en eau chaude sanitaire' },
+          { title: 'Recherche des financements mobilisables' },
+          { title: 'Installation et mise en service' },
+          { title: 'Exploitation et maintenance' },
+        ]}
+      />
       <p>
         <strong>
           Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
@@ -270,14 +275,14 @@ function FundingSection() {
     <SolutionSection id="aides">
       <p>Plusieurs dispositifs peuvent contribuer au financement d’un chauffe-eau thermodynamique, sous conditions.</p>
       <p>Selon le projet, il est notamment possible de mobiliser :</p>
-      <ul>
-        <SolutionListItem funding="renovation">
+      <SolutionFundingList>
+        <SolutionFundingCard kind="renovation">
           MaPrimeRénov’ : depuis le 1er septembre 2026, le chauffe-eau thermodynamique n’est plus financé en tant que geste seul. Il peut
           être pris en compte lorsqu’il s’intègre dans un projet MaPrimeRénov’ Rénovation d’ampleur
-        </SolutionListItem>
-        <SolutionListItem funding="cee">les Certificats d’économies d’énergie (CEE), sous conditions</SolutionListItem>
-        <SolutionListItem funding="local">des aides locales, selon le territoire.</SolutionListItem>
-      </ul>
+        </SolutionFundingCard>
+        <SolutionFundingCard kind="cee">les Certificats d’économies d’énergie (CEE), sous conditions</SolutionFundingCard>
+        <SolutionFundingCard kind="local">des aides locales, selon le territoire.</SolutionFundingCard>
+      </SolutionFundingList>
       <p>Pour connaître les aides mobilisables selon votre situation, utilisez le simulateur d’aides</p>
       <p>
         Pour en savoir plus sur les aides mobilisables, utilisez le simulateur <strong>France Chaleur Urbaine :</strong>

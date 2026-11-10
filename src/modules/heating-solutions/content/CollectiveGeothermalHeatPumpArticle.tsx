@@ -1,9 +1,12 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
 import { SolutionFlow } from '../client/SolutionFlow';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -276,16 +279,18 @@ function CautionsSection() {
 function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
-      <ol>
-        <SolutionListItem>Recherche d’un AMO (non obligatoire mais fortement conseillée)</SolutionListItem>
-        <SolutionListItem>Étude du bâtiment et des besoins et puissances de chauffage (voire d’ECS et de froid)</SolutionListItem>
-        <SolutionListItem>Étude de faisabilité et du potentiel géothermique de la parcelle</SolutionListItem>
-        <SolutionListItem>Choix et dimensionnement de la solution</SolutionListItem>
-        <SolutionListItem>Recherche des financements mobilisables</SolutionListItem>
-        <SolutionListItem>Réalisation du système de captage et installation de la pompe à chaleur</SolutionListItem>
-        <SolutionListItem>Mise en service et réglages</SolutionListItem>
-        <SolutionListItem>Exploitation et maintenance</SolutionListItem>
-      </ol>
+      <SolutionSteps
+        steps={[
+          { title: 'Recherche d’un AMO (non obligatoire mais fortement conseillée)' },
+          { title: 'Étude du bâtiment et des besoins et puissances de chauffage (voire d’ECS et de froid)' },
+          { title: 'Étude de faisabilité et du potentiel géothermique de la parcelle' },
+          { title: 'Choix et dimensionnement de la solution' },
+          { title: 'Recherche des financements mobilisables' },
+          { title: 'Réalisation du système de captage et installation de la pompe à chaleur' },
+          { title: 'Mise en service et réglages' },
+          { title: 'Exploitation et maintenance' },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.
@@ -373,11 +378,11 @@ function FundingSection() {
     <SolutionSection id="aides">
       <p>L'installation peut bénéficier de plusieurs dispositifs d'aide et de mobiliser des professionnels compétents et qualifiés.</p>
       <p>Selon les projets, il est notamment possible de mobiliser :</p>
-      <ul>
-        <SolutionListItem funding="cee">les Certificats d'économies d'énergie (CEE)</SolutionListItem>
-        <SolutionListItem funding="heatFund">le Fonds Chaleur de l'ADEME</SolutionListItem>
-        <SolutionListItem funding="local">dans certains cas des aides locales</SolutionListItem>
-      </ul>
+      <SolutionFundingList>
+        <SolutionFundingCard kind="cee">les Certificats d'économies d'énergie (CEE)</SolutionFundingCard>
+        <SolutionFundingCard kind="heatFund">le Fonds Chaleur de l'ADEME</SolutionFundingCard>
+        <SolutionFundingCard kind="local">dans certains cas des aides locales</SolutionFundingCard>
+      </SolutionFundingList>
       <p>
         Pour en savoir plus sur les aides mobilisables, utilisez le simulateur réalisé par <strong>France Chaleur Urbaine</strong>, qui vous
         oriente vers les dispositifs adaptés

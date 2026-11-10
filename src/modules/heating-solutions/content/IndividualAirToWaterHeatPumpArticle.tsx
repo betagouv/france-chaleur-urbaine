@@ -1,9 +1,12 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
 import { SolutionFlow } from '../client/SolutionFlow';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -231,26 +234,16 @@ function CautionsSection() {
 function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
-      <ol>
-        <SolutionListItem>
-          <p>Étude de faisabilité du logement et des équipements existants / devis de l’installateur</p>
-        </SolutionListItem>
-        <SolutionListItem>
-          <p>Choix et dimensionnement de la solution</p>
-        </SolutionListItem>
-        <SolutionListItem>
-          <p>Vérification des autorisations nécessaires auprès de la copropriété</p>
-        </SolutionListItem>
-        <SolutionListItem>
-          <p>Recherche des financements mobilisables</p>
-        </SolutionListItem>
-        <SolutionListItem>
-          <p>Installation et mise en service</p>
-        </SolutionListItem>
-        <SolutionListItem>
-          <p>Exploitation et maintenance</p>
-        </SolutionListItem>
-      </ol>
+      <SolutionSteps
+        steps={[
+          { title: 'Étude de faisabilité du logement et des équipements existants / devis de l’installateur' },
+          { title: 'Choix et dimensionnement de la solution' },
+          { title: 'Vérification des autorisations nécessaires auprès de la copropriété' },
+          { title: 'Recherche des financements mobilisables' },
+          { title: 'Installation et mise en service' },
+          { title: 'Exploitation et maintenance' },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.
@@ -327,13 +320,13 @@ function FundingSection() {
     <SolutionSection id="aides">
       <p>L’installation peut bénéficier de plusieurs dispositifs d’aide, sous réserve de respecter les critères d’éligibilité.</p>
       <p>Selon les projets, il est possible de mobiliser :</p>
-      <ul>
-        <SolutionListItem funding="renovation">
+      <SolutionFundingList>
+        <SolutionFundingCard kind="renovation">
           MaPrimeRénov’ : éligible, sous conditions de ressources et de respect des critères techniques.
-        </SolutionListItem>
-        <SolutionListItem funding="cee">les Certificats d’économies d’énergie (CEE)</SolutionListItem>
-        <SolutionListItem funding="local">dans certains cas des aides locales</SolutionListItem>
-      </ul>
+        </SolutionFundingCard>
+        <SolutionFundingCard kind="cee">les Certificats d’économies d’énergie (CEE)</SolutionFundingCard>
+        <SolutionFundingCard kind="local">dans certains cas des aides locales</SolutionFundingCard>
+      </SolutionFundingList>
       <p>
         Pour en savoir plus sur les aides mobilisables, utilisez le simulateur réalisé par <strong>France Chaleur Urbaine :</strong>
       </p>

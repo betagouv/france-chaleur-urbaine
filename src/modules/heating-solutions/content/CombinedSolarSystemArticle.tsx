@@ -1,8 +1,11 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -187,34 +190,42 @@ function CautionsSection() {
 function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
-      <p>
-        <strong>1. Évaluer les besoins en eau chaude et en chauffage</strong>
-      </p>
-      <p>Prendre en compte le niveau d’isolation, le nombre d’occupants et les besoins en eau chaude du foyer.</p>
-      <p>
-        <strong>2. Vérifier la faisabilité de l’installation</strong>
-      </p>
-      <p>Étudier la surface disponible, l’exposition, l’inclinaison, les éventuels ombrages et l’emplacement du ballon.</p>
-      <p>
-        <strong>3. Dimensionner l’installation</strong>
-      </p>
-      <p>Déterminer la surface de capteurs et le volume de stockage adaptés aux besoins.</p>
-      <p>
-        <strong>4. Définir le système d’appoint</strong>
-      </p>
-      <p>Prévoir le système qui complètera la production solaire lorsqu’elle sera insuffisante.</p>
-      <p>
-        <strong>5. Identifier les aides et établir le financement</strong>
-      </p>
-      <p>Les demandes d’aides doivent être réalisées avant le démarrage des travaux, qu’il s’agisse de MaPrimeRénov’ ou CEE.</p>
-      <p>
-        <strong>6. Installer et mettre en service les équipements</strong>
-      </p>
-      <p>Installation des capteurs, du ballon, du circuit et de la régulation.</p>
-      <p>
-        <strong>7. Entretenir l’installation</strong>
-      </p>
-      <p>Contrôler régulièrement son fonctionnement et ses performances.</p>
+      <SolutionSteps
+        steps={[
+          {
+            description: <p>Prendre en compte le niveau d’isolation, le nombre d’occupants et les besoins en eau chaude du foyer.</p>,
+            title: 'Évaluer les besoins en eau chaude et en chauffage',
+          },
+          {
+            description: (
+              <p>Étudier la surface disponible, l’exposition, l’inclinaison, les éventuels ombrages et l’emplacement du ballon.</p>
+            ),
+            title: 'Vérifier la faisabilité de l’installation',
+          },
+          {
+            description: <p>Déterminer la surface de capteurs et le volume de stockage adaptés aux besoins.</p>,
+            title: 'Dimensionner l’installation',
+          },
+          {
+            description: <p>Prévoir le système qui complètera la production solaire lorsqu’elle sera insuffisante.</p>,
+            title: 'Définir le système d’appoint',
+          },
+          {
+            description: (
+              <p>Les demandes d’aides doivent être réalisées avant le démarrage des travaux, qu’il s’agisse de MaPrimeRénov’ ou CEE.</p>
+            ),
+            title: 'Identifier les aides et établir le financement',
+          },
+          {
+            description: <p>Installation des capteurs, du ballon, du circuit et de la régulation.</p>,
+            title: 'Installer et mettre en service les équipements',
+          },
+          {
+            description: <p>Contrôler régulièrement son fonctionnement et ses performances.</p>,
+            title: 'Entretenir l’installation',
+          },
+        ]}
+      />
     </SolutionSection>
   );
 }
@@ -283,14 +294,14 @@ function FundingSection() {
   return (
     <SolutionSection id="aides">
       <p>Plusieurs aides peuvent contribuer au financement d’un système solaire combiné, sous conditions :</p>
-      <ul>
-        <SolutionListItem funding="renovation">
+      <SolutionFundingList>
+        <SolutionFundingCard kind="renovation">
           <strong>MaPrimeRénov’</strong> : le système solaire combiné peut être financé dans le cadre d’une rénovation d’ampleur. Il n’est
           pas éligible seul en monogeste.
-        </SolutionListItem>
-        <SolutionListItem funding="cee">**Certificats d’économies d’énergie (CEE)</SolutionListItem>
-        <SolutionListItem funding="local">Aides locales**, selon le territoire.</SolutionListItem>
-      </ul>
+        </SolutionFundingCard>
+        <SolutionFundingCard kind="cee">Certificats d’économies d’énergie (CEE)</SolutionFundingCard>
+        <SolutionFundingCard kind="local">Aides locales, selon le territoire.</SolutionFundingCard>
+      </SolutionFundingList>
       <p>Le montant des aides dépend notamment de la situation du ménage et du projet.</p>
     </SolutionSection>
   );
