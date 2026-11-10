@@ -1,9 +1,12 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
 import { SolutionFlow } from '../client/SolutionFlow';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -249,14 +252,16 @@ function CautionsSection() {
 function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
-      <ol>
-        <SolutionListItem>Recherche d'un AMO (non obligatoire mais fortement conseillée)</SolutionListItem>
-        <SolutionListItem>Étude des besoins du bâtiment et de la faisabilité de la solution biomasse</SolutionListItem>
-        <SolutionListItem>Choix du combustible (granulés ou plaquettes) et dimensionnement de la chaudière et du stockage</SolutionListItem>
-        <SolutionListItem>Recherche des financements mobilisables</SolutionListItem>
-        <SolutionListItem>Travaux d'aménagement de la chaufferie et du silo, puis installation de la chaudière</SolutionListItem>
-        <SolutionListItem>Mise en service, organisation de l'approvisionnement, exploitation et maintenance</SolutionListItem>
-      </ol>
+      <SolutionSteps
+        steps={[
+          { title: "Recherche d'un AMO (non obligatoire mais fortement conseillée)" },
+          { title: 'Étude des besoins du bâtiment et de la faisabilité de la solution biomasse' },
+          { title: 'Choix du combustible (granulés ou plaquettes) et dimensionnement de la chaudière et du stockage' },
+          { title: 'Recherche des financements mobilisables' },
+          { title: "Travaux d'aménagement de la chaufferie et du silo, puis installation de la chaudière" },
+          { title: "Mise en service, organisation de l'approvisionnement, exploitation et maintenance" },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.
@@ -345,17 +350,17 @@ function FundingSection() {
     <SolutionSection id="aides">
       <p>L'installation peut bénéficier de plusieurs dispositifs d'aide, sous réserve de respecter les critères d'éligibilité.</p>
       <p>Selon les projets, il est notamment possible de mobiliser :</p>
-      <ul>
-        <SolutionListItem funding="cee">
+      <SolutionFundingList>
+        <SolutionFundingCard kind="cee">
           les <strong>Certificats d'économies d'énergie (CEE)</strong>
-        </SolutionListItem>
-        <SolutionListItem funding="heatFund">
+        </SolutionFundingCard>
+        <SolutionFundingCard kind="heatFund">
           le <strong>Fonds Chaleur de l'ADEME</strong>
-        </SolutionListItem>
-        <SolutionListItem funding="local">
+        </SolutionFundingCard>
+        <SolutionFundingCard kind="local">
           dans certains cas, des <strong>aides locales</strong>
-        </SolutionListItem>
-      </ul>
+        </SolutionFundingCard>
+      </SolutionFundingList>
       <p>
         Pour en savoir plus sur les aides mobilisables, utilisez le simulateur <strong>France Chaleur Urbaine</strong>, qui vous oriente
         vers les dispositifs adaptés

@@ -29,6 +29,28 @@ describe('validated heating solution publication', () => {
     expect([...article.querySelectorAll('a')].filter((link) => link.textContent?.includes('Faites le test')).length).toStrictEqual(3);
     expect(article.querySelectorAll('#en-quelques-mots h3').length).toStrictEqual(4);
     expect(article.querySelectorAll('section').length).toStrictEqual(11);
+    const stepLists = article.querySelectorAll('#etapes ol');
+    expect(stepLists.length).toStrictEqual(1);
+    const steps = [...stepLists[0].querySelectorAll(':scope > li')];
+    expect(steps.length).toBeGreaterThan(0);
+    expect(steps.map((step) => step.querySelector('[aria-hidden="true"]')?.textContent)).toStrictEqual(
+      steps.map((_step, index) => String(index + 1))
+    );
+    expect(article.textContent).not.toContain('**');
+    const internalLinks = [...article.querySelectorAll('a')].flatMap((link) => {
+      const href = link.getAttribute('href');
+      return href?.startsWith('/') ? [href] : [];
+    });
+    const knownInternalLinks = new Set([
+      '/',
+      '/carte',
+      '/reseaux',
+      '/chaleur-renouvelable',
+      '/ressources/articles',
+      '/ressources/cout-raccordement',
+      ...Object.keys(articlesBySlug).map((slug) => `/ressources/${slug}`),
+    ]);
+    internalLinks.forEach((href) => expect(knownInternalLinks.has(href.split(/[?#]/)[0])).toStrictEqual(true));
     expect(content).not.toMatch(/discussion:\/\/|discussion-urls|notion-file-block:\/\//);
     expect(content).not.toContain('figma.com/api/mcp/asset');
     expect(statSync(join(process.cwd(), 'public', solution.image)).size).toBeGreaterThan(0);

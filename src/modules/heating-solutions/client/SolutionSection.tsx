@@ -38,10 +38,6 @@ export function SolutionSection({ id, photo, children }: SolutionSectionProps) {
             '[&_ul]:grid [&_ul]:list-none [&_ul]:gap-3 [&_ul]:pl-0 [&_ul]:sm:grid-cols-2 [&_ul]:lg:grid-cols-4 [&_li]:min-h-28 [&_li]:rounded-2xl [&_li]:bg-[#f3f6fe] [&_li]:px-4 [&_li]:py-4',
           illustration === 'advantages' && '[&_li]:mb-2 [&_li]:rounded-2xl [&_li]:bg-[#e3fdeb] [&_li]:px-4 [&_li]:py-2',
           illustration === 'vigilance' && '[&_li]:mb-2 [&_li]:rounded-2xl [&_li]:bg-[#fef7da] [&_li]:px-4 [&_li]:py-2',
-          id === 'aides' &&
-            '[&_ul]:flex [&_ul]:list-none [&_ul]:flex-col [&_ul]:gap-3 [&_ul]:pl-0 [&_ul]:md:flex-row [&_li]:min-h-30 [&_li]:min-w-0 [&_li]:flex-1 [&_li]:rounded-2xl [&_li]:bg-[#e3fdeb] [&_li]:p-4',
-          illustration === 'steps' &&
-            '[&_ol]:list-none [&_ol]:pl-0 [&_ol]:[counter-reset:step] [&_ol>li]:mb-2 [&_ol>li]:flex [&_ol>li]:items-start [&_ol>li]:gap-3 [&_ol>li]:rounded-2xl [&_ol>li]:bg-[#f3f6fe] [&_ol>li]:px-4 [&_ol>li]:py-2 [&_ol>li]:[counter-increment:step] [&_ol>li]:before:flex [&_ol>li]:before:size-6 [&_ol>li]:before:shrink-0 [&_ol>li]:before:items-center [&_ol>li]:before:justify-center [&_ol>li]:before:rounded-full [&_ol>li]:before:bg-[#4b4afb] [&_ol>li]:before:text-sm [&_ol>li]:before:font-bold [&_ol>li]:before:text-white [&_ol>li]:before:content-[counter(step)] [&_ol>li::marker]:content-none',
           illustration === 'cost' && 'rounded-2xl bg-[#fde2b5] p-4'
         )}
       >

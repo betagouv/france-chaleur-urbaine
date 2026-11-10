@@ -1,9 +1,12 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
 import { SolutionFlow } from '../client/SolutionFlow';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -261,15 +264,17 @@ function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
       <p>Un projet de PAC géothermique individuelle comprend plusieurs étapes :</p>
-      <ol>
-        <SolutionListItem>Étude de la maison, du terrain et des besoins de chauffage (voire d’ECS et de froid)</SolutionListItem>
-        <SolutionListItem>Étude de faisabilité et choix du système de captage</SolutionListItem>
-        <SolutionListItem>Dimensionnement de la pompe à chaleur et du système de captage</SolutionListItem>
-        <SolutionListItem>Recherche des financements mobilisables</SolutionListItem>
-        <SolutionListItem>Réalisation du captage et installation de la PAC</SolutionListItem>
-        <SolutionListItem>Mise en service</SolutionListItem>
-        <SolutionListItem>Exploitation et maintenance</SolutionListItem>
-      </ol>
+      <SolutionSteps
+        steps={[
+          { title: 'Étude de la maison, du terrain et des besoins de chauffage (voire d’ECS et de froid)' },
+          { title: 'Étude de faisabilité et choix du système de captage' },
+          { title: 'Dimensionnement de la pompe à chaleur et du système de captage' },
+          { title: 'Recherche des financements mobilisables' },
+          { title: 'Réalisation du captage et installation de la PAC' },
+          { title: 'Mise en service' },
+          { title: 'Exploitation et maintenance' },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.
@@ -358,18 +363,18 @@ function FundingSection() {
         des professionnels compétents et qualifiés.
       </p>
       <p>Selon le projet, il est notamment possible de mobiliser :</p>
-      <ul>
-        <SolutionListItem funding="renovation">
+      <SolutionFundingList>
+        <SolutionFundingCard kind="renovation">
           <strong>MaPrimeRénov’</strong> : la pompe à chaleur géothermique est éligible, sous conditions de ressources et de respect des
           critères techniques
-        </SolutionListItem>
-        <SolutionListItem funding="cee">
+        </SolutionFundingCard>
+        <SolutionFundingCard kind="cee">
           <strong>les Certificats d’économies d’énergie (CEE)</strong>, sous conditions
-        </SolutionListItem>
-        <SolutionListItem funding="local">
+        </SolutionFundingCard>
+        <SolutionFundingCard kind="local">
           <strong>des aides locales</strong>, selon le territoire.
-        </SolutionListItem>
-      </ul>
+        </SolutionFundingCard>
+      </SolutionFundingList>
       <p>
         Pour en savoir plus sur les aides mobilisables, utilisez le simulateur réalisé par <strong>France Chaleur Urbaine</strong>, qui vous
         oriente vers les dispositifs adaptés

@@ -4,6 +4,7 @@ import { SolutionFlow } from '../client/SolutionFlow';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -249,42 +250,57 @@ function CautionsSection() {
 function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
-      <p>
-        <strong>1. Se faire accompagner</strong>
-      </p>
-      <p>
-        Il est recommandé de faire appel à un <strong>AMO</strong> pour accompagner la copropriété dans la définition et le suivi du projet.
-      </p>
-      <p>
-        <strong>2. Réaliser une étude de faisabilité</strong>
-      </p>
-      <p>Analyser les besoins de chauffage du bâtiment, les équipements existants et les possibilités d’implantation de la PAC.</p>
-      <p>
-        <strong>3. Dimensionner la solution hybride</strong>
-      </p>
-      <p>Déterminer la puissance de la PAC et les conditions dans lesquelles la chaudière gaz intervient en appoint.</p>
-      <p>
-        <strong>4. Vérifier les contraintes techniques</strong>
-      </p>
-      <p>
-        Étudier l’espace disponible, l’acoustique, le raccordement électrique, le local technique et la compatibilité avec le réseau de
-        chauffage existant.
-      </p>
-      <p>
-        <strong>5. Définir le financement et faire voter les travaux</strong>
-      </p>
-      <p>Identifier les aides mobilisables, établir le plan de financement et soumettre le projet au vote de la copropriété.</p>
-      <p>
-        <strong>6. Réaliser les travaux</strong>
-      </p>
-      <p>Installer la PAC et adapter la chaufferie et les équipements existants.</p>
-      <p>
-        <strong>7. Mettre en service et suivre l'installation</strong>
-      </p>
-      <p>
-        Régler le pilotage entre la PAC et la chaudière afin de privilégier le fonctionnement de la PAC et assurer le suivi des
-        performances.
-      </p>
+      <SolutionSteps
+        steps={[
+          {
+            description: (
+              <p>
+                Il est recommandé de faire appel à un <strong>AMO</strong> pour accompagner la copropriété dans la définition et le suivi du
+                projet.
+              </p>
+            ),
+            title: 'Se faire accompagner',
+          },
+          {
+            description: (
+              <p>Analyser les besoins de chauffage du bâtiment, les équipements existants et les possibilités d’implantation de la PAC.</p>
+            ),
+            title: 'Réaliser une étude de faisabilité',
+          },
+          {
+            description: <p>Déterminer la puissance de la PAC et les conditions dans lesquelles la chaudière gaz intervient en appoint.</p>,
+            title: 'Dimensionner la solution hybride',
+          },
+          {
+            description: (
+              <p>
+                Étudier l’espace disponible, l’acoustique, le raccordement électrique, le local technique et la compatibilité avec le réseau
+                de chauffage existant.
+              </p>
+            ),
+            title: 'Vérifier les contraintes techniques',
+          },
+          {
+            description: (
+              <p>Identifier les aides mobilisables, établir le plan de financement et soumettre le projet au vote de la copropriété.</p>
+            ),
+            title: 'Définir le financement et faire voter les travaux',
+          },
+          {
+            description: <p>Installer la PAC et adapter la chaufferie et les équipements existants.</p>,
+            title: 'Réaliser les travaux',
+          },
+          {
+            description: (
+              <p>
+                Régler le pilotage entre la PAC et la chaudière afin de privilégier le fonctionnement de la PAC et assurer le suivi des
+                performances.
+              </p>
+            ),
+            title: "Mettre en service et suivre l'installation",
+          },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.

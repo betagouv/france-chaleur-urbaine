@@ -1,9 +1,12 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
 import { SolutionFlow } from '../client/SolutionFlow';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -208,14 +211,16 @@ function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
       <p>Un projet de pompe à chaleur collective comprend plusieurs étapes :</p>
-      <ol>
-        <SolutionListItem>Recherche d’un AMO (assistant à maitrise d’ouvrage), non obligatoire mais fortement conseillé</SolutionListItem>
-        <SolutionListItem>Étude de faisabilité du bâtiment</SolutionListItem>
-        <SolutionListItem>Choix et dimensionnement de la solution</SolutionListItem>
-        <SolutionListItem>Recherche des financements mobilisables</SolutionListItem>
-        <SolutionListItem>Installation et mise en service</SolutionListItem>
-        <SolutionListItem>Exploitation et maintenance</SolutionListItem>
-      </ol>
+      <SolutionSteps
+        steps={[
+          { title: 'Recherche d’un AMO (assistant à maitrise d’ouvrage), non obligatoire mais fortement conseillé' },
+          { title: 'Étude de faisabilité du bâtiment' },
+          { title: 'Choix et dimensionnement de la solution' },
+          { title: 'Recherche des financements mobilisables' },
+          { title: 'Installation et mise en service' },
+          { title: 'Exploitation et maintenance' },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.
@@ -286,13 +291,13 @@ function FundingSection() {
     <SolutionSection id="aides">
       <p>L’installation peut bénéficier de plusieurs dispositifs d’aide, sous réserve de respecter les critères d’éligibilité.</p>
       <p>Selon les projets, il est notamment possible de mobiliser :</p>
-      <ul>
-        <SolutionListItem funding="renovation">
+      <SolutionFundingList>
+        <SolutionFundingCard kind="renovation">
           MaPrimeRénov’ Copropriété : la PAC peut être financée lorsqu’elle s’intègre dans un projet de rénovation énergétique de la
           copropriété répondant aux conditions du dispositif
-        </SolutionListItem>
-        <SolutionListItem funding="local">dans certains cas des aides locales</SolutionListItem>
-      </ul>
+        </SolutionFundingCard>
+        <SolutionFundingCard kind="local">dans certains cas des aides locales</SolutionFundingCard>
+      </SolutionFundingList>
       <p>
         Pour en savoir plus sur les aides mobilisables, utilisez le simulateur <strong>France Chaleur Urbaine :</strong>
       </p>

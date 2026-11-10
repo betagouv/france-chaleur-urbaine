@@ -1,9 +1,12 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
 import { SolutionFlow } from '../client/SolutionFlow';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -228,24 +231,17 @@ function CautionsSection() {
 function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
-      <ol>
-        <SolutionListItem>
-          <strong>Étude des besoins de la maison</strong> et de la faisabilité de la solution biomasse
-        </SolutionListItem>
-        <SolutionListItem>
-          <strong>Choix du combustible</strong> et dimensionnement de la chaudière et du stockage
-        </SolutionListItem>
-        <SolutionListItem>
-          <strong>Recherche des financements mobilisables</strong>
-        </SolutionListItem>
-        <SolutionListItem>
-          <strong>Installation de la chaudière</strong>, du système de stockage et, si nécessaire, adaptation du conduit d’évacuation des
-          fumées
-        </SolutionListItem>
-        <SolutionListItem>
-          <strong>Mise en service</strong>, organisation de l’approvisionnement et entretien de l’installation
-        </SolutionListItem>
-      </ol>
+      <SolutionSteps
+        steps={[
+          { title: 'Étude des besoins de la maison et de la faisabilité de la solution biomasse' },
+          { title: 'Choix du combustible et dimensionnement de la chaudière et du stockage' },
+          { title: 'Recherche des financements mobilisables' },
+          {
+            title: 'Installation de la chaudière, du système de stockage et, si nécessaire, adaptation du conduit d’évacuation des fumées',
+          },
+          { title: 'Mise en service, organisation de l’approvisionnement et entretien de l’installation' },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.
@@ -321,17 +317,17 @@ function FundingSection() {
     <SolutionSection id="aides">
       <p>L'installation peut bénéficier de plusieurs dispositifs d'aide, sous réserve de respecter les critères d'éligibilité.</p>
       <p>Selon les projets, il est notamment possible de mobiliser :</p>
-      <ul>
-        <SolutionListItem funding="cee">
+      <SolutionFundingList>
+        <SolutionFundingCard kind="cee">
           les <strong>Certificats d'économies d'énergie (CEE)</strong>
-        </SolutionListItem>
-        <SolutionListItem funding="local">
+        </SolutionFundingCard>
+        <SolutionFundingCard kind="local">
           dans certains cas, des <strong>aides locales,</strong> en particulier{' '}
           <SolutionContentLink href="https://agirpourlatransition.ademe.fr/particuliers/amenager-maison/renover/aide-fonds-air-bois">
             les Primes Air Bois
           </SolutionContentLink>
-        </SolutionListItem>
-      </ul>
+        </SolutionFundingCard>
+      </SolutionFundingList>
       <p>
         Pour en savoir plus sur les aides mobilisables, utilisez le simulateur de <strong>France Chaleur Urbaine</strong>, qui vous oriente
         vers les dispositifs adaptés

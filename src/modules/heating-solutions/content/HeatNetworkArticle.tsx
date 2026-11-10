@@ -1,8 +1,11 @@
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
+import { SolutionFundingCard } from '../client/SolutionFundingCard';
+import { SolutionFundingList } from '../client/SolutionFundingList';
 import { SolutionListItem } from '../client/SolutionListItem';
 import { SolutionResourceCard } from '../client/SolutionResourceCard';
 import { SolutionSection } from '../client/SolutionSection';
+import { SolutionSteps } from '../client/SolutionSteps';
 import { SolutionSummaryCard } from '../client/SolutionSummaryCard';
 import { SolutionTestCallout } from '../client/SolutionTestCallout';
 
@@ -204,36 +207,48 @@ function CautionsSection() {
 function ProjectStepsSection() {
   return (
     <SolutionSection id="etapes">
-      <p>
-        <strong>1. Vérifier si le bâtiment est raccordable</strong>
-      </p>
-      <p>La première étape consiste à identifier les réseaux existants ou en construction à proximité du bâtiment.</p>
-      <p>
-        <strong>2. Faire une demande de raccordement</strong>
-      </p>
-      <p>Le gestionnaire du réseau étudie la possibilité de raccorder le bâtiment et les conditions techniques du projet.</p>
-      <p>
-        <strong>3. Étudier la proposition</strong>
-      </p>
-      <p>
-        La copropriété peut notamment comparer le coût du raccordement, le prix de la chaleur, le mix énergétique du réseau et les travaux
-        nécessaires dans l’immeuble.
-      </p>
-      <p>
-        <strong>4. Faire voter le projet en copropriété</strong>
-      </p>
-      <p>Le raccordement et les travaux associés doivent être soumis à la copropriété.</p>
-      <p>
-        <strong>5. Réaliser les travaux</strong>
-      </p>
-      <p>
-        Les travaux permettent de relier le bâtiment au réseau et d’installer la sous-station assurant l’échange avec le circuit de
-        chauffage de l’immeuble.
-      </p>
-      <p>
-        Lorsque le réseau est en cours de création ou d’extension, le raccordement peut être facilité car son tracé peut être adapté aux
-        bâtiments souhaitant se raccorder.
-      </p>
+      <SolutionSteps
+        steps={[
+          {
+            description: <p>La première étape consiste à identifier les réseaux existants ou en construction à proximité du bâtiment.</p>,
+            title: 'Vérifier si le bâtiment est raccordable',
+          },
+          {
+            description: (
+              <p>Le gestionnaire du réseau étudie la possibilité de raccorder le bâtiment et les conditions techniques du projet.</p>
+            ),
+            title: 'Faire une demande de raccordement',
+          },
+          {
+            description: (
+              <p>
+                La copropriété peut notamment comparer le coût du raccordement, le prix de la chaleur, le mix énergétique du réseau et les
+                travaux nécessaires dans l’immeuble.
+              </p>
+            ),
+            title: 'Étudier la proposition',
+          },
+          {
+            description: <p>Le raccordement et les travaux associés doivent être soumis à la copropriété.</p>,
+            title: 'Faire voter le projet en copropriété',
+          },
+          {
+            description: (
+              <>
+                <p>
+                  Les travaux permettent de relier le bâtiment au réseau et d’installer la sous-station assurant l’échange avec le circuit
+                  de chauffage de l’immeuble.
+                </p>
+                <p>
+                  Lorsque le réseau est en cours de création ou d’extension, le raccordement peut être facilité car son tracé peut être
+                  adapté aux bâtiments souhaitant se raccorder.
+                </p>
+              </>
+            ),
+            title: 'Réaliser les travaux',
+          },
+        ]}
+      />
       <p>
         Il est fortement conseillé de mettre en place un suivi des consommations énergétiques afin de vérifier les performances de
         l’installation dans le temps.
@@ -326,13 +341,13 @@ function FundingSection() {
       <p>
         <strong>À vérifier au moment du projet :</strong>
       </p>
-      <ul>
-        <SolutionListItem funding="renovation">les aides mobilisables par la copropriété</SolutionListItem>
-        <SolutionListItem funding="local">les éventuelles aides ou conditions proposées localement</SolutionListItem>
-        <SolutionListItem funding="financing">
+      <SolutionFundingList>
+        <SolutionFundingCard kind="renovation">les aides mobilisables par la copropriété</SolutionFundingCard>
+        <SolutionFundingCard kind="local">les éventuelles aides ou conditions proposées localement</SolutionFundingCard>
+        <SolutionFundingCard kind="financing">
           les modalités de financement du raccordement proposées par le gestionnaire du réseau
-        </SolutionListItem>
-      </ul>
+        </SolutionFundingCard>
+      </SolutionFundingList>
     </SolutionSection>
   );
 }
