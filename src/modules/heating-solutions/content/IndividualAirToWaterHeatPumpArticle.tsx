@@ -327,14 +327,6 @@ function FundingSection() {
         <SolutionFundingCard kind="cee">les Certificats d’économies d’énergie (CEE)</SolutionFundingCard>
         <SolutionFundingCard kind="local">dans certains cas des aides locales</SolutionFundingCard>
       </SolutionFundingList>
-      <p>
-        Pour en savoir plus sur les aides mobilisables, utilisez le simulateur réalisé par <strong>France Chaleur Urbaine :</strong>
-      </p>
-      <p>
-        <SolutionContentLink href="https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable">
-          Tester le simulateur
-        </SolutionContentLink>
-      </p>
     </SolutionSection>
   );
 }

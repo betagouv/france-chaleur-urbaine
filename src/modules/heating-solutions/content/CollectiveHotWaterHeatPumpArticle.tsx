@@ -61,7 +61,7 @@ function OverviewSection() {
           <p>2000 à 3000 euros</p>
         </SolutionSummaryCard>
         <SolutionSummaryCard tone="feasibility">
-          <p>Sa mise en œuvre nécessite :</p>
+          <p className="mb-0">Sa mise en œuvre nécessite :</p>
           <ul>
             <SolutionListItem>un espace extérieur suffisant pour installer les unités de PAC</SolutionListItem>
             <SolutionListItem>un local technique pour les ballons de stockage</SolutionListItem>
@@ -298,14 +298,6 @@ function FundingSection() {
         </SolutionFundingCard>
         <SolutionFundingCard kind="local">dans certains cas des aides locales</SolutionFundingCard>
       </SolutionFundingList>
-      <p>
-        Pour en savoir plus sur les aides mobilisables, utilisez le simulateur <strong>France Chaleur Urbaine :</strong>
-      </p>
-      <p>
-        <SolutionContentLink href="https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable">
-          Tester le simulateur
-        </SolutionContentLink>
-      </p>
     </SolutionSection>
   );
 }

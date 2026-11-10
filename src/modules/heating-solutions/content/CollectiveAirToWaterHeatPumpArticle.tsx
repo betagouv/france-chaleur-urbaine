@@ -61,7 +61,7 @@ function OverviewSection() {
           <p>4 000 à 6 000 €/logement, pouvant être réduit grâce à des aides financières.</p>
         </SolutionSummaryCard>
         <SolutionSummaryCard tone="feasibility">
-          <p>Sa mise en œuvre nécessite :</p>
+          <p className="mb-0">Sa mise en œuvre nécessite :</p>
           <ul>
             <SolutionListItem>un espace extérieur suffisant pour installer les unités de PAC</SolutionListItem>
             <SolutionListItem>un local technique</SolutionListItem>
@@ -342,15 +342,6 @@ function FundingSection() {
         </SolutionFundingCard>
         <SolutionFundingCard kind="local">dans certains cas des aides locales</SolutionFundingCard>
       </SolutionFundingList>
-      <p>
-        Pour en savoir plus sur les aides mobilisables, utilisez le simulateur <strong>France Chaleur Urbaine</strong>, qui vous oriente
-        notamment vers France Rénov’.
-      </p>
-      <p>
-        <SolutionContentLink href="https://france-chaleur-urbaine.beta.gouv.fr/chaleur-renouvelable">
-          Tester le simulateur
-        </SolutionContentLink>
-      </p>
     </SolutionSection>
   );
 }
