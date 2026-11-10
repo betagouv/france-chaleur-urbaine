@@ -1,9 +1,18 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { SolutionArticleLink } from './SolutionArticleLink';
 
+const tracking = vi.hoisted(() => ({ event: vi.fn() }));
+vi.mock('@/modules/analytics/client', () => ({ trackEvent: vi.fn(), trackPostHogEvent: tracking.event }));
+
 describe('simulator solution article links', () => {
+  it('does not count an internal article opened in a new tab as an external destination', () => {
+    render(<SolutionArticleLink modeId="collective-air-water-heat-pump" solutionName="PAC air/eau collective" />);
+    fireEvent.click(screen.getByRole('link', { name: 'En savoir plus' }));
+    expect(tracking.event).not.toHaveBeenCalledWith('nav:external_link_clicked', expect.anything());
+  });
+
   it.each([
     ['collective-air-water-heat-pump', 'pac-air-eau-collective'],
     ['collective-heat-network', 'reseau-de-chaleur'],
