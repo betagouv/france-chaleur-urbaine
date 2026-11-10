@@ -24,7 +24,7 @@ function NewsletterForm() {
   const form = useAppForm({
     ...schemaValidation(zNewsletter),
     defaultValues: {
-      optin_newsletter: profile?.optin_at !== null && profile?.optin_at !== undefined,
+      optin_newsletter: profile?.newsletter_optin_at !== null && profile?.newsletter_optin_at !== undefined,
     },
   });
 
