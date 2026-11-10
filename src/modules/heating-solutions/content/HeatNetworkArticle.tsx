@@ -370,7 +370,7 @@ function ResourcesSection() {
           <iframe
             src="/iframe/form"
             title="Test d’adresse France Chaleur Urbaine"
-            className="h-[330px] w-full border-0"
+            className="h-[550px] w-full border-0"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
