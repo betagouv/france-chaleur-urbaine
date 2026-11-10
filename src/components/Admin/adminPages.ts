@@ -87,6 +87,12 @@ export const adminPages = [
     label: 'Statistiques par réseau',
   },
   {
+    desc: 'Repérez les réseaux dont les gestionnaires ne répondent plus aux demandes',
+    group: 'analytics',
+    href: '/admin/reseaux/suivi',
+    label: 'Suivi des réseaux',
+  },
+  {
     desc: "Consultez les tests d'éligibilité d'adresses réalisés par les utilisateurs",
     group: 'analytics',
     href: '/admin/tests-adresses',

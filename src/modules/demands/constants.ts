@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { zAcquisition } from '@/modules/analytics/constants';
+import { networkTypes } from '@/modules/reseaux/constants';
 import type { EligibilityType } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { escapeHtml } from '@/utils/html';
@@ -55,6 +56,44 @@ export const demandStatuses = [
 export const demandStatusDefault = demandStatuses[0].label;
 
 export type DemandStatus = DEMANDE_STATUS;
+
+/**
+ * Status groups of the network tracking screen: `pending` waits for the manager, `inProgress` is an open project, `closed` needs no further action.
+ */
+export const demandStatusGroups = {
+  closed: [DEMANDE_STATUS.UNREALISABLE, DEMANDE_STATUS.DONE, DEMANDE_STATUS.ABANDONNED],
+  inProgress: [DEMANDE_STATUS.RECONTACTED, DEMANDE_STATUS.COMMERCIAL_PROPOSAL, DEMANDE_STATUS.VOTED, DEMANDE_STATUS.WORK_IN_PROGRESS],
+  pending: [DEMANDE_STATUS.TO_PROCESS],
+} as const satisfies Record<string, readonly DemandStatus[]>;
+
+export type DemandStatusGroup = keyof typeof demandStatusGroups;
+
+export const demandStatusGroupLabels = {
+  closed: 'Closes',
+  inProgress: 'En cours',
+  pending: 'À traiter',
+} as const satisfies Record<DemandStatusGroup, string>;
+
+/**
+ * First full month with a usable audit log: earlier demand events point to Airtable ids that no longer exist.
+ * A status with no recorded change on an older demand is counted from this date (its real age is greater).
+ */
+export const DEMAND_HISTORY_START = '2025-12-01';
+
+export const networkTrackingStates = ['silent', 'late', 'up_to_date'] as const;
+
+export type NetworkTrackingState = (typeof networkTrackingStates)[number];
+
+export const networkTrackingStateLabels = {
+  late: 'En retard',
+  silent: 'Muet',
+  up_to_date: 'À jour',
+} as const satisfies Record<NetworkTrackingState, string>;
+
+export const zNetworkTrackingInput = z.object({
+  networkId: z.number().int().min(1).max(32_767), // `demands.network_id` is a smallint, the id comes from the URL
+  networkType: z.enum(networkTypes),
+});
 
 export const fcrLegacyValueKeys = {
   alternativeHeatingSolutions: 'Solutions chaleur renouvelable',

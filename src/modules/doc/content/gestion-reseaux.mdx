@@ -148,6 +148,22 @@ Deux choses distinctes portent le mot « statistiques » :
 - [Statistiques par réseau](/admin/reseaux/stats) : par réseau, le nombre de demandes **validées** (total et « À traiter »), sur plusieurs fenêtres de temps, avec les gestionnaires ayant accès et leur dernière connexion. But : **repérer les réseaux dont les demandes ne sont pas traitées** (alerte si toutes les demandes récentes restent en attente). Exportable en Excel.
 - La tâche mensuelle `aggregateMonthlyStats` (voir [Références](/admin/doc/references)) : agrège les stats du mois écoulé (fréquentation, actions…) qui alimentent la **page de statistiques publique**, sans rapport avec la page par réseau.
 
+## Suivi des réseaux
+
+Le [Suivi des réseaux](/admin/reseaux/suivi) complète les statistiques par réseau : au-delà du nombre de demandes en attente, il mesure **ce que les gestionnaires font de leurs demandes**, à partir du journal des événements. Il liste les réseaux ayant au moins une demande validée.
+
+- **Action d'un gestionnaire** : [mise à jour d'une demande](/admin/events?types=demand_updated) ou [envoi d'un courriel au demandeur](/admin/events?types=demand_email_sent) par un compte gestionnaire, collectivité ou ALEC, ou [mise à jour par l'API partenaire](/admin/events?types=api_demand_updated). Les actions des admins ne comptent pas.
+- **Réception d'une demande** : sa [validation par un admin](/admin/events?types=demand_validated), ou sa dernière [réaffectation](/admin/events?types=demand_assignment_changed) si elle a changé de réseau depuis. Le délai de réponse court de cette date jusqu'à la première action d'un gestionnaire.
+- **État du réseau** : «&nbsp;À jour&nbsp;» tant qu'aucune demande «&nbsp;À traiter&nbsp;» n'attend depuis plus de <Rule id="networkTrackingLateDays" />. Au-delà, le réseau est «&nbsp;En retard&nbsp;» si un gestionnaire a agi depuis moins de <Rule id="networkTrackingSilentDays" />, «&nbsp;Muet&nbsp;» sinon.
+- **Taux et délai de réponse** : calculés sur les demandes reçues depuis <Rule id="networkTrackingResponseWindowMonths" />. Le délai affiché est une médiane.
+
+Le nom d'un réseau ouvre son détail : activité mensuelle (demandes reçues et demandes sur lesquelles un gestionnaire a agi), réponse par trimestre, puis répartition des demandes par statut avec l'âge médian dans le statut et le nombre de demandes non closes **bloquées** dans le même statut depuis plus de <Rule id="networkTrackingStuckMonths" />.
+
+**Limites à connaître** :
+
+- Le journal ne permet de reconstituer l'activité que depuis décembre 2025. Une demande plus ancienne restée sans changement n'a ni date de réception ni action connue : elle compte dans les demandes en attente, pas dans le taux de réponse, et son statut est compté depuis le 1er décembre 2025 (son âge réel est supérieur).
+- Le rôle retenu est celui que le compte a aujourd'hui : les actions passées d'un compte qui a changé de rôle depuis ne sont plus attribuées aux gestionnaires.
+
 ## Fusionner des réseaux
 
 Quand plusieurs réseaux de chaleur, de froid ou en construction n'en forment plus qu'un (regroupement en cours d'année, nouvel identifiant SNCU apparu dans l'enquête pour un réseau déjà connu), le bouton **Fusionner des réseaux** en tête de l'onglet concerné de [Gestion des réseaux](/admin/reseaux) ouvre la fusion, toujours entre réseaux **du même type** :

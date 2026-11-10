@@ -1,7 +1,6 @@
 import DSFRBadge from '@codegouvfr/react-dsfr/Badge';
 import Tag from '@codegouvfr/react-dsfr/Tag';
 import type { ColumnFiltersState } from '@tanstack/react-table';
-import dayjs from 'dayjs';
 import { type ReactNode, useMemo } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
@@ -22,13 +21,12 @@ import { NotesCell } from '@/modules/reseaux/client/admin/NotesCell';
 import { RemindersCell } from '@/modules/reseaux/client/admin/RemindersCell';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import trpc from '@/modules/trpc/client';
-import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
-import { objectToURLSearchParams } from '@/utils/network';
 import { compareFrenchStrings, formatMW } from '@/utils/strings';
 
 import type { ReseauxStats } from '../types';
+import { buildAdminDemandsUrl, buildDemandFilters } from './admin-demands-url';
 
 const initialSortingState = [{ desc: true, id: 'lastSixMonths' }];
 const initialFilterState: ColumnFiltersState = [];
@@ -429,24 +427,6 @@ const DemandStatsCell = ({
     <Link href={buildAdminDemandsUrl(buildDemandFilters(networkId, networkType, periodMonths, false))}>{total}</Link>
   </span>
 );
-
-const buildAdminDemandsUrl = (filters: ColumnFiltersState) => {
-  return `/admin/demandes?${objectToURLSearchParams({ demands_filters: filters }).toString()}`;
-};
-
-const buildDemandFilters = (
-  networkId: number,
-  networkType: NetworkType,
-  periodMonths: number | undefined,
-  pendingOnly: boolean
-): ColumnFiltersState => [
-  { id: 'network_id', value: { [`${networkType}:${networkId}`]: true } },
-  { id: 'validated', value: { false: false, true: true } },
-  ...(pendingOnly ? [{ id: 'Status', value: { [DEMANDE_STATUS.TO_PROCESS]: true } }] : []),
-  ...(isDefined(periodMonths)
-    ? [{ id: 'Date de la demande', value: [dayjs().subtract(periodMonths, 'month').format('YYYY-MM-DD'), null, false] }]
-    : []),
-];
 
 const CopyEmailsButton = ({ emails }: { emails: string[] }) => {
   const { copied, copy } = useCopy();

@@ -11,6 +11,7 @@ import {
   zDeleteDemandInput,
   zGestionnaireUpdateDemandInput,
   zListEmailsInput,
+  zNetworkTrackingInput,
   zSendEmailInput,
 } from '../constants';
 import {
@@ -32,6 +33,7 @@ import {
   updateDemandByGestionnaire,
 } from './gestionnaire-operations';
 import { ensureUserCanAccessDemand } from './helpers';
+import { getNetworkTracking, listNetworkTracking } from './network-tracking';
 import { updateCommentFromRelanceId } from './relances';
 import { getReseauxStats } from './stats';
 import { listByUser } from './user-tracking';
@@ -70,11 +72,13 @@ export const demandsRouter = router({
       const { demandId } = input;
       await removeDemand(demandId, ctx.user.id);
     }),
+    getNetworkTracking: adminRoute.input(zNetworkTrackingInput).query(async ({ input }) => getNetworkTracking(input)),
     getReseauxStats: adminRoute.query(async () => getReseauxStats()),
     list: adminRoute.query(async () => {
       const result = await listAdmin();
       return result;
     }),
+    listNetworkTracking: adminRoute.query(async () => listNetworkTracking()),
     recalculateEligibility: adminRoute.input(z.object({ demandId: z.string() })).mutation(async ({ input }) => {
       return await recalculateEligibility(input.demandId);
     }),
