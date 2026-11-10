@@ -1,12 +1,15 @@
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
 import { articleSections, articlesBySlug } from '@/components/Ressources/config';
 import { modesDeChauffage } from '@/modules/chaleur-renouvelable/client/heating-modes/catalog';
 
 import { getHeatingSolution, getHeatingSolutionHref, heatingSolutions } from './constants';
+import { heatingSolutionContent } from './content';
 
 describe('validated heating solution publication', () => {
   it('publishes exactly the fifteen validated source pages with unique routes and mode mappings', () => {
@@ -20,10 +23,12 @@ describe('validated heating solution publication', () => {
     expect(getHeatingSolution(solution.slug)).toStrictEqual(solution);
     expect(articleSections[0].slugs).toContain(solution.slug);
     expect(articlesBySlug[solution.slug].title).toStrictEqual(solution.title);
-    const content = readFileSync(join(process.cwd(), 'src/modules/heating-solutions/content', `${solution.slug}.mdx`), 'utf8');
-    expect(content.match(/<SolutionTestCallout \/>/g)?.length).toStrictEqual(3);
-    expect(content.match(/<SolutionSummaryCard /g)?.length).toStrictEqual(4);
-    expect(content.match(/<SolutionSection /g)?.length).toStrictEqual(11);
+    const content = renderToStaticMarkup(createElement(heatingSolutionContent[solution.slug]));
+    const article = document.createElement('div');
+    article.innerHTML = content;
+    expect([...article.querySelectorAll('a')].filter((link) => link.textContent?.includes('Faites le test')).length).toStrictEqual(3);
+    expect(article.querySelectorAll('#en-quelques-mots h3').length).toStrictEqual(4);
+    expect(article.querySelectorAll('section').length).toStrictEqual(11);
     expect(content).not.toMatch(/discussion:\/\/|discussion-urls|notion-file-block:\/\//);
     expect(content).not.toContain('figma.com/api/mcp/asset');
     expect(statSync(join(process.cwd(), 'public', solution.image)).size).toBeGreaterThan(0);
@@ -46,8 +51,8 @@ describe('validated heating solution publication', () => {
   });
 
   it('preserves the approved CEPAC resource link and omits the two rejected individual-house references', () => {
-    const content = readFileSync(join(process.cwd(), 'src/modules/heating-solutions/content/pac-air-eau-collective.mdx'), 'utf8');
-    expect(content).toContain('](https://cepac-experts.org/carte-realisations-exemplaires/?type-doperation=renovation');
+    const content = renderToStaticMarkup(createElement(heatingSolutionContent['pac-air-eau-collective']));
+    expect(content).toContain('https://cepac-experts.org/carte-realisations-exemplaires/?type-doperation=renovation');
     expect(content).not.toContain('8595-etude-sur-les-consommations-des-pac-air-air');
     expect(content).not.toContain('les-pompes-a-chaleur-une-solution-a-fort-potentiel');
   });

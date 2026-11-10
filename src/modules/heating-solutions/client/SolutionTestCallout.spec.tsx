@@ -6,6 +6,6 @@ import { SolutionTestCallout } from './SolutionTestCallout';
 describe('article simulator invitation', () => {
   it('takes the reader to the requested FCR landing page', () => {
     render(<SolutionTestCallout />);
-    expect(screen.getByRole('link', { name: /Faire le test/ })).toHaveAttribute('href', '/chaleur-renouvelable');
+    expect(screen.getByRole('link', { name: /Faites le test/ })).toHaveAttribute('href', '/chaleur-renouvelable');
   });
 });
