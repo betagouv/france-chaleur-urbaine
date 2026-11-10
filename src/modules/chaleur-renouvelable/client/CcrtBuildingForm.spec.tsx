@@ -6,7 +6,11 @@ import { uuid } from '@/tests/helpers';
 import type { CcrtDemand } from '../types';
 import { CcrtBuildingForm } from './CcrtBuildingForm';
 
-const mocks = vi.hoisted(() => ({ eligibility: { distance: 96, isEligible: true }, invalidate: vi.fn(), mutateAsync: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  eligibility: { coordinates: { lat: 47.2, lon: -1.55 }, distance: 96, isEligible: true },
+  invalidate: vi.fn(),
+  mutateAsync: vi.fn(),
+}));
 vi.mock('@/modules/trpc/client', async () => {
   const { useState } = await import('react');
   const utils = {
@@ -57,6 +61,9 @@ const demand: CcrtDemand = {
   address: '5 avenue Carnot, 44000 Nantes',
   alternative_heating_solutions: [],
   annual_heating_consumption: null,
+  archive_comment: null,
+  archive_reason: null,
+  archived_at: null,
   assigned_to: null,
   average_area: 70,
   average_residents: 2,
@@ -95,6 +102,8 @@ const demand: CcrtDemand = {
   simulation_url: '/chaleur-renouvelable/resultat',
   status: 'A traiter',
   surface_area: null,
+  transferred_demand_id: null,
+  transferred_network_name: null,
   updated_at: '2026-10-08T10:00:00.000Z',
   validated: true,
 };
@@ -103,6 +112,19 @@ describe('CcrtBuildingForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.mutateAsync.mockResolvedValue({ id: demand.id, updatedAt: '2026-10-08T10:01:00.000Z' });
+  });
+
+  it.each([null, 'BATIMENT-1'])('links to the saved building on the national map with construction id %s', (constructionId) => {
+    render(<CcrtBuildingForm demand={{ ...demand, batiment_construction_id: constructionId }} />);
+    const link = screen.getByRole('link', { name: 'Afficher dans la carte' });
+    const url = new URL(link.getAttribute('href')!, 'http://localhost');
+
+    expect(url.pathname).toStrictEqual('/carte');
+    expect(Object.fromEntries(url.searchParams)).toStrictEqual({
+      ...(constructionId ? { construction_id: constructionId } : {}),
+      coord: '-1.55,47.2',
+      zoom: '17',
+    });
   });
 
   it('automatically saves a valid edit after typing stops without submitting a button', async () => {
@@ -261,8 +283,20 @@ describe('CcrtBuildingForm', () => {
     fireEvent.change(screen.getByLabelText('Type de logement'), { target: { value: 'maison_individuelle' } });
 
     expect(screen.getByLabelText('Mode eau chaude')).toHaveValue('nonRenseigne');
+    expect(screen.getByLabelText('Nombre de logements')).toHaveValue(1);
     expect(screen.queryByRole('option', { name: 'Collectif' })).toBeNull();
     expect(screen.getByRole('option', { name: 'Couplé au chauffage' })).toBeInTheDocument();
+  });
+
+  it('saves one dwelling when switching to a house and keeps it when switching back', async () => {
+    render(<CcrtBuildingForm demand={demand} />);
+    fireEvent.change(screen.getByLabelText('Type de logement'), { target: { value: 'maison_individuelle' } });
+    fireEvent.blur(screen.getByLabelText('Type de logement'));
+
+    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1));
+    expect(mocks.mutateAsync.mock.calls[0][0].values).toMatchObject({ housing_count: 1, housing_type: 'maison_individuelle' });
+    fireEvent.change(screen.getByLabelText('Type de logement'), { target: { value: 'immeuble_chauffage_collectif' } });
+    expect(screen.getByLabelText('Nombre de logements')).toHaveValue(1);
   });
 
   it.each([

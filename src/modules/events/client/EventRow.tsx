@@ -104,9 +104,19 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       a reconstruit les tuiles <strong>{event.data.name}</strong>
     </span>
   ),
+  ccrt_demand_admin_comment_updated: () => <span>a modifié le commentaire interne FCU</span>,
   ccrt_demand_email_sent: (event) => (
     <span>
       a envoyé un email CCRT : <strong>{event.data.object}</strong>
+    </span>
+  ),
+  ccrt_demand_moderated: (event) => (
+    <span>
+      {event.data.action === 'transfer'
+        ? `a transféré la demande à ${event.data.networkName}`
+        : event.data.action === 'archive'
+          ? 'a archivé la demande chaleur renouvelable'
+          : 'a restauré la demande chaleur renouvelable'}
     </span>
   ),
   ccrt_demand_note_created: () => <span>a ajouté une note à une demande CCRT</span>,

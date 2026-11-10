@@ -1,7 +1,7 @@
 import type { CcrtTrackingTab } from '@/modules/analytics/posthog.config';
 import cx from '@/utils/cx';
 
-export const ccrtDemandTabs = [
+const ccrtFollowUpTabs = [
   { description: 'Aucun contact engagé', label: 'À traiter', value: 'to_process' },
   { description: 'Contact ou étude engagés', label: 'En cours', value: 'in_progress' },
   { description: 'Réorientées ou abandonnées', label: 'Clôturées', value: 'closed' },
@@ -9,10 +9,19 @@ export const ccrtDemandTabs = [
   { description: 'Historique complet', label: 'Toutes les demandes', value: 'all' },
 ] as const;
 
+const ccrtAdminTabs = [
+  { description: 'Demandes à examiner', label: 'À valider', value: 'awaiting_validation' },
+  { description: 'Demandes actives', label: 'Toutes les demandes', value: 'all' },
+  { description: 'Archivées ou transférées', label: 'Archivées', value: 'archived' },
+] as const;
+export const ccrtDemandTabs = [...ccrtFollowUpTabs, ...ccrtAdminTabs.filter((tab) => tab.value !== 'all')];
+
 export type CcrtDemandTab = (typeof ccrtDemandTabs)[number]['value'];
 
 export const ccrtTrackingTabs = {
   all: 'toutes',
+  archived: 'cloturees',
+  awaiting_validation: 'toutes',
   closed: 'cloturees',
   completed: 'realisees',
   in_progress: 'en_cours',
@@ -23,16 +32,17 @@ type CcrtDemandTabsProps = {
   activeTab: CcrtDemandTab;
   counts: Record<CcrtDemandTab, number>;
   isLoading: boolean;
+  isAdmin?: boolean;
   onTabChange: (tab: CcrtDemandTab) => void;
 };
 
 /**
  * Demand groups with counters independent of search and status filters.
  */
-export function CcrtDemandTabs({ activeTab, counts, isLoading, onTabChange }: CcrtDemandTabsProps) {
+export function CcrtDemandTabs({ activeTab, counts, isLoading, onTabChange, isAdmin = false }: CcrtDemandTabsProps) {
   return (
     <nav aria-label="Afficher les demandes par avancement" className="mb-4 flex flex-wrap gap-2 lg:mb-6 lg:gap-4">
-      {ccrtDemandTabs.map((tab) => (
+      {(isAdmin ? ccrtAdminTabs : ccrtFollowUpTabs).map((tab) => (
         <button
           key={tab.value}
           type="button"
@@ -41,7 +51,7 @@ export function CcrtDemandTabs({ activeTab, counts, isLoading, onTabChange }: Cc
             'flex items-center gap-1 rounded-2xl border px-2.5 py-1 text-sm leading-6 lg:flex-col lg:items-start lg:gap-0 lg:rounded-none lg:px-4 lg:py-2 lg:text-base lg:text-left',
             tab.value === 'closed' && 'order-4 lg:order-none',
             tab.value === 'completed' && 'order-5 lg:order-none',
-            tab.value === 'all' && 'order-3 lg:order-none',
+            !isAdmin && tab.value === 'all' && 'order-3 lg:order-none',
             activeTab === tab.value
               ? 'border-(--border-active-blue-france) bg-(--background-action-high-blue-france) text-(--text-inverted-blue-france) lg:bg-(--background-default-grey) lg:text-(--text-active-blue-france) lg:shadow-[inset_0_-3px_0_var(--border-active-blue-france)]'
               : 'border-(--border-active-blue-france) bg-(--background-default-grey) text-(--text-action-high-blue-france) lg:border-(--border-default-grey) lg:text-(--text-default-grey)'
@@ -58,7 +68,7 @@ export function CcrtDemandTabs({ activeTab, counts, isLoading, onTabChange }: Cc
             ) : (
               tab.label
             )}
-            {(tab.value === 'to_process' || tab.value === 'in_progress') && (
+            {(isAdmin || tab.value === 'to_process' || tab.value === 'in_progress') && (
               <span className="lg:hidden"> ({isLoading ? '—' : counts[tab.value]})</span>
             )}
             {tab.value === 'to_process' && (

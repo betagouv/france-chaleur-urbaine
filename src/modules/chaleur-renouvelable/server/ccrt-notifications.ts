@@ -48,7 +48,8 @@ const baseNotifiableQuery = () =>
     )
     .where('u.active', '=', true)
     .where('u.role', '=', 'ccrt')
-    .where('d.validated', '=', true);
+    .where('d.validated', '=', true)
+    .where('d.archived_at', 'is', null);
 
 const toEmailPayload = (demand: DemandRow): DemandeChaleurRenouvelable => ({
   address: demand.address,

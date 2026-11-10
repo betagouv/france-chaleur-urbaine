@@ -84,6 +84,7 @@ export function SettingsTopFields({
             setParams({
               espaceExterieur: espaceExterieur ?? 'none',
               typeLogement: nextTypeLogement,
+              ...(nextTypeLogement === 'maison_individuelle' ? { nbLogements: 1 } : {}),
             });
           },
           value: typeLogement ?? undefined,

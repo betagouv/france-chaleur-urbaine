@@ -20,9 +20,7 @@ export const adminDashboardIndicators = [
   },
   {
     description: 'Demandes issues du parcours chaleur renouvelable non encore validées',
-    href: tableLink('/admin/demandes-chaleur-renouvelable', 'demandes_chaleur_renouvelable', [
-      { id: 'validated', value: { false: true, true: false } },
-    ]),
+    href: '/admin/demandes-chaleur-renouvelable?demandes_chaleur_renouvelable_tab=awaiting_validation',
     key: 'renewableHeatDemandsToValidate',
     label: 'Demandes chaleur renouvelable à valider',
   },

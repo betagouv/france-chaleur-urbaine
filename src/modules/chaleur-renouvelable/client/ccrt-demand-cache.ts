@@ -21,3 +21,11 @@ export const invalidateCcrtDemand = (
         ]
       : []),
   ]);
+
+/** Refreshes moderation counters and the classic list after an archive, transfer, restoration or validation. */
+export const invalidateCcrtModeration = (utils: ReturnType<typeof trpc.useUtils>, demandId: string) =>
+  Promise.all([
+    invalidateCcrtDemand(utils, demandId),
+    utils.admin.getDashboardIndicators.invalidate(),
+    utils.demands.admin.list.invalidate(),
+  ]);

@@ -6,6 +6,7 @@
 import type { ColumnType, GeneratedAlways, JSONColumnType } from 'kysely';
 
 import type {
+  CcrtArchiveReason,
   DemandConcern,
   DemandeChaleurRenouvelableProjectState,
   DPE,
@@ -282,6 +283,10 @@ export interface ConversionSources {
 
 export interface DemandsChaleurRenouvelable {
   address: string;
+  admin_comment: Generated<string>;
+  archive_comment: string | null;
+  archive_reason: CcrtArchiveReason | null;
+  archived_at: Timestamp | null;
   alternative_heating_solutions: Generated<string[]>;
   annual_heating_consumption: number | null;
   assigned_to: string | null;
@@ -323,6 +328,8 @@ export interface DemandsChaleurRenouvelable {
   simulation_url: string;
   status: Generated<string>;
   surface_area: number | null;
+  transferred_demand_id: string | null;
+  transferred_network_name: string | null;
   updated_at: Generated<Timestamp>;
   validated: Generated<boolean>;
 }
@@ -598,7 +605,13 @@ export interface Jobs {
   id: Generated<string>;
   result: Json | null;
   status: 'pending' | 'processing' | 'finished' | 'error';
-  type: 'pro_eligibility_test' | 'build_tiles' | 'pro_eligibility_test_notify_changes' | 'scan_file' | 'parse_request_geometries';
+  type:
+    | 'pro_eligibility_test'
+    | 'build_tiles'
+    | 'pro_eligibility_test_notify_changes'
+    | 'scan_file'
+    | 'parse_request_geometries'
+    | 'ccrt_moderation_email';
   updated_at: Generated<Timestamp>;
   user_id: string | null;
 }

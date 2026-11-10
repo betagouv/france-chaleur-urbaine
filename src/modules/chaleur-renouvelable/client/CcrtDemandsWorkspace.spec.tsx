@@ -29,11 +29,13 @@ vi.mock('@/modules/trpc/client', () => ({
     batEnr: {
       admin: {
         listDemandesChaleurRenouvelable: { useQuery: mocks.adminQuery },
+        restoreDemand: { useMutation: () => ({ mutateAsync: vi.fn() }) },
         validateDemandeChaleurRenouvelable: { useMutation: () => ({ mutateAsync: mocks.validate }) },
       },
       ccrt: { getFollowUp: { useQuery: () => ({ data: { total: 1 } }) }, listDemandesChaleurRenouvelable: { useQuery: mocks.ccrtQuery } },
     },
     useUtils: () => ({
+      admin: { getDashboardIndicators: { invalidate: vi.fn() } },
       batEnr: {
         admin: { listDemandesChaleurRenouvelable: { invalidate: mocks.invalidateAdmin } },
         ccrt: {
@@ -41,6 +43,7 @@ vi.mock('@/modules/trpc/client', () => ({
           listDemandesChaleurRenouvelable: { invalidate: mocks.invalidateCcrt },
         },
       },
+      demands: { admin: { list: { invalidate: vi.fn() } } },
     }),
   },
 }));
@@ -72,6 +75,9 @@ const demand: CcrtDemand = {
   address: '5 avenue Carnot, 44000 Nantes',
   alternative_heating_solutions: [],
   annual_heating_consumption: null,
+  archive_comment: null,
+  archive_reason: null,
+  archived_at: null,
   assigned_to: null,
   average_area: 70,
   average_residents: 2,
@@ -110,6 +116,8 @@ const demand: CcrtDemand = {
   simulation_url: '/chaleur-renouvelable/resultat',
   status: 'A traiter',
   surface_area: null,
+  transferred_demand_id: null,
+  transferred_network_name: null,
   updated_at: '2026-10-08T10:00:00.000Z',
   validated: false,
 };
@@ -183,7 +191,7 @@ describe('CcrtDemandsWorkspace', () => {
     const getNames = () => screen.getAllByRole('button', { name: /^(Joëlle|Paul|Claire) Martini$/ }).map((button) => button.textContent);
     fireEvent.click(screen.getByRole('button', { name: 'Trier les statuts de A à Z' }));
     await waitFor(() => expect(getNames()).toStrictEqual(['Claire Martini', 'Paul Martini', 'Joëlle Martini']));
-    expect(screen.getByRole('button', { name: /Toutes les demandes/ })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('button', { name: /Demandes à examiner/ })).toHaveAttribute('aria-current', 'true');
     fireEvent.click(screen.getByRole('button', { name: 'Trier les statuts de Z à A' }));
     await waitFor(() => expect(getNames()).toStrictEqual(['Joëlle Martini', 'Paul Martini', 'Claire Martini']));
   });
@@ -200,17 +208,18 @@ describe('CcrtDemandsWorkspace', () => {
     expect(mocks.invalidateFollowUp).toHaveBeenCalledExactlyOnceWith({ demandId: demand.id });
   });
 
-  it.each([false, true])('shows contact after publication with mobile mode %s', (isMobile) => {
+  it.each([false, true])('shows contact after publication with mobile mode %s', async (isMobile) => {
     mocks.isMobile = isMobile;
     mocks.adminQuery.mockReturnValue({ data: { items: [{ ...demand, validated: true }] }, isError: false, isLoading: false });
     renderWorkspace();
 
     expect(screen.queryByRole('button', { name: 'Valider' })).toBeNull();
     expect(screen.queryByText('Validée')).toBeNull();
-    expect(screen.getByRole('button', { name: /Contacter/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Toutes les demandes/ }));
+    expect(await screen.findByRole('button', { name: /Contacter/ })).toBeInTheDocument();
   });
 
-  it('keeps all admin demands visible initially, including unvalidated demands already in progress', () => {
+  it('defaults to unvalidated admin demands, independently from their follow-up status', () => {
     mocks.adminQuery.mockReturnValue({
       data: { items: [{ ...demand, status: 'Recontacté pour premier échange' }] },
       isError: false,
@@ -219,11 +228,11 @@ describe('CcrtDemandsWorkspace', () => {
     renderWorkspace();
 
     expect(screen.getByRole('button', { name: 'Joëlle Martini' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Toutes les demandes/ })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('button', { name: /Demandes à examiner/ })).toHaveAttribute('aria-current', 'true');
     expect(screen.getByRole('button', { name: 'Valider' })).toBeInTheDocument();
   });
 
-  it.each([true, false])('separates completed installations from ongoing and closed demands with admin mode %s', async (isAdmin) => {
+  it('keeps the CCRT follow-up tabs for professionals', async () => {
     const items = [
       { ...demand, status: 'Installation réalisée' },
       { ...demand, first_name: 'Paul', id: uuid(2), status: 'Recontacté pour premier échange' },
@@ -231,7 +240,7 @@ describe('CcrtDemandsWorkspace', () => {
     ];
     mocks.adminQuery.mockReturnValue({ data: { items }, isError: false, isLoading: false });
     mocks.ccrtQuery.mockReturnValue({ data: { items }, isError: false, isLoading: false });
-    renderWorkspace(isAdmin);
+    renderWorkspace(false);
 
     fireEvent.click(screen.getByRole('button', { name: /Réalisées/ }));
     await waitFor(() => expect(screen.getByRole('button', { name: 'Joëlle Martini' })).toBeInTheDocument());
