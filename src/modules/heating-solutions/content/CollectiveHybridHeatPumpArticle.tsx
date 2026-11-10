@@ -64,7 +64,7 @@ function OverviewSection() {
           </p>
         </SolutionSummaryCard>
         <SolutionSummaryCard tone="feasibility">
-          <p>Nécessite :</p>
+          <p className="mb-0">Nécessite :</p>
           <ul>
             <SolutionListItem>un chauffage collectif avec réseau d’eau</SolutionListItem>
             <SolutionListItem>un espace extérieur suffisant pour installer les unités de PAC</SolutionListItem>
@@ -218,28 +218,30 @@ function BenefitsSection() {
 function CautionsSection() {
   return (
     <SolutionSection id="vigilance">
-      <p>
-        <strong>Le gaz reste nécessaire :</strong> contrairement à une solution 100 % PAC, le bâtiment reste partiellement dépendant d’une
-        énergie fossile.
-      </p>
-      <p>
-        <strong>Émissions de CO₂ :</strong> elles restent supérieures à celles d’une installation 100 % thermodynamique.
-      </p>
-      <p>
-        <strong>Double système :</strong> la présence d’une PAC et d’une chaudière implique deux équipements à exploiter et entretenir.
-      </p>
-      <p>
-        <strong>Coûts d’exploitation :</strong> deux énergies restent utilisées, avec les abonnements associés.
-      </p>
-      <p>
-        <strong>Espace extérieur :</strong> il faut disposer d’un emplacement suffisant pour les unités extérieures de la PAC.
-      </p>
-      <p>
-        <strong>Acoustique :</strong> l’implantation des unités extérieures doit tenir compte des nuisances sonores.
-      </p>
-      <p>
-        <strong>Raccordement électrique :</strong> la capacité du réseau électrique doit être vérifiée.
-      </p>
+      <ul>
+        <SolutionListItem>
+          <strong>Le gaz reste nécessaire :</strong> contrairement à une solution 100 % PAC, le bâtiment reste partiellement dépendant d’une
+          énergie fossile.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Émissions de CO₂ :</strong> elles restent supérieures à celles d’une installation 100 % thermodynamique.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Double système :</strong> la présence d’une PAC et d’une chaudière implique deux équipements à exploiter et entretenir.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Coûts d’exploitation :</strong> deux énergies restent utilisées, avec les abonnements associés.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Espace extérieur :</strong> il faut disposer d’un emplacement suffisant pour les unités extérieures de la PAC.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Acoustique :</strong> l’implantation des unités extérieures doit tenir compte des nuisances sonores.
+        </SolutionListItem>
+        <SolutionListItem>
+          <strong>Raccordement électrique :</strong> la capacité du réseau électrique doit être vérifiée.
+        </SolutionListItem>
+      </ul>
     </SolutionSection>
   );
 }
@@ -413,7 +415,7 @@ function ResourcesSection() {
           Le simulateur réalisé par France Chaleur Urbaine vous permet d'évaluer la pertinence d'une solution hybride associant une PAC
           air/eau collective et une chaudière gaz pour votre bâtiment.
         </p>
-        <p>Vous y trouverez :</p>
+        <p className="mb-0">Vous y trouverez :</p>
         <ul>
           <SolutionListItem>une estimation des coûts de consommation et du prix de l’installation</SolutionListItem>
           <SolutionListItem>

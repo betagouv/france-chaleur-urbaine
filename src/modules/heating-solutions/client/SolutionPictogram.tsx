@@ -10,10 +10,7 @@ type SolutionPictogramProps = {
  */
 export function SolutionPictogram({ icon, className }: SolutionPictogramProps) {
   return (
-    <span
-      aria-hidden="true"
-      className={cx("shrink-0 font-['Apple_Color_Emoji','Segoe_UI_Emoji','Noto_Color_Emoji',sans-serif]", className)}
-    >
+    <span aria-hidden="true" className={cx('shrink-0', className)}>
       {icon}
     </span>
   );

@@ -13,7 +13,7 @@ type SolutionContentLinkProps = {
 export function SolutionContentLink({ href, children }: SolutionContentLinkProps) {
   const target = href.replace('https://france-chaleur-urbaine.beta.gouv.fr', '');
   return (
-    <Link href={target} variant="link" isExternal={target.startsWith('http')} className="wrap-anywhere">
+    <Link href={target} variant="link" isExternal={target.startsWith('http')} className="inline wrap-anywhere">
       {children}
     </Link>
   );

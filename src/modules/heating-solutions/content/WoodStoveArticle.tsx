@@ -63,7 +63,7 @@ function OverviewSection() {
           </p>
         </SolutionSummaryCard>
         <SolutionSummaryCard tone="feasibility">
-          <p>Nécessite :</p>
+          <p className="mb-0">Nécessite :</p>
           <ul>
             <SolutionListItem>un espace suffisant pour stocker le combustible</SolutionListItem>
             <SolutionListItem>un accès permettant les livraisons de bois</SolutionListItem>
@@ -334,7 +334,7 @@ function ResourcesSection() {
         isPrimary
       >
         <p>Le simulateur réalisé par France Chaleur Urbaine vous permet d'évaluer la pertinence.</p>
-        <p>Vous y trouverez :</p>
+        <p className="mb-0">Vous y trouverez :</p>
         <ul>
           <SolutionListItem>une estimation des coûts de consommation et du prix de l’installation</SolutionListItem>
           <SolutionListItem>

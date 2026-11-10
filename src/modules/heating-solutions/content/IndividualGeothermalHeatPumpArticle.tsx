@@ -67,7 +67,7 @@ function OverviewSection() {
           </p>
         </SolutionSummaryCard>
         <SolutionSummaryCard tone="feasibility">
-          <p>Nécessite :</p>
+          <p className="mb-0">Nécessite :</p>
           <ul>
             <SolutionListItem>un terrain adapté au système de captage envisagé</SolutionListItem>
             <SolutionListItem>un emplacement pour la pompe à chaleur</SolutionListItem>
@@ -393,7 +393,7 @@ function ResourcesSection() {
         isPrimary
       >
         <p>Le simulateur France Chaleur Urbaine vous permet d'évaluer la pertinence d'une PAC géothermique pour votre maison.</p>
-        <p>Vous y trouverez :</p>
+        <p className="mb-0">Vous y trouverez :</p>
         <ul>
           <SolutionListItem>une estimation des coûts de consommation et du prix de l’installation</SolutionListItem>
           <SolutionListItem>

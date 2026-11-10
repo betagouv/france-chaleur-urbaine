@@ -63,7 +63,7 @@ function OverviewSection() {
           </p>
         </SolutionSummaryCard>
         <SolutionSummaryCard tone="feasibility">
-          <p>Nécessite :</p>
+          <p className="mb-0">Nécessite :</p>
           <ul>
             <SolutionListItem>un local technique adapté</SolutionListItem>
             <SolutionListItem>un espace suffisant pour stocker le combustible</SolutionListItem>
@@ -382,7 +382,7 @@ function ResourcesSection() {
           Le simulateur réalisé par France Chaleur Urbaine vous permet d'évaluer la pertinence d'une chaudière à bois ou biomasse pour votre
           bâtiment.
         </p>
-        <p>Vous y trouverez :</p>
+        <p className="mb-0">Vous y trouverez :</p>
         <ul>
           <SolutionListItem>une estimation des coûts de consommation et du prix de l’installation</SolutionListItem>
           <SolutionListItem>
