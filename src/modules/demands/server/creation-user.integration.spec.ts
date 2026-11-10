@@ -327,6 +327,7 @@ describe('creation-user', () => {
           isExisting: false,
           networkName: null,
           status: 'À traiter',
+          validated: false,
         });
       });
     });

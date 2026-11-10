@@ -4,7 +4,6 @@ import Loader from '@/components/ui/Loader';
 import { trackPostHogEvent } from '@/modules/analytics/client';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
-import { notify } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
 const zNewsletter = z.object({
@@ -19,7 +18,6 @@ function NewsletterForm() {
   const utils = trpc.useUtils();
 
   const updateNewsletter = trpc.users.updateNewsletterSubscription.useMutation({
-    onError: (error) => notify('error', error.message || 'Erreur lors de la mise à jour des préférences newsletter'),
     onSuccess: () => utils.users.getProfile.invalidate(),
   });
 

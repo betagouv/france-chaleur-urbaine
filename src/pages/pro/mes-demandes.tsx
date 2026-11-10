@@ -136,7 +136,7 @@ function MesDemandesPage(): React.ReactElement {
         accessorKey: 'Status',
         cell: ({ row }) => {
           const demand = row.original;
-          return <DemandStatusBadge status={demand.Status as DemandStatus} audience="demandeur" />;
+          return <DemandStatusBadge status={demand.Status as DemandStatus} validated={demand.validated} audience="demandeur" />;
         },
         enableGlobalFilter: false,
         filterProps: {

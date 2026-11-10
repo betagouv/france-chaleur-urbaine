@@ -377,6 +377,7 @@ function HeatNetworkDemandForm({
         isExisting: false,
         networkName: null,
         status: DEMANDE_STATUS.TO_PROCESS,
+        validated: false,
       }
     );
     setIsSubmissionDialogOpen(true);

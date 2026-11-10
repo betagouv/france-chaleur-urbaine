@@ -91,6 +91,10 @@ vi.mock('next/dynamic', () => ({
 vi.mock('@/modules/trpc/client', () => ({
   __esModule: true,
   default: {
+    // Demand tracking form rendered on the home page
+    demandTracking: {
+      request: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue(undefined) }) },
+    },
     // Minimal context hook to satisfy consumers that read it
     useContext: () => ({}),
     // Provide utils with a minimal client shape used in components

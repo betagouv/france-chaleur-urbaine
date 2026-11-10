@@ -143,7 +143,7 @@ export const createDemand = async (
 const findRecentDemandByEmailAndAddress = (email: string, address: string) =>
   kdb
     .selectFrom('demands')
-    .select(['id', 'legacy_values'])
+    .select(['id', 'legacy_values', 'validated'])
     .where('deleted_at', 'is', null)
     .where(sql`lower(legacy_values->>'Mail')`, '=', email.toLowerCase())
     .where(sql`lower(legacy_values->>'Adresse')`, '=', address.toLowerCase())
@@ -154,7 +154,7 @@ const findRecentDemandByEmailAndAddress = (email: string, address: string) =>
 
 /** Projette une demande (créée ou existante) sur le payload minimal attendu par la dialog de confirmation. */
 const toDemandSubmissionResult = (
-  demand: { id: string; legacy_values: LegacyDemandValues },
+  demand: { id: string; legacy_values: LegacyDemandValues; validated: boolean },
   isExisting: boolean
 ): DemandSubmissionResult => ({
   address: demand.legacy_values.Adresse,
@@ -166,4 +166,5 @@ const toDemandSubmissionResult = (
   isExisting,
   networkName: demand.legacy_values['Nom réseau'] ?? null,
   status: demand.legacy_values.Status || DEMANDE_STATUS.TO_PROCESS,
+  validated: demand.validated,
 });

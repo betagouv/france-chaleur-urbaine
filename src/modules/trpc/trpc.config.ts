@@ -9,6 +9,7 @@ import buildContext from '@/modules/config/server/context-builder';
 import { conversionTrackingRouter } from '@/modules/conversion-tracking/server/trpc-routes';
 import { dataRouter } from '@/modules/data/server/trpc-routes';
 import { dataDiagnosticRouter } from '@/modules/data-diagnostic/server/trpc-routes';
+import { demandTrackingRouter } from '@/modules/demand-tracking/server/trpc-routes';
 import { demandsRouter } from '@/modules/demands/server/trpc-routes';
 import { diagnosticRouter } from '@/modules/diagnostic/server/trpc-routes';
 import { emailRouter } from '@/modules/email/server/trpc-routes';
@@ -57,6 +58,7 @@ export const appRouter = router({
   data: dataRouter,
   dataDiagnostic: dataDiagnosticRouter,
   demands: demandsRouter,
+  demandTracking: demandTrackingRouter,
   diagnostic: diagnosticRouter,
   email: emailRouter,
   events: eventsRouter,

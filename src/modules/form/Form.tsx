@@ -1,5 +1,7 @@
 import { useRef } from 'react';
 
+import { type ClientErrorMessage, handleClientError } from '@/modules/notification';
+
 export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit'> & {
   form: {
     AppForm: React.ComponentType<React.PropsWithChildren>;
@@ -7,14 +9,17 @@ export type FormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmi
     state: { isValid: boolean };
     validate: (cause: 'submit') => unknown;
   };
+  /** Replaces the generic message of the error toast shown when `onSubmit` throws. */
+  errorMessage?: ClientErrorMessage;
 };
 
 /**
  * `<form>` wrapper for a `useAppForm` instance: wires submit handling, provides
- * the form context (needed by `form.SubmitButton`), and moves focus to the
- * first invalid field after a failed submit attempt.
+ * the form context (needed by `form.SubmitButton`), moves focus to the
+ * first invalid field after a failed submit attempt, and toasts the error when
+ * `onSubmit` throws.
  */
-export function Form({ form, children, ...formProps }: FormProps) {
+export function Form({ form, children, errorMessage, ...formProps }: FormProps) {
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -25,7 +30,9 @@ export function Form({ form, children, ...formProps }: FormProps) {
     // metas of the remounted fields, while the others keep theirs) would make it
     // return early without ever re-running the schema
     await form.validate('submit');
-    await form.handleSubmit();
+    // `onSubmit` throws on failure (never swallow its errors): the form state then records a
+    // failed attempt, and the error is toasted once here — deduplicated with the tRPC link's toast
+    await form.handleSubmit().catch((error) => handleClientError(error, errorMessage));
     if (!form.state.isValid) {
       focusFirstInvalidField(formRef.current);
     }

@@ -73,12 +73,82 @@ export const demandLockReasons = {
 
 export type DemandLockReason = keyof typeof demandLockReasons;
 
+/** Phase shown to the requester: open demands are listed first in the recap email, closed ones (done, not feasible, closed) last. */
+export type DemandStatusPhase = 'en_cours' | 'cloturee';
+
+export type DemandStatusDisplay = {
+  /** Public wording, never the internal status label. */
+  label: string;
+  explanation: string;
+  phase: DemandStatusPhase;
+  /** Appends a link to the renewable heating simulator after the explanation. */
+  showCompareSolutionsLink?: boolean;
+};
+
+/** Shared by the closed statuses of both demand types. */
+export const CLOSED_DEMAND_STATUS_DISPLAY: DemandStatusDisplay = {
+  explanation: "Cette demande a été clôturée. Si votre projet est toujours d'actualité, écrivez-nous via le formulaire de contact.",
+  label: 'Demande clôturée',
+  phase: 'cloturee',
+};
+
+/** Raccordement demand not yet validated by the FCU team (still "À traiter"): nothing has been sent to the manager yet. */
+export const DEMAND_NOT_VALIDATED_STATUS_DISPLAY: DemandStatusDisplay = {
+  explanation:
+    'Votre demande est bien enregistrée. Elle va être transmise au gestionnaire du réseau de chaleur, qui reviendra vers vous pour étudier votre projet. Si aucun gestionnaire de réseau n’est référencé à proximité de votre bâtiment, nous informerons l’éventuel futur gestionnaire si un réseau est créé à proximité de cette adresse.',
+  label: 'En attente de prise en charge',
+  phase: 'en_cours',
+};
+
+/** Public wording of every status, shown to the requester everywhere (recap email, confirmation screens, « Mes demandes »). */
+export const demandStatusDisplays: Record<DEMANDE_STATUS, DemandStatusDisplay> = {
+  [DEMANDE_STATUS.TO_PROCESS]: {
+    explanation: 'Votre demande a été transmise au gestionnaire du réseau de chaleur, qui reviendra vers vous pour étudier votre projet.',
+    label: 'En attente de prise en charge',
+    phase: 'en_cours',
+  },
+  [DEMANDE_STATUS.RECONTACTED]: {
+    explanation: 'Le gestionnaire du réseau a pris contact avec vous pour étudier la faisabilité du raccordement de votre bâtiment.',
+    label: 'Prise en charge par le gestionnaire du réseau',
+    phase: 'en_cours',
+  },
+  [DEMANDE_STATUS.COMMERCIAL_PROPOSAL]: {
+    explanation:
+      'Le gestionnaire du réseau vous a adressé une proposition de raccordement, qui pourra être présentée en assemblée générale.',
+    label: 'Proposition de raccordement transmise',
+    phase: 'en_cours',
+  },
+  [DEMANDE_STATUS.VOTED]: {
+    explanation: 'Le raccordement de votre bâtiment a été voté en assemblée générale.',
+    label: 'Raccordement voté en assemblée générale',
+    phase: 'en_cours',
+  },
+  [DEMANDE_STATUS.WORK_IN_PROGRESS]: {
+    explanation: 'Les travaux de raccordement de votre bâtiment sont en cours.',
+    label: 'Travaux de raccordement en cours',
+    phase: 'en_cours',
+  },
+  [DEMANDE_STATUS.DONE]: {
+    explanation: 'Votre bâtiment est raccordé au réseau de chaleur.',
+    label: 'Raccordement réalisé',
+    phase: 'cloturee',
+  },
+  [DEMANDE_STATUS.UNREALISABLE]: {
+    explanation:
+      "Le raccordement de votre bâtiment au réseau de chaleur n'est pas envisageable à ce jour. D'autres solutions de chauffage renouvelable peuvent convenir à votre immeuble :",
+    label: 'Raccordement non envisageable à ce jour',
+    phase: 'cloturee',
+    showCompareSolutionsLink: true,
+  },
+  [DEMANDE_STATUS.ABANDONNED]: CLOSED_DEMAND_STATUS_DISPLAY,
+};
+
 /**
- * Libellé de statut présenté au demandeur. « À traiter » relève de la file de traitement interne des gestionnaires :
- * on le neutralise en « En cours de traitement ». Les autres statuts restent inchangés.
+ * Status label shown to the requester: always the public wording, never the internal label. A demand not yet
+ * validated by the FCU team has not been forwarded, whatever its internal status (same rule as the recap email).
  */
-export const getDemandeurStatusLabel = (status: DemandStatus): string =>
-  status === DEMANDE_STATUS.TO_PROCESS ? 'En cours de traitement' : status;
+export const getDemandeurStatusLabel = (status: DemandStatus, validated = true): string =>
+  validated ? demandStatusDisplays[status].label : DEMAND_NOT_VALIDATED_STATUS_DISPLAY.label;
 
 const zDemandStatus = z.enum([...demandStatuses.map((s) => s.label), '']);
 
@@ -353,6 +423,8 @@ export type DemandSubmissionResult = {
   address: string;
   createdAt: string;
   status: DemandStatus;
+  /** Validated by the FCU team, i.e. forwarded to the manager; always false for a demand just created. */
+  validated: boolean;
   isEligible: boolean;
   networkName: string | null;
   distance: number | null;

@@ -2,7 +2,8 @@ export const userRoles = ['admin', 'gestionnaire', 'collectivite', 'alec', 'ccrt
 
 export type UserRole = (typeof userRoles)[number];
 
-export const userRolesInscription = ['particulier', 'professionnel'] as const satisfies UserRole[];
+// particulier accounts are being phased out: demands are tracked by email without an account
+export const userRolesInscription = ['professionnel'] as const satisfies UserRole[];
 export type UserRoleInscription = (typeof userRolesInscription)[number];
 
 export const userRolesWithPermissionsHeatNetwork = ['gestionnaire', 'collectivite', 'alec'] as const satisfies UserRole[];

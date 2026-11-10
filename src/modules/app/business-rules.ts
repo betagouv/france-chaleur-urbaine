@@ -78,6 +78,13 @@ export const businessRules = {
     label: 'Déduplication des demandes',
     value: 30,
   },
+  demandTrackingEmailsPerHour: {
+    description:
+      "Nombre maximal de demandes de suivi « Où en est votre demande ? » acceptées en une heure depuis une même adresse IP ; au-delà, aucun email n'est envoyé et le formulaire affiche une erreur « Trop de requêtes ».",
+    display: '3 envois par heure',
+    label: 'Suivi de demande : plafond d’envois',
+    value: 3,
+  },
   eligibilityMaxDisplayDistance: {
     description: "Au-delà, la distance n'est plus affichée et l'adresse est considérée « trop éloignée ».",
     display: '1 000 m',

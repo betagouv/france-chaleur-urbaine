@@ -240,6 +240,7 @@ describe('DemandFCRForm simulation outcome', () => {
     isEligible: true,
     networkName: null,
     status: '',
+    validated: false,
   };
 
   it.each([

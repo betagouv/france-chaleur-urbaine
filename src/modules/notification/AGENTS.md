@@ -72,6 +72,12 @@ a single toast): the first issue of a tRPC input validation error (any depth), e
 (REST `FetchError` or tRPC `BAD_REQUEST`) or of an error raised by the client code; for any other error (401, 403, 404,
 429, 5xx) the generic message, followed by the error message as detail.
 
+**Never toast a tRPC error by hand** (`notify('error', …)` in `useMutation({ onError })` or in a `catch`, after a tRPC
+call): the tRPC link already toasts every error, a manual toast is a second one. The link, `toastErrors` and
+`handleClientError` share one toast per error object, so to add context (e.g. « Impossible de tester cette adresse »)
+call `handleClientError(error, () => 'message')` in the `catch`: it updates the toast of the link instead of adding one.
+A manual `onError` that only reformats the message brings nothing: drop it.
+
 ### URL-based Notifications
 
 The module supports URL-based notifications through query parameters:
@@ -86,23 +92,25 @@ router.push('/login?notify=error:Invalid credentials');
 
 ### Integration with Forms
 
+`<Form>` toasts the error itself when `onSubmit` throws (`handleClientError`, one toast per error, shared with the tRPC link). **Do not wrap a `useAppForm` `onSubmit` in `toastErrors`**: swallowing the error makes the form record a successful submission (see `form/AGENTS.md`). For a custom message, pass `errorMessage` to `<Form>`.
+
 ```typescript
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
-import { notify, toastErrors } from '@/modules/notification';
+import { notify } from '@/modules/notification';
 
 const MyForm = () => {
   const form = useAppForm({
     ...schemaValidation(mySchema),
     defaultValues: { name: '' },
-    onSubmit: toastErrors(async ({ value }) => {
+    onSubmit: async ({ value }) => {
       await api.create(value);
       notify('success', 'Item created successfully');
-    }),
+    },
   });
 
   return (
-    <Form form={form}>
+    <Form form={form} errorMessage={() => 'Impossible de créer cet élément'}>
       <form.AppField name="name">{(field) => <field.TextField label="Name" />}</form.AppField>
       <form.SubmitButton>Create</form.SubmitButton>
     </Form>

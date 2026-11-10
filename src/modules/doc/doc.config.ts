@@ -182,10 +182,10 @@ export const docPages = [
   {
     Content: RoleDemandeur,
     description:
-      "Ce qu'un particulier ou un professionnel voit et peut faire : dépôt et suivi de ses demandes, tests d'adresses, boucle de satisfaction.",
+      "Ce qu'un professionnel (ou un particulier, rôle en cours de suppression) voit et peut faire : dépôt et suivi de ses demandes, tests d'adresses, boucle de satisfaction.",
     slug: 'role-demandeur',
     theme: 'roles',
-    title: 'Rôle : particulier et professionnel',
+    title: 'Rôle : professionnel (et particulier)',
   },
   {
     Content: RoleAdmin,
