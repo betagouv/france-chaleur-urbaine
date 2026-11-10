@@ -5,11 +5,13 @@ Static educational articles for validated renewable heating solutions, published
 ## Structure
 
 - `constants.ts` — validated article metadata and exact simulator-mode mappings. Only solutions marked `Validé` in the source Notion database are published; missing articles have no simulator link.
-- `content/*.mdx` — French editorial content copied from the validated Notion properties, with the source URL recorded in metadata. Preserve approved wording and figures; do not silently resolve editorial inconsistencies.
-- `content.ts` — static MDX imports for server-rendered, indexable article bodies.
+- `content/*Article.tsx` — French editorial content copied from the validated Notion properties, with the source URL recorded in metadata. Preserve approved wording and figures; do not silently resolve editorial inconsistencies.
+- `content.ts` — static named TSX component imports for server-rendered, indexable article bodies.
 - Fifteen validated articles are published, including the heat network, collective geothermal heat pump and individual thermodynamic water heater. All three thermodynamic-water-heater catalogue IDs describe individual hot-water production, including the one grouped under collective heating.
 - `client/HeatingSolutionArticle.tsx` — common Figma article layout, section navigation and browser print/PDF action.
-- `client/Solution*.tsx` — reusable sections, summary cards, flow diagrams, FAQ and the three comparator calls to action.
+- `article-sections.ts` — shared section titles and Figma pictograms for headings and quick links. The cost and funding heading is shared; funding keeps its `aides` anchor as a subheading. `buildingLabel` in article metadata adapts the suitability heading to an apartment building, house or dwelling through `SolutionBuildingContext`. Summary-card labels and pictograms belong to `SolutionSummaryCard`, never to individual article files. The colorful emoji pictograms explicitly requested from this Figma template are a scoped exception to the usual DSFR/Remix icon convention.
+- `client/Solution*.tsx` — reusable sections, summary cards, flow diagrams, FAQ and the three comparator calls to action. `SolutionPictogram` enforces color-emoji font fallback for the template pictograms. `SolutionFlow` takes explicit step labels and optional descriptions to preserve their distinct font weights.
+- `client/SolutionResourceCard.tsx` — explicit further-reading cards in TSX, with pictogram headings and optional primary/secondary actions. Articles with only one approved resource block retain one card.
 - The heat-network article embeds the existing `/iframe/form` address test, hidden when printing. The recommended heat-network card also links to its article.
 - Illustrations live in `public/img/heating-solutions/`. Figma sources: file `t3chbwPeNK6ZulaWs4Rn4S`, web template `3745:19077`, autumn 2026 illustration section `3782:10324`. The eleven autumn illustrations include four page-level frames outside the section hierarchy: collective air/water (`3783:1120`), solar thermal (`3783:1373`), thermodynamic water heater (`3783:920`) and solar atmospheric heat pump (`3783:951`). Individual air/water modes keep their existing illustration.
 

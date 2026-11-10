@@ -1,7 +1,10 @@
 import type { ModeDeChauffageId } from '@/modules/chaleur-renouvelable/constants';
 
+import type { SolutionBuildingLabel } from './article-sections';
+
 export const heatingSolutions = [
   {
+    buildingLabel: 'immeuble',
     image: 'img/heating-solutions/air-water.svg',
     modeIds: ['collective-air-water-heat-pump'],
     slug: 'pac-air-eau-collective',
@@ -11,6 +14,7 @@ export const heatingSolutions = [
     title: 'PAC air/eau collective',
   },
   {
+    buildingLabel: 'logement',
     image: 'img/icon-pac.webp',
     modeIds: ['individual-apartment-air-water-heat-pump', 'house-air-water-heat-pump'],
     slug: 'pac-air-eau-individuelle',
@@ -19,6 +23,7 @@ export const heatingSolutions = [
     title: 'PAC air/eau individuelle (appartement + maison)',
   },
   {
+    buildingLabel: 'logement',
     image: 'img/heating-solutions/air-air.svg',
     modeIds: ['individual-apartment-air-air-heat-pump', 'house-air-air-heat-pump'],
     slug: 'pac-air-air-individuelle',
@@ -27,6 +32,7 @@ export const heatingSolutions = [
     title: 'PAC air/air individuelle (appartement et maison)',
   },
   {
+    buildingLabel: 'immeuble',
     image: 'img/heating-solutions/biomass-boiler.svg',
     modeIds: ['collective-biomass-boiler'],
     slug: 'chaudiere-biomasse-collective',
@@ -35,6 +41,7 @@ export const heatingSolutions = [
     title: 'Chaudière à bois ou biomasse (collectif)',
   },
   {
+    buildingLabel: 'maison',
     image: 'img/heating-solutions/geothermal-house.svg',
     modeIds: ['house-geothermal-heat-pump'],
     slug: 'pac-geothermique-individuelle',
@@ -44,6 +51,7 @@ export const heatingSolutions = [
     title: 'PAC géothermique eau/eau individuelle (maison) ou glycolée/eau individuelle',
   },
   {
+    buildingLabel: 'maison',
     image: 'img/heating-solutions/biomass-boiler.svg',
     modeIds: ['house-biomass-boiler'],
     slug: 'chaudiere-biomasse-individuelle',
@@ -53,6 +61,7 @@ export const heatingSolutions = [
     title: 'Chaudière à bois ou biomasse (individuelle)',
   },
   {
+    buildingLabel: 'logement',
     image: 'img/heating-solutions/wood-stove.svg',
     modeIds: ['house-wood-stove'],
     slug: 'poele-insert-bois',
@@ -61,6 +70,7 @@ export const heatingSolutions = [
     title: 'Poêle, insert ou foyer fermé au bois (individuel)',
   },
   {
+    buildingLabel: 'immeuble',
     image: 'img/heating-solutions/air-water.svg',
     modeIds: ['collective-air-water-heat-pump-hot-water', 'individual-apartment-collective-air-water-heat-pump-hot-water'],
     slug: 'pac-air-eau-collective-eau-chaude-sanitaire',
@@ -69,6 +79,7 @@ export const heatingSolutions = [
     title: 'PAC air/eau collective pour l’ECS uniquement',
   },
   {
+    buildingLabel: 'immeuble',
     image: 'img/heating-solutions/hybrid.svg',
     modeIds: ['collective-hybrid-air-water-heat-pump-gas'],
     slug: 'pac-air-eau-hybride-gaz-collective',
@@ -77,6 +88,7 @@ export const heatingSolutions = [
     title: 'Solution hybride PAC air/eau + gaz pour chauffage collectif',
   },
   {
+    buildingLabel: 'maison',
     image: 'img/heating-solutions/solar-thermal.svg',
     modeIds: ['house-solar-thermal-hot-water'],
     slug: 'solaire-thermique-eau-chaude-maison',
@@ -85,6 +97,7 @@ export const heatingSolutions = [
     title: 'Solaire thermique - ECS uniquement (maison)',
   },
   {
+    buildingLabel: 'immeuble',
     image: 'img/heating-solutions/solar-thermal.svg',
     modeIds: ['collective-solar-thermal-hot-water', 'individual-apartment-solar-thermal-hot-water'],
     slug: 'solaire-thermique-eau-chaude-collective',
@@ -93,6 +106,7 @@ export const heatingSolutions = [
     title: 'Solaire thermique - ECS uniquement (collective)',
   },
   {
+    buildingLabel: 'maison',
     image: 'img/heating-solutions/solar-thermal.svg',
     modeIds: ['house-combined-solar-system'],
     slug: 'systeme-solaire-combine',
@@ -101,6 +115,7 @@ export const heatingSolutions = [
     title: 'Solaire thermique - système solaire combiné (maison)',
   },
   {
+    buildingLabel: 'immeuble',
     image: 'img/heating-solutions/network.svg',
     modeIds: ['collective-heat-network'],
     slug: 'reseau-de-chaleur',
@@ -109,6 +124,7 @@ export const heatingSolutions = [
     title: 'Réseau de chaleur',
   },
   {
+    buildingLabel: 'immeuble',
     image: 'img/heating-solutions/geothermal-collective.svg',
     modeIds: ['collective-geothermal-heat-pump'],
     slug: 'pac-geothermique-collective',
@@ -117,6 +133,7 @@ export const heatingSolutions = [
     title: 'PAC géothermique eau/eau ou eau/glycolée eau collective',
   },
   {
+    buildingLabel: 'logement',
     image: 'img/heating-solutions/thermodynamic-water-heater.svg',
     modeIds: [
       'collective-thermodynamic-water-heater',
@@ -129,6 +146,7 @@ export const heatingSolutions = [
     title: 'Chauffe-eau thermodynamique ECS uniquement',
   },
 ] as const satisfies readonly {
+  buildingLabel: SolutionBuildingLabel;
   image: string;
   modeIds: readonly ModeDeChauffageId[];
   slug: string;
