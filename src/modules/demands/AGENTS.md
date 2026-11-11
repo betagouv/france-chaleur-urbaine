@@ -37,7 +37,7 @@ Connection requests ("demandes de raccordement") lifecycle: creation, enrichment
 
 ## Key invariants
 
-- Classic requests from the multi-energy simulator reuse creation inputs `mtm_source` / `mtm_campaign` for UTM/Google Ads attribution (`Campagne source` / `Campagne matomo` in `legacy_values`). The admin UI exposes these as source/campaign filters. Creation deduplication preserves the original campaign. Google conversions are emitted by the simulator client only after a new demand is confirmed, never for a deduplicated result. Details: `docs/google-ads-multienr.md`.
+- Classic requests from the multi-energy simulator reuse creation inputs `mtm_source` / `mtm_campaign` for UTM/Google Ads attribution (`Campagne source` / `Campagne matomo` in `legacy_values`). The admin UI exposes these as source/campaign filters. Creation deduplication preserves the original campaign. Google conversions are emitted by the simulator client only after a new demand is confirmed, never for a deduplicated result.
 
 - A demand is invisible to gestionnaires/collectivités until an admin validates it; all crons filter on `validated = true` and `deleted_at IS NULL`.
 - `'Relance à activer'` is set only at creation (eligible AND collective heating) and drives the satisfaction relances.

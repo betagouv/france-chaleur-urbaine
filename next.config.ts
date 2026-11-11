@@ -78,9 +78,6 @@ const configFunctions = [
       'img-src': ["'self'", 'https:', 'data:'],
       'script-src': [
         "'self'",
-        "'sha256-Ny4QAH1g1FWyqlgrnIVWh1mj+jM8c6SjgqJ2i6c2REU='", // GoogleTagsScript - dataLayer/gtag bootstrap (after consent)
-        "'sha256-8r71P9EINuYzK2mdhvMfZG0nDrKZhY5rvxXNAgVD45g='", // GoogleTagsScript - loader for Google Ads AW-16641573937
-        "'sha256-/To7QTI1yR8LpZjhrqYdP21zirnpAwwI4s7M8TwKxnI='", // GoogleTagsScript - loader for Google Analytics G-B35Q28PSV8
         'https://stats.beta.gouv.fr', // Matomo
         'https://www.gstatic.com/', // react-google-charts loader
         'https://*.googletagmanager.com', // gtag (Google Analytics / Ads, after consent)

@@ -1,43 +1,14 @@
-import Script from 'next/script';
-import type React from 'react';
+import { useEffect } from 'react';
 
-type GoogleTagsScriptProps = React.ComponentProps<typeof Script> & {
-  tagIds: string[];
-};
+import { loadGoogleTags } from '@/modules/analytics/google-tag-manager';
 
-const GoogleTagsScript: React.FC<GoogleTagsScriptProps> = ({ tagIds, ...props }) => {
-  return (
-    <>
-      <Script id={'google-ads-tags'}>
-        {`
-        "use strict";
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = function gtag() {
-          window.dataLayer.push(arguments);
-        };
-        `}
-      </Script>
-      {tagIds.map((tagId) => (
-        <Script key={tagId} id={`google-ads-tag-${tagId}`} {...props}>
-          {`
-          (() => {
-            const script = document.createElement('script');
-            script.src = 'https://www.googletagmanager.com/gtag/js?id=${tagId}';
-            script.async = true;
-            document.head.appendChild(script);
+type GoogleTagsScriptProps = { tagIds: string[] };
 
-            script.onload = () => {
-              gtag('js', new Date());
-              gtag('config', '${tagId}', {
-                'anonymize_ip': true
-              });
-            };
-          })()
-          `}
-        </Script>
-      ))}
-    </>
-  );
-};
-
-export default GoogleTagsScript;
+/** Loads legacy Google destinations through the same consent and URL safeguards as GTM. */
+export function GoogleTagsScript({ tagIds }: GoogleTagsScriptProps) {
+  // Configuration must enter the data layer before scripts start reading the current page.
+  useEffect(() => {
+    loadGoogleTags(tagIds);
+  }, [tagIds]);
+  return null;
+}

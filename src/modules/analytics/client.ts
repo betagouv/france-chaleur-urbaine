@@ -9,6 +9,8 @@ import { isDevModeEnabled } from '@/hooks/useDevMode';
 import { AnalyticsFormId, type TrackingConfiguration, trackingEvents } from '@/modules/analytics/analytics.config';
 import type { PostHogEvent, PostHogEventMap } from '@/modules/analytics/posthog.config';
 
+import { getGooglePageParameters } from './google-tag-manager';
+
 export { AnalyticsFormId, type TrackingConfiguration };
 
 type ExtractSuffix<T extends string, S extends string> = T extends `${infer Prefix}${S}` ? Prefix : never;
@@ -18,11 +20,11 @@ type MatomoAnalyticsLoadingState = 'pending' | 'loaded' | 'error';
 
 const matomoAnalyticsLoadingStateAtom = atom<MatomoAnalyticsLoadingState>('pending');
 
-const onRouteChange = (url: string) => {
+const onRouteChange = () => {
   // see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag&hl=fr#manually_send_page_view_events
   if (clientConfig.tracking.googleTagIds.length > 0 && typeof window?.gtag === 'function') {
     window.gtag('event', 'page_view', {
-      page_location: url,
+      ...getGooglePageParameters(),
       page_title: document.title,
     });
   }
