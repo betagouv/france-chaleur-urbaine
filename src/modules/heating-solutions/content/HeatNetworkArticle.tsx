@@ -1,3 +1,4 @@
+import { HeatNetworkEligibilityForm } from '../client/HeatNetworkEligibilityForm';
 import { SolutionContentLink } from '../client/SolutionContentLink';
 import { SolutionFaqItem } from '../client/SolutionFaqItem';
 import { SolutionFundingCard } from '../client/SolutionFundingCard';
@@ -366,18 +367,7 @@ function ResourcesSection() {
         <p>
           <strong>Testez votre adresse :</strong>
         </p>
-        <div className="print:hidden">
-          <iframe
-            src="/iframe/form"
-            title="Test d’adresse France Chaleur Urbaine"
-            className="h-[550px] w-full border-0"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-          <p className="text-right text-xs">
-            Fourni par <a href="/">France Chaleur Urbaine</a>
-          </p>
-        </div>
+        <HeatNetworkEligibilityForm />
         <p>
           Si le raccordement est envisageable, vous pourrez ensuite <strong>transmettre une demande de raccordement</strong> afin d’être mis
           en relation avec le gestionnaire du réseau concerné.
