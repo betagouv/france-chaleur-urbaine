@@ -12,6 +12,7 @@ import { getHeatingSolution, getHeatingSolutionHref, heatingSolutions } from './
 import { heatingSolutionContent } from './content';
 
 vi.mock('@root/public/icons/arrow-down-line.svgr', () => ({ default: 'svg' }));
+vi.mock('./client/HeatNetworkEligibilityForm', () => ({ HeatNetworkEligibilityForm: () => null }));
 
 describe('validated heating solution publication', () => {
   it('publishes exactly the fifteen validated source pages with unique routes and mode mappings', () => {
