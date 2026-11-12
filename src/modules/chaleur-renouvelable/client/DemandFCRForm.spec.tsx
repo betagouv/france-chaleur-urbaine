@@ -23,15 +23,17 @@ vi.mock('@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParam
   }),
 }));
 
-const { recordOutcome, submitDemand, track } = vi.hoisted(() => ({
+const { recordOutcome, submitDemand, track, trackConversion } = vi.hoisted(() => ({
   recordOutcome: vi.fn().mockResolvedValue(undefined),
   submitDemand: vi.fn(),
   track: vi.fn(),
+  trackConversion: vi.fn(),
 }));
 
 const simulationId = '11111111-2222-4333-8444-555555555555';
 
 vi.mock('@/modules/analytics/client', () => ({ trackPostHogEvent: track }));
+vi.mock('@/modules/analytics/client/useMultiEnrConversion', () => ({ useMultiEnrConversion: () => trackConversion }));
 
 vi.mock('@/modules/trpc/client', () => ({
   default: {
@@ -254,6 +256,7 @@ describe('DemandFCRForm simulation outcome', () => {
     ['no demand created → nothing', { demandSubmissionResult: null, id: null }, null],
   ] as const)('records %s', async (_, result, expectedOutcome) => {
     recordOutcome.mockClear();
+    trackConversion.mockClear();
     submitDemand.mockResolvedValueOnce(result);
     render(
       <DemandFCRForm
@@ -272,8 +275,15 @@ describe('DemandFCRForm simulation outcome', () => {
     await waitFor(() => expect(submitDemand).toHaveBeenCalledTimes(1));
     if (expectedOutcome) {
       await waitFor(() => expect(recordOutcome).toHaveBeenCalledExactlyOnceWith({ ...expectedOutcome, id: simulationId }));
+      expect(trackConversion).toHaveBeenCalledExactlyOnceWith({
+        demand_id: expectedOutcome.demandId,
+        demand_type: expectedOutcome.outcome === 'ccrt_demand' ? 'ccrt' : 'heat_network',
+        event: 'multienr_accompaniment_submitted',
+        simulation_id: simulationId,
+      });
     } else {
       expect(recordOutcome).not.toHaveBeenCalled();
+      expect(trackConversion).not.toHaveBeenCalled();
     }
   });
 

@@ -61,20 +61,28 @@ const configFunctions = [
         'https://*.analytics.google.com',
         'https://*.googletagmanager.com',
         'https://www.google.com', // Google Ads conversion pings (ccm/collect)
+        'https://www.google.fr',
+        'https://www.googleadservices.com',
+        'https://googleads.g.doubleclick.net',
+        'https://pagead2.googlesyndication.com',
         'https://ad.doubleclick.net',
         'https://stats.g.doubleclick.net',
       ],
       'font-src': ["'self'", 'https:', 'data:'],
-      'frame-src': ['https://td.doubleclick.net', 'https://www.youtube.com/', 'https://cloud.contact.ademe.fr'],
+      'frame-src': [
+        'https://td.doubleclick.net',
+        'https://www.googletagmanager.com',
+        'https://www.youtube.com/',
+        'https://cloud.contact.ademe.fr',
+      ],
       'img-src': ["'self'", 'https:', 'data:'],
       'script-src': [
         "'self'",
-        "'sha256-Ny4QAH1g1FWyqlgrnIVWh1mj+jM8c6SjgqJ2i6c2REU='", // GoogleTagsScript - dataLayer/gtag bootstrap (after consent)
-        "'sha256-8r71P9EINuYzK2mdhvMfZG0nDrKZhY5rvxXNAgVD45g='", // GoogleTagsScript - loader for Google Ads AW-16641573937
-        "'sha256-/To7QTI1yR8LpZjhrqYdP21zirnpAwwI4s7M8TwKxnI='", // GoogleTagsScript - loader for Google Analytics G-B35Q28PSV8
         'https://stats.beta.gouv.fr', // Matomo
         'https://www.gstatic.com/', // react-google-charts loader
-        'https://*.googletagmanager.com', // gtag (Google Analytics / Ads, after consent)
+        'https://www.googletagmanager.com', // GTM and Google Ads destination (after consent)
+        ...(!clientConfig.isProductionSite ? ['https://tagmanager.google.com'] : []), // GTM preview outside production
+        'https://www.google.com', // Google Ads conversion scripts (required by Google's CSP guide)
         'https://www.googleadservices.com', // Google Ads conversion scripts
         'https://googleads.g.doubleclick.net',
         'https://www.ssa.gov/accessibility/', // Nécessaire pour faire fonctionner le bookmarklet ANDI

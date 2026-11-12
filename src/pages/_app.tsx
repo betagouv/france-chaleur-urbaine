@@ -15,6 +15,7 @@ import ThemeProvider, { dsfrDocumentApi } from '@/components/Theme/ThemeProvider
 import useHtmlAttributes from '@/hooks/useHtmlAttributes';
 import { usePreserveScroll } from '@/hooks/usePreserveScroll';
 import { useAnalytics } from '@/modules/analytics/client';
+import { useCaptureAcquisition } from '@/modules/analytics/client/acquisition';
 import { useInitAuthentication } from '@/modules/auth/client/hooks';
 import { NotifierContainer } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
@@ -74,6 +75,7 @@ const AppProvider = (props: AppProps<AuthSSRPageProps>) => {
 };
 
 function App(appProps: AppProps<AuthSSRPageProps>) {
+  useCaptureAcquisition();
   usePreserveScroll();
   useAnalytics();
   useHtmlAttributes();

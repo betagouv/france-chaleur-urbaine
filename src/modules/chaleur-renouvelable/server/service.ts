@@ -238,6 +238,7 @@ const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promi
 
   const demandSubmissionResult = await createDemand(
     {
+      acquisition: input.acquisition,
       address: input.address,
       city: input.geoAddress.city,
       commentUser: input.comments ?? '',
@@ -685,6 +686,7 @@ const createCcrtDemand = async (input: DemandeChaleurRenouvelable) => {
     .insertInto('demands_chaleur_renouvelable')
     .values({
       ...territory,
+      acquisition: input.acquisition ? JSON.stringify(input.acquisition) : null,
       address: input.address,
       alternative_heating_solutions: input.alternativeHeatingSolutions ?? [],
       annual_heating_consumption: input.annualHeatingConsumption,
@@ -767,7 +769,7 @@ export const validateDemandeChaleurRenouvelableAdmin = async ({ demandId }: Admi
 };
 
 export const listDemandesChaleurRenouvelableAdmin = async () => {
-  const demandes = await selectDemandesChaleurRenouvelableForList().orderBy('created_at', 'desc').execute();
+  const demandes = await selectDemandesChaleurRenouvelableForList().select('acquisition').orderBy('created_at', 'desc').execute();
   return { count: demandes.length, items: serializeDemandesChaleurRenouvelable(demandes) };
 };
 

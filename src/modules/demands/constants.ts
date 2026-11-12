@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { zAcquisition } from '@/modules/analytics/constants';
 import type { EligibilityType } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { escapeHtml } from '@/utils/html';
@@ -205,6 +206,7 @@ export const zAdminUpdateDemandInput = z.object({
 });
 
 export const zCreateDemandInput = z.object({
+  acquisition: zAcquisition.nullish(),
   address: z.string().trim(),
   city: z.string(),
   commentUser: z.string().trim().max(COMMENT_USER_MAX_LENGTH, COMMENT_USER_MAX_LENGTH_ERROR_MESSAGE).optional(),
@@ -625,15 +627,17 @@ export const formatDataToLegacyValues = (values: CreateDemandInput) => {
     mtm_campaign,
     mtm_kwd,
     mtm_source,
+    acquisition,
     demandArea,
     nbLogements,
   } = values;
 
   return {
     Adresse: address,
-    'Campagne keywords': mtm_kwd,
-    'Campagne matomo': mtm_campaign,
-    'Campagne source': mtm_source,
+    'Campagne keywords': acquisition ? acquisition.keyword : mtm_kwd,
+    'Campagne matomo': acquisition ? (acquisition.campaign ?? undefined) : mtm_campaign,
+    'Campagne medium': acquisition?.medium ?? undefined,
+    'Campagne source': acquisition ? (acquisition.source ?? undefined) : mtm_source,
     'Code Postal': postcode,
     Departement: department,
     'Distance au réseau': eligibility?.distance,

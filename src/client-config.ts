@@ -1,6 +1,8 @@
 // Attention, il faut référencer explicitement chaque variable process.env.NEXT_PUBLIC_*
 
 // exemple: ENABLE_INSCRIPTIONS: envBooleanSchema.default(false).parse(process.env.NEXT_PUBLIC_FLAG_ENABLE_INSCRIPTIONS),
+import { z } from 'zod';
+
 export const clientConfig = {
   // Lets an admin take over a real account (identity + permissions) from /admin/users. Local development only, never set it on a deployed environment.
   allowFullImpersonation: process.env.NEXT_PUBLIC_IMPERSONATION_ALLOW_FULL_PROFILE === 'true',
@@ -21,7 +23,11 @@ export const clientConfig = {
   sentryDsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
   summaryAreaSizeLimit: 5, // km²
   tracking: {
-    googleTagIds: (process.env.NEXT_PUBLIC_GOOGLE_TAG_ID ?? '').split(',').filter(Boolean),
+    googleTagManagerId: z
+      .string()
+      .regex(/^GTM-[A-Z0-9]+$/)
+      .or(z.literal(''))
+      .parse(process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID ?? ''),
     matomoServerURL: process.env.NEXT_PUBLIC_MATOMO_URL,
     matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
     postHogApiHost: process.env.NEXT_PUBLIC_POSTHOG_HOST,

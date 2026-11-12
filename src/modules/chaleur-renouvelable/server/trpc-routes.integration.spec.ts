@@ -329,6 +329,53 @@ describe('batEnrRouter', () => {
   });
 
   describe('batEnr.createDemandeChaleurRenouvelable', () => {
+    it('persists campaign attribution on a CCRT demand for admins only', async () => {
+      await seedTableUser([testUsers.admin, testUsers.ccrt]);
+      await seedDepartmentPermission(testUsers.ccrt.id!, '13');
+      const acquisition = { campaign: 'chauffage-automne', medium: 'cpc', source: 'google' };
+      const result = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(
+        buildCcrtExperimentationDemandInput({ acquisition, isPublicAdvisorSelected: true })
+      );
+
+      expect(
+        await kdb.selectFrom('demands_chaleur_renouvelable').select('acquisition').where('id', '=', result.id!).executeTakeFirstOrThrow()
+      ).toStrictEqual({ acquisition });
+      const adminList = await createTestCaller(testUsers.admin).batEnr.admin.listDemandesChaleurRenouvelable();
+      expect(adminList.items.map((demand) => demand.acquisition)).toStrictEqual([acquisition]);
+
+      await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: result.id! });
+      const ccrtList = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
+      expect(ccrtList.items.map((demand) => demand.id)).toStrictEqual([result.id]);
+      expect(ccrtList.items[0]).not.toHaveProperty('acquisition');
+    });
+
+    it('preserves the original campaign when a classic demand is deduplicated', async () => {
+      const input = buildCcrtExperimentationDemandInput({
+        acquisition: { campaign: 'chauffage-automne', medium: 'cpc', source: 'google' },
+      });
+      const created = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
+      const duplicate = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable({
+        ...input,
+        acquisition: { campaign: 'different-campaign', medium: 'email', source: 'newsletter' },
+      });
+      const saved = await kdb
+        .selectFrom('demands')
+        .select('legacy_values')
+        .where('id', '=', created.demandSubmissionResult!.id)
+        .executeTakeFirstOrThrow();
+
+      expect(duplicate.demandSubmissionResult?.isExisting).toStrictEqual(true);
+      expect({
+        campaign: saved.legacy_values['Campagne matomo'],
+        medium: saved.legacy_values['Campagne medium'],
+        source: saved.legacy_values['Campagne source'],
+      }).toStrictEqual({
+        campaign: 'chauffage-automne',
+        medium: 'cpc',
+        source: 'google',
+      });
+    });
+
     it.each([
       ['previous refusal', { isPublicAdvisorSelected: true }],
       ['ineligible heat network', { heatNetworkEligibility: { distance: 450, inPDP: false, isEligible: false } }],
@@ -916,6 +963,7 @@ describe('batEnrRouter', () => {
         items: [
           {
             ...newerDemandInput,
+            acquisition: null,
             alternative_heating_solutions: [],
             assigned_to: null,
             commune_code: null,
@@ -935,6 +983,7 @@ describe('batEnrRouter', () => {
           },
           {
             ...olderDemandInput,
+            acquisition: null,
             alternative_heating_solutions: [],
             assigned_to: null,
             commune_code: null,

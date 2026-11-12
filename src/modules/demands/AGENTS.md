@@ -37,6 +37,8 @@ Connection requests ("demandes de raccordement") lifecycle: creation, enrichment
 
 ## Key invariants
 
+- Classic forms and the multi-energy simulator send the shared `zAcquisition` shape through `zCreateDemandInput.acquisition`. `formatDataToLegacyValues` stores raw source, medium and campaign in `Campagne source` / `Campagne medium` / `Campagne matomo`, plus optional keyword in `Campagne keywords`. Legacy `mtm_source` / `mtm_campaign` / `mtm_kwd` API inputs remain supported. The admin table has no acquisition columns or filters. Creation deduplication preserves the original campaign; simulator Google events are emitted only after a new demand is confirmed.
+
 - A demand is invisible to gestionnaires/collectivités until an admin validates it; all crons filter on `validated = true` and `deleted_at IS NULL`.
 - `'Relance à activer'` is set only at creation (eligible AND collective heating) and drives the satisfaction relances.
 - Status transitions are free (no enforced order); admin UI displays Status disabled — status is changed by the responsible role or the partner API.

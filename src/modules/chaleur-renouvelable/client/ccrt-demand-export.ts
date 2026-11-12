@@ -1,3 +1,4 @@
+import { getAcquisitionSource } from '@/modules/analytics/constants';
 import { dayjs } from '@/utils/date';
 import type { ExportColumn } from '@/utils/export';
 
@@ -42,4 +43,10 @@ export const ccrtDemandExportColumns = [
   { accessorKey: 'housing_count', name: 'Logements' },
   { accessorKey: 'average_area', name: 'Surface moyenne (m²)', precision: 2 },
   { accessorKey: 'simulation_url', name: 'Simulation' },
+] satisfies ExportColumn<CcrtDemand>[];
+
+export const ccrtDemandAcquisitionExportColumns = [
+  { accessorFn: (demand) => (demand.acquisition ? getAcquisitionSource(demand.acquisition) : '') ?? '', name: 'Source d’acquisition' },
+  { accessorFn: (demand) => demand.acquisition?.medium ?? '', name: 'Support d’acquisition' },
+  { accessorFn: (demand) => demand.acquisition?.campaign ?? '', name: 'Campagne d’acquisition' },
 ] satisfies ExportColumn<CcrtDemand>[];

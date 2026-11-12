@@ -82,6 +82,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
   };
   const toolbar = (
     <CcrtDemandToolbar
+      isAdmin={isAdmin}
       search={filters.search}
       status={filters.status}
       demands={visibleDemands}

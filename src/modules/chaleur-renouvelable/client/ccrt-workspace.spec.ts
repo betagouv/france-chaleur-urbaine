@@ -57,4 +57,17 @@ describe('matchesCcrtDemandSearch', () => {
   ])('matches "%s": %s', (search, expected) => {
     expect(matchesCcrtDemandSearch(demand, search)).toStrictEqual(expected);
   });
+
+  it.each(['Google Ads', 'RENOVATION AUTOMNE'])('finds an admin demand from its acquisition: %s', (search) => {
+    expect(
+      matchesCcrtDemandSearch(
+        {
+          ...demand,
+          acquisition: { campaign: 'Rénovation automne', medium: 'cpc', source: 'google' },
+        },
+        search
+      )
+    ).toStrictEqual(true);
+    expect(matchesCcrtDemandSearch(demand, search)).toStrictEqual(false);
+  });
 });

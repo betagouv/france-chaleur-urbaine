@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { useMultiEnrConversion } from '@/modules/analytics/client/useMultiEnrConversion';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { getHeatingModeCosts, setPublicodesSituation } from '@/modules/chaleur-renouvelable/client/heatingModeCosts';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
@@ -29,6 +30,7 @@ export function useChoixChauffageResults() {
   const utils = trpc.useUtils();
   const selectionVersion = useRef(0);
   const lastTrackedRecommendation = useRef<string | null>(null);
+  const trackConversion = useMultiEnrConversion();
 
   useRemoveHashOnScroll('#help-ademe');
 
@@ -204,6 +206,12 @@ export function useChoixChauffageResults() {
       simulationTracking.track(simulationSnapshot);
     }
   }, [isSimulationReady, simulationSnapshot, simulationTracking]);
+
+  useEffect(() => {
+    if (isSimulationReady) {
+      trackConversion({ event: 'multienr_simulation_completed', simulation_id: simulationTracking.simulationId });
+    }
+  }, [isSimulationReady, simulationTracking.simulationId, trackConversion]);
 
   // Track the displayed solution, not new object identities produced by asynchronous recalculations.
   useEffect(() => {

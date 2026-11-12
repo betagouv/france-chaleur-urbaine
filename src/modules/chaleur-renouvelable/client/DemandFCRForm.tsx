@@ -6,6 +6,8 @@ import Dialog from '@/components/ui/Dialog';
 import Link from '@/components/ui/Link';
 import RichSelect from '@/components/ui/RichSelect';
 import { trackPostHogEvent } from '@/modules/analytics/client';
+import { getAcquisition } from '@/modules/analytics/client/acquisition';
+import { useMultiEnrConversion } from '@/modules/analytics/client/useMultiEnrConversion';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { FranceRenovAdvisorCallout } from '@/modules/chaleur-renouvelable/client/FranceRenovAdvisorCallout';
 import { useChoixChauffageQueryParams } from '@/modules/chaleur-renouvelable/client/hooks/useChoixChauffageQueryParams';
@@ -251,6 +253,7 @@ function HeatNetworkDemandForm({
 }: HeatNetworkDemandFormProps) {
   const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
   const recordSimulationOutcome = useRecordSimulationOutcome();
+  const trackConversion = useMultiEnrConversion();
   const [isCcrtUnavailable, setIsCcrtUnavailable] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
   const [refusalPeriod, setRefusalPeriod] = useState('');
@@ -303,6 +306,7 @@ function HeatNetworkDemandForm({
     });
 
     const result = await createDemandeChaleurRenouvelable.mutateAsync({
+      acquisition: getAcquisition(),
       address: params.adresse ?? '',
       alternativeHeatingSolutions: alternativeHeatingSolutionLabels,
       annualHeatingConsumption: isCcrtDemand ? (value.annualHeatingConsumption ?? null) : null,
@@ -364,6 +368,12 @@ function HeatNetworkDemandForm({
         : null;
     if (simulationOutcome) {
       recordSimulationOutcome(simulationId, simulationOutcome);
+      trackConversion({
+        demand_id: simulationOutcome.demandId,
+        demand_type: simulationOutcome.outcome === 'ccrt_demand' ? 'ccrt' : 'heat_network',
+        event: 'multienr_accompaniment_submitted',
+        simulation_id: simulationId,
+      });
     }
 
     setSubmissionResult(

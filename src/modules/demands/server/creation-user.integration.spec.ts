@@ -73,6 +73,19 @@ describe('creation-user', () => {
   });
 
   describe('createDemand()', () => {
+    it('stores the same raw acquisition fields as simulator demands', async () => {
+      const acquisition = { campaign: 'chauffage-automne', keyword: 'pompe à chaleur', medium: 'cpc', source: 'google' };
+      const result = await createDemand(buildDemandInput({ acquisition }));
+      const saved = await kdb.selectFrom('demands').select('legacy_values').where('id', '=', result.id).executeTakeFirstOrThrow();
+
+      expect({
+        campaign: saved.legacy_values['Campagne matomo'],
+        keyword: saved.legacy_values['Campagne keywords'],
+        medium: saved.legacy_values['Campagne medium'],
+        source: saved.legacy_values['Campagne source'],
+      }).toStrictEqual(acquisition);
+    });
+
     it('crée une demande avec adresse de test, eligibility_history et événement', async () => {
       const input = buildDemandInput();
 
