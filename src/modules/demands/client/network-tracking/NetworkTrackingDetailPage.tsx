@@ -9,10 +9,13 @@ import Loader from '@/components/ui/Loader';
 import { buildAdminDemandsUrl, buildDemandFilters } from '@/modules/demands/client/admin-demands-url';
 import { zNetworkTrackingInput } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
+import { isDefined } from '@/utils/core';
+import { formatMW } from '@/utils/strings';
 
 import { getNetworkName } from './format';
 import { NetworkQuartersTable } from './NetworkQuartersTable';
 import { NetworkStatusesTable } from './NetworkStatusesTable';
+import { NetworkTrackingFollowUp } from './NetworkTrackingFollowUp';
 import { NetworkTrackingIndicators } from './NetworkTrackingIndicators';
 import { NetworkTrackingStateBadge } from './NetworkTrackingStateBadge';
 import { NetworkTypeBadges } from './NetworkTypeBadges';
@@ -23,7 +26,7 @@ const NetworkActivityChart = dynamic(() => import('./NetworkActivityChart').then
 });
 
 /**
- * Admin screen detailing how the managers of one network handle its demands: indicators, monthly activity, response by quarter and statuses.
+ * Admin screen detailing how the managers of one network handle its demands: indicators, accounts and follow-up, monthly activity, response by quarter and statuses.
  */
 export default function NetworkTrackingDetailPage() {
   const router = useRouter();
@@ -49,6 +52,7 @@ export default function NetworkTrackingDetailPage() {
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
                 <NetworkTrackingStateBadge state={tracking.summary.state} />
                 <NetworkTypeBadges networkType={tracking.summary.networkType} sncuId={tracking.summary.sncuId} />
+                {isDefined(tracking.summary.powerMW) && <span>{formatMW(tracking.summary.powerMW)}</span>}
                 <Link
                   href={buildAdminDemandsUrl(
                     buildDemandFilters(tracking.summary.networkId, tracking.summary.networkType, undefined, false)
@@ -56,11 +60,17 @@ export default function NetworkTrackingDetailPage() {
                 >
                   Voir les {tracking.summary.total} demandes
                 </Link>
-                <Link href={`/admin/reseaux/stats?reseaux_search=${encodeURIComponent(networkName)}`}>Comptes et relances</Link>
               </div>
             </div>
 
             <NetworkTrackingIndicators summary={tracking.summary} />
+
+            <section className="flex flex-col gap-2">
+              <Heading as="h2" size="h5" className="mb-0!">
+                Comptes et suivi
+              </Heading>
+              <NetworkTrackingFollowUp network={tracking.summary} />
+            </section>
 
             <section className="flex flex-col gap-2">
               <Heading as="h2" size="h5" className="mb-0!">

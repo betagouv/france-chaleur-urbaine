@@ -10,40 +10,44 @@ type NetworkDemandsCellProps = {
 };
 
 /**
- * Demands of a network, pending then all: how many (linking to them) and the dates of the oldest and newest one.
+ * Demands of a network, pending then all: how many (linking to them) and, below each figure, the dates of the oldest and newest one.
  */
 export function NetworkDemandsCell({ network }: NetworkDemandsCellProps) {
   if (network.total === 0) {
     return <span className="text-sm text-gray-400">Aucune demande</span>;
   }
   return (
-    <div className="grid w-full grid-cols-[auto_1fr] items-baseline gap-x-2 gap-y-1 text-xs">
-      <span>
-        <Link
-          href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, undefined, true))}
-          className={cx('text-base font-bold', network.pending > 0 && 'text-error')}
-        >
-          {network.pending}
-        </Link>{' '}
-        à traiter
-      </span>
-      <span className="text-right text-(--text-mention-grey)">
-        {network.oldestPendingDemandAt && network.newestPendingDemandAt
-          ? formatDateRange(network.oldestPendingDemandAt, network.newestPendingDemandAt)
-          : ''}
-      </span>
-      <span>
-        <Link
-          href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, undefined, false))}
-          className="text-base font-bold"
-        >
-          {network.total}
-        </Link>{' '}
-        au total
-      </span>
-      <span className="text-right text-(--text-mention-grey)">
-        {network.oldestDemandAt && network.newestDemandAt ? formatDateRange(network.oldestDemandAt, network.newestDemandAt) : ''}
-      </span>
+    <div className="flex flex-col gap-2 text-xs">
+      <div className="flex flex-col">
+        <span>
+          <Link
+            href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, undefined, true))}
+            className={cx('text-base font-bold', network.pending > 0 && 'text-error')}
+          >
+            {network.pending}
+          </Link>{' '}
+          à traiter
+        </span>
+        {network.oldestPendingDemandAt && network.newestPendingDemandAt && (
+          <span className="text-(--text-mention-grey)">
+            {formatDateRange(network.oldestPendingDemandAt, network.newestPendingDemandAt)}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-col">
+        <span>
+          <Link
+            href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, undefined, false))}
+            className="text-base font-bold"
+          >
+            {network.total}
+          </Link>{' '}
+          au total
+        </span>
+        {network.oldestDemandAt && network.newestDemandAt && (
+          <span className="text-(--text-mention-grey)">{formatDateRange(network.oldestDemandAt, network.newestDemandAt)}</span>
+        )}
+      </div>
     </div>
   );
 }

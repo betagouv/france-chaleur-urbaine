@@ -12,22 +12,21 @@ type NetworkCellProps = {
 };
 
 /**
- * Identity of a network in the tracking table: state, type and SNCU badges, name linking to its detail, and its power.
+ * Identity of a network in the tracking table: name linking to its detail followed by its state, then its type, SNCU identifier and power.
  */
 export function NetworkCell({ network }: NetworkCellProps) {
   return (
     <div className="flex min-w-0 flex-col gap-1">
-      <div className="flex flex-wrap items-center gap-1">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <Link href={buildNetworkTrackingUrl(network.networkType, network.networkId)} className="text-sm font-semibold leading-snug">
+          {getNetworkName(network)}
+        </Link>
         <NetworkTrackingStateBadge state={network.state} />
-        <NetworkTypeBadges networkType={network.networkType} sncuId={network.sncuId} />
       </div>
-      <Link
-        href={buildNetworkTrackingUrl(network.networkType, network.networkId)}
-        className="self-start text-sm font-semibold leading-snug"
-      >
-        {getNetworkName(network)}
-      </Link>
-      {isDefined(network.powerMW) && <span className="text-xs text-(--text-mention-grey)">{formatMW(network.powerMW)}</span>}
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <NetworkTypeBadges networkType={network.networkType} sncuId={network.sncuId} />
+        {isDefined(network.powerMW) && <span className="text-xs text-(--text-mention-grey)">{formatMW(network.powerMW)}</span>}
+      </div>
     </div>
   );
 }
