@@ -34,7 +34,6 @@ const brevoContact = (email: string, overrides: Partial<BrevoBlockedContact> = {
 
 const adminOnly: TestCaseBoolean<Partial<User> | null>[] = [
   { expectedOutput: false, input: null },
-  { expectedOutput: false, input: testUsers.particulier },
   { expectedOutput: false, input: testUsers.professionnel },
   { expectedOutput: false, input: testUsers.gestionnaire },
   { expectedOutput: false, input: testUsers.collectivite },

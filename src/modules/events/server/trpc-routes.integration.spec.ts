@@ -11,7 +11,6 @@ import { createTestCaller, forbiddenError, testUsers } from '@/tests/trpc-helper
 
 const adminOnlyPermissions: TestCaseBoolean<Partial<User> | null>[] = [
   { expectedOutput: false, input: null },
-  { expectedOutput: false, input: testUsers.particulier },
   { expectedOutput: false, input: testUsers.professionnel },
   { expectedOutput: false, input: testUsers.gestionnaire },
   { expectedOutput: true, input: testUsers.admin },

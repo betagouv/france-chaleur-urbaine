@@ -22,7 +22,6 @@ import { registerProEligibilityTestsCommands } from '@/modules/pro-eligibility-t
 import { registerNetworkCommands } from '@/modules/reseaux/commands';
 import { registerEcoreseauCommand } from '@/modules/reseaux/commands/ecoreseau';
 import { registerTilesCommands } from '@/modules/tiles/commands';
-import { registerUsersCommands } from '@/modules/users/commands';
 import { serverConfig } from '@/server/config';
 import { aggregateMonthlyStats } from '@/server/cron/aggregateMonthlyStats';
 import { anonymizeDatabase } from '@/server/db/anonymize';
@@ -65,7 +64,6 @@ program
   });
 
 registerAdemeConnectCommands(program);
-registerUsersCommands(program);
 registerAppCommands(program);
 registerBdnbCommands(program);
 registerDataCommands(program);

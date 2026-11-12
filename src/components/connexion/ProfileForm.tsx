@@ -47,8 +47,7 @@ function ProfileForm() {
   });
 
   const structureType = useStore(form.store, (state) => state.values.structure_type);
-  const showStructureFields = profile?.role !== 'particulier';
-  const showEntrepriseField = profile?.role !== 'particulier' && profile?.role !== 'admin';
+  const showEntrepriseField = profile?.role !== 'admin';
 
   if (!profile) {
     return <Loader variant="section" />;
@@ -67,20 +66,16 @@ function ProfileForm() {
         <form.AppField name="last_name">{(field) => <field.TextField label="Nom de famille" />}</form.AppField>
         <form.AppField name="phone">{(field) => <field.PhoneField label="Téléphone" />}</form.AppField>
 
-        {showStructureFields && (
-          <>
-            <form.AppField name="structure_type">
-              {(field) => <field.SelectField label="Type de structure" options={structureTypeOptions} />}
-            </form.AppField>
-            {structureType === 'autre' && (
-              <form.AppField name="structure_other">
-                {/* only rendered when "autre" is selected, where the schema refine makes it required */}
-                {(field) => <field.TextField label="Renseignez le type de structure" nativeInputProps={{ required: true }} />}
-              </form.AppField>
-            )}
-            <form.AppField name="structure_name">{(field) => <field.TextField label="Nom de la structure" />}</form.AppField>
-          </>
+        <form.AppField name="structure_type">
+          {(field) => <field.SelectField label="Type de structure" options={structureTypeOptions} />}
+        </form.AppField>
+        {structureType === 'autre' && (
+          <form.AppField name="structure_other">
+            {/* only rendered when "autre" is selected, where the schema refine makes it required */}
+            {(field) => <field.TextField label="Renseignez le type de structure" nativeInputProps={{ required: true }} />}
+          </form.AppField>
         )}
+        <form.AppField name="structure_name">{(field) => <field.TextField label="Nom de la structure" />}</form.AppField>
 
         {showEntrepriseField && (
           <form.AppField name="entreprise">{(field) => <field.CustomField Component={EntrepriseField} label="Entreprise" />}</form.AppField>

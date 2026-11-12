@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type UserRole, userRoles, userRolesInscription } from '@/types/enum/UserRole';
+import { type StoredUserRole, type UserRole, userRoles, userRolesInscription } from '@/types/enum/UserRole';
 import { ObjectKeys } from '@/utils/typescript';
 import { zPassword } from '@/utils/validation';
 
@@ -44,9 +44,11 @@ export const roles: Record<UserRole, string> = {
   ccrt: 'CCRT',
   collectivite: 'Collectivité',
   gestionnaire: 'Gestionnaire',
-  particulier: 'Particulier',
   professionnel: 'Professionnel',
 };
+
+/** Labels of every role met in stored events, removed roles included. */
+export const storedRoleLabels: Record<StoredUserRole, string> = { ...roles, particulier: 'Particulier' };
 
 // ─── User preferences (users.preferences JSONB) ──────────────────────────────
 

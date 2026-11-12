@@ -517,7 +517,7 @@ const PageHeader = (props: PageHeaderProps) => {
         ...(hasRole('admin') ? adminNavigationMenu : []),
         ...(hasRole('gestionnaire') || hasRole('collectivite') || hasRole('alec') ? gestionnaireNavigationMenu : []),
         ...(hasRole('ccrt') ? ccrtNavigationMenu : []),
-        ...(hasRole('particulier') || hasRole('professionnel') ? professionnelNavigationMenu : []),
+        ...(hasRole('professionnel') ? professionnelNavigationMenu : []),
       ];
     }
     return publicNavigationMenu;

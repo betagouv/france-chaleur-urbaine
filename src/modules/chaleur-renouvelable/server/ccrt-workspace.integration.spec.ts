@@ -432,12 +432,12 @@ describe('CCRT heat-network eligibility', () => {
 
   it('lists territorial access holders without including permission updates or synchronizations in demand history', async () => {
     const demand = await seedWorkspace();
-    await seedTableUser([{ ...testUsers.gestionnaire, active: false }, testUsers.particulier]);
+    await seedTableUser([{ ...testUsers.gestionnaire, active: false }, testUsers.professionnel]);
     await kdb
       .insertInto('user_permissions')
       .values([
         { resource_id: '13', type: 'departement', user_id: testUsers.gestionnaire.id },
-        { resource_id: '13', type: 'departement', user_id: testUsers.particulier.id },
+        { resource_id: '13', type: 'departement', user_id: testUsers.professionnel.id },
       ])
       .execute();
     await createUserEvent({

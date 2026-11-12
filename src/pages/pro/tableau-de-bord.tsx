@@ -18,7 +18,7 @@ export default function DashboardPage() {
         </Heading>
         {hasRole('admin') && <DashboardAdmin />}
         {(hasRole('gestionnaire') || hasRole('collectivite') || hasRole('alec') || hasRole('ccrt')) && <DashboardGestionnaire />}
-        {(hasRole('particulier') || hasRole('professionnel')) && <DashboardProfessionnel />}
+        {hasRole('professionnel') && <DashboardProfessionnel />}
       </Box>
     </SimplePage>
   );

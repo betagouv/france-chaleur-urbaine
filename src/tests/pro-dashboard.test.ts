@@ -27,7 +27,6 @@ describe('Professional landing page', () => {
     ['collectivite', '/pro/demandes'],
     ['alec', '/pro/demandes'],
     ['admin', null],
-    ['particulier', null],
     ['professionnel', null],
   ] as const)('selects the default destination for %s after login', async (role, destination) => {
     const session: Session = {

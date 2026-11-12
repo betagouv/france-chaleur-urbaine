@@ -47,7 +47,6 @@ describe('proEligibilityTestsRouter', () => {
 
     const permissionTests: PermissionTestCase[] = [
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-      { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
       { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
       { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
       { allowed: true, label: "autorise admin et retourne le résultat d'éligibilité", user: testUsers.admin },

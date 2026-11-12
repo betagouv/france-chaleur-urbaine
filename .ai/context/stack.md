@@ -9,7 +9,7 @@ Versions live in `package.json` (authoritative) — this file captures the choic
 ## Data & API
 - **PostgreSQL 16 + PostGIS 3.5**. **Kysely** query builder (not Prisma) — types generated from the live schema table by table (`pnpm cli db:sync --single <table>`, merged by hand — see database.md).
 - **tRPC 11** + **Zod 4** (validation, shared client/server) + **TanStack React Query 5** (server state).
-- **NextAuth v4**, credentials provider, JWT sessions. Roles: `admin`, `gestionnaire`, `collectivite`, `alec`, `professionnel`, `particulier`.
+- **NextAuth v4**, credentials provider, JWT sessions. Roles: `admin`, `gestionnaire`, `collectivite`, `alec`, `ccrt`, `professionnel`.
 
 ## UI
 - **DSFR** (`@codegouvfr/react-dsfr`) — French government design system, mandatory.

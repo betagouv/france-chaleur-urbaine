@@ -90,7 +90,7 @@ const validateSchemaIfExists = (schema?: z.ZodSchema, body?: any) => {
  * export default handleRouteErrors(
  *   { GET, POST, PUT, DELETE },
  *   {
- *     requireAuthentication: ['particulier', 'professionnel', 'gestionnaire', 'admin'],
+ *     requireAuthentication: ['professionnel', 'gestionnaire', 'admin'],
  *   }
  * );
  */

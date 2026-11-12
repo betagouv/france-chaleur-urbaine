@@ -116,11 +116,6 @@ export const testUsers = {
     id: uuid(101),
     role: 'gestionnaire' as const,
   },
-  particulier: {
-    email: `particulier-${uuid(102)}@test.local`,
-    id: uuid(102),
-    role: 'particulier' as const,
-  },
   professionnel: {
     email: `professionnel-${uuid(103)}@test.local`,
     id: uuid(103),

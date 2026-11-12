@@ -8,7 +8,7 @@ import { createTestCaller, forbiddenError, type TestCaseBoolean, testUsers } fro
 
 const adminOnly: TestCaseBoolean<Partial<User> | null>[] = [
   { expectedOutput: false, input: null },
-  { expectedOutput: false, input: testUsers.particulier },
+  { expectedOutput: false, input: testUsers.professionnel },
   { expectedOutput: false, input: testUsers.gestionnaire },
   { expectedOutput: true, input: testUsers.admin },
 ];

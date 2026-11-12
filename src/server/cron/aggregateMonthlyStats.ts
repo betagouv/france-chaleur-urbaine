@@ -401,7 +401,6 @@ const saveComptesProCreatedStats = async (startDate: string, endDate: string) =>
     .select((eb) => [
       sql<string>`TO_CHAR(date_trunc('day', created_at), 'yyyy-mm-dd')`.as('date'),
       eb.fn.count<number>(eb.case().when('role', '=', 'professionnel').then(1).end()).as('professionnels'),
-      eb.fn.count<number>(eb.case().when('role', '=', 'particulier').then(1).end()).as('particuliers'),
     ])
     .where('created_at', '>=', start)
     .where('created_at', '<=', end)
@@ -415,24 +414,14 @@ const saveComptesProCreatedStats = async (startDate: string, endDate: string) =>
     return;
   }
 
-  const statsPromises = comptesProCreated.flatMap((dayData) => {
-    // console.log(`Processing accounts created for ${dayData.date}: ${dayData.professionnels} pro, ${dayData.particuliers} particuliers`);
-
-    return [
-      addStatFromDB({
-        date: dayData.date,
-        period: STAT_PERIOD.DAILY,
-        stat_key: STAT_KEY.NB_ACCOUNTS_PRO_CREATED,
-        value: dayData.professionnels,
-      }),
-      addStatFromDB({
-        date: dayData.date,
-        period: STAT_PERIOD.DAILY,
-        stat_key: STAT_KEY.NB_ACCOUNTS_PARTICULIER_CREATED,
-        value: dayData.particuliers,
-      }),
-    ];
-  });
+  const statsPromises = comptesProCreated.map((dayData) =>
+    addStatFromDB({
+      date: dayData.date,
+      period: STAT_PERIOD.DAILY,
+      stat_key: STAT_KEY.NB_ACCOUNTS_PRO_CREATED,
+      value: dayData.professionnels,
+    })
+  );
 
   await Promise.all(statsPromises);
 

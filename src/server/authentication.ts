@@ -88,12 +88,12 @@ export const withServerSession = (handler: WithServerSessionProps) => async (con
  *
  * ✅ CORRECT usage:
  * ```ts
- * export const getServerSideProps = withAuthentication(['particulier', 'professionnel']);
+ * export const getServerSideProps = withAuthentication(['gestionnaire', 'professionnel']);
  * ```
  *
  * ❌ INCORRECT usage (will bundle server code in client):
  * ```ts
- * export default withAuthentication(['particulier'])(MyComponent);
+ * export default withAuthentication(['professionnel'])(MyComponent);
  * ```
  */
 export const withAuthentication = (requiredRoles?: UserRole[], handler?: WithServerSessionProps): GetServerSideProps<AuthSSRPageProps> => {

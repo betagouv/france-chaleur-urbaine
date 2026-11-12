@@ -10,7 +10,7 @@ import { computeRecipeCommuneCodes, refreshCustomTerritories } from './service';
 
 const adminOnly: TestCaseBoolean<Partial<User> | null>[] = [
   { expectedOutput: false, input: null },
-  { expectedOutput: false, input: testUsers.particulier },
+  { expectedOutput: false, input: testUsers.professionnel },
   { expectedOutput: false, input: testUsers.gestionnaire },
   { expectedOutput: false, input: testUsers.ccrt },
   { expectedOutput: true, input: testUsers.admin },
@@ -33,7 +33,7 @@ const departement64HorsPaysBasque: CustomTerritoryRecipe = {
 beforeEach(async () => {
   await cleanDatabase();
   await kdb.deleteFrom('ept').execute();
-  await seedTableUser([testUsers.admin, testUsers.gestionnaire, testUsers.particulier, testUsers.ccrt]);
+  await seedTableUser([testUsers.admin, testUsers.gestionnaire, testUsers.professionnel, testUsers.ccrt]);
   await seedPyreneesAtlantiques();
 });
 

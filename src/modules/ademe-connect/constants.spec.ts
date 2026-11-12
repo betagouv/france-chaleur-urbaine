@@ -10,7 +10,7 @@ describe('buildRubriques', () => {
   const cases: TestCase<[UserRole | null | undefined, StructureType | null | undefined], string[] | undefined>[] = [
     { expectedOutput: undefined, input: [undefined, undefined], label: 'no role and no structure → undefined' },
     { expectedOutput: undefined, input: ['admin', null], label: 'admin has no rubrique → undefined' },
-    { expectedOutput: ['FCU - rôle particulier'], input: ['particulier', null], label: 'particulier without structure' },
+    { expectedOutput: ['FCU - rôle professionnel'], input: ['professionnel', null], label: 'professionnel without structure' },
     {
       expectedOutput: ['FCU - rôle professionnel', "FCU - structure Bureau d'études"],
       input: ['professionnel', 'bureau_etudes'],

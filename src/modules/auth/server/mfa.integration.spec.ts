@@ -147,14 +147,14 @@ describe('mfa', () => {
   describe('auth.resetUserMfa', () => {
     const permissionCases: TestCaseBoolean[] = [
       { expectedOutput: false, input: null },
-      { expectedOutput: false, input: testUsers.particulier },
+      { expectedOutput: false, input: testUsers.professionnel },
       { expectedOutput: false, input: testUsers.gestionnaire },
       { expectedOutput: true, input: testUsers.admin },
     ];
 
     permissionCases.forEach(({ input: caller, expectedOutput }) => {
       it(`${expectedOutput ? 'allows' : 'forbids'} ${caller?.role ?? 'anonymous'}`, async () => {
-        await seedTableUser([testUsers.admin, testUsers.gestionnaire, testUsers.particulier]);
+        await seedTableUser([testUsers.admin, testUsers.gestionnaire, testUsers.professionnel]);
         const callRoute = () => createTestCaller(caller).auth.resetUserMfa({ userId: testUsers.gestionnaire.id });
 
         if (expectedOutput) {

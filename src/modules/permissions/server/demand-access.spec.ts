@@ -19,7 +19,7 @@ const gestionnaire: UserWithRole = { id: '1', role: 'gestionnaire' };
 const collectivite: UserWithRole = { id: '1', role: 'collectivite' };
 const alec: UserWithRole = { id: '1', role: 'alec' };
 const ccrt: UserWithRole = { id: '1', role: 'ccrt' };
-const particulier: UserWithRole = { id: '1', role: 'particulier' };
+const professionnel: UserWithRole = { id: '1', role: 'professionnel' };
 
 const baseDemand: DemandForAccess = {
   commune_code: '75056',
@@ -72,8 +72,8 @@ describe('canUserAccessDemand', () => {
     { expectedOutput: true, input: { demand: baseDemand, permissions: [], user: admin } },
     { expectedOutput: true, input: { demand: unvalidated, permissions: [], user: admin } },
 
-    // Particulier — always false
-    { expectedOutput: false, input: { demand: baseDemand, permissions: [], user: particulier } },
+    // Professionnel — always false
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [], user: professionnel } },
 
     // Gestionnaire with network permissions
     { expectedOutput: true, input: { demand: baseDemand, permissions: [networkExistant], user: gestionnaire } },
@@ -156,8 +156,8 @@ describe('isUserResponsibleForDemand', () => {
     // Admin — never responsible
     { expectedOutput: false, input: { demand: baseDemand, permissions: [networkExistant], user: admin } },
 
-    // Particulier — never responsible
-    { expectedOutput: false, input: { demand: baseDemand, permissions: [networkExistant], user: particulier } },
+    // Professionnel — never responsible
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [networkExistant], user: professionnel } },
 
     // Unvalidated demand — never responsible
     { expectedOutput: false, input: { demand: unvalidated, permissions: [networkExistant], user: gestionnaire } },

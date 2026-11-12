@@ -869,7 +869,6 @@ describe('batEnrRouter', () => {
   describe('batEnr.admin.listDemandesChaleurRenouvelable', () => {
     const permissionTests: PermissionTestCase[] = [
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-      { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
       { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
       { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
       { allowed: true, label: 'autorise admin', user: testUsers.admin },
@@ -1011,7 +1010,6 @@ describe('batEnrRouter', () => {
   describe('batEnr.ccrt.listDemandesChaleurRenouvelable', () => {
     const permissionTests: PermissionTestCase[] = [
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-      { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
       { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
       { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
       { allowed: false, label: 'refuse collectivité', user: testUsers.collectivite },
@@ -1280,7 +1278,6 @@ describe('batEnrRouter', () => {
   describe('batEnr.admin.validateDemandeChaleurRenouvelable', () => {
     const permissionTests: PermissionTestCase[] = [
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-      { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
       { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
       { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
       { allowed: true, label: 'autorise admin', user: testUsers.admin },
@@ -1436,7 +1433,6 @@ describe('batEnrRouter', () => {
     });
     const permissionTests: PermissionTestCase[] = [
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-      { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
       { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
       { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
       { allowed: true, label: 'autorise admin', user: testUsers.admin },

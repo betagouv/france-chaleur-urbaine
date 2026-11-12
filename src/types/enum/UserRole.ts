@@ -1,8 +1,11 @@
-export const userRoles = ['admin', 'gestionnaire', 'collectivite', 'alec', 'ccrt', 'particulier', 'professionnel'] as const;
+export const userRoles = ['admin', 'gestionnaire', 'collectivite', 'alec', 'ccrt', 'professionnel'] as const;
 
 export type UserRole = (typeof userRoles)[number];
 
-// particulier accounts are being phased out: demands are tracked by email without an account
+// Removed roles still met in stored events (past admin impersonations).
+export const retiredUserRoles = ['particulier'] as const;
+export type StoredUserRole = UserRole | (typeof retiredUserRoles)[number];
+
 export const userRolesInscription = ['professionnel'] as const satisfies UserRole[];
 export type UserRoleInscription = (typeof userRolesInscription)[number];
 

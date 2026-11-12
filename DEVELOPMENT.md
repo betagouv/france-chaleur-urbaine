@@ -46,7 +46,6 @@ Pour créer des utilisateurs de chaque rôle :
 ```sh
 pnpm cli users:add admin@fcu.local 'MON MDP SECURE' admin
 pnpm cli users:add professionnel@fcu.local 'MON MDP SECURE' professionnel
-pnpm cli users:add particulier@fcu.local 'MON MDP SECURE' particulier
 pnpm cli users:add gestionnaire@fcu.local 'MON MDP SECURE' gestionnaire ENGIE_2407C,ENGIE_2305C,ENGIE_7615C,ENGIE_6105C
 ```
 

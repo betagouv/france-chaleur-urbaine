@@ -29,7 +29,7 @@ describe('authRouter', () => {
     // Route publique - tout le monde peut demander un reset
     const permissionTests: PermissionTestCase[] = [
       { allowed: true, label: 'autorise utilisateur non authentifié', user: null },
-      { allowed: true, label: 'autorise particulier', user: testUsers.particulier },
+      { allowed: true, label: 'autorise professionnel', user: testUsers.professionnel },
       { allowed: true, label: 'autorise admin', user: testUsers.admin },
     ];
 
@@ -51,7 +51,7 @@ describe('authRouter', () => {
     // Route publique avec validation JWT dans l'input
     const permissionTests: PermissionTestCase[] = [
       { allowed: true, label: 'autorise utilisateur non authentifié', user: null },
-      { allowed: true, label: 'autorise particulier', user: testUsers.particulier },
+      { allowed: true, label: 'autorise professionnel', user: testUsers.professionnel },
     ];
 
     it.each(permissionTests)('$label (rejeté par validation JWT)', async ({ user }) => {

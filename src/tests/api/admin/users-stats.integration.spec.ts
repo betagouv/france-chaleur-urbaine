@@ -15,11 +15,11 @@ const adminUser = {
   role: 'admin' as const,
 } satisfies Partial<InsertObject<DB, 'users'>>;
 
-const particulierUser = {
+const professionnelUser = {
   active: true,
   email: `user-${uuid(2)}@test.local`,
   id: uuid(2),
-  role: 'particulier' as const,
+  role: 'professionnel' as const,
 } satisfies Partial<InsertObject<DB, 'users'>>;
 
 describe('API /admin/users-stats', () => {
@@ -31,7 +31,7 @@ describe('API /admin/users-stats', () => {
         last_connection: sql`NOW() - INTERVAL '2 HOUR'`,
       },
       {
-        ...particulierUser,
+        ...professionnelUser,
         last_connection: sql`NOW() - INTERVAL '1 HOUR'`,
       },
       {
@@ -47,7 +47,7 @@ describe('API /admin/users-stats', () => {
       {
         id: uuid(5),
         last_connection: sql`NOW() - INTERVAL '10 DAY'`,
-        role: 'particulier',
+        role: 'professionnel',
       },
     ]);
   });
@@ -69,7 +69,7 @@ describe('API /admin/users-stats', () => {
             message: 'Permissions invalides',
           },
           expectedStatus: 403,
-          user: particulierUser,
+          user: professionnelUser,
         },
         {
           description: 'utilisateur admin',

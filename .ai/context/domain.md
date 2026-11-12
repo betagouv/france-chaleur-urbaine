@@ -5,7 +5,7 @@
 France Chaleur Urbaine is a French government platform (beta.gouv.fr) that accelerates the adoption of district heating networks (réseaux de chaleur urbains). District heating delivers heat from a centralized plant to buildings through underground pipes, often using renewable energy sources.
 
 The platform serves several audiences:
-1. **Citizens (particuliers)** — test if their address is near a heating network and request a connection.
+1. **Citizens (particuliers)** — test if their address is near a heating network, request a connection and follow it by email (`/suivre-ma-demande`), without an account.
 2. **Professionals (professionnels)** — bulk-test address eligibility for building portfolios.
 3. **Network operators (gestionnaires)** — manage connection demands for their assigned networks.
 4. **Local authorities (collectivités)** — monitor demands on their territory, coordinate with gestionnaires.
@@ -57,7 +57,6 @@ The platform serves several audiences:
 | Collectivité | Monitor demands on their territory, see gestionnaires for their territory, request network changes | Manage demands directly, access admin features |
 | ALEC | Same as Collectivité, scoped to their territory | Same as Collectivité |
 | Professionnel | Submit demands, run bulk eligibility tests, view own demands | Access admin features, manage other users |
-| Particulier | Submit single demand, test eligibility | Bulk testing, dashboard features |
 
 PII anonymization for demos: admin enables an `anonymize` checkbox when starting an imposture at `/admin/impostures`. The flag is carried by the impersonation JWT and masks `Mail`/`Nom`/`Prénom`/`Téléphone` in `demands.gestionnaire.list`.
 

@@ -10,7 +10,7 @@ export const demandsRouter = router({
   getById: routeRole(['admin', 'gestionnaire'])
     .input(z.object({ id: z.string() }))
     .query(({ input, ctx }) => demandsService.getById(input.id, ctx.userId)),
-  create: routeRole(['professionnel', 'particulier'])
+  create: routeRole(['professionnel'])
     .input(zCreateDemand)
     .mutation(({ input, ctx }) => demandsService.create(input, ctx.userId)),
 });
