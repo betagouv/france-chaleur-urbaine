@@ -1,4 +1,4 @@
-import { type Acquisition, getAcquisitionSource } from './constants';
+import { type Acquisition, getAcquisitionSource } from '../constants';
 
 type AcquisitionDetailsProps = { acquisition?: Acquisition | null };
 

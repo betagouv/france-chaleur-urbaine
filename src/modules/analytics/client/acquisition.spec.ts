@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getAcquisitionSource, zAcquisition } from './constants';
+import { getAcquisitionSource, zAcquisition } from '../constants';
 
 beforeEach(() => {
   vi.resetModules();

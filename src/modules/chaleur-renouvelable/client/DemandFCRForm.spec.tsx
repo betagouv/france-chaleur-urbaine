@@ -33,7 +33,7 @@ const { recordOutcome, submitDemand, track, trackConversion } = vi.hoisted(() =>
 const simulationId = '11111111-2222-4333-8444-555555555555';
 
 vi.mock('@/modules/analytics/client', () => ({ trackPostHogEvent: track }));
-vi.mock('@/modules/analytics/useMultiEnrConversion', () => ({ useMultiEnrConversion: () => trackConversion }));
+vi.mock('@/modules/analytics/client/useMultiEnrConversion', () => ({ useMultiEnrConversion: () => trackConversion }));
 
 vi.mock('@/modules/trpc/client', () => ({
   default: {

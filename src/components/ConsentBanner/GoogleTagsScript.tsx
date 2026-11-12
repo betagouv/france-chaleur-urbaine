@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { loadGoogleTags } from '@/modules/analytics/google-tag-manager';
+import { loadGoogleTags } from '@/modules/analytics/client/google-tag-manager';
 
 type GoogleTagsScriptProps = { tagIds: string[] };
 

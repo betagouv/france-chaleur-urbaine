@@ -1,7 +1,7 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 
 import Button from '@/components/ui/Button';
-import { AcquisitionDetails } from '@/modules/analytics/AcquisitionDetails';
+import { AcquisitionDetails } from '@/modules/analytics/client/AcquisitionDetails';
 import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';

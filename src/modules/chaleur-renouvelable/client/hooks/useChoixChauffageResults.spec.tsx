@@ -32,7 +32,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('../building-address', () => ({ getBuildingAddress: mocks.resolveBuildingAddress }));
 vi.mock('next/router', () => ({ useRouter: () => ({ isReady: true, pathname: '/chaleur-renouvelable/resultat' }) }));
 vi.mock('@/modules/analytics/client', () => ({ trackPostHogEvent: mocks.track }));
-vi.mock('@/modules/analytics/useMultiEnrConversion', () => ({ useMultiEnrConversion: () => mocks.trackConversion }));
+vi.mock('@/modules/analytics/client/useMultiEnrConversion', () => ({ useMultiEnrConversion: () => mocks.trackConversion }));
 vi.mock('@/components/ComparateurPublicodes/useSimulatorEngine', () => ({ default: () => ({}) }));
 vi.mock('@/hooks/useContactFormFCU', () => ({ default: () => ({}) }));
 vi.mock('./useRemoveHashOnScroll', () => ({ useRemoveHashOnScroll: () => {} }));

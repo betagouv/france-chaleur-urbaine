@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-import type { Acquisition } from './constants';
+import type { Acquisition } from '../constants';
 
 // Attribution belongs to this navigation only; no browser storage or cross-session identification.
 let currentAcquisition: Acquisition | null = null;

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { loadGoogleTagManager } from '@/modules/analytics/google-tag-manager';
+import { loadGoogleTagManager } from '@/modules/analytics/client/google-tag-manager';
 
 type GoogleTagManagerScriptProps = { containerId: string };
 

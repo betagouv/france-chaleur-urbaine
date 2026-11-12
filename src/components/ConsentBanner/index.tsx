@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { clientConfig } from '@/client-config';
 import { usePostHog } from '@/components/ConsentBanner/usePostHog';
 import { trackPostHogEvent } from '@/modules/analytics/client';
-import { setGoogleConsent } from '@/modules/analytics/google-tag-manager';
+import { setGoogleConsent } from '@/modules/analytics/client/google-tag-manager';
 
 import { GoogleTagManagerScript } from './GoogleTagManagerScript';
 import { GoogleTagsScript } from './GoogleTagsScript';

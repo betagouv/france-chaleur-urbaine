@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSimulatorEngine from '@/components/ComparateurPublicodes/useSimulatorEngine';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { trackPostHogEvent } from '@/modules/analytics/client';
-import { useMultiEnrConversion } from '@/modules/analytics/useMultiEnrConversion';
+import { useMultiEnrConversion } from '@/modules/analytics/client/useMultiEnrConversion';
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { getHeatingModeCosts, setPublicodesSituation } from '@/modules/chaleur-renouvelable/client/heatingModeCosts';
 import { useAddressEligibility } from '@/modules/chaleur-renouvelable/client/hooks/useAddressEligibility';
