@@ -44,7 +44,7 @@ export function NetworkStatusesTable({ summary, statuses }: NetworkStatusesTable
               <td className="text-right">
                 <Link
                   href={buildAdminDemandsUrl([
-                    ...buildDemandFilters(summary.networkId, summary.networkType, undefined, false),
+                    ...buildDemandFilters(summary.networkId, summary.networkType, false),
                     { id: 'Status', value: { [row.status]: true } },
                   ])}
                 >

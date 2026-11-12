@@ -31,7 +31,4 @@ export const formatDateRange = (oldest: string, newest: string) => {
   return from === to ? from : `${from} → ${to}`;
 };
 
-/** Time elapsed since a date, formatted as a duration. */
-export const formatElapsedSince = (date: string) => formatDurationDays(dayjs().diff(date, 'day', true));
-
 export const formatResponseRate = (responded: number, received: number) => `${Math.round((100 * responded) / received)} %`;

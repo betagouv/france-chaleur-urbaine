@@ -21,7 +21,7 @@ export function NetworkDemandsCell({ network }: NetworkDemandsCellProps) {
       <div className="flex flex-col">
         <span>
           <Link
-            href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, undefined, true))}
+            href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, true))}
             className={cx('text-base font-bold', network.pending > 0 && 'text-error')}
           >
             {network.pending}
@@ -37,7 +37,7 @@ export function NetworkDemandsCell({ network }: NetworkDemandsCellProps) {
       <div className="flex flex-col">
         <span>
           <Link
-            href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, undefined, false))}
+            href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, false))}
             className="text-base font-bold"
           >
             {network.total}

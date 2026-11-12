@@ -81,12 +81,6 @@ export const adminPages = [
     label: 'Conversion — contrôle des abus',
   },
   {
-    desc: 'Consultez les statistiques des demandes par réseau',
-    group: 'analytics',
-    href: '/admin/reseaux/stats',
-    label: 'Statistiques par réseau',
-  },
-  {
     desc: 'Repérez les réseaux dont les gestionnaires ne répondent plus aux demandes',
     group: 'analytics',
     href: '/admin/reseaux/suivi',

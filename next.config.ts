@@ -146,6 +146,12 @@ const nextConfig: NextConfig = {
   // reactStrictMode: true,
   async redirects() {
     return [
+      // the per-network statistics screen was replaced by the network tracking screen
+      {
+        destination: '/admin/reseaux/suivi',
+        permanent: true,
+        source: '/admin/reseaux/stats',
+      },
       // iframe pages moved under /iframe/*
       {
         destination: '/iframe/carte-reseaux-de-chaleur-et-froid',

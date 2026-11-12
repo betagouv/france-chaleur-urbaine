@@ -5,7 +5,7 @@ import { businessRules } from '@/modules/app/business-rules';
 import { buildAdminDemandsUrl, buildDemandFilters } from '@/modules/demands/client/admin-demands-url';
 import cx from '@/utils/cx';
 
-import { formatDurationDays, formatElapsedSince, formatResponseRate } from './format';
+import { formatDateRange, formatDurationDays, formatResponseRate } from './format';
 import { LastManagerAction } from './LastManagerAction';
 import type { NetworkTrackingSummary } from './types';
 
@@ -16,7 +16,7 @@ type NetworkTrackingIndicatorsProps = {
 };
 
 /**
- * Headline indicators of a network: pending demands, last manager action, response rate and median response delay.
+ * Headline indicators of a network: pending and total demands with their dates, last manager action, response rate and median response delay.
  */
 export function NetworkTrackingIndicators({ summary }: NetworkTrackingIndicatorsProps) {
   return (
@@ -25,16 +25,25 @@ export function NetworkTrackingIndicators({ summary }: NetworkTrackingIndicators
         title="Demandes à traiter"
         value={
           <Link
-            href={buildAdminDemandsUrl(buildDemandFilters(summary.networkId, summary.networkType, undefined, true))}
+            href={buildAdminDemandsUrl(buildDemandFilters(summary.networkId, summary.networkType, true))}
             className={cx(summary.pending > 0 && 'text-error')}
           >
             {summary.pending}
           </Link>
         }
         detail={
-          summary.oldestPendingDemandAt
-            ? `la plus ancienne date d'il y a ${formatElapsedSince(summary.oldestPendingDemandAt)}`
-            : 'aucune demande en attente'
+          <span className="flex flex-col">
+            <span>
+              {summary.oldestPendingDemandAt && summary.newestPendingDemandAt
+                ? `déposées : ${formatDateRange(summary.oldestPendingDemandAt, summary.newestPendingDemandAt)}`
+                : 'aucune demande en attente'}
+            </span>
+            {summary.oldestDemandAt && summary.newestDemandAt && (
+              <span>
+                {summary.total} au total : {formatDateRange(summary.oldestDemandAt, summary.newestDemandAt)}
+              </span>
+            )}
+          </span>
         }
       />
       <IndicatorCard

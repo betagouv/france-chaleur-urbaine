@@ -21,6 +21,7 @@ import TableSimple, { type ColumnDef } from '@/components/ui/table/TableSimple';
 import { useFetch } from '@/hooks/useApi';
 import useCrud from '@/hooks/useCrud';
 import { useDialogState } from '@/hooks/useDialogState';
+import { buildNetworkTrackingUrl } from '@/modules/demands/client/network-tracking/format';
 import EmailBlockedBadge from '@/modules/email/client/EmailBlockedBadge';
 import EmailDeliverabilityPanel from '@/modules/email/client/EmailDeliverabilityPanel';
 import { notify, toastErrors } from '@/modules/notification';
@@ -115,8 +116,7 @@ function PermissionTooltipContent({ permissions }: { permissions: PermissionWith
             {perms.map((p) => (
               <li key={p.resource_id}>
                 {p.type === 'reseau_de_chaleur' || p.type === 'reseau_en_construction' ? (
-                  // Supprime l'éventuel id sncu pour ne garder que le nom
-                  <Link href={`/admin/reseaux/stats?reseaux_search=${encodeURIComponent(p.label.replace(/ \([^)]*\)$/, ''))}`} isExternal>
+                  <Link href={buildNetworkTrackingUrl(p.type, Number(p.resource_id))} isExternal>
                     {p.label}
                   </Link>
                 ) : (

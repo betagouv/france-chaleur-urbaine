@@ -87,6 +87,7 @@ export default function NetworkTrackingPage() {
         ]}
         columnFilters={columnFilters}
         controlsLayout="block"
+        height="85vh"
         padding="sm"
         loadingEmptyMessage="Aucun réseau"
         urlSyncKey="suivi_reseaux"

@@ -35,7 +35,6 @@ import {
 import { ensureUserCanAccessDemand } from './helpers';
 import { getNetworkTracking, listNetworkTracking } from './network-tracking';
 import { updateCommentFromRelanceId } from './relances';
-import { getReseauxStats } from './stats';
 import { listByUser } from './user-tracking';
 
 const zRequestAssignmentChangeInput = z
@@ -73,7 +72,6 @@ export const demandsRouter = router({
       await removeDemand(demandId, ctx.user.id);
     }),
     getNetworkTracking: adminRoute.input(zNetworkTrackingInput).query(async ({ input }) => getNetworkTracking(input)),
-    getReseauxStats: adminRoute.query(async () => getReseauxStats()),
     list: adminRoute.query(async () => {
       const result = await listAdmin();
       return result;
