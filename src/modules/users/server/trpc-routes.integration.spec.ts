@@ -88,29 +88,6 @@ describe('usersRouter', () => {
       });
     });
 
-    it('stores the newsletter opt-in and traces an event only when the consent changes', async () => {
-      const caller = createTestCaller(testUsers.ccrt);
-      const readOptinAt = () =>
-        kdb.selectFrom('users').select('newsletter_optin_at').where('id', '=', testUsers.ccrt.id).executeTakeFirstOrThrow();
-
-      await caller.users.updateNewsletterSubscription({ optin_newsletter: true });
-      await caller.users.updateNewsletterSubscription({ optin_newsletter: true });
-      await expect(readOptinAt()).resolves.toStrictEqual({ newsletter_optin_at: expect.any(Date) });
-
-      await caller.users.updateNewsletterSubscription({ optin_newsletter: false });
-      await caller.users.updateNewsletterSubscription({ optin_newsletter: false });
-      await expect(readOptinAt()).resolves.toStrictEqual({ newsletter_optin_at: null });
-
-      const events = await kdb
-        .selectFrom('events')
-        .select('type')
-        .where('context_id', '=', testUsers.ccrt.id)
-        .where('type', 'in', ['user_newsletter_subscribed', 'user_newsletter_unsubscribed'])
-        .orderBy('created_at', 'asc')
-        .execute();
-      expect(events).toStrictEqual([{ type: 'user_newsletter_subscribed' }, { type: 'user_newsletter_unsubscribed' }]);
-    });
-
     it('preserves both changes when the signature and notifications are updated concurrently', async () => {
       await Promise.all([
         updateUserPreferences(testUsers.ccrt.id, { email_signature: 'Conseiller CCRT' }),

@@ -1,16 +1,9 @@
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
-import dayjs from 'dayjs';
 import type { Kysely, Selectable } from 'kysely';
 import type { z } from 'zod';
 
-import {
-  ALL_FCU_RUBRIQUES,
-  buildNewsletterFields,
-  buildRubriques,
-  isSyncedRole,
-  ROLE_TYPE_ORGANISME,
-} from '@/modules/ademe-connect/constants';
+import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
 import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
@@ -66,7 +59,6 @@ export const list = async () => {
         'structure_type',
         'structure_other',
         'entreprise',
-        'newsletter_optin_at',
         'created_at',
         'last_connection',
         'from_organization_id',
@@ -95,7 +87,7 @@ export const list = async () => {
 export type User = Awaited<ReturnType<typeof list>>['items'][number];
 
 export const create = async (data: CreateUserInput, context: Context): Promise<DB['users']> => {
-  const { newsletter_optin_at, entreprise, notifications, ...rest } = data;
+  const { entreprise, notifications, ...rest } = data;
 
   const existingUser = await kdb.selectFrom('users').select('id').where('email', '=', data.email).executeTakeFirst();
   if (existingUser) {
@@ -109,7 +101,6 @@ export const create = async (data: CreateUserInput, context: Context): Promise<D
     {
       ...rest,
       entreprise: entreprise ? toEntrepriseJsonb(await findEtablissementBySiret(entreprise.siret)) : null,
-      newsletter_optin_at: newsletter_optin_at ? new Date() : null,
       password,
       preferences: JSON.stringify({ ...defaultUserPreferences, notifications } satisfies UserPreferences),
       status: 'valid',
@@ -138,9 +129,7 @@ export const create = async (data: CreateUserInput, context: Context): Promise<D
 
   if (isSyncedRole(data.role)) {
     createContact({
-      abonnementNewsletter: !!newsletter_optin_at,
       acceptationRGPD: false,
-      dateNewsletter: newsletter_optin_at ? dayjs().format('YYYY-MM-DD') : undefined,
       email: data.email,
       nom: data.last_name || undefined,
       prenom: data.first_name || undefined,
@@ -160,19 +149,15 @@ export const update = async (
   config: ListConfig<typeof tableName>,
   context: Context
 ): Promise<DB['users']> => {
-  const { newsletter_optin_at, entreprise, notifications, ...userUpdate } = data;
+  const { entreprise, notifications, ...userUpdate } = data;
 
   // The CRM contact is keyed by email: keep the one known before the update (an email change is not propagated).
-  const previous = await kdb.selectFrom('users').select(['email', 'newsletter_optin_at']).where('id', '=', id).executeTakeFirstOrThrow();
+  const previous = await kdb.selectFrom('users').select('email').where('id', '=', id).executeTakeFirstOrThrow();
 
   const updated = await baseModel.update(
     id,
     {
       ...userUpdate,
-      // Clé absente du payload → on ne touche pas. true → on garde la date d'opt-in existante (sinon maintenant). false → on efface.
-      ...('newsletter_optin_at' in data
-        ? { newsletter_optin_at: newsletter_optin_at ? (previous.newsletter_optin_at ?? new Date()) : null }
-        : {}),
       // Clé absente du payload → on ne touche pas. Présente avec null → on efface. Présente avec un objet → on re-fetch via SIRET.
       ...('entreprise' in data
         ? { entreprise: entreprise ? toEntrepriseJsonb(await findEtablissementBySiret(entreprise.siret)) : null }
@@ -192,24 +177,24 @@ export const update = async (
     type: 'user_updated_by_admin',
   });
 
-  syncContactAfterAdminUpdate(id, previous).catch((error) =>
+  syncContactAfterAdminUpdate(id, previous.email).catch((error) =>
     logger.error('ademe-connect updateContact failed on user.update', { error, user_id: id })
   );
 
   return updated;
 };
 
-/** Resync of the CRM contact from the stored row: identity, phone, SIRET, rubriques, and the newsletter consent only when it changed (never `actif`). */
-const syncContactAfterAdminUpdate = async (id: string, previous: { email: string; newsletter_optin_at: Date | null }) => {
+/** Resync of the CRM contact from the stored row: identity, phone, SIRET and rubriques (never `actif` nor the newsletter subscription). */
+const syncContactAfterAdminUpdate = async (id: string, previousEmail: string) => {
   const user = await kdb
     .selectFrom('users')
-    .select(['role', 'first_name', 'last_name', 'phone', 'structure_type', 'newsletter_optin_at', 'entreprise'])
+    .select(['role', 'first_name', 'last_name', 'phone', 'structure_type', 'entreprise'])
     .where('id', '=', id)
     .executeTakeFirstOrThrow();
   if (!isSyncedRole(user.role)) {
     return;
   }
-  await updateContact(previous.email, {
+  await updateContact(previousEmail, {
     nom: user.last_name ?? undefined,
     prenom: user.first_name ?? undefined,
     rubriques: buildRubriques(user.role, user.structure_type),
@@ -217,7 +202,6 @@ const syncContactAfterAdminUpdate = async (id: string, previous: { email: string
     siret: user.entreprise?.siret,
     telephone: user.phone ?? undefined,
     typeOrganisme: ROLE_TYPE_ORGANISME[user.role],
-    ...(!!previous.newsletter_optin_at !== !!user.newsletter_optin_at ? buildNewsletterFields(!!user.newsletter_optin_at) : {}),
   });
 };
 
@@ -258,7 +242,6 @@ export const getProfile = async (userId: string) => {
       'structure_type',
       'structure_other',
       'entreprise',
-      'newsletter_optin_at',
       'preferences',
     ])
     // the demand notifications only apply to accounts holding a network permission (classic demands)
@@ -390,14 +373,3 @@ export const findEtablissementBySiret = async (siret: string): Promise<Entrepris
 
 /** Sérialise une `Entreprise` en expression JSONB pour insert/update. */
 const toEntrepriseJsonb = (e: Entreprise | null) => (e ? sql<string | null>`${JSON.stringify(e)}::jsonb` : null);
-
-/** Sets or clears the newsletter opt-in. Returns false when the stored consent already matched: nothing to trace nor to sync. */
-export const updateNewsletterSubscription = async (userId: string, optin: boolean): Promise<boolean> => {
-  const result = await kdb
-    .updateTable('users')
-    .set({ newsletter_optin_at: optin ? new Date() : null })
-    .where('id', '=', userId)
-    .where('newsletter_optin_at', optin ? 'is' : 'is not', null)
-    .executeTakeFirstOrThrow();
-  return result.numUpdatedRows > 0;
-};

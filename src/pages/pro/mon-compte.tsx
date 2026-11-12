@@ -5,7 +5,6 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import Heading from '@/components/ui/Heading';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import EmailSignatureForm from '@/modules/users/client/preferences/EmailSignatureForm';
-import NewsletterForm from '@/modules/users/client/preferences/NewsletterForm';
 import NotificationPreferencesForm from '@/modules/users/client/preferences/NotificationPreferencesForm';
 import { withAuthentication } from '@/server/authentication';
 import { userRolesWithPermissions } from '@/types/enum/UserRole';
@@ -39,12 +38,6 @@ export default function MonComptePage() {
               <EmailSignatureForm />
             </section>
           )}
-          <section>
-            <Heading as="h2" size="h5">
-              Newsletter
-            </Heading>
-            <NewsletterForm />
-          </section>
           {showDemandSections && (
             <section>
               <Heading as="h2" size="h5">

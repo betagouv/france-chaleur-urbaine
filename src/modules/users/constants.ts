@@ -170,7 +170,6 @@ export const createUserAdminSchema = z.object({
   entreprise: zEntreprise.nullable().optional(),
   first_name: z.string().optional().nullable(),
   last_name: z.string().optional().nullable(),
-  newsletter_optin_at: z.boolean().nullable(),
   notifications: zNotificationPreferences,
   phone: z.string().optional().nullable(),
   role: z.enum(userRoles),
@@ -186,7 +185,6 @@ export const updateUserAdminSchema = z
     entreprise: zEntreprise.nullable().optional(),
     first_name: z.string().optional(),
     last_name: z.string().optional(),
-    newsletter_optin_at: z.boolean().optional(),
     notifications: zNotificationPreferences.optional(),
     phone: z.string().optional(),
     role: z.enum(userRoles).optional(),
@@ -224,12 +222,6 @@ export const zUpdateProfileSchema = z
   }));
 
 export type UpdateProfileSchema = z.infer<typeof zUpdateProfileSchema>;
-
-export const zUpdateNewsletterSchema = z.object({
-  optin_newsletter: z.boolean(),
-});
-
-export type UpdateNewsletterSchema = z.infer<typeof zUpdateNewsletterSchema>;
 
 export const updateProfileDefaultValues: UpdateProfileSchema = {
   entreprise: null,

@@ -79,7 +79,7 @@ export const register = async ({
   });
 
   createContact({
-    abonnementNewsletter: optin_newsletter,
+    abonnementNewsletter: optin_newsletter ? true : undefined,
     acceptationRGPD: true,
     dateNewsletter: optin_newsletter ? dayjs().format('YYYY-MM-DD') : undefined,
     email: insertedUser.email,

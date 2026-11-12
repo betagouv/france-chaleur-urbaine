@@ -87,7 +87,7 @@ Données modifiées à l'inscription :
 | Acceptation des CGU | Base — `users.accepted_cgu_at` | Horodatée si cochée |
 | Abonnement à la newsletter | Base — `users.newsletter_optin_at` | Horodaté si coché |
 | Entreprise | Base — `users.entreprise` | Fiche complète récupérée via le SIRET |
-| Contact CRM | ADEME Connect | Nom, prénom, email, téléphone, SIRET de l'entreprise si renseigné, rubriques selon rôle et type de structure, type d'organisme (uniquement pour les rôles particulier, gestionnaire et professionnel), consentement newsletter avec la date d'abonnement du jour si la case est cochée |
+| Contact CRM | ADEME Connect | Nom, prénom, email, téléphone, SIRET de l'entreprise si renseigné, rubriques selon rôle et type de structure, type d'organisme (uniquement pour les rôles particulier, gestionnaire et professionnel), abonnement à la newsletter avec la date du jour uniquement si la case est cochée (sinon aucune information de newsletter n'est transmise) |
 
 Données modifiées à l'activation (clic sur le lien) :
 
@@ -97,9 +97,11 @@ Données modifiées à l'activation (clic sur le lien) :
 | Date d'activation | Base — `users.activated_at` | Horodatée |
 | Jeton d'activation | Base — `users.activation_token` | Effacé (usage unique) |
 
-### Abonnement à la newsletter depuis « Mon compte »
+### Abonnement à la newsletter
 
-La personne peut s'abonner ou se désabonner à tout moment depuis « Mon compte ». Si le choix change, `users.newsletter_optin_at` est renseigné ou effacé, un événement [«&nbsp;Abonnement newsletter&nbsp;»](/admin/events?types=user_newsletter_subscribed) ou [«&nbsp;Désabonnement newsletter&nbsp;»](/admin/events?types=user_newsletter_unsubscribed) est enregistré et le contact ADEME Connect reçoit le nouveau consentement avec la date d'abonnement ou de désabonnement du jour. Si le choix est identique à celui déjà enregistré, rien n'est modifié ni transmis.
+L'abonnement à la newsletter n'est recueilli qu'à l'inscription publique, par la case à cocher du formulaire : si elle est cochée, l'abonnement et sa date sont transmis au contact ADEME Connect à sa création, puis ne sont plus jamais renvoyés par France Chaleur Urbaine ; si elle ne l'est pas, aucune information de newsletter n'est transmise. Ni «&nbsp;Mon compte&nbsp;» ni la gestion des utilisateurs ne permettent de s'abonner ou de se désabonner : l'API ADEME Connect ne prend pas en charge le désabonnement. `users.newsletter_optin_at` garde donc la date de l'abonnement souscrit à l'inscription, sans refléter un désabonnement ultérieur.
+
+Les événements [«&nbsp;Abonnement newsletter&nbsp;»](/admin/events?types=user_newsletter_subscribed) et [«&nbsp;Désabonnement newsletter&nbsp;»](/admin/events?types=user_newsletter_unsubscribed) ne sont plus enregistrés : ils restent consultables pour les choix faits depuis «&nbsp;Mon compte&nbsp;» avant la suppression de ce réglage.
 
 ## Parcours 2 — Création par un admin
 
@@ -136,13 +138,13 @@ Données modifiées :
 | --- | --- | --- |
 | Compte complet | Base — `users` | Email (normalisé en minuscules), rôle, structure, statut « valide », mot de passe aléatoire |
 | Préférences de notification | Base — `users.preferences.notifications` | Choisies par l'admin dans le formulaire, modifiables ensuite par la personne dans « Mon compte » |
-| Contact CRM | ADEME Connect | Créé pour tous les rôles sauf admin |
+| Contact CRM | ADEME Connect | Créé pour tous les rôles sauf admin, sans aucune information de newsletter (seule l'inscription publique permet de s'abonner) |
 
 ### Modification et suppression par un admin
 
-Depuis la même page, un admin peut modifier n'importe quel compte (identité, téléphone, rôle, structure, abonnement à la newsletter, activation) ou le supprimer. Ces actions n'envoient aucun email. L'acceptation des CGU et sa date y sont affichées en lecture seule : seule l'inscription publique la recueille, un admin ne peut pas la poser.
+Depuis la même page, un admin peut modifier n'importe quel compte (identité, téléphone, rôle, structure, activation) ou le supprimer. Ces actions n'envoient aucun email. L'acceptation des CGU et sa date y sont affichées en lecture seule : seule l'inscription publique la recueille, un admin ne peut pas la poser.
 
-- **Modification** : le contact ADEME Connect est resynchronisé depuis le compte (nom, prénom, téléphone, SIRET de l'entreprise si renseigné, rubriques du rôle et de la structure, type d'organisme pour les rôles particulier, gestionnaire et professionnel). Le consentement newsletter n'est transmis que s'il change, avec la date d'abonnement ou de désabonnement du jour. **Le changement d'email n'est pas répercuté** : le contact reste connu sous l'ancien email dans le CRM. L'état actif ou inactif du compte n'est pas transmis.
+- **Modification** : le contact ADEME Connect est resynchronisé depuis le compte (nom, prénom, téléphone, SIRET de l'entreprise si renseigné, rubriques du rôle et de la structure, type d'organisme pour les rôles particulier, gestionnaire et professionnel). L'abonnement à la newsletter n'est jamais transmis ni modifié. **Le changement d'email n'est pas répercuté** : le contact reste connu sous l'ancien email dans le CRM. L'état actif ou inactif du compte n'est pas transmis.
 - **Suppression** : rien n'est envoyé à ADEME Connect, le contact y reste tel quel.
 - Événements enregistrés : [«&nbsp;Mise à jour utilisateur (admin)&nbsp;»](/admin/events?types=user_updated_by_admin), [«&nbsp;Suppression utilisateur (admin)&nbsp;»](/admin/events?types=user_deleted_by_admin).
 

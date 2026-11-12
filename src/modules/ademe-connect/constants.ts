@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 import type { StructureType } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
@@ -48,15 +46,6 @@ const STRUCTURE_RUBRIQUES: Partial<Record<StructureType, string>> = {
  * we send in `rubriques` (full sync of FCU rubriques, leaves non-FCU rubriques untouched).
  */
 export const ALL_FCU_RUBRIQUES: string[] = [...Object.values(ROLE_RUBRIQUES), ...Object.values(STRUCTURE_RUBRIQUES)];
-
-/**
- * Newsletter consent fields for ADEME Connect: the flag plus the start (`dateNewsletter`) or end (`dateFinNewsletter`)
- * date of the subscription, set to today. Only to be sent when the consent actually changes.
- */
-export const buildNewsletterFields = (subscribed: boolean) => ({
-  abonnementNewsletter: subscribed,
-  ...(subscribed ? { dateNewsletter: dayjs().format('YYYY-MM-DD') } : { dateFinNewsletter: dayjs().format('YYYY-MM-DD') }),
-});
 
 /**
  * Builds the `rubriques` array for ADEME Connect from a user's role and structure type.

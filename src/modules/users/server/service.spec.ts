@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ALL_FCU_RUBRIQUES, buildRubriques } from '@/modules/ademe-connect/constants';
 import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
@@ -70,7 +70,6 @@ describe('create user opening email', () => {
         {
           active: input.active,
           email,
-          newsletter_optin_at: null,
           notifications: { new_demands: 'none', pending_demands_reminder: false },
           role: input.role,
         },
@@ -89,7 +88,6 @@ describe('create user opening email', () => {
         {
           active: true,
           email,
-          newsletter_optin_at: null,
           notifications: { new_demands: 'none', pending_demands_reminder: false },
           role: 'ccrt',
         },
@@ -102,127 +100,69 @@ describe('create user opening email', () => {
   });
 });
 
-describe('newsletter consent sent to ADEME Connect', () => {
-  const today = '2026-11-10';
+describe('ADEME Connect contact sync', () => {
   const context = { user: { id: uuid(2) } } as Context;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers({ toFake: ['Date'] });
-    vi.setSystemTime(new Date(`${today}T10:00:00`));
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  describe('on creation', () => {
+  it('creates the contact without any newsletter field: only the public registration subscribes to the newsletter', async () => {
     const record = { id: uuid(1) };
     const email = 'new-user@example.com';
-    const cases: TestCase<boolean | null, { abonnementNewsletter: boolean; dateNewsletter: string | undefined }>[] = [
-      { expectedOutput: { abonnementNewsletter: true, dateNewsletter: today }, input: true, label: 'opted in → subscribed, starts today' },
-      {
-        expectedOutput: { abonnementNewsletter: false, dateNewsletter: undefined },
-        input: false,
-        label: 'opted out → not subscribed, no date',
-      },
-      { expectedOutput: { abonnementNewsletter: false, dateNewsletter: undefined }, input: null, label: 'unset → not subscribed, no date' },
-    ];
+    mocks.findExistingUser.mockResolvedValue(undefined);
+    mocks.createRecord.mockResolvedValue(record);
 
-    beforeEach(() => {
-      mocks.findExistingUser.mockResolvedValue(undefined);
-      mocks.createRecord.mockResolvedValue(record);
-    });
+    await create(
+      { active: true, email, notifications: { new_demands: 'none', pending_demands_reminder: false }, role: 'particulier' },
+      context
+    );
 
-    it.each(cases)('$label', async ({ input, expectedOutput }) => {
-      await create(
+    expect(vi.mocked(createContact).mock.calls).toStrictEqual([
+      [
         {
-          active: true,
+          acceptationRGPD: false,
           email,
-          newsletter_optin_at: input,
-          notifications: { new_demands: 'none', pending_demands_reminder: false },
-          role: 'particulier',
+          nom: undefined,
+          prenom: undefined,
+          rubriques: buildRubriques('particulier', undefined),
+          siret: undefined,
+          telephone: undefined,
+          typeOrganisme: 'Particulier',
         },
-        context
-      );
-
-      expect(vi.mocked(createContact).mock.calls).toStrictEqual([
-        [
-          {
-            ...expectedOutput,
-            acceptationRGPD: false,
-            email,
-            nom: undefined,
-            prenom: undefined,
-            rubriques: buildRubriques('particulier', undefined),
-            siret: undefined,
-            telephone: undefined,
-            typeOrganisme: 'Particulier',
-          },
-        ],
-      ]);
-    });
+      ],
+    ]);
   });
 
-  describe('on admin update', () => {
+  it('resyncs the contact on admin update without any newsletter field', async () => {
     const id = uuid(1);
     const email = 'user@example.com';
-    const subscribedAt = new Date('2026-01-15T00:00:00');
-    const config = {} as ListConfig<'users'>;
-    const cases: TestCase<{ previous: Date | null; newsletter_optin_at?: boolean }, Record<string, unknown>>[] = [
-      {
-        expectedOutput: { abonnementNewsletter: true, dateNewsletter: today },
-        input: { newsletter_optin_at: true, previous: null },
-        label: 'subscribes → flag and start date',
-      },
-      {
-        expectedOutput: { abonnementNewsletter: false, dateFinNewsletter: today },
-        input: { newsletter_optin_at: false, previous: subscribedAt },
-        label: 'unsubscribes → flag and end date',
-      },
-      { expectedOutput: {}, input: { newsletter_optin_at: true, previous: subscribedAt }, label: 'still subscribed → no newsletter field' },
-      { expectedOutput: {}, input: { newsletter_optin_at: false, previous: null }, label: 'still unsubscribed → no newsletter field' },
-      { expectedOutput: {}, input: { previous: subscribedAt }, label: 'consent absent from the payload → no newsletter field' },
-    ];
-
-    it.each(cases)('$label', async ({ input, expectedOutput }) => {
-      // Mirrors what `update` stores: untouched when absent, kept or set when true, cleared when false.
-      const storedOptinAt =
-        input.newsletter_optin_at === undefined ? input.previous : input.newsletter_optin_at ? (input.previous ?? new Date()) : null;
-      mocks.findUser.mockResolvedValueOnce({ email, newsletter_optin_at: input.previous }).mockResolvedValueOnce({
-        entreprise: null,
-        first_name: 'Jean',
-        last_name: 'Dupont',
-        newsletter_optin_at: storedOptinAt,
-        phone: null,
-        role: 'particulier',
-        structure_type: null,
-      });
-      mocks.updateRecord.mockResolvedValue({ email, id });
-
-      await update(
-        id,
-        { active: true, ...(input.newsletter_optin_at === undefined ? {} : { newsletter_optin_at: input.newsletter_optin_at }) },
-        config,
-        context
-      );
-
-      await vi.waitFor(() => expect(updateContact).toHaveBeenCalled());
-      expect(vi.mocked(updateContact).mock.calls).toStrictEqual([
-        [
-          email,
-          {
-            nom: 'Dupont',
-            prenom: 'Jean',
-            rubriques: buildRubriques('particulier', null),
-            rubriquesASupprimer: ALL_FCU_RUBRIQUES,
-            siret: undefined,
-            telephone: undefined,
-            typeOrganisme: 'Particulier',
-            ...expectedOutput,
-          },
-        ],
-      ]);
+    mocks.findUser.mockResolvedValueOnce({ email }).mockResolvedValueOnce({
+      entreprise: null,
+      first_name: 'Jean',
+      last_name: 'Dupont',
+      phone: null,
+      role: 'particulier',
+      structure_type: null,
     });
+    mocks.updateRecord.mockResolvedValue({ email, id });
+
+    await update(id, { active: true }, {} as ListConfig<'users'>, context);
+
+    await vi.waitFor(() => expect(updateContact).toHaveBeenCalled());
+    expect(vi.mocked(updateContact).mock.calls).toStrictEqual([
+      [
+        email,
+        {
+          nom: 'Dupont',
+          prenom: 'Jean',
+          rubriques: buildRubriques('particulier', null),
+          rubriquesASupprimer: ALL_FCU_RUBRIQUES,
+          siret: undefined,
+          telephone: undefined,
+          typeOrganisme: 'Particulier',
+        },
+      ],
+    ]);
   });
 });

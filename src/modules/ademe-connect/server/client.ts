@@ -28,9 +28,9 @@ type ContactData = {
   dateCreation?: string;
   dateModification?: string;
   dateConnexion?: string;
-  abonnementNewsletter?: boolean;
+  /** Subscription only: the CONNECT API has no unsubscription, so `false` is never sent (omit the field instead). */
+  abonnementNewsletter?: true;
   dateNewsletter?: string;
-  dateFinNewsletter?: string;
   actif?: boolean;
 };
 
