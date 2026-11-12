@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server';
 
 import { businessRules } from '@/modules/app/business-rules';
+import { syncDemandCustomTerritoryIds } from '@/modules/custom-territories/server/service';
 import { updateEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -33,6 +34,8 @@ export const fillDemandTerritoryFromCoords = async (demandId: string, lon: numbe
       AND d.commune_code IS NOT NULL
       AND EXISTS (SELECT 1 FROM jsonb_array_elements(e.membres) m WHERE m->>'code' = d.commune_code)
   `.execute(kdb);
+
+  await syncDemandCustomTerritoryIds('demands', demandId);
 };
 
 const getNetworkTypeFromEligibilityType = (type: EligibilityType): NetworkType | null => {

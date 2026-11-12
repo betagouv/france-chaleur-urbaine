@@ -74,6 +74,7 @@ const notFound = { code: 'NOT_FOUND', message: 'Demande chaleur renouvelable int
 const originalTracking = serverConfig.tracking;
 afterEach(() => Object.assign(serverConfig, { tracking: originalTracking }));
 const otherCcrtUser = { ...testUsers.ccrt, email: 'colleague-ccrt@test.local', id: uuid(107) };
+const customTerritoryId = uuid(600);
 const seedWorkspace = async () => {
   await seedTableUser([testUsers.admin, testUsers.ccrt, testUsers.alec, otherCcrtUser]);
   await seedCommune({ insee_com: '13055', insee_dep: '13', insee_reg: '93', siren_epci: 'EPCI-13' });
@@ -88,6 +89,7 @@ const seedWorkspace = async () => {
   return seedDemandeChaleurRenouvelable({
     commune_code: '13055',
     created_at: new Date('2026-01-01T00:00:00.000Z'),
+    custom_territory_ids: [customTerritoryId],
     departement_code: '13',
     epci_code: 'EPCI-13',
     ept_code: 'EPT-13',
@@ -156,6 +158,7 @@ describe('CCRT workspace access', () => {
     ['ept', 'EPT-13'],
     ['departement', '13'],
     ['region', '93'],
+    ['custom_territory', customTerritoryId],
   ] as const)('uses %s permissions consistently for the list and individual actions', async (type, resource_id) => {
     const demand = await seedWorkspace();
     await kdb.deleteFrom('user_permissions').where('user_id', '=', testUsers.ccrt.id).execute();
@@ -177,6 +180,7 @@ describe('CCRT workspace access', () => {
 
   const deniedPermissionCases: TestCase<Permission[], typeof notFound>[] = [
     { expectedOutput: notFound, input: [{ resource_id: '75056', type: 'commune' }], label: 'another territory' },
+    { expectedOutput: notFound, input: [{ resource_id: uuid(601), type: 'custom_territory' }], label: 'another custom territory' },
     { expectedOutput: notFound, input: [{ resource_id: '13', type: 'reseau_de_chaleur' }], label: 'network only' },
     { expectedOutput: notFound, input: [{ resource_id: 'operator', type: 'organization' }], label: 'organization only' },
     { expectedOutput: notFound, input: [], label: 'no permissions' },
@@ -258,6 +262,7 @@ describe('CCRT assignment candidates', () => {
     ['ept', 'EPT-13'],
     ['departement', '13'],
     ['region', '93'],
+    ['custom_territory', customTerritoryId],
   ] as const)('finds CCRT candidates covered by %s before publication', async (type, resource_id) => {
     const demand = await seedWorkspace();
     await kdb.updateTable('demands_chaleur_renouvelable').set({ validated: false }).where('id', '=', demand.id).execute();

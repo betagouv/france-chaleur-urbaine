@@ -23,6 +23,7 @@ const particulier: UserWithRole = { id: '1', role: 'particulier' };
 
 const baseDemand: DemandForAccess = {
   commune_code: '75056',
+  custom_territory_ids: ['ct-paris'],
   departement_code: '75',
   epci_code: '200054781',
   ept_code: 'T1',
@@ -50,6 +51,8 @@ const region11: Permission = { resource_id: '11', type: 'region' };
 const eptT1: Permission = { resource_id: 'T1', type: 'ept' };
 const epci200054781: Permission = { resource_id: '200054781', type: 'epci' };
 const epciWrong: Permission = { resource_id: '200000000', type: 'epci' };
+const customTerritoryParis: Permission = { resource_id: 'ct-paris', type: 'custom_territory' };
+const customTerritoryWrong: Permission = { resource_id: 'ct-other', type: 'custom_territory' };
 
 const testLabel = ({ user, permissions, demand }: TestInput): string => {
   const parts: string[] = [user.role];
@@ -106,6 +109,18 @@ describe('canUserAccessDemand', () => {
     { expectedOutput: false, input: { demand: baseDemand, permissions: [dept75], user: ccrt } },
     { expectedOutput: false, input: { demand: baseDemand, permissions: [epci200054781], user: ccrt } },
     { expectedOutput: false, input: { demand: constructionDemand, permissions: [networkConstruction], user: ccrt } },
+
+    // Custom territory — the demand carries the ids of the territories containing its commune
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [customTerritoryParis], user: collectivite } },
+    { expectedOutput: true, input: { demand: baseDemand, permissions: [customTerritoryParis], user: alec } },
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [customTerritoryWrong], user: collectivite } },
+    { expectedOutput: false, input: { demand: unvalidated, permissions: [customTerritoryParis], user: collectivite } },
+    {
+      expectedOutput: false,
+      input: { demand: { ...baseDemand, custom_territory_ids: [] }, permissions: [customTerritoryParis], user: collectivite },
+    },
+    // A matching custom territory does not open connection demands to a CCRT either
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [customTerritoryParis], user: ccrt } },
 
     // Multiple permissions — one match is enough
     {
@@ -170,6 +185,12 @@ describe('isUserResponsibleForDemand', () => {
     { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [dept13], user: collectivite } },
     // Demand without network + only network perm → NOT responsible (case theoretical, perm route wouldn't grant access)
     { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [networkExistant], user: gestionnaire } },
+
+    // Custom territory behaves like any territory permission: triage on unaffected demands, read-only otherwise
+    { expectedOutput: true, input: { demand: unaffectedDemand, permissions: [customTerritoryParis], user: collectivite } },
+    { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [customTerritoryWrong], user: collectivite } },
+    { expectedOutput: false, input: { demand: baseDemand, permissions: [customTerritoryParis], user: collectivite } },
+    { expectedOutput: false, input: { demand: unaffectedDemand, permissions: [customTerritoryParis], user: ccrt } },
 
     // Organization scope — responsible for a network-affected demand of one of the org's networks
     { expectedOutput: true, input: { demand: orgDemand, permissions: [org1], user: gestionnaire } },

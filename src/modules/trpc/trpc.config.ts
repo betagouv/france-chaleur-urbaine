@@ -7,6 +7,7 @@ import { batEnrRouter } from '@/modules/chaleur-renouvelable/server/trpc-routes'
 import { communesSansReseauRouter } from '@/modules/communes-sans-reseau/server/trpc-routes';
 import buildContext from '@/modules/config/server/context-builder';
 import { conversionTrackingRouter } from '@/modules/conversion-tracking/server/trpc-routes';
+import { customTerritoriesRouter } from '@/modules/custom-territories/server/trpc-routes';
 import { dataRouter } from '@/modules/data/server/trpc-routes';
 import { dataDiagnosticRouter } from '@/modules/data-diagnostic/server/trpc-routes';
 import { demandTrackingRouter } from '@/modules/demand-tracking/server/trpc-routes';
@@ -55,6 +56,7 @@ export const appRouter = router({
   bdnb: bdnbRouter,
   communesSansReseau: communesSansReseauRouter,
   conversionTracking: conversionTrackingRouter,
+  customTerritories: customTerritoriesRouter,
   data: dataRouter,
   dataDiagnostic: dataDiagnosticRouter,
   demands: demandsRouter,

@@ -2,6 +2,7 @@ import type { PermissionType } from './types';
 
 export const permissionTypeLabels: Record<PermissionType, string> = {
   commune: 'Commune',
+  custom_territory: 'Territoire personnalisé',
   departement: 'Département',
   epci: 'EPCI',
   ept: 'EPT',
@@ -13,6 +14,7 @@ export const permissionTypeLabels: Record<PermissionType, string> = {
 
 export const permissionTypeBadgeColors: Record<PermissionType, string> = {
   commune: 'bg-[#B6D7A8]',
+  custom_territory: 'bg-[#F4CCCC]',
   departement: 'bg-[#A4C2F4]',
   epci: 'bg-[#D5A6E6]',
   ept: 'bg-[#F9CB9C]',

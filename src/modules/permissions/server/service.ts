@@ -2,7 +2,7 @@ import { createUserEvent } from '@/modules/events/server/service';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import { kdb } from '@/server/db/kysely';
 
-import { MAX_PERMISSIONS_PER_USER, type Permission } from '../types';
+import { MAX_PERMISSIONS_PER_USER, type Permission, type PermissionType } from '../types';
 
 // Re-export for external callers (context-builder, demands-service, manager, trpc-helpers)
 export {
@@ -100,25 +100,28 @@ export const removeNetworkPermissionFromAllUsers = async (type: NetworkType, res
   );
 };
 
-// ─── Organization deletion cleanup ─────────────────────────────────────────────
+// ─── Resource deletion cleanup ──────────────────────────────────────────────────
 
 /**
- * Retire la permission `organization` ciblant une organisation donnée chez tous les users la détenant.
- * `user_permissions.resource_id` n'a pas de FK vers `organizations` → à appeler avant de supprimer l'org,
- * sinon des permissions orphelines (pointant un id mort) subsistent. Miroir de `removeNetworkPermissionFromAllUsers`.
+ * Removes the permission `(type, resourceId)` from every user holding it. `user_permissions.resource_id`
+ * has no FK: call this before deleting the resource (organization, custom territory…) or orphan
+ * permissions pointing to a dead id remain. Mirror of `removeNetworkPermissionFromAllUsers`.
  */
-export const removeOrganizationPermissionFromAllUsers = async (organizationId: string, authorId: string): Promise<void> => {
+export const removePermissionFromAllUsers = async (type: PermissionType, resourceId: string, authorId: string): Promise<void> => {
   const users = await kdb
     .selectFrom('user_permissions')
     .select('user_id')
-    .where('type', '=', 'organization')
-    .where('resource_id', '=', organizationId)
+    .where('type', '=', type)
+    .where('resource_id', '=', resourceId)
     .execute();
   await Promise.all(
     users.map(async ({ user_id }) => {
       const current = await getUserPermissions(user_id);
-      const next = current.filter((p) => !(p.type === 'organization' && p.resource_id === organizationId));
+      const next = current.filter((p) => !(p.type === type && p.resource_id === resourceId));
       await setUserPermissions(user_id, next, authorId);
     })
   );
 };
+
+export const removeOrganizationPermissionFromAllUsers = (organizationId: string, authorId: string): Promise<void> =>
+  removePermissionFromAllUsers('organization', organizationId, authorId);

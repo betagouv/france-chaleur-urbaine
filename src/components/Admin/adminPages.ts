@@ -51,6 +51,12 @@ export const adminPages = [
     label: 'Gestion des organisations',
   },
   {
+    desc: 'Définissez des périmètres sur mesure (département hors métropole…) attribuables comme permission',
+    group: 'management',
+    href: '/admin/territoires',
+    label: 'Territoires personnalisés',
+  },
+  {
     desc: "Consultez l'activité des utilisateurs sur le site",
     group: 'analytics',
     href: '/admin/events',

@@ -39,6 +39,7 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
   const isNetworkMode = availableTypes.some((t) => networkPermissionSet.has(t));
   const isTerritoryMode = availableTypes.some((t) => territoryPermissionSet.has(t));
   const isOrganizationMode = availableTypes.includes('organization' as PermissionType);
+  const isCustomTerritoryMode = availableTypes.includes('custom_territory' as PermissionType);
 
   const networkResults = trpc.permissions.searchNetworks.useQuery(
     { search: debouncedQuery },
@@ -55,7 +56,13 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     { enabled: isOrganizationMode && debouncedQuery.length >= 2 }
   );
 
-  const isFetching = networkResults.isFetching || territoryResults.isFetching || organizationResults.isFetching;
+  const customTerritoryResults = trpc.permissions.searchCustomTerritories.useQuery(
+    { search: debouncedQuery },
+    { enabled: isCustomTerritoryMode && debouncedQuery.length >= 2 }
+  );
+
+  const isFetching =
+    networkResults.isFetching || territoryResults.isFetching || organizationResults.isFetching || customTerritoryResults.isFetching;
 
   type ResultItem = {
     label: string;
@@ -96,9 +103,19 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
     }
   }
 
+  if (isCustomTerritoryMode && customTerritoryResults.data) {
+    customTerritoryResults.data.forEach((territory) =>
+      results.push({
+        label: territory.name,
+        permission: { resource_id: territory.id, type: 'custom_territory' },
+        sublabel: `${permissionTypeLabels.custom_territory} · ${territory.communes_count} communes`,
+      })
+    );
+  }
+
   const searchTargets = [
     isNetworkMode ? 'un réseau' : null,
-    isTerritoryMode ? 'un territoire' : null,
+    isTerritoryMode || isCustomTerritoryMode ? 'un territoire' : null,
     isOrganizationMode ? 'une organisation' : null,
   ].filter(Boolean) as string[];
   const placeholder =

@@ -12,6 +12,7 @@ import {
   normalizeHeatingEnergy,
   normalizeHeatingType,
 } from '@/modules/demands/constants';
+import { buildDemandForAccessQuery, permissionMatchesCustomTerritoryIds } from '@/modules/permissions/server/demand-access';
 import { canUserAccessDemand, type DemandForAccess, isUserResponsibleForDemand } from '@/modules/permissions/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -53,36 +54,11 @@ export const ensureDemandIsNotLocked = (demand: { lock_reason: DemandLockReason 
   }
 };
 
-const buildDemandForAccessCheckQuery = (demandId: string) =>
-  kdb
-    .selectFrom('demands')
-    .leftJoin('reseaux_de_chaleur as rdc', (j) =>
-      j.onRef('rdc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'reseau_de_chaleur')
-    )
-    .leftJoin('zones_et_reseaux_en_construction as zrc', (j) =>
-      j.onRef('zrc.id_fcu', '=', 'demands.network_id').on('demands.network_type', '=', 'reseau_en_construction')
-    )
-    .select([
-      'demands.network_id',
-      'demands.network_type',
-      'demands.validated',
-      'demands.commune_code',
-      'demands.epci_code',
-      'demands.ept_code',
-      'demands.departement_code',
-      'demands.region_code',
-    ])
-    .select((eb) => eb.fn.coalesce('rdc.organization_id', 'zrc.organization_id').as('network_organization_id'))
-    .where('demands.id', '=', demandId)
-    .where('demands.deleted_at', 'is', null);
-
 const loadDemandForAccessOrThrow = async (demandId: string): Promise<DemandForAccess> =>
-  buildDemandForAccessCheckQuery(demandId).executeTakeFirstOrThrow(
-    () => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' })
-  );
+  buildDemandForAccessQuery(demandId).executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
 
 const loadDemandForProcessOrThrow = async (demandId: string): Promise<DemandForProcessCheck> =>
-  buildDemandForAccessCheckQuery(demandId)
+  buildDemandForAccessQuery(demandId)
     .select(['demands.id', 'demands.legacy_values'])
     .select(selectDemandLockReason())
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
@@ -176,6 +152,10 @@ export const buildDemandQuery = () => {
               eb.and([eb('up.type', '=', 'ept'), eb('up.resource_id', '=', eb.ref('d.ept_code'))]),
               eb.and([eb('up.type', '=', 'departement'), eb('up.resource_id', '=', eb.ref('d.departement_code'))]),
               eb.and([eb('up.type', '=', 'region'), eb('up.resource_id', '=', eb.ref('d.region_code'))]),
+              eb.and([
+                eb('up.type', '=', 'custom_territory'),
+                permissionMatchesCustomTerritoryIds(eb.ref('up.resource_id'), eb.ref('d.custom_territory_ids')),
+              ]),
             ])
           )
         )

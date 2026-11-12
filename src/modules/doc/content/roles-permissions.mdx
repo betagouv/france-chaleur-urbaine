@@ -31,7 +31,7 @@ Cas particuliers à connaître :
 - **Les rôles territoriaux n'ont pas de tableau de bord** : la page les redirige vers «&nbsp;Demandes&nbsp;» (provisoire, en attendant un tableau de bord dédié).
 - **La page «&nbsp;Aide&nbsp;» est réservée aux rôles territoriaux** : un admin qui veut la consulter doit passer par une [imposture](/admin/impostures).
 - **L'admin peut ouvrir la vue «&nbsp;Demandes&nbsp;» des gestionnaires** (`/pro/demandes`) par l'URL, mais son menu l'oriente vers [Gestion des demandes](/admin/demandes) : les deux vues coexistent.
-- **Les demandes chaleur renouvelable CCRT** sont un cas dédié du parcours chaleur renouvelable : l’espace est réservé aux CCRT et aux administrateurs. Seul le rôle CCRT a l'onglet dans le menu, et la liste contient les demandes validées filtrées sur ses permissions territoriales classiques (commune, EPCI, EPT, département ou région). Le périmètre pilote du formulaire public ne donne aucun droit de gestion.
+- **Les demandes chaleur renouvelable CCRT** sont un cas dédié du parcours chaleur renouvelable : l’espace est réservé aux CCRT et aux administrateurs. Seul le rôle CCRT a l'onglet dans le menu, et la liste contient les demandes validées filtrées sur ses permissions territoriales (commune, EPCI, EPT, département, région ou territoire personnalisé). Le périmètre pilote du formulaire public ne donne aucun droit de gestion.
 
 ## Les permissions
 
@@ -40,10 +40,18 @@ Les rôles territoriaux ne voient rien par défaut : leur périmètre est défin
 | Famille | Types | Donne accès à |
 | --- | --- | --- |
 | Réseau | Réseau de chaleur, réseau en construction | Les demandes affectées à ce réseau |
-| Territoire | Commune, EPCI, EPT, département, région | Les demandes situées sur ce territoire |
+| Territoire | Commune, EPCI, EPT, département, région, territoire personnalisé | Les demandes situées sur ce territoire |
 | Organisation | Organisation | Les demandes de **tous** les réseaux de l'organisation |
 
 L’administrateur peut attribuer et modifier les permissions d’un CCRT depuis la gestion des utilisateurs, et simuler ce rôle avec des permissions depuis [Impostures](/admin/impostures). Dans «&nbsp;Mon compte&nbsp;», le CCRT dispose des sections «&nbsp;Mes permissions&nbsp;», «&nbsp;Signature des emails&nbsp;» et «&nbsp;Notifications&nbsp;».
+
+### Les territoires personnalisés
+
+Certains périmètres d'intervention ne suivent pas les découpages administratifs : un département **hors** sa métropole, un parc naturel régional, une liste de communes. Plutôt que d'attribuer des centaines de permissions communales, l'admin définit un **territoire personnalisé** dans [Territoires personnalisés](/admin/territoires) : un nom et une **recette**, c'est-à-dire des territoires inclus (commune, EPCI, EPT, département, région) dont on retire des territoires exclus. L'écran affiche en direct, avant l'enregistrement, le nombre de communes couvertes par département et une carte du résultat (le territoire obtenu en rouge, les territoires exclus en gris) ; une recette qui ne couvre aucune commune ou un nom déjà utilisé sont refusés.
+
+Le territoire s'attribue ensuite comme n'importe quelle permission, via la famille «&nbsp;Territoire personnalisé&nbsp;» du formulaire de [Gestion des utilisateurs](/admin/users) ou d'une [imposture](/admin/impostures). Il se comporte exactement comme une permission territoire, avec le même cloisonnement par rôle. Pour une collectivité ou une ALEC, sur les demandes de raccordement : lecture seule sur une demande affectée à un réseau, rôle de tri sur une demande sans réseau. Pour un CCRT, sur les demandes d'accompagnement chaleur renouvelable : accès à la liste, aux fiches et aux notifications. Un CCRT n'accède à aucune demande de raccordement et les autres rôles à aucune demande d'accompagnement, même avec un territoire personnalisé qui couvre l'adresse. Une même commune peut appartenir à plusieurs territoires personnalisés.
+
+Chaque demande (raccordement et chaleur renouvelable) mémorise, à sa création et à chaque correction d'adresse, les territoires personnalisés qui contiennent sa commune. Créer, modifier ou supprimer un territoire recalcule immédiatement ce rattachement sur toutes les demandes existantes ; après une mise à jour du référentiel des communes (fusion de communes, changement de périmètre d'un EPCI), l'équipe technique lance un recalcul (`pnpm cli custom-territories:refresh`) qui reprend les communes de chaque territoire à partir de sa recette, puis le rattachement des demandes. Sans ce recalcul, un territoire conserve les communes de l'ancien référentiel : le [Diagnostic des données](/admin/data-diagnostic) le signale en erreur. Il signale aussi les recettes qui référencent un territoire disparu (commune absorbée lors d'une fusion, EPCI ou EPT dissous) : le recalcul ne corrige pas ce cas, la recette est à modifier dans l'écran des territoires. La suppression d'un territoire retire aussi la permission des comptes qui la détenaient. Ces opérations sont tracées dans [Activité du site](/admin/events?types=custom_territory_created,custom_territory_updated,custom_territory_deleted).
 
 ## Accès aux demandes : consulter ou traiter
 

@@ -136,6 +136,21 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
       a mis à jour l'intégration iframe <strong>{event.data.label}</strong> (source <strong>{event.data.key}</strong>)
     </span>
   ),
+  custom_territory_created: (event) => (
+    <span>
+      a créé le territoire personnalisé <strong>{event.data.name}</strong> ({event.data.communes_count} communes)
+    </span>
+  ),
+  custom_territory_deleted: (event) => (
+    <span>
+      a supprimé le territoire personnalisé <strong>{event.data.name}</strong>
+    </span>
+  ),
+  custom_territory_updated: (event) => (
+    <span>
+      a mis à jour le territoire personnalisé <strong>{event.data.name}</strong> ({event.data.communes_count} communes)
+    </span>
+  ),
   data_retention_applied: (event) => (
     <span>
       a appliqué la règle de conservation{' '}
