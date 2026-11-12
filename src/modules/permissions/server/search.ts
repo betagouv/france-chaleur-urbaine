@@ -52,6 +52,22 @@ export const findReseauxDeChaleurBySncuIds = async (sncuIds: string[]): Promise<
 
 export type OrganizationSearchResult = { id: string; name: string };
 
+export type CustomTerritorySearchResult = { id: string; name: string; communes_count: number };
+
+/** Custom territories by name (autocomplete of the `custom_territory` permission). */
+export const searchCustomTerritories = async (query: string): Promise<CustomTerritorySearchResult[]> => {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  return kdb
+    .selectFrom('custom_territories')
+    .select((eb) => ['id', 'name', sql<number>`cardinality(${eb.ref('commune_codes')})`.as('communes_count')])
+    .where('name', 'ilike', `%${q}%`)
+    .orderBy('name')
+    .limit(20)
+    .execute()
+    .then((rows) => rows.map((row) => ({ ...row, communes_count: Number(row.communes_count) })));
+};
+
 /** Recherche d'organisations par nom (pour l'autocomplete de permission `organization`). */
 export const searchOrganizations = async (query: string): Promise<OrganizationSearchResult[]> => {
   const q = query.trim();
@@ -160,6 +176,7 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
   const deptCodes = permissions.filter((p) => p.type === 'departement').map((p) => p.resource_id!);
   const regionCodes = permissions.filter((p) => p.type === 'region').map((p) => p.resource_id!);
   const organizationIds = permissions.filter((p) => p.type === 'organization').map((p) => p.resource_id!);
+  const customTerritoryIds = permissions.filter((p) => p.type === 'custom_territory').map((p) => p.resource_id);
 
   const lookups = [];
 
@@ -292,6 +309,22 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
           for (const id of organizationIds) {
             result.push({ label: map.get(id) ?? 'Organisation inconnue', resource_id: id, type: 'organization' });
           }
+        })
+    );
+  }
+
+  if (customTerritoryIds.length > 0) {
+    lookups.push(
+      kdb
+        .selectFrom('custom_territories')
+        .select(['id', 'name'])
+        .where('id', 'in', customTerritoryIds)
+        .execute()
+        .then((rows) => {
+          const map = new Map(rows.map((row) => [row.id, row.name]));
+          customTerritoryIds.forEach((id) =>
+            result.push({ label: map.get(id) ?? 'Territoire personnalisé inconnu', resource_id: id, type: 'custom_territory' })
+          );
         })
     );
   }

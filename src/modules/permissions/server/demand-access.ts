@@ -4,8 +4,14 @@ import type { DB, Demands } from '@/server/db/kysely';
 import { kdb } from '@/server/db/kysely';
 import { type UserRole, userRolesWithPermissionsHeatNetwork, userRolesWithPermissionsRenewableHeat } from '@/types/enum/UserRole';
 
-import { type NetworkPermission, type Permission, type TerritoryPermissionType, territoryPermissionToColumn } from '../types';
-import { isHeatNetworkDemandRole, isNetworkPermissionType, isOrganizationPermissionType } from './helpers';
+import {
+  customTerritoryPermissionType,
+  type NetworkPermission,
+  type Permission,
+  type TerritoryPermissionType,
+  territoryPermissionToColumn,
+} from '../types';
+import { isCustomTerritoryPermissionType, isHeatNetworkDemandRole, isNetworkPermissionType, isOrganizationPermissionType } from './helpers';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -16,11 +22,36 @@ type UserWithRole = {
 
 export type DemandForAccess = Pick<
   Selectable<Demands>,
-  'network_id' | 'network_type' | 'validated' | 'commune_code' | 'epci_code' | 'ept_code' | 'departement_code' | 'region_code'
+  | 'network_id'
+  | 'network_type'
+  | 'validated'
+  | 'commune_code'
+  | 'epci_code'
+  | 'ept_code'
+  | 'departement_code'
+  | 'region_code'
+  | 'custom_territory_ids'
 > & {
   /** `organization_id` du réseau affecté (dérivé par jointure, esprit Piste 1). Null si pas de réseau ou réseau sans org. */
   network_organization_id: string | null;
 };
+
+// ─── Custom territory SQL predicates ─────────────────────────────────────────
+
+/**
+ * `demands.custom_territory_ids @> ARRAY[id]::uuid[]` — the id comes from a validated permission, so the uuid
+ * cast is safe and the GIN index is used. For a permission column of mixed types use `permissionMatchesCustomTerritoryIds`.
+ */
+export const customTerritoryIdsContain = (idsColumn: Expression<string[]>, customTerritoryId: string) =>
+  sql<SqlBool>`${idsColumn} @> ARRAY[${customTerritoryId}]::uuid[]`;
+
+/**
+ * `up.resource_id = ANY(d.custom_territory_ids::text[])` for joins on `user_permissions`. The cast is on the array
+ * side on purpose: casting `resource_id` to uuid would fail on the other permission types of the same OR
+ * (Postgres does not short-circuit `AND`).
+ */
+export const permissionMatchesCustomTerritoryIds = (resourceIdColumn: Expression<string | null>, idsColumn: Expression<string[]>) =>
+  sql<SqlBool>`${resourceIdColumn} = ANY(${idsColumn}::text[])`;
 
 // ─── Access filters (Kysely query builders) ──────────────────────────────────
 
@@ -49,11 +80,14 @@ export const buildDemandAccessFilter = (
       return qb.where(sql.lit(false));
     }
 
-    // Partition à 3 : réseau / organisation / territoire. Sans le 3e bucket, une perm `organization`
+    // Partition à 4 : réseau / organisation / territoire personnalisé / territoire. Sans bucket dédié, une perm `organization`
     // tomberait dans `territoryPerms` et serait silencieusement ignorée (cf. garde-fou plan §6.1).
     const networkPerms = permissions.filter((p): p is NetworkPermission => isNetworkPermissionType(p.type));
     const organizationPerms = permissions.filter((p) => isOrganizationPermissionType(p.type));
-    const territoryPerms = permissions.filter((p) => !isNetworkPermissionType(p.type) && !isOrganizationPermissionType(p.type));
+    const customTerritoryPerms = permissions.filter((p) => isCustomTerritoryPermissionType(p.type));
+    const territoryPerms = permissions.filter(
+      (p) => !isNetworkPermissionType(p.type) && !isOrganizationPermissionType(p.type) && !isCustomTerritoryPermissionType(p.type)
+    );
 
     return qb.where((eb) => {
       const conditions: Expression<SqlBool>[] = [];
@@ -93,6 +127,10 @@ export const buildDemandAccessFilter = (
         }
       }
 
+      for (const p of customTerritoryPerms) {
+        conditions.push(customTerritoryIdsContain(eb.ref('demands.custom_territory_ids'), p.resource_id));
+      }
+
       return conditions.length > 0 ? eb.or(conditions) : sql.lit(false);
     });
   };
@@ -109,7 +147,13 @@ const matchesNetworkAffectation =
   (p: Permission): boolean =>
     isNetworkPermissionType(p.type) && p.type === demand.network_type && Number(p.resource_id) === demand.network_id;
 
-/** Une perm territoire matche ssi elle couvre la maille géographique de la demande. */
+/** Une perm territoire personnalisé matche ssi la commune de la demande appartient au territoire (ids dénormalisés). */
+const matchesCustomTerritory =
+  (demand: DemandForAccess) =>
+  (p: Permission): boolean =>
+    isCustomTerritoryPermissionType(p.type) && demand.custom_territory_ids.includes(p.resource_id);
+
+/** Une perm territoire (administratif ou personnalisé) matche ssi elle couvre la maille géographique de la demande. */
 const matchesTerritory =
   (demand: DemandForAccess) =>
   (p: Permission): boolean => {
@@ -117,7 +161,7 @@ const matchesTerritory =
       const column = territoryPermissionToColumn[p.type as keyof typeof territoryPermissionToColumn];
       return demand[column] === p.resource_id;
     }
-    return false;
+    return matchesCustomTerritory(demand)(p);
   };
 
 /** Une perm organisation matche ssi la demande est affectée à un réseau rattaché à cette organisation. */
@@ -189,6 +233,12 @@ export const getUsersWithAccessToDemand = async (demand: DemandForAccess, demand
         }
       }
 
+      if (demand.custom_territory_ids.length > 0) {
+        conditions.push(
+          eb.and([eb('up.type', '=', customTerritoryPermissionType), eb('up.resource_id', 'in', demand.custom_territory_ids)])
+        );
+      }
+
       return conditions.length > 0 ? eb.or(conditions) : sql.lit(false);
     })
     .groupBy(['u.id', 'u.email', 'u.role', 'u.first_name', 'u.last_name', 'u.structure_name'])
@@ -219,6 +269,7 @@ export const getDemandForAccessCheck = async (demandId: string): Promise<DemandF
       'demands.ept_code',
       'demands.departement_code',
       'demands.region_code',
+      'demands.custom_territory_ids',
     ])
     .select((eb) => eb.fn.coalesce('rdc.organization_id', 'zrc.organization_id').as('network_organization_id'))
     .where('demands.id', '=', demandId)

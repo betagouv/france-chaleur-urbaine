@@ -1,6 +1,9 @@
 import { type ExpressionBuilder, sql } from 'kysely';
 
+import type { TerritoryRef } from '@/modules/custom-territories/constants';
+import { findCustomTerritoriesWithOrphanRefs, findStaleCustomTerritories } from '@/modules/custom-territories/server/service';
 import { findAttachedNetworksNotMatchingPatterns, findUnattachedNetworksMatchingPatterns } from '@/modules/organizations/server/service';
+import { permissionTypeLabels } from '@/modules/permissions/constants';
 import { linkedGestionnairesSQL, linkedMaitresOuvrageSQL } from '@/modules/reseaux/server/linked-fields-sync';
 import { type DB, kdb } from '@/server/db/kysely';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
@@ -240,6 +243,62 @@ const checkOrphanPermissions: IssueBuilder = async () => {
     totalCount,
     truncated,
     type: 'permission.orphan_resource',
+  };
+};
+
+/**
+ * Territoires personnalisés dont les communes enregistrées ne correspondent plus à la recette : le référentiel
+ * (communes IGN, EPT) a changé depuis leur dernier enregistrement et le recalcul CLI n'a pas été lancé.
+ */
+const checkCustomTerritoryStaleCommunes: IssueBuilder = async () => {
+  const rows = await findStaleCustomTerritories();
+
+  if (rows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+    context: `${row.added_count} commune(s) à ajouter, ${row.removed_count} à retirer`,
+    href: '/admin/territoires',
+    label: row.name,
+  }));
+
+  return {
+    description:
+      'Les communes enregistrées pour ces territoires ne correspondent plus à leur recette : le référentiel (communes IGN, EPT) a changé depuis leur dernier enregistrement. Les demandes des communes concernées ne sont pas rattachées au bon territoire. Lancer `pnpm cli custom-territories:refresh`.',
+    items,
+    severity: 'error',
+    title: 'Territoire personnalisé désynchronisé du référentiel',
+    totalCount,
+    truncated,
+    type: 'custom_territory.stale_communes',
+  };
+};
+
+/**
+ * Territoires personnalisés dont la recette référence un territoire qui ne correspond plus à aucune commune du
+ * référentiel (commune absorbée, EPCI ou EPT dissous). Le recalcul CLI ne corrige pas ce cas : la recette est à modifier.
+ */
+const checkCustomTerritoryOrphanRecipeRef: IssueBuilder = async () => {
+  const rows = await findCustomTerritoriesWithOrphanRefs();
+
+  if (rows.length === 0) return null;
+
+  const describeRefs = (prefix: string, refs: TerritoryRef[]) =>
+    refs.length > 0 ? `${prefix} : ${refs.map((ref) => `${permissionTypeLabels[ref.type]} ${ref.code}`).join(', ')}` : null;
+  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+    context: [describeRefs('inclus', row.include), describeRefs('exclu', row.exclude)].filter(Boolean).join(' ; '),
+    href: '/admin/territoires',
+    label: row.name,
+  }));
+
+  return {
+    description:
+      'La recette de ces territoires référence un territoire qui ne correspond plus à aucune commune du référentiel (commune absorbée lors d’une fusion, EPCI ou EPT dissous). Une inclusion disparue retire des communes du territoire, une exclusion disparue en rajoute, sans aucun signal. Le recalcul ne corrige pas ce cas : modifier la recette pour remplacer ou retirer la référence.',
+    items,
+    severity: 'error',
+    title: 'Territoire personnalisé dont la recette référence un territoire disparu',
+    totalCount,
+    truncated,
+    type: 'custom_territory.orphan_recipe_ref',
   };
 };
 
@@ -1096,6 +1155,8 @@ const checks: IssueBuilder[] = [
   checkPermissionOnRoleWithoutPermissions,
   checkDuplicateEmail,
   checkOrphanPermissions,
+  checkCustomTerritoryStaleCommunes,
+  checkCustomTerritoryOrphanRecipeRef,
   checkDormantAccounts,
   checkDemandMissingCoordinates,
   checkDemandNetworkMismatch,

@@ -77,6 +77,11 @@ export const allDatabaseTables = [
   },
   {
     bundle: 'fcu',
+    description: 'Territoires personnalisés (permissions sur mesure)',
+    name: 'custom_territories',
+  },
+  {
+    bundle: 'fcu',
     description: 'Catalogue des étiquettes utilisateurs',
     name: 'user_tags',
   },

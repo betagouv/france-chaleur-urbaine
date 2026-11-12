@@ -2,6 +2,7 @@ import { beforeEach, expect, it } from 'vitest';
 
 import { kdb, sql } from '@/server/db/kysely';
 import { cleanDatabase, seedCommune, seedDepartement } from '@/tests/fixtures';
+import { uuid } from '@/tests/helpers';
 
 import { getCcrtTerritory } from './ccrt-access';
 
@@ -29,6 +30,7 @@ it.each([
 
   expect(await getCcrtTerritory(input.arrondissement, null, { lat: input.lat, lon: input.lon })).toStrictEqual({
     commune_code: input.commune,
+    custom_territory_ids: [],
     departement_code: input.department,
     epci_code: 'EPCI',
     ept_code: 'EPT',
@@ -50,6 +52,7 @@ it('keeps EPCI and EPT separate when IGN stores a combined Grand Paris membershi
 
   expect(await getCcrtTerritory('92012', null)).toStrictEqual({
     commune_code: '92012',
+    custom_territory_ids: [],
     departement_code: '92',
     epci_code: '200054781',
     ept_code: '200057974',
@@ -65,6 +68,7 @@ it.each([
 
   expect(await getCcrtTerritory(null, department)).toStrictEqual({
     commune_code: null,
+    custom_territory_ids: [],
     departement_code: department,
     epci_code: null,
     ept_code: null,
@@ -77,6 +81,7 @@ it('falls back to the exact commune code when no spatial reference is available'
 
   expect(await getCcrtTerritory('74010', '75', { lat: 45.9, lon: 6.1 })).toStrictEqual({
     commune_code: '74010',
+    custom_territory_ids: [],
     departement_code: '74',
     epci_code: '200066793',
     ept_code: null,
@@ -96,9 +101,31 @@ it('prefers the spatial commune over conflicting address codes', async () => {
 
   expect(await getCcrtTerritory('75056', '75', { lat: 45.75, lon: 4.82 })).toStrictEqual({
     commune_code: '69123',
+    custom_territory_ids: [],
     departement_code: '69',
     epci_code: '200046977',
     ept_code: null,
     region_code: '84',
+  });
+});
+
+it('resolves the custom territories containing the commune, in id order', async () => {
+  await seedCommune({ insee_com: '64024', insee_dep: '64', insee_reg: '75', siren_epci: '200067254' });
+  await kdb
+    .insertInto('custom_territories')
+    .values([
+      { commune_codes: ['64024', '64445'], id: uuid(2), name: 'Béarn', recipe: JSON.stringify({ exclude: [], include: [] }) },
+      { commune_codes: ['64024'], id: uuid(1), name: 'Pau', recipe: JSON.stringify({ exclude: [], include: [] }) },
+      { commune_codes: ['64102'], id: uuid(3), name: 'Pays Basque', recipe: JSON.stringify({ exclude: [], include: [] }) },
+    ])
+    .execute();
+
+  expect(await getCcrtTerritory('64024', null)).toStrictEqual({
+    commune_code: '64024',
+    custom_territory_ids: [uuid(1), uuid(2)],
+    departement_code: '64',
+    epci_code: '200067254',
+    ept_code: null,
+    region_code: '75',
   });
 });

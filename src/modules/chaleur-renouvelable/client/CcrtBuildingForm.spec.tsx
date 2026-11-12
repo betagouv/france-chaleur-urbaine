@@ -64,6 +64,7 @@ const demand: CcrtDemand = {
   comments: null,
   commune_code: '44109',
   created_at: '2026-10-08T10:00:00.000Z',
+  custom_territory_ids: [],
   demand_concern: null,
   departement_code: '44',
   dpe: 'D',

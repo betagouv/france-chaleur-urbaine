@@ -8,7 +8,15 @@ export const territoryPermissionResourceTypes = ['commune', 'epci', 'ept', 'depa
 // Scope « organisation » (opérateur national) : 1 permission = toutes les demandes des réseaux de l'org.
 // resource_id = `organizations.id` (uuid). Voir buildDemandAccessFilter (Piste 1, sous-requête).
 export const organizationPermissionType = 'organization' as const;
-export const permissionTypes = [...networkTypes, ...territoryPermissionResourceTypes, organizationPermissionType] as const;
+// Custom territory (admin-defined set of communes, `custom_territories` table): resource_id = `custom_territories.id` (uuid),
+// matched against the `custom_territory_ids` array denormalized on the demands tables.
+export const customTerritoryPermissionType = 'custom_territory' as const;
+export const permissionTypes = [
+  ...networkTypes,
+  ...territoryPermissionResourceTypes,
+  organizationPermissionType,
+  customTerritoryPermissionType,
+] as const;
 
 export type TerritoryPermissionType = (typeof territoryPermissionResourceTypes)[number];
 export type PermissionType = (typeof permissionTypes)[number];
@@ -30,7 +38,13 @@ export const zNetworkPermission = z.object({
 
 export const zTerritoryPermission = z.object({ resource_id: z.string(), type: z.enum(territoryPermissionResourceTypes) });
 
-export const zPermission = z.object({ resource_id: z.string(), type: z.enum(permissionTypes) });
+// A custom territory id is interpolated as `::uuid[]` in SQL filters: reject anything else upfront.
+export const zPermission = z
+  .object({ resource_id: z.string(), type: z.enum(permissionTypes) })
+  .refine((permission) => permission.type !== customTerritoryPermissionType || z.uuid().safeParse(permission.resource_id).success, {
+    message: 'Identifiant de territoire personnalisé invalide',
+    path: ['resource_id'],
+  });
 
 export const MAX_PERMISSIONS_PER_USER = businessRules.maxPermissionsPerUser.value;
 

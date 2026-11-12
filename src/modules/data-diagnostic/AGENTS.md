@@ -52,6 +52,8 @@ Errors (broken state):
 - `user.role_without_permissions_has_permission` — admin/particulier/professionnel holds a permission
 - `user.duplicate_email` — duplicate emails (case-insensitive)
 - `permission.orphan_resource` — `resource_id` no longer exists in the referenced table
+- `custom_territory.stale_communes` — custom territory whose stored communes no longer match its recipe (referential updated without `pnpm cli custom-territories:refresh`); detection shared with the refresh (`custom-territories/server/service.ts#findStaleCustomTerritories`)
+- `custom_territory.orphan_recipe_ref` — custom territory whose recipe references a territory matching no commune anymore (absorbed commune, dissolved EPCI / EPT); the refresh does not fix it, the recipe must be edited (`findCustomTerritoriesWithOrphanRefs`)
 - `demand.network_id_type_mismatch` — `network_id`/`network_type` partially set
 - `demand.orphan_network` — affected `network_id` no longer exists
 
@@ -80,6 +82,6 @@ No client changes required — the UI renders any issue whose `severity` is know
 
 ## Dependencies
 
-- `@/server/db/kysely` — direct DB queries (no business module layer).
+- `@/server/db/kysely` — direct DB queries (no business module layer), except detections owned by a module and shared with its fix (`organizations`, `custom-territories`).
 - `@/modules/trpc/server` — `adminRoute`, `router`.
 - `@/components/ui/Accordion`, DSFR `Badge` — UI primitives.

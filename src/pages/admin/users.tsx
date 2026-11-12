@@ -47,6 +47,7 @@ const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr
 
 const permissionTypePluralLabels: Record<PermissionType, string> = {
   commune: 'Communes',
+  custom_territory: 'Territoires personnalisés',
   departement: 'Départements',
   epci: 'EPCI',
   ept: 'EPT',

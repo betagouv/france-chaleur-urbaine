@@ -17,6 +17,7 @@ const sentMail = vi.mocked(sendEmailTemplate);
 
 const DEPARTEMENT = '13';
 const OTHER_DEPARTEMENT = '75';
+const CUSTOM_TERRITORY = uuid(600);
 
 const ccrtMatching = uuid(101); // perm departement:13, actif, daily + rappel → reçoit tout
 const ccrtOtherDepartement = uuid(102); // perm departement:75 → ne reçoit rien
@@ -112,10 +113,17 @@ describe('ccrt-notifications', () => {
       ['epci', 'EPCI-13'],
       ['ept', 'EPT-13'],
       ['region', '93'],
+      ['custom_territory', CUSTOM_TERRITORY],
     ] as const)('matche la demande par la permission territoriale %s', async (type, resource_id) => {
       await kdb.deleteFrom('user_permissions').where('user_id', '=', ccrtMatching).execute();
       await seedPermission({ resource_id, type, user_id: ccrtMatching });
-      await seedDemand({ commune_code: '13055', epci_code: 'EPCI-13', ept_code: 'EPT-13', region_code: '93' });
+      await seedDemand({
+        commune_code: '13055',
+        custom_territory_ids: [CUSTOM_TERRITORY],
+        epci_code: 'EPCI-13',
+        ept_code: 'EPT-13',
+        region_code: '93',
+      });
 
       runAt(WEDNESDAY_10H);
       await notifyCcrtOfNewDemands();
