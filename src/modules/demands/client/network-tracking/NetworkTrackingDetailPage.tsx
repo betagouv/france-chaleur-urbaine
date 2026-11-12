@@ -37,16 +37,15 @@ export default function NetworkTrackingDetailPage() {
 
   return (
     <SimplePage title={`${networkName} - Suivi des réseaux`} mode="authenticated" layout="center">
+      <Breadcrumb
+        className="mt-0! mb-2!"
+        currentPageLabel={networkName}
+        segments={[
+          { label: 'Administration', linkProps: { href: ADMIN_DASHBOARD_URL } },
+          { label: 'Suivi des réseaux', linkProps: { href: NETWORK_TRACKING_URL } },
+        ]}
+      />
       <div className="flex flex-col gap-8">
-        <Breadcrumb
-          className="m-0!"
-          currentPageLabel={networkName}
-          segments={[
-            { label: 'Administration', linkProps: { href: ADMIN_DASHBOARD_URL } },
-            { label: 'Suivi des réseaux', linkProps: { href: NETWORK_TRACKING_URL } },
-          ]}
-        />
-
         {isLoading && <Loader size="xl" variant="section" />}
         {!isLoading && !tracking && <p>Ce réseau est introuvable.</p>}
         {tracking && (
