@@ -1,3 +1,4 @@
+import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
 import { skipToken } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -12,7 +13,7 @@ import trpc from '@/modules/trpc/client';
 import { isDefined } from '@/utils/core';
 import { formatMW } from '@/utils/strings';
 
-import { getNetworkName } from './format';
+import { ADMIN_DASHBOARD_URL, getNetworkName, NETWORK_TRACKING_URL } from './format';
 import { NetworkQuartersTable } from './NetworkQuartersTable';
 import { NetworkStatusesTable } from './NetworkStatusesTable';
 import { NetworkTrackingFollowUp } from './NetworkTrackingFollowUp';
@@ -37,9 +38,14 @@ export default function NetworkTrackingDetailPage() {
   return (
     <SimplePage title={`${networkName} - Suivi des réseaux`} mode="authenticated" layout="center">
       <div className="flex flex-col gap-8">
-        <Link href="/admin/reseaux/suivi" className="self-start text-sm">
-          ← Suivi des réseaux
-        </Link>
+        <Breadcrumb
+          className="m-0!"
+          currentPageLabel={networkName}
+          segments={[
+            { label: 'Administration', linkProps: { href: ADMIN_DASHBOARD_URL } },
+            { label: 'Suivi des réseaux', linkProps: { href: NETWORK_TRACKING_URL } },
+          ]}
+        />
 
         {isLoading && <Loader size="xl" variant="section" />}
         {!isLoading && !tracking && <p>Ce réseau est introuvable.</p>}

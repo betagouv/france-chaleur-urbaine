@@ -1,3 +1,4 @@
+import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import { parseAsJson, useQueryState } from 'nuqs';
 import { useState } from 'react';
@@ -11,7 +12,7 @@ import { networkTrackingStateLabels } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
 
 import { networkTrackingColumns } from './columns';
-import { historyStartLabel } from './format';
+import { ADMIN_DASHBOARD_URL, historyStartLabel } from './format';
 import type { NetworkTrackingSummary } from './types';
 
 // biome-ignore assist/source/useSortedKeys: display order, from the whole list to the cases to act on
@@ -55,6 +56,11 @@ export default function NetworkTrackingPage() {
 
   return (
     <SimplePage title="Suivi des réseaux" mode="authenticated" layout="fluid" className="p-4">
+      <Breadcrumb
+        className="mt-0! mb-2!"
+        currentPageLabel="Suivi des réseaux"
+        segments={[{ label: 'Administration', linkProps: { href: ADMIN_DASHBOARD_URL } }]}
+      />
       <Heading as="h1" color="blue-france">
         Suivi des réseaux
       </Heading>

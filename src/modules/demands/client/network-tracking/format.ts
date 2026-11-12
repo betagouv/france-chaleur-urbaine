@@ -12,7 +12,13 @@ export const historyStartLabel = dayjs(DEMAND_HISTORY_START).format('MMMM YYYY')
 
 export const getNetworkName = (network: { name: string | null; networkId: number }) => network.name ?? `Réseau ${network.networkId}`;
 
-export const buildNetworkTrackingUrl = (networkType: NetworkType, networkId: number) => `/admin/reseaux/suivi/${networkType}/${networkId}`;
+/** The admin home: the dashboard every authenticated role lands on, which shows the admin pages to an admin. */
+export const ADMIN_DASHBOARD_URL = '/pro/tableau-de-bord';
+
+export const NETWORK_TRACKING_URL = '/admin/reseaux/suivi';
+
+export const buildNetworkTrackingUrl = (networkType: NetworkType, networkId: number) =>
+  `${NETWORK_TRACKING_URL}/${networkType}/${networkId}`;
 
 /** Duration for display: in days under two months, in months under two years, in years beyond. */
 export const formatDurationDays = (days: number) =>
