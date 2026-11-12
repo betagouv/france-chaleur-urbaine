@@ -80,7 +80,7 @@ export function registerAdemeConnectCommands(parentProgram: Command) {
 
         try {
           await createContact({
-            abonnementNewsletter: !!user.newsletter_optin_at,
+            abonnementNewsletter: user.newsletter_optin_at ? true : undefined,
             // Only the public registration form collects the CGU acceptance; admin or partner-created accounts never do.
             acceptationRGPD: !!user.accepted_cgu_at,
             dateConnexion: user.last_connection ? dayjs(user.last_connection).format('YYYY-MM-DDTHH:mm:ss') : undefined,

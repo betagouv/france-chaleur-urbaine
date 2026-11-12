@@ -75,7 +75,6 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
     entreprise: user?.entreprise ?? null,
     first_name: user?.first_name ?? '',
     last_name: user?.last_name ?? '',
-    newsletter_optin_at: !!user?.newsletter_optin_at,
     notifications: user?.preferences.notifications ?? defaultUserPreferences.notifications,
     phone: user?.phone ?? '',
     role: user?.role || 'gestionnaire',
@@ -215,11 +214,6 @@ const UserForm = ({ user, onSubmit, loading }: UserFormProps) => {
               />
             )}
           </form.AppField>
-          {!isNew && (
-            <form.AppField name="newsletter_optin_at">
-              {(field) => <field.CheckboxField label="Abonné à la newsletter France Chaleur Urbaine" />}
-            </form.AppField>
-          )}
           {!isNew && (
             // Read-only: only the public registration form collects the CGU acceptance, an admin must not set it.
             <Checkbox

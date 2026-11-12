@@ -81,7 +81,6 @@ export const syncEngieUsers = async (org: { id: string; name: string }, data: un
             active: true,
             email,
             from_organization_id: org.id,
-            newsletter_optin_at: null,
             notifications: defaultUserPreferences.notifications,
             role: 'gestionnaire',
             structure_name: org.name,

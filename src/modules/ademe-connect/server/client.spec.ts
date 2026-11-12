@@ -53,7 +53,7 @@ describe('ademe-connect client', () => {
       vi.mocked(postFetchJSON).mockResolvedValue(queueAck);
 
       const result = await createContact({
-        abonnementNewsletter: false,
+        acceptationRGPD: false,
         email: 'jean@example.com',
         nom: 'Dupont',
         prenom: '',
@@ -67,7 +67,7 @@ describe('ademe-connect client', () => {
         [
           'https://ademe.test/api/v1/personnes',
           {
-            abonnementNewsletter: false,
+            acceptationRGPD: false,
             dateCreation: '2026-10-08T10:00:00',
             email: 'jean@example.com',
             nom: 'Dupont',
@@ -103,11 +103,11 @@ describe('ademe-connect client', () => {
   });
 
   describe('updateContact', () => {
-    it('puts the contact by encoded email with a modification date and keeps false booleans (abonnementNewsletter: false)', async () => {
+    it('puts the contact by encoded email with a modification date and keeps false booleans (acceptationRGPD: false)', async () => {
       vi.mocked(putFetchJSON).mockResolvedValue(queueAck);
 
       const result = await updateContact('jean+fcu@example.com', {
-        abonnementNewsletter: false,
+        acceptationRGPD: false,
         nom: null as unknown as undefined,
         telephone: '',
       });
@@ -117,7 +117,7 @@ describe('ademe-connect client', () => {
         [
           'https://ademe.test/api/v1/personnes/mail/jean%2Bfcu%40example.com',
           {
-            abonnementNewsletter: false,
+            acceptationRGPD: false,
             dateModification: '2026-10-08T10:00:00',
             email: 'jean+fcu@example.com',
             source: 'France Chaleur Urbaine',
@@ -130,7 +130,7 @@ describe('ademe-connect client', () => {
     it('is a no-op without credentials', async () => {
       serverConfigMock.ADEME_CONNECT_CLIENT_SECRET = undefined;
 
-      const result = await updateContact('jean@example.com', { abonnementNewsletter: false });
+      const result = await updateContact('jean@example.com', { acceptationRGPD: false });
 
       expect(result).toStrictEqual(null);
       expect(vi.mocked(putFetchJSON).mock.calls).toStrictEqual([]);

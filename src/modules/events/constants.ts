@@ -15,6 +15,7 @@ export const eventTypes = [
   'user_login',
   'user_activated',
   'user_registered',
+  // No longer emitted (the « Mon compte » newsletter toggle was removed): kept to render the stored history.
   'user_newsletter_subscribed',
   'user_newsletter_unsubscribed',
   'user_password_reset_requested',

@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import { ALL_FCU_RUBRIQUES, buildNewsletterFields, buildRubriques, isSyncedRole } from '@/modules/ademe-connect/constants';
+import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole } from '@/modules/ademe-connect/constants';
 import { updateContact } from '@/modules/ademe-connect/server/client';
 import { createUserEvent } from '@/modules/events/server/service';
 import { adminRoute } from '@/modules/trpc/server';
@@ -10,7 +10,6 @@ import {
   zBulkAddUserTags,
   zCreateUserTag,
   zSetUserTags,
-  zUpdateNewsletterSchema,
   zUpdateProfileSchema,
   zUpdateUserPreferences,
   zUpdateUserTag,
@@ -55,26 +54,6 @@ export const usersRouter = router({
       .mutation(({ ctx, input }) => announceParticulierDeletion(input.deletionDate, ctx.user.id)),
     getStatus: adminRoute.query(() => getParticulierPhaseOutStatus()),
   },
-
-  updateNewsletterSubscription: routeAuthenticated.input(zUpdateNewsletterSchema).mutation(async ({ ctx, input }) => {
-    const changed = await usersService.updateNewsletterSubscription(ctx.user.id, input.optin_newsletter);
-    if (!changed) {
-      return;
-    }
-
-    await createUserEvent({
-      author_id: ctx.user.id,
-      context_id: ctx.user.id,
-      context_type: 'user',
-      type: input.optin_newsletter ? 'user_newsletter_subscribed' : 'user_newsletter_unsubscribed',
-    });
-
-    if (isSyncedRole(ctx.user.role)) {
-      updateContact(ctx.user.email, buildNewsletterFields(input.optin_newsletter)).catch((error) =>
-        logger.error('ademe-connect updateContact failed on updateNewsletterSubscription', { error, user_id: ctx.user.id })
-      );
-    }
-  }),
 
   /** Mise à jour partielle de `users.preferences` (signature d'email, notifications de demandes). Événement tracé par le service. */
   updatePreferences: routeAuthenticated
