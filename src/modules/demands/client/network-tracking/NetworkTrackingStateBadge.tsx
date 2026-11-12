@@ -9,12 +9,14 @@ const silentDelay = businessRules.networkTrackingSilentDays.display;
 
 const stateSeverities = {
   late: 'warning',
+  no_demand: undefined,
   silent: 'error',
   up_to_date: 'success',
 } as const satisfies Record<NetworkTrackingState, BadgeProps['severity']>;
 
 const stateDescriptions = {
   late: `Une demande attend depuis plus de ${lateDelay}, mais un gestionnaire a agi sur le réseau il y a moins de ${silentDelay}.`,
+  no_demand: "Aucune demande validée n'est affectée à ce réseau.",
   silent: `Une demande attend depuis plus de ${lateDelay} et aucun gestionnaire n'a agi sur le réseau depuis ${silentDelay}.`,
   up_to_date: `Aucune demande n'attend depuis plus de ${lateDelay}.`,
 } as const satisfies Record<NetworkTrackingState, string>;

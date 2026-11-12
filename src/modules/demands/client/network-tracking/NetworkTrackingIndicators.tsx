@@ -32,8 +32,8 @@ export function NetworkTrackingIndicators({ summary }: NetworkTrackingIndicators
           </Link>
         }
         detail={
-          summary.oldestPendingSince
-            ? `la plus ancienne attend depuis ${formatElapsedSince(summary.oldestPendingSince)}`
+          summary.oldestPendingDemandAt
+            ? `la plus ancienne date d'il y a ${formatElapsedSince(summary.oldestPendingDemandAt)}`
             : 'aucune demande en attente'
         }
       />

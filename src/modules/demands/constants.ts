@@ -68,6 +68,9 @@ export const demandStatusGroups = {
 
 export type DemandStatusGroup = keyof typeof demandStatusGroups;
 
+/** Display order of the status groups: from what needs an action to what is over. */
+export const demandStatusGroupOrder = ['pending', 'inProgress', 'closed'] as const satisfies readonly DemandStatusGroup[];
+
 export const demandStatusGroupLabels = {
   closed: 'Closes',
   inProgress: 'En cours',
@@ -80,12 +83,13 @@ export const demandStatusGroupLabels = {
  */
 export const DEMAND_HISTORY_START = '2025-12-01';
 
-export const networkTrackingStates = ['silent', 'late', 'up_to_date'] as const;
+export const networkTrackingStates = ['silent', 'late', 'up_to_date', 'no_demand'] as const;
 
 export type NetworkTrackingState = (typeof networkTrackingStates)[number];
 
 export const networkTrackingStateLabels = {
   late: 'En retard',
+  no_demand: 'Sans demande',
   silent: 'Muet',
   up_to_date: 'À jour',
 } as const satisfies Record<NetworkTrackingState, string>;

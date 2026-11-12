@@ -21,6 +21,9 @@ type NetworkStatusesTableProps = {
  * Demands of a network by current status: how many, how long they have been in it, and how many open ones are stuck.
  */
 export function NetworkStatusesTable({ summary, statuses }: NetworkStatusesTableProps) {
+  if (statuses.length === 0) {
+    return <p className="mb-0 text-sm text-(--text-mention-grey)">Aucune demande validée n'est affectée à ce réseau.</p>;
+  }
   return (
     <div className="flex flex-col gap-2">
       <TableBasic bordered noScroll className="mb-0 overflow-x-auto" tableClassName="text-sm">

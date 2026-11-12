@@ -10,10 +10,12 @@ import { buildAdminDemandsUrl, buildDemandFilters } from '@/modules/demands/clie
 import { zNetworkTrackingInput } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
 
+import { getNetworkName } from './format';
 import { NetworkQuartersTable } from './NetworkQuartersTable';
 import { NetworkStatusesTable } from './NetworkStatusesTable';
 import { NetworkTrackingIndicators } from './NetworkTrackingIndicators';
 import { NetworkTrackingStateBadge } from './NetworkTrackingStateBadge';
+import { NetworkTypeBadges } from './NetworkTypeBadges';
 
 const NetworkActivityChart = dynamic(() => import('./NetworkActivityChart').then((module) => module.NetworkActivityChart), {
   loading: () => <Loader size="xl" variant="section" />,
@@ -27,7 +29,7 @@ export default function NetworkTrackingDetailPage() {
   const router = useRouter();
   const network = zNetworkTrackingInput.safeParse({ networkId: Number(router.query.networkId), networkType: router.query.networkType });
   const { data: tracking, isLoading } = trpc.demands.admin.getNetworkTracking.useQuery(network.success ? network.data : skipToken);
-  const networkName = tracking ? (tracking.summary.name ?? `Réseau ${tracking.summary.networkId}`) : 'Réseau';
+  const networkName = tracking ? getNetworkName(tracking.summary) : 'Réseau';
 
   return (
     <SimplePage title={`${networkName} - Suivi des réseaux`} mode="authenticated" layout="center">
@@ -37,7 +39,7 @@ export default function NetworkTrackingDetailPage() {
         </Link>
 
         {isLoading && <Loader size="xl" variant="section" />}
-        {!isLoading && !tracking && <p>Aucune demande validée n'est affectée à ce réseau.</p>}
+        {!isLoading && !tracking && <p>Ce réseau est introuvable.</p>}
         {tracking && (
           <>
             <div className="flex flex-col gap-2">
@@ -46,15 +48,7 @@ export default function NetworkTrackingDetailPage() {
               </Heading>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
                 <NetworkTrackingStateBadge state={tracking.summary.state} />
-                <span>
-                  {[
-                    tracking.summary.sncuId,
-                    tracking.summary.networkType === 'reseau_de_chaleur' ? 'Réseau existant' : 'Réseau en construction',
-                    tracking.summary.gestionnaire,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
-                </span>
+                <NetworkTypeBadges networkType={tracking.summary.networkType} sncuId={tracking.summary.sncuId} />
                 <Link
                   href={buildAdminDemandsUrl(
                     buildDemandFilters(tracking.summary.networkId, tracking.summary.networkType, undefined, false)

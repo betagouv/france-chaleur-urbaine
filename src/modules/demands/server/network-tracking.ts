@@ -1,8 +1,10 @@
 import { TRPCError } from '@trpc/server';
 import type { Expression, ExpressionBuilder, SqlBool } from 'kysely';
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
 import { businessRules } from '@/modules/app/business-rules';
 import type { NetworkType } from '@/modules/reseaux/constants';
+import { reminderJsonAggSQL } from '@/modules/reseaux/server/reminders';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { userRolesWithPermissionsHeatNetwork } from '@/types/enum/UserRole';
 import { dayjs } from '@/utils/date';
@@ -26,7 +28,7 @@ type NetworkRef = {
 };
 
 /**
- * Admin: tracking indicators of every network that has at least one validated demand.
+ * Admin: tracking indicators of every heat network (existing or under construction), with its accounts, reminders and notes.
  */
 export const listNetworkTracking = async () => {
   const now = new Date();
@@ -42,9 +44,7 @@ export const getNetworkTracking = async (network: NetworkRef) => {
   const activityStart = getActivityStart(now);
 
   const [summaryRow, receivedByMonth, handledByMonth, quarters, statuses] = await Promise.all([
-    networkSummariesQuery(now, network).executeTakeFirstOrThrow(
-      () => new TRPCError({ code: 'NOT_FOUND', message: 'Aucune demande validée pour ce réseau' })
-    ),
+    networkSummariesQuery(now, network).executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Réseau introuvable' })),
     receivedByMonthQuery(network, activityStart).execute(),
     handledByMonthQuery(network, activityStart).execute(),
     quartersQuery(network, activityStart).execute(),
@@ -168,50 +168,109 @@ const demandTimelineQuery = (network?: NetworkRef) =>
     })
     .$narrowType<{ network_id: number; network_type: NetworkType }>();
 
+type NetworkTable = 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction';
+
+/** Active accounts holding a permission on the network, most recently connected first. */
+const networkUsersJson = (eb: ExpressionBuilder<DB, NetworkTable>, table: NetworkTable, networkType: NetworkType) =>
+  jsonArrayFrom(
+    eb
+      .selectFrom('users as u')
+      .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
+      .leftJoin('email_blocked_contacts as ebc', (join) =>
+        join.on((joinBuilder) => joinBuilder('ebc.email', '=', joinBuilder.fn<string>('lower', ['u.email'])))
+      )
+      .select(['u.id', 'u.email', 'u.last_connection', 'ebc.reason_code as email_blocked_reason'])
+      .where('up.type', '=', networkType)
+      .where((userBuilder) => userBuilder('up.resource_id', '=', userBuilder.cast<string>(`${table}.id_fcu`, 'text')))
+      .where('u.active', '=', true)
+      .orderBy('u.last_connection', (order) => order.desc().nullsLast())
+  );
+
 const networksQuery = () =>
   kdb
     .selectFrom('reseaux_de_chaleur')
-    .select(['id_fcu', 'nom_reseau', 'Identifiant reseau', 'Gestionnaire as gestionnaire'])
-    .select(sql.lit<NetworkType>('reseau_de_chaleur').as('network_type'))
+    .select(['id_fcu', 'nom_reseau', 'Identifiant reseau', 'notes', 'puissance_totale_MW'])
+    .select((eb) => [
+      sql.lit<NetworkType>('reseau_de_chaleur').as('network_type'),
+      networkUsersJson(eb, 'reseaux_de_chaleur', 'reseau_de_chaleur').as('users'),
+      reminderJsonAggSQL(eb, 'reseaux_de_chaleur', 'reseau_de_chaleur', 'demand').as('reminders'),
+    ])
     .unionAll(
       kdb
         .selectFrom('zones_et_reseaux_en_construction')
-        .select(['id_fcu', 'nom_reseau', 'Identifiant reseau', 'gestionnaire'])
-        .select(sql.lit<NetworkType>('reseau_en_construction').as('network_type'))
+        .select(['id_fcu', 'nom_reseau', 'Identifiant reseau', 'notes'])
+        .select((eb) => [
+          sql<number | null>`null`.as('puissance_totale_MW'), // networks under construction have no power yet
+          sql.lit<NetworkType>('reseau_en_construction').as('network_type'),
+          networkUsersJson(eb, 'zones_et_reseaux_en_construction', 'reseau_en_construction').as('users'),
+          reminderJsonAggSQL(eb, 'zones_et_reseaux_en_construction', 'reseau_en_construction', 'demand').as('reminders'),
+        ])
     );
 
 const secondsBetween = (start: Expression<Date | null>, end: Expression<Date | null>) => sql<number>`extract(epoch from ${end} - ${start})`;
 
+/** One row per network: its own data, plus the aggregates of its demands when it has any. */
 const networkSummariesQuery = (now: Date, network?: NetworkRef) => {
   const responseWindowStart = dayjs(now).subtract(businessRules.networkTrackingResponseWindowMonths.value, 'month').toDate();
   return kdb
     .with('timeline', () => demandTimelineQuery(network))
     .with('networks', networksQuery)
-    .selectFrom('timeline as t')
-    .leftJoin('networks as n', (join) => join.onRef('n.id_fcu', '=', 't.network_id').onRef('n.network_type', '=', 't.network_type'))
-    .groupBy(['t.network_type', 't.network_id', 'n.nom_reseau', 'n.Identifiant reseau', 'n.gestionnaire'])
+    .with('summaries', (db) =>
+      db
+        .selectFrom('timeline as t')
+        .groupBy(['t.network_type', 't.network_id'])
+        .select((eb) => [
+          't.network_type',
+          't.network_id',
+          eb.fn.countAll<number>().as('total'),
+          eb.fn.countAll<number>().filterWhere('t.status', 'in', demandStatusGroups.pending).as('pending'),
+          eb.fn.countAll<number>().filterWhere('t.status', 'in', demandStatusGroups.inProgress).as('in_progress'),
+          eb.fn.countAll<number>().filterWhere('t.status', 'in', demandStatusGroups.closed).as('closed'),
+          eb.fn.min('t.demand_date').as('oldest_demand_at'),
+          eb.fn.max('t.demand_date').as('newest_demand_at'),
+          eb.fn.min('t.demand_date').filterWhere('t.status', 'in', demandStatusGroups.pending).as('oldest_pending_demand_at'),
+          eb.fn.max('t.demand_date').filterWhere('t.status', 'in', demandStatusGroups.pending).as('newest_pending_demand_at'),
+          eb.fn.min('t.waiting_since').filterWhere('t.status', 'in', demandStatusGroups.pending).as('oldest_pending_since'),
+          eb.fn.max('t.last_action_at').as('last_action_at'),
+          eb.fn.countAll<number>().filterWhere('t.started_at', '>=', responseWindowStart).as('recent_received'),
+          eb.fn.count<number>('t.responded_at').filterWhere('t.started_at', '>=', responseWindowStart).as('recent_responded'),
+          eb.fn
+            .agg<number | null>('percentile_cont', [sql.lit(0.5)])
+            .withinGroupOrderBy(secondsBetween(eb.ref('t.started_at'), eb.ref('t.responded_at')))
+            .filterWhere('t.started_at', '>=', responseWindowStart)
+            .as('median_response_seconds'),
+        ])
+    )
+    .selectFrom('networks as n')
+    .leftJoin('summaries as s', (join) => join.onRef('s.network_id', '=', 'n.id_fcu').onRef('s.network_type', '=', 'n.network_type'))
+    .where((eb) =>
+      network ? eb.and([eb('n.id_fcu', '=', network.networkId), eb('n.network_type', '=', network.networkType)]) : eb.lit(true)
+    )
     .select((eb) => [
-      't.network_type',
-      't.network_id',
+      'n.id_fcu',
+      'n.network_type',
       'n.nom_reseau',
       'n.Identifiant reseau',
-      'n.gestionnaire',
-      eb.fn.countAll<number>().as('total'),
-      eb.fn.countAll<number>().filterWhere('t.status', 'in', demandStatusGroups.pending).as('pending'),
-      eb.fn.countAll<number>().filterWhere('t.status', 'in', demandStatusGroups.inProgress).as('in_progress'),
-      eb.fn.countAll<number>().filterWhere('t.status', 'in', demandStatusGroups.closed).as('closed'),
-      eb.fn.min('t.waiting_since').filterWhere('t.status', 'in', demandStatusGroups.pending).as('oldest_pending_since'),
-      eb.fn.max('t.last_action_at').as('last_action_at'),
-      eb.fn.countAll<number>().filterWhere('t.started_at', '>=', responseWindowStart).as('recent_received'),
-      eb.fn.count<number>('t.responded_at').filterWhere('t.started_at', '>=', responseWindowStart).as('recent_responded'),
-      eb.fn
-        .agg<number | null>('percentile_cont', [sql.lit(0.5)])
-        .withinGroupOrderBy(secondsBetween(eb.ref('t.started_at'), eb.ref('t.responded_at')))
-        .filterWhere('t.started_at', '>=', responseWindowStart)
-        .as('median_response_seconds'),
+      'n.notes',
+      'n.puissance_totale_MW',
+      'n.users',
+      'n.reminders',
+      eb.fn.coalesce('s.total', eb.lit(0)).as('total'),
+      eb.fn.coalesce('s.pending', eb.lit(0)).as('pending'),
+      eb.fn.coalesce('s.in_progress', eb.lit(0)).as('in_progress'),
+      eb.fn.coalesce('s.closed', eb.lit(0)).as('closed'),
+      eb.fn.coalesce('s.recent_received', eb.lit(0)).as('recent_received'),
+      eb.fn.coalesce('s.recent_responded', eb.lit(0)).as('recent_responded'),
+      's.oldest_demand_at',
+      's.newest_demand_at',
+      's.oldest_pending_demand_at',
+      's.newest_pending_demand_at',
+      's.oldest_pending_since',
+      's.last_action_at',
+      's.median_response_seconds',
     ])
-    .orderBy('t.network_type')
-    .orderBy('t.network_id');
+    .orderBy('n.network_type')
+    .orderBy('n.id_fcu');
 };
 
 const monthOf = (timestamp: Expression<Date | null>) => sql<string>`to_char(${timestamp} at time zone ${sql.lit(TIMEZONE)}, 'YYYY-MM')`;
@@ -336,36 +395,44 @@ type NetworkSummaryRow = Awaited<ReturnType<ReturnType<typeof networkSummariesQu
 
 const toNetworkTrackingSummary = (row: NetworkSummaryRow, now: Date) => ({
   closed: row.closed,
-  gestionnaire: row.gestionnaire,
   inProgress: row.in_progress,
   lastManagerActionAt: row.last_action_at,
   medianResponseDays: secondsToDays(row.median_response_seconds),
   name: row.nom_reseau,
-  networkId: row.network_id,
+  networkId: row.id_fcu,
   networkType: row.network_type,
-  oldestPendingSince: row.oldest_pending_since,
+  newestDemandAt: row.newest_demand_at,
+  newestPendingDemandAt: row.newest_pending_demand_at,
+  notes: row.notes,
+  oldestDemandAt: row.oldest_demand_at,
+  oldestPendingDemandAt: row.oldest_pending_demand_at,
   pending: row.pending,
+  powerMW: row.puissance_totale_MW,
   recentReceived: row.recent_received,
   recentResponded: row.recent_responded,
+  reminders: row.reminders,
   sncuId: row['Identifiant reseau'],
   state: getNetworkTrackingState(row, now),
   total: row.total,
+  users: row.users,
 });
 
 /**
- * Up to date while no pending demand is older than the late threshold; beyond it, late if a manager acted recently, silent otherwise.
+ * Without any demand, nothing to track. Otherwise up to date while no pending demand has waited longer than the late threshold; beyond it, late if a manager acted recently, silent otherwise.
  */
 const getNetworkTrackingState = (
-  row: Pick<NetworkSummaryRow, 'oldest_pending_since' | 'last_action_at'>,
+  row: Pick<NetworkSummaryRow, 'total' | 'oldest_pending_since' | 'last_action_at'>,
   now: Date
 ): NetworkTrackingState => {
   const lateBefore = dayjs(now).subtract(businessRules.networkTrackingLateDays.value, 'day');
   const silentBefore = dayjs(now).subtract(businessRules.networkTrackingSilentDays.value, 'day');
-  return !row.oldest_pending_since || !lateBefore.isAfter(row.oldest_pending_since)
-    ? 'up_to_date'
-    : row.last_action_at && !silentBefore.isAfter(row.last_action_at)
-      ? 'late'
-      : 'silent';
+  return row.total === 0
+    ? 'no_demand'
+    : !row.oldest_pending_since || !lateBefore.isAfter(row.oldest_pending_since)
+      ? 'up_to_date'
+      : row.last_action_at && !silentBefore.isAfter(row.last_action_at)
+        ? 'late'
+        : 'silent';
 };
 
 /** First month of the activity series: 18 months back, never before the audit log is usable. */

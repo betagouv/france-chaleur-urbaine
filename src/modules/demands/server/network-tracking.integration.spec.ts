@@ -70,22 +70,34 @@ const seedEvents = (events: SeedEventValues[]) =>
 const seedUsers = () =>
   seedTableUser([
     { id: adminId, role: 'admin' },
-    { id: gestionnaireId, role: 'gestionnaire' },
+    { id: gestionnaireId, last_connection: null, role: 'gestionnaire' },
     { id: collectiviteId, role: 'collectivite' },
   ]);
 
-const seedNetworks = () =>
-  Promise.all([
+/** Network A has an account, a reminder and notes; network C has no demand; network B shares its id with A but not its type. */
+const seedNetworks = async () => {
+  await Promise.all([
     seedReseauDeChaleur({
-      Gestionnaire: 'Opérateur A',
       'Identifiant reseau': '7501C',
       id_fcu: 1,
       nom_reseau: 'Réseau A',
+      notes: 'Contact difficile',
       ouvert_aux_raccordements: true,
+      puissance_totale_MW: 12.5,
     }),
-    // same id as the heat network: the network type is part of the key
-    seedZoneEtReseauEnConstruction({ gestionnaire: 'Opérateur B', id_fcu: 1, nom_reseau: 'Réseau B', ouvert_aux_raccordements: true }),
+    seedReseauDeChaleur({ id_fcu: 2, nom_reseau: 'Réseau C', ouvert_aux_raccordements: true }),
+    seedZoneEtReseauEnConstruction({ id_fcu: 1, nom_reseau: 'Réseau B', ouvert_aux_raccordements: true }),
   ]);
+  await kdb.insertInto('user_permissions').values({ resource_id: '1', type: 'reseau_de_chaleur', user_id: gestionnaireId }).execute();
+  await kdb
+    .insertInto('network_reminders')
+    .values([
+      { author_id: adminId, id: uuid(50), network_id: 1, network_type: 'reseau_de_chaleur', note: 'Relancé par courriel', type: 'demand' },
+      // a reminder about the network geometry belongs to another screen
+      { author_id: adminId, id: uuid(51), network_id: 1, network_type: 'reseau_de_chaleur', note: 'Tracé à revoir', type: 'trace' },
+    ])
+    .execute();
+};
 
 /** Network A: one answered demand, one pending, one reassigned then answered through the API, one older than the audit log. */
 const seedTrackedDemands = async () => {
@@ -127,20 +139,55 @@ const seedTrackedDemands = async () => {
   ]);
 };
 
-const networkASummary = {
-  closed: 1,
-  gestionnaire: 'Opérateur A',
-  inProgress: 2,
-  lastManagerActionAt: day('2026-09-21'),
-  medianResponseDays: 2,
+/** Expected summary of a network without any demand, the starting point of every expected summary. */
+const emptySummary = {
+  closed: 0,
+  inProgress: 0,
+  lastManagerActionAt: null,
+  medianResponseDays: null,
+  newestDemandAt: null,
+  newestPendingDemandAt: null,
+  notes: null,
+  oldestDemandAt: null,
+  oldestPendingDemandAt: null,
+  pending: 0,
+  powerMW: null,
+  recentReceived: 0,
+  recentResponded: 0,
+  reminders: [],
+  sncuId: null,
+  state: 'no_demand',
+  total: 0,
+  users: [],
+};
+
+const networkAIdentity = {
   name: 'Réseau A',
   networkId: 1,
   networkType: 'reseau_de_chaleur',
-  oldestPendingSince: day('2026-09-10'),
+  notes: 'Contact difficile',
+  powerMW: 12.5,
+  reminders: [{ author_email: `user-${adminId}@test.local`, created_at: expect.any(String), id: uuid(50), note: 'Relancé par courriel' }],
+  sncuId: '7501C',
+  users: [{ email: `user-${gestionnaireId}@test.local`, email_blocked_reason: null, id: gestionnaireId, last_connection: null }],
+};
+const networkCIdentity = { name: 'Réseau C', networkId: 2, networkType: 'reseau_de_chaleur' };
+const networkBIdentity = { name: 'Réseau B', networkId: 1, networkType: 'reseau_en_construction' };
+
+const networkASummary = {
+  ...emptySummary,
+  ...networkAIdentity,
+  closed: 1,
+  inProgress: 2,
+  lastManagerActionAt: day('2026-09-21'),
+  medianResponseDays: 2,
+  newestDemandAt: day('2026-09-09'),
+  newestPendingDemandAt: day('2026-09-09'),
+  oldestDemandAt: day('2024-05-01'),
+  oldestPendingDemandAt: day('2026-09-09'),
   pending: 1,
   recentReceived: 3,
   recentResponded: 2,
-  sncuId: '7501C',
   state: 'late',
   total: 4,
 };
@@ -182,7 +229,11 @@ describe('network tracking', () => {
       const callRoute = () => createTestCaller(user).demands.admin.listNetworkTracking();
 
       if (allowed) {
-        await expect(callRoute()).resolves.toStrictEqual([]);
+        await expect(callRoute()).resolves.toStrictEqual([
+          { ...emptySummary, ...networkAIdentity },
+          { ...emptySummary, ...networkCIdentity },
+          { ...emptySummary, ...networkBIdentity },
+        ]);
       } else {
         await expect(callRoute).rejects.toMatchObject(forbiddenError);
       }
@@ -195,20 +246,17 @@ describe('network tracking', () => {
 
       expect(result).toStrictEqual([
         networkASummary,
+        { ...emptySummary, ...networkCIdentity },
         {
+          ...emptySummary,
+          ...networkBIdentity,
           closed: 1,
-          gestionnaire: 'Opérateur B',
-          inProgress: 0,
           lastManagerActionAt: day('2026-03-03'),
           medianResponseDays: 1,
-          name: 'Réseau B',
-          networkId: 1,
-          networkType: 'reseau_en_construction',
-          oldestPendingSince: null,
-          pending: 0,
+          newestDemandAt: day('2026-03-01'),
+          oldestDemandAt: day('2026-03-01'),
           recentReceived: 1,
           recentResponded: 1,
-          sncuId: null,
           state: 'up_to_date',
           total: 1,
         },
@@ -240,19 +288,42 @@ describe('network tracking', () => {
 
       const result = await createTestCaller(testUsers.admin).demands.admin.listNetworkTracking();
 
-      expect(result.map((network) => network.state)).toStrictEqual([expectedOutput]);
+      expect(result.map((network) => network.state)).toStrictEqual([expectedOutput, 'no_demand', 'no_demand']);
     });
   });
 
   describe('getNetworkTracking', () => {
     const input = { networkId: 1, networkType: 'reseau_de_chaleur' } as const;
+    // from the start of the audit log to the frozen current month
+    const activityMonths = [
+      '2025-12',
+      '2026-01',
+      '2026-02',
+      '2026-03',
+      '2026-04',
+      '2026-05',
+      '2026-06',
+      '2026-07',
+      '2026-08',
+      '2026-09',
+      '2026-10',
+    ];
 
     it.each(permissionTests)('$label', async ({ user, allowed }) => {
-      const callRoute = () => createTestCaller(user).demands.admin.getNetworkTracking(input);
+      const callRoute = () => createTestCaller(user).demands.admin.getNetworkTracking({ ...input, networkId: 999 });
 
-      await expect(callRoute).rejects.toMatchObject(
-        allowed ? { code: 'NOT_FOUND', message: 'Aucune demande validée pour ce réseau' } : forbiddenError
-      );
+      await expect(callRoute).rejects.toMatchObject(allowed ? { code: 'NOT_FOUND', message: 'Réseau introuvable' } : forbiddenError);
+    });
+
+    it('returns an empty detail for a network without any demand', async () => {
+      const result = await createTestCaller(testUsers.admin).demands.admin.getNetworkTracking({ ...input, networkId: 2 });
+
+      expect(result).toStrictEqual({
+        months: activityMonths.map((month) => ({ handled: 0, month, received: 0 })),
+        quarters: [],
+        statuses: [],
+        summary: { ...emptySummary, ...networkCIdentity },
+      });
     });
 
     it('details the activity, the response by quarter and the statuses of a network', async () => {
@@ -260,13 +331,10 @@ describe('network tracking', () => {
 
       const result = await createTestCaller(testUsers.admin).demands.admin.getNetworkTracking(input);
 
-      const quietMonths = ['2025-12', '2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08'];
       expect(result).toStrictEqual({
-        months: [
-          ...quietMonths.map((month) => ({ handled: 0, month, received: 0 })),
-          { handled: 2, month: '2026-09', received: 3 },
-          { handled: 0, month: '2026-10', received: 0 },
-        ],
+        months: activityMonths.map((month) =>
+          month === '2026-09' ? { handled: 2, month, received: 3 } : { handled: 0, month, received: 0 }
+        ),
         quarters: [{ medianResponseDays: 2, quarter: '2026-T3', received: 3, responded: 2 }],
         statuses: [
           { count: 1, medianAgeDays: 35, status: DEMANDE_STATUS.TO_PROCESS, stuckCount: 0 },
