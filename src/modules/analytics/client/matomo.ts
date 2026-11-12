@@ -1,13 +1,11 @@
 import { trackPagesRouter } from '@socialgouv/matomo-next';
 import { atom, useAtom, useAtomValue } from 'jotai';
-import { Router } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { clientConfig } from '@/client-config';
 import { isDevModeEnabled } from '@/hooks/useDevMode';
 
 import { AnalyticsFormId, type TrackingConfiguration, trackingEvents } from '../analytics.config';
-import { getGooglePageParameters } from './google-tag-manager';
 
 export { AnalyticsFormId, type TrackingConfiguration };
 
@@ -18,22 +16,11 @@ type MatomoAnalyticsLoadingState = 'pending' | 'loaded' | 'error';
 
 const matomoAnalyticsLoadingStateAtom = atom<MatomoAnalyticsLoadingState>('pending');
 
-const onRouteChange = () => {
-  // see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag&hl=fr#manually_send_page_view_events
-  if (clientConfig.tracking.googleTagIds.length > 0 && typeof window?.gtag === 'function') {
-    window.gtag('event', 'page_view', {
-      ...getGooglePageParameters(),
-      page_title: document.title,
-    });
-  }
-};
-
 // prevent the double init effect due to strict mode
 let hookInitialized = false;
 
 /**
  * Register analytics (Matomo only for now).
- * Matomo and Google Analytics page views both have to be triggered manually.
  */
 export const useAnalytics = () => {
   const [matomoAnalyticsLoadingState, setMatomoAnalyticsLoadedState] = useAtom(matomoAnalyticsLoadingStateAtom);
@@ -68,29 +55,6 @@ export const useAnalytics = () => {
       };
     }
   }, []);
-
-  const [analyticsLoaded, setAnalyticsLoaded] = useState(false);
-  useEffect(() => {
-    if (!analyticsLoaded) {
-      return;
-    }
-    Router.events.on('routeChangeComplete', onRouteChange);
-    return () => {
-      Router.events.off('routeChangeComplete', onRouteChange);
-    };
-  }, [analyticsLoaded]);
-
-  if (typeof window === 'object') {
-    document.addEventListener(
-      'multiplegtag_loaded',
-      () => {
-        setAnalyticsLoaded(true);
-      },
-      {
-        once: true,
-      }
-    );
-  }
 };
 
 /*
@@ -123,20 +87,12 @@ export const trackEvent = (eventKey: TrackingEvent, ...eventPayload: any[]) => {
 
 // augment window type with tracking helpers
 declare let window: Window & {
-  gtag: (...args: any[]) => void; // google
   _paq: [any]; // matomo
   Matomo: any; // matomo
   matomoAbTestingAsyncInit: any; // matomo
 };
 
 const performTracking = (trackingConfig: TrackingConfiguration, eventPayload?: any[]) => {
-  if (trackingConfig.google && typeof window?.gtag === 'function') {
-    clientConfig.tracking.googleTagIds.forEach((googleTagId) => {
-      window.gtag('event', 'conversion', {
-        send_to: `${googleTagId}/${trackingConfig.google}`,
-      });
-    });
-  }
   if (trackingConfig.matomo && typeof window?._paq?.push === 'function') {
     window._paq.push(['trackEvent', ...trackingConfig.matomo, ...(eventPayload ?? [])]);
   }

@@ -6,23 +6,29 @@ Comprehensive tracking and analytics integration for France Chaleur Urbaine.
 
 ```
 analytics/
-├── AGENTS.md              # This file
-├── TRACKING_PLAN.md       # Plan de tracking PostHog (référence)
-├── analytics.config.ts    # Event configuration and tracking mappings
-├── client.ts              # Public Matomo/PostHog API
-├── client/                # Browser-only tracking, hooks and components
-└── types.ts               # Type definitions
+├── AGENTS.md
+├── TRACKING_PLAN.md
+├── analytics.config.ts    # Legacy Matomo event mappings
+├── posthog.config.ts      # PostHog event contract
+├── constants.ts           # Shared acquisition schema and display label
+├── client.ts              # Public compatibility API for Matomo and PostHog
+└── client/                # Browser-only tracking, hooks and components
+    ├── matomo.ts
+    ├── posthog.ts
+    ├── google-tag-manager.ts
+    ├── useMultiEnrConversion.ts
+    ├── acquisition.ts
+    └── AcquisitionDetails.tsx
 ```
 
 ## Supported Platforms
 
-- **Google Tag Manager / Google Ads (multi-energy simulator)** — `client/google-tag-manager.ts` queues typed `multienr_simulation_completed` / `multienr_accompaniment_submitted` events; `useMultiEnrConversion` checks Google consent and configuration. `components/ConsentBanner/GoogleTagManagerScript.tsx` loads the configured container after consent. Demand events occur only after successful creation and distinguish CCRT from heat-network demands. No new Matomo events. Set `NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID` before building; conversion labels and hostname filters are managed in GTM. Event contract and product behavior: `src/modules/doc/content/chaleur-renouvelable.mdx`.
-- **Google consent and URLs** — `setGoogleConsent` establishes denied defaults and updates Consent Mode v2 before any GTM/gtag loader or simulator conversion. Advertising personalization is always denied. `getGooglePageParameters` strips query strings and fragments from page/referrer URLs; global settings are refreshed on SPA navigation and legacy gtag destinations use the same safeguards. The first refusal keeps the page and in-memory attribution; withdrawal sends denied consent then reloads. Do not add inline Google loaders or destination-specific CSP hashes.
+- **Google Tag Manager / Google Ads (multi-energy simulator)** — `client/google-tag-manager.ts` queues typed `multienr_simulation_completed` / `multienr_accompaniment_submitted` events; `client/useMultiEnrConversion` checks explicit `google_ads` consent and configuration. `components/ConsentBanner/GoogleTagManagerScript.tsx` loads the validated container after consent. GTM is the only Google integration; direct legacy conversions and the old destination environment variable have been removed. Demand events occur only after successful creation and distinguish CCRT from heat-network demands. No new Matomo events. Set `NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID` before building; conversion labels and hostname/type filters are versioned in `docs/gtm-multienr-conversions.json` and must be reviewed in the published GTM container. Product behavior: `src/modules/doc/content/chaleur-renouvelable.mdx`.
+- **Google consent and URLs** — `setGoogleConsent` only establishes denied defaults and updates advertising consent when it changes; audience measurement and personalization stay denied. The new `google_ads` purpose forces a fresh choice (DSFR keys persistence by finalities), independently of PostHog audience consent. First refusal keeps the page; withdrawal sends denied consent then reloads. `isGoogleTrackingAllowed` excludes admin/iframe routes; navigation into them after GTM loads uses a document navigation to unload it. `getGooglePageParameters` allows only explicit UTM/click-attribution parameters and removes fragments from page/referrer URLs; URL overrides are refreshed on consented public SPA navigation and conversions. Automatic collection in the external container still needs network acceptance testing. Do not add inline Google loaders or destination-specific CSP hashes.
 - **First-party campaign attribution** — `client/acquisition.ts` captures the latest UTM-tagged arrival in memory across internal navigation, independently of Google consent; no browser storage or raw click identifiers. `constants.ts` owns the bounded server-validated schema and source label. Never overload conversion-tracking's `?source=` integration identifier. CCRT stores acquisition for admins only; classic demands reuse existing campaign fields. `client/AcquisitionDetails.tsx` renders the admin summary.
 
 - **PostHog** - Product analytics (nouvelle plateforme principale). Voir [TRACKING_PLAN.md](./TRACKING_PLAN.md) pour le plan de tracking complet, les conventions de nommage, le consentement et l'identification.
 - **Matomo** - Analytics historique (en cours de remplacement par PostHog, migration progressive). Ne pas ajouter de nouveaux events Matomo : utiliser PostHog.
-- **Google Analytics 4** - Conversion tracking
 
 ## Migration Matomo → PostHog
 
@@ -51,7 +57,6 @@ export const trackingEvents = {
   },
   'Eligibilité|Formulaire de test - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de test - Envoi'],
-    google: 'XNYRCJ6h6c0ZELGIqf89',
   },
 } as const;
 ```
@@ -73,7 +78,7 @@ function App() {
 
 ### `trackEvent(eventKey, ...payload)`
 
-Track custom events across all configured platforms (Matomo, Google).
+Track legacy custom Matomo events.
 
 ```typescript
 import { trackEvent } from '@/modules/analytics/client';
@@ -152,9 +157,8 @@ NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com
 NEXT_PUBLIC_MATOMO_URL=https://matomo.exemple.fr
 NEXT_PUBLIC_MATOMO_SITE_ID=1
 
-# Google Analytics (optional)
+# Google Ads through GTM (optional)
 NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=GTM-XXXXXX
-NEXT_PUBLIC_GOOGLE_TAG_ID=G-XXXXXXXXXX
 ```
 
 ## Development Mode

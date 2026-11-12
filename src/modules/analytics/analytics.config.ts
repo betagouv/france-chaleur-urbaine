@@ -1,6 +1,5 @@
 export type TrackingConfiguration = {
   matomo?: readonly string[]; // ex: ['Carto', 'Ajouter un segment']
-  google?: string; // ex: 6QaoCJfrtN8DEIqs-vYo (ads id)
 };
 
 /**
@@ -400,99 +399,76 @@ export const trackingEvents = {
     matomo: ['Debug', 'Debug Event 2'],
   },
   'Eligibilité|Formulaire de contact inéligible - Carte - Envoi': {
-    google: 'sdziCKqh6c0ZELGIqf89', // Contact > Formulaire envoyé - Non Eligible
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Carte - Envoi'],
   },
   'Eligibilité|Formulaire de contact inéligible - Choix chauffage - Envoi': {
-    google: 'sdziCKqh6c0ZELGIqf89', // Contact > Formulaire envoyé - Non Eligible
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Choix chauffage - Envoi'],
   },
   'Eligibilité|Formulaire de contact inéligible - Comparateur - Envoi': {
-    google: 'sdziCKqh6c0ZELGIqf89', // Contact > Formulaire envoyé - Non Eligible
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Comparateur - Envoi'],
   },
   'Eligibilité|Formulaire de contact inéligible - Envoi': {
-    google: 'sdziCKqh6c0ZELGIqf89', // Contact > Formulaire envoyé - Non Eligible
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Envoi'],
   },
   'Eligibilité|Formulaire de contact inéligible - Fiche réseau - Envoi': {
-    google: 'sdziCKqh6c0ZELGIqf89', // Contact > Formulaire envoyé - Non Eligible
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Fiche réseau - Envoi'],
   },
 
   // formulaire d'éligibilité
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {
-    google: '47QiCKeh6c0ZELGIqf89', // Contact > Formulaire envoyé - Eligible
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Carte - Envoi'],
   },
   'Eligibilité|Formulaire de contact éligible - Choix chauffage - Envoi': {
-    google: '47QiCKeh6c0ZELGIqf89', // Contact > Formulaire envoyé - Eligible
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Choix chauffage - Envoi'],
   },
   'Eligibilité|Formulaire de contact éligible - Comparateur - Envoi': {
-    google: '47QiCKeh6c0ZELGIqf89', // Contact > Formulaire envoyé - Eligible
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Comparateur - Envoi'],
   },
   'Eligibilité|Formulaire de contact éligible - Envoi': {
-    google: '47QiCKeh6c0ZELGIqf89', // Contact > Formulaire envoyé - Eligible
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Envoi'],
   },
   'Eligibilité|Formulaire de contact éligible - Fiche réseau - Envoi': {
-    google: '47QiCKeh6c0ZELGIqf89', // Contact > Formulaire envoyé - Eligible
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Fiche réseau - Envoi'],
   },
   'Eligibilité|Formulaire de test - Adresse Inéligible': {
-    google: 'izv4CKGh6c0ZELGIqf89', // Formulaire - non éligible
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Inéligible'],
   },
   'Eligibilité|Formulaire de test - Adresse Inéligible - CTA comparateur': {
-    google: 'izv4CKGh6c0ZELGIqf89', // Formulaire - non éligible - clic CTA comparateur
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Inéligible - CTA comparateur'],
   },
   'Eligibilité|Formulaire de test - Adresse Éligible': {
-    google: 'CFo-CKSh6c0ZELGIqf89', // Formulaire - éligible
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Éligible'],
   },
   'Eligibilité|Formulaire de test - Carte - Adresse Inéligible': {
-    google: 'izv4CKGh6c0ZELGIqf89', // Formulaire - non éligible
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Adresse Inéligible'],
   },
   'Eligibilité|Formulaire de test - Carte - Adresse Éligible': {
-    google: 'CFo-CKSh6c0ZELGIqf89', // Formulaire - éligible
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Adresse Éligible'],
   },
   'Eligibilité|Formulaire de test - Carte - Envoi': {
-    google: 'XNYRCJ6h6c0ZELGIqf89', // Test éligibilité
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Envoi'],
   },
   // comparateur
   'Eligibilité|Formulaire de test - Comparateur - Adresse Inéligible': {
-    google: 'izv4CKGh6c0ZELGIqf89', // Formulaire - non éligible
     matomo: ['Eligibilité', 'Formulaire de test - Comparateur - Adresse Inéligible'],
   },
   'Eligibilité|Formulaire de test - Comparateur - Adresse Éligible': {
-    google: 'CFo-CKSh6c0ZELGIqf89', // Formulaire - éligible
     matomo: ['Eligibilité', 'Formulaire de test - Comparateur - Adresse Éligible'],
   },
   'Eligibilité|Formulaire de test - Comparateur - Envoi': {
-    google: 'XNYRCJ6h6c0ZELGIqf89', // Test éligibilité
     matomo: ['Eligibilité', 'Formulaire de test - Comparateur - Envoi'],
   },
   'Eligibilité|Formulaire de test - Envoi': {
-    google: 'XNYRCJ6h6c0ZELGIqf89', // Test éligibilité
     matomo: ['Eligibilité', 'Formulaire de test - Envoi'],
   },
   // fiche réseau
   'Eligibilité|Formulaire de test - Fiche réseau - Adresse Inéligible': {
-    google: 'izv4CKGh6c0ZELGIqf89', // Formulaire - non éligible
     matomo: ['Eligibilité', 'Formulaire de test - Fiche réseau - Adresse Inéligible'],
   },
   'Eligibilité|Formulaire de test - Fiche réseau - Adresse Éligible': {
-    google: 'CFo-CKSh6c0ZELGIqf89', // Formulaire - éligible
     matomo: ['Eligibilité', 'Formulaire de test - Fiche réseau - Adresse Éligible'],
   },
   'Eligibilité|Formulaire de test - Fiche réseau - Envoi': {
-    google: 'XNYRCJ6h6c0ZELGIqf89', // Test éligibilité
     matomo: ['Eligibilité', 'Formulaire de test - Fiche réseau - Envoi'],
   },
 

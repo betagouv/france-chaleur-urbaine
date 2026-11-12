@@ -3,21 +3,21 @@ import { useCallback } from 'react';
 import { clientConfig } from '@/client-config';
 import { useConsent } from '@/components/ConsentBanner';
 
-import { pushMultiEnrConversion } from './google-tag-manager';
+import { isGoogleTrackingAllowed, pushMultiEnrConversion } from './google-tag-manager';
 
 /**
  * Sends simulator conversions only when GTM is configured and Google consent is granted.
  */
 export function useMultiEnrConversion() {
   const { finalityConsent } = useConsent();
-  const hasConsent = !!finalityConsent?.google_analytics;
+  const hasConsent = !!finalityConsent?.google_ads;
 
   return useCallback(
     (conversion: Parameters<typeof pushMultiEnrConversion>[0]) => {
-      if (!hasConsent || !/^GTM-[A-Z0-9]+$/.test(clientConfig.tracking.googleTagManagerId)) {
+      if (!hasConsent || !clientConfig.tracking.googleTagManagerId) {
         return;
       }
-      if (window.location.pathname.startsWith('/iframe/') || window.location.pathname.startsWith('/admin')) {
+      if (!isGoogleTrackingAllowed(window.location.pathname)) {
         return;
       }
       pushMultiEnrConversion(conversion);

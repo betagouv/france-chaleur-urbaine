@@ -4,11 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { uuid } from '@/tests/helpers';
 
-import { getGooglePageParameters, loadGoogleTagManager, loadGoogleTags, setGoogleConsent } from './google-tag-manager';
-import { useMultiEnrConversion } from './useMultiEnrConversion';
-
 const mocks = vi.hoisted(() => ({ consent: false, containerId: 'GTM-TEST123' }));
-vi.mock('@/components/ConsentBanner', () => ({ useConsent: () => ({ finalityConsent: { google_analytics: mocks.consent } }) }));
+vi.mock('@/components/ConsentBanner', () => ({ useConsent: () => ({ finalityConsent: { google_ads: mocks.consent } }) }));
 vi.mock('@/client-config', () => ({
   clientConfig: {
     tracking: {
@@ -30,16 +27,17 @@ const getGoogleCommands = () =>
     .map((entry) => Array.from(entry)) ?? [];
 
 beforeEach(() => {
+  vi.resetModules();
   mocks.consent = false;
   mocks.containerId = 'GTM-TEST123';
   (window as TrackingWindow).dataLayer = [];
   document.getElementById('multienr-google-tag-manager')?.remove();
-  document.getElementById('google-ads-tag-AW-123456')?.remove();
   window.history.replaceState({}, '', '/chaleur-renouvelable/resultat?adresse=private-address&email=private-email#contact');
 });
 
 describe('multi-energy Google conversions', () => {
-  it('does not queue an event before consent, then records it once after consent', () => {
+  it('does not queue an event before consent, then records it once after consent', async () => {
+    const { useMultiEnrConversion } = await import('./useMultiEnrConversion');
     const conversion = { event: 'multienr_simulation_completed', simulation_id: uuid(1) } as const;
     const { result, rerender } = renderHook(() => useMultiEnrConversion());
     result.current(conversion);
@@ -60,7 +58,8 @@ describe('multi-energy Google conversions', () => {
     ]);
   });
 
-  it('stops recording events after consent is withdrawn', () => {
+  it('stops recording events after consent is withdrawn', async () => {
+    const { useMultiEnrConversion } = await import('./useMultiEnrConversion');
     mocks.consent = true;
     const { result, rerender } = renderHook(() => useMultiEnrConversion());
     mocks.consent = false;
@@ -69,15 +68,17 @@ describe('multi-energy Google conversions', () => {
     expect((window as TrackingWindow).dataLayer).toStrictEqual([]);
   });
 
-  it.each(['', 'invalid-container-id'])('does not track without a valid configured container (%s)', (containerId) => {
-    mocks.containerId = containerId;
+  it('does not track without a configured container', async () => {
+    const { useMultiEnrConversion } = await import('./useMultiEnrConversion');
+    mocks.containerId = '';
     mocks.consent = true;
     const { result } = renderHook(() => useMultiEnrConversion());
     result.current({ event: 'multienr_simulation_completed', simulation_id: uuid(4) });
     expect((window as TrackingWindow).dataLayer).toStrictEqual([]);
   });
 
-  it.each(['/iframe/test', '/admin/chaleur-renouvelable'])('does not track on %s', (pathname) => {
+  it.each(['/iframe', '/iframe/test', '/admin', '/admin/chaleur-renouvelable'])('does not track on %s', async (pathname) => {
+    const { useMultiEnrConversion } = await import('./useMultiEnrConversion');
     window.history.replaceState({}, '', pathname);
     mocks.consent = true;
     const { result } = renderHook(() => useMultiEnrConversion());
@@ -85,7 +86,8 @@ describe('multi-energy Google conversions', () => {
     expect((window as TrackingWindow).dataLayer).toStrictEqual([]);
   });
 
-  it('deduplicates successful submissions by demand, independently of the simulation', () => {
+  it('deduplicates successful submissions by demand, independently of the simulation', async () => {
+    const { useMultiEnrConversion } = await import('./useMultiEnrConversion');
     mocks.consent = true;
     const { result } = renderHook(() => useMultiEnrConversion());
     result.current({ demand_id: uuid(6), demand_type: 'ccrt', event: 'multienr_accompaniment_submitted', simulation_id: uuid(7) });
@@ -104,71 +106,67 @@ describe('multi-energy Google conversions', () => {
   });
 });
 
-describe('GTM loader', () => {
-  it('starts and loads the container once across repeated mounts', () => {
+describe('GTM loader and consent', () => {
+  it('queues denied defaults before granting advertising consent and loading the container once', async () => {
+    const { loadGoogleTagManager } = await import('./google-tag-manager');
     loadGoogleTagManager('GTM-TEST123');
     loadGoogleTagManager('GTM-TEST123');
     expect(Array.from(document.querySelectorAll('#multienr-google-tag-manager')).map((script) => script.getAttribute('src'))).toStrictEqual(
       ['https://www.googletagmanager.com/gtm.js?id=GTM-TEST123']
     );
     expect((window as TrackingWindow).dataLayer?.slice(-1)).toStrictEqual([{ event: 'gtm.js', 'gtm.start': expect.any(Number) }]);
-    expect(getGoogleCommands().filter(([command]) => command === 'consent')).toStrictEqual([
+    expect(getGoogleCommands().slice(0, 2)).toStrictEqual([
       ['consent', 'default', { ad_personalization: 'denied', ad_storage: 'denied', ad_user_data: 'denied', analytics_storage: 'denied' }],
-      ['consent', 'update', { ad_personalization: 'denied', ad_storage: 'granted', ad_user_data: 'granted', analytics_storage: 'granted' }],
+      ['consent', 'update', { ad_personalization: 'denied', ad_storage: 'granted', ad_user_data: 'granted', analytics_storage: 'denied' }],
     ]);
   });
 
-  it('does not load an invalid container', () => {
-    loadGoogleTagManager('invalid');
+  it.each(['', '/admin', '/iframe/carte'])('does not load a missing container or an excluded route (%s)', async (value) => {
+    const { loadGoogleTagManager } = await import('./google-tag-manager');
+    if (value) {
+      window.history.replaceState({}, '', value);
+    }
+    loadGoogleTagManager(value ? 'GTM-TEST123' : '');
     expect(document.getElementById('multienr-google-tag-manager')).toBeNull();
     expect((window as TrackingWindow).dataLayer).toStrictEqual([]);
   });
+
+  it('queues nothing on initial refusal, deduplicates consent changes and reports withdrawal', async () => {
+    const { setGoogleConsent } = await import('./google-tag-manager');
+    setGoogleConsent(false);
+    expect((window as TrackingWindow).dataLayer).toStrictEqual([]);
+    setGoogleConsent(true);
+    setGoogleConsent(true);
+    setGoogleConsent(false);
+    setGoogleConsent(false);
+    expect(getGoogleCommands()).toStrictEqual([
+      ['consent', 'default', { ad_personalization: 'denied', ad_storage: 'denied', ad_user_data: 'denied', analytics_storage: 'denied' }],
+      ['consent', 'update', { ad_personalization: 'denied', ad_storage: 'granted', ad_user_data: 'granted', analytics_storage: 'denied' }],
+      ['consent', 'update', { ad_personalization: 'denied', ad_storage: 'denied', ad_user_data: 'denied', analytics_storage: 'denied' }],
+    ]);
+  });
 });
 
-describe('Google consent and URL parameters', () => {
-  it('does not load a Google script when consent is denied and reports withdrawal', () => {
-    setGoogleConsent(false);
-    expect(document.querySelector('script[src*="googletagmanager.com"]')).toBeNull();
-    setGoogleConsent(true);
-    setGoogleConsent(false);
-    expect(getGoogleCommands().filter(([command]) => command === 'consent')).toStrictEqual([
-      ['consent', 'default', { ad_personalization: 'denied', ad_storage: 'denied', ad_user_data: 'denied', analytics_storage: 'denied' }],
-      ['consent', 'update', { ad_personalization: 'denied', ad_storage: 'denied', ad_user_data: 'denied', analytics_storage: 'denied' }],
-      ['consent', 'update', { ad_personalization: 'denied', ad_storage: 'granted', ad_user_data: 'granted', analytics_storage: 'granted' }],
-      ['consent', 'update', { ad_personalization: 'denied', ad_storage: 'denied', ad_user_data: 'denied', analytics_storage: 'denied' }],
-    ]);
-  });
-
-  it('sanitizes page and referrer parameters, including after internal navigation', () => {
-    const referrer = vi.spyOn(document, 'referrer', 'get').mockReturnValue('https://example.com/results?adresse=private#contact');
+describe('Google URL parameters', () => {
+  it('preserves allowlisted attribution and removes simulator/contact data from page and referrer URLs', async () => {
+    const { getGooglePageParameters, updateGooglePageParameters } = await import('./google-tag-manager');
+    window.history.replaceState(
+      {},
+      '',
+      '/chaleur-renouvelable/resultat?utm_source=google&utm_medium=cpc&utm_campaign=automne&gclid=click&adresse=private&email=secret&originDemandId=private#contact'
+    );
+    const referrer = vi
+      .spyOn(document, 'referrer', 'get')
+      .mockReturnValue('https://example.com/results?utm_source=newsletter&adresse=private#contact');
     expect(getGooglePageParameters()).toStrictEqual({
-      page_location: `${window.location.origin}/chaleur-renouvelable/resultat`,
-      page_referrer: 'https://example.com/results',
+      page_location: `${window.location.origin}/chaleur-renouvelable/resultat?utm_source=google&utm_medium=cpc&utm_campaign=automne&gclid=click`,
+      page_referrer: 'https://example.com/results?utm_source=newsletter',
     });
     window.history.replaceState({}, '', '/contact?email=private');
-    setGoogleConsent(true);
-    expect(getGoogleCommands().find(([command]) => command === 'set')).toStrictEqual([
-      'set',
-      { page_location: `${window.location.origin}/contact`, page_referrer: 'https://example.com/results' },
+    updateGooglePageParameters();
+    expect(getGoogleCommands()).toStrictEqual([
+      ['set', { page_location: `${window.location.origin}/contact`, page_referrer: 'https://example.com/results?utm_source=newsletter' }],
     ]);
     referrer.mockRestore();
-  });
-
-  it('configures legacy tags after consent with sanitized URLs and loads each destination only once', () => {
-    loadGoogleTags(['AW-123456']);
-    loadGoogleTags(['AW-123456']);
-    expect(getGoogleCommands().filter(([command]) => command === 'config')).toStrictEqual([
-      [
-        'config',
-        'AW-123456',
-        { anonymize_ip: true, page_location: `${window.location.origin}/chaleur-renouvelable/resultat`, page_referrer: '' },
-      ],
-    ]);
-    expect(document.querySelectorAll('#google-ads-tag-AW-123456')).toHaveLength(1);
-    expect(getGoogleCommands()[0]).toStrictEqual([
-      'consent',
-      'default',
-      { ad_personalization: 'denied', ad_storage: 'denied', ad_user_data: 'denied', analytics_storage: 'denied' },
-    ]);
   });
 });

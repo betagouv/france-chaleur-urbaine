@@ -24,7 +24,6 @@ vi.mock('@/server/config', () => ({
     publicodesDocumentationURL: 'https://test.example.com',
     summaryAreaSizeLimit: 5,
     tracking: {
-      googleTagIds: [],
       matomoServerURL: undefined,
       matomoSiteId: undefined,
     },

@@ -80,9 +80,9 @@ const configFunctions = [
         "'self'",
         'https://stats.beta.gouv.fr', // Matomo
         'https://www.gstatic.com/', // react-google-charts loader
-        'https://*.googletagmanager.com', // gtag (Google Analytics / Ads, after consent)
-        'https://tagmanager.google.com', // GTM preview
-        'https://www.google.com',
+        'https://www.googletagmanager.com', // GTM and Google Ads destination (after consent)
+        ...(!clientConfig.isProductionSite ? ['https://tagmanager.google.com'] : []), // GTM preview outside production
+        'https://www.google.com', // Google Ads conversion scripts (required by Google's CSP guide)
         'https://www.googleadservices.com', // Google Ads conversion scripts
         'https://googleads.g.doubleclick.net',
         'https://www.ssa.gov/accessibility/', // Nécessaire pour faire fonctionner le bookmarklet ANDI
