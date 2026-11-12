@@ -16,15 +16,20 @@ type RemindersCellProps = {
   onCreateReminder: (note: string | null, createdAt: string) => Promise<unknown>;
   onUpdateReminder: (id: string, changes: { note: string | null; createdAt: string }) => Promise<unknown>;
   onDeleteReminder: (id: string) => Promise<unknown>;
-  /** Dense cell for wide tables: the latest reminder shows without its author nor its actions and with its note clamped; the history dialog, always reachable, keeps everything. */
-  compact?: boolean;
+  /**
+   * `latest` (default): the latest reminder with its actions, the older ones in a history dialog.
+   * `compact`: dense cell for wide tables, the latest reminder without its author nor its actions and with its note clamped; the history dialog, always reachable, keeps everything.
+   * `all`: every reminder listed in place, for a page with room.
+   */
+  display?: 'latest' | 'compact' | 'all';
 };
 
 /**
  * Table cell rendering the list of reminders for a network with inline edit/delete actions.
  * Exposes a single dialog used for both creating new reminders and editing existing ones.
  */
-export function RemindersCell({ reminders, onCreateReminder, onUpdateReminder, onDeleteReminder, compact = false }: RemindersCellProps) {
+export function RemindersCell({ reminders, onCreateReminder, onUpdateReminder, onDeleteReminder, display = 'latest' }: RemindersCellProps) {
+  const compact = display === 'compact';
   const [dialog, setDialog] = useState<ReminderDialogState>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [note, setNote] = useState('');
@@ -116,8 +121,10 @@ export function RemindersCell({ reminders, onCreateReminder, onUpdateReminder, o
 
   return (
     <div className="flex flex-col gap-1 w-full">
-      {latest && renderReminderItem(latest, { dense: compact, withActions: !compact })}
-      {(compact ? reminders.length > 0 : extraCount > 0) && (
+      {display === 'all'
+        ? reminders.map((reminder) => renderReminderItem(reminder, { withActions: true }))
+        : latest && renderReminderItem(latest, { dense: compact, withActions: !compact })}
+      {display !== 'all' && (compact ? reminders.length > 0 : extraCount > 0) && (
         <Button priority="tertiary no outline" size="small" onClick={() => setHistoryOpen(true)}>
           {compact ? 'Historique' : "Voir l'historique"} ({reminders.length})
         </Button>

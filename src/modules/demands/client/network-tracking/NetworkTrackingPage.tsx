@@ -14,21 +14,30 @@ import { networkTrackingColumns } from './columns';
 import { historyStartLabel } from './format';
 import type { NetworkTrackingSummary } from './types';
 
+// biome-ignore assist/source/useSortedKeys: display order, from the whole list to the cases to act on
 const quickFilterPresets = {
   all: {
     filters: [],
     getStat: (networks) => networks.length,
     label: 'réseaux',
   },
+  silent: {
+    filters: [{ id: 'state', value: { [networkTrackingStateLabels.silent]: true } }],
+    getStat: (networks) => networks.filter((network) => network.state === 'silent').length,
+    label: 'muets',
+  },
   late: {
     filters: [{ id: 'state', value: { [networkTrackingStateLabels.late]: true } }],
     getStat: (networks) => networks.filter((network) => network.state === 'late').length,
     label: 'en retard',
   },
-  silent: {
-    filters: [{ id: 'state', value: { [networkTrackingStateLabels.silent]: true } }],
-    getStat: (networks) => networks.filter((network) => network.state === 'silent').length,
-    label: 'muets',
+  pendingWithoutUsers: {
+    filters: [
+      { id: 'pending', value: [1, Number.MAX_VALUE] }, // open-ended upper bound: at least one pending demand
+      { id: 'users', value: 'empty' },
+    ],
+    getStat: (networks) => networks.filter((network) => network.pending > 0 && network.users.length === 0).length,
+    label: 'à traiter sans utilisateur',
   },
 } satisfies Record<string, QuickFilterPreset<NetworkTrackingSummary>>;
 

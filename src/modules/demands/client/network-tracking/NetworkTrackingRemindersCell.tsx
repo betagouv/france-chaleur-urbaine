@@ -7,14 +7,14 @@ import { useNetworkTrackingRefresh } from './useNetworkTrackingRefresh';
 
 type NetworkTrackingRemindersCellProps = {
   network: NetworkTrackingSummary;
-  /** Dense rendering for the table; the detail page shows the latest reminder in full. */
-  compact?: boolean;
+  /** Dense rendering for the table by default; the detail page lists every reminder. */
+  display?: 'compact' | 'all';
 };
 
 /**
  * Reminders an admin logged when chasing the managers of a network, editable in place.
  */
-export function NetworkTrackingRemindersCell({ network, compact = true }: NetworkTrackingRemindersCellProps) {
+export function NetworkTrackingRemindersCell({ network, display = 'compact' }: NetworkTrackingRemindersCellProps) {
   const refreshTracking = useNetworkTrackingRefresh();
   const refresh = (message: string) => () => {
     void refreshTracking();
@@ -26,7 +26,7 @@ export function NetworkTrackingRemindersCell({ network, compact = true }: Networ
 
   return (
     <RemindersCell
-      compact={compact}
+      display={display}
       reminders={network.reminders}
       onCreateReminder={(note, createdAt) =>
         createReminder({ createdAt, networkId: network.networkId, networkType: network.networkType, note, type: 'demand' })

@@ -12,7 +12,7 @@ type NetworkTrackingFollowUpProps = {
 };
 
 /**
- * Who to contact about a network and what was already done: accounts holding a permission, reminders and notes, editable in place.
+ * Who to contact about a network and what was already done: accounts holding a permission, notes and the whole reminders history, editable in place.
  */
 export function NetworkTrackingFollowUp({ network }: NetworkTrackingFollowUpProps) {
   return (
@@ -20,11 +20,11 @@ export function NetworkTrackingFollowUp({ network }: NetworkTrackingFollowUpProp
       <FollowUpCard title={`Utilisateurs ayant accès (${network.users.length})`}>
         <NetworkTrackingUsersCell network={network} />
       </FollowUpCard>
-      <FollowUpCard title={`Relances (${network.reminders.length})`}>
-        <NetworkTrackingRemindersCell network={network} compact={false} />
-      </FollowUpCard>
       <FollowUpCard title="Notes">
         <NetworkTrackingNotesCell network={network} previewLength={NOTES_PREVIEW_LENGTH} />
+      </FollowUpCard>
+      <FollowUpCard title={`Relances (${network.reminders.length})`}>
+        <NetworkTrackingRemindersCell network={network} display="all" />
       </FollowUpCard>
     </div>
   );
