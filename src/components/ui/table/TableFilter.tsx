@@ -60,6 +60,7 @@ export const DEFAULT_MAX_DATE = '2100-12-31';
 
 const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, facetedMinMaxValues, cellType }: TableFilterProps) => {
   const isDateRange = type === 'Range' && (cellType === 'DateTime' || cellType === 'Date');
+  const includeNullId = React.useId(); // several date filters share a dialog: a fixed id would tie every label to the first checkbox
 
   React.useEffect(() => {
     if (!value) {
@@ -131,14 +132,14 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
         <div className="fr-checkbox-group fr-checkbox-group--sm">
           <input
             type="checkbox"
-            id="include-null-dates"
+            id={includeNullId}
             checked={includeNull}
             onChange={(e) => {
               const newIncludeNull = e.target.checked;
               handleDateChange(startDate, endDate, newIncludeNull);
             }}
           />
-          <label className="fr-label" htmlFor="include-null-dates">
+          <label className="fr-label" htmlFor={includeNullId}>
             Inclure les valeurs nulles
           </label>
         </div>

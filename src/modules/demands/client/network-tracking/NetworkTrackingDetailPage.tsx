@@ -32,7 +32,8 @@ const NetworkActivityChart = dynamic(() => import('./NetworkActivityChart').then
 export default function NetworkTrackingDetailPage() {
   const router = useRouter();
   const network = zNetworkTrackingInput.safeParse({ networkId: Number(router.query.networkId), networkType: router.query.networkType });
-  const { data: tracking, isLoading } = trpc.demands.admin.getNetworkTracking.useQuery(network.success ? network.data : skipToken);
+  const { data: tracking, isLoading, error } = trpc.demands.admin.getNetworkTracking.useQuery(network.success ? network.data : skipToken);
+  const isNotFound = !network.success || error?.data?.code === 'NOT_FOUND';
   const networkName = tracking ? getNetworkName(tracking.summary) : 'Réseau';
 
   return (
@@ -47,7 +48,7 @@ export default function NetworkTrackingDetailPage() {
       />
       <div className="flex flex-col gap-8">
         {isLoading && <Loader size="xl" variant="section" />}
-        {!isLoading && !tracking && <p>Ce réseau est introuvable.</p>}
+        {!isLoading && !tracking && <p>{isNotFound ? 'Ce réseau est introuvable.' : "Le suivi de ce réseau n'a pas pu être chargé."}</p>}
         {tracking && (
           <>
             <div className="flex flex-col gap-2">
@@ -60,9 +61,11 @@ export default function NetworkTrackingDetailPage() {
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
                 <NetworkTypeBadges networkType={tracking.summary.networkType} sncuId={tracking.summary.sncuId} />
                 {isDefined(tracking.summary.powerMW) && <span>{formatMW(tracking.summary.powerMW)}</span>}
-                <Link href={buildAdminDemandsUrl(buildDemandFilters(tracking.summary.networkId, tracking.summary.networkType, false))}>
-                  Voir les {tracking.summary.total} demandes
-                </Link>
+                {tracking.summary.total > 0 && (
+                  <Link href={buildAdminDemandsUrl(buildDemandFilters(tracking.summary.networkId, tracking.summary.networkType, false))}>
+                    {tracking.summary.total > 1 ? `Voir les ${tracking.summary.total} demandes` : 'Voir la demande'}
+                  </Link>
+                )}
               </div>
             </div>
 

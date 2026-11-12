@@ -36,7 +36,7 @@ const statusGroupsTooltip = (
  * Columns of the network tracking table. A visible column gathers several figures; the hidden columns that follow it
  * expose each figure on its own to the sort dialog, the filters and the Excel export.
  */
-export const networkTrackingColumns: ColumnDef<NetworkTrackingSummary>[] = [
+const columns: ColumnDef<NetworkTrackingSummary>[] = [
   {
     accessorFn: (row) => `${getNetworkName(row)} ${row.networkId} ${row.sncuId ?? ''}`,
     cell: ({ row }) => <NetworkCell network={row.original} />,
@@ -45,6 +45,14 @@ export const networkTrackingColumns: ColumnDef<NetworkTrackingSummary>[] = [
     header: 'Réseau',
     id: 'network',
     sortingFn: (rowA, rowB) => compareFrenchStrings(getNetworkName(rowA.original), getNetworkName(rowB.original)),
+  },
+  {
+    accessorFn: (row) => row.networkId,
+    enableSorting: false,
+    exportOnly: true,
+    header: 'Identifiant FCU',
+    id: 'networkId',
+    visible: false,
   },
   {
     accessorFn: (row) => row.sncuId ?? '',
@@ -266,3 +274,10 @@ export const networkTrackingColumns: ColumnDef<NetworkTrackingSummary>[] = [
     id: 'notes',
   },
 ];
+
+/** The global search only looks at what identifies a network and its contacts: figures and dates would match by accident. */
+const searchableColumnIds = ['network', 'networkId', 'sncuId', 'users', 'notes'];
+
+export const networkTrackingColumns = columns.map((column) =>
+  searchableColumnIds.includes(column.id ?? '') ? column : { ...column, enableGlobalFilter: false }
+);

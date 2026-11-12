@@ -8,6 +8,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import EmailBlockedBadge from '@/modules/email/client/EmailBlockedBadge';
 import { notify } from '@/modules/notification';
 import cx from '@/utils/cx';
+import { dayjs } from '@/utils/date';
 
 export type NetworkUser = {
   id: string;
@@ -65,14 +66,10 @@ export function NetworkUsersCell({ users, onEmailUnblocked }: NetworkUsersCellPr
   );
 }
 
-const getLastConnectionClassName = (value: string | null | undefined) => {
-  if (!value) return 'text-error';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return 'text-error';
-  const diffInDays = (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24);
-  if (diffInDays <= 30) return 'text-success';
-  if (diffInDays <= 90) return 'text-orange-600';
-  return 'text-error';
+/** Green up to a month since the last connection, orange up to three, red beyond or without any connection. */
+const getLastConnectionClassName = (lastConnection: string | null) => {
+  const daysSinceConnection = lastConnection ? dayjs().diff(lastConnection, 'day', true) : Number.POSITIVE_INFINITY;
+  return daysSinceConnection <= 30 ? 'text-success' : daysSinceConnection <= 90 ? 'text-orange-600' : 'text-error';
 };
 
 type CopyEmailsButtonProps = {

@@ -41,7 +41,8 @@ export const listNetworkTracking = async () => {
  */
 export const getNetworkTracking = async (network: NetworkRef) => {
   const now = new Date();
-  const activityStart = getActivityStart(now);
+  const activityMonths = getActivityMonths(now);
+  const activityStart = dayjs.tz(`${activityMonths[0]}-01`, TIMEZONE).toDate();
 
   const [summaryRow, receivedByMonth, handledByMonth, quarters, statuses] = await Promise.all([
     networkSummariesQuery(now, network).executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Réseau introuvable' })),
@@ -51,17 +52,12 @@ export const getNetworkTracking = async (network: NetworkRef) => {
     statusesQuery(network, now).execute(),
   ]);
 
-  const monthCount = dayjs(now).tz(TIMEZONE).startOf('month').diff(dayjs(activityStart).tz(TIMEZONE), 'month') + 1;
-
   return {
-    months: Array.from({ length: monthCount }, (_, index) => {
-      const month = dayjs(activityStart).tz(TIMEZONE).add(index, 'month').format('YYYY-MM');
-      return {
-        handled: handledByMonth.find((row) => row.month === month)?.count ?? 0,
-        month,
-        received: receivedByMonth.find((row) => row.month === month)?.count ?? 0,
-      };
-    }),
+    months: activityMonths.map((month) => ({
+      handled: handledByMonth.find((row) => row.month === month)?.count ?? 0,
+      month,
+      received: receivedByMonth.find((row) => row.month === month)?.count ?? 0,
+    })),
     quarters: quarters.map((row) => ({
       medianResponseDays: secondsToDays(row.median_response_seconds),
       quarter: row.quarter,
@@ -170,19 +166,41 @@ const demandTimelineQuery = (network?: NetworkRef) =>
 
 type NetworkTable = 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction';
 
-/** Active accounts holding a permission on the network, most recently connected first. */
+/**
+ * Active accounts able to process the demands of the network, most recently connected first:
+ * a permission on the network itself or on the organization it belongs to, with a role allowed to process heat network demands
+ * (same rule as `isUserResponsibleForDemand` for an assigned demand).
+ */
 const networkUsersJson = (eb: ExpressionBuilder<DB, NetworkTable>, table: NetworkTable, networkType: NetworkType) =>
   jsonArrayFrom(
     eb
       .selectFrom('users as u')
-      .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
       .leftJoin('email_blocked_contacts as ebc', (join) =>
         join.on((joinBuilder) => joinBuilder('ebc.email', '=', joinBuilder.fn<string>('lower', ['u.email'])))
       )
       .select(['u.id', 'u.email', 'u.last_connection', 'ebc.reason_code as email_blocked_reason'])
-      .where('up.type', '=', networkType)
-      .where((userBuilder) => userBuilder('up.resource_id', '=', userBuilder.cast<string>(`${table}.id_fcu`, 'text')))
       .where('u.active', '=', true)
+      .where('u.role', 'in', userRolesWithPermissionsHeatNetwork)
+      .where((userBuilder) =>
+        userBuilder.exists(
+          userBuilder
+            .selectFrom('user_permissions as up')
+            .select('up.id')
+            .whereRef('up.user_id', '=', 'u.id')
+            .where((permissionBuilder) =>
+              permissionBuilder.or([
+                permissionBuilder.and([
+                  permissionBuilder('up.type', '=', networkType),
+                  permissionBuilder('up.resource_id', '=', permissionBuilder.cast<string>(`${table}.id_fcu`, 'text')),
+                ]),
+                permissionBuilder.and([
+                  permissionBuilder('up.type', '=', 'organization'),
+                  permissionBuilder('up.resource_id', '=', permissionBuilder.cast<string>(`${table}.organization_id`, 'text')),
+                ]),
+              ])
+            )
+        )
+      )
       .orderBy('u.last_connection', (order) => order.desc().nullsLast())
   );
 
@@ -209,6 +227,13 @@ const networksQuery = () =>
 
 const secondsBetween = (start: Expression<Date | null>, end: Expression<Date | null>) => sql<number>`extract(epoch from ${end} - ${start})`;
 
+/**
+ * A received demand awaits a response when a manager acted on it or when it is still pending.
+ * The others never needed one from this network: ineligible demands are created as unrealisable, and a demand reassigned after it was handled keeps its status.
+ */
+const awaitsResponse = (eb: ExpressionBuilder<{ t: { responded_at: Date | null; status: DemandStatus } }, 't'>): Expression<SqlBool> =>
+  eb.or([eb('t.responded_at', 'is not', null), eb('t.status', 'in', demandStatusGroups.pending)]);
+
 /** One row per network: its own data, plus the aggregates of its demands when it has any. */
 const networkSummariesQuery = (now: Date, network?: NetworkRef) => {
   const responseWindowStart = dayjs(now).subtract(businessRules.networkTrackingResponseWindowMonths.value, 'month').toDate();
@@ -232,7 +257,12 @@ const networkSummariesQuery = (now: Date, network?: NetworkRef) => {
           eb.fn.max('t.demand_date').filterWhere('t.status', 'in', demandStatusGroups.pending).as('newest_pending_demand_at'),
           eb.fn.min('t.waiting_since').filterWhere('t.status', 'in', demandStatusGroups.pending).as('oldest_pending_since'),
           eb.fn.max('t.last_action_at').as('last_action_at'),
-          eb.fn.countAll<number>().filterWhere('t.started_at', '>=', responseWindowStart).as('recent_received'),
+          eb.fn
+            .countAll<number>()
+            .filterWhere((filterBuilder) =>
+              filterBuilder.and([filterBuilder('t.started_at', '>=', responseWindowStart), awaitsResponse(filterBuilder)])
+            )
+            .as('recent_received'),
           eb.fn.count<number>('t.responded_at').filterWhere('t.started_at', '>=', responseWindowStart).as('recent_responded'),
           eb.fn
             .agg<number | null>('percentile_cont', [sql.lit(0.5)])
@@ -304,7 +334,7 @@ const quartersQuery = (network: NetworkRef, from: Date) =>
     .selectFrom('timeline as t')
     .select((eb) => [
       sql<string>`to_char(${eb.ref('t.started_at')} at time zone ${sql.lit(TIMEZONE)}, 'YYYY-"T"Q')`.as('quarter'),
-      eb.fn.countAll<number>().as('received'),
+      eb.fn.countAll<number>().filterWhere(awaitsResponse).as('received'),
       eb.fn.count<number>('t.responded_at').as('responded'),
       eb.fn
         .agg<number | null>('percentile_cont', [sql.lit(0.5)])
@@ -435,14 +465,16 @@ const getNetworkTrackingState = (
         : 'silent';
 };
 
-/** First month of the activity series: 18 months back, never before the audit log is usable. */
-const getActivityStart = (now: Date) => {
-  const historyStart = dayjs.tz(DEMAND_HISTORY_START, TIMEZONE);
-  const windowStart = dayjs(now)
-    .tz(TIMEZONE)
-    .startOf('month')
-    .subtract(ACTIVITY_MONTHS - 1, 'month');
-  return (windowStart.isAfter(historyStart) ? windowStart : historyStart).toDate();
+/**
+ * Months of the activity series as `YYYY-MM`, oldest first: the 18 months up to the current one, never before the audit log is usable.
+ * Built on calendar months in UTC: month arithmetic on a Paris-time date drifts by an hour across a daylight saving change.
+ */
+const getActivityMonths = (now: Date) => {
+  const currentMonth = dayjs.utc(`${dayjs(now).tz(TIMEZONE).format('YYYY-MM')}-01`);
+  const historyStartMonth = DEMAND_HISTORY_START.slice(0, 7);
+  return Array.from({ length: ACTIVITY_MONTHS }, (_, index) =>
+    currentMonth.subtract(ACTIVITY_MONTHS - 1 - index, 'month').format('YYYY-MM')
+  ).filter((month) => month >= historyStartMonth);
 };
 
 const secondsToDays = (seconds: number | null) => (seconds === null ? null : Math.round((seconds / SECONDS_PER_DAY) * 10) / 10);

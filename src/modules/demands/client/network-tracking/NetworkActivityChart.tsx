@@ -36,7 +36,7 @@ export function NetworkActivityChart({ months }: NetworkActivityChartProps) {
         />
         <Bar
           dataKey="handled"
-          name="Demandes traitées par un gestionnaire"
+          name="Demandes avec une action d'un gestionnaire"
           fill={HANDLED_COLOR}
           radius={[4, 4, 0, 0]}
           maxBarSize={18}

@@ -17,6 +17,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const adminId = testUsers.admin.id;
 const gestionnaireId = testUsers.gestionnaire.id;
 const collectiviteId = testUsers.collectivite.id;
+const organizationId = uuid(60);
 
 const day = (isoDay: string) => new Date(`${isoDay}T10:00:00.000Z`);
 const daysAgo = (days: number) => new Date(NOW.getTime() - days * DAY_MS);
@@ -71,11 +72,15 @@ const seedUsers = () =>
   seedTableUser([
     { id: adminId, role: 'admin' },
     { id: gestionnaireId, last_connection: null, role: 'gestionnaire' },
-    { id: collectiviteId, role: 'collectivite' },
+    { id: collectiviteId, last_connection: null, role: 'collectivite' },
   ]);
 
-/** Network A has an account, a reminder and notes; network C has no demand; network B shares its id with A but not its type. */
+/**
+ * Network A has an account, a reminder and notes; network C has no demand and is only reachable through its organization;
+ * network B shares its id with A but not its type.
+ */
 const seedNetworks = async () => {
+  await kdb.insertInto('organizations').values({ id: organizationId, name: 'Opérateur C' }).execute();
   await Promise.all([
     seedReseauDeChaleur({
       'Identifiant reseau': '7501C',
@@ -85,10 +90,18 @@ const seedNetworks = async () => {
       ouvert_aux_raccordements: true,
       puissance_totale_MW: 12.5,
     }),
-    seedReseauDeChaleur({ id_fcu: 2, nom_reseau: 'Réseau C', ouvert_aux_raccordements: true }),
+    seedReseauDeChaleur({ id_fcu: 2, nom_reseau: 'Réseau C', organization_id: organizationId, ouvert_aux_raccordements: true }),
     seedZoneEtReseauEnConstruction({ id_fcu: 1, nom_reseau: 'Réseau B', ouvert_aux_raccordements: true }),
   ]);
-  await kdb.insertInto('user_permissions').values({ resource_id: '1', type: 'reseau_de_chaleur', user_id: gestionnaireId }).execute();
+  await kdb
+    .insertInto('user_permissions')
+    .values([
+      { resource_id: '1', type: 'reseau_de_chaleur', user_id: gestionnaireId },
+      // an admin never processes demands, even with a permission on the network
+      { resource_id: '1', type: 'reseau_de_chaleur', user_id: adminId },
+      { resource_id: organizationId, type: 'organization', user_id: collectiviteId },
+    ])
+    .execute();
   await kdb
     .insertInto('network_reminders')
     .values([
@@ -99,7 +112,7 @@ const seedNetworks = async () => {
     .execute();
 };
 
-/** Network A: one answered demand, one pending, one reassigned then answered through the API, one older than the audit log. */
+/** Network A: one answered demand, one pending, one reassigned then answered through the API, one older than the audit log, one created unrealisable. */
 const seedTrackedDemands = async () => {
   await Promise.all([
     seedDemand(1, { demandDate: day('2026-08-30'), status: DEMANDE_STATUS.RECONTACTED }),
@@ -110,6 +123,7 @@ const seedTrackedDemands = async () => {
     seedDemand(6, { deletedAt: day('2026-09-02'), demandDate: day('2026-09-01'), status: DEMANDE_STATUS.TO_PROCESS }),
     seedDemand(7, { demandDate: day('2026-09-01'), networkId: null, networkType: null, status: DEMANDE_STATUS.TO_PROCESS }),
     seedDemand(8, { demandDate: day('2026-03-01'), networkType: 'reseau_en_construction', status: DEMANDE_STATUS.DONE }),
+    seedDemand(9, { demandDate: day('2026-09-12'), status: DEMANDE_STATUS.UNREALISABLE }),
   ]);
   await seedEvents([
     { authorId: adminId, created_at: day('2026-09-01'), demand: 1, type: 'demand_validated' },
@@ -135,6 +149,8 @@ const seedTrackedDemands = async () => {
     { authorId: adminId, created_at: day('2026-09-20'), demand: 3, type: 'demand_assignment_changed' },
     { created_at: day('2026-09-21'), data: { statut: DEMANDE_STATUS.UNREALISABLE }, demand: 3, type: 'api_demand_updated' },
     { authorId: adminId, created_at: day('2026-03-02'), demand: 8, type: 'demand_validated' },
+    // an ineligible demand is created unrealisable: validated, never awaiting a response
+    { authorId: adminId, created_at: day('2026-09-13'), demand: 9, type: 'demand_validated' },
     { authorId: collectiviteId, created_at: day('2026-03-03'), demand: 8, type: 'demand_email_sent' },
   ]);
 };
@@ -171,17 +187,22 @@ const networkAIdentity = {
   sncuId: '7501C',
   users: [{ email: `user-${gestionnaireId}@test.local`, email_blocked_reason: null, id: gestionnaireId, last_connection: null }],
 };
-const networkCIdentity = { name: 'Réseau C', networkId: 2, networkType: 'reseau_de_chaleur' };
+const networkCIdentity = {
+  name: 'Réseau C',
+  networkId: 2,
+  networkType: 'reseau_de_chaleur',
+  users: [{ email: `user-${collectiviteId}@test.local`, email_blocked_reason: null, id: collectiviteId, last_connection: null }],
+};
 const networkBIdentity = { name: 'Réseau B', networkId: 1, networkType: 'reseau_en_construction' };
 
 const networkASummary = {
   ...emptySummary,
   ...networkAIdentity,
-  closed: 1,
+  closed: 2,
   inProgress: 2,
   lastManagerActionAt: day('2026-09-21'),
   medianResponseDays: 2,
-  newestDemandAt: day('2026-09-09'),
+  newestDemandAt: day('2026-09-12'),
   newestPendingDemandAt: day('2026-09-09'),
   oldestDemandAt: day('2024-05-01'),
   oldestPendingDemandAt: day('2026-09-09'),
@@ -189,7 +210,7 @@ const networkASummary = {
   recentReceived: 3,
   recentResponded: 2,
   state: 'late',
-  total: 4,
+  total: 5,
 };
 
 type PermissionTestCase = {
@@ -219,7 +240,9 @@ describe('network tracking', () => {
   });
 
   beforeEach(async () => {
+    vi.setSystemTime(NOW);
     await cleanDatabase();
+    await kdb.deleteFrom('organizations').execute();
     await seedUsers();
     await seedNetworks();
   });
@@ -326,6 +349,33 @@ describe('network tracking', () => {
       });
     });
 
+    const activityWindowCases: TestCase<string, { count: number; first: string; last: string }>[] = [
+      {
+        expectedOutput: { count: 18, first: '2026-02', last: '2027-07' },
+        input: '2027-07-15T10:00:00.000Z',
+        label: 'in summer time, the window starts 17 months earlier in winter time',
+      },
+      {
+        expectedOutput: { count: 18, first: '2026-07', last: '2027-12' },
+        input: '2027-12-15T10:00:00.000Z',
+        label: 'in winter time, the window starts 17 months earlier in summer time',
+      },
+      {
+        expectedOutput: { count: 18, first: '2026-02', last: '2027-07' },
+        input: '2027-06-30T22:30:00.000Z',
+        label: 'the first minutes of a month in Paris are still the previous month in UTC',
+      },
+    ];
+
+    it.each(activityWindowCases)('activity window: $label', async ({ input: now, expectedOutput }) => {
+      vi.setSystemTime(new Date(now));
+
+      const result = await createTestCaller(testUsers.admin).demands.admin.getNetworkTracking({ ...input, networkId: 2 });
+
+      const months = result.months.map((month) => month.month);
+      expect({ count: months.length, first: months[0], last: months.at(-1) }).toStrictEqual(expectedOutput);
+    });
+
     it('details the activity, the response by quarter and the statuses of a network', async () => {
       await seedTrackedDemands();
 
@@ -333,12 +383,13 @@ describe('network tracking', () => {
 
       expect(result).toStrictEqual({
         months: activityMonths.map((month) =>
-          month === '2026-09' ? { handled: 2, month, received: 3 } : { handled: 0, month, received: 0 }
+          month === '2026-09' ? { handled: 2, month, received: 4 } : { handled: 0, month, received: 0 }
         ),
         quarters: [{ medianResponseDays: 2, quarter: '2026-T3', received: 3, responded: 2 }],
         statuses: [
           { count: 1, medianAgeDays: 35, status: DEMANDE_STATUS.TO_PROCESS, stuckCount: 0 },
-          { count: 1, medianAgeDays: 24, status: DEMANDE_STATUS.UNREALISABLE, stuckCount: 0 },
+          // demand 3 changed 24 days ago; demand 9 never changed, so it counts from its reception 32 days ago
+          { count: 2, medianAgeDays: 28, status: DEMANDE_STATUS.UNREALISABLE, stuckCount: 0 },
           // demand 4 has no recorded change: counted from the start of the audit log (2025-12-01, Paris time)
           { count: 2, medianAgeDays: 179.7, status: DEMANDE_STATUS.RECONTACTED, stuckCount: 1 },
         ],
