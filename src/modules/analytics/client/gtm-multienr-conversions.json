@@ -1,0 +1,326 @@
+{
+  "containerVersion": {
+    "accountId": "0",
+    "builtInVariable": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "name": "Page Hostname",
+        "type": "PAGE_HOSTNAME"
+      }
+    ],
+    "container": {
+      "accountId": "0",
+      "containerId": "0",
+      "name": "MultiENR",
+      "publicId": "GTM-T9RP6ZXL",
+      "usageContext": ["WEB"]
+    },
+    "containerId": "0",
+    "containerVersionId": "0",
+    "description": "Portable partial import. Reuses the existing AW-18521951422 destination. Merge into GTM-T9RP6ZXL; preview before publishing. No heat-network conversion is configured.",
+    "folder": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "folderId": "1000",
+        "name": "MultiENR — Google Ads"
+      }
+    ],
+    "name": "MultiENR — Conversions simulation et CCRT",
+    "tag": [
+      {
+        "accountId": "0",
+        "consentSettings": {
+          "consentStatus": "NOT_SET"
+        },
+        "containerId": "0",
+        "firingTriggerId": ["1003"],
+        "name": "MultiENR — Simulation terminée",
+        "notes": "The application loads GTM only after Google consent. This tag does not enable enhanced conversions or user-provided data collection. Review the existing destination settings separately.",
+        "parameter": [
+          {
+            "key": "conversionId",
+            "type": "TEMPLATE",
+            "value": "18521951422"
+          },
+          {
+            "key": "conversionLabel",
+            "type": "TEMPLATE",
+            "value": "bJqQCJ6nj7UdEL6Z-v9E"
+          },
+          {
+            "key": "orderId",
+            "type": "TEMPLATE",
+            "value": "{{MultiENR - simulation_id}}"
+          },
+          {
+            "key": "enableConversionLinker",
+            "type": "BOOLEAN",
+            "value": "true"
+          },
+          {
+            "key": "enableEnhancedConversion",
+            "type": "BOOLEAN",
+            "value": "false"
+          },
+          {
+            "key": "enableNewCustomerReporting",
+            "type": "BOOLEAN",
+            "value": "false"
+          },
+          {
+            "key": "enableProductReporting",
+            "type": "BOOLEAN",
+            "value": "false"
+          },
+          {
+            "key": "enableShippingData",
+            "type": "BOOLEAN",
+            "value": "false"
+          }
+        ],
+        "parentFolderId": "1000",
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "tagId": "1001",
+        "type": "awct"
+      },
+      {
+        "accountId": "0",
+        "consentSettings": {
+          "consentStatus": "NOT_SET"
+        },
+        "containerId": "0",
+        "firingTriggerId": ["1004"],
+        "name": "MultiENR — Demande CCRT",
+        "notes": "The application loads GTM only after Google consent. This tag does not enable enhanced conversions or user-provided data collection. Review the existing destination settings separately.",
+        "parameter": [
+          {
+            "key": "conversionId",
+            "type": "TEMPLATE",
+            "value": "18521951422"
+          },
+          {
+            "key": "conversionLabel",
+            "type": "TEMPLATE",
+            "value": "j5_YCKGnj7UdEL6Z-v9E"
+          },
+          {
+            "key": "orderId",
+            "type": "TEMPLATE",
+            "value": "{{MultiENR - demand_id}}"
+          },
+          {
+            "key": "enableConversionLinker",
+            "type": "BOOLEAN",
+            "value": "true"
+          },
+          {
+            "key": "enableEnhancedConversion",
+            "type": "BOOLEAN",
+            "value": "false"
+          },
+          {
+            "key": "enableNewCustomerReporting",
+            "type": "BOOLEAN",
+            "value": "false"
+          },
+          {
+            "key": "enableProductReporting",
+            "type": "BOOLEAN",
+            "value": "false"
+          },
+          {
+            "key": "enableShippingData",
+            "type": "BOOLEAN",
+            "value": "false"
+          }
+        ],
+        "parentFolderId": "1000",
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "tagId": "1002",
+        "type": "awct"
+      }
+    ],
+    "trigger": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "customEventFilter": [
+          {
+            "parameter": [
+              {
+                "key": "arg0",
+                "type": "TEMPLATE",
+                "value": "{{_event}}"
+              },
+              {
+                "key": "arg1",
+                "type": "TEMPLATE",
+                "value": "multienr_simulation_completed"
+              }
+            ],
+            "type": "EQUALS"
+          }
+        ],
+        "filter": [
+          {
+            "parameter": [
+              {
+                "key": "arg0",
+                "type": "TEMPLATE",
+                "value": "{{Page Hostname}}"
+              },
+              {
+                "key": "arg1",
+                "type": "TEMPLATE",
+                "value": "france-chaleur-urbaine.beta.gouv.fr"
+              }
+            ],
+            "type": "EQUALS"
+          }
+        ],
+        "name": "MultiENR — Simulation terminée — événement confirmé",
+        "parentFolderId": "1000",
+        "triggerId": "1003",
+        "type": "CUSTOM_EVENT"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "customEventFilter": [
+          {
+            "parameter": [
+              {
+                "key": "arg0",
+                "type": "TEMPLATE",
+                "value": "{{_event}}"
+              },
+              {
+                "key": "arg1",
+                "type": "TEMPLATE",
+                "value": "multienr_accompaniment_submitted"
+              }
+            ],
+            "type": "EQUALS"
+          }
+        ],
+        "filter": [
+          {
+            "parameter": [
+              {
+                "key": "arg0",
+                "type": "TEMPLATE",
+                "value": "{{Page Hostname}}"
+              },
+              {
+                "key": "arg1",
+                "type": "TEMPLATE",
+                "value": "france-chaleur-urbaine.beta.gouv.fr"
+              }
+            ],
+            "type": "EQUALS"
+          },
+          {
+            "parameter": [
+              {
+                "key": "arg0",
+                "type": "TEMPLATE",
+                "value": "{{MultiENR - demand_type}}"
+              },
+              {
+                "key": "arg1",
+                "type": "TEMPLATE",
+                "value": "ccrt"
+              }
+            ],
+            "type": "EQUALS"
+          }
+        ],
+        "name": "MultiENR — Demande CCRT — événement confirmé",
+        "parentFolderId": "1000",
+        "triggerId": "1004",
+        "type": "CUSTOM_EVENT"
+      }
+    ],
+    "variable": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "name": "MultiENR - simulation_id",
+        "parameter": [
+          {
+            "key": "dataLayerVersion",
+            "type": "INTEGER",
+            "value": "2"
+          },
+          {
+            "key": "setDefaultValue",
+            "type": "BOOLEAN",
+            "value": "false"
+          },
+          {
+            "key": "name",
+            "type": "TEMPLATE",
+            "value": "simulation_id"
+          }
+        ],
+        "parentFolderId": "1000",
+        "type": "v",
+        "variableId": "1005"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "name": "MultiENR - demand_id",
+        "parameter": [
+          {
+            "key": "dataLayerVersion",
+            "type": "INTEGER",
+            "value": "2"
+          },
+          {
+            "key": "setDefaultValue",
+            "type": "BOOLEAN",
+            "value": "false"
+          },
+          {
+            "key": "name",
+            "type": "TEMPLATE",
+            "value": "demand_id"
+          }
+        ],
+        "parentFolderId": "1000",
+        "type": "v",
+        "variableId": "1006"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "name": "MultiENR - demand_type",
+        "parameter": [
+          {
+            "key": "dataLayerVersion",
+            "type": "INTEGER",
+            "value": "2"
+          },
+          {
+            "key": "setDefaultValue",
+            "type": "BOOLEAN",
+            "value": "false"
+          },
+          {
+            "key": "name",
+            "type": "TEMPLATE",
+            "value": "demand_type"
+          }
+        ],
+        "parentFolderId": "1000",
+        "type": "v",
+        "variableId": "1007"
+      }
+    ]
+  },
+  "exportFormatVersion": 2,
+  "exportTime": "2026-11-09 16:07:34"
+}
