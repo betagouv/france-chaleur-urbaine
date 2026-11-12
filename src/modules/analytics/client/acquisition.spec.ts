@@ -8,6 +8,22 @@ beforeEach(() => {
 });
 
 describe('acquisition attribution', () => {
+  it('uses the same in-memory attribution for legacy Matomo links, without reading stored campaigns', async () => {
+    const { getAcquisition } = await import('./acquisition');
+    localStorage.setItem('mtm_source', 'outdated-source');
+    expect(getAcquisition()).toBeNull();
+    window.history.replaceState({}, '', '/?mtm_source=newsletter&mtm_medium=email&mtm_campaign=automne&mtm_kwd=chauffage');
+    expect(getAcquisition()).toStrictEqual({ campaign: 'automne', keyword: 'chauffage', medium: 'email', source: 'newsletter' });
+    window.history.replaceState({}, '', '/contact');
+    expect(getAcquisition()).toStrictEqual({ campaign: 'automne', keyword: 'chauffage', medium: 'email', source: 'newsletter' });
+  });
+
+  it('prefers a UTM arrival as a whole rather than mixing it with an older Matomo campaign', async () => {
+    const { getAcquisition } = await import('./acquisition');
+    window.history.replaceState({}, '', '/?utm_source=google&utm_medium=cpc&utm_term=bois&mtm_source=newsletter&mtm_campaign=old');
+    expect(getAcquisition()).toStrictEqual({ campaign: null, keyword: 'bois', medium: 'cpc', source: 'google' });
+  });
+
   it('retains a tagged arrival across navigation and replaces it on a new tagged arrival', async () => {
     const { getAcquisition } = await import('./acquisition');
     window.history.replaceState({}, '', '/?utm_source=google&utm_medium=cpc&utm_campaign=chauffage');
@@ -28,7 +44,7 @@ describe('acquisition attribution', () => {
     expect(acquisition && getAcquisitionSource(acquisition)).toStrictEqual('Google Ads');
   });
 
-  it.each(['/', '/?source=partner', '/?gclid=', '/admin?utm_source=google', '/iframe/carte?utm_source=google'])(
+  it.each(['/', '/?source=partner', '/?gclid=', '/admin?utm_source=google'])(
     'does not infer a marketing campaign from %s',
     async (path) => {
       const { getAcquisition } = await import('./acquisition');
@@ -36,6 +52,12 @@ describe('acquisition attribution', () => {
       expect(getAcquisition()).toBeNull();
     }
   );
+
+  it('keeps first-party campaign attribution available to embedded classic forms without Google tracking', async () => {
+    const { getAcquisition } = await import('./acquisition');
+    window.history.replaceState({}, '', '/iframe/carte?mtm_source=newsletter&mtm_medium=email&mtm_campaign=automne');
+    expect(getAcquisition()).toStrictEqual({ campaign: 'automne', medium: 'email', source: 'newsletter' });
+  });
 
   it('bounds parameters before sending them to the API', async () => {
     const { getAcquisition } = await import('./acquisition');

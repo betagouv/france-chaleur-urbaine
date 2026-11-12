@@ -365,9 +365,14 @@ describe('batEnrRouter', () => {
         .executeTakeFirstOrThrow();
 
       expect(duplicate.demandSubmissionResult?.isExisting).toStrictEqual(true);
-      expect({ campaign: saved.legacy_values['Campagne matomo'], source: saved.legacy_values['Campagne source'] }).toStrictEqual({
+      expect({
+        campaign: saved.legacy_values['Campagne matomo'],
+        medium: saved.legacy_values['Campagne medium'],
+        source: saved.legacy_values['Campagne source'],
+      }).toStrictEqual({
         campaign: 'chauffage-automne',
-        source: 'Google Ads',
+        medium: 'cpc',
+        source: 'google',
       });
     });
 

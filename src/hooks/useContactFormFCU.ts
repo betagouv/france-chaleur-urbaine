@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
-import useURLParamOrLocalStorage, { parseAsString } from '@/hooks/useURLParamOrLocalStorage';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
+import { getAcquisition } from '@/modules/analytics/client/acquisition';
 import type { EligibilityContext } from '@/modules/analytics/posthog.config';
 import { getDemandOrigin } from '@/modules/conversion-tracking/client/trackingContext';
 import { useRecordConversionEvent } from '@/modules/conversion-tracking/client/useRecordConversionEvent';
@@ -53,9 +53,6 @@ const useContactFormFCU = () => {
   const [messageSent, setMessageSent] = useState(false);
   const [messageReceived, setMessageReceived] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('idle');
-  const [mtm_campaign] = useURLParamOrLocalStorage('mtm_campaign', 'mtm_campaign', null, parseAsString);
-  const [mtm_kwd] = useURLParamOrLocalStorage('mtm_kwd', 'mtm_kwd', null, parseAsString);
-  const [mtm_source] = useURLParamOrLocalStorage('mtm_source', 'mtm_source', null, parseAsString);
   const trpcUtils = trpc.useUtils();
   const recordConversionEvent = useRecordConversionEvent();
 
@@ -173,9 +170,7 @@ const useContactFormFCU = () => {
 
       const result = await trpcUtils.client.demands.user.create.mutate({
         ...data,
-        mtm_campaign: mtm_campaign ?? undefined,
-        mtm_kwd: mtm_kwd ?? undefined,
-        mtm_source: mtm_source ?? undefined,
+        acquisition: getAcquisition(),
         ...getDemandOrigin(),
       } as unknown as CreateDemandInput);
 

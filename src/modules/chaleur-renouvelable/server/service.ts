@@ -1,6 +1,5 @@
 import { TRPCError } from '@trpc/server';
 
-import { getAcquisitionSource } from '@/modules/analytics/constants';
 import { businessRules } from '@/modules/app/business-rules';
 import { EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
 import type {
@@ -239,6 +238,7 @@ const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promi
 
   const demandSubmissionResult = await createDemand(
     {
+      acquisition: input.acquisition,
       address: input.address,
       city: input.geoAddress.city,
       commentUser: input.comments ?? '',
@@ -255,8 +255,6 @@ const createRaccordableDemand = async (input: DemandeChaleurRenouvelable): Promi
       heatingEnergy: getDemandHeatingEnergy(input.heatingEnergy),
       heatingType: getDemandHeatingType(input.housingType),
       lastName: input.lastName,
-      mtm_campaign: input.acquisition?.campaign ?? undefined,
-      mtm_source: input.acquisition ? (getAcquisitionSource(input.acquisition) ?? undefined) : undefined,
       nbLogements: input.housingCount,
       phone: input.phone,
       postcode: input.geoAddress.postcode,

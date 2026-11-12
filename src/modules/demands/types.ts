@@ -20,6 +20,7 @@ export type PendingAssignmentChange = {
 export type LegacyDemandValues = Partial<Omit<LegacyDemand, 'id' | 'Status'>> & {
   'Campagne keywords'?: string;
   'Campagne matomo'?: string;
+  'Campagne medium'?: string;
   'Campagne source'?: string;
   'ID réseau le plus proche'?: string | null;
   'ID BNB'?: string;

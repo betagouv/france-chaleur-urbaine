@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const zAcquisition = z.object({
   campaign: z.string().trim().max(200).nullable(),
+  keyword: z.string().trim().max(200).optional(),
   medium: z.string().trim().max(200).nullable(),
   source: z.string().trim().max(200).nullable(),
 });
