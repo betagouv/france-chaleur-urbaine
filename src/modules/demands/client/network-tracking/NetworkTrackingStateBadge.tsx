@@ -23,15 +23,17 @@ const stateDescriptions = {
 
 type NetworkTrackingStateBadgeProps = {
   state: NetworkTrackingState;
+  /** `sm` in the table, `md` next to the title of the detail page. */
+  size?: 'sm' | 'md';
 };
 
 /**
  * Tracking state of a network (silent, late, up to date), with the rule behind it as a tooltip.
  */
-export function NetworkTrackingStateBadge({ state }: NetworkTrackingStateBadgeProps) {
+export function NetworkTrackingStateBadge({ state, size = 'sm' }: NetworkTrackingStateBadgeProps) {
   return (
     <Tooltip title={stateDescriptions[state]}>
-      <Badge small severity={stateSeverities[state]} className="cursor-help whitespace-nowrap">
+      <Badge small={size === 'sm'} severity={stateSeverities[state]} className="cursor-help whitespace-nowrap">
         {networkTrackingStateLabels[state]}
       </Badge>
     </Tooltip>

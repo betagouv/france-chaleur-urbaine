@@ -51,11 +51,13 @@ export default function NetworkTrackingDetailPage() {
         {tracking && (
           <>
             <div className="flex flex-col gap-2">
-              <Heading as="h1" color="blue-france" className="mb-0!">
-                {networkName}
-              </Heading>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <Heading as="h1" color="blue-france" className="mb-0!">
+                  {networkName}
+                </Heading>
+                <NetworkTrackingStateBadge state={tracking.summary.state} size="md" />
+              </div>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-                <NetworkTrackingStateBadge state={tracking.summary.state} />
                 <NetworkTypeBadges networkType={tracking.summary.networkType} sncuId={tracking.summary.sncuId} />
                 {isDefined(tracking.summary.powerMW) && <span>{formatMW(tracking.summary.powerMW)}</span>}
                 <Link href={buildAdminDemandsUrl(buildDemandFilters(tracking.summary.networkId, tracking.summary.networkType, false))}>
