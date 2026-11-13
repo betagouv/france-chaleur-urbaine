@@ -57,6 +57,9 @@ const excludedPages = [
   '/map',
   '/viaseva',
 
+  // developer sandboxes (also noindex via SimplePage and an X-Robots-Tag header, see next.config.ts)
+  '/dev/*',
+
   // misc pages
   '/satisfaction',
   '/inscription/bravo',
@@ -75,7 +78,7 @@ export default {
   robotsTxtOptions: {
     // the network pages are rendered on request: their sitemap is served by the app
     additionalSitemaps: [`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://france-chaleur-urbaine.beta.gouv.fr'}/server-sitemap.xml`],
-    policies: [isProductionSite ? { allow: '/', userAgent: '*' } : { disallow: '/', userAgent: '*' }],
+    policies: [isProductionSite ? { allow: '/', disallow: '/dev/', userAgent: '*' } : { disallow: '/', userAgent: '*' }],
   },
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://france-chaleur-urbaine.beta.gouv.fr',
   transform: (config, path) => {
