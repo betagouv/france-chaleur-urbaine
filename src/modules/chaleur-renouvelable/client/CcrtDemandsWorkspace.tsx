@@ -185,6 +185,8 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
           <div className="hidden bg-(--background-default-grey) lg:block">
             {toolbar}
             <CcrtDemandsTable
+              origin={filters.origin}
+              onOriginChange={(origin) => void setFilters({ origin })}
               demands={visibleDemands}
               expandedDemandId={filters.demandId}
               isLoading={query.isLoading}

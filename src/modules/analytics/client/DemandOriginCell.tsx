@@ -34,9 +34,6 @@ export function DemandOriginCell({ origin }: DemandOriginCellProps) {
               </div>
             ))}
         </dl>
-        <p className="mb-0 mt-3 text-xs">
-          Les informations non enregistrées ne peuvent pas être reconstituées. L’absence de référent ne prouve pas une arrivée directe.
-        </p>
       </PopoverContent>
     </Popover>
   );

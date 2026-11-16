@@ -2,6 +2,7 @@ import Button from '@/components/ui/Button';
 import TableBasic from '@/components/ui/TableBasic';
 
 import type { CcrtDemand } from '../types';
+import { CcrtDemandOriginFilter } from './CcrtDemandOriginFilter';
 import { CcrtDemandRow } from './CcrtDemandRow';
 import type { useCcrtDemandActions } from './hooks/useCcrtDemandActions';
 
@@ -16,6 +17,8 @@ type CcrtDemandsTableProps = {
   onToggle: (demand: CcrtDemand) => void;
   onSort: (sort: 'date' | 'status') => void;
   onValidate?: (demandId: string) => Promise<void>;
+  origin?: string;
+  onOriginChange?: (origin: string) => void;
 };
 
 /**
@@ -32,6 +35,8 @@ export function CcrtDemandsTable({
   onToggle,
   onSort,
   onValidate,
+  origin,
+  onOriginChange,
 }: CcrtDemandsTableProps) {
   return (
     <TableBasic
@@ -92,7 +97,14 @@ export function CcrtDemandsTable({
               />
             </div>
           </th>
-          {onValidate && <th scope="col">Origine</th>}
+          {onValidate && (
+            <th scope="col">
+              <div className="flex items-center justify-between gap-2">
+                <span>Origine</span>
+                {onOriginChange && <CcrtDemandOriginFilter value={origin ?? ''} onChange={onOriginChange} compact />}
+              </div>
+            </th>
+          )}
           {onValidate && <th scope="col">Accès</th>}
           <th scope="col" className="text-center!">
             Action

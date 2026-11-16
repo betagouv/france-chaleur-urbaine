@@ -61,16 +61,8 @@ vi.mock('./hooks/useCcrtDemandActions', () => ({
   }),
 }));
 vi.mock('./CcrtDemandToolbar', () => ({
-  CcrtDemandToolbar: ({ isAdmin, search, onSearchChange, origin, onOriginChange }: ComponentProps<typeof CcrtDemandToolbar>) => (
-    <>
-      <input aria-label="Rechercher" value={search} onChange={(event) => onSearchChange(event.target.value)} />
-      {isAdmin && (
-        <select aria-label="Origine" value={origin} onChange={(event) => onOriginChange?.(event.target.value)}>
-          <option value="">Toutes les origines</option>
-          <option value="ai">Assistant IA</option>
-        </select>
-      )}
-    </>
+  CcrtDemandToolbar: ({ search, onSearchChange }: ComponentProps<typeof CcrtDemandToolbar>) => (
+    <input aria-label="Rechercher" value={search} onChange={(event) => onSearchChange(event.target.value)} />
   ),
 }));
 vi.mock('./CcrtBuildingForm', () => ({
@@ -173,12 +165,17 @@ describe('CcrtDemandsWorkspace', () => {
     });
     const admin = renderWorkspace();
     expect(screen.getByRole('button', { name: 'Déplier la demande de Louis Martini' })).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText('Origine'), { target: { value: 'ai' } });
+    expect(screen.queryByRole('combobox', { name: 'Origine' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Filtrer par origine' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Assistant IA' }));
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Déplier la demande de Louis Martini' })).toBeNull());
     expect(screen.getByRole('button', { name: 'Déplier la demande de Joëlle Martini' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Filtrer par origine' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Toutes les origines' }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Déplier la demande de Louis Martini' })).toBeInTheDocument());
     admin.unmount();
     renderWorkspace(false);
-    expect(screen.queryByLabelText('Origine')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Filtrer par origine' })).toBeNull();
   });
 
   it.each([true, false])('opens and collapses the shared building sheet with admin mode %s', async (isAdmin) => {

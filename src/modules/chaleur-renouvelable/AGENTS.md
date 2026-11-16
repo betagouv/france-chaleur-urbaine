@@ -106,7 +106,7 @@ Renewable heating guidance journey: collect building/context inputs, rank heatin
 
 ## Admin demand origin
 
-The admin list computes `origin` with the shared `analytics/demand-origin.ts` classifier and integration labels. Only admin responses include the acquisition snapshot and computed origin; professional projections omit both. The workspace has an admin-only origin column/popover, URL channel filter and detailed export. The acquisition snapshot carries the FCU refusal-email indicator; `origin_demand_id` remains a business link, not an attribution fallback. Public capture stays in memory only. See `analytics/AGENTS.md` for storage, rules and pending privacy review.
+The admin list computes `origin` with the shared `analytics/demand-origin.ts` classifier and integration labels. Only admin responses include the acquisition snapshot and computed origin; professional projections omit both. The workspace has an admin-only origin column/popover, URL channel filter (`CcrtDemandOriginFilter`, from the column header on desktop and the mobile filter panel) and detailed export. The acquisition snapshot carries the FCU refusal-email indicator; `origin_demand_id` remains a business link, not an attribution fallback. Public capture stays in memory only. See `analytics/AGENTS.md` for storage, rules and pending privacy review.
 
 ## Reopening published demands
 
