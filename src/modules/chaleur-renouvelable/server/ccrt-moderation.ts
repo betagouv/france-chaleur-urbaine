@@ -9,10 +9,10 @@ import type { EventDataMap } from '@/modules/events/constants';
 import { createUserEvent } from '@/modules/events/server/service';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 
-import type { zCcrtAdminComment, zCcrtArchiveDemand, zCcrtDemandId, zCcrtTransferDemand } from '../constants';
+import type { zCcrtAdminComment, zCcrtArchiveDemand, zCcrtDemandId, zCcrtModerationEmailData, zCcrtTransferDemand } from '../constants';
 import { selectDemandesChaleurRenouvelableForList } from './ccrt-demand-query';
 import { getCcrtTransferNetwork } from './ccrt-transfer-network';
-import { getDemandHeatingEnergy, getDemandHeatingType, getDemandStructure } from './service';
+import { getDemandHeatingEnergy, getDemandHeatingType, getDemandStructure } from './demand-mapping';
 
 /**
  * Archives only unpublished demands; email delivery is queued in the same transaction.
@@ -220,7 +220,9 @@ const queueModerationEmail = (
   transaction
     .insertInto('jobs')
     .values({
-      data: { archivedAt: archivedAt.toISOString(), deliveryStatus: 'ready', demandId, network: network ?? null },
+      data: { archivedAt: archivedAt.toISOString(), deliveryStatus: 'ready', demandId, network: network ?? null } satisfies z.infer<
+        typeof zCcrtModerationEmailData
+      >,
       entity_id: demandId,
       status: 'pending',
       type: 'ccrt_moderation_email',

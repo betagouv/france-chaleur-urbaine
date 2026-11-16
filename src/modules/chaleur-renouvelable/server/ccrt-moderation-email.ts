@@ -1,6 +1,5 @@
 import type { Selectable } from 'kysely';
 import type { Logger } from 'winston';
-import { z } from 'zod';
 
 import type { BANAddressFeature } from '@/modules/ban/types';
 import { sendEmailTemplate } from '@/modules/email';
@@ -8,21 +7,15 @@ import { serverConfig } from '@/server/config';
 import { type Jobs, kdb, sql } from '@/server/db/kysely';
 import { fetchJSON } from '@/utils/network';
 
+import { zCcrtModerationEmailData } from '../constants';
 import { getNearestFranceRenovSpace } from './france-renov-directory';
-
-const zDeliveryData = z.object({
-  archivedAt: z.iso.datetime(),
-  deliveryStatus: z.enum(['ready', 'sending', 'sent', 'failed']),
-  demandId: z.uuid(),
-  network: z.object({ distance: z.number().nullable(), manager: z.string().nullable(), name: z.string() }).nullable(),
-});
 
 /**
  * Delivers moderation emails after commit, retaining a reservation when SMTP success cannot be reconciled.
  */
 export const processCcrtModerationEmail = async (job: Pick<Selectable<Jobs>, 'id'>, logger: Logger) => {
   const storedJob = await kdb.selectFrom('jobs').select('data').where('id', '=', job.id).executeTakeFirstOrThrow();
-  const data = zDeliveryData.parse(storedJob.data);
+  const data = zCcrtModerationEmailData.parse(storedJob.data);
   if (data.deliveryStatus === 'sent') {
     return { alreadySent: true };
   }
