@@ -1,5 +1,7 @@
 import { TRPCError } from '@trpc/server';
 
+import { classifyDemandOrigin } from '@/modules/analytics/demand-origin';
+import { getIntegrationLabels } from '@/modules/analytics/server/demand-origin';
 import { getNearestNetwork, type UpdateAdminDemandInput } from '@/modules/demands/constants';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -86,6 +88,7 @@ export const listAdmin = async () => {
     recordsCount: records.length,
   });
 
+  const integrationLabels = await getIntegrationLabels();
   const demands = records
     .map((record) => {
       const { testAddress, ...demand } = record;
@@ -99,7 +102,11 @@ export const listAdmin = async () => {
         return null;
       }
 
-      return enrichDemandForAdmin({ demand, testAddress });
+      const enriched = enrichDemandForAdmin({ demand, testAddress });
+      return {
+        ...enriched,
+        origin: classifyDemandOrigin(record.acquisition, integrationLabels),
+      };
     })
     .filter((v) => v !== null);
 

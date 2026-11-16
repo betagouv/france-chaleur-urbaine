@@ -9,6 +9,7 @@ import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
 import { demandeChaleurRenouvelableStatusOptions } from '../constants';
+import type { CcrtDemand } from '../types';
 import { CcrtDemandEmailDialog } from './CcrtDemandEmailDialog';
 import { CcrtDemandsMobile } from './CcrtDemandsMobile';
 import { CcrtDemandsTable } from './CcrtDemandsTable';
@@ -24,6 +25,7 @@ const QUERY_PREFIX = 'demandes_chaleur_renouvelable_ccrt';
 const queryParsers = {
   demandId: parseAsString,
   order: parseAsStringLiteral(['asc', 'desc']).withDefault('desc'),
+  origin: parseAsString.withDefault(''),
   search: parseAsString.withDefault(''),
   sort: parseAsStringLiteral(['date', 'status']).withDefault('date'),
   status: parseAsString.withDefault(''),
@@ -43,6 +45,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
     urlKeys: {
       demandId: `${queryPrefix}_demand`,
       order: `${queryPrefix}_order`,
+      origin: `${queryPrefix}_origin`,
       search: `${queryPrefix}_search`,
       sort: `${queryPrefix}_sort`,
       status: `${queryPrefix}_status`,
@@ -59,7 +62,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
     await validation.mutateAsync({ demandId });
     await invalidateCcrtModeration(utils, demandId);
   });
-  const demands = query.data?.items ?? [];
+  const demands: CcrtDemand[] = query.data?.items ?? [];
   // Notification links already use the search key, so search defaults to the full list.
   const selectedTab = filters.tab ?? (filters.search ? 'all' : isAdmin ? 'awaiting_validation' : 'to_process');
   const activeTab = isAdmin
@@ -75,7 +78,12 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
     isAdmin ? matchesCcrtAdminTab(demand, activeTab) : activeTab === 'all' || getCcrtDemandTab(demand) === activeTab
   );
   const visibleDemands = demandsInTab
-    .filter((demand) => (!filters.status || demand.status === filters.status) && matchesCcrtDemandSearch(demand, filters.search))
+    .filter(
+      (demand) =>
+        (!isAdmin || !filters.origin || demand.origin?.channel === filters.origin) &&
+        (!filters.status || demand.status === filters.status) &&
+        matchesCcrtDemandSearch(demand, filters.search)
+    )
     .toSorted((first, second) => {
       const comparison =
         filters.sort === 'status' ? first.status.localeCompare(second.status, 'fr') : first.created_at.localeCompare(second.created_at);
@@ -93,6 +101,8 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
   const toolbar = (
     <CcrtDemandToolbar
       isAdmin={isAdmin}
+      origin={filters.origin}
+      onOriginChange={(origin) => void setFilters({ origin })}
       search={filters.search}
       status={filters.status}
       demands={visibleDemands}

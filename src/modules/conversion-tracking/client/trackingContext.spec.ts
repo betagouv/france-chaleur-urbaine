@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { TestCase } from '@/tests/trpc-helpers';
 
-import { getConversionSource, getDemandOrigin, getTrackingContext } from './trackingContext';
+import { getConversionSource, getTrackingContext } from './trackingContext';
 
 const setURL = (url: string) => (window as unknown as { happyDOM: { setURL: (url: string) => void } }).happyDOM.setURL(url);
 
@@ -45,22 +45,5 @@ describe('getTrackingContext', () => {
   it('hors iframe sans `?host=` → host undefined', () => {
     setURL('https://france-chaleur-urbaine.beta.gouv.fr/carte');
     expect(getTrackingContext()).toStrictEqual({ host: undefined, inIframe: false });
-  });
-});
-
-describe('getDemandOrigin', () => {
-  it('attribue la demande à la source, au pathname et au host embarquant (atterrissage post-redirection de /iframe/form)', () => {
-    setURL('https://france-chaleur-urbaine.beta.gouv.fr/?source=engie&host=engie.fr%2Fchauffage&address=x');
-    expect(getDemandOrigin()).toStrictEqual({ origin_host: 'engie.fr/chauffage', origin_page: '/', origin_source: 'engie' });
-  });
-
-  it('sans `?source=` ni `?host=`, ne pose que le pathname', () => {
-    setURL('https://france-chaleur-urbaine.beta.gouv.fr/villes/paris');
-    expect(getDemandOrigin()).toStrictEqual({ origin_host: undefined, origin_page: '/villes/paris', origin_source: undefined });
-  });
-
-  it('vide sur une page admin (preview du générateur)', () => {
-    setURL('https://france-chaleur-urbaine.beta.gouv.fr/admin/iframes');
-    expect(getDemandOrigin()).toStrictEqual({});
   });
 });

@@ -2,7 +2,7 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Fragment } from 'react';
 
 import Button from '@/components/ui/Button';
-import { AcquisitionDetails } from '@/modules/analytics/client/AcquisitionDetails';
+import { DemandOriginCell } from '@/modules/analytics/client/DemandOriginCell';
 import type { CcrtTrackingPlacement } from '@/modules/analytics/posthog.config';
 import cx from '@/utils/cx';
 import { dayjs } from '@/utils/date';
@@ -102,7 +102,6 @@ export function CcrtDemandRow({
             >
               {demand.email}
             </a>
-            <AcquisitionDetails acquisition={demand.acquisition} />
           </div>
         </td>
         <td className="align-top!">
@@ -166,6 +165,7 @@ export function CcrtDemandRow({
             </p>
           )}
         </td>
+        {onValidate && <td>{demand.origin && <DemandOriginCell origin={demand.origin} />}</td>}
         {onValidate && <td>{demand.access_users && <CcrtDemandAccessColumn users={demand.access_users} />}</td>}
         <td className="text-center!">
           {onValidate && !demand.validated ? (
@@ -184,7 +184,7 @@ export function CcrtDemandRow({
       </tr>
       {isExpanded && (
         <tr className="border-l-4 border-(--border-active-blue-france) bg-(--background-alt-blue-france)!">
-          <td colSpan={onValidate ? 8 : 7} className="p-0!">
+          <td colSpan={onValidate ? 9 : 7} className="p-0!">
             <CcrtDemandDetails
               demand={demand}
               isUpdating={isUpdating}

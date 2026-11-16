@@ -29,6 +29,7 @@ export const createTransferredDemand = async (transaction: Transaction<DB>, inpu
   const demand = await transaction
     .insertInto('demands')
     .values({
+      acquisition: JSON.stringify({ campaign: null, medium: null, source: null, ...input.values.acquisition, creationMethod: 'transfer' }),
       comment_user: input.values.commentUser || null,
       commune_code: input.territory.commune_code,
       departement_code: input.territory.departement_code,

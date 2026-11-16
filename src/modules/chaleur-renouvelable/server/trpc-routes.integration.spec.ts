@@ -341,7 +341,7 @@ describe('batEnrRouter', () => {
         await kdb.selectFrom('demands_chaleur_renouvelable').select('acquisition').where('id', '=', result.id!).executeTakeFirstOrThrow()
       ).toStrictEqual({ acquisition });
       const adminList = await createTestCaller(testUsers.admin).batEnr.admin.listDemandesChaleurRenouvelable();
-      expect(adminList.items.map((demand) => demand.acquisition)).toStrictEqual([acquisition]);
+      expect(adminList.items.map((demand) => demand.origin.acquisition)).toStrictEqual([acquisition]);
 
       await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: result.id! });
       const ccrtList = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
@@ -360,16 +360,12 @@ describe('batEnrRouter', () => {
       });
       const saved = await kdb
         .selectFrom('demands')
-        .select('legacy_values')
+        .select('acquisition')
         .where('id', '=', created.demandSubmissionResult!.id)
         .executeTakeFirstOrThrow();
 
       expect(duplicate.demandSubmissionResult?.isExisting).toStrictEqual(true);
-      expect({
-        campaign: saved.legacy_values['Campagne matomo'],
-        medium: saved.legacy_values['Campagne medium'],
-        source: saved.legacy_values['Campagne source'],
-      }).toStrictEqual({
+      expect(saved.acquisition).toStrictEqual({
         campaign: 'chauffage-automne',
         medium: 'cpc',
         source: 'google',
@@ -964,7 +960,6 @@ describe('batEnrRouter', () => {
           {
             ...newerDemandInput,
             access_users: [],
-            acquisition: null,
             alternative_heating_solutions: [],
             archive_comment: null,
             archive_reason: null,
@@ -976,6 +971,7 @@ describe('batEnrRouter', () => {
             epci_code: null,
             ept_code: null,
             id: newerDemand.id,
+            origin: { acquisition: null, channel: 'unknown', detail: null },
             origin_demand_id: null,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
             region_code: null,
@@ -991,7 +987,6 @@ describe('batEnrRouter', () => {
           {
             ...olderDemandInput,
             access_users: [],
-            acquisition: null,
             alternative_heating_solutions: [],
             archive_comment: null,
             archive_reason: null,
@@ -1003,6 +998,7 @@ describe('batEnrRouter', () => {
             epci_code: null,
             ept_code: null,
             id: olderDemand.id,
+            origin: { acquisition: null, channel: 'unknown', detail: null },
             origin_demand_id: null,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
             region_code: null,

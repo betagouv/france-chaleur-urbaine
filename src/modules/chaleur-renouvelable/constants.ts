@@ -501,7 +501,7 @@ const zDemandeChaleurRenouvelableHeatNetworkEligibility = z.object({
 });
 
 export const zDemandeChaleurRenouvelable = z.object({
-  acquisition: zAcquisition.nullish(),
+  acquisition: zAcquisition.omit({ creationMethod: true }).nullish(),
   address: z.string(),
   alternativeHeatingSolutions: z.array(z.string().trim().min(1).max(120)).max(3).optional(),
   annualHeatingConsumption: z

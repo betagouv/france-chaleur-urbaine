@@ -390,6 +390,7 @@ export interface DemandEmails {
 }
 
 export interface Demands {
+  acquisition: JSONColumnType<Acquisition> | null;
   comment_fcu: string | null;
   comment_gestionnaire: string | null;
   comment_user: string | null;

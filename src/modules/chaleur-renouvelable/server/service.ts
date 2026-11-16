@@ -1,5 +1,7 @@
 import { TRPCError } from '@trpc/server';
 
+import { classifyDemandOrigin } from '@/modules/analytics/demand-origin';
+import { getIntegrationLabels } from '@/modules/analytics/server/demand-origin';
 import { businessRules } from '@/modules/app/business-rules';
 import { EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
 import type {
@@ -774,8 +776,17 @@ export const validateDemandeChaleurRenouvelableAdmin = async ({ demandId }: Admi
 };
 
 export const listDemandesChaleurRenouvelableAdmin = async () => {
-  const demandes = await selectCcrtDemandsForAdmin().select('acquisition').orderBy('created_at', 'desc').execute();
-  return { count: demandes.length, items: serializeDemandesChaleurRenouvelable(demandes) };
+  const [demandes, integrationLabels] = await Promise.all([
+    selectCcrtDemandsForAdmin().select('acquisition').orderBy('created_at', 'desc').execute(),
+    getIntegrationLabels(),
+  ]);
+  return {
+    count: demandes.length,
+    items: serializeDemandesChaleurRenouvelable(demandes).map(({ acquisition, ...demand }) => ({
+      ...demand,
+      origin: classifyDemandOrigin(acquisition, integrationLabels),
+    })),
+  };
 };
 
 export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {

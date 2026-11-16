@@ -48,7 +48,8 @@ export function CcrtDemandsTable({
         <col />
         <col className="w-24" />
         <col className="w-32" />
-        {onValidate && <col className="w-32" />}
+        {onValidate && <col />}
+        {onValidate && <col className="w-24" />}
         <col className="w-36" />
       </colgroup>
       <thead>
@@ -91,6 +92,7 @@ export function CcrtDemandsTable({
               />
             </div>
           </th>
+          {onValidate && <th scope="col">Origine</th>}
           {onValidate && <th scope="col">Accès</th>}
           <th scope="col" className="text-center!">
             Action
@@ -116,7 +118,7 @@ export function CcrtDemandsTable({
         ))}
         {demands.length === 0 && (
           <tr>
-            <td colSpan={onValidate ? 8 : 7} className="py-12! text-center!">
+            <td colSpan={onValidate ? 9 : 7} className="py-12! text-center!">
               <span role="status">
                 {isLoading
                   ? 'Chargement des demandes…'

@@ -59,8 +59,16 @@ vi.mock('./hooks/useCcrtDemandActions', () => ({
   }),
 }));
 vi.mock('./CcrtDemandToolbar', () => ({
-  CcrtDemandToolbar: ({ search, onSearchChange }: ComponentProps<typeof CcrtDemandToolbar>) => (
-    <input aria-label="Rechercher" value={search} onChange={(event) => onSearchChange(event.target.value)} />
+  CcrtDemandToolbar: ({ isAdmin, search, onSearchChange, origin, onOriginChange }: ComponentProps<typeof CcrtDemandToolbar>) => (
+    <>
+      <input aria-label="Rechercher" value={search} onChange={(event) => onSearchChange(event.target.value)} />
+      {isAdmin && (
+        <select aria-label="Origine" value={origin} onChange={(event) => onOriginChange?.(event.target.value)}>
+          <option value="">Toutes les origines</option>
+          <option value="ai">Assistant IA</option>
+        </select>
+      )}
+    </>
   ),
 }));
 vi.mock('./CcrtBuildingForm', () => ({
@@ -142,6 +150,32 @@ describe('CcrtDemandsWorkspace', () => {
         <CcrtDemandsWorkspace isAdmin={isAdmin} />
       </NuqsTestingAdapter>
     );
+
+  it('filters admin demands by origin without showing the filter to professionals', async () => {
+    mocks.adminQuery.mockReturnValue({
+      data: {
+        items: [
+          { ...demand, origin: { acquisition: null, channel: 'ai', detail: 'chatgpt.com' } },
+          {
+            ...demand,
+            first_name: 'Louis',
+            id: uuid(2),
+            origin: { acquisition: null, channel: 'referral', detail: 'example.com' },
+          },
+        ],
+      },
+      isError: false,
+      isLoading: false,
+    });
+    const admin = renderWorkspace();
+    expect(screen.getByRole('button', { name: 'Déplier la demande de Louis Martini' })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Origine'), { target: { value: 'ai' } });
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Déplier la demande de Louis Martini' })).toBeNull());
+    expect(screen.getByRole('button', { name: 'Déplier la demande de Joëlle Martini' })).toBeInTheDocument();
+    admin.unmount();
+    renderWorkspace(false);
+    expect(screen.queryByLabelText('Origine')).toBeNull();
+  });
 
   it.each([true, false])('opens and collapses the shared building sheet with admin mode %s', async (isAdmin) => {
     renderWorkspace(isAdmin);

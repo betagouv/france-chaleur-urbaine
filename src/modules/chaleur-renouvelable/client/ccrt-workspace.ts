@@ -1,4 +1,4 @@
-import { getAcquisitionSource } from '@/modules/analytics/constants';
+import { originChannels } from '@/modules/analytics/demand-origin';
 import { normalize } from '@/utils/strings';
 
 import {
@@ -51,7 +51,7 @@ export const getCcrtAccessWarning = (users: CcrtDemand['access_users']): string 
  * Matches a demand by its contact, address or identifier, ignoring accents.
  */
 export function matchesCcrtDemandSearch(
-  demand: Pick<CcrtDemand, 'id' | 'first_name' | 'last_name' | 'email' | 'phone' | 'address' | 'acquisition'>,
+  demand: Pick<CcrtDemand, 'id' | 'first_name' | 'last_name' | 'email' | 'phone' | 'address' | 'origin'>,
   search: string
 ): boolean {
   const searchableText = normalize(
@@ -62,8 +62,10 @@ export function matchesCcrtDemandSearch(
       demand.email,
       demand.phone,
       demand.address,
-      demand.acquisition && getAcquisitionSource(demand.acquisition),
-      demand.acquisition?.campaign,
+      demand.origin && originChannels[demand.origin.channel],
+      demand.origin?.detail,
+      demand.origin?.acquisition?.source,
+      demand.origin?.acquisition?.campaign,
     ].join(' ')
   );
   return normalize(search)

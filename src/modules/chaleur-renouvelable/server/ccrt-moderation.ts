@@ -57,6 +57,7 @@ export const transferCcrtDemand = async (ctx: Context, input: z.infer<typeof zCc
       territory: demand,
       values: {
         ...structure,
+        acquisition: demand.acquisition,
         address: demand.address,
         city: context.address.city,
         commentUser: demand.comments ?? '',
@@ -161,6 +162,7 @@ export const updateCcrtAdminComment = async (ctx: Context, input: z.infer<typeof
 const notFound = () => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' });
 const lockPendingDemand = async (transaction: Transaction<DB>, demandId: string) => {
   const current = await selectDemandesChaleurRenouvelableForList(transaction)
+    .select('acquisition')
     .where('id', '=', demandId)
     .forUpdate()
     .executeTakeFirstOrThrow(notFound);

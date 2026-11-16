@@ -2,6 +2,7 @@ import SearchBar from '@codegouvfr/react-dsfr/SearchBar';
 import dynamic from 'next/dynamic';
 
 import Select from '@/components/form/dsfr/Select';
+import { originChannels } from '@/modules/analytics/demand-origin';
 
 import type { CcrtDemand } from '../types';
 import { ccrtDemandAcquisitionExportColumns, ccrtDemandExportColumns } from './ccrt-demand-export';
@@ -10,6 +11,8 @@ const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr
 
 type CcrtDemandToolbarProps = {
   isAdmin?: boolean;
+  origin?: string;
+  onOriginChange?: (origin: string) => void;
   search: string;
   status: string;
   statusOptions: { label: string; value: string }[];
@@ -25,6 +28,8 @@ type CcrtDemandToolbarProps = {
  */
 export function CcrtDemandToolbar({
   isAdmin = false,
+  origin,
+  onOriginChange,
   search,
   status,
   statusOptions,
@@ -66,6 +71,17 @@ export function CcrtDemandToolbar({
           value: statusOptions.length === 1 ? statusOptions[0].value : status,
         }}
       />
+      {isAdmin && (
+        <Select
+          className="mb-0 w-full lg:w-60"
+          label="Origine"
+          options={[
+            { label: 'Toutes les origines', value: '' },
+            ...Object.entries(originChannels).map(([value, label]) => ({ label, value })),
+          ]}
+          nativeSelectProps={{ onChange: (event) => onOriginChange?.(event.target.value), value: origin ?? '' }}
+        />
+      )}
       <ButtonExport
         filename="demandes-chaleur-renouvelable-ccrt.xlsx"
         priority="tertiary"

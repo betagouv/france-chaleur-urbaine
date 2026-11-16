@@ -2,6 +2,7 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
+import { DemandOriginCell } from '@/modules/analytics/client/DemandOriginCell';
 import trpc from '@/modules/trpc/client';
 import { dayjs } from '@/utils/date';
 
@@ -45,6 +46,7 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
         <p className="mb-0 break-words font-medium leading-6">
           {demand.occupant_status} · {formatCcrtAddress(demand.address)}
         </p>
+        {onValidate && demand.origin && <DemandOriginCell origin={demand.origin} />}
       </header>
       <div className="space-y-2 border border-(--background-default-grey-active) bg-(--background-default-grey) p-4">
         <p className="mb-0 font-bold text-(--text-action-high-blue-france)">{isClosed ? 'DEMANDE CLÔTURÉE' : 'PROCHAINE ÉTAPE'}</p>

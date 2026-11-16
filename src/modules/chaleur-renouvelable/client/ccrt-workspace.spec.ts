@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { classifyDemandOrigin } from '@/modules/analytics/demand-origin';
 import { uuid } from '@/tests/helpers';
 
 import { formatCcrtAddress, getCcrtAccessWarning, getCcrtDemandTab, matchesCcrtAdminTab, matchesCcrtDemandSearch } from './ccrt-workspace';
@@ -63,7 +64,7 @@ describe('matchesCcrtDemandSearch', () => {
       matchesCcrtDemandSearch(
         {
           ...demand,
-          acquisition: { campaign: 'Rénovation automne', medium: 'cpc', source: 'google' },
+          origin: classifyDemandOrigin({ campaign: 'Rénovation automne', medium: 'cpc', source: 'google' }),
         },
         search
       )

@@ -57,6 +57,7 @@ vi.mock('@/modules/ban/server/service', () => ({
 
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 
+import { listAdmin } from './admin-operations';
 import { createDemand } from './creation-user';
 import { enrichDemandForGestionnaire, getDemandById } from './helpers';
 
@@ -73,17 +74,40 @@ describe('creation-user', () => {
   });
 
   describe('createDemand()', () => {
-    it('stores the same raw acquisition fields as simulator demands', async () => {
-      const acquisition = { campaign: 'chauffage-automne', keyword: 'pompe à chaleur', medium: 'cpc', source: 'google' };
+    it('stores acquisition in its dedicated column without duplicating it in legacy values', async () => {
+      const acquisition = {
+        campaign: 'chauffage-automne',
+        formPage: '/carte',
+        keyword: 'pompe à chaleur',
+        landingPage: '/',
+        medium: 'cpc',
+        referrer: 'google.fr',
+        source: 'google',
+      };
       const result = await createDemand(buildDemandInput({ acquisition }));
-      const saved = await kdb.selectFrom('demands').select('legacy_values').where('id', '=', result.id).executeTakeFirstOrThrow();
+      const saved = await kdb
+        .selectFrom('demands')
+        .select(['acquisition', 'legacy_values'])
+        .where('id', '=', result.id)
+        .executeTakeFirstOrThrow();
 
-      expect({
-        campaign: saved.legacy_values['Campagne matomo'],
-        keyword: saved.legacy_values['Campagne keywords'],
-        medium: saved.legacy_values['Campagne medium'],
-        source: saved.legacy_values['Campagne source'],
-      }).toStrictEqual(acquisition);
+      expect(saved.acquisition).toStrictEqual(acquisition);
+      expect(Object.keys(saved.legacy_values).filter((key) => key.startsWith('Campagne '))).toStrictEqual([]);
+    });
+
+    it('keeps origin details in the admin response and out of the professional response', async () => {
+      const acquisition = { campaign: null, formPage: '/carte', landingPage: '/', medium: null, referrer: 'chatgpt.com', source: null };
+      const result = await createDemand(buildDemandInput({ acquisition }));
+      const admin = await listAdmin();
+      expect(admin.items.find((demand) => demand.id === result.id)?.origin).toStrictEqual({
+        acquisition,
+        channel: 'ai',
+        detail: 'chatgpt.com',
+      });
+      const { testAddress, ...demand } = await getDemandById(result.id);
+      const professional = enrichDemandForGestionnaire({ demand, testAddress });
+      expect('acquisition' in professional).toStrictEqual(false);
+      expect('origin' in professional).toStrictEqual(false);
     });
 
     it('crée une demande avec adresse de test, eligibility_history et événement', async () => {
