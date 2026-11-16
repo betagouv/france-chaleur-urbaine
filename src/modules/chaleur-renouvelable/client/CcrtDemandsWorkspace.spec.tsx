@@ -78,6 +78,7 @@ vi.mock('./CcrtBuildingForm', () => ({
 }));
 vi.mock('./CcrtDemandFollowUp', () => ({ CcrtDemandFollowUp: () => <p>Suivi de la demande</p> }));
 vi.mock('./CcrtBuildingIdentification', () => ({ CcrtBuildingIdentification: () => <p>Identification du bâtiment</p> }));
+vi.mock('./CcrtIdentificationForm', () => ({ CcrtIdentificationForm: () => <p>Identification du bâtiment et du demandeur</p> }));
 vi.mock('./CcrtProjectFields', () => ({ CcrtProjectFields: () => <p>Projet initial</p> }));
 vi.mock('./CcrtDemandEmailDialog', () => ({ CcrtDemandEmailDialog: () => null }));
 

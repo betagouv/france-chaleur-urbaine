@@ -115,7 +115,7 @@ const getEventLabel = (event: CcrtFollowUp['history'][number]) =>
     : event.type === 'ccrt_demand_updated'
       ? 'status' in event.data.changes
         ? 'Changement de statut'
-        : 'Information du bâtiment modifiée'
+        : 'Informations de la demande modifiées'
       : (eventLabels[event.type] ?? 'Suivi');
 const eventLabels: Record<string, string> = {
   ccrt_demand_admin_comment_updated: 'Commentaire interne FCU modifié',
@@ -143,12 +143,18 @@ const fieldLabels: Record<string, string> = {
   average_residents: 'Habitants moyens',
   comments: 'Commentaire',
   dpe: 'DPE',
+  email: 'Email',
+  first_name: 'Prénom',
   heating_energy: 'Énergie',
   hot_water_system_type: 'Eau chaude',
   housing_count: 'Nombre de logements',
   housing_type: 'Type de logement',
   is_public_advisor_selected: 'Refus de raccordement au réseau de chaleur',
+  last_name: 'Nom',
+  occupant_status: 'Type de demandeur',
+  organization_name: 'Structure',
   outdoor_space: 'Espaces extérieurs',
+  phone: 'Téléphone',
   project_state: 'État du projet',
   project_status: 'Avancement déclaré',
   radiator_type: 'Radiateurs',

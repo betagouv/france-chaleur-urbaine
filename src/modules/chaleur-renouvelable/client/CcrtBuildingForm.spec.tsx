@@ -5,6 +5,7 @@ import { uuid } from '@/tests/helpers';
 
 import type { CcrtDemand } from '../types';
 import { CcrtBuildingForm } from './CcrtBuildingForm';
+import { CcrtBuildingIdentification } from './CcrtBuildingIdentification';
 
 const mocks = vi.hoisted(() => ({
   eligibility: { coordinates: { lat: 47.2, lon: -1.55 }, distance: 96, isEligible: true },
@@ -116,7 +117,7 @@ describe('CcrtBuildingForm', () => {
   });
 
   it.each([null, 'BATIMENT-1'])('links to the saved building on the national map with construction id %s', (constructionId) => {
-    render(<CcrtBuildingForm demand={{ ...demand, batiment_construction_id: constructionId }} />);
+    render(<CcrtBuildingIdentification demand={{ ...demand, batiment_construction_id: constructionId }} />);
     const link = screen.getByRole('link', { name: 'Afficher dans la carte' });
     const url = new URL(link.getAttribute('href')!, 'http://localhost');
 
@@ -188,14 +189,11 @@ describe('CcrtBuildingForm', () => {
   it('saves decimal residents with the selected energy label and reuses the saved version for a second edit', async () => {
     render(<CcrtBuildingForm demand={demand} />);
     expect(screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent)).toStrictEqual([
-      'Identification du bâtiment',
       'Bâtiment et chauffage',
       'Avancement déclaré par l’usager',
     ]);
     expect(screen.queryByRole('button', { name: 'Enregistrer et recalculer' })).toBeNull();
     expect(screen.queryByLabelText('Adresse du bâtiment')).toBeNull();
-    expect(screen.getByText(demand.address)).toBeInTheDocument();
-    expect(screen.getByText('Syndicat de copropriété :')).toHaveTextContent('Non renseigné');
     fireEvent.change(screen.getByLabelText('Habitants moyens'), { target: { value: '2.5' } });
     fireEvent.change(screen.getByLabelText('DPE'), { target: { value: 'E' } });
     fireEvent.blur(screen.getByLabelText('DPE'));

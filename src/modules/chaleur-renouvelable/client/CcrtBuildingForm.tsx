@@ -4,7 +4,6 @@ import Button from '@/components/ui/Button';
 import { Form } from '@/modules/form/Form';
 
 import type { CcrtDemand } from '../types';
-import { CcrtBuildingIdentification } from './CcrtBuildingIdentification';
 import { CcrtDetailsSection } from './CcrtDetailsSection';
 import { CcrtProjectFields } from './CcrtProjectFields';
 import { CcrtSimulationFields } from './CcrtSimulationFields';
@@ -15,12 +14,12 @@ const textFields = [
   { label: 'Motif du refus', name: 'refusal_reason' },
 ] as const;
 
-type CcrtBuildingFormProps = { demand: CcrtDemand; onSimulation?: () => void; onMap?: () => void; buildingOnly?: boolean };
+type CcrtBuildingFormProps = { demand: CcrtDemand; onSimulation?: () => void; buildingOnly?: boolean };
 
 /**
  * Edits the demand snapshot with the existing outdoor-space checkboxes and saves a recalculated simulation.
  */
-export function CcrtBuildingForm({ demand, onSimulation, onMap, buildingOnly = false }: CcrtBuildingFormProps) {
+export function CcrtBuildingForm({ demand, onSimulation, buildingOnly = false }: CcrtBuildingFormProps) {
   const autosave = useCcrtBuildingAutosave(demand);
   const form = autosave.form;
   const hasConnectionRefusal = useStore(form.store, (state) => state.values.is_public_advisor_selected);
@@ -43,7 +42,6 @@ export function CcrtBuildingForm({ demand, onSimulation, onMap, buildingOnly = f
       }}
     >
       <fieldset disabled={demand.archived_at !== null} className="m-0 space-y-6 border-0 p-0">
-        {!buildingOnly && <CcrtBuildingIdentification demand={demand} onMap={onMap} />}
         <CcrtDetailsSection title="Bâtiment et chauffage">
           <CcrtSimulationFields
             form={form}

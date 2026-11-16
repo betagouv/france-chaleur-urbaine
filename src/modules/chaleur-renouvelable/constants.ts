@@ -336,6 +336,19 @@ const OCCUPANT_STATUS_VALUES = [
 export type OccupantStatus = (typeof OCCUPANT_STATUS_VALUES)[number];
 export const occupantStatusOptions = OCCUPANT_STATUS_VALUES.map((value) => ({ label: value, value }));
 
+const ORGANIZATION_NAME_OCCUPANT_STATUSES = [
+  'Bailleur social',
+  "Bureau d'étude ou AMO",
+  'Grande entreprise ou Foncière',
+  'Mandataire ou Délégataire CEE',
+  'Syndicat de copropriété',
+  'TPE ou PME',
+] as const satisfies readonly OccupantStatus[];
+
+export function hasOrganizationNameField(occupantStatus: OccupantStatus) {
+  return ORGANIZATION_NAME_OCCUPANT_STATUSES.some((organizationNameOccupantStatus) => organizationNameOccupantStatus === occupantStatus);
+}
+
 const DEMAND_CONCERN_VALUES = ['Une copropriété', 'Une maison individuelle', 'Un bâtiment tertiaire', 'Plusieurs bâtiments'] as const;
 export type DemandConcern = (typeof DEMAND_CONCERN_VALUES)[number];
 export const demandConcernOptions = DEMAND_CONCERN_VALUES.map((value) => ({ label: value, value }));
@@ -619,6 +632,18 @@ export const zCcrtBuilding = z.object({
   surface_area: z.number().positive().nullish(),
 });
 export const zCcrtUpdateBuilding = zCcrtDemandId.extend({ updatedAt: z.iso.datetime(), values: zCcrtBuilding });
+export const zCcrtIdentification = z.object({
+  email: zContactFormChaleurRenouvelable.shape.email.trim(),
+  first_name: z.string().trim().min(1, 'Veuillez renseigner le prénom').max(200),
+  last_name: z.string().trim().min(1, 'Veuillez renseigner le nom').max(200),
+  occupant_status: z.enum(OCCUPANT_STATUS_VALUES),
+  organization_name: z.string().trim().max(500).nullable(),
+  phone: zContactFormChaleurRenouvelable.shape.phone,
+  rnic_nom_copropriete: z.string().trim().max(500).nullable(),
+  rnic_numero_immatriculation: z.string().trim().max(100).nullable(),
+  rnic_siret_representant_legal: z.string().trim().max(100).nullable(),
+});
+export const zCcrtUpdateIdentification = zCcrtDemandId.extend({ updatedAt: z.iso.datetime(), values: zCcrtIdentification });
 const zCcrtEmailContent = z.object({
   body: z.string().trim().min(1, 'Veuillez saisir un message').max(20000),
   cc: z.string().refine((value) => !value || value.split(',').every((email) => z.email().safeParse(email.trim()).success), {

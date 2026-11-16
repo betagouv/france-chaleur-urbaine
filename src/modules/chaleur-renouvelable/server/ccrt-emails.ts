@@ -34,13 +34,14 @@ export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSen
     // Serialize the reservation with withdrawal, then release the lock before SMTP.
     const current = await transaction
       .selectFrom('demands_chaleur_renouvelable')
-      .select(['validated', 'archived_at'])
+      .select(['validated', 'archived_at', 'email'])
       .where('id', '=', demand.id)
       .forUpdate()
       .executeTakeFirstOrThrow();
     if (current.archived_at || (ctx.user.role !== 'admin' && !current.validated)) {
       throw new TRPCError({ code: 'CONFLICT', message: 'Cette demande n’est plus disponible pour l’envoi. Actualisez la liste.' });
     }
+    message.to = current.email;
     const reservation = await transaction
       .insertInto('ccrt_demand_emails')
       .values({ author_id: ctx.user.id, ...message, demand_id: demand.id, id: input.messageId })
@@ -79,7 +80,7 @@ export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSen
   try {
     await sendEmailTemplate(
       'demands.demandeur.message-gestionnaire',
-      { email: demand.email, id: demand.id },
+      { email: message.to, id: demand.id },
       {
         content: escapeHtml(emailContent.body).replaceAll('\n', '<br />'),
         signature: emailContent.signature,
@@ -114,7 +115,7 @@ export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSen
         author_id: ctx.user.id,
         context_id: demand.id,
         context_type: 'ccrt_demand',
-        data: { messageId: input.messageId, object: emailContent.object, to: demand.email },
+        data: { messageId: input.messageId, object: emailContent.object, to: message.to },
         type: 'ccrt_demand_email_sent',
       },
       transaction

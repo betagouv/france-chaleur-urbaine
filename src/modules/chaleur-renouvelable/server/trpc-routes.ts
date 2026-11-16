@@ -13,6 +13,7 @@ import {
   zCcrtTransferNetwork,
   zCcrtUpdateBuilding,
   zCcrtUpdateDemandeChaleurRenouvelableInput,
+  zCcrtUpdateIdentification,
   zDemandeChaleurRenouvelable,
   zFranceRenovSpaceInput,
   zLocationInfos,
@@ -40,6 +41,7 @@ import { updateCcrtBuilding } from './ccrt-building';
 import { sendCcrtEmail } from './ccrt-emails';
 import { getCcrtFollowUp } from './ccrt-follow-up';
 import { getCcrtHeatNetworkEligibility } from './ccrt-heat-network';
+import { updateCcrtIdentification } from './ccrt-identification';
 import { archiveCcrtDemand, getCcrtAdminComment, restoreCcrtDemand, transferCcrtDemand, updateCcrtAdminComment } from './ccrt-moderation';
 import { reopenCcrtDemand } from './ccrt-reopening';
 import { getCcrtTransferNetwork } from './ccrt-transfer-network';
@@ -89,6 +91,9 @@ export const batEnrRouter = router({
     updateDemandeChaleurRenouvelable: renewableHeatAccessRoute
       .input(zCcrtUpdateDemandeChaleurRenouvelableInput)
       .mutation(async ({ ctx, input }) => await updateDemandeChaleurRenouvelableCcrt(ctx, input)),
+    updateIdentification: renewableHeatAccessRoute
+      .input(zCcrtUpdateIdentification)
+      .mutation(({ ctx, input }) => updateCcrtIdentification(ctx, input)),
   },
   createDemandeChaleurRenouvelable: route
     .input(zDemandeChaleurRenouvelable)
