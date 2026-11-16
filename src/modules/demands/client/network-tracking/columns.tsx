@@ -91,7 +91,7 @@ const columns: ColumnDef<NetworkTrackingSummary>[] = [
     visible: false,
   },
   {
-    accessorFn: (row) => row.users.map((user) => user.email).join(' | '),
+    accessorFn: (row) => row.users.map((user) => (user.via_organization ? `${user.email} (organisation)` : user.email)).join(' | '),
     cell: ({ row }) => <NetworkTrackingUsersCell network={row.original} />,
     enableSorting: false,
     filterProps: { emptyLabel: 'Sans utilisateur', filledLabel: 'Avec utilisateurs' },

@@ -15,6 +15,8 @@ export type NetworkUser = {
   email: string;
   last_connection: string | null;
   email_blocked_reason: string | null;
+  /** Access only through the organization of the network: usually not the one reminded. */
+  via_organization: boolean;
 };
 
 type NetworkUsersCellProps = {
@@ -24,12 +26,14 @@ type NetworkUsersCellProps = {
 };
 
 /**
- * Accounts holding a permission on a network: email, last connection, blocked-email badge, and a button copying all the addresses.
+ * Accounts holding a permission on a network: email, last connection, blocked-email and organization badges,
+ * and a button copying the addresses of the accounts with a permission on the network itself (the ones reminded).
  */
 export function NetworkUsersCell({ users, onEmailUnblocked }: NetworkUsersCellProps) {
   if (users.length === 0) {
     return <span className="text-gray-400 text-sm">Aucun utilisateur</span>;
   }
+  const remindedEmails = users.filter((user) => !user.via_organization).map((user) => user.email);
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap gap-1">
@@ -55,13 +59,21 @@ export function NetworkUsersCell({ users, onEmailUnblocked }: NetworkUsersCellPr
                   {user.email_blocked_reason && (
                     <EmailBlockedBadge email={user.email} reasonCode={user.email_blocked_reason} size="xs" onUnblocked={onEmailUnblocked} />
                   )}
+                  {user.via_organization && (
+                    <Tooltip title="Accès via l'organisation du réseau, sans permission sur le réseau lui-même : en général pas relancé. Adresse exclue de la copie.">
+                      <span className="inline-flex cursor-help items-center text-(--text-mention-grey)">
+                        <Icon name="fr-icon-building-line" size="xs" className="mr-1" />
+                        Organisation
+                      </span>
+                    </Tooltip>
+                  )}
                 </span>
               </div>
             </Tag>
           );
         })}
       </div>
-      <CopyEmailsButton emails={users.map((user) => user.email)} />
+      {remindedEmails.length > 0 && <CopyEmailsButton emails={remindedEmails} />}
     </div>
   );
 }

@@ -76,7 +76,7 @@ const seedUsers = () =>
   ]);
 
 /**
- * Network A has an account, a reminder and notes; network C has no demand and is only reachable through its organization;
+ * Network A has an account, a reminder and notes; network C has no demand, an account on it and one only reachable through its organization;
  * network B shares its id with A but not its type.
  */
 const seedNetworks = async () => {
@@ -100,6 +100,9 @@ const seedNetworks = async () => {
       // an admin never processes demands, even with a permission on the network
       { resource_id: '1', type: 'reseau_de_chaleur', user_id: adminId },
       { resource_id: organizationId, type: 'organization', user_id: collectiviteId },
+      // a permission on the network wins over one on its organization, and comes first
+      { resource_id: organizationId, type: 'organization', user_id: gestionnaireId },
+      { resource_id: '2', type: 'reseau_de_chaleur', user_id: gestionnaireId },
     ])
     .execute();
   await kdb
@@ -185,13 +188,36 @@ const networkAIdentity = {
   powerMW: 12.5,
   reminders: [{ author_email: `user-${adminId}@test.local`, created_at: expect.any(String), id: uuid(50), note: 'Relancé par courriel' }],
   sncuId: '7501C',
-  users: [{ email: `user-${gestionnaireId}@test.local`, email_blocked_reason: null, id: gestionnaireId, last_connection: null }],
+  users: [
+    {
+      email: `user-${gestionnaireId}@test.local`,
+      email_blocked_reason: null,
+      id: gestionnaireId,
+      last_connection: null,
+      via_organization: false,
+    },
+  ],
 };
 const networkCIdentity = {
   name: 'Réseau C',
   networkId: 2,
   networkType: 'reseau_de_chaleur',
-  users: [{ email: `user-${collectiviteId}@test.local`, email_blocked_reason: null, id: collectiviteId, last_connection: null }],
+  users: [
+    {
+      email: `user-${gestionnaireId}@test.local`,
+      email_blocked_reason: null,
+      id: gestionnaireId,
+      last_connection: null,
+      via_organization: false,
+    },
+    {
+      email: `user-${collectiviteId}@test.local`,
+      email_blocked_reason: null,
+      id: collectiviteId,
+      last_connection: null,
+      via_organization: true,
+    },
+  ],
 };
 const networkBIdentity = { name: 'Réseau B', networkId: 1, networkType: 'reseau_en_construction' };
 

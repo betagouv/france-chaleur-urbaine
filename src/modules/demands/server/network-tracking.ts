@@ -167,42 +167,46 @@ const demandTimelineQuery = (network?: NetworkRef) =>
 type NetworkTable = 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction';
 
 /**
- * Active accounts able to process the demands of the network, most recently connected first:
+ * Active accounts able to process the demands of the network:
  * a permission on the network itself or on the organization it belongs to, with a role allowed to process heat network demands
  * (same rule as `isUserResponsibleForDemand` for an assigned demand).
+ * `via_organization` flags the accounts reaching the network only through its organization: usually not the ones reminded.
+ * Accounts with a permission on the network come first, then most recently connected first.
  */
-const networkUsersJson = (eb: ExpressionBuilder<DB, NetworkTable>, table: NetworkTable, networkType: NetworkType) =>
-  jsonArrayFrom(
+const networkUsersJson = (eb: ExpressionBuilder<DB, NetworkTable>, table: NetworkTable, networkType: NetworkType) => {
+  const hasPermission = (
+    userBuilder: ExpressionBuilder<DB & { u: DB['users'] }, NetworkTable | 'u'>,
+    type: 'network' | 'organization'
+  ): Expression<SqlBool> =>
+    userBuilder.exists(
+      userBuilder
+        .selectFrom('user_permissions as up')
+        .select('up.id')
+        .whereRef('up.user_id', '=', 'u.id')
+        .where('up.type', '=', type === 'network' ? networkType : 'organization')
+        .where((permissionBuilder) =>
+          permissionBuilder(
+            'up.resource_id',
+            '=',
+            permissionBuilder.cast<string>(type === 'network' ? `${table}.id_fcu` : `${table}.organization_id`, 'text')
+          )
+        )
+    );
+  return jsonArrayFrom(
     eb
       .selectFrom('users as u')
       .leftJoin('email_blocked_contacts as ebc', (join) =>
         join.on((joinBuilder) => joinBuilder('ebc.email', '=', joinBuilder.fn<string>('lower', ['u.email'])))
       )
       .select(['u.id', 'u.email', 'u.last_connection', 'ebc.reason_code as email_blocked_reason'])
+      .select((userBuilder) => userBuilder.not(hasPermission(userBuilder, 'network')).$castTo<boolean>().as('via_organization'))
       .where('u.active', '=', true)
       .where('u.role', 'in', userRolesWithPermissionsHeatNetwork)
-      .where((userBuilder) =>
-        userBuilder.exists(
-          userBuilder
-            .selectFrom('user_permissions as up')
-            .select('up.id')
-            .whereRef('up.user_id', '=', 'u.id')
-            .where((permissionBuilder) =>
-              permissionBuilder.or([
-                permissionBuilder.and([
-                  permissionBuilder('up.type', '=', networkType),
-                  permissionBuilder('up.resource_id', '=', permissionBuilder.cast<string>(`${table}.id_fcu`, 'text')),
-                ]),
-                permissionBuilder.and([
-                  permissionBuilder('up.type', '=', 'organization'),
-                  permissionBuilder('up.resource_id', '=', permissionBuilder.cast<string>(`${table}.organization_id`, 'text')),
-                ]),
-              ])
-            )
-        )
-      )
+      .where((userBuilder) => userBuilder.or([hasPermission(userBuilder, 'network'), hasPermission(userBuilder, 'organization')]))
+      .orderBy('via_organization')
       .orderBy('u.last_connection', (order) => order.desc().nullsLast())
   );
+};
 
 const networksQuery = () =>
   kdb
