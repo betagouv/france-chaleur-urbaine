@@ -1,3 +1,5 @@
+import Badge from '@codegouvfr/react-dsfr/Badge';
+
 import AsyncButton from '@/components/ui/AsyncButton';
 import trpc from '@/modules/trpc/client';
 
@@ -17,24 +19,24 @@ export function CcrtDemandValidation({ demand, full, onValidate }: CcrtDemandVal
   if (demand.archived_at !== null) {
     return (
       <div className="space-y-2 text-left text-sm">
-        <p className="mb-0">
-          {demand.transferred_network_name
-            ? `Transférée à ${demand.transferred_network_name}`
-            : `Archivée : ${ccrtArchiveReasons.find((reason) => reason.value === demand.archive_reason)?.label ?? ''}`}
-        </p>
+        <Badge small noIcon severity={demand.transferred_network_name ? 'info' : undefined} className="max-w-full whitespace-normal!">
+          {demand.transferred_network_name ? `Transférée` : `Archivée`}
+        </Badge>
+        {demand.transferred_network_name
+          ? demand.transferred_network_name
+          : (ccrtArchiveReasons.find((reason) => reason.value === demand.archive_reason)?.label ?? '')}
         {demand.archive_comment && <p className="mb-0 whitespace-pre-wrap">{demand.archive_comment}</p>}
-        {!demand.transferred_network_name && (
-          <AsyncButton
-            full={full}
-            priority="secondary"
-            onClick={async () => {
-              await restore.mutateAsync({ demandId: demand.id });
-              await invalidateCcrtModeration(utils, demand.id);
-            }}
-          >
-            Restaurer
-          </AsyncButton>
-        )}
+        <AsyncButton
+          priority="tertiary no outline"
+          size="small"
+          className="h-auto! min-h-0! p-0! underline"
+          onClick={async () => {
+            await restore.mutateAsync({ demandId: demand.id });
+            await invalidateCcrtModeration(utils, demand.id);
+          }}
+        >
+          Annuler
+        </AsyncButton>
       </div>
     );
   }

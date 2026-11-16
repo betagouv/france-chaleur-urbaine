@@ -148,8 +148,11 @@ export async function getEventStats(options: EventStatsOptions): Promise<EventSt
   };
 }
 
-export async function createEvent(event: Pick<Insertable<Events>, 'type' | 'context_type' | 'context_id' | 'data'>) {
-  await kdb.insertInto('events').values(event).execute();
+export async function createEvent(
+  event: Pick<Insertable<Events>, 'type' | 'context_type' | 'context_id' | 'data'>,
+  database: Kysely<DB> = kdb
+) {
+  await database.insertInto('events').values(event).execute();
 }
 
 /**

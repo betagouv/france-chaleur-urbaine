@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import * as demandHelpers from '@/modules/demands/server/helpers';
 import { sendEmailTemplate } from '@/modules/email';
 import * as eventsService from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 import { cleanDatabase, seedDemandeChaleurRenouvelable, seedReseauDeChaleur, seedTableUser } from '@/tests/fixtures';
 import { createTestCaller, forbiddenError, type TestCaseBoolean, testUsers } from '@/tests/trpc-helpers';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
 
 import { processCcrtModerationEmail } from './ccrt-moderation-email';
@@ -235,7 +237,6 @@ describe('CCRT moderation lifecycle', () => {
     });
     const managerDemands = await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.list();
     expect(managerDemands.map((item) => item.id)).toStrictEqual([result.transferredDemandId]);
-    await expect(route.restoreDemand({ demandId: demand.id })).rejects.toMatchObject({ code: 'CONFLICT' });
     await expect(route.transferDemand({ demandId: demand.id, networkId: 500 })).rejects.toMatchObject({ code: 'CONFLICT' });
     const job = await kdb.selectFrom('jobs').select('id').executeTakeFirstOrThrow();
     await processCcrtModerationEmail(job, parentLogger);
@@ -248,6 +249,149 @@ describe('CCRT moderation lifecycle', () => {
         network: { distance: 0, manager: 'Gestionnaire test', name: 'Réseau 500' },
       }
     );
+  });
+
+  it('cancels an untouched transfer atomically, removes the classic demand and skips its queued email', async () => {
+    const demand = await seedDemandeChaleurRenouvelable({ admin_comment: 'Private', comments: 'Initial comment' });
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    const transferred = await route.transferDemand({ demandId: demand.id, networkId: 500 });
+    await route.restoreDemand({ demandId: demand.id });
+    expect(
+      await kdb.selectFrom('demands').select('deleted_at').where('id', '=', transferred.transferredDemandId).executeTakeFirstOrThrow()
+    ).toStrictEqual({ deleted_at: expect.any(Date) });
+    expect(
+      await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['archived_at', 'transferred_demand_id', 'transferred_network_name', 'validated', 'admin_comment', 'comments'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow()
+    ).toStrictEqual({
+      admin_comment: 'Private',
+      archived_at: null,
+      comments: 'Initial comment',
+      transferred_demand_id: null,
+      transferred_network_name: null,
+      validated: false,
+    });
+    expect(await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.list()).toStrictEqual([]);
+    const job = await kdb.selectFrom('jobs').select('id').executeTakeFirstOrThrow();
+    expect(await processCcrtModerationEmail(job, parentLogger)).toStrictEqual({ skipped: true });
+    expect(sendEmailTemplate).not.toHaveBeenCalled();
+    expect(
+      await kdb
+        .selectFrom('events')
+        .select(['type', 'data'])
+        .where('context_id', '=', demand.id)
+        .where('type', '=', 'ccrt_demand_moderated')
+        .orderBy('created_at')
+        .execute()
+    ).toStrictEqual([
+      {
+        data: { action: 'transfer', networkName: 'Réseau 500', transferredDemandId: transferred.transferredDemandId },
+        type: 'ccrt_demand_moderated',
+      },
+      {
+        data: { action: 'restore', networkName: 'Réseau 500', transferredDemandId: transferred.transferredDemandId },
+        type: 'ccrt_demand_moderated',
+      },
+    ]);
+  });
+
+  it.each(['manager edit', 'API edit', 'email'] as const)(
+    'refuses transfer cancellation after recorded processing: %s',
+    async (activity) => {
+      const demand = await seedDemandeChaleurRenouvelable();
+      await seedNetwork();
+      const route = createTestCaller(testUsers.admin).batEnr.admin;
+      const transferred = await route.transferDemand({ demandId: demand.id, networkId: 500 });
+      if (activity === 'manager edit') {
+        await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.update({
+          demandId: transferred.transferredDemandId,
+          values: { Status: DEMANDE_STATUS.TO_PROCESS },
+        });
+      } else if (activity === 'API edit') {
+        await eventsService.createEvent({
+          context_id: transferred.transferredDemandId,
+          context_type: 'demand',
+          data: { credential_id: 'test', organization_id: 'test', organization_name: 'Test', statut: 'À traiter' },
+          type: 'api_demand_updated',
+        });
+      } else {
+        await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.sendEmail({
+          demand_id: transferred.transferredDemandId,
+          emailContent: { body: 'Bonjour', cc: '', object: 'Contact', replyTo: '', signature: '', to: 'client@example.fr' },
+          key: 'test',
+        });
+      }
+      await expect(route.restoreDemand({ demandId: demand.id })).rejects.toMatchObject({ code: 'CONFLICT' });
+      expect(
+        await kdb.selectFrom('demands').select('deleted_at').where('id', '=', transferred.transferredDemandId).executeTakeFirstOrThrow()
+      ).toStrictEqual({ deleted_at: null });
+      expect(
+        await kdb
+          .selectFrom('demands_chaleur_renouvelable')
+          .select('transferred_demand_id')
+          .where('id', '=', demand.id)
+          .executeTakeFirstOrThrow()
+      ).toStrictEqual({ transferred_demand_id: transferred.transferredDemandId });
+    }
+  );
+
+  it.each(['update', 'email'] as const)('rejects a stale manager %s if cancellation happens after its access check', async (operation) => {
+    const demand = await seedDemandeChaleurRenouvelable();
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    const transferred = await route.transferDemand({ demandId: demand.id, networkId: 500 });
+    const originalCheck = demandHelpers.ensureUserCanProcessDemand;
+    vi.spyOn(demandHelpers, 'ensureUserCanProcessDemand').mockImplementationOnce(async (...args) => {
+      const snapshot = await originalCheck(...args);
+      await route.restoreDemand({ demandId: demand.id });
+      return snapshot;
+    });
+    const manager = createTestCaller(testUsers.gestionnaire).demands.gestionnaire;
+    await expect(
+      operation === 'update'
+        ? manager.update({ demandId: transferred.transferredDemandId, values: { Status: DEMANDE_STATUS.TO_PROCESS } })
+        : manager.sendEmail({
+            demand_id: transferred.transferredDemandId,
+            emailContent: { body: 'Bonjour', cc: '', object: 'Contact', replyTo: '', signature: '', to: 'client@example.fr' },
+            key: 'test',
+          })
+    ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+    expect(sendEmailTemplate).not.toHaveBeenCalled();
+    expect(
+      await kdb.selectFrom('demand_emails').select('id').where('demand_id', '=', transferred.transferredDemandId).execute()
+    ).toStrictEqual([]);
+  });
+
+  it('rolls back the classic deletion and restoration if the moderation audit fails', async () => {
+    const demand = await seedDemandeChaleurRenouvelable();
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    const transferred = await route.transferDemand({ demandId: demand.id, networkId: 500 });
+    const recordEvent = eventsService.createUserEvent;
+    vi.spyOn(eventsService, 'createUserEvent').mockImplementationOnce(recordEvent).mockRejectedValueOnce(new Error('Audit unavailable'));
+    await expect(route.restoreDemand({ demandId: demand.id })).rejects.toThrow('Audit unavailable');
+    expect(
+      await kdb.selectFrom('demands').select('deleted_at').where('id', '=', transferred.transferredDemandId).executeTakeFirstOrThrow()
+    ).toStrictEqual({ deleted_at: null });
+    expect(
+      await kdb.selectFrom('demands_chaleur_renouvelable').select('archived_at').where('id', '=', demand.id).executeTakeFirstOrThrow()
+    ).toStrictEqual({ archived_at: expect.any(Date) });
+  });
+
+  it('blocks cancellation while the moderation email is being delivered, then allows it after delivery', async () => {
+    const demand = await seedDemandeChaleurRenouvelable();
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    await route.transferDemand({ demandId: demand.id, networkId: 500 });
+    vi.mocked(sendEmailTemplate).mockImplementationOnce(async () => {
+      await expect(route.restoreDemand({ demandId: demand.id })).rejects.toMatchObject({ code: 'CONFLICT' });
+    });
+    await processCcrtModerationEmail(await kdb.selectFrom('jobs').select('id').executeTakeFirstOrThrow(), parentLogger);
+    await route.restoreDemand({ demandId: demand.id });
+    expect(sendEmailTemplate).toHaveBeenCalledTimes(1);
   });
 
   it('serializes concurrent archive and transfer operations', async () => {

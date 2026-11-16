@@ -1,4 +1,5 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
+import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 import { useStore } from '@tanstack/react-form';
 import type { z } from 'zod';
 
@@ -43,6 +44,7 @@ export function CcrtTransferForm({ demandId, onClose }: CcrtTransferFormProps) {
         small
         description="La demande sera transmise au gestionnaire du réseau choisi et archivée dans cet espace. Un email informera l’usager du transfert."
       />
+      <h3 className="mb-0 text-lg">Gestionnaire de réseau destinataire</h3>
       <label className="fr-label" htmlFor={`transfer-network-${demandId}`}>
         Rechercher un réseau par nom ou identifiant SNCU
       </label>
@@ -61,12 +63,22 @@ export function CcrtTransferForm({ demandId, onClose }: CcrtTransferFormProps) {
           </Button>
         </>
       ) : network ? (
-        <div className="border border-(--border-active-blue-france) p-3">
-          <strong>{network.nom_reseau ?? 'Réseau sans nom'}</strong>
-          <p className="mb-0">
-            SNCU : {network.sncu_id ?? 'Non renseigné'} · {network.distance === null ? 'Distance inconnue' : `${network.distance} m`}
-          </p>
-        </div>
+        <RadioButtons
+          legend="Réseau sélectionné"
+          className="mb-0 border border-(--border-active-blue-france) p-3"
+          options={[
+            {
+              hintText: `SNCU : ${network.sncu_id ?? 'Non renseigné'} · ${network.distance === null ? 'Distance inconnue' : `${network.distance} m`}`,
+              label: network.nom_reseau ?? 'Réseau sans nom',
+              nativeInputProps: {
+                checked: true,
+                name: `transfer-network-${demandId}`,
+                onChange: () => form.setFieldValue('networkId', network.id_fcu),
+                value: network.id_fcu,
+              },
+            },
+          ]}
+        />
       ) : (
         <p>Aucun réseau avec tracé trouvé. Recherchez un réseau ci-dessus.</p>
       )}

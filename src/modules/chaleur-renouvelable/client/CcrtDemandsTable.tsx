@@ -50,7 +50,7 @@ export function CcrtDemandsTable({
         <col className="w-32" />
         {onValidate && <col />}
         {onValidate && <col className="w-24" />}
-        <col className="w-36" />
+        <col className={onValidate ? 'w-44' : 'w-36'} />
       </colgroup>
       <thead>
         <tr>

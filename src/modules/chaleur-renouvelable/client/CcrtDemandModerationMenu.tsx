@@ -20,7 +20,14 @@ export function CcrtDemandModerationMenu({ demandId, full }: CcrtDemandModeratio
     <>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <Button full={full} priority="secondary" size="small">
+          <Button
+            full={full}
+            priority="secondary"
+            size="small"
+            iconId="fr-icon-arrow-down-s-line"
+            iconPosition="right"
+            className="whitespace-nowrap after:shrink-0"
+          >
             Ne pas valider
           </Button>
         </PopoverTrigger>
@@ -59,7 +66,12 @@ export function CcrtDemandModerationMenu({ demandId, full }: CcrtDemandModeratio
       <Dialog
         open={mode !== null}
         onOpenChange={(open) => !open && setMode(null)}
-        title={mode === 'transfer' ? 'Transférer la demande' : 'Archiver la demande'}
+        title={
+          <span className="flex items-center gap-3">
+            <Image src={`/icons/ccrt-moderation-${mode ?? 'archive'}.svg`} width={24} height={24} alt="" className="shrink-0" />
+            {mode === 'transfer' ? 'Transférer la demande' : 'Archiver la demande'}
+          </span>
+        }
       >
         {mode === 'archive' && <CcrtArchiveForm demandId={demandId} onClose={() => setMode(null)} />}
         {mode === 'transfer' && <CcrtTransferForm demandId={demandId} onClose={() => setMode(null)} />}

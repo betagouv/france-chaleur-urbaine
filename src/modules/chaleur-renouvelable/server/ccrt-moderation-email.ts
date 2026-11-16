@@ -34,15 +34,30 @@ export const processCcrtModerationEmail = async (job: Pick<Selectable<Jobs>, 'id
   if (!demand?.archived_at || demand.archived_at.toISOString() !== data.archivedAt) {
     return { skipped: true };
   }
-  const reservation = await kdb
-    .updateTable('jobs')
-    .set({ data: { ...data, deliveryStatus: 'sending' } })
-    .where('id', '=', job.id)
-    .where((expression) => sql<string>`${expression.ref('data')}->>'deliveryStatus'`, 'in', ['ready', 'failed'])
-    .returning('id')
-    .executeTakeFirst();
+  const reservation = await kdb.transaction().execute(async (transaction) => {
+    const current = await transaction
+      .selectFrom('demands_chaleur_renouvelable')
+      .select('archived_at')
+      .where('id', '=', data.demandId)
+      .forUpdate()
+      .executeTakeFirst();
+    if (!current?.archived_at || current.archived_at.toISOString() !== data.archivedAt) {
+      return null;
+    }
+    const reserved = await transaction
+      .updateTable('jobs')
+      .set({ data: { ...data, deliveryStatus: 'sending' } })
+      .where('id', '=', job.id)
+      .where((expression) => sql<string>`${expression.ref('data')}->>'deliveryStatus'`, 'in', ['ready', 'failed'])
+      .returning('id')
+      .executeTakeFirst();
+    if (!reserved) {
+      throw new Error('Envoi déjà réservé : vérifier la livraison avant toute reprise manuelle.');
+    }
+    return reserved;
+  });
   if (!reservation) {
-    throw new Error('Envoi déjà réservé : vérifier la livraison avant toute reprise manuelle.');
+    return { skipped: true };
   }
   const emailDemand = {
     address: demand.address,

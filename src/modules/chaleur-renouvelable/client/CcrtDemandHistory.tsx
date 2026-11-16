@@ -109,7 +109,7 @@ const getEventLabel = (event: CcrtFollowUp['history'][number]) =>
     ? {
         archive: 'Demande archivée',
         reopen: 'Demande remise à valider',
-        restore: 'Demande restaurée',
+        restore: event.data.transferredDemandId ? 'Transfert annulé' : 'Archivage annulé',
         transfer: 'Demande transférée à un réseau',
       }[event.data.action]
     : event.type === 'ccrt_demand_updated'

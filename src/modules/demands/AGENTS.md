@@ -47,3 +47,5 @@ Connection requests ("demandes de raccordement") lifecycle: creation, enrichment
 - `'Relance à activer'` is set only at creation (eligible AND collective heating) and drives the satisfaction relances.
 - Status transitions are free (no enforced order); admin UI displays Status disabled — status is changed by the responsible role or the partner API.
 - Deletion is always soft (`deleted_at`).
+
+- `server/cancel-transfer.ts` withdraws an untouched CCRT transfer inside the moderation transaction, preserving audit and demand data via soft deletion. Manager/API updates commit their audit with the write and reject deleted rows; email records are reserved under the demand lock before SMTP. These paths serialize with transfer cancellation.

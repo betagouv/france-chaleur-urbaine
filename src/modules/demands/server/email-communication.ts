@@ -1,10 +1,10 @@
-import type { Insertable } from 'kysely';
+import { TRPCError } from '@trpc/server';
 
 import type { Context } from '@/modules/config/server/context-builder';
 import { sendEmailTemplate } from '@/modules/email';
 import { createUserEvent } from '@/modules/events/server/service';
 import { getUserPreferences, updateUserPreferences } from '@/modules/users/server/service';
-import { type DemandEmails, kdb } from '@/server/db/kysely';
+import { kdb } from '@/server/db/kysely';
 
 import { ensureUserCanAccessDemand, ensureUserCanProcessDemand } from './helpers';
 
@@ -14,15 +14,6 @@ import { ensureUserCanAccessDemand, ensureUserCanProcessDemand } from './helpers
 export const listDemandEmails = async (ctx: Context, { demandId }: { demandId: string }) => {
   await ensureUserCanAccessDemand(ctx, demandId);
   return await kdb.selectFrom('demand_emails').selectAll().where('demand_id', '=', demandId).where('deleted_at', 'is', null).execute();
-};
-
-const createDemandEmail = async (values: Omit<Insertable<DemandEmails>, 'created_at' | 'updated_at' | 'id'>) => {
-  const [createdEmail] = await kdb
-    .insertInto('demand_emails')
-    .values({ ...values, created_at: new Date(), sent_at: new Date(), updated_at: new Date() })
-    .returningAll()
-    .execute();
-  return createdEmail;
 };
 
 /**
@@ -49,16 +40,31 @@ export const sendDemandEmail = async (
 
   await ensureUserCanProcessDemand(ctx, demandId);
 
-  await createDemandEmail({
-    body: emailContent.body,
-    cc: emailContent.cc.join(',') || '',
-    demand_id: demandId,
-    email_key: key,
-    object: emailContent.object,
-    reply_to: emailContent.replyTo,
-    signature: emailContent.signature,
-    to: emailContent.to,
-    user_email: user.email,
+  await kdb.transaction().execute(async (transaction) => {
+    await transaction
+      .selectFrom('demands')
+      .select('id')
+      .where('id', '=', demandId)
+      .where('deleted_at', 'is', null)
+      .forUpdate()
+      .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+    await transaction
+      .insertInto('demand_emails')
+      .values({
+        body: emailContent.body,
+        cc: emailContent.cc.join(',') || '',
+        created_at: new Date(),
+        demand_id: demandId,
+        email_key: key,
+        object: emailContent.object,
+        reply_to: emailContent.replyTo,
+        sent_at: new Date(),
+        signature: emailContent.signature,
+        to: emailContent.to,
+        updated_at: new Date(),
+        user_email: user.email,
+      })
+      .execute();
   });
 
   const preferences = await getUserPreferences(user.id);

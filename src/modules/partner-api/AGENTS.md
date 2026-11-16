@@ -74,3 +74,5 @@ since the sync creates gestionnaires and grants permissions on any SNCU id.
   creates/reactivates the feed's gestionnaire accounts (additive `reseau_de_chaleur` permissions resolved by SNCU id,
   `users.from_organization_id` provenance, FK to `organizations`) and deactivates active users absent from the feed. Emits `user_*_by_api` /
   `user_permissions_synced_from_api` events.
+
+Partner PATCH commits the demand update and audit together, filtering `deleted_at IS NULL` on the write as well as the access check. This serializes processing with CCRT transfer cancellation and returns 404 if a cancellation wins after the access check.

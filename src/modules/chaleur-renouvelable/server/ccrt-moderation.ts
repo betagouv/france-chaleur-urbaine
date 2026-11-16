@@ -3,10 +3,11 @@ import type { Transaction } from 'kysely';
 import type { z } from 'zod';
 
 import type { Context } from '@/modules/config/server/context-builder';
+import { cancelTransferredDemand } from '@/modules/demands/server/cancel-transfer';
 import { createTransferredDemand } from '@/modules/demands/server/creation-transfer';
 import type { EventDataMap } from '@/modules/events/constants';
 import { createUserEvent } from '@/modules/events/server/service';
-import { type DB, kdb } from '@/server/db/kysely';
+import { type DB, kdb, sql } from '@/server/db/kysely';
 
 import type { zCcrtAdminComment, zCcrtArchiveDemand, zCcrtDemandId, zCcrtTransferDemand } from '../constants';
 import { selectDemandesChaleurRenouvelableForList } from './ccrt-demand-query';
@@ -105,18 +106,32 @@ export const transferCcrtDemand = async (ctx: Context, input: z.infer<typeof zCc
 };
 
 /**
- * Restores an archived demand to moderation without notifying the user. Transfers remain with the network operator.
+ * Cancels archival or an untouched transfer atomically, without notifying the user.
  */
 export const restoreCcrtDemand = async (ctx: Context, input: z.infer<typeof zCcrtDemandId>) =>
   kdb.transaction().execute(async (transaction) => {
     const demand = await transaction
       .selectFrom('demands_chaleur_renouvelable')
-      .select(['archived_at', 'transferred_network_name'])
+      .select(['archived_at', 'transferred_network_name', 'transferred_demand_id'])
       .where('id', '=', input.demandId)
       .forUpdate()
       .executeTakeFirstOrThrow(notFound);
-    if (!demand.archived_at || demand.transferred_network_name !== null) {
-      throw new TRPCError({ code: 'CONFLICT', message: 'Seules les demandes archivées sans transfert peuvent être restaurées.' });
+    if (!demand.archived_at) {
+      throw new TRPCError({ code: 'CONFLICT', message: 'Cette demande n’est plus archivée. Actualisez la liste.' });
+    }
+    const pendingEmail = await transaction
+      .selectFrom('jobs')
+      .select('id')
+      .where('type', '=', 'ccrt_moderation_email')
+      .where('entity_id', '=', input.demandId)
+      .where((expression) => sql<string>`${expression.ref('data')}->>'deliveryStatus'`, '=', 'sending')
+      .limit(1)
+      .executeTakeFirst();
+    if (pendingEmail) {
+      throw new TRPCError({ code: 'CONFLICT', message: 'Un email de modération est en cours d’envoi. Attendez sa fin avant d’annuler.' });
+    }
+    if (demand.transferred_demand_id) {
+      await cancelTransferredDemand(transaction, demand.transferred_demand_id, ctx.user.id);
     }
     await transaction
       .updateTable('demands_chaleur_renouvelable')
@@ -124,12 +139,20 @@ export const restoreCcrtDemand = async (ctx: Context, input: z.infer<typeof zCcr
         archive_comment: null,
         archive_reason: null,
         archived_at: null,
+        transferred_demand_id: null,
+        transferred_network_name: null,
         updated_at: new Date(),
         validated: false,
       })
       .where('id', '=', input.demandId)
       .execute();
-    await recordModeration(transaction, ctx, input.demandId, { action: 'restore' });
+    await recordModeration(transaction, ctx, input.demandId, {
+      action: 'restore',
+      ...(demand.transferred_demand_id && {
+        networkName: demand.transferred_network_name ?? undefined,
+        transferredDemandId: demand.transferred_demand_id,
+      }),
+    });
     return { id: input.demandId };
   });
 
