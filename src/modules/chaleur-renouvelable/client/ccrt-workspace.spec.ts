@@ -98,7 +98,7 @@ describe('admin moderation groups', () => {
       structure_name: null,
     };
     expect(getCcrtAccessWarning(undefined)).toStrictEqual(null);
-    expect(getCcrtAccessWarning([])).toStrictEqual('Aucun compte CCRT');
+    expect(getCcrtAccessWarning([])).toStrictEqual('Aucun accès');
     expect(getCcrtAccessWarning([user])).toStrictEqual('Aucun CCRT ne s’est connecté');
     expect(getCcrtAccessWarning([user, { ...user, id: uuid(3), last_connection: '2026-10-23T10:00:00Z' }])).toStrictEqual(null);
   });

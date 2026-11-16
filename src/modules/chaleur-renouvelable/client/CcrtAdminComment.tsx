@@ -17,7 +17,6 @@ export function CcrtAdminComment({ demandId }: CcrtAdminCommentProps) {
   return (
     <section className="border-t border-(--border-default-grey) p-4">
       <h3 className="mb-2 text-lg">Commentaires internes FCU</h3>
-      <p className="text-sm">Visibles uniquement par les administrateurs.</p>
       {query.isError ? (
         <>
           <Alert severity="error" small description="Impossible de charger le commentaire." />

@@ -4,33 +4,39 @@ import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import trpc from '@/modules/trpc/client';
-import { userRolesWithPermissionsHeatNetwork } from '@/types/enum/UserRole';
+import { userRolesWithPermissions } from '@/types/enum/UserRole';
+import { dayjs } from '@/utils/date';
+
+import type { AccessDetailUser } from '../types';
 
 type AccessDetailDialogProps = {
   demandId: string;
+  users?: AccessDetailUser[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
 /**
  * Dialog listant les utilisateurs ayant (ou qui auront) accès à une demande, groupés par rôle.
- * Query tRPC déclenchée uniquement à l'ouverture (`enabled: open`), cachée 60s par React Query.
+ * La requête est désactivée lorsque les comptes CCRT sont déjà fournis par la liste admin.
  */
-export default function AccessDetailDialog({ demandId, open, onOpenChange }: AccessDetailDialogProps) {
+export default function AccessDetailDialog({ demandId, users: suppliedUsers, open, onOpenChange }: AccessDetailDialogProps) {
   const { hasRole } = useAuthentication();
   const isAdmin = hasRole('admin');
-  const { data: users, isLoading } = trpc.permissions.listUsersWithAccessToDemand.useQuery(
+  const query = trpc.permissions.listUsersWithAccessToDemand.useQuery(
     { demandId },
-    { enabled: open, staleTime: 60_000 }
+    { enabled: open && suppliedUsers === undefined, staleTime: 60_000 }
   );
 
-  const grouped = userRolesWithPermissionsHeatNetwork.map((role) => ({
+  const users: AccessDetailUser[] | undefined = suppliedUsers ?? query.data;
+  const isLoading = suppliedUsers === undefined && query.isLoading;
+  const grouped = userRolesWithPermissions.map((role) => ({
     role,
-    users: (users ?? []).filter((u) => u.role === role),
+    users: (users ?? []).filter((user) => user.role === role),
   }));
 
   return (
-    <Dialog title="Utilisateurs avec accès à la demande" size="md" open={open} onOpenChange={onOpenChange}>
+    <Dialog title="Utilisateurs avec accès à la demande" size="lg" open={open} onOpenChange={onOpenChange}>
       {isLoading && (
         <div className="flex justify-center py-8">
           <Loader size="md" />
@@ -52,16 +58,29 @@ export default function AccessDetailDialog({ demandId, open, onOpenChange }: Acc
                   </span>
                 </div>
                 <ul className="flex flex-col gap-1 list-disc pl-6">
-                  {roleUsers.map((u) => (
-                    <li key={u.id} className="text-sm">
-                      <div className="flex items-center gap-2 justify-between">
-                        <span>{u.email}</span>
+                  {roleUsers.map((user) => (
+                    <li key={user.id} className="text-sm">
+                      <div className="flex flex-wrap items-center justify-between gap-2 lg:flex-nowrap">
+                        <span className="min-w-0 break-words">
+                          <a className="break-all" href={`mailto:${user.email}`}>
+                            {user.email}
+                          </a>
+                          {user.last_connection !== undefined && (
+                            <>
+                              {' '}
+                              ·{' '}
+                              {user.last_connection
+                                ? `Dernière connexion le ${dayjs(user.last_connection).tz('Europe/Paris').format('DD/MM/YYYY')}`
+                                : 'Jamais connecté'}
+                            </>
+                          )}
+                        </span>
                         {isAdmin && (
                           <Link
-                            href={`/admin/events?authorIds=${u.id}&preset=6m`}
+                            href={`/admin/events?authorIds=${user.id}&preset=6m`}
                             variant="tertiaryNoOutline"
                             title="Voir l'historique des événements de cet utilisateur"
-                            className="fr-btn--sm fr-btn--icon-left fr-icon-time-line"
+                            className="fr-btn--sm fr-btn--icon-left fr-icon-time-line shrink-0"
                           >
                             Voir l'activité
                           </Link>

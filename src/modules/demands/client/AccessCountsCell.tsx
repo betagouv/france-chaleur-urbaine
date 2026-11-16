@@ -4,16 +4,19 @@ import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
+import { roles } from '@/modules/users/constants';
 import { roleBadgeClasses } from '@/modules/users/role-colors';
+import { userRolesWithPermissions } from '@/types/enum/UserRole';
 import cx from '@/utils/cx';
 
-import type { AccessCounts } from '../types';
+import type { AccessDetailUser } from '../types';
 
 const AccessDetailDialog = dynamic(() => import('./AccessDetailDialog'), { ssr: false });
 
 type AccessCountsCellProps = {
   demandId: string;
-  accessCounts: AccessCounts;
+  accessCounts: Partial<Record<(typeof userRolesWithPermissions)[number], number>>;
+  users?: AccessDetailUser[];
 };
 
 const roleBadgeBase = 'inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs font-semibold';
@@ -23,11 +26,11 @@ const roleBadgeBase = 'inline-flex items-center justify-center px-1.5 py-0.5 rou
  * groupés par rôle. Warning explicite si personne n'a accès (demande orpheline).
  * Clic → dialog dynamique avec le détail (nom/email/structure), chargé au premier clic uniquement.
  */
-export default function AccessCountsCell({ demandId, accessCounts }: AccessCountsCellProps) {
+export default function AccessCountsCell({ demandId, accessCounts, users }: AccessCountsCellProps) {
   const [open, setOpen] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
 
-  const total = accessCounts.gestionnaire + accessCounts.collectivite + accessCounts.alec;
+  const total = Object.values(accessCounts).reduce((total, count) => total + (count ?? 0), 0);
 
   const handleOpen = () => {
     setHasOpened(true);
@@ -36,7 +39,13 @@ export default function AccessCountsCell({ demandId, accessCounts }: AccessCount
 
   if (total === 0) {
     return (
-      <Tooltip title="Aucun utilisateur n'a accès à cette demande. Il manque un gestionnaire, une collectivité ou une ALEC avec les permissions adéquates.">
+      <Tooltip
+        title={
+          users
+            ? 'Aucun compte CCRT actif ne possède les permissions territoriales nécessaires pour cette demande.'
+            : "Aucun utilisateur n'a accès à cette demande. Il manque un gestionnaire, une collectivité ou une ALEC avec les permissions adéquates."
+        }
+      >
         <span className="flex items-center gap-1 text-destructive text-xs">
           <Icon name="fr-icon-alert-line" size="sm" />
           Aucun accès
@@ -63,17 +72,17 @@ export default function AccessCountsCell({ demandId, accessCounts }: AccessCount
           className="px-1!"
         >
           <span className="flex flex-col items-start gap-0.5">
-            {accessCounts.gestionnaire > 0 && (
-              <span className={cx(roleBadgeBase, roleBadgeClasses.gestionnaire)}>Gestionnaire&nbsp;({accessCounts.gestionnaire})</span>
-            )}
-            {accessCounts.collectivite > 0 && (
-              <span className={cx(roleBadgeBase, roleBadgeClasses.collectivite)}>Collectivité&nbsp;({accessCounts.collectivite})</span>
-            )}
-            {accessCounts.alec > 0 && <span className={cx(roleBadgeBase, roleBadgeClasses.alec)}>ALEC&nbsp;({accessCounts.alec})</span>}
+            {userRolesWithPermissions
+              .filter((role) => (accessCounts[role] ?? 0) > 0)
+              .map((role) => (
+                <span key={role} className={cx(roleBadgeBase, roleBadgeClasses[role])}>
+                  {roles[role]}&nbsp;({accessCounts[role]})
+                </span>
+              ))}
           </span>
         </Button>
       </Tooltip>
-      {hasOpened && <AccessDetailDialog demandId={demandId} open={open} onOpenChange={setOpen} />}
+      {hasOpened && <AccessDetailDialog demandId={demandId} users={users} open={open} onOpenChange={setOpen} />}
     </>
   );
 }

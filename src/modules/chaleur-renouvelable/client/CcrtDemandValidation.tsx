@@ -5,7 +5,6 @@ import { ccrtArchiveReasons } from '../constants';
 import type { CcrtDemand } from '../types';
 import { CcrtDemandModerationMenu } from './CcrtDemandModerationMenu';
 import { invalidateCcrtModeration } from './ccrt-demand-cache';
-import { getCcrtAccessWarning } from './ccrt-workspace';
 
 type CcrtDemandValidationProps = { demand: CcrtDemand; full?: boolean; onValidate: (demandId: string) => Promise<void> };
 
@@ -15,7 +14,6 @@ type CcrtDemandValidationProps = { demand: CcrtDemand; full?: boolean; onValidat
 export function CcrtDemandValidation({ demand, full, onValidate }: CcrtDemandValidationProps) {
   const restore = trpc.batEnr.admin.restoreDemand.useMutation();
   const utils = trpc.useUtils();
-  const warning = getCcrtAccessWarning(demand.access_users);
   if (demand.archived_at !== null) {
     return (
       <div className="space-y-2 text-left text-sm">
@@ -52,12 +50,6 @@ export function CcrtDemandValidation({ demand, full, onValidate }: CcrtDemandVal
       >
         Valider
       </AsyncButton>
-      {warning && (
-        <p className="mb-0 text-left text-sm text-(--text-default-warning)">
-          <span aria-hidden className="fr-icon-warning-fill mr-1" />
-          {warning}
-        </p>
-      )}
       <CcrtDemandModerationMenu demandId={demand.id} full={full} />
     </div>
   );

@@ -148,11 +148,6 @@ export function CcrtDemandRow({
           </time>
         </td>
         <td>
-          {onValidate && !demand.validated && (
-            <Badge small severity="info" className="mb-2">
-              {demand.archived_at ? 'Archivée' : 'À valider'}
-            </Badge>
-          )}
           <Badge
             severity={isToProcess || getCcrtDemandTab(demand) === 'closed' ? 'warning' : 'info'}
             noIcon={!isToProcess}
@@ -167,7 +162,7 @@ export function CcrtDemandRow({
           )}
         </td>
         {onValidate && <td>{demand.origin && <DemandOriginCell origin={demand.origin} />}</td>}
-        {onValidate && <td>{demand.access_users && <CcrtDemandAccessColumn users={demand.access_users} />}</td>}
+        {onValidate && <td>{demand.access_users && <CcrtDemandAccessColumn demandId={demand.id} users={demand.access_users} />}</td>}
         <td className="text-center!">
           {onValidate && !demand.validated ? (
             <CcrtDemandValidation demand={demand} onValidate={onValidate} />

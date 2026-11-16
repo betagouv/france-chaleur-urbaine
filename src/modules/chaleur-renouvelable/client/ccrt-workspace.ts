@@ -42,7 +42,7 @@ export const getCcrtAccessWarning = (users: CcrtDemand['access_users']): string 
   users === undefined
     ? null
     : users.length === 0
-      ? 'Aucun compte CCRT'
+      ? 'Aucun accès'
       : users.every((user) => user.last_connection === null)
         ? 'Aucun CCRT ne s’est connecté'
         : null;

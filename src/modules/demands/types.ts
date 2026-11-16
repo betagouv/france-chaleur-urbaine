@@ -1,4 +1,5 @@
 import type { NetworkType } from '@/modules/reseaux/constants';
+import type { RouterOutput } from '@/modules/trpc/client';
 import type { Demand as LegacyDemand } from '@/types/Summary/Demand';
 
 import { type DemandLockReason, type DemandStatus, fcrLegacyValueKeys } from './constants';
@@ -66,4 +67,8 @@ export type AccessCounts = {
   gestionnaire: number;
   collectivite: number;
   alec: number;
+};
+
+export type AccessDetailUser = Pick<RouterOutput['permissions']['listUsersWithAccessToDemand'][number], 'id' | 'email' | 'role'> & {
+  last_connection?: string | null;
 };
