@@ -11,6 +11,7 @@ import type { CcrtDemand } from '../types';
 import { CcrtBuildingForm } from './CcrtBuildingForm';
 import { CcrtBuildingIdentification } from './CcrtBuildingIdentification';
 import { CcrtDemandFollowUp } from './CcrtDemandFollowUp';
+import { CcrtDemandReopening } from './CcrtDemandReopening';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
 import { CcrtProjectFields } from './CcrtProjectFields';
 import { formatCcrtAddress, getCcrtDemandTab } from './ccrt-workspace';
@@ -47,6 +48,7 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
           {demand.occupant_status} · {formatCcrtAddress(demand.address)}
         </p>
         {onValidate && demand.origin && <DemandOriginCell origin={demand.origin} />}
+        {onValidate && demand.validated && !demand.archived_at && <CcrtDemandReopening demand={demand} />}
       </header>
       <div className="space-y-2 border border-(--background-default-grey-active) bg-(--background-default-grey) p-4">
         <p className="mb-0 font-bold text-(--text-action-high-blue-france)">{isClosed ? 'DEMANDE CLÔTURÉE' : 'PROCHAINE ÉTAPE'}</p>

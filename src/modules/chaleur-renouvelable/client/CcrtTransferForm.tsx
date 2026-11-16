@@ -5,11 +5,10 @@ import type { z } from 'zod';
 import Button from '@/components/ui/Button';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
-import { toastErrors } from '@/modules/notification';
 import ReseauAutocomplete from '@/modules/reseaux/client/ReseauAutocomplete';
 import trpc from '@/modules/trpc/client';
 
-import { zCcrtTransferNetwork } from '../constants';
+import { zCcrtTransferForm } from '../constants';
 import { invalidateCcrtModeration } from './ccrt-demand-cache';
 
 type CcrtTransferFormProps = { demandId: string; onClose: () => void };
@@ -20,26 +19,30 @@ type CcrtTransferFormProps = { demandId: string; onClose: () => void };
 export function CcrtTransferForm({ demandId, onClose }: CcrtTransferFormProps) {
   const transfer = trpc.batEnr.admin.transferDemand.useMutation();
   const utils = trpc.useUtils();
-  const defaultValues: z.input<typeof zCcrtTransferNetwork> = { demandId, networkId: undefined };
+  const defaultValues: z.input<typeof zCcrtTransferForm> = { demandId, managerMessage: '', networkId: undefined };
   const form = useAppForm({
-    ...schemaValidation(zCcrtTransferNetwork),
+    ...schemaValidation(zCcrtTransferForm),
     defaultValues,
-    onSubmit: toastErrors(async () => {
+    onSubmit: async ({ value }) => {
       const selected = networkQuery.data?.network;
       if (!selected || networkQuery.isFetching || networkQuery.isError) {
         return;
       }
-      await transfer.mutateAsync({ demandId, networkId: selected.id_fcu });
+      await transfer.mutateAsync({ demandId, managerMessage: value.managerMessage, networkId: selected.id_fcu });
       await invalidateCcrtModeration(utils, demandId);
       onClose();
-    }),
+    },
   });
   const networkId = useStore(form.store, (state) => state.values.networkId);
   const networkQuery = trpc.batEnr.admin.getTransferNetwork.useQuery({ demandId, networkId });
   const network = networkQuery.data?.network;
   return (
     <Form form={form} className="space-y-4">
-      <p>La demande sera transmise au gestionnaire du réseau choisi et archivée dans cet espace. L’usager sera informé par email.</p>
+      <Alert
+        severity="info"
+        small
+        description="La demande sera transmise au gestionnaire du réseau choisi et archivée dans cet espace. Un email informera l’usager du transfert."
+      />
       <label className="fr-label" htmlFor={`transfer-network-${demandId}`}>
         Rechercher un réseau par nom ou identifiant SNCU
       </label>
@@ -58,7 +61,7 @@ export function CcrtTransferForm({ demandId, onClose }: CcrtTransferFormProps) {
           </Button>
         </>
       ) : network ? (
-        <div className="border border-(--border-default-grey) p-3">
+        <div className="border border-(--border-active-blue-france) p-3">
           <strong>{network.nom_reseau ?? 'Réseau sans nom'}</strong>
           <p className="mb-0">
             SNCU : {network.sncu_id ?? 'Non renseigné'} · {network.distance === null ? 'Distance inconnue' : `${network.distance} m`}
@@ -67,11 +70,12 @@ export function CcrtTransferForm({ demandId, onClose }: CcrtTransferFormProps) {
       ) : (
         <p>Aucun réseau avec tracé trouvé. Recherchez un réseau ci-dessus.</p>
       )}
-      <div className="flex flex-wrap gap-3">
-        <form.SubmitButton disabled={!network || networkQuery.isFetching || networkQuery.isError}>Confirmer le transfert</form.SubmitButton>
-        <Button priority="tertiary" disabled={transfer.isPending} onClick={onClose}>
+      <form.AppField name="managerMessage">{(field) => <field.TextareaField label="Message au gestionnaire" />}</form.AppField>
+      <div className="flex flex-wrap justify-end gap-3">
+        <Button priority="secondary" disabled={transfer.isPending} onClick={onClose}>
           Annuler
         </Button>
+        <form.SubmitButton disabled={!network || networkQuery.isFetching || networkQuery.isError}>Transférer la demande</form.SubmitButton>
       </div>
     </Form>
   );

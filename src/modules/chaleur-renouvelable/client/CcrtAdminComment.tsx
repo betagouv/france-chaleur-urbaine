@@ -3,7 +3,6 @@ import Alert from '@codegouvfr/react-dsfr/Alert';
 import Button from '@/components/ui/Button';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
-import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
 import { zCcrtAdminComment } from '../constants';
@@ -46,10 +45,10 @@ function AdminCommentForm({ demandId, comment }: AdminCommentFormProps) {
   const form = useAppForm({
     ...schemaValidation(zCcrtAdminComment),
     defaultValues: { comment, demandId },
-    onSubmit: toastErrors(async ({ value }) => {
+    onSubmit: async ({ value }) => {
       await mutation.mutateAsync(value);
       utils.batEnr.admin.getAdminComment.setData({ demandId }, { admin_comment: value.comment.trim() });
-    }),
+    },
   });
   return (
     <Form form={form}>

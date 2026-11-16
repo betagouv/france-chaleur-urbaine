@@ -4,6 +4,7 @@ import type { z } from 'zod';
 
 import type { Context } from '@/modules/config/server/context-builder';
 import { createTransferredDemand } from '@/modules/demands/server/creation-transfer';
+import type { EventDataMap } from '@/modules/events/constants';
 import { createUserEvent } from '@/modules/events/server/service';
 import { type DB, kdb } from '@/server/db/kysely';
 
@@ -60,7 +61,9 @@ export const transferCcrtDemand = async (ctx: Context, input: z.infer<typeof zCc
         acquisition: demand.acquisition,
         address: demand.address,
         city: context.address.city,
-        commentUser: demand.comments ?? '',
+        commentUser: [demand.comments, input.managerMessage && `Message de l’équipe FCU au gestionnaire :\n${input.managerMessage}`]
+          .filter(Boolean)
+          .join('\n\n'),
         company: demand.organization_name ?? '',
         coords: context.coordinates,
         demandArea: demand.surface_area ?? demand.average_area * demand.housing_count,
@@ -172,17 +175,7 @@ const lockPendingDemand = async (transaction: Transaction<DB>, demandId: string)
   return current;
 };
 
-const recordModeration = (
-  transaction: Transaction<DB>,
-  ctx: Context,
-  demandId: string,
-  data: {
-    action: 'archive' | 'transfer' | 'restore';
-    reason?: string;
-    transferredDemandId?: string;
-    networkName?: string;
-  }
-) =>
+const recordModeration = (transaction: Transaction<DB>, ctx: Context, demandId: string, data: EventDataMap['ccrt_demand_moderated']) =>
   createUserEvent(
     {
       author_id: ctx.user.id,

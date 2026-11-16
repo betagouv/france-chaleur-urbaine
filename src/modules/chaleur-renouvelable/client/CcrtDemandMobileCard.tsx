@@ -7,6 +7,7 @@ import { dayjs } from '@/utils/date';
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand } from '../types';
 import { CcrtDemandAccessColumn } from './CcrtDemandAccessColumn';
+import { CcrtDemandReopening } from './CcrtDemandReopening';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
 import { formatCcrtAddress } from './ccrt-workspace';
 
@@ -61,6 +62,7 @@ export function CcrtDemandMobileCard({ demand, onOpen, onContact, onValidate }: 
         )}
         <Button priority="secondary" iconId="fr-icon-add-line" title={`Ouvrir la demande de ${fullName}`} onClick={onOpen} />
       </div>
+      {onValidate && demand.validated && !demand.archived_at && <CcrtDemandReopening demand={demand} full />}
     </article>
   );
 }

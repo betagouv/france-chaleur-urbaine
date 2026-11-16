@@ -4,7 +4,6 @@ import type { z } from 'zod';
 import Button from '@/components/ui/Button';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
-import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
 import { ccrtArchiveReasons, zCcrtArchiveDemand, zCcrtArchiveForm } from '../constants';
@@ -22,28 +21,32 @@ export function CcrtArchiveForm({ demandId, onClose }: CcrtArchiveFormProps) {
   const form = useAppForm({
     ...schemaValidation(zCcrtArchiveForm),
     defaultValues,
-    onSubmit: toastErrors(async ({ value }) => {
+    onSubmit: async ({ value }) => {
       await archive.mutateAsync(zCcrtArchiveDemand.parse({ ...value, demandId }));
       await invalidateCcrtModeration(utils, demandId);
       onClose();
-    }),
+    },
   });
   const reason = useStore(form.store, (state) => state.values.reason);
   return (
     <Form form={form}>
+      <p>La demande ne sera pas transmise aux CCRT. Vous pourrez la retrouver dans les demandes archivées.</p>
       <form.AppField name="reason">
         {(field) => (
-          <field.SelectField label="Motif d’archivage" options={[{ label: 'Choisissez un motif', value: '' }, ...ccrtArchiveReasons]} />
+          <field.RadioField
+            label="Motif d’archivage"
+            options={ccrtArchiveReasons.map(({ label, value }) => ({ label, nativeInputProps: { value } }))}
+          />
         )}
       </form.AppField>
       {reason === 'other' && <form.AppField name="comment">{(field) => <field.TextareaField label="Précision" />}</form.AppField>}
       <form.AppField name="sendEmail">{(field) => <field.CheckboxField label="Envoyer l’email à l’usager" />}</form.AppField>
-      <p className="text-sm">La demande sera archivée et ne sera pas transmise aux CCRT. L’email oriente l’usager vers France Rénov’.</p>
-      <div className="flex flex-wrap gap-3">
-        <form.SubmitButton>Archiver la demande</form.SubmitButton>
-        <Button priority="tertiary" disabled={archive.isPending} onClick={onClose}>
+      <p className="text-sm">L’email oriente l’usager vers France Rénov’.</p>
+      <div className="flex flex-wrap justify-end gap-3">
+        <Button priority="secondary" disabled={archive.isPending} onClick={onClose}>
           Annuler
         </Button>
+        <form.SubmitButton>Archiver la demande</form.SubmitButton>
       </div>
     </Form>
   );

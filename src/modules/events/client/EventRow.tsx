@@ -116,7 +116,9 @@ export const eventLabelRenderers: { [T in EventType]: EventRenderer<T> } = {
         ? `a transféré la demande à ${event.data.networkName}`
         : event.data.action === 'archive'
           ? 'a archivé la demande chaleur renouvelable'
-          : 'a restauré la demande chaleur renouvelable'}
+          : event.data.action === 'reopen'
+            ? 'a remis à valider la demande chaleur renouvelable'
+            : 'a restauré la demande chaleur renouvelable'}
     </span>
   ),
   ccrt_demand_note_created: () => <span>a ajouté une note à une demande CCRT</span>,

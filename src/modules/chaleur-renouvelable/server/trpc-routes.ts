@@ -7,6 +7,7 @@ import {
   zCcrtArchiveDemand,
   zCcrtDemandId,
   zCcrtFollowUpInput,
+  zCcrtReopenDemand,
   zCcrtSendEmail,
   zCcrtTransferDemand,
   zCcrtTransferNetwork,
@@ -40,6 +41,7 @@ import { sendCcrtEmail } from './ccrt-emails';
 import { getCcrtFollowUp } from './ccrt-follow-up';
 import { getCcrtHeatNetworkEligibility } from './ccrt-heat-network';
 import { archiveCcrtDemand, getCcrtAdminComment, restoreCcrtDemand, transferCcrtDemand, updateCcrtAdminComment } from './ccrt-moderation';
+import { reopenCcrtDemand } from './ccrt-reopening';
 import { getCcrtTransferNetwork } from './ccrt-transfer-network';
 
 export const batEnrRouter = router({
@@ -57,6 +59,9 @@ export const batEnrRouter = router({
       .input(zCcrtDemandId)
       .query(({ ctx, input }) => listCcrtAssignmentCandidates(ctx, input.demandId)),
     listDemandesChaleurRenouvelable: routeRole(['admin']).query(async () => await listDemandesChaleurRenouvelableAdmin()),
+    reopenDemand: routeRole(['admin'])
+      .input(zCcrtReopenDemand)
+      .mutation(({ ctx, input }) => reopenCcrtDemand(ctx, input)),
     restoreDemand: routeRole(['admin'])
       .input(zCcrtDemandId)
       .mutation(({ ctx, input }) => restoreCcrtDemand(ctx, input)),

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
 import type { ComponentProps, ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   invalidateFollowUp: vi.fn(),
   isMobile: false,
   openEmail: vi.fn(),
+  reopen: vi.fn(),
   track: vi.fn(),
   trackOpening: vi.fn(),
   validate: vi.fn(),
@@ -29,6 +30,7 @@ vi.mock('@/modules/trpc/client', () => ({
     batEnr: {
       admin: {
         listDemandesChaleurRenouvelable: { useQuery: mocks.adminQuery },
+        reopenDemand: { useMutation: () => ({ mutateAsync: mocks.reopen }) },
         restoreDemand: { useMutation: () => ({ mutateAsync: vi.fn() }) },
         validateDemandeChaleurRenouvelable: { useMutation: () => ({ mutateAsync: mocks.validate }) },
       },
@@ -136,6 +138,7 @@ describe('CcrtDemandsWorkspace', () => {
     vi.clearAllMocks();
     mocks.isMobile = false;
     mocks.validate.mockResolvedValue({ id: demand.id, validated: true });
+    mocks.reopen.mockResolvedValue({ id: demand.id });
     mocks.adminQuery.mockReturnValue({ data: { items: [demand] }, isError: false, isLoading: false });
     mocks.ccrtQuery.mockReturnValue({
       data: { items: [{ ...demand, validated: true }], trackingContext: { departements: ['44'], structure_ccrt: null } },
@@ -252,6 +255,36 @@ describe('CcrtDemandsWorkspace', () => {
     expect(screen.queryByText('Validée')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: /Toutes les demandes/ }));
     expect(await screen.findByRole('button', { name: /Contacter/ })).toBeInTheDocument();
+  });
+
+  it.each([false, true])('confirms reopening with the CCRT warning and refreshes shared views with mobile mode %s', async (isMobile) => {
+    mocks.isMobile = isMobile;
+    mocks.adminQuery.mockReturnValue({
+      data: {
+        items: [
+          {
+            ...demand,
+            last_ccrt_status_change: { date: '2026-11-05T10:00:00.000Z', status: 'Recontacté pour premier échange' },
+            validated: true,
+          },
+        ],
+      },
+      isError: false,
+      isLoading: false,
+    });
+    renderWorkspace();
+    fireEvent.click(screen.getByRole('button', { name: /Toutes les demandes/ }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Remettre à valider' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Remettre la demande à valider' });
+    expect(
+      within(dialog).getByText(/Un CCRT a déjà modifié le statut.*Recontacté pour premier échange le 05\/11\/2026/)
+    ).toBeInTheDocument();
+    expect(mocks.reopen).not.toHaveBeenCalled();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Remettre à valider' }));
+    await waitFor(() => expect(mocks.reopen).toHaveBeenCalledExactlyOnceWith({ demandId: demand.id, updatedAt: demand.updated_at }));
+    expect(mocks.invalidateAdmin).toHaveBeenCalledExactlyOnceWith();
+    expect(mocks.invalidateCcrt).toHaveBeenCalledExactlyOnceWith();
+    expect(mocks.invalidateFollowUp).toHaveBeenCalledExactlyOnceWith({ demandId: demand.id });
   });
 
   it('defaults to unvalidated admin demands, independently from their follow-up status', () => {

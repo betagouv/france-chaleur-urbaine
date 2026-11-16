@@ -228,7 +228,7 @@ type NetworkChangeRequestSource = { request_id?: string; request_kind?: NetworkC
 
 export type EventDataMap = {
   ccrt_demand_moderated: {
-    action: 'archive' | 'transfer' | 'restore';
+    action: 'archive' | 'transfer' | 'restore' | 'reopen';
     reason?: string;
     transferredDemandId?: string;
     networkName?: string;

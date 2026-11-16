@@ -11,6 +11,7 @@ import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
 import { CcrtDemandAccessColumn } from './CcrtDemandAccessColumn';
 import { CcrtDemandDetails } from './CcrtDemandDetails';
+import { CcrtDemandReopening } from './CcrtDemandReopening';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
 import { CcrtHeatingEnergyTag } from './CcrtHeatingEnergyTag';
 import { formatCcrtAddress, getCcrtDemandTab } from './ccrt-workspace';
@@ -180,6 +181,7 @@ export function CcrtDemandRow({
               {isToProcess ? 'Contacter' : 'Relancer'}
             </Button>
           )}
+          {onValidate && demand.validated && !demand.archived_at && <CcrtDemandReopening demand={demand} full />}
         </td>
       </tr>
       {isExpanded && (

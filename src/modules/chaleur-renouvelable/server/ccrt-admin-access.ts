@@ -1,4 +1,4 @@
-import { jsonArrayFrom } from 'kysely/helpers/postgres';
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 
 import { permissionMatchesCustomTerritoryIds } from '@/modules/permissions/server/demand-access';
 import { customTerritoryPermissionType, territoryPermissionToColumn } from '@/modules/permissions/types';
@@ -11,7 +11,7 @@ import { selectDemandesChaleurRenouvelableForList } from './ccrt-demand-query';
  * Correlates access holders in one query, including accounts that will see an unpublished demand.
  */
 export const selectCcrtDemandsForAdmin = () =>
-  selectDemandesChaleurRenouvelableForList().select((expression) =>
+  selectDemandesChaleurRenouvelableForList().select((expression) => [
     jsonArrayFrom(
       expression
         .selectFrom('users as access_user')
@@ -62,8 +62,25 @@ export const selectCcrtDemandsForAdmin = () =>
           )
         )
         .orderBy('access_user.email')
-    ).as('access_users')
-  );
+    ).as('access_users'),
+    jsonObjectFrom(
+      expression
+        .selectFrom('events')
+        .innerJoin('users as author', 'author.id', 'events.author_id')
+        .select((eventExpression) => [
+          sql<string>`${eventExpression.ref('events.data')}->'changes'->'status'->>'to'`.as('status'),
+          sql<string>`to_char(${eventExpression.ref('events.created_at')} at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')`.as('date'),
+        ])
+        .where('context_type', '=', 'ccrt_demand')
+        .where('context_id', '=', sql<string>`${expression.ref('demands_chaleur_renouvelable.id')}::text`)
+        .where('type', '=', 'ccrt_demand_updated')
+        .where('author.role', '=', 'ccrt')
+        .where((eventExpression) => sql<boolean>`${eventExpression.ref('events.data')}->'changes' ? 'status'`)
+        .orderBy('events.created_at', 'desc')
+        .orderBy('events.id', 'desc')
+        .limit(1)
+    ).as('last_ccrt_status_change'),
+  ]);
 
 /**
  * Keeps the admin-only access details out of the CCRT list.

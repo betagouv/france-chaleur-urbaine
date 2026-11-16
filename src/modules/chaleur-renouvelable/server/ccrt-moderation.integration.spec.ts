@@ -78,6 +78,50 @@ describe('Admin moderation permissions', () => {
 });
 
 describe('CCRT moderation lifecycle', () => {
+  it('transfers a reopened demand with an explicit manager message while retaining private admin comments in the original', async () => {
+    const demand = await seedDemandeChaleurRenouvelable({ admin_comment: 'Private admin', comments: 'Public comment', validated: true });
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    await route.reopenDemand({ demandId: demand.id, updatedAt: demand.updated_at.toISOString() });
+    const transfer = await route.transferDemand({
+      demandId: demand.id,
+      managerMessage: 'Étudier le raccordement en priorité.',
+      networkId: 500,
+    });
+    expect(
+      await kdb
+        .selectFrom('demands')
+        .select(['comment_user', 'comment_fcu', 'validated'])
+        .where('id', '=', transfer.transferredDemandId)
+        .executeTakeFirstOrThrow()
+    ).toStrictEqual({
+      comment_fcu: null,
+      comment_user: 'Public comment\n\nMessage de l’équipe FCU au gestionnaire :\nÉtudier le raccordement en priorité.',
+      validated: true,
+    });
+    expect(
+      await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['admin_comment', 'comments', 'reopened_at', 'transferred_demand_id', 'validated'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow()
+    ).toStrictEqual({
+      admin_comment: 'Private admin',
+      comments: 'Public comment',
+      reopened_at: expect.any(Date),
+      transferred_demand_id: transfer.transferredDemandId,
+      validated: false,
+    });
+    expect(
+      (await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.list()).map(({ id, comment_user }) => ({ comment_user, id }))
+    ).toStrictEqual([
+      {
+        comment_user: 'Public comment\n\nMessage de l’équipe FCU au gestionnaire :\nÉtudier le raccordement en priorité.',
+        id: transfer.transferredDemandId,
+      },
+    ]);
+  });
+
   it('rolls back a transfer completely when its classic-demand audit cannot be recorded', async () => {
     const demand = await seedDemandeChaleurRenouvelable();
     await seedNetwork();

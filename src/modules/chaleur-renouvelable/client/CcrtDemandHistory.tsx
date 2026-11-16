@@ -105,11 +105,18 @@ export function CcrtDemandHistory({ followUp, offset, onPageChange, onEmailClick
 }
 
 const getEventLabel = (event: CcrtFollowUp['history'][number]) =>
-  event.type === 'ccrt_demand_updated'
-    ? 'status' in event.data.changes
-      ? 'Changement de statut'
-      : 'Information du bâtiment modifiée'
-    : (eventLabels[event.type] ?? 'Suivi');
+  event.type === 'ccrt_demand_moderated'
+    ? {
+        archive: 'Demande archivée',
+        reopen: 'Demande remise à valider',
+        restore: 'Demande restaurée',
+        transfer: 'Demande transférée à un réseau',
+      }[event.data.action]
+    : event.type === 'ccrt_demand_updated'
+      ? 'status' in event.data.changes
+        ? 'Changement de statut'
+        : 'Information du bâtiment modifiée'
+      : (eventLabels[event.type] ?? 'Suivi');
 const eventLabels: Record<string, string> = {
   ccrt_demand_admin_comment_updated: 'Commentaire interne FCU modifié',
   ccrt_demand_email_sent: 'Mail envoyé',
