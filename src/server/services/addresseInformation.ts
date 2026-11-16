@@ -223,6 +223,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         'gestionnaire_fcu',
         'Taux EnR&R',
         'contenu CO2 ACV',
+        'reseaux classes',
       ])
       .where('has_trace', '=', false)
       .where('ouvert_aux_raccordements', '=', true)
@@ -467,7 +468,7 @@ export const getDetailedEligibilityStatus = async (lat: number, lon: number) => 
         hasPDP: false,
         id_fcu: reseauDeChaleurSansTrace.id_fcu,
         id_sncu: reseauDeChaleurSansTrace['Identifiant reseau'] ?? '',
-        isClasse: null,
+        isClasse: reseauDeChaleurSansTrace['reseaux classes'] ?? null,
         nom: reseauDeChaleurSansTrace.nom_reseau ?? '',
         tauxENRR: reseauDeChaleurSansTrace['Taux EnR&R'] ?? null,
         type: 'dans_ville_reseau_existant_sans_trace',
