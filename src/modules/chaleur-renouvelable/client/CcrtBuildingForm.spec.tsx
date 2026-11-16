@@ -1,11 +1,9 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { uuid } from '@/tests/helpers';
-
-import type { CcrtDemand } from '../types';
 import { CcrtBuildingForm } from './CcrtBuildingForm';
 import { CcrtBuildingIdentification } from './CcrtBuildingIdentification';
+import { makeCcrtDemand } from './ccrt-demand-fixture';
 
 const mocks = vi.hoisted(() => ({
   eligibility: { coordinates: { lat: 47.2, lon: -1.55 }, distance: 96, isEligible: true },
@@ -58,57 +56,7 @@ vi.mock('@/modules/trpc/client', async () => {
   };
 });
 
-const demand: CcrtDemand = {
-  address: '5 avenue Carnot, 44000 Nantes',
-  alternative_heating_solutions: [],
-  annual_heating_consumption: null,
-  archive_comment: null,
-  archive_reason: null,
-  archived_at: null,
-  assigned_to: null,
-  average_area: 70,
-  average_residents: 2,
-  batiment_construction_id: null,
-  comments: null,
-  commune_code: '44109',
-  created_at: '2026-10-08T10:00:00.000Z',
-  custom_territory_ids: [],
-  demand_concern: null,
-  departement_code: '44',
-  dpe: 'D',
-  email: 'client@example.test',
-  epci_code: null,
-  ept_code: null,
-  first_name: 'Joëlle',
-  heating_energy: 'Gaz',
-  hot_water_system_type: null,
-  housing_count: 25,
-  housing_type: 'immeuble_chauffage_collectif',
-  id: uuid(1),
-  is_public_advisor_selected: false,
-  last_name: 'Martini',
-  occupant_status: 'Copropriétaire',
-  organization_name: null,
-  origin_demand_id: null,
-  outdoor_space: 'none',
-  phone: '',
-  project_state: 'En réflexion',
-  project_status: [],
-  radiator_type: 'radiateur-eau',
-  refusal_period: null,
-  refusal_reason: null,
-  region_code: null,
-  rnic_nom_copropriete: null,
-  rnic_numero_immatriculation: null,
-  rnic_siret_representant_legal: null,
-  simulation_url: '/chaleur-renouvelable/resultat',
-  status: 'A traiter',
-  surface_area: null,
-  transferred_demand_id: null,
-  transferred_network_name: null,
-  updated_at: '2026-10-08T10:00:00.000Z',
-  validated: true,
-};
+const demand = makeCcrtDemand();
 
 describe('CcrtBuildingForm', () => {
   beforeEach(() => {
