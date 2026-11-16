@@ -1,5 +1,6 @@
 import Tag from '@/components/ui/Tag';
-import { dayjs } from '@/utils/date';
+import { formatLastConnection } from '@/modules/demands/client/access-user-formatting';
+import { roles } from '@/modules/users/constants';
 
 import type { CcrtFollowUp } from '../types';
 
@@ -9,15 +10,15 @@ type CcrtAccessUsersProps = { users: CcrtFollowUp['users']; showDates?: boolean 
  * Groups access holders under their role tag and exposes activity dates to admins.
  */
 export function CcrtAccessUsers({ users, showDates = false }: CcrtAccessUsersProps) {
-  const roles = [...new Set(users.map((user) => user.role))];
+  const accessRoles = [...new Set(users.map((user) => user.role))];
   return (
     <div className="space-y-3">
-      {roles.map((role) => {
+      {accessRoles.map((role) => {
         const roleUsers = users.filter((user) => user.role === role);
         return (
           <div key={role}>
             <Tag size="sm">
-              {roleLabels[role] ?? role} ({roleUsers.length})
+              {roles[role]} ({roleUsers.length})
             </Tag>
             <ul className="m-0 list-none space-y-2 p-0 text-sm">
               {roleUsers.map((user) => (
@@ -29,15 +30,7 @@ export function CcrtAccessUsers({ users, showDates = false }: CcrtAccessUsersPro
                   <a className="break-all" href={`mailto:${user.email}`}>
                     {user.email}
                   </a>
-                  {showDates && (
-                    <span>
-                      {' '}
-                      ·{' '}
-                      {user.last_connection
-                        ? `Dernière connexion le ${dayjs(user.last_connection).tz('Europe/Paris').format('DD/MM/YYYY')}`
-                        : 'Jamais connecté'}
-                    </span>
-                  )}
+                  {showDates && <span> · {formatLastConnection(user.last_connection)}</span>}
                 </li>
               ))}
             </ul>
@@ -48,5 +41,3 @@ export function CcrtAccessUsers({ users, showDates = false }: CcrtAccessUsersPro
     </div>
   );
 }
-
-const roleLabels: Record<string, string> = { alec: 'ALEC', ccrt: 'CCRT', collectivite: 'Collectivité', gestionnaire: 'Gestionnaire' };

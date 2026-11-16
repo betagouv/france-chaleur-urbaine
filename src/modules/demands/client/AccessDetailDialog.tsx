@@ -5,9 +5,9 @@ import Loader from '@/components/ui/Loader';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import trpc from '@/modules/trpc/client';
 import { userRolesWithPermissions } from '@/types/enum/UserRole';
-import { dayjs } from '@/utils/date';
 
 import type { AccessDetailUser } from '../types';
+import { formatLastConnection } from './access-user-formatting';
 
 type AccessDetailDialogProps = {
   demandId: string;
@@ -65,15 +65,7 @@ export default function AccessDetailDialog({ demandId, users: suppliedUsers, ope
                           <a className="break-all" href={`mailto:${user.email}`}>
                             {user.email}
                           </a>
-                          {user.last_connection !== undefined && (
-                            <>
-                              {' '}
-                              ·{' '}
-                              {user.last_connection
-                                ? `Dernière connexion le ${dayjs(user.last_connection).tz('Europe/Paris').format('DD/MM/YYYY')}`
-                                : 'Jamais connecté'}
-                            </>
-                          )}
+                          {user.last_connection !== undefined && <> · {formatLastConnection(user.last_connection)}</>}
                         </span>
                         {isAdmin && (
                           <Link
