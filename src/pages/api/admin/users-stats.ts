@@ -22,6 +22,7 @@ const GET = async () => {
         .filterWhere('role', '<>', 'admin')
         .as('last7d'),
     ])
+    .where('deleted_at', 'is', null)
     .executeTakeFirstOrThrow();
   return stats;
 };

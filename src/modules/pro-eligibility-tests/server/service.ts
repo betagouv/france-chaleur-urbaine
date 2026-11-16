@@ -308,7 +308,7 @@ export const listAdmin = async () => {
     .selectFrom('pro_eligibility_tests')
     .selectAll('pro_eligibility_tests')
     .innerJoin('users', 'users.id', 'pro_eligibility_tests.user_id')
-    .where('deleted_at', 'is', null)
+    .where('pro_eligibility_tests.deleted_at', 'is', null)
     .select((eb) => [
       eb.ref('users.email').as('user_email'),
       eb

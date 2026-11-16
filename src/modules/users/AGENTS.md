@@ -10,6 +10,12 @@ Single JSONB column validated by `zUserPreferences` (`constants.ts`): `email_sig
 
 Preference writes use `updateUserPreferences(userId, changes, database?)`: a transaction and user-row lock serialize partial updates; callers such as CCRT email delivery can pass their transaction to keep the preferences and audit event atomic with their own changes.
 
+## Account deletion (soft delete)
+
+An admin deletion (`server/service.ts#remove`) never deletes the `users` row: it sets `deleted_at`, `active = false`, erases the identity (names, phone, structure, entreprise, password, tokens, TOTP) and replaces the email with `supprime-<id>@<original domain>.invalid` (readable domain, undeliverable by construction), so the audit events of the account keep their author. In the same transaction it deletes what the foreign key cascades used to remove (`pro_eligibility_tests`, `pro_comparateur_configurations`, `jobs`, `email_templates`, `user_permissions`, `user_tag_assignments`), detaches the demands (`demands.user_id = NULL`, a new account on the same email finds them again) and calls `anonymizeAccountsInEvents` (events module) so the events about the account no longer carry its email. `account-deletion.integration.spec.ts` lists every foreign key to `users`: a new one fails the test until it is classified (deleted with the account, detached or kept).
+
+Reading `users`: a deleted row is inactive, so anything filtering on `active = true` or going through `user_permissions` already ignores it; lists, counters and by-id admin actions must filter `deleted_at is null` (done in `list`, `update`, users statistics, MFA reset, impersonation, retention rules). When joining `users` to a table that has its own `deleted_at` (`demands`, `pro_eligibility_tests`), qualify the column — or use a subquery like `buildDemandQuery` does. The `pending_accounts` retention rule still hard-deletes never-activated accounts (nothing to audit).
+
 ## Account opening emails
 
 `server/service.ts#create` sends an opening email only when the new account is explicitly active: `auth.gestionnaire.ouverture-espace` for network managers, `auth.ccrt.ouverture-espace` for CCRT. Opening emails skipped during the temporary suspension are not automatically replayed. Updates, including activation of an existing account, do not send an opening email. The CCRT template uses generic manager-space wording and explains how to set a password through the forgotten-password flow.

@@ -50,6 +50,7 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
       .selectFrom('users')
       .select(['id', 'role'])
       .where('id', '=', userId)
+      .where('deleted_at', 'is', null)
       .executeTakeFirstOrThrow(() => new BadRequestError('Utilisateur introuvable'));
     logger.warn('impersonating full profile', { admin_id: req.user.id, target_user_id: target.id });
     const jwt = await getSessionJWT(req);

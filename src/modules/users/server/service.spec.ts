@@ -18,13 +18,11 @@ const mocks = vi.hoisted(() => ({
   updateRecord: vi.fn(),
 }));
 
-vi.mock('@/server/db/kysely', () => ({
-  kdb: {
-    selectFrom: () => ({
-      select: () => ({ where: () => ({ executeTakeFirst: mocks.findExistingUser, executeTakeFirstOrThrow: mocks.findUser }) }),
-    }),
-  },
-}));
+vi.mock('@/server/db/kysely', () => {
+  // `where` chains: a lookup may filter on several columns
+  const query = { executeTakeFirst: mocks.findExistingUser, executeTakeFirstOrThrow: mocks.findUser, where: () => query };
+  return { kdb: { selectFrom: () => ({ select: () => query }) } };
+});
 vi.mock('@/server/db/kysely/base-model', () => ({
   createBaseModel: () => ({ create: mocks.createRecord, update: mocks.updateRecord }),
 }));

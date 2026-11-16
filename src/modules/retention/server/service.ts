@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { genSalt, hash } from 'bcryptjs';
 
 import { businessRules } from '@/modules/app/business-rules';
-import { createUserEvent } from '@/modules/events/server/service';
+import { anonymizeAccountsInEvents, createUserEvent } from '@/modules/events/server/service';
 import { purgeUnownedFileContents } from '@/modules/files/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
@@ -23,6 +23,7 @@ const pendingAccountsQuery = () =>
   kdb
     .selectFrom('users')
     .where('status', '=', 'pending_email_confirmation')
+    .where('deleted_at', 'is', null)
     .where('created_at', '<', cutoff(businessRules.retentionAccountsPendingMonths.value, 'months'));
 
 /** Active non-admin accounts without a connection for longer than the inactive retention (creation date if never connected). */
@@ -32,6 +33,7 @@ const inactiveAccountsQuery = () =>
     .where('role', '<>', 'admin')
     .where('active', 'is', true)
     .where('status', '=', 'valid')
+    .where('deleted_at', 'is', null)
     .where('email', 'not like', `${ANONYMIZED_EMAIL_PREFIX}%`)
     .where(sql<Date>`coalesce(last_connection, created_at)`, '<', cutoff(businessRules.retentionAccountsInactiveYears.value, 'years'));
 
@@ -119,29 +121,48 @@ export const previewRetention = async (): Promise<RetentionPreview[]> => Promise
 const applyRule = async (rule: RetentionRule): Promise<number> => {
   switch (rule) {
     case 'pending_accounts': {
-      const deleted = await kdb.deleteFrom('users').where('id', 'in', pendingAccountsQuery().select('id')).executeTakeFirst();
-      return Number(deleted.numDeletedRows);
+      // never used: nothing to audit, the events about the accounts go with them (the ones they authored cascade)
+      return kdb.transaction().execute(async (trx) => {
+        await trx
+          .deleteFrom('events')
+          .where('context_type', '=', 'user')
+          .where(
+            'context_id',
+            'in',
+            pendingAccountsQuery().select((eb) => eb.cast<string>('id', 'text').as('id'))
+          )
+          .execute();
+        const deleted = await trx.deleteFrom('users').where('id', 'in', pendingAccountsQuery().select('id')).executeTakeFirst();
+        return Number(deleted.numDeletedRows);
+      });
     }
     case 'inactive_accounts': {
       // an unknown random password: nobody can log in, the row stays for the demands linked to it
       const unusablePassword = await hash(randomBytes(32).toString('hex'), await genSalt(10));
-      const updated = await kdb
-        .updateTable('users')
-        .set({
-          activation_token: null,
-          active: false,
-          email: sql<string>`${ANONYMIZED_EMAIL_PREFIX} || id::text || ${ANONYMIZED_EMAIL_DOMAIN}`,
-          first_name: null,
-          last_name: null,
-          newsletter_optin_at: null,
-          password: unusablePassword,
-          phone: null,
-          preferences: sql`preferences || '{"email_signature": null}'::jsonb`,
-          reset_token: null,
-        })
-        .where('id', 'in', inactiveAccountsQuery().select('id'))
-        .executeTakeFirst();
-      return Number(updated.numUpdatedRows);
+      return kdb.transaction().execute(async (trx) => {
+        const anonymized = await trx
+          .updateTable('users')
+          .set({
+            activation_token: null,
+            active: false,
+            email: sql<string>`${ANONYMIZED_EMAIL_PREFIX} || id::text || ${ANONYMIZED_EMAIL_DOMAIN}`,
+            first_name: null,
+            last_name: null,
+            newsletter_optin_at: null,
+            password: unusablePassword,
+            phone: null,
+            preferences: sql`preferences || '{"email_signature": null}'::jsonb`,
+            reset_token: null,
+          })
+          .where('id', 'in', inactiveAccountsQuery().select('id'))
+          .returning('id')
+          .execute();
+        await anonymizeAccountsInEvents(
+          anonymized.map((account) => account.id),
+          trx
+        );
+        return anonymized.length;
+      });
     }
     case 'closed_demands': {
       const updated = await kdb

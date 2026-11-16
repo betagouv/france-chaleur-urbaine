@@ -164,6 +164,33 @@ export async function createEvents(
   await kdb.insertInto('events').values(events).execute();
 }
 
+/**
+ * Removes the identity of deleted or anonymized accounts from the events about them: their email is replaced by the
+ * anonymized one now stored on the account, and the values of their changed fields are dropped (the field names stay).
+ * Call it after the `users` rows were anonymized, in the same transaction.
+ */
+export async function anonymizeAccountsInEvents(userIds: string[], database: Kysely<DB>) {
+  if (userIds.length === 0) {
+    return;
+  }
+  await database
+    .updateTable('events')
+    .from('users')
+    .set((eb) => ({
+      data: sql`${eb.ref('events.data')}
+        || CASE WHEN ${eb.ref('events.data')} ? 'user_email' THEN jsonb_build_object('user_email', ${eb.ref('users.email')}) ELSE '{}'::jsonb END
+        || CASE WHEN ${eb.ref('events.data')} ? 'email' THEN jsonb_build_object('email', ${eb.ref('users.email')}) ELSE '{}'::jsonb END
+        || CASE WHEN jsonb_typeof(${eb.ref('events.data')}->'changes') = 'object'
+          THEN jsonb_build_object('changes', (SELECT coalesce(jsonb_object_agg(field, 'null'::jsonb), '{}'::jsonb) FROM jsonb_object_keys(${eb.ref('events.data')}->'changes') AS field))
+          ELSE '{}'::jsonb END`,
+    }))
+    .where('events.context_type', '=', 'user')
+    // context_id is text and holds other identifiers too: cast the uuid, never the text
+    .where((eb) => eb('events.context_id', '=', eb.cast<string>('users.id', 'text')))
+    .where('users.id', 'in', userIds)
+    .execute();
+}
+
 export async function createUserEvent(
   event: Required<Pick<Insertable<Events>, 'author_id'>> & Pick<Insertable<Events>, 'type' | 'context_type' | 'context_id' | 'data'>,
   database: Kysely<DB> = kdb
