@@ -7,6 +7,7 @@ import Dialog from '@/components/ui/Dialog';
 import Icon from '@/components/ui/Icon';
 import TimeAgo from '@/components/ui/TimeAgo';
 import type { NetworkReminderListItem } from '@/modules/reseaux/server/reminders';
+import cx from '@/utils/cx';
 
 type ReminderDialogState = { mode: 'create' } | { mode: 'edit'; id: string; note: string; createdAt: string } | null;
 
@@ -15,13 +16,20 @@ type RemindersCellProps = {
   onCreateReminder: (note: string | null, createdAt: string) => Promise<unknown>;
   onUpdateReminder: (id: string, changes: { note: string | null; createdAt: string }) => Promise<unknown>;
   onDeleteReminder: (id: string) => Promise<unknown>;
+  /**
+   * `latest` (default): the latest reminder with its actions, the older ones in a history dialog.
+   * `compact`: dense cell for wide tables, the latest reminder without its author nor its actions and with its note clamped; the history dialog, always reachable, keeps everything.
+   * `all`: every reminder listed in place, for a page with room.
+   */
+  display?: 'latest' | 'compact' | 'all';
 };
 
 /**
  * Table cell rendering the list of reminders for a network with inline edit/delete actions.
  * Exposes a single dialog used for both creating new reminders and editing existing ones.
  */
-export function RemindersCell({ reminders, onCreateReminder, onUpdateReminder, onDeleteReminder }: RemindersCellProps) {
+export function RemindersCell({ reminders, onCreateReminder, onUpdateReminder, onDeleteReminder, display = 'latest' }: RemindersCellProps) {
+  const compact = display === 'compact';
   const [dialog, setDialog] = useState<ReminderDialogState>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [note, setNote] = useState('');
@@ -63,7 +71,10 @@ export function RemindersCell({ reminders, onCreateReminder, onUpdateReminder, o
     await onDeleteReminder(reminder.id);
   };
 
-  const renderReminderItem = (reminder: NetworkReminderListItem, { withActions }: { withActions: boolean }) => (
+  const renderReminderItem = (
+    reminder: NetworkReminderListItem,
+    { withActions, dense = false }: { withActions: boolean; dense?: boolean }
+  ) => (
     <div key={reminder.id} className="text-xs border-l-2 border-blue-400 pl-2 py-0.5">
       <div className="flex items-start gap-2">
         <div className="flex flex-col flex-1 min-w-0">
@@ -71,7 +82,7 @@ export function RemindersCell({ reminders, onCreateReminder, onUpdateReminder, o
             <Icon name="fr-icon-calendar-line" size="xs" className="text-gray-400" />
             <TimeAgo date={reminder.created_at} />
           </div>
-          {reminder.author_email && (
+          {reminder.author_email && !dense && (
             <div className="flex items-center gap-1 text-gray-400 text-[11px] my-1">
               <Icon name="fr-icon-user-line" size="xs" />
               {reminder.author_email}
@@ -97,16 +108,25 @@ export function RemindersCell({ reminders, onCreateReminder, onUpdateReminder, o
           </div>
         )}
       </div>
-      {reminder.note && <div className="text-gray-500 italic whitespace-pre-wrap text-[13px]">{reminder.note}</div>}
+      {reminder.note && (
+        <div
+          className={cx('text-gray-500 italic whitespace-pre-wrap text-[13px]', dense && 'line-clamp-2')}
+          title={dense ? reminder.note : undefined}
+        >
+          {reminder.note}
+        </div>
+      )}
     </div>
   );
 
   return (
     <div className="flex flex-col gap-1 w-full">
-      {latest && renderReminderItem(latest, { withActions: true })}
-      {extraCount > 0 && (
+      {display === 'all'
+        ? reminders.map((reminder) => renderReminderItem(reminder, { withActions: true }))
+        : latest && renderReminderItem(latest, { dense: compact, withActions: !compact })}
+      {display !== 'all' && (compact ? reminders.length > 0 : extraCount > 0) && (
         <Button priority="tertiary no outline" size="small" onClick={() => setHistoryOpen(true)}>
-          Voir l'historique ({reminders.length})
+          {compact ? 'Historique' : "Voir l'historique"} ({reminders.length})
         </Button>
       )}
       <Dialog open={historyOpen} onOpenChange={setHistoryOpen} title={`Historique des relances (${reminders.length})`} size="md">

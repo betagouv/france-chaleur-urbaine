@@ -107,6 +107,7 @@ export async function cleanDatabase() {
     kdb.deleteFrom('pro_eligibility_tests_addresses').execute(),
     kdb.deleteFrom('jobs').execute(),
     kdb.deleteFrom('network_change_requests').execute(), // cascades to network_change_request_files
+    kdb.deleteFrom('network_reminders').execute(), // references its author without cascade
   ]);
   await Promise.all([
     kdb.deleteFrom('demands').execute(),

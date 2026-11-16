@@ -1,6 +1,5 @@
-import ReseauxStatsPage from '@/modules/demands/client/ReseauxStatsPage';
 import { withAuthentication } from '@/server/authentication';
 
-export default ReseauxStatsPage;
+export { default } from '@/modules/demands/client/network-tracking/NetworkTrackingDetailPage';
 
 export const getServerSideProps = withAuthentication(['admin']);

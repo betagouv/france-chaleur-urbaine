@@ -249,6 +249,32 @@ export const businessRules = {
     label: 'Filtre « proche réseau » : distance',
     value: 100,
   },
+  networkTrackingLateDays: {
+    description:
+      "Ancienneté de la plus ancienne demande « À traiter » d'un réseau au-delà de laquelle le suivi des réseaux le signale comme en retard ou muet.",
+    display: '30 jours',
+    label: 'Suivi des réseaux : demande en retard',
+    value: 30,
+  },
+  networkTrackingResponseWindowMonths: {
+    description: 'Période glissante sur laquelle le suivi des réseaux calcule le taux et le délai de réponse des gestionnaires.',
+    display: '12 mois',
+    label: 'Suivi des réseaux : période du taux de réponse',
+    value: 12,
+  },
+  networkTrackingSilentDays: {
+    description:
+      "Durée sans aucune action d'un gestionnaire au-delà de laquelle un réseau ayant une demande en retard est signalé comme muet.",
+    display: '90 jours',
+    label: 'Suivi des réseaux : réseau muet',
+    value: 90,
+  },
+  networkTrackingStuckMonths: {
+    description: 'Durée passée dans un même statut au-delà de laquelle une demande non close est comptée comme bloquée.',
+    display: '6 mois',
+    label: 'Suivi des réseaux : demande bloquée',
+    value: 6,
+  },
   passwordMinLength: {
     description:
       "Longueur minimale d'un mot de passe à l'inscription et à la réinitialisation. Aucune contrainte de composition : une phrase facile à retenir est conseillée.",

@@ -124,7 +124,7 @@ Un PDP est la zone d'un réseau **classé** où le raccordement peut être **obl
 À ne pas confondre avec les [relances automatiques des demandeurs](/admin/doc/relances-notifications) : ici, une « relance réseau » est une **note de suivi datée, posée manuellement par un admin** sur un réseau. Elle n'envoie aucun email — c'est un pense-bête interne, visible des seuls admins. Deux usages :
 
 - **Suivi du tracé/des données** — depuis [Gestion des réseaux](/admin/reseaux).
-- **Relance d'un gestionnaire qui ne traite pas ses demandes** — depuis [Statistiques par réseau](/admin/reseaux/stats).
+- **Relance d'un gestionnaire qui ne traite pas ses demandes** — depuis le [Suivi des réseaux](/admin/reseaux/suivi).
 
 Événements : [création](/admin/events?types=network_reminder_created), [mise à jour](/admin/events?types=network_reminder_updated), [suppression](/admin/events?types=network_reminder_deleted) de relance réseau.
 
@@ -143,10 +143,26 @@ La carte publique est servie à partir de **tuiles** pré-calculées. Elles sont
 
 ## Statistiques
 
-Deux choses distinctes portent le mot « statistiques » :
+La tâche mensuelle `aggregateMonthlyStats` (voir [Références](/admin/doc/references)) agrège les stats du mois écoulé (fréquentation, actions…) qui alimentent la **page de statistiques publique**. Elle est sans rapport avec le suivi de l'activité par réseau, décrit ci-dessous.
 
-- [Statistiques par réseau](/admin/reseaux/stats) : par réseau, le nombre de demandes **validées** (total et « À traiter »), sur plusieurs fenêtres de temps, avec les gestionnaires ayant accès et leur dernière connexion. But : **repérer les réseaux dont les demandes ne sont pas traitées** (alerte si toutes les demandes récentes restent en attente). Exportable en Excel.
-- La tâche mensuelle `aggregateMonthlyStats` (voir [Références](/admin/doc/references)) : agrège les stats du mois écoulé (fréquentation, actions…) qui alimentent la **page de statistiques publique**, sans rapport avec la page par réseau.
+## Suivi des réseaux
+
+Le [Suivi des réseaux](/admin/reseaux/suivi) sert à **repérer les réseaux dont les demandes ne sont pas traitées** : au-delà du nombre de demandes en attente, il mesure **ce que les gestionnaires font de leurs demandes**, à partir du journal des événements. Il liste tous les réseaux de chaleur, existants et en construction, y compris ceux qui n'ont aucune demande.
+
+- **Action d'un gestionnaire** : [mise à jour d'une demande](/admin/events?types=demand_updated) ou [envoi d'un courriel au demandeur](/admin/events?types=demand_email_sent) par un compte gestionnaire, collectivité ou ALEC, ou [mise à jour par l'API partenaire](/admin/events?types=api_demand_updated). Les actions des admins ne comptent pas.
+- **Réception d'une demande** : sa [validation par un admin](/admin/events?types=demand_validated), ou sa dernière [réaffectation](/admin/events?types=demand_assignment_changed) si elle a changé de réseau depuis. Le délai de réponse court de cette date jusqu'à la première action d'un gestionnaire.
+- **État du réseau** : «&nbsp;À jour&nbsp;» tant qu'aucune demande «&nbsp;À traiter&nbsp;» n'attend depuis plus de <Rule id="networkTrackingLateDays" />. Au-delà, le réseau est «&nbsp;En retard&nbsp;» si un gestionnaire a agi depuis moins de <Rule id="networkTrackingSilentDays" />, «&nbsp;Muet&nbsp;» sinon. Un réseau sans demande validée est «&nbsp;Sans demande&nbsp;».
+- **Demandes** : nombre de demandes «&nbsp;À traiter&nbsp;» et nombre total de demandes validées, chacun avec la date de la demande la plus ancienne et de la plus récente. La colonne «&nbsp;Demandes par statut&nbsp;» les répartit en trois groupes : à traiter, en cours (recontacté pour étude, proposition commerciale envoyée, voté en AG, travaux en cours) et closes (non réalisable, réalisé, projet abandonné par le prospect).
+- **Taux et délai de réponse** : calculés sur les demandes reçues depuis <Rule id="networkTrackingResponseWindowMonths" /> qui attendaient une réponse, c'est-à-dire celles sur lesquelles un gestionnaire a agi et celles encore «&nbsp;À traiter&nbsp;». Une demande créée directement «&nbsp;Non réalisable&nbsp;» (adresse non éligible) ou réaffectée après avoir été traitée n'en fait pas partie. Le délai affiché est une médiane.
+
+Le tableau reprend aussi, pour chaque réseau, sa puissance, les comptes pouvant traiter ses demandes (dernière connexion, adresses bloquées, copie des adresses) : comptes gestionnaire, collectivité ou ALEC actifs ayant une permission sur le réseau ou sur l'organisation à laquelle il est rattaché, les relances réseau (décrites plus haut) et les notes, modifiables sur place. Plusieurs indicateurs partagent une même colonne : les boutons «&nbsp;Trier&nbsp;» et «&nbsp;Filtres&nbsp;» donnent accès à chacun d'eux, et l'export Excel leur réserve une colonne chacun. Le raccourci «&nbsp;à traiter sans utilisateur&nbsp;» isole les réseaux qui ont des demandes «&nbsp;À traiter&nbsp;» alors qu'aucun compte n'y a accès : personne ne peut y répondre, il faut d'abord créer ou rattacher un compte. Ces réseaux portent le badge «&nbsp;Aucun utilisateur&nbsp;».
+
+Le nom d'un réseau ouvre son détail : comptes ayant accès, notes et historique complet des relances du réseau, activité mensuelle (demandes reçues et demandes sur lesquelles un gestionnaire a agi), réponse par trimestre, puis répartition des demandes par statut avec l'âge médian dans le statut et le nombre de demandes non closes **bloquées** dans le même statut depuis plus de <Rule id="networkTrackingStuckMonths" />.
+
+**Limites à connaître** :
+
+- Le journal ne permet de reconstituer l'activité que depuis décembre 2025. Une demande plus ancienne restée sans changement n'a ni date de réception ni action connue : elle compte dans les demandes en attente, pas dans le taux de réponse, et son statut est compté depuis le 1er décembre 2025 (son âge réel est supérieur).
+- Le rôle retenu est celui que le compte a aujourd'hui : les actions passées d'un compte qui a changé de rôle depuis ne sont plus attribuées aux gestionnaires. Les actions d'un compte supprimé disparaissent du journal avec lui.
 
 ## Fusionner des réseaux
 

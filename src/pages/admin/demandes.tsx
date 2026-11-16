@@ -27,6 +27,7 @@ import AffectedNetworkCell from '@/modules/demands/client/AffectedNetworkCell';
 import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
+import { buildNetworkTrackingUrl } from '@/modules/demands/client/network-tracking/format';
 import Status from '@/modules/demands/client/Status';
 import type { DemandStatus } from '@/modules/demands/constants';
 import { eligibilityTypes as eligibilityCases, eligibilityTitleByType } from '@/modules/demands/constants';
@@ -818,13 +819,13 @@ function DemandActions({ demand, onDelete }: { demand: DemandsListAdminItem; onD
           },
         ]
       : []),
-    ...(demand.network_name
+    ...(demand.network_id && demand.network_type
       ? [
           {
-            href: `/admin/reseaux/stats?reseaux_filters=${encodeURIComponent(JSON.stringify([{ id: 'reseau', value: demand.network_name }]))}`,
+            href: buildNetworkTrackingUrl(demand.network_type, demand.network_id),
             icon: 'fr-icon-bar-chart-box-line' as const,
-            id: 'stats-reseau',
-            label: 'Statistiques du réseau',
+            id: 'suivi-reseau',
+            label: 'Suivi du réseau',
             target: '_blank' as const,
           },
         ]

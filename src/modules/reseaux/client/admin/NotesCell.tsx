@@ -7,13 +7,15 @@ import Dialog from '@/components/ui/Dialog';
 type NotesCellProps = {
   initialNotes: string;
   onSave: (notes: string) => Promise<void>;
+  /** Number of characters shown in the cell before the notes are truncated. */
+  previewLength?: number;
 };
 
 /**
  * Table cell rendering a network's free-text notes in a modal editor with explicit save/cancel.
  * Shows a truncated preview in the cell and opens a large textarea dialog on edit.
  */
-export function NotesCell({ initialNotes, onSave }: NotesCellProps) {
+export function NotesCell({ initialNotes, onSave, previewLength = 150 }: NotesCellProps) {
   const [value, setValue] = useState(initialNotes);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -51,8 +53,10 @@ export function NotesCell({ initialNotes, onSave }: NotesCellProps) {
           </div>
         </div>
       </Dialog>
-      <div className="whitespace-pre-wrap">{initialNotes.length > 150 ? `${initialNotes.slice(0, 150)}...` : initialNotes}</div>
-      <Button priority="tertiary" iconId="fr-icon-pencil-line" onClick={openDialog} />
+      <div className="min-w-0 whitespace-pre-wrap wrap-break-word">
+        {initialNotes.length > previewLength ? `${initialNotes.slice(0, previewLength)}...` : initialNotes}
+      </div>
+      <Button priority="tertiary" iconId="fr-icon-pencil-line" className="shrink-0" onClick={openDialog} />
     </>
   );
 }

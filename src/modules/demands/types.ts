@@ -71,5 +71,3 @@ export type AccessCounts = {
   collectivite: number;
   alec: number;
 };
-
-export type { ReseauxStats } from './server/stats';
