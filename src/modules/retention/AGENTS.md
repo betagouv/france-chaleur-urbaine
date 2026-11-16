@@ -11,6 +11,7 @@ Manual application of the personal-data retention rules published in the privacy
 
 ## Rules
 
-- Anonymized rows are marked by an email starting with `anonymise-` and are excluded from later previews.
+- Anonymized rows are marked by an email starting with `anonymise-` and are excluded from later previews. Accounts deleted by an admin (`users.deleted_at`, see `src/modules/users/AGENTS.md`) are excluded from both account rules.
+- `inactive_accounts` also calls `anonymizeAccountsInEvents` (events module): the events about the anonymized accounts take their anonymized email and lose the values of their changed fields. `pending_accounts` hard-deletes the accounts with the events about them.
 - Adding a rule: business rule + `retentionRules` + definition + service query/apply + doc page `retention-donnees.mdx` + privacy policy.
 - The contact form is not covered (ADEME CRM iframe). Network change requests (modification / contribution forms) are covered by `processed_network_change_requests` (contact anonymized, `payload.emailReferentCommercial` dropped, file contents purged except published documents).

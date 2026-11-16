@@ -17,7 +17,6 @@ const roles = [
   { label: 'ALEC', value: 'alec' },
   { label: 'CCRT', value: 'ccrt' },
   { label: 'Professionnel', value: 'professionnel' },
-  { label: 'Particulier', value: 'particulier' },
 ] satisfies { label: string; value: UserRole }[];
 
 type ImpersonateUserRole = (typeof roles)[number]['value'];

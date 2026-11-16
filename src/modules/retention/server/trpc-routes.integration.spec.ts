@@ -8,7 +8,6 @@ import { createTestCaller, forbiddenError, type TestCaseBoolean, testUsers } fro
 
 const adminOnly: TestCaseBoolean<Partial<User> | null>[] = [
   { expectedOutput: false, input: null },
-  { expectedOutput: false, input: testUsers.particulier },
   { expectedOutput: false, input: testUsers.professionnel },
   { expectedOutput: false, input: testUsers.gestionnaire },
   { expectedOutput: false, input: testUsers.collectivite },
@@ -58,6 +57,21 @@ const seedDemand = (id: string, values: Record<string, unknown>, extra: { delete
     .insertInto('demands')
     .values({ id, legacy_values: JSON.stringify(values), ...extra })
     .execute();
+
+const seedAccountEvent = (userId: string, email: string) =>
+  kdb
+    .insertInto('events')
+    .values({
+      author_id: testUsers.admin.id,
+      context_id: userId,
+      context_type: 'user',
+      data: JSON.stringify({ changes: { phone: '0600000000' }, user_email: email }),
+      type: 'user_updated_by_admin',
+    })
+    .execute();
+
+const listAccountEvents = () =>
+  kdb.selectFrom('events').select(['context_id', 'data']).where('type', '=', 'user_updated_by_admin').orderBy('context_id').execute();
 
 describe('retention', () => {
   beforeEach(async () => {
@@ -159,15 +173,21 @@ describe('retention', () => {
     expect(bothItem?.date && Math.abs(new Date(bothItem.date).getTime() - yearsAgo(4).getTime()) < 1000).toStrictEqual(true);
   });
 
-  it('deletes never-activated accounts past the delay', async () => {
+  it('deletes never-activated accounts past the delay, with the events about them', async () => {
+    await seedAccountEvent(uuid(1), 'pending-old@test.local');
+
     const result = await createTestCaller(testUsers.admin).retention.run({ rule: 'pending_accounts' });
 
     const remaining = await kdb.selectFrom('users').select('email').where('status', '=', 'pending_email_confirmation').execute();
     expect(result).toStrictEqual({ count: 1, rule: 'pending_accounts' });
     expect(remaining).toStrictEqual([{ email: 'pending-recent@test.local' }]);
+    expect(await listAccountEvents()).toStrictEqual([]);
   });
 
   it('deactivates and anonymizes inactive accounts, keeps admins and active accounts', async () => {
+    await seedAccountEvent(uuid(3), 'inactive@test.local');
+    await seedAccountEvent(uuid(4), 'active@test.local');
+
     const result = await createTestCaller(testUsers.admin).retention.run({ rule: 'inactive_accounts' });
 
     const users = await kdb
@@ -190,6 +210,11 @@ describe('retention', () => {
     ]);
     expect(events).toStrictEqual([
       { author_id: testUsers.admin.id, data: { count: 2, rule: 'inactive_accounts' }, type: 'data_retention_applied' },
+    ]);
+    // the events about an anonymized account lose its email and the values of its changed fields
+    expect(await listAccountEvents()).toStrictEqual([
+      { context_id: uuid(3), data: { changes: { phone: null }, user_email: `anonymise-${uuid(3)}@anonymise.invalid` } },
+      { context_id: uuid(4), data: { changes: { phone: '0600000000' }, user_email: 'active@test.local' } },
     ]);
   });
 

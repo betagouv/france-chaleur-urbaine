@@ -1,16 +1,16 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 
-import { roles } from '@/modules/users/constants';
+import { storedRoleLabels } from '@/modules/users/constants';
 import { roleBadgeClasses } from '@/modules/users/role-colors';
-import type { UserRole } from '@/types/enum/UserRole';
+import type { StoredUserRole } from '@/types/enum/UserRole';
 
 type UserRoleBadgeProps = {
-  role: UserRole;
+  role: StoredUserRole;
 };
 
 const UserRoleBadge = ({ role }: UserRoleBadgeProps) => (
   <Badge small className={roleBadgeClasses[role]}>
-    {roles[role]}
+    {storedRoleLabels[role]}
   </Badge>
 );
 

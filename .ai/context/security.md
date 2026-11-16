@@ -26,7 +26,6 @@ enum USER_ROLE {
   COLLECTIVITE = 'collectivite',   // Local authority — demands for their territory
   ALEC = 'alec',                   // Local energy agency — demands for their territory
   PROFESSIONNEL = 'professionnel', // Bulk testing, demand submission
-  PARTICULIER = 'particulier',     // Individual citizen
 }
 ```
 

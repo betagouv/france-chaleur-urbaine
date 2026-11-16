@@ -298,7 +298,7 @@ describe('désaffectation / réaffectation flow', () => {
         { id: testUsers.collectivite.id, role: 'collectivite' },
         { id: testUsers.alec.id, role: 'alec' },
         { id: testUsers.ccrt.id, role: 'ccrt' },
-        { id: testUsers.particulier.id, role: 'particulier' },
+        { id: testUsers.professionnel.id, role: 'professionnel' },
       ]);
       await setupNetwork(100);
       const demand = await seedAffectedDemand({ networkIdFcu: 100, networkType: 'reseau_de_chaleur' });
@@ -335,7 +335,7 @@ describe('désaffectation / réaffectation flow', () => {
     });
 
     const forbiddenRoles: TestCase<Partial<User>, typeof forbiddenError>[] = [
-      { expectedOutput: forbiddenError, input: testUsers.particulier, label: 'particulier' },
+      { expectedOutput: forbiddenError, input: testUsers.professionnel, label: 'professionnel' },
       { expectedOutput: forbiddenError, input: testUsers.ccrt, label: 'ccrt' },
     ];
 

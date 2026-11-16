@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto';
+
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
 import type { Kysely, Selectable } from 'kysely';
@@ -6,7 +8,7 @@ import type { z } from 'zod';
 import { ALL_FCU_RUBRIQUES, buildRubriques, isSyncedRole, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
 import { createContact, updateContact } from '@/modules/ademe-connect/server/client';
 import { sendEmailTemplate } from '@/modules/email';
-import { createUserEvent } from '@/modules/events/server/service';
+import { anonymizeAccountsInEvents, createUserEvent } from '@/modules/events/server/service';
 import { getAllPermissionsWithLabels } from '@/modules/permissions/server/search';
 import { customTerritoryPermissionType, territoryPermissionResourceTypes } from '@/modules/permissions/types';
 import { networkTypes } from '@/modules/reseaux/constants';
@@ -66,6 +68,7 @@ export const list = async () => {
         'totp_enrolled_at',
         'ebc.reason_code as email_blocked_reason',
       ])
+      .where('users.deleted_at', 'is', null)
       .orderBy('users.id')
       .execute(),
     getAllPermissionsWithLabels(),
@@ -152,7 +155,12 @@ export const update = async (
   const { entreprise, notifications, ...userUpdate } = data;
 
   // The CRM contact is keyed by email: keep the one known before the update (an email change is not propagated).
-  const previous = await kdb.selectFrom('users').select('email').where('id', '=', id).executeTakeFirstOrThrow();
+  const previous = await kdb
+    .selectFrom('users')
+    .select('email')
+    .where('id', '=', id)
+    .where('deleted_at', 'is', null)
+    .executeTakeFirstOrThrow();
 
   const updated = await baseModel.update(
     id,
@@ -206,21 +214,78 @@ const syncContactAfterAdminUpdate = async (id: string, previousEmail: string) =>
 };
 
 /**
- * Supprime un utilisateur et toutes ses données associées en cascade.
+ * Adresse d'un compte supprimé : anonymisée, elle garde le domaine lisible et ne peut jamais recevoir de courrier
+ * (`.invalid` est un domaine réservé).
  */
-export const remove = async (id: string, config: ListConfig<typeof tableName>, context: Context) => {
-  const user = await kdb.selectFrom('users').select('email').where('id', '=', id).executeTakeFirstOrThrow();
-  const result = await baseModel.remove(id, config, context);
+const getDeletedAccountEmail = (user: { id: string; email: string }) => {
+  const domain = user.email.split('@')[1];
+  // un compte déjà anonymisé par la règle de conservation porte déjà un domaine en `.invalid`
+  return `supprime-${user.id}@${domain.endsWith('.invalid') ? domain : `${domain}.invalid`}`;
+};
+
+/**
+ * Supprime un compte : la ligne reste dans `users` (`deleted_at`, email anonymisé, identité effacée) pour conserver
+ * ses événements d'audit, ses données liées sont supprimées et ses demandes détachées.
+ */
+export const remove = async (id: string, _config: ListConfig<typeof tableName>, context: Context): Promise<DB['users']> => {
+  const user = await kdb
+    .selectFrom('users')
+    .select(['id', 'email'])
+    .where('id', '=', id)
+    .where('deleted_at', 'is', null)
+    .executeTakeFirstOrThrow();
+  const email = getDeletedAccountEmail(user);
+  // mot de passe aléatoire inconnu : plus personne ne peut se connecter
+  const unusablePassword = await bcrypt.hash(randomBytes(32).toString('hex'), await bcrypt.genSalt(10));
+
+  const deleted = await kdb.transaction().execute(async (trx) => {
+    // la ligne reste : ce que les clés étrangères supprimaient en cascade avec elle est supprimé ici
+    await trx.deleteFrom('pro_eligibility_tests').where('user_id', '=', id).execute();
+    await trx.deleteFrom('pro_comparateur_configurations').where('user_id', '=', id).execute();
+    await trx.deleteFrom('jobs').where('user_id', '=', id).execute();
+    await trx.deleteFrom('email_templates').where('user_id', '=', id).execute();
+    await trx.deleteFrom('user_permissions').where('user_id', '=', id).execute();
+    await trx.deleteFrom('user_tag_assignments').where('user_id', '=', id).execute();
+    // détachées comme avant : un nouveau compte sur le même email les retrouve (`linkDemandsByEmail`)
+    await trx.updateTable('demands').set({ user_id: null }).where('user_id', '=', id).execute();
+    const row = await trx
+      .updateTable('users')
+      .set({
+        activation_token: null,
+        active: false,
+        deleted_at: new Date(),
+        email,
+        entreprise: null,
+        first_name: null,
+        from_organization_id: null,
+        last_name: null,
+        newsletter_optin_at: null,
+        password: unusablePassword,
+        phone: null,
+        preferences: sql`preferences || '{"email_signature": null}'::jsonb`,
+        reset_token: null,
+        structure_name: null,
+        structure_other: null,
+        totp_enrolled_at: null,
+        totp_secret: null,
+      })
+      .where('id', '=', id)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+    await anonymizeAccountsInEvents([id], trx);
+    return row;
+  });
 
   await createUserEvent({
     author_id: context.user.id,
     context_id: id,
     context_type: 'user',
-    data: { user_email: user.email },
+    data: { user_email: email },
     type: 'user_deleted_by_admin',
   });
 
-  return result;
+  // même contrat que le modèle générique, qui type les lignes renvoyées comme la table
+  return deleted as unknown as DB['users'];
 };
 
 export const validation = {

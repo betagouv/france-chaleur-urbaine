@@ -27,7 +27,7 @@ export function registerAdemeConnectCommands(parentProgram: Command) {
     .option('--nom <nom>', 'Nom du contact')
     .option('--prenom <prenom>', 'Prénom du contact')
     .option('--telephone <telephone>', 'Téléphone du contact')
-    .option('--type-organisme <typeOrganisme>', 'Type organisme (Particulier, Entreprise, Collectivité…)')
+    .option('--type-organisme <typeOrganisme>', 'Type organisme (Entreprise, Collectivité…)')
     .action(async (email, options) => {
       const result = await createContact({
         email,

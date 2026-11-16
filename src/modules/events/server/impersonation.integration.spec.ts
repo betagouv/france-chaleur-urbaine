@@ -79,7 +79,7 @@ describe('/api/admin/impersonate', () => {
     mockGetServerSession.mockResolvedValue({ user: { active: true, id: adminId, role: 'gestionnaire' } });
     const res = mockResponse();
 
-    await impersonateHandler(mockRequest({ body: { role: 'particulier' }, method: 'POST' }), res);
+    await impersonateHandler(mockRequest({ body: { role: 'professionnel' }, method: 'POST' }), res);
 
     expect(res.status).toHaveBeenCalledWith(403);
     expect(await listImpersonationEvents()).toStrictEqual([]);

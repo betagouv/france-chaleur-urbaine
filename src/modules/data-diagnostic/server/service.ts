@@ -112,14 +112,14 @@ const checkGestionnaireWithTerritory: IssueBuilder = async () => {
 };
 
 /**
- * Rôles sans permissions (admin / particulier / professionnel) ayant tout de même une permission.
+ * Rôles sans permissions (admin / professionnel) ayant tout de même une permission.
  */
 const checkPermissionOnRoleWithoutPermissions: IssueBuilder = async () => {
   const rows = await kdb
     .selectFrom('users as u')
     .innerJoin('user_permissions as up', 'up.user_id', 'u.id')
     .select(['u.id', 'u.email', 'u.role'])
-    .where('u.role', 'in', ['admin', 'particulier', 'professionnel'])
+    .where('u.role', 'in', ['admin', 'professionnel'])
     .distinct()
     .orderBy('u.role')
     .orderBy('u.email')
@@ -135,7 +135,7 @@ const checkPermissionOnRoleWithoutPermissions: IssueBuilder = async () => {
 
   return {
     description:
-      'Les rôles admin, particulier et professionnel ne doivent jamais avoir de permissions attribuées. Ces lignes sont probablement des résidus à supprimer.',
+      'Les rôles admin et professionnel ne doivent jamais avoir de permissions attribuées. Ces lignes sont probablement des résidus à supprimer.',
     items,
     severity: 'error',
     title: 'Permission sur un rôle qui n’en porte pas',

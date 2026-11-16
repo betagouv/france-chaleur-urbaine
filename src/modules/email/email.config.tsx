@@ -19,9 +19,6 @@ import DoubleAuthentificationReinitialisee, {
 import ReinitialisationMotDePasse, {
   scenarios as reinitialisationMotDePasseScenarios,
 } from './templates/auth/utilisateur/reinitialisation-mot-de-passe';
-import SuppressionCompteParticulier, {
-  scenarios as suppressionCompteParticulierScenarios,
-} from './templates/auth/utilisateur/suppression-compte-particulier';
 import NouvelleDemandeChaleurRenouvelable, {
   scenarios as nouvelleDemandeChaleurRenouvelableScenarios,
 } from './templates/demands/ccrt/nouvelle-demande-chaleur-renouvelable';
@@ -132,7 +129,7 @@ export const emails = defineEmails({
     scenarios: confirmationInscriptionScenarios,
     subject: '[France Chaleur Urbaine] Confirmez votre email',
     trigger: {
-      description: "À l'inscription publique sur /inscription (particulier ou professionnel).",
+      description: "À l'inscription publique sur /inscription.",
       type: 'action',
     },
   },
@@ -170,19 +167,6 @@ export const emails = defineEmails({
     subject: '[France Chaleur Urbaine] Réinitialisation de votre mot de passe',
     trigger: {
       description: 'Au clic sur « Mot de passe oublié », uniquement si le compte existe et est actif.',
-      type: 'action',
-    },
-  },
-  'auth.utilisateur.suppression-compte-particulier': {
-    Component: SuppressionCompteParticulier,
-    description:
-      "Annonce envoyée aux titulaires d'un compte particulier au moins 15 jours avant la suppression de ces comptes : les demandes sont conservées et restent suivables par email sans compte.",
-    label: 'Suppression du compte particulier (annonce)',
-    preview: 'Votre compte particulier sera supprimé',
-    scenarios: suppressionCompteParticulierScenarios,
-    subject: '[France Chaleur Urbaine] Votre compte particulier sera supprimé',
-    trigger: {
-      description: 'Envoi par un admin depuis la page « Suppression des comptes particuliers », aux comptes pas encore prévenus.',
       type: 'action',
     },
   },

@@ -42,7 +42,6 @@ describe('demandsRouter', () => {
     describe('list', () => {
       const permissionTests: PermissionTestCase[] = [
         { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-        { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
         { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
         { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
         { allowed: true, label: 'autorise admin', user: testUsers.admin },
@@ -76,7 +75,6 @@ describe('demandsRouter', () => {
 
       const permissionTests: PermissionTestCase[] = [
         { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-        { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
         { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
         { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
         { allowed: true, label: "autorise admin et recalcule l'éligibilité depuis l'adresse source", user: testUsers.admin },
@@ -122,7 +120,6 @@ describe('demandsRouter', () => {
       // demandAccessRoute : admin + rôles avec permissions territoriales
       const permissionTests: PermissionTestCase[] = [
         { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-        { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
         { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
         { allowed: true, label: 'autorise admin', user: testUsers.admin },
         { allowed: true, label: 'autorise gestionnaire', user: testUsers.gestionnaire },
@@ -147,7 +144,6 @@ describe('demandsRouter', () => {
       // Permissions: ['gestionnaire', 'admin']
       const permissionTests: PermissionTestCase[] = [
         { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-        { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
         { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
       ];
 
@@ -217,7 +213,6 @@ describe('demandsRouter', () => {
     describe('list', () => {
       const permissionTests: PermissionTestCase[] = [
         { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-        { allowed: true, label: 'autorise particulier', user: testUsers.particulier },
         { allowed: true, label: 'autorise professionnel', user: testUsers.professionnel },
         { allowed: true, label: 'autorise gestionnaire', user: testUsers.gestionnaire },
         { allowed: true, label: 'autorise admin', user: testUsers.admin },
@@ -239,7 +234,6 @@ describe('demandsRouter', () => {
       // BAD_REQUEST car addresses vide est invalide, ce qui prouve que la permission est passée
       const permissionTests: PermissionTestCase[] = [
         { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-        { allowed: true, label: 'autorise particulier', user: testUsers.particulier },
         { allowed: true, label: 'autorise professionnel', user: testUsers.professionnel },
       ];
 
@@ -264,7 +258,7 @@ describe('demandsRouter', () => {
           await seedTableUser([
             { id: testUsers.admin.id, role: 'admin' },
             { id: testUsers.professionnel.id, role: 'professionnel' },
-            { id: testUsers.particulier.id, role: 'particulier' },
+            { id: testUsers.gestionnaire.id, role: 'gestionnaire' },
           ]);
           await kdb
             .insertInto('pro_eligibility_tests')
@@ -302,7 +296,7 @@ describe('demandsRouter', () => {
           ["l'adresse du test d'un autre utilisateur", () => [addressId]],
           ['une adresse inconnue', () => [uuid(999)]],
         ] as const)('refuse %s (NOT_FOUND)', async (_label, ids) => {
-          await expect(createBatchFrom(testUsers.particulier, ids())).rejects.toMatchObject({
+          await expect(createBatchFrom(testUsers.gestionnaire, ids())).rejects.toMatchObject({
             code: 'NOT_FOUND',
             message: 'Adresse de test introuvable',
           });

@@ -4,13 +4,13 @@ Qui voit quoi, et qui peut agir sur quoi. C'est le socle de tous les autres parc
 
 ## Les rôles
 
-Sept rôles (détail dans [Inscription et comptes](/admin/doc/inscription-comptes)) : **admin**, quatre rôles «&nbsp;territoriaux&nbsp;» à permissions (**gestionnaire**, **collectivité**, **ALEC**, **CCRT**) et deux rôles «&nbsp;demandeurs&nbsp;» (**professionnel** — le seul ouvert à l'inscription publique — et **particulier**, en cours de suppression : le suivi des demandes se fait désormais [par email, sans compte](/admin/doc/cycle-de-vie-demande#suivi-par-le-demandeur)).
+Six rôles (détail dans [Inscription et comptes](/admin/doc/inscription-comptes)) : **admin**, quatre rôles «&nbsp;territoriaux&nbsp;» à permissions (**gestionnaire**, **collectivité**, **ALEC**, **CCRT**) et un rôle «&nbsp;demandeur&nbsp;», **professionnel**, le seul ouvert à l'inscription publique. Déposer et suivre une demande ne nécessite pas de compte : le suivi se fait [par email](/admin/doc/cycle-de-vie-demande#suivi-par-le-demandeur).
 
 ## Les onglets de l'espace connecté
 
 Le menu de l'espace connecté dépend **uniquement du rôle** (jamais des permissions). Un compte n'a qu'un seul rôle : les menus ne se cumulent pas.
 
-| Onglet | Particulier, professionnel | Gestionnaire, collectivité, ALEC, CCRT | Admin |
+| Onglet | Professionnel | Gestionnaire, collectivité, ALEC, CCRT | Admin |
 | --- | --- | --- | --- |
 | Retour au site | Oui | Oui | Oui |
 | [Tableau de bord](/pro/tableau-de-bord) | Oui | Redirigé vers «&nbsp;Demandes&nbsp;» | Oui |
@@ -27,7 +27,7 @@ Le menu de l'espace connecté dépend **uniquement du rôle** (jamais des permis
 
 Cas particuliers à connaître :
 
-- **«&nbsp;Mes demandes&nbsp;» est accessible à tous les rôles, mais l'onglet n'est affiché qu'aux particuliers et professionnels.** C'est pourtant utile aux autres : une demande déposée via le formulaire public avec l'email d'un gestionnaire ou d'une collectivité est rattachée à son compte à la connexion, et n'est suivable que sur cette page — rien dans le menu ne l'y mène.
+- **«&nbsp;Mes demandes&nbsp;» est accessible à tous les rôles, mais l'onglet n'est affiché qu'aux professionnels.** C'est pourtant utile aux autres : une demande déposée via le formulaire public avec l'email d'un gestionnaire ou d'une collectivité est rattachée à son compte à la connexion, et n'est suivable que sur cette page — rien dans le menu ne l'y mène.
 - **Les rôles territoriaux n'ont pas de tableau de bord** : la page les redirige vers «&nbsp;Demandes&nbsp;» (provisoire, en attendant un tableau de bord dédié).
 - **La page «&nbsp;Aide&nbsp;» est réservée aux rôles territoriaux** : un admin qui veut la consulter doit passer par une [imposture](/admin/impostures).
 - **L'admin peut ouvrir la vue «&nbsp;Demandes&nbsp;» des gestionnaires** (`/pro/demandes`) par l'URL, mais son menu l'oriente vers [Gestion des demandes](/admin/demandes) : les deux vues coexistent.
@@ -83,7 +83,7 @@ Pour un rôle territorial, l'accès à une demande **validée** ne dépend que d
 - Une demande **sans réseau** n'est visible que via une permission territoire : hors de ce territoire elle est **invisible**. Il n'existe pas de «&nbsp;lecture seule&nbsp;» sur les demandes non affectées.
 - Les demandes **non validées** ne sont visibles de personne (hors admins et demandeur).
 - L'admin voit tout et agit sur tout (validation, affectation, changement de statut — voir [Cycle de vie](/admin/doc/cycle-de-vie-demande)), sans être «&nbsp;responsable&nbsp;» d'aucune demande.
-- Les rôles demandeurs (particulier, professionnel) sont hors de ce système : ils ne voient que les demandes qu'ils ont eux-mêmes déposées, dans [Mes demandes](/pro/mes-demandes) — et, comme tout demandeur, par email via [Suivre ma demande](/suivre-ma-demande).
+- Le rôle professionnel est hors de ce système : il ne voit que les demandes qu'il a lui-même déposées, dans [Mes demandes](/pro/mes-demandes) — et, comme tout demandeur, par email via [Suivre ma demande](/suivre-ma-demande).
 
 **Piège fréquent** : les [emails automatiques aux gestionnaires](/admin/doc/relances-notifications) ne se déclenchent que sur les permissions **réseau** — jamais territoire ni organisation, quel que soit le rôle.
 

@@ -22,7 +22,6 @@ describe('usersRouter', () => {
   describe('users.getProfile', () => {
     const permissionTests: PermissionTestCase[] = [
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-      { allowed: true, label: 'autorise particulier', user: testUsers.particulier },
       { allowed: true, label: 'autorise professionnel', user: testUsers.professionnel },
       { allowed: true, label: 'autorise gestionnaire', user: testUsers.gestionnaire },
       { allowed: true, label: 'autorise admin', user: testUsers.admin },
@@ -44,7 +43,6 @@ describe('usersRouter', () => {
   describe('users.updateProfile', () => {
     const permissionTests: PermissionTestCase[] = [
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-      { allowed: true, label: 'autorise particulier', user: testUsers.particulier },
       { allowed: true, label: 'autorise professionnel', user: testUsers.professionnel },
       { allowed: true, label: 'autorise gestionnaire', user: testUsers.gestionnaire },
       { allowed: true, label: 'autorise admin', user: testUsers.admin },

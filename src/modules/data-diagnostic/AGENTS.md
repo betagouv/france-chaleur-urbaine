@@ -49,7 +49,7 @@ type Issue = {
 Errors (broken state):
 - `user.no_permission` — active user with permission-bearing role but zero permissions
 - `user.gestionnaire_with_territory` — gestionnaire holds a territory permission
-- `user.role_without_permissions_has_permission` — admin/particulier/professionnel holds a permission
+- `user.role_without_permissions_has_permission` — admin/professionnel holds a permission
 - `user.duplicate_email` — duplicate emails (case-insensitive)
 - `permission.orphan_resource` — `resource_id` no longer exists in the referenced table
 - `custom_territory.stale_communes` — custom territory whose stored communes no longer match its recipe (referential updated without `pnpm cli custom-territories:refresh`); detection shared with the refresh (`custom-territories/server/service.ts#findStaleCustomTerritories`)

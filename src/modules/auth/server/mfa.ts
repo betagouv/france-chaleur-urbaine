@@ -200,6 +200,7 @@ export const resetUserMfa = async (targetUserId: string, adminId: string) => {
     .updateTable('users')
     .set({ totp_enrolled_at: null, totp_failed_attempts: 0, totp_last_used_step: null, totp_locked_until: null, totp_secret: null })
     .where('id', '=', targetUserId)
+    .where('deleted_at', 'is', null)
     .returning(['id', 'email'])
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Utilisateur introuvable' }));
   logger.warn('mfa reset by admin', { admin_id: adminId, target_user_id: targetUserId });

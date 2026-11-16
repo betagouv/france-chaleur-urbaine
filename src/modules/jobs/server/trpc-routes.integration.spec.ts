@@ -13,7 +13,6 @@ describe('jobsRouter', () => {
   describe('jobs.list', () => {
     const permissionTests: PermissionTestCase[] = [
       { allowed: false, label: 'refuse utilisateur non authentifié', user: null },
-      { allowed: false, label: 'refuse particulier', user: testUsers.particulier },
       { allowed: false, label: 'refuse professionnel', user: testUsers.professionnel },
       { allowed: false, label: 'refuse gestionnaire', user: testUsers.gestionnaire },
       { allowed: true, label: 'autorise admin', user: testUsers.admin },

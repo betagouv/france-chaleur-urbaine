@@ -6,12 +6,14 @@ Cette page décrit comment les durées de conservation annoncées dans la politi
 
 | Règle | Concerne | Durée | Ce que fait la règle |
 | --- | --- | --- | --- |
-| Comptes jamais activés | Comptes dont l'email n'a jamais été confirmé | <Rule id="retentionAccountsPendingMonths" /> après la création | Suppression du compte |
-| Comptes inactifs | Comptes valides sans connexion (administrateurs exclus) | <Rule id="retentionAccountsInactiveYears" /> après la dernière connexion, ou la création si jamais connecté | Désactivation et anonymisation : email, identité, téléphone, signature effacés, mot de passe invalidé. Les demandes rattachées restent liées au compte anonymisé |
+| Comptes jamais activés | Comptes dont l'email n'a jamais été confirmé | <Rule id="retentionAccountsPendingMonths" /> après la création | Suppression définitive du compte et de son historique d'activité (il n'a jamais servi) |
+| Comptes inactifs | Comptes valides sans connexion (administrateurs exclus) | <Rule id="retentionAccountsInactiveYears" /> après la dernière connexion, ou la création si jamais connecté | Désactivation et anonymisation : email, identité, téléphone, signature effacés, mot de passe invalidé. Les demandes rattachées restent liées au compte anonymisé. Les événements qui portent sur le compte ne contiennent plus son email ni les valeurs des champs modifiés |
 | Demandes closes | Demandes au statut « Réalisé », « Non réalisable », « Projet abandonné par le prospect », ou supprimées | <Rule id="retentionDemandsClosedYears" /> après la date de dépôt pour une demande close (la date de clôture n'est pas tracée et la date de modification a été réinitialisée lors de la reprise des demandes dans la base), ou après la suppression | Anonymisation : nom, prénom, email, téléphone et commentaires effacés ; adresse, réseau, statut, dates et données de logement conservés pour les statistiques |
 | Demandes de modification de réseau traitées | [Demandes de modification de réseau](/admin/doc/modifications-reseau) traitées (appliquées ou closes) | <Rule id="retentionNetworkChangeRequestsYears" /> après la décision | Anonymisation du déposant (nom, prénom, email, structure, fonction), effacement du commentaire interne et suppression du contenu des fichiers joints (sauf les documents publiés sur la fiche du réseau, qui appartiennent désormais au réseau) ; valeurs proposées, réseau et décision conservés |
 
 Ce qui n'est pas couvert par cette page : le formulaire de contact (formulaire du CRM de l'ADEME intégré en iframe, données hors du Service), les tests d'adresses professionnels (rattachés au compte, supprimés avec lui) et les journaux techniques (conservés un an par l'hébergeur).
+
+La suppression d'un compte par un admin suit la même logique d'anonymisation, appliquée immédiatement : voir [Inscription et comptes](/admin/doc/inscription-comptes#modification-et-suppression-par-un-admin).
 
 ## Traçabilité
 

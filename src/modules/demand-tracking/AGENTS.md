@@ -1,6 +1,6 @@
 # demand-tracking module
 
-Account-less tracking of demands: a visitor types the email used when submitting a demand and receives the "Où en est votre demande ?" recap (`demands.demandeur.suivi-demande`). Replaces the particulier account whose only feature was the read-only "Mes demandes" page.
+Account-less tracking of demands: a visitor types the email used when submitting a demand and receives the "Où en est votre demande ?" recap (`demands.demandeur.suivi-demande`). Replaced the former particulier account (role and accounts deleted), whose only feature was the read-only "Mes demandes" page.
 
 > Business documentation (French): `/admin/doc/cycle-de-vie-demande` (section « Suivi par le demandeur »), sources in `src/modules/doc/content/`.
 
@@ -27,4 +27,4 @@ Account-less tracking of demands: a visitor types the email used when submitting
 
 ## Entry points wired elsewhere
 
-Home tools section (`public-pages/client/ToolsTabsSection.tsx`), header menu « Ressources et outils » and footer (`SimplePage.tsx`), FAQ, login / registration notice (`components/connexion/ProfessionalAccountNotice.tsx`), failed login and password-reset alerts, demand confirmation panels and emails, the particulier deletion announcement email (`users/commands.ts`).
+Home tools section (`public-pages/client/ToolsTabsSection.tsx`), header menu « Ressources et outils » and footer (`SimplePage.tsx`), FAQ, login / registration notice (`components/connexion/ProfessionalAccountNotice.tsx`), failed login and password-reset alerts, demand confirmation panels and emails.

@@ -18,13 +18,11 @@ const mocks = vi.hoisted(() => ({
   updateRecord: vi.fn(),
 }));
 
-vi.mock('@/server/db/kysely', () => ({
-  kdb: {
-    selectFrom: () => ({
-      select: () => ({ where: () => ({ executeTakeFirst: mocks.findExistingUser, executeTakeFirstOrThrow: mocks.findUser }) }),
-    }),
-  },
-}));
+vi.mock('@/server/db/kysely', () => {
+  // `where` chains: a lookup may filter on several columns
+  const query = { executeTakeFirst: mocks.findExistingUser, executeTakeFirstOrThrow: mocks.findUser, where: () => query };
+  return { kdb: { selectFrom: () => ({ select: () => query }) } };
+});
 vi.mock('@/server/db/kysely/base-model', () => ({
   createBaseModel: () => ({ create: mocks.createRecord, update: mocks.updateRecord }),
 }));
@@ -47,7 +45,6 @@ describe('create user opening email', () => {
     ccrt: 'auth.ccrt.ouverture-espace',
     collectivite: null,
     gestionnaire: 'auth.gestionnaire.ouverture-espace',
-    particulier: null,
     professionnel: null,
   };
   const cases: TestCase<{ active: boolean | undefined; role: UserRole }, string | null>[] = userRoles.flatMap((role) =>
@@ -114,7 +111,7 @@ describe('ADEME Connect contact sync', () => {
     mocks.createRecord.mockResolvedValue(record);
 
     await create(
-      { active: true, email, notifications: { new_demands: 'none', pending_demands_reminder: false }, role: 'particulier' },
+      { active: true, email, notifications: { new_demands: 'none', pending_demands_reminder: false }, role: 'professionnel' },
       context
     );
 
@@ -125,10 +122,10 @@ describe('ADEME Connect contact sync', () => {
           email,
           nom: undefined,
           prenom: undefined,
-          rubriques: buildRubriques('particulier', undefined),
+          rubriques: buildRubriques('professionnel', undefined),
           siret: undefined,
           telephone: undefined,
-          typeOrganisme: 'Particulier',
+          typeOrganisme: 'Entreprise',
         },
       ],
     ]);
@@ -142,7 +139,7 @@ describe('ADEME Connect contact sync', () => {
       first_name: 'Jean',
       last_name: 'Dupont',
       phone: null,
-      role: 'particulier',
+      role: 'professionnel',
       structure_type: null,
     });
     mocks.updateRecord.mockResolvedValue({ email, id });
@@ -156,11 +153,11 @@ describe('ADEME Connect contact sync', () => {
         {
           nom: 'Dupont',
           prenom: 'Jean',
-          rubriques: buildRubriques('particulier', null),
+          rubriques: buildRubriques('professionnel', null),
           rubriquesASupprimer: ALL_FCU_RUBRIQUES,
           siret: undefined,
           telephone: undefined,
-          typeOrganisme: 'Particulier',
+          typeOrganisme: 'Entreprise',
         },
       ],
     ]);

@@ -10,9 +10,11 @@ Single JSONB column validated by `zUserPreferences` (`constants.ts`): `email_sig
 
 Preference writes use `updateUserPreferences(userId, changes, database?)`: a transaction and user-row lock serialize partial updates; callers such as CCRT email delivery can pass their transaction to keep the preferences and audit event atomic with their own changes.
 
-## Particulier accounts phase-out (`commands.ts`)
+## Account deletion (soft delete)
 
-Temporary admin page `/admin/suppression-comptes-particuliers` (`client/admin/ParticulierPhaseOutPanel.tsx`, tRPC `users.particulierPhaseOut.getStatus` / `announceDeletion`, service `server/particulier-phase-out.ts`): lists active particulier accounts with their announcement state and Brevo block, and sends `auth.utilisateur.suppression-compte-particulier` to those without a `user_particulier_deletion_announced` event yet (one event per sent email, author = admin, so a rerun resumes). `pnpm cli users particulier:delete [--dry-run]` (`commands.ts`) deletes them on the announced date (demands are kept, `demands.user_id` becomes NULL through the FK; bulk tests and jobs cascade) and records a `user_particulier_accounts_deleted` event. Everything here is to be removed with the role. Registration no longer offers the role (`userRolesInscription`); demand follow-up is handled by `src/modules/demand-tracking/`.
+An admin deletion (`server/service.ts#remove`) never deletes the `users` row: it sets `deleted_at`, `active = false`, erases the identity (names, phone, structure, entreprise, password, tokens, TOTP) and replaces the email with `supprime-<id>@<original domain>.invalid` (readable domain, undeliverable by construction), so the audit events of the account keep their author. In the same transaction it deletes what the foreign key cascades used to remove (`pro_eligibility_tests`, `pro_comparateur_configurations`, `jobs`, `email_templates`, `user_permissions`, `user_tag_assignments`), detaches the demands (`demands.user_id = NULL`, a new account on the same email finds them again) and calls `anonymizeAccountsInEvents` (events module) so the events about the account no longer carry its email. `account-deletion.integration.spec.ts` lists every foreign key to `users`: a new one fails the test until it is classified (deleted with the account, detached or kept).
+
+Reading `users`: a deleted row is inactive, so anything filtering on `active = true` or going through `user_permissions` already ignores it; lists, counters and by-id admin actions must filter `deleted_at is null` (done in `list`, `update`, users statistics, MFA reset, impersonation, retention rules). When joining `users` to a table that has its own `deleted_at` (`demands`, `pro_eligibility_tests`), qualify the column — or use a subquery like `buildDemandQuery` does. The `pending_accounts` retention rule still hard-deletes never-activated accounts (nothing to audit).
 
 ## Account opening emails
 
@@ -137,7 +139,7 @@ const { data: users } = trpc.users.list.useQuery({
 
 await trpc.users.create.mutate({
   email: 'user@example.com',
-  role: 'particulier',
+  role: 'professionnel',
 });
 ```
 

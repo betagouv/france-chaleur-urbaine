@@ -1019,6 +1019,7 @@ export interface Users {
   activation_token: string | null;
   active: Generated<boolean>;
   created_at: Generated<Date | null>;
+  deleted_at: Date | null;
   email: string;
   entreprise: JSONColumnType<Entreprise> | null;
   first_name: string | null;

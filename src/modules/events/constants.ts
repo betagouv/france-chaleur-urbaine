@@ -2,7 +2,7 @@ import type { DemandTrackingEmailRow } from '@/modules/demand-tracking/constants
 import type { EmailUnblockSource } from '@/modules/email/constants';
 import type { NetworkChangeRequestKind } from '@/modules/network-change-requests/constants';
 import type { NetworkEntityType, NetworkType, ReminderType } from '@/modules/reseaux/constants';
-import type { UserRole } from '@/types/enum/UserRole';
+import type { StoredUserRole, UserRole } from '@/types/enum/UserRole';
 
 export const eventTypes = [
   'ccrt_demand_updated',
@@ -26,8 +26,6 @@ export const eventTypes = [
   'user_deactivated_by_api',
   'user_updated_by_admin',
   'user_deleted_by_admin',
-  'user_particulier_deletion_announced',
-  'user_particulier_accounts_deleted',
   'user_impersonation_started',
   'user_impersonation_stopped',
   'user_mfa_enrolled',
@@ -179,8 +177,6 @@ export const eventTypeLabels: Record<EventType, string> = {
   user_mfa_reset: 'Double authentification réinitialisée (admin)',
   user_newsletter_subscribed: 'Abonnement newsletter',
   user_newsletter_unsubscribed: 'Désabonnement newsletter',
-  user_particulier_accounts_deleted: 'Suppression des comptes particuliers',
-  user_particulier_deletion_announced: 'Annonce de suppression du compte particulier',
   user_password_reset_requested: 'Demande réinitialisation mot de passe',
   user_permissions_synced_from_api: 'Synchronisation permissions (API)',
   user_permissions_updated: 'Modification permissions',
@@ -382,8 +378,8 @@ export type EventDataMap = {
   user_deactivated_by_api: { api_name: string; user_email: string };
   user_deleted_by_admin: { user_email: string };
   user_registered: null;
-  user_impersonation_started: { role: UserRole; permissions_count: number; anonymize: boolean };
-  user_impersonation_stopped: { role: UserRole };
+  user_impersonation_started: { role: StoredUserRole; permissions_count: number; anonymize: boolean };
+  user_impersonation_stopped: { role: StoredUserRole };
   user_login: null;
   user_mfa_enrolled: null;
   user_mfa_failed: { locked: boolean };
@@ -409,8 +405,6 @@ export type EventDataMap = {
     changes: Partial<{ name: { from: string; to: string }; color: { from: string; to: string } }>;
   };
   user_tag_deleted: { tag_id: string; name: string; color: string };
-  user_particulier_accounts_deleted: { count: number };
-  user_particulier_deletion_announced: { deletion_date: string };
   user_email_blocked: EmailBlockedEventData;
   user_email_unblocked: EmailUnblockedEventData;
   user_newsletter_subscribed: null;

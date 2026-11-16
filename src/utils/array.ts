@@ -2,8 +2,8 @@
  * Type-safe array inclusion check that narrows the value type.
  *
  * @example
- * if (isOneOf(user.role, ['particulier', 'professionnel'] as const)) {
- *   // user.role is narrowed to 'particulier' | 'professionnel'
+ * if (isOneOf(user.role, ['gestionnaire', 'professionnel'] as const)) {
+ *   // user.role is narrowed to 'gestionnaire' | 'professionnel'
  * }
  */
 export function isOneOf<T extends U, U>(value: U, array: readonly T[]): value is T {

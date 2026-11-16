@@ -186,7 +186,6 @@ export const buildDemandQuery = () => {
     .leftJoin('zones_et_reseaux_en_construction as pending_zrc', (j) =>
       j.on('pending_zrc.id_fcu', '=', pendingNetworkId).on(pendingNetworkType, '=', 'reseau_en_construction')
     )
-    .leftJoin('users as pending_author', (j) => j.on('pending_author.id', '=', pendingAuthorId))
     .leftJoin('access_counts_by_demand as acbd', 'acbd.demand_id', 'demands.id')
     .selectAll('demands')
     .select((eb) => [
@@ -195,7 +194,8 @@ export const buildDemandQuery = () => {
       eb.ref('rdc.Identifiant reseau').as('network_sncu_id'),
       eb.fn.coalesce('pending_rdc.nom_reseau', 'pending_zrc.nom_reseau').as('pending_assignment_name'),
       eb.ref('pending_rdc.Identifiant reseau').as('pending_assignment_sncu_id'),
-      eb.ref('pending_author.email').as('pending_assignment_author_email'),
+      // a subquery, not a join: `users.deleted_at` would make the callers' filters on `deleted_at` ambiguous
+      eb.selectFrom('users').select('users.email').where('users.id', '=', pendingAuthorId).as('pending_assignment_author_email'),
       selectDemandLockReason(),
       jsonBuildObject({
         ban_address: eb.ref('pro_eligibility_tests_addresses.ban_address'),

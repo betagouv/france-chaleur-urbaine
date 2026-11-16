@@ -49,7 +49,7 @@ const userId = await register({
   password: 'SecurePass123!',
   first_name: 'John',
   last_name: 'Doe',
-  role: 'particulier',
+  role: 'professionnel',
   accept_cgu: true,
   optin_newsletter: false,
 });
@@ -184,7 +184,7 @@ The module handles automatic redirection after login:
 
 Managed by `useRedirectionAfterLogin()` hook.
 
-Without an explicit callback URL, login and impersonation both enter `/pro/tableau-de-bord`. Its server-side handler redirects CCRT sessions to `/pro/demandes-chaleur-renouvelable`, and gestionnaire/collectivité/ALEC sessions to `/pro/demandes`. Admin, particulier and professionnel sessions keep the dashboard.
+Without an explicit callback URL, login and impersonation both enter `/pro/tableau-de-bord`. Its server-side handler redirects CCRT sessions to `/pro/demandes-chaleur-renouvelable`, and gestionnaire/collectivité/ALEC sessions to `/pro/demandes`. Admin and professionnel sessions keep the dashboard.
 
 ## Email Templates
 
