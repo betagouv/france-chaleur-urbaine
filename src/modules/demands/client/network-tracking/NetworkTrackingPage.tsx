@@ -32,13 +32,13 @@ const quickFilterPresets = {
     getStat: (networks) => networks.filter((network) => network.state === 'late').length,
     label: 'en retard',
   },
-  pendingWithoutUsers: {
+  pendingWithoutManagers: {
     filters: [
       { id: 'pending', value: [1, Number.MAX_VALUE] }, // open-ended upper bound: at least one pending demand
-      { id: 'users', value: 'empty' },
+      { id: 'managers', value: 'empty' },
     ],
-    getStat: (networks) => networks.filter((network) => network.pending > 0 && network.users.length === 0).length,
-    label: 'à traiter sans utilisateur',
+    getStat: (networks) => networks.filter((network) => network.pending > 0 && network.managers.length === 0).length,
+    label: 'à traiter sans gestionnaire',
   },
 } satisfies Record<string, QuickFilterPreset<NetworkTrackingSummary>>;
 

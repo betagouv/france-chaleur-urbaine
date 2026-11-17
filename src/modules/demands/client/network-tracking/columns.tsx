@@ -14,9 +14,9 @@ import { getNetworkName, historyStartLabel } from './format';
 import { ManagerActivityCell } from './ManagerActivityCell';
 import { NetworkCell } from './NetworkCell';
 import { NetworkDemandsCell } from './NetworkDemandsCell';
+import { managersTooltip, NetworkTrackingManagersCell } from './NetworkTrackingManagersCell';
 import { NetworkTrackingNotesCell } from './NetworkTrackingNotesCell';
 import { NetworkTrackingRemindersCell } from './NetworkTrackingRemindersCell';
-import { NetworkTrackingUsersCell } from './NetworkTrackingUsersCell';
 import { networkTypeLabels } from './NetworkTypeBadges';
 import type { NetworkTrackingSummary } from './types';
 
@@ -38,7 +38,7 @@ const statusGroupsTooltip = (
  */
 const columns: ColumnDef<NetworkTrackingSummary>[] = [
   {
-    accessorFn: (row) => `${getNetworkName(row)} ${row.networkId} ${row.sncuId ?? ''}`,
+    accessorFn: (row) => `${getNetworkName(row)} ${row.networkId} ${row.sncuId ?? ''} ${row.organization?.name ?? ''}`,
     cell: ({ row }) => <NetworkCell network={row.original} />,
     exportFn: getNetworkName,
     flex: 3,
@@ -72,6 +72,15 @@ const columns: ColumnDef<NetworkTrackingSummary>[] = [
     visible: false,
   },
   {
+    accessorFn: (row) => row.organization?.name ?? '',
+    enableSorting: false,
+    exportOnly: true,
+    filterType: 'Facets',
+    header: 'Organisation',
+    id: 'organization',
+    visible: false,
+  },
+  {
     accessorFn: (row) => networkTrackingStateLabels[row.state],
     exportOnly: true,
     filterType: 'Facets',
@@ -91,28 +100,29 @@ const columns: ColumnDef<NetworkTrackingSummary>[] = [
     visible: false,
   },
   {
-    accessorFn: (row) => row.users.map((user) => (user.via_organization ? `${user.email} (organisation)` : user.email)).join(' | '),
-    cell: ({ row }) => <NetworkTrackingUsersCell network={row.original} />,
+    accessorFn: (row) => row.managers.map((manager) => manager.email).join(' | '),
+    cell: ({ row }) => <NetworkTrackingManagersCell network={row.original} />,
     enableSorting: false,
-    filterProps: { emptyLabel: 'Sans utilisateur', filledLabel: 'Avec utilisateurs' },
-    filtersDialogLabel: 'Utilisateurs',
+    filterProps: { emptyLabel: 'Sans gestionnaire', filledLabel: 'Avec gestionnaires' },
+    filtersDialogLabel: 'Gestionnaires',
     filterType: 'EmptyOrFilled',
     flex: 3,
-    header: 'Utilisateurs',
-    id: 'users',
+    header: 'Gestionnaires',
+    headerTooltip: managersTooltip,
+    id: 'managers',
   },
   {
-    accessorFn: (row) => row.users.length,
+    accessorFn: (row) => row.managers.length,
     exportOnly: true,
     filterType: 'Range',
-    header: "Nombre d'utilisateurs",
-    id: 'usersCount',
+    header: 'Nombre de gestionnaires',
+    id: 'managersCount',
     visible: false,
   },
   {
-    accessorFn: (row) => (row.users.some((user) => user.email_blocked_reason) ? 'Oui' : 'Non'),
+    accessorFn: (row) => (row.managers.some((manager) => manager.email_blocked_reason) ? 'Oui' : 'Non'),
     enableSorting: false,
-    filtersDialogLabel: 'Utilisateurs aux emails bloqués (Brevo)',
+    filtersDialogLabel: 'Gestionnaires aux emails bloqués (Brevo)',
     filterType: 'Facets',
     header: 'Emails bloqués',
     id: 'emailBlocked',

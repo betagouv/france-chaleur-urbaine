@@ -3,6 +3,7 @@ import { isDefined } from '@/utils/core';
 import { formatMW } from '@/utils/strings';
 
 import { buildNetworkTrackingUrl, getNetworkName } from './format';
+import { OrganizationBadge } from './NetworkTrackingOrganization';
 import { NetworkTrackingStateBadge } from './NetworkTrackingStateBadge';
 import { NetworkTypeBadges } from './NetworkTypeBadges';
 import type { NetworkTrackingSummary } from './types';
@@ -12,7 +13,7 @@ type NetworkCellProps = {
 };
 
 /**
- * Identity of a network in the tracking table: name linking to its detail followed by its state, then its type, SNCU identifier and power.
+ * Identity of a network in the tracking table: name linking to its detail followed by its state, then its type, SNCU identifier, power and organization.
  */
 export function NetworkCell({ network }: NetworkCellProps) {
   return (
@@ -26,6 +27,7 @@ export function NetworkCell({ network }: NetworkCellProps) {
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <NetworkTypeBadges networkType={network.networkType} sncuId={network.sncuId} />
         {isDefined(network.powerMW) && <span className="text-xs text-(--text-mention-grey)">{formatMW(network.powerMW)}</span>}
+        {network.organization && <OrganizationBadge name={network.organization.name} />}
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ const NetworkActivityChart = dynamic(() => import('./NetworkActivityChart').then
 });
 
 /**
- * Admin screen detailing how the managers of one network handle its demands: indicators, accounts and follow-up, monthly activity, response by quarter and statuses.
+ * Admin screen detailing how the managers of one network handle its demands: indicators, managers, organization and follow-up, monthly activity, response by quarter and statuses.
  */
 export default function NetworkTrackingDetailPage() {
   const router = useRouter();
@@ -75,7 +75,7 @@ export default function NetworkTrackingDetailPage() {
               <Heading as="h2" size="h5" className="mb-0!">
                 Comptes et suivi
               </Heading>
-              <NetworkTrackingFollowUp network={tracking.summary} />
+              <NetworkTrackingFollowUp network={tracking.summary} organization={tracking.organization} />
             </section>
 
             <section className="flex flex-col gap-2">

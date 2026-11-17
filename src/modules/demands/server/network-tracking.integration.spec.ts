@@ -76,7 +76,7 @@ const seedUsers = () =>
   ]);
 
 /**
- * Network A has an account, a reminder and notes; network C has no demand, an account on it and one only reachable through its organization;
+ * Network A has a manager, a reminder and notes; network C has no demand, a manager also in its organization and an account only in its organization;
  * network B shares its id with A but not its type.
  */
 const seedNetworks = async () => {
@@ -100,7 +100,7 @@ const seedNetworks = async () => {
       // an admin never processes demands, even with a permission on the network
       { resource_id: '1', type: 'reseau_de_chaleur', user_id: adminId },
       { resource_id: organizationId, type: 'organization', user_id: collectiviteId },
-      // a permission on the network wins over one on its organization, and comes first
+      // a manager of the network can also belong to its organization: listed in both
       { resource_id: organizationId, type: 'organization', user_id: gestionnaireId },
       { resource_id: '2', type: 'reseau_de_chaleur', user_id: gestionnaireId },
     ])
@@ -163,12 +163,14 @@ const emptySummary = {
   closed: 0,
   inProgress: 0,
   lastManagerActionAt: null,
+  managers: [],
   medianResponseDays: null,
   newestDemandAt: null,
   newestPendingDemandAt: null,
   notes: null,
   oldestDemandAt: null,
   oldestPendingDemandAt: null,
+  organization: null,
   pending: 0,
   powerMW: null,
   recentReceived: 0,
@@ -177,10 +179,13 @@ const emptySummary = {
   sncuId: null,
   state: 'no_demand',
   total: 0,
-  users: [],
 };
 
+const accountOf = (id: string) => ({ email: `user-${id}@test.local`, email_blocked_reason: null, id, last_connection: null });
+const gestionnaireAccount = accountOf(gestionnaireId);
+
 const networkAIdentity = {
+  managers: [gestionnaireAccount],
   name: 'Réseau A',
   networkId: 1,
   networkType: 'reseau_de_chaleur',
@@ -188,36 +193,13 @@ const networkAIdentity = {
   powerMW: 12.5,
   reminders: [{ author_email: `user-${adminId}@test.local`, created_at: expect.any(String), id: uuid(50), note: 'Relancé par courriel' }],
   sncuId: '7501C',
-  users: [
-    {
-      email: `user-${gestionnaireId}@test.local`,
-      email_blocked_reason: null,
-      id: gestionnaireId,
-      last_connection: null,
-      via_organization: false,
-    },
-  ],
 };
 const networkCIdentity = {
+  managers: [gestionnaireAccount],
   name: 'Réseau C',
   networkId: 2,
   networkType: 'reseau_de_chaleur',
-  users: [
-    {
-      email: `user-${gestionnaireId}@test.local`,
-      email_blocked_reason: null,
-      id: gestionnaireId,
-      last_connection: null,
-      via_organization: false,
-    },
-    {
-      email: `user-${collectiviteId}@test.local`,
-      email_blocked_reason: null,
-      id: collectiviteId,
-      last_connection: null,
-      via_organization: true,
-    },
-  ],
+  organization: { id: organizationId, name: 'Opérateur C' },
 };
 const networkBIdentity = { name: 'Réseau B', networkId: 1, networkType: 'reseau_en_construction' };
 
@@ -369,10 +351,34 @@ describe('network tracking', () => {
 
       expect(result).toStrictEqual({
         months: activityMonths.map((month) => ({ handled: 0, month, received: 0 })),
+        organization: {
+          hasApiAccess: false,
+          id: organizationId,
+          name: 'Opérateur C',
+          users: [gestionnaireAccount, accountOf(collectiviteId)],
+        },
         quarters: [],
         statuses: [],
         summary: { ...emptySummary, ...networkCIdentity },
       });
+    });
+
+    const apiAccessCases: TestCase<(Date | null)[], boolean>[] = [
+      { expectedOutput: false, input: [day('2026-09-01')], label: 'a revoked credential grants no access' },
+      { expectedOutput: true, input: [day('2026-09-01'), null], label: 'an active credential grants access' },
+    ];
+
+    it.each(apiAccessCases)('organization API access: $label', async ({ input: revokedDates, expectedOutput }) => {
+      await kdb
+        .insertInto('organization_api_credentials')
+        .values(
+          revokedDates.map((revokedAt, index) => ({ organization_id: organizationId, revoked_at: revokedAt, token_hash: `hash-${index}` }))
+        )
+        .execute();
+
+      const result = await createTestCaller(testUsers.admin).demands.admin.getNetworkTracking({ ...input, networkId: 2 });
+
+      expect(result.organization?.hasApiAccess).toBe(expectedOutput);
     });
 
     const activityWindowCases: TestCase<string, { count: number; first: string; last: string }>[] = [
@@ -411,6 +417,7 @@ describe('network tracking', () => {
         months: activityMonths.map((month) =>
           month === '2026-09' ? { handled: 2, month, received: 4 } : { handled: 0, month, received: 0 }
         ),
+        organization: null,
         quarters: [{ medianResponseDays: 2, quarter: '2026-T3', received: 3, responded: 2 }],
         statuses: [
           { count: 1, medianAgeDays: 35, status: DEMANDE_STATUS.TO_PROCESS, stuckCount: 0 },

@@ -1,9 +1,9 @@
 import { TRPCError } from '@trpc/server';
 import type { Expression, ExpressionBuilder, SqlBool } from 'kysely';
-import { jsonArrayFrom } from 'kysely/helpers/postgres';
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 
 import { businessRules } from '@/modules/app/business-rules';
-import type { NetworkType } from '@/modules/reseaux/constants';
+import { type NetworkType, networkEntityToTable } from '@/modules/reseaux/constants';
 import { reminderJsonAggSQL } from '@/modules/reseaux/server/reminders';
 import { type DB, kdb, sql } from '@/server/db/kysely';
 import { userRolesWithPermissionsHeatNetwork } from '@/types/enum/UserRole';
@@ -37,15 +37,16 @@ export const listNetworkTracking = async () => {
 };
 
 /**
- * Admin: tracking detail of one network (indicators, monthly activity, quarterly response, breakdown by status).
+ * Admin: tracking detail of one network (indicators, organization, monthly activity, quarterly response, breakdown by status).
  */
 export const getNetworkTracking = async (network: NetworkRef) => {
   const now = new Date();
   const activityMonths = getActivityMonths(now);
   const activityStart = dayjs.tz(`${activityMonths[0]}-01`, TIMEZONE).toDate();
 
-  const [summaryRow, receivedByMonth, handledByMonth, quarters, statuses] = await Promise.all([
+  const [summaryRow, organization, receivedByMonth, handledByMonth, quarters, statuses] = await Promise.all([
     networkSummariesQuery(now, network).executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Réseau introuvable' })),
+    organizationQuery(network).executeTakeFirst(),
     receivedByMonthQuery(network, activityStart).execute(),
     handledByMonthQuery(network, activityStart).execute(),
     quartersQuery(network, activityStart).execute(),
@@ -58,6 +59,9 @@ export const getNetworkTracking = async (network: NetworkRef) => {
       month,
       received: receivedByMonth.find((row) => row.month === month)?.count ?? 0,
     })),
+    organization: organization
+      ? { hasApiAccess: organization.has_api_access, id: organization.id, name: organization.name, users: organization.users }
+      : null,
     quarters: quarters.map((row) => ({
       medianResponseDays: secondsToDays(row.median_response_seconds),
       quarter: row.quarter,
@@ -167,46 +171,72 @@ const demandTimelineQuery = (network?: NetworkRef) =>
 type NetworkTable = 'reseaux_de_chaleur' | 'zones_et_reseaux_en_construction';
 
 /**
- * Active accounts able to process the demands of the network:
- * a permission on the network itself or on the organization it belongs to, with a role allowed to process heat network demands
- * (same rule as `isUserResponsibleForDemand` for an assigned demand).
- * `via_organization` flags the accounts reaching the network only through its organization: usually not the ones reminded.
- * Accounts with a permission on the network come first, then most recently connected first.
+ * Active accounts holding the given permission, with a role allowed to process heat network demands
+ * (same rule as `isUserResponsibleForDemand` for an assigned demand), most recently connected first.
+ * Correlated subquery: `resourceId` refers to the enclosing row.
  */
-const networkUsersJson = (eb: ExpressionBuilder<DB, NetworkTable>, table: NetworkTable, networkType: NetworkType) => {
-  const hasPermission = (
-    userBuilder: ExpressionBuilder<DB & { u: DB['users'] }, NetworkTable | 'u'>,
-    type: 'network' | 'organization'
-  ): Expression<SqlBool> =>
-    userBuilder.exists(
-      userBuilder
-        .selectFrom('user_permissions as up')
-        .select('up.id')
-        .whereRef('up.user_id', '=', 'u.id')
-        .where('up.type', '=', type === 'network' ? networkType : 'organization')
-        .where((permissionBuilder) =>
-          permissionBuilder(
-            'up.resource_id',
-            '=',
-            permissionBuilder.cast<string>(type === 'network' ? `${table}.id_fcu` : `${table}.organization_id`, 'text')
-          )
-        )
-    );
-  return jsonArrayFrom(
-    eb
+const accountsJson = (permissionType: NetworkType | 'organization', resourceId: Expression<string>) =>
+  jsonArrayFrom(
+    kdb
       .selectFrom('users as u')
       .leftJoin('email_blocked_contacts as ebc', (join) =>
         join.on((joinBuilder) => joinBuilder('ebc.email', '=', joinBuilder.fn<string>('lower', ['u.email'])))
       )
       .select(['u.id', 'u.email', 'u.last_connection', 'ebc.reason_code as email_blocked_reason'])
-      .select((userBuilder) => userBuilder.not(hasPermission(userBuilder, 'network')).$castTo<boolean>().as('via_organization'))
       .where('u.active', '=', true)
       .where('u.role', 'in', userRolesWithPermissionsHeatNetwork)
-      .where((userBuilder) => userBuilder.or([hasPermission(userBuilder, 'network'), hasPermission(userBuilder, 'organization')]))
-      .orderBy('via_organization')
+      .where((eb) =>
+        eb.exists(
+          eb
+            .selectFrom('user_permissions as up')
+            .select('up.id')
+            .whereRef('up.user_id', '=', 'u.id')
+            .where('up.type', '=', permissionType)
+            .where('up.resource_id', '=', resourceId)
+        )
+      )
       .orderBy('u.last_connection', (order) => order.desc().nullsLast())
+      .orderBy('u.email')
   );
-};
+
+/**
+ * Managers of the network: the accounts holding a permission on the network itself, the only ones notified of its demands and reminded.
+ * The accounts reaching it through its organization can process its demands too, but are listed apart (see `organizationQuery`).
+ */
+const networkManagersJson = (eb: ExpressionBuilder<DB, NetworkTable>, table: NetworkTable, networkType: NetworkType) =>
+  accountsJson(networkType, eb.cast<string>(`${table}.id_fcu`, 'text'));
+
+const networkOrganizationJson = (eb: ExpressionBuilder<DB, NetworkTable>, table: NetworkTable) =>
+  jsonObjectFrom(eb.selectFrom('organizations as o').select(['o.id', 'o.name']).whereRef('o.id', '=', `${table}.organization_id`));
+
+/**
+ * Organization of the network, with its accounts (managers of the network included) and whether it holds an active partner API access.
+ */
+const organizationQuery = (network: NetworkRef) =>
+  kdb
+    .selectFrom('organizations as o')
+    .select((eb) => [
+      'o.id',
+      'o.name',
+      accountsJson('organization', eb.cast<string>('o.id', 'text')).as('users'),
+      eb
+        .exists(
+          eb
+            .selectFrom('organization_api_credentials as c')
+            .select('c.id')
+            .whereRef('c.organization_id', '=', 'o.id')
+            .where('c.revoked_at', 'is', null)
+        )
+        .$castTo<boolean>()
+        .as('has_api_access'),
+    ])
+    .where('o.id', '=', (eb) =>
+      eb
+        .selectFrom(networkEntityToTable[network.networkType])
+        .select('organization_id')
+        .where('id_fcu', '=', network.networkId)
+        .$narrowType<{ organization_id: string }>()
+    );
 
 const networksQuery = () =>
   kdb
@@ -214,7 +244,8 @@ const networksQuery = () =>
     .select(['id_fcu', 'nom_reseau', 'Identifiant reseau', 'notes', 'puissance_totale_MW'])
     .select((eb) => [
       sql.lit<NetworkType>('reseau_de_chaleur').as('network_type'),
-      networkUsersJson(eb, 'reseaux_de_chaleur', 'reseau_de_chaleur').as('users'),
+      networkManagersJson(eb, 'reseaux_de_chaleur', 'reseau_de_chaleur').as('managers'),
+      networkOrganizationJson(eb, 'reseaux_de_chaleur').as('organization'),
       reminderJsonAggSQL(eb, 'reseaux_de_chaleur', 'reseau_de_chaleur', 'demand').as('reminders'),
     ])
     .unionAll(
@@ -224,7 +255,8 @@ const networksQuery = () =>
         .select((eb) => [
           sql<number | null>`null`.as('puissance_totale_MW'), // networks under construction have no power yet
           sql.lit<NetworkType>('reseau_en_construction').as('network_type'),
-          networkUsersJson(eb, 'zones_et_reseaux_en_construction', 'reseau_en_construction').as('users'),
+          networkManagersJson(eb, 'zones_et_reseaux_en_construction', 'reseau_en_construction').as('managers'),
+          networkOrganizationJson(eb, 'zones_et_reseaux_en_construction').as('organization'),
           reminderJsonAggSQL(eb, 'zones_et_reseaux_en_construction', 'reseau_en_construction', 'demand').as('reminders'),
         ])
     );
@@ -287,7 +319,8 @@ const networkSummariesQuery = (now: Date, network?: NetworkRef) => {
       'n.Identifiant reseau',
       'n.notes',
       'n.puissance_totale_MW',
-      'n.users',
+      'n.managers',
+      'n.organization',
       'n.reminders',
       eb.fn.coalesce('s.total', eb.lit(0)).as('total'),
       eb.fn.coalesce('s.pending', eb.lit(0)).as('pending'),
@@ -431,6 +464,7 @@ const toNetworkTrackingSummary = (row: NetworkSummaryRow, now: Date) => ({
   closed: row.closed,
   inProgress: row.in_progress,
   lastManagerActionAt: row.last_action_at,
+  managers: row.managers,
   medianResponseDays: secondsToDays(row.median_response_seconds),
   name: row.nom_reseau,
   networkId: row.id_fcu,
@@ -440,6 +474,7 @@ const toNetworkTrackingSummary = (row: NetworkSummaryRow, now: Date) => ({
   notes: row.notes,
   oldestDemandAt: row.oldest_demand_at,
   oldestPendingDemandAt: row.oldest_pending_demand_at,
+  organization: row.organization,
   pending: row.pending,
   powerMW: row.puissance_totale_MW,
   recentReceived: row.recent_received,
@@ -448,7 +483,6 @@ const toNetworkTrackingSummary = (row: NetworkSummaryRow, now: Date) => ({
   sncuId: row['Identifiant reseau'],
   state: getNetworkTrackingState(row, now),
   total: row.total,
-  users: row.users,
 });
 
 /**
