@@ -15,7 +15,6 @@ import { CcrtDemandsMobile } from './CcrtDemandsMobile';
 import { CcrtDemandsTable } from './CcrtDemandsTable';
 import { CcrtDemandTabs, ccrtDemandTabs } from './CcrtDemandTabs';
 import { CcrtDemandToolbar } from './CcrtDemandToolbar';
-import { CcrtModerationIndicators } from './CcrtModerationIndicators';
 import { invalidateCcrtModeration } from './ccrt-demand-cache';
 import { getCcrtDemandTab, matchesCcrtAdminTab, matchesCcrtDemandSearch } from './ccrt-workspace';
 import { useCcrtDemandActions } from './hooks/useCcrtDemandActions';
@@ -90,7 +89,6 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
       return (filters.order === 'desc' ? -comparison : comparison) || second.created_at.localeCompare(first.created_at);
     });
 
-  const description = isAdmin ? 'Toutes les demandes, y compris celles à valider' : 'Immeubles en chauffage collectif de votre territoire';
   const isMobileDetails = isMobile && visibleDemands.some((demand) => demand.id === filters.demandId);
   const toggleDemand = (demand: (typeof demands)[number]) => {
     if (filters.demandId !== demand.id) {
@@ -122,7 +120,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
   return (
     <SimplePage
       title="Demandes d’accompagnement"
-      description={description}
+      description="Immeubles en chauffage collectif de votre territoire"
       mode="authenticated"
       className="min-h-screen bg-(--background-alt-grey)"
       includeFooter={false}
@@ -134,8 +132,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
               <span className="lg:hidden">Demandes</span>
               <span className="hidden lg:inline">Demandes d’accompagnement</span>
             </h1>
-            <p className="mb-6 hidden lg:block">{description}</p>
-            {isAdmin && <CcrtModerationIndicators demands={demands} />}
+            <p className="mb-6 hidden lg:block">Immeubles en chauffage collectif de votre territoire</p>
             <CcrtDemandTabs
               isAdmin={isAdmin}
               activeTab={activeTab}
