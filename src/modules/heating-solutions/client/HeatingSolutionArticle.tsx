@@ -19,7 +19,7 @@ export function HeatingSolutionArticle({ solution }: HeatingSolutionArticleProps
   const Content = heatingSolutionContent[solution.slug];
   return (
     <SolutionBuildingContext.Provider value={solution.buildingLabel}>
-      <div className="grid gap-6 pb-10 lg:grid-cols-[12rem_minmax(0,1fr)] print:block print:p-0">
+      <div className="grid gap-6 pb-10 lg:grid-cols-[12rem_minmax(0,1fr)] print:block print:pb-0">
         <SolutionTableOfContents />
         <article className="min-w-0 text-(--text-default-grey)">
           <div className="print:hidden">
@@ -31,9 +31,9 @@ export function HeatingSolutionArticle({ solution }: HeatingSolutionArticleProps
               ]}
             />
           </div>
-          <header className="flex items-center justify-between gap-4 rounded-2xl bg-[#4b4afb] px-5 py-4 text-white md:px-7 print:border print:border-gray-300 print:bg-white print:text-black">
+          <header className="flex items-center justify-between gap-4 rounded-2xl bg-[#4b4afb] px-5 py-4 text-white md:px-7">
             <div>
-              <h1 className="mb-2 text-3xl leading-10 text-white md:text-4xl print:text-black">{solution.title}</h1>
+              <h1 className="mb-2 text-3xl leading-10 text-white md:text-4xl">{solution.title}</h1>
               <p className="mb-0 text-base">{solution.subtitle}</p>
             </div>
             <Image

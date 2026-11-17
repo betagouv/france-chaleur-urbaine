@@ -48,7 +48,7 @@ export function SolutionSection({ id, photo, children }: SolutionSectionProps) {
             height={illustrationSizes[illustration].height}
             alt=""
             className={cx(
-              'mx-auto mb-4 h-auto max-w-40 shrink-0 object-contain md:mb-0 print:max-w-24',
+              'mx-auto mb-4 h-auto max-w-40 shrink-0 object-contain md:mb-0 print:hidden',
               illustration === 'steps' && 'md:order-2',
               illustration === 'cost' || illustration === 'funding' ? 'md:w-32' : 'md:w-1/4 md:max-w-60'
             )}
