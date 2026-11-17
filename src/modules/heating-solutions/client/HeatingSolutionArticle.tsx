@@ -13,7 +13,7 @@ type HeatingSolutionArticleProps = {
 };
 
 /**
- * Server-rendered solution article following the shared Figma template, with print/PDF support.
+ * Server-rendered solution article, with print/PDF support.
  */
 export function HeatingSolutionArticle({ solution }: HeatingSolutionArticleProps) {
   const Content = heatingSolutionContent[solution.slug];

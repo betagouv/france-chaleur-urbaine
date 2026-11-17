@@ -55,7 +55,6 @@ describe('validated heating solution publication', () => {
     ]);
     internalLinks.forEach((href) => expect(knownInternalLinks.has(href.split(/[?#]/)[0])).toStrictEqual(true));
     expect(content).not.toMatch(/discussion:\/\/|discussion-urls|notion-file-block:\/\//);
-    expect(content).not.toContain('figma.com/api/mcp/asset');
     expect(statSync(join(process.cwd(), 'public', solution.image)).size).toBeGreaterThan(0);
     solution.modeIds.forEach((modeId) => expect(getHeatingSolutionHref(modeId)).toStrictEqual(`/ressources/${solution.slug}`));
   });

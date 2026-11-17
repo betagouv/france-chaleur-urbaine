@@ -18,7 +18,7 @@ type CcrtDemandEmailDialogProps = {
 };
 
 /**
- * Displays the Figma contact dialog and the shared sent-message history below its form.
+ * Displays the contact dialog and the shared sent-message history below its form.
  */
 export function CcrtDemandEmailDialog({
   demand,
