@@ -336,7 +336,7 @@ function OtherSolutionRow({
           <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
         </div>
         <div className="hidden md:flex justify-center">
-          <Image src={`/${item.icone}`} alt="" width={216} height={162} className="justify-self-center object-contain" />
+          <Image src={`/${item.icone}`} alt="" width={216} height={162} className="w-full h-auto justify-self-center object-contain" />
         </div>
       </div>
       <div className="mt-6 px-5">
