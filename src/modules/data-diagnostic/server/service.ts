@@ -1149,6 +1149,56 @@ const formatDate = (value: Date | string | null): string => {
   return date.toLocaleDateString('fr-FR');
 };
 
+/**
+ * Extensions liées à un réseau de chaleur qui portent encore des demandes ou des permissions : elles reviennent au réseau parent,
+ * la synchronisation des champs liés ne les a pas encore déplacées (affectation ou permission créée hors des parcours prévus).
+ */
+const checkExtensionNotConsolidated: IssueBuilder = async () => {
+  const rows = await kdb
+    .selectFrom('zones_et_reseaux_en_construction as extension')
+    .select((eb) => [
+      'extension.id_fcu',
+      'extension.nom_reseau',
+      'extension.Identifiant reseau as sncu',
+      eb
+        .selectFrom('demands as d')
+        .select((demandBuilder) => demandBuilder.fn.countAll<number>().as('count'))
+        .where('d.network_type', '=', 'reseau_en_construction')
+        .whereRef('d.network_id', '=', 'extension.id_fcu')
+        .as('demands_count'),
+      eb
+        .selectFrom('user_permissions as up')
+        .select((permissionBuilder) => permissionBuilder.fn.countAll<number>().as('count'))
+        .where('up.type', '=', 'reseau_en_construction')
+        .where((permissionBuilder) => permissionBuilder('up.resource_id', '=', permissionBuilder.cast<string>('extension.id_fcu', 'text')))
+        .as('permissions_count'),
+    ])
+    .where('extension.reseau_de_chaleur_id', 'is not', null)
+    .orderBy('extension.id_fcu')
+    .execute();
+
+  const staleRows = rows.filter((row) => Number(row.demands_count) > 0 || Number(row.permissions_count) > 0);
+
+  if (staleRows.length === 0) return null;
+
+  const { items, totalCount, truncated } = truncate(staleRows, (row) => ({
+    context: `${Number(row.demands_count)} demande(s), ${Number(row.permissions_count)} permission(s)`,
+    href: '/admin/reseaux?reseauxTab=reseaux-en-construction',
+    label: networkLabel(row.id_fcu, row.nom_reseau, row.sncu),
+  }));
+
+  return {
+    description:
+      'Les demandes et les permissions d’une extension liée à un réseau de chaleur sont portées par ce réseau parent. Celles-ci sont restées sur l’extension : les comptes du réseau ne les voient pas. Lancer `pnpm cli reseaux:sync-linked-fields`, ou enregistrer une modification du réseau dans Gestion des réseaux, les déplace.',
+    items,
+    severity: 'error',
+    title: 'Extension portant encore des demandes ou des permissions',
+    totalCount,
+    truncated,
+    type: 'extension.not_consolidated',
+  };
+};
+
 const checks: IssueBuilder[] = [
   checkUserNoPermission,
   checkGestionnaireWithTerritory,
@@ -1161,6 +1211,7 @@ const checks: IssueBuilder[] = [
   checkDemandMissingCoordinates,
   checkDemandNetworkMismatch,
   checkDemandOrphanNetwork,
+  checkExtensionNotConsolidated,
   checkPdpOrphanNetwork,
   checkPdpAmbiguousOperator,
   checkPdpMissingNetworkLink,

@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 
 import type { Context } from '@/modules/config/server/context-builder';
-import type { UpdateGestionnaireDemandInput } from '@/modules/demands/constants';
+import { getNearestNetwork, type UpdateGestionnaireDemandInput } from '@/modules/demands/constants';
 import { createUserEvent } from '@/modules/events/server/service';
 import { buildDemandAccessFilter, isUserResponsibleForDemand } from '@/modules/permissions/server/service';
 import type { NetworkType } from '@/modules/reseaux/constants';
@@ -118,7 +118,7 @@ export const updateDemandByGestionnaire = async (ctx: Context, demandId: string,
  * - `networkIdFcu`/`networkType` à `null` = demande de désaffectation
  * - Refuse si la demande n'existe pas / est supprimée
  * - Refuse si une demande de réaffectation est déjà en attente
- * - Refuse si la cible (réseau ou null) est identique à l'affectation actuelle
+ * - Refuse si la cible (réseau ou null) est identique au réseau le plus proche actuel (l'extension quand la demande en a une)
  * - Protection TOCTOU via UPDATE conditionnel `pending_assignment_change IS NULL`
  * Un snapshot de la distance au réseau ciblé est stocké dans le JSONB (null en cas de désaffectation).
  */
@@ -131,18 +131,19 @@ export const requestDemandAssignmentChange = async (
 ) => {
   const demand = await kdb
     .selectFrom('demands')
-    .select(['id', 'network_id', 'network_type', 'pending_assignment_change'])
+    .select(['id', 'network_id', 'network_type', 'extension_id', 'pending_assignment_change'])
     .select(selectDemandLockReason())
     .where('id', '=', demandId)
     .where('deleted_at', 'is', null)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+  const currentNetwork = getNearestNetwork(demand);
 
   ensureDemandIsNotLocked(demand);
 
   if (demand.pending_assignment_change) {
     throw new TRPCError({ code: 'CONFLICT', message: 'Une demande de réaffectation est déjà en attente' });
   }
-  if (demand.network_id === networkIdFcu && demand.network_type === networkType) {
+  if ((currentNetwork?.id ?? null) === networkIdFcu && (currentNetwork?.type ?? null) === networkType) {
     throw new TRPCError({
       code: 'BAD_REQUEST',
       message: networkIdFcu === null ? 'La demande est déjà sans réseau affecté' : 'Le réseau demandé est déjà affecté à cette demande',
@@ -157,14 +158,13 @@ export const requestDemandAssignmentChange = async (
   }
   const newDistance = isUnassignment ? null : await computeNetworkDistance(demandId, networkIdFcu, networkType);
 
-  const oldInfo =
-    demand.network_type !== null && demand.network_id !== null
-      ? await resolveNetworkInfo(demand.network_type, demand.network_id)
-      : { network_name: null, network_sncu_id: null };
+  const oldInfo = currentNetwork
+    ? await resolveNetworkInfo(currentNetwork.type, currentNetwork.id)
+    : { network_name: null, network_sncu_id: null };
   let oldDistance: number | null = null;
-  if (demand.network_id !== null && demand.network_type !== null) {
+  if (currentNetwork) {
     try {
-      oldDistance = await computeNetworkDistance(demandId, demand.network_id, demand.network_type);
+      oldDistance = await computeNetworkDistance(demandId, currentNetwork.id, currentNetwork.type);
     } catch {
       oldDistance = null;
     }
@@ -206,10 +206,10 @@ export const requestDemandAssignmentChange = async (
       },
       old: {
         distance: oldDistance,
-        network_id: demand.network_id,
+        network_id: currentNetwork?.id ?? null,
         network_name: oldInfo.network_name,
         network_sncu_id: oldInfo.network_sncu_id,
-        network_type: demand.network_type,
+        network_type: currentNetwork?.type ?? null,
       },
     },
     type: 'demand_assignment_change_requested',

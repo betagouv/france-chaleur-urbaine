@@ -1210,7 +1210,15 @@ export const searchNetworkOperators = async (field: 'gestionnaire' | 'maitreOuvr
   return rows.map((r) => r.value).filter(isDefined);
 };
 
-export const searchNetworks = async (search: string): Promise<NetworkSearchResult[]> => {
+type SearchNetworksOptions = {
+  /** Leave out the extensions linked to a heat network: they hold no permission, their parent network does. */
+  excludeLinkedExtensions?: boolean;
+};
+
+export const searchNetworks = async (
+  search: string,
+  { excludeLinkedExtensions = false }: SearchNetworksOptions = {}
+): Promise<NetworkSearchResult[]> => {
   const pattern = `%${search}%`;
 
   const [existants, enConstruction] = await Promise.all([
@@ -1242,6 +1250,7 @@ export const searchNetworks = async (search: string): Promise<NetworkSearchResul
           eb(sql<string>`"id_fcu"::TEXT`, 'like', pattern),
         ])
       )
+      .$if(excludeLinkedExtensions, (query) => query.where('reseau_de_chaleur_id', 'is', null))
       .orderBy('nom_reseau')
       .limit(10)
       .execute(),

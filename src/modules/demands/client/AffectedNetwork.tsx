@@ -12,14 +12,23 @@ type AffectedNetworkProps = {
   networkSncuId: string | null;
   distance: number | null | undefined;
   notFound?: boolean;
+  /** Le réseau en construction est l'extension d'un réseau existant, qui porte la demande (son identifiant SNCU est affiché). */
+  isExtension?: boolean;
 };
 
 /**
  * Affichage lecture seule du réseau affecté à une demande.
- * Badges (existant / en construction), identifiant SNCU, nom et distance.
+ * Badges (existant / en construction / extension en construction), identifiant SNCU, nom et distance.
  * Si `notFound` est vrai, affiche un fallback "Réseau introuvable" (ex. réseau supprimé).
  */
-export default function AffectedNetwork({ networkName, networkType, networkSncuId, distance, notFound }: AffectedNetworkProps) {
+export default function AffectedNetwork({
+  networkName,
+  networkType,
+  networkSncuId,
+  distance,
+  notFound,
+  isExtension = false,
+}: AffectedNetworkProps) {
   if (notFound) {
     return (
       <Tooltip title="Le réseau demandé n'existe plus ou est introuvable">
@@ -39,18 +48,26 @@ export default function AffectedNetwork({ networkName, networkType, networkSncuI
 
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-1">
-        <Tooltip title={isExistant ? 'Réseau de chaleur existant' : 'Réseau de chaleur en construction'}>
+      <div className="flex flex-wrap items-center gap-1">
+        <Tooltip
+          title={
+            isExistant
+              ? 'Réseau de chaleur existant'
+              : isExtension
+                ? "Extension en construction d'un réseau de chaleur existant, dont l'équipe traite la demande"
+                : 'Réseau de chaleur en construction'
+          }
+        >
           <DSFRBadge
             small
             className="text-white! cursor-help shrink-0"
             style={{ backgroundColor: isExistant ? reseauDeChaleurNonClasseColor : reseauxEnConstructionColor }}
           >
-            {isExistant ? 'Existant' : 'En construction'}
+            {isExistant ? 'Existant' : isExtension ? 'Extension en construction' : 'En construction'}
           </DSFRBadge>
         </Tooltip>
         {networkSncuId && (
-          <Tooltip title="Identifiant SNCU du réseau">
+          <Tooltip title={isExtension ? 'Identifiant SNCU du réseau existant étendu' : 'Identifiant SNCU du réseau'}>
             <DSFRBadge small className="cursor-help shrink-0">
               {networkSncuId}
             </DSFRBadge>

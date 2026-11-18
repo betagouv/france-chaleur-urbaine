@@ -111,6 +111,24 @@ export const computeNetworkDistance = async (demandId: string, networkIdFcu: num
   return reseau.distance;
 };
 
+/**
+ * Assignment columns of a demand for the given nearest network. An extension linked to a heat network never carries a demand:
+ * its parent network does (permissions, notifications, tracking), the extension is kept aside in `extension_id`.
+ */
+export const resolveDemandAssignment = async (networkIdFcu: number, networkType: NetworkType) => {
+  const extension =
+    networkType === 'reseau_en_construction'
+      ? await kdb
+          .selectFrom('zones_et_reseaux_en_construction')
+          .select('reseau_de_chaleur_id')
+          .where('id_fcu', '=', networkIdFcu)
+          .executeTakeFirst()
+      : undefined;
+  return extension?.reseau_de_chaleur_id
+    ? { extension_id: networkIdFcu, network_id: extension.reseau_de_chaleur_id, network_type: 'reseau_de_chaleur' as const }
+    : { extension_id: null, network_id: networkIdFcu, network_type: networkType };
+};
+
 /** Max distance (m) to auto-assign a network for the non-eligible "réseau loin" cases. */
 const networkAssignmentDistanceThreshold = businessRules.autoAssignMaxDistance.value;
 
@@ -137,16 +155,20 @@ export const autoAssignNetworkFromEligibility = async (demandId: string) => {
     lastEligibility.eligible || (lastEligibility.distance !== null && lastEligibility.distance < networkAssignmentDistanceThreshold);
   if (!isAssignable) return;
 
+  const networkType = getNetworkTypeFromEligibilityType(lastEligibility.type);
+  const assignment = networkType
+    ? await resolveDemandAssignment(lastEligibility.id_fcu, networkType)
+    : { extension_id: null, network_id: lastEligibility.id_fcu, network_type: null };
+
   await kdb
     .updateTable('demands')
     .set({
+      ...assignment,
       legacy_values: mergeLegacyValues({
         'Distance au réseau': lastEligibility.distance,
         'Identifiant réseau': lastEligibility.id_sncu,
         'Nom réseau': lastEligibility.nom,
       }),
-      network_id: lastEligibility.id_fcu,
-      network_type: getNetworkTypeFromEligibilityType(lastEligibility.type),
     })
     .where('id', '=', demandId)
     .execute();

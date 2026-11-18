@@ -12,8 +12,9 @@ import {
   seedReseauDeChaleur,
   seedZoneEtReseauEnConstruction,
 } from '@/tests/fixtures';
+import type { TestCase } from '@/tests/trpc-helpers';
 
-import { autoAssignNetworkFromEligibility, computeNetworkDistance } from './eligibility';
+import { autoAssignNetworkFromEligibility, computeNetworkDistance, resolveDemandAssignment } from './eligibility';
 
 const PARIS = { lat: 48.8566, lon: 2.3522 };
 
@@ -187,5 +188,54 @@ describe('autoAssignNetworkFromEligibility()', () => {
     const id = await makeDemand(type, distance, idFcu, eligible);
     await autoAssignNetworkFromEligibility(id);
     expect(await getNetwork(id)).toStrictEqual(expected);
+  });
+
+  it('extension liée à un réseau de chaleur → demande portée par le réseau parent, extension conservée', async () => {
+    await seedReseauDeChaleur({ id_fcu: 30, ouvert_aux_raccordements: true });
+    await seedZoneEtReseauEnConstruction({ id_fcu: 31, ouvert_aux_raccordements: true, reseau_de_chaleur_id: 30 });
+    const id = await makeDemand('reseau_futur_tres_proche', 40, 31, true);
+
+    await autoAssignNetworkFromEligibility(id);
+
+    expect(
+      await kdb.selectFrom('demands').select(['network_id', 'network_type', 'extension_id']).where('id', '=', id).executeTakeFirstOrThrow()
+    ).toStrictEqual({ extension_id: 31, network_id: 30, network_type: 'reseau_de_chaleur' });
+  });
+});
+
+describe('resolveDemandAssignment()', () => {
+  beforeEach(async () => {
+    await cleanDatabase();
+    await seedReseauDeChaleur({ id_fcu: 30, ouvert_aux_raccordements: true });
+    await Promise.all([
+      seedZoneEtReseauEnConstruction({ id_fcu: 31, ouvert_aux_raccordements: true, reseau_de_chaleur_id: 30 }),
+      seedZoneEtReseauEnConstruction({ id_fcu: 32, ouvert_aux_raccordements: true }),
+    ]);
+  });
+
+  const cases: TestCase<Parameters<typeof resolveDemandAssignment>, Awaited<ReturnType<typeof resolveDemandAssignment>>>[] = [
+    {
+      expectedOutput: { extension_id: null, network_id: 30, network_type: 'reseau_de_chaleur' },
+      input: [30, 'reseau_de_chaleur'],
+      label: 'réseau existant → lui-même',
+    },
+    {
+      expectedOutput: { extension_id: null, network_id: 32, network_type: 'reseau_en_construction' },
+      input: [32, 'reseau_en_construction'],
+      label: 'réseau en construction sans lien → lui-même',
+    },
+    {
+      expectedOutput: { extension_id: 31, network_id: 30, network_type: 'reseau_de_chaleur' },
+      input: [31, 'reseau_en_construction'],
+      label: 'extension liée → réseau parent, extension à part',
+    },
+    {
+      expectedOutput: { extension_id: null, network_id: 99, network_type: 'reseau_en_construction' },
+      input: [99, 'reseau_en_construction'],
+      label: 'réseau en construction introuvable → lui-même',
+    },
+  ];
+  it.each(cases)('$label', async ({ input, expectedOutput }) => {
+    expect(await resolveDemandAssignment(...input)).toStrictEqual(expectedOutput);
   });
 });

@@ -41,7 +41,7 @@ Stored in the `user_permissions` table (**not** in session/JWT). Each row links 
 | Permission type | Roles | resource_id | Demand column matched |
 |----------------|-------|-------------|----------------------|
 | `reseau_existant` | gestionnaire | FCU network ID (id_fcu) | `demands.network_id` |
-| `reseau_en_construction` | gestionnaire | Zone ID | `demands.network_id` |
+| `reseau_en_construction` | gestionnaire | Zone ID (standalone networks under construction only) | `demands.network_id` |
 | `commune` | collectivite, alec | INSEE code | `demands.commune_code` |
 | `epci` | collectivite, alec | EPCI code | `demands.epci_code` |
 | `ept` | collectivite, alec | EPT code | `demands.ept_code` |
@@ -50,6 +50,8 @@ Stored in the `user_permissions` table (**not** in session/JWT). Each row links 
 | `national` | collectivite, alec | NULL | No filter (all validated) |
 | `organization` | gestionnaire (national/pilote) | Organization id (uuid) | Demands whose network's `organization_id` matches (derived via subquery, not a `demands` column) |
 | `custom_territory` | collectivite, alec, ccrt | `custom_territories.id` (uuid) | `demands.custom_territory_ids` (uuid[] denormalized from `commune_code`, see `src/modules/custom-territories/AGENTS.md`) |
+
+An extension linked to a heat network holds no permission and no demand: its demands are assigned to the parent network (`demands.extension_id` keeps the extension, see `src/modules/demands/AGENTS.md`), so a `reseau_existant` permission covers them by plain equality on `network_id`. `syncLinkedNetworkFields` converts any permission on a linked extension into one on its parent; the permission autocomplete does not offer linked extensions.
 
 `buildDemandAccessFilter` partitions permissions in **4 buckets** (network / organization / custom territory / territory): an `organization` perm grants access to all demands of the org's networks (1 perm instead of N). In-memory matchers compare `demand.network_organization_id` (resolved by join). Deleting an org or a custom territory must call `removePermissionFromAllUsers` (no FK on `user_permissions.resource_id`). A `custom_territory` perm behaves like a territory perm (triage on unassigned connection demands for collectivité / ALEC, renewable-heat workspace and notifications for CCRT — the role group still gates each workspace) and is matched with `custom_territory_ids @> ARRAY[id]::uuid[]` in list filters and `resource_id = ANY(custom_territory_ids::text[])` in joins on `user_permissions` — never cast `resource_id` to uuid in an `OR` with other permission types (no short-circuit in Postgres).
 

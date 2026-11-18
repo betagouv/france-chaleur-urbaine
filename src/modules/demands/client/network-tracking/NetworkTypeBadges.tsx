@@ -23,12 +23,15 @@ const networkTypeColors = {
 type NetworkTypeBadgesProps = {
   networkType: NetworkType;
   sncuId: string | null;
+  /** Extensions under construction tracked with the network (their demands are carried by it). */
+  extensionsCount?: number;
 };
 
 /**
- * Badges identifying a network: its type in the colour it has on the map, and its SNCU identifier when it has one.
+ * Badges identifying a network: its type in the colour it has on the map, its SNCU identifier when it has one,
+ * and the extensions under construction tracked with it.
  */
-export function NetworkTypeBadges({ networkType, sncuId }: NetworkTypeBadgesProps) {
+export function NetworkTypeBadges({ networkType, sncuId, extensionsCount = 0 }: NetworkTypeBadgesProps) {
   return (
     <>
       <Tooltip title={networkTypeDescriptions[networkType]}>
@@ -40,6 +43,17 @@ export function NetworkTypeBadges({ networkType, sncuId }: NetworkTypeBadgesProp
         <Tooltip title="Identifiant SNCU du réseau">
           <DSFRBadge small className="cursor-help">
             {sncuId}
+          </DSFRBadge>
+        </Tooltip>
+      )}
+      {extensionsCount > 0 && (
+        <Tooltip title="Les demandes des extensions en construction de ce réseau sont suivies avec les siennes">
+          <DSFRBadge
+            small
+            className="text-white! cursor-help whitespace-nowrap"
+            style={{ backgroundColor: networkTypeColors.reseau_en_construction }}
+          >
+            {extensionsCount > 1 ? `+ ${extensionsCount} extensions` : '+ 1 extension'}
           </DSFRBadge>
         </Tooltip>
       )}

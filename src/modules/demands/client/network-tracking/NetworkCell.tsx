@@ -25,7 +25,7 @@ export function NetworkCell({ network }: NetworkCellProps) {
         <NetworkTrackingStateBadge state={network.state} />
       </div>
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <NetworkTypeBadges networkType={network.networkType} sncuId={network.sncuId} />
+        <NetworkTypeBadges networkType={network.networkType} sncuId={network.sncuId} extensionsCount={network.extensions.length} />
         {isDefined(network.powerMW) && <span className="text-xs text-(--text-mention-grey)">{formatMW(network.powerMW)}</span>}
         {network.organization && <OrganizationBadge name={network.organization.name} />}
       </div>

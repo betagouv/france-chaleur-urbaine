@@ -83,6 +83,7 @@ describe('searchNetworks()', () => {
         is_zone: false,
         nom_reseau: futurEst.nom_reseau,
         ouvert_aux_raccordements: false,
+        reseau_de_chaleur_id: chaleurNord.id_fcu,
       }),
       seedZoneEtReseauEnConstruction({
         gestionnaire: zoneOuest.gestionnaire,
@@ -110,6 +111,14 @@ describe('searchNetworks()', () => {
   it.each(cases)('$label', async ({ input, expectedOutput }) => {
     const results = await searchNetworks(input);
     expect(results.sort(byIdFcu)).toStrictEqual(expectedOutput.sort(byIdFcu));
+  });
+
+  it('écarte les extensions liées à un RC sur demande (elles ne portent pas de permission), pas les autres réseaux en construction', async () => {
+    const [bySncu, zones] = await Promise.all([
+      searchNetworks('1101C', { excludeLinkedExtensions: true }),
+      searchNetworks('Ouest', { excludeLinkedExtensions: true }),
+    ]);
+    expect([...bySncu, ...zones]).toStrictEqual([chaleurNord, zoneOuest]);
   });
 });
 

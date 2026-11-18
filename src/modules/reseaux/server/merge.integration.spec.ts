@@ -376,4 +376,37 @@ describe('reseaux merge', () => {
       '4 documents publiés au total, 3 maximum par réseau : retirez-en avant la fusion',
     ]);
   });
+
+  it('merges extensions of a heat network: the demands it carries for the absorbed extension follow the kept one', async () => {
+    await seedHeatNetwork(20, { gestionnaire: 'Dalkia', sncu: '7520C' });
+    await Promise.all([
+      seedZoneEtReseauEnConstruction({
+        geom: createLineGeometry(paris.lon, paris.lat, 100),
+        id_fcu: 1,
+        ouvert_aux_raccordements: true,
+        reseau_de_chaleur_id: 20,
+      }),
+      seedZoneEtReseauEnConstruction({
+        geom: createLineGeometry(paris.lon, paris.lat, 200),
+        id_fcu: 2,
+        ouvert_aux_raccordements: true,
+        reseau_de_chaleur_id: 20,
+      }),
+    ]);
+    await seedDemand(uuid(41), 20, 'reseau_de_chaleur');
+    await kdb.updateTable('demands').set({ extension_id: 2 }).where('id', '=', uuid(41)).execute();
+    const caller = createTestCaller(testUsers.admin);
+
+    const preview = await caller.reseaux.mergePreview({ ids: [1, 2], table: 'zones_et_reseaux_en_construction' });
+    expect(preview.candidates.map((candidate) => ({ demands: candidate.impacts.demands, id_fcu: candidate.id_fcu }))).toStrictEqual([
+      { demands: 0, id_fcu: 1 },
+      { demands: 1, id_fcu: 2 },
+    ]);
+
+    await caller.reseaux.mergeNetworks({ absorbedIds: [2], choices: {}, keptId: 1, table: 'zones_et_reseaux_en_construction' });
+
+    expect(await kdb.selectFrom('demands').select(['network_id', 'network_type', 'extension_id']).execute()).toStrictEqual([
+      { extension_id: 1, network_id: 20, network_type: 'reseau_de_chaleur' },
+    ]);
+  });
 });

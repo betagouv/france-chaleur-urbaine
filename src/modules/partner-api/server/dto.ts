@@ -11,6 +11,7 @@ export type DemandRow = {
   updated_at: Date | string;
   network_id: number;
   network_type: NetworkType;
+  extension_id: number | null;
   comment_gestionnaire: string | null;
   legacy_values: LegacyDemandValues;
   network_name: string | null;
@@ -77,13 +78,14 @@ export const toDemandDTO = (row: DemandRow): DemandDTO => {
       region_code: row.region_code,
       region_label: lv.Region ?? null,
     },
+    // the contract exposes the nearest network: a demand carried by a parent network keeps the id and type of its extension
     reseau: {
       gestionnaire: row.network_gestionnaire,
-      id_fcu: row.network_id,
+      id_fcu: row.extension_id ?? row.network_id,
       identifiant_sncu: row.network_sncu_id,
       maitre_ouvrage: row.network_maitre_ouvrage,
       nom: row.network_name,
-      type: row.network_type,
+      type: row.extension_id === null ? row.network_type : 'reseau_en_construction',
     },
     statut: toDemandeStatut(lv.Status),
   };

@@ -31,10 +31,11 @@ const entityTypeToTable = {
 export function registerNetworkCommands(parentProgram: Command) {
   parentProgram
     .command('reseaux:sync-linked-fields')
-    .description('Resynchronise les champs dérivés des liens entre entités (SNCU des extensions, gestionnaire/MO des PDP)')
+    .description(
+      'Resynchronise ce qui découle des liens entre entités (champs et organisation des extensions, demandes / permissions / rappels / notes portés par le réseau parent, gestionnaire/MO des PDP)'
+    )
     .action(async () => {
-      const stats = await syncLinkedNetworkFields();
-      logger.info('synchronisation des champs liés terminée', stats);
+      await syncLinkedNetworkFields(); // logs its own statistics
     });
 
   const program = parentProgram.command('geom').description('Commandes pour gérer les géométries des données FCU (réseaux, PDP. etc)');
