@@ -1,6 +1,7 @@
 import type { Command } from '@commander-js/extra-typings';
 import { z } from 'zod';
 
+import { reassignDemandsOfDeletedNetworks } from '@/modules/demands/server/eligibility';
 import { readFileGeometry } from '@/modules/geo/server/helpers';
 import { identifyNetworkGeometries } from '@/modules/reseaux/server/geometry-identify';
 import { kdb, sql } from '@/server/db/kysely';
@@ -36,6 +37,17 @@ export function registerNetworkCommands(parentProgram: Command) {
     )
     .action(async () => {
       await syncLinkedNetworkFields(); // logs its own statistics
+    });
+
+  parentProgram
+    .command('reseaux:reassign-orphan-demands')
+    .description(
+      "Réaffecte les demandes dont le réseau n'existe plus (éligibilité recalculée puis affectation automatique). À lancer après une suppression de réseau faite hors de l'admin, ou pour rattraper des demandes orphelines plus anciennes"
+    )
+    .option('--dry-run', 'Compte les demandes concernées sans rien modifier', false)
+    .action(async ({ dryRun }) => {
+      const count = await reassignDemandsOfDeletedNetworks({ dryRun });
+      logger.info(`${count} demande(s) ${dryRun ? 'à réaffecter' : 'réaffectée(s)'}`);
     });
 
   const program = parentProgram.command('geom').description('Commandes pour gérer les géométries des données FCU (réseaux, PDP. etc)');

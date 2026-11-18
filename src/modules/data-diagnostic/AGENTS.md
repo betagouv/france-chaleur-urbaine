@@ -55,7 +55,7 @@ Errors (broken state):
 - `custom_territory.stale_communes` — custom territory whose stored communes no longer match its recipe (referential updated without `pnpm cli custom-territories:refresh`); detection shared with the refresh (`custom-territories/server/service.ts#findStaleCustomTerritories`)
 - `custom_territory.orphan_recipe_ref` — custom territory whose recipe references a territory matching no commune anymore (absorbed commune, dissolved EPCI / EPT); the refresh does not fix it, the recipe must be edited (`findCustomTerritoriesWithOrphanRefs`)
 - `demand.network_id_type_mismatch` — `network_id`/`network_type` partially set
-- `demand.orphan_network` — affected `network_id` no longer exists
+- `demand.orphan_network` — affected `network_id` no longer exists (should stay empty: a network deletion reassigns its demands, see `reassignDemandsOfDeletedNetworks`; `reseaux:reassign-orphan-demands` repairs a deletion made outside the admin)
 - `extension.not_consolidated` — extension linked to a heat network still carrying demands or network permissions (they belong to the parent network; `reseaux:sync-linked-fields` moves them)
 
 Warnings (suspicious):

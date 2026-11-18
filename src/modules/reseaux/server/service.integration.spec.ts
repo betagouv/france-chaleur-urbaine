@@ -4,7 +4,11 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { kdb } from '@/server/db/kysely';
 import {
   cleanDatabase,
+  createLineGeometry,
   seedCommune,
+  seedDepartement,
+  seedProEligibilityTestsAddress,
+  seedRegion,
   seedReseauDeChaleur,
   seedReseauDeFroid,
   seedTableUser,
@@ -15,6 +19,7 @@ import { type TestCase, testUsers } from '@/tests/trpc-helpers';
 import {
   applyNetworkGeometryDraft,
   type ContributionNetworkSearchResult,
+  deleteNetwork,
   type NetworkSearchResult,
   searchHeatNetworksForContribution,
   searchNetworkOperators,
@@ -76,6 +81,9 @@ describe('searchNetworks()', () => {
         nom_reseau: chaleurSud.nom_reseau,
         ouvert_aux_raccordements: true,
       }),
+    ]);
+    // after the heat networks: the extension references its parent network
+    await Promise.all([
       seedZoneEtReseauEnConstruction({
         gestionnaire: futurEst.gestionnaire,
         'Identifiant reseau': futurEst.identifiant_reseau,
@@ -277,5 +285,63 @@ describe('a point placed on the map for a network known without trace', () => {
       .where('id_fcu', '=', 3001)
       .executeTakeFirstOrThrow();
     expect(network).toStrictEqual({ communes_insee: ['75056'], geom_update: null, has_trace: false, type: 'ST_Point' });
+  });
+});
+
+describe('a deleted network hands its demands over to the nearest remaining network', () => {
+  const paris = { lat: 48.8566, lon: 2.3522 };
+
+  const seedDemandOn = async (networkId: number) => {
+    const demand = await kdb
+      .insertInto('demands')
+      .values({ legacy_values: JSON.stringify({}), network_id: networkId, network_type: 'reseau_de_chaleur' })
+      .returning('id')
+      .executeTakeFirstOrThrow();
+    await seedProEligibilityTestsAddress({ demand_id: demand.id, source_address: '10 Rue de Rivoli 75001 Paris' });
+    return demand.id;
+  };
+
+  const getAssignment = (demandId: string) =>
+    kdb.selectFrom('demands').select(['network_id', 'network_type']).where('id', '=', demandId).executeTakeFirstOrThrow();
+
+  it('once the deletion is effective: at the sync for a network with a trace, right away for one never synced', async () => {
+    await cleanDatabase();
+    await Promise.all([
+      seedTableUser([{ ...testUsers.admin }]),
+      seedCommune({
+        geom: sql`ST_Multi(ST_Buffer(ST_Transform(ST_SetSRID(ST_MakePoint(${paris.lon}, ${paris.lat}), 4326), 2154), 1000))`,
+        insee_com: '75056',
+        insee_dep: '75',
+        insee_reg: '11',
+        nom: 'Paris',
+      }),
+      seedDepartement({ insee_dep: '75', insee_reg: '11', nom: 'Paris' }),
+      seedRegion({ insee_reg: '11', nom: 'Île-de-France' }),
+      seedReseauDeChaleur({
+        geom: createLineGeometry(paris.lon, paris.lat, 150),
+        has_trace: true,
+        id_fcu: 100,
+        ouvert_aux_raccordements: true,
+      }),
+      seedReseauDeChaleur({
+        geom: createLineGeometry(paris.lon, paris.lat, 20),
+        has_trace: true,
+        id_fcu: 101,
+        ouvert_aux_raccordements: true,
+      }),
+      // never synced: no live geometry
+      seedReseauDeChaleur({ id_fcu: 102, ouvert_aux_raccordements: true }),
+    ]);
+    const [syncedNetworkDemand, draftNetworkDemand] = await Promise.all([seedDemandOn(101), seedDemandOn(102)]);
+
+    await deleteNetwork(101, 'reseaux_de_chaleur');
+    // marked for deletion only: still the network of its demand until the sync
+    expect(await getAssignment(syncedNetworkDemand)).toStrictEqual({ network_id: 101, network_type: 'reseau_de_chaleur' });
+
+    await applyNetworkGeometryDraft('reseaux_de_chaleur', 101, testUsers.admin.id);
+    expect(await getAssignment(syncedNetworkDemand)).toStrictEqual({ network_id: 100, network_type: 'reseau_de_chaleur' });
+
+    await deleteNetwork(102, 'reseaux_de_chaleur');
+    expect(await getAssignment(draftNetworkDemand)).toStrictEqual({ network_id: 100, network_type: 'reseau_de_chaleur' });
   });
 });

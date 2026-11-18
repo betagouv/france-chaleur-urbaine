@@ -48,6 +48,10 @@ Aucun email n'est envoyé à l'auteur dans les deux cas — le résultat se cons
 
 L'admin peut aussi **réaffecter directement** n'importe quelle demande à tout moment, sans proposition préalable ; toute réaffectation en attente est alors effacée.
 
+## Réaffectation automatique à la suppression d'un réseau
+
+Quand un réseau est supprimé dans [Gestion des réseaux](/admin/reseaux), ses demandes sont réaffectées sans intervention au moment où la suppression devient effective&nbsp;: éligibilité recalculée, puis affectation au réseau le plus proche ou retour à «&nbsp;sans réseau affecté&nbsp;». Le détail est décrit dans [Gestion des réseaux](/admin/doc/gestion-reseaux).
+
 ## Effet de bord à connaître
 
 Changer l'affectation change le **périmètre de visibilité** : la demande disparaît de l'espace des gestionnaires de l'ancien réseau et apparaît chez ceux du nouveau, qui seront notifiés par le [cron des nouvelles demandes](/admin/doc/relances-notifications) si elle n'avait pas déjà été notifiée.

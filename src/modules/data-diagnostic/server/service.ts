@@ -449,7 +449,8 @@ const checkDemandOrphanNetwork: IssueBuilder = async () => {
   }));
 
   return {
-    description: 'Le réseau référencé n’existe plus en base. La demande n’a plus de gestionnaire effectif et doit être réaffectée.',
+    description:
+      'Le réseau référencé n’existe plus en base. La demande n’a plus de gestionnaire effectif. Lancer `pnpm cli reseaux:reassign-orphan-demands` recalcule son éligibilité et la réaffecte (`--dry-run` pour seulement compter).',
     items,
     severity: 'error',
     title: 'Demande affectée à un réseau supprimé',

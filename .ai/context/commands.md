@@ -41,6 +41,7 @@ pnpm cli openapi:generate                                    # Regenerate public
 pnpm cli data arrete-dpe:html-to-csv <page.html> <out.csv>   # Extract the arrêté DPE annex (saved Légifrance page) to a CSV to version in src/data/arrete-dpe/
 pnpm cli data import arrete-dpe --file <csv> [--dry-run]     # Apply regulatory values (CO2, EnR&R, reference year) to networks, then regenerate tiles. Runbook: docs/import_arrete_dpe.md
 pnpm cli import:epci                                          # Reload the full EPCI list (decoupage-administratif); required for the EPCI autocomplete of permissions / custom territories
+pnpm cli reseaux:reassign-orphan-demands [--dry-run]          # Reassign the demands pointing to a network that no longer exists (deletion made outside the admin, older orphans); the data diagnostic reports them
 pnpm cli custom-territories:refresh                           # Re-resolve the custom territory recipes, then custom_territory_ids on every demand (CLI only; run after every IGN communes or `import:ept` update — the data diagnostic reports stale territories)
 ```
 

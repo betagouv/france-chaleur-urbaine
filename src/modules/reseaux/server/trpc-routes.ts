@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import { countNetworkDemands } from '@/modules/demands/server/eligibility';
 import { createUserEvent } from '@/modules/events/server/service';
 import { getUsersWithNetworkPermission, removeNetworkPermissionFromAllUsers } from '@/modules/permissions/server/service';
 import {
@@ -314,6 +315,11 @@ export const reseauxRouter = router({
   documents: networkDocumentsRouter,
   eligibilityStatus: route.input(z.object({ lat: z.number(), lon: z.number() })).query(async ({ input }) => {
     return (await getEligilityStatus(input.lat, input.lon)) as HeatNetworksResponse; // legacy type for compatibility
+  }),
+  /** Demands concerned by the deletion of a network (to warn before deletion). */
+  getNetworkDemandsCounts: adminRoute.input(zDeleteNetworkInput).query(async ({ input }) => {
+    const type = networkPermissionType(input.type);
+    return type ? await countNetworkDemands(input.id, type) : { assigned: 0, keptOnParent: 0 };
   }),
   getNetworkGeometry: route.input(zDownloadNetworkGeometryInput).query(async ({ input }) => {
     return await reseauxService.getNetworkGeometry(input.type, input.id);
