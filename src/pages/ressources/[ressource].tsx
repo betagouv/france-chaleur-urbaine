@@ -4,12 +4,21 @@ import { getRessource, ressourceKeys } from '@/components/Ressources/config';
 import Ressource from '@/components/Ressources/Ressource';
 import SimplePage from '@/components/shared/page/SimplePage';
 import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
+import { HeatingSolutionArticle } from '@/modules/heating-solutions/client/HeatingSolutionArticle';
+import { getHeatingSolution } from '@/modules/heating-solutions/constants';
 
 const RessourcePage = ({ ressource, ressourceName }: InferGetStaticPropsType<typeof getStaticProps>) => {
   useTrackPageView();
+  const solution = getHeatingSolution(ressourceName);
   return (
-    <SimplePage currentPage="/ressources" title={ressource.seoTitle || ressource.title} description={ressource.seoDescription}>
-      <Ressource ressourceKey={ressourceName} />
+    <SimplePage
+      currentPage="/ressources"
+      title={ressource.seoTitle || ressource.title}
+      description={ressource.seoDescription}
+      layout={solution ? 'center' : 'fluid'}
+      type={solution ? 'article' : 'website'}
+    >
+      {solution ? <HeatingSolutionArticle solution={solution} /> : <Ressource ressourceKey={ressourceName} />}
     </SimplePage>
   );
 };

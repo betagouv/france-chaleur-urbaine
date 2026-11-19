@@ -59,6 +59,8 @@ fileignoreconfig:
   checksum: 54403c92867852fb5afabd8ca59ab8c70093fcb554a197c922e252cc6e0959db
 - filename: src/modules/email/react-email/templates/reset-password.tsx
   checksum: ce24c239f7ded12411bc26d68dee01a10be5878b092415b3ee30a9094591ee5d
+- filename: src/modules/heating-solutions/constants.ts
+  checksum: 620ec75643be8e681ba0cfda38d45973bac75117140583d1a9dc1a036fd8d158
 - filename: src/modules/opendata/OPENDATA.md
   checksum: 478651bb1b40e3adfd6100d9dd91c8fd80e30b6b9d03cefd4657b80709216447
 - filename: src/modules/tiles/server/generation-config.ts
@@ -77,7 +79,6 @@ fileignoreconfig:
 scopeconfig:
 - scope: node
 allowed_patterns:
-- https://www\.figma\.com/design/t3chbwPeNK6ZulaWs4Rn4S/France-Chaleur-Renouvelable\?node-id=3463-18759
 - \/codegouvfr\/react-dsfr\/blob\/.*
 - pass
 - (?i).*key.*

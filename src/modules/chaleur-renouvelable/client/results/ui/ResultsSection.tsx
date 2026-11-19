@@ -24,6 +24,7 @@ import {
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type TypeLogement,
 } from '@/modules/chaleur-renouvelable/constants';
+import { SolutionArticleLink } from '@/modules/heating-solutions/client/SolutionArticleLink';
 import cx from '@/utils/cx';
 
 import { CoolingPossibleTag } from './CoolingPossibleTag';
@@ -320,6 +321,7 @@ function OtherSolutionRow({
         <div className="md:col-span-2">
           <h4 className="text-lg uppercase">Description</h4>
           <p className="mb-0">{item.description}</p>
+          <SolutionArticleLink modeId={item.id} solutionName={item.label} />
           {item.rafraichissementPossible && <CoolingPossibleTag />}
         </div>
         <div className="md:hidden">
@@ -334,7 +336,7 @@ function OtherSolutionRow({
           <ProsConsLists avantages={item.avantages} inconvenients={item.inconvenients} />
         </div>
         <div className="hidden md:flex justify-center">
-          <Image src={`/${item.icone}`} alt="" width={216} height={162} className="justify-self-center object-contain" />
+          <Image src={`/${item.icone}`} alt="" width={216} height={162} className="w-full h-auto justify-self-center object-contain" />
         </div>
       </div>
       <div className="mt-6 px-5">

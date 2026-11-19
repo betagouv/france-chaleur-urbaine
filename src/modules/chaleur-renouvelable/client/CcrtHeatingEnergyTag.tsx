@@ -15,7 +15,7 @@ const energyColors: Record<string, string> = {
 type CcrtHeatingEnergyTagProps = Pick<CcrtDemand, 'heating_energy' | 'housing_type'> & { className?: string };
 
 /**
- * Energy tags use the Figma gas/oil palette and matching DSFR accent colors for the other energies.
+ * Energy tags use the gas/oil palette and matching DSFR accent colors for the other energies.
  */
 export function CcrtHeatingEnergyTag({ heating_energy, housing_type, className }: CcrtHeatingEnergyTagProps) {
   return (

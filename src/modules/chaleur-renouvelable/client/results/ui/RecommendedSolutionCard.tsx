@@ -12,6 +12,7 @@ import { SolutionConsumptionPanel } from '@/modules/chaleur-renouvelable/client/
 import { SolutionCta } from '@/modules/chaleur-renouvelable/client/results/ui/SolutionCta';
 import { UsageTags } from '@/modules/chaleur-renouvelable/client/results/ui/UsageTags';
 import type { BatEnrBatiment, DPE } from '@/modules/chaleur-renouvelable/constants';
+import { SolutionArticleLink } from '@/modules/heating-solutions/client/SolutionArticleLink';
 import { Map } from '@/modules/map/client/Map';
 
 import { CoolingPossibleTag } from './CoolingPossibleTag';
@@ -82,6 +83,7 @@ export function HeatNetworkRecommendedSolutionCard({
         un chauffage collectif. Une énergie majoritairement <strong>renouvelable et locale</strong>, un <strong>prix stable</strong> et une{' '}
         <strong>TVA réduite à 5,5 %</strong>, le tout garanti par un service public.
       </p>
+      <SolutionArticleLink modeId={item.id} solutionName={item.label} />
       {item.rafraichissementPossible && <CoolingPossibleTag />}
       <div className="grid-1 grid gap-6 md:grid-cols-3">
         {mapMarkerCoordinates && (
