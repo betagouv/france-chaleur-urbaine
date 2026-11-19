@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { zAcquisition } from '@/modules/analytics/constants';
-import { networkTypes } from '@/modules/reseaux/constants';
+import { type NetworkType, networkTypes } from '@/modules/reseaux/constants';
 import type { EligibilityType } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { escapeHtml } from '@/utils/html';
@@ -93,6 +93,19 @@ export const networkTrackingStateLabels = {
   silent: 'Muet',
   up_to_date: 'À jour',
 } as const satisfies Record<NetworkTrackingState, string>;
+
+type DemandNetworks = { extension_id: number | null; network_id: number | null; network_type: NetworkType | null };
+
+/**
+ * Nearest network of a demand: the extension it matched when it has one, else the network carrying it.
+ * A demand matching an extension linked to a heat network is carried by that parent network (`network_id`), see `resolveDemandAssignment`.
+ */
+export const getNearestNetwork = (demand: DemandNetworks): { id: number; type: NetworkType } | null =>
+  demand.extension_id !== null
+    ? { id: demand.extension_id, type: 'reseau_en_construction' }
+    : demand.network_id !== null && demand.network_type !== null
+      ? { id: demand.network_id, type: demand.network_type }
+      : null;
 
 export const zNetworkTrackingInput = z.object({
   networkId: z.number().int().min(1).max(32_767), // `demands.network_id` is a smallint, the id comes from the URL

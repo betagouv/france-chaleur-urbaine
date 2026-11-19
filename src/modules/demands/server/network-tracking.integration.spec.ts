@@ -10,6 +10,7 @@ import { createTestCaller, forbiddenError, type TestCase, testUsers } from '@/te
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
 import type { NetworkTrackingState } from '../constants';
+import { getParentNetworkId } from './network-tracking';
 
 const NOW = new Date('2026-10-15T10:00:00.000Z');
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -25,6 +26,7 @@ const daysAgo = (days: number) => new Date(NOW.getTime() - days * DAY_MS);
 type SeedDemandValues = {
   status: DEMANDE_STATUS;
   demandDate: Date;
+  extensionId?: number;
   networkId?: number | null;
   networkType?: NetworkType | null;
   validated?: boolean;
@@ -36,6 +38,7 @@ const seedDemand = (index: number, values: SeedDemandValues) =>
     .insertInto('demands')
     .values({
       deleted_at: values.deletedAt ?? null,
+      extension_id: values.extensionId ?? null,
       id: uuid(index),
       legacy_values: JSON.stringify({
         Adresse: '10 Rue de Rivoli 75001 Paris',
@@ -161,6 +164,7 @@ const seedTrackedDemands = async () => {
 /** Expected summary of a network without any demand, the starting point of every expected summary. */
 const emptySummary = {
   closed: 0,
+  extensions: [],
   inProgress: 0,
   lastManagerActionAt: null,
   managers: [],
@@ -294,6 +298,36 @@ describe('network tracking', () => {
       ]);
     });
 
+    it('tracks an extension linked to a heat network with its parent network, which carries its demands', async () => {
+      await seedZoneEtReseauEnConstruction({
+        id_fcu: 5,
+        mise_en_service: '2027',
+        nom_reseau: 'Réseau C',
+        ouvert_aux_raccordements: true,
+        reseau_de_chaleur_id: 2,
+      });
+      await seedDemand(20, { demandDate: day('2026-10-10'), extensionId: 5, networkId: 2, status: DEMANDE_STATUS.TO_PROCESS });
+
+      const result = await createTestCaller(testUsers.admin).demands.admin.listNetworkTracking();
+
+      expect(result).toStrictEqual([
+        { ...emptySummary, ...networkAIdentity },
+        {
+          ...emptySummary,
+          ...networkCIdentity,
+          extensions: [{ id_fcu: 5, mise_en_service: '2027' }],
+          newestDemandAt: day('2026-10-10'),
+          newestPendingDemandAt: day('2026-10-10'),
+          oldestDemandAt: day('2026-10-10'),
+          oldestPendingDemandAt: day('2026-10-10'),
+          pending: 1,
+          state: 'up_to_date',
+          total: 1,
+        },
+        { ...emptySummary, ...networkBIdentity },
+      ]);
+    });
+
     const stateCases: TestCase<{ pendingDays: number | null; lastActionDays: number | null }, NetworkTrackingState>[] = [
       { expectedOutput: 'up_to_date', input: { lastActionDays: null, pendingDays: null }, label: 'no pending demand → up to date' },
       { expectedOutput: 'up_to_date', input: { lastActionDays: null, pendingDays: 10 }, label: 'pending for 10 days → up to date' },
@@ -320,6 +354,24 @@ describe('network tracking', () => {
       const result = await createTestCaller(testUsers.admin).demands.admin.listNetworkTracking();
 
       expect(result.map((network) => network.state)).toStrictEqual([expectedOutput, 'no_demand', 'no_demand']);
+    });
+  });
+
+  describe('getParentNetworkId', () => {
+    const cases: TestCase<Parameters<typeof getParentNetworkId>[0], number | null>[] = [
+      { expectedOutput: 2, input: { networkId: 5, networkType: 'reseau_en_construction' }, label: 'linked extension → its parent network' },
+      {
+        expectedOutput: null,
+        input: { networkId: 1, networkType: 'reseau_en_construction' },
+        label: 'standalone network under construction',
+      },
+      { expectedOutput: null, input: { networkId: 2, networkType: 'reseau_de_chaleur' }, label: 'heat network' },
+      { expectedOutput: null, input: { networkId: 99, networkType: 'reseau_en_construction' }, label: 'unknown network' },
+    ];
+    it.each(cases)('$label', async ({ input, expectedOutput }) => {
+      await seedZoneEtReseauEnConstruction({ id_fcu: 5, ouvert_aux_raccordements: true, reseau_de_chaleur_id: 2 });
+
+      expect(await getParentNetworkId(input)).toStrictEqual(expectedOutput);
     });
   });
 

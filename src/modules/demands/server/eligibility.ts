@@ -2,12 +2,15 @@ import { TRPCError } from '@trpc/server';
 
 import { businessRules } from '@/modules/app/business-rules';
 import { syncDemandCustomTerritoryIds } from '@/modules/custom-territories/server/service';
-import { updateEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
+import { createEvent } from '@/modules/events/server/service';
+import { getAddressEligibilityHistoryEntry, updateEligibilityTestAddress } from '@/modules/pro-eligibility-tests/server/service';
 import type { ProEligibilityTestHistoryEntry } from '@/modules/pro-eligibility-tests/types';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import { kdb, sql } from '@/server/db/kysely';
 import type { EligibilityType } from '@/server/services/addresseInformation';
+import { processInParallel } from '@/utils/async';
 
+import { getNearestNetwork } from '../constants';
 import { mergeLegacyValues } from './legacy-values';
 
 /**
@@ -111,6 +114,24 @@ export const computeNetworkDistance = async (demandId: string, networkIdFcu: num
   return reseau.distance;
 };
 
+/**
+ * Assignment columns of a demand for the given nearest network. An extension linked to a heat network never carries a demand:
+ * its parent network does (permissions, notifications, tracking), the extension is kept aside in `extension_id`.
+ */
+export const resolveDemandAssignment = async (networkIdFcu: number, networkType: NetworkType) => {
+  const extension =
+    networkType === 'reseau_en_construction'
+      ? await kdb
+          .selectFrom('zones_et_reseaux_en_construction')
+          .select('reseau_de_chaleur_id')
+          .where('id_fcu', '=', networkIdFcu)
+          .executeTakeFirst()
+      : undefined;
+  return extension?.reseau_de_chaleur_id
+    ? { extension_id: networkIdFcu, network_id: extension.reseau_de_chaleur_id, network_type: 'reseau_de_chaleur' as const }
+    : { extension_id: null, network_id: networkIdFcu, network_type: networkType };
+};
+
 /** Max distance (m) to auto-assign a network for the non-eligible "réseau loin" cases. */
 const networkAssignmentDistanceThreshold = businessRules.autoAssignMaxDistance.value;
 
@@ -137,19 +158,158 @@ export const autoAssignNetworkFromEligibility = async (demandId: string) => {
     lastEligibility.eligible || (lastEligibility.distance !== null && lastEligibility.distance < networkAssignmentDistanceThreshold);
   if (!isAssignable) return;
 
+  const networkType = getNetworkTypeFromEligibilityType(lastEligibility.type);
+  const assignment = networkType
+    ? await resolveDemandAssignment(lastEligibility.id_fcu, networkType)
+    : { extension_id: null, network_id: lastEligibility.id_fcu, network_type: null };
+
   await kdb
     .updateTable('demands')
     .set({
+      ...assignment,
       legacy_values: mergeLegacyValues({
         'Distance au réseau': lastEligibility.distance,
         'Identifiant réseau': lastEligibility.id_sncu,
         'Nom réseau': lastEligibility.nom,
       }),
-      network_id: lastEligibility.id_fcu,
-      network_type: getNetworkTypeFromEligibilityType(lastEligibility.type),
     })
     .where('id', '=', demandId)
     .execute();
+};
+
+/** Demands processed at once when their eligibility is recomputed after a network deletion. */
+const REASSIGNMENT_CONCURRENCY = 10;
+
+/**
+ * Reassigns the demands whose network no longer exists (deleted, effective at the sync): nobody can process them anymore.
+ * Their eligibility is recomputed from the stored coordinates, then the usual auto-assignment applies; without an assignable
+ * network they go back to « sans réseau », triaged by the territory accounts. Traced by a system `demand_assignment_changed`
+ * event per demand. Idempotent: only looks at demands pointing to a missing network. `dryRun` only counts them.
+ */
+export const reassignDemandsOfDeletedNetworks = async ({ dryRun = false }: { dryRun?: boolean } = {}) => {
+  const orphanDemands = await kdb
+    .selectFrom('demands')
+    .leftJoin('pro_eligibility_tests_addresses as address', 'address.demand_id', 'demands.id')
+    .select([
+      'demands.id',
+      'demands.network_id',
+      'demands.network_type',
+      'demands.legacy_values',
+      'address.id as address_id',
+      'address.eligibility_history',
+    ])
+    .select((eb) => [
+      sql<number | null>`ST_Y(ST_Transform(${eb.ref('address.geom')}, 4326))`.as('latitude'),
+      sql<number | null>`ST_X(ST_Transform(${eb.ref('address.geom')}, 4326))`.as('longitude'),
+    ])
+    .where('demands.deleted_at', 'is', null)
+    .where('demands.network_id', 'is not', null)
+    .where((eb) =>
+      eb.or([
+        eb.and([
+          eb('demands.network_type', '=', 'reseau_de_chaleur'),
+          eb.not(
+            eb.exists(eb.selectFrom('reseaux_de_chaleur as rdc').select('rdc.id_fcu').whereRef('rdc.id_fcu', '=', 'demands.network_id'))
+          ),
+        ]),
+        eb.and([
+          eb('demands.network_type', '=', 'reseau_en_construction'),
+          eb.not(
+            eb.exists(
+              eb
+                .selectFrom('zones_et_reseaux_en_construction as zrc')
+                .select('zrc.id_fcu')
+                .whereRef('zrc.id_fcu', '=', 'demands.network_id')
+            )
+          ),
+        ]),
+      ])
+    )
+    .execute();
+  if (dryRun) {
+    return orphanDemands.length;
+  }
+
+  await processInParallel(orphanDemands, REASSIGNMENT_CONCURRENCY, async (demand) => {
+    const history = (demand.eligibility_history ?? []) as ProEligibilityTestHistoryEntry[];
+    const historyEntry =
+      demand.latitude !== null && demand.longitude !== null
+        ? await getAddressEligibilityHistoryEntry(demand.latitude, demand.longitude, history[history.length - 1]?.eligibility)
+        : null;
+    if (demand.address_id && historyEntry && historyEntry.transition !== 'none') {
+      await kdb
+        .updateTable('pro_eligibility_tests_addresses')
+        .set({ eligibility_history: JSON.stringify([...history, historyEntry]) })
+        .where('id', '=', demand.address_id)
+        .execute();
+    }
+
+    await kdb
+      .updateTable('demands')
+      .set({
+        extension_id: null,
+        // filled again by the auto-assignment when a network is assignable
+        legacy_values: mergeLegacyValues({ 'Distance au réseau': null, 'Identifiant réseau': null, 'Nom réseau': null }),
+        network_id: null,
+        network_type: null,
+        updated_at: new Date(),
+      })
+      .where('id', '=', demand.id)
+      .execute();
+    await autoAssignNetworkFromEligibility(demand.id);
+
+    const reassigned = await kdb
+      .selectFrom('demands')
+      .select(['network_id', 'network_type', 'extension_id', 'legacy_values'])
+      .where('id', '=', demand.id)
+      .executeTakeFirstOrThrow();
+    const newNetwork = getNearestNetwork(reassigned);
+    await createEvent({
+      context_id: demand.id,
+      context_type: 'demand',
+      data: {
+        new: {
+          distance: newNetwork ? (reassigned.legacy_values['Distance au réseau'] ?? null) : null,
+          network_id: newNetwork?.id ?? null,
+          network_name: newNetwork ? (reassigned.legacy_values['Nom réseau'] ?? null) : null,
+          network_sncu_id: newNetwork ? (reassigned.legacy_values['Identifiant réseau'] ?? null) : null,
+          network_type: newNetwork?.type ?? null,
+        },
+        old: {
+          distance: demand.legacy_values['Distance au réseau'] ?? null,
+          network_id: demand.network_id,
+          network_name: demand.legacy_values['Nom réseau'] ?? null,
+          network_sncu_id: demand.legacy_values['Identifiant réseau'] ?? null,
+          network_type: demand.network_type,
+        },
+      },
+      type: 'demand_assignment_changed',
+    });
+  });
+
+  return orphanDemands.length;
+};
+
+/**
+ * Number of demands a network deletion concerns: those it carries (reassigned once the deletion is effective) and, for an
+ * extension linked to a heat network, those it is the nearest network of (they stay on the parent network).
+ */
+export const countNetworkDemands = async (networkIdFcu: number, networkType: NetworkType) => {
+  const counts = await kdb
+    .selectFrom('demands')
+    .select((eb) => [
+      eb.fn
+        .countAll<number>()
+        .filterWhere((filter) => filter.and([filter('network_type', '=', networkType), filter('network_id', '=', networkIdFcu)]))
+        .as('assigned'),
+      eb.fn
+        .countAll<number>()
+        .filterWhere((filter) => (networkType === 'reseau_en_construction' ? filter('extension_id', '=', networkIdFcu) : filter.lit(false)))
+        .as('kept_on_parent'),
+    ])
+    .where('deleted_at', 'is', null)
+    .executeTakeFirstOrThrow();
+  return { assigned: Number(counts.assigned), keptOnParent: Number(counts.kept_on_parent) };
 };
 
 /**

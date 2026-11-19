@@ -21,12 +21,17 @@ type DeleteNetworkDialogProps = {
 /**
  * Confirmation de suppression d'un réseau. Avertit quand des utilisateurs sont liés au réseau
  * via leurs permissions : à la confirmation, le serveur supprime aussi ces permissions devenues incohérentes.
+ * Indique aussi les demandes concernées : celles du réseau sont réaffectées à la synchronisation suivante.
  */
 export default function DeleteNetworkDialog({ control, onConfirm }: DeleteNetworkDialogProps) {
   const network = control.data;
-  const { data: linkedUsers, isFetching } = trpc.reseaux.getNetworkLinkedUsers.useQuery(
+  const { data: linkedUsers, isFetching: isFetchingLinkedUsers } = trpc.reseaux.getNetworkLinkedUsers.useQuery(
     network ? { id: network.id, type: network.type } : skipToken
   );
+  const { data: demandsCounts, isFetching: isFetchingDemandsCounts } = trpc.reseaux.getNetworkDemandsCounts.useQuery(
+    network ? { id: network.id, type: network.type } : skipToken
+  );
+  const isFetching = isFetchingLinkedUsers || isFetchingDemandsCounts;
 
   return (
     <ConfirmDialog
@@ -45,6 +50,22 @@ export default function DeleteNetworkDialog({ control, onConfirm }: DeleteNetwor
         </p>
 
         {isFetching && <Loader size="sm" />}
+
+        {!isFetching && demandsCounts && demandsCounts.assigned > 0 && (
+          <Notice variant="warning" size="sm">
+            {demandsCounts.assigned > 1
+              ? `${demandsCounts.assigned} demandes sont affectées à ce réseau. À la prochaine synchronisation, leur éligibilité sera recalculée : elles seront réaffectées au réseau le plus proche, ou laissées sans réseau s'il n'y en a pas.`
+              : "1 demande est affectée à ce réseau. À la prochaine synchronisation, son éligibilité sera recalculée : elle sera réaffectée au réseau le plus proche, ou laissée sans réseau s'il n'y en a pas."}
+          </Notice>
+        )}
+
+        {!isFetching && demandsCounts && demandsCounts.keptOnParent > 0 && (
+          <Notice variant="info" size="sm">
+            {demandsCounts.keptOnParent > 1
+              ? `${demandsCounts.keptOnParent} demandes ont cette extension pour réseau le plus proche : elles restent affectées au réseau de chaleur étendu.`
+              : '1 demande a cette extension pour réseau le plus proche : elle reste affectée au réseau de chaleur étendu.'}
+          </Notice>
+        )}
 
         {!isFetching && linkedUsers && linkedUsers.length > 0 && (
           <div className="flex flex-col gap-2">

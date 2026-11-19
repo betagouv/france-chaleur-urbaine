@@ -1,12 +1,12 @@
 import { TRPCError } from '@trpc/server';
 
-import type { UpdateAdminDemandInput } from '@/modules/demands/constants';
+import { getNearestNetwork, type UpdateAdminDemandInput } from '@/modules/demands/constants';
 import { createEvent, createUserEvent } from '@/modules/events/server/service';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import { kdb, sql } from '@/server/db/kysely';
 import { parentLogger } from '@/server/helpers/logger';
 
-import { computeNetworkDistance } from './eligibility';
+import { computeNetworkDistance, resolveDemandAssignment } from './eligibility';
 import { buildDemandQuery, enrichDemandForAdmin, getDemandById, resolveNetworkInfo } from './helpers';
 import { mergeLegacyValues } from './legacy-values';
 import { sendUnrealizableDemandEmailIfNeeded } from './unrealizable-email';
@@ -55,8 +55,10 @@ export const listAdmin = async () => {
       join.on((eb) => eb('ebc.email', '=', sql<string>`lower(${eb.ref('demands.legacy_values')}->>'Mail')`))
     )
     .select('ebc.reason_code as email_blocked_reason')
+    // the communes are those of the nearest network: the extension when the demand is carried by its parent network
+    .leftJoin('zones_et_reseaux_en_construction as extension', 'extension.id_fcu', 'demands.extension_id')
     .select((eb) => {
-      const communes = eb.fn.coalesce('rdc.communes_insee', 'zrc.communes_insee');
+      const communes = eb.fn.coalesce('extension.communes_insee', 'rdc.communes_insee', 'zrc.communes_insee');
       return eb
         .case()
         .when(
@@ -128,7 +130,8 @@ export const validateDemand = async (demandId: string, adminUserId: string) => {
 };
 
 /**
- * Admin: changes the network assigned to a demand.
+ * Admin: changes the network assigned to a demand, given its nearest network (the one picked by the admin).
+ * An extension linked to a heat network is resolved to its parent network, see `resolveDemandAssignment`; the event keeps the nearest network.
  * Pass null for both to unassign the network (désaffectation).
  * Clears any pending assignment change request on success.
  */
@@ -140,10 +143,11 @@ export const changeDemandAssignment = async (
 ): Promise<{ distance: number | null }> => {
   const currentDemand = await kdb
     .selectFrom('demands')
-    .select(['network_id', 'network_type'])
+    .select(['network_id', 'network_type', 'extension_id'])
     .where('id', '=', demandId)
     .where('deleted_at', 'is', null)
     .executeTakeFirstOrThrow();
+  const currentNetwork = getNearestNetwork(currentDemand);
 
   const newInfo =
     networkIdFcu !== null && networkType !== null
@@ -151,15 +155,18 @@ export const changeDemandAssignment = async (
       : { network_name: null, network_sncu_id: null };
   const newDistance =
     networkIdFcu !== null && networkType !== null ? await computeNetworkDistance(demandId, networkIdFcu, networkType) : null;
+  const assignment =
+    networkIdFcu !== null && networkType !== null
+      ? await resolveDemandAssignment(networkIdFcu, networkType)
+      : { extension_id: null, network_id: networkIdFcu, network_type: networkType };
 
-  const oldInfo =
-    currentDemand.network_id !== null && currentDemand.network_type !== null
-      ? await resolveNetworkInfo(currentDemand.network_type, currentDemand.network_id)
-      : { network_name: null, network_sncu_id: null };
+  const oldInfo = currentNetwork
+    ? await resolveNetworkInfo(currentNetwork.type, currentNetwork.id)
+    : { network_name: null, network_sncu_id: null };
   let oldDistance: number | null = null;
-  if (currentDemand.network_id !== null && currentDemand.network_type !== null) {
+  if (currentNetwork) {
     try {
-      oldDistance = await computeNetworkDistance(demandId, currentDemand.network_id, currentDemand.network_type);
+      oldDistance = await computeNetworkDistance(demandId, currentNetwork.id, currentNetwork.type);
     } catch {
       oldDistance = null;
     }
@@ -168,13 +175,12 @@ export const changeDemandAssignment = async (
   await kdb
     .updateTable('demands')
     .set({
+      ...assignment,
       legacy_values: mergeLegacyValues({
         'Distance au réseau': newDistance,
         'Identifiant réseau': newInfo.network_sncu_id,
         'Nom réseau': newInfo.network_name,
       }),
-      network_id: networkIdFcu,
-      network_type: networkType,
       pending_assignment_change: null,
       updated_at: new Date(),
     })
@@ -196,10 +202,10 @@ export const changeDemandAssignment = async (
       },
       old: {
         distance: oldDistance,
-        network_id: currentDemand.network_id,
+        network_id: currentNetwork?.id ?? null,
         network_name: oldInfo.network_name,
         network_sncu_id: oldInfo.network_sncu_id,
-        network_type: currentDemand.network_type,
+        network_type: currentNetwork?.type ?? null,
       },
     },
     type: 'demand_assignment_changed',

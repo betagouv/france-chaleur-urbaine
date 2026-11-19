@@ -1,5 +1,6 @@
 import type { ExpressionBuilder } from 'kysely';
 
+import { createEvents } from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
 import type { DB, ZoneDeDeveloppementPrioritaire } from '@/server/db/kysely/database';
 import { parentLogger } from '@/server/helpers/logger';
@@ -9,7 +10,7 @@ const logger = parentLogger.child({ module: 'reseaux/linked-fields-sync' });
 /** Correlated subquery reading a field of the parent RC of the current construction row. */
 const parentReseauDeChaleurField = (
   eb: ExpressionBuilder<DB, 'zones_et_reseaux_en_construction'>,
-  column: 'Identifiant reseau' | 'Gestionnaire' | 'MO' | 'nom_reseau'
+  column: 'Identifiant reseau' | 'Gestionnaire' | 'MO' | 'nom_reseau' | 'organization_id'
 ) =>
   eb
     .selectFrom('reseaux_de_chaleur')
@@ -18,8 +19,9 @@ const parentReseauDeChaleurField = (
 
 /**
  * Keeps the redundant link-derived network fields consistent:
- * - extensions (linked to a parent RC): mirror the parent's SNCU, `nom_reseau`, `Gestionnaire`
- *   and `MO` (strict copies — the parent RC is the single source, edits happen on the parent);
+ * - extensions (linked to a parent RC): mirror the parent's SNCU, `nom_reseau`, `Gestionnaire`,
+ *   `MO` and organization (strict copies — the parent RC is the single source, edits happen on the parent),
+ *   and hand over to the parent what the same team handles (see {@link consolidateExtensionsIntoParents});
  * - PDP: resolve legacy SNCU-only links into `reseau_de_chaleur_ids`, mirror the SNCU of a
  *   single linked RC, and fill empty `Gestionnaire`/`MO` when the linked value is unambiguous
  *   (never overwrites a non-empty value — ambiguities are surfaced by the data diagnostic).
@@ -41,6 +43,7 @@ export const syncLinkedNetworkFields = async () => {
       gestionnaire: parentReseauDeChaleurField(eb, 'Gestionnaire'),
       MO: parentReseauDeChaleurField(eb, 'MO'),
       nom_reseau: parentReseauDeChaleurField(eb, 'nom_reseau'),
+      organization_id: parentReseauDeChaleurField(eb, 'organization_id'),
     }))
     .where('reseau_de_chaleur_id', 'is not', null)
     .where((eb) =>
@@ -48,6 +51,7 @@ export const syncLinkedNetworkFields = async () => {
         eb(eb.ref('gestionnaire'), 'is distinct from', parentReseauDeChaleurField(eb, 'Gestionnaire')),
         eb(eb.ref('MO'), 'is distinct from', parentReseauDeChaleurField(eb, 'MO')),
         eb(eb.ref('nom_reseau'), 'is distinct from', parentReseauDeChaleurField(eb, 'nom_reseau')),
+        eb(eb.ref('organization_id'), 'is distinct from', parentReseauDeChaleurField(eb, 'organization_id')),
       ])
     )
     .executeTakeFirst();
@@ -133,7 +137,10 @@ export const syncLinkedNetworkFields = async () => {
     )
   );
 
+  const consolidation = await consolidateExtensionsIntoParents();
+
   const stats = {
+    ...consolidation,
     extensionsOperatorUpdated: Number(extensionsResult?.numUpdatedRows ?? 0),
     extensionsSncuUpdated: Number(sncuResult?.numUpdatedRows ?? 0),
     pdpFilled: pdpUpdates.length,
@@ -143,6 +150,189 @@ export const syncLinkedNetworkFields = async () => {
   logger.info('synchronized linked network fields', stats);
   return stats;
 };
+
+/**
+ * An extension linked to a heat network is handled by the team of its parent network, which therefore carries everything
+ * that team works with: the demands (the extension stays their nearest network, in `extension_id`), the network permissions,
+ * the `demand` reminders and the notes. Demands follow the link when it changes and go back to the extension when it is removed.
+ */
+const consolidateExtensionsIntoParents = async () => {
+  const attachedDemands = await kdb
+    .updateTable('demands')
+    .from('zones_et_reseaux_en_construction as extension')
+    .set((eb) => ({
+      extension_id: eb.ref('demands.network_id'),
+      network_id: eb.ref('extension.reseau_de_chaleur_id'),
+      network_type: 'reseau_de_chaleur',
+    }))
+    .where('demands.network_type', '=', 'reseau_en_construction')
+    .whereRef('demands.network_id', '=', 'extension.id_fcu')
+    .where('extension.reseau_de_chaleur_id', 'is not', null)
+    .executeTakeFirst();
+
+  const relinkedDemands = await kdb
+    .updateTable('demands')
+    .from('zones_et_reseaux_en_construction as extension')
+    .set((eb) => ({ network_id: eb.ref('extension.reseau_de_chaleur_id') }))
+    .whereRef('demands.extension_id', '=', 'extension.id_fcu')
+    .where('extension.reseau_de_chaleur_id', 'is not', null)
+    .where((eb) => eb('demands.network_id', 'is distinct from', eb.ref('extension.reseau_de_chaleur_id')))
+    .executeTakeFirst();
+
+  const detachedDemands = await kdb
+    .updateTable('demands')
+    .from('zones_et_reseaux_en_construction as extension')
+    .set((eb) => ({
+      extension_id: null,
+      network_id: eb.ref('demands.extension_id'),
+      network_type: 'reseau_en_construction',
+    }))
+    .whereRef('demands.extension_id', '=', 'extension.id_fcu')
+    .where('extension.reseau_de_chaleur_id', 'is', null)
+    .executeTakeFirst();
+
+  const movedReminders = await kdb
+    .updateTable('network_reminders')
+    .from('zones_et_reseaux_en_construction as extension')
+    .set((eb) => ({
+      network_id: eb.ref('extension.reseau_de_chaleur_id').$notNull(),
+      network_type: 'reseau_de_chaleur',
+    }))
+    .where('network_reminders.network_type', '=', 'reseau_en_construction')
+    .where('network_reminders.type', '=', 'demand')
+    .whereRef('network_reminders.network_id', '=', 'extension.id_fcu')
+    .where('extension.reseau_de_chaleur_id', 'is not', null)
+    .executeTakeFirst();
+
+  const [movedPermissions, movedNotes] = await Promise.all([moveExtensionPermissionsToParents(), moveExtensionNotesToParents()]);
+
+  return {
+    extensionsDemandsAttached: Number(attachedDemands?.numUpdatedRows ?? 0) + Number(relinkedDemands?.numUpdatedRows ?? 0),
+    extensionsDemandsDetached: Number(detachedDemands?.numUpdatedRows ?? 0),
+    extensionsNotesMoved: movedNotes,
+    extensionsPermissionsMoved: movedPermissions,
+    extensionsRemindersMoved: Number(movedReminders?.numUpdatedRows ?? 0),
+  };
+};
+
+/**
+ * Replaces every permission on a linked extension by a permission on its parent network (kept once when the account already
+ * holds it), traced by a system `user_permissions_updated` event per account.
+ */
+const moveExtensionPermissionsToParents = async () => {
+  const extensionPermissions = await kdb
+    .selectFrom('user_permissions as permission')
+    .innerJoin('zones_et_reseaux_en_construction as extension', (join) =>
+      join.on((eb) => eb('permission.resource_id', '=', eb.cast<string>('extension.id_fcu', 'text')))
+    )
+    .innerJoin('users as holder', 'holder.id', 'permission.user_id')
+    .select(['permission.id', 'permission.user_id', 'permission.resource_id', 'extension.reseau_de_chaleur_id', 'holder.email'])
+    .where('permission.type', '=', 'reseau_en_construction')
+    .where('extension.reseau_de_chaleur_id', 'is not', null)
+    .$narrowType<{ reseau_de_chaleur_id: number }>()
+    .execute();
+  if (extensionPermissions.length === 0) {
+    return 0;
+  }
+
+  const addedPermissions = await kdb.transaction().execute(async (trx) => {
+    const added = await trx
+      .insertInto('user_permissions')
+      .values(
+        extensionPermissions.map((permission) => ({
+          resource_id: String(permission.reseau_de_chaleur_id),
+          type: 'reseau_de_chaleur',
+          user_id: permission.user_id,
+        }))
+      )
+      .onConflict((conflict) => conflict.columns(['user_id', 'type', 'resource_id']).doNothing())
+      .returning(['user_id', 'type', 'resource_id'])
+      .execute();
+    await trx
+      .deleteFrom('user_permissions')
+      .where(
+        'id',
+        'in',
+        extensionPermissions.map((permission) => permission.id)
+      )
+      .execute();
+    return added;
+  });
+
+  await createEvents(
+    [...new Set(extensionPermissions.map((permission) => permission.user_id))].map((userId) => {
+      const removed = extensionPermissions.filter((permission) => permission.user_id === userId);
+      return {
+        context_id: userId,
+        context_type: 'user',
+        data: {
+          added: addedPermissions
+            .filter((permission) => permission.user_id === userId)
+            .map((permission) => ({ resource_id: permission.resource_id, type: permission.type })),
+          removed: removed.map((permission) => ({ resource_id: permission.resource_id, type: 'reseau_en_construction' })),
+          user_email: removed[0].email,
+        },
+        type: 'user_permissions_updated' as const,
+      };
+    })
+  );
+  return extensionPermissions.length;
+};
+
+/** Characters trimmed around a note before comparing it (Postgres `btrim` only removes spaces by default). */
+const NOTE_PADDING = ' \n\r\t';
+
+/**
+ * Appends the notes of the linked extensions to those of their parent network, then clears them on the extensions.
+ * The same team follows both, so the same note was often entered on each: a note the parent already holds is not repeated.
+ */
+const moveExtensionNotesToParents = async () =>
+  kdb.transaction().execute(async (trx) => {
+    const movedNotes = await trx
+      .updateTable('reseaux_de_chaleur')
+      .from(
+        trx
+          .selectFrom('zones_et_reseaux_en_construction as extension')
+          .innerJoin('reseaux_de_chaleur as parent', 'parent.id_fcu', 'extension.reseau_de_chaleur_id')
+          .select((eb) => [
+            'extension.reseau_de_chaleur_id',
+            eb.fn
+              .agg<string>('string_agg', [eb.fn<string>('btrim', ['extension.notes', eb.val(NOTE_PADDING)]), eb.val('\n\n')])
+              .distinct()
+              .as('notes'),
+          ])
+          .where('extension.notes', 'is not', null)
+          .where((eb) => eb(eb.fn<string>('btrim', ['extension.notes', eb.val(NOTE_PADDING)]), '!=', ''))
+          .where((eb) =>
+            eb(
+              eb.fn<number>('strpos', [
+                eb.fn.coalesce('parent.notes', eb.val('')),
+                eb.fn<string>('btrim', ['extension.notes', eb.val(NOTE_PADDING)]),
+              ]),
+              '=',
+              0
+            )
+          )
+          .groupBy('extension.reseau_de_chaleur_id')
+          .as('moved')
+      )
+      .set((eb) => ({
+        notes: eb.fn<string>('concat_ws', [
+          eb.val('\n\n'),
+          eb.fn('nullif', [eb.ref('reseaux_de_chaleur.notes'), eb.val('')]),
+          eb.ref('moved.notes'),
+        ]),
+      }))
+      .whereRef('reseaux_de_chaleur.id_fcu', '=', 'moved.reseau_de_chaleur_id')
+      .executeTakeFirst();
+    await trx
+      .updateTable('zones_et_reseaux_en_construction')
+      .set({ notes: null })
+      .where('reseau_de_chaleur_id', 'is not', null)
+      .where('notes', 'is not', null)
+      .execute();
+    return Number(movedNotes?.numUpdatedRows ?? 0);
+  });
 
 type PdpExpressionBuilder = ExpressionBuilder<DB & { pdp: ZoneDeDeveloppementPrioritaire }, 'pdp'>;
 

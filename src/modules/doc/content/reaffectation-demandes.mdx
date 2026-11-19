@@ -27,10 +27,12 @@ Qui : les quatre rôles territoriaux (gestionnaire, collectivité, ALEC, CCRT), 
 - un **réseau cible** (réseau de chaleur ou réseau en construction), ou
 - une **désaffectation** (retirer le réseau) — il n'est pas possible de proposer une ville.
 
+Quand le réseau cible est une **extension liée à un réseau de chaleur**, la demande est portée par ce réseau de chaleur, dont l'équipe la traite, et l'extension reste affichée comme son réseau le plus proche (voir [Gestion des réseaux](/admin/doc/gestion-reseaux)).
+
 La proposition enregistre l'auteur, un commentaire, et la distance de l'adresse au réseau cible (calculée au moment de la proposition). Garde-fous :
 
 - **Une seule réaffectation en attente** par demande : impossible d'en poser une seconde tant que la première n'est pas arbitrée.
-- Une proposition identique à l'affectation actuelle est refusée.
+- Une proposition identique à l'affectation actuelle (le réseau le plus proche affiché sur la demande) est refusée.
 - Seul **l'auteur** de la proposition peut l'annuler ([événement « Annulation de demande de réaffectation »](/admin/events?types=demand_assignment_change_request_cancelled)).
 
 Tant que la proposition est en attente, **la demande reste chez son responsable actuel** — rien ne change dans les périmètres.
@@ -45,6 +47,10 @@ Dans [Gestion des demandes](/admin/demandes), le filtre « réaffectations en at
 Aucun email n'est envoyé à l'auteur dans les deux cas — le résultat se constate dans son espace.
 
 L'admin peut aussi **réaffecter directement** n'importe quelle demande à tout moment, sans proposition préalable ; toute réaffectation en attente est alors effacée.
+
+## Réaffectation automatique à la suppression d'un réseau
+
+Quand un réseau est supprimé dans [Gestion des réseaux](/admin/reseaux), ses demandes sont réaffectées sans intervention au moment où la suppression devient effective&nbsp;: éligibilité recalculée, puis affectation au réseau le plus proche ou retour à «&nbsp;sans réseau affecté&nbsp;». Le détail est décrit dans [Gestion des réseaux](/admin/doc/gestion-reseaux).
 
 ## Effet de bord à connaître
 

@@ -239,12 +239,13 @@ export const resolveNetworkInfo = async (
       .executeTakeFirst();
     return { network_name: reseau?.nom_reseau ?? null, network_sncu_id: reseau?.sncu_id ?? null };
   }
+  // an extension carries the SNCU of its parent network (copied by the linked fields sync)
   const reseau = await kdb
     .selectFrom('zones_et_reseaux_en_construction')
-    .select('nom_reseau')
+    .select(['nom_reseau', 'Identifiant reseau'])
     .where('id_fcu', '=', networkId)
     .executeTakeFirst();
-  return { network_name: reseau?.nom_reseau ?? null, network_sncu_id: null };
+  return { network_name: reseau?.nom_reseau ?? null, network_sncu_id: reseau?.['Identifiant reseau'] ?? null };
 };
 
 /**

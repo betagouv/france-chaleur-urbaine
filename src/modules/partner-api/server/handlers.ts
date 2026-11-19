@@ -27,6 +27,7 @@ export const baseDemandQuery = () =>
       'demands.updated_at',
       'demands.network_id',
       'demands.network_type',
+      'demands.extension_id',
       'demands.comment_gestionnaire',
       'demands.legacy_values',
       'demands.commune_code',

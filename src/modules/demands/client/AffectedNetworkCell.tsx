@@ -9,6 +9,7 @@ import { notify, toastErrors } from '@/modules/notification';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import trpc from '@/modules/trpc/client';
 
+import { getNearestNetwork } from '../constants';
 import type { PendingAssignmentChange } from '../types';
 import AffectedNetwork from './AffectedNetwork';
 import NetworkSelectorDialog, { type NetworkSelection } from './NetworkSelectorDialog';
@@ -17,6 +18,7 @@ type BaseDemand = {
   id: string;
   network_id: number | null;
   network_type: NetworkType | null;
+  extension_id: number | null;
   network_name: string | null;
   network_sncu_id: string | null;
   ville_differente?: boolean;
@@ -45,7 +47,7 @@ type AffectedNetworkCellProps<T extends BaseDemand> = (AdminProps | NonAdminProp
 
 /**
  * Cellule affichage+action pour le réseau affecté à une demande.
- * - lecture via `AffectedNetwork`
+ * - lecture via `AffectedNetwork` : le réseau le plus proche, donc l'extension quand la demande est portée par son réseau parent
  * - bouton (toujours visible) pour réaffecter (admin) ou demander une réaffectation (non-admin)
  * - bloc "en attente de validation" si `pending_assignment_change` est présent, avec les actions admin
  *   (valider, rejeter) ou auteur (annuler) selon le contexte
@@ -112,6 +114,7 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
     })();
   };
 
+  const nearestNetwork = getNearestNetwork(demand);
   const villeDifferente = !!props.isAdmin && !!demand.ville_differente;
   const pending = demand.pending_assignment_change;
   const pendingIsUnassign = !!pending && pending.network_id === null;
@@ -130,9 +133,10 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
         <div className="flex-1 min-w-0 pt-1.5">
           <AffectedNetwork
             networkName={demand.network_name}
-            networkType={demand.network_type}
+            networkType={nearestNetwork?.type ?? null}
             networkSncuId={demand.network_sncu_id}
             distance={demand['Distance au réseau']}
+            isExtension={demand.extension_id !== null}
           />
           {villeDifferente && <FCUBadge type="warning_ville_differente" size="xs" className="mt-1" />}
         </div>
@@ -206,8 +210,8 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
         open={selectorOpen}
         onOpenChange={setSelectorOpen}
         demandId={demand.id}
-        currentNetworkId={demand.network_id}
-        currentNetworkType={demand.network_type}
+        currentNetworkId={nearestNetwork?.id ?? null}
+        currentNetworkType={nearestNetwork?.type ?? null}
         isAdmin={!!props.isAdmin}
         onConfirm={handleSelectorConfirm}
       />

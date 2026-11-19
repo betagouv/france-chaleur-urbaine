@@ -59,16 +59,28 @@ export const getPermissionsMapData = async (permissions: Permission[]): Promise<
           .then((rows) => rows.map((r) => r.id_fcu))
       : Promise.resolve([] as number[]);
 
-  const [territories, boundsData, pdpIds] = await Promise.all([
+  // a permission on a heat network covers its extensions: no permission of their own, but part of the perimeter
+  const extensionsPromise =
+    existingIds.length > 0
+      ? kdb
+          .selectFrom('zones_et_reseaux_en_construction')
+          .select('id_fcu')
+          .where('reseau_de_chaleur_id', 'in', existingIds)
+          .execute()
+          .then((rows) => rows.map((row) => row.id_fcu))
+      : Promise.resolve([]);
+
+  const [territories, boundsData, pdpIds, extensionIds] = await Promise.all([
     getTerritoryGeometries(permissions),
     getBoundsData(permissions),
     pdpPromise,
+    extensionsPromise,
   ]);
 
   return {
     bounds: boundsData.bounds,
     highlightPdpIdsFcu: pdpIds,
-    highlightReseauxEnConstruction: constructionIds,
+    highlightReseauxEnConstruction: [...constructionIds, ...extensionIds],
     highlightReseauxExistants: existingIds,
     perPermissionBounds: boundsData.perPermissionBounds,
     territories,

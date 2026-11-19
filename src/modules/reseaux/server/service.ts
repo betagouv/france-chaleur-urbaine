@@ -3,6 +3,7 @@ import type { ExpressionBuilder, RawBuilder } from 'kysely';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
 import { businessRules } from '@/modules/app/business-rules';
+import { reassignDemandsOfDeletedNetworks } from '@/modules/demands/server/eligibility';
 import { createUserEvent } from '@/modules/events/server/service';
 import { parseBbox } from '@/modules/geo/client/helpers';
 import { createGeometryExpression, processGeometry } from '@/modules/geo/server/helpers';
@@ -617,6 +618,7 @@ export const deleteNetwork = async (
   if (existingCreation) {
     await kdb.deleteFrom(dbName).where('id_fcu', '=', id_fcu).execute();
     logger.info(`Le réseau ${id_fcu} a été supprimé car pas encore synchronisé`);
+    await reassignDemandsOfDeletedNetworks();
     return;
   }
 
@@ -908,6 +910,12 @@ const processTableGeometryUpdates = async (config: TableConfig, idFcu?: number) 
       .returning('id_fcu')
       .execute(),
   ]);
+
+  // the demands of a deleted network can no longer be processed by anyone: they are reassigned from their eligibility
+  if (deleted.length > 0) {
+    const reassignedDemands = await reassignDemandsOfDeletedNetworks();
+    logger.info(`${reassignedDemands} demande(s) réaffectée(s) après suppression de ${deleted.length} réseau(x)`);
+  }
 
   // Met à jour les labels pour les entités créées et modifiées
   const allUpdatedIds = [...created, ...updated];
@@ -1210,7 +1218,15 @@ export const searchNetworkOperators = async (field: 'gestionnaire' | 'maitreOuvr
   return rows.map((r) => r.value).filter(isDefined);
 };
 
-export const searchNetworks = async (search: string): Promise<NetworkSearchResult[]> => {
+type SearchNetworksOptions = {
+  /** Leave out the extensions linked to a heat network: they hold no permission, their parent network does. */
+  excludeLinkedExtensions?: boolean;
+};
+
+export const searchNetworks = async (
+  search: string,
+  { excludeLinkedExtensions = false }: SearchNetworksOptions = {}
+): Promise<NetworkSearchResult[]> => {
   const pattern = `%${search}%`;
 
   const [existants, enConstruction] = await Promise.all([
@@ -1242,6 +1258,7 @@ export const searchNetworks = async (search: string): Promise<NetworkSearchResul
           eb(sql<string>`"id_fcu"::TEXT`, 'like', pattern),
         ])
       )
+      .$if(excludeLinkedExtensions, (query) => query.where('reseau_de_chaleur_id', 'is', null))
       .orderBy('nom_reseau')
       .limit(10)
       .execute(),

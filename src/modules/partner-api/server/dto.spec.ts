@@ -38,6 +38,7 @@ const baseRow: DemandRow = {
   commune_code: '93066',
   created_at: new Date('2026-06-01T09:12:03Z'),
   departement_code: '93',
+  extension_id: null,
   id: '11111111-1111-4111-8111-111111111111',
   legacy_values: legacy,
   network_gestionnaire: 'Coriance',
@@ -88,6 +89,17 @@ describe('toDemandDTO', () => {
         type: 'reseau_de_chaleur',
       },
       statut: DEMANDE_STATUS.RECONTACTED,
+    });
+  });
+
+  it('exposes the extension as the network of a demand carried by its parent network', () => {
+    expect(toDemandDTO({ ...baseRow, extension_id: 56 }).reseau).toStrictEqual({
+      gestionnaire: 'Coriance',
+      id_fcu: 56,
+      identifiant_sncu: '7501C',
+      maitre_ouvrage: 'Ville de Saint-Denis',
+      nom: 'Réseau de Saint-Denis',
+      type: 'reseau_en_construction',
     });
   });
 

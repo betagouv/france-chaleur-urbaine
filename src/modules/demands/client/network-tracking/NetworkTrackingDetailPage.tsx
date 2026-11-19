@@ -59,7 +59,11 @@ export default function NetworkTrackingDetailPage() {
                 <NetworkTrackingStateBadge state={tracking.summary.state} size="md" />
               </div>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-                <NetworkTypeBadges networkType={tracking.summary.networkType} sncuId={tracking.summary.sncuId} />
+                <NetworkTypeBadges
+                  networkType={tracking.summary.networkType}
+                  sncuId={tracking.summary.sncuId}
+                  extensionsCount={tracking.summary.extensions.length}
+                />
                 {isDefined(tracking.summary.powerMW) && <span>{formatMW(tracking.summary.powerMW)}</span>}
                 {tracking.summary.total > 0 && (
                   <Link href={buildAdminDemandsUrl(buildDemandFilters(tracking.summary.networkId, tracking.summary.networkType, false))}>

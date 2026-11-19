@@ -393,6 +393,8 @@ export interface Demands {
   departement_code: string | null;
   epci_code: string | null;
   ept_code: string | null;
+  /** Nearest network when it is an extension linked to a heat network; `network_id` is then its parent network. */
+  extension_id: number | null;
   id: Generated<string>;
   origin_host: string | null;
   origin_page: string | null;

@@ -31,6 +31,7 @@ pnpm cli openapi:generate                  # CLI command → writes public/opena
 
 `schema.ts:zDemande` drives all three surfaces:
 - **DTO returned**: `DemandDTO = z.infer<typeof zDemande>` → `toDemandDTO` won't compile if a field is missing.
+- **`reseau` is the nearest network**: a demand matching an extension linked to a heat network is carried by that parent network in base (`demands.extension_id` keeps the extension), but the contract still exposes the extension (`id_fcu` = extension id, `type` = `reseau_en_construction`), with the name / SNCU / gestionnaire / MO of the parent.
 - **OpenAPI spec**: `z.toJSONSchema(zDemande)` (`server/openapi.ts`). Regenerate with `pnpm cli openapi:generate`;
   `openapi.spec.ts` fails if the committed YAML is stale. **Never hand-edit `public/openapi-schema.yaml`.**
 - **Public doc page** `/api-gestionnaires`: its field table is computed from `z.toJSONSchema(zDemande)`.

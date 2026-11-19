@@ -1,7 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { kdb } from '@/server/db/kysely';
-import { cleanDatabase, seedReseauDeChaleur, seedZoneDeDeveloppementPrioritaire, seedZoneEtReseauEnConstruction } from '@/tests/fixtures';
+import {
+  cleanDatabase,
+  seedReseauDeChaleur,
+  seedTableUser,
+  seedZoneDeDeveloppementPrioritaire,
+  seedZoneEtReseauEnConstruction,
+} from '@/tests/fixtures';
+import { uuid } from '@/tests/helpers';
+import type { TestCase } from '@/tests/trpc-helpers';
 
 import { syncLinkedNetworkFields } from './linked-fields-sync';
 
@@ -147,5 +155,199 @@ describe('syncLinkedNetworkFields()', () => {
     await syncLinkedNetworkFields();
 
     expect(await getPdp(302)).toStrictEqual({ Gestionnaire: 'Valeur saisie', MO: 'Commune de Nantes' });
+  });
+
+  describe('extension liée : ce que traite la même équipe est porté par le RC parent', () => {
+    const seedExtension = (idFcu: number, parentIdFcu: number | null, notes: string | null = null) =>
+      seedZoneEtReseauEnConstruction({ id_fcu: idFcu, notes, ouvert_aux_raccordements: true, reseau_de_chaleur_id: parentIdFcu });
+
+    const seedDemand = (assignment: {
+      extension_id: number | null;
+      network_id: number;
+      network_type: 'reseau_de_chaleur' | 'reseau_en_construction';
+    }) =>
+      kdb
+        .insertInto('demands')
+        .values({ ...assignment, legacy_values: JSON.stringify({}) })
+        .returning('id')
+        .executeTakeFirstOrThrow();
+
+    const getAssignment = (demandId: string) =>
+      kdb.selectFrom('demands').select(['network_id', 'network_type', 'extension_id']).where('id', '=', demandId).executeTakeFirstOrThrow();
+
+    it("rattache au RC parent les demandes d'une extension liée, qui reste leur réseau le plus proche", async () => {
+      await Promise.all([seedExtension(200, 100), seedExtension(203, null)]);
+      const [extensionDemand, standaloneDemand] = await Promise.all([
+        seedDemand({ extension_id: null, network_id: 200, network_type: 'reseau_en_construction' }),
+        seedDemand({ extension_id: null, network_id: 203, network_type: 'reseau_en_construction' }),
+      ]);
+
+      await syncLinkedNetworkFields();
+
+      expect(await getAssignment(extensionDemand.id)).toStrictEqual({
+        extension_id: 200,
+        network_id: 100,
+        network_type: 'reseau_de_chaleur',
+      });
+      expect(await getAssignment(standaloneDemand.id)).toStrictEqual({
+        extension_id: null,
+        network_id: 203,
+        network_type: 'reseau_en_construction',
+      });
+    });
+
+    const linkChangeCases: TestCase<number | null, Awaited<ReturnType<typeof getAssignment>>>[] = [
+      {
+        expectedOutput: { extension_id: 200, network_id: 100, network_type: 'reseau_de_chaleur' },
+        input: 100,
+        label: 'lien inchangé → la demande reste sur le RC parent',
+      },
+      {
+        expectedOutput: { extension_id: 200, network_id: 101, network_type: 'reseau_de_chaleur' },
+        input: 101,
+        label: 'extension liée à un autre RC → la demande suit',
+      },
+      {
+        expectedOutput: { extension_id: null, network_id: 200, network_type: 'reseau_en_construction' },
+        input: null,
+        label: "lien retiré → la demande revient sur l'extension",
+      },
+    ];
+    it.each(linkChangeCases)('$label', async ({ input: parentIdFcu, expectedOutput }) => {
+      await seedExtension(200, parentIdFcu);
+      const demand = await seedDemand({ extension_id: 200, network_id: 100, network_type: 'reseau_de_chaleur' });
+
+      await syncLinkedNetworkFields();
+
+      expect(await getAssignment(demand.id)).toStrictEqual(expectedOutput);
+    });
+
+    it("remplace les permissions sur l'extension par une permission sur le RC parent, tracée par compte", async () => {
+      const extensionOnlyUserId = uuid(1);
+      const bothUserId = uuid(2);
+      await Promise.all([
+        seedExtension(200, 100),
+        seedExtension(203, null),
+        seedTableUser([
+          { email: 'extension@test.local', id: extensionOnlyUserId, role: 'gestionnaire' },
+          { email: 'both@test.local', id: bothUserId, role: 'gestionnaire' },
+        ]),
+      ]);
+      await kdb
+        .insertInto('user_permissions')
+        .values([
+          { resource_id: '200', type: 'reseau_en_construction', user_id: extensionOnlyUserId },
+          { resource_id: '203', type: 'reseau_en_construction', user_id: extensionOnlyUserId },
+          { resource_id: '200', type: 'reseau_en_construction', user_id: bothUserId },
+          { resource_id: '100', type: 'reseau_de_chaleur', user_id: bothUserId },
+        ])
+        .execute();
+
+      await syncLinkedNetworkFields();
+
+      const permissions = await kdb
+        .selectFrom('user_permissions')
+        .select(['user_id', 'type', 'resource_id'])
+        .orderBy('user_id')
+        .orderBy('resource_id')
+        .execute();
+      expect(permissions).toStrictEqual([
+        { resource_id: '100', type: 'reseau_de_chaleur', user_id: extensionOnlyUserId },
+        { resource_id: '203', type: 'reseau_en_construction', user_id: extensionOnlyUserId },
+        { resource_id: '100', type: 'reseau_de_chaleur', user_id: bothUserId },
+      ]);
+
+      const events = await kdb
+        .selectFrom('events')
+        .select(['author_id', 'context_id', 'context_type', 'data', 'type'])
+        .orderBy('context_id')
+        .execute();
+      expect(events).toStrictEqual([
+        {
+          author_id: null,
+          context_id: extensionOnlyUserId,
+          context_type: 'user',
+          data: {
+            added: [{ resource_id: '100', type: 'reseau_de_chaleur' }],
+            removed: [{ resource_id: '200', type: 'reseau_en_construction' }],
+            user_email: 'extension@test.local',
+          },
+          type: 'user_permissions_updated',
+        },
+        {
+          author_id: null,
+          context_id: bothUserId,
+          context_type: 'user',
+          data: { added: [], removed: [{ resource_id: '200', type: 'reseau_en_construction' }], user_email: 'both@test.local' },
+          type: 'user_permissions_updated',
+        },
+      ]);
+    });
+
+    it("déplace sur le RC parent les rappels de demandes de l'extension, pas ses rappels de tracé", async () => {
+      await seedExtension(200, 100);
+      await kdb
+        .insertInto('network_reminders')
+        .values([
+          { network_id: 200, network_type: 'reseau_en_construction', note: 'demandes', type: 'demand' },
+          { network_id: 200, network_type: 'reseau_en_construction', note: 'tracé', type: 'trace' },
+        ])
+        .execute();
+
+      await syncLinkedNetworkFields();
+
+      const reminders = await kdb.selectFrom('network_reminders').select(['network_id', 'network_type', 'note']).orderBy('note').execute();
+      expect(reminders).toStrictEqual([
+        { network_id: 100, network_type: 'reseau_de_chaleur', note: 'demandes' },
+        { network_id: 200, network_type: 'reseau_en_construction', note: 'tracé' },
+      ]);
+    });
+
+    it("ajoute les notes de l'extension à celles du RC parent puis les vide sur l'extension, sans répéter une note déjà présente", async () => {
+      await kdb.updateTable('reseaux_de_chaleur').set({ notes: 'Note du réseau' }).where('id_fcu', '=', 100).execute();
+      await Promise.all([
+        seedExtension(200, 100, "Note de l'extension"),
+        // same note as its parent network: entered on both by the team following them
+        seedExtension(202, 100, ' Note du réseau\n'),
+        // same note on two extensions of a network without notes
+        seedExtension(201, 101, 'Seule note'),
+        seedExtension(203, 101, 'Seule note'),
+      ]);
+
+      await syncLinkedNetworkFields();
+      await syncLinkedNetworkFields();
+
+      const [networks, extensions] = await Promise.all([
+        kdb.selectFrom('reseaux_de_chaleur').select(['id_fcu', 'notes']).orderBy('id_fcu').execute(),
+        kdb.selectFrom('zones_et_reseaux_en_construction').select(['id_fcu', 'notes']).orderBy('id_fcu').execute(),
+      ]);
+      expect(networks).toStrictEqual([
+        { id_fcu: 100, notes: "Note du réseau\n\nNote de l'extension" },
+        { id_fcu: 101, notes: 'Seule note' },
+      ]);
+      expect(extensions).toStrictEqual([
+        { id_fcu: 200, notes: null },
+        { id_fcu: 201, notes: null },
+        { id_fcu: 202, notes: null },
+        { id_fcu: 203, notes: null },
+      ]);
+    });
+
+    it("recopie l'organisation du RC parent sur l'extension", async () => {
+      const organizationId = uuid(10);
+      await kdb.deleteFrom('organizations').execute(); // not covered by cleanDatabase
+      await kdb.insertInto('organizations').values({ id: organizationId, name: 'Opérateur' }).execute();
+      await kdb.updateTable('reseaux_de_chaleur').set({ organization_id: organizationId }).where('id_fcu', '=', 100).execute();
+      await seedExtension(200, 100);
+
+      await syncLinkedNetworkFields();
+
+      const extension = await kdb
+        .selectFrom('zones_et_reseaux_en_construction')
+        .select('organization_id')
+        .where('id_fcu', '=', 200)
+        .executeTakeFirstOrThrow();
+      expect(extension).toStrictEqual({ organization_id: organizationId });
+    });
   });
 });

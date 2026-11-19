@@ -159,13 +159,23 @@ const loadImpacts = async (table: MergeableNetworkTable, ids: number[]): Promise
     entity === 'reseau_de_froid'
       ? new Map<number, number>()
       : countBy(
-          kdb
-            .selectFrom('demands')
-            .select(['network_id', (eb) => eb.fn.countAll().as('count')])
-            .where('network_type', '=', entity)
-            .where('network_id', 'in', ids)
-            .groupBy('network_id')
-            .execute() as Promise<{ network_id: number; count: string | number | bigint }[]>
+          // the demands of a linked extension are carried by its parent network, the extension stays in `extension_id`
+          table === 'zones_et_reseaux_en_construction'
+            ? (kdb
+                .selectFrom('demands')
+                .select((eb) => [eb.fn.coalesce('extension_id', 'network_id').as('network_id'), eb.fn.countAll().as('count')])
+                .where((eb) =>
+                  eb.or([eb.and([eb('network_type', '=', entity), eb('network_id', 'in', ids)]), eb('extension_id', 'in', ids)])
+                )
+                .groupBy((eb) => eb.fn.coalesce('extension_id', 'network_id'))
+                .execute() as Promise<{ network_id: number; count: string | number | bigint }[]>)
+            : (kdb
+                .selectFrom('demands')
+                .select(['network_id', (eb) => eb.fn.countAll().as('count')])
+                .where('network_type', '=', entity)
+                .where('network_id', 'in', ids)
+                .groupBy('network_id')
+                .execute() as Promise<{ network_id: number; count: string | number | bigint }[]>)
         ),
     countBy(
       kdb
@@ -382,6 +392,14 @@ export const mergeNetworks = async (input: MergeNetworksInput, context: { userId
         })
         .where('network_type', '=', entity)
         .where('network_id', 'in', input.absorbedIds)
+        .execute();
+    }
+    if (input.table === 'zones_et_reseaux_en_construction') {
+      // before the deletion, which would clear the extension of the demands carried by a parent network
+      await trx
+        .updateTable('demands')
+        .set({ extension_id: kept.id_fcu, updated_at: new Date() })
+        .where('extension_id', 'in', input.absorbedIds)
         .execute();
     }
     for (const linkedTable of ['network_change_requests', 'network_files', 'network_reminders'] as const) {

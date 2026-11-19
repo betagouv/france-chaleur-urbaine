@@ -61,7 +61,9 @@ export const permissionsRouter = router({
     .input(z.object({ search: z.string().min(2).max(100) }))
     .query(({ input }) => searchCustomTerritories(input.search)),
 
-  searchNetworks: adminRoute.input(z.object({ search: z.string().min(2).max(100) })).query(({ input }) => searchNetworks(input.search)),
+  searchNetworks: adminRoute
+    .input(z.object({ search: z.string().min(2).max(100) }))
+    .query(({ input }) => searchNetworks(input.search, { excludeLinkedExtensions: true })),
 
   searchOrganizations: adminRoute
     .input(z.object({ search: z.string().min(2).max(100) }))

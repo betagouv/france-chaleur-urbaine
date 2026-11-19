@@ -98,4 +98,35 @@ describe('suppression de réseau → nettoyage des permissions', () => {
       ).rejects.toMatchObject(forbiddenError);
     });
   });
+
+  describe('route reseaux.getNetworkDemandsCounts', () => {
+    it('compte les demandes non supprimées affectées au réseau', async () => {
+      await kdb.deleteFrom('demands').execute();
+      await kdb
+        .insertInto('demands')
+        .values([
+          { legacy_values: JSON.stringify({}), network_id: Number(NETWORK_ID), network_type: 'reseau_de_chaleur' },
+          { deleted_at: new Date(), legacy_values: JSON.stringify({}), network_id: Number(NETWORK_ID), network_type: 'reseau_de_chaleur' },
+          { legacy_values: JSON.stringify({}), network_id: Number(OTHER_NETWORK_ID), network_type: 'reseau_de_chaleur' },
+        ])
+        .execute();
+      const caller = createTestCaller(testUsers.admin);
+
+      expect(await caller.reseaux.getNetworkDemandsCounts({ id: Number(NETWORK_ID), type: 'reseaux_de_chaleur' })).toStrictEqual({
+        assigned: 1,
+        keptOnParent: 0,
+      });
+      // cold networks carry no demand
+      expect(await caller.reseaux.getNetworkDemandsCounts({ id: Number(NETWORK_ID), type: 'reseaux_de_froid' })).toStrictEqual({
+        assigned: 0,
+        keptOnParent: 0,
+      });
+    });
+
+    it('refuse un utilisateur non admin', async () => {
+      await expect(
+        createTestCaller(testUsers.gestionnaire).reseaux.getNetworkDemandsCounts({ id: Number(NETWORK_ID), type: 'reseaux_de_chaleur' })
+      ).rejects.toMatchObject(forbiddenError);
+    });
+  });
 });

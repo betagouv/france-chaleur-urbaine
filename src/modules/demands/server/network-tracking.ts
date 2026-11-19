@@ -29,6 +29,7 @@ type NetworkRef = {
 
 /**
  * Admin: tracking indicators of every heat network (existing or under construction), with its accounts, reminders and notes.
+ * An extension linked to a heat network has no line of its own: its demands are carried by its parent network, see `resolveDemandAssignment`.
  */
 export const listNetworkTracking = async () => {
   const now = new Date();
@@ -80,6 +81,20 @@ export const getNetworkTracking = async (network: NetworkRef) => {
     summary: toNetworkTrackingSummary(summaryRow, now),
   };
 };
+
+/**
+ * Heat network tracked in place of an extension linked to it, `null` for any other network.
+ */
+export const getParentNetworkId = async (network: NetworkRef): Promise<number | null> =>
+  network.networkType === 'reseau_en_construction'
+    ? ((
+        await kdb
+          .selectFrom('zones_et_reseaux_en_construction')
+          .select('reseau_de_chaleur_id')
+          .where('id_fcu', '=', network.networkId)
+          .executeTakeFirst()
+      )?.reseau_de_chaleur_id ?? null)
+    : null;
 
 // --- Queries ---
 
@@ -238,12 +253,23 @@ const organizationQuery = (network: NetworkRef) =>
         .$narrowType<{ organization_id: string }>()
     );
 
+/** Extensions under construction of the heat network of the enclosing row (none for a network under construction). */
+const networkExtensionsJson = (parentId: Expression<number> | null) =>
+  jsonArrayFrom(
+    kdb
+      .selectFrom('zones_et_reseaux_en_construction as extension')
+      .select(['extension.id_fcu', 'extension.mise_en_service'])
+      .where((eb) => (parentId ? eb('extension.reseau_de_chaleur_id', '=', parentId) : eb.lit(false)))
+      .orderBy('extension.id_fcu')
+  );
+
 const networksQuery = () =>
   kdb
     .selectFrom('reseaux_de_chaleur')
     .select(['id_fcu', 'nom_reseau', 'Identifiant reseau', 'notes', 'puissance_totale_MW'])
     .select((eb) => [
       sql.lit<NetworkType>('reseau_de_chaleur').as('network_type'),
+      networkExtensionsJson(eb.ref('reseaux_de_chaleur.id_fcu')).as('extensions'),
       networkManagersJson(eb, 'reseaux_de_chaleur', 'reseau_de_chaleur').as('managers'),
       networkOrganizationJson(eb, 'reseaux_de_chaleur').as('organization'),
       reminderJsonAggSQL(eb, 'reseaux_de_chaleur', 'reseau_de_chaleur', 'demand').as('reminders'),
@@ -255,10 +281,12 @@ const networksQuery = () =>
         .select((eb) => [
           sql<number | null>`null`.as('puissance_totale_MW'), // networks under construction have no power yet
           sql.lit<NetworkType>('reseau_en_construction').as('network_type'),
+          networkExtensionsJson(null).as('extensions'),
           networkManagersJson(eb, 'zones_et_reseaux_en_construction', 'reseau_en_construction').as('managers'),
           networkOrganizationJson(eb, 'zones_et_reseaux_en_construction').as('organization'),
           reminderJsonAggSQL(eb, 'zones_et_reseaux_en_construction', 'reseau_en_construction', 'demand').as('reminders'),
         ])
+        .where('reseau_de_chaleur_id', 'is', null) // a linked extension is tracked with its parent network
     );
 
 const secondsBetween = (start: Expression<Date | null>, end: Expression<Date | null>) => sql<number>`extract(epoch from ${end} - ${start})`;
@@ -319,6 +347,7 @@ const networkSummariesQuery = (now: Date, network?: NetworkRef) => {
       'n.Identifiant reseau',
       'n.notes',
       'n.puissance_totale_MW',
+      'n.extensions',
       'n.managers',
       'n.organization',
       'n.reminders',
@@ -462,6 +491,7 @@ type NetworkSummaryRow = Awaited<ReturnType<ReturnType<typeof networkSummariesQu
 
 const toNetworkTrackingSummary = (row: NetworkSummaryRow, now: Date) => ({
   closed: row.closed,
+  extensions: row.extensions,
   inProgress: row.in_progress,
   lastManagerActionAt: row.last_action_at,
   managers: row.managers,

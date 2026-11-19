@@ -11,6 +11,7 @@ import {
   seedProEligibilityTestsAddress,
   seedReseauDeChaleur,
   seedTableUser,
+  seedZoneEtReseauEnConstruction,
 } from '@/tests/fixtures';
 import { uuid } from '@/tests/helpers';
 import { createTestCaller, forbiddenError, type TestCase, testUsers } from '@/tests/trpc-helpers';
@@ -118,6 +119,106 @@ describe('désaffectation / réaffectation flow', () => {
       await changeDemandAssignment(demand.id, null, null, adminId);
 
       expect(await getPending(demand.id)).toBeNull();
+    });
+  });
+
+  describe('extension liée à un réseau de chaleur', () => {
+    // the parent network needs a name: a reassignment request refuses a nameless target
+    const setupParentNetwork = () =>
+      seedReseauDeChaleur({
+        geom: createLineGeometry(PARIS.lon, PARIS.lat, 200),
+        has_trace: true,
+        id_fcu: 100,
+        nom_reseau: 'Réseau étendu',
+        ouvert_aux_raccordements: true,
+      });
+
+    const setupExtension = () =>
+      seedZoneEtReseauEnConstruction({
+        geom: createLineGeometry(PARIS.lon, PARIS.lat, 150),
+        'Identifiant reseau': '7501C',
+        id_fcu: 200,
+        nom_reseau: 'Réseau étendu',
+        ouvert_aux_raccordements: true,
+        reseau_de_chaleur_id: 100,
+      });
+
+    const getAssignment = (demandId: string) =>
+      kdb
+        .selectFrom('demands')
+        .select(['network_id', 'network_type', 'extension_id', 'legacy_values'])
+        .where('id', '=', demandId)
+        .executeTakeFirstOrThrow();
+
+    it("admin : réaffecter vers l'extension fait porter la demande par le réseau parent, l'événement garde l'extension", async () => {
+      await setupParentNetwork();
+      await setupExtension();
+      const demand = await seedAffectedDemand({ networkIdFcu: null, networkType: null });
+
+      const result = await changeDemandAssignment(demand.id, 200, 'reseau_en_construction', adminId);
+
+      expect(result).toStrictEqual({ distance: 99 });
+      expect(await getAssignment(demand.id)).toStrictEqual({
+        extension_id: 200,
+        legacy_values: { 'Distance au réseau': 99, 'Identifiant réseau': '7501C', 'Nom réseau': 'Réseau étendu' },
+        network_id: 100,
+        network_type: 'reseau_de_chaleur',
+      });
+      const event = await getLastEvent(demand.id, 'demand_assignment_changed');
+      expect(event?.data).toStrictEqual({
+        new: {
+          distance: 99,
+          network_id: 200,
+          network_name: 'Réseau étendu',
+          network_sncu_id: '7501C',
+          network_type: 'reseau_en_construction',
+        },
+        old: { distance: null, network_id: null, network_name: null, network_sncu_id: null, network_type: null },
+      });
+    });
+
+    it("admin : réaffecter vers un réseau existant retire l'extension de la demande", async () => {
+      await Promise.all([setupParentNetwork(), setupNetwork(101)]);
+      await setupExtension();
+      const demand = await seedAffectedDemand({ networkIdFcu: null, networkType: null });
+      await changeDemandAssignment(demand.id, 200, 'reseau_en_construction', adminId);
+
+      await changeDemandAssignment(demand.id, 101, 'reseau_de_chaleur', adminId);
+
+      const assignment = await getAssignment(demand.id);
+      expect({
+        extension_id: assignment.extension_id,
+        network_id: assignment.network_id,
+        network_type: assignment.network_type,
+      }).toStrictEqual({
+        extension_id: null,
+        network_id: 101,
+        network_type: 'reseau_de_chaleur',
+      });
+      const event = await getLastEvent(demand.id, 'demand_assignment_changed');
+      expect(event?.data).toMatchObject({
+        old: {
+          distance: 99,
+          network_id: 200,
+          network_name: 'Réseau étendu',
+          network_sncu_id: '7501C',
+          network_type: 'reseau_en_construction',
+        },
+      });
+    });
+
+    it("gestionnaire : refuse l'extension déjà réseau le plus proche, accepte le réseau parent", async () => {
+      await setupParentNetwork();
+      await setupExtension();
+      const demand = await seedAffectedDemand({ networkIdFcu: null, networkType: null });
+      await changeDemandAssignment(demand.id, 200, 'reseau_en_construction', adminId);
+
+      await expect(requestDemandAssignmentChange(demand.id, 200, 'reseau_en_construction', null, gestionnaireId)).rejects.toThrow(
+        new TRPCError({ code: 'BAD_REQUEST', message: 'Le réseau demandé est déjà affecté à cette demande' })
+      );
+      await requestDemandAssignmentChange(demand.id, 100, 'reseau_de_chaleur', null, gestionnaireId);
+
+      expect(await getPending(demand.id)).toMatchObject({ network_id: 100, network_type: 'reseau_de_chaleur' });
     });
   });
 

@@ -51,10 +51,10 @@ Trois canaux créent des demandes :
 | Consommation de gaz | `Conso` | Point de consommation le plus proche (rayon 3,5 m) |
 | Nombre de logements | `Logement`, `ID BNB` | Bâtiment BDNB le plus proche, sauf si le demandeur l'a renseigné |
 | Territoire | `commune_code`, `epci_code`, `departement_code`, `region_code` | Déterminé par les coordonnées géographiques |
-| Réseau affecté | `network_id`, `Distance au réseau`, `Nom réseau` | Voir ci-dessous |
+| Réseau affecté | `network_id`, `extension_id`, `Distance au réseau`, `Nom réseau` | Voir ci-dessous |
 | Historique d'éligibilité | ligne de test d'adresse liée | Conserve le détail du calcul au moment du dépôt |
 
-**Affectation automatique au réseau** : la demande est affectée au réseau le plus proche si l'adresse est éligible **ou** si le réseau est à moins de <Rule id="autoAssignMaxDistance" />. Au-delà, la demande reste « sans réseau affecté » — ce sont ces demandes que les collectivités peuvent trier (voir [Rôle : collectivité](/admin/doc/role-collectivite)).
+**Affectation automatique au réseau** : la demande est affectée au réseau le plus proche si l'adresse est éligible **ou** si le réseau est à moins de <Rule id="autoAssignMaxDistance" />. Au-delà, la demande reste « sans réseau affecté » — ce sont ces demandes que les collectivités peuvent trier (voir [Rôle : collectivité](/admin/doc/role-collectivite)). Quand le réseau le plus proche est une **extension liée à un réseau de chaleur**, la demande est affectée à ce réseau de chaleur, dont l'équipe traite aussi l'extension, et garde l'extension comme réseau le plus proche (`extension_id`, voir [Gestion des réseaux](/admin/doc/gestion-reseaux)).
 
 **Statut initial** : « À traiter » si l'adresse est éligible, « Non réalisable » sinon. Le marqueur « Relance à activer » (qui conditionne les [relances automatiques](/admin/doc/relances-notifications)) est posé uniquement si la demande est **éligible ET en chauffage collectif**, et uniquement à la création.
 
