@@ -10,7 +10,7 @@ analytics/
 ├── TRACKING_PLAN.md
 ├── analytics.config.ts    # Legacy Matomo event mappings
 ├── posthog.config.ts      # PostHog event contract
-├── constants.ts           # Shared acquisition schema and display label
+├── constants.ts           # Shared acquisition schema
 ├── client.ts              # Public compatibility API for Matomo and PostHog
 └── client/                # Browser-only tracking, hooks and components
     ├── matomo.ts
@@ -18,14 +18,14 @@ analytics/
     ├── google-tag-manager.ts
     ├── useMultiEnrConversion.ts
     ├── acquisition.ts
-    └── AcquisitionDetails.tsx
+    └── DemandOriginCell.tsx
 ```
 
 ## Supported Platforms
 
 - **Google Tag Manager / Google Ads (multi-energy simulator)** — `client/google-tag-manager.ts` queues typed `multienr_simulation_completed` / `multienr_accompaniment_submitted` events; `client/useMultiEnrConversion` checks explicit `google_ads` consent and configuration. `components/ConsentBanner/GoogleTagManagerScript.tsx` loads the validated container after consent. GTM is the only Google integration; direct legacy conversions and the old destination environment variable have been removed. Demand events occur only after successful creation and distinguish CCRT from heat-network demands. No new Matomo events. Set `NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID` before building; conversion labels and hostname/type filters are versioned in `client/gtm-multienr-conversions.json` and must be reviewed in the published GTM container. Product behavior: `src/modules/doc/content/chaleur-renouvelable.mdx`.
 - **Google consent and URLs** — `setGoogleConsent` only establishes denied defaults and updates advertising consent when it changes; audience measurement and personalization stay denied. The new `google_ads` purpose forces a fresh choice (DSFR keys persistence by finalities), independently of PostHog audience consent. First refusal keeps the page; withdrawal sends denied consent then reloads. `isGoogleTrackingAllowed` excludes admin/iframe routes; navigation into them after GTM loads uses a document navigation to unload it. `getGooglePageParameters` allows only explicit UTM/click-attribution parameters and removes fragments from page/referrer URLs; URL overrides are refreshed on consented public SPA navigation and conversions. Automatic collection in the external container still needs network acceptance testing. Do not add inline Google loaders or destination-specific CSP hashes.
-- **First-party campaign attribution** — `client/acquisition.ts` captures the latest tagged arrival in memory across internal navigation, independently of Google consent; no browser storage or retained raw click identifiers. UTM/click arrivals take precedence over legacy MTM arrivals as a whole. First-party attribution remains available to embedded classic forms (without loading Google); admin pages are excluded. Both public forms send the same bounded `zAcquisition` shape (source/medium/campaign and optional keyword). Never overload conversion-tracking's `?source=` integration identifier. CCRT stores acquisition for admins only; classic demands store the same raw fields in existing legacy JSON with `Campagne medium` alongside source/campaign. `client/AcquisitionDetails.tsx` renders the admin CCRT summary.
+- **First-party campaign attribution** — `client/acquisition.ts` captures the latest tagged arrival in memory across internal navigation, independently of Google consent; no browser storage or retained raw click identifiers. Campaign capture reads UTM parameters and Google click markers only. First-party attribution remains available to embedded classic forms (without loading Google); admin pages are excluded. Both public forms send the same bounded `zAcquisition` shape (source/medium/campaign and optional keyword). Never overload conversion-tracking's `?source=` integration identifier. CCRT stores acquisition for admins only; classic demands store the extended snapshot in nullable `demands.acquisition` as the sole attribution source. The snapshot includes the external referrer hostname, landing/form paths and integration context. `client/DemandOriginCell.tsx` renders the shared admin origin popover. `demand-origin.ts` classifies acquisition server-side; `server/demand-origin.ts` resolves integration labels once per list. Product behavior: `doc/content/chaleur-renouvelable.mdx`.
 
 - **PostHog** - Product analytics (nouvelle plateforme principale). Voir [TRACKING_PLAN.md](./TRACKING_PLAN.md) pour le plan de tracking complet, les conventions de nommage, le consentement et l'identification.
 - **Matomo** - Analytics historique (en cours de remplacement par PostHog, migration progressive). Ne pas ajouter de nouveaux events Matomo : utiliser PostHog.
@@ -211,3 +211,9 @@ Analytics failures are handled gracefully:
 - No impact on critical rendering path
 - Timeout protection (2s) for unresponsive services
 - Event debouncing for rapid interactions
+
+## Demand origin invariants
+
+- Capture is memory-only; reloads and new tabs start again. Store paths without queries/fragments and only the external referrer hostname. Discard raw Google click IDs. Server creation paths own creation-method markers; public input strips them.
+- Classify only `acquisition`, with priority: creation method, integration, campaign, external referrer, unknown. Classic admin lists fall back to recorded `origin_page`, `origin_host` and `origin_source` only when `acquisition` is null. No legacy campaign reconstruction or attribution writes. A source path alone keeps the unknown channel and appears as its detail. Transfers retain the snapshot; duplicates retain the original. Attribution never grants access or changes routing or notifications.
+- Apply `20261116110000_demand_acquisition` before deployment. Evidence is admin-only, subject to the demand’s existing retention/access rules. DPO ADEME, homologation, product/design approval and staging acceptance remain pending; this implementation does not claim regulatory approval.

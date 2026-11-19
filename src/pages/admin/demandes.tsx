@@ -16,12 +16,13 @@ import FCUBadge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import HamburgerMenu, { type HamburgerMenuItem } from '@/components/ui/HamburgerMenu';
 import Icon from '@/components/ui/Icon';
-import Link from '@/components/ui/Link';
 import Loader from '@/components/ui/Loader';
 import QuickFilterPresets from '@/components/ui/QuickFilterPresets';
 import { ResizablePanel, ResizablePanelGroup, ResizableSeparator } from '@/components/ui/Resizable';
 import Tooltip from '@/components/ui/Tooltip';
 import TableSimple, { type ColumnDef, type QuickFilterPreset } from '@/components/ui/table/TableSimple';
+import { DemandOriginCell } from '@/modules/analytics/client/DemandOriginCell';
+import { demandOriginFields, getDemandOriginValue, originChannels } from '@/modules/analytics/demand-origin';
 import AccessCountsCell from '@/modules/demands/client/AccessCountsCell';
 import AffectedNetworkCell from '@/modules/demands/client/AffectedNetworkCell';
 import Comment from '@/modules/demands/client/Comment';
@@ -159,13 +160,6 @@ function DemandesAdmin(): React.ReactElement {
 
   const { data: demandsData, isLoading } = trpc.demands.admin.list.useQuery();
   const demands = demandsData?.items ?? [];
-
-  // `origin_source` stocke l'id (uuid) de l'intégration — on résout son label pour l'affichage.
-  const { data: integrations = [] } = trpc.conversionTracking.sources.list.useQuery({ includeArchived: true });
-  const integrationLabelById = useMemo<Record<string, string>>(
-    () => Object.fromEntries(integrations.map((integration) => [integration.id, integration.label])),
-    [integrations]
-  );
 
   // Réinitialise la sélection quand l'ensemble des demandes affichées change (filtres/recherche),
   // mais pas lors d'une simple édition de ligne, d'un tri ou d'un changement de sélection.
@@ -477,32 +471,28 @@ function DemandesAdmin(): React.ReactElement {
         width: '94px',
       },
       {
-        accessorFn: (row) => (row.origin_source ? (integrationLabelById[row.origin_source] ?? row.origin_source) : undefined),
-        cell: ({ row }) =>
-          row.original.origin_source && (
-            <Link href={`/admin/conversion?source=${encodeURIComponent(row.original.origin_source)}`}>
-              {integrationLabelById[row.original.origin_source] ?? row.original.origin_source}
-            </Link>
-          ),
+        accessorFn: (row) => originChannels[row.origin.channel],
+        cell: ({ row }) => <DemandOriginCell origin={row.original.origin} />,
+        exportFn: (row) => [originChannels[row.origin.channel], row.origin.detail].filter(Boolean).join(' · '),
         filterType: 'Facets',
-        header: 'Source',
-        id: 'origin_source',
-        width: '150px',
+        header: 'Origine',
+        id: 'origin',
+        width: '180px',
       },
       {
-        accessorKey: 'origin_page',
-        enableGlobalFilter: false,
-        enableSorting: false,
-        header: 'Page source',
-        width: '220px',
+        accessorFn: (row) => row.origin.detail ?? '',
+        exportOnly: true,
+        header: 'Détail de l’origine',
+        id: 'origin_detail',
+        visible: false,
       },
-      {
-        accessorKey: 'origin_host',
-        enableGlobalFilter: false,
-        enableSorting: false,
-        header: 'Site hôte',
-        width: '200px',
-      },
+      ...demandOriginFields.map(([key, label]) => ({
+        accessorFn: (row: DemandsListAdminItem) => getDemandOriginValue(row.origin.acquisition, key),
+        exportOnly: true,
+        header: label,
+        id: `origin_${key}`,
+        visible: false,
+      })),
       {
         accessorKey: 'testAddress.eligibility.id_sncu',
         exportFn: (row) => row.testAddress.eligibility?.id_sncu ?? '',
@@ -618,7 +608,7 @@ function DemandesAdmin(): React.ReactElement {
         width: '50px',
       },
     ],
-    [updateDemand, changeNetwork, validateDemand, deleteDemand, handleEmailClick, integrationLabelById, utils]
+    [updateDemand, changeNetwork, validateDemand, deleteDemand, handleEmailClick, utils]
   );
 
   const onMarkerSelect = useCallback((demandId: string) => {

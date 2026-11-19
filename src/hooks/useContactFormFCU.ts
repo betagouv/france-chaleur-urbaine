@@ -3,7 +3,6 @@ import { useCallback, useState } from 'react';
 import { trackEvent, trackPostHogEvent } from '@/modules/analytics/client';
 import { getAcquisition } from '@/modules/analytics/client/acquisition';
 import type { EligibilityContext } from '@/modules/analytics/posthog.config';
-import { getDemandOrigin } from '@/modules/conversion-tracking/client/trackingContext';
 import { useRecordConversionEvent } from '@/modules/conversion-tracking/client/useRecordConversionEvent';
 import type { CreateDemandInput, ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
@@ -171,7 +170,6 @@ const useContactFormFCU = () => {
       const result = await trpcUtils.client.demands.user.create.mutate({
         ...data,
         acquisition: getAcquisition(),
-        ...getDemandOrigin(),
       } as unknown as CreateDemandInput);
 
       setMessageSent(true);

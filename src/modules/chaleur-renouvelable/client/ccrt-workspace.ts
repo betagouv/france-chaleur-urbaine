@@ -1,4 +1,4 @@
-import { getAcquisitionSource } from '@/modules/analytics/constants';
+import { originChannels } from '@/modules/analytics/demand-origin';
 import { normalize } from '@/utils/strings';
 
 import {
@@ -33,11 +33,25 @@ export function getCcrtDemandTab(demand: Pick<CcrtDemand, 'status'>): Exclude<Cc
         : 'in_progress';
 }
 
+/** Keeps moderation groups independent from the CCRT follow-up status. */
+export const matchesCcrtAdminTab = (demand: Pick<CcrtDemand, 'archived_at' | 'validated'>, tab: CcrtDemandTab): boolean =>
+  tab === 'archived' ? demand.archived_at !== null : demand.archived_at === null && (tab !== 'awaiting_validation' || !demand.validated);
+
+/** Warns about absent or never-connected CCRT accounts without blocking publication. */
+export const getCcrtAccessWarning = (users: CcrtDemand['access_users']): string | null =>
+  users === undefined
+    ? null
+    : users.length === 0
+      ? 'Aucun accès'
+      : users.every((user) => user.last_connection === null)
+        ? 'Aucun CCRT ne s’est connecté'
+        : null;
+
 /**
  * Matches a demand by its contact, address or identifier, ignoring accents.
  */
 export function matchesCcrtDemandSearch(
-  demand: Pick<CcrtDemand, 'id' | 'first_name' | 'last_name' | 'email' | 'phone' | 'address' | 'acquisition'>,
+  demand: Pick<CcrtDemand, 'id' | 'first_name' | 'last_name' | 'email' | 'phone' | 'address' | 'origin'>,
   search: string
 ): boolean {
   const searchableText = normalize(
@@ -48,8 +62,10 @@ export function matchesCcrtDemandSearch(
       demand.email,
       demand.phone,
       demand.address,
-      demand.acquisition && getAcquisitionSource(demand.acquisition),
-      demand.acquisition?.campaign,
+      demand.origin && originChannels[demand.origin.channel],
+      demand.origin?.detail,
+      demand.origin?.acquisition?.source,
+      demand.origin?.acquisition?.campaign,
     ].join(' ')
   );
   return normalize(search)

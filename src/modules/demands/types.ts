@@ -1,4 +1,5 @@
 import type { NetworkType } from '@/modules/reseaux/constants';
+import type { RouterOutput } from '@/modules/trpc/client';
 import type { Demand as LegacyDemand } from '@/types/Summary/Demand';
 
 import { type DemandLockReason, type DemandStatus, fcrLegacyValueKeys } from './constants';
@@ -18,10 +19,6 @@ export type PendingAssignmentChange = {
 };
 // Ce type permet de corriger le type Legacy existant avec ce qui est réellement stocké dans `legacy_values`
 export type LegacyDemandValues = Partial<Omit<LegacyDemand, 'id' | 'Status'>> & {
-  'Campagne keywords'?: string;
-  'Campagne matomo'?: string;
-  'Campagne medium'?: string;
-  'Campagne source'?: string;
   'ID réseau le plus proche'?: string | null;
   'ID BNB'?: string;
   'Notification envoyé'?: string;
@@ -70,4 +67,8 @@ export type AccessCounts = {
   gestionnaire: number;
   collectivite: number;
   alec: number;
+};
+
+export type AccessDetailUser = Pick<RouterOutput['permissions']['listUsersWithAccessToDemand'][number], 'id' | 'email' | 'role'> & {
+  last_connection?: string | null;
 };

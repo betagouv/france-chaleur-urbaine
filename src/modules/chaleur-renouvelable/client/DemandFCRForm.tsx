@@ -17,6 +17,7 @@ import {
   demandConcernOptions,
   ESPACE_EXTERIEUR_VALUES,
   type HeatingEnergy,
+  hasOrganizationNameField,
   heatingEnergyOptions,
   MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE,
   type OccupantStatus,
@@ -88,15 +89,6 @@ const CONTACT_FORM_DEFAULT_VALUES: z.input<typeof zContactFormChaleurRenouvelabl
   termOfUse: false,
 };
 
-const ORGANIZATION_NAME_OCCUPANT_STATUSES = [
-  'Bailleur social',
-  "Bureau d'étude ou AMO",
-  'Grande entreprise ou Foncière',
-  'Mandataire ou Délégataire CEE',
-  'Syndicat de copropriété',
-  'TPE ou PME',
-] as const satisfies readonly OccupantStatus[];
-
 const HOUSING_COUNT_OCCUPANT_STATUSES = [
   'Bailleur social',
   'Copropriétaire',
@@ -161,17 +153,13 @@ function ContactRecipientSelector({
 function getFormTitle(isHeatNetworkEligible: boolean) {
   return isHeatNetworkEligible
     ? 'Faites-vous recontacter par le gestionnaire de réseau'
-    : 'Faites-vous recontacter par un·e conseiller·ère';
+    : 'Faites-vous recontacter par un·e conseiller·ère du service public';
 }
 
 function getFormDescription(isHeatNetworkEligible: boolean) {
   return isHeatNetworkEligible
     ? 'Vous êtes éligible au réseau de chaleur. C’est lui qu’il faut contacter en priorité : le gestionnaire évaluera gratuitement la faisabilité technique et le coût exact du raccordement pour votre bâtiment.'
     : 'Votre demande sera transmise à un·e conseiller·ère chaleur renouvelable compétent·e sur votre territoire pour vous accompagner dans la suite de votre projet.';
-}
-
-function hasOrganizationNameField(occupantStatus: OccupantStatus) {
-  return ORGANIZATION_NAME_OCCUPANT_STATUSES.some((organizationNameOccupantStatus) => organizationNameOccupantStatus === occupantStatus);
 }
 
 function getOccupantStatusDetailField(occupantStatus: OccupantStatus): OccupantStatusDetailField | null {

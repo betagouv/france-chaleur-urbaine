@@ -97,6 +97,7 @@ export const updateCcrtBuilding = async (ctx: Context, input: z.infer<typeof zCc
         updated_at: new Date(),
       })
       .where('id', '=', input.demandId)
+      .where('archived_at', 'is', null)
       .where((expression) => sql<boolean>`date_trunc('milliseconds', ${expression.ref('updated_at')}) = ${new Date(input.updatedAt)}`)
       .returning(['id', 'updated_at'])
       .executeTakeFirst();

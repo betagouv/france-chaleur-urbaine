@@ -105,7 +105,6 @@ All events include `structure_ccrt` and `departement`. Demand events (`ccrt_dema
 | `ccrt_demande:internal_note_created` | — | Committed note insertion, no note content |
 | `ccrt_demande:simulation_viewed` | `emplacement` | Saved simulation link clicked |
 | `ccrt_demande:map_opened` | — | Saved building map link clicked |
-| `ccrt_demande:access_managed` | — | Existing admin permission editor opened |
 | `ccrt_demandes:tab_clicked` | `onglet` | Group clicked |
 | `ccrt_demandes:search_used` | — | Settled live search or search submitted; never search text |
 | `ccrt_demandes:filter_applied` | `type_filtre` (`statut` / `date`), `valeur` | Status filter or date sort applied |

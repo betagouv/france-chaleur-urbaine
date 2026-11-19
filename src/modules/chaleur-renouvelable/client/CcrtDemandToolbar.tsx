@@ -4,12 +4,15 @@ import dynamic from 'next/dynamic';
 import Select from '@/components/form/dsfr/Select';
 
 import type { CcrtDemand } from '../types';
+import { CcrtDemandOriginFilter } from './CcrtDemandOriginFilter';
 import { ccrtDemandAcquisitionExportColumns, ccrtDemandExportColumns } from './ccrt-demand-export';
 
 const ButtonExport = dynamic(() => import('@/components/ui/ButtonExport'), { ssr: false });
 
 type CcrtDemandToolbarProps = {
   isAdmin?: boolean;
+  origin?: string;
+  onOriginChange?: (origin: string) => void;
   search: string;
   status: string;
   statusOptions: { label: string; value: string }[];
@@ -25,6 +28,8 @@ type CcrtDemandToolbarProps = {
  */
 export function CcrtDemandToolbar({
   isAdmin = false,
+  origin,
+  onOriginChange,
   search,
   status,
   statusOptions,
@@ -66,6 +71,11 @@ export function CcrtDemandToolbar({
           value: statusOptions.length === 1 ? statusOptions[0].value : status,
         }}
       />
+      {isAdmin && onOriginChange && (
+        <div className="lg:hidden">
+          <CcrtDemandOriginFilter value={origin ?? ''} onChange={onOriginChange} />
+        </div>
+      )}
       <ButtonExport
         filename="demandes-chaleur-renouvelable-ccrt.xlsx"
         priority="tertiary"

@@ -1,4 +1,4 @@
-import { getAcquisitionSource } from '@/modules/analytics/constants';
+import { demandOriginFields, getDemandOriginValue, originChannels } from '@/modules/analytics/demand-origin';
 import { dayjs } from '@/utils/date';
 import type { ExportColumn } from '@/utils/export';
 
@@ -46,7 +46,10 @@ export const ccrtDemandExportColumns = [
 ] satisfies ExportColumn<CcrtDemand>[];
 
 export const ccrtDemandAcquisitionExportColumns = [
-  { accessorFn: (demand) => (demand.acquisition ? getAcquisitionSource(demand.acquisition) : '') ?? '', name: 'Source d’acquisition' },
-  { accessorFn: (demand) => demand.acquisition?.medium ?? '', name: 'Support d’acquisition' },
-  { accessorFn: (demand) => demand.acquisition?.campaign ?? '', name: 'Campagne d’acquisition' },
+  { accessorFn: (demand) => (demand.origin ? originChannels[demand.origin.channel] : ''), name: 'Origine' },
+  { accessorFn: (demand) => demand.origin?.detail ?? '', name: 'Détail de l’origine' },
+  ...demandOriginFields.map(([key, label]) => ({
+    accessorFn: (demand: CcrtDemand) => getDemandOriginValue(demand.origin?.acquisition, key),
+    name: label,
+  })),
 ] satisfies ExportColumn<CcrtDemand>[];

@@ -1,3 +1,4 @@
+import type { Acquisition } from '@/modules/analytics/constants';
 import { businessRules } from '@/modules/app/business-rules';
 import { type CreateDemandInput, type DemandSubmissionResult, formatDataToLegacyValues } from '@/modules/demands/constants';
 import type { LegacyDemandValues } from '@/modules/demands/types';
@@ -30,7 +31,13 @@ export const createDemand = async (
     userId,
     pro_eligibility_tests_addresse_id,
     deduplicate,
-  }: { userId?: string; pro_eligibility_tests_addresse_id?: string; deduplicate?: boolean } = {}
+    creationMethod,
+  }: {
+    userId?: string;
+    pro_eligibility_tests_addresse_id?: string;
+    deduplicate?: boolean;
+    creationMethod?: Acquisition['creationMethod'];
+  } = {}
 ): Promise<DemandSubmissionResult> => {
   // Normalisation avant toute comparaison (dédup) ou insertion : email + adresse sans espaces superflus,
   // pour tous les appelants (route user comme batch pro). Les données historiques sont nettoyées par migration.
@@ -66,12 +73,19 @@ export const createDemand = async (
   const [createdDemand] = await kdb
     .insertInto('demands')
     .values({
+      acquisition:
+        values.acquisition || creationMethod
+          ? JSON.stringify({
+              campaign: null,
+              medium: null,
+              source: null,
+              ...values.acquisition,
+              ...(creationMethod ? { creationMethod } : {}),
+            })
+          : null,
       comment_user: values.commentUser || null,
       created_at: new Date(),
       legacy_values: sql<string>`${JSON.stringify(legacyRecord)}::jsonb`,
-      origin_host: values.origin_host ?? null,
-      origin_page: values.origin_page ?? null,
-      origin_source: values.origin_source ?? null,
       updated_at: new Date(),
       user_id: userId ?? null,
     })

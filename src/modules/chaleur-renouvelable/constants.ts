@@ -336,6 +336,19 @@ const OCCUPANT_STATUS_VALUES = [
 export type OccupantStatus = (typeof OCCUPANT_STATUS_VALUES)[number];
 export const occupantStatusOptions = OCCUPANT_STATUS_VALUES.map((value) => ({ label: value, value }));
 
+const ORGANIZATION_NAME_OCCUPANT_STATUSES = [
+  'Bailleur social',
+  "Bureau d'étude ou AMO",
+  'Grande entreprise ou Foncière',
+  'Mandataire ou Délégataire CEE',
+  'Syndicat de copropriété',
+  'TPE ou PME',
+] as const satisfies readonly OccupantStatus[];
+
+export function hasOrganizationNameField(occupantStatus: OccupantStatus) {
+  return ORGANIZATION_NAME_OCCUPANT_STATUSES.some((organizationNameOccupantStatus) => organizationNameOccupantStatus === occupantStatus);
+}
+
 const DEMAND_CONCERN_VALUES = ['Une copropriété', 'Une maison individuelle', 'Un bâtiment tertiaire', 'Plusieurs bâtiments'] as const;
 export type DemandConcern = (typeof DEMAND_CONCERN_VALUES)[number];
 export const demandConcernOptions = DEMAND_CONCERN_VALUES.map((value) => ({ label: value, value }));
@@ -501,7 +514,7 @@ const zDemandeChaleurRenouvelableHeatNetworkEligibility = z.object({
 });
 
 export const zDemandeChaleurRenouvelable = z.object({
-  acquisition: zAcquisition.nullish(),
+  acquisition: zAcquisition.omit({ creationMethod: true }).nullish(),
   address: z.string(),
   alternativeHeatingSolutions: z.array(z.string().trim().min(1).max(120)).max(3).optional(),
   annualHeatingConsumption: z
@@ -549,17 +562,6 @@ export const zFranceRenovSpaceInput = z.object({
 });
 export type FranceRenovSpaceInput = z.infer<typeof zFranceRenovSpaceInput>;
 
-export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
-  demandId: z.string(),
-  values: z
-    .object({
-      assignedTo: z.string().nullable(),
-      status: z.enum(demandeChaleurRenouvelableStatuses.map((status) => status.label)),
-    })
-    .partial(),
-});
-export type AdminUpdateDemandeChaleurRenouvelableInput = z.infer<typeof zAdminUpdateDemandeChaleurRenouvelableInput>;
-
 const zCcrtNote = z.object({ body: z.string().trim().min(1, 'Veuillez saisir une note').max(250) });
 export const zCcrtUpdateDemandeChaleurRenouvelableInput = z.object({
   demandId: z.string(),
@@ -577,6 +579,30 @@ export const zCcrtFollowUpForm = zCcrtUpdateDemandeChaleurRenouvelableInput.shap
 });
 
 export const zCcrtDemandId = z.object({ demandId: z.uuid() });
+export const zCcrtReopenDemand = zCcrtDemandId.extend({ updatedAt: z.iso.datetime() });
+export const ccrtArchiveReasons = [
+  { label: 'Maison individuelle', value: 'individual_house' },
+  { label: 'Chauffage individuel', value: 'individual_heating' },
+  { label: 'Département non couvert', value: 'uncovered_department' },
+  { label: 'Test', value: 'test' },
+  { label: 'Demande en doublon', value: 'duplicate' },
+  { label: 'Autre', value: 'other' },
+] as const;
+export const zCcrtArchiveReason = z.enum(ccrtArchiveReasons.map((reason) => reason.value));
+export type CcrtArchiveReason = z.infer<typeof zCcrtArchiveReason>;
+export const zCcrtArchiveForm = z.object({
+  comment: z.string().trim().max(2000).default(''),
+  reason: z.string().min(1, 'Choisissez un motif d’archivage').pipe(zCcrtArchiveReason),
+  sendEmail: z.boolean().default(true),
+});
+export const zCcrtArchiveDemand = zCcrtArchiveForm.extend({ demandId: z.uuid() });
+export const zCcrtTransferNetwork = zCcrtDemandId.extend({ networkId: z.number().int().positive().optional() });
+export const zCcrtTransferDemand = zCcrtDemandId.extend({
+  managerMessage: z.string().trim().max(2000).default(''),
+  networkId: z.number().int().positive(),
+});
+export const zCcrtTransferForm = zCcrtTransferDemand.extend({ networkId: zCcrtTransferNetwork.shape.networkId });
+export const zCcrtAdminComment = zCcrtDemandId.extend({ comment: z.string().trim().max(10000) });
 export const zCcrtFollowUpInput = zCcrtDemandId.extend({ offset: z.number().int().nonnegative().default(0) });
 export const zCcrtBuilding = z.object({
   annual_heating_consumption: z.number().positive().nullish(),
@@ -595,6 +621,18 @@ export const zCcrtBuilding = z.object({
   surface_area: z.number().positive().nullish(),
 });
 export const zCcrtUpdateBuilding = zCcrtDemandId.extend({ updatedAt: z.iso.datetime(), values: zCcrtBuilding });
+export const zCcrtIdentification = z.object({
+  email: zContactFormChaleurRenouvelable.shape.email.trim(),
+  first_name: z.string().trim().min(1, 'Veuillez renseigner le prénom').max(200),
+  last_name: z.string().trim().min(1, 'Veuillez renseigner le nom').max(200),
+  occupant_status: z.enum(OCCUPANT_STATUS_VALUES),
+  organization_name: z.string().trim().max(500).nullable(),
+  phone: zContactFormChaleurRenouvelable.shape.phone,
+  rnic_nom_copropriete: z.string().trim().max(500).nullable(),
+  rnic_numero_immatriculation: z.string().trim().max(100).nullable(),
+  rnic_siret_representant_legal: z.string().trim().max(100).nullable(),
+});
+export const zCcrtUpdateIdentification = zCcrtDemandId.extend({ updatedAt: z.iso.datetime(), values: zCcrtIdentification });
 const zCcrtEmailContent = z.object({
   body: z.string().trim().min(1, 'Veuillez saisir un message').max(20000),
   cc: z.string().refine((value) => !value || value.split(',').every((email) => z.email().safeParse(email.trim()).success), {
@@ -626,3 +664,10 @@ export const zBatEnrByBanIdInput = z.object({
   banId: z.string().min(1, 'banId manquant'),
 });
 export type BatEnrByBanIdInput = z.infer<typeof zBatEnrByBanIdInput>;
+
+export const zCcrtModerationEmailData = z.object({
+  archivedAt: z.iso.datetime(),
+  deliveryStatus: z.enum(['ready', 'sending', 'sent', 'failed']),
+  demandId: z.uuid(),
+  network: z.object({ distance: z.number().nullable(), manager: z.string().nullable(), name: z.string() }).nullable(),
+});

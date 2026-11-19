@@ -53,7 +53,8 @@ const baseNotifiableQuery = () =>
     )
     .where('u.active', '=', true)
     .where('u.role', '=', 'ccrt')
-    .where('d.validated', '=', true);
+    .where('d.validated', '=', true)
+    .where('d.archived_at', 'is', null);
 
 const toEmailPayload = (demand: DemandRow): DemandeChaleurRenouvelable => ({
   address: demand.address,
@@ -165,6 +166,7 @@ export const notifyCcrtOfNewDemands = async () => {
   const previousDigestDate = today.subtract(7, 'day').format('YYYY-MM-DD');
 
   const recipients = await baseNotifiableQuery()
+    .where('d.reopened_at', 'is', null)
     .select(['u.id', 'u.email', 'u.structure_name'])
     .select(newDemandsFrequency.as('frequency'))
     .select((eb) => sql<string[]>`array_agg(distinct ${eb.ref('d.id')})`.as('demand_ids'))

@@ -89,7 +89,6 @@ export function useCcrtDemandActions(structureName: string | null) {
     openEmail,
     selectedEmailId,
     showEmailHistory,
-    trackAccess: (demand: CcrtDemand) => trackPostHogEvent('ccrt_demande:access_managed', getTrackingProperties(demand)),
     trackContact,
     trackMap: (demand: CcrtDemand) => trackPostHogEvent('ccrt_demande:map_opened', getTrackingProperties(demand)),
     trackOpening,

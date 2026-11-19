@@ -18,6 +18,9 @@ import { getCcrtServerTrackingProperties, recordCcrtFollowUpChanges, recordCcrtP
  */
 export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSendEmail>) => {
   const demand = await ensureCcrtDemandAccess(ctx, input.demandId);
+  if (demand.archived_at) {
+    throw new TRPCError({ code: 'CONFLICT', message: 'Cette demande est archivée. Aucun message ne peut être envoyé depuis son suivi.' });
+  }
   const emailContent = input.emailContent;
   const message = {
     body: emailContent.body,
@@ -27,45 +30,57 @@ export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSen
     signature: emailContent.signature,
     to: demand.email,
   };
-  const reservation = await kdb
-    .insertInto('ccrt_demand_emails')
-    .values({
-      author_id: ctx.user.id,
-      ...message,
-      demand_id: demand.id,
-      id: input.messageId,
-    })
-    .onConflict((conflict) => conflict.column('id').doNothing())
-    .returning('id')
-    .executeTakeFirst();
-  if (!reservation) {
-    const previousSend = await kdb
-      .selectFrom('ccrt_demand_emails')
-      .select('status')
-      .where('id', '=', input.messageId)
-      .where('demand_id', '=', demand.id)
-      .where('author_id', '=', ctx.user.id)
-      .executeTakeFirst();
-    if (previousSend?.status === 'sent') {
-      return { id: input.messageId };
+  const reserved = await kdb.transaction().execute(async (transaction) => {
+    // Serialize the reservation with withdrawal, then release the lock before SMTP.
+    const current = await transaction
+      .selectFrom('demands_chaleur_renouvelable')
+      .select(['validated', 'archived_at', 'email'])
+      .where('id', '=', demand.id)
+      .forUpdate()
+      .executeTakeFirstOrThrow();
+    if (current.archived_at || (ctx.user.role !== 'admin' && !current.validated)) {
+      throw new TRPCError({ code: 'CONFLICT', message: 'Cette demande n’est plus disponible pour l’envoi. Actualisez la liste.' });
     }
-    const retry = await kdb
-      .updateTable('ccrt_demand_emails')
-      .set({ ...message, status: 'pending' })
-      .where('id', '=', input.messageId)
-      .where('demand_id', '=', demand.id)
-      .where('author_id', '=', ctx.user.id)
-      .where('status', '=', 'failed')
+    message.to = current.email;
+    const reservation = await transaction
+      .insertInto('ccrt_demand_emails')
+      .values({ author_id: ctx.user.id, ...message, demand_id: demand.id, id: input.messageId })
+      .onConflict((conflict) => conflict.column('id').doNothing())
       .returning('id')
       .executeTakeFirst();
-    if (!retry) {
-      throw new TRPCError({ code: 'CONFLICT', message: 'Ce message est déjà en cours d’envoi. Actualisez le suivi avant de réessayer.' });
+    if (!reservation) {
+      const previousSend = await transaction
+        .selectFrom('ccrt_demand_emails')
+        .select('status')
+        .where('id', '=', input.messageId)
+        .where('demand_id', '=', demand.id)
+        .where('author_id', '=', ctx.user.id)
+        .executeTakeFirst();
+      if (previousSend?.status === 'sent') {
+        return false;
+      }
+      const retry = await transaction
+        .updateTable('ccrt_demand_emails')
+        .set({ ...message, status: 'pending' })
+        .where('id', '=', input.messageId)
+        .where('demand_id', '=', demand.id)
+        .where('author_id', '=', ctx.user.id)
+        .where('status', '=', 'failed')
+        .returning('id')
+        .executeTakeFirst();
+      if (!retry) {
+        throw new TRPCError({ code: 'CONFLICT', message: 'Ce message est déjà en cours d’envoi. Actualisez le suivi avant de réessayer.' });
+      }
     }
+    return true;
+  });
+  if (!reserved) {
+    return { id: input.messageId };
   }
   try {
     await sendEmailTemplate(
       'demands.demandeur.message-gestionnaire',
-      { email: demand.email, id: demand.id },
+      { email: message.to, id: demand.id },
       {
         content: escapeHtml(emailContent.body).replaceAll('\n', '<br />'),
         signature: emailContent.signature,
@@ -83,6 +98,13 @@ export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSen
   }
   // Keep a pending reservation if persistence fails after SMTP: retrying must not send the same message twice.
   const followUp = await kdb.transaction().execute(async (transaction) => {
+    // Keep the same demand-then-email lock order as reservation and reopening.
+    await transaction
+      .selectFrom('demands_chaleur_renouvelable')
+      .select('id')
+      .where('id', '=', demand.id)
+      .forUpdate()
+      .executeTakeFirstOrThrow();
     await transaction
       .updateTable('ccrt_demand_emails')
       .set({ sent_at: new Date(), status: 'sent' })
@@ -93,7 +115,7 @@ export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSen
         author_id: ctx.user.id,
         context_id: demand.id,
         context_type: 'ccrt_demand',
-        data: { messageId: input.messageId, object: emailContent.object, to: demand.email },
+        data: { messageId: input.messageId, object: emailContent.object, to: message.to },
         type: 'ccrt_demand_email_sent',
       },
       transaction

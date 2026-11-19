@@ -97,21 +97,41 @@ export const patchDemand: PartnerApiHandler<void> = async (req, res, auth) => {
     return;
   }
 
-  await kdb
-    .updateTable('demands')
-    .set({
-      ...(input.commentaire !== undefined && { comment_gestionnaire: input.commentaire }),
-      ...(input.statut !== undefined && { legacy_values: mergeLegacyValues({ Status: input.statut }) }),
-      updated_at: new Date(),
-    })
-    .where('id', '=', id)
-    .execute();
+  const updated = await kdb.transaction().execute(async (transaction) => {
+    const updated = await transaction
+      .updateTable('demands')
+      .set({
+        ...(input.commentaire !== undefined && { comment_gestionnaire: input.commentaire }),
+        ...(input.statut !== undefined && { legacy_values: mergeLegacyValues({ Status: input.statut }) }),
+        updated_at: new Date(),
+      })
+      .where('id', '=', id)
+      .where('deleted_at', 'is', null)
+      .returning('id')
+      .executeTakeFirst();
+    if (!updated) {
+      // Une annulation de transfert peut supprimer la demande après le contrôle d'accès.
+      return false;
+    }
 
-  // Audit : mise à jour via l'API (author_id null), distincte de `demand_updated` (modifs utilisateur via l'UI).
-  await createEvent({
-    context_id: id,
-    context_type: 'demand',
-    data: { credential_id: auth.credentialId, organization_id: auth.organizationId, organization_name: auth.organizationName, ...input },
-    type: 'api_demand_updated',
+    // Audit : mise à jour via l'API (author_id null), distincte de `demand_updated` (modifs utilisateur via l'UI).
+    await createEvent(
+      {
+        context_id: id,
+        context_type: 'demand',
+        data: {
+          credential_id: auth.credentialId,
+          organization_id: auth.organizationId,
+          organization_name: auth.organizationName,
+          ...input,
+        },
+        type: 'api_demand_updated',
+      },
+      transaction
+    );
+    return true;
   });
+  if (!updated) {
+    res.status(404).json({ message: 'Demande introuvable' });
+  }
 };

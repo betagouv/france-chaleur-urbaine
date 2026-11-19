@@ -146,7 +146,7 @@ export const createBatchDemands = async (
           structure: contact.structure,
           termOfUse: true,
         },
-        { pro_eligibility_tests_addresse_id: addressData.addressId, userId: demandOwnerUserId }
+        { creationMethod: 'batch', pro_eligibility_tests_addresse_id: addressData.addressId, userId: demandOwnerUserId }
       );
       return { addressId: addressData.addressId, demandId: result.id };
     })

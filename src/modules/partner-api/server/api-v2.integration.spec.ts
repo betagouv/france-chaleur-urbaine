@@ -1,8 +1,9 @@
 import type { InsertObject } from 'kysely';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { createCredential, createOrganization } from '@/modules/organizations/server/service';
+import * as demandAccess from '@/modules/permissions/server/demand-access';
 import type { DB } from '@/server/db/kysely';
 import { kdb } from '@/server/db/kysely';
 import { requiredAuthenticationError } from '@/server/helpers/server';
@@ -273,6 +274,36 @@ describe('API v2 partenaire (/api/v2/demands)', () => {
           },
         },
       ]);
+    });
+
+    it('returns 404 without an update or audit if a transfer is cancelled after the access check', async () => {
+      const cancelledId = uuid(99);
+      await seedDemand({ id: cancelledId });
+      const originalCheck = demandAccess.getDemandForAccessCheck;
+      const accessCheck = vi.spyOn(demandAccess, 'getDemandForAccessCheck').mockImplementationOnce(async (id) => {
+        const snapshot = await originalCheck(id);
+        await kdb.updateTable('demands').set({ deleted_at: new Date() }).where('id', '=', id).execute();
+        return snapshot;
+      });
+      try {
+        const response = createMockResponse();
+        await patchDemand(mockRequest({ body: { commentaire: 'Stale edit' }, query: { id: cancelledId } }), response.response, auth);
+        expect(response.state).toStrictEqual({ body: { message: 'Demande introuvable' }, statusCode: 404 });
+        expect(
+          await kdb.selectFrom('demands').select('comment_gestionnaire').where('id', '=', cancelledId).executeTakeFirstOrThrow()
+        ).toStrictEqual({ comment_gestionnaire: null });
+        expect(
+          await kdb
+            .selectFrom('events')
+            .select('id')
+            .where('context_id', '=', cancelledId)
+            .where('type', '=', 'api_demand_updated')
+            .execute()
+        ).toStrictEqual([]);
+      } finally {
+        accessCheck.mockRestore();
+        await kdb.deleteFrom('demands').where('id', '=', cancelledId).execute();
+      }
     });
 
     it('émet api_demand_updated (contexte demande) sur PATCH, distinct de demand_updated', async () => {

@@ -67,6 +67,27 @@ const batiment = {
 } satisfies BatEnrBatiment;
 
 describe('ParamsForm', () => {
+  it('replaces the previous dwelling count when switching to a house', async () => {
+    const onSave = vi.fn();
+    render(
+      <ParamsForm
+        batiments={[]}
+        isOpen
+        onSave={onSave}
+        paramSources={{ isDpeExplicit: true, isModeEauChaudeSanitaireInferred: false }}
+        setGeoAddress={vi.fn()}
+        setIsOpen={vi.fn()}
+        values={{ ...values, nbLogements: 25 }}
+      />
+    );
+    fireEvent.change(screen.getByRole('combobox', { name: 'Mode de chauffage' }), { target: { value: 'maison_individuelle' } });
+    expect(screen.getByLabelText('Nombre de logements')).toHaveValue(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et recalculer' }));
+    await waitFor(() =>
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ nbLogements: 1, typeLogement: 'maison_individuelle' }))
+    );
+  });
+
   it.each([
     ['Surface habitable par logement (moy)', '90', String(values.surfaceMoyenne)],
     ['Habitants par logement (moy)', '3', values.habitantsMoyen],

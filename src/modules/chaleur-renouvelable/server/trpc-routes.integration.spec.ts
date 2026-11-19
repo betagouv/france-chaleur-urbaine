@@ -341,7 +341,7 @@ describe('batEnrRouter', () => {
         await kdb.selectFrom('demands_chaleur_renouvelable').select('acquisition').where('id', '=', result.id!).executeTakeFirstOrThrow()
       ).toStrictEqual({ acquisition });
       const adminList = await createTestCaller(testUsers.admin).batEnr.admin.listDemandesChaleurRenouvelable();
-      expect(adminList.items.map((demand) => demand.acquisition)).toStrictEqual([acquisition]);
+      expect(adminList.items.map((demand) => demand.origin.acquisition)).toStrictEqual([acquisition]);
 
       await createTestCaller(testUsers.admin).batEnr.admin.validateDemandeChaleurRenouvelable({ demandId: result.id! });
       const ccrtList = await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable();
@@ -360,16 +360,12 @@ describe('batEnrRouter', () => {
       });
       const saved = await kdb
         .selectFrom('demands')
-        .select('legacy_values')
+        .select('acquisition')
         .where('id', '=', created.demandSubmissionResult!.id)
         .executeTakeFirstOrThrow();
 
       expect(duplicate.demandSubmissionResult?.isExisting).toStrictEqual(true);
-      expect({
-        campaign: saved.legacy_values['Campagne matomo'],
-        medium: saved.legacy_values['Campagne medium'],
-        source: saved.legacy_values['Campagne source'],
-      }).toStrictEqual({
+      expect(saved.acquisition).toStrictEqual({
         campaign: 'chauffage-automne',
         medium: 'cpc',
         source: 'google',
@@ -963,8 +959,11 @@ describe('batEnrRouter', () => {
         items: [
           {
             ...newerDemandInput,
-            acquisition: null,
+            access_users: [],
             alternative_heating_solutions: [],
+            archive_comment: null,
+            archive_reason: null,
+            archived_at: null,
             assigned_to: null,
             commune_code: null,
             created_at: newerDate.toISOString(),
@@ -972,6 +971,8 @@ describe('batEnrRouter', () => {
             epci_code: null,
             ept_code: null,
             id: newerDemand.id,
+            last_ccrt_status_change: null,
+            origin: { acquisition: null, channel: 'unknown', detail: null },
             origin_demand_id: null,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
             region_code: null,
@@ -979,13 +980,18 @@ describe('batEnrRouter', () => {
             rnic_numero_immatriculation: null,
             rnic_siret_representant_legal: null,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+            transferred_demand_id: null,
+            transferred_network_name: null,
             updated_at: newerDate.toISOString(),
             validated: false,
           },
           {
             ...olderDemandInput,
-            acquisition: null,
+            access_users: [],
             alternative_heating_solutions: [],
+            archive_comment: null,
+            archive_reason: null,
+            archived_at: null,
             assigned_to: null,
             commune_code: null,
             created_at: olderDate.toISOString(),
@@ -993,6 +999,8 @@ describe('batEnrRouter', () => {
             epci_code: null,
             ept_code: null,
             id: olderDemand.id,
+            last_ccrt_status_change: null,
+            origin: { acquisition: null, channel: 'unknown', detail: null },
             origin_demand_id: null,
             project_state: DEMANDE_CHALEUR_RENOUVELABLE_PROJECT_STATE_REFLECTION,
             region_code: null,
@@ -1000,6 +1008,8 @@ describe('batEnrRouter', () => {
             rnic_numero_immatriculation: null,
             rnic_siret_representant_legal: null,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
+            transferred_demand_id: null,
+            transferred_network_name: null,
             updated_at: olderDate.toISOString(),
             validated: false,
           },
@@ -1095,6 +1105,9 @@ describe('batEnrRouter', () => {
           {
             ...matchingDemandInput,
             alternative_heating_solutions: [],
+            archive_comment: null,
+            archive_reason: null,
+            archived_at: null,
             assigned_to: null,
             batiment_construction_id: null,
             comments: null,
@@ -1118,6 +1131,8 @@ describe('batEnrRouter', () => {
             rnic_siret_representant_legal: null,
             status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
             surface_area: null,
+            transferred_demand_id: null,
+            transferred_network_name: null,
             updated_at: matchingDate.toISOString(),
             validated: true,
           },
@@ -1430,7 +1445,7 @@ describe('batEnrRouter', () => {
     });
   });
 
-  describe('batEnr.admin.updateDemandeChaleurRenouvelable', () => {
+  describe('batEnr.ccrt.updateDemandeChaleurRenouvelable', () => {
     beforeEach(async () => {
       await seedTableUser([testUsers.admin]);
     });
@@ -1447,6 +1462,7 @@ describe('batEnrRouter', () => {
         .insertInto('demands_chaleur_renouvelable')
         .values({
           address: '1 rue du test',
+          assigned_to: 'Gestionnaire test',
           average_area: 70,
           average_residents: 2,
           dpe: 'E',
@@ -1467,14 +1483,13 @@ describe('batEnrRouter', () => {
 
       const caller = createTestCaller(user);
       const callRoute = () =>
-        caller.batEnr.admin.updateDemandeChaleurRenouvelable({
+        caller.batEnr.ccrt.updateDemandeChaleurRenouvelable({
           demandId: demand.id,
-          values: { assignedTo: 'Gestionnaire test', status: ADMIN_UPDATED_STATUS },
+          values: { status: ADMIN_UPDATED_STATUS },
         });
 
       if (allowed) {
         await expect(callRoute()).resolves.toMatchObject({
-          assigned_to: 'Gestionnaire test',
           id: demand.id,
           status: ADMIN_UPDATED_STATUS,
         });
@@ -1483,11 +1498,12 @@ describe('batEnrRouter', () => {
       }
     });
 
-    it('met à jour le statut et l’affectation', async () => {
+    it('updates the status while preserving the historical assignment', async () => {
       const demand = await kdb
         .insertInto('demands_chaleur_renouvelable')
         .values({
           address: '1 rue du test',
+          assigned_to: 'Gestionnaire test',
           average_area: 70,
           average_residents: 2,
           dpe: 'E',
@@ -1506,9 +1522,9 @@ describe('batEnrRouter', () => {
         .returning(['id'])
         .executeTakeFirstOrThrow();
 
-      await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+      await createTestCaller(testUsers.admin).batEnr.ccrt.updateDemandeChaleurRenouvelable({
         demandId: demand.id,
-        values: { assignedTo: 'Gestionnaire test', status: ADMIN_UPDATED_STATUS },
+        values: { status: ADMIN_UPDATED_STATUS },
       });
 
       const updatedDemand = await kdb
@@ -1529,6 +1545,7 @@ describe('batEnrRouter', () => {
         .insertInto('demands_chaleur_renouvelable')
         .values({
           address: '1 rue du test',
+          assigned_to: 'Gestionnaire test',
           average_area: 70,
           average_residents: 2,
           dpe: 'E',
@@ -1548,7 +1565,7 @@ describe('batEnrRouter', () => {
         .returning(['id'])
         .executeTakeFirstOrThrow();
 
-      await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+      await createTestCaller(testUsers.admin).batEnr.ccrt.updateDemandeChaleurRenouvelable({
         demandId: demand.id,
         values: { status: ADMIN_UPDATED_STATUS },
       });

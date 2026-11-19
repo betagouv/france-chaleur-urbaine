@@ -1,17 +1,18 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { zAdminUpdateDemandeChaleurRenouvelableInput, zCcrtUpdateDemandeChaleurRenouvelableInput } from '../constants';
+import { zCcrtUpdateDemandeChaleurRenouvelableInput } from '../constants';
 import { CcrtFollowUpForm } from './CcrtFollowUpForm';
 
 describe('CcrtFollowUpForm', () => {
-  it.each([zAdminUpdateDemandeChaleurRenouvelableInput, zCcrtUpdateDemandeChaleurRenouvelableInput])(
-    'rejects the retired closed status in update inputs',
-    (schema) => {
-      expect(schema.safeParse({ demandId: 'demand', values: { status: 'Clôturée' } }).success).toStrictEqual(false);
-      expect(schema.safeParse({ demandId: 'demand', values: { status: 'Installation réalisée' } }).success).toStrictEqual(true);
-    }
-  );
+  it('rejects the retired closed status in update inputs', () => {
+    expect(
+      zCcrtUpdateDemandeChaleurRenouvelableInput.safeParse({ demandId: 'demand', values: { status: 'Clôturée' } }).success
+    ).toStrictEqual(false);
+    expect(
+      zCcrtUpdateDemandeChaleurRenouvelableInput.safeParse({ demandId: 'demand', values: { status: 'Installation réalisée' } }).success
+    ).toStrictEqual(true);
+  });
 
   it('autosaves the status without submitting or clearing a drafted note', async () => {
     const onUpdate = vi.fn().mockResolvedValue(undefined);

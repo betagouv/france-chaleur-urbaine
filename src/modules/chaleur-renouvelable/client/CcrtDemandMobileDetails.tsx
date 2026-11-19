@@ -2,15 +2,17 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 
 import Accordion from '@/components/ui/Accordion';
 import Button from '@/components/ui/Button';
+import { DemandOriginCell } from '@/modules/analytics/client/DemandOriginCell';
 import trpc from '@/modules/trpc/client';
 import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand } from '../types';
 import { CcrtBuildingForm } from './CcrtBuildingForm';
-import { CcrtBuildingIdentification } from './CcrtBuildingIdentification';
 import { CcrtDemandFollowUp } from './CcrtDemandFollowUp';
+import { CcrtDemandReopening } from './CcrtDemandReopening';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
+import { CcrtIdentificationForm } from './CcrtIdentificationForm';
 import { CcrtProjectFields } from './CcrtProjectFields';
 import { formatCcrtAddress, getCcrtDemandTab } from './ccrt-workspace';
 import type { useCcrtDemandActions } from './hooks/useCcrtDemandActions';
@@ -45,6 +47,8 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
         <p className="mb-0 break-words font-medium leading-6">
           {demand.occupant_status} · {formatCcrtAddress(demand.address)}
         </p>
+        {onValidate && demand.origin && <DemandOriginCell origin={demand.origin} />}
+        {onValidate && demand.validated && !demand.archived_at && <CcrtDemandReopening demand={demand} />}
       </header>
       <div className="space-y-2 border border-(--background-default-grey-active) bg-(--background-default-grey) p-4">
         <p className="mb-0 font-bold text-(--text-action-high-blue-france)">{isClosed ? 'DEMANDE CLÔTURÉE' : 'PROCHAINE ÉTAPE'}</p>
@@ -72,24 +76,8 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
         ) : (
           <p className="text-sm">Aucune solution enregistrée</p>
         )}
-        <Accordion label="Usager" simple lazy className="border-t border-(--border-default-grey)">
-          <p className="mb-2">
-            {demand.occupant_status}
-            {demand.organization_name && ` · ${demand.organization_name}`}
-          </p>
-          <a
-            href={`mailto:${demand.email}`}
-            className="mb-2 block break-all"
-            onClick={() => actions.trackContact(demand, 'email', 'fiche')}
-          >
-            {demand.email}
-          </a>
-          {demand.phone && (
-            <a href={`tel:${demand.phone}`} className="mb-4 block" onClick={() => actions.trackContact(demand, 'phone', 'fiche')}>
-              {demand.phone}
-            </a>
-          )}
-          <CcrtBuildingIdentification demand={demand} onMap={() => actions.trackMap(demand)} />
+        <Accordion label="Identification" simple lazy className="border-t border-(--border-default-grey)">
+          <CcrtIdentificationForm demand={demand} onMap={() => actions.trackMap(demand)} />
         </Accordion>
         <Accordion label="Bâtiment et chauffage" simple lazy className="border-t border-(--border-default-grey)">
           <CcrtBuildingForm demand={demand} buildingOnly />
@@ -108,7 +96,6 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
             isUpdating={actions.isUpdating}
             onUpdate={(values) => actions.updateDemand(demand, values)}
             onContact={onContact}
-            onManageAccess={() => actions.trackAccess(demand)}
             showContactAction={false}
           />
         </Accordion>
@@ -124,7 +111,7 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
             </Button>
           )}
           {onValidate && !demand.validated ? (
-            <CcrtDemandValidation demandId={demand.id} full onValidate={onValidate} />
+            <CcrtDemandValidation demand={demand} full onValidate={onValidate} />
           ) : (
             <Button full iconId="fr-icon-mail-line" iconPosition="right" onClick={() => onContact()}>
               Contacter par email

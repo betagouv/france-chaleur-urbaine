@@ -68,7 +68,7 @@ describe('CcrtDemandHistory', () => {
 
     render(<CcrtDemandHistory followUp={followUp} offset={0} onPageChange={vi.fn()} onEmailClick={vi.fn()} />);
 
-    expect(screen.queryByRole('heading', { name: 'Information du bâtiment modifiée' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Informations de la demande modifiées' })).toBeNull();
     expect(screen.getByText('Aucune action enregistrée.')).toBeInTheDocument();
   });
 

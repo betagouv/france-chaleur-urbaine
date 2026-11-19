@@ -2,14 +2,16 @@ import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Fragment } from 'react';
 
 import Button from '@/components/ui/Button';
-import { AcquisitionDetails } from '@/modules/analytics/client/AcquisitionDetails';
+import { DemandOriginCell } from '@/modules/analytics/client/DemandOriginCell';
 import type { CcrtTrackingPlacement } from '@/modules/analytics/posthog.config';
 import cx from '@/utils/cx';
 import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand, CcrtDemandUpdate } from '../types';
+import { CcrtDemandAccessColumn } from './CcrtDemandAccessColumn';
 import { CcrtDemandDetails } from './CcrtDemandDetails';
+import { CcrtDemandReopening } from './CcrtDemandReopening';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
 import { CcrtHeatingEnergyTag } from './CcrtHeatingEnergyTag';
 import { formatCcrtAddress, getCcrtDemandTab } from './ccrt-workspace';
@@ -22,7 +24,6 @@ type CcrtDemandRowProps = {
   onContact: (contactType: 'email' | 'phone') => void;
   onSimulation: (placement?: CcrtTrackingPlacement) => void;
   onMap: () => void;
-  onManageAccess: () => void;
   onSendEmail: (showHistory?: boolean, placement?: CcrtTrackingPlacement, emailId?: string) => void;
   onUpdate: (values: CcrtDemandUpdate) => Promise<void>;
   onValidate?: (demandId: string) => Promise<void>;
@@ -42,7 +43,6 @@ export function CcrtDemandRow({
   onSendEmail,
   onValidate,
   onMap,
-  onManageAccess,
 }: CcrtDemandRowProps) {
   const isToProcess = demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS;
   const fullName = `${demand.first_name} ${demand.last_name}`;
@@ -101,7 +101,6 @@ export function CcrtDemandRow({
             >
               {demand.email}
             </a>
-            <AcquisitionDetails acquisition={demand.acquisition} />
           </div>
         </td>
         <td className="align-top!">
@@ -160,9 +159,11 @@ export function CcrtDemandRow({
             </p>
           )}
         </td>
+        {onValidate && <td>{demand.origin && <DemandOriginCell origin={demand.origin} />}</td>}
+        {onValidate && <td>{demand.access_users && <CcrtDemandAccessColumn demandId={demand.id} users={demand.access_users} />}</td>}
         <td className="text-center!">
           {onValidate && !demand.validated ? (
-            <CcrtDemandValidation demandId={demand.id} onValidate={onValidate} />
+            <CcrtDemandValidation demand={demand} onValidate={onValidate} />
           ) : (
             <Button
               priority={isToProcess ? 'primary' : 'secondary'}
@@ -173,11 +174,12 @@ export function CcrtDemandRow({
               {isToProcess ? 'Contacter' : 'Relancer'}
             </Button>
           )}
+          {onValidate && demand.validated && !demand.archived_at && <CcrtDemandReopening demand={demand} full />}
         </td>
       </tr>
       {isExpanded && (
         <tr className="border-l-4 border-(--border-active-blue-france) bg-(--background-alt-blue-france)!">
-          <td colSpan={7} className="p-0!">
+          <td colSpan={onValidate ? 9 : 7} className="p-0!">
             <CcrtDemandDetails
               demand={demand}
               isUpdating={isUpdating}
@@ -185,7 +187,6 @@ export function CcrtDemandRow({
               onContact={(showHistory, emailId) => onSendEmail(showHistory, 'fiche', emailId)}
               onSimulation={() => onSimulation('fiche')}
               onMap={onMap}
-              onManageAccess={onManageAccess}
               onCollapse={onToggle}
             />
           </td>
