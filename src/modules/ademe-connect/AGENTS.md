@@ -38,12 +38,12 @@ Without `CLIENT_ID` + `CLIENT_SECRET`, `createContact` / `updateContact` are no-
 
 ## Key behaviors
 
-- **Synced roles: every role except `admin`** (`isSyncedRole`). Callers must guard every call with it.
+- **Synced roles: every role except `admin` and `particulier`** (`isSyncedRole`). Callers must guard every call with it. `admin` accounts belong to the FCU team; `particulier` accounts are being phased out (deleted soon), so nothing is sent for them anymore — no creation, no update, no `dateConnexion` on login — and the contacts already on the CRM are left as is.
 - **The contact key is the email.** An email change is not propagated: admin updates keep targeting the email known before the update (see `users/server/service.ts` → `update`).
 - **`actif` is never sent**: deactivation, deletion and retention are not mirrored to the CRM.
-- Rubriques: one `FCU - rôle …` per role + one `FCU - structure …` per structure type (`buildRubriques`). `typeOrganisme` is derived from the role (`ROLE_TYPE_ORGANISME`) and only set for particulier (`Particulier`), gestionnaire and professionnel (`Entreprise`); other roles are sent without it.
+- Rubriques: one `FCU - rôle …` per role + one `FCU - structure …` per structure type (`buildRubriques`). `typeOrganisme` is derived from the role (`ROLE_TYPE_ORGANISME`) and only set for gestionnaire and professionnel (`Entreprise`); other roles are sent without it.
 - `siret` is sent from `users.entreprise` when the user has one (optional); clearing the entreprise does not clear the SIRET on the CRM side (empty fields are stripped).
-- On update, callers send `rubriquesASupprimer: ALL_FCU_RUBRIQUES` together with the new `rubriques` so the contact ends up with exactly the FCU rubriques of its current role/structure (non-FCU rubriques untouched).
+- On update, callers send `rubriquesASupprimer: ALL_FCU_RUBRIQUES` together with the new `rubriques` so the contact ends up with exactly the FCU rubriques of its current role/structure (non-FCU rubriques untouched). The list also carries the retired `FCU - rôle particulier` rubrique (`RETIRED_RUBRIQUES`): the contacts of particulier accounts are left as is on the CRM, so an account moved to a synced role, or a later account on the same email, drops it at its first update.
 - Auth: `client_id` + `client_secret` headers on every request.
 - Logging: `info` lines carry only a pseudonymized email; the full request payload and the API response are logged at `debug` level (`LOG_LEVEL=debug`), which exposes personal data — never enable it durably in production.
 - `acceptationRGPD` mirrors `users.accepted_cgu_at`, which only the public registration form sets: `true` on register, `false` for admin or partner-created accounts, read from the row in the bulk backfill.
@@ -57,7 +57,7 @@ Without `CLIENT_ID` + `CLIENT_SECRET`, `createContact` / `updateContact` are no-
 
 | Caller | Operation | Trigger |
 |--------|-----------|---------|
-| `modules/auth/server/service.ts` → `register` | `createContact` | Public self-registration (particulier, professionnel) |
+| `modules/auth/server/service.ts` → `register` | `createContact` | Public self-registration (professionnel) |
 | `modules/auth/server/service.ts` → `login` | `updateContact` | Login: update `dateConnexion` |
 | `modules/users/server/service.ts` → `create` | `createContact` | Admin or partner API (ENGIE feed) creates a user, any synced role |
 | `modules/users/server/service.ts` → `update` | `updateContact` | Admin edits a user: identity, phone, rubriques (resync from the stored row, under the previous email); never the newsletter subscription |
@@ -76,7 +76,7 @@ pnpm cli ademe-connect contact:create <email> [--nom] [--prenom] [--telephone] [
 pnpm cli ademe-connect contacts:bulk-create [--dry-run] [--role <role>]
 ```
 
-`contacts:bulk-create`: fetches every valid and active FCU user except admins (optionally one role) and creates them one by one in the ADEME Connect API. Intended for backfilling existing accounts, e.g. after a new role is added to the sync.
+`contacts:bulk-create`: fetches every valid and active FCU user of a synced role (optionally a single one) and creates them one by one in the ADEME Connect API. Intended for backfilling existing accounts, e.g. after a new role is added to the sync.
 
 ## Dependencies
 

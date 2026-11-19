@@ -10,7 +10,8 @@ describe('buildRubriques', () => {
   const cases: TestCase<[UserRole | null | undefined, StructureType | null | undefined], string[] | undefined>[] = [
     { expectedOutput: undefined, input: [undefined, undefined], label: 'no role and no structure → undefined' },
     { expectedOutput: undefined, input: ['admin', null], label: 'admin has no rubrique → undefined' },
-    { expectedOutput: ['FCU - rôle particulier'], input: ['particulier', null], label: 'particulier without structure' },
+    { expectedOutput: undefined, input: ['particulier', null], label: 'particulier is no longer synced → undefined' },
+    { expectedOutput: ['FCU - rôle professionnel'], input: ['professionnel', null], label: 'professionnel without structure' },
     {
       expectedOutput: ['FCU - rôle professionnel', "FCU - structure Bureau d'études"],
       input: ['professionnel', 'bureau_etudes'],
@@ -41,7 +42,8 @@ describe('isSyncedRole', () => {
     { expectedOutput: false, input: undefined },
     { expectedOutput: false, input: null },
     { expectedOutput: false, input: 'admin' },
-    ...userRoles.filter((role) => role !== 'admin').map((role) => ({ expectedOutput: true, input: role })),
+    { expectedOutput: false, input: 'particulier' },
+    ...userRoles.filter((role) => role !== 'admin' && role !== 'particulier').map((role) => ({ expectedOutput: true, input: role })),
   ];
 
   cases.forEach(({ input, expectedOutput }) => {
@@ -54,6 +56,10 @@ describe('isSyncedRole', () => {
 describe('ALL_FCU_RUBRIQUES', () => {
   it('lists every rubrique once (the list is sent as rubriquesASupprimer on each profile update)', () => {
     expect(new Set(ALL_FCU_RUBRIQUES).size).toStrictEqual(ALL_FCU_RUBRIQUES.length);
+  });
+
+  it('still removes the particulier rubrique from the contacts that carry it', () => {
+    expect(ALL_FCU_RUBRIQUES.includes('FCU - rôle particulier')).toStrictEqual(true);
   });
 
   it('covers every synced role', () => {
