@@ -96,7 +96,6 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
             isUpdating={actions.isUpdating}
             onUpdate={(values) => actions.updateDemand(demand, values)}
             onContact={onContact}
-            onManageAccess={() => actions.trackAccess(demand)}
             showContactAction={false}
           />
         </Accordion>

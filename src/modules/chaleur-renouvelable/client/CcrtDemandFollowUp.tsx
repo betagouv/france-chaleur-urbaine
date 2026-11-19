@@ -19,21 +19,13 @@ type CcrtDemandFollowUpProps = {
   isUpdating: boolean;
   onUpdate: (values: CcrtDemandUpdate) => Promise<void>;
   onContact: (showHistory?: boolean, emailId?: string) => void;
-  onManageAccess?: () => void;
   showContactAction?: boolean;
 };
 
 /**
  * Contact action and existing status controls for a CCRT demand.
  */
-export function CcrtDemandFollowUp({
-  demand,
-  isUpdating,
-  onUpdate,
-  onContact,
-  onManageAccess,
-  showContactAction = true,
-}: CcrtDemandFollowUpProps) {
+export function CcrtDemandFollowUp({ demand, isUpdating, onUpdate, onContact, showContactAction = true }: CcrtDemandFollowUpProps) {
   const [offset, setOffset] = useState(0);
   const { hasRole } = useAuthentication();
   const followUp = trpc.batEnr.ccrt.getFollowUp.useQuery({ demandId: demand.id, offset });
@@ -87,7 +79,7 @@ export function CcrtDemandFollowUp({
             onPageChange={setOffset}
             onEmailClick={(emailId) => onContact(true, emailId)}
           />
-          <CcrtDemandAccess users={followUp.data.users} onManageAccess={onManageAccess} />
+          <CcrtDemandAccess users={followUp.data.users} />
         </>
       ) : (
         <p className="p-4" role="status">

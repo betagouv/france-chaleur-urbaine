@@ -24,7 +24,6 @@ type CcrtDemandRowProps = {
   onContact: (contactType: 'email' | 'phone') => void;
   onSimulation: (placement?: CcrtTrackingPlacement) => void;
   onMap: () => void;
-  onManageAccess: () => void;
   onSendEmail: (showHistory?: boolean, placement?: CcrtTrackingPlacement, emailId?: string) => void;
   onUpdate: (values: CcrtDemandUpdate) => Promise<void>;
   onValidate?: (demandId: string) => Promise<void>;
@@ -44,7 +43,6 @@ export function CcrtDemandRow({
   onSendEmail,
   onValidate,
   onMap,
-  onManageAccess,
 }: CcrtDemandRowProps) {
   const isToProcess = demand.status === DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS;
   const fullName = `${demand.first_name} ${demand.last_name}`;
@@ -189,7 +187,6 @@ export function CcrtDemandRow({
               onContact={(showHistory, emailId) => onSendEmail(showHistory, 'fiche', emailId)}
               onSimulation={() => onSimulation('fiche')}
               onMap={onMap}
-              onManageAccess={onManageAccess}
               onCollapse={onToggle}
             />
           </td>

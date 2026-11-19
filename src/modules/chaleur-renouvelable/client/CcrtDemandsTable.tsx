@@ -123,7 +123,6 @@ export function CcrtDemandsTable({
             onSendEmail={(showHistory, placement, emailId) => actions.openEmail(demand, showHistory, placement, emailId)}
             onSimulation={(placement) => actions.trackSimulation(demand, placement)}
             onMap={() => actions.trackMap(demand)}
-            onManageAccess={() => actions.trackAccess(demand)}
             onUpdate={(values) => actions.updateDemand(demand, values)}
             onValidate={onValidate}
           />
