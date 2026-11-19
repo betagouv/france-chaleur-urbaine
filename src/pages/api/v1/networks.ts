@@ -26,6 +26,7 @@ export default handleRouteErrors(async (req, res) => {
         'Taux EnR&R',
         'contenu CO2',
         'contenu CO2 ACV',
+        'reseaux classes as est_classe',
         sql<GeoJSON.Geometry>`st_asgeojson(st_transform(geom, 4326))::jsonb`.as('geom'),
       ])
       .union(
@@ -39,6 +40,7 @@ export default handleRouteErrors(async (req, res) => {
             'Taux EnR&R',
             'contenu CO2',
             'contenu CO2 ACV',
+            'reseaux classes as est_classe',
             sql<GeoJSON.Geometry>`st_asgeojson(st_transform(geom, 4326))::jsonb`.as('geom'),
           ])
       )

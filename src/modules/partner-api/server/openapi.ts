@@ -61,6 +61,11 @@ const v1Paths: PathsObject = {
                       "true si l'adresse testée se situe dans le périmètre de développement prioritaire d'un réseau classé (zone où s'applique une obligation de raccordement pour certains bâtiments)",
                     type: 'boolean',
                   },
+                  isClasse: {
+                    description:
+                      "true si le réseau de chaleur renvoyé est classé, false s'il ne l'est pas. La collectivité doit définir le périmètre de développement prioritaire dans lequel s'applique la réglementation: voir inPDP.",
+                    type: ['boolean', 'null'],
+                  },
                   isEligible: {
                     description:
                       "true si la distance entre l'adresse testée et le réseau de chaleur le plus proche est inférieure à un certain seuil de distance* ou si nous avons connaissance d'un réseau de chaleur dans le quartier dont nous n'avons pas le tracé. * Le seuil de distance est fixé à 100 m sur Paris, 200 m ailleurs. En pratique ce seuil dépendra des besoins en chaleur du bâtiment à raccorder. Les valeurs prises ici sont volontairement élevées : le gestionnaire du réseau sera le seul à même d'évaluer la faisabilité du raccordement",
@@ -102,6 +107,7 @@ const v1Paths: PathsObject = {
                   properties: {
                     'contenu CO2': { example: 0.154, type: 'number' },
                     'contenu CO2 ACV': { example: 0.188, type: 'number' },
+                    est_classe: { description: 'true si le réseau est classé', example: true, type: 'boolean' },
                     Gestionnaire: { example: 'CPCU (ENGIE SOLUTIONS)', type: 'string' },
                     geom: {
                       description: 'Géométrie au format GeoJSON',

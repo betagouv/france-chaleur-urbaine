@@ -18,6 +18,7 @@ const GET = async (req: NextApiRequest) => {
     gestionnaire: result.gestionnaire,
     id: result.id,
     inPDP: result.inPDP,
+    isClasse: result.isClasse,
     isEligible: result.isEligible,
     name: result.name,
     rateCO2: result.co2,
