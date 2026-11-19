@@ -122,6 +122,11 @@ const nextConfig: NextConfig = {
               source: '/:path*',
             },
           ]),
+      // Developer sandboxes (/dev/*) are never indexed, production included
+      {
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }],
+        source: '/dev/:path*',
+      },
       {
         headers: [
           {
