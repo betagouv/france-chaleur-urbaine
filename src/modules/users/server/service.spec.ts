@@ -114,7 +114,7 @@ describe('ADEME Connect contact sync', () => {
     mocks.createRecord.mockResolvedValue(record);
 
     await create(
-      { active: true, email, notifications: { new_demands: 'none', pending_demands_reminder: false }, role: 'particulier' },
+      { active: true, email, notifications: { new_demands: 'none', pending_demands_reminder: false }, role: 'professionnel' },
       context
     );
 
@@ -125,10 +125,10 @@ describe('ADEME Connect contact sync', () => {
           email,
           nom: undefined,
           prenom: undefined,
-          rubriques: buildRubriques('particulier', undefined),
+          rubriques: buildRubriques('professionnel', undefined),
           siret: undefined,
           telephone: undefined,
-          typeOrganisme: 'Particulier',
+          typeOrganisme: 'Entreprise',
         },
       ],
     ]);
@@ -142,7 +142,7 @@ describe('ADEME Connect contact sync', () => {
       first_name: 'Jean',
       last_name: 'Dupont',
       phone: null,
-      role: 'particulier',
+      role: 'professionnel',
       structure_type: null,
     });
     mocks.updateRecord.mockResolvedValue({ email, id });
@@ -156,13 +156,52 @@ describe('ADEME Connect contact sync', () => {
         {
           nom: 'Dupont',
           prenom: 'Jean',
-          rubriques: buildRubriques('particulier', null),
+          rubriques: buildRubriques('professionnel', null),
           rubriquesASupprimer: ALL_FCU_RUBRIQUES,
           siret: undefined,
           telephone: undefined,
-          typeOrganisme: 'Particulier',
+          typeOrganisme: 'Entreprise',
         },
       ],
     ]);
+  });
+
+  describe('roles left out of the sync (FCU team, particulier accounts being phased out)', () => {
+    const unsyncedRoles = ['admin', 'particulier'] as const satisfies UserRole[];
+    // The sync is fire-and-forget: let it settle before asserting that nothing was sent.
+    const flushPendingSync = () => new Promise((resolve) => setImmediate(resolve));
+
+    it.each(unsyncedRoles)('creates no contact for a %s account', async (role) => {
+      mocks.findExistingUser.mockResolvedValue(undefined);
+      mocks.createRecord.mockResolvedValue({ id: uuid(1) });
+
+      await create(
+        { active: true, email: 'new-user@example.com', notifications: { new_demands: 'none', pending_demands_reminder: false }, role },
+        context
+      );
+      await flushPendingSync();
+
+      expect(vi.mocked(createContact).mock.calls).toStrictEqual([]);
+    });
+
+    it.each(unsyncedRoles)('does not resync the contact of a %s account on admin update', async (role) => {
+      const id = uuid(1);
+      const email = 'user@example.com';
+      mocks.findUser.mockResolvedValueOnce({ email }).mockResolvedValueOnce({
+        entreprise: null,
+        first_name: 'Jean',
+        last_name: 'Dupont',
+        phone: null,
+        role,
+        structure_type: null,
+      });
+      mocks.updateRecord.mockResolvedValue({ email, id });
+
+      await update(id, { active: true }, {} as ListConfig<'users'>, context);
+      await flushPendingSync();
+
+      expect(mocks.findUser.mock.calls.length).toStrictEqual(2);
+      expect(vi.mocked(updateContact).mock.calls).toStrictEqual([]);
+    });
   });
 });

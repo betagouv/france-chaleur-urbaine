@@ -87,7 +87,7 @@ Données modifiées à l'inscription :
 | Acceptation des CGU | Base — `users.accepted_cgu_at` | Horodatée si cochée |
 | Abonnement à la newsletter | Base — `users.newsletter_optin_at` | Horodaté si coché |
 | Entreprise | Base — `users.entreprise` | Fiche complète récupérée via le SIRET |
-| Contact CRM | ADEME Connect | Nom, prénom, email, téléphone, SIRET de l'entreprise si renseigné, rubriques selon rôle et type de structure, type d'organisme (uniquement pour les rôles particulier, gestionnaire et professionnel), abonnement à la newsletter avec la date du jour uniquement si la case est cochée (sinon aucune information de newsletter n'est transmise) |
+| Contact CRM | ADEME Connect | Nom, prénom, email, téléphone, SIRET de l'entreprise si renseigné, rubriques selon rôle et type de structure, type d'organisme (uniquement pour les rôles gestionnaire et professionnel), abonnement à la newsletter avec la date du jour uniquement si la case est cochée (sinon aucune information de newsletter n'est transmise) |
 
 Données modifiées à l'activation (clic sur le lien) :
 
@@ -116,7 +116,7 @@ Depuis [Gestion des utilisateurs](/admin/users), un admin peut créer un compte 
     compte -- "Si compte actif et rôle gestionnaire" --> mailGest["Email « Ouverture de l'espace gestionnaire »"]:::email
     compte -- "Si compte actif et rôle CCRT" --> mailCcrt["Email « Ouverture d'espace gestionnaire » adapté à l'accompagnement"]:::email
     compte -- "Autres cas" --> noMail["Aucun email : l'admin prévient la personne"]
-    compte -- "Sauf rôle admin" --> crmContact["Contact créé dans ADEME Connect"]:::crm
+    compte -- "Sauf rôles admin et particulier" --> crmContact["Contact créé dans ADEME Connect"]:::crm
     click mailGest "/admin/emails?type=auth.gestionnaire.ouverture-espace" "Voir le modèle d'email"
     click mailCcrt "/admin/emails?type=auth.ccrt.ouverture-espace" "Voir le modèle d'email CCRT"
     click evtCreation "/admin/events?types=user_created_by_admin" "Voir dans l'activité du site"
@@ -128,7 +128,7 @@ Depuis [Gestion des utilisateurs](/admin/users), un admin peut créer un compte 
 
 - Un mot de passe aléatoire est généré : la personne doit utiliser « Mot de passe oublié » pour définir le sien.
 - Un **compte gestionnaire créé actif** reçoit [«&nbsp;Ouverture de l'espace gestionnaire&nbsp;»](/admin/emails?type=auth.gestionnaire.ouverture-espace). Un **compte CCRT créé actif** reçoit la [version adaptée aux demandes d'accompagnement sur son territoire](/admin/emails?type=auth.ccrt.ouverture-espace). Les emails d'ouverture des comptes créés pendant la suspension ne sont pas renvoyés automatiquement ; l'activation ultérieure d'un compte existant ne déclenche pas cet email. Les autres rôles et les comptes créés inactifs ne reçoivent aucun email ; c'est à l'admin de prévenir la personne. Les deux modèles proposent un bouton de connexion et expliquent comment définir son mot de passe via «&nbsp;Mot de passe oublié&nbsp;».
-- Le contact ADEME Connect est créé pour tous les rôles sauf admin (les comptes de l'équipe ne sont jamais synchronisés).
+- Le contact ADEME Connect est créé pour tous les rôles sauf admin (les comptes de l'équipe ne sont jamais synchronisés) et particulier (rôle en cours de suppression, voir [Suppression des comptes particuliers](/admin/doc/inscription-comptes#suppression-des-comptes-particuliers)).
 - Pour un gestionnaire, l'admin choisit aussi ses notifications de demandes : fréquence des nouvelles demandes (quotidien par défaut, hebdomadaire ou aucun email) et rappel des demandes en attente. La personne peut ensuite les modifier elle-même dans « Mon compte » (voir [Rôle : gestionnaire](/admin/doc/role-gestionnaire) et [Relances et notifications](/admin/doc/relances-notifications)).
 - Événement enregistré : [« Création utilisateur (admin) »](/admin/events?types=user_created_by_admin).
 
@@ -138,13 +138,13 @@ Données modifiées :
 | --- | --- | --- |
 | Compte complet | Base — `users` | Email (normalisé en minuscules), rôle, structure, statut « valide », mot de passe aléatoire |
 | Préférences de notification | Base — `users.preferences.notifications` | Choisies par l'admin dans le formulaire, modifiables ensuite par la personne dans « Mon compte » |
-| Contact CRM | ADEME Connect | Créé pour tous les rôles sauf admin, sans aucune information de newsletter (seule l'inscription publique permet de s'abonner) |
+| Contact CRM | ADEME Connect | Créé pour tous les rôles sauf admin et particulier, sans aucune information de newsletter (seule l'inscription publique permet de s'abonner) |
 
 ### Modification et suppression par un admin
 
 Depuis la même page, un admin peut modifier n'importe quel compte (identité, téléphone, rôle, structure, activation) ou le supprimer. Ces actions n'envoient aucun email. L'acceptation des CGU et sa date y sont affichées en lecture seule : seule l'inscription publique la recueille, un admin ne peut pas la poser.
 
-- **Modification** : le contact ADEME Connect est resynchronisé depuis le compte (nom, prénom, téléphone, SIRET de l'entreprise si renseigné, rubriques du rôle et de la structure, type d'organisme pour les rôles particulier, gestionnaire et professionnel). L'abonnement à la newsletter n'est jamais transmis ni modifié. **Le changement d'email n'est pas répercuté** : le contact reste connu sous l'ancien email dans le CRM. L'état actif ou inactif du compte n'est pas transmis.
+- **Modification** : le contact ADEME Connect est resynchronisé depuis le compte (nom, prénom, téléphone, SIRET de l'entreprise si renseigné, rubriques du rôle et de la structure, type d'organisme pour les rôles gestionnaire et professionnel), sauf pour les comptes admin et particulier, qui ne sont pas synchronisés. L'abonnement à la newsletter n'est jamais transmis ni modifié. **Le changement d'email n'est pas répercuté** : le contact reste connu sous l'ancien email dans le CRM. L'état actif ou inactif du compte n'est pas transmis.
 - **Suppression** : rien n'est envoyé à ADEME Connect, le contact y reste tel quel.
 - Événements enregistrés : [«&nbsp;Mise à jour utilisateur (admin)&nbsp;»](/admin/events?types=user_updated_by_admin), [«&nbsp;Suppression utilisateur (admin)&nbsp;»](/admin/events?types=user_deleted_by_admin).
 
@@ -188,7 +188,7 @@ Sans lien de retour explicite, un compte CCRT arrive sur les demandes d'accompag
 Chaque connexion réussie a des effets de bord :
 
 - Les **demandes déposées avec le même email** (y compris sans compte, via le formulaire public) sont automatiquement rattachées au compte, ce qui les fait apparaître dans «&nbsp;Mes demandes&nbsp;».
-- La date de connexion est mise à jour dans ADEME Connect.
+- La date de connexion est mise à jour dans ADEME Connect, sauf pour les comptes admin et particulier.
 - Événement enregistré : [« Connexion utilisateur »](/admin/events?types=user_login).
 
 Cas de refus :
@@ -202,7 +202,7 @@ Données modifiées :
 | Donnée | Où | Détail |
 | --- | --- | --- |
 | Rattachement des demandes | Base — `demands.user_id` | Toute demande portant le même email est reliée au compte |
-| Date de connexion | ADEME Connect | Mise à jour à chaque connexion |
+| Date de connexion | ADEME Connect | Mise à jour à chaque connexion, sauf comptes admin et particulier |
 
 ## Double authentification des admins
 
@@ -286,4 +286,6 @@ Le compte particulier n'avait qu'un usage propre : «&nbsp;Mes demandes&nbsp;»,
 1. Le formulaire d'inscription ne propose plus que le rôle professionnel ; les pages de connexion et d'inscription affichent un encart «&nbsp;Compte professionnel&nbsp;» et renvoient vers [Suivre ma demande](/suivre-ma-demande). Un échec de connexion et la demande de réinitialisation de mot de passe affichent le même rappel, pour tout email, sans révéler si un compte existe.
 2. Au moins 15 jours avant la date choisie, un admin envoie depuis la page temporaire [Suppression des comptes particuliers](/admin/suppression-comptes-particuliers) l'email [«&nbsp;Suppression du compte particulier (annonce)&nbsp;»](/admin/emails?type=auth.utilisateur.suppression-compte-particulier) à chaque compte particulier actif. La page liste les comptes, leur état (déjà prévenu ou non, adresse bloquée côté Brevo) et demande la date de suppression (au moins 15 jours après l'envoi). Chaque envoi est tracé par l'événement [«&nbsp;Annonce de suppression du compte particulier&nbsp;»](/admin/events?types=user_particulier_deletion_announced) sur le compte, et un compte déjà prévenu n'est pas recontacté : relancer après un incident reprend là où l'envoi s'est arrêté.
 3. À la date annoncée, `pnpm cli users particulier:delete` supprime les comptes (identifiant, mot de passe, préférences). Les demandes sont **conservées** et restent visibles et traitables par les gestionnaires et CCRT : elles sont simplement détachées du compte. Événement : [«&nbsp;Suppression des comptes particuliers&nbsp;»](/admin/events?types=user_particulier_accounts_deleted).
+
+Dans l'attente de leur suppression, les comptes particuliers ne sont plus synchronisés avec ADEME Connect : aucun contact n'est créé ni modifié pour ce rôle, et la date de connexion n'est plus transmise. Les contacts déjà présents dans le CRM y restent tels quels, la suppression des comptes ne leur envoie rien.
 

@@ -2,11 +2,13 @@ import type { Command } from '@commander-js/extra-typings';
 import dayjs from 'dayjs';
 import { z } from 'zod';
 
-import { buildRubriques, ROLE_TYPE_ORGANISME } from '@/modules/ademe-connect/constants';
+import { buildRubriques, isSyncedRole, ROLE_TYPE_ORGANISME, type SyncedRole } from '@/modules/ademe-connect/constants';
 import { createContact, getContact } from '@/modules/ademe-connect/server/client';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
-import { type UserRole, userRoles } from '@/types/enum/UserRole';
+import { userRoles } from '@/types/enum/UserRole';
+
+const syncedRoles = userRoles.filter(isSyncedRole);
 
 export function registerAdemeConnectCommands(parentProgram: Command) {
   const program = parentProgram.command('ademe-connect').description('Commandes pour le CRM ADEME Connect');
@@ -27,7 +29,7 @@ export function registerAdemeConnectCommands(parentProgram: Command) {
     .option('--nom <nom>', 'Nom du contact')
     .option('--prenom <prenom>', 'Prénom du contact')
     .option('--telephone <telephone>', 'Téléphone du contact')
-    .option('--type-organisme <typeOrganisme>', 'Type organisme (Particulier, Entreprise, Collectivité…)')
+    .option('--type-organisme <typeOrganisme>', 'Type organisme (Entreprise, Collectivité…)')
     .action(async (email, options) => {
       const result = await createContact({
         email,
@@ -41,9 +43,9 @@ export function registerAdemeConnectCommands(parentProgram: Command) {
 
   program
     .command('contacts:bulk-create')
-    .description("Crée en masse tous les comptes FCU valides et actifs (hors admins) dans ADEME Connect (reprise de l'existant)")
+    .description("Crée en masse les comptes FCU valides et actifs (hors admins et particuliers) dans ADEME Connect (reprise de l'existant)")
     .option('--dry-run', "Affiche les contacts qui seraient créés sans appeler l'API", false)
-    .option('--role <role>', 'Limite la reprise à un rôle (ex. ccrt, collectivite)', (v) => z.enum(userRoles).parse(v))
+    .option('--role <role>', 'Limite la reprise à un rôle synchronisé (ex. ccrt, collectivite)', (v) => z.enum(syncedRoles).parse(v))
     .action(async ({ dryRun, role }) => {
       const users = await kdb
         .selectFrom('users')
@@ -60,10 +62,10 @@ export function registerAdemeConnectCommands(parentProgram: Command) {
           'last_connection',
           'entreprise',
         ])
-        .where((eb) => (role ? eb('role', '=', role) : eb('role', '<>', 'admin')))
+        .where('role', 'in', role ? [role] : syncedRoles)
         .where('status', '=', 'valid')
         .where('active', '=', true)
-        .$narrowType<{ role: Exclude<UserRole, 'admin'> }>()
+        .$narrowType<{ role: SyncedRole }>()
         .orderBy('created_at', 'asc')
         .execute();
 

@@ -57,9 +57,9 @@ describe('ademe-connect client', () => {
         email: 'jean@example.com',
         nom: 'Dupont',
         prenom: '',
-        rubriques: ['FCU - rôle particulier'],
+        rubriques: ['FCU - rôle professionnel'],
         telephone: undefined,
-        typeOrganisme: 'Particulier',
+        typeOrganisme: 'Entreprise',
       });
 
       expect(result).toStrictEqual(queueAck);
@@ -71,9 +71,9 @@ describe('ademe-connect client', () => {
             dateCreation: '2026-10-08T10:00:00',
             email: 'jean@example.com',
             nom: 'Dupont',
-            rubriques: ['FCU - rôle particulier'],
+            rubriques: ['FCU - rôle professionnel'],
             source: 'France Chaleur Urbaine',
-            typeOrganisme: 'Particulier',
+            typeOrganisme: 'Entreprise',
           },
           authHeaders,
         ],

@@ -1,25 +1,25 @@
 import type { StructureType } from '@/modules/users/constants';
 import type { UserRole } from '@/types/enum/UserRole';
 
-/**
- * Admin accounts belong to the FCU team: they are never synchronized to ADEME Connect.
- * Every other role is (contact creation and updates).
- */
-export const isSyncedRole = (role?: UserRole | null): role is Exclude<UserRole, 'admin'> => !!role && role !== 'admin';
+export type SyncedRole = Exclude<UserRole, 'admin' | 'particulier'>;
 
 /**
- * `typeOrganisme` expected by ADEME Connect. Only set for particulier, gestionnaire and professionnel;
+ * Roles never synchronized to ADEME Connect (no contact creation nor update): admin accounts belong to the FCU team,
+ * and particulier accounts are being phased out (they are about to be deleted). Every other role is synchronized.
+ */
+export const isSyncedRole = (role?: UserRole | null): role is SyncedRole => !!role && role !== 'admin' && role !== 'particulier';
+
+/**
+ * `typeOrganisme` expected by ADEME Connect. Only set for gestionnaire and professionnel;
  * other roles (collectivité, ALEC, CCRT) are sent without `typeOrganisme`.
  */
-export const ROLE_TYPE_ORGANISME: Partial<Record<Exclude<UserRole, 'admin'>, string>> = {
+export const ROLE_TYPE_ORGANISME: Partial<Record<SyncedRole, string>> = {
   gestionnaire: 'Entreprise',
-  particulier: 'Particulier',
   professionnel: 'Entreprise',
 };
 
 // biome-ignore assist/source/useSortedKeys: keep order matching the rubriques list expected on ADEME Connect
 const ROLE_RUBRIQUES: Partial<Record<UserRole, string>> = {
-  particulier: 'FCU - rôle particulier',
   professionnel: 'FCU - rôle professionnel',
   gestionnaire: 'FCU - rôle gestionnaire',
   collectivite: 'FCU - rôle collectivité',
@@ -40,12 +40,15 @@ const STRUCTURE_RUBRIQUES: Partial<Record<StructureType, string>> = {
   syndic_copropriete: 'FCU - structure Syndic de copropriété',
 };
 
+// no longer sent since particulier accounts are not synchronized, still removed on update from the contacts that carry it
+const RETIRED_RUBRIQUES = ['FCU - rôle particulier'];
+
 /**
  * All FCU rubriques managed by this app on ADEME Connect.
  * Used as `rubriquesASupprimer` on update so the contact ends up with only the rubriques
  * we send in `rubriques` (full sync of FCU rubriques, leaves non-FCU rubriques untouched).
  */
-export const ALL_FCU_RUBRIQUES: string[] = [...Object.values(ROLE_RUBRIQUES), ...Object.values(STRUCTURE_RUBRIQUES)];
+export const ALL_FCU_RUBRIQUES: string[] = [...Object.values(ROLE_RUBRIQUES), ...Object.values(STRUCTURE_RUBRIQUES), ...RETIRED_RUBRIQUES];
 
 /**
  * Builds the `rubriques` array for ADEME Connect from a user's role and structure type.
