@@ -53,7 +53,7 @@ export function IndividualGeothermalHeatPumpArticle() {
 function OverviewSection() {
   return (
     <SolutionSection id="en-quelques-mots">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2">
         <SolutionSummaryCard tone="building">
           <p>
             Maisons équipées d'un chauffage à eau, ou pouvant être adaptées pour accueillir un système de chauffage compatible avec une

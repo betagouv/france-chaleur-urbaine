@@ -51,7 +51,7 @@ export function IndividualAirToAirHeatPumpArticle() {
 function OverviewSection() {
   return (
     <SolutionSection id="en-quelques-mots">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2">
         <SolutionSummaryCard tone="building">
           <p>Bâtiments comprenant des logements équipés d’un chauffage individuel ou maisons individuelles.</p>
         </SolutionSummaryCard>

@@ -53,7 +53,7 @@ export function WoodStoveArticle() {
 function OverviewSection() {
   return (
     <SolutionSection id="en-quelques-mots">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2">
         <SolutionSummaryCard tone="building">
           <p>Tous, dès lors qu’ils comportent une évacuation des fumées ou qu’une évacuation des fumées peut être installée</p>
         </SolutionSummaryCard>

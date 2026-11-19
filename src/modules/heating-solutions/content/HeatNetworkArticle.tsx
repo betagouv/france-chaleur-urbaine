@@ -53,7 +53,7 @@ export function HeatNetworkArticle() {
 function OverviewSection() {
   return (
     <SolutionSection id="en-quelques-mots">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2">
         <SolutionSummaryCard tone="building">
           <p>
             Principalement les bâtiments disposant d’un chauffage collectif, situés à proximité d’un réseau de chaleur existant ou en cours
