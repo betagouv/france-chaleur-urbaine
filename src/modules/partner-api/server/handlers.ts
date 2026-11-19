@@ -110,6 +110,7 @@ export const patchDemand: PartnerApiHandler<void> = async (req, res, auth) => {
       .returning('id')
       .executeTakeFirst();
     if (!updated) {
+      // Une annulation de transfert peut supprimer la demande après le contrôle d'accès.
       return false;
     }
 

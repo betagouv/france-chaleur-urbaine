@@ -11,6 +11,7 @@ import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
 
 import { processCcrtModerationEmail } from './ccrt-moderation-email';
+import { getNearestFranceRenovSpace } from './france-renov-directory';
 
 vi.mock('@/modules/email', () => ({ sendEmailTemplate: vi.fn() }));
 vi.mock('@/utils/network', () => ({ fetchJSON: vi.fn(), postFetchJSON: vi.fn() }));
@@ -161,7 +162,8 @@ describe('CCRT moderation lifecycle', () => {
       .set({ data: sql`jsonb_set(${JSON.stringify(job.data)}::jsonb, '{deliveryStatus}', '"sending"')` })
       .where('id', '=', job.id)
       .execute();
-    await expect(processCcrtModerationEmail(job, parentLogger)).rejects.toThrow('Envoi déjà réservé');
+    const reservedJob = await kdb.selectFrom('jobs').select(['id', 'data']).where('id', '=', job.id).executeTakeFirstOrThrow();
+    await expect(processCcrtModerationEmail(reservedJob, parentLogger)).rejects.toThrow('Envoi déjà réservé');
     expect(sendEmailTemplate).not.toHaveBeenCalled();
   });
   it.each([true, false])('archives with optional user email (%s), excludes CCRT and restores without email', async (sendEmail) => {
@@ -181,7 +183,7 @@ describe('CCRT moderation lifecycle', () => {
     });
     expect((await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable()).items).toStrictEqual([]);
     await expect(route.validateDemandeChaleurRenouvelable({ demandId: demand.id })).rejects.toMatchObject({ code: 'CONFLICT' });
-    const jobs = await kdb.selectFrom('jobs').select('id').execute();
+    const jobs = await kdb.selectFrom('jobs').select(['id', 'data']).execute();
     expect(jobs.length).toStrictEqual(sendEmail ? 1 : 0);
     await route.restoreDemand({ demandId: demand.id });
     expect(
@@ -238,9 +240,10 @@ describe('CCRT moderation lifecycle', () => {
     const managerDemands = await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.list();
     expect(managerDemands.map((item) => item.id)).toStrictEqual([result.transferredDemandId]);
     await expect(route.transferDemand({ demandId: demand.id, networkId: 500 })).rejects.toMatchObject({ code: 'CONFLICT' });
-    const job = await kdb.selectFrom('jobs').select('id').executeTakeFirstOrThrow();
+    const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
     await processCcrtModerationEmail(job, parentLogger);
-    await processCcrtModerationEmail(job, parentLogger);
+    const sentJob = await kdb.selectFrom('jobs').select(['id', 'data']).where('id', '=', job.id).executeTakeFirstOrThrow();
+    expect(await processCcrtModerationEmail(sentJob, parentLogger)).toStrictEqual({ alreadySent: true });
     expect(sendEmailTemplate).toHaveBeenCalledExactlyOnceWith(
       'demands.demandeur.transfert-chaleur-renouvelable',
       { email: demand.email },
@@ -275,7 +278,7 @@ describe('CCRT moderation lifecycle', () => {
       validated: false,
     });
     expect(await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.list()).toStrictEqual([]);
-    const job = await kdb.selectFrom('jobs').select('id').executeTakeFirstOrThrow();
+    const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
     expect(await processCcrtModerationEmail(job, parentLogger)).toStrictEqual({ skipped: true });
     expect(sendEmailTemplate).not.toHaveBeenCalled();
     expect(
@@ -389,7 +392,7 @@ describe('CCRT moderation lifecycle', () => {
     vi.mocked(sendEmailTemplate).mockImplementationOnce(async () => {
       await expect(route.restoreDemand({ demandId: demand.id })).rejects.toMatchObject({ code: 'CONFLICT' });
     });
-    await processCcrtModerationEmail(await kdb.selectFrom('jobs').select('id').executeTakeFirstOrThrow(), parentLogger);
+    await processCcrtModerationEmail(await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow(), parentLogger);
     await route.restoreDemand({ demandId: demand.id });
     expect(sendEmailTemplate).toHaveBeenCalledTimes(1);
   });
@@ -454,11 +457,32 @@ describe('CCRT moderation lifecycle', () => {
   it('delivers an archive notice with fallback advice and keeps failed SMTP retryable', async () => {
     const demand = await seedDemandeChaleurRenouvelable();
     await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
-    const job = await kdb.selectFrom('jobs').select('id').executeTakeFirstOrThrow();
+    const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
     vi.mocked(sendEmailTemplate).mockRejectedValueOnce(new Error('SMTP unavailable'));
     await expect(processCcrtModerationEmail(job, parentLogger)).rejects.toThrow('SMTP unavailable');
-    await processCcrtModerationEmail(job, parentLogger);
+    const failedJob = await kdb.selectFrom('jobs').select(['id', 'data']).where('id', '=', job.id).executeTakeFirstOrThrow();
+    await processCcrtModerationEmail(failedJob, parentLogger);
+    expect(getNearestFranceRenovSpace).toHaveBeenLastCalledWith({ lat: 48.8566, lon: 2.3522 });
     expect(sendEmailTemplate).toHaveBeenLastCalledWith(
+      'demands.demandeur.archivage-chaleur-renouvelable',
+      { email: demand.email },
+      { demand: expect.objectContaining({ address: demand.address }), space: null }
+    );
+  });
+
+  it.each(['no address', 'geocoding aborted'])('sends the archive notice with national fallback when %s', async (outcome) => {
+    const demand = await seedDemandeChaleurRenouvelable();
+    await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
+    const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
+    if (outcome === 'no address') {
+      vi.mocked(fetchJSON).mockResolvedValueOnce({ features: [] });
+    } else {
+      vi.mocked(fetchJSON).mockRejectedValueOnce(new DOMException('The operation was aborted.', 'AbortError'));
+    }
+
+    expect(await processCcrtModerationEmail(job, parentLogger)).toStrictEqual({ sent: true });
+    expect(getNearestFranceRenovSpace).not.toHaveBeenCalled();
+    expect(sendEmailTemplate).toHaveBeenCalledExactlyOnceWith(
       'demands.demandeur.archivage-chaleur-renouvelable',
       { email: demand.email },
       { demand: expect.objectContaining({ address: demand.address }), space: null }

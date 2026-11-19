@@ -1,21 +1,19 @@
 import type { Selectable } from 'kysely';
 import type { Logger } from 'winston';
 
-import type { BANAddressFeature } from '@/modules/ban/types';
+import { searchBANAddresses } from '@/modules/ban/client';
 import { sendEmailTemplate } from '@/modules/email';
-import { serverConfig } from '@/server/config';
 import { type Jobs, kdb, sql } from '@/server/db/kysely';
-import { fetchJSON } from '@/utils/network';
 
 import { zCcrtModerationEmailData } from '../constants';
 import { getNearestFranceRenovSpace } from './france-renov-directory';
 
 /**
- * Delivers moderation emails after commit, retaining a reservation when SMTP success cannot be reconciled.
+ * Sends archive/transfer notices after the moderation transaction commits.
+ * Delivery reservations prevent duplicate sends and restoration during SMTP delivery.
  */
-export const processCcrtModerationEmail = async (job: Pick<Selectable<Jobs>, 'id'>, logger: Logger) => {
-  const storedJob = await kdb.selectFrom('jobs').select('data').where('id', '=', job.id).executeTakeFirstOrThrow();
-  const data = zCcrtModerationEmailData.parse(storedJob.data);
+export const processCcrtModerationEmail = async (job: Pick<Selectable<Jobs>, 'id' | 'data'>, logger: Logger) => {
+  const data = zCcrtModerationEmailData.parse(job.data);
   if (data.deliveryStatus === 'sent') {
     return { alreadySent: true };
   }
@@ -89,11 +87,12 @@ export const processCcrtModerationEmail = async (job: Pick<Selectable<Jobs>, 'id
 
 const findAdviceSpace = async (address: string, logger: Logger) => {
   try {
-    const result = await fetchJSON<{ features: BANAddressFeature[] }>(`${serverConfig.banApiBaseUrl}search`, {
-      params: { limit: 1, q: address },
+    const addresses = await searchBANAddresses({
+      limit: 1,
+      query: address,
       signal: AbortSignal.timeout(10000),
     });
-    const coordinates = result.features[0]?.geometry.coordinates;
+    const coordinates = addresses[0]?.geometry.coordinates;
     return coordinates ? await getNearestFranceRenovSpace({ lat: coordinates[1], lon: coordinates[0] }) : null;
   } catch {
     logger.warn('Advice centre geocoding unavailable');
