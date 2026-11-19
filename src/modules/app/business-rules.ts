@@ -256,10 +256,11 @@ export const businessRules = {
     label: 'Suivi des réseaux : demande en retard',
     value: 30,
   },
-  networkTrackingResponseWindowMonths: {
-    description: 'Période glissante sur laquelle le suivi des réseaux calcule le taux et le délai de réponse des gestionnaires.',
+  networkTrackingRecentMonths: {
+    description:
+      "Ancienneté maximale du dépôt d'une demande pour qu'elle compte dans l'état et les indicateurs du suivi des réseaux (demandes à traiter, taux et délai de réponse). Les demandes plus anciennes sont seulement dénombrées à part.",
     display: '12 mois',
-    label: 'Suivi des réseaux : période du taux de réponse',
+    label: 'Suivi des réseaux : demandes récentes',
     value: 12,
   },
   networkTrackingSilentDays: {

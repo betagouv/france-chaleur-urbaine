@@ -35,6 +35,7 @@ export default function NetworkTrackingDetailPage() {
   const { data: tracking, isLoading, error } = trpc.demands.admin.getNetworkTracking.useQuery(network.success ? network.data : skipToken);
   const isNotFound = !network.success || error?.data?.code === 'NOT_FOUND';
   const networkName = tracking ? getNetworkName(tracking.summary) : 'Réseau';
+  const demandsCount = tracking ? tracking.summary.recentTotal + tracking.summary.olderTotal : 0;
 
   return (
     <SimplePage title={`${networkName} - Suivi des réseaux`} mode="authenticated" layout="center">
@@ -65,9 +66,9 @@ export default function NetworkTrackingDetailPage() {
                   extensionsCount={tracking.summary.extensions.length}
                 />
                 {isDefined(tracking.summary.powerMW) && <span>{formatMW(tracking.summary.powerMW)}</span>}
-                {tracking.summary.total > 0 && (
+                {demandsCount > 0 && (
                   <Link href={buildAdminDemandsUrl(buildDemandFilters(tracking.summary.networkId, tracking.summary.networkType, false))}>
-                    {tracking.summary.total > 1 ? `Voir les ${tracking.summary.total} demandes` : 'Voir la demande'}
+                    {demandsCount > 1 ? `Voir les ${demandsCount} demandes` : 'Voir la demande'}
                   </Link>
                 )}
               </div>

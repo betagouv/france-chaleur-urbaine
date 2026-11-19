@@ -84,11 +84,12 @@ export function createPolygonGeometry(lon: number, lat: number, radiusMeters: nu
 }
 
 export async function cleanDatabase() {
+  // Extensions reference their parent heat network (ON DELETE SET NULL): deleting both tables at once deadlocks on the extension rows
+  await kdb.deleteFrom('zones_et_reseaux_en_construction').execute();
   // Parallelize all table cleanups (ordered by FK constraints between groups)
   await Promise.all([
     // Network tables
     kdb.deleteFrom('zone_de_developpement_prioritaire').execute(),
-    kdb.deleteFrom('zones_et_reseaux_en_construction').execute(),
     kdb.deleteFrom('reseaux_de_chaleur').execute(),
     kdb.deleteFrom('reseaux_de_froid').execute(),
 

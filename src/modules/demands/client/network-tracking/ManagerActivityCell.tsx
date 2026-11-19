@@ -1,20 +1,16 @@
-import { businessRules } from '@/modules/app/business-rules';
-
-import { formatDurationDays, formatResponseRate } from './format';
+import { formatDurationDays, formatResponseRate, recentWindowLabel } from './format';
 import { LastManagerAction } from './LastManagerAction';
 import type { NetworkTrackingSummary } from './types';
-
-const responseWindow = businessRules.networkTrackingResponseWindowMonths.display;
 
 type ManagerActivityCellProps = {
   network: NetworkTrackingSummary;
 };
 
 /**
- * What the managers of a network did with its demands: last action, then response rate and median delay over the tracking window.
+ * What the managers of a network did with its demands: last action on any of them, then response rate and median delay on the recent ones.
  */
 export function ManagerActivityCell({ network }: ManagerActivityCellProps) {
-  if (network.total === 0) {
+  if (network.state === 'no_demand') {
     return null;
   }
   return (
@@ -23,7 +19,7 @@ export function ManagerActivityCell({ network }: ManagerActivityCellProps) {
         <LastManagerAction date={network.lastManagerActionAt} />
       </span>
       {network.recentReceived === 0 ? (
-        <span className="text-(--text-mention-grey)">aucune demande reçue sur {responseWindow}</span>
+        <span className="text-(--text-mention-grey)">aucune demande reçue sur {recentWindowLabel}</span>
       ) : (
         <>
           <span>

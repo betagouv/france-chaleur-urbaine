@@ -2,7 +2,8 @@ import Link from '@/components/ui/Link';
 import { buildAdminDemandsUrl, buildDemandFilters } from '@/modules/demands/client/admin-demands-url';
 import cx from '@/utils/cx';
 
-import { formatDateRange } from './format';
+import { formatDateRange, recentWindowLabel } from './format';
+import { NetworkOlderDemands } from './NetworkOlderDemands';
 import type { NetworkTrackingSummary } from './types';
 
 type NetworkDemandsCellProps = {
@@ -10,44 +11,46 @@ type NetworkDemandsCellProps = {
 };
 
 /**
- * Demands of a network, pending then all: how many (linking to them) and, below each figure, the dates of the oldest and newest one.
+ * Demands of a network: the recent ones first, pending (with the dates of the oldest and newest one) then all, each figure linking to them; the older ones below, apart.
  */
 export function NetworkDemandsCell({ network }: NetworkDemandsCellProps) {
-  if (network.total === 0) {
+  if (network.state === 'no_demand') {
     return <span className="text-sm text-gray-400">Aucune demande</span>;
   }
   return (
     <div className="flex flex-col gap-2 text-xs">
-      <div className="flex flex-col">
-        <span>
-          <Link
-            href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, true))}
-            className={cx('text-base font-bold', network.pending > 0 && 'text-error')}
-          >
-            {network.pending}
-          </Link>{' '}
-          à traiter
-        </span>
-        {network.oldestPendingDemandAt && network.newestPendingDemandAt && (
-          <span className="text-(--text-mention-grey)">
-            {formatDateRange(network.oldestPendingDemandAt, network.newestPendingDemandAt)}
+      {network.recentTotal === 0 ? (
+        <span className="text-(--text-mention-grey)">Aucune demande sur {recentWindowLabel}</span>
+      ) : (
+        <>
+          <div className="flex flex-col">
+            <span>
+              <Link
+                href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, true, 'recent'))}
+                className={cx('text-base font-bold', network.recentPending > 0 && 'text-error')}
+              >
+                {network.recentPending}
+              </Link>{' '}
+              à traiter
+            </span>
+            {network.oldestRecentPendingDemandAt && network.newestRecentPendingDemandAt && (
+              <span className="text-(--text-mention-grey)">
+                {formatDateRange(network.oldestRecentPendingDemandAt, network.newestRecentPendingDemandAt)}
+              </span>
+            )}
+          </div>
+          <span>
+            <Link
+              href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, false, 'recent'))}
+              className="text-base font-bold"
+            >
+              {network.recentTotal}
+            </Link>{' '}
+            sur {recentWindowLabel}
           </span>
-        )}
-      </div>
-      <div className="flex flex-col">
-        <span>
-          <Link
-            href={buildAdminDemandsUrl(buildDemandFilters(network.networkId, network.networkType, false))}
-            className="text-base font-bold"
-          >
-            {network.total}
-          </Link>{' '}
-          au total
-        </span>
-        {network.oldestDemandAt && network.newestDemandAt && (
-          <span className="text-(--text-mention-grey)">{formatDateRange(network.oldestDemandAt, network.newestDemandAt)}</span>
-        )}
-      </div>
+        </>
+      )}
+      <NetworkOlderDemands network={network} />
     </div>
   );
 }

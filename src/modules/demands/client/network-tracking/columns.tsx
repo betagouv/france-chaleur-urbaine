@@ -1,5 +1,4 @@
 import type { ColumnDef } from '@/components/ui/table/TableSimple';
-import { businessRules } from '@/modules/app/business-rules';
 import {
   demandStatusGroupLabels,
   demandStatusGroupOrder,
@@ -10,7 +9,7 @@ import {
 import { compareFrenchStrings } from '@/utils/strings';
 
 import { DemandStatusGroupsBar } from './DemandStatusGroupsBar';
-import { getNetworkName, historyStartLabel } from './format';
+import { getNetworkName, historyStartLabel, recentWindowLabel } from './format';
 import { ManagerActivityCell } from './ManagerActivityCell';
 import { NetworkCell } from './NetworkCell';
 import { NetworkDemandsCell } from './NetworkDemandsCell';
@@ -20,10 +19,9 @@ import { NetworkTrackingRemindersCell } from './NetworkTrackingRemindersCell';
 import { networkTypeLabels } from './NetworkTypeBadges';
 import type { NetworkTrackingSummary } from './types';
 
-const responseWindow = businessRules.networkTrackingResponseWindowMonths.display;
-
 const statusGroupsTooltip = (
   <span className="flex flex-col gap-1">
+    <span>Demandes déposées depuis {recentWindowLabel}.</span>
     {demandStatusGroupOrder.map((group) => (
       <span key={group}>
         <strong>{demandStatusGroupLabels[group]}</strong> : {demandStatusGroups[group].join(', ')}
@@ -35,6 +33,7 @@ const statusGroupsTooltip = (
 /**
  * Columns of the network tracking table. A visible column gathers several figures; the hidden columns that follow it
  * expose each figure on its own to the sort dialog, the filters and the Excel export.
+ * Figures cover the recent demands unless the column says otherwise.
  */
 const columns: ColumnDef<NetworkTrackingSummary>[] = [
   {
@@ -129,38 +128,53 @@ const columns: ColumnDef<NetworkTrackingSummary>[] = [
     visible: false,
   },
   {
-    accessorFn: (row) => row.pending,
+    accessorFn: (row) => row.recentPending,
     cell: ({ row }) => <NetworkDemandsCell network={row.original} />,
-    exportHeader: 'Demandes à traiter',
+    exportHeader: `Demandes à traiter (${recentWindowLabel})`,
     filterProps: { openEndedBounds: true },
     filtersDialogDescription: 'Déplacez le curseur gauche pour fixer un minimum.',
-    filtersDialogLabel: 'Demandes à traiter',
+    filtersDialogLabel: `Demandes à traiter (${recentWindowLabel})`,
     filterType: 'Range',
     header: 'Demandes',
-    headerTooltip:
-      'Demandes « À traiter » puis ensemble des demandes validées du réseau, avec les dates de la plus ancienne et de la plus récente.',
-    id: 'pending',
-    sortDialogLabel: 'Demandes à traiter',
+    headerTooltip: `Demandes validées déposées depuis ${recentWindowLabel} : celles « À traiter », avec les dates de la plus ancienne et de la plus récente, puis leur ensemble. En dessous, les demandes plus anciennes, dénombrées à part, avec la date de la première.`,
+    id: 'recentPending',
+    sortDialogLabel: `Demandes à traiter (${recentWindowLabel})`,
     width: '160px',
   },
   {
-    accessorFn: (row) => row.oldestPendingDemandAt ?? undefined,
+    accessorFn: (row) => row.oldestRecentPendingDemandAt ?? undefined,
     cellType: 'Date',
     exportOnly: true,
     filterType: 'Range',
-    header: 'Plus ancienne demande à traiter',
-    id: 'oldestPendingDemandAt',
+    header: `Plus ancienne demande à traiter (${recentWindowLabel})`,
+    id: 'oldestRecentPendingDemandAt',
     sortUndefined: 'last',
     visible: false,
   },
   {
-    accessorFn: (row) => row.newestPendingDemandAt ?? undefined,
+    accessorFn: (row) => row.newestRecentPendingDemandAt ?? undefined,
     cellType: 'Date',
     exportOnly: true,
     filterType: 'Range',
-    header: 'Plus récente demande à traiter',
-    id: 'newestPendingDemandAt',
+    header: `Plus récente demande à traiter (${recentWindowLabel})`,
+    id: 'newestRecentPendingDemandAt',
     sortUndefined: 'last',
+    visible: false,
+  },
+  {
+    accessorFn: (row) => row.olderTotal,
+    exportOnly: true,
+    filterType: 'Range',
+    header: 'Demandes plus anciennes',
+    id: 'olderTotal',
+    visible: false,
+  },
+  {
+    accessorFn: (row) => row.olderPending,
+    exportOnly: true,
+    filterType: 'Range',
+    header: 'Demandes plus anciennes à traiter',
+    id: 'olderPending',
     visible: false,
   },
   {
@@ -184,29 +198,40 @@ const columns: ColumnDef<NetworkTrackingSummary>[] = [
     visible: false,
   },
   {
-    accessorFn: (row) => row.total,
+    accessorFn: (row) => row.recentTotal,
     cell: ({ row }) =>
-      row.original.total > 0 && (
-        <DemandStatusGroupsBar pending={row.original.pending} inProgress={row.original.inProgress} closed={row.original.closed} />
+      row.original.recentTotal > 0 && (
+        <DemandStatusGroupsBar
+          pending={row.original.recentPending}
+          inProgress={row.original.recentInProgress}
+          closed={row.original.recentClosed}
+        />
       ),
-    exportHeader: 'Demandes validées',
-    filtersDialogLabel: 'Demandes validées',
+    exportHeader: `Demandes validées (${recentWindowLabel})`,
+    filtersDialogLabel: `Demandes validées (${recentWindowLabel})`,
     filterType: 'Range',
     flex: 2,
     header: 'Demandes par statut',
     headerTooltip: statusGroupsTooltip,
-    id: 'total',
-    sortDialogLabel: 'Demandes validées',
+    id: 'recentTotal',
+    sortDialogLabel: `Demandes validées (${recentWindowLabel})`,
   },
   {
-    accessorFn: (row) => row.inProgress,
+    accessorFn: (row) => row.recentInProgress,
     exportOnly: true,
     filterType: 'Range',
-    header: 'Demandes en cours',
-    id: 'inProgress',
+    header: `Demandes en cours (${recentWindowLabel})`,
+    id: 'recentInProgress',
     visible: false,
   },
-  { accessorFn: (row) => row.closed, exportOnly: true, filterType: 'Range', header: 'Demandes closes', id: 'closed', visible: false },
+  {
+    accessorFn: (row) => row.recentClosed,
+    exportOnly: true,
+    filterType: 'Range',
+    header: `Demandes closes (${recentWindowLabel})`,
+    id: 'recentClosed',
+    visible: false,
+  },
   {
     accessorFn: (row) => row.lastManagerActionAt ?? undefined,
     cell: ({ row }) => <ManagerActivityCell network={row.original} />,
@@ -215,7 +240,7 @@ const columns: ColumnDef<NetworkTrackingSummary>[] = [
     filtersDialogLabel: "Dernière action d'un gestionnaire",
     filterType: 'Range',
     header: 'Activité des gestionnaires',
-    headerTooltip: `Dernière mise à jour ou dernier courriel d'un gestionnaire sur une demande du réseau (historique depuis ${historyStartLabel}), puis part des demandes reçues depuis ${responseWindow} ayant eu une réponse et délai médian de cette première réponse.`,
+    headerTooltip: `Dernière mise à jour ou dernier courriel d'un gestionnaire sur une demande du réseau, quelle que soit son ancienneté (historique depuis ${historyStartLabel}), puis part des demandes déposées depuis ${recentWindowLabel} ayant eu une réponse et délai médian de cette première réponse.`,
     id: 'lastManagerActionAt',
     sortDialogLabel: "Dernière action d'un gestionnaire",
     sortUndefined: 'last',
@@ -225,14 +250,14 @@ const columns: ColumnDef<NetworkTrackingSummary>[] = [
     accessorFn: (row) => row.recentReceived,
     exportOnly: true,
     filterType: 'Range',
-    header: `Demandes reçues (${responseWindow})`,
+    header: `Demandes reçues (${recentWindowLabel})`,
     id: 'recentReceived',
     visible: false,
   },
   {
     accessorFn: (row) => row.recentResponded,
     exportOnly: true,
-    header: `Demandes avec réponse (${responseWindow})`,
+    header: `Demandes avec réponse (${recentWindowLabel})`,
     id: 'recentResponded',
     visible: false,
   },
@@ -240,7 +265,7 @@ const columns: ColumnDef<NetworkTrackingSummary>[] = [
     accessorFn: (row) => (row.recentReceived > 0 ? Math.round((100 * row.recentResponded) / row.recentReceived) : undefined),
     exportOnly: true,
     filterType: 'Range',
-    header: `Taux de réponse (${responseWindow}, %)`,
+    header: `Taux de réponse (${recentWindowLabel}, %)`,
     id: 'responseRate',
     sortUndefined: 'last',
     visible: false,
@@ -249,7 +274,7 @@ const columns: ColumnDef<NetworkTrackingSummary>[] = [
     accessorFn: (row) => row.medianResponseDays ?? undefined,
     exportOnly: true,
     filterType: 'Range',
-    header: `Délai médian de réponse (${responseWindow}, jours)`,
+    header: `Délai médian de réponse (${recentWindowLabel}, jours)`,
     id: 'medianResponseDays',
     sortUndefined: 'last',
     visible: false,

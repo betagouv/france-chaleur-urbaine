@@ -12,7 +12,7 @@ import { networkTrackingStateLabels } from '@/modules/demands/constants';
 import trpc from '@/modules/trpc/client';
 
 import { networkTrackingColumns } from './columns';
-import { ADMIN_DASHBOARD_URL, historyStartLabel } from './format';
+import { ADMIN_DASHBOARD_URL, historyStartLabel, recentWindowLabel } from './format';
 import type { NetworkTrackingSummary } from './types';
 
 // biome-ignore assist/source/useSortedKeys: display order, from the whole list to the cases to act on
@@ -34,10 +34,10 @@ const quickFilterPresets = {
   },
   pendingWithoutManagers: {
     filters: [
-      { id: 'pending', value: [1, Number.MAX_VALUE] }, // open-ended upper bound: at least one pending demand
+      { id: 'recentPending', value: [1, Number.MAX_VALUE] }, // open-ended upper bound: at least one pending demand
       { id: 'managers', value: 'empty' },
     ],
-    getStat: (networks) => networks.filter((network) => network.pending > 0 && network.managers.length === 0).length,
+    getStat: (networks) => networks.filter((network) => network.recentPending > 0 && network.managers.length === 0).length,
     label: 'à traiter sans gestionnaire',
   },
 } satisfies Record<string, QuickFilterPreset<NetworkTrackingSummary>>;
@@ -67,9 +67,10 @@ export default function NetworkTrackingPage() {
 
       <CallOut size="sm">
         <p>
-          Cet écran repère les réseaux dont les gestionnaires ne répondent plus aux demandes validées. L'activité des gestionnaires est
-          connue depuis {historyStartLabel} : un réseau sans action depuis cette date est signalé comme tel. Les boutons « Trier » et «
-          Filtres » donnent accès à chaque indicateur, y compris ceux regroupés dans une même colonne.
+          Cet écran repère les réseaux dont les gestionnaires ne répondent plus aux demandes validées. L'état d'un réseau et ses indicateurs
+          portent sur les demandes déposées depuis {recentWindowLabel} ; les demandes plus anciennes sont seulement dénombrées à part.
+          L'activité des gestionnaires est connue depuis {historyStartLabel} : un réseau sans action depuis cette date est signalé comme
+          tel. Les boutons « Trier » et « Filtres » donnent accès à chaque indicateur, y compris ceux regroupés dans une même colonne.
         </p>
       </CallOut>
 
@@ -89,7 +90,7 @@ export default function NetworkTrackingPage() {
         loading={isLoading}
         initialSortingState={[
           { desc: false, id: 'state' },
-          { desc: true, id: 'pending' },
+          { desc: true, id: 'recentPending' },
         ]}
         columnFilters={columnFilters}
         controlsLayout="block"

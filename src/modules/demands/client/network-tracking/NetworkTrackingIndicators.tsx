@@ -1,48 +1,55 @@
 import type { ReactNode } from 'react';
 
 import Link from '@/components/ui/Link';
-import { businessRules } from '@/modules/app/business-rules';
 import { buildAdminDemandsUrl, buildDemandFilters } from '@/modules/demands/client/admin-demands-url';
 import cx from '@/utils/cx';
 
-import { formatDateRange, formatDurationDays, formatResponseRate } from './format';
+import { formatDateRange, formatDurationDays, formatResponseRate, recentWindowLabel } from './format';
 import { LastManagerAction } from './LastManagerAction';
+import { NetworkOlderDemands } from './NetworkOlderDemands';
 import type { NetworkTrackingSummary } from './types';
-
-const responseWindow = businessRules.networkTrackingResponseWindowMonths.display;
 
 type NetworkTrackingIndicatorsProps = {
   summary: NetworkTrackingSummary;
 };
 
 /**
- * Headline indicators of a network: pending and total demands with their dates, last manager action, response rate and median response delay.
+ * Headline indicators of a network: recent pending and total demands with the older ones apart, last manager action, response rate and median response delay.
  */
 export function NetworkTrackingIndicators({ summary }: NetworkTrackingIndicatorsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <IndicatorCard
-        title="Demandes à traiter"
+        title={`Demandes à traiter sur ${recentWindowLabel}`}
         value={
           <Link
-            href={buildAdminDemandsUrl(buildDemandFilters(summary.networkId, summary.networkType, true))}
-            className={cx(summary.pending > 0 && 'text-error')}
+            href={buildAdminDemandsUrl(buildDemandFilters(summary.networkId, summary.networkType, true, 'recent'))}
+            className={cx(summary.recentPending > 0 && 'text-error')}
           >
-            {summary.pending}
+            {summary.recentPending}
           </Link>
         }
         detail={
           <span className="flex flex-col">
-            <span>
-              {summary.oldestPendingDemandAt && summary.newestPendingDemandAt
-                ? `déposées : ${formatDateRange(summary.oldestPendingDemandAt, summary.newestPendingDemandAt)}`
-                : 'aucune demande en attente'}
-            </span>
-            {summary.oldestDemandAt && summary.newestDemandAt && (
-              <span>
-                {summary.total} au total : {formatDateRange(summary.oldestDemandAt, summary.newestDemandAt)}
-              </span>
+            {summary.recentTotal === 0 ? (
+              <span>aucune demande déposée sur la période</span>
+            ) : (
+              <>
+                <span>
+                  {summary.oldestRecentPendingDemandAt && summary.newestRecentPendingDemandAt
+                    ? `déposées : ${formatDateRange(summary.oldestRecentPendingDemandAt, summary.newestRecentPendingDemandAt)}`
+                    : 'aucune demande en attente'}
+                </span>
+                <span>
+                  sur{' '}
+                  <Link href={buildAdminDemandsUrl(buildDemandFilters(summary.networkId, summary.networkType, false, 'recent'))}>
+                    {summary.recentTotal}
+                  </Link>{' '}
+                  demande{summary.recentTotal > 1 && 's'} déposée{summary.recentTotal > 1 && 's'}
+                </span>
+              </>
             )}
+            <NetworkOlderDemands network={summary} />
           </span>
         }
       />
@@ -52,7 +59,7 @@ export function NetworkTrackingIndicators({ summary }: NetworkTrackingIndicators
         detail="mise à jour ou courriel sur une demande du réseau"
       />
       <IndicatorCard
-        title={`Taux de réponse sur ${responseWindow}`}
+        title={`Taux de réponse sur ${recentWindowLabel}`}
         value={summary.recentReceived > 0 ? formatResponseRate(summary.recentResponded, summary.recentReceived) : '—'}
         detail={
           summary.recentReceived > 0
@@ -63,7 +70,7 @@ export function NetworkTrackingIndicators({ summary }: NetworkTrackingIndicators
       <IndicatorCard
         title="Délai médian de réponse"
         value={summary.medianResponseDays !== null ? formatDurationDays(summary.medianResponseDays) : '—'}
-        detail={`entre la réception d'une demande et la première action, sur ${responseWindow}`}
+        detail={`entre la réception d'une demande et la première action, sur ${recentWindowLabel}`}
       />
     </div>
   );

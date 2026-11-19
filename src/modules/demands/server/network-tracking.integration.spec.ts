@@ -163,26 +163,28 @@ const seedTrackedDemands = async () => {
 
 /** Expected summary of a network without any demand, the starting point of every expected summary. */
 const emptySummary = {
-  closed: 0,
   extensions: [],
-  inProgress: 0,
   lastManagerActionAt: null,
   managers: [],
   medianResponseDays: null,
   newestDemandAt: null,
-  newestPendingDemandAt: null,
+  newestRecentPendingDemandAt: null,
   notes: null,
+  olderPending: 0,
+  olderTotal: 0,
   oldestDemandAt: null,
-  oldestPendingDemandAt: null,
+  oldestRecentPendingDemandAt: null,
   organization: null,
-  pending: 0,
   powerMW: null,
+  recentClosed: 0,
+  recentInProgress: 0,
+  recentPending: 0,
   recentReceived: 0,
   recentResponded: 0,
+  recentTotal: 0,
   reminders: [],
   sncuId: null,
   state: 'no_demand',
-  total: 0,
 };
 
 const accountOf = (id: string) => ({ email: `user-${id}@test.local`, email_blocked_reason: null, id, last_connection: null });
@@ -207,22 +209,24 @@ const networkCIdentity = {
 };
 const networkBIdentity = { name: 'Réseau B', networkId: 1, networkType: 'reseau_en_construction' };
 
+// demand 4, deposited before the recent window, only counts among the older demands
 const networkASummary = {
   ...emptySummary,
   ...networkAIdentity,
-  closed: 2,
-  inProgress: 2,
   lastManagerActionAt: day('2026-09-21'),
   medianResponseDays: 2,
   newestDemandAt: day('2026-09-12'),
-  newestPendingDemandAt: day('2026-09-09'),
+  newestRecentPendingDemandAt: day('2026-09-09'),
+  olderTotal: 1,
   oldestDemandAt: day('2024-05-01'),
-  oldestPendingDemandAt: day('2026-09-09'),
-  pending: 1,
+  oldestRecentPendingDemandAt: day('2026-09-09'),
+  recentClosed: 2,
+  recentInProgress: 1,
+  recentPending: 1,
   recentReceived: 3,
   recentResponded: 2,
+  recentTotal: 4,
   state: 'late',
-  total: 5,
 };
 
 type PermissionTestCase = {
@@ -285,15 +289,15 @@ describe('network tracking', () => {
         {
           ...emptySummary,
           ...networkBIdentity,
-          closed: 1,
           lastManagerActionAt: day('2026-03-03'),
           medianResponseDays: 1,
           newestDemandAt: day('2026-03-01'),
           oldestDemandAt: day('2026-03-01'),
+          recentClosed: 1,
           recentReceived: 1,
           recentResponded: 1,
+          recentTotal: 1,
           state: 'up_to_date',
-          total: 1,
         },
       ]);
     });
@@ -317,32 +321,93 @@ describe('network tracking', () => {
           ...networkCIdentity,
           extensions: [{ id_fcu: 5, mise_en_service: '2027' }],
           newestDemandAt: day('2026-10-10'),
-          newestPendingDemandAt: day('2026-10-10'),
+          newestRecentPendingDemandAt: day('2026-10-10'),
           oldestDemandAt: day('2026-10-10'),
-          oldestPendingDemandAt: day('2026-10-10'),
-          pending: 1,
+          oldestRecentPendingDemandAt: day('2026-10-10'),
+          recentPending: 1,
+          recentTotal: 1,
           state: 'up_to_date',
-          total: 1,
         },
         { ...emptySummary, ...networkBIdentity },
       ]);
     });
 
-    const stateCases: TestCase<{ pendingDays: number | null; lastActionDays: number | null }, NetworkTrackingState>[] = [
-      { expectedOutput: 'up_to_date', input: { lastActionDays: null, pendingDays: null }, label: 'no pending demand → up to date' },
-      { expectedOutput: 'up_to_date', input: { lastActionDays: null, pendingDays: 10 }, label: 'pending for 10 days → up to date' },
-      { expectedOutput: 'late', input: { lastActionDays: 20, pendingDays: 40 }, label: 'pending for 40 days, action 20 days ago → late' },
+    it('splits the demands at the start of the day the recent window begins, in UTC', async () => {
+      await Promise.all([
+        seedDemand(1, { demandDate: new Date('2025-10-15T00:00:00.000Z'), status: DEMANDE_STATUS.TO_PROCESS }),
+        seedDemand(2, { demandDate: new Date('2025-10-14T23:59:59.999Z'), status: DEMANDE_STATUS.TO_PROCESS }),
+      ]);
+
+      const result = await createTestCaller(testUsers.admin).demands.admin.listNetworkTracking();
+
+      expect(result[0]).toStrictEqual({
+        ...emptySummary,
+        ...networkAIdentity,
+        newestDemandAt: new Date('2025-10-15T00:00:00.000Z'),
+        newestRecentPendingDemandAt: new Date('2025-10-15T00:00:00.000Z'),
+        olderPending: 1,
+        olderTotal: 1,
+        oldestDemandAt: new Date('2025-10-14T23:59:59.999Z'),
+        oldestRecentPendingDemandAt: new Date('2025-10-15T00:00:00.000Z'),
+        recentPending: 1,
+        recentTotal: 1,
+        state: 'silent',
+      });
+    });
+
+    type StateCaseInput = {
+      /** Age of the closed demand carrying the manager action. */
+      doneDays: number;
+      pendingDays: number | null;
+      lastActionDays: number | null;
+    };
+
+    const stateCases: TestCase<StateCaseInput, NetworkTrackingState>[] = [
+      {
+        expectedOutput: 'up_to_date',
+        input: { doneDays: 200, lastActionDays: null, pendingDays: null },
+        label: 'no pending demand → up to date',
+      },
+      {
+        expectedOutput: 'up_to_date',
+        input: { doneDays: 200, lastActionDays: null, pendingDays: 10 },
+        label: 'pending for 10 days → up to date',
+      },
+      {
+        expectedOutput: 'late',
+        input: { doneDays: 200, lastActionDays: 20, pendingDays: 40 },
+        label: 'pending for 40 days, action 20 days ago → late',
+      },
       {
         expectedOutput: 'silent',
-        input: { lastActionDays: 100, pendingDays: 40 },
+        input: { doneDays: 200, lastActionDays: 100, pendingDays: 40 },
         label: 'pending for 40 days, action 100 days ago → silent',
       },
-      { expectedOutput: 'silent', input: { lastActionDays: null, pendingDays: 40 }, label: 'pending for 40 days, no action → silent' },
+      {
+        expectedOutput: 'silent',
+        input: { doneDays: 200, lastActionDays: null, pendingDays: 40 },
+        label: 'pending for 40 days, no action → silent',
+      },
+      {
+        expectedOutput: 'up_to_date',
+        input: { doneDays: 200, lastActionDays: null, pendingDays: 500 },
+        label: 'pending demand older than the recent window → up to date',
+      },
+      {
+        expectedOutput: 'late',
+        input: { doneDays: 400, lastActionDays: 20, pendingDays: 40 },
+        label: 'pending for 40 days, action 20 days ago on an older demand → late',
+      },
+      {
+        expectedOutput: 'no_recent_demand',
+        input: { doneDays: 400, lastActionDays: null, pendingDays: 500 },
+        label: 'only demands older than the recent window → no recent demand',
+      },
     ];
 
     it.each(stateCases)('$label', async ({ input, expectedOutput }) => {
-      await seedDemand(1, { demandDate: daysAgo(200), status: DEMANDE_STATUS.DONE });
-      await seedEvents([{ authorId: adminId, created_at: daysAgo(200), demand: 1, type: 'demand_validated' }]);
+      await seedDemand(1, { demandDate: daysAgo(input.doneDays), status: DEMANDE_STATUS.DONE });
+      await seedEvents([{ authorId: adminId, created_at: daysAgo(input.doneDays), demand: 1, type: 'demand_validated' }]);
       if (input.lastActionDays !== null) {
         await seedEvents([{ authorId: gestionnaireId, created_at: daysAgo(input.lastActionDays), demand: 1, type: 'demand_updated' }]);
       }
@@ -472,11 +537,11 @@ describe('network tracking', () => {
         organization: null,
         quarters: [{ medianResponseDays: 2, quarter: '2026-T3', received: 3, responded: 2 }],
         statuses: [
-          { count: 1, medianAgeDays: 35, status: DEMANDE_STATUS.TO_PROCESS, stuckCount: 0 },
+          { medianAgeDays: 35, olderCount: 0, recentCount: 1, status: DEMANDE_STATUS.TO_PROCESS, stuckCount: 0 },
           // demand 3 changed 24 days ago; demand 9 never changed, so it counts from its reception 32 days ago
-          { count: 2, medianAgeDays: 28, status: DEMANDE_STATUS.UNREALISABLE, stuckCount: 0 },
-          // demand 4 has no recorded change: counted from the start of the audit log (2025-12-01, Paris time)
-          { count: 2, medianAgeDays: 179.7, status: DEMANDE_STATUS.RECONTACTED, stuckCount: 1 },
+          { medianAgeDays: 28, olderCount: 0, recentCount: 2, status: DEMANDE_STATUS.UNREALISABLE, stuckCount: 0 },
+          // demand 4, older than the recent window, has no recorded change: counted from the start of the audit log (2025-12-01, Paris time)
+          { medianAgeDays: 179.7, olderCount: 1, recentCount: 1, status: DEMANDE_STATUS.RECONTACTED, stuckCount: 1 },
         ],
         summary: networkASummary,
       });
