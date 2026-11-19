@@ -1,9 +1,11 @@
 import { z } from 'zod';
 
 import { zAcquisition } from '@/modules/analytics/constants';
+import { businessRules } from '@/modules/app/business-rules';
 import { type NetworkType, networkTypes } from '@/modules/reseaux/constants';
 import type { EligibilityType } from '@/server/services/addresseInformation';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import { dayjs } from '@/utils/date';
 import { escapeHtml } from '@/utils/html';
 import { type ExtractKeys, nonEmptyArray } from '@/utils/typescript';
 
@@ -83,13 +85,21 @@ export const demandStatusGroupLabels = {
  */
 export const DEMAND_HISTORY_START = '2025-12-01';
 
-export const networkTrackingStates = ['silent', 'late', 'up_to_date', 'no_demand'] as const;
+/**
+ * Deposit date from which a demand is recent for the network tracking: recent demands drive the state and the indicators of their network, older ones are only counted apart.
+ * Aligned on a UTC day, so that the date filter of the admin demands list selects exactly the demands counted on each side.
+ */
+export const getRecentDemandsStart = (now: Date) =>
+  dayjs.utc(now).startOf('day').subtract(businessRules.networkTrackingRecentMonths.value, 'month').toDate();
+
+export const networkTrackingStates = ['silent', 'late', 'up_to_date', 'no_recent_demand', 'no_demand'] as const;
 
 export type NetworkTrackingState = (typeof networkTrackingStates)[number];
 
 export const networkTrackingStateLabels = {
   late: 'En retard',
   no_demand: 'Sans demande',
+  no_recent_demand: 'Sans demande récente',
   silent: 'Muet',
   up_to_date: 'À jour',
 } as const satisfies Record<NetworkTrackingState, string>;

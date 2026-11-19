@@ -1,3 +1,4 @@
+import { businessRules } from '@/modules/app/business-rules';
 import { DEMAND_HISTORY_START } from '@/modules/demands/constants';
 import type { NetworkType } from '@/modules/reseaux/constants';
 import { dayjs } from '@/utils/date';
@@ -9,6 +10,9 @@ const YEARS_DISPLAY_FROM_DAYS = 2 * DAYS_PER_YEAR;
 
 /** Month the demand audit log starts, e.g. « décembre 2025 ». */
 export const historyStartLabel = dayjs(DEMAND_HISTORY_START).format('MMMM YYYY');
+
+/** Window of the recent demands, the ones the tracking state and indicators look at, e.g. « 12 mois ». */
+export const recentWindowLabel = businessRules.networkTrackingRecentMonths.display;
 
 export const getNetworkName = (network: { name: string | null; networkId: number }) => network.name ?? `Réseau ${network.networkId}`;
 
@@ -30,10 +34,12 @@ export const formatDurationDays = (days: number) =>
         ? `${Math.round(days / DAYS_PER_MONTH)} mois`
         : `${(days / DAYS_PER_YEAR).toLocaleString('fr-FR', { maximumFractionDigits: 1 })} ans`;
 
+export const formatDay = (date: string) => dayjs(date).format('DD/MM/YY');
+
 /** Dates of the oldest and newest demand of a set, e.g. « 12/06/22 → 03/10/26 », or a single date when they fall on the same day. */
 export const formatDateRange = (oldest: string, newest: string) => {
-  const from = dayjs(oldest).format('DD/MM/YY');
-  const to = dayjs(newest).format('DD/MM/YY');
+  const from = formatDay(oldest);
+  const to = formatDay(newest);
   return from === to ? from : `${from} → ${to}`;
 };
 

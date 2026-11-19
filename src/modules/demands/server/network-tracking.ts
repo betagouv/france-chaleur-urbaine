@@ -15,6 +15,7 @@ import {
   demandStatusDefault,
   demandStatuses,
   demandStatusGroups,
+  getRecentDemandsStart,
   type NetworkTrackingState,
 } from '../constants';
 
@@ -29,6 +30,7 @@ type NetworkRef = {
 
 /**
  * Admin: tracking indicators of every heat network (existing or under construction), with its accounts, reminders and notes.
+ * The state and the indicators only look at the recent demands (see `getRecentDemandsStart`); the older ones are counted apart.
  * An extension linked to a heat network has no line of its own: its demands are carried by its parent network, see `resolveDemandAssignment`.
  */
 export const listNetworkTracking = async () => {
@@ -73,8 +75,9 @@ export const getNetworkTracking = async (network: NetworkRef) => {
       .map((status) => statuses.find((row) => row.status === status.label))
       .filter((row) => row !== undefined)
       .map((row) => ({
-        count: row.count,
         medianAgeDays: secondsToDays(row.median_age_seconds),
+        olderCount: row.count - row.recent_count,
+        recentCount: row.recent_count,
         status: row.status,
         stuckCount: row.stuck_count,
       })),
@@ -298,9 +301,12 @@ const secondsBetween = (start: Expression<Date | null>, end: Expression<Date | n
 const awaitsResponse = (eb: ExpressionBuilder<{ t: { responded_at: Date | null; status: DemandStatus } }, 't'>): Expression<SqlBool> =>
   eb.or([eb('t.responded_at', 'is not', null), eb('t.status', 'in', demandStatusGroups.pending)]);
 
-/** One row per network: its own data, plus the aggregates of its demands when it has any. */
+/**
+ * One row per network: its own data, plus the aggregates of its demands when it has any.
+ * Counts, pending dates and response metrics cover the recent demands; `total`, `pending` and the demand dates cover every demand, and the last action too: a manager working on an old demand is not silent.
+ */
 const networkSummariesQuery = (now: Date, network?: NetworkRef) => {
-  const responseWindowStart = dayjs(now).subtract(businessRules.networkTrackingResponseWindowMonths.value, 'month').toDate();
+  const recentStart = getRecentDemandsStart(now);
   return kdb
     .with('timeline', () => demandTimelineQuery(network))
     .with('networks', networksQuery)
@@ -308,32 +314,44 @@ const networkSummariesQuery = (now: Date, network?: NetworkRef) => {
       db
         .selectFrom('timeline as t')
         .groupBy(['t.network_type', 't.network_id'])
-        .select((eb) => [
-          't.network_type',
-          't.network_id',
-          eb.fn.countAll<number>().as('total'),
-          eb.fn.countAll<number>().filterWhere('t.status', 'in', demandStatusGroups.pending).as('pending'),
-          eb.fn.countAll<number>().filterWhere('t.status', 'in', demandStatusGroups.inProgress).as('in_progress'),
-          eb.fn.countAll<number>().filterWhere('t.status', 'in', demandStatusGroups.closed).as('closed'),
-          eb.fn.min('t.demand_date').as('oldest_demand_at'),
-          eb.fn.max('t.demand_date').as('newest_demand_at'),
-          eb.fn.min('t.demand_date').filterWhere('t.status', 'in', demandStatusGroups.pending).as('oldest_pending_demand_at'),
-          eb.fn.max('t.demand_date').filterWhere('t.status', 'in', demandStatusGroups.pending).as('newest_pending_demand_at'),
-          eb.fn.min('t.waiting_since').filterWhere('t.status', 'in', demandStatusGroups.pending).as('oldest_pending_since'),
-          eb.fn.max('t.last_action_at').as('last_action_at'),
-          eb.fn
-            .countAll<number>()
-            .filterWhere((filterBuilder) =>
-              filterBuilder.and([filterBuilder('t.started_at', '>=', responseWindowStart), awaitsResponse(filterBuilder)])
-            )
-            .as('recent_received'),
-          eb.fn.count<number>('t.responded_at').filterWhere('t.started_at', '>=', responseWindowStart).as('recent_responded'),
-          eb.fn
-            .agg<number | null>('percentile_cont', [sql.lit(0.5)])
-            .withinGroupOrderBy(secondsBetween(eb.ref('t.started_at'), eb.ref('t.responded_at')))
-            .filterWhere('t.started_at', '>=', responseWindowStart)
-            .as('median_response_seconds'),
-        ])
+        .select((eb) => {
+          const isRecent = eb('t.demand_date', '>=', recentStart);
+          const isPending = eb('t.status', 'in', demandStatusGroups.pending);
+          const isRecentPending = eb.and([isRecent, isPending]);
+          const isRecentReceived = eb.and([isRecent, eb('t.started_at', 'is not', null)]);
+          return [
+            't.network_type',
+            't.network_id',
+            eb.fn.countAll<number>().as('total'),
+            eb.fn.countAll<number>().filterWhere(isPending).as('pending'),
+            eb.fn.countAll<number>().filterWhere(isRecent).as('recent_total'),
+            eb.fn.countAll<number>().filterWhere(isRecentPending).as('recent_pending'),
+            eb.fn
+              .countAll<number>()
+              .filterWhere(eb.and([isRecent, eb('t.status', 'in', demandStatusGroups.inProgress)]))
+              .as('recent_in_progress'),
+            eb.fn
+              .countAll<number>()
+              .filterWhere(eb.and([isRecent, eb('t.status', 'in', demandStatusGroups.closed)]))
+              .as('recent_closed'),
+            eb.fn.min('t.demand_date').as('oldest_demand_at'),
+            eb.fn.max('t.demand_date').as('newest_demand_at'),
+            eb.fn.min('t.demand_date').filterWhere(isRecentPending).as('oldest_recent_pending_demand_at'),
+            eb.fn.max('t.demand_date').filterWhere(isRecentPending).as('newest_recent_pending_demand_at'),
+            eb.fn.min('t.waiting_since').filterWhere(isRecentPending).as('oldest_recent_pending_since'),
+            eb.fn.max('t.last_action_at').as('last_action_at'),
+            eb.fn
+              .countAll<number>()
+              .filterWhere(eb.and([isRecentReceived, awaitsResponse(eb)]))
+              .as('recent_received'),
+            eb.fn.count<number>('t.responded_at').filterWhere(isRecentReceived).as('recent_responded'),
+            eb.fn
+              .agg<number | null>('percentile_cont', [sql.lit(0.5)])
+              .withinGroupOrderBy(secondsBetween(eb.ref('t.started_at'), eb.ref('t.responded_at')))
+              .filterWhere(isRecentReceived)
+              .as('median_response_seconds'),
+          ];
+        })
     )
     .selectFrom('networks as n')
     .leftJoin('summaries as s', (join) => join.onRef('s.network_id', '=', 'n.id_fcu').onRef('s.network_type', '=', 'n.network_type'))
@@ -353,15 +371,17 @@ const networkSummariesQuery = (now: Date, network?: NetworkRef) => {
       'n.reminders',
       eb.fn.coalesce('s.total', eb.lit(0)).as('total'),
       eb.fn.coalesce('s.pending', eb.lit(0)).as('pending'),
-      eb.fn.coalesce('s.in_progress', eb.lit(0)).as('in_progress'),
-      eb.fn.coalesce('s.closed', eb.lit(0)).as('closed'),
+      eb.fn.coalesce('s.recent_total', eb.lit(0)).as('recent_total'),
+      eb.fn.coalesce('s.recent_pending', eb.lit(0)).as('recent_pending'),
+      eb.fn.coalesce('s.recent_in_progress', eb.lit(0)).as('recent_in_progress'),
+      eb.fn.coalesce('s.recent_closed', eb.lit(0)).as('recent_closed'),
       eb.fn.coalesce('s.recent_received', eb.lit(0)).as('recent_received'),
       eb.fn.coalesce('s.recent_responded', eb.lit(0)).as('recent_responded'),
       's.oldest_demand_at',
       's.newest_demand_at',
-      's.oldest_pending_demand_at',
-      's.newest_pending_demand_at',
-      's.oldest_pending_since',
+      's.oldest_recent_pending_demand_at',
+      's.newest_recent_pending_demand_at',
+      's.oldest_recent_pending_since',
       's.last_action_at',
       's.median_response_seconds',
     ])
@@ -415,10 +435,11 @@ const quartersQuery = (network: NetworkRef, from: Date) =>
 const eventStatus = (data: Expression<unknown>) => sql<string | null>`coalesce(${data}->>'Status', ${data}->>'statut')`;
 
 /**
- * Demands of the network by current status, with how long they have been in it.
+ * Demands of the network by current status, recent and older ones alike, with how long they have been in it.
  * The status date is its last recorded change; without one, the status dates from the demand itself (pending, or created since the audit log exists) or from `DEMAND_HISTORY_START` at the latest.
  */
 const statusesQuery = (network: NetworkRef, now: Date) => {
+  const recentStart = getRecentDemandsStart(now);
   const historyStart = dayjs.tz(DEMAND_HISTORY_START, TIMEZONE).toDate();
   const stuckBefore = dayjs(now).subtract(businessRules.networkTrackingStuckMonths.value, 'month').toDate();
   return kdb
@@ -459,6 +480,7 @@ const statusesQuery = (network: NetworkRef, now: Date) => {
         .leftJoin('status_changes as c', (join) => join.on((eb) => eb('c.context_id', '=', eb.cast<string>('t.id', 'text'))))
         .select((eb) => [
           't.status',
+          't.demand_date',
           eb.fn
             .coalesce(
               'c.changed_at',
@@ -476,6 +498,7 @@ const statusesQuery = (network: NetworkRef, now: Date) => {
     .select((eb) => [
       's.status',
       eb.fn.countAll<number>().as('count'),
+      eb.fn.countAll<number>().filterWhere('s.demand_date', '>=', recentStart).as('recent_count'),
       eb.fn.countAll<number>().filterWhere('s.status_since', '<', stuckBefore).as('stuck_count'),
       eb.fn
         .agg<number | null>('percentile_cont', [sql.lit(0.5)])
@@ -489,10 +512,9 @@ const statusesQuery = (network: NetworkRef, now: Date) => {
 
 type NetworkSummaryRow = Awaited<ReturnType<ReturnType<typeof networkSummariesQuery>['execute']>>[number];
 
+/** `recent*` figures cover the demands deposited since `getRecentDemandsStart`, `older*` ones the rest; `oldestDemandAt` / `newestDemandAt` cover both. */
 const toNetworkTrackingSummary = (row: NetworkSummaryRow, now: Date) => ({
-  closed: row.closed,
   extensions: row.extensions,
-  inProgress: row.in_progress,
   lastManagerActionAt: row.last_action_at,
   managers: row.managers,
   medianResponseDays: secondsToDays(row.median_response_seconds),
@@ -500,37 +522,43 @@ const toNetworkTrackingSummary = (row: NetworkSummaryRow, now: Date) => ({
   networkId: row.id_fcu,
   networkType: row.network_type,
   newestDemandAt: row.newest_demand_at,
-  newestPendingDemandAt: row.newest_pending_demand_at,
+  newestRecentPendingDemandAt: row.newest_recent_pending_demand_at,
   notes: row.notes,
+  olderPending: row.pending - row.recent_pending,
+  olderTotal: row.total - row.recent_total,
   oldestDemandAt: row.oldest_demand_at,
-  oldestPendingDemandAt: row.oldest_pending_demand_at,
+  oldestRecentPendingDemandAt: row.oldest_recent_pending_demand_at,
   organization: row.organization,
-  pending: row.pending,
   powerMW: row.puissance_totale_MW,
+  recentClosed: row.recent_closed,
+  recentInProgress: row.recent_in_progress,
+  recentPending: row.recent_pending,
   recentReceived: row.recent_received,
   recentResponded: row.recent_responded,
+  recentTotal: row.recent_total,
   reminders: row.reminders,
   sncuId: row['Identifiant reseau'],
   state: getNetworkTrackingState(row, now),
-  total: row.total,
 });
 
 /**
- * Without any demand, nothing to track. Otherwise up to date while no pending demand has waited longer than the late threshold; beyond it, late if a manager acted recently, silent otherwise.
+ * Without any demand, or any recent one, nothing to track. Otherwise up to date while no recent pending demand has waited longer than the late threshold; beyond it, late if a manager acted recently, silent otherwise.
  */
 const getNetworkTrackingState = (
-  row: Pick<NetworkSummaryRow, 'total' | 'oldest_pending_since' | 'last_action_at'>,
+  row: Pick<NetworkSummaryRow, 'total' | 'recent_total' | 'oldest_recent_pending_since' | 'last_action_at'>,
   now: Date
 ): NetworkTrackingState => {
   const lateBefore = dayjs(now).subtract(businessRules.networkTrackingLateDays.value, 'day');
   const silentBefore = dayjs(now).subtract(businessRules.networkTrackingSilentDays.value, 'day');
   return row.total === 0
     ? 'no_demand'
-    : !row.oldest_pending_since || !lateBefore.isAfter(row.oldest_pending_since)
-      ? 'up_to_date'
-      : row.last_action_at && !silentBefore.isAfter(row.last_action_at)
-        ? 'late'
-        : 'silent';
+    : row.recent_total === 0
+      ? 'no_recent_demand'
+      : !row.oldest_recent_pending_since || !lateBefore.isAfter(row.oldest_recent_pending_since)
+        ? 'up_to_date'
+        : row.last_action_at && !silentBefore.isAfter(row.last_action_at)
+          ? 'late'
+          : 'silent';
 };
 
 /**
