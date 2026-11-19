@@ -23,6 +23,28 @@ export type DemandOrigin = {
   acquisition: Acquisition | null;
 };
 
+/** Reads historical provenance only when no structured snapshot was recorded; never rewrites stored data. */
+export const getDemandAcquisition = (demand: {
+  acquisition: Acquisition | null;
+  origin_page: string | null;
+  origin_host: string | null;
+  origin_source: string | null;
+}): Acquisition | null => {
+  if (demand.acquisition) return demand.acquisition;
+  const formPage = demand.origin_page?.split(/[?#]/)[0].trim().slice(0, 1000);
+  const host = demand.origin_host?.split(/[?#]/)[0].trim().slice(0, 1000);
+  const integrationId = demand.origin_source?.trim().slice(0, 200);
+  if (!formPage && !host && !integrationId) return null;
+  return {
+    campaign: null,
+    medium: null,
+    source: null,
+    ...(formPage ? { formPage } : {}),
+    ...(host ? { host } : {}),
+    ...(integrationId ? { integrationId } : {}),
+  };
+};
+
 export const demandOriginFields = [
   ['landingPage', 'Page d’arrivée'],
   ['formPage', 'Page du formulaire'],
@@ -78,7 +100,9 @@ export const classifyDemandOrigin = (acquisition: Acquisition | null, integratio
   if (acquisition.source || acquisition.medium || acquisition.campaign || acquisition.keyword) {
     return result('campaign', detail);
   }
-  return acquisition.referrer ? result(classifyDomain(acquisition.referrer) ?? 'referral', acquisition.referrer) : result('unknown');
+  return acquisition.referrer
+    ? result(classifyDomain(acquisition.referrer) ?? 'referral', acquisition.referrer)
+    : result('unknown', acquisition.formPage ?? acquisition.landingPage ?? null);
 };
 
 /** Matches whole domain boundaries so unrelated sites cannot impersonate a known channel. */
