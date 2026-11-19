@@ -1445,7 +1445,7 @@ describe('batEnrRouter', () => {
     });
   });
 
-  describe('batEnr.admin.updateDemandeChaleurRenouvelable', () => {
+  describe('batEnr.ccrt.updateDemandeChaleurRenouvelable', () => {
     beforeEach(async () => {
       await seedTableUser([testUsers.admin]);
     });
@@ -1462,6 +1462,7 @@ describe('batEnrRouter', () => {
         .insertInto('demands_chaleur_renouvelable')
         .values({
           address: '1 rue du test',
+          assigned_to: 'Gestionnaire test',
           average_area: 70,
           average_residents: 2,
           dpe: 'E',
@@ -1482,14 +1483,13 @@ describe('batEnrRouter', () => {
 
       const caller = createTestCaller(user);
       const callRoute = () =>
-        caller.batEnr.admin.updateDemandeChaleurRenouvelable({
+        caller.batEnr.ccrt.updateDemandeChaleurRenouvelable({
           demandId: demand.id,
-          values: { assignedTo: 'Gestionnaire test', status: ADMIN_UPDATED_STATUS },
+          values: { status: ADMIN_UPDATED_STATUS },
         });
 
       if (allowed) {
         await expect(callRoute()).resolves.toMatchObject({
-          assigned_to: 'Gestionnaire test',
           id: demand.id,
           status: ADMIN_UPDATED_STATUS,
         });
@@ -1498,11 +1498,12 @@ describe('batEnrRouter', () => {
       }
     });
 
-    it('met à jour le statut et l’affectation', async () => {
+    it('updates the status while preserving the historical assignment', async () => {
       const demand = await kdb
         .insertInto('demands_chaleur_renouvelable')
         .values({
           address: '1 rue du test',
+          assigned_to: 'Gestionnaire test',
           average_area: 70,
           average_residents: 2,
           dpe: 'E',
@@ -1521,9 +1522,9 @@ describe('batEnrRouter', () => {
         .returning(['id'])
         .executeTakeFirstOrThrow();
 
-      await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+      await createTestCaller(testUsers.admin).batEnr.ccrt.updateDemandeChaleurRenouvelable({
         demandId: demand.id,
-        values: { assignedTo: 'Gestionnaire test', status: ADMIN_UPDATED_STATUS },
+        values: { status: ADMIN_UPDATED_STATUS },
       });
 
       const updatedDemand = await kdb
@@ -1544,6 +1545,7 @@ describe('batEnrRouter', () => {
         .insertInto('demands_chaleur_renouvelable')
         .values({
           address: '1 rue du test',
+          assigned_to: 'Gestionnaire test',
           average_area: 70,
           average_residents: 2,
           dpe: 'E',
@@ -1563,7 +1565,7 @@ describe('batEnrRouter', () => {
         .returning(['id'])
         .executeTakeFirstOrThrow();
 
-      await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+      await createTestCaller(testUsers.admin).batEnr.ccrt.updateDemandeChaleurRenouvelable({
         demandId: demand.id,
         values: { status: ADMIN_UPDATED_STATUS },
       });

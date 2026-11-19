@@ -1,11 +1,9 @@
 import { TRPCError } from '@trpc/server';
 import type { z } from 'zod';
 
-import type { BANAddressFeature } from '@/modules/ban/types';
+import { searchBANAddresses } from '@/modules/ban/client';
 import type { Context } from '@/modules/config/server/context-builder';
-import { serverConfig } from '@/server/config';
 import { kdb, sql } from '@/server/db/kysely';
-import { fetchJSON } from '@/utils/network';
 
 import type { zCcrtTransferNetwork } from '../constants';
 import { ensureCcrtDemandAccess } from './ccrt-access';
@@ -17,14 +15,15 @@ import { getBatEnrBatimentDetails } from './service';
  */
 export const getCcrtTransferNetwork = async (ctx: Context, input: z.infer<typeof zCcrtTransferNetwork>) => {
   const demand = await ensureCcrtDemandAccess(ctx, input.demandId);
-  const [search, building] = await Promise.all([
-    fetchJSON<{ features: BANAddressFeature[] }>(`${serverConfig.banApiBaseUrl}search`, {
-      params: { limit: 1, q: demand.address },
+  const [addresses, building] = await Promise.all([
+    searchBANAddresses({
+      limit: 1,
+      query: demand.address,
       signal: AbortSignal.timeout(10000),
     }),
     demand.batiment_construction_id ? getBatEnrBatimentDetails({ batiment_construction_id: demand.batiment_construction_id }) : null,
   ]);
-  const address = search.features[0];
+  const address = addresses[0];
   if (!address) {
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Adresse introuvable. Impossible de déterminer le réseau et sa distance.' });
   }

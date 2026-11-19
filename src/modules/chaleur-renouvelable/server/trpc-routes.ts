@@ -1,6 +1,5 @@
 import {
   zAddressEligibilityContextInput,
-  zAdminUpdateDemandeChaleurRenouvelableInput,
   zAdminValidateDemandeChaleurRenouvelableInput,
   zBatEnrByBanIdInput,
   zCcrtAdminComment,
@@ -29,14 +28,12 @@ import {
   getSimulationPrefill,
   listDemandesChaleurRenouvelableAdmin,
   listDemandesChaleurRenouvelableCcrt,
-  updateDemandeChaleurRenouvelableAdmin,
   updateDemandeChaleurRenouvelableCcrt,
   validateDemandeChaleurRenouvelableAdmin,
 } from '@/modules/chaleur-renouvelable/server/service';
 import { zGetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { renewableHeatAccessRoute, route, routeRole, router } from '@/modules/trpc/server';
 
-import { listCcrtAssignmentCandidates } from './ccrt-access';
 import { updateCcrtBuilding } from './ccrt-building';
 import { sendCcrtEmail } from './ccrt-emails';
 import { getCcrtFollowUp } from './ccrt-follow-up';
@@ -57,9 +54,6 @@ export const batEnrRouter = router({
     getTransferNetwork: routeRole(['admin'])
       .input(zCcrtTransferNetwork)
       .query(({ ctx, input }) => getCcrtTransferNetwork(ctx, input)),
-    listAssignmentCandidates: routeRole(['admin'])
-      .input(zCcrtDemandId)
-      .query(({ ctx, input }) => listCcrtAssignmentCandidates(ctx, input.demandId)),
     listDemandesChaleurRenouvelable: routeRole(['admin']).query(async () => await listDemandesChaleurRenouvelableAdmin()),
     reopenDemand: routeRole(['admin'])
       .input(zCcrtReopenDemand)
@@ -73,9 +67,6 @@ export const batEnrRouter = router({
     updateAdminComment: routeRole(['admin'])
       .input(zCcrtAdminComment)
       .mutation(({ ctx, input }) => updateCcrtAdminComment(ctx, input)),
-    updateDemandeChaleurRenouvelable: routeRole(['admin'])
-      .input(zAdminUpdateDemandeChaleurRenouvelableInput)
-      .mutation(async ({ ctx, input }) => await updateDemandeChaleurRenouvelableAdmin(ctx, input)),
     validateDemandeChaleurRenouvelable: routeRole(['admin'])
       .input(zAdminValidateDemandeChaleurRenouvelableInput)
       .mutation(async ({ input }) => await validateDemandeChaleurRenouvelableAdmin(input)),

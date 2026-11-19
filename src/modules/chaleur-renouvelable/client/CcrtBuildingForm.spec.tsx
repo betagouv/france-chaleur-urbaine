@@ -15,7 +15,6 @@ vi.mock('@/modules/trpc/client', async () => {
   const utils = {
     batEnr: {
       admin: {
-        listAssignmentCandidates: { invalidate: mocks.invalidate },
         listDemandesChaleurRenouvelable: { invalidate: mocks.invalidate },
       },
       ccrt: {

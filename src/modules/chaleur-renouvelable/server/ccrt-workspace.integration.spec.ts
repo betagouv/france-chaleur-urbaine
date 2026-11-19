@@ -254,23 +254,7 @@ describe('CCRT demand publication', () => {
   });
 });
 
-describe('CCRT assignment candidates', () => {
-  const permissionCases: TestCaseBoolean<(typeof testUsers)[keyof typeof testUsers] | null>[] = [
-    { expectedOutput: false, input: null },
-    ...Object.values(testUsers).map((user) => ({ expectedOutput: user.role === 'admin', input: user })),
-  ];
-  permissionCases.forEach(({ input: user, expectedOutput: allowed }) => {
-    it(`protects assignment candidates for ${user?.role ?? 'anonymous'}`, async () => {
-      const demand = await seedWorkspace();
-      const request = createTestCaller(user).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
-      if (allowed) {
-        expect((await request).map((candidate) => candidate.id).sort()).toStrictEqual([testUsers.ccrt.id, otherCcrtUser.id].sort());
-      } else {
-        await expect(request).rejects.toMatchObject(forbiddenError);
-      }
-    });
-  });
-
+describe('CCRT access holders before publication', () => {
   it.each([
     ['commune', '13055'],
     ['epci', 'EPCI-13'],
@@ -284,7 +268,7 @@ describe('CCRT assignment candidates', () => {
     await kdb.deleteFrom('user_permissions').where('user_id', '=', testUsers.ccrt.id).execute();
     await kdb.insertInto('user_permissions').values({ resource_id, type, user_id: testUsers.ccrt.id }).execute();
 
-    const candidates = await createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
+    const { users: candidates } = await createTestCaller(testUsers.admin).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect(candidates.map((candidate) => candidate.id).sort()).toStrictEqual([testUsers.ccrt.id, otherCcrtUser.id].sort());
   });
 
@@ -305,15 +289,13 @@ describe('CCRT assignment candidates', () => {
       ])
       .execute();
 
-    const candidates = await createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
+    const { users: candidates } = await createTestCaller(testUsers.admin).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect(candidates.map((candidate) => candidate.id).sort()).toStrictEqual([testUsers.ccrt.id, otherCcrtUser.id].sort());
   });
 
   it('rejects a missing demand', async () => {
     await seedWorkspace();
-    await expect(createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: uuid(999) })).rejects.toMatchObject(
-      notFound
-    );
+    await expect(createTestCaller(testUsers.admin).batEnr.ccrt.getFollowUp({ demandId: uuid(999) })).rejects.toMatchObject(notFound);
   });
 });
 
@@ -500,7 +482,7 @@ describe('CCRT heat-network eligibility', () => {
     });
     const list = await createTestCaller(otherCcrtUser).batEnr.ccrt.listDemandesChaleurRenouvelable();
     expect(list.items.map((item) => item.status)).toStrictEqual([DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED]);
-    await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+    await createTestCaller(testUsers.admin).batEnr.ccrt.updateDemandeChaleurRenouvelable({
       demandId: demand.id,
       values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS },
     });

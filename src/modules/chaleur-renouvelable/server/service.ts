@@ -6,7 +6,6 @@ import { businessRules } from '@/modules/app/business-rules';
 import { EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
 import type {
   AddressEligibilityContextInput,
-  AdminUpdateDemandeChaleurRenouvelableInput,
   AdminValidateDemandeChaleurRenouvelableInput,
   BatEnrBatiment,
   BatEnrBatimentsSelectionContext,
@@ -742,13 +741,6 @@ export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
       structure_ccrt: user?.structure_name ?? null,
     },
   };
-};
-
-export const updateDemandeChaleurRenouvelableAdmin = async (ctx: Context, input: AdminUpdateDemandeChaleurRenouvelableInput) => {
-  const demand = await ensureCcrtDemandAccess(ctx, input.demandId);
-  const result = await kdb.transaction().execute((transaction) => applyCcrtFollowUpUpdate(ctx, input, transaction));
-  await recordCcrtFollowUpChanges(ctx, demand, result.changes, 'manual', result.noteCreated);
-  return result.demand;
 };
 
 export const updateDemandeChaleurRenouvelableCcrt = async (ctx: Context, input: CcrtUpdateDemandeChaleurRenouvelableInput) => {

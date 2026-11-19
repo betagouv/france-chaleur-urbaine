@@ -562,17 +562,6 @@ export const zFranceRenovSpaceInput = z.object({
 });
 export type FranceRenovSpaceInput = z.infer<typeof zFranceRenovSpaceInput>;
 
-export const zAdminUpdateDemandeChaleurRenouvelableInput = z.object({
-  demandId: z.string(),
-  values: z
-    .object({
-      assignedTo: z.string().nullable(),
-      status: z.enum(demandeChaleurRenouvelableStatuses.map((status) => status.label)),
-    })
-    .partial(),
-});
-export type AdminUpdateDemandeChaleurRenouvelableInput = z.infer<typeof zAdminUpdateDemandeChaleurRenouvelableInput>;
-
 const zCcrtNote = z.object({ body: z.string().trim().min(1, 'Veuillez saisir une note').max(250) });
 export const zCcrtUpdateDemandeChaleurRenouvelableInput = z.object({
   demandId: z.string(),

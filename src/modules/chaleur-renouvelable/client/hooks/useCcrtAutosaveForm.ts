@@ -91,7 +91,6 @@ export function useCcrtAutosaveForm<Values>({
     form,
     hasChanges,
     isSaving,
-    isValid,
     reset: () => {
       savedValues.current = getDefaultValues(demand);
       updatedAt.current = demand.updated_at;

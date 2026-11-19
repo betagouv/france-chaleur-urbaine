@@ -47,14 +47,6 @@ export const ensureCcrtDemandAccess = async (ctx: Context, demandId: string) =>
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
 
 /**
- * Finds active CCRT accounts covering the demand territory, including before publication.
- */
-export const listCcrtAssignmentCandidates = async (ctx: Context, demandId: string) => {
-  const demand = await ensureCcrtDemandAccess(ctx, demandId);
-  return getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null }, 'renewableHeat');
-};
-
-/**
  * Resolves administrative scopes from authoritative geographic tables, never from an address context string.
  */
 export const getCcrtTerritory = async (
