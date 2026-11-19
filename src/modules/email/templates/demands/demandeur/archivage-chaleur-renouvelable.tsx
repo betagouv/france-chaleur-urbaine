@@ -28,7 +28,7 @@ function ArchivageChaleurRenouvelable({ demand, space }: ArchivageChaleurRenouve
       </Text>
       {space ? (
         <Text>
-          <strong>Votre espace conseil France Rénov’ le plus proche :</strong>
+          <strong>Votre espace conseil France Rénov’ :</strong>
           <br />
           {space.name}
           <br />
@@ -72,7 +72,7 @@ function ArchivageChaleurRenouvelable({ demand, space }: ArchivageChaleurRenouve
 export const scenarios = defineEmailScenarios<typeof ArchivageChaleurRenouvelable>({
   defaut: { label: 'Coordonnées nationales', props: { demand: sampleRenewableHeatDemand, space: null } },
   espaceLocal: {
-    label: 'Espace conseil le plus proche',
+    label: 'Espace conseil de la commune',
     props: {
       demand: sampleRenewableHeatDemand,
       space: {

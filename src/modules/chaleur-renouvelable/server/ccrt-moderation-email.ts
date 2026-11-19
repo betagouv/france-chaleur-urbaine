@@ -1,12 +1,11 @@
 import type { Selectable } from 'kysely';
 import type { Logger } from 'winston';
 
-import { searchBANAddresses } from '@/modules/ban/client';
 import { sendEmailTemplate } from '@/modules/email';
 import { type Jobs, kdb, sql } from '@/server/db/kysely';
 
 import { zCcrtModerationEmailData } from '../constants';
-import { getNearestFranceRenovSpace } from './france-renov-directory';
+import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
 
 /**
  * Sends archive/transfer notices after the moderation transaction commits.
@@ -19,7 +18,18 @@ export const processCcrtModerationEmail = async (job: Pick<Selectable<Jobs>, 'id
   }
   const demand = await kdb
     .selectFrom('demands_chaleur_renouvelable')
-    .select(['id', 'address', 'first_name', 'email', 'housing_type', 'housing_count', 'heating_energy', 'simulation_url', 'archived_at'])
+    .select([
+      'id',
+      'address',
+      'first_name',
+      'email',
+      'housing_type',
+      'housing_count',
+      'heating_energy',
+      'simulation_url',
+      'archived_at',
+      'commune_code',
+    ])
     .where('id', '=', data.demandId)
     .executeTakeFirst();
   if (!demand?.archived_at || demand.archived_at.toISOString() !== data.archivedAt) {
@@ -66,7 +76,7 @@ export const processCcrtModerationEmail = async (job: Pick<Selectable<Jobs>, 'id
         { demand: emailDemand, network: data.network }
       );
     } else {
-      const space = await findAdviceSpace(demand.address, logger);
+      const space = await findAdviceSpace(demand.commune_code, logger);
       await sendEmailTemplate('demands.demandeur.archivage-chaleur-renouvelable', { email: demand.email }, { demand: emailDemand, space });
     }
   } catch (error) {
@@ -85,17 +95,14 @@ export const processCcrtModerationEmail = async (job: Pick<Selectable<Jobs>, 'id
   return { sent: true };
 };
 
-const findAdviceSpace = async (address: string, logger: Logger) => {
+const findAdviceSpace = async (cityCode: string | null, logger: Logger) => {
+  if (!cityCode) {
+    return null;
+  }
   try {
-    const addresses = await searchBANAddresses({
-      limit: 1,
-      query: address,
-      signal: AbortSignal.timeout(10000),
-    });
-    const coordinates = addresses[0]?.geometry.coordinates;
-    return coordinates ? await getNearestFranceRenovSpace({ lat: coordinates[1], lon: coordinates[0] }) : null;
+    return await getFranceRenovSpaceByCityCode(cityCode);
   } catch {
-    logger.warn('Advice centre geocoding unavailable');
+    logger.warn('France Renov spaces unavailable');
     return null;
   }
 };

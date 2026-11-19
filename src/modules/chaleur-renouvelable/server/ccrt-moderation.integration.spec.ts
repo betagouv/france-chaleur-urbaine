@@ -11,11 +11,11 @@ import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
 
 import { processCcrtModerationEmail } from './ccrt-moderation-email';
-import { getNearestFranceRenovSpace } from './france-renov-directory';
+import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
 
 vi.mock('@/modules/email', () => ({ sendEmailTemplate: vi.fn() }));
 vi.mock('@/utils/network', () => ({ fetchJSON: vi.fn(), postFetchJSON: vi.fn() }));
-vi.mock('./france-renov-directory', () => ({ getNearestFranceRenovSpace: vi.fn().mockResolvedValue(null) }));
+vi.mock('./france-renov-spaces', () => ({ getFranceRenovSpaceByCityCode: vi.fn() }));
 afterEach(() => vi.restoreAllMocks());
 
 const banAddress = {
@@ -26,6 +26,7 @@ const banAddress = {
 beforeEach(async () => {
   await cleanDatabase();
   vi.clearAllMocks();
+  vi.mocked(getFranceRenovSpaceByCityCode).mockReset().mockResolvedValue(null);
   vi.mocked(sendEmailTemplate).mockResolvedValue(undefined);
   vi.mocked(fetchJSON).mockResolvedValue({ features: [banAddress] });
   await seedTableUser(Object.values(testUsers));
@@ -455,14 +456,14 @@ describe('CCRT moderation lifecycle', () => {
   });
 
   it('delivers an archive notice with fallback advice and keeps failed SMTP retryable', async () => {
-    const demand = await seedDemandeChaleurRenouvelable();
+    const demand = await seedDemandeChaleurRenouvelable({ commune_code: '75056' });
     await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
     const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
     vi.mocked(sendEmailTemplate).mockRejectedValueOnce(new Error('SMTP unavailable'));
     await expect(processCcrtModerationEmail(job, parentLogger)).rejects.toThrow('SMTP unavailable');
     const failedJob = await kdb.selectFrom('jobs').select(['id', 'data']).where('id', '=', job.id).executeTakeFirstOrThrow();
     await processCcrtModerationEmail(failedJob, parentLogger);
-    expect(getNearestFranceRenovSpace).toHaveBeenLastCalledWith({ lat: 48.8566, lon: 2.3522 });
+    expect(getFranceRenovSpaceByCityCode).toHaveBeenLastCalledWith('75056');
     expect(sendEmailTemplate).toHaveBeenLastCalledWith(
       'demands.demandeur.archivage-chaleur-renouvelable',
       { email: demand.email },
@@ -470,22 +471,54 @@ describe('CCRT moderation lifecycle', () => {
     );
   });
 
-  it.each(['no address', 'geocoding aborted'])('sends the archive notice with national fallback when %s', async (outcome) => {
-    const demand = await seedDemandeChaleurRenouvelable();
+  it('uses the space associated with the saved municipality without geocoding the address', async () => {
+    const demand = await seedDemandeChaleurRenouvelable({ commune_code: '01001' });
+    const space = {
+      address: '2 boulevard Edouard Herriot',
+      city: 'Bourg-en-Bresse',
+      email: 'conseil@example.fr',
+      name: 'Espace conseil de la commune',
+      phone: '0474983376',
+      secondaryPhone: null,
+      website: 'https://france-renov.gouv.fr',
+      zipcode: '01000',
+    };
+    vi.mocked(getFranceRenovSpaceByCityCode).mockResolvedValueOnce(space);
     await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
     const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
-    if (outcome === 'no address') {
-      vi.mocked(fetchJSON).mockResolvedValueOnce({ features: [] });
-    } else {
-      vi.mocked(fetchJSON).mockRejectedValueOnce(new DOMException('The operation was aborted.', 'AbortError'));
-    }
 
     expect(await processCcrtModerationEmail(job, parentLogger)).toStrictEqual({ sent: true });
-    expect(getNearestFranceRenovSpace).not.toHaveBeenCalled();
+    expect(getFranceRenovSpaceByCityCode).toHaveBeenCalledExactlyOnceWith('01001');
+    expect(fetchJSON).not.toHaveBeenCalled();
     expect(sendEmailTemplate).toHaveBeenCalledExactlyOnceWith(
       'demands.demandeur.archivage-chaleur-renouvelable',
       { email: demand.email },
-      { demand: expect.objectContaining({ address: demand.address }), space: null }
+      { demand: expect.objectContaining({ address: demand.address }), space }
     );
   });
+
+  it.each(['no municipality', 'no matching space', 'dataset unavailable'])(
+    'sends the archive notice with national fallback when %s',
+    async (outcome) => {
+      const demand = await seedDemandeChaleurRenouvelable({ commune_code: outcome === 'no municipality' ? null : '75056' });
+      await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
+      const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
+      if (outcome === 'dataset unavailable') {
+        vi.mocked(getFranceRenovSpaceByCityCode).mockRejectedValueOnce(new Error('Dataset unavailable'));
+      }
+
+      expect(await processCcrtModerationEmail(job, parentLogger)).toStrictEqual({ sent: true });
+      if (outcome === 'no municipality') {
+        expect(getFranceRenovSpaceByCityCode).not.toHaveBeenCalled();
+      } else {
+        expect(getFranceRenovSpaceByCityCode).toHaveBeenCalledExactlyOnceWith('75056');
+      }
+      expect(fetchJSON).not.toHaveBeenCalled();
+      expect(sendEmailTemplate).toHaveBeenCalledExactlyOnceWith(
+        'demands.demandeur.archivage-chaleur-renouvelable',
+        { email: demand.email },
+        { demand: expect.objectContaining({ address: demand.address }), space: null }
+      );
+    }
+  );
 });
