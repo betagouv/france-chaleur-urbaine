@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 // Types de jobs disponibles
 export const jobTypes = [
-  'ccrt_moderation_email',
   'build_tiles',
   'pro_eligibility_test',
   'pro_eligibility_test_notify_changes',

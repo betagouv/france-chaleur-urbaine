@@ -18,14 +18,16 @@ export function CcrtDemandValidation({ demand, full, onValidate }: CcrtDemandVal
   const utils = trpc.useUtils();
   if (demand.archived_at !== null) {
     return (
-      <div className="space-y-2 text-left text-sm">
+      <div className="grid gap-2 justify-center">
         <Badge small noIcon severity={demand.transferred_network_name ? 'info' : undefined} className="max-w-full whitespace-normal!">
           {demand.transferred_network_name ? `Transférée` : `Archivée`}
         </Badge>
-        {demand.transferred_network_name
-          ? demand.transferred_network_name
-          : (ccrtArchiveReasons.find((reason) => reason.value === demand.archive_reason)?.label ?? '')}
-        {demand.archive_comment && <p className="mb-0 whitespace-pre-wrap">{demand.archive_comment}</p>}
+        <p className="text-sm">
+          {demand.transferred_network_name
+            ? demand.transferred_network_name
+            : (ccrtArchiveReasons.find((reason) => reason.value === demand.archive_reason)?.label ?? '')}
+          {demand.archive_comment && <p className="mb-0 whitespace-pre-wrap">{demand.archive_comment}</p>}
+        </p>
         <AsyncButton
           priority="tertiary no outline"
           size="small"

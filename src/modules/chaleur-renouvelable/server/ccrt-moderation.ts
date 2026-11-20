@@ -7,18 +7,19 @@ import { cancelTransferredDemand } from '@/modules/demands/server/cancel-transfe
 import { createTransferredDemand } from '@/modules/demands/server/creation-transfer';
 import type { EventDataMap } from '@/modules/events/constants';
 import { createUserEvent } from '@/modules/events/server/service';
-import { type DB, kdb, sql } from '@/server/db/kysely';
+import { type DB, kdb } from '@/server/db/kysely';
 
-import type { zCcrtAdminComment, zCcrtArchiveDemand, zCcrtDemandId, zCcrtModerationEmailData, zCcrtTransferDemand } from '../constants';
+import type { zCcrtAdminComment, zCcrtArchiveDemand, zCcrtDemandId, zCcrtTransferDemand } from '../constants';
 import { selectDemandesChaleurRenouvelableForList } from './ccrt-demand-query';
+import { sendCcrtModerationEmail } from './ccrt-moderation-email';
 import { getCcrtTransferNetwork } from './ccrt-transfer-network';
 import { getDemandHeatingEnergy, getDemandHeatingType, getDemandStructure } from './demand-mapping';
 
 /**
- * Archives only unpublished demands; email delivery is queued in the same transaction.
+ * Archives only unpublished demands, then sends the optional notice directly.
  */
-export const archiveCcrtDemand = async (ctx: Context, input: z.infer<typeof zCcrtArchiveDemand>) =>
-  kdb.transaction().execute(async (transaction) => {
+export const archiveCcrtDemand = async (ctx: Context, input: z.infer<typeof zCcrtArchiveDemand>) => {
+  const result = await kdb.transaction().execute(async (transaction) => {
     await lockPendingDemand(transaction, input.demandId);
     const archivedAt = new Date();
     await transaction
@@ -31,12 +32,14 @@ export const archiveCcrtDemand = async (ctx: Context, input: z.infer<typeof zCcr
       })
       .where('id', '=', input.demandId)
       .execute();
-    if (input.sendEmail) {
-      await queueModerationEmail(transaction, ctx, input.demandId, archivedAt);
-    }
     await recordModeration(transaction, ctx, input.demandId, { action: 'archive', reason: input.reason });
     return { id: input.demandId };
   });
+  if (input.sendEmail) {
+    await sendCcrtModerationEmail(input.demandId, ctx.logger);
+  }
+  return result;
+};
 
 /**
  * Atomically creates the classic demand and archives its accompaniment source.
@@ -47,7 +50,8 @@ export const transferCcrtDemand = async (ctx: Context, input: z.infer<typeof zCc
   if (!network) {
     throw new TRPCError({ code: 'NOT_FOUND', message: 'Réseau de chaleur introuvable' });
   }
-  return kdb.transaction().execute(async (transaction) => {
+  const networkName = network.nom_reseau ?? network.sncu_id ?? `Réseau ${network.id_fcu}`;
+  const result = await kdb.transaction().execute(async (transaction) => {
     const demand = await lockPendingDemand(transaction, input.demandId);
     if (demand.updated_at.toISOString() !== context.updatedAt) {
       throw new TRPCError({ code: 'CONFLICT', message: 'La demande a été modifiée. Rechargez-la avant de la transférer.' });
@@ -84,7 +88,6 @@ export const transferCcrtDemand = async (ctx: Context, input: z.infer<typeof zCc
       },
     });
     const archivedAt = new Date();
-    const networkName = network.nom_reseau ?? network.sncu_id ?? `Réseau ${network.id_fcu}`;
     await transaction
       .updateTable('demands_chaleur_renouvelable')
       .set({
@@ -95,14 +98,15 @@ export const transferCcrtDemand = async (ctx: Context, input: z.infer<typeof zCc
       })
       .where('id', '=', demand.id)
       .execute();
-    await queueModerationEmail(transaction, ctx, demand.id, archivedAt, {
-      distance: network.distance,
-      manager: network.manager,
-      name: networkName,
-    });
     await recordModeration(transaction, ctx, demand.id, { action: 'transfer', networkName, transferredDemandId: transferred.id });
     return { id: demand.id, transferredDemandId: transferred.id };
   });
+  await sendCcrtModerationEmail(result.id, ctx.logger, {
+    distance: network.distance,
+    manager: network.manager,
+    name: networkName,
+  });
+  return result;
 };
 
 /**
@@ -118,17 +122,6 @@ export const restoreCcrtDemand = async (ctx: Context, input: z.infer<typeof zCcr
       .executeTakeFirstOrThrow(notFound);
     if (!demand.archived_at) {
       throw new TRPCError({ code: 'CONFLICT', message: 'Cette demande n’est plus archivée. Actualisez la liste.' });
-    }
-    const pendingEmail = await transaction
-      .selectFrom('jobs')
-      .select('id')
-      .where('type', '=', 'ccrt_moderation_email')
-      .where('entity_id', '=', input.demandId)
-      .where((expression) => sql<string>`${expression.ref('data')}->>'deliveryStatus'`, '=', 'sending')
-      .limit(1)
-      .executeTakeFirst();
-    if (pendingEmail) {
-      throw new TRPCError({ code: 'CONFLICT', message: 'Un email de modération est en cours d’envoi. Attendez sa fin avant d’annuler.' });
     }
     if (demand.transferred_demand_id) {
       await cancelTransferredDemand(transaction, demand.transferred_demand_id, ctx.user.id);
@@ -209,23 +202,3 @@ const recordModeration = (transaction: Transaction<DB>, ctx: Context, demandId: 
     },
     transaction
   );
-
-const queueModerationEmail = (
-  transaction: Transaction<DB>,
-  ctx: Context,
-  demandId: string,
-  archivedAt: Date,
-  network?: { name: string; distance: number | null; manager: string | null }
-) =>
-  transaction
-    .insertInto('jobs')
-    .values({
-      data: { archivedAt: archivedAt.toISOString(), deliveryStatus: 'ready', demandId, network: network ?? null } satisfies z.infer<
-        typeof zCcrtModerationEmailData
-      >,
-      entity_id: demandId,
-      status: 'pending',
-      type: 'ccrt_moderation_email',
-      user_id: ctx.user.id,
-    })
-    .execute();

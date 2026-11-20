@@ -18,7 +18,7 @@ export function CcrtBuildingIdentification({ demand, onMap, children }: CcrtBuil
   return (
     <CcrtDetailsSection
       title="Identification du bâtiment"
-      description={`Demande n° ${demand.id}, reçue le ${dayjs(demand.created_at).format('D MMM YYYY')}`}
+      description={`Demande reçue le ${dayjs(demand.created_at).format('D MMM YYYY')}`}
     >
       <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-1">
         <p className="mb-0 min-w-0 break-words text-sm leading-6 text-(--text-default-grey)">Adresse du bâtiment :</p>

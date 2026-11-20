@@ -624,13 +624,7 @@ export interface Jobs {
   id: Generated<string>;
   result: Json | null;
   status: 'pending' | 'processing' | 'finished' | 'error';
-  type:
-    | 'pro_eligibility_test'
-    | 'build_tiles'
-    | 'pro_eligibility_test_notify_changes'
-    | 'scan_file'
-    | 'parse_request_geometries'
-    | 'ccrt_moderation_email';
+  type: 'pro_eligibility_test' | 'build_tiles' | 'pro_eligibility_test_notify_changes' | 'scan_file' | 'parse_request_geometries';
   updated_at: Generated<Timestamp>;
   user_id: string | null;
 }

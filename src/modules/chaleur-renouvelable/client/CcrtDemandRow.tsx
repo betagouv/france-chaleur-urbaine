@@ -165,16 +165,18 @@ export function CcrtDemandRow({
           {onValidate && !demand.validated ? (
             <CcrtDemandValidation demand={demand} onValidate={onValidate} />
           ) : (
-            <Button
-              priority={isToProcess ? 'primary' : 'secondary'}
-              iconId="fr-icon-mail-line"
-              iconPosition="right"
-              onClick={() => onSendEmail()}
-            >
-              {isToProcess ? 'Contacter' : 'Relancer'}
-            </Button>
+            <div className="space-y-2">
+              <Button
+                priority={isToProcess ? 'primary' : 'secondary'}
+                iconId="fr-icon-mail-line"
+                iconPosition="right"
+                onClick={() => onSendEmail()}
+              >
+                {isToProcess ? 'Contacter' : 'Relancer'}
+              </Button>
+              {onValidate && demand.validated && !demand.archived_at && <CcrtDemandReopening demand={demand} full />}
+            </div>
           )}
-          {onValidate && demand.validated && !demand.archived_at && <CcrtDemandReopening demand={demand} full />}
         </td>
       </tr>
       {isExpanded && (

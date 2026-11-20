@@ -664,10 +664,3 @@ export const zBatEnrByBanIdInput = z.object({
   banId: z.string().min(1, 'banId manquant'),
 });
 export type BatEnrByBanIdInput = z.infer<typeof zBatEnrByBanIdInput>;
-
-export const zCcrtModerationEmailData = z.object({
-  archivedAt: z.iso.datetime(),
-  deliveryStatus: z.enum(['ready', 'sending', 'sent', 'failed']),
-  demandId: z.uuid(),
-  network: z.object({ distance: z.number().nullable(), manager: z.string().nullable(), name: z.string() }).nullable(),
-});

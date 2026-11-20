@@ -4,13 +4,11 @@ import * as demandHelpers from '@/modules/demands/server/helpers';
 import { sendEmailTemplate } from '@/modules/email';
 import * as eventsService from '@/modules/events/server/service';
 import { kdb, sql } from '@/server/db/kysely';
-import { parentLogger } from '@/server/helpers/logger';
 import { cleanDatabase, seedDemandeChaleurRenouvelable, seedReseauDeChaleur, seedTableUser } from '@/tests/fixtures';
 import { createTestCaller, forbiddenError, type TestCaseBoolean, testUsers } from '@/tests/trpc-helpers';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 import { fetchJSON } from '@/utils/network';
 
-import { processCcrtModerationEmail } from './ccrt-moderation-email';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
 
 vi.mock('@/modules/email', () => ({ sendEmailTemplate: vi.fn() }));
@@ -135,6 +133,7 @@ describe('CCRT moderation lifecycle', () => {
     );
     expect(await kdb.selectFrom('demands').select('id').execute()).toStrictEqual([]);
     expect(await kdb.selectFrom('jobs').select('id').execute()).toStrictEqual([]);
+    expect(sendEmailTemplate).not.toHaveBeenCalled();
     expect(
       await kdb
         .selectFrom('demands_chaleur_renouvelable')
@@ -154,19 +153,6 @@ describe('CCRT moderation lifecycle', () => {
     expect(results.map((result) => result.status).toSorted()).toStrictEqual(['fulfilled', 'rejected']);
   });
 
-  it('refuses to replay a delivery with an uncertain SMTP outcome', async () => {
-    const demand = await seedDemandeChaleurRenouvelable();
-    await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'test' });
-    const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
-    await kdb
-      .updateTable('jobs')
-      .set({ data: sql`jsonb_set(${JSON.stringify(job.data)}::jsonb, '{deliveryStatus}', '"sending"')` })
-      .where('id', '=', job.id)
-      .execute();
-    const reservedJob = await kdb.selectFrom('jobs').select(['id', 'data']).where('id', '=', job.id).executeTakeFirstOrThrow();
-    await expect(processCcrtModerationEmail(reservedJob, parentLogger)).rejects.toThrow('Envoi déjà réservé');
-    expect(sendEmailTemplate).not.toHaveBeenCalled();
-  });
   it.each([true, false])('archives with optional user email (%s), excludes CCRT and restores without email', async (sendEmail) => {
     const demand = await seedDemandeChaleurRenouvelable({ departement_code: '75' });
     const route = createTestCaller(testUsers.admin).batEnr.admin;
@@ -184,8 +170,8 @@ describe('CCRT moderation lifecycle', () => {
     });
     expect((await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable()).items).toStrictEqual([]);
     await expect(route.validateDemandeChaleurRenouvelable({ demandId: demand.id })).rejects.toMatchObject({ code: 'CONFLICT' });
-    const jobs = await kdb.selectFrom('jobs').select(['id', 'data']).execute();
-    expect(jobs.length).toStrictEqual(sendEmail ? 1 : 0);
+    expect(await kdb.selectFrom('jobs').select('id').execute()).toStrictEqual([]);
+    expect(sendEmailTemplate).toHaveBeenCalledTimes(sendEmail ? 1 : 0);
     await route.restoreDemand({ demandId: demand.id });
     expect(
       await kdb
@@ -194,10 +180,7 @@ describe('CCRT moderation lifecycle', () => {
         .where('id', '=', demand.id)
         .executeTakeFirstOrThrow()
     ).toStrictEqual({ archive_comment: null, archive_reason: null, archived_at: null, validated: false });
-    if (jobs[0]) {
-      expect(await processCcrtModerationEmail(jobs[0], parentLogger)).toStrictEqual({ skipped: true });
-    }
-    expect(sendEmailTemplate).not.toHaveBeenCalled();
+    expect(sendEmailTemplate).toHaveBeenCalledTimes(sendEmail ? 1 : 0);
   });
 
   it('creates one validated connection demand, retains private details and prevents restoring a transfer', async () => {
@@ -241,10 +224,7 @@ describe('CCRT moderation lifecycle', () => {
     const managerDemands = await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.list();
     expect(managerDemands.map((item) => item.id)).toStrictEqual([result.transferredDemandId]);
     await expect(route.transferDemand({ demandId: demand.id, networkId: 500 })).rejects.toMatchObject({ code: 'CONFLICT' });
-    const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
-    await processCcrtModerationEmail(job, parentLogger);
-    const sentJob = await kdb.selectFrom('jobs').select(['id', 'data']).where('id', '=', job.id).executeTakeFirstOrThrow();
-    expect(await processCcrtModerationEmail(sentJob, parentLogger)).toStrictEqual({ alreadySent: true });
+    expect(await kdb.selectFrom('jobs').select('id').execute()).toStrictEqual([]);
     expect(sendEmailTemplate).toHaveBeenCalledExactlyOnceWith(
       'demands.demandeur.transfert-chaleur-renouvelable',
       { email: demand.email },
@@ -255,7 +235,7 @@ describe('CCRT moderation lifecycle', () => {
     );
   });
 
-  it('cancels an untouched transfer atomically, removes the classic demand and skips its queued email', async () => {
+  it('cancels an untouched transfer atomically and removes the classic demand without another email', async () => {
     const demand = await seedDemandeChaleurRenouvelable({ admin_comment: 'Private', comments: 'Initial comment' });
     await seedNetwork();
     const route = createTestCaller(testUsers.admin).batEnr.admin;
@@ -279,9 +259,7 @@ describe('CCRT moderation lifecycle', () => {
       validated: false,
     });
     expect(await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.list()).toStrictEqual([]);
-    const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
-    expect(await processCcrtModerationEmail(job, parentLogger)).toStrictEqual({ skipped: true });
-    expect(sendEmailTemplate).not.toHaveBeenCalled();
+    expect(sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(
       await kdb
         .selectFrom('events')
@@ -363,7 +341,7 @@ describe('CCRT moderation lifecycle', () => {
             key: 'test',
           })
     ).rejects.toMatchObject({ code: 'NOT_FOUND' });
-    expect(sendEmailTemplate).not.toHaveBeenCalled();
+    expect(sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(
       await kdb.selectFrom('demand_emails').select('id').where('demand_id', '=', transferred.transferredDemandId).execute()
     ).toStrictEqual([]);
@@ -383,19 +361,6 @@ describe('CCRT moderation lifecycle', () => {
     expect(
       await kdb.selectFrom('demands_chaleur_renouvelable').select('archived_at').where('id', '=', demand.id).executeTakeFirstOrThrow()
     ).toStrictEqual({ archived_at: expect.any(Date) });
-  });
-
-  it('blocks cancellation while the moderation email is being delivered, then allows it after delivery', async () => {
-    const demand = await seedDemandeChaleurRenouvelable();
-    await seedNetwork();
-    const route = createTestCaller(testUsers.admin).batEnr.admin;
-    await route.transferDemand({ demandId: demand.id, networkId: 500 });
-    vi.mocked(sendEmailTemplate).mockImplementationOnce(async () => {
-      await expect(route.restoreDemand({ demandId: demand.id })).rejects.toMatchObject({ code: 'CONFLICT' });
-    });
-    await processCcrtModerationEmail(await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow(), parentLogger);
-    await route.restoreDemand({ demandId: demand.id });
-    expect(sendEmailTemplate).toHaveBeenCalledTimes(1);
   });
 
   it('serializes concurrent archive and transfer operations', async () => {
@@ -455,21 +420,30 @@ describe('CCRT moderation lifecycle', () => {
     expect((await admin.ccrt.getFollowUp({ demandId: demand.id })).users).toStrictEqual(list.items[0].access_users);
   });
 
-  it('delivers an archive notice with fallback advice and keeps failed SMTP retryable', async () => {
-    const demand = await seedDemandeChaleurRenouvelable({ commune_code: '75056' });
-    await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
-    const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
-    vi.mocked(sendEmailTemplate).mockRejectedValueOnce(new Error('SMTP unavailable'));
-    await expect(processCcrtModerationEmail(job, parentLogger)).rejects.toThrow('SMTP unavailable');
-    const failedJob = await kdb.selectFrom('jobs').select(['id', 'data']).where('id', '=', job.id).executeTakeFirstOrThrow();
-    await processCcrtModerationEmail(failedJob, parentLogger);
-    expect(getFranceRenovSpaceByCityCode).toHaveBeenLastCalledWith('75056');
-    expect(sendEmailTemplate).toHaveBeenLastCalledWith(
-      'demands.demandeur.archivage-chaleur-renouvelable',
-      { email: demand.email },
-      { demand: expect.objectContaining({ address: demand.address }), space: null }
-    );
-  });
+  it.each(['archive', 'transfer'] as const)(
+    'keeps the %s committed and reports a direct SMTP failure without queuing a job',
+    async (action) => {
+      const demand = await seedDemandeChaleurRenouvelable({ commune_code: '75056' });
+      await seedNetwork();
+      vi.mocked(sendEmailTemplate).mockImplementationOnce(async () => {
+        expect(
+          await kdb.selectFrom('demands_chaleur_renouvelable').select('archived_at').where('id', '=', demand.id).executeTakeFirstOrThrow()
+        ).toStrictEqual({ archived_at: expect.any(Date) });
+        throw new Error('SMTP unavailable');
+      });
+      const route = createTestCaller(testUsers.admin).batEnr.admin;
+      await expect(
+        action === 'archive'
+          ? route.archiveDemand({ demandId: demand.id, reason: 'individual_house' })
+          : route.transferDemand({ demandId: demand.id, networkId: 500 })
+      ).rejects.toThrow('La modération a été enregistrée, mais l’envoi de l’email a échoué.');
+      expect(await kdb.selectFrom('jobs').select('id').execute()).toStrictEqual([]);
+      expect(sendEmailTemplate).toHaveBeenCalledTimes(1);
+      expect(
+        await kdb.selectFrom('demands_chaleur_renouvelable').select('archived_at').where('id', '=', demand.id).executeTakeFirstOrThrow()
+      ).toStrictEqual({ archived_at: expect.any(Date) });
+    }
+  );
 
   it('uses the space associated with the saved municipality without geocoding the address', async () => {
     const demand = await seedDemandeChaleurRenouvelable({ commune_code: '01001' });
@@ -485,9 +459,7 @@ describe('CCRT moderation lifecycle', () => {
     };
     vi.mocked(getFranceRenovSpaceByCityCode).mockResolvedValueOnce(space);
     await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
-    const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
 
-    expect(await processCcrtModerationEmail(job, parentLogger)).toStrictEqual({ sent: true });
     expect(getFranceRenovSpaceByCityCode).toHaveBeenCalledExactlyOnceWith('01001');
     expect(fetchJSON).not.toHaveBeenCalled();
     expect(sendEmailTemplate).toHaveBeenCalledExactlyOnceWith(
@@ -501,13 +473,11 @@ describe('CCRT moderation lifecycle', () => {
     'sends the archive notice with national fallback when %s',
     async (outcome) => {
       const demand = await seedDemandeChaleurRenouvelable({ commune_code: outcome === 'no municipality' ? null : '75056' });
-      await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
-      const job = await kdb.selectFrom('jobs').select(['id', 'data']).executeTakeFirstOrThrow();
       if (outcome === 'dataset unavailable') {
         vi.mocked(getFranceRenovSpaceByCityCode).mockRejectedValueOnce(new Error('Dataset unavailable'));
       }
 
-      expect(await processCcrtModerationEmail(job, parentLogger)).toStrictEqual({ sent: true });
+      await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
       if (outcome === 'no municipality') {
         expect(getFranceRenovSpaceByCityCode).not.toHaveBeenCalled();
       } else {

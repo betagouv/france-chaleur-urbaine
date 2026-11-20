@@ -1,65 +1,24 @@
-import type { Selectable } from 'kysely';
+import { TRPCError } from '@trpc/server';
 import type { Logger } from 'winston';
 
 import { sendEmailTemplate } from '@/modules/email';
-import { type Jobs, kdb, sql } from '@/server/db/kysely';
+import { kdb } from '@/server/db/kysely';
 
-import { zCcrtModerationEmailData } from '../constants';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
 
 /**
- * Sends archive/transfer notices after the moderation transaction commits.
- * Delivery reservations prevent duplicate sends and restoration during SMTP delivery.
+ * Sends archive/transfer notices directly after the moderation transaction commits.
  */
-export const processCcrtModerationEmail = async (job: Pick<Selectable<Jobs>, 'id' | 'data'>, logger: Logger) => {
-  const data = zCcrtModerationEmailData.parse(job.data);
-  if (data.deliveryStatus === 'sent') {
-    return { alreadySent: true };
-  }
+export const sendCcrtModerationEmail = async (
+  demandId: string,
+  logger: Logger,
+  network?: { name: string; distance: number | null; manager: string | null }
+) => {
   const demand = await kdb
     .selectFrom('demands_chaleur_renouvelable')
-    .select([
-      'id',
-      'address',
-      'first_name',
-      'email',
-      'housing_type',
-      'housing_count',
-      'heating_energy',
-      'simulation_url',
-      'archived_at',
-      'commune_code',
-    ])
-    .where('id', '=', data.demandId)
-    .executeTakeFirst();
-  if (!demand?.archived_at || demand.archived_at.toISOString() !== data.archivedAt) {
-    return { skipped: true };
-  }
-  const reservation = await kdb.transaction().execute(async (transaction) => {
-    const current = await transaction
-      .selectFrom('demands_chaleur_renouvelable')
-      .select('archived_at')
-      .where('id', '=', data.demandId)
-      .forUpdate()
-      .executeTakeFirst();
-    if (!current?.archived_at || current.archived_at.toISOString() !== data.archivedAt) {
-      return null;
-    }
-    const reserved = await transaction
-      .updateTable('jobs')
-      .set({ data: { ...data, deliveryStatus: 'sending' } })
-      .where('id', '=', job.id)
-      .where((expression) => sql<string>`${expression.ref('data')}->>'deliveryStatus'`, 'in', ['ready', 'failed'])
-      .returning('id')
-      .executeTakeFirst();
-    if (!reserved) {
-      throw new Error('Envoi déjà réservé : vérifier la livraison avant toute reprise manuelle.');
-    }
-    return reserved;
-  });
-  if (!reservation) {
-    return { skipped: true };
-  }
+    .select(['address', 'first_name', 'email', 'housing_type', 'housing_count', 'heating_energy', 'simulation_url', 'commune_code'])
+    .where('id', '=', demandId)
+    .executeTakeFirstOrThrow();
   const emailDemand = {
     address: demand.address,
     firstName: demand.first_name,
@@ -69,30 +28,23 @@ export const processCcrtModerationEmail = async (job: Pick<Selectable<Jobs>, 'id
     simulationUrl: demand.simulation_url,
   };
   try {
-    if (data.network) {
+    if (network) {
       await sendEmailTemplate(
         'demands.demandeur.transfert-chaleur-renouvelable',
         { email: demand.email },
-        { demand: emailDemand, network: data.network }
+        { demand: emailDemand, network }
       );
     } else {
       const space = await findAdviceSpace(demand.commune_code, logger);
       await sendEmailTemplate('demands.demandeur.archivage-chaleur-renouvelable', { email: demand.email }, { demand: emailDemand, space });
     }
-  } catch (error) {
-    await kdb
-      .updateTable('jobs')
-      .set({ data: { ...data, deliveryStatus: 'failed' } })
-      .where('id', '=', job.id)
-      .execute();
-    throw error;
+  } catch {
+    logger.error('CCRT moderation email delivery failed', { demandId });
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'La modération a été enregistrée, mais l’envoi de l’email a échoué.',
+    });
   }
-  await kdb
-    .updateTable('jobs')
-    .set({ data: { ...data, deliveryStatus: 'sent' } })
-    .where('id', '=', job.id)
-    .execute();
-  return { sent: true };
 };
 
 const findAdviceSpace = async (cityCode: string | null, logger: Logger) => {

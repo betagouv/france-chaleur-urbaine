@@ -21,7 +21,7 @@ export function CcrtDemandReopening({ demand, full }: CcrtDemandReopeningProps) 
   const lastChange = demand.last_ccrt_status_change;
   return (
     <>
-      <Button priority="tertiary" size="small" full={full} onClick={() => dialog.open()}>
+      <Button priority="secondary" size="small" full={full} onClick={() => dialog.open()}>
         Remettre à valider
       </Button>
       <ConfirmDialog
