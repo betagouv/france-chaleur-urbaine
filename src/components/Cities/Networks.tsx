@@ -89,6 +89,7 @@ const Networks = ({ citySlug, networksData, network, cityCoord }: NetworksProps)
               reseauxDeChaleur: {
                 show: true,
               },
+              zonesDeDeveloppementPrioritaire: true,
             })}
           >
             <MapMarker longitude={cityCoord[0]} latitude={cityCoord[1]} color="#4550e5" />
