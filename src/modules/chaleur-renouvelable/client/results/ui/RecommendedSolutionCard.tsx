@@ -48,6 +48,7 @@ export function HeatNetworkRecommendedSolutionCard({
       reseauxDeChaleur: {
         show: true,
       },
+      reseauxEnConstruction: true,
       zonesDeDeveloppementPrioritaire: true,
     }),
     [heatNetwork?.id]
@@ -82,8 +83,8 @@ export function HeatNetworkRecommendedSolutionCard({
         Votre bâtiment est situé à <strong>{distanceLabel}</strong> du réseau de chaleur{networkName}. C’est la solution à privilégier pour
         un chauffage collectif. Une énergie majoritairement <strong>renouvelable et locale</strong>, un <strong>prix stable</strong> et une{' '}
         <strong>TVA réduite à 5,5 %</strong>, le tout garanti par un service public.
+        <SolutionArticleLink modeId={item.id} solutionName={item.label} />
       </p>
-      <SolutionArticleLink modeId={item.id} solutionName={item.label} />
       {item.rafraichissementPossible && <CoolingPossibleTag />}
       <div className="grid-1 grid gap-6 md:grid-cols-3">
         {mapMarkerCoordinates && (
