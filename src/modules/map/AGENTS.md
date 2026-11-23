@@ -151,7 +151,7 @@ Zoom bounds and the FCU attribution (link to `/donnees`) are hardcoded — they 
 
 Built-in. When `interactive=true` and `layers` are provided, `<MapCanvas>` mounts `<MapInteractions layers={layers} />`:
 - selectable layers = sublayers without `unselectable: true`,
-- on `mousemove` / `click` / `touchend`: `queryRenderedFeatures` over a 15px buffer around the cursor,
+- on `mousemove` / `click` / `touchend`: `queryRenderedFeatures` over a 15px buffer around the cursor. Taps need `touchend` (MapboxDraw, mounted with the legend, cancels the emulated `click` on touch devices); a `touchend` closing a pan / pinch is skipped via `map.isMoving()`,
 - pick by geometry priority (Point > Line > Polygon), nearest-distance tie-break via turf,
 - hover state applied via `setFeatureState`,
 - popup opened at the turf-snapped nearest point on the feature, content portal'd into a `maplibregl.Popup`.

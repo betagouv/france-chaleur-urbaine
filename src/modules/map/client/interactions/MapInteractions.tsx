@@ -224,6 +224,15 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
       });
     };
 
+    // Taps go through `touchend`: MapboxDraw (mounted with the legend) cancels the emulated `click` on
+    // touch devices. `touchend` also fires when a pan / pinch ends — the gesture is still in progress at
+    // that point, so `isMoving()` tells a tap from a map move.
+    const onTouchEnd = (event: MapTouchEvent) => {
+      if (!map.isMoving()) {
+        onClick(event);
+      }
+    };
+
     // No `mouseleave`: would kill the hover state when the cursor moves over
     // the popup DOM. Hover clears naturally on the next feature-less mousemove.
     // Paused while drawing OR while a tool captures the click (building selector, …) —
@@ -245,7 +254,7 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
     const timeoutId = window.setTimeout(() => {
       map.on('mousemove', onMouseMove);
       map.on('click', onClick);
-      map.on('touchend', onClick);
+      map.on('touchend', onTouchEnd);
       attached = true;
     }, reactivateDelayMs);
 
@@ -257,7 +266,7 @@ export function useMapInteractions(layers: readonly MapSourceLayersSpecification
       if (attached) {
         map.off('mousemove', onMouseMove);
         map.off('click', onClick);
-        map.off('touchend', onClick);
+        map.off('touchend', onTouchEnd);
       }
       clearHover();
       map.getCanvas().style.cursor = '';
