@@ -42,7 +42,7 @@ export function CcrtIdentificationForm({ demand, onMap }: CcrtIdentificationForm
         <div className="grid items-start gap-6 lg:grid-cols-2">
           <CcrtBuildingIdentification demand={demand} onMap={onMap}>
             <div className="grid gap-6 sm:grid-cols-2 [&_.fr-input-group]:mb-0">
-              <div className="sm:col-span-2">
+              <div className="sm:col-span-2 mt-3.25">
                 <form.AppField name="rnic_nom_copropriete">{(field) => <field.TextField label="Syndicat de copropriété" />}</form.AppField>
               </div>
               {buildingFields.map(({ name, label }) => (

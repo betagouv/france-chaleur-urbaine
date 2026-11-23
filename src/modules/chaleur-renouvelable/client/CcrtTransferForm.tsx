@@ -65,7 +65,7 @@ export function CcrtTransferForm({ demandId, onClose }: CcrtTransferFormProps) {
       ) : network ? (
         <RadioButtons
           legend="Réseau sélectionné"
-          className="mb-0 border border-(--border-active-blue-france) p-3"
+          className="border border-(--border-active-blue-france) p-3"
           options={[
             {
               hintText: `SNCU : ${network.sncu_id ?? 'Non renseigné'} · ${network.distance === null ? 'Distance inconnue' : `${network.distance} m`}`,

@@ -40,7 +40,7 @@ export function CcrtDemandModerationMenu({ demandId, full }: CcrtDemandModeratio
           {(
             [
               ['transfer', 'Transférer à un gestionnaire de réseau', 'La demande est réaffectée'],
-              ['archive', 'Archiver la demande', 'Elle ne sera transmise à aucun gestionnaire'],
+              ['archive', 'Archiver la demande', 'Elle ne sera transmise à aucun CCRT'],
             ] as const
           ).map(([action, label, description]) => (
             <div key={action}>
