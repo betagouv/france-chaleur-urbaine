@@ -557,6 +557,7 @@ const NetworkPanel = ({
                       show: true,
                     },
                     reseauxDeFroid: true,
+                    zonesDeDeveloppementPrioritaire: true,
                   })}
                 />
               </Box>

@@ -123,6 +123,7 @@ const Carte = () => {
       ...(maitreOuvrage?.length ? { filtreMaitreOuvrage: maitreOuvrage } : {}),
       reseauxDeChaleur: { show: true, ...rdcDimensions },
       reseauxEnConstruction: true,
+      zonesDeDeveloppementPrioritaire: true,
     };
 
     additionalLayersParam
@@ -146,7 +147,8 @@ const Carte = () => {
       includeFooter={false}
     >
       <h1 className="fr-sr-only">Carte nationale des réseaux de chaleur et de froid en France</h1>
-      {/* Remplit le viewport sous le header. Hauteur mesurée → `--header-height` (cf. useHeaderHeightVar) ; repli 57px avant la mesure. */}
+      {/* Remplit le viewport sous le header. Hauteur mesurée → `--header-height` (cf. useHeaderHeightVar) ; repli 57px avant la mesure.
+          Garder les `_` autour du `-` : la forme canonique suggérée par l'IDE (`100dvh-var(…)`) produit un calc invalide et la carte ne s'affiche plus. */}
       <div className="w-full h-[calc(100dvh_-_var(--header-height,57px))]">
         <Map config={config} initialView={initialView} legend="auto" search="eligibility" contextMenu={hasRole('admin')}>
           <MapViewUrlSync />
