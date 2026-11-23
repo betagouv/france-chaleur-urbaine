@@ -219,7 +219,7 @@ export const modesDeChauffage = {
         </>
       ),
       estPossible: (situation) =>
-        hasEspaceShared(situation) &&
+        hasEspacePrivate(situation) &&
         hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 2,
@@ -227,7 +227,7 @@ export const modesDeChauffage = {
       id: 'collective-air-water-heat-pump',
       incompatibilites: [
         {
-          isIncompatible: (situation) => !hasEspaceShared(situation),
+          isIncompatible: (situation) => !hasEspacePrivate(situation),
           reason: 'Vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure',
           source: 'Formulaire',
         },
@@ -269,7 +269,7 @@ export const modesDeChauffage = {
         </>
       ),
       estPossible: (situation) =>
-        hasEspaceShared(situation) &&
+        hasEspacePrivate(situation) &&
         hasCompatibleHotWaterMode(situation, ['Collectif', 'Individuel']) &&
         hasCompatibleRadiator(situation, ['radiateur-eau']),
       gainClasse: 1,
@@ -277,7 +277,7 @@ export const modesDeChauffage = {
       id: 'collective-hybrid-air-water-heat-pump-gas',
       incompatibilites: [
         {
-          isIncompatible: (situation) => !hasEspaceShared(situation),
+          isIncompatible: (situation) => !hasEspacePrivate(situation),
           reason: 'Vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure',
           source: 'Formulaire',
         },
@@ -353,7 +353,7 @@ export const modesDeChauffage = {
           une place importante en local technique pour les ballons de stockage.
         </>
       ),
-      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
+      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspacePrivate(situation),
       gainClasse: 1,
       icone: 'img/heating-solutions/solar-atmospheric-heat-pump.svg',
       id: 'collective-solar-atmospheric-heat-pump-hot-water',
@@ -406,7 +406,7 @@ export const modesDeChauffage = {
           chaude sanitaire. Elle capte les calories de l'air extérieur pour chauffer l’eau.
         </>
       ),
-      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
+      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspacePrivate(situation),
       gainClasse: 1,
       icone: 'img/heating-solutions/air-water.svg',
       id: 'collective-air-water-heat-pump-hot-water',
@@ -579,7 +579,7 @@ export const modesDeChauffage = {
           une place importante en local technique pour les ballons de stockage.
         </>
       ),
-      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
+      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspacePrivate(situation),
       gainClasse: 1,
       icone: 'img/heating-solutions/solar-atmospheric-heat-pump.svg',
       id: 'individual-apartment-solar-atmospheric-heat-pump-hot-water',
@@ -632,7 +632,7 @@ export const modesDeChauffage = {
           chaude sanitaire. Elle capte les calories de l'air extérieur pour chauffer l’eau.
         </>
       ),
-      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspaceShared(situation),
+      estPossible: (situation) => hasCompatibleHotWaterMode(situation, ['Collectif']) && hasEspacePrivate(situation),
       gainClasse: 1,
       icone: 'img/heating-solutions/air-water.svg',
       id: 'individual-apartment-collective-air-water-heat-pump-hot-water',

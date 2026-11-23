@@ -235,10 +235,16 @@ const heatingModeCases: HeatingModeCase[] = [
     usage: 'heatingAndHotWater',
   },
   {
+    additionalPossibleCases: [
+      {
+        description: 'avec uniquement une terrasse ou un balcon',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+      },
+    ],
     impossibleCases: [
       {
-        description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+        description: 'sans espace extérieur',
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'sans radiateur à eau',
@@ -251,10 +257,16 @@ const heatingModeCases: HeatingModeCase[] = [
     usage: 'heatingAndHotWater',
   },
   {
+    additionalPossibleCases: [
+      {
+        description: 'avec uniquement une terrasse ou un balcon',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+      },
+    ],
     impossibleCases: [
       {
-        description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+        description: 'sans espace extérieur',
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'sans radiateur à eau',
@@ -295,10 +307,16 @@ const heatingModeCases: HeatingModeCase[] = [
     usage: 'hotWaterOnly',
   },
   {
+    additionalPossibleCases: [
+      {
+        description: 'avec uniquement une terrasse ou un balcon',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+      },
+    ],
     impossibleCases: [
       {
-        description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+        description: 'sans espace extérieur',
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'avec une eau chaude individuelle',
@@ -327,10 +345,16 @@ const heatingModeCases: HeatingModeCase[] = [
     usage: 'hotWaterOnly',
   },
   {
+    additionalPossibleCases: [
+      {
+        description: 'avec uniquement une terrasse ou un balcon',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+      },
+    ],
     impossibleCases: [
       {
-        description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+        description: 'sans espace extérieur',
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'avec une eau chaude individuelle',
@@ -413,10 +437,16 @@ const heatingModeCases: HeatingModeCase[] = [
     usage: 'hotWaterOnly',
   },
   {
+    additionalPossibleCases: [
+      {
+        description: 'avec uniquement une terrasse ou un balcon',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+      },
+    ],
     impossibleCases: [
       {
-        description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+        description: 'sans espace extérieur',
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'avec une eau chaude individuelle',
@@ -445,10 +475,16 @@ const heatingModeCases: HeatingModeCase[] = [
     usage: 'hotWaterOnly',
   },
   {
+    additionalPossibleCases: [
+      {
+        description: 'avec uniquement une terrasse ou un balcon',
+        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+      },
+    ],
     impossibleCases: [
       {
-        description: 'sans espace extérieur commun',
-        overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+        description: 'sans espace extérieur',
+        overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Collectif' },
       },
       {
         description: 'avec une eau chaude individuelle',
@@ -685,7 +721,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'PAC air-eau collective',
-    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+    overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Collectif' },
     reason: 'Vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure',
     source: 'Formulaire',
     typeLogement: 'immeuble_chauffage_collectif',
@@ -693,7 +729,7 @@ const incompatibilityCases: IncompatibilityCase[] = [
   },
   {
     label: 'Hybride : PAC air/eau collective et chaudière gaz',
-    overrides: { espaceExterieur: 'terrasseBalcon', modeEauChaudeSanitaire: 'Collectif' },
+    overrides: { espaceExterieur: 'none', modeEauChaudeSanitaire: 'Collectif' },
     reason: 'Vous ne disposez pas d’espace extérieur pour disposer l’unité extérieure',
     source: 'Formulaire',
     typeLogement: 'immeuble_chauffage_collectif',
