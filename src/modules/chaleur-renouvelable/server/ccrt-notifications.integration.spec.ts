@@ -89,6 +89,23 @@ describe('ccrt-notifications', () => {
   };
 
   describe('notifyCcrtOfNewDemands', () => {
+    it.each([null, notifiedOn('2026-10-14')])(
+      'excludes reopened demands from daily and weekly notifications, whether previously notified or not (%s)',
+      async (notifiedAt) => {
+        runAt(MONDAY_10H);
+        await seedWeeklyUser();
+        const reopened = await seedDemand({ notified_at: notifiedAt, reopened_at: daysAgo(1) });
+        const ordinary = await seedDemand();
+
+        await notifyCcrtOfNewDemands();
+
+        expect(recipientIds()).toStrictEqual([ccrtMatching, ccrtWeekly].sort());
+        expect(callsFor(ccrtMatching)[0][2]).toMatchObject({ demandUrl: expect.stringContaining(ordinary.id) });
+        expect(callsFor(ccrtWeekly)[0][2]).toMatchObject({ demands: [{ id: ordinary.id }] });
+        expect(await notifiedAtOf(reopened.id)).toStrictEqual(notifiedAt);
+      }
+    );
+
     it('quotidien : un email détaillé par demande aux seuls CCRT actifs avec une permission territoriale matchante', async () => {
       const demand = await seedDemand();
 
@@ -212,6 +229,15 @@ describe('ccrt-notifications', () => {
   });
 
   describe('notifyCcrtOfUnhandledDemands', () => {
+    it.each([false, true])(
+      'preserves ordinary reminders for a previously notified reopened demand only after revalidation (%s)',
+      async (validated) => {
+        await seedDemand({ notified_at: daysAgo(10), reopened_at: daysAgo(1), validated });
+        await notifyCcrtOfUnhandledDemands();
+        expect(recipientIds()).toStrictEqual(validated ? [ccrtMatching, ccrtOptedOutNew].sort() : []);
+      }
+    );
+
     it('relance les CCRT matchants avec pending_demands_reminder=true sur une demande notifiée depuis plus de 7 jours', async () => {
       const demand = await seedDemand({ notified_at: daysAgo(10) });
 

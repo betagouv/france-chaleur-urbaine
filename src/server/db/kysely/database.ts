@@ -7,6 +7,7 @@ import type { ColumnType, GeneratedAlways, JSONColumnType } from 'kysely';
 
 import type { Acquisition } from '@/modules/analytics/constants';
 import type {
+  CcrtArchiveReason,
   DemandConcern,
   DemandeChaleurRenouvelableProjectState,
   DemandeChaleurRenouvelableStatus,
@@ -295,6 +296,10 @@ export interface CustomTerritories {
 export interface DemandsChaleurRenouvelable {
   acquisition: JSONColumnType<Acquisition> | null;
   address: string;
+  admin_comment: Generated<string>;
+  archive_comment: string | null;
+  archive_reason: CcrtArchiveReason | null;
+  archived_at: Timestamp | null;
   alternative_heating_solutions: Generated<string[]>;
   annual_heating_consumption: number | null;
   assigned_to: string | null;
@@ -331,12 +336,15 @@ export interface DemandsChaleurRenouvelable {
   radiator_type: TypeRadiateur | null;
   refusal_period: string | null;
   refusal_reason: string | null;
+  reopened_at: Timestamp | null;
   rnic_nom_copropriete: string | null;
   rnic_numero_immatriculation: string | null;
   rnic_siret_representant_legal: string | null;
   simulation_url: string;
   status: Generated<DemandeChaleurRenouvelableStatus>;
   surface_area: number | null;
+  transferred_demand_id: string | null;
+  transferred_network_name: string | null;
   updated_at: Generated<Timestamp>;
   validated: Generated<boolean>;
 }
@@ -383,6 +391,7 @@ export interface DemandEmails {
 }
 
 export interface Demands {
+  acquisition: JSONColumnType<Acquisition> | null;
   comment_fcu: string | null;
   comment_gestionnaire: string | null;
   comment_user: string | null;

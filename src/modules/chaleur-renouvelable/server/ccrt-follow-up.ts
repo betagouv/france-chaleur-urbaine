@@ -7,6 +7,7 @@ import { kdb } from '@/server/db/kysely';
 
 import type { zCcrtFollowUpInput } from '../constants';
 import { ensureCcrtDemandAccess, listCcrtUsersWithAccess } from './ccrt-access';
+import { getCcrtAdminAccessUsers } from './ccrt-admin-access';
 
 type CcrtHistoryEvent = {
   [Type in EventType]: Pick<Extract<AdminEvent, { type: Type }>, 'id' | 'type' | 'data' | 'created_at'> & {
@@ -26,6 +27,8 @@ export const getCcrtFollowUp = async (ctx: Context, input: z.infer<typeof zCcrtF
     .leftJoin('users as author', 'author.id', 'events.author_id')
     .where('context_type', '=', 'ccrt_demand')
     .where('context_id', '=', demand.id);
+  const visibleHistoryQuery =
+    ctx.user.role === 'admin' ? historyQuery : historyQuery.where('type', '!=', 'ccrt_demand_admin_comment_updated');
   const [notes, emails, users, history, count] = await Promise.all([
     kdb
       .selectFrom('ccrt_demand_notes')
@@ -49,15 +52,17 @@ export const getCcrtFollowUp = async (ctx: Context, input: z.infer<typeof zCcrtF
       .where('status', '=', 'sent')
       .orderBy('sent_at', 'desc')
       .execute(),
-    listCcrtUsersWithAccess(demand),
-    historyQuery
+    ctx.user.role === 'admin'
+      ? getCcrtAdminAccessUsers(demand.id)
+      : listCcrtUsersWithAccess(demand).then((users) => users.map((user) => ({ ...user, last_connection: null }))),
+    visibleHistoryQuery
       .select(['events.id', 'type', 'data', 'events.created_at', 'author.email', 'author.first_name', 'author.last_name'])
       .orderBy('events.created_at', 'desc')
       .orderBy('events.id', 'desc')
       .limit(20)
       .offset(input.offset)
       .execute(),
-    historyQuery.select(kdb.fn.count<number>('events.id').as('count')).executeTakeFirstOrThrow(),
+    visibleHistoryQuery.select(kdb.fn.count<number>('events.id').as('count')).executeTakeFirstOrThrow(),
   ]);
   return {
     emails: emails.map((email) => ({ ...email, sent_at: email.sent_at?.toISOString() ?? null })),

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { sendEmailTemplate } from '@/modules/email';
+import * as eventsService from '@/modules/events/server/service';
 import { createUserEvent } from '@/modules/events/server/service';
 import type { Permission } from '@/modules/permissions/types';
 import { defaultUserPreferences } from '@/modules/users/constants';
@@ -19,7 +20,9 @@ import {
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
   DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
   zCcrtBuilding,
+  zCcrtIdentification,
 } from '../constants';
+import * as ccrtAccessService from './ccrt-access';
 import * as ccrtNotesService from './ccrt-notes';
 import { getAddressEligibilityContext, listDemandesChaleurRenouvelableCcrt } from './service';
 
@@ -140,6 +143,18 @@ describe('CCRT workspace access', () => {
             demandId: demand.id,
             values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED },
           }),
+        async () => {
+          const current = await kdb
+            .selectFrom('demands_chaleur_renouvelable')
+            .select('updated_at')
+            .where('id', '=', demand.id)
+            .executeTakeFirstOrThrow();
+          return route.updateIdentification({
+            demandId: demand.id,
+            updatedAt: current.updated_at.toISOString(),
+            values: zCcrtIdentification.parse(demand),
+          });
+        },
       ];
       await calls.reduce(async (previous, call) => {
         await previous;
@@ -239,23 +254,7 @@ describe('CCRT demand publication', () => {
   });
 });
 
-describe('CCRT assignment candidates', () => {
-  const permissionCases: TestCaseBoolean<(typeof testUsers)[keyof typeof testUsers] | null>[] = [
-    { expectedOutput: false, input: null },
-    ...Object.values(testUsers).map((user) => ({ expectedOutput: user.role === 'admin', input: user })),
-  ];
-  permissionCases.forEach(({ input: user, expectedOutput: allowed }) => {
-    it(`protects assignment candidates for ${user?.role ?? 'anonymous'}`, async () => {
-      const demand = await seedWorkspace();
-      const request = createTestCaller(user).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
-      if (allowed) {
-        expect((await request).map((candidate) => candidate.id).sort()).toStrictEqual([testUsers.ccrt.id, otherCcrtUser.id].sort());
-      } else {
-        await expect(request).rejects.toMatchObject(forbiddenError);
-      }
-    });
-  });
-
+describe('CCRT access holders before publication', () => {
   it.each([
     ['commune', '13055'],
     ['epci', 'EPCI-13'],
@@ -269,7 +268,7 @@ describe('CCRT assignment candidates', () => {
     await kdb.deleteFrom('user_permissions').where('user_id', '=', testUsers.ccrt.id).execute();
     await kdb.insertInto('user_permissions').values({ resource_id, type, user_id: testUsers.ccrt.id }).execute();
 
-    const candidates = await createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
+    const { users: candidates } = await createTestCaller(testUsers.admin).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect(candidates.map((candidate) => candidate.id).sort()).toStrictEqual([testUsers.ccrt.id, otherCcrtUser.id].sort());
   });
 
@@ -290,15 +289,13 @@ describe('CCRT assignment candidates', () => {
       ])
       .execute();
 
-    const candidates = await createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: demand.id });
+    const { users: candidates } = await createTestCaller(testUsers.admin).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect(candidates.map((candidate) => candidate.id).sort()).toStrictEqual([testUsers.ccrt.id, otherCcrtUser.id].sort());
   });
 
   it('rejects a missing demand', async () => {
     await seedWorkspace();
-    await expect(createTestCaller(testUsers.admin).batEnr.admin.listAssignmentCandidates({ demandId: uuid(999) })).rejects.toMatchObject(
-      notFound
-    );
+    await expect(createTestCaller(testUsers.admin).batEnr.ccrt.getFollowUp({ demandId: uuid(999) })).rejects.toMatchObject(notFound);
   });
 });
 
@@ -485,7 +482,7 @@ describe('CCRT heat-network eligibility', () => {
     });
     const list = await createTestCaller(otherCcrtUser).batEnr.ccrt.listDemandesChaleurRenouvelable();
     expect(list.items.map((item) => item.status)).toStrictEqual([DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED]);
-    await createTestCaller(testUsers.admin).batEnr.admin.updateDemandeChaleurRenouvelable({
+    await createTestCaller(testUsers.admin).batEnr.ccrt.updateDemandeChaleurRenouvelable({
       demandId: demand.id,
       values: { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS },
     });
@@ -579,6 +576,202 @@ describe('CCRT email delivery', () => {
       .where('id', '=', demand.id)
       .executeTakeFirstOrThrow();
     expect(current).toStrictEqual({ status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED });
+  });
+});
+
+describe('CCRT identity corrections', () => {
+  it('allows admins to correct an unpublished demand, but not an archived one', async () => {
+    const demand = await seedWorkspace();
+    await kdb.updateTable('demands_chaleur_renouvelable').set({ validated: false }).where('id', '=', demand.id).execute();
+    const input = {
+      demandId: demand.id,
+      updatedAt: demand.updated_at.toISOString(),
+      values: { ...zCcrtIdentification.parse(demand), first_name: 'Marie' },
+    };
+    const result = await createTestCaller(testUsers.admin).batEnr.ccrt.updateIdentification(input);
+    await kdb
+      .updateTable('demands_chaleur_renouvelable')
+      .set({ archive_reason: 'test', archived_at: new Date() })
+      .where('id', '=', demand.id)
+      .execute();
+    await expect(
+      createTestCaller(testUsers.admin).batEnr.ccrt.updateIdentification({ ...input, updatedAt: result.updatedAt })
+    ).rejects.toMatchObject({ code: 'CONFLICT' });
+  });
+
+  it('rolls back identity corrections when the audit cannot be saved', async () => {
+    const demand = await seedWorkspace();
+    const audit = vi.spyOn(eventsService, 'createUserEvent').mockRejectedValueOnce(new Error('Audit unavailable'));
+    try {
+      await expect(
+        createTestCaller(testUsers.ccrt).batEnr.ccrt.updateIdentification({
+          demandId: demand.id,
+          updatedAt: demand.updated_at.toISOString(),
+          values: { ...zCcrtIdentification.parse(demand), first_name: 'Marie' },
+        })
+      ).rejects.toThrow('Audit unavailable');
+      expect(
+        await kdb
+          .selectFrom('demands_chaleur_renouvelable')
+          .select(['first_name', 'updated_at'])
+          .where('id', '=', demand.id)
+          .executeTakeFirstOrThrow()
+      ).toStrictEqual({ first_name: demand.first_name, updated_at: demand.updated_at });
+    } finally {
+      audit.mockRestore();
+    }
+  });
+
+  it('reserves the current email when the contact changes after the access check', async () => {
+    const demand = await seedWorkspace();
+    const original = ccrtAccessService.ensureCcrtDemandAccess;
+    const access = vi.spyOn(ccrtAccessService, 'ensureCcrtDemandAccess').mockImplementationOnce(async (...args) => {
+      const checked = await original(...args);
+      await kdb.updateTable('demands_chaleur_renouvelable').set({ email: 'corrige@example.fr' }).where('id', '=', demand.id).execute();
+      return checked;
+    });
+    try {
+      await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail({
+        demandId: demand.id,
+        emailContent,
+        messageId: uuid(552),
+        updateStatusOnSend: false,
+      });
+      expect(vi.mocked(sendEmailTemplate).mock.calls.map((call) => call[1])).toStrictEqual([
+        { email: 'corrige@example.fr', id: demand.id },
+      ]);
+      expect(await kdb.selectFrom('ccrt_demand_emails').select('to').where('demand_id', '=', demand.id).execute()).toStrictEqual([
+        { to: 'corrige@example.fr' },
+      ]);
+    } finally {
+      access.mockRestore();
+    }
+  });
+
+  it.each([testUsers.admin, testUsers.ccrt])(
+    'updates contact and co-ownership details for $role without changing the building',
+    async (user) => {
+      const demand = await seedWorkspace();
+      const values = {
+        ...zCcrtIdentification.parse(demand),
+        address: 'Une autre adresse',
+        email: 'nouveau@example.fr',
+        first_name: 'Marie',
+        last_name: 'Durand',
+        occupant_status: 'Propriétaire de maison individuelle',
+        organization_name: 'Structure',
+        phone: '0605040302',
+        rnic_nom_copropriete: 'Copropriété corrigée',
+        rnic_numero_immatriculation: 'AB1234567',
+        rnic_siret_representant_legal: '12345678901234',
+      };
+      const result = await createTestCaller(user).batEnr.ccrt.updateIdentification({
+        demandId: demand.id,
+        updatedAt: demand.updated_at.toISOString(),
+        values,
+      });
+      const stored = await kdb.selectFrom('demands_chaleur_renouvelable').selectAll().where('id', '=', demand.id).executeTakeFirstOrThrow();
+      expect(zCcrtIdentification.parse(stored)).toStrictEqual(zCcrtIdentification.parse(values));
+      expect({
+        address: stored.address,
+        building: stored.batiment_construction_id,
+        housing: stored.housing_type,
+        simulation: stored.simulation_url,
+        territory: stored.commune_code,
+      }).toStrictEqual({
+        address: demand.address,
+        building: demand.batiment_construction_id,
+        housing: demand.housing_type,
+        simulation: demand.simulation_url,
+        territory: demand.commune_code,
+      });
+      expect(result).toStrictEqual({ id: demand.id, updatedAt: stored.updated_at.toISOString() });
+      const history = await createTestCaller(user).batEnr.ccrt.getFollowUp({ demandId: demand.id });
+      expect(history.history).toHaveLength(1);
+      expect(history.history[0]).toMatchObject({
+        data: {
+          changes: {
+            email: { from: demand.email, to: values.email },
+            occupant_status: { from: demand.occupant_status, to: values.occupant_status },
+          },
+        },
+        type: 'ccrt_demand_updated',
+      });
+      expect(fetchJSON).not.toHaveBeenCalled();
+      expect(postFetchJSON).not.toHaveBeenCalled();
+    }
+  );
+
+  it('refuses stale corrections without losing the first edit', async () => {
+    const demand = await seedWorkspace();
+    const input = {
+      demandId: demand.id,
+      updatedAt: demand.updated_at.toISOString(),
+      values: { ...zCcrtIdentification.parse(demand), first_name: 'Marie' },
+    };
+    await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateIdentification(input);
+    await expect(
+      createTestCaller(testUsers.admin).batEnr.ccrt.updateIdentification({ ...input, values: { ...input.values, first_name: 'Jean' } })
+    ).rejects.toMatchObject({ code: 'CONFLICT' });
+    expect(
+      await kdb.selectFrom('demands_chaleur_renouvelable').select('first_name').where('id', '=', demand.id).executeTakeFirstOrThrow()
+    ).toStrictEqual({ first_name: 'Marie' });
+    expect(await kdb.selectFrom('events').select('id').where('context_id', '=', demand.id).execute()).toHaveLength(1);
+  });
+
+  it.each(['outside', 'unpublished', 'archived'] as const)('refuses CCRT corrections on %s demands', async (restriction) => {
+    const demand = await seedWorkspace();
+    await kdb
+      .updateTable('demands_chaleur_renouvelable')
+      .set(
+        restriction === 'outside'
+          ? { departement_code: '75', epci_code: null }
+          : restriction === 'unpublished'
+            ? { validated: false }
+            : { archive_reason: 'test', archived_at: new Date(), validated: false }
+      )
+      .where('id', '=', demand.id)
+      .execute();
+    await expect(
+      createTestCaller(testUsers.ccrt).batEnr.ccrt.updateIdentification({
+        demandId: demand.id,
+        updatedAt: demand.updated_at.toISOString(),
+        values: { ...zCcrtIdentification.parse(demand), email: 'nouveau@example.fr' },
+      })
+    ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+  });
+
+  it('uses the corrected email for future messages while retaining previous recipients', async () => {
+    const demand = await seedWorkspace();
+    await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail({
+      demandId: demand.id,
+      emailContent,
+      messageId: uuid(550),
+      updateStatusOnSend: false,
+    });
+    const current = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select('updated_at')
+      .where('id', '=', demand.id)
+      .executeTakeFirstOrThrow();
+    await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateIdentification({
+      demandId: demand.id,
+      updatedAt: current.updated_at.toISOString(),
+      values: { ...zCcrtIdentification.parse(demand), email: 'nouveau@example.fr' },
+    });
+    await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail({
+      demandId: demand.id,
+      emailContent,
+      messageId: uuid(551),
+      updateStatusOnSend: false,
+    });
+    expect(vi.mocked(sendEmailTemplate).mock.calls.map((call) => call[1])).toStrictEqual([
+      { email: demand.email, id: demand.id },
+      { email: 'nouveau@example.fr', id: demand.id },
+    ]);
+    expect(
+      await kdb.selectFrom('ccrt_demand_emails').select('to').where('demand_id', '=', demand.id).orderBy('id').execute()
+    ).toStrictEqual([{ to: demand.email }, { to: 'nouveau@example.fr' }]);
   });
 });
 

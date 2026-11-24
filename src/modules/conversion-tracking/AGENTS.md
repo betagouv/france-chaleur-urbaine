@@ -12,7 +12,7 @@ conversion-tracking/
 ├── constants.ts          # event types, canaux, granularités + schémas Zod
 ├── client/
 │   ├── trackingContext.ts          # getConversionSource() (?source=), getTrackingContext() (inIframe + host),
-│   │                               # isTrackablePage() (guard /admin), getDemandOrigin() (demands.origin_*)
+│   │                               # isTrackablePage() (guard /admin)
 │   ├── useRecordConversionEvent.ts # hook d'émission fire-and-forget — point d'entrée unique des call sites
 │   ├── useTrackPageView.ts         # beacon `display` au montage, bâti sur useRecordConversionEvent
 │   ├── ConversionStatsPage.tsx     # écran admin « conversion par source » (/admin/conversion) + lien anti-abus
@@ -45,9 +45,7 @@ conversion-tracking/
 - **Possède** : tables `conversion_sources` (registre des intégrations iframe : `id` uuid = `source=`, label,
   snapshot `config`, `archived_at`) et `conversion_events` (log append-only).
 - **Funnel autonome** : les 3 events (`display`, `address_test`, `demand`) sont émis **côté client** via
-  `useRecordConversionEvent` → `getStats` lit la seule table `conversion_events`. Les colonnes
-  `demands.origin_source` / `origin_page` / `origin_host` sont **du bonus** (posées via `getDemandOrigin()`
-  dans les payloads de création), pas la source du funnel.
+  `useRecordConversionEvent` → `getStats` lit la seule table `conversion_events`. L’attribution de chaque demande relève du champ structuré `acquisition`, géré par le module `analytics`, et ne modifie pas cet entonnoir.
 - **Câblage** : `display` via `useTrackPageView()` (sans argument) sur `/iframe/carte`, `/iframe/form`,
   les iframes carte historiques figées (`/iframe/map`, `/iframe/engie`, `/iframe/dalkia`, `/iframe/idex`,
   `/iframe/viaseva`, `/iframe/charleville-mezieres`, `/iframe/carte-collectivite`,
@@ -56,8 +54,7 @@ conversion-tracking/
   `useContactFormFCU`, plus `ComparateurPublicodes` et `EligibilityTestBox` en direct. La preview admin est
   exclue par le guard `/admin` (`isTrackablePage`, dans le hook).
 - **Admin** : générateur persistant `/admin/iframes` (CRUD du registre + config, iframes carte **et** form,
-  `?source=` dans le code), écran `/admin/conversion` (`getStats` ; filtre `?source=` en URL via nuqs — la
-  colonne Source de `/admin/demandes` pointe dessus) et écran anti-abus `/admin/conversion/abus` (détection +
+  `?source=` dans le code), écran `/admin/conversion` (`getStats` ; filtre `?source=` en URL via nuqs) et écran anti-abus `/admin/conversion/abus` (détection +
   règles IP ; deep-link `?source=` depuis la page stats pour isoler les IP d'une source). CRUD = procédures
   tRPC explicites.
 - **Lignes à zéro** (`period: null`) : intégrations actives du registre sans event sur la période, et routes
@@ -113,8 +110,6 @@ Chaque mutation `sources.*` émet un event d'audit `conversion_source_created` /
   purge UPDATE chaque ligne à ~90 j) + partiel `(created_at) WHERE ip IS NOT NULL` pour la purge.
 - `conversion_ip_rules` : `ip` inet (PK, IPv4/IPv6, CIDR accepté), `disposition` (`exclude`/`keep`, CHECK),
   `reason` (NOT NULL), `created_by` (→ `users`, `ON DELETE SET NULL`), `created_at`. Aucun seed.
-- `demands.origin_source` / `origin_page` / `origin_host` — colonnes **bonus** (hors module, écrites par
-  `createDemand`). `origin_host` = page embarquante, décisive pour attribuer une demande iframe au partenaire.
 
 ## Dépendances
 
@@ -130,5 +125,5 @@ const recordConversionEvent = useRecordConversionEvent();
 recordConversionEvent('address_test', { eligible });
 recordConversionEvent('demand', { eligible }); // émis depuis useContactFormFCU (handleOnSubmitContact)
 useTrackPageView(); // beacon `display` au montage
-// Demande : colonnes bonus posées via { ...getDemandOrigin() } dans le payload de création.
+// Demand attribution is handled separately by analytics/client/acquisition.ts.
 ```

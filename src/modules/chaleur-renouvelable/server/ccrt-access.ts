@@ -25,31 +25,26 @@ export const applyCcrtAccessFilter = <Output>(
     return query.where(sql.lit(false));
   }
   const territories = Object.entries(territoryPermissionToColumn);
-  return query.where('validated', '=', true).where((expression) => {
-    const conditions = [
-      ...territories.flatMap(([type, column]) =>
-        permissions.filter((permission) => permission.type === type).map((permission) => expression(column, '=', permission.resource_id))
-      ),
-      ...permissions
-        .filter((permission) => permission.type === customTerritoryPermissionType)
-        .map((permission) => customTerritoryIdsContain(expression.ref('custom_territory_ids'), permission.resource_id)),
-    ];
-    return conditions.length ? expression.or(conditions) : sql.lit(false);
-  });
+  return query
+    .where('archived_at', 'is', null)
+    .where('validated', '=', true)
+    .where((expression) => {
+      const conditions = [
+        ...territories.flatMap(([type, column]) =>
+          permissions.filter((permission) => permission.type === type).map((permission) => expression(column, '=', permission.resource_id))
+        ),
+        ...permissions
+          .filter((permission) => permission.type === customTerritoryPermissionType)
+          .map((permission) => customTerritoryIdsContain(expression.ref('custom_territory_ids'), permission.resource_id)),
+      ];
+      return conditions.length ? expression.or(conditions) : sql.lit(false);
+    });
 };
 
 export const ensureCcrtDemandAccess = async (ctx: Context, demandId: string) =>
   applyCcrtAccessFilter(selectDemandesChaleurRenouvelableForList(), ctx.user, await ctx.getPermissions())
     .where('id', '=', demandId)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
-
-/**
- * Finds active CCRT accounts covering the demand territory, including before publication.
- */
-export const listCcrtAssignmentCandidates = async (ctx: Context, demandId: string) => {
-  const demand = await ensureCcrtDemandAccess(ctx, demandId);
-  return getUsersWithAccessToDemand({ ...demand, network_id: null, network_organization_id: null, network_type: null }, 'renewableHeat');
-};
 
 /**
  * Resolves administrative scopes from authoritative geographic tables, never from an address context string.

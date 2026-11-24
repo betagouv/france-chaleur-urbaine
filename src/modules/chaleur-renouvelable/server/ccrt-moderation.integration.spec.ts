@@ -1,0 +1,494 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import * as demandHelpers from '@/modules/demands/server/helpers';
+import { sendEmailTemplate } from '@/modules/email';
+import * as eventsService from '@/modules/events/server/service';
+import { kdb, sql } from '@/server/db/kysely';
+import { cleanDatabase, seedDemandeChaleurRenouvelable, seedReseauDeChaleur, seedTableUser } from '@/tests/fixtures';
+import { createTestCaller, forbiddenError, type TestCaseBoolean, testUsers } from '@/tests/trpc-helpers';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import { fetchJSON } from '@/utils/network';
+
+import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
+
+vi.mock('@/modules/email', () => ({ sendEmailTemplate: vi.fn() }));
+vi.mock('@/utils/network', () => ({ fetchJSON: vi.fn(), postFetchJSON: vi.fn() }));
+vi.mock('./france-renov-spaces', () => ({ getFranceRenovSpaceByCityCode: vi.fn() }));
+afterEach(() => vi.restoreAllMocks());
+
+const banAddress = {
+  geometry: { coordinates: [2.3522, 48.8566] },
+  properties: { city: 'Paris', citycode: '75056', postcode: '75001' },
+};
+
+beforeEach(async () => {
+  await cleanDatabase();
+  vi.clearAllMocks();
+  vi.mocked(getFranceRenovSpaceByCityCode).mockReset().mockResolvedValue(null);
+  vi.mocked(sendEmailTemplate).mockResolvedValue(undefined);
+  vi.mocked(fetchJSON).mockResolvedValue({ features: [banAddress] });
+  await seedTableUser(Object.values(testUsers));
+  await kdb
+    .insertInto('user_permissions')
+    .values([
+      { resource_id: '75', type: 'departement', user_id: testUsers.ccrt.id },
+      { resource_id: '75', type: 'departement', user_id: testUsers.alec.id },
+      { resource_id: '500', type: 'reseau_de_chaleur', user_id: testUsers.gestionnaire.id },
+    ])
+    .execute();
+});
+
+const seedNetwork = (id_fcu = 500, offset = 0) =>
+  seedReseauDeChaleur({
+    Gestionnaire: 'Gestionnaire test',
+    geom: sql`ST_Transform(ST_GeomFromText(${`LINESTRING(${2.3522 + offset} 48.8566, ${2.3532 + offset} 48.8566)`}, 4326), 2154)`,
+    has_trace: true,
+    'Identifiant reseau': `${id_fcu}C`,
+    id_fcu,
+    nom_reseau: `Réseau ${id_fcu}`,
+    ouvert_aux_raccordements: true,
+  });
+
+describe('Admin moderation permissions', () => {
+  const cases: TestCaseBoolean<(typeof testUsers)[keyof typeof testUsers] | null>[] = [
+    { expectedOutput: false, input: null },
+    ...Object.values(testUsers).map((user) => ({ expectedOutput: user.role === 'admin', input: user })),
+  ];
+  cases.forEach(({ input: user, expectedOutput: allowed }) => {
+    it(`protects moderation and private comments for ${user?.role ?? 'anonymous'}`, async () => {
+      const demand = await seedDemandeChaleurRenouvelable();
+      await seedNetwork();
+      const route = createTestCaller(user).batEnr.admin;
+      const operations = [
+        () => route.getAdminComment({ demandId: demand.id }),
+        () => route.updateAdminComment({ comment: 'Private', demandId: demand.id }),
+        () => route.getTransferNetwork({ demandId: demand.id }),
+        () => route.archiveDemand({ demandId: demand.id, reason: 'test', sendEmail: false }),
+        () => route.restoreDemand({ demandId: demand.id }),
+        () => route.transferDemand({ demandId: demand.id, networkId: 500 }),
+      ];
+      await operations.reduce(async (previous, operation) => {
+        await previous;
+        if (allowed) {
+          await expect(operation()).resolves.toEqual(expect.any(Object));
+        } else {
+          await expect(operation()).rejects.toMatchObject(forbiddenError);
+        }
+      }, Promise.resolve());
+    });
+  });
+});
+
+describe('CCRT moderation lifecycle', () => {
+  it('transfers a reopened demand with an explicit manager message while retaining private admin comments in the original', async () => {
+    const demand = await seedDemandeChaleurRenouvelable({ admin_comment: 'Private admin', comments: 'Public comment', validated: true });
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    await route.reopenDemand({ demandId: demand.id, updatedAt: demand.updated_at.toISOString() });
+    const transfer = await route.transferDemand({
+      demandId: demand.id,
+      managerMessage: 'Étudier le raccordement en priorité.',
+      networkId: 500,
+    });
+    expect(
+      await kdb
+        .selectFrom('demands')
+        .select(['comment_user', 'comment_fcu', 'validated'])
+        .where('id', '=', transfer.transferredDemandId)
+        .executeTakeFirstOrThrow()
+    ).toStrictEqual({
+      comment_fcu: null,
+      comment_user: 'Public comment\n\nMessage de l’équipe FCU au gestionnaire :\nÉtudier le raccordement en priorité.',
+      validated: true,
+    });
+    expect(
+      await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['admin_comment', 'comments', 'reopened_at', 'transferred_demand_id', 'validated'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow()
+    ).toStrictEqual({
+      admin_comment: 'Private admin',
+      comments: 'Public comment',
+      reopened_at: expect.any(Date),
+      transferred_demand_id: transfer.transferredDemandId,
+      validated: false,
+    });
+    expect(
+      (await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.list()).map(({ id, comment_user }) => ({ comment_user, id }))
+    ).toStrictEqual([
+      {
+        comment_user: 'Public comment\n\nMessage de l’équipe FCU au gestionnaire :\nÉtudier le raccordement en priorité.',
+        id: transfer.transferredDemandId,
+      },
+    ]);
+  });
+
+  it('rolls back a transfer completely when its classic-demand audit cannot be recorded', async () => {
+    const demand = await seedDemandeChaleurRenouvelable();
+    await seedNetwork();
+    vi.spyOn(eventsService, 'createUserEvent').mockRejectedValueOnce(new Error('Audit unavailable'));
+    await expect(createTestCaller(testUsers.admin).batEnr.admin.transferDemand({ demandId: demand.id, networkId: 500 })).rejects.toThrow(
+      'Audit unavailable'
+    );
+    expect(await kdb.selectFrom('demands').select('id').execute()).toStrictEqual([]);
+    expect(await kdb.selectFrom('jobs').select('id').execute()).toStrictEqual([]);
+    expect(sendEmailTemplate).not.toHaveBeenCalled();
+    expect(
+      await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['archived_at', 'transferred_demand_id', 'validated'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow()
+    ).toStrictEqual({ archived_at: null, transferred_demand_id: null, validated: false });
+  });
+
+  it('serializes validation and archival of the same demand', async () => {
+    const demand = await seedDemandeChaleurRenouvelable();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    const results = await Promise.allSettled([
+      route.validateDemandeChaleurRenouvelable({ demandId: demand.id }),
+      route.archiveDemand({ demandId: demand.id, reason: 'test', sendEmail: false }),
+    ]);
+    expect(results.map((result) => result.status).toSorted()).toStrictEqual(['fulfilled', 'rejected']);
+  });
+
+  it.each([true, false])('archives with optional user email (%s), excludes CCRT and restores without email', async (sendEmail) => {
+    const demand = await seedDemandeChaleurRenouvelable({ departement_code: '75' });
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    await route.archiveDemand({ comment: 'Duplicate', demandId: demand.id, reason: 'other', sendEmail });
+    const archived = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select(['archived_at', 'archive_reason', 'archive_comment', 'validated'])
+      .where('id', '=', demand.id)
+      .executeTakeFirstOrThrow();
+    expect(archived).toStrictEqual({
+      archive_comment: 'Duplicate',
+      archive_reason: 'other',
+      archived_at: expect.any(Date),
+      validated: false,
+    });
+    expect((await createTestCaller(testUsers.ccrt).batEnr.ccrt.listDemandesChaleurRenouvelable()).items).toStrictEqual([]);
+    await expect(route.validateDemandeChaleurRenouvelable({ demandId: demand.id })).rejects.toMatchObject({ code: 'CONFLICT' });
+    expect(await kdb.selectFrom('jobs').select('id').execute()).toStrictEqual([]);
+    expect(sendEmailTemplate).toHaveBeenCalledTimes(sendEmail ? 1 : 0);
+    await route.restoreDemand({ demandId: demand.id });
+    expect(
+      await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['archived_at', 'archive_reason', 'archive_comment', 'validated'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow()
+    ).toStrictEqual({ archive_comment: null, archive_reason: null, archived_at: null, validated: false });
+    expect(sendEmailTemplate).toHaveBeenCalledTimes(sendEmail ? 1 : 0);
+  });
+
+  it('creates one validated connection demand, retains private details and prevents restoring a transfer', async () => {
+    const demand = await seedDemandeChaleurRenouvelable({
+      admin_comment: 'Private admin',
+      comments: 'Public comment',
+      departement_code: '75',
+      refusal_reason: 'Additional context',
+    });
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    const result = await route.transferDemand({ demandId: demand.id, networkId: 500 });
+    const classic = await kdb
+      .selectFrom('demands')
+      .select(['network_id', 'network_type', 'validated', 'comment_user', 'comment_fcu', 'legacy_values'])
+      .where('id', '=', result.transferredDemandId)
+      .executeTakeFirstOrThrow();
+    expect(classic).toMatchObject({
+      comment_fcu: null,
+      comment_user: 'Public comment',
+      legacy_values: { 'Distance au réseau': 0, Mail: demand.email, 'Nom réseau': 'Réseau 500', Status: 'À traiter' },
+      network_id: 500,
+      network_type: 'reseau_de_chaleur',
+      validated: true,
+    });
+    expect(JSON.stringify(classic)).not.toContain('Private admin');
+    expect(JSON.stringify(classic)).not.toContain('Additional context');
+    expect(
+      await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['admin_comment', 'refusal_reason', 'transferred_demand_id', 'transferred_network_name', 'validated'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow()
+    ).toStrictEqual({
+      admin_comment: 'Private admin',
+      refusal_reason: 'Additional context',
+      transferred_demand_id: result.transferredDemandId,
+      transferred_network_name: 'Réseau 500',
+      validated: false,
+    });
+    const managerDemands = await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.list();
+    expect(managerDemands.map((item) => item.id)).toStrictEqual([result.transferredDemandId]);
+    await expect(route.transferDemand({ demandId: demand.id, networkId: 500 })).rejects.toMatchObject({ code: 'CONFLICT' });
+    expect(await kdb.selectFrom('jobs').select('id').execute()).toStrictEqual([]);
+    expect(sendEmailTemplate).toHaveBeenCalledExactlyOnceWith(
+      'demands.demandeur.transfert-chaleur-renouvelable',
+      { email: demand.email },
+      {
+        demand: expect.objectContaining({ address: demand.address }),
+        network: { distance: 0, manager: 'Gestionnaire test', name: 'Réseau 500' },
+      }
+    );
+  });
+
+  it('cancels an untouched transfer atomically and removes the classic demand without another email', async () => {
+    const demand = await seedDemandeChaleurRenouvelable({ admin_comment: 'Private', comments: 'Initial comment' });
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    const transferred = await route.transferDemand({ demandId: demand.id, networkId: 500 });
+    await route.restoreDemand({ demandId: demand.id });
+    expect(
+      await kdb.selectFrom('demands').select('deleted_at').where('id', '=', transferred.transferredDemandId).executeTakeFirstOrThrow()
+    ).toStrictEqual({ deleted_at: expect.any(Date) });
+    expect(
+      await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['archived_at', 'transferred_demand_id', 'transferred_network_name', 'validated', 'admin_comment', 'comments'])
+        .where('id', '=', demand.id)
+        .executeTakeFirstOrThrow()
+    ).toStrictEqual({
+      admin_comment: 'Private',
+      archived_at: null,
+      comments: 'Initial comment',
+      transferred_demand_id: null,
+      transferred_network_name: null,
+      validated: false,
+    });
+    expect(await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.list()).toStrictEqual([]);
+    expect(sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(
+      await kdb
+        .selectFrom('events')
+        .select(['type', 'data'])
+        .where('context_id', '=', demand.id)
+        .where('type', '=', 'ccrt_demand_moderated')
+        .orderBy('created_at')
+        .execute()
+    ).toStrictEqual([
+      {
+        data: { action: 'transfer', networkName: 'Réseau 500', transferredDemandId: transferred.transferredDemandId },
+        type: 'ccrt_demand_moderated',
+      },
+      {
+        data: { action: 'restore', networkName: 'Réseau 500', transferredDemandId: transferred.transferredDemandId },
+        type: 'ccrt_demand_moderated',
+      },
+    ]);
+  });
+
+  it.each(['manager edit', 'API edit', 'email'] as const)(
+    'refuses transfer cancellation after recorded processing: %s',
+    async (activity) => {
+      const demand = await seedDemandeChaleurRenouvelable();
+      await seedNetwork();
+      const route = createTestCaller(testUsers.admin).batEnr.admin;
+      const transferred = await route.transferDemand({ demandId: demand.id, networkId: 500 });
+      if (activity === 'manager edit') {
+        await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.update({
+          demandId: transferred.transferredDemandId,
+          values: { Status: DEMANDE_STATUS.TO_PROCESS },
+        });
+      } else if (activity === 'API edit') {
+        await eventsService.createEvent({
+          context_id: transferred.transferredDemandId,
+          context_type: 'demand',
+          data: { credential_id: 'test', organization_id: 'test', organization_name: 'Test', statut: 'À traiter' },
+          type: 'api_demand_updated',
+        });
+      } else {
+        await createTestCaller(testUsers.gestionnaire).demands.gestionnaire.sendEmail({
+          demand_id: transferred.transferredDemandId,
+          emailContent: { body: 'Bonjour', cc: '', object: 'Contact', replyTo: '', signature: '', to: 'client@example.fr' },
+          key: 'test',
+        });
+      }
+      await expect(route.restoreDemand({ demandId: demand.id })).rejects.toMatchObject({ code: 'CONFLICT' });
+      expect(
+        await kdb.selectFrom('demands').select('deleted_at').where('id', '=', transferred.transferredDemandId).executeTakeFirstOrThrow()
+      ).toStrictEqual({ deleted_at: null });
+      expect(
+        await kdb
+          .selectFrom('demands_chaleur_renouvelable')
+          .select('transferred_demand_id')
+          .where('id', '=', demand.id)
+          .executeTakeFirstOrThrow()
+      ).toStrictEqual({ transferred_demand_id: transferred.transferredDemandId });
+    }
+  );
+
+  it.each(['update', 'email'] as const)('rejects a stale manager %s if cancellation happens after its access check', async (operation) => {
+    const demand = await seedDemandeChaleurRenouvelable();
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    const transferred = await route.transferDemand({ demandId: demand.id, networkId: 500 });
+    const originalCheck = demandHelpers.ensureUserCanProcessDemand;
+    vi.spyOn(demandHelpers, 'ensureUserCanProcessDemand').mockImplementationOnce(async (...args) => {
+      const snapshot = await originalCheck(...args);
+      await route.restoreDemand({ demandId: demand.id });
+      return snapshot;
+    });
+    const manager = createTestCaller(testUsers.gestionnaire).demands.gestionnaire;
+    await expect(
+      operation === 'update'
+        ? manager.update({ demandId: transferred.transferredDemandId, values: { Status: DEMANDE_STATUS.TO_PROCESS } })
+        : manager.sendEmail({
+            demand_id: transferred.transferredDemandId,
+            emailContent: { body: 'Bonjour', cc: '', object: 'Contact', replyTo: '', signature: '', to: 'client@example.fr' },
+            key: 'test',
+          })
+    ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+    expect(sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(
+      await kdb.selectFrom('demand_emails').select('id').where('demand_id', '=', transferred.transferredDemandId).execute()
+    ).toStrictEqual([]);
+  });
+
+  it('rolls back the classic deletion and restoration if the moderation audit fails', async () => {
+    const demand = await seedDemandeChaleurRenouvelable();
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    const transferred = await route.transferDemand({ demandId: demand.id, networkId: 500 });
+    const recordEvent = eventsService.createUserEvent;
+    vi.spyOn(eventsService, 'createUserEvent').mockImplementationOnce(recordEvent).mockRejectedValueOnce(new Error('Audit unavailable'));
+    await expect(route.restoreDemand({ demandId: demand.id })).rejects.toThrow('Audit unavailable');
+    expect(
+      await kdb.selectFrom('demands').select('deleted_at').where('id', '=', transferred.transferredDemandId).executeTakeFirstOrThrow()
+    ).toStrictEqual({ deleted_at: null });
+    expect(
+      await kdb.selectFrom('demands_chaleur_renouvelable').select('archived_at').where('id', '=', demand.id).executeTakeFirstOrThrow()
+    ).toStrictEqual({ archived_at: expect.any(Date) });
+  });
+
+  it('serializes concurrent archive and transfer operations', async () => {
+    const demand = await seedDemandeChaleurRenouvelable();
+    await seedNetwork();
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    const outcomes = await Promise.allSettled([
+      route.transferDemand({ demandId: demand.id, networkId: 500 }),
+      route.archiveDemand({ demandId: demand.id, reason: 'test', sendEmail: false }),
+    ]);
+    expect(outcomes.map((outcome) => outcome.status).toSorted()).toStrictEqual(['fulfilled', 'rejected']);
+    const source = await kdb
+      .selectFrom('demands_chaleur_renouvelable')
+      .select('transferred_demand_id')
+      .where('id', '=', demand.id)
+      .executeTakeFirstOrThrow();
+    expect((await kdb.selectFrom('demands').select('id').execute()).length).toStrictEqual(source.transferred_demand_id ? 1 : 0);
+  });
+
+  it('chooses the closest traced network and accepts an explicit alternative', async () => {
+    const demand = await seedDemandeChaleurRenouvelable();
+    await seedNetwork(500);
+    await seedNetwork(501, 0.01);
+    const route = createTestCaller(testUsers.admin).batEnr.admin;
+    expect((await route.getTransferNetwork({ demandId: demand.id })).network).toMatchObject({ distance: 0, id_fcu: 500, sncu_id: '500C' });
+    expect((await route.getTransferNetwork({ demandId: demand.id, networkId: 501 })).network).toMatchObject({
+      distance: expect.any(Number),
+      id_fcu: 501,
+    });
+  });
+
+  it('never includes admin comments in shared lists, follow-up notes, history or audit data', async () => {
+    const demand = await seedDemandeChaleurRenouvelable({ departement_code: '75', validated: true });
+    await createTestCaller(testUsers.admin).batEnr.admin.updateAdminComment({ comment: 'Secret text', demandId: demand.id });
+    const ccrt = createTestCaller(testUsers.ccrt).batEnr.ccrt;
+    const list = await ccrt.listDemandesChaleurRenouvelable();
+    const followUp = await ccrt.getFollowUp({ demandId: demand.id });
+    const events = await kdb.selectFrom('events').select('data').execute();
+    expect(JSON.stringify([list, followUp, events])).not.toContain('Secret text');
+    expect(followUp.history).toStrictEqual([]);
+    expect(await createTestCaller(testUsers.admin).batEnr.admin.getAdminComment({ demandId: demand.id })).toStrictEqual({
+      admin_comment: 'Secret text',
+    });
+  });
+
+  it('counts each active CCRT account once before validation and exposes its last connection to admins', async () => {
+    const demand = await seedDemandeChaleurRenouvelable({ commune_code: '75056', departement_code: '75' });
+    await kdb
+      .updateTable('users')
+      .set({ last_connection: new Date('2026-10-23T10:00:00Z') })
+      .where('id', '=', testUsers.ccrt.id)
+      .execute();
+    await kdb.insertInto('user_permissions').values({ resource_id: '75056', type: 'commune', user_id: testUsers.ccrt.id }).execute();
+    const admin = createTestCaller(testUsers.admin).batEnr;
+    const list = await admin.admin.listDemandesChaleurRenouvelable();
+    expect(list.items[0].access_users).toMatchObject([{ id: testUsers.ccrt.id, last_connection: expect.any(String), role: 'ccrt' }]);
+    expect((await admin.ccrt.getFollowUp({ demandId: demand.id })).users).toStrictEqual(list.items[0].access_users);
+  });
+
+  it.each(['archive', 'transfer'] as const)(
+    'keeps the %s committed and reports a direct SMTP failure without queuing a job',
+    async (action) => {
+      const demand = await seedDemandeChaleurRenouvelable({ commune_code: '75056' });
+      await seedNetwork();
+      vi.mocked(sendEmailTemplate).mockImplementationOnce(async () => {
+        expect(
+          await kdb.selectFrom('demands_chaleur_renouvelable').select('archived_at').where('id', '=', demand.id).executeTakeFirstOrThrow()
+        ).toStrictEqual({ archived_at: expect.any(Date) });
+        throw new Error('SMTP unavailable');
+      });
+      const route = createTestCaller(testUsers.admin).batEnr.admin;
+      await expect(
+        action === 'archive'
+          ? route.archiveDemand({ demandId: demand.id, reason: 'individual_house' })
+          : route.transferDemand({ demandId: demand.id, networkId: 500 })
+      ).rejects.toThrow('La modération a été enregistrée, mais l’envoi de l’email a échoué.');
+      expect(await kdb.selectFrom('jobs').select('id').execute()).toStrictEqual([]);
+      expect(sendEmailTemplate).toHaveBeenCalledTimes(1);
+      expect(
+        await kdb.selectFrom('demands_chaleur_renouvelable').select('archived_at').where('id', '=', demand.id).executeTakeFirstOrThrow()
+      ).toStrictEqual({ archived_at: expect.any(Date) });
+    }
+  );
+
+  it('uses the space associated with the saved municipality without geocoding the address', async () => {
+    const demand = await seedDemandeChaleurRenouvelable({ commune_code: '01001' });
+    const space = {
+      address: '2 boulevard Edouard Herriot',
+      city: 'Bourg-en-Bresse',
+      email: 'conseil@example.fr',
+      name: 'Espace conseil de la commune',
+      phone: '0474983376',
+      secondaryPhone: null,
+      website: 'https://france-renov.gouv.fr',
+      zipcode: '01000',
+    };
+    vi.mocked(getFranceRenovSpaceByCityCode).mockResolvedValueOnce(space);
+    await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
+
+    expect(getFranceRenovSpaceByCityCode).toHaveBeenCalledExactlyOnceWith('01001');
+    expect(fetchJSON).not.toHaveBeenCalled();
+    expect(sendEmailTemplate).toHaveBeenCalledExactlyOnceWith(
+      'demands.demandeur.archivage-chaleur-renouvelable',
+      { email: demand.email },
+      { demand: expect.objectContaining({ address: demand.address }), space }
+    );
+  });
+
+  it.each(['no municipality', 'no matching space', 'dataset unavailable'])(
+    'sends the archive notice with national fallback when %s',
+    async (outcome) => {
+      const demand = await seedDemandeChaleurRenouvelable({ commune_code: outcome === 'no municipality' ? null : '75056' });
+      if (outcome === 'dataset unavailable') {
+        vi.mocked(getFranceRenovSpaceByCityCode).mockRejectedValueOnce(new Error('Dataset unavailable'));
+      }
+
+      await createTestCaller(testUsers.admin).batEnr.admin.archiveDemand({ demandId: demand.id, reason: 'individual_house' });
+      if (outcome === 'no municipality') {
+        expect(getFranceRenovSpaceByCityCode).not.toHaveBeenCalled();
+      } else {
+        expect(getFranceRenovSpaceByCityCode).toHaveBeenCalledExactlyOnceWith('75056');
+      }
+      expect(fetchJSON).not.toHaveBeenCalled();
+      expect(sendEmailTemplate).toHaveBeenCalledExactlyOnceWith(
+        'demands.demandeur.archivage-chaleur-renouvelable',
+        { email: demand.email },
+        { demand: expect.objectContaining({ address: demand.address }), space: null }
+      );
+    }
+  );
+});

@@ -1,10 +1,11 @@
 import { TRPCError } from '@trpc/server';
 
+import { classifyDemandOrigin } from '@/modules/analytics/demand-origin';
+import { getIntegrationLabels } from '@/modules/analytics/server/demand-origin';
 import { businessRules } from '@/modules/app/business-rules';
 import { EMPTY_BAT_ENR_INFO, getBatEnrInfoFromBatiment } from '@/modules/chaleur-renouvelable/bat-enr';
 import type {
   AddressEligibilityContextInput,
-  AdminUpdateDemandeChaleurRenouvelableInput,
   AdminValidateDemandeChaleurRenouvelableInput,
   BatEnrBatiment,
   BatEnrBatimentsSelectionContext,
@@ -17,7 +18,7 @@ import type {
   GetLocationInput,
 } from '@/modules/chaleur-renouvelable/constants';
 import type { Context } from '@/modules/config/server/context-builder';
-import { type CreateDemandInput, type DemandSubmissionResult, fcrLegacyValueKeys } from '@/modules/demands/constants';
+import { type DemandSubmissionResult, fcrLegacyValueKeys } from '@/modules/demands/constants';
 import { createDemand } from '@/modules/demands/server/creation-user';
 import { type LegacyValuesPatch, mergeLegacyValues } from '@/modules/demands/server/legacy-values';
 import { sendEmailTemplate } from '@/modules/email';
@@ -33,9 +34,11 @@ import { canProposeHeatNetwork } from '../heat-network-eligibility';
 import { getSimulationPrefillFromBatEnrBatiment } from '../simulation-prefill';
 import { getAltitudeByCoordinates } from './altimetry';
 import { applyCcrtAccessFilter, ensureCcrtDemandAccess, getCcrtTerritory, hasCcrtTerritoryCoverage } from './ccrt-access';
+import { selectCcrtDemandsForAdmin } from './ccrt-admin-access';
 import { selectDemandesChaleurRenouvelableForList, serializeDemandesChaleurRenouvelable } from './ccrt-demand-query';
 import { applyCcrtFollowUpUpdate } from './ccrt-demand-update';
 import { recordCcrtFollowUpChanges } from './ccrt-tracking';
+import { getDemandHeatingEnergy, getDemandHeatingType, getDemandStructure } from './demand-mapping';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
 import { getNetworkEligibilityCoordinates, type NetworkEligibilityCoordinates } from './network-eligibility-coordinates';
 import { getRnicCoproprieteByBatimentConstructionId } from './rnic';
@@ -119,71 +122,6 @@ const getDemandeChaleurRenouvelableDepartmentCode = async (input: DemandeChaleur
   const locationInfos = await getLocationInfos({ city: input.geoAddress.city, cityCode: input.geoAddress.cityCode });
 
   return locationInfos?.departement_id;
-};
-
-const getDemandHeatingEnergy = (heatingEnergy: DemandeChaleurRenouvelable['heatingEnergy']): CreateDemandInput['heatingEnergy'] => {
-  switch (heatingEnergy) {
-    case 'Électricité':
-      return 'électricité';
-    case 'Gaz':
-      return 'gaz';
-    case 'Fioul':
-      return 'fioul';
-    default:
-      return 'autre';
-  }
-};
-
-const getDemandHeatingType = (housingType: DemandeChaleurRenouvelable['housingType']): CreateDemandInput['heatingType'] =>
-  housingType === 'immeuble_chauffage_collectif' ? 'collectif' : 'individuel';
-
-const getDemandStructure = (
-  input: DemandeChaleurRenouvelable
-): Pick<CreateDemandInput, 'companyType' | 'demandCompanyType' | 'structure'> => {
-  if (input.demandConcern === 'Une maison individuelle' || input.occupantStatus === 'Propriétaire de maison individuelle') {
-    return { companyType: '', demandCompanyType: '', structure: 'Maison individuelle' };
-  }
-
-  if (input.occupantStatus === 'Bailleur social') {
-    return { companyType: '', demandCompanyType: '', structure: 'Bailleur social' };
-  }
-
-  if (input.occupantStatus === 'Copropriétaire' || input.occupantStatus === 'Syndicat de copropriété') {
-    return { companyType: 'Syndic de copropriété', demandCompanyType: '', structure: 'Copropriété' };
-  }
-
-  if (input.occupantStatus === "Bureau d'étude ou AMO") {
-    return {
-      companyType: "Bureau d'études ou AMO",
-      demandCompanyType: getDemandCompanyType(input.demandConcern),
-      structure: 'Tertiaire',
-    };
-  }
-
-  if (input.occupantStatus === 'Mandataire ou Délégataire CEE') {
-    return {
-      companyType: 'Mandataire / délégataire CEE',
-      demandCompanyType: getDemandCompanyType(input.demandConcern),
-      structure: 'Tertiaire',
-    };
-  }
-
-  return { companyType: input.occupantStatus, demandCompanyType: '', structure: 'Tertiaire' };
-};
-
-const getDemandCompanyType = (demandConcern: DemandeChaleurRenouvelable['demandConcern']) => {
-  switch (demandConcern) {
-    case 'Une copropriété':
-      return 'Copropriété';
-    case 'Une maison individuelle':
-      return 'Maison individuelle';
-    case 'Un bâtiment tertiaire':
-      return 'Bâtiment tertiaire';
-    case 'Plusieurs bâtiments':
-      return 'Autre';
-    default:
-      return '';
-  }
 };
 
 const getFcrSimulationPath = (simulationUrl: string) => {
@@ -756,21 +694,34 @@ export const validateDemandeChaleurRenouvelableAdmin = async ({ demandId }: Admi
     })
     .where('id', '=', demandId)
     .where('validated', '=', false)
+    .where('archived_at', 'is', null)
     .execute();
 
   // the CCRT notification is sent by the cron notifyCcrtOfNewDemands (ccrt-notifications.ts), not here
   const demand = await kdb
     .selectFrom('demands_chaleur_renouvelable')
-    .select(['id', 'updated_at', 'validated'])
+    .select(['id', 'updated_at', 'validated', 'archived_at'])
     .where('id', '=', demandId)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande chaleur renouvelable introuvable' }));
 
-  return demand;
+  if (demand.archived_at) {
+    throw new TRPCError({ code: 'CONFLICT', message: 'Cette demande a été archivée ou transférée. Actualisez la liste.' });
+  }
+  return { id: demand.id, updated_at: demand.updated_at, validated: demand.validated };
 };
 
 export const listDemandesChaleurRenouvelableAdmin = async () => {
-  const demandes = await selectDemandesChaleurRenouvelableForList().select('acquisition').orderBy('created_at', 'desc').execute();
-  return { count: demandes.length, items: serializeDemandesChaleurRenouvelable(demandes) };
+  const [demandes, integrationLabels] = await Promise.all([
+    selectCcrtDemandsForAdmin().select('acquisition').orderBy('created_at', 'desc').execute(),
+    getIntegrationLabels(),
+  ]);
+  return {
+    count: demandes.length,
+    items: serializeDemandesChaleurRenouvelable(demandes).map(({ acquisition, ...demand }) => ({
+      ...demand,
+      origin: classifyDemandOrigin(acquisition, integrationLabels),
+    })),
+  };
 };
 
 export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
@@ -790,13 +741,6 @@ export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
       structure_ccrt: user?.structure_name ?? null,
     },
   };
-};
-
-export const updateDemandeChaleurRenouvelableAdmin = async (ctx: Context, input: AdminUpdateDemandeChaleurRenouvelableInput) => {
-  const demand = await ensureCcrtDemandAccess(ctx, input.demandId);
-  const result = await kdb.transaction().execute((transaction) => applyCcrtFollowUpUpdate(ctx, input, transaction));
-  await recordCcrtFollowUpChanges(ctx, demand, result.changes, 'manual', result.noteCreated);
-  return result.demand;
 };
 
 export const updateDemandeChaleurRenouvelableCcrt = async (ctx: Context, input: CcrtUpdateDemandeChaleurRenouvelableInput) => {

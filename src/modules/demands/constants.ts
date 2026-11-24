@@ -272,7 +272,7 @@ export const zAdminUpdateDemandInput = z.object({
 });
 
 export const zCreateDemandInput = z.object({
-  acquisition: zAcquisition.nullish(),
+  acquisition: zAcquisition.omit({ creationMethod: true }).nullish(),
   address: z.string().trim(),
   city: z.string(),
   commentUser: z.string().trim().max(COMMENT_USER_MAX_LENGTH, COMMENT_USER_MAX_LENGTH_ERROR_MESSAGE).optional(),
@@ -296,14 +296,7 @@ export const zCreateDemandInput = z.object({
   heatingEnergy: z.string(),
   heatingType: z.string().optional(),
   lastName: z.string(),
-  mtm_campaign: z.string().optional(),
-  mtm_kwd: z.string().optional(),
-  mtm_source: z.string().optional(),
   nbLogements: z.number().optional(),
-  // Tracking de conversion (module conversion-tracking) : source (niveau 1) + page + host embarquant (iframes)
-  origin_host: z.string().optional(),
-  origin_page: z.string().optional(),
-  origin_source: z.string().optional(),
   phone: z.string().optional().default(''),
   postcode: z.string(),
   region: z.string(),
@@ -690,20 +683,12 @@ export const formatDataToLegacyValues = (values: CreateDemandInput) => {
     phone,
     demandCompanyType,
     demandCompanyName,
-    mtm_campaign,
-    mtm_kwd,
-    mtm_source,
-    acquisition,
     demandArea,
     nbLogements,
   } = values;
 
   return {
     Adresse: address,
-    'Campagne keywords': acquisition ? acquisition.keyword : mtm_kwd,
-    'Campagne matomo': acquisition ? (acquisition.campaign ?? undefined) : mtm_campaign,
-    'Campagne medium': acquisition?.medium ?? undefined,
-    'Campagne source': acquisition ? (acquisition.source ?? undefined) : mtm_source,
     'Code Postal': postcode,
     Departement: department,
     'Distance au réseau': eligibility?.distance,

@@ -4,6 +4,7 @@ import SimplePage from '@/components/shared/page/SimplePage';
 import useInitialSearchParam from '@/hooks/useInitialSearchParam';
 import useRouterReady from '@/hooks/useRouterReady';
 import { useAuthentication } from '@/modules/auth/client/hooks';
+import { BatEnrBatimentHighlight } from '@/modules/chaleur-renouvelable/client/BatEnrBatimentHighlight';
 import { useTrackPageView } from '@/modules/conversion-tracking/client/useTrackPageView';
 import type { MapConfiguration, MapConfigurationProperty } from '@/modules/map/client/config/map-configuration';
 import { FileDropHandler } from '@/modules/map/client/interactions/FileDropHandler';
@@ -84,6 +85,7 @@ const Carte = () => {
   useTrackPageView();
 
   const coordParam = useInitialSearchParam('coord');
+  const constructionIdParam = useInitialSearchParam('construction_id');
   const zoomParam = useInitialSearchParam('zoom');
   const boundsParam = useInitialSearchParam('bounds');
   const bboxParam = useInitialSearchParam('bbox');
@@ -151,6 +153,7 @@ const Carte = () => {
           Garder les `_` autour du `-` : la forme canonique suggérée par l'IDE (`100dvh-var(…)`) produit un calc invalide et la carte ne s'affiche plus. */}
       <div className="w-full h-[calc(100dvh_-_var(--header-height,57px))]">
         <Map config={config} initialView={initialView} legend="auto" search="eligibility" contextMenu={hasRole('admin')}>
+          {constructionIdParam && <BatEnrBatimentHighlight constructionId={constructionIdParam} />}
           <MapViewUrlSync />
           <ReseauxFiltersUrlSync />
           <FileDropHandler />

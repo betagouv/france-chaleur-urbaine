@@ -79,23 +79,30 @@ export const updateDemandByGestionnaire = async (ctx: Context, demandId: string,
 
   const demandBeforeUpdate = await ensureUserCanProcessDemand(ctx, demandId);
 
-  const [updatedDemand] = await kdb
-    .updateTable('demands')
-    .set({
-      ...(comment_gestionnaire && { comment_gestionnaire }),
-      legacy_values: mergeLegacyValues(legacyUpdates),
-      updated_at: new Date(),
-    })
-    .where('id', '=', demandId)
-    .returningAll()
-    .execute();
+  const updatedDemand = await kdb.transaction().execute(async (transaction) => {
+    const updated = await transaction
+      .updateTable('demands')
+      .set({
+        ...(comment_gestionnaire && { comment_gestionnaire }),
+        legacy_values: mergeLegacyValues(legacyUpdates),
+        updated_at: new Date(),
+      })
+      .where('id', '=', demandId)
+      .where('deleted_at', 'is', null)
+      .returningAll()
+      .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
 
-  await createUserEvent({
-    author_id: userId,
-    context_id: demandId,
-    context_type: 'demand',
-    data: values,
-    type: 'demand_updated',
+    await createUserEvent(
+      {
+        author_id: userId,
+        context_id: demandId,
+        context_type: 'demand',
+        data: values,
+        type: 'demand_updated',
+      },
+      transaction
+    );
+    return updated;
   });
   await sendUnrealizableDemandEmailIfNeeded({ actorRole: ctx.user.role, currentDemand: demandBeforeUpdate, nextStatus: values.Status });
 

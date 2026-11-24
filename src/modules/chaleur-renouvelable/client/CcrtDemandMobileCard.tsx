@@ -1,11 +1,13 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 
 import Button from '@/components/ui/Button';
-import { AcquisitionDetails } from '@/modules/analytics/client/AcquisitionDetails';
+import { DemandOriginCell } from '@/modules/analytics/client/DemandOriginCell';
 import { dayjs } from '@/utils/date';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS } from '../constants';
 import type { CcrtDemand } from '../types';
+import { CcrtDemandAccessColumn } from './CcrtDemandAccessColumn';
+import { CcrtDemandReopening } from './CcrtDemandReopening';
 import { CcrtDemandValidation } from './CcrtDemandValidation';
 import { formatCcrtAddress } from './ccrt-workspace';
 
@@ -39,14 +41,15 @@ export function CcrtDemandMobileCard({ demand, onOpen, onContact, onValidate }: 
           {fullName}
         </button>
       </h2>
-      <AcquisitionDetails acquisition={demand.acquisition} />
+      {onValidate && demand.origin && <DemandOriginCell origin={demand.origin} />}
       <p className="mb-0 break-words font-medium leading-6">{formatCcrtAddress(demand.address)}</p>
       <p className="mb-0 text-sm leading-6">
         {demand.alternative_heating_solutions[0] ? `Reco n°1 : ${demand.alternative_heating_solutions[0]}` : 'Aucune solution enregistrée'}
       </p>
+      {onValidate && demand.access_users && <CcrtDemandAccessColumn demandId={demand.id} users={demand.access_users} />}
       <div className="flex items-stretch gap-2">
         {onValidate && !demand.validated ? (
-          <CcrtDemandValidation demandId={demand.id} full onValidate={onValidate} />
+          <CcrtDemandValidation demand={demand} full onValidate={onValidate} />
         ) : (
           <Button full iconId="fr-icon-mail-line" iconPosition="right" onClick={onContact}>
             Contacter par email
@@ -54,6 +57,7 @@ export function CcrtDemandMobileCard({ demand, onOpen, onContact, onValidate }: 
         )}
         <Button priority="secondary" iconId="fr-icon-add-line" title={`Ouvrir la demande de ${fullName}`} onClick={onOpen} />
       </div>
+      {onValidate && demand.validated && !demand.archived_at && <CcrtDemandReopening demand={demand} full />}
     </article>
   );
 }

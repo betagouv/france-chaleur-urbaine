@@ -254,7 +254,7 @@ export const resolveNetworkInfo = async (
  * `access_counts` (compteurs d'accès par rôle, fournis par `buildDemandQuery`) est passé tel quel.
  */
 export const enrichDemandForGestionnaire = <T extends Selectable<Demands>>({
-  demand: { legacy_values, access_counts, ...demand },
+  demand: { legacy_values, access_counts, acquisition: _acquisition, ...demand },
   testAddress,
 }: {
   demand: T & { access_counts: AccessCounts };

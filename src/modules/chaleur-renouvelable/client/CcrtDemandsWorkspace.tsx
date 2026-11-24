@@ -9,13 +9,14 @@ import { toastErrors } from '@/modules/notification';
 import trpc from '@/modules/trpc/client';
 
 import { demandeChaleurRenouvelableStatusOptions } from '../constants';
+import type { CcrtDemand } from '../types';
 import { CcrtDemandEmailDialog } from './CcrtDemandEmailDialog';
 import { CcrtDemandsMobile } from './CcrtDemandsMobile';
 import { CcrtDemandsTable } from './CcrtDemandsTable';
 import { CcrtDemandTabs, ccrtDemandTabs } from './CcrtDemandTabs';
 import { CcrtDemandToolbar } from './CcrtDemandToolbar';
-import { invalidateCcrtDemand } from './ccrt-demand-cache';
-import { getCcrtDemandTab, matchesCcrtDemandSearch } from './ccrt-workspace';
+import { invalidateCcrtModeration } from './ccrt-demand-cache';
+import { getCcrtDemandTab, matchesCcrtAdminTab, matchesCcrtDemandSearch } from './ccrt-workspace';
 import { useCcrtDemandActions } from './hooks/useCcrtDemandActions';
 import { useCcrtWorkspaceTracking } from './hooks/useCcrtWorkspaceTracking';
 
@@ -23,6 +24,7 @@ const QUERY_PREFIX = 'demandes_chaleur_renouvelable_ccrt';
 const queryParsers = {
   demandId: parseAsString,
   order: parseAsStringLiteral(['asc', 'desc']).withDefault('desc'),
+  origin: parseAsString.withDefault(''),
   search: parseAsString.withDefault(''),
   sort: parseAsStringLiteral(['date', 'status']).withDefault('date'),
   status: parseAsString.withDefault(''),
@@ -42,6 +44,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
     urlKeys: {
       demandId: `${queryPrefix}_demand`,
       order: `${queryPrefix}_order`,
+      origin: `${queryPrefix}_origin`,
       search: `${queryPrefix}_search`,
       sort: `${queryPrefix}_sort`,
       status: `${queryPrefix}_status`,
@@ -56,23 +59,36 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
   const validation = trpc.batEnr.admin.validateDemandeChaleurRenouvelable.useMutation();
   const validateDemand = toastErrors(async (demandId: string) => {
     await validation.mutateAsync({ demandId });
-    await invalidateCcrtDemand(utils, demandId);
+    await invalidateCcrtModeration(utils, demandId);
   });
-  const demands = query.data?.items ?? [];
+  const demands: CcrtDemand[] = query.data?.items ?? [];
   // Notification links already use the search key, so search defaults to the full list.
-  const activeTab = filters.tab ?? (isAdmin || filters.search ? 'all' : 'to_process');
+  const selectedTab = filters.tab ?? (filters.search ? 'all' : isAdmin ? 'awaiting_validation' : 'to_process');
+  const activeTab = isAdmin
+    ? ['all', 'archived', 'awaiting_validation'].includes(selectedTab)
+      ? selectedTab
+      : 'awaiting_validation'
+    : selectedTab === 'archived' || selectedTab === 'awaiting_validation'
+      ? 'to_process'
+      : selectedTab;
   const actions = useCcrtDemandActions(trackingContext?.structure_ccrt ?? null);
   const tracking = useCcrtWorkspaceTracking(trackingContext, activeTab, filters.search);
-  const demandsInTab = demands.filter((demand) => activeTab === 'all' || getCcrtDemandTab(demand) === activeTab);
+  const demandsInTab = demands.filter((demand) =>
+    isAdmin ? matchesCcrtAdminTab(demand, activeTab) : activeTab === 'all' || getCcrtDemandTab(demand) === activeTab
+  );
   const visibleDemands = demandsInTab
-    .filter((demand) => (!filters.status || demand.status === filters.status) && matchesCcrtDemandSearch(demand, filters.search))
+    .filter(
+      (demand) =>
+        (!isAdmin || !filters.origin || demand.origin?.channel === filters.origin) &&
+        (!filters.status || demand.status === filters.status) &&
+        matchesCcrtDemandSearch(demand, filters.search)
+    )
     .toSorted((first, second) => {
       const comparison =
         filters.sort === 'status' ? first.status.localeCompare(second.status, 'fr') : first.created_at.localeCompare(second.created_at);
       return (filters.order === 'desc' ? -comparison : comparison) || second.created_at.localeCompare(first.created_at);
     });
 
-  const description = isAdmin ? 'Toutes les demandes, y compris celles à valider' : 'Immeubles en chauffage collectif de votre territoire';
   const isMobileDetails = isMobile && visibleDemands.some((demand) => demand.id === filters.demandId);
   const toggleDemand = (demand: (typeof demands)[number]) => {
     if (filters.demandId !== demand.id) {
@@ -83,11 +99,13 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
   const toolbar = (
     <CcrtDemandToolbar
       isAdmin={isAdmin}
+      origin={filters.origin}
+      onOriginChange={(origin) => void setFilters({ origin })}
       search={filters.search}
       status={filters.status}
       demands={visibleDemands}
       statusOptions={demandeChaleurRenouvelableStatusOptions.filter(
-        (status) => activeTab === 'all' || getCcrtDemandTab({ status: status.value }) === activeTab
+        (status) => isAdmin || activeTab === 'all' || getCcrtDemandTab({ status: status.value }) === activeTab
       )}
       onSearchChange={(search) => void setFilters({ search, tab: activeTab })}
       onSearch={tracking.trackSearch}
@@ -102,7 +120,7 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
   return (
     <SimplePage
       title="Demandes d’accompagnement"
-      description={description}
+      description="Immeubles en chauffage collectif de votre territoire"
       mode="authenticated"
       className="min-h-screen bg-(--background-alt-grey)"
       includeFooter={false}
@@ -114,12 +132,15 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
               <span className="lg:hidden">Demandes</span>
               <span className="hidden lg:inline">Demandes d’accompagnement</span>
             </h1>
-            <p className="mb-6 hidden lg:block">{description}</p>
+            <p className="mb-6 hidden lg:block">Immeubles en chauffage collectif de votre territoire</p>
             <CcrtDemandTabs
+              isAdmin={isAdmin}
               activeTab={activeTab}
               isLoading={query.isLoading}
               counts={{
-                all: demands.length,
+                all: demands.filter((demand) => !isAdmin || demand.archived_at === null).length,
+                archived: demands.filter((demand) => demand.archived_at !== null).length,
+                awaiting_validation: demands.filter((demand) => !demand.validated && demand.archived_at === null).length,
                 closed: demands.filter((demand) => getCcrtDemandTab(demand) === 'closed').length,
                 completed: demands.filter((demand) => getCcrtDemandTab(demand) === 'completed').length,
                 in_progress: demands.filter((demand) => getCcrtDemandTab(demand) === 'in_progress').length,
@@ -161,6 +182,8 @@ export function CcrtDemandsWorkspace({ isAdmin = false }: CcrtDemandsWorkspacePr
           <div className="hidden bg-(--background-default-grey) lg:block">
             {toolbar}
             <CcrtDemandsTable
+              origin={filters.origin}
+              onOriginChange={(origin) => void setFilters({ origin })}
               demands={visibleDemands}
               expandedDemandId={filters.demandId}
               isLoading={query.isLoading}

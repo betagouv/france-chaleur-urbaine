@@ -1,13 +1,18 @@
 import {
   zAddressEligibilityContextInput,
-  zAdminUpdateDemandeChaleurRenouvelableInput,
   zAdminValidateDemandeChaleurRenouvelableInput,
   zBatEnrByBanIdInput,
+  zCcrtAdminComment,
+  zCcrtArchiveDemand,
   zCcrtDemandId,
   zCcrtFollowUpInput,
+  zCcrtReopenDemand,
   zCcrtSendEmail,
+  zCcrtTransferDemand,
+  zCcrtTransferNetwork,
   zCcrtUpdateBuilding,
   zCcrtUpdateDemandeChaleurRenouvelableInput,
+  zCcrtUpdateIdentification,
   zDemandeChaleurRenouvelable,
   zFranceRenovSpaceInput,
   zLocationInfos,
@@ -23,28 +28,45 @@ import {
   getSimulationPrefill,
   listDemandesChaleurRenouvelableAdmin,
   listDemandesChaleurRenouvelableCcrt,
-  updateDemandeChaleurRenouvelableAdmin,
   updateDemandeChaleurRenouvelableCcrt,
   validateDemandeChaleurRenouvelableAdmin,
 } from '@/modules/chaleur-renouvelable/server/service';
 import { zGetBdnbConstructionInput } from '@/modules/tiles/constants';
 import { renewableHeatAccessRoute, route, routeRole, router } from '@/modules/trpc/server';
 
-import { listCcrtAssignmentCandidates } from './ccrt-access';
 import { updateCcrtBuilding } from './ccrt-building';
 import { sendCcrtEmail } from './ccrt-emails';
 import { getCcrtFollowUp } from './ccrt-follow-up';
 import { getCcrtHeatNetworkEligibility } from './ccrt-heat-network';
+import { updateCcrtIdentification } from './ccrt-identification';
+import { archiveCcrtDemand, getCcrtAdminComment, restoreCcrtDemand, transferCcrtDemand, updateCcrtAdminComment } from './ccrt-moderation';
+import { reopenCcrtDemand } from './ccrt-reopening';
+import { getCcrtTransferNetwork } from './ccrt-transfer-network';
 
 export const batEnrRouter = router({
   admin: {
-    listAssignmentCandidates: routeRole(['admin'])
+    archiveDemand: routeRole(['admin'])
+      .input(zCcrtArchiveDemand)
+      .mutation(({ ctx, input }) => archiveCcrtDemand(ctx, input)),
+    getAdminComment: routeRole(['admin'])
       .input(zCcrtDemandId)
-      .query(({ ctx, input }) => listCcrtAssignmentCandidates(ctx, input.demandId)),
+      .query(({ input }) => getCcrtAdminComment(input)),
+    getTransferNetwork: routeRole(['admin'])
+      .input(zCcrtTransferNetwork)
+      .query(({ ctx, input }) => getCcrtTransferNetwork(ctx, input)),
     listDemandesChaleurRenouvelable: routeRole(['admin']).query(async () => await listDemandesChaleurRenouvelableAdmin()),
-    updateDemandeChaleurRenouvelable: routeRole(['admin'])
-      .input(zAdminUpdateDemandeChaleurRenouvelableInput)
-      .mutation(async ({ ctx, input }) => await updateDemandeChaleurRenouvelableAdmin(ctx, input)),
+    reopenDemand: routeRole(['admin'])
+      .input(zCcrtReopenDemand)
+      .mutation(({ ctx, input }) => reopenCcrtDemand(ctx, input)),
+    restoreDemand: routeRole(['admin'])
+      .input(zCcrtDemandId)
+      .mutation(({ ctx, input }) => restoreCcrtDemand(ctx, input)),
+    transferDemand: routeRole(['admin'])
+      .input(zCcrtTransferDemand)
+      .mutation(({ ctx, input }) => transferCcrtDemand(ctx, input)),
+    updateAdminComment: routeRole(['admin'])
+      .input(zCcrtAdminComment)
+      .mutation(({ ctx, input }) => updateCcrtAdminComment(ctx, input)),
     validateDemandeChaleurRenouvelable: routeRole(['admin'])
       .input(zAdminValidateDemandeChaleurRenouvelableInput)
       .mutation(async ({ input }) => await validateDemandeChaleurRenouvelableAdmin(input)),
@@ -60,6 +82,9 @@ export const batEnrRouter = router({
     updateDemandeChaleurRenouvelable: renewableHeatAccessRoute
       .input(zCcrtUpdateDemandeChaleurRenouvelableInput)
       .mutation(async ({ ctx, input }) => await updateDemandeChaleurRenouvelableCcrt(ctx, input)),
+    updateIdentification: renewableHeatAccessRoute
+      .input(zCcrtUpdateIdentification)
+      .mutation(({ ctx, input }) => updateCcrtIdentification(ctx, input)),
   },
   createDemandeChaleurRenouvelable: route
     .input(zDemandeChaleurRenouvelable)

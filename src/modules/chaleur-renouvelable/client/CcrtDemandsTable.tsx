@@ -2,6 +2,7 @@ import Button from '@/components/ui/Button';
 import TableBasic from '@/components/ui/TableBasic';
 
 import type { CcrtDemand } from '../types';
+import { CcrtDemandOriginFilter } from './CcrtDemandOriginFilter';
 import { CcrtDemandRow } from './CcrtDemandRow';
 import type { useCcrtDemandActions } from './hooks/useCcrtDemandActions';
 
@@ -16,6 +17,8 @@ type CcrtDemandsTableProps = {
   onToggle: (demand: CcrtDemand) => void;
   onSort: (sort: 'date' | 'status') => void;
   onValidate?: (demandId: string) => Promise<void>;
+  origin?: string;
+  onOriginChange?: (origin: string) => void;
 };
 
 /**
@@ -32,23 +35,27 @@ export function CcrtDemandsTable({
   onToggle,
   onSort,
   onValidate,
+  origin,
+  onOriginChange,
 }: CcrtDemandsTableProps) {
   return (
     <TableBasic
       className="m-0! [&>div::after]:hidden!"
       layoutFixed
-      tableClassName="w-full min-w-[1240px] table-fixed leading-6 text-(--text-default-grey) [&_th]:h-16 [&_th]:bg-(--background-default-grey)! [&_th]:py-2! [&_th]:text-sm [&_th]:font-bold [&_th]:uppercase [&_td]:bg-transparent! [&_td]:px-4! [&_td]:py-3! [&_td]:text-base [&_td:first-child]:px-2!"
+      tableClassName="w-full table-fixed leading-6 text-(--text-default-grey) [&_th]:h-16 [&_th]:bg-(--background-default-grey)! [&_th]:py-2! [&_th]:text-sm [&_th]:font-bold [&_th]:uppercase [&_td]:bg-transparent! [&_td]:px-2! [&_td]:py-3! [&_td]:text-base [&_td]:break-words [&_td:first-child]:px-2!"
       tableProps={{ 'aria-busy': isLoading }}
     >
       <caption className="sr-only">Demandes d’accompagnement CCRT</caption>
       <colgroup>
         <col className="w-8" />
-        <col className="w-[270px]" />
-        <col className="w-[219px]" />
-        <col className="w-[249px]" />
-        <col className="w-[125px]" />
-        <col className="w-[178px]" />
-        <col className="w-[165px]" />
+        <col />
+        <col />
+        <col />
+        <col className="w-24" />
+        <col className="w-32" />
+        {onValidate && <col />}
+        {onValidate && <col className="w-24" />}
+        <col className={onValidate ? 'w-44' : 'w-36'} />
       </colgroup>
       <thead>
         <tr>
@@ -58,7 +65,7 @@ export function CcrtDemandsTable({
           <th scope="col">Usager</th>
           <th scope="col">Bâtiment</th>
           <th scope="col">
-            <span className="whitespace-nowrap">Résultats de la simulation</span>
+            <span>Résultats de la simulation</span>
           </th>
           <th scope="col" aria-sort={sort === 'date' ? (order === 'desc' ? 'descending' : 'ascending') : 'none'}>
             <div className="flex items-center justify-between gap-2">
@@ -90,6 +97,15 @@ export function CcrtDemandsTable({
               />
             </div>
           </th>
+          {onValidate && (
+            <th scope="col">
+              <div className="flex items-center justify-between gap-2">
+                <span>Origine</span>
+                {onOriginChange && <CcrtDemandOriginFilter value={origin ?? ''} onChange={onOriginChange} compact />}
+              </div>
+            </th>
+          )}
+          {onValidate && <th scope="col">Accès</th>}
           <th scope="col" className="text-center!">
             Action
           </th>
@@ -107,14 +123,13 @@ export function CcrtDemandsTable({
             onSendEmail={(showHistory, placement, emailId) => actions.openEmail(demand, showHistory, placement, emailId)}
             onSimulation={(placement) => actions.trackSimulation(demand, placement)}
             onMap={() => actions.trackMap(demand)}
-            onManageAccess={() => actions.trackAccess(demand)}
             onUpdate={(values) => actions.updateDemand(demand, values)}
             onValidate={onValidate}
           />
         ))}
         {demands.length === 0 && (
           <tr>
-            <td colSpan={7} className="py-12! text-center!">
+            <td colSpan={onValidate ? 9 : 7} className="py-12! text-center!">
               <span role="status">
                 {isLoading
                   ? 'Chargement des demandes…'

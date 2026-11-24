@@ -293,7 +293,6 @@ export type PostHogEventMap = {
   };
   'ccrt_demande:internal_note_created': CcrtDemandTrackingProperties;
   'ccrt_demande:map_opened': CcrtDemandTrackingProperties;
-  'ccrt_demande:access_managed': CcrtDemandTrackingProperties;
   'ccrt_demandes:tab_clicked': CcrtCommonTrackingProperties & { onglet: CcrtTrackingTab };
   'ccrt_demandes:search_used': CcrtCommonTrackingProperties;
   'ccrt_demandes:filter_applied': CcrtCommonTrackingProperties & { type_filtre: 'statut' | 'date'; valeur: string };
