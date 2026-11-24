@@ -2,7 +2,7 @@
 
 Change requests submitted for a network (modification of the public network page, new or updated trace, priority development perimeter, other), stored in the database and reviewed by an admin.
 
-> Product documentation (French): `/admin/doc/modifications-reseau` (`src/modules/doc/content/modifications-reseau.mdx`). Update it and run `pnpm doc:build-search-index` for any behavior change.
+> Product documentation (French): `/admin/doc/modifications-reseau` (`src/modules/doc/content/modifications-reseau.mdx`). Update it for any behavior change.
 
 ## Structure
 

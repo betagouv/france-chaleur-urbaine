@@ -2,7 +2,7 @@
 
 Yearly update of the heat and cold networks from the FEDENE library, and decision of the survey discrepancies, on the admin page `/admin/enquete-fedene` (not in the admin menu: linked from `/admin/modifications-reseau` and from the dashboard indicator).
 
-> Product documentation (French): `/admin/doc/gestion-reseaux`, section « Enquête FEDENE » (`src/modules/doc/content/gestion-reseaux.mdx`). Update it and run `pnpm doc:build-search-index` for any behavior change.
+> Product documentation (French): `/admin/doc/gestion-reseaux`, section « Enquête FEDENE » (`src/modules/doc/content/gestion-reseaux.mdx`). Update it for any behavior change.
 
 ## Structure
 

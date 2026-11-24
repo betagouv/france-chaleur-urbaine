@@ -2,7 +2,7 @@
 
 Renewable heating guidance journey: collect building/context inputs, rank heating modes, create either a classic connection demand or a dedicated CCRT accompaniment demand, and expose admin/CCRT follow-up views.
 
-> Product documentation (French, product-team audience): `/admin/doc/chaleur-renouvelable`, with cross-effects documented in `/admin/doc/cycle-de-vie-demande` when this module creates or changes classic connection demands. Update `src/modules/doc/content/*.mdx` and run `pnpm doc:build-search-index` for any behavior change.
+> Product documentation (French, product-team audience): `/admin/doc/chaleur-renouvelable`, with cross-effects documented in `/admin/doc/cycle-de-vie-demande` when this module creates or changes classic connection demands. Update `src/modules/doc/content/*.mdx` for any behavior change.
 
 ## Fast Map
 
