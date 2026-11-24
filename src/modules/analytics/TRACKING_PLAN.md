@@ -89,11 +89,12 @@ France Chaleur Urbaine utilise PostHog pour mesurer l'usage produit. Ce document
 
 ### Espace CCRT
 
-All events include `structure_ccrt` and `departement`. Demand events (`ccrt_demande:*`, `demande_opened`, `demande_received`) also include `demande_id` and `solution_1`. Contact and simulation placements are `liste` or `fiche`. Tab values are `a_traiter`, `en_cours`, `cloturees`, `toutes`.
+All events include `structure_ccrt` and `departement`. Demand events (`ccrt_demande:*`, `demande_opened`) also include `demande_id` and `solution_1`. Contact and simulation placements are `liste` or `fiche`. Tab values are `a_traiter`, `en_cours`, `cloturees`, `toutes`.
+
+CCRT events are captured only in the browser. Action events are captured after successful mutations, through the consent-controlled PostHog SDK. Mutation responses supply committed transitions and changed field names; failed requests, no-op saves and already-sent email retries produce no action event. Cron notifications have no PostHog event; their database audit remains available. Browser delivery is best-effort (closed tabs, network errors and blockers may prevent capture).
 
 | Event | Additional properties | Trigger |
 |---|---|---|
-| `ccrt_demandes:demande_received` | — | Cron notification (`notifyCcrtOfNewDemands`), once per notified CCRT account and demand |
 | `ccrt_demandes:list_viewed` | `onglet` | Authorized workspace group displayed |
 | `ccrt_demandes:demande_opened` | `premiere_ouverture` | Demand opened; first opening within this workspace visit |
 | `ccrt_demande:status_changed` | `type_statut` (`suivi` / `avancement`), `statut_avant`, `statut_apres`, `declenchement` (`manuel` / `auto`) | Committed status/project-state transition |

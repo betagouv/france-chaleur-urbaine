@@ -12,7 +12,6 @@ import { dayjs } from '@/utils/date';
 import { ObjectEntries } from '@/utils/typescript';
 
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, type DemandeChaleurRenouvelable } from '../constants';
-import { recordCcrtPostHogEvent } from './ccrt-tracking';
 
 /** Day of the week (0 = Sunday) of the weekly digest, matching the cron (Monday). */
 const WEEKLY_DIGEST_DAY = 1;
@@ -167,7 +166,7 @@ export const notifyCcrtOfNewDemands = async () => {
 
   const recipients = await baseNotifiableQuery()
     .where('d.reopened_at', 'is', null)
-    .select(['u.id', 'u.email', 'u.structure_name'])
+    .select(['u.id', 'u.email'])
     .select(newDemandsFrequency.as('frequency'))
     .select((eb) => sql<string[]>`array_agg(distinct ${eb.ref('d.id')})`.as('demand_ids'))
     .select((eb) =>
@@ -186,7 +185,7 @@ export const notifyCcrtOfNewDemands = async () => {
           : []),
       ])
     )
-    .groupBy(['u.id', 'u.email', 'u.structure_name', newDemandsFrequency])
+    .groupBy(['u.id', 'u.email', newDemandsFrequency])
     .execute();
 
   const newlyNotifiedDemandIds = [...new Set(recipients.flatMap((recipient) => recipient.unnotified_demand_ids))];
@@ -210,7 +209,6 @@ export const notifyCcrtOfNewDemands = async () => {
     listDemands(allDemandIds),
     countPendingDemandsByRecipient(recipients.map((recipient) => recipient.id)),
   ]);
-  const demandsById = new Map(demands.map((demand) => [demand.id, demand]));
 
   await processInParallel(recipients, businessRules.emailSendConcurrency.value, async (recipient) => {
     const recipientDemands = demands.filter((demand) => recipient.demand_ids.includes(demand.id));
@@ -233,22 +231,6 @@ export const notifyCcrtOfNewDemands = async () => {
         });
       }
     }
-
-    await Promise.all(
-      recipient.demand_ids.map((demandId) => {
-        const demand = demandsById.get(demandId);
-        return recordCcrtPostHogEvent({
-          distinctId: recipient.id,
-          event: 'ccrt_demandes:demande_received',
-          properties: {
-            demande_id: demandId,
-            departement: demand?.departement_code ?? null,
-            solution_1: demand?.alternative_heating_solutions[0] ?? null,
-            structure_ccrt: recipient.structure_name,
-          },
-        });
-      })
-    );
   });
 
   console.info(`${recipients.length} email(s) envoyé(s) aux CCRT pour les nouvelles demandes.`);

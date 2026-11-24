@@ -17,7 +17,6 @@ import {
   type zCcrtUpdateBuilding,
 } from '../constants';
 import { ensureCcrtDemandAccess, getCcrtTerritory } from './ccrt-access';
-import { getCcrtServerTrackingProperties, recordCcrtPostHogEvent } from './ccrt-tracking';
 import { getAddressEligibilityContext } from './service';
 
 /**
@@ -112,17 +111,5 @@ export const updateCcrtBuilding = async (ctx: Context, input: z.infer<typeof zCc
     }
     return { changes, id: updatedDemand.id, updatedAt: updatedDemand.updated_at.toISOString() };
   });
-  const changedFields = Object.keys(result.changes);
-  if (changedFields.length > 0) {
-    await recordCcrtPostHogEvent({
-      distinctId: ctx.user.id,
-      event: 'ccrt_demande:building_data_edited',
-      properties: {
-        ...(await getCcrtServerTrackingProperties(ctx, demand)),
-        champs_modifies: changedFields,
-        nb_champs_modifies: changedFields.length,
-      },
-    });
-  }
-  return { id: result.id, updatedAt: result.updatedAt };
+  return { changedFields: Object.keys(result.changes), id: result.id, updatedAt: result.updatedAt };
 };

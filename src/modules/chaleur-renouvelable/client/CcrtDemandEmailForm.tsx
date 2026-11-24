@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import CrudDropdown from '@/components/ui/CrudDropdown';
 import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/ui/Tooltip';
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
@@ -19,6 +20,7 @@ import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, zCcrtEmailForm } from '
 import type { CcrtDemand } from '../types';
 import { CcrtEmailSignature } from './CcrtEmailSignature';
 import { invalidateCcrtDemand } from './ccrt-demand-cache';
+import { getCcrtTrackingProperties, trackCcrtFollowUpChanges } from './ccrt-tracking';
 
 type CcrtDemandEmailFormProps = { demand: CcrtDemand; onClose: () => void; preferences: UserPreferences; isActive?: boolean };
 
@@ -45,12 +47,18 @@ export function CcrtDemandEmailForm({ demand, onClose, preferences, isActive = t
     },
     onSubmit: toastErrors(async ({ value }) => {
       const { updateStatusOnSend, ...emailContent } = value;
-      await mutation.mutateAsync({
+      const result = await mutation.mutateAsync({
         demandId: demand.id,
         emailContent: { ...emailContent, body: replacePlaceholders(value.body), object: replacePlaceholders(value.object) },
         messageId: messageId.current,
         updateStatusOnSend,
       });
+      if (result.sent) {
+        const structureName = utils.batEnr.ccrt.listDemandesChaleurRenouvelable.getData()?.trackingContext.structure_ccrt;
+        const properties = getCcrtTrackingProperties(demand, structureName);
+        trackCcrtFollowUpChanges(properties, result, 'auto');
+        trackPostHogEvent('ccrt_demande:email_sent', properties);
+      }
       await Promise.all([utils.users.getPreferences.invalidate(), invalidateCcrtDemand(utils, demand.id)]);
       onClose();
     }),

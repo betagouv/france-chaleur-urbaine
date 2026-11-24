@@ -1,10 +1,12 @@
 import type { z } from 'zod';
 
+import { trackPostHogEvent } from '@/modules/analytics/client';
 import { MODE_EAU_CHAUDE_SANITAIRE_NON_RENSEIGNE, zCcrtBuilding } from '@/modules/chaleur-renouvelable/constants';
 import type { CcrtDemand } from '@/modules/chaleur-renouvelable/types';
 import trpc from '@/modules/trpc/client';
 
 import { invalidateCcrtDemand } from '../ccrt-demand-cache';
+import { getCcrtTrackingProperties } from '../ccrt-tracking';
 import { useCcrtAutosaveForm } from './useCcrtAutosaveForm';
 
 /**
@@ -19,7 +21,18 @@ export function useCcrtBuildingAutosave(demand: CcrtDemand) {
     getDefaultValues: getBuildingDefaultValues,
     invalidate,
     isError: mutation.isError,
-    persist: (values, updatedAt) => mutation.mutateAsync({ demandId: demand.id, updatedAt, values }),
+    persist: async (values, updatedAt) => {
+      const result = await mutation.mutateAsync({ demandId: demand.id, updatedAt, values });
+      if (result.changedFields.length) {
+        const structureName = utils.batEnr.ccrt.listDemandesChaleurRenouvelable.getData()?.trackingContext.structure_ccrt;
+        trackPostHogEvent('ccrt_demande:building_data_edited', {
+          ...getCcrtTrackingProperties(demand, structureName),
+          champs_modifies: result.changedFields,
+          nb_champs_modifies: result.changedFields.length,
+        });
+      }
+      return result;
+    },
     resetError: mutation.reset,
     schema: zCcrtBuilding,
   });

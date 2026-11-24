@@ -9,7 +9,9 @@ const mocks = vi.hoisted(() => ({
   eligibility: { coordinates: { lat: 47.2, lon: -1.55 }, distance: 96, isEligible: true },
   invalidate: vi.fn(),
   mutateAsync: vi.fn(),
+  track: vi.fn(),
 }));
+vi.mock('@/modules/analytics/client', () => ({ trackPostHogEvent: mocks.track }));
 vi.mock('@/modules/trpc/client', async () => {
   const { useState } = await import('react');
   const utils = {
@@ -20,7 +22,10 @@ vi.mock('@/modules/trpc/client', async () => {
       ccrt: {
         getFollowUp: { invalidate: mocks.invalidate },
         getHeatNetworkEligibility: { invalidate: mocks.invalidate },
-        listDemandesChaleurRenouvelable: { invalidate: mocks.invalidate },
+        listDemandesChaleurRenouvelable: {
+          getData: () => ({ trackingContext: { structure_ccrt: 'CCRT 44' } }),
+          invalidate: mocks.invalidate,
+        },
       },
     },
   };
@@ -60,7 +65,7 @@ const demand = makeCcrtDemand();
 describe('CcrtBuildingForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.mutateAsync.mockResolvedValue({ id: demand.id, updatedAt: '2026-10-08T10:01:00.000Z' });
+    mocks.mutateAsync.mockResolvedValue({ changedFields: ['average_area'], id: demand.id, updatedAt: '2026-10-08T10:01:00.000Z' });
   });
 
   it.each([null, 'BATIMENT-1'])('links to the saved building on the national map with construction id %s', (constructionId) => {
@@ -83,13 +88,30 @@ describe('CcrtBuildingForm', () => {
     await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(1), { timeout: 3000 });
     expect(mocks.mutateAsync.mock.calls[0][0]).toMatchObject({ updatedAt: demand.updated_at, values: { average_area: 85 } });
     expect(mocks.invalidate).toHaveBeenCalledWith({ demandId: demand.id });
+    expect(mocks.track).toHaveBeenCalledExactlyOnceWith('ccrt_demande:building_data_edited', {
+      champs_modifies: ['average_area'],
+      demande_id: demand.id,
+      departement: demand.departement_code,
+      nb_champs_modifies: 1,
+      solution_1: demand.alternative_heating_solutions[0] ?? null,
+      structure_ccrt: 'CCRT 44',
+    });
+  });
+
+  it('does not track an edit normalized to the existing server values', async () => {
+    mocks.mutateAsync.mockResolvedValueOnce({ changedFields: [], id: demand.id, updatedAt: demand.updated_at });
+    render(<CcrtBuildingForm demand={demand} />);
+    fireEvent.change(screen.getByLabelText('Surface moyenne'), { target: { value: '85' } });
+    fireEvent.blur(screen.getByLabelText('Surface moyenne'));
+    await waitFor(() => expect(mocks.invalidate).toHaveBeenCalled());
+    expect(mocks.track).not.toHaveBeenCalled();
   });
 
   it.each([false, true])('keeps edits made during a save with the new server version when closing the sheet: %s', async (closeSheet) => {
-    let resolveSave = (_result: { id: string; updatedAt: string }) => {};
+    let resolveSave = (_result: { changedFields: string[]; id: string; updatedAt: string }) => {};
     mocks.mutateAsync.mockImplementationOnce(
       () =>
-        new Promise<{ id: string; updatedAt: string }>((resolve) => {
+        new Promise<{ changedFields: string[]; id: string; updatedAt: string }>((resolve) => {
           resolveSave = resolve;
         })
     );
@@ -105,7 +127,7 @@ describe('CcrtBuildingForm', () => {
       unmount();
     }
 
-    await act(async () => resolveSave({ id: demand.id, updatedAt: '2026-10-08T10:01:00.000Z' }));
+    await act(async () => resolveSave({ changedFields: ['average_area'], id: demand.id, updatedAt: '2026-10-08T10:01:00.000Z' }));
     if (!closeSheet) {
       expect(screen.getByLabelText('Surface moyenne')).toHaveValue(90);
     }

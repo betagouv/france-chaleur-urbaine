@@ -6,6 +6,7 @@ import type { CcrtDemand, CcrtDemandUpdate } from '@/modules/chaleur-renouvelabl
 import trpc from '@/modules/trpc/client';
 
 import { invalidateCcrtDemand } from '../ccrt-demand-cache';
+import { getCcrtTrackingProperties, trackCcrtFollowUpChanges } from '../ccrt-tracking';
 
 /**
  * Preserves contact tracking and applies follow-up changes confirmed by the server.
@@ -20,12 +21,7 @@ export function useCcrtDemandActions(structureName: string | null) {
   const openedDemands = useRef(new Set<string>());
   const updatingDemands = useRef(new Set<string>());
 
-  const getTrackingProperties = (demand: CcrtDemand) => ({
-    demande_id: demand.id,
-    departement: demand.departement_code,
-    solution_1: demand.alternative_heating_solutions[0] ?? null,
-    structure_ccrt: structureName,
-  });
+  const getTrackingProperties = (demand: CcrtDemand) => getCcrtTrackingProperties(demand, structureName);
 
   const updateDemand = async (demand: CcrtDemand, values: CcrtDemandUpdate) => {
     if (updatingDemands.current.has(demand.id)) {
@@ -33,7 +29,8 @@ export function useCcrtDemandActions(structureName: string | null) {
     }
     updatingDemands.current.add(demand.id);
     try {
-      const updatedDemand = await mutation.mutateAsync({ demandId: demand.id, values });
+      const { changes, noteCreated, ...updatedDemand } = await mutation.mutateAsync({ demandId: demand.id, values });
+      trackCcrtFollowUpChanges(getTrackingProperties(demand), { changes, noteCreated });
       utils.batEnr.ccrt.listDemandesChaleurRenouvelable.setData(
         undefined,
         (data) =>

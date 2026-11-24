@@ -11,7 +11,6 @@ import { escapeHtml } from '@/utils/html';
 import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT, type zCcrtSendEmail } from '../constants';
 import { ensureCcrtDemandAccess } from './ccrt-access';
 import { applyCcrtFollowUpUpdate } from './ccrt-demand-update';
-import { getCcrtServerTrackingProperties, recordCcrtFollowUpChanges, recordCcrtPostHogEvent } from './ccrt-tracking';
 
 /**
  * Reserves an idempotent send before SMTP; only successful sends enter the shared history and update the status.
@@ -75,7 +74,7 @@ export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSen
     return true;
   });
   if (!reserved) {
-    return { id: input.messageId };
+    return { changes: {}, id: input.messageId, sent: false };
   }
   try {
     await sendEmailTemplate(
@@ -130,13 +129,5 @@ export const sendCcrtEmail = async (ctx: Context, input: z.infer<typeof zCcrtSen
     await updateUserPreferences(ctx.user.id, { email_signature: emailContent.signature }, transaction);
     return result;
   });
-  if (followUp) {
-    await recordCcrtFollowUpChanges(ctx, demand, followUp.changes, 'contact');
-  }
-  await recordCcrtPostHogEvent({
-    distinctId: ctx.user.id,
-    event: 'ccrt_demande:email_sent',
-    properties: await getCcrtServerTrackingProperties(ctx, demand),
-  });
-  return { id: input.messageId };
+  return { changes: followUp?.changes ?? {}, id: input.messageId, sent: true };
 };

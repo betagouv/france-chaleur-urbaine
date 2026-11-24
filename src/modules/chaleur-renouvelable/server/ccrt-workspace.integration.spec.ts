@@ -345,9 +345,13 @@ describe('CCRT heat-network eligibility', () => {
 
   it('saves the status and note together with both audit events', async () => {
     const demand = await seedWorkspace();
-    await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
+    const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateDemandeChaleurRenouvelable({
       demandId: demand.id,
       values: { note: 'Premier échange', status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT },
+    });
+    expect({ changes: result.changes, noteCreated: result.noteCreated }).toStrictEqual({
+      changes: { status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT } },
+      noteCreated: true,
     });
     const current = await kdb
       .selectFrom('demands_chaleur_renouvelable')
@@ -364,20 +368,7 @@ describe('CCRT heat-network eligibility', () => {
       notes: ['Premier échange'],
       status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
     });
-    expect(vi.mocked(postFetchJSON).mock.calls.map(([, payload]) => payload)).toStrictEqual([
-      expect.objectContaining({
-        event: 'ccrt_demande:status_changed',
-        properties: expect.objectContaining({
-          declenchement: 'manuel',
-          demande_id: demand.id,
-          statut_apres: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT,
-          statut_avant: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS,
-          type_statut: 'suivi',
-        }),
-      }),
-      expect.objectContaining({ event: 'ccrt_demande:internal_note_created' }),
-    ]);
-    expect(JSON.stringify(vi.mocked(postFetchJSON).mock.calls)).not.toContain('Premier échange');
+    expect(postFetchJSON).not.toHaveBeenCalled();
   });
 
   it('rolls back the status and audit when the note cannot be inserted', async () => {
@@ -504,8 +495,18 @@ describe('CCRT email delivery', () => {
       .where('id', '=', testUsers.ccrt.id)
       .execute();
     const input = { demandId: demand.id, emailContent, messageId: uuid(510), updateStatusOnSend };
-    await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail(input);
-    await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail(input);
+    const sent = await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail(input);
+    const retried = await createTestCaller(testUsers.ccrt).batEnr.ccrt.sendEmail(input);
+    expect({ retried, sent }).toStrictEqual({
+      retried: { changes: {}, id: input.messageId, sent: false },
+      sent: {
+        changes: updateStatusOnSend
+          ? { status: { from: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_TO_PROCESS, to: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_FIRST_CONTACT } }
+          : {},
+        id: input.messageId,
+        sent: true,
+      },
+    });
     expect(vi.mocked(sendEmailTemplate).mock.calls).toStrictEqual([
       [
         'demands.demandeur.message-gestionnaire',
@@ -526,18 +527,7 @@ describe('CCRT email delivery', () => {
     expect(followUp.emails.map((email) => ({ body: email.body, id: email.id, to: email.to }))).toStrictEqual([
       { body: emailContent.body, id: input.messageId, to: demand.email },
     ]);
-    const captures = vi.mocked(postFetchJSON).mock.calls.map(([, payload]) => payload);
-    expect(captures).toHaveLength(updateStatusOnSend ? 2 : 1);
-    expect(captures).toContainEqual(expect.objectContaining({ event: 'ccrt_demande:email_sent' }));
-    if (updateStatusOnSend) {
-      expect(captures).toContainEqual(
-        expect.objectContaining({
-          event: 'ccrt_demande:status_changed',
-          properties: expect.objectContaining({ declenchement: 'auto', type_statut: 'suivi' }),
-        })
-      );
-    }
-    expect(JSON.stringify(captures)).not.toContain(demand.email);
+    expect(postFetchJSON).not.toHaveBeenCalled();
     await expect(getUserPreferences(testUsers.ccrt.id)).resolves.toStrictEqual({ ...preferences, email_signature: emailContent.signature });
     const preferenceEvents = await kdb
       .selectFrom('events')
@@ -804,23 +794,18 @@ describe('CCRT building corrections', () => {
       changes: [{ changes: { surface_area: { from: null, to: 145 } } }],
       current: { refusal_period: null, refusal_reason: null, surface_area: 145 },
     });
-    expect(postFetchJSON).toHaveBeenCalledExactlyOnceWith(
-      'https://posthog.test/capture/',
-      expect.objectContaining({
-        properties: expect.objectContaining({ champs_modifies: ['surface_area'], nb_champs_modifies: 1 }),
-      })
-    );
+    expect(postFetchJSON).not.toHaveBeenCalled();
   });
 
   it('does not create an audit or tracking event for equivalent missing refusal details alone', async () => {
     const demand = await seedWorkspace();
-    await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateBuilding({
+    const result = await createTestCaller(testUsers.ccrt).batEnr.ccrt.updateBuilding({
       demandId: demand.id,
       updatedAt: demand.updated_at.toISOString(),
       values: { ...zCcrtBuilding.parse(demand), refusal_period: '', refusal_reason: '' },
     });
     const followUp = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
-    expect(followUp.history).toStrictEqual([]);
+    expect({ changedFields: result.changedFields, history: followUp.history }).toStrictEqual({ changedFields: [], history: [] });
     expect(postFetchJSON).not.toHaveBeenCalled();
   });
 
@@ -862,21 +847,7 @@ describe('CCRT building corrections', () => {
       current: readOnlyValues,
     });
     expect(vi.mocked(fetchJSON).mock.calls[0][1]).toMatchObject({ params: { q: demand.address } });
-    expect(postFetchJSON).toHaveBeenCalledExactlyOnceWith('https://posthog.test/capture/', {
-      api_key: 'test',
-      distinct_id: testUsers.ccrt.id,
-      event: 'ccrt_demande:building_data_edited',
-      properties: {
-        $process_person_profile: false,
-        champs_modifies: ['dpe'],
-        demande_id: demand.id,
-        departement: '13',
-        nb_champs_modifies: 1,
-        solution_1: demand.alternative_heating_solutions[0] ?? null,
-        source: 'ccrt_workspace',
-        structure_ccrt: null,
-      },
-    });
+    expect(postFetchJSON).not.toHaveBeenCalled();
   });
 
   it('keeps an eligible heat network out of the saved alternative solutions', async () => {
@@ -1013,7 +984,7 @@ describe('CCRT building corrections', () => {
         values,
       })
     ).rejects.toMatchObject({ code: 'CONFLICT' });
-    expect(postFetchJSON).toHaveBeenCalledTimes(1);
+    expect(postFetchJSON).not.toHaveBeenCalled();
     const followUp = await createTestCaller(testUsers.ccrt).batEnr.ccrt.getFollowUp({ demandId: demand.id });
     expect(followUp.history.map((event) => event.data)).toStrictEqual([
       {

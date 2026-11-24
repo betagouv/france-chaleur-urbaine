@@ -261,7 +261,6 @@ export type PostHogEventMap = {
     solution_type: string;
   };
   'fcr_results:ccrt_contact_cta_clicked': never;
-  'ccrt_demandes:demande_received': CcrtDemandTrackingProperties;
   'ccrt_demandes:list_viewed': CcrtCommonTrackingProperties & {
     onglet: CcrtTrackingTab;
   };

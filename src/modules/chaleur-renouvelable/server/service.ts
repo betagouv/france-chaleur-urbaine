@@ -38,7 +38,6 @@ import { applyCcrtAccessFilter, ensureCcrtDemandAccess, getCcrtTerritory, hasCcr
 import { selectCcrtDemandsForAdmin } from './ccrt-admin-access';
 import { selectDemandesChaleurRenouvelableForList, serializeDemandesChaleurRenouvelable } from './ccrt-demand-query';
 import { applyCcrtFollowUpUpdate } from './ccrt-demand-update';
-import { recordCcrtFollowUpChanges } from './ccrt-tracking';
 import { getDemandHeatingEnergy, getDemandHeatingType, getDemandStructure } from './demand-mapping';
 import { getFranceRenovSpaceByCityCode } from './france-renov-spaces';
 import { getNetworkEligibilityCoordinates, type NetworkEligibilityCoordinates } from './network-eligibility-coordinates';
@@ -781,11 +780,12 @@ export const listDemandesChaleurRenouvelableCcrt = async (ctx: Context) => {
 };
 
 export const updateDemandeChaleurRenouvelableCcrt = async (ctx: Context, input: CcrtUpdateDemandeChaleurRenouvelableInput) => {
-  const demand = await ensureCcrtDemandAccess(ctx, input.demandId);
+  await ensureCcrtDemandAccess(ctx, input.demandId);
   const result = await kdb.transaction().execute((transaction) => applyCcrtFollowUpUpdate(ctx, input, transaction));
-  await recordCcrtFollowUpChanges(ctx, demand, result.changes, input.trigger, result.noteCreated);
   return {
+    changes: result.changes,
     id: result.demand.id,
+    noteCreated: result.noteCreated,
     project_state: result.demand.project_state,
     status: result.demand.status,
     updated_at: result.demand.updated_at,

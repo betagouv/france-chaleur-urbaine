@@ -2,6 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { CcrtTrackingPlacement } from '@/modules/analytics/posthog.config';
+import { DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED } from '@/modules/chaleur-renouvelable/constants';
 import type { CcrtDemand } from '@/modules/chaleur-renouvelable/types';
 import { uuid } from '@/tests/helpers';
 
@@ -51,14 +52,52 @@ describe('CCRT contact tracking', () => {
   );
 
   it('refreshes both admin and CCRT summaries with the status returned by the server', async () => {
-    mocks.mutate.mockResolvedValue({ id: demand.id, project_state: 'En réflexion', status: 'Recontacté pour premier échange' });
+    mocks.mutate.mockResolvedValue({
+      changes: { status: { from: demand.status, to: 'Recontacté pour premier échange' } },
+      id: demand.id,
+      noteCreated: true,
+      project_state: 'En réflexion',
+      status: 'Recontacté pour premier échange',
+    });
     const { result } = renderHook(() => useCcrtDemandActions('CCRT 44'));
-    await act(() => result.current.updateDemand(demand, { status: 'Recontacté pour premier échange' }));
+    await act(() => result.current.updateDemand(demand, { note: 'Private note', status: 'Recontacté pour premier échange' }));
     const initialData = { count: 1, items: [demand] };
     const expected = { count: 1, items: [{ ...demand, project_state: 'En réflexion', status: 'Recontacté pour premier échange' }] };
     expect(mocks.setAdmin.mock.calls[0][1](initialData)).toStrictEqual(expected);
     expect(mocks.setCcrt.mock.calls[0][1](initialData)).toStrictEqual(expected);
     expect(mocks.invalidate).toHaveBeenCalledTimes(3);
+    expect(mocks.track.mock.calls).toStrictEqual([
+      [
+        'ccrt_demande:status_changed',
+        {
+          ...properties,
+          declenchement: 'manuel',
+          statut_apres: 'Recontacté pour premier échange',
+          statut_avant: demand.status,
+          type_statut: 'suivi',
+        },
+      ],
+      ['ccrt_demande:internal_note_created', properties],
+    ]);
+  });
+
+  it('does not track a failed update', async () => {
+    mocks.mutate.mockRejectedValueOnce(new Error('Save failed'));
+    const { result } = renderHook(() => useCcrtDemandActions('CCRT 44'));
+    await expect(result.current.updateDemand(demand, { note: 'Private note' })).rejects.toThrow('Save failed');
+    expect(mocks.track).not.toHaveBeenCalled();
+  });
+
+  it('does not infer a transition from stale client state on a no-op save', async () => {
+    mocks.mutate.mockResolvedValueOnce({
+      changes: {},
+      id: demand.id,
+      noteCreated: false,
+      status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED,
+    });
+    const { result } = renderHook(() => useCcrtDemandActions('CCRT 44'));
+    await act(() => result.current.updateDemand(demand, { status: DEMANDE_CHALEUR_RENOUVELABLE_STATUS_COMPLETED }));
+    expect(mocks.track).not.toHaveBeenCalled();
   });
 
   it('tracks the integrated contact button without counting a mailto and leaves history visits untracked', () => {
