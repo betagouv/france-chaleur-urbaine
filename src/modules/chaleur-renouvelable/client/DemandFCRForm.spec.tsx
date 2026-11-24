@@ -252,6 +252,15 @@ describe('DemandFCRForm simulation outcome', () => {
       { demandId: 'demand-1', outcome: 'heat_network_demand' },
     ],
     ['a deduplicated classic demand → nothing', { demandSubmissionResult: { ...submittedDemand, isExisting: true }, id: null }, null],
+    [
+      'a deduplicated CCRT demand → nothing',
+      {
+        demandSubmissionResult: null,
+        existingCcrtDemand: { address: '14 Rue Lecourbe 75015 Paris', createdAt: '2026-11-20T12:00:00.000Z' },
+        id: 'ccrt-1',
+      },
+      null,
+    ],
     ['a created CCRT demand → CCRT demand', { demandSubmissionResult: null, id: 'ccrt-1' }, { demandId: 'ccrt-1', outcome: 'ccrt_demand' }],
     ['no demand created → nothing', { demandSubmissionResult: null, id: null }, null],
   ] as const)('records %s', async (_, result, expectedOutcome) => {
@@ -284,6 +293,15 @@ describe('DemandFCRForm simulation outcome', () => {
     } else {
       expect(recordOutcome).not.toHaveBeenCalled();
       expect(trackConversion).not.toHaveBeenCalled();
+    }
+    if ('existingCcrtDemand' in result) {
+      expect(await screen.findByRole('heading', { name: 'Demande déjà enregistrée' })).toBeInTheDocument();
+      expect(screen.getByRole('dialog', { name: 'Demande déjà enregistrée' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
+      expect(screen.getByText('14 Rue Lecourbe 75015 Paris')).toBeInTheDocument();
+      expect(screen.getByText('20 novembre 2026')).toBeInTheDocument();
+      expect(screen.queryByText('Demande de mise en relation bien reçue')).not.toBeInTheDocument();
+      expect(screen.getByText('Envoyer').closest('button')).toBeDisabled();
     }
   });
 

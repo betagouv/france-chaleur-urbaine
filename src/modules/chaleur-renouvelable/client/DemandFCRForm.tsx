@@ -16,6 +16,7 @@ import {
   type DemandConcern,
   demandConcernOptions,
   ESPACE_EXTERIEUR_VALUES,
+  type ExistingCcrtDemand,
   type HeatingEnergy,
   hasOrganizationNameField,
   heatingEnergyOptions,
@@ -29,7 +30,6 @@ import DemandSubmittedPanel from '@/modules/demands/client/public-forms/DemandSu
 import type { DemandSubmissionResult } from '@/modules/demands/constants';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
-import { toastErrors } from '@/modules/notification';
 import { useRecordSimulationOutcome } from '@/modules/simulation-tracking/client/useSimulationTracking';
 import type { SimulationOutcomeDeclaration } from '@/modules/simulation-tracking/constants';
 import trpc from '@/modules/trpc/client';
@@ -38,6 +38,7 @@ import type { HeatNetwork } from '@/types/HeatNetworksResponse';
 import { isDefined } from '@/utils/core';
 import cx from '@/utils/cx';
 
+import { ExistingCcrtDemandPanel } from './ExistingCcrtDemandPanel';
 import { ProjectStatusSelect } from './ProjectStatusSelect';
 
 const contactRecipients = [
@@ -244,6 +245,7 @@ function HeatNetworkDemandForm({
   const trackConversion = useMultiEnrConversion();
   const [isCcrtUnavailable, setIsCcrtUnavailable] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<DemandSubmissionResult | null>(null);
+  const [existingCcrtDemand, setExistingCcrtDemand] = useState<ExistingCcrtDemand | null>(null);
   const [refusalPeriod, setRefusalPeriod] = useState('');
   const [refusalReason, setRefusalReason] = useState('');
   const isPublicAdvisorSelected = isHeatNetworkEligible && selectedRecipientId === 'public-advisor';
@@ -341,6 +343,12 @@ function HeatNetworkDemandForm({
       surfaceArea,
     });
 
+    if (result.existingCcrtDemand) {
+      setExistingCcrtDemand(result.existingCcrtDemand);
+      setIsSubmissionDialogOpen(true);
+      return;
+    }
+
     if (!result.demandSubmissionResult && !result.id) {
       setIsCcrtUnavailable(true);
       return;
@@ -384,11 +392,8 @@ function HeatNetworkDemandForm({
   const form = useAppForm({
     ...schemaValidation(zContactFormChaleurRenouvelable),
     defaultValues,
-    onSubmit: toastErrors(
-      // re-parse to apply the schema defaults and get the output type
-      async ({ value }) => handleSubmit(zContactFormChaleurRenouvelable.parse(value)),
-      () => 'Une erreur est survenue pendant l’envoi de votre demande. Veuillez réessayer dans quelques instants.'
-    ),
+    // Re-parse to apply schema defaults and let Form handle submission errors.
+    onSubmit: async ({ value }) => handleSubmit(zContactFormChaleurRenouvelable.parse(value)),
   });
 
   const handleSelectRecipient = (recipientId: ContactRecipientId) => {
@@ -442,7 +447,10 @@ function HeatNetworkDemandForm({
               )}
             </span>
           </div>
-          <Form form={form}>
+          <Form
+            form={form}
+            errorMessage={() => 'Une erreur est survenue pendant l’envoi de votre demande. Veuillez réessayer dans quelques instants.'}
+          >
             <div className="mb-6 grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 [&_.fr-error-text]:text-error [&_.fr-input]:bg-white [&_.fr-label]:text-(--text-title-grey) [&_.fr-select]:bg-white">
               <div className={cx(!shouldShowOrganizationName && 'md:col-span-2 mb-5')}>
                 <form.AppField name="occupantStatus">
@@ -583,13 +591,24 @@ function HeatNetworkDemandForm({
                 />
               )}
             </form.AppField>
-            <form.SubmitButton disabled={submissionResult !== null} iconId="fr-icon-arrow-right-line" iconPosition="right" className="mt-4">
+            <form.SubmitButton
+              disabled={submissionResult !== null || existingCcrtDemand !== null}
+              iconId="fr-icon-arrow-right-line"
+              iconPosition="right"
+              className="mt-4"
+            >
               Envoyer
             </form.SubmitButton>
           </Form>
         </>
       )}
-      <Dialog title="" open={isSubmissionDialogOpen && submissionResult !== null} size="lg" onOpenChange={setIsSubmissionDialogOpen}>
+      <Dialog
+        title={existingCcrtDemand ? 'Demande déjà enregistrée' : ''}
+        open={isSubmissionDialogOpen && (submissionResult !== null || existingCcrtDemand !== null)}
+        size="lg"
+        onOpenChange={setIsSubmissionDialogOpen}
+      >
+        {existingCcrtDemand && <ExistingCcrtDemandPanel demand={existingCcrtDemand} />}
         {submissionResult && (
           <DemandSubmittedPanel
             nextStepsContext={nextStepsContext}

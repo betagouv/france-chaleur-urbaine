@@ -169,6 +169,111 @@ describe('batEnrRouter', () => {
     mockedFetchJSON.mockReset();
   });
 
+  describe('CCRT creation deduplication', () => {
+    beforeEach(async () => {
+      await seedTableUser([testUsers.ccrt]);
+      await seedDepartmentPermission(testUsers.ccrt.id!, '13');
+    });
+
+    it('preserves the original request for the same email and building even when the address changes', async () => {
+      const input = buildCcrtExperimentationDemandInput({ isPublicAdvisorSelected: true });
+      const original = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input);
+      await kdb
+        .updateTable('demands_chaleur_renouvelable')
+        .set({ email: ' CONTACT@EXAMPLE.COM ' })
+        .where('id', '=', original.id!)
+        .execute();
+      const beforeDuplicate = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['id', 'address', 'email', 'created_at', 'comments', 'acquisition'])
+        .where('id', '=', original.id!)
+        .executeTakeFirstOrThrow();
+
+      const duplicate = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable({
+        ...input,
+        acquisition: { campaign: 'another-campaign', medium: 'email', source: 'test' },
+        address: 'Autre libellé pour le même bâtiment',
+        comments: 'Do not overwrite the initial request',
+        email: ' contact@EXAMPLE.com ',
+      });
+      const afterDuplicate = await kdb
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['id', 'address', 'email', 'created_at', 'comments', 'acquisition'])
+        .execute();
+
+      expect({ duplicate, emails: sentEmailTemplate.mock.calls.map(([key]) => key), rows: afterDuplicate }).toStrictEqual({
+        duplicate: {
+          demandSubmissionResult: null,
+          existingCcrtDemand: { address: beforeDuplicate.address, createdAt: new Date(beforeDuplicate.created_at).toISOString() },
+          id: original.id,
+        },
+        emails: ['demands.demandeur.confirmation-demande-chaleur-renouvelable'],
+        rows: [beforeDuplicate],
+      });
+    });
+
+    it.each([
+      ['different applicant', {}, { email: 'other@example.com' }, false, false],
+      ['different building at the same address', {}, { batimentConstructionId: 'ANOTHER-CONSTRUCTION' }, false, false],
+      ['request older than the classic deduplication window', {}, {}, true, false],
+      ['archived request', {}, {}, false, true],
+      ['both building identifiers missing', { batimentConstructionId: null }, { batimentConstructionId: null }, false, false],
+      ['only the new building identifier missing', {}, { batimentConstructionId: null }, false, false],
+    ] satisfies [string, Partial<DemandeChaleurRenouvelable>, Partial<DemandeChaleurRenouvelable>, boolean, boolean][])(
+      'allows a new request: %s',
+      async (_label, firstOverrides, secondOverrides, isOld, isArchived) => {
+        const input = buildCcrtExperimentationDemandInput({ isPublicAdvisorSelected: true });
+        const first = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable({ ...input, ...firstOverrides });
+        if (isOld) {
+          await kdb
+            .updateTable('demands_chaleur_renouvelable')
+            .set({ created_at: sql`now() - interval '31 days'` })
+            .where('id', '=', first.id!)
+            .execute();
+        }
+        if (isArchived) {
+          await kdb
+            .updateTable('demands_chaleur_renouvelable')
+            .set({ archive_reason: 'duplicate', archived_at: new Date() })
+            .where('id', '=', first.id!)
+            .execute();
+        }
+        const second = await createTestCaller(null).batEnr.createDemandeChaleurRenouvelable({ ...input, ...secondOverrides });
+        const rows = await kdb.selectFrom('demands_chaleur_renouvelable').select('id').execute();
+        expect({
+          count: rows.length,
+          distinctIds: first.id !== second.id,
+          emails: sentEmailTemplate.mock.calls.length,
+          result: second,
+        }).toStrictEqual({
+          count: 2,
+          distinctIds: true,
+          emails: 2,
+          result: { demandSubmissionResult: null, id: second.id },
+        });
+      }
+    );
+
+    it('creates one request and sends one confirmation for concurrent submissions', async () => {
+      const input = buildCcrtExperimentationDemandInput({ isPublicAdvisorSelected: true });
+      const results = await Promise.all(
+        Array.from({ length: 4 }, () => createTestCaller(null).batEnr.createDemandeChaleurRenouvelable(input))
+      );
+      const rows = await kdb.selectFrom('demands_chaleur_renouvelable').select('id').execute();
+      expect({
+        duplicates: results.filter((result) => result.existingCcrtDemand).length,
+        emails: sentEmailTemplate.mock.calls.map(([key]) => key),
+        ids: [...new Set(results.map((result) => result.id))],
+        rows,
+      }).toStrictEqual({
+        duplicates: 3,
+        emails: ['demands.demandeur.confirmation-demande-chaleur-renouvelable'],
+        ids: [rows[0].id],
+        rows: [{ id: rows[0].id }],
+      });
+    });
+  });
+
   it('keeps the authoritative commune department when the fallback lookup is missing', async () => {
     await seedTableUser([testUsers.ccrt]);
     await seedDepartmentPermission(testUsers.ccrt.id!, '13');

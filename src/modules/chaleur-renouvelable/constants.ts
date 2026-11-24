@@ -480,7 +480,7 @@ export const zContactFormChaleurRenouvelable = z.object({
   annualHeatingConsumption: z.number().positive('Veuillez renseigner une consommation annuelle supérieure à 0 MWh').optional(),
   comments: z.string().default(''),
   demandConcern: z.enum(DEMAND_CONCERN_VALUES).or(z.literal('')).default(''),
-  email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
+  email: z.string().trim().email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   firstName: z.string().min(1, 'Veuillez renseigner votre prénom'),
   heatingEnergy: z.enum(HEATING_ENERGY_VALUES),
   housingCount: z.number().int().positive().optional(),
@@ -528,7 +528,7 @@ export const zDemandeChaleurRenouvelable = z.object({
   comments: z.string().nullable().default(null),
   demandConcern: z.enum(DEMAND_CONCERN_VALUES).nullable().default(null),
   dpe: z.enum(DPE_VALUES),
-  email: z.email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
+  email: z.string().trim().email("Votre adresse email n'est pas valide").min(1, 'Veuillez renseigner votre adresse email'),
   firstName: z.string(),
   geoAddress: zDemandeChaleurRenouvelableGeoAddress.optional(),
   heatingEnergy: z.enum(HEATING_ENERGY_VALUES),
@@ -555,6 +555,11 @@ export const zDemandeChaleurRenouvelable = z.object({
   surfaceArea: z.number().nullable().default(null),
 });
 export type DemandeChaleurRenouvelable = z.infer<typeof zDemandeChaleurRenouvelable>;
+
+export type ExistingCcrtDemand = {
+  address: string;
+  createdAt: string;
+};
 
 export const zFranceRenovSpaceInput = z.object({
   address: z.string().nullable().default(null),

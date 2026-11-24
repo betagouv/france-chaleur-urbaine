@@ -13,6 +13,7 @@ import type {
   CcrtUpdateDemandeChaleurRenouvelableInput,
   ColdNetworkEligibility,
   DemandeChaleurRenouvelable,
+  ExistingCcrtDemand,
   FranceRenovSpace,
   FranceRenovSpaceInput,
   GetLocationInput,
@@ -574,7 +575,15 @@ const getPreselectedBatimentConstructionIdFromRnb = async (banId: string) => {
   return bdnbExternalId?.id ?? null;
 };
 
-export const createDemandeChaleurRenouvelable = async ({ input }: { input: DemandeChaleurRenouvelable }) => {
+export const createDemandeChaleurRenouvelable = async ({
+  input,
+}: {
+  input: DemandeChaleurRenouvelable;
+}): Promise<{
+  demandSubmissionResult: DemandSubmissionResult | null;
+  id: string | null;
+  existingCcrtDemand?: ExistingCcrtDemand;
+}> => {
   const demandSubmissionResult = await createRaccordableDemand(input);
 
   if (demandSubmissionResult) {
@@ -584,11 +593,12 @@ export const createDemandeChaleurRenouvelable = async ({ input }: { input: Deman
     };
   }
 
-  const ccrtDemandId = await createCcrtDemand(input);
+  const ccrtDemand = await createCcrtDemand(input);
 
   return {
     demandSubmissionResult: null,
-    id: ccrtDemandId,
+    id: ccrtDemand?.id ?? null,
+    ...(ccrtDemand?.existingCcrtDemand ? { existingCcrtDemand: ccrtDemand.existingCcrtDemand } : {}),
   };
 };
 
@@ -620,51 +630,78 @@ const createCcrtDemand = async (input: DemandeChaleurRenouvelable) => {
     getRnicCoproprieteSafe(input.batimentConstructionId),
   ]);
 
-  const createdCcrtDemand = await kdb
-    .insertInto('demands_chaleur_renouvelable')
-    .values({
-      ...territory,
-      acquisition: input.acquisition ? JSON.stringify(input.acquisition) : null,
-      address: input.address,
-      alternative_heating_solutions: input.alternativeHeatingSolutions ?? [],
-      annual_heating_consumption: input.annualHeatingConsumption,
-      average_area: input.averageArea,
-      average_residents: input.averageResidents,
-      batiment_construction_id: input.batimentConstructionId,
-      comments: input.comments,
-      created_at: new Date(),
-      demand_concern: input.demandConcern,
-      dpe: input.dpe,
-      email: input.email,
-      first_name: input.firstName,
-      heating_energy: input.heatingEnergy,
-      hot_water_system_type: input.hotWaterSystemType,
-      housing_count: input.housingCount,
-      housing_type: input.housingType,
-      is_public_advisor_selected: input.isPublicAdvisorSelected,
-      last_name: input.lastName,
-      occupant_status: input.occupantStatus,
-      organization_name: input.organizationName,
-      origin_demand_id: originDemandId,
-      outdoor_space: input.outdoorSpace,
-      phone: input.phone,
-      project_status: input.projectStatus,
-      radiator_type: input.radiatorType,
-      refusal_period: input.refusalPeriod,
-      refusal_reason: input.refusalReason,
-      rnic_nom_copropriete: rnicCopropriete?.nomCopropriete ?? null,
-      rnic_numero_immatriculation: rnicCopropriete?.numeroImmatriculation ?? null,
-      rnic_siret_representant_legal: rnicCopropriete?.siretRepresentantLegal ?? null,
-      simulation_url: input.simulationUrl,
-      surface_area: input.surfaceArea,
-      updated_at: new Date(),
-    })
-    .returning(['id'])
-    .executeTakeFirstOrThrow();
+  const createdCcrtDemand = await kdb.transaction().execute(async (transaction) => {
+    if (input.batimentConstructionId) {
+      const email = input.email.trim().toLowerCase();
+      // Serializes submissions for the same applicant/building, including when no row exists yet.
+      await sql`SELECT pg_advisory_xact_lock(hashtextextended(${JSON.stringify(['ccrt-demand', email, input.batimentConstructionId])}, 0))`.execute(
+        transaction
+      );
+      const existingDemand = await transaction
+        .selectFrom('demands_chaleur_renouvelable')
+        .select(['id', 'address', 'created_at'])
+        .where('batiment_construction_id', '=', input.batimentConstructionId)
+        .where((expression) => sql<string>`lower(trim(${expression.ref('email')}))`, '=', email)
+        .where('archived_at', 'is', null)
+        .where('created_at', '>', sql<Date>`now() - make_interval(days => ${businessRules.demandDedupWindowDays.value})`)
+        .orderBy('created_at', 'desc')
+        .executeTakeFirst();
+      if (existingDemand) {
+        return {
+          existingCcrtDemand: { address: existingDemand.address, createdAt: new Date(existingDemand.created_at).toISOString() },
+          id: existingDemand.id,
+        };
+      }
+    }
+    const demand = await transaction
+      .insertInto('demands_chaleur_renouvelable')
+      .values({
+        ...territory,
+        acquisition: input.acquisition ? JSON.stringify(input.acquisition) : null,
+        address: input.address,
+        alternative_heating_solutions: input.alternativeHeatingSolutions ?? [],
+        annual_heating_consumption: input.annualHeatingConsumption,
+        average_area: input.averageArea,
+        average_residents: input.averageResidents,
+        batiment_construction_id: input.batimentConstructionId,
+        comments: input.comments,
+        created_at: new Date(),
+        demand_concern: input.demandConcern,
+        dpe: input.dpe,
+        email: input.email.trim(),
+        first_name: input.firstName,
+        heating_energy: input.heatingEnergy,
+        hot_water_system_type: input.hotWaterSystemType,
+        housing_count: input.housingCount,
+        housing_type: input.housingType,
+        is_public_advisor_selected: input.isPublicAdvisorSelected,
+        last_name: input.lastName,
+        occupant_status: input.occupantStatus,
+        organization_name: input.organizationName,
+        origin_demand_id: originDemandId,
+        outdoor_space: input.outdoorSpace,
+        phone: input.phone,
+        project_status: input.projectStatus,
+        radiator_type: input.radiatorType,
+        refusal_period: input.refusalPeriod,
+        refusal_reason: input.refusalReason,
+        rnic_nom_copropriete: rnicCopropriete?.nomCopropriete ?? null,
+        rnic_numero_immatriculation: rnicCopropriete?.numeroImmatriculation ?? null,
+        rnic_siret_representant_legal: rnicCopropriete?.siretRepresentantLegal ?? null,
+        simulation_url: input.simulationUrl,
+        surface_area: input.surfaceArea,
+        updated_at: new Date(),
+      })
+      .returning(['id'])
+      .executeTakeFirstOrThrow();
+    return { existingCcrtDemand: null, id: demand.id };
+  });
 
-  await sendEmailTemplate('demands.demandeur.confirmation-demande-chaleur-renouvelable', { email: input.email }, { demand: input });
+  if (!createdCcrtDemand.existingCcrtDemand) {
+    await sendEmailTemplate('demands.demandeur.confirmation-demande-chaleur-renouvelable', { email: input.email }, { demand: input });
+  }
 
-  return createdCcrtDemand.id;
+  return createdCcrtDemand;
 };
 
 const getValidOriginDemandId = async (input: DemandeChaleurRenouvelable) => {

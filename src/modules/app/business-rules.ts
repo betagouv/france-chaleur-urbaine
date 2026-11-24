@@ -73,7 +73,8 @@ export const businessRules = {
     value: 90,
   },
   demandDedupWindowDays: {
-    description: 'Fenêtre pendant laquelle une demande identique (même email et même adresse) ne recrée pas de demande.',
+    description:
+      'Fenêtre de dédoublonnage : même email et même adresse pour le raccordement, même email et même bâtiment pour l’accompagnement chaleur renouvelable.',
     display: '30 jours',
     label: 'Déduplication des demandes',
     value: 30,
