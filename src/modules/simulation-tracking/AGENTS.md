@@ -2,7 +2,7 @@
 
 First-party tracking of the renewable heating simulations (`chaleur-renouvelable` journey): one mutable row per arrival on the results page, written only by public client beacons, with its start page, current inputs, offered contact options and outcome, plus the admin flow view. Sibling of `conversion-tracking` (which measures the classic journey: displays → address tests → demands) and reuses its anti-abuse primitives.
 
-> Product documentation (French): `/admin/doc/chaleur-renouvelable`, section « Le suivi des simulations ». Update `src/modules/doc/content/chaleur-renouvelable.mdx` and run `pnpm doc:build-search-index` for any behavior change.
+> Product documentation (French): `/admin/doc/chaleur-renouvelable`, section « Le suivi des simulations ». Update `src/modules/doc/content/chaleur-renouvelable.mdx` for any behavior change.
 
 ## Structure
 

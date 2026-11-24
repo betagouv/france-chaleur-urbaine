@@ -14,7 +14,6 @@ import { type BootstrapBundle, bootstrapBundleNames, selectBootstrapTables } fro
 import { registerBdnbCommands } from '@/modules/bdnb/commands';
 import { refreshCustomTerritories } from '@/modules/custom-territories/server/service';
 import { registerDataCommands } from '@/modules/data/commands';
-import { registerDocCommands } from '@/modules/doc/commands';
 import { registerJobsCommands } from '@/modules/jobs/commands';
 import { registerOptimizationCommands } from '@/modules/optimization/commands';
 import { renderOpenApiYaml } from '@/modules/partner-api/server/openapi';
@@ -69,7 +68,6 @@ registerUsersCommands(program);
 registerAppCommands(program);
 registerBdnbCommands(program);
 registerDataCommands(program);
-registerDocCommands(program);
 registerJobsCommands(program);
 registerOptimizationCommands(program);
 registerProEligibilityTestsCommands(program);

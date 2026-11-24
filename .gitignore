@@ -111,3 +111,6 @@ scripts/simulateur/codes-insee.json
 
 # Backup config (scripts/backup/backup-prod.sh)
 scripts/backup/.env
+
+# Doc search index generated from the MDX pages (pnpm doc:build-search-index: postinstall, predev, prebuild)
+/src/modules/doc/search-index.generated.ts
