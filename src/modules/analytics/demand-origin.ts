@@ -10,6 +10,7 @@ export const originChannels = {
   emailing: 'Emailing',
   fcu_email: 'Email FCU',
   integration: 'Intégration partenaire',
+  map: 'Carte',
   referral: 'Site référent',
   search: 'Moteur de recherche',
   social: 'Réseaux sociaux',
@@ -100,9 +101,11 @@ export const classifyDemandOrigin = (acquisition: Acquisition | null, integratio
   if (acquisition.source || acquisition.medium || acquisition.campaign || acquisition.keyword) {
     return result('campaign', detail);
   }
-  return acquisition.referrer
-    ? result(classifyDomain(acquisition.referrer) ?? 'referral', acquisition.referrer)
-    : result('unknown', acquisition.formPage ?? acquisition.landingPage ?? null);
+  if (acquisition.referrer) {
+    return result(classifyDomain(acquisition.referrer) ?? 'referral', acquisition.referrer);
+  }
+  const isMapPage = [acquisition.formPage, acquisition.landingPage].some((page) => page?.split(/[?#]/)[0].replace(/\/$/, '') === '/carte');
+  return result(isMapPage ? 'map' : 'unknown', acquisition.formPage ?? acquisition.landingPage ?? null);
 };
 
 /** Matches whole domain boundaries so unrelated sites cannot impersonate a known channel. */

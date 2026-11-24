@@ -27,7 +27,17 @@ describe('demand origin rules', () => {
     ['social', { referrer: 'l.facebook.com' }, 'social', 'l.facebook.com'],
     ['external site', { referrer: 'france-renov.gouv.fr' }, 'referral', 'france-renov.gouv.fr'],
     ['domain lookalike', { referrer: 'chatgpt.com.example.org' }, 'referral', 'chatgpt.com.example.org'],
-    ['missing referrer', { landingPage: '/carte' }, 'unknown', '/carte'],
+    ['map landing without referrer', { landingPage: '/carte' }, 'map', '/carte'],
+    ['map form without referrer', { formPage: '/carte' }, 'map', '/carte'],
+    ['map query parameters', { formPage: '/carte?coord=1,2' }, 'map', '/carte?coord=1,2'],
+    ['map fragment', { landingPage: '/carte#contact' }, 'map', '/carte#contact'],
+    ['map trailing slash', { formPage: '/carte/' }, 'map', '/carte/'],
+    ['map landing followed by another form', { formPage: '/reseaux/7501C', landingPage: '/carte' }, 'map', '/reseaux/7501C'],
+    ['similar page is not the map', { formPage: '/carte-autre' }, 'unknown', '/carte-autre'],
+    ['another page stays direct', { formPage: '/chaleur-renouvelable' }, 'unknown', '/chaleur-renouvelable'],
+    ['campaign precedes map page', { landingPage: '/carte', medium: 'cpc', source: 'google' }, 'advertising', 'Google Ads'],
+    ['referrer precedes map page', { landingPage: '/carte', referrer: 'google.fr' }, 'search', 'google.fr'],
+    ['integration precedes map page', { formPage: '/carte', integrationId: 'partner' }, 'integration', 'Hellio'],
   ];
   it.each(cases)('%s', (_, values, channel, detail) => {
     const acquisition = values ? { ...campaign, ...values } : null;
@@ -37,6 +47,14 @@ describe('demand origin rules', () => {
 
 describe('historical demand provenance', () => {
   const empty = { acquisition: null, origin_host: null, origin_page: null, origin_source: null };
+  it('labels historical map submissions as Carte after stripping query parameters', () => {
+    const acquisition = getDemandAcquisition({ ...empty, origin_page: '/carte?coord=1,2#contact' });
+    expect(classifyDemandOrigin(acquisition)).toStrictEqual({
+      acquisition: { ...campaign, formPage: '/carte' },
+      channel: 'map',
+      detail: '/carte',
+    });
+  });
   it('keeps the stored source page without inventing an external channel', () => {
     const acquisition = getDemandAcquisition({ ...empty, origin_page: '/reseaux/7501C?email=private#contact' });
     expect(classifyDemandOrigin(acquisition)).toStrictEqual({
