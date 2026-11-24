@@ -14,7 +14,7 @@ export const originChannels = {
   search: 'Moteur de recherche',
   social: 'Réseaux sociaux',
   transfer: 'Transfert CCRT',
-  unknown: 'Direct / inconnu',
+  unknown: 'Direct',
 } as const;
 export type OriginChannel = keyof typeof originChannels;
 export type DemandOrigin = {
