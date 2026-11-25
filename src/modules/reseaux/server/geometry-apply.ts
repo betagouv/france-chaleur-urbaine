@@ -43,10 +43,18 @@ export async function applyNetworkGeometries(directory: string, options: { dryRu
   });
 
   logger.info(`${prefix}Résumé:`);
-  if (counts.created > 0) logger.info(`  ${counts.created} ${dryRun ? 'seraient créés' : 'créés'}`);
-  if (counts.updated > 0) logger.info(`  ${counts.updated} ${dryRun ? 'seraient mis à jour' : 'mis à jour'}`);
-  if (counts.empty > 0) logger.warn(`  ${counts.empty} fichiers vides ignorés`);
-  if (counts.error > 0) logger.error(`  ${counts.error} erreurs`);
+  if (counts.created > 0) {
+    logger.info(`  ${counts.created} ${dryRun ? 'seraient créés' : 'créés'}`);
+  }
+  if (counts.updated > 0) {
+    logger.info(`  ${counts.updated} ${dryRun ? 'seraient mis à jour' : 'mis à jour'}`);
+  }
+  if (counts.empty > 0) {
+    logger.warn(`  ${counts.empty} fichiers vides ignorés`);
+  }
+  if (counts.error > 0) {
+    logger.error(`  ${counts.error} erreurs`);
+  }
 
   if (dryRun) {
     logger.info(`Aucune modification effectuée. Relancer avec --apply pour exécuter.`);

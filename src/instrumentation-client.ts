@@ -37,7 +37,9 @@ if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
     defaults: '2026-01-30',
     disable_session_recording: true,
     loaded: (posthog) => {
-      if (process.env.NEXT_PUBLIC_POSTHOG_DEBUG === 'true') posthog.debug();
+      if (process.env.NEXT_PUBLIC_POSTHOG_DEBUG === 'true') {
+        posthog.debug();
+      }
     },
     persistence: consentGiven ? 'localStorage+cookie' : 'memory',
     person_profiles: 'always',

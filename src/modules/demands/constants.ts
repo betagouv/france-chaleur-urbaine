@@ -629,7 +629,9 @@ export type CreateBatchDemandInput = z.infer<typeof zCreateBatchDemandInput>;
  * Gère les inconsistances : casse, accents, espaces, valeurs legacy.
  */
 export const normalizeHeatingEnergy = (value: string | null | undefined): ModeDeChauffageLabel | null => {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   const normalized = value.toLowerCase().trim();
 
@@ -654,7 +656,9 @@ export const normalizeHeatingEnergy = (value: string | null | undefined): ModeDe
  * Gère les inconsistances : casse, valeurs legacy.
  */
 export const normalizeHeatingType = (value: string | null | undefined): TypeDeChauffageLabel | null => {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   const normalized = value.toLowerCase().trim();
 

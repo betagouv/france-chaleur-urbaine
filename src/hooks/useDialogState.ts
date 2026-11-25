@@ -28,7 +28,9 @@ export function useDialogState<T = void>(): DialogControl<T> {
     data: state?.data,
     dialogProps: {
       onOpenChange: (isOpen) => {
-        if (!isOpen) setState(null);
+        if (!isOpen) {
+          setState(null);
+        }
       },
       open: state !== null,
     },

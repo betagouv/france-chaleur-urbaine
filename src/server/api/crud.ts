@@ -65,7 +65,9 @@ type ValidationType = 'create' | 'update' | 'delete';
 
 /** Valide le body et retourne la valeur parsée (transforms zod appliqués, ex. `trim().toLowerCase()`), ou le body brut sans schéma. */
 const validateSchemaIfExists = (schema?: z.ZodSchema, body?: any) => {
-  if (!schema) return body;
+  if (!schema) {
+    return body;
+  }
 
   const result = schema.safeParse(body);
   if (!result.success) {

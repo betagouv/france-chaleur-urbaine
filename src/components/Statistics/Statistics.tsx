@@ -125,7 +125,9 @@ const Statistics = () => {
   } = useFetch<MatomoMonthStat[]>('/api/statistiques/actions');
 
   const totalComparateurTests = useMemo(() => {
-    if (!dataActions) return 0;
+    if (!dataActions) {
+      return 0;
+    }
 
     return dataActions.reduce((total, entry) => {
       return total + (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_ELIGIBLE] ?? 0) + (entry[STAT_LABEL.FORM_TEST_COMPARATEUR_UNELIGIBLE] ?? 0);

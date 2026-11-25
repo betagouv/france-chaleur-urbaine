@@ -14,13 +14,21 @@ const MAX_SAFE = 9007199254740991;
 
 /** Nettoie le JSON Schema produit par zod : retire `$schema` et le bruit des bornes d'entiers sûrs. */
 const sanitizeSchema = (node: unknown): unknown => {
-  if (Array.isArray(node)) return node.map(sanitizeSchema);
+  if (Array.isArray(node)) {
+    return node.map(sanitizeSchema);
+  }
   if (node && typeof node === 'object') {
     const out: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(node)) {
-      if (value === undefined || key === '$schema') continue;
-      if (key === 'minimum' && value === -MAX_SAFE) continue;
-      if (key === 'maximum' && value === MAX_SAFE) continue;
+      if (value === undefined || key === '$schema') {
+        continue;
+      }
+      if (key === 'minimum' && value === -MAX_SAFE) {
+        continue;
+      }
+      if (key === 'maximum' && value === MAX_SAFE) {
+        continue;
+      }
       out[key] = sanitizeSchema(value);
     }
     return out;

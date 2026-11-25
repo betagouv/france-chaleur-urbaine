@@ -36,8 +36,12 @@ import { parseAsLngLat } from '@/utils/nuqs-parsers';
 // Tolère l'ancien `legend` booléen des URLs partenaires en plus de l'enum actuel.
 const parseAsLegacyLegend = createParser<LegendMode>({
   parse: (value) => {
-    if (value === 'true') return 'auto';
-    if (value === 'false') return 'off';
+    if (value === 'true') {
+      return 'auto';
+    }
+    if (value === 'false') {
+      return 'off';
+    }
     return (legendModes as readonly string[]).includes(value) ? (value as LegendMode) : null;
   },
   serialize: (value) => value,

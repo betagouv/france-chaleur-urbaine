@@ -177,8 +177,12 @@ const matchesOrganization =
  * - sinon : au moins une permission (réseau OU territoire) matche
  */
 export const canUserAccessDemand = (user: UserWithRole, permissions: Permission[], demand: DemandForAccess): boolean => {
-  if (user.role === 'admin') return true;
-  if (!isHeatNetworkDemandRole(user.role) || !demand.validated) return false;
+  if (user.role === 'admin') {
+    return true;
+  }
+  if (!isHeatNetworkDemandRole(user.role) || !demand.validated) {
+    return false;
+  }
 
   return permissions.some((p) => matchesNetworkAffectation(demand)(p) || matchesOrganization(demand)(p) || matchesTerritory(demand)(p));
 };
@@ -190,7 +194,9 @@ export const canUserAccessDemand = (user: UserWithRole, permissions: Permission[
  * - demande sans réseau : toute perm territoire matchante suffit (rôle de triage)
  */
 export const isUserResponsibleForDemand = (user: UserWithRole, permissions: Permission[], demand: DemandForAccess): boolean => {
-  if (user.role === 'admin' || !isHeatNetworkDemandRole(user.role) || !demand.validated) return false;
+  if (user.role === 'admin' || !isHeatNetworkDemandRole(user.role) || !demand.validated) {
+    return false;
+  }
 
   // Demande affectée à un réseau : une perm réseau matchante OU une perm org couvrant ce réseau donne la responsabilité.
   // Demande sans réseau : org ne s'applique pas (scope opérateur = réseaux), seul le territoire (triage) suffit.

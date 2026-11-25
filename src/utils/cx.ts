@@ -10,7 +10,9 @@ const cx = (...args: CxArg[]): string => {
   let cls = '';
   for (; i < len; i++) {
     const arg = args[i];
-    if (arg == null) continue;
+    if (arg == null) {
+      continue;
+    }
 
     let toAdd;
     switch (typeof arg) {
@@ -25,7 +27,9 @@ const cx = (...args: CxArg[]): string => {
           toAdd = '';
           for (const k in arg) {
             if (arg[k as string] && k) {
-              if (toAdd) toAdd += ' ';
+              if (toAdd) {
+                toAdd += ' ';
+              }
               toAdd += k;
             }
           }
@@ -37,7 +41,9 @@ const cx = (...args: CxArg[]): string => {
       }
     }
     if (toAdd) {
-      if (cls) cls += ' ';
+      if (cls) {
+        cls += ' ';
+      }
       cls += toAdd;
     }
   }

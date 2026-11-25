@@ -35,7 +35,9 @@ export function DistancesMeasurementTool() {
 
   // Sync the atom into the MapLibre sources whenever it changes.
   useEffect(() => {
-    if (!map || !mapReady) return;
+    if (!map || !mapReady) {
+      return;
+    }
     map.getSource<GeoJSONSource>(distancesMeasurementLinesSourceId)?.setData({
       features,
       type: 'FeatureCollection',
@@ -66,7 +68,9 @@ export function DistancesMeasurementTool() {
 
   // Start drawing on mount; clean up on unmount.
   useEffect(() => {
-    if (!map || !draw || !mapReady) return;
+    if (!map || !draw || !mapReady) {
+      return;
+    }
 
     const onDrawCreate = ({ features: drawFeatures }: DrawCreateEvent) => {
       const feature = drawFeatures[0] as MeasureFeature;
@@ -88,9 +92,13 @@ export function DistancesMeasurementTool() {
     };
 
     const onDrawRender = () => {
-      if (draw.getMode() !== 'draw_line_string') return;
+      if (draw.getMode() !== 'draw_line_string') {
+        return;
+      }
       const featureBeingDrawn = draw.getAll().features.at(-1) as MeasureFeature | undefined;
-      if (!featureBeingDrawn) return;
+      if (!featureBeingDrawn) {
+        return;
+      }
       setFeatures((prev) => {
         if (prev.at(-1)?.id !== featureBeingDrawn.id) {
           return [
@@ -145,7 +153,9 @@ export function DistancesMeasurementTool() {
   useKeyboardEvent(
     'Escape',
     () => {
-      if (isDrawing) cancelMeasurement();
+      if (isDrawing) {
+        cancelMeasurement();
+      }
     },
     [],
     { event: 'keyup' }
@@ -157,12 +167,16 @@ export function DistancesMeasurementTool() {
     );
   }
   function startMeasurement() {
-    if (!draw) return;
+    if (!draw) {
+      return;
+    }
     draw.changeMode('draw_line_string');
     setIsDrawing(true);
   }
   function cancelMeasurement() {
-    if (!draw) return;
+    if (!draw) {
+      return;
+    }
     draw.deleteAll();
     setIsDrawing((wasDrawing) => {
       const shouldDrawAgain = featuresRef.current.length === 1;
@@ -176,7 +190,9 @@ export function DistancesMeasurementTool() {
   function deleteMeasurement(featureId: string) {
     setFeatures((prev) => {
       const updated = prev.filter((feature) => feature.id !== featureId);
-      if (updated.length === 0) startMeasurement();
+      if (updated.length === 0) {
+        startMeasurement();
+      }
       return updated;
     });
     trackEvent('Carto|Mesure de distance|Supprimer un tracé');

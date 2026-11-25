@@ -37,7 +37,9 @@ export function deepIntersection<T extends object, U extends object>(
     }
 
     if (Array.isArray(o1) && Array.isArray(o2)) {
-      if (JSON.stringify(o1) === JSON.stringify(o2)) return undefined;
+      if (JSON.stringify(o1) === JSON.stringify(o2)) {
+        return undefined;
+      }
       return keepArray ? o2 : o2.map((item, index) => intersectionHelper(o1[index], item)).filter(Boolean);
     }
 

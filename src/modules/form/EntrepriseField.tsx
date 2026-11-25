@@ -24,7 +24,9 @@ const fetchEntreprises = async (query: string, signal: AbortSignal): Promise<Ent
   url.searchParams.set('per_page', '10');
 
   const res = await fetch(url, { signal });
-  if (!res.ok) throw new Error(`Recherche entreprises indisponible (${res.status})`);
+  if (!res.ok) {
+    throw new Error(`Recherche entreprises indisponible (${res.status})`);
+  }
 
   const data: RechercheEntreprisesResponse = await res.json();
   return data.results.flatMap((r) =>

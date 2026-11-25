@@ -63,10 +63,14 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
     const value = row.getValue<any>(columnId);
 
     // Si la valeur n'est pas un tableau ou est null/undefined, on retourne false
-    if (!value || !Array.isArray(value)) return false;
+    if (!value || !Array.isArray(value)) {
+      return false;
+    }
 
     // Si le filtre est vide, on affiche tout
-    if (!filterValue || filterValue.length === 0) return true;
+    if (!filterValue || filterValue.length === 0) {
+      return true;
+    }
 
     // Vérifie si au moins un des tags du filtre est présent dans le tableau
     return filterValue.some((filterTag) => value.includes(filterTag));
@@ -91,8 +95,12 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
   },
   includesAny: (row, columnId, filterValue: Record<string, boolean>) => {
     let value = row.getValue<any>(columnId);
-    if (value === true) value = 'true';
-    if (value === false) value = 'false';
+    if (value === true) {
+      value = 'true';
+    }
+    if (value === false) {
+      value = 'false';
+    }
 
     // Gérer undefined/null/"" explicitement
     if (!value) {
@@ -599,11 +607,19 @@ const TableSimple = <T extends RowData>({
   const columnClassName = React.useCallback(({ align, className }: ColumnDef<T>) => {
     const classNames = [];
 
-    if (align === 'left') classNames.push('text-left! justify-start'); // need the ! to bypass DSFR
-    if (align === 'right') classNames.push('text-right! justify-end');
-    if (align === 'center') classNames.push('text-center! justify-center');
+    if (align === 'left') {
+      classNames.push('text-left! justify-start'); // need the ! to bypass DSFR
+    }
+    if (align === 'right') {
+      classNames.push('text-right! justify-end');
+    }
+    if (align === 'center') {
+      classNames.push('text-center! justify-center');
+    }
 
-    if (className) classNames.push(className);
+    if (className) {
+      classNames.push(className);
+    }
 
     return classNames.join(' ');
   }, []);
@@ -1197,21 +1213,28 @@ function getFCUFacetedMinMaxValues<TData extends RowData>() {
     memo(
       () => [table.getColumn(columnId)?.getFacetedRowModel(), (table.getColumn(columnId)?.columnDef as any)?.cellType], // TODO cellType ne devrait pas se retrouver dans tanstack table
       (facetedRowModel, cellType) => {
-        if (!facetedRowModel) return undefined;
+        if (!facetedRowModel) {
+          return undefined;
+        }
 
         let uniqueValues = facetedRowModel.flatRows.flatMap((flatRow) => flatRow.getUniqueValues(columnId) ?? []) as string[] | number[];
         if (cellType !== 'DateTime' && cellType !== 'Date') {
           uniqueValues = uniqueValues.map(Number).filter((value) => !Number.isNaN(value)) as number[];
         }
 
-        if (!uniqueValues.length) return;
+        if (!uniqueValues.length) {
+          return;
+        }
 
         let facetedMinValue = uniqueValues[0]!;
         let facetedMaxValue = uniqueValues[uniqueValues.length - 1]!;
 
         for (const value of uniqueValues) {
-          if (value < facetedMinValue) facetedMinValue = value;
-          else if (value > facetedMaxValue) facetedMaxValue = value;
+          if (value < facetedMinValue) {
+            facetedMinValue = value;
+          } else if (value > facetedMaxValue) {
+            facetedMaxValue = value;
+          }
         }
 
         return [facetedMinValue, facetedMaxValue] as [number, number] | [string, string];

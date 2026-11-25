@@ -47,7 +47,9 @@ export function BuildingsDataExtractionTool() {
   const areaHasSelfIntersections = features[0]?.properties.areaHasSelfIntersections ?? false;
 
   const syncDrawingToMap = useCallback(() => {
-    if (!map || !mapReady) return;
+    if (!map || !mapReady) {
+      return;
+    }
     const source = map.getSource<GeoJSONSource>(buildingsDataExtractionPolygonsSourceId);
     source?.setData({
       features: drawingFeatureRef.current ? [drawingFeatureRef.current] : [],
@@ -64,7 +66,9 @@ export function BuildingsDataExtractionTool() {
   );
 
   useEffect(() => {
-    if (!map || !draw || !mapReady) return;
+    if (!map || !draw || !mapReady) {
+      return;
+    }
 
     const onDrawCreate = async ({ features: drawFeatures }: DrawCreateEvent) => {
       const feature = drawFeatures[0] as GeoJSON.Feature<GeoJSON.Polygon>;
@@ -73,7 +77,9 @@ export function BuildingsDataExtractionTool() {
       drawingFeatureRef.current = null;
 
       const area = feature.geometry.coordinates[0];
-      if (turfArea(feature) / 1_000_000 > clientConfig.summaryAreaSizeLimit || !validatePolygonGeometry(area)) return;
+      if (turfArea(feature) / 1_000_000 > clientConfig.summaryAreaSizeLimit || !validatePolygonGeometry(area)) {
+        return;
+      }
 
       try {
         setIsLoading(true);
@@ -103,9 +109,13 @@ export function BuildingsDataExtractionTool() {
     };
 
     const onDrawRender = () => {
-      if (draw.getMode() !== 'draw_polygon') return;
+      if (draw.getMode() !== 'draw_polygon') {
+        return;
+      }
       const featureBeingDrawn = draw.getAll().features.at(-1) as AreaSummaryFeature | undefined;
-      if (!featureBeingDrawn) return;
+      if (!featureBeingDrawn) {
+        return;
+      }
 
       const areaSize = turfArea(featureBeingDrawn) / 1_000_000;
       const isGeometryValid = validatePolygonGeometry(featureBeingDrawn.geometry.coordinates[0]);
@@ -164,7 +174,9 @@ export function BuildingsDataExtractionTool() {
 
   // Persisted polygon: sync the completed-feature atom to the source.
   useEffect(() => {
-    if (!map || !mapReady) return;
+    if (!map || !mapReady) {
+      return;
+    }
     map.getSource<GeoJSONSource>(buildingsDataExtractionPolygonsSourceId)?.setData({
       features,
       type: 'FeatureCollection',
@@ -174,14 +186,18 @@ export function BuildingsDataExtractionTool() {
   useKeyboardEvent(
     'Escape',
     () => {
-      if (isDrawing) clearSummary();
+      if (isDrawing) {
+        clearSummary();
+      }
     },
     [],
     { event: 'keyup' }
   );
 
   function clearSummary() {
-    if (!draw) return;
+    if (!draw) {
+      return;
+    }
     setSummary(null);
     draw.deleteAll();
     draw.changeMode('draw_polygon');
@@ -319,6 +335,8 @@ export function BuildingsDataExtractionTool() {
 
 function formatConso(consos: { conso_nb: number }[]) {
   const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
-  if (sum > 1000) return `${(sum / 1000).toFixed(2)} GWh`;
+  if (sum > 1000) {
+    return `${(sum / 1000).toFixed(2)} GWh`;
+  }
   return `${sum.toFixed(2)} MWh`;
 }

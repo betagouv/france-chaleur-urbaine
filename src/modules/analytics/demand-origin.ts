@@ -30,11 +30,15 @@ export const getDemandAcquisition = (demand: {
   origin_host: string | null;
   origin_source: string | null;
 }): Acquisition | null => {
-  if (demand.acquisition) return demand.acquisition;
+  if (demand.acquisition) {
+    return demand.acquisition;
+  }
   const formPage = demand.origin_page?.split(/[?#]/)[0].trim().slice(0, 1000);
   const host = demand.origin_host?.split(/[?#]/)[0].trim().slice(0, 1000);
   const integrationId = demand.origin_source?.trim().slice(0, 200);
-  if (!formPage && !host && !integrationId) return null;
+  if (!formPage && !host && !integrationId) {
+    return null;
+  }
   return {
     campaign: null,
     medium: null,

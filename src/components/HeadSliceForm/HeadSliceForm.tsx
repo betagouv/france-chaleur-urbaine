@@ -145,7 +145,9 @@ const HeadSliceForm = ({
 
   // Restaure la geoAddress depuis la BAN si l'adresse est connue mais l'objet feature absent (rechargement).
   useEffect(() => {
-    if (!userInfo.address || geoAddress) return;
+    if (!userInfo.address || geoAddress) {
+      return;
+    }
     const controller = new AbortController();
     searchBANAddresses({ query: userInfo.address, signal: controller.signal })
       .then((features) => {

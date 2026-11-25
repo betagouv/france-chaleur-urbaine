@@ -369,7 +369,9 @@ const getBoundsData = async (
   let bounds: BoundingBox | null = null;
   const perPermissionBounds: Record<string, BoundingBox> = {};
   for (const row of result.rows) {
-    if (row.west === null) continue;
+    if (row.west === null) {
+      continue;
+    }
     const bbox: BoundingBox = [row.west, row.south, row.east, row.north];
     if (row.type === null) {
       bounds = bbox;

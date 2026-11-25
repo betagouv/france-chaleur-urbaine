@@ -39,7 +39,9 @@ export const permissionsRouter = router({
   listUsersWithAccessToDemand: demandAccessRoute.input(z.object({ demandId: z.uuidv4() })).query(async ({ input, ctx }) => {
     const demand = await ensureUserCanAccessDemand(ctx, input.demandId);
     const users = await getUsersWithAccessToDemand(demand, 'heatNetwork');
-    if (!ctx.anonymize) return users;
+    if (!ctx.anonymize) {
+      return users;
+    }
     return users.map((u) => ({
       ...u,
       email: anonymizeEmail(u.email),

@@ -67,7 +67,9 @@ export function MapMarker({ longitude, latitude, color, anchor, popupContent, de
     markerRef.current?.setLngLat([longitude, latitude]);
   }, [longitude, latitude]);
 
-  if (!popupContainer || !popupContent) return null;
+  if (!popupContainer || !popupContent) {
+    return null;
+  }
   const close = () => popupRef.current?.remove();
   return createPortal(popupContent(close), popupContainer);
 }

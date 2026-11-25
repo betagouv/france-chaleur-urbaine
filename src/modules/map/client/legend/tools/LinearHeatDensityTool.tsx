@@ -45,7 +45,9 @@ export function LinearHeatDensityTool() {
 
   // Sync the atom + in-progress sketch into the MapLibre sources.
   const syncMap = useCallback(() => {
-    if (!map || !mapReady) return;
+    if (!map || !mapReady) {
+      return;
+    }
     const allFeatures = drawingFeatureRef.current ? [...featuresRef.current, drawingFeatureRef.current] : featuresRef.current;
     map.getSource<GeoJSONSource>(linearHeatDensityLinesSourceId)?.setData({
       features: allFeatures,
@@ -82,7 +84,9 @@ export function LinearHeatDensityTool() {
 
   // Mount/unmount drawing flow.
   useEffect(() => {
-    if (!map || !draw || !mapReady) return;
+    if (!map || !draw || !mapReady) {
+      return;
+    }
 
     const onDrawCreate = async ({ features: drawFeatures }: DrawCreateEvent) => {
       const feature = drawFeatures[0] as MeasureFeature;
@@ -115,9 +119,13 @@ export function LinearHeatDensityTool() {
     };
 
     const onDrawRender = () => {
-      if (draw.getMode() !== 'draw_line_string') return;
+      if (draw.getMode() !== 'draw_line_string') {
+        return;
+      }
       const featureBeingDrawn = draw.getAll().features.at(-1) as MeasureFeature | undefined;
-      if (!featureBeingDrawn) return;
+      if (!featureBeingDrawn) {
+        return;
+      }
       drawingFeatureRef.current = {
         ...featureBeingDrawn,
         properties: {
@@ -130,7 +138,9 @@ export function LinearHeatDensityTool() {
 
     const offDrawCreate = onDrawEvent(map, 'draw.create', onDrawCreate);
     const offDrawRender = onDrawEvent(map, 'draw.render', onDrawRender);
-    if (!densite) startMeasurement();
+    if (!densite) {
+      startMeasurement();
+    }
 
     return () => {
       offDrawCreate();
@@ -145,19 +155,25 @@ export function LinearHeatDensityTool() {
   useKeyboardEvent(
     'Escape',
     () => {
-      if (isDrawing) cancelMeasurement();
+      if (isDrawing) {
+        cancelMeasurement();
+      }
     },
     [],
     { event: 'keyup' }
   );
 
   function startMeasurement() {
-    if (!draw) return;
+    if (!draw) {
+      return;
+    }
     draw.changeMode('draw_line_string');
     setIsDrawing(true);
   }
   function cancelMeasurement() {
-    if (!draw) return;
+    if (!draw) {
+      return;
+    }
     draw.deleteAll();
     drawingFeatureRef.current = null;
     setIsDrawing((wasDrawing) => {
@@ -170,7 +186,9 @@ export function LinearHeatDensityTool() {
     });
   }
   function clearDensity() {
-    if (!draw) return;
+    if (!draw) {
+      return;
+    }
     setDensite(null);
     draw.deleteAll();
     draw.changeMode('draw_line_string');

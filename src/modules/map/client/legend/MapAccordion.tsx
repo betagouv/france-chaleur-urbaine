@@ -92,7 +92,9 @@ export function MapCheckableAccordion({
   const { expanded, setExpanded } = useExpansionState(rest);
   const handleCheckChange = (next: boolean) => {
     onCheckChange(next);
-    if (next) setExpanded?.(true);
+    if (next) {
+      setExpanded?.(true);
+    }
   };
   return (
     <AccordionRoot defaultExpanded={rest.defaultExpanded} expanded={expanded} setExpanded={setExpanded} className={className}>

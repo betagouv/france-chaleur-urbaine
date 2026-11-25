@@ -67,20 +67,28 @@ export function EventsStatsSection({ stats, granularity, isLoading, onDateRangeC
   // React event handlers on the wrapper div — Recharts doesn't provide activeTooltipIndex
   // at mousedown time, so we use native React div events instead of Recharts chart events.
   const handleContainerMouseDown = () => {
-    if (!onDateRangeChange) return;
+    if (!onDateRangeChange) {
+      return;
+    }
     const idx = hoveredIdxRef.current;
-    if (idx === null) return;
+    if (idx === null) {
+      return;
+    }
     selectStartIdxRef.current = idx;
     setSelectionRange(null);
   };
 
   const handleContainerMouseUp = () => {
     const startIdx = selectStartIdxRef.current;
-    if (startIdx === null) return;
+    if (startIdx === null) {
+      return;
+    }
     const endIdx = hoveredIdxRef.current;
     selectStartIdxRef.current = null;
     setSelectionRange(null);
-    if (endIdx === null || startIdx === endIdx) return;
+    if (endIdx === null || startIdx === endIdx) {
+      return;
+    }
     const fromIdx = Math.min(startIdx, endIdx);
     const toIdx = Math.max(startIdx, endIdx);
     const fromPoint = timeSeriesData[fromIdx];
@@ -98,7 +106,9 @@ export function EventsStatsSection({ stats, granularity, isLoading, onDateRangeC
       hoveredIdxRef.current = idx;
     }
     const startIdx = selectStartIdxRef.current;
-    if (startIdx === null || idx === null || Number.isNaN(idx)) return;
+    if (startIdx === null || idx === null || Number.isNaN(idx)) {
+      return;
+    }
     const fromIdx = Math.min(startIdx, idx);
     const toIdx = Math.max(startIdx, idx);
     const x1 = timeSeriesData[fromIdx]?.label;

@@ -13,7 +13,9 @@
  */
 export function pseudonymizeEmail(email: string): string {
   const [local, domain] = email.split('@');
-  if (!domain) return '***';
+  if (!domain) {
+    return '***';
+  }
   const mask = (s: string) => (s.length <= 1 ? s : `${s[0]}...${s[s.length - 1]}`);
   const domainParts = domain.split('.');
   const tld = domainParts[domainParts.length - 1];

@@ -350,7 +350,9 @@ const simpleHash = (str: string): number => {
  * Anonymise un email (mode démo / anonymisation) en gardant un identifiant stable.
  */
 export const anonymizeEmail = (email: string | undefined): string => {
-  if (!email) return 'anonyme@example.com';
+  if (!email) {
+    return 'anonyme@example.com';
+  }
   const hash = simpleHash(email);
   return `utilisateur${hash}@exemple.fr`;
 };
@@ -359,7 +361,9 @@ export const anonymizeEmail = (email: string | undefined): string => {
  * Anonymise un nom ou prénom en gardant uniquement la première lettre.
  */
 export const anonymizeName = (name: string | undefined): string => {
-  if (!name) return '***';
+  if (!name) {
+    return '***';
+  }
   return `${name.charAt(0)}***`;
 };
 

@@ -34,7 +34,9 @@ const DataDiagnosticPage = () => {
 
   const counts = useMemo<SeverityCounts>(() => {
     const initial: SeverityCounts = { error: 0, warning: 0 };
-    if (!data) return initial;
+    if (!data) {
+      return initial;
+    }
     return data.issues.reduce((accumulator, issue) => {
       accumulator[issue.severity] += 1;
       return accumulator;

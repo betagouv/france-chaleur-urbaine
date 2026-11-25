@@ -92,9 +92,15 @@ const usePublicodesEngine = (rules: Rules, options?: Options) => {
       return false;
     }
 
-    if (defaultValue === true && value === 'oui') return true;
-    if (defaultValue === false && value === 'non') return true;
-    if (typeof value === 'string') return defaultValue === value || defaultValue === `'${value}'` || value === `'${defaultValue}'`;
+    if (defaultValue === true && value === 'oui') {
+      return true;
+    }
+    if (defaultValue === false && value === 'non') {
+      return true;
+    }
+    if (typeof value === 'string') {
+      return defaultValue === value || defaultValue === `'${value}'` || value === `'${defaultValue}'`;
+    }
     return defaultValue === value;
   };
 

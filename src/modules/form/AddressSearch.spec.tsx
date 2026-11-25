@@ -7,7 +7,9 @@ import { highlightMatch } from './AddressSearch';
 
 function render(...args: Parameters<typeof highlightMatch>): string {
   const node = highlightMatch(...args);
-  if (typeof node === 'string') return node;
+  if (typeof node === 'string') {
+    return node;
+  }
   return renderToStaticMarkup(node as React.ReactElement);
 }
 

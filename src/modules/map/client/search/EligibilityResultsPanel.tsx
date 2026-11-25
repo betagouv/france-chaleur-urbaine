@@ -46,7 +46,9 @@ export function EligibilityResultsPanel({
     [addresses.length, setSelectedIndex]
   );
 
-  if (addresses.length === 0) return null;
+  if (addresses.length === 0) {
+    return null;
+  }
 
   return (
     <Accordion

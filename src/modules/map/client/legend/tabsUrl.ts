@@ -24,11 +24,17 @@ export const tabsParser = createParser<TabState>({
   eq: (a, b) => a.tabId === b.tabId && a.subTabId === b.subTabId,
   parse: (query) => {
     const [rawTab, rawSub] = query.split('/');
-    if (!(rawTab in tabsTree)) return null;
+    if (!(rawTab in tabsTree)) {
+      return null;
+    }
     const tabId = rawTab as TabId;
     const subTabs = tabsTree[tabId] as readonly string[];
-    if (!rawSub) return { subTabId: null, tabId } as TabState;
-    if (!subTabs.includes(rawSub)) return null;
+    if (!rawSub) {
+      return { subTabId: null, tabId } as TabState;
+    }
+    if (!subTabs.includes(rawSub)) {
+      return null;
+    }
     return { subTabId: rawSub, tabId } as TabState;
   },
   serialize: ({ tabId, subTabId }) => (subTabId ? `${tabId}/${subTabId}` : tabId),

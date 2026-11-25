@@ -176,7 +176,9 @@ export async function moveFile(src: string, dest: string) {
  * @param src - Le chemin du fichier à supprimer
  */
 export async function unlinkFileIfExists(src: string) {
-  if (existsSync(src)) await unlink(src);
+  if (existsSync(src)) {
+    await unlink(src);
+  }
 }
 
 export async function listDirectoryEntries(basePath: string, type: 'dir' | 'file'): Promise<string[]> {

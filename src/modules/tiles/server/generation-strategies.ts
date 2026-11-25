@@ -77,7 +77,9 @@ export const extractZippedShapefileToGeoJSON = defineTilesGenerationStrategy(asy
       for (const file of files) {
         if (file.isDirectory()) {
           const result = await findShapefile(join(dir, file.name));
-          if (result) return result;
+          if (result) {
+            return result;
+          }
         }
       }
 

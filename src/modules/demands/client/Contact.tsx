@@ -58,7 +58,9 @@ const Contact = ({
           )}
           onClick={(e) => {
             e.stopPropagation();
-            if (disabled) return;
+            if (disabled) {
+              return;
+            }
             onEmailClick(demand);
           }}
           title={disabled ? (disabledReason ?? 'Demande hors de votre périmètre — envoi de mail désactivé') : undefined}

@@ -46,7 +46,9 @@ const renderDialog = async (
   const onConfirm = opts.onConfirm ?? vi.fn();
   const user = userEvent.setup();
   render(<Harness onConfirm={onConfirm} confirmDisabled={opts.confirmDisabled} />);
-  if (opts.open !== false) await openDialog(user);
+  if (opts.open !== false) {
+    await openDialog(user);
+  }
   return { onConfirm, user };
 };
 

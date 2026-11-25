@@ -35,9 +35,14 @@ type StatRow = RouterOutput['conversionTracking']['getStats'][number];
 /** Lien vers l'écran anti-abus filtré sur le canal de la ligne (source d'intégration, sinon route interne). */
 const abusePageHref = (row: StatRow) => {
   const params = new URLSearchParams();
-  if (row.source) params.set('source', row.source);
-  else if (row.route) params.set('route', row.route);
-  if (row.host) params.set('host', row.host);
+  if (row.source) {
+    params.set('source', row.source);
+  } else if (row.route) {
+    params.set('route', row.route);
+  }
+  if (row.host) {
+    params.set('host', row.host);
+  }
   return `/admin/conversion/abus?${params.toString()}`;
 };
 

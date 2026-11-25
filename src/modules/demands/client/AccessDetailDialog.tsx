@@ -48,7 +48,9 @@ export default function AccessDetailDialog({ demandId, users: suppliedUsers, ope
       {!isLoading && users && users.length > 0 && (
         <div className="flex flex-col gap-4">
           {grouped.map(({ role, users: roleUsers }) => {
-            if (roleUsers.length === 0) return null;
+            if (roleUsers.length === 0) {
+              return null;
+            }
             return (
               <div key={role} className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">

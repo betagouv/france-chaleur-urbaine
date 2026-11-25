@@ -27,7 +27,9 @@ function VirtualList<T>({ items, renderRow: RenderRow, estimateSize = 35, height
   const nearEnd = items.length > 0 && lastVisibleIndex >= items.length - 10;
 
   useEffect(() => {
-    if (nearEnd) onNearEnd?.();
+    if (nearEnd) {
+      onNearEnd?.();
+    }
   }, [nearEnd, onNearEnd]);
 
   return (

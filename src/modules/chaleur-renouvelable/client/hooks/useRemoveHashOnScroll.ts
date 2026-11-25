@@ -5,22 +5,32 @@ export function useRemoveHashOnScroll(hashToRemove: string) {
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!router.isReady) return;
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (!router.isReady) {
+      return;
+    }
 
     let removed = false;
     let ignoreUntil = 0; // timestamp : on ignore la suppression pendant un court laps après un clic ancre
 
     const shouldRemove = () => {
-      if (removed) return false;
-      if (Date.now() < ignoreUntil) return false;
+      if (removed) {
+        return false;
+      }
+      if (Date.now() < ignoreUntil) {
+        return false;
+      }
 
       const currentHash = window.location.hash;
       return !!currentHash && currentHash === hashToRemove;
     };
 
     const removeHash = () => {
-      if (!shouldRemove()) return;
+      if (!shouldRemove()) {
+        return;
+      }
       removed = true;
 
       const nextUrl = router.asPath.split('#')[0];
@@ -36,7 +46,9 @@ export function useRemoveHashOnScroll(hashToRemove: string) {
     const onClickCapture = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       const a = target?.closest?.('a[href^="#"]') as HTMLAnchorElement | null;
-      if (!a) return;
+      if (!a) {
+        return;
+      }
 
       // si c'est exactement l'ancre qu'on gère (ou n'importe quelle ancre, à ton choix)
       if (a.getAttribute('href') === hashToRemove) {
@@ -48,7 +60,9 @@ export function useRemoveHashOnScroll(hashToRemove: string) {
     const onTouchMove = () => removeHash();
     const onKeyDown = (e: KeyboardEvent) => {
       // touches qui peuvent déclencher un scroll
-      if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key)) removeHash();
+      if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key)) {
+        removeHash();
+      }
     };
 
     const cleanup = () => {

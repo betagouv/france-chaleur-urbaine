@@ -228,9 +228,15 @@ const columns: ColumnDef<RouterOutput['proEligibilityTests']['get']['addresses']
       const aDate = aHistory?.length ? new Date(aHistory[aHistory.length - 1].calculated_at) : null;
       const bDate = bHistory?.length ? new Date(bHistory[bHistory.length - 1].calculated_at) : null;
 
-      if (aDate === null && bDate === null) return 0;
-      if (aDate === null) return 1;
-      if (bDate === null) return -1;
+      if (aDate === null && bDate === null) {
+        return 0;
+      }
+      if (aDate === null) {
+        return 1;
+      }
+      if (bDate === null) {
+        return -1;
+      }
 
       // Most recent date first (descending)
       return bDate.getTime() - aDate.getTime();
@@ -567,7 +573,9 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
   }, [filteredAddresses]);
 
   const downloadCSV = toastErrors(async () => {
-    if (!addresses.length) return;
+    if (!addresses.length) {
+      return;
+    }
 
     const xlsx = await getProEligibilityTestAsXlsx(addresses);
 
@@ -739,11 +747,12 @@ const ProEligibilityTestItem = React.memo(function ProEligibilityTestItem({
                   }
 
                   setSelectedTabId(newTabId);
-                  if (newTabId === 'carte')
+                  if (newTabId === 'carte') {
                     trackPostHogEvent('bulk_test:map_viewed', {
                       bulk_test_id: test.id,
                       rows_displayed_on_map: filteredAddresses.length,
                     });
+                  }
                 }}
               />
               {!readOnly && (

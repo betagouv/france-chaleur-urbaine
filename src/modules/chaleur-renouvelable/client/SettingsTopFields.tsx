@@ -58,13 +58,19 @@ export function SettingsTopFields({
         }}
         onlyAddress
         onClear={() => {
-          if (adresse !== null) void setParams({ adresse: null });
-          if (geoAddress !== undefined) setGeoAddress(undefined);
+          if (adresse !== null) {
+            void setParams({ adresse: null });
+          }
+          if (geoAddress !== undefined) {
+            setGeoAddress(undefined);
+          }
           onSelectGeoAddress?.(undefined);
         }}
         onSelect={(next?: BANAddressFeature) => {
           const nextLabel = next?.properties?.label ?? '';
-          if ((adresse ?? '') === nextLabel) return;
+          if ((adresse ?? '') === nextLabel) {
+            return;
+          }
           trackPostHogEvent('fcr_landing:address_selected');
           setParams({ adresse: nextLabel });
           setGeoAddress(next);

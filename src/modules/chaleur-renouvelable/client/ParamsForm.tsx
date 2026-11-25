@@ -380,7 +380,9 @@ export function ParamsForm({
                         form.setFieldValue('habitantsMoyen', normalizedHabitantsMoyen);
                       }}
                       onChange={(value) => {
-                        if (!(value === '' || /^[0-9]+([.,][0-9]*)?$/.test(value))) return;
+                        if (!(value === '' || /^[0-9]+([.,][0-9]*)?$/.test(value))) {
+                          return;
+                        }
 
                         form.setFieldValue('habitantsMoyen', value);
                       }}

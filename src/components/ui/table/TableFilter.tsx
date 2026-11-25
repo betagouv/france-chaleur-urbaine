@@ -75,7 +75,9 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
       }
     } else if (type === 'Range') {
       const domain = filterProps?.domain || (facetedMinMaxValues as Interval);
-      if (domain && value[0] === domain[0] && value[1] === domain[1]) onChange(undefined);
+      if (domain && value[0] === domain[0] && value[1] === domain[1]) {
+        onChange(undefined);
+      }
     } else if (type === 'Facets' && Object.values(value).every((v) => v === true)) {
       onChange(undefined);
     }

@@ -62,14 +62,18 @@ const useScreenshot = () => {
     try {
       const { width: originalWidth, position: originalPosition } = node.style;
 
-      if (forPrint) node.style.width = '794px';
+      if (forPrint) {
+        node.style.width = '794px';
+      }
 
       const dataUrlTransparentBackground = await domtoimage.toPng(node, { filter: (node: any) => node.tagName !== 'BUTTON' });
       const dataUrl = await addBackground(dataUrlTransparentBackground, { bgColor, padding });
       const blob = dataUrlToBlob(dataUrl);
       const file = new File([blob], filename, { type: 'image/png' });
 
-      if (forPrint) node.style.width = originalWidth;
+      if (forPrint) {
+        node.style.width = originalWidth;
+      }
       node.style.position = originalPosition;
 
       setScreenshot(dataUrl);

@@ -108,7 +108,9 @@ const Carte = () => {
       gestionnaires?: string[];
       maitreOuvrage?: string[];
     } => {
-      if (!rdcFiltersParam) return {};
+      if (!rdcFiltersParam) {
+        return {};
+      }
       try {
         return JSON.parse(rdcFiltersParam);
       } catch {

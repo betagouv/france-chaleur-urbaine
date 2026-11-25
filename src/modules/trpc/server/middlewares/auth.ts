@@ -10,7 +10,9 @@ export function createAuthMiddleware(t: TRoot) {
   return t.middleware(async ({ meta, ctx, next, input }) => {
     const authConfig = meta?.auth;
 
-    if (!authConfig) return next(); // No auth config = allow
+    if (!authConfig) {
+      return next(); // No auth config = allow
+    }
 
     // Check authentication
     if (authConfig.authenticated && !ctx.userId) {

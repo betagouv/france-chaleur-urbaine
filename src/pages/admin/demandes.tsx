@@ -168,7 +168,9 @@ function DemandesAdmin(): React.ReactElement {
   const prevFilteredIds = usePrevious(filteredIds);
 
   useEffect(() => {
-    if (!prevFilteredIds) return;
+    if (!prevFilteredIds) {
+      return;
+    }
     const setChanged = prevFilteredIds.size !== filteredIds.size || [...filteredIds].some((id) => !prevFilteredIds.has(id));
     if (setChanged) {
       setSelectedDemandId(null);
@@ -215,7 +217,9 @@ function DemandesAdmin(): React.ReactElement {
     toastErrors(async (demandId: string, demandUpdate: Partial<DemandsListAdminItem>) => {
       isUpdatingDemandField = true; // prevent the map from being centered on the first demand
       utils.demands.admin.list.setData(undefined, (demandsData) => {
-        if (!demandsData) return demandsData;
+        if (!demandsData) {
+          return demandsData;
+        }
         return {
           count: demandsData.count,
           items: demandsData.items.map((demand) => {
@@ -242,7 +246,9 @@ function DemandesAdmin(): React.ReactElement {
       await deleteDemandMutation({ demandId });
 
       utils.demands.admin.list.setData(undefined, (demandsData) => {
-        if (!demandsData) return demandsData;
+        if (!demandsData) {
+          return demandsData;
+        }
         return {
           count: demandsData.count - 1,
           items: demandsData.items.filter((demand) => demand.id !== demandId),
@@ -269,7 +275,9 @@ function DemandesAdmin(): React.ReactElement {
     toastErrors(async (demandId: string) => {
       isUpdatingDemandField = true;
       utils.demands.admin.list.setData(undefined, (demandsData) => {
-        if (!demandsData) return demandsData;
+        if (!demandsData) {
+          return demandsData;
+        }
         return {
           count: demandsData.count,
           items: demandsData.items.map((demand) => {

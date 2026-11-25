@@ -24,7 +24,9 @@ export type ReseauDeChaleurBySncuIdResult = {
  */
 export const findReseauxDeChaleurBySncuIds = async (sncuIds: string[]): Promise<ReseauDeChaleurBySncuIdResult[]> => {
   const normalized = sncuIds.map((id) => id.trim().toUpperCase()).filter((id) => id.length > 0);
-  if (normalized.length === 0) return [];
+  if (normalized.length === 0) {
+    return [];
+  }
 
   const rows = await kdb
     .selectFrom('reseaux_de_chaleur')
@@ -36,7 +38,9 @@ export const findReseauxDeChaleurBySncuIds = async (sncuIds: string[]): Promise<
 
   return normalized.map((input): ReseauDeChaleurBySncuIdResult => {
     const row = map.get(input);
-    if (!row) return { input, status: 'not_found' };
+    if (!row) {
+      return { input, status: 'not_found' };
+    }
     return {
       input,
       network: {
@@ -57,7 +61,9 @@ export type CustomTerritorySearchResult = { id: string; name: string; communes_c
 /** Custom territories by name (autocomplete of the `custom_territory` permission). */
 export const searchCustomTerritories = async (query: string): Promise<CustomTerritorySearchResult[]> => {
   const q = query.trim();
-  if (q.length < 2) return [];
+  if (q.length < 2) {
+    return [];
+  }
   return kdb
     .selectFrom('custom_territories')
     .select((eb) => ['id', 'name', sql<number>`cardinality(${eb.ref('commune_codes')})`.as('communes_count')])
@@ -71,7 +77,9 @@ export const searchCustomTerritories = async (query: string): Promise<CustomTerr
 /** Recherche d'organisations par nom (pour l'autocomplete de permission `organization`). */
 export const searchOrganizations = async (query: string): Promise<OrganizationSearchResult[]> => {
   const q = query.trim();
-  if (q.length < 2) return [];
+  if (q.length < 2) {
+    return [];
+  }
   return kdb.selectFrom('organizations').select(['id', 'name']).where('name', 'ilike', `%${q}%`).orderBy('name').limit(20).execute();
 };
 
@@ -164,7 +172,9 @@ type ResolvedPermissionLabel = Permission & { label: string };
  * Resolves human-readable labels for a list of permissions.
  */
 export const resolvePermissionLabels = async (permissions: Permission[]): Promise<ResolvedPermissionLabel[]> => {
-  if (permissions.length === 0) return [];
+  if (permissions.length === 0) {
+    return [];
+  }
 
   const result: ResolvedPermissionLabel[] = [];
 
@@ -338,7 +348,9 @@ export const resolvePermissionLabels = async (permissions: Permission[]): Promis
  * Resolves labels for an already-loaded list of permissions.
  */
 export const resolvePermissionsWithLabels = async (permissions: Permission[]): Promise<PermissionWithLabel[]> => {
-  if (permissions.length === 0) return [];
+  if (permissions.length === 0) {
+    return [];
+  }
   const labels = await resolvePermissionLabels(permissions);
   const labelMap = new Map(labels.map((l) => [`${l.type}:${l.resource_id}`, l.label]));
   return permissions.map(
@@ -364,7 +376,9 @@ export const getAllPermissionsWithLabels = async (): Promise<Record<string, Perm
   const permissions = (await kdb.selectFrom('user_permissions').select(['user_id', 'type', 'resource_id']).execute()) as (Permission & {
     user_id: string;
   })[];
-  if (permissions.length === 0) return {};
+  if (permissions.length === 0) {
+    return {};
+  }
 
   const uniquePerms = new Map<string, Permission>();
   for (const permission of permissions) {

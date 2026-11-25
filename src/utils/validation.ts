@@ -53,7 +53,9 @@ const isDefinedShape = (shape: ZodRawShape | undefined): shape is ZodRawShape =>
  * arrays, intersections and wrappers (refine/transform/optional/nullable…).
  */
 export const getSchemaField = (schema: ZodType, fieldPath: string): ZodType | undefined => {
-  if (!schema || !fieldPath) return undefined;
+  if (!schema || !fieldPath) {
+    return undefined;
+  }
 
   const normalizedPath = fieldPath
     .replace(/\[\d+\]/g, '')
@@ -107,7 +109,9 @@ export type AllowedGeometry = GeoJSON.Feature<GeoJSON.Point | GeoJSON.LineString
 // Simple geometry validation - actual processing is done in processGeometry
 export const zGeometry = z.any().refine(
   (val) => {
-    if (!val || typeof val !== 'object') return false;
+    if (!val || typeof val !== 'object') {
+      return false;
+    }
     const type = (val as any).type;
     return (
       type === 'FeatureCollection' ||

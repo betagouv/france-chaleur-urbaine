@@ -179,6 +179,8 @@ export async function searchAuthors(search: string) {
 }
 
 export async function getAuthorsByIds(ids: string[]) {
-  if (ids.length === 0) return [];
+  if (ids.length === 0) {
+    return [];
+  }
   return kdb.selectFrom('users').select(['id', 'email', 'role']).where('id', 'in', ids).execute();
 }

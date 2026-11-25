@@ -55,7 +55,9 @@ const ComboBox = (rawProps: ComboBoxProps) => {
 
   const filteredOptions = useMemo(() => {
     const searchQuery = normalize(query.trim());
-    if (!searchQuery) return options;
+    if (!searchQuery) {
+      return options;
+    }
     return options.filter((option) => normalize(option.label).includes(searchQuery));
   }, [options, query]);
 
@@ -99,7 +101,9 @@ const ComboBox = (rawProps: ComboBoxProps) => {
   };
 
   const selectAll = () => {
-    if (!props.multiple) return;
+    if (!props.multiple) {
+      return;
+    }
     props.onChange(options.filter((option) => !option.disabled).map((option) => option.key));
   };
 
@@ -108,8 +112,12 @@ const ComboBox = (rawProps: ComboBoxProps) => {
   const allSelected = props.multiple && options.length > 0 && options.every((option) => option.disabled || isSelected(option.key));
 
   const displayedText = useMemo(() => {
-    if (props.multiple) return valueArray.map((key) => options.find((option) => option.key === key)?.label || key).join(', ');
-    if (!valueArray[0]) return '';
+    if (props.multiple) {
+      return valueArray.map((key) => options.find((option) => option.key === key)?.label || key).join(', ');
+    }
+    if (!valueArray[0]) {
+      return '';
+    }
     return options.find((option) => option.key === valueArray[0])?.label || valueArray[0];
   }, [props.multiple, valueArray, options]);
 
@@ -266,7 +274,9 @@ const ComboBox = (rawProps: ComboBoxProps) => {
                 } else if (event.key === 'Enter') {
                   event.preventDefault();
                   const option = filteredOptions[highlighted];
-                  if (option) selectOne(option);
+                  if (option) {
+                    selectOne(option);
+                  }
                 } else if (event.key === 'Escape') {
                   setIsOpen(false);
                 }
@@ -295,7 +305,9 @@ const ComboBox = (rawProps: ComboBoxProps) => {
                   onMouseEnter={() => setHighlighted(index)}
                   onClick={(event) => {
                     event.preventDefault();
-                    if (option.disabled) return;
+                    if (option.disabled) {
+                      return;
+                    }
                     selectOne(option);
                   }}
                 >

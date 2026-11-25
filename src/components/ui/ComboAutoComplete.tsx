@@ -258,7 +258,9 @@ export function ComboAutoComplete<Option>({
                 } else if (event.key === 'Enter') {
                   event.preventDefault();
                   const option = suggestions[highlighted];
-                  if (option) toggleOption(option);
+                  if (option) {
+                    toggleOption(option);
+                  }
                 } else if (event.key === 'Escape') {
                   setIsOpen(false);
                 }

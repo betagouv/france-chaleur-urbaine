@@ -47,7 +47,9 @@ export function useDrawingTool(visibilityFlag: ToolVisibilityFlag) {
   // mapbox-gl-draw writes `style.cursor` on the canvas inline — only an inline
   // style on the same element overrides it.
   useEffect(() => {
-    if (!map || !isDrawing) return;
+    if (!map || !isDrawing) {
+      return;
+    }
     const canvas = map.getCanvas();
     const previous = canvas.style.cursor;
     canvas.style.cursor = 'crosshair';

@@ -56,7 +56,9 @@ export function FileDropHandler({ onDrop, sourceId = 'customGeojson' }: FileDrop
       event.preventDefault();
       setDragging(false);
       const files = event.dataTransfer?.files;
-      if (!files || files.length === 0) return;
+      if (!files || files.length === 0) {
+        return;
+      }
       const wgs84GeoJsonData = Array.from(files).some((f) => f.name.endsWith('.shp'))
         ? await readShapefileWithProjection(Array.from(files))
         : await convertFileToGeoJSON(files[0]);
@@ -66,7 +68,9 @@ export function FileDropHandler({ onDrop, sourceId = 'customGeojson' }: FileDrop
     const handlePaste = toastErrors(async (event: ClipboardEvent) => {
       event.preventDefault();
       const text = event.clipboardData?.getData('text');
-      if (!text) return;
+      if (!text) {
+        return;
+      }
       let geojsonData;
       try {
         geojsonData = JSON.parse(text);

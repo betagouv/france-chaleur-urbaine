@@ -124,8 +124,12 @@ export async function identifyNetworkGeometries(directory: string, options: Iden
   logger.info(`  ${counts.ambigu} ambigus (à arbitrer manuellement)`);
   logger.info(`  ${counts.faible} faibles`);
   logger.info(`  ${counts.aucun} sans candidat`);
-  if (counts.vide > 0) logger.warn(`  ${counts.vide} fichiers vides`);
-  if (counts.erreur > 0) logger.warn(`  ${counts.erreur} erreurs`);
+  if (counts.vide > 0) {
+    logger.warn(`  ${counts.vide} fichiers vides`);
+  }
+  if (counts.erreur > 0) {
+    logger.warn(`  ${counts.erreur} erreurs`);
+  }
   if (options.writeDir) {
     logger.info(
       `Fichiers GeoJSON écrits dans ${options.writeDir} — supprimer ceux à ne pas importer, renommer les sans candidat en <id_sncu>.geojson, puis lancer bulk-update.`
@@ -299,9 +303,13 @@ async function scoreCandidates(geom: GeoJSON.Geometry, srid: number, maxDistance
 
 /** Loose match between the file name (city) and a candidate's communes — confirmation signal only. */
 function matchesCommune(fichier: string, communes: string[] | null): boolean | null {
-  if (!communes || communes.length === 0) return null;
+  if (!communes || communes.length === 0) {
+    return null;
+  }
   const nf = normalize(path.basename(fichier, path.extname(fichier)));
-  if (nf.length === 0) return null;
+  if (nf.length === 0) {
+    return null;
+  }
   return communes.some((c) => {
     const nc = normalize(c);
     return nc.length > 2 && (nf.includes(nc) || nc.includes(nf));
@@ -336,14 +344,18 @@ function buildRow(fichier: string, statut: Statut): IdentifyRow {
 }
 
 function num(v: unknown): number | null {
-  if (v === null || v === undefined) return null;
+  if (v === null || v === undefined) {
+    return null;
+  }
   const n = typeof v === 'number' ? v : Number(v);
   return Number.isFinite(n) ? n : null;
 }
 
 function toCsv(rows: IdentifyRow[]): string {
   const escape = (v: unknown): string => {
-    if (v === null || v === undefined) return '';
+    if (v === null || v === undefined) {
+      return '';
+    }
     const s = String(v);
     return /[",\n\r]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
   };

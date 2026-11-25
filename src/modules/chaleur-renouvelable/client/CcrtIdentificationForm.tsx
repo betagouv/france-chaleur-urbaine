@@ -33,9 +33,12 @@ export function CcrtIdentificationForm({ demand, onMap }: CcrtIdentificationForm
           event.relatedTarget instanceof Element &&
           event.currentTarget.contains(event.relatedTarget) &&
           event.relatedTarget.closest('button')
-        )
+        ) {
           return;
-        if (hasChanges && !error && !demand.archived_at) save();
+        }
+        if (hasChanges && !error && !demand.archived_at) {
+          save();
+        }
       }}
     >
       <fieldset disabled={demand.archived_at !== null} className="m-0 min-w-0 border-0 p-0">
