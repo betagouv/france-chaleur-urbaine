@@ -184,7 +184,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
-    "@biomejs/biome": "^2.5.14",
+    "@biomejs/biome": "^2.6.9",
     "@playwright/test": "^1.63.0",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.3.3",

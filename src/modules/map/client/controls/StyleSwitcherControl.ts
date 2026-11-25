@@ -55,7 +55,7 @@ export class StyleSwitcherControl implements IControl {
     for (const style of this.styles) {
       const styleButton = document.createElement('button');
       styleButton.type = 'button';
-      styleButton.innerText = style.label;
+      styleButton.textContent = style.label;
       if (style.id === this.activeStyleId) {
         styleButton.classList.add('active');
       }
@@ -105,7 +105,7 @@ export class StyleSwitcherControl implements IControl {
     for (const button of Array.from(this.listContainer.querySelectorAll('button'))) {
       button.classList.remove('active');
     }
-    const activeButton = Array.from(this.listContainer.querySelectorAll('button')).find((button) => button.innerText === style.label);
+    const activeButton = Array.from(this.listContainer.querySelectorAll('button')).find((button) => button.textContent === style.label);
     activeButton?.classList.add('active');
   }
 }

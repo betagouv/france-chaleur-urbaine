@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.9/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -117,6 +117,8 @@
       "correctness": {
         // Désactivé car incompatible avec l'API de @tanstack/react-form qui utilise children comme prop
         "noChildrenProp": "off",
+        // désactivé comme noNestedComponentDefinitions (composants inline, fabriques volontaires) + faux positifs sur les handlers GET/POST de crud.ts
+        "noComponentHookFactories": "off",
         "noConstAssign": "error",
         "noConstantCondition": "error",
         "noEmptyCharacterClassInRegex": "error",
@@ -150,7 +152,7 @@
         "useYield": "error"
       },
       "nursery": {
-        "useSortedClasses": "off"
+        "useTailwindSortedClasses": "off"
       },
       "performance": {
         "noAccumulatingSpread": "off", // désactivé car trop de cas où c'est acceptable
@@ -222,6 +224,11 @@
       }
     }
   },
+  // Markdown et YAML (pris en charge depuis Biome 2.6) restent hors périmètre : contenus éditoriaux et doc IA non reformatés
+  "markdown": {
+    "formatter": { "enabled": false },
+    "linter": { "enabled": false }
+  },
   "overrides": [
     {
       // seuls endroits où le composant Link de Next est nécessaire (wrapper du projet, enregistrement DSFR)
@@ -253,5 +260,9 @@
     "clientKind": "git",
     "enabled": true,
     "useIgnoreFile": true
+  },
+  "yaml": {
+    "formatter": { "enabled": false },
+    "linter": { "enabled": false }
   }
 }

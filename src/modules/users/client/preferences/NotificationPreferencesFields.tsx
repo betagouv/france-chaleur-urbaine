@@ -32,7 +32,7 @@ const wordingByScope: Record<NotificationScope, { newDemandsLabel: string; newDe
  */
 export const NotificationPreferencesFields = withFieldGroup<NotificationPreferences, unknown, NotificationPreferencesFieldsProps>({
   defaultValues: defaultUserPreferences.notifications,
-  // biome-ignore lint: a named PascalCase function is required for the hooks rules (an inline `render()` method is not seen as a component)
+  // a named PascalCase function is required for the hooks rules (an inline `render()` method is not seen as a component)
   render: function NotificationPreferencesFieldsRender({ group, scope, onFieldChange }) {
     const wording = wordingByScope[scope];
     return (
