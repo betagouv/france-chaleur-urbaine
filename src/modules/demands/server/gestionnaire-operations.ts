@@ -23,6 +23,7 @@ import {
 } from './helpers';
 import { mergeLegacyValues } from './legacy-values';
 import { sendUnrealizableDemandEmailIfNeeded } from './unrealizable-email';
+import { resolveUnrealizableReasonColumns } from './unrealizable-reason';
 
 const logger = parentLogger.child({ module: 'demands/gestionnaire-operations' });
 
@@ -69,21 +70,23 @@ export const listDemands = async (ctx: Context) => {
 
 /**
  * Gestionnaire: updates a demand from fields in `zGestionnaireDemandUpdateValues`.
- * Only `legacy_values` + `comment_gestionnaire` are affected (no column sync for network/validated).
+ * Only `legacy_values`, `comment_gestionnaire` and the unrealizable reason are affected (no column sync for network/validated).
  *
  * Refuse l'opération si l'utilisateur n'est pas responsable de la demande (admin exclu — il a son propre flow).
  */
 export const updateDemandByGestionnaire = async (ctx: Context, demandId: string, values: UpdateGestionnaireDemandInput) => {
-  const { comment_gestionnaire, ...legacyUpdates } = values;
+  const { comment_gestionnaire, unrealizable_detail: _detail, unrealizable_reason: _reason, ...legacyUpdates } = values;
   const userId = ctx.user.id;
 
   const demandBeforeUpdate = await ensureUserCanProcessDemand(ctx, demandId);
+  const unrealizableReasonColumns = resolveUnrealizableReasonColumns(demandBeforeUpdate.legacy_values.Status, values);
 
   const updatedDemand = await kdb.transaction().execute(async (transaction) => {
     const updated = await transaction
       .updateTable('demands')
       .set({
         ...(comment_gestionnaire && { comment_gestionnaire }),
+        ...unrealizableReasonColumns,
         legacy_values: mergeLegacyValues(legacyUpdates),
         updated_at: new Date(),
       })
@@ -104,7 +107,11 @@ export const updateDemandByGestionnaire = async (ctx: Context, demandId: string,
     );
     return updated;
   });
-  await sendUnrealizableDemandEmailIfNeeded({ actorRole: ctx.user.role, currentDemand: demandBeforeUpdate, nextStatus: values.Status });
+  await sendUnrealizableDemandEmailIfNeeded({
+    currentDemand: demandBeforeUpdate,
+    nextStatus: values.Status,
+    reason: values.unrealizable_reason,
+  });
 
   const testAddress = await kdb
     .selectFrom('pro_eligibility_tests_addresses')

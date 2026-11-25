@@ -219,6 +219,98 @@ export const getDemandeurStatusLabel = (status: DemandStatus, validated = true):
 
 const zDemandStatus = z.enum([...demandStatuses.map((s) => s.label), '']);
 
+/** Reasons a manager can pick when closing a demand as « Non réalisable », in display order. */
+export const selectableUnrealizableReasons = [
+  { detailHint: 'Précision facultative', key: 'chauffage_individuel', label: 'Chauffage individuel ou non compatible' },
+  { detailHint: 'Précision facultative', key: 'maison_individuelle', label: 'Maison individuelle' },
+  { detailHint: 'Ex. : consommation ou puissance estimée', key: 'besoin_chaleur_faible', label: 'Besoin de chaleur trop faible' },
+  {
+    detailHint: 'Ex. : distance estimée au point de raccordement',
+    key: 'batiment_trop_eloigne',
+    label: 'Bâtiment trop éloigné du réseau',
+  },
+  { detailHint: 'Précision facultative', key: 'capacite_insuffisante', label: 'Capacité du réseau ou de production insuffisante' },
+  {
+    detailHint: 'Ex. : nature de la contrainte',
+    key: 'contrainte_technique',
+    label: 'Contrainte technique de passage (voirie, terrain privé, ouvrage…)',
+  },
+  { detailHint: 'Ex. : TRI, densité, coût de raccordement', key: 'rentabilite_insuffisante', label: 'Rentabilité insuffisante' },
+  {
+    detailHint: 'Précision facultative',
+    key: 'demande_erronee',
+    label: 'Demande erronée ou doublon (test, message hors sujet, déjà traitée)',
+  },
+  { detailHint: 'Précisez le motif (obligatoire)', key: 'autre', label: 'Autre motif' },
+] as const satisfies readonly { detailHint: string; key: string; label: string }[];
+
+export type SelectableUnrealizableReason = (typeof selectableUnrealizableReasons)[number]['key'];
+
+const selectableUnrealizableReasonKeys = selectableUnrealizableReasons.map((reason) => reason.key);
+
+/** Reason set by FCU when a demand is created on a non-eligible address: never offered to the managers. */
+export const UNREALIZABLE_REASON_NOT_ELIGIBLE = 'batiment_trop_eloigne_fcu';
+
+/** The requester gets no « Raccordement non réalisable » email for this reason: the demand was not a real one. */
+export const UNREALIZABLE_REASON_INVALID_DEMAND = 'demande_erronee' satisfies SelectableUnrealizableReason;
+
+/** The only reason whose precision is mandatory. */
+export const UNREALIZABLE_REASON_OTHER = 'autre' satisfies SelectableUnrealizableReason;
+
+export const UNREALIZABLE_DETAIL_MIN_LENGTH = 10;
+const UNREALIZABLE_DETAIL_MAX_LENGTH = 1000;
+
+export type UnrealizableReason = SelectableUnrealizableReason | typeof UNREALIZABLE_REASON_NOT_ELIGIBLE;
+
+const allUnrealizableReasons = [
+  ...selectableUnrealizableReasons,
+  { key: UNREALIZABLE_REASON_NOT_ELIGIBLE, label: 'Bâtiment trop éloigné du réseau (FCU)' },
+];
+
+/** Shown for the demands closed before the reason existed, or through the partner API. */
+export const UNREALIZABLE_REASON_MISSING_LABEL = 'Motif non renseigné';
+
+export const isSelectableUnrealizableReason = (reason: UnrealizableReason): reason is SelectableUnrealizableReason =>
+  selectableUnrealizableReasonKeys.some((key) => key === reason);
+
+/** Precision is free except for « Autre motif », which says nothing without it. */
+export const isUnrealizableDetailValid = (reason: UnrealizableReason, detail: string) =>
+  reason !== UNREALIZABLE_REASON_OTHER || detail.trim().length >= UNREALIZABLE_DETAIL_MIN_LENGTH;
+
+/**
+ * Reason label of a demand, `null` unless it is « Non réalisable ».
+ * The status is checked first because the server clears the reason when the status changes, while a client cache may still hold it.
+ */
+export const getUnrealizableReasonLabel = (demand: { Status?: string; unrealizable_reason?: UnrealizableReason | null }) =>
+  demand.Status !== DEMANDE_STATUS.UNREALISABLE
+    ? null
+    : (allUnrealizableReasons.find((reason) => reason.key === demand.unrealizable_reason)?.label ?? UNREALIZABLE_REASON_MISSING_LABEL);
+
+const zUnrealizableDetail = z
+  .string()
+  .trim()
+  .max(UNREALIZABLE_DETAIL_MAX_LENGTH, `La précision ne doit pas dépasser ${UNREALIZABLE_DETAIL_MAX_LENGTH} caractères`);
+
+/** Values of the reason dialog shown before a demand becomes « Non réalisable ». */
+export const zUnrealizableReasonForm = z
+  .object({
+    unrealizable_detail: zUnrealizableDetail,
+    unrealizable_reason: z.enum(selectableUnrealizableReasonKeys, 'Sélectionnez un motif'),
+  })
+  .refine((values) => isUnrealizableDetailValid(values.unrealizable_reason, values.unrealizable_detail), {
+    message: `Précisez le motif en au moins ${UNREALIZABLE_DETAIL_MIN_LENGTH} caractères`,
+    path: ['unrealizable_detail'],
+    when: () => true,
+  });
+
+export type UnrealizableReasonForm = z.infer<typeof zUnrealizableReasonForm>;
+
+// Shape only: the rule (required when entering the status, selectable reasons only) needs the current status and lives in `resolveUnrealizableReasonColumns`.
+const unrealizableReasonUpdateShape = {
+  unrealizable_detail: zUnrealizableDetail.nullable(),
+  unrealizable_reason: z.enum([...selectableUnrealizableReasonKeys, UNREALIZABLE_REASON_NOT_ELIGIBLE]).nullable(),
+};
+
 // Zod schema for demand update values - only fields actually used in updateDemand calls
 // Analysis based on all updateDemand usage across the codebase
 const zGestionnaireDemandUpdateValues = z
@@ -237,6 +329,8 @@ const zGestionnaireDemandUpdateValues = z
     'Gestionnaire Conso': z.number().nullable(),
     'Gestionnaire Logement': z.number().nullable(),
     'Surface en m2': z.number().nullable(),
+
+    ...unrealizableReasonUpdateShape,
   })
   .partial();
 
@@ -254,6 +348,8 @@ export const zAdminDemandUpdateValues = z
 
     // Communication
     comment_fcu: z.string(),
+
+    ...unrealizableReasonUpdateShape,
   })
   .partial();
 

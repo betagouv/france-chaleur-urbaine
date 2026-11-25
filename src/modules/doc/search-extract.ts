@@ -12,7 +12,7 @@ export function extractPlainText(rawMdx: string): string {
   return rawMdx
     .replace(/^import\s.*$/gm, '') // ESM import lines
     .replace(/<Mermaid[\s\S]*?\/>/g, ' ') // Mermaid diagram blocks
-    .replace(/<(?:EmailsInventory|CronsInventory|DemandStatuses|FcrDemandStatuses|EventsInventory)\s*\/>/g, ' ') // generated inventories
+    .replace(/<(?:EmailsInventory|CronsInventory|DemandStatuses|FcrDemandStatuses|EventsInventory|UnrealizableReasons)\s*\/>/g, ' ') // generated inventories
     .replace(/<Rule\s+id="([^"]+)"\s*\/>/g, (_match, id: string) => businessRules[id as BusinessRuleId]?.display ?? '') // Rule → its value
     .replace(/\{\/\*[\s\S]*?\*\/\}/g, ' ') // MDX comments
     .replace(/<\/?[a-z][^>]*>/gi, ' ') // remaining HTML/JSX tags (e.g. a heading written as <h2 id="…">), their text is kept

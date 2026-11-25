@@ -31,7 +31,7 @@ import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import { buildNetworkTrackingUrl } from '@/modules/demands/client/network-tracking/format';
 import Status from '@/modules/demands/client/Status';
 import type { DemandStatus } from '@/modules/demands/constants';
-import { eligibilityTypes as eligibilityCases, eligibilityTitleByType } from '@/modules/demands/constants';
+import { eligibilityTypes as eligibilityCases, eligibilityTitleByType, getUnrealizableReasonLabel } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
 import EmailBlockedBadge from '@/modules/email/client/EmailBlockedBadge';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
@@ -305,27 +305,7 @@ function DemandesAdmin(): React.ReactElement {
       },
       {
         accessorKey: 'Status',
-        cell: ({ row }) => {
-          const demand = row.original;
-          return (
-            <div>
-              <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} className="mb-0!" />
-              <div className="" onClick={stopPropagation} onDoubleClick={stopPropagation}>
-                <EligibilityHelpDialog detailedEligibilityStatus={demand.testAddress.eligibility}>
-                  <Button
-                    className="text-gray-700! font-normal! italic"
-                    title="Voir le détail de l'éligibilité"
-                    priority="tertiary no outline"
-                    size="small"
-                    iconId="fr-icon-info-line"
-                  >
-                    {demand.testAddress.eligibility?.type ? eligibilityTitleByType[demand.testAddress.eligibility?.type] : 'Non connu'}
-                  </Button>
-                </EligibilityHelpDialog>
-              </div>
-            </div>
-          );
-        },
+        cell: ({ row }) => <Status demand={row.original as unknown as Demand} updateDemand={updateDemand} className="mb-0!" />,
         enableGlobalFilter: false,
         filterProps: {
           Component: ({ value }) => <DemandStatusBadge status={value as DemandStatus} />,
@@ -333,6 +313,23 @@ function DemandesAdmin(): React.ReactElement {
         filterType: 'Facets',
         header: 'Statut',
         width: '290px',
+      },
+      // hidden: shown under the status, reachable through the « Filtres » and « Trier » dialogs and the export
+      {
+        accessorFn: (row) => getUnrealizableReasonLabel(row),
+        exportOnly: true,
+        filterType: 'Facets',
+        header: 'Motif non réalisable',
+        id: 'unrealizable_reason',
+        visible: false,
+      },
+      {
+        accessorFn: (row) => (getUnrealizableReasonLabel(row) ? row.unrealizable_detail : null),
+        exportOnly: true,
+        header: 'Précision du motif',
+        id: 'unrealizable_detail',
+        showInSortDialog: false,
+        visible: false,
       },
       {
         accessorKey: 'Recontacté par le gestionnaire',
@@ -371,6 +368,19 @@ function DemandesAdmin(): React.ReactElement {
         cell: ({ row }) => (
           <div className="flex flex-col gap-1 w-full" onClick={stopPropagation} onDoubleClick={stopPropagation}>
             <AffectedNetworkCell demand={row.original} isAdmin onChangeNetwork={changeNetwork} />
+            <EligibilityHelpDialog detailedEligibilityStatus={row.original.testAddress.eligibility}>
+              <Button
+                className="text-gray-700! font-normal! italic"
+                title="Voir le détail de l'éligibilité"
+                priority="tertiary no outline"
+                size="small"
+                iconId="fr-icon-info-line"
+              >
+                {row.original.testAddress.eligibility?.type
+                  ? eligibilityTitleByType[row.original.testAddress.eligibility.type]
+                  : 'Non connu'}
+              </Button>
+            </EligibilityHelpDialog>
           </div>
         ),
         enableSorting: false,
@@ -428,7 +438,7 @@ function DemandesAdmin(): React.ReactElement {
       },
       { accessorKey: 'Nom', exportOnly: true, header: 'Nom', visible: false },
       { accessorKey: 'Prénom', exportOnly: true, header: 'Prénom', visible: false },
-      { accessorKey: 'Téléphone', exportOnly: true, header: 'Téléphone', visible: false },
+      { accessorKey: 'Téléphone', exportOnly: true, header: 'Téléphone', showInSortDialog: false, visible: false },
       {
         accessorKey: 'Structure',
         cell: ({ row }) => <Tag text={row.original.Structure} />,
@@ -484,6 +494,7 @@ function DemandesAdmin(): React.ReactElement {
         exportOnly: true,
         header: 'Détail de l’origine',
         id: 'origin_detail',
+        showInSortDialog: false,
         visible: false,
       },
       ...demandOriginFields.map(([key, label]) => ({
@@ -491,6 +502,7 @@ function DemandesAdmin(): React.ReactElement {
         exportOnly: true,
         header: label,
         id: `origin_${key}`,
+        showInSortDialog: false,
         visible: false,
       })),
       {
@@ -560,11 +572,14 @@ function DemandesAdmin(): React.ReactElement {
       {
         accessorKey: 'en PDP',
         filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+        header: 'En PDP',
         visible: false,
       },
       {
         accessorKey: 'testAddress.eligibility.type',
         filterType: 'Facets', // obligatoire pour faire fonctionner le filtre
+        showInFiltersDialog: false, // technical values, only set by the links coming from other pages
+        showInSortDialog: false,
         visible: false,
       },
       {
@@ -582,6 +597,8 @@ function DemandesAdmin(): React.ReactElement {
         filterType: 'Facets',
         header: 'network_id',
         id: 'network_id',
+        showInFiltersDialog: false, // technical values, only set by the links coming from other pages
+        showInSortDialog: false,
         visible: false,
       },
       {
@@ -712,6 +729,8 @@ function DemandesAdmin(): React.ReactElement {
               height="viewport"
               scrollToRowRef={scrollToRowRef}
               urlSyncKey={demandsTableUrlSyncKey}
+              enableFiltersDialog
+              enableSortDialog
               export={{
                 fileName: `demandes_${dayjs().format('YYYY-MM-DD')}.xlsx`,
                 sheetName: 'demandes',

@@ -41,7 +41,6 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
 
   it('envoie l’email et trace l’événement lors du passage en Non réalisable', async () => {
     await sendUnrealizableDemandEmailIfNeeded({
-      actorRole: 'gestionnaire',
       currentDemand: createDemand(DEMANDE_STATUS.TO_PROCESS),
       nextStatus: DEMANDE_STATUS.UNREALISABLE,
     });
@@ -69,7 +68,6 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
     const currentDemand = createDemand(DEMANDE_STATUS.TO_PROCESS);
 
     await sendUnrealizableDemandEmailIfNeeded({
-      actorRole: 'admin',
       currentDemand: {
         ...currentDemand,
         legacy_values: {
@@ -107,7 +105,6 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
 
   it('n’envoie rien si le statut cible n’est pas Non réalisable', async () => {
     await sendUnrealizableDemandEmailIfNeeded({
-      actorRole: 'gestionnaire',
       currentDemand: createDemand(DEMANDE_STATUS.TO_PROCESS),
       nextStatus: DEMANDE_STATUS.RECONTACTED,
     });
@@ -118,7 +115,6 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
 
   it('n’envoie rien si la demande était déjà Non réalisable', async () => {
     await sendUnrealizableDemandEmailIfNeeded({
-      actorRole: 'gestionnaire',
       currentDemand: createDemand(DEMANDE_STATUS.UNREALISABLE),
       nextStatus: DEMANDE_STATUS.UNREALISABLE,
     });
@@ -127,11 +123,11 @@ describe('sendUnrealizableDemandEmailIfNeeded', () => {
     expect(createdEvent.mock.calls).toStrictEqual([]);
   });
 
-  it('n’envoie rien si un rôle territorial classe la demande en Non réalisable', async () => {
+  it('n’envoie rien si la demande est classée comme erronée ou doublon', async () => {
     await sendUnrealizableDemandEmailIfNeeded({
-      actorRole: 'collectivite',
       currentDemand: createDemand(DEMANDE_STATUS.TO_PROCESS),
       nextStatus: DEMANDE_STATUS.UNREALISABLE,
+      reason: 'demande_erronee',
     });
 
     expect(sentEmail.mock.calls).toStrictEqual([]);

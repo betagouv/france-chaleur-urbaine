@@ -267,6 +267,18 @@ Formulaires branchés : `suivi_demande` (bloc accueil `source=homepage`, page d�
 | `pro:tool_cta_clicked` | `tool_name` | Clic sur un outil professionnel |
 | `tools:tool_accessed` | `tool_name` | Accès à un outil depuis la page outils |
 
+### Demandes de raccordement (espaces gestionnaire et admin)
+
+Suivi de la fenêtre de motif affichée avant de classer une demande en « Non réalisable ». Événements émis par le navigateur uniquement : les changements de statut faits par l'API partenaire n'y figurent pas, et les volumes sont partiels (consentement). Les chiffres complets par motif viennent de la base (filtre et export de la liste admin des demandes).
+
+Propriétés communes : `source` (`status_select` / `email_template`), `user_role`, `network_id`, `network_type`, `is_in_pdp`.
+
+| Événement | Propriétés | Description |
+|---|---|---|
+| `demand:unrealizable_dialog_opened` | _(communes)_ | Ouverture de la fenêtre de motif |
+| `demand:unrealizable_dialog_closed` | _(communes)_, `outcome` (`confirmed` / `cancelled`), `reason?`, `has_detail?` | Fermeture de la fenêtre : motif confirmé (avec le motif et la présence d'une précision) ou fenêtre fermée sans confirmation |
+| `demand:status_selected_after_unrealizable_cancel` | _(communes)_, `status` | Statut choisi sur la même demande juste après une fenêtre fermée sans confirmation |
+
 ### Newsletter
 
 | Événement | Propriétés | Description |

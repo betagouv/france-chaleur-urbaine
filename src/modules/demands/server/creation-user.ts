@@ -1,6 +1,11 @@
 import type { Acquisition } from '@/modules/analytics/constants';
 import { businessRules } from '@/modules/app/business-rules';
-import { type CreateDemandInput, type DemandSubmissionResult, formatDataToLegacyValues } from '@/modules/demands/constants';
+import {
+  type CreateDemandInput,
+  type DemandSubmissionResult,
+  formatDataToLegacyValues,
+  UNREALIZABLE_REASON_NOT_ELIGIBLE,
+} from '@/modules/demands/constants';
 import type { LegacyDemandValues } from '@/modules/demands/types';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
@@ -86,6 +91,7 @@ export const createDemand = async (
       comment_user: values.commentUser || null,
       created_at: new Date(),
       legacy_values: sql<string>`${JSON.stringify(legacyRecord)}::jsonb`,
+      unrealizable_reason: values.eligibility.isEligible ? null : UNREALIZABLE_REASON_NOT_ELIGIBLE,
       updated_at: new Date(),
       user_id: userId ?? null,
     })

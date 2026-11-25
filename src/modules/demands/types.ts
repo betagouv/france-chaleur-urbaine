@@ -2,7 +2,7 @@ import type { NetworkType } from '@/modules/reseaux/constants';
 import type { RouterOutput } from '@/modules/trpc/client';
 import type { Demand as LegacyDemand } from '@/types/Summary/Demand';
 
-import { type DemandLockReason, type DemandStatus, fcrLegacyValueKeys } from './constants';
+import { type DemandLockReason, type DemandStatus, fcrLegacyValueKeys, type UnrealizableReason } from './constants';
 
 /**
  * Snapshot d'une demande de réaffectation en attente de traitement admin.
@@ -56,6 +56,10 @@ export type Demand = LegacyDemandValues & {
   comment_user?: string | null;
   created_at: string;
   lock_reason?: DemandLockReason | null;
+  network_id?: number | null;
+  network_type?: NetworkType | null;
+  unrealizable_detail?: string | null;
+  unrealizable_reason?: UnrealizableReason | null;
   updated_at: string;
 };
 

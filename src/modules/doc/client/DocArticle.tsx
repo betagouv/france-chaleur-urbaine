@@ -8,6 +8,7 @@ import { EventsInventory } from './inventories/EventsInventory';
 import { FcrDemandStatuses } from './inventories/FcrDemandStatuses';
 import { NetworkFieldsInventory } from './inventories/NetworkFieldsInventory';
 import { tableClasses } from './inventories/table-classes';
+import { UnrealizableReasons } from './inventories/UnrealizableReasons';
 import { Mermaid } from './Mermaid';
 import { Rule } from './Rule';
 
@@ -39,4 +40,5 @@ const mdxComponents: MDXComponents = {
   ),
   td: (props) => <td className={tableClasses.cell} {...props} />,
   th: (props) => <th className={tableClasses.header} {...props} />,
+  UnrealizableReasons,
 };

@@ -22,6 +22,7 @@ import type {
 } from '@/modules/chaleur-renouvelable/constants';
 import type { ConversionEventType, ConversionIpDisposition, ConversionSourceConfig } from '@/modules/conversion-tracking/constants';
 import type { CustomTerritoryRecipe } from '@/modules/custom-territories/constants';
+import type { UnrealizableReason } from '@/modules/demands/constants';
 import type { LegacyDemandValues, PendingAssignmentChange } from '@/modules/demands/types';
 import type { EventType } from '@/modules/events/constants';
 import type { FileScanStatus } from '@/modules/files/constants';
@@ -413,6 +414,10 @@ export interface Demands {
   network_type: NetworkType | null;
   pending_assignment_change: JSONColumnType<PendingAssignmentChange> | null;
   region_code: string | null;
+  /** Free-text precision of `unrealizable_reason`, written and cleared with it. */
+  unrealizable_detail: string | null;
+  /** Why the demand is « Non réalisable »: set when it enters this status, cleared when it leaves it. */
+  unrealizable_reason: UnrealizableReason | null;
   updated_at: Generated<Timestamp>;
   user_id: string | null;
   validated: Generated<boolean>;

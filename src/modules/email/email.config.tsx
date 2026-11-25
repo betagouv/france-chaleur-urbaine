@@ -297,13 +297,14 @@ export const emails = defineEmails({
   'demands.demandeur.raccordement-non-realisable': {
     Component: RaccordementNonRealisable,
     description:
-      'Email envoyé automatiquement au demandeur lorsqu’un gestionnaire ou un admin classe sa demande de raccordement en « Non réalisable ». Pour une demande issue du parcours chaleur renouvelable, il reprend les solutions alternatives identifiées pendant la simulation.',
+      'Email envoyé automatiquement au demandeur lorsque sa demande de raccordement est classée en « Non réalisable » depuis la plateforme (gestionnaire, collectivité ou admin), sauf avec le motif « Demande erronée ou doublon ». Pour une demande issue du parcours chaleur renouvelable, il reprend les solutions alternatives identifiées pendant la simulation.',
     label: 'Raccordement non réalisable',
     preview: 'Des solutions de chauffage adaptées existent pour votre bâtiment',
     scenarios: raccordementNonRealisableScenarios,
     subject: '[France Chaleur Urbaine] Votre demande de raccordement',
     trigger: {
-      description: 'Au changement manuel du statut d’une demande vers « Non réalisable » par un gestionnaire ou un admin.',
+      description:
+        'Au changement manuel du statut d’une demande vers « Non réalisable » depuis la plateforme, une fois le motif confirmé (sauf « Demande erronée ou doublon »). Pas d’envoi pour un changement fait par l’API partenaire.',
       type: 'action',
     },
   },

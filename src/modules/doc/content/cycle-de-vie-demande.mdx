@@ -21,8 +21,10 @@ Une « demande » est une demande de mise en relation pour un raccordement, dép
     gate -- "Pas encore" --> invisible["Invisible de tous sauf admins et du demandeur"]
     visible --> notif["Notification des gestionnaires (cron, du lundi au vendredi)"]:::email
     notif --> traitement["Traitement : statuts, contact, relances automatiques"]
-    traitement --> nonReal{"Statut changé vers « Non réalisable » par un gestionnaire ou l'admin ?"}
-    nonReal -- "Oui" --> mailNonReal["Email « Raccordement non réalisable » au demandeur"]:::email
+    traitement --> nonReal{"Statut changé vers « Non réalisable » depuis la plateforme ?"}
+    nonReal -- "Oui" --> motif["Motif obligatoire, enregistré avec sa précision"]:::db
+    motif --> erronee{"Motif « Demande erronée ou doublon » ?"}
+    erronee -- "Non" --> mailNonReal["Email « Raccordement non réalisable » au demandeur"]:::email
     mailNonReal --> fcrLiee{"Le demandeur crée une demande chaleur renouvelable liée ?"}
     fcrLiee -- "Oui" --> verrouillee["Demande grisée et non modifiable par le gestionnaire"]:::db
     click mailConf "/admin/emails?type=demands.demandeur.confirmation-demande" "Voir le modèle d'email"
@@ -56,7 +58,7 @@ Trois canaux créent des demandes :
 
 **Affectation automatique au réseau** : la demande est affectée au réseau le plus proche si l'adresse est éligible **ou** si le réseau est à moins de <Rule id="autoAssignMaxDistance" />. Au-delà, la demande reste « sans réseau affecté » — ce sont ces demandes que les collectivités peuvent trier (voir [Rôle : collectivité](/admin/doc/role-collectivite)). Quand le réseau le plus proche est une **extension liée à un réseau de chaleur**, la demande est affectée à ce réseau de chaleur, dont l'équipe traite aussi l'extension, et garde l'extension comme réseau le plus proche (`extension_id`, voir [Gestion des réseaux](/admin/doc/gestion-reseaux)).
 
-**Statut initial** : « À traiter » si l'adresse est éligible, « Non réalisable » sinon. Le marqueur « Relance à activer » (qui conditionne les [relances automatiques](/admin/doc/relances-notifications)) est posé uniquement si la demande est **éligible ET en chauffage collectif**, et uniquement à la création.
+**Statut initial** : « À traiter » si l'adresse est éligible, « Non réalisable » sinon, avec le motif automatique «&nbsp;Bâtiment trop éloigné du réseau (FCU)&nbsp;» (voir [Motif de refus](#motif-de-refus)). Le marqueur « Relance à activer » (qui conditionne les [relances automatiques](/admin/doc/relances-notifications)) est posé uniquement si la demande est **éligible ET en chauffage collectif**, et uniquement à la création.
 
 Enfin : email [« Confirmation de demande »](/admin/emails?type=demands.demandeur.confirmation-demande) au demandeur (avec analyse d'éligibilité personnalisée) et événement [« Création demande »](/admin/events?types=demand_created).
 
@@ -72,10 +74,25 @@ Huit statuts, du dépôt à la clôture — liste et descriptions dans [Référe
 
 - **Aucun ordre n'est imposé** : le statut se change librement dans la liste, il n'y a pas de transitions contrôlées.
 - Le statut est modifié par le **responsable** de la demande (gestionnaire, ou collectivité pour une demande non affectée — voir [Rôles et permissions](/admin/doc/roles-permissions)). Un **admin** peut aussi changer le statut de n'importe quelle demande depuis sa page, en plus de la validation, de l'affectation et du recalcul d'éligibilité.
-- Quand un gestionnaire ou un admin change explicitement le statut vers « Non réalisable », l'email [« Raccordement non réalisable »](/admin/emails?type=demands.demandeur.raccordement-non-realisable) est envoyé au demandeur et renvoie vers le simulateur de modes de chauffage alternatifs. Ce lien transporte l'identifiant de la demande refusée : la page de saisie préremplit l'adresse depuis cette demande, et la page de résultats ne repropose pas le réseau de chaleur dans les solutions compatibles, même si l'adresse reste techniquement éligible, puis l'affiche dans les solutions non compatibles avec une raison dédiée. La demande reste conservée : elle n'est pas supprimée par ce changement de statut.
+- Quand le statut est changé vers « Non réalisable » depuis la plateforme (gestionnaire, collectivité ou admin), un [motif](#motif-de-refus) est obligatoire. Sauf pour le motif «&nbsp;Demande erronée ou doublon&nbsp;», l'email [« Raccordement non réalisable »](/admin/emails?type=demands.demandeur.raccordement-non-realisable) est alors envoyé au demandeur et renvoie vers le simulateur de modes de chauffage alternatifs. Ce lien transporte l'identifiant de la demande refusée : la page de saisie préremplit l'adresse depuis cette demande, et la page de résultats ne repropose pas le réseau de chaleur dans les solutions compatibles, même si l'adresse reste techniquement éligible, puis l'affiche dans les solutions non compatibles avec une raison dédiée. La demande reste conservée : elle n'est pas supprimée par ce changement de statut.
 - Si le demandeur utilise ce lien d'email pour créer une demande d'accompagnement chaleur renouvelable, cette nouvelle demande est liée à la demande de raccordement refusée. La demande de raccordement reste visible mais devient grisée et non modifiable dans l'espace gestionnaire ; un admin conserve la possibilité d'agir depuis l'interface admin.
 - Côté demandeur, le statut interne n'est jamais affiché tel quel : partout où il le voit (email de suivi, écran de confirmation d'une demande déjà déposée, «&nbsp;Mes demandes&nbsp;» des comptes existants), c'est le libellé usager de la table ci-dessous qui est affiché (voir [Suivi par le demandeur](#suivi-par-le-demandeur)).
-- L'**API partenaire** peut aussi modifier le statut et le commentaire gestionnaire — rien d'autre ([événement « Mise à jour demande (API) »](/admin/events?types=api_demand_updated)).
+- L'**API partenaire** peut aussi modifier le statut et le commentaire gestionnaire — rien d'autre ([événement « Mise à jour demande (API) »](/admin/events?types=api_demand_updated)). Elle ne transmet pas encore de motif : un passage en «&nbsp;Non réalisable&nbsp;» par l'API n'enregistre aucun motif et n'envoie pas d'email au demandeur.
+
+## Motif de refus
+
+Le statut «&nbsp;Non réalisable&nbsp;» seul ne dit pas pourquoi une demande est refusée. Un motif lui est donc associé.
+
+- **Fenêtre de motif** : choisir «&nbsp;Non réalisable&nbsp;» dans la liste des statuts ouvre une fenêtre qui demande un motif et, au besoin, une précision. Rien n'est enregistré et aucun email ne part tant que la fenêtre n'est pas confirmée ; l'annuler laisse la demande inchangée. La précision est facultative, sauf pour «&nbsp;Autre motif&nbsp;» où elle est obligatoire.
+- **Emails de refus du gestionnaire** : envoyer au demandeur l'un des modèles «&nbsp;Non réalisable – …&nbsp;» passe la demande en «&nbsp;Non réalisable&nbsp;». La même fenêtre s'ouvre donc avant l'envoi, qui est impossible sans motif. Le demandeur reçoit ensuite deux emails : celui du gestionnaire, puis l'email automatique «&nbsp;Raccordement non réalisable&nbsp;».
+- **Qui est concerné** : tout compte qui change le statut depuis la plateforme — gestionnaire, collectivité, admin. L'email automatique part quel que soit le rôle.
+- **Qui voit le motif** : le gestionnaire, la collectivité ayant accès à la demande et les admins, sous le statut dans leur liste des demandes, et dans les exports. Le demandeur ne le voit jamais.
+- **Filtre et tri** : dans [Gestion des demandes](/admin/demandes), les boutons «&nbsp;Filtres&nbsp;» et «&nbsp;Trier&nbsp;» au-dessus du tableau permettent de filtrer et de trier les demandes par motif, comme par les autres colonnes.
+- **Demandes sans motif** : les demandes classées avant la mise en place du motif, ou classées par l'API partenaire, affichent «&nbsp;Motif non renseigné&nbsp;». Elles ne sont pas à requalifier.
+- **Classement automatique** : une demande créée directement en «&nbsp;Non réalisable&nbsp;» parce que son adresse n'est pas éligible reçoit le motif «&nbsp;Bâtiment trop éloigné du réseau (FCU)&nbsp;», que les gestionnaires ne peuvent pas choisir.
+- **Sortie du statut** : si la demande reçoit un autre statut, le motif et sa précision sont effacés de la demande. Ils restent consultables dans [l'activité du site](/admin/events?types=demand_updated), sur l'événement du changement de statut.
+
+<UnrealizableReasons />
 
 ## Suivi par le demandeur
 

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { mergeLegacyValues } from '@/modules/demands/server/legacy-values';
+import { resolveUnrealizableReasonReset } from '@/modules/demands/server/unrealizable-reason';
 import { createEvent } from '@/modules/events/server/service';
 import { getDemandForAccessCheck } from '@/modules/permissions/server/demand-access';
 import { buildDemandAccessFilter, isUserResponsibleForDemand } from '@/modules/permissions/server/service';
@@ -103,6 +104,7 @@ export const patchDemand: PartnerApiHandler<void> = async (req, res, auth) => {
       .set({
         ...(input.commentaire !== undefined && { comment_gestionnaire: input.commentaire }),
         ...(input.statut !== undefined && { legacy_values: mergeLegacyValues({ Status: input.statut }) }),
+        ...resolveUnrealizableReasonReset(input.statut),
         updated_at: new Date(),
       })
       .where('id', '=', id)

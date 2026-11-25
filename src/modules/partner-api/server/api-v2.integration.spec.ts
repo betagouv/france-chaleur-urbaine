@@ -235,6 +235,34 @@ describe('API v2 partenaire (/api/v2/demands)', () => {
       );
     });
 
+    it('vide le motif quand le statut quitte Non réalisable, sans en exiger pour y entrer', async () => {
+      const getReason = () =>
+        kdb
+          .selectFrom('demands')
+          .select(['unrealizable_detail', 'unrealizable_reason'])
+          .where('id', '=', DEMAND_VISIBLE_OLD)
+          .executeTakeFirstOrThrow();
+      await kdb
+        .updateTable('demands')
+        .set({ unrealizable_detail: 'TRI à 14 ans', unrealizable_reason: 'rentabilite_insuffisante' })
+        .where('id', '=', DEMAND_VISIBLE_OLD)
+        .execute();
+
+      await patchDemand(
+        mockRequest({ body: { statut: DEMANDE_STATUS.UNREALISABLE }, query: { id: DEMAND_VISIBLE_OLD } }),
+        createMockResponse().response,
+        auth
+      );
+      expect(await getReason()).toStrictEqual({ unrealizable_detail: 'TRI à 14 ans', unrealizable_reason: 'rentabilite_insuffisante' });
+
+      await patchDemand(
+        mockRequest({ body: { statut: DEMANDE_STATUS.RECONTACTED }, query: { id: DEMAND_VISIBLE_OLD } }),
+        createMockResponse().response,
+        auth
+      );
+      expect(await getReason()).toStrictEqual({ unrealizable_detail: null, unrealizable_reason: null });
+    });
+
     it("renvoie 404 (sans divulgation) pour une demande hors périmètre de l'organisation", async () => {
       const { response, state } = createMockResponse();
 
