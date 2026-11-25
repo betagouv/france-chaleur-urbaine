@@ -159,6 +159,7 @@ const applyRule = async (rule: RetentionRule): Promise<number> => {
                 '{Mail}', to_jsonb(${ANONYMIZED_EMAIL_PREFIX} || id::text || ${ANONYMIZED_EMAIL_DOMAIN}), true),
               '{Téléphone}', '""'::jsonb, false),
             '{Commentaire}', '""'::jsonb, false)`,
+          unrealizable_detail: null,
           updated_at: new Date(),
         })
         .where('id', 'in', closedDemandsQuery().select('id'))

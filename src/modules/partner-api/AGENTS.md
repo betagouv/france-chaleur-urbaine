@@ -54,6 +54,7 @@ unchanged (role `gestionnaire`), so the partner sees/edits exactly the demands o
   incremental sync — boundary rows may repeat across polls, idempotent via upsert by `id`. Backed by `idx_demands_updated_at`
   (migration `20260625000000`).
 - PATCH writes only `legacy_values.Status` + `comment_gestionnaire`; traced in `events` (`author_id: null`, credential in `data`).
+- The unrealizable reason (`demands.unrealizable_reason` / `unrealizable_detail`, mandatory in the app) is **not** part of the contract yet: a PATCH to `Non réalisable` stores no reason and sends no email to the requester, and a PATCH to any other status clears the reason (`resolveUnrealizableReasonReset`). Product decision of 2026-11-25: build the reason mapping with a partner first.
 - `date_creation` maps to `legacy_values['Date de la demande']` (business date, reliable), falling back to `created_at`
   (import date) only when absent. A future migration will realign `created_at`, then this can revert to `created_at`.
 

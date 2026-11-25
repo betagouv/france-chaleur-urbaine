@@ -1,28 +1,26 @@
 import type { Selectable } from 'kysely';
 
-import { fcrLegacyValueKeys } from '@/modules/demands/constants';
+import { fcrLegacyValueKeys, UNREALIZABLE_REASON_INVALID_DEMAND, type UnrealizableReason } from '@/modules/demands/constants';
 import { sendEmailTemplate } from '@/modules/email';
 import { createEvent } from '@/modules/events/server/service';
 import type { Demands } from '@/server/db/kysely';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import type { UserRole } from '@/types/enum/UserRole';
 
 type MaybeUnrealizableStatusChange = {
-  actorRole: UserRole;
   currentDemand: Pick<Selectable<Demands>, 'id' | 'legacy_values'>;
   nextStatus?: string;
+  reason?: UnrealizableReason | null;
 };
 
 /**
- * Sends the demandeur email when an existing demand is manually closed as unrealizable.
+ * Sends the demandeur email when an existing demand is manually closed as unrealizable, whoever closes it.
+ * An invalid demand (test, duplicate) is closed silently.
  */
-export const sendUnrealizableDemandEmailIfNeeded = async ({ actorRole, currentDemand, nextStatus }: MaybeUnrealizableStatusChange) => {
-  const canTriggerEmail = actorRole === 'admin' || actorRole === 'gestionnaire';
-
+export const sendUnrealizableDemandEmailIfNeeded = async ({ currentDemand, nextStatus, reason }: MaybeUnrealizableStatusChange) => {
   if (
-    !canTriggerEmail ||
     nextStatus !== DEMANDE_STATUS.UNREALISABLE ||
-    currentDemand.legacy_values.Status === DEMANDE_STATUS.UNREALISABLE
+    currentDemand.legacy_values.Status === DEMANDE_STATUS.UNREALISABLE ||
+    reason === UNREALIZABLE_REASON_INVALID_DEMAND
   ) {
     return;
   }

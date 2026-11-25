@@ -12,6 +12,7 @@ import { computeNetworkDistance, resolveDemandAssignment } from './eligibility';
 import { buildDemandQuery, enrichDemandForAdmin, getDemandById, resolveNetworkInfo } from './helpers';
 import { mergeLegacyValues } from './legacy-values';
 import { sendUnrealizableDemandEmailIfNeeded } from './unrealizable-email';
+import { resolveUnrealizableReasonColumns } from './unrealizable-reason';
 
 const logger = parentLogger.child({ module: 'demands/admin-operations' });
 
@@ -269,18 +270,20 @@ export const rejectDemandAssignmentChangeRequest = async (demandId: string, admi
  * and merges the remaining fields into `legacy_values`.
  */
 export const updateDemandByAdmin = async (demandId: string, values: UpdateAdminDemandInput, adminUserId: string) => {
-  const { comment_fcu, ...legacyUpdates } = values;
+  const { comment_fcu, unrealizable_detail: _detail, unrealizable_reason: _reason, ...legacyUpdates } = values;
 
   const currentDemand = await kdb
     .selectFrom('demands')
     .selectAll()
     .where('id', '=', demandId)
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Demande introuvable' }));
+  const unrealizableReasonColumns = resolveUnrealizableReasonColumns(currentDemand.legacy_values.Status, values);
 
   const [updatedDemand] = await kdb
     .updateTable('demands')
     .set({
       ...(comment_fcu && { comment_fcu }),
+      ...unrealizableReasonColumns,
       legacy_values: mergeLegacyValues(legacyUpdates),
       updated_at: new Date(),
     })
@@ -301,7 +304,7 @@ export const updateDemandByAdmin = async (demandId: string, values: UpdateAdminD
     data: values,
     type: 'demand_updated',
   });
-  await sendUnrealizableDemandEmailIfNeeded({ actorRole: 'admin', currentDemand, nextStatus: values.Status });
+  await sendUnrealizableDemandEmailIfNeeded({ currentDemand, nextStatus: values.Status, reason: values.unrealizable_reason });
 
   const demand = await getDemandById(updatedDemand.id);
   return enrichDemandForAdmin({ demand, testAddress: testAddress || null });

@@ -12,10 +12,12 @@ import type {
   TypeLogement,
   TypeRadiateur,
 } from '@/modules/chaleur-renouvelable/constants';
-import type { ModeDeChauffage, TypeDeChauffage } from '@/modules/demands/constants';
+import type { DemandStatus, ModeDeChauffage, SelectableUnrealizableReason, TypeDeChauffage } from '@/modules/demands/constants';
 import type { SimulateurPacEventProperties } from '@/modules/pac/constants';
 import type { HomeFormMode } from '@/modules/public-pages/constants';
+import type { NetworkType } from '@/modules/reseaux/constants';
 import type { TypeCommune } from '@/server/services/communeAPotentiel';
+import type { UserRole } from '@/types/enum/UserRole';
 
 type CcrtCommonTrackingProperties = {
   departement?: string | null;
@@ -25,6 +27,15 @@ type CcrtCommonTrackingProperties = {
 type CcrtDemandTrackingProperties = CcrtCommonTrackingProperties & {
   demande_id: string;
   solution_1?: string | null;
+};
+
+/** Context of the dialog asking why a demand is « Non réalisable » (manager and admin demand lists). */
+export type UnrealizableDialogTrackingProperties = {
+  is_in_pdp: boolean;
+  network_id: number | null;
+  network_type: NetworkType | null;
+  source: 'status_select' | 'email_template';
+  user_role: UserRole | null;
 };
 
 export type CcrtTrackingPlacement = 'liste' | 'fiche';
@@ -455,6 +466,11 @@ export type PostHogEventMap = {
   'collectivities:iframe_cta_clicked': never;
 
   'pro:tool_cta_clicked': { tool_name: string };
+
+  'demand:unrealizable_dialog_opened': UnrealizableDialogTrackingProperties;
+  'demand:unrealizable_dialog_closed': UnrealizableDialogTrackingProperties &
+    ({ outcome: 'cancelled' } | { has_detail: boolean; outcome: 'confirmed'; reason: SelectableUnrealizableReason });
+  'demand:status_selected_after_unrealizable_cancel': UnrealizableDialogTrackingProperties & { status: DemandStatus };
 
   'newsletter:signup_link_clicked': { source: NewsletterLinkSource };
 

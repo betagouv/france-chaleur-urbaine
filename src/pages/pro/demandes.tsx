@@ -22,7 +22,7 @@ import Comment from '@/modules/demands/client/Comment';
 import Contact from '@/modules/demands/client/Contact';
 import DemandStatusBadge from '@/modules/demands/client/DemandStatusBadge';
 import Status from '@/modules/demands/client/Status';
-import { demandLockReasons } from '@/modules/demands/constants';
+import { demandLockReasons, getUnrealizableReasonLabel } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
 import { createMapConfiguration } from '@/modules/map/client/config/map-configuration';
 import { AdressesEligiblesLayer } from '@/modules/map/client/layers/AdressesEligiblesLayer';
@@ -55,6 +55,14 @@ export const demandsExportColumns: ExportColumn<DemandsListItem>[] = [
   {
     accessorKey: 'Status',
     name: 'Statut',
+  },
+  {
+    accessorFn: (demand) => getUnrealizableReasonLabel(demand) ?? '',
+    name: 'Motif non réalisable',
+  },
+  {
+    accessorFn: (demand) => (getUnrealizableReasonLabel(demand) ? (demand.unrealizable_detail ?? '') : ''),
+    name: 'Précision du motif',
   },
   {
     accessorFn: (demand) => `${demand.Prénom ? demand.Prénom : ''} ${demand.Nom}`,

@@ -273,29 +273,29 @@ describe('creation-user', () => {
 
     type EligibilityCase = TestCase<
       { isEligible: boolean; heatingType: 'collectif' | 'individuel' },
-      { Status: string | undefined; 'Relance à activer': boolean }
+      { Status: string | undefined; 'Relance à activer': boolean; unrealizable_reason: string | null }
     >;
 
     const eligibilityCases: EligibilityCase[] = [
       {
-        expectedOutput: { 'Relance à activer': true, Status: 'À traiter' },
+        expectedOutput: { 'Relance à activer': true, Status: 'À traiter', unrealizable_reason: null },
         input: { heatingType: 'collectif', isEligible: true },
         label: 'éligible + collectif → Status "À traiter", relance active',
       },
       {
-        expectedOutput: { 'Relance à activer': false, Status: 'À traiter' },
+        expectedOutput: { 'Relance à activer': false, Status: 'À traiter', unrealizable_reason: null },
         input: { heatingType: 'individuel', isEligible: true },
         label: 'éligible + individuel → Status "À traiter", pas de relance',
       },
       {
-        expectedOutput: { 'Relance à activer': false, Status: 'Non réalisable' },
+        expectedOutput: { 'Relance à activer': false, Status: 'Non réalisable', unrealizable_reason: 'batiment_trop_eloigne_fcu' },
         input: { heatingType: 'collectif', isEligible: false },
-        label: 'non éligible + collectif → Status "Non réalisable", pas de relance',
+        label: 'non éligible + collectif → Status "Non réalisable" avec le motif FCU, pas de relance',
       },
       {
-        expectedOutput: { 'Relance à activer': false, Status: 'Non réalisable' },
+        expectedOutput: { 'Relance à activer': false, Status: 'Non réalisable', unrealizable_reason: 'batiment_trop_eloigne_fcu' },
         input: { heatingType: 'individuel', isEligible: false },
-        label: 'non éligible + individuel → Status "Non réalisable", pas de relance',
+        label: 'non éligible + individuel → Status "Non réalisable" avec le motif FCU, pas de relance',
       },
     ];
 
@@ -311,6 +311,7 @@ describe('creation-user', () => {
       const legacyValues = demandInDb?.legacy_values as Record<string, unknown>;
       expect(legacyValues.Status).toBe(expectedOutput.Status);
       expect(legacyValues['Relance à activer']).toBe(expectedOutput['Relance à activer']);
+      expect(demandInDb?.unrealizable_reason).toStrictEqual(expectedOutput.unrealizable_reason);
     });
 
     describe('déduplication (deduplicate: true)', () => {

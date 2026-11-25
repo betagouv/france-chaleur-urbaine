@@ -22,6 +22,8 @@ sql`ST_Contains(geom, ST_Transform(ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326
 ## Naming
 snake_case + French legacy names; some columns have spaces/caps (`nom_reseau`, `Identifiant reseau`, `created_at`). FKs `<table>_id`, geometry `geom`, enums stored as text. **Never rename existing columns — it breaks data pipelines.**
 
+**New columns that are filled together share a prefix naming the business step that fills them** (`demands.unrealizable_reason` + `unrealizable_detail`, written when a demand becomes « Non réalisable » and cleared together when it leaves that status), so that a column's purpose is readable from its name alone. Prefer such typed, prefixed columns to a new key in a JSONB blob (`demands.legacy_values` is legacy: its fields will follow this rule when they migrate).
+
 - Always use `.select([...])` — never rely on `selectAll()` in production queries (over-fetches columns).
 - Prevent N+1: use joins or batch queries, never loop with individual DB calls.
 - Use `.$if()` for optional filters rather than building query strings conditionally.

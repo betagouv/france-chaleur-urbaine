@@ -62,6 +62,7 @@ export const anonymizeDatabase = async (databaseUrl: string): Promise<Anonymizat
               '{Mail}', to_jsonb('demande-' || id::text || ${LOCAL_ACCOUNT_DOMAIN}), false),
             '{Téléphone}', '"0600000000"'::jsonb, false),
           '{Commentaire}', '""'::jsonb, false)`,
+        unrealizable_detail: null,
       })
       .executeTakeFirst();
     report.demands = Number(demands.numUpdatedRows);

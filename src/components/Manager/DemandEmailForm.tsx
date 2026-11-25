@@ -12,6 +12,8 @@ import Tooltip, { TooltipIcon } from '@/components/ui/Tooltip';
 import { useFetch } from '@/hooks/useApi';
 import { useAuthentication } from '@/modules/auth/client/hooks';
 import EmailHistory from '@/modules/demands/client/EmailHistory';
+import { UnrealizableReasonDialog } from '@/modules/demands/client/UnrealizableReasonDialog';
+import type { UnrealizableReasonForm } from '@/modules/demands/constants';
 import type { Demand } from '@/modules/demands/types';
 import { Form } from '@/modules/form/Form';
 import { schemaValidation, useAppForm } from '@/modules/form/useAppForm';
@@ -42,6 +44,9 @@ const zDemandEmail = z.object({
 });
 
 type EmailContent = z.input<typeof zDemandEmail>;
+
+/** Built-in templates telling the requester the connection is refused: sending one closes the demand as « Non réalisable ». */
+const refusalEmailTemplateKeys = ['koFarFromNetwok', 'koIndividualHeat', 'koOther'];
 
 /**
  * Processes a string value by replacing placeholders with values from the current demand
@@ -91,6 +96,8 @@ function DemandEmailForm(props: Props) {
   const initialContentRef = useRef(getDefaultEmailContent());
   const [sent, setSent] = useState(false);
   const [sentError, setSentError] = useState(false);
+  const [pendingRefusalEmail, setPendingRefusalEmail] = useState<EmailContent | null>(null);
+  const isRefusalEmail = refusalEmailTemplateKeys.includes(emailKey);
 
   const {
     data: sentHistory,
@@ -100,45 +107,55 @@ function DemandEmailForm(props: Props) {
 
   const sendEmailMutation = trpc.demands.gestionnaire.sendEmail.useMutation();
 
+  const sendEmail = async (value: EmailContent, unrealizableReason?: UnrealizableReasonForm) => {
+    //Save content in DB
+    try {
+      await sendEmailMutation.mutateAsync({
+        demand_id: props.currentDemand.id,
+        emailContent: {
+          ...value,
+          body: processPlaceholders(value.body, props.currentDemand),
+          cc: value.cc ?? '',
+          object: processPlaceholders(value.object, props.currentDemand),
+          to: props.currentDemand.Mail,
+        },
+        key: emailKey,
+      });
+
+      void refetch();
+
+      // Record the sent email in the demand's legacy values
+      alreadySent.push(value.object);
+      const updatedFields: any = {
+        'Emails envoyés': alreadySent.join('\n'),
+      };
+      if (isRefusalEmail) {
+        updatedFields.Status = DEMANDE_STATUS.UNREALISABLE;
+        Object.assign(updatedFields, unrealizableReason);
+      } else if (emailKey === 'askForPieces') {
+        updatedFields.Status = DEMANDE_STATUS.RECONTACTED;
+      }
+      await props.updateDemand(props.currentDemand.id, updatedFields);
+
+      // the server saves the signature along with the email (users.preferences.email_signature)
+      void utils.users.getPreferences.invalidate();
+
+      setSent(true);
+    } catch (_err: any) {
+      setSentError(true);
+    }
+  };
+
   const form = useAppForm({
     ...schemaValidation(zDemandEmail),
     defaultValues: initialContentRef.current,
     onSubmit: async ({ value }) => {
-      //Save content in DB
-      try {
-        await sendEmailMutation.mutateAsync({
-          demand_id: props.currentDemand.id,
-          emailContent: {
-            ...value,
-            body: processPlaceholders(value.body, props.currentDemand),
-            cc: value.cc ?? '',
-            object: processPlaceholders(value.object, props.currentDemand),
-            to: props.currentDemand.Mail,
-          },
-          key: emailKey,
-        });
-
-        void refetch();
-
-        // Record the sent email in the demand's legacy values
-        alreadySent.push(value.object);
-        const updatedFields: any = {
-          'Emails envoyés': alreadySent.join('\n'),
-        };
-        if (emailKey === 'koFarFromNetwok' || emailKey === 'koIndividualHeat' || emailKey === 'koOther') {
-          updatedFields.Status = DEMANDE_STATUS.UNREALISABLE;
-        } else if (emailKey === 'askForPieces') {
-          updatedFields.Status = DEMANDE_STATUS.RECONTACTED;
-        }
-        await props.updateDemand(props.currentDemand.id, updatedFields);
-
-        // the server saves the signature along with the email (users.preferences.email_signature)
-        void utils.users.getPreferences.invalidate();
-
-        setSent(true);
-      } catch (_err: any) {
-        setSentError(true);
+      // a refusal email closes the demand: its reason is asked first, and nothing is sent until it is confirmed
+      if (isRefusalEmail && props.currentDemand.Status !== DEMANDE_STATUS.UNREALISABLE) {
+        setPendingRefusalEmail(value);
+        return;
       }
+      await sendEmail(value);
     },
   });
 
@@ -342,6 +359,18 @@ function DemandEmailForm(props: Props) {
         </span>
       ) : (
         <span>Votre courriel a bien été envoyé !</span>
+      )}
+      {pendingRefusalEmail && (
+        <UnrealizableReasonDialog
+          demand={props.currentDemand}
+          open
+          source="email_template"
+          onCancel={() => setPendingRefusalEmail(null)}
+          onConfirm={async (unrealizableReason) => {
+            await sendEmail(pendingRefusalEmail, unrealizableReason);
+            setPendingRefusalEmail(null);
+          }}
+        />
       )}
     </div>
   );
