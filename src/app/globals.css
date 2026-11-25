@@ -91,8 +91,8 @@ html[data-os="mac"] .scrollbar-visible {
 @media print {
   html,
   body {
-    print-color-adjust: exact !important;
-    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   @page {
