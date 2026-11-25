@@ -50,14 +50,13 @@ const upsertAndFixCity = async (city: any, { codesINSEE }: { codesINSEE: any }) 
       codesINSEE.find((c: any) => c.nom_comm === city.Commune)
     );
     throw new Error(`city not found ${city.Commune}`);
-  } else {
-    if (`${cityWithCorrectInseeCode.postal_code}` !== postalCode) {
-      console.error(`postal_code mismatch on ${city.Commune}`);
-      console.error(cityWithCorrectInseeCode.postal_code, postalCode);
-      console.error(city);
-      console.error(cityWithCorrectInseeCode);
-      throw new Error(`postal_code mismatch on ${city.Commune}`);
-    }
+  }
+  if (`${cityWithCorrectInseeCode.postal_code}` !== postalCode) {
+    console.error(`postal_code mismatch on ${city.Commune}`);
+    console.error(cityWithCorrectInseeCode.postal_code, postalCode);
+    console.error(city);
+    console.error(cityWithCorrectInseeCode);
+    throw new Error(`postal_code mismatch on ${city.Commune}`);
   }
 
   const altitude_moyenne =

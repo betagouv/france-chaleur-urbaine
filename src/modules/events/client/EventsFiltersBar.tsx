@@ -49,13 +49,17 @@ export function EventsFiltersBar({
   // Pendant le fetch, label=key → ComboAutoComplete affiche un skeleton pour chaque item sélectionné.
   // Après fetch, on remplace par les emails réels.
   const authors = useMemo<ComboAutoCompleteItem[]>(() => {
-    if (!fetchedAuthors) return authorIds.map((id) => ({ key: id, label: id }));
+    if (!fetchedAuthors) {
+      return authorIds.map((id) => ({ key: id, label: id }));
+    }
     return fetchedAuthors.map((a) => ({ key: a.id, label: a.email }));
   }, [authorIds, fetchedAuthors]);
 
   const fetchAuthors = useCallback(
     async (query: string, _signal: AbortSignal) => {
-      if (query.length < 2) return [];
+      if (query.length < 2) {
+        return [];
+      }
       return utils.events.admin.searchAuthors.fetch({ search: query });
     },
     [utils]

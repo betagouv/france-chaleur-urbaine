@@ -9,10 +9,14 @@ import { createParser } from 'nuqs';
 export const parseAsLngLat = createParser<[number, number]>({
   parse: (v) => {
     const parts = v.split(',');
-    if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
+    if (parts.length !== 2 || !parts[0] || !parts[1]) {
+      return null;
+    }
     const lng = Number(parts[0]);
     const lat = Number(parts[1]);
-    if (Number.isNaN(lng) || Number.isNaN(lat)) return null;
+    if (Number.isNaN(lng) || Number.isNaN(lat)) {
+      return null;
+    }
     return [lng, lat];
   },
   serialize: ([lng, lat]) => `${lng},${lat}`,

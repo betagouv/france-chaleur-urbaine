@@ -200,7 +200,9 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                         autoFocus
                         onKeyDown={(e) => {
                           e.stopPropagation();
-                          if (e.key === 'Enter') void handleRename(item[valueKey] as string);
+                          if (e.key === 'Enter') {
+                            void handleRename(item[valueKey] as string);
+                          }
                         }}
                       />
                     </div>
@@ -282,7 +284,9 @@ function CrudDropdown<T extends CrudResponse<keyof DB, any>>({
                   placeholder={addPlaceholderLabel}
                   autoFocus
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') void handleAddNew();
+                    if (e.key === 'Enter') {
+                      void handleAddNew();
+                    }
                   }}
                 />
                 <Button

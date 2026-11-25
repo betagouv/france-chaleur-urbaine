@@ -61,8 +61,12 @@ const testLabel = ({ user, permissions, demand }: TestInput): string => {
   } else {
     parts.push('[no perms]');
   }
-  if (!demand.validated) parts.push('(unvalidated)');
-  if (demand.network_type === 'reseau_en_construction') parts.push('(construction)');
+  if (!demand.validated) {
+    parts.push('(unvalidated)');
+  }
+  if (demand.network_type === 'reseau_en_construction') {
+    parts.push('(construction)');
+  }
   return parts.join(' ');
 };
 

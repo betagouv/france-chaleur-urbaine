@@ -67,7 +67,9 @@ export function RemindersCell({ reminders, onCreateReminder, onUpdateReminder, o
     const label = reminder.note
       ? `"${reminder.note.slice(0, 60)}${reminder.note.length > 60 ? '...' : ''}"`
       : `du ${dayjs(reminder.created_at).format('DD/MM/YYYY')}`;
-    if (!window.confirm(`Supprimer la relance ${label} ?`)) return;
+    if (!window.confirm(`Supprimer la relance ${label} ?`)) {
+      return;
+    }
     await onDeleteReminder(reminder.id);
   };
 

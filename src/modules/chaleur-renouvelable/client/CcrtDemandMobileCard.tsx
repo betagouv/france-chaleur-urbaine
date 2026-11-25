@@ -42,7 +42,7 @@ export function CcrtDemandMobileCard({ demand, onOpen, onContact, onValidate }: 
         </button>
       </h2>
       {onValidate && demand.origin && <DemandOriginCell origin={demand.origin} />}
-      <p className="mb-0 break-words font-medium leading-6">{formatCcrtAddress(demand.address)}</p>
+      <p className="mb-0 wrap-break-word font-medium leading-6">{formatCcrtAddress(demand.address)}</p>
       <p className="mb-0 text-sm leading-6">
         {demand.alternative_heating_solutions[0] ? `Reco n°1 : ${demand.alternative_heating_solutions[0]}` : 'Aucune solution enregistrée'}
       </p>

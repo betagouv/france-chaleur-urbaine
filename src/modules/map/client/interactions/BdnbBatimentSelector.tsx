@@ -162,7 +162,9 @@ export function BdnbBatimentSelector({ value, onSelect }: BdnbBatimentSelectorPr
     let hoveredId: string | null = null;
 
     const clearHover = () => {
-      if (!hoveredId) return;
+      if (!hoveredId) {
+        return;
+      }
       try {
         map.removeFeatureState({ id: hoveredId, source: SOURCE_ID, sourceLayer: SOURCE_LAYER }, 'hover');
       } catch {

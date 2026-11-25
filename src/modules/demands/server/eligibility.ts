@@ -148,15 +148,21 @@ export const autoAssignNetworkFromEligibility = async (demandId: string) => {
     .where('demand_id', '=', demandId)
     .executeTakeFirst();
 
-  if (!testAddress) return;
+  if (!testAddress) {
+    return;
+  }
 
   const history = testAddress.eligibility_history as ProEligibilityTestHistoryEntry[] | null;
   const lastEligibility = history?.[history.length - 1]?.eligibility;
-  if (!lastEligibility?.id_fcu) return;
+  if (!lastEligibility?.id_fcu) {
+    return;
+  }
 
   const isAssignable =
     lastEligibility.eligible || (lastEligibility.distance !== null && lastEligibility.distance < networkAssignmentDistanceThreshold);
-  if (!isAssignable) return;
+  if (!isAssignable) {
+    return;
+  }
 
   const networkType = getNetworkTypeFromEligibilityType(lastEligibility.type);
   const assignment = networkType

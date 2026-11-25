@@ -33,7 +33,7 @@ const unrealizableEmailCall = (demandId: string) => [
 
 const sentEmail = vi.mocked(sendEmailTemplate);
 
-async function seedDemand(status = DEMANDE_STATUS.TO_PROCESS, unrealizableReason: UnrealizableReason | null = null) {
+async function seedDemand(status: DEMANDE_STATUS = DEMANDE_STATUS.TO_PROCESS, unrealizableReason: UnrealizableReason | null = null) {
   const [demand] = await kdb
     .insertInto('demands')
     .values({

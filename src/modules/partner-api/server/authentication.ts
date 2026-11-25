@@ -17,7 +17,9 @@ const BEARER_PREFIX = 'Bearer ';
 
 const extractBearerToken = (req: NextApiRequest): string | null => {
   const header = req.headers.authorization;
-  if (!header?.startsWith(BEARER_PREFIX)) return null;
+  if (!header?.startsWith(BEARER_PREFIX)) {
+    return null;
+  }
   return header.slice(BEARER_PREFIX.length).trim() || null;
 };
 
@@ -27,10 +29,14 @@ const extractBearerToken = (req: NextApiRequest): string | null => {
  */
 export const authenticatePartner = async (req: NextApiRequest): Promise<PartnerAuth> => {
   const token = extractBearerToken(req);
-  if (!token) throw requiredAuthenticationError;
+  if (!token) {
+    throw requiredAuthenticationError;
+  }
 
   const org = await findOrganizationByToken(token);
-  if (!org) throw requiredAuthenticationError;
+  if (!org) {
+    throw requiredAuthenticationError;
+  }
 
   await touchCredentialLastUsed(org.credential_id);
   return { credentialId: org.credential_id, organizationId: org.organization_id, organizationName: org.organization_name };
@@ -54,6 +60,8 @@ export const withPartnerApi = (handlers: Partial<Record<'GET' | 'PATCH', Partner
     await partnerRateLimiter(req, res);
     const auth = await authenticatePartner(req);
     const handler = handlers[req.method as 'GET' | 'PATCH'];
-    if (!handler) throw invalidRouteError;
+    if (!handler) {
+      throw invalidRouteError;
+    }
     return handler(req, res, auth);
   });

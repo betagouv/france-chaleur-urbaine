@@ -36,7 +36,9 @@ const TagChip = ({ tag, onRemove, onSave, onDelete }: TagChipProps) => {
   const isDirty = trimmedName !== '' && (trimmedName !== tag.name || color !== tag.color);
 
   const handleSave = toastErrors(async () => {
-    if (!isDirty) return;
+    if (!isDirty) {
+      return;
+    }
     await onSave({ color, name: trimmedName });
     setOpen(false);
   });
@@ -96,7 +98,9 @@ const TagChip = ({ tag, onRemove, onSave, onDelete }: TagChipProps) => {
               maxLength={50}
               onChange={(event) => setName(event.target.value)}
               onKeyDown={(event) => {
-                if (event.key === 'Enter') void handleSave();
+                if (event.key === 'Enter') {
+                  void handleSave();
+                }
               }}
             />
           </div>

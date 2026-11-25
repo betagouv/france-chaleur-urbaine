@@ -52,39 +52,38 @@ export default handleRouteErrors(async function demands(req: NextApiRequest) {
 
   if (group === 'all') {
     return (await getAllDemandsForStats()).reverse().reduce(reducer(), {});
-  } else {
-    const results = await kdb
-      .selectFrom('matomo_stats as s')
-      .select([
-        sql<string>`TO_CHAR(date::date, 'yyyy-mm-dd')`.as('date'),
-        sql<number>`(SELECT s1.value
+  }
+  const results = await kdb
+    .selectFrom('matomo_stats as s')
+    .select([
+      sql<string>`TO_CHAR(date::date, 'yyyy-mm-dd')`.as('date'),
+      sql<number>`(SELECT s1.value
           FROM public.matomo_stats as s1
           WHERE s1.stat_label = ${STAT_LABEL.NB_ELIGIBLE}
           AND s1.date = s.date
           AND s1.method = ${STAT_METHOD.DEMANDS}
           AND s1.stat_key = ${STAT_KEY.NB_CONTACTS}
           AND s1.period = ${STAT_PERIOD.MONTHLY})`.as(STAT_LABEL.NB_ELIGIBLE),
-        sql<number>`(SELECT s2.value
+      sql<number>`(SELECT s2.value
           FROM public.matomo_stats as s2
           WHERE s2.stat_label = ${STAT_LABEL.NB_UNELIGIBLE}
           AND s2.date = s.date
           AND s2.method = ${STAT_METHOD.DEMANDS}
           AND s2.stat_key = ${STAT_KEY.NB_CONTACTS}
           AND s2.period = ${STAT_PERIOD.MONTHLY})`.as(STAT_LABEL.NB_UNELIGIBLE),
-        sql<number>`(SELECT s3.value
+      sql<number>`(SELECT s3.value
           FROM public.matomo_stats as s3
           WHERE s3.stat_label = ${STAT_LABEL.NB_TOTAL}
           AND s3.date = s.date
           AND s3.method = ${STAT_METHOD.DEMANDS}
           AND s3.stat_key = ${STAT_KEY.NB_CONTACTS}
           AND s3.period = ${STAT_PERIOD.MONTHLY})`.as(STAT_LABEL.NB_TOTAL),
-      ])
-      .where('s.method', '=', STAT_METHOD.DEMANDS)
-      .where('s.stat_key', '=', STAT_KEY.NB_CONTACTS)
-      .where('s.period', '=', STAT_PERIOD.MONTHLY)
-      .orderBy('s.date', 'asc')
-      .groupBy('s.date')
-      .execute();
-    return results;
-  }
+    ])
+    .where('s.method', '=', STAT_METHOD.DEMANDS)
+    .where('s.stat_key', '=', STAT_KEY.NB_CONTACTS)
+    .where('s.period', '=', STAT_PERIOD.MONTHLY)
+    .orderBy('s.date', 'asc')
+    .groupBy('s.date')
+    .execute();
+  return results;
 });

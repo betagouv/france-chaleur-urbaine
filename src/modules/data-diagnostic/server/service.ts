@@ -57,7 +57,9 @@ const checkUserNoPermission: IssueBuilder = async () => {
     .orderBy('u.email')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: [row.role, fullName(row.first_name, row.last_name)].filter(Boolean).join(' — '),
@@ -91,7 +93,9 @@ const checkGestionnaireWithTerritory: IssueBuilder = async () => {
     .orderBy('u.email')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: fullName(row.first_name, row.last_name) ?? undefined,
@@ -125,7 +129,9 @@ const checkPermissionOnRoleWithoutPermissions: IssueBuilder = async () => {
     .orderBy('u.email')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: row.role,
@@ -160,7 +166,9 @@ const checkDuplicateEmail: IssueBuilder = async () => {
     .having((eb) => eb.fn.count('id'), '>', 1)
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `${row.ids.length} comptes : ${row.emails.join(', ')}`,
@@ -226,7 +234,9 @@ const checkOrphanPermissions: IssueBuilder = async () => {
     .orderBy('u.email')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: row.email,
@@ -253,7 +263,9 @@ const checkOrphanPermissions: IssueBuilder = async () => {
 const checkCustomTerritoryStaleCommunes: IssueBuilder = async () => {
   const rows = await findStaleCustomTerritories();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `${row.added_count} commune(s) à ajouter, ${row.removed_count} à retirer`,
@@ -280,7 +292,9 @@ const checkCustomTerritoryStaleCommunes: IssueBuilder = async () => {
 const checkCustomTerritoryOrphanRecipeRef: IssueBuilder = async () => {
   const rows = await findCustomTerritoriesWithOrphanRefs();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const describeRefs = (prefix: string, refs: TerritoryRef[]) =>
     refs.length > 0 ? `${prefix} : ${refs.map((ref) => `${permissionTypeLabels[ref.type]} ${ref.code}`).join(', ')}` : null;
@@ -315,7 +329,9 @@ const checkDormantAccounts: IssueBuilder = async () => {
     .orderBy('last_connection')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `${row.role} — dernière connexion ${row.last_connection ? formatDate(row.last_connection) : 'jamais'}`,
@@ -358,7 +374,9 @@ const checkDemandMissingCoordinates: IssueBuilder = async () => {
     .orderBy('created_at', 'desc')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `créée le ${formatDate(row.created_at)}`,
@@ -395,7 +413,9 @@ const checkDemandNetworkMismatch: IssueBuilder = async () => {
     .orderBy('id')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `network_id=${row.network_id ?? '∅'} / network_type=${row.network_type ?? '∅'}`,
@@ -440,7 +460,9 @@ const checkDemandOrphanNetwork: IssueBuilder = async () => {
     .orderBy('d.id')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `${row.network_type} #${row.network_id}`,
@@ -508,7 +530,9 @@ const checkPdpOrphanNetwork: IssueBuilder = async () => {
     .orderBy('pdp.id_fcu')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: [
@@ -558,7 +582,9 @@ const checkPdpAmbiguousOperator: IssueBuilder = async () => {
     (row) => (!row.Gestionnaire && row.linked_gestionnaires.length > 1) || (!row.MO && row.linked_maitres_ouvrage.length > 1)
   );
 
-  if (ambiguousRows.length === 0) return null;
+  if (ambiguousRows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(ambiguousRows, (row) => ({
     context: [
@@ -597,8 +623,12 @@ const groupNetworksByPdp = (
     }
     return value;
   };
-  for (const row of rdcRows) entry(row).rdc.push(row.network);
-  for (const row of zrcRows) entry(row).zrc.push(row.network);
+  for (const row of rdcRows) {
+    entry(row).rdc.push(row.network);
+  }
+  for (const row of zrcRows) {
+    entry(row).zrc.push(row.network);
+  }
 
   return [...byPdp.entries()]
     .sort(([a], [b]) => a - b)
@@ -664,7 +694,9 @@ const checkPdpMissingNetworkLink: IssueBuilder = async () => {
       .execute(),
   ]);
 
-  if (rdcRows.length === 0 && zrcRows.length === 0) return null;
+  if (rdcRows.length === 0 && zrcRows.length === 0) {
+    return null;
+  }
 
   const grouped = groupNetworksByPdp(
     rdcRows.map((row) => ({ ...row, network: networkLabel(row.network_id, row.nom_reseau, row.network_sncu) })),
@@ -736,7 +768,9 @@ const checkPdpLinkWithoutIntersection: IssueBuilder = async () => {
       .execute(),
   ]);
 
-  if (rdcRows.length === 0 && zrcRows.length === 0) return null;
+  if (rdcRows.length === 0 && zrcRows.length === 0) {
+    return null;
+  }
 
   const grouped = groupNetworksByPdp(
     rdcRows.map((row) => ({ ...row, network: networkLabel(row.network_id, row.nom_reseau, row.network_sncu) })),
@@ -769,7 +803,9 @@ const checkDemandUnvalidatedOld: IssueBuilder = async () => {
     .orderBy('created_at')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `créée le ${formatDate(row.created_at)}`,
@@ -805,7 +841,9 @@ const checkDemandPendingAssignmentStale: IssueBuilder = async () => {
     .orderBy(sql<Date>`(pending_assignment_change->>'requested_at')::timestamptz`)
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `demande de réaffectation depuis le ${formatDate(row.requested_at)}`,
@@ -892,7 +930,9 @@ const checkDemandRecontactMismatch: IssueBuilder = async () => {
     .orderBy((eb) => lastSatisfactionAt(eb), 'desc')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `statut « ${row.status} » — « Non » répondu le ${formatDate(row.satisfaction_at)}`,
@@ -936,7 +976,9 @@ const checkDemandRecontactMismatchLegacy: IssueBuilder = async () => {
     .orderBy('demands.created_at', 'desc')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `statut « ${row.status} » — créée le ${formatDate(row.created_at)}`,
@@ -989,7 +1031,9 @@ const checkOrganizationWithoutNetworks: IssueBuilder = async () => {
     .orderBy('o.name')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: row.has_active_credential ? 'token API actif — portée vide' : undefined,
@@ -1034,7 +1078,9 @@ const checkNationalCandidateUnmigrated: IssueBuilder = async () => {
     .orderBy((eb) => eb.fn.count('up.id'), 'desc')
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `${row.network_perms} permissions réseau — ${fullName(row.first_name, row.last_name) ?? 'sans nom'}`,
@@ -1072,7 +1118,9 @@ const checkGestionnaireSplitAcrossOrganizations: IssueBuilder = async () => {
     .having((eb) => eb.fn.count('r.organization_id').distinct(), '>', 1)
     .execute();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `${row.org_count} organisations : ${row.org_names.join(', ')}`,
@@ -1098,7 +1146,9 @@ const checkGestionnaireSplitAcrossOrganizations: IssueBuilder = async () => {
 const checkNetworkMatchingPatternUnattached: IssueBuilder = async () => {
   const rows = await findUnattachedNetworksMatchingPatterns();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `devrait être rattaché à ${row.organization_name}${row.gestionnaire ? ` — ${row.gestionnaire}` : ''}`,
@@ -1124,7 +1174,9 @@ const checkNetworkMatchingPatternUnattached: IssueBuilder = async () => {
 const checkNetworkAttachedNotMatchingPattern: IssueBuilder = async () => {
   const rows = await findAttachedNetworksNotMatchingPatterns();
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(rows, (row) => ({
     context: `rattaché à ${row.organization_name} — gestionnaire : ${row.gestionnaire ?? '(vide)'}`,
@@ -1145,7 +1197,9 @@ const checkNetworkAttachedNotMatchingPattern: IssueBuilder = async () => {
 };
 
 const formatDate = (value: Date | string | null): string => {
-  if (value === null) return '—';
+  if (value === null) {
+    return '—';
+  }
   const date = value instanceof Date ? value : new Date(value);
   return date.toLocaleDateString('fr-FR');
 };
@@ -1180,7 +1234,9 @@ const checkExtensionNotConsolidated: IssueBuilder = async () => {
 
   const staleRows = rows.filter((row) => Number(row.demands_count) > 0 || Number(row.permissions_count) > 0);
 
-  if (staleRows.length === 0) return null;
+  if (staleRows.length === 0) {
+    return null;
+  }
 
   const { items, totalCount, truncated } = truncate(staleRows, (row) => ({
     context: `${Number(row.demands_count)} demande(s), ${Number(row.permissions_count)} permission(s)`,

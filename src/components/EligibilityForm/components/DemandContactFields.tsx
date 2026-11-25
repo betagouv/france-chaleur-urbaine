@@ -54,7 +54,7 @@ type DemandContactFieldsProps = {
  */
 export const DemandContactFields = withFieldGroup<DemandContactFieldsValues, unknown, DemandContactFieldsProps>({
   defaultValues: demandContactDefaultValues,
-  // biome-ignore lint: a named PascalCase function is required for the hooks rules (an inline `render()` method is not seen as a component)
+  // a named PascalCase function is required for the hooks rules (an inline `render()` method is not seen as a component)
   render: function DemandContactFieldsRender({ group, cardMode, city, showHouseWarning, structureClassName }) {
     // despite the type, `values` is undefined while a group mounted on an optional subtree initializes
     const structure = useStore(group.store, (state) => state.values?.structure);

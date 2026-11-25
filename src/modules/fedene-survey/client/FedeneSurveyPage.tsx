@@ -264,7 +264,7 @@ type DiffValueProps = { segments: DiffSegment[] };
 /** The value with its words that differ from the other side highlighted. */
 function DiffValue({ segments }: DiffValueProps) {
   return (
-    <span className="break-words">
+    <span className="wrap-break-word">
       {segments.map((segment, index) =>
         segment.kind === 'different' ? (
           <mark key={index} className={differentClass}>

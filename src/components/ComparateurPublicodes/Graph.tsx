@@ -178,11 +178,21 @@ const roundScale = roundUpToNearestThreshold([
 
 const getGridRepeatPercentage = (value: number) => {
   let gridPercentage = 50;
-  if (value % 500 === 0 && value <= 3000) gridPercentage = 100 / (value / 500);
-  if (value % 1000 === 0 && value <= 10000) gridPercentage = 100 / (value / 1000);
-  if (value % 10000 === 0 && value > 10000) gridPercentage = 100 / (value / 10000);
-  if (value % 100000 === 0 && value > 100000) gridPercentage = 100 / (value / 100000);
-  if (value % 1000000 === 0 && value > 1000000) gridPercentage = 100 / (value / 1000000);
+  if (value % 500 === 0 && value <= 3000) {
+    gridPercentage = 100 / (value / 500);
+  }
+  if (value % 1000 === 0 && value <= 10000) {
+    gridPercentage = 100 / (value / 1000);
+  }
+  if (value % 10000 === 0 && value > 10000) {
+    gridPercentage = 100 / (value / 10000);
+  }
+  if (value % 100000 === 0 && value > 100000) {
+    gridPercentage = 100 / (value / 100000);
+  }
+  if (value % 1000000 === 0 && value > 1000000) {
+    gridPercentage = 100 / (value / 1000000);
+  }
   return gridPercentage;
 };
 
@@ -286,8 +296,12 @@ const Graph: React.FC<GraphProps> = ({
       if (idxA !== -1 && idxB !== -1) {
         return idxA - idxB;
       }
-      if (idxA !== -1) return -1;
-      if (idxB !== -1) return 1;
+      if (idxA !== -1) {
+        return -1;
+      }
+      if (idxB !== -1) {
+        return 1;
+      }
 
       // Neither found: default to original order
       return 0;

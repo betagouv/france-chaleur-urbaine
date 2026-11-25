@@ -70,7 +70,8 @@ const TableCell = <T,>({
           </time>
         </span>
       );
-    } else if (type === 'Date') {
+    }
+    if (type === 'Date') {
       const date = new Date(value);
       const computedCellProps: Intl.DateTimeFormatOptions = hasCellProps
         ? (cellProps as Intl.DateTimeFormatOptions)
@@ -168,17 +169,25 @@ export default memo(TableCell, (prevProps, nextProps) => {
 // Fonction utilitaire pour comparer des objets sans sérialisation JSON
 function isEqual(a: any, b: any): boolean {
   // Si les références sont identiques
-  if (a === b) return true;
+  if (a === b) {
+    return true;
+  }
 
   // Si l'un est null/undefined mais pas l'autre
-  if (a == null || b == null) return a === b;
+  if (a == null || b == null) {
+    return a === b;
+  }
 
   // Types différents
-  if (typeof a !== typeof b) return false;
+  if (typeof a !== typeof b) {
+    return false;
+  }
 
   // Pour les tableaux
   if (Array.isArray(a) && Array.isArray(b)) {
-    if (a.length !== b.length) return false;
+    if (a.length !== b.length) {
+      return false;
+    }
     return a.every((item, index) => isEqual(item, b[index]));
   }
 
@@ -187,7 +196,9 @@ function isEqual(a: any, b: any): boolean {
     const keysA = Object.keys(a);
     const keysB = Object.keys(b);
 
-    if (keysA.length !== keysB.length) return false;
+    if (keysA.length !== keysB.length) {
+      return false;
+    }
 
     return keysA.every((key) => a[key] === b[key]);
   }

@@ -5,10 +5,11 @@ export type TrackingConfiguration = {
 /**
  * These ids are used in Matomo to track Forms interactions.
  */
-export enum AnalyticsFormId {
-  form_test_adresse = 'form_test_adresse',
-  form_contact = 'form_contact',
-}
+export const AnalyticsFormId = {
+  form_contact: 'form_contact',
+  form_test_adresse: 'form_test_adresse',
+} as const;
+export type AnalyticsFormId = (typeof AnalyticsFormId)[keyof typeof AnalyticsFormId];
 /**
  * List of all events tracked by analytics tools.
  */

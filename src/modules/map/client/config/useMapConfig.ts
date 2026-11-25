@@ -17,7 +17,9 @@ export const mapConfigAtom = atom<MapConfiguration | null>(null);
 
 export const mapConfigDispatchAtom = atom(null, (get, set, action: MapConfigAction) => {
   const current = get(mapConfigAtom);
-  if (!current) return;
+  if (!current) {
+    return;
+  }
   set(mapConfigAtom, reducer(current, action));
 });
 

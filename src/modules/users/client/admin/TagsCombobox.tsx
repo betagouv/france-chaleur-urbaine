@@ -79,7 +79,9 @@ const TagsCombobox = ({ value, onChange, disabled }: TagsComboboxProps) => {
 
   const handleCreate = toastErrors(async () => {
     const name = query.trim();
-    if (!name) return;
+    if (!name) {
+      return;
+    }
     const created = await createTag.mutateAsync({ color: DEFAULT_TAG_COLOR, name });
     onChange([...value, created.id]);
     setQuery('');
@@ -96,7 +98,9 @@ const TagsCombobox = ({ value, onChange, disabled }: TagsComboboxProps) => {
       return;
     }
     // Ignore arrows/Enter while no dropdown is shown (avoids toggling a hidden option).
-    if (!popoverOpen) return;
+    if (!popoverOpen) {
+      return;
+    }
 
     if (event.key === 'ArrowDown') {
       event.preventDefault();
@@ -106,7 +110,9 @@ const TagsCombobox = ({ value, onChange, disabled }: TagsComboboxProps) => {
       setHighlightedIndex((index) => (index <= 0 ? itemCount - 1 : index - 1));
     } else if (event.key === 'Enter') {
       event.preventDefault();
-      if (highlightedIndex < 0) return; // nothing highlighted → do nothing (no accidental toggle)
+      if (highlightedIndex < 0) {
+        return; // nothing highlighted → do nothing (no accidental toggle)
+      }
       if (highlightedIndex < filteredOptions.length) {
         toggle(filteredOptions[highlightedIndex].id);
       } else if (canCreate) {

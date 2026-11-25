@@ -501,11 +501,15 @@ export async function selectBootstrapTables(bundles: BootstrapBundle[]): Promise
       type: 'multiselect',
     })) as { bundles?: BootstrapBundle[] };
     selectedBundles = answer.bundles ?? [];
-    if (selectedBundles.length === 0) return [];
+    if (selectedBundles.length === 0) {
+      return [];
+    }
   }
 
   const bundleTables = allDatabaseTables.filter((table) => selectedBundles.includes(table.bundle));
-  if (bundles.length > 0) return bundleTables.map((table) => table.name);
+  if (bundles.length > 0) {
+    return bundleTables.map((table) => table.name);
+  }
 
   const { refine } = (await prompts({
     initial: false,
@@ -513,7 +517,9 @@ export async function selectBootstrapTables(bundles: BootstrapBundle[]): Promise
     name: 'refine',
     type: 'confirm',
   })) as { refine?: boolean };
-  if (!refine) return bundleTables.map((table) => table.name);
+  if (!refine) {
+    return bundleTables.map((table) => table.name);
+  }
 
   const { selectedTables } = (await prompts({
     choices: bundleTables.map((table) => ({

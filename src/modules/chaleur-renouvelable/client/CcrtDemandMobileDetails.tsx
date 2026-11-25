@@ -44,7 +44,7 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
         <h1 className="mb-0 text-[28px] leading-9">
           {demand.first_name} {demand.last_name}
         </h1>
-        <p className="mb-0 break-words font-medium leading-6">
+        <p className="mb-0 wrap-break-word font-medium leading-6">
           {demand.occupant_status} · {formatCcrtAddress(demand.address)}
         </p>
         {onValidate && demand.origin && <DemandOriginCell origin={demand.origin} />}
@@ -65,7 +65,7 @@ export function CcrtDemandMobileDetails({ demand, actions, onClose, onValidate }
           </p>
         )}
       </div>
-      <div className="border border-(--background-default-grey-active) bg-(--background-default-grey) p-4 [&_.fr-accordion__btn]:py-2! [&_.fr-accordion__btn]:font-medium! [&_.fr-collapse]:max-w-full [&_.fr-collapse]:break-words">
+      <div className="border border-(--background-default-grey-active) bg-(--background-default-grey) p-4 [&_.fr-accordion__btn]:py-2! [&_.fr-accordion__btn]:font-medium! [&_.fr-collapse]:max-w-full [&_.fr-collapse]:wrap-break-word">
         <p className="mb-2 text-sm">Recommandations de la simulation</p>
         {demand.alternative_heating_solutions.length > 0 ? (
           <ol className="m-0 mb-2 list-decimal space-y-2 pl-6 font-medium">

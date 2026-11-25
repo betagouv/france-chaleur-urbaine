@@ -97,7 +97,9 @@ const ChipAutoComplete = (rawProps: ChipAutoCompleteProps) => {
   }, [inputValue, options]);
 
   useEffect(() => {
-    if (isOpen && filteredOptions.length > 0) setHighlightedIndex(0);
+    if (isOpen && filteredOptions.length > 0) {
+      setHighlightedIndex(0);
+    }
   }, [isOpen, inputValue, filteredOptions.length]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

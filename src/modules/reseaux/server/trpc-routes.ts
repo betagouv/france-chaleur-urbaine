@@ -180,8 +180,12 @@ const networkRemindersRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const changes: { note?: string | null; created_at?: Date } = {};
-      if ('note' in input) changes.note = input.note ?? null;
-      if (input.createdAt) changes.created_at = new Date(input.createdAt);
+      if ('note' in input) {
+        changes.note = input.note ?? null;
+      }
+      if (input.createdAt) {
+        changes.created_at = new Date(input.createdAt);
+      }
       await updateNetworkReminder(input.id, changes, ctx.user.id);
     }),
   updateNotes: adminRoute

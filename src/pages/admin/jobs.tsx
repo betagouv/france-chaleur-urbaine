@@ -43,7 +43,9 @@ const columns: ColumnDef<AdminJobItem>[] = [
     accessorKey: 'result',
     cell: (info) => {
       const result = info.getValue();
-      if (!result) return null;
+      if (!result) {
+        return null;
+      }
 
       if ('error' in result) {
         return <Text color="error">{result.error}</Text>;

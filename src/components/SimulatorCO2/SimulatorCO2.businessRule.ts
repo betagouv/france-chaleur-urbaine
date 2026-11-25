@@ -1,13 +1,15 @@
-export enum TypeSurf {
-  copropriete = 'copropriete',
-  tertiaire = 'tertiaire',
-}
+export const TypeSurf = {
+  copropriete: 'copropriete',
+  tertiaire: 'tertiaire',
+} as const;
+export type TypeSurf = (typeof TypeSurf)[keyof typeof TypeSurf];
 
-export enum TypeEnergy {
-  fioul = 'fioul',
-  gaz = 'gaz',
-  rdc = 'rdc',
-}
+export const TypeEnergy = {
+  fioul: 'fioul',
+  gaz: 'gaz',
+  rdc: 'rdc',
+} as const;
+export type TypeEnergy = (typeof TypeEnergy)[keyof typeof TypeEnergy];
 
 const equiLog = 10; // --> Consommation moyenne par logement et par an : consommation moyenne en MWh/an
 const equiSurfLog = 140; // --> Consommation moyenne par m² de logement et par an : consommation moyenne en kWh/m2/an

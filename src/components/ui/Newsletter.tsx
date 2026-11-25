@@ -64,7 +64,9 @@ export const NewsletterButton: React.FC<Omit<AsyncButtonProps, 'disabled' | 'onC
 
 export const NewsletterError: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => {
   const { error } = useContext(NewsletterContext);
-  if (!error) return null;
+  if (!error) {
+    return null;
+  }
   return (
     <p className={cx('fr-error-text', className)} {...props}>
       {error}

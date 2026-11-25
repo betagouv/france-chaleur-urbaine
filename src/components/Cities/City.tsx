@@ -23,7 +23,9 @@ const Simulator = dynamic(() => import('@/modules/simulator/client/Simulator'), 
 
 const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; network?: HeatNetwork }) => {
   const cityData = citiesData[citySlug];
-  if (!cityData) return;
+  if (!cityData) {
+    return;
+  }
   const hasUniqueNetwork = !!cityData.networksData?.identifiant;
 
   return (

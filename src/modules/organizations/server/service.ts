@@ -134,7 +134,9 @@ export const deleteOrganization = async (id: string, authorId: string): Promise<
 
 /** Affecte (ou dé-affecte si `organizationId` est null) des réseaux par `id_fcu`. Retourne le nombre de lignes modifiées. */
 export const assignNetworks = async (table: NetworkTableName, idsFcu: number[], organizationId: string | null): Promise<number> => {
-  if (idsFcu.length === 0) return 0;
+  if (idsFcu.length === 0) {
+    return 0;
+  }
   const res = await kdb.updateTable(table).set({ organization_id: organizationId }).where('id_fcu', 'in', idsFcu).executeTakeFirst();
   return Number(res?.numUpdatedRows ?? 0);
 };

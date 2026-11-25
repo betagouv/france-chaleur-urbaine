@@ -44,7 +44,9 @@ export function createRateLimitMiddleware(t: TRoot) {
     const config = meta?.rateLimit ?? DEFAULT_RATE_LIMIT;
 
     // Si explicitement désactivé, pas de rate limiting
-    if (config === false) return next();
+    if (config === false) {
+      return next();
+    }
 
     // Créer un rate limiter avec store partagé et préfixe par route
     const rateLimiter = createRateLimiter({

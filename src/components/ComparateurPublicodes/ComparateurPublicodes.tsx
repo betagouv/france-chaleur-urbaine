@@ -172,7 +172,9 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   // Masque le spinner dès que l'engine est chargé, sauf si une auto-résolution d'adresse est en cours
   // (dans ce cas, c'est l'effet ci-dessous qui appellera setLoading(false) quand elle sera terminée).
   React.useEffect(() => {
-    if (!engine.loaded) return;
+    if (!engine.loaded) {
+      return;
+    }
     const savedAddress = addressInUrl || userInfo.address;
     if (!savedAddress || isAddressSelectedRef.current) {
       setLoading(false);
@@ -182,12 +184,16 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   // Restaure la situation publicodes au rechargement quand une adresse est connue mais l'engine pas encore alimenté.
   React.useEffect(() => {
     const savedAddress = addressInUrl || userInfo.address;
-    if (!savedAddress || isAddressSelectedRef.current) return;
+    if (!savedAddress || isAddressSelectedRef.current) {
+      return;
+    }
     const controller = new AbortController();
     searchBANAddresses({ excludeCities: true, query: savedAddress, signal: controller.signal })
       .then(async (features) => {
         const match = features.find((f) => f.properties.label === savedAddress) ?? features[0];
-        if (match) await handleAddressSelectRef.current(match, false);
+        if (match) {
+          await handleAddressSelectRef.current(match, false);
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));

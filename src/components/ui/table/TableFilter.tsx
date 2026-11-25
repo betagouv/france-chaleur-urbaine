@@ -75,7 +75,9 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
       }
     } else if (type === 'Range') {
       const domain = filterProps?.domain || (facetedMinMaxValues as Interval);
-      if (domain && value[0] === domain[0] && value[1] === domain[1]) onChange(undefined);
+      if (domain && value[0] === domain[0] && value[1] === domain[1]) {
+        onChange(undefined);
+      }
     } else if (type === 'Facets' && Object.values(value).every((v) => v === true)) {
       onChange(undefined);
     }
@@ -155,7 +157,8 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
     ) : (
       'Aucun filtrage possible'
     );
-  } else if (type === 'Facets') {
+  }
+  if (type === 'Facets') {
     const entries = Object.entries(facetedUniqueValues ? Object.fromEntries(facetedUniqueValues) : {}).sort(([k1], [k2]) =>
       k1.localeCompare(k2)
     );
@@ -196,7 +199,8 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
         {...facetsFilterProps}
       />
     );
-  } else if (type === 'ComboBox') {
+  }
+  if (type === 'ComboBox') {
     const { options, label, placeholder } = filterProps || { options: [] };
     return (
       <ComboBox
@@ -214,7 +218,8 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
         placeholder={placeholder}
       />
     );
-  } else if (type === 'EmptyOrFilled') {
+  }
+  if (type === 'EmptyOrFilled') {
     const { filledLabel = 'Rempli', emptyLabel = 'Vide' } = filterProps || {};
     return (
       <div className="flex flex-col gap-2">
@@ -254,7 +259,8 @@ const TableFilter = ({ value, type, onChange, filterProps, facetedUniqueValues, 
         </div>
       </div>
     );
-  } else if (type === 'Text') {
+  }
+  if (type === 'Text') {
     const { label = '', placeholder = 'Filtrer...' } = filterProps || {};
     return (
       <Input

@@ -88,7 +88,9 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
   };
 
   const handleAcceptPending = async () => {
-    if (!props.isAdmin || !demand.pending_assignment_change) return;
+    if (!props.isAdmin || !demand.pending_assignment_change) {
+      return;
+    }
     const pending = demand.pending_assignment_change;
     await toastErrors(async () => {
       await props.onChangeNetwork(demand.id, pending.network_id, pending.network_type);
@@ -97,8 +99,12 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
   };
 
   const handleRejectPending = async () => {
-    if (!props.isAdmin || !demand.pending_assignment_change) return;
-    if (!confirm('Rejeter cette demande de réaffectation ?')) return;
+    if (!props.isAdmin || !demand.pending_assignment_change) {
+      return;
+    }
+    if (!confirm('Rejeter cette demande de réaffectation ?')) {
+      return;
+    }
     await toastErrors(async () => {
       await rejectMutation.mutateAsync({ demandId: demand.id });
       notify('success', 'Demande de réaffectation rejetée');
@@ -106,8 +112,12 @@ export default function AffectedNetworkCell<T extends BaseDemand>(props: Affecte
   };
 
   const handleCancelPending = async () => {
-    if (props.isAdmin || !demand.pending_assignment_change) return;
-    if (!confirm('Annuler votre demande de réaffectation ?')) return;
+    if (props.isAdmin || !demand.pending_assignment_change) {
+      return;
+    }
+    if (!confirm('Annuler votre demande de réaffectation ?')) {
+      return;
+    }
     await toastErrors(async () => {
       await cancelMutation.mutateAsync({ demandId: demand.id });
       notify('success', 'Demande de réaffectation annulée');

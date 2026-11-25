@@ -145,7 +145,9 @@ function MapImplInner({
 
   const handleNetworkSelect = async (result: MapSearchResult) => {
     const controller = effectiveRef.current;
-    if (!controller) return;
+    if (!controller) {
+      return;
+    }
     // Any new selection (address or network) clears the previous marker — only
     // the latest address selection materializes a marker on the map.
     setNetworkSearchMarker(null);

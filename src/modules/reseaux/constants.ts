@@ -68,8 +68,12 @@ export const tableToNetworkEntity = {
  * `…C` → réseau de chaleur, `…F` → réseau de froid, sinon `null`.
  */
 export function networkTableForId(id_sncu: string): 'reseaux_de_chaleur' | 'reseaux_de_froid' | null {
-  if (id_sncu.endsWith('C')) return 'reseaux_de_chaleur';
-  if (id_sncu.endsWith('F')) return 'reseaux_de_froid';
+  if (id_sncu.endsWith('C')) {
+    return 'reseaux_de_chaleur';
+  }
+  if (id_sncu.endsWith('F')) {
+    return 'reseaux_de_froid';
+  }
   return null;
 }
 

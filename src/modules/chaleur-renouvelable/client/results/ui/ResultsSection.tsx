@@ -389,7 +389,7 @@ function OtherSolutionLabel({
         <span className="hidden md:block" />
         <span className="text-(--text-default-grey) text-sm"> par an par logement</span>
       </span>
-      <span className="grid grid-cols-2 items-center gap-4 hidden md:block">
+      <span className="hidden md:block">
         <GainVsGazBadge item={item} coutParAnGaz={coutParAnGaz} coutParAnGazHotWaterOnly={coutParAnGazHotWaterOnly} />
         <span className="flex justify-center md:hidden">
           <DpeProgression from={dpeFrom} to={dpeTo} />

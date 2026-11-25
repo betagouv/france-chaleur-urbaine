@@ -130,7 +130,9 @@ const ConversionAbusePage = () => {
   };
   const confirmRemove = async () => {
     const target = removeDialog.data;
-    if (!target) return;
+    if (!target) {
+      return;
+    }
     const result = await removeMutation.mutateAsync({ ip: target.ip });
     notify('success', `Règle retirée pour ${result.ip} — ${result.changedEvents} enregistrement(s) recomptés (événements et simulations).`);
   };
@@ -185,7 +187,9 @@ const ConversionAbusePage = () => {
         accessorFn: (row) => row.ruleDisposition ?? '',
         cell: ({ row }) => {
           const { ruleDisposition, ruleReason, ruleIp, hasExactRule } = row.original;
-          if (!ruleDisposition) return <span className="text-(--text-mention-grey)">—</span>;
+          if (!ruleDisposition) {
+            return <span className="text-(--text-mention-grey)">—</span>;
+          }
           const badge = dispositionBadge[ruleDisposition];
           const inherited = !hasExactRule;
           return (

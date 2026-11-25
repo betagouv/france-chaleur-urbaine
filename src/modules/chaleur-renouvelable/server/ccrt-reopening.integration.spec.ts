@@ -30,8 +30,11 @@ describe('CCRT demand reopening permissions', () => {
       const demand = await seedDemandeChaleurRenouvelable({ validated: true });
       const route = createTestCaller(user).batEnr.admin;
       const operation = route.reopenDemand({ demandId: demand.id, updatedAt: demand.updated_at.toISOString() });
-      if (allowed) await expect(operation).resolves.toEqual(expect.any(Object));
-      else await expect(operation).rejects.toMatchObject(forbiddenError);
+      if (allowed) {
+        await expect(operation).resolves.toEqual(expect.any(Object));
+      } else {
+        await expect(operation).rejects.toMatchObject(forbiddenError);
+      }
     });
   });
 });

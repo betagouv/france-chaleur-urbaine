@@ -80,13 +80,21 @@ export default function AdminEventsPage() {
 
       let granularity = currentGranularity;
       if (currentBuckets < 2) {
-        if (diffHours < 2) granularity = 'minute';
-        else if (diffHours < 48) granularity = 'hour';
-        else if (diffDays < 14) granularity = 'day';
-        else if (diffDays < 90) granularity = 'week';
-        else granularity = 'month';
+        if (diffHours < 2) {
+          granularity = 'minute';
+        } else if (diffHours < 48) {
+          granularity = 'hour';
+        } else if (diffDays < 14) {
+          granularity = 'day';
+        } else if (diffDays < 90) {
+          granularity = 'week';
+        } else {
+          granularity = 'month';
+        }
         // Ensure we don't suggest a granularity finer than what's in the allowed list
-        if (!eventGranularities.includes(granularity)) granularity = currentGranularity;
+        if (!eventGranularities.includes(granularity)) {
+          granularity = currentGranularity;
+        }
       }
 
       void setFilters({
@@ -100,7 +108,9 @@ export default function AdminEventsPage() {
   );
 
   const handleExport = useCallback(() => {
-    if (!stats) return;
+    if (!stats) {
+      return;
+    }
     exportAsXLSX('événements_export.xlsx', [
       {
         columns: [

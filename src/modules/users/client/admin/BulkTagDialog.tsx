@@ -31,7 +31,9 @@ const BulkTagDialog = ({ control, onSuccess }: BulkTagDialogProps) => {
   const canSubmit = tagIds.length > 0 && emails.length > 0;
 
   const handleSubmit = async () => {
-    if (!canSubmit) return;
+    if (!canSubmit) {
+      return;
+    }
     const res = await addToUsers.mutateAsync({ emails, tagIds });
     setResult(res);
     onSuccess();

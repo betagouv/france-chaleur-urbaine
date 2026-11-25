@@ -73,7 +73,9 @@ const BulkAddNetworksDialog = ({ open, onOpenChange, existingPermissions, onAdd 
   );
 
   const rows: LineRow[] = useMemo(() => {
-    if (sncuIds.length === 0) return [];
+    if (sncuIds.length === 0) {
+      return [];
+    }
     if (!lookup.data) {
       return sncuIds.map((input) => ({ input, label: 'Vérification…', status: 'pending' }));
     }
@@ -107,7 +109,9 @@ const BulkAddNetworksDialog = ({ open, onOpenChange, existingPermissions, onAdd 
   const remainingSlots = MAX_PERMISSIONS_PER_USER - existingPermissions.length;
 
   const handleSubmit = () => {
-    if (newPermissions.length === 0 || willExceedLimit) return;
+    if (newPermissions.length === 0 || willExceedLimit) {
+      return;
+    }
     onAdd(newPermissions);
     onOpenChange(false);
   };

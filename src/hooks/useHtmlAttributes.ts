@@ -1,17 +1,31 @@
 import { useEffect } from 'react';
 
 const getOsFromUserAgent = (ua: string): string => {
-  if (/Mac/i.test(ua)) return 'mac';
-  if (/Win/i.test(ua)) return 'windows';
-  if (/Linux/i.test(ua)) return 'linux';
+  if (/Mac/i.test(ua)) {
+    return 'mac';
+  }
+  if (/Win/i.test(ua)) {
+    return 'windows';
+  }
+  if (/Linux/i.test(ua)) {
+    return 'linux';
+  }
   return 'unknown';
 };
 
 const getBrowserFromUserAgent = (ua: string): string => {
-  if (/Firefox/i.test(ua)) return 'firefox';
-  if (/Chrome/i.test(ua)) return 'chrome';
-  if (/Safari/i.test(ua)) return 'safari';
-  if (/Edge/i.test(ua)) return 'edge';
+  if (/Firefox/i.test(ua)) {
+    return 'firefox';
+  }
+  if (/Chrome/i.test(ua)) {
+    return 'chrome';
+  }
+  if (/Safari/i.test(ua)) {
+    return 'safari';
+  }
+  if (/Edge/i.test(ua)) {
+    return 'edge';
+  }
   return 'unknown';
 };
 

@@ -102,7 +102,9 @@ export const populateTilesCache = () => {
   state.tilesCacheDay = new Date().getDate();
   Promise.all(
     ObjectEntries(tileSourcesConfig).map(async ([sourceId, config]) => {
-      if (!('cache' in config)) return;
+      if (!('cache' in config)) {
+        return;
+      }
 
       const logger = parentLogger.child({ sourceId });
       const startTime = Date.now();

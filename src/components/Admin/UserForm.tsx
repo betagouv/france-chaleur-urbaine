@@ -50,7 +50,9 @@ const STRUCTURE_TYPE_TO_ROLE = {
 } as const satisfies Partial<Record<keyof typeof structureTypesFormLabels, UserRole>>;
 
 const getAvailableTypes = (role: UserRole) => {
-  if ((userRolesWithPermissions as readonly string[]).includes(role)) return permissionTypes;
+  if ((userRolesWithPermissions as readonly string[]).includes(role)) {
+    return permissionTypes;
+  }
   return [] as const;
 };
 

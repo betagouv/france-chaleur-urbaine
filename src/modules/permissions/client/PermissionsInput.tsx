@@ -39,7 +39,9 @@ const PermissionsInput = ({ value, onChange, availableTypes }: PermissionsInputP
   const handleBulkAdd = (permissions: Permission[]) => {
     const existingKeys = new Set(value.map((p) => `${p.type}:${p.resource_id}`));
     const toAdd = permissions.filter((p) => !existingKeys.has(`${p.type}:${p.resource_id}`));
-    if (toAdd.length > 0) onChange([...value, ...toAdd]);
+    if (toAdd.length > 0) {
+      onChange([...value, ...toAdd]);
+    }
   };
 
   const handleRemove = (index: number) => {

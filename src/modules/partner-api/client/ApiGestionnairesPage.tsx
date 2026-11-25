@@ -27,7 +27,9 @@ const demandeSchema = z.toJSONSchema(zDemande, { target: 'draft-2020-12' }) as J
 
 /** Objet sous-jacent d'un nœud (gère un objet nullable `anyOf: [object, null]`). */
 const objectOf = (node: JsonSchemaNode): JsonSchemaNode | null => {
-  if (node.type === 'object' && node.properties) return node;
+  if (node.type === 'object' && node.properties) {
+    return node;
+  }
   return node.anyOf?.find((b) => b.type === 'object' && b.properties) ?? null;
 };
 
@@ -37,7 +39,9 @@ const typeLabel = (node: JsonSchemaNode): string => {
     const base = nonNull ? typeLabel(nonNull) : 'object';
     return node.anyOf.some((b) => b.type === 'null') ? `${base} | null` : base;
   }
-  if (node.enum) return 'string';
+  if (node.enum) {
+    return 'string';
+  }
   const t = node.type;
   if (Array.isArray(t)) {
     const base = t.filter((x) => x !== 'null').join(' | ') || 'null';
@@ -134,8 +138,11 @@ const demandExampleLines: ExampleLine[] = (() => {
   const groups: [string, JsonSchemaNode, JsonSchemaNode][] = [];
   for (const [key, node] of Object.entries(properties)) {
     const obj = objectOf(node);
-    if (obj?.properties) groups.push([key, node, obj]);
-    else roots.push([key, node]);
+    if (obj?.properties) {
+      groups.push([key, node, obj]);
+    } else {
+      roots.push([key, node]);
+    }
   }
 
   const lines: ExampleLine[] = [];

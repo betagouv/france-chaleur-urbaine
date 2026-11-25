@@ -54,7 +54,9 @@ export function AddressSearch({ onlyAddress, onlyCities, excludeCities, ...props
  */
 export function highlightMatch(text: string, query: string): React.ReactNode {
   const words = query.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return text;
+  if (words.length === 0) {
+    return text;
+  }
 
   const normalizedText = normalize(text);
   const pattern = new RegExp(words.map((w) => normalize(w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'g');
@@ -62,15 +64,21 @@ export function highlightMatch(text: string, query: string): React.ReactNode {
   let lastIndex = 0;
 
   for (const match of normalizedText.matchAll(pattern)) {
-    if (match.index === undefined) continue;
+    if (match.index === undefined) {
+      continue;
+    }
     const start = match.index;
     const end = start + match[0].length;
-    if (start > lastIndex) segments.push(text.slice(lastIndex, start));
+    if (start > lastIndex) {
+      segments.push(text.slice(lastIndex, start));
+    }
     segments.push(<strong key={start}>{text.slice(start, end)}</strong>);
     lastIndex = end;
   }
 
-  if (lastIndex < text.length) segments.push(text.slice(lastIndex));
+  if (lastIndex < text.length) {
+    segments.push(text.slice(lastIndex));
+  }
 
   return <>{segments}</>;
 }

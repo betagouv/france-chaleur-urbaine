@@ -271,11 +271,11 @@ program
       return;
     }
 
-    if (sequential)
+    if (sequential) {
       for (const table of selectedTables) {
         await runBash(`pnpm db:pull:prod --data-only "${table}"`);
       }
-    else {
+    } else {
       await runBash(`pnpm db:pull:prod --data-only ${selectedTables.map((t) => `"${t}"`).join(' ')}`);
     }
     if (selectedTables.includes('users')) {

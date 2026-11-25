@@ -355,7 +355,9 @@ function withUtmEmail(url: string, campaign: string, content?: string): string {
  * - If a `campaign` is provided, UTM tracking params are appended (FCU links only — skips external URLs).
  */
 function resolveEmailHref(href: string | undefined, campaign?: string, content?: string) {
-  if (typeof href !== 'string') return href;
+  if (typeof href !== 'string') {
+    return href;
+  }
   const absolute = href.startsWith('/') ? `${clientConfig.websiteUrl}${href}` : href;
   return campaign && /^https?:\/\//.test(absolute) ? withUtmEmail(absolute, campaign, content) : absolute;
 }

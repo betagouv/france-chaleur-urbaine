@@ -27,14 +27,18 @@ const toISO = (value: Date | string): string => (value instanceof Date ? value :
 
 /** Date legacy → `Date` valide, sinon `null`. */
 const toValidDate = (value: unknown): Date | null => {
-  if (value === null || value === undefined || value === '') return null;
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
   const d = new Date(value as string);
   return Number.isNaN(d.getTime()) ? null : d;
 };
 
 /** JSONB → number robuste (gère `null`/`''`/chaîne numérique). */
 const num = (value: unknown): number | null => {
-  if (value === null || value === undefined || value === '') return null;
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
 };

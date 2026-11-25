@@ -604,7 +604,9 @@ function FaqPage() {
                       expanded={expandedQuestionId === questionId}
                       onExpandedChange={(expanded) => {
                         const nextQuestionId = expanded ? questionId : null;
-                        if (nextQuestionId) trackPostHogEvent('faq:accordeon', { question: nextQuestionId });
+                        if (nextQuestionId) {
+                          trackPostHogEvent('faq:accordeon', { question: nextQuestionId });
+                        }
                         setExpandedQuestionId(nextQuestionId);
                         updateHash(nextQuestionId);
                       }}

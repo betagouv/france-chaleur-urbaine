@@ -1215,7 +1215,7 @@ describe('batEnrRouter', () => {
     });
   });
 
-  describe('batEnr.ccrt.updateDemandeChaleurRenouvelable', () => {
+  describe('batEnr.ccrt.updateDemandeChaleurRenouvelable (périmètre départemental)', () => {
     it('permet à un CCRT de mettre à jour une demande validée sur son département', async () => {
       await seedTableUser([{ email: testUsers.ccrt.email, id: testUsers.ccrt.id, role: 'ccrt' }]);
       await seedDepartmentPermission(testUsers.ccrt.id!, '13');

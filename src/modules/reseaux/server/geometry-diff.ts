@@ -74,7 +74,9 @@ export async function diffNetworkGeometries(directory: string, outputPath: strin
   logger.info(`  ${counts.modifié} modifiés`);
   logger.info(`  ${counts.inchangé} inchangés`);
   logger.info(`  ${counts.vide} fichiers vides (potentiellement à supprimer)`);
-  if (counts.erreur > 0) logger.warn(`  ${counts.erreur} erreurs`);
+  if (counts.erreur > 0) {
+    logger.warn(`  ${counts.erreur} erreurs`);
+  }
 }
 
 async function diffSingle(id_sncu: string, filePath: string): Promise<DiffRow> {
@@ -228,20 +230,26 @@ async function diffSingle(id_sncu: string, filePath: string): Promise<DiffRow> {
 }
 
 function num(v: unknown): number | null {
-  if (v === null || v === undefined) return null;
+  if (v === null || v === undefined) {
+    return null;
+  }
   const n = typeof v === 'number' ? v : Number(v);
   return Number.isFinite(n) ? n : null;
 }
 
 function round(n: number | null, digits: number): number | null {
-  if (n === null) return null;
+  if (n === null) {
+    return null;
+  }
   const f = 10 ** digits;
   return Math.round(n * f) / f;
 }
 
 function toCsv(rows: DiffRow[]): string {
   const escape = (v: unknown): string => {
-    if (v === null || v === undefined) return '';
+    if (v === null || v === undefined) {
+      return '';
+    }
     const s = String(v);
     return /[",\n\r]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
   };

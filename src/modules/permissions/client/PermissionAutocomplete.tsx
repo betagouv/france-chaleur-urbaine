@@ -32,7 +32,9 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
   useEffect(() => {
     debounceRef.current = setTimeout(() => setDebouncedQuery(query), 300);
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
     };
   }, [query]);
 
@@ -74,7 +76,9 @@ const PermissionAutocomplete = ({ availableTypes, onAdd }: PermissionAutocomplet
 
   if (isNetworkMode && networkResults.data) {
     for (const n of networkResults.data) {
-      if (!availableTypes.includes(n.network_type)) continue;
+      if (!availableTypes.includes(n.network_type)) {
+        continue;
+      }
       results.push({
         label: n.nom_reseau ?? 'Sans nom',
         permission: { resource_id: String(n.id_fcu), type: n.network_type },

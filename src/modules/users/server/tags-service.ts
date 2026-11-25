@@ -61,8 +61,12 @@ export const updateTag = async (id: string, patch: { name: string; color: UserTa
     .executeTakeFirstOrThrow(() => new TRPCError({ code: 'NOT_FOUND', message: 'Étiquette introuvable' }));
 
   const changes: EventDataMap['user_tag_updated']['changes'] = {};
-  if (previous && previous.name !== updated.name) changes.name = { from: previous.name, to: updated.name };
-  if (previous && previous.color !== updated.color) changes.color = { from: previous.color, to: updated.color };
+  if (previous && previous.name !== updated.name) {
+    changes.name = { from: previous.name, to: updated.name };
+  }
+  if (previous && previous.color !== updated.color) {
+    changes.color = { from: previous.color, to: updated.color };
+  }
   if (ObjectKeys(changes).length > 0) {
     await createUserEvent({
       author_id: authorId,
@@ -78,7 +82,9 @@ export const updateTag = async (id: string, patch: { name: string; color: UserTa
 /** Removes the tag from the catalog; ON DELETE CASCADE detaches it from every user. */
 export const deleteTag = async (id: string, authorId: string): Promise<void> => {
   const tag = await kdb.selectFrom('user_tags').select(['id', 'name', 'color']).where('id', '=', id).executeTakeFirst();
-  if (!tag) return;
+  if (!tag) {
+    return;
+  }
 
   await kdb.deleteFrom('user_tags').where('id', '=', id).execute();
   await createUserEvent({
@@ -218,14 +224,18 @@ export const addTagsToUsersByEmail = async (tagIds: string[], emails: string[], 
   const addedNamesByUser: Record<string, string[]> = {};
   for (const row of inserted) {
     const tag = catalogById.get(row.tag_id);
-    if (!tag) continue;
+    if (!tag) {
+      continue;
+    }
     (addedNamesByUser[row.user_id] ??= []).push(tag.name);
   }
 
   const userById = new Map(users.map((user) => [user.id, user]));
   for (const [userId, addedNames] of Object.entries(addedNamesByUser)) {
     const user = userById.get(userId);
-    if (!user) continue;
+    if (!user) {
+      continue;
+    }
     await createUserEvent({
       author_id: authorId,
       context_id: userId,

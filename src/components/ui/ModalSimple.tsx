@@ -40,7 +40,9 @@ const ModalSimple = ({ children, trigger, title, size = 'medium', open: controll
   const isControlled = controlledOpen !== undefined;
 
   const modal = useMemo(() => {
-    if (!isOpen) return null;
+    if (!isOpen) {
+      return null;
+    }
     return createModal({
       id: `modal-${Math.random().toString(36).slice(2)}`,
       isOpenedByDefault: false,

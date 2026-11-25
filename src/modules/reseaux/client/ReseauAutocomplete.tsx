@@ -67,7 +67,9 @@ export default function ReseauAutocomplete({
 
   const handleSelect = useCallback(
     (network: NetworkSearchResult) => {
-      if (network.id_fcu === excludeNetworkIdFcu && network.network_type === excludeNetworkType) return;
+      if (network.id_fcu === excludeNetworkIdFcu && network.network_type === excludeNetworkType) {
+        return;
+      }
       onSelect(network);
     },
     [excludeNetworkIdFcu, excludeNetworkType, onSelect]

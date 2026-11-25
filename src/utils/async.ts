@@ -17,7 +17,9 @@ export async function processInParallel<T>(
   let firstError: Error | undefined;
 
   const tryProcessNextOperation = async () => {
-    if (hasFailed) return;
+    if (hasFailed) {
+      return;
+    }
     const nextItem = asyncIterator.next();
     if (!nextItem.done) {
       const operationPromise = asyncLimit(() => asyncOperation(nextItem.value)).catch((error) => {

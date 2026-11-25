@@ -22,7 +22,7 @@ export function CcrtAccessUsers({ users, showDates = false }: CcrtAccessUsersPro
             </Tag>
             <ul className="m-0 list-none space-y-2 p-0 text-sm">
               {roleUsers.map((user) => (
-                <li key={user.id} className="break-words">
+                <li key={user.id} className="wrap-break-word">
                   {(user.first_name || user.last_name) && (
                     <span className="block font-medium">{[user.first_name, user.last_name].filter(Boolean).join(' ')}</span>
                   )}

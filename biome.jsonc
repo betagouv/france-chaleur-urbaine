@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.9/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -117,6 +117,8 @@
       "correctness": {
         // Désactivé car incompatible avec l'API de @tanstack/react-form qui utilise children comme prop
         "noChildrenProp": "off",
+        // désactivé comme noNestedComponentDefinitions (composants inline, fabriques volontaires) + faux positifs sur les handlers GET/POST de crud.ts
+        "noComponentHookFactories": "off",
         "noConstAssign": "error",
         "noConstantCondition": "error",
         "noEmptyCharacterClassInRegex": "error",
@@ -150,7 +152,10 @@
         "useYield": "error"
       },
       "nursery": {
-        "useSortedClasses": "off"
+        "noTailwindConflictingClasses": "error", // deux classes sur la même propriété : l'une est morte
+        "noTailwindLegacyUtilities": "error", // noms Tailwind v3 (flex-shrink-0, break-words…)
+        "useTailwindSortedClasses": "off",
+        "useTailwindVariablesShorthand": "error" // bg-(--x) plutôt que bg-[var(--x)]
       },
       "performance": {
         "noAccumulatingSpread": "off", // désactivé car trop de cas où c'est acceptable
@@ -164,6 +169,7 @@
       },
       "style": {
         "noDescendingSpecificity": "off", // désactivé car trop de cas complexes avec CSS
+        "noEnum": "error", // objet `as const` + type dérivé à la place
         "noNonNullAssertion": "off", // désactivé car souvent nécessaire avec TypeScript strict
         "noRestrictedImports": {
           "level": "warn", // dépréciation : les usages historiques restent à migrer
@@ -172,6 +178,12 @@
               "next/link": "Utilisez le composant Link du projet (@/components/ui/Link) : DSFR, isExternal, tracking."
             }
           }
+        },
+        "noUselessElse": "error", // pas de else après un return / throw : retour anticipé
+        // accolades obligatoires ; avec le formateur, garantit aussi une seule instruction par ligne
+        "useBlockStatements": {
+          "fix": "safe", // ajout d'accolades sans risque : appliqué à l'enregistrement et au pre-commit
+          "level": "error"
         },
         "useConsistentArrayType": {
           "level": "error",
@@ -222,6 +234,11 @@
       }
     }
   },
+  // Markdown et YAML (pris en charge depuis Biome 2.6) restent hors périmètre : contenus éditoriaux et doc IA non reformatés
+  "markdown": {
+    "formatter": { "enabled": false },
+    "linter": { "enabled": false }
+  },
   "overrides": [
     {
       // seuls endroits où le composant Link de Next est nécessaire (wrapper du projet, enregistrement DSFR)
@@ -253,5 +270,9 @@
     "clientKind": "git",
     "enabled": true,
     "useIgnoreFile": true
+  },
+  "yaml": {
+    "formatter": { "enabled": false },
+    "linter": { "enabled": false }
   }
 }

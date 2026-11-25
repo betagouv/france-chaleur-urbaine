@@ -30,7 +30,9 @@ const formatNetworkLabel = (data: {
   communes_count?: number;
 }): string => {
   if (data.network_type === 'perimetre_de_developpement_prioritaire') {
-    if (data.identifiant_reseau) return data.identifiant_reseau;
+    if (data.identifiant_reseau) {
+      return data.identifiant_reseau;
+    }
     if (data.first_commune) {
       return data.communes_count && data.communes_count > 1
         ? `${data.first_commune} (+${data.communes_count - 1} communes)`

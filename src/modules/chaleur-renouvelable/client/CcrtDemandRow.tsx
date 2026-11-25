@@ -104,7 +104,7 @@ export function CcrtDemandRow({
           </div>
         </td>
         <td className="align-top!">
-          <p className="mb-1 break-words font-medium">{formatCcrtAddress(demand.address)}</p>
+          <p className="mb-1 wrap-break-word font-medium">{formatCcrtAddress(demand.address)}</p>
           <p className="mb-1 text-sm leading-6">{demand.housing_count} logements</p>
           <div className="flex flex-wrap items-center gap-2 text-sm leading-6">
             <CcrtHeatingEnergyTag heating_energy={demand.heating_energy} housing_type={demand.housing_type} />

@@ -148,7 +148,9 @@ async function syncPermissionsForUser(
       user_id: userId,
     }));
 
-  if (permissions.length === 0) return;
+  if (permissions.length === 0) {
+    return;
+  }
 
   const inserted = await kdb
     .insertInto('user_permissions')

@@ -6,10 +6,18 @@ const SAFE_PLAIN = /^[A-Za-z][\w .()/-]*$/;
 const RESERVED = /^(?:true|false|null|yes|no|on|off|~)$/i;
 
 const emitScalar = (value: string | number | boolean | null): string => {
-  if (value === null) return 'null';
-  if (typeof value === 'boolean') return value ? 'true' : 'false';
-  if (typeof value === 'number') return String(value);
-  if (value !== '' && value === value.trim() && SAFE_PLAIN.test(value) && !RESERVED.test(value)) return value;
+  if (value === null) {
+    return 'null';
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'true' : 'false';
+  }
+  if (typeof value === 'number') {
+    return String(value);
+  }
+  if (value !== '' && value === value.trim() && SAFE_PLAIN.test(value) && !RESERVED.test(value)) {
+    return value;
+  }
   return JSON.stringify(value);
 };
 
@@ -18,7 +26,9 @@ const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'obj
 const emitMapping = (obj: Record<string, unknown>, indent: string): string => {
   const lines: string[] = [];
   for (const [key, value] of Object.entries(obj)) {
-    if (value === undefined) continue;
+    if (value === undefined) {
+      continue;
+    }
     const k = emitScalar(key);
     if (isRecord(value)) {
       const keys = Object.keys(value).filter((kk) => value[kk] !== undefined);

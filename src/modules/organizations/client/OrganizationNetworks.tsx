@@ -52,7 +52,9 @@ const OrganizationNetworks = ({ organizationId }: { organizationId: string }) =>
   };
 
   const addPattern = () => {
-    if (trimmed.length < 2 || patterns.includes(trimmed)) return;
+    if (trimmed.length < 2 || patterns.includes(trimmed)) {
+      return;
+    }
     setPatterns.mutate({ organizationId, patterns: [...patterns, trimmed] });
     setNewPattern('');
   };

@@ -258,7 +258,7 @@ function getNextActiveOptionIndex(currentActiveOptionIndex: number, offset: numb
     return -1;
   }
 
-  const normalizedActiveOptionIndex = currentActiveOptionIndex >= 0 ? currentActiveOptionIndex : 0;
+  const normalizedActiveOptionIndex = Math.max(currentActiveOptionIndex, 0);
 
   return (normalizedActiveOptionIndex + offset + optionsCount) % optionsCount;
 }

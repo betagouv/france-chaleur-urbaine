@@ -21,7 +21,9 @@ export function MapStoreProvider({ partial, children }: MapStoreProviderProps) {
   const initial = useMapConfiguration(partial);
   const store = useMemo(() => createStore(), []);
 
-  if (!initial) return null;
+  if (!initial) {
+    return null;
+  }
 
   return (
     <JotaiProvider store={store}>

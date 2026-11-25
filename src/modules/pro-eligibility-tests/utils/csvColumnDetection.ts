@@ -136,18 +136,27 @@ function calculateConfidence(header: string, values: string[], detectedType: Col
   // Header name boost
   switch (detectedType) {
     case 'address':
-      if (['adresse', 'address'].includes(headerLower)) confidence += 0.4;
-      else if (headerLower.includes('adresse') || headerLower.includes('address')) confidence += 0.2;
+      if (['adresse', 'address'].includes(headerLower)) {
+        confidence += 0.4;
+      } else if (headerLower.includes('adresse') || headerLower.includes('address')) {
+        confidence += 0.2;
+      }
       break;
 
     case 'latitude':
-      if (['lat', 'latitude', 'y'].includes(headerLower)) confidence += 0.4;
-      else if (headerLower.includes('lat') || headerLower.includes('y')) confidence += 0.2;
+      if (['lat', 'latitude', 'y'].includes(headerLower)) {
+        confidence += 0.4;
+      } else if (headerLower.includes('lat') || headerLower.includes('y')) {
+        confidence += 0.2;
+      }
       break;
 
     case 'longitude':
-      if (['lon', 'lng', 'longitude', 'x'].includes(headerLower)) confidence += 0.4;
-      else if (headerLower.includes('lon') || headerLower.includes('x')) confidence += 0.2;
+      if (['lon', 'lng', 'longitude', 'x'].includes(headerLower)) {
+        confidence += 0.4;
+      } else if (headerLower.includes('lon') || headerLower.includes('x')) {
+        confidence += 0.2;
+      }
       break;
   }
 

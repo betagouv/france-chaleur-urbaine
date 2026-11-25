@@ -94,7 +94,9 @@ async function detectCrsFromProj(projText: string) {
  * @returns a geojson with the coordinates in WGS84
  */
 async function convertToWGS84(geojson: any, sourceCrs?: any) {
-  if (!sourceCrs) return geojson;
+  if (!sourceCrs) {
+    return geojson;
+  }
 
   const proj4 = (await import('proj4')).default;
 
