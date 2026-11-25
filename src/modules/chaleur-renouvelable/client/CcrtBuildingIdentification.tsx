@@ -21,7 +21,7 @@ export function CcrtBuildingIdentification({ demand, onMap, children }: CcrtBuil
       description={`Demande reçue le ${dayjs(demand.created_at).format('D MMM YYYY')}`}
     >
       <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-1">
-        <p className="mb-0 min-w-0 break-words text-sm leading-6 text-(--text-default-grey)">Adresse du bâtiment :</p>
+        <p className="mb-0 min-w-0 wrap-break-word text-sm leading-6 text-(--text-default-grey)">Adresse du bâtiment :</p>
         {coordinates && (
           <a
             className="shrink-0 whitespace-nowrap text-right fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
@@ -33,7 +33,7 @@ export function CcrtBuildingIdentification({ demand, onMap, children }: CcrtBuil
             Afficher dans la carte
           </a>
         )}
-        <p className="col-span-2 mb-0 break-words text-base font-medium leading-6">{formatCcrtAddress(demand.address)}</p>
+        <p className="col-span-2 mb-0 wrap-break-word text-base font-medium leading-6">{formatCcrtAddress(demand.address)}</p>
       </div>
       {children}
     </CcrtDetailsSection>

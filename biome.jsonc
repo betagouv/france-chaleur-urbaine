@@ -152,7 +152,10 @@
         "useYield": "error"
       },
       "nursery": {
-        "useTailwindSortedClasses": "off"
+        "noTailwindConflictingClasses": "error", // deux classes sur la même propriété : l'une est morte
+        "noTailwindLegacyUtilities": "error", // noms Tailwind v3 (flex-shrink-0, break-words…)
+        "useTailwindSortedClasses": "off",
+        "useTailwindVariablesShorthand": "error" // bg-(--x) plutôt que bg-[var(--x)]
       },
       "performance": {
         "noAccumulatingSpread": "off", // désactivé car trop de cas où c'est acceptable
@@ -175,6 +178,7 @@
             }
           }
         },
+        "noUselessElse": "error", // pas de else après un return / throw : retour anticipé
         // accolades obligatoires ; avec le formateur, garantit aussi une seule instruction par ligne
         "useBlockStatements": {
           "fix": "safe", // ajout d'accolades sans risque : appliqué à l'enregistrement et au pre-commit

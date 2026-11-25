@@ -63,7 +63,7 @@ export default function AccessDetailDialog({ demandId, users: suppliedUsers, ope
                   {roleUsers.map((user) => (
                     <li key={user.id} className="text-sm">
                       <div className="flex flex-wrap items-center justify-between gap-2 lg:flex-nowrap">
-                        <span className="min-w-0 break-words">
+                        <span className="min-w-0 wrap-break-word">
                           <a className="break-all" href={`mailto:${user.email}`}>
                             {user.email}
                           </a>

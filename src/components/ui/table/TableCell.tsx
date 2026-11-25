@@ -70,7 +70,8 @@ const TableCell = <T,>({
           </time>
         </span>
       );
-    } else if (type === 'Date') {
+    }
+    if (type === 'Date') {
       const date = new Date(value);
       const computedCellProps: Intl.DateTimeFormatOptions = hasCellProps
         ? (cellProps as Intl.DateTimeFormatOptions)

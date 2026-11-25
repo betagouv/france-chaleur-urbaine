@@ -81,7 +81,8 @@ export const customFilterFn = <T extends RowData>(): Record<string, FilterFn<T>>
 
     if (filterValue === 'filled') {
       return isFilled;
-    } else if (filterValue === 'empty') {
+    }
+    if (filterValue === 'empty') {
       return !isFilled;
     }
 

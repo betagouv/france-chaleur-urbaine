@@ -26,7 +26,7 @@ export function CcrtProjectFields({ demand, onSimulation }: CcrtProjectFieldsPro
       )}
       <p className="mb-1 text-sm leading-6 text-(--text-default-grey)">Commentaire laissé dans le formulaire</p>
       {demand.comments ? (
-        <blockquote className="m-0 mb-6 whitespace-pre-wrap break-words text-base leading-6 text-(--text-default-grey)">
+        <blockquote className="m-0 mb-6 whitespace-pre-wrap wrap-break-word text-base leading-6 text-(--text-default-grey)">
           « {demand.comments} »
         </blockquote>
       ) : (

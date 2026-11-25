@@ -312,7 +312,7 @@ const ComboBox = (rawProps: ComboBoxProps) => {
                   }}
                 >
                   {props.multiple ? (
-                    <div className="fr-checkbox-group fr-checkbox-group--sm flex-shrink-0 ml-3">
+                    <div className="fr-checkbox-group fr-checkbox-group--sm shrink-0 ml-3">
                       <input
                         type="checkbox"
                         id={`${optionId}-checkbox`}

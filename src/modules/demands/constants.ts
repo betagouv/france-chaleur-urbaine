@@ -744,7 +744,8 @@ const formatEtablissementToLegacy: (
       return demandCompanyName || '';
     }
     return '';
-  } else if (structure === 'Tertiaire' && companyType === 'Syndic de copropriété') {
+  }
+  if (structure === 'Tertiaire' && companyType === 'Syndic de copropriété') {
     return '';
   }
   return company;

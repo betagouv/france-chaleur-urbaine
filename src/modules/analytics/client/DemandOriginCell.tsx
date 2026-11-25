@@ -11,7 +11,7 @@ export function DemandOriginCell({ origin }: DemandOriginCellProps) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="max-w-full break-words text-left text-sm text-(--text-action-high-blue-france) underline"
+          className="max-w-full wrap-break-word text-left text-sm text-(--text-action-high-blue-france) underline"
           aria-label={`Origine : ${originChannels[origin.channel]}${origin.detail ? ` · ${origin.detail}` : ''}. Voir les détails`}
         >
           {originChannels[origin.channel]}
@@ -28,7 +28,7 @@ export function DemandOriginCell({ origin }: DemandOriginCellProps) {
             .map(([key, label]) => [label, getDemandOriginValue(origin.acquisition, key)])
             .filter(([, value]) => !!value)
             .map(([label, value]) => (
-              <div key={label} className="break-words">
+              <div key={label} className="wrap-break-word">
                 <dt className="font-bold">{label}</dt>
                 <dd className="m-0">{value}</dd>
               </div>
