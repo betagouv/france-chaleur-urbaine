@@ -67,7 +67,8 @@ const Dialog = ({ children, trigger, title, description, size = 'md', open, onOp
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay asChild>
           <motion.div
-            className="fixed inset-0 z-2002 bg-black/50"
+            // same z-index as the content: stacking then follows the DOM order, so the backdrop of a dialog opened over another one covers it
+            className="fixed inset-0 z-2003 bg-black/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
