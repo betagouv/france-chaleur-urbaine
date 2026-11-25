@@ -169,6 +169,7 @@
       },
       "style": {
         "noDescendingSpecificity": "off", // désactivé car trop de cas complexes avec CSS
+        "noEnum": "error", // objet `as const` + type dérivé à la place
         "noNonNullAssertion": "off", // désactivé car souvent nécessaire avec TypeScript strict
         "noRestrictedImports": {
           "level": "warn", // dépréciation : les usages historiques restent à migrer

@@ -3,6 +3,7 @@ import { writeFile } from 'node:fs/promises';
 import { kdb } from '@/server/db/kysely';
 import { logger } from '@/server/helpers/logger';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import { isOneOf } from '@/utils/array';
 import { prettyFormatNumber } from '@/utils/strings';
 
 const ratioTonnesCO2ParRaccordement = 108212 / 2017; // moyenne de 30 logements par raccordement. calcué initialement avec l'ancien simulateur de CO2.
@@ -67,7 +68,7 @@ const getDemandesEnCoursStats = async () => {
   const totalDemandes = demandes.length;
 
   const demandesEnCours = demandes.filter((record) =>
-    [DEMANDE_STATUS.RECONTACTED, DEMANDE_STATUS.WORK_IN_PROGRESS, DEMANDE_STATUS.DONE].includes(record.fields.Status as DEMANDE_STATUS)
+    isOneOf(record.fields.Status, [DEMANDE_STATUS.RECONTACTED, DEMANDE_STATUS.WORK_IN_PROGRESS, DEMANDE_STATUS.DONE])
   );
 
   const totalLogements = demandesEnCours.reduce((acc, record) => acc + Number(record.fields.Logement || 1), 0);
