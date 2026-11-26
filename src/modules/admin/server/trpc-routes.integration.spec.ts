@@ -74,7 +74,6 @@ describe('admin.getDashboardIndicators', () => {
     await seedJob('error', daysAgo(1));
     await seedJob('error', daysAgo(10)); // older than the window: ignored
     await seedJob('finished', daysAgo(1));
-    await kdb.deleteFrom('organizations').execute();
     await kdb
       .insertInto('organizations')
       .values({ gestionnaire_patterns: ['%engie%'], id: uuid(30), name: 'ENGIE' })

@@ -91,8 +91,6 @@ const seedDocument = async (fileId: string, networkId: number) => {
 describe('reseaux merge', () => {
   beforeEach(async () => {
     await cleanDatabase();
-    // not covered by the shared cleanup
-    await Promise.all([kdb.deleteFrom('organizations').execute(), kdb.deleteFrom('network_reminders').execute()]);
     await seedTableUser([{ ...testUsers.admin }, { ...testUsers.gestionnaire }, { ...testUsers.collectivite }]);
     await kdb.insertInto('organizations').values({ id: organizationId, name: 'ENGIE' }).execute();
   });

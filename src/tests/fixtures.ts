@@ -116,6 +116,8 @@ export async function cleanDatabase() {
     kdb.deleteFrom('files').execute(),
   ]);
   await kdb.deleteFrom('users').execute();
+  // Last: networks and users reference their organization (ON DELETE SET NULL); cascades to the API credentials
+  await kdb.deleteFrom('organizations').execute();
 }
 
 export async function seedTableUser(users: readonly Partial<InsertObject<DB, 'users'>>[]) {
