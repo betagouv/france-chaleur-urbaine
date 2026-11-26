@@ -1,7 +1,7 @@
 allowBuilds:
-  - '@sentry/cli': true
-  - esbuild: true
-  - sharp: true
+  '@sentry/cli': true
+  esbuild: true
+  sharp: true
 
 publicHoistPattern:
   - '*import-in-the-middle*'
