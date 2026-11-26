@@ -1,4 +1,4 @@
-import { httpBatchLink, loggerLink, type TRPCLink } from '@trpc/client';
+import { httpBatchLink, httpLink, loggerLink, splitLink, type TRPCLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import { observable } from '@trpc/server/observable';
 import type { NextPageContext } from 'next';
@@ -57,7 +57,7 @@ const trpc = createTRPCNext<AppRouter>({
       enabled: (opts) => process.env.NODE_ENV === 'development' || (opts.direction === 'down' && opts.result instanceof Error),
     });
 
-    const trpcHttpBatchLink = httpBatchLink({
+    const httpLinkOptions = {
       /**
        * Set custom request headers on every request from tRPC
        * @link https://trpc.io/docs/ssr
@@ -76,13 +76,21 @@ const trpc = createTRPCNext<AppRouter>({
         };
       },
       url: `${typeof window !== 'undefined' ? '' : clientConfig.websiteUrl}/api/trpc`,
+    };
+
+    // Queries fired together share one HTTP request, answered when the slowest is done. A slow query opts out with
+    // `trpc: { context: { skipBatch: true } }` and travels alone, so the others are not held back.
+    const trpcHttpLink = splitLink({
+      condition: (operation) => operation.context.skipBatch === true,
+      false: httpBatchLink(httpLinkOptions),
+      true: httpLink(httpLinkOptions),
     });
 
     return {
       /**
        * @link https://trpc.io/docs/client/links
        */
-      links: [errorHandlerLink, trpcLoggerLink, trpcHttpBatchLink],
+      links: [errorHandlerLink, trpcLoggerLink, trpcHttpLink],
       /**
        * @link https://tanstack.com/query/v5/docs/react/reference/QueryClient
        */

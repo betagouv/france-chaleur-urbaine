@@ -69,7 +69,7 @@ describe('email.deliverability', () => {
   beforeEach(async () => {
     await cleanDatabase();
     // The admin must exist: unblock events reference their author (FK on events.author_id).
-    await seedTableUser([{ email: blockedUserEmail.toUpperCase(), id: blockedUserId }, { ...testUsers.admin }]);
+    await seedTableUser([{ email: blockedUserEmail, id: blockedUserId }, { ...testUsers.admin }]);
     vi.mocked(listAllBlockedContacts).mockResolvedValue([]);
     serverConfig.BREVO_ALLOW_WRITES = false;
   });

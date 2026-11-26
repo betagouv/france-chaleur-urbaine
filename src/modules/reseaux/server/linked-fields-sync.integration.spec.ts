@@ -335,7 +335,6 @@ describe('syncLinkedNetworkFields()', () => {
 
     it("recopie l'organisation du RC parent sur l'extension", async () => {
       const organizationId = uuid(10);
-      await kdb.deleteFrom('organizations').execute(); // not covered by cleanDatabase
       await kdb.insertInto('organizations').values({ id: organizationId, name: 'Opérateur' }).execute();
       await kdb.updateTable('reseaux_de_chaleur').set({ organization_id: organizationId }).where('id_fcu', '=', 100).execute();
       await seedExtension(200, 100);

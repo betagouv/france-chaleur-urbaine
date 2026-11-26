@@ -258,7 +258,6 @@ describe('network tracking', () => {
   beforeEach(async () => {
     vi.setSystemTime(NOW);
     await cleanDatabase();
-    await kdb.deleteFrom('organizations').execute();
     await seedUsers();
     await seedNetworks();
   });

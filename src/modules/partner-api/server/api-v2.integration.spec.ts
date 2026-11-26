@@ -106,9 +106,6 @@ const expectedDemande = (over: Pick<DemandDTO, 'id' | 'date_creation' | 'date_mo
 describe('API v2 partenaire (/api/v2/demands)', () => {
   beforeAll(async () => {
     await cleanDatabase();
-    // cleanDatabase ne purge pas les tables organisations → on le fait ici (credentials d'abord : FK).
-    await kdb.deleteFrom('organization_api_credentials').execute();
-    await kdb.deleteFrom('organizations').execute();
 
     await seedTableUser([{ email: 'admin@test.local', id: ADMIN_ID, role: 'admin' }]);
 

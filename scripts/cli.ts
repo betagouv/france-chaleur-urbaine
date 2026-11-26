@@ -233,7 +233,7 @@ program
 program
   .command('users:add')
   .description('Add a new user')
-  .argument('<email>', 'Email of the user', (v) => z.email().parse(v))
+  .argument('<email>', 'Email of the user', (v) => z.email().trim().toLowerCase().parse(v))
   .argument('<password>', 'Password of the user')
   .argument('<role>', 'Role of the user', (v) => z.enum(userRoles).parse(v))
   .action(async (email, password, role) => {
