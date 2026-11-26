@@ -19,4 +19,4 @@ Yearly update of the heat and cold networks from the FEDENE library, and decisio
 ## Integration
 
 - The import itself lives in `src/modules/data/server/imports/donnees-reseaux-bibliotheque-fedene.ts` (also run by `pnpm cli data import donnees-reseaux-bibliotheque-fedene`); it creates / refreshes the `enquete` requests through `upsertSurveyDiscrepancyRequest` (network-change-requests module).
-- Survey discrepancies are excluded from the submitted requests (`/admin/modifications-reseau`) and counted apart on the admin dashboard (`surveyDiscrepanciesPending`).
+- Survey discrepancies are excluded from the submitted requests (`/admin/modifications-reseau`) and reported apart on the admin dashboard, as a warning shown while some are pending (data diagnostic `network.survey_discrepancy`).

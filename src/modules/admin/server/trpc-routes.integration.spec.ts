@@ -70,7 +70,7 @@ describe('admin.getDashboardIndicators', () => {
     await seedRequest('pending');
     await seedRequest('pending');
     await seedRequest('processed');
-    await seedRequest('pending', 'enquete'); // survey discrepancy: counted apart
+    await seedRequest('pending', 'enquete'); // survey discrepancy: reported by the data diagnostic
     await seedJob('error', daysAgo(1));
     await seedJob('error', daysAgo(10)); // older than the window: ignored
     await seedJob('finished', daysAgo(1));
@@ -91,7 +91,6 @@ describe('admin.getDashboardIndicators', () => {
       organizationNetworksDrift: 2,
       pendingReassignments: 1,
       renewableHeatDemandsToValidate: 1,
-      surveyDiscrepanciesPending: 1,
     });
   });
 });

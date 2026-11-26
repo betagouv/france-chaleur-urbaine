@@ -1,34 +1,45 @@
 # Data Diagnostic Module
 
-> Admin-only data quality report. Detects inconsistencies in users, permissions, demands and organisations (network/gestionnaire-pattern curation).
+> Admin-only data quality checks, shown on the admin dashboard. Detects inconsistencies in users, permissions, demands, networks and organisations.
 
 ## Structure
 
 ```
 data-diagnostic/
 ├── AGENTS.md
-├── constants.ts                # MAX_ITEMS_PER_ISSUE, severity labels
-├── types.ts                    # Issue, IssueItem, IssueSeverity, DataDiagnosticResult
+├── constants.ts                # diagnosticChecks (registry of every check), zRunDataDiagnosticInput, MAX_ITEMS_PER_ISSUE
+├── types.ts                    # Issue, IssueItem, IssueSeverity
 ├── server/
-│   ├── service.ts              # runDataDiagnostic + individual checks
+│   ├── service.ts              # runDataDiagnostic({ onDemand }) + one builder per check
 │   └── trpc-routes.ts          # dataDiagnostic.run (adminRoute)
 └── client/
-    └── DataDiagnosticPage.tsx  # admin UI (IDE-like issue list)
+    ├── DataDiagnosticIssues.tsx        # the two columns of the dashboard: errors to fix, warnings to check
+    ├── DataDiagnosticOnDemandChecks.tsx # under the warnings: the on-demand checks behind a button
+    ├── DataDiagnosticIssueList.tsx     # a list of issues, its loading and empty states
+    └── DataDiagnosticIssue.tsx         # one issue (compact accordion: count, title, theme tag, then description and items)
 ```
 
 ## Purpose and boundaries
 
-Read-only diagnostic. The module never mutates data — it only reports.
+Read-only diagnostic. The module never mutates data — it only reports. It has no page of its own: the admin dashboard (`src/components/dashboard/DashboardAdmin.tsx`) renders `DataDiagnosticIssues` below the permanent counters of the `admin` module (which owns the theme list, `adminDashboardThemeIds`).
 
-Each check returns `Issue | null`. Returning `null` means no anomaly: the issue is excluded from the response so the UI stays clean. All checks run in parallel via `Promise.all`.
+**`diagnosticChecks` (constants.ts) is the single source of the checks**: type, title and description shown to the admins, severity, dashboard theme, and `onDemand`. The service only holds the query of each check (`builders`, one per type, enforced by `Record<DiagnosticCheckType, …>`); the product documentation lists them from the same registry (`DashboardAlertsInventory`, rendered in `/admin/doc/role-admin`). Never keep another hand-written list of the checks.
 
-Two severities only: `error` (broken / inconsistent state) and `warning` (suspicious but possibly legitimate). No `info` — purely informational lines were intentionally removed to avoid desensitising readers.
+A builder returns its items or `null`. `null` means no anomaly: the issue is excluded from the response, so an anomaly is displayed only while it exists. A run covers every check of the dashboard display, in parallel via `Promise.all`, errors first then by number of items. The client sends it outside the tRPC batch (`skipBatch`), so the counters fired with it are not held back.
+
+**On-demand checks** (`onDemand: true`): too slow, and too rarely a priority, to run at every display of the dashboard — today the two spatial comparisons between networks and PDP perimeters. They run only when the admin clicks the button under the warnings column (labelled for the PDP geometry: reword it if another kind of check becomes on demand); their issues are then added to that column.
+
+Two severities only: `error` (broken / inconsistent state, to fix) and `warning` (suspicious but possibly legitimate, to check). No `info` — purely informational lines were intentionally removed to avoid desensitising readers. Same reason for the checks removed in November 2026: dormant accounts (noise), late validations and late reassignments (already counted by the dashboard counters).
+
+**Prefer a database constraint to a check.** A state that must never exist is forbidden by the schema, not reported afterwards: half-filled demand assignment (`demands_network_id_with_type`) and emails differing only by case (`users_email_lowercase`, which makes the existing unique constraint case-insensitive) used to be checks.
+
+**A check or a dashboard counter?** A work queue the team empties itself, and that goes back to zero, is a permanent counter of the `admin` module (the organization attachment drift is one). Everything else is a check here.
 
 ## API (tRPC routes)
 
 | Procedure | Type | Auth | Description |
 |-----------|------|------|-------------|
-| `dataDiagnostic.run` | query | admin | Runs all checks and returns the consolidated result |
+| `dataDiagnostic.run` | query | admin | Input `{ onDemand }`. Runs the checks of every dashboard display, or the on-demand ones, and returns their issues (each with its theme) |
 
 ## Issue payload
 
@@ -36,6 +47,7 @@ Two severities only: `error` (broken / inconsistent state) and `warning` (suspic
 type Issue = {
   type: string;                // stable id, e.g. 'user.no_permission'
   severity: 'error' | 'warning';
+  theme: AdminDashboardThemeId; // tag of the line on the dashboard
   title: string;               // FR — shown in the accordion header
   description: string;         // FR — explains what's wrong and how to fix
   totalCount: number;          // raw count from SQL
@@ -44,45 +56,34 @@ type Issue = {
 };
 ```
 
-## Implemented checks
+## Notes on some checks
 
-Errors (broken state):
-- `user.no_permission` — active user with permission-bearing role but zero permissions
-- `user.gestionnaire_with_territory` — gestionnaire holds a territory permission
-- `user.role_without_permissions_has_permission` — admin/particulier/professionnel holds a permission
-- `user.duplicate_email` — duplicate emails (case-insensitive)
-- `permission.orphan_resource` — `resource_id` no longer exists in the referenced table
-- `custom_territory.stale_communes` — custom territory whose stored communes no longer match its recipe (referential updated without `pnpm cli custom-territories:refresh`); detection shared with the refresh (`custom-territories/server/service.ts#findStaleCustomTerritories`)
-- `custom_territory.orphan_recipe_ref` — custom territory whose recipe references a territory matching no commune anymore (absorbed commune, dissolved EPCI / EPT); the refresh does not fix it, the recipe must be edited (`findCustomTerritoriesWithOrphanRefs`)
-- `demand.network_id_type_mismatch` — `network_id`/`network_type` partially set
-- `demand.orphan_network` — affected `network_id` no longer exists (should stay empty: a network deletion reassigns its demands, see `reassignDemandsOfDeletedNetworks`; `reseaux:reassign-orphan-demands` repairs a deletion made outside the admin)
-- `extension.not_consolidated` — extension linked to a heat network still carrying demands or network permissions (they belong to the parent network; `reseaux:sync-linked-fields` moves them)
+The list of checks lives in `diagnosticChecks`. Only what the registry cannot say is noted here:
 
-Warnings (suspicious):
-- `user.dormant` — active non-admin, no connection in > 1 year
-- `demand.missing_coordinates` — `legacy_values.Latitude`/`Longitude` null
-- `demand.unvalidated_old` — `validated=false` for > 30 days
-- `demand.pending_assignment_stale` — `pending_assignment_change` open > 14 days
-- `demand.recontact_mismatch` — status implies contact but demandeur answered "Non" to the satisfaction survey after the last real status change (chronology via events; fusion_statuts migration events excluded)
-- `demand.recontact_mismatch_legacy` — same mismatch but chronology unknown: the "Non" predates the events system and no real status change is traced (frozen legacy population, manual review)
-- `organization.without_networks` — organization with no heat/cold/under-construction network attached
-- `user.national_candidate_unmigrated` — active account with ≥ 50 network permissions and no organization (migrate to org scope)
-- `network.gestionnaire_split_across_organizations` — one `Gestionnaire` value mapped to several organizations
-- `pdp.ambiguous_operator` — PDP with empty Gestionnaire/MO while linked networks carry several distinct values (manual choice expected)
-- `pdp.missing_network_link` — network crossing the PDP polygon but not linked to it (heat networks: classified + open to connections, i.e. dark green on the map; under-construction networks/zones: open to connections). Links = `reseau_de_chaleur_ids`, `reseau_en_construction_ids`, SNCU id
-- `pdp.link_without_intersection` — linked network whose geometry does not intersect the PDP polygon (wrong link, misplaced perimeter or incomplete trace); networks without geometry are skipped
+- `demand.orphan_network` — should stay empty: a network deletion reassigns its demands (`reassignDemandsOfDeletedNetworks`); `reseaux:reassign-orphan-demands` repairs a deletion made outside the admin.
+- `pdp.missing_network_link` (on demand) — heat networks: classified + open to connections, i.e. dark green on the map; under-construction networks/zones: open to connections. Links = `reseau_de_chaleur_ids`, `reseau_en_construction_ids`, SNCU id.
+- `pdp.link_without_intersection` (on demand) — networks without geometry are skipped.
+- `demand.recontact_mismatch` — chronology via events; fusion_statuts migration events excluded. `demand.recontact_mismatch_legacy` is the same mismatch with an unknown chronology (the "Non" predates the events system): a frozen population.
+- `network.gestionnaire_split_across_organizations` — only partly covered by the organization drift counter of the dashboard (not when the second organization has no pattern, or when both patterns match).
+- `custom_territory.stale_communes` / `custom_territory.orphan_recipe_ref` — detections owned by the custom-territories module (`findStaleCustomTerritories`, shared with the refresh; `findCustomTerritoriesWithOrphanRefs`, which the refresh does not fix).
+- `demands` theme: no check yet, only counters.
 
 ## Adding a new check
 
-1. Write a new `IssueBuilder` in `server/service.ts`.
-2. Return `null` early when the SQL returns zero rows.
-3. Wrap rows with the local `truncate()` helper to enforce `MAX_ITEMS_PER_ISSUE`.
-4. Register the builder in the `checks` array.
+1. Add its entry to `diagnosticChecks` (constants.ts): type, French title and description (what is wrong and how to fix it), severity (`error` only for a state to fix), its theme, and `onDemand` (`true` only for a slow check: every other check runs at each display of the dashboard, keep it cheap).
+2. Write its `IssueBuilder` in `server/service.ts` and register it in `builders` (TypeScript fails until it is).
+3. Return `null` early when the SQL returns zero rows, otherwise wrap the rows with the local `truncate()` helper (enforces `MAX_ITEMS_PER_ISSUE`).
+4. Give each item an `href` to the screen where it is fixed, targeting the item when the page allows it (user: `userHref`, PDP: `pdpHref` — `/admin/reseaux?reseauxTab=…&reseauId=…` selects the row, demand: `demandHref`).
 
-No client changes required — the UI renders any issue whose `severity` is known.
+No client change and no documentation to write: the dashboard and the product documentation both read the registry.
+
+## Performance
+
+Measured in production on 2026-11-18, when the checks still had their own page: it took 19.5 s, of which 19.3 s in `pdp.link_without_intersection` (`ST_Intersects` on whole geometries, each linked pair computed twice). Production runs GEOS 3.11, about 100 times slower than the local GEOS 3.13 on these geometries, so **a local timing does not predict production for spatial checks**. `networkCrossesPdp` tests the network part by part (`ST_Dump` + bounding box + `ST_Intersects`, first hit wins): about 1 s on both versions. Both PDP checks are now on demand, so this cost is no longer paid at every display. The under-construction side of `pdp.missing_network_link` keeps whole geometries (zones are polygons, part by part is slower there). To benchmark a spatial check, load the three network tables into a Debian `postgis/postgis:16-3.5` container (GEOS 3.9) rather than trusting the local database.
 
 ## Dependencies
 
 - `@/server/db/kysely` — direct DB queries (no business module layer), except detections owned by a module and shared with its fix (`organizations`, `custom-territories`).
+- `@/modules/admin/constants` — the themes that tag each check.
 - `@/modules/trpc/server` — `adminRoute`, `router`.
 - `@/components/ui/Accordion`, DSFR `Badge` — UI primitives.

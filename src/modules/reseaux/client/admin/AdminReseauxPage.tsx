@@ -1,5 +1,5 @@
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
-import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { parseAsInteger, parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Checkbox from '@/components/form/dsfr/Checkbox';
@@ -546,6 +546,15 @@ const GestionDesReseaux = () => {
     },
     [setSelectedTab]
   );
+
+  // Deep link (data diagnostic): `?reseauxTab=…&reseauId=…` focuses the network of the displayed tab, then leaves the URL.
+  const [networkIdFromUrl, setNetworkIdFromUrl] = useQueryState('reseauId', parseAsInteger);
+  useEffect(() => {
+    if (networkIdFromUrl !== null) {
+      setPendingNetworkFocus({ idFcu: networkIdFromUrl, tab: selectedTab });
+      void setNetworkIdFromUrl(null);
+    }
+  }, [networkIdFromUrl, selectedTab, setNetworkIdFromUrl]);
 
   useEffect(() => {
     if (!pendingNetworkFocus || selectedTab !== pendingNetworkFocus.tab) {

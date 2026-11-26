@@ -1,3 +1,5 @@
+import type { AdminDashboardThemeId } from '@/modules/admin/constants';
+
 export type IssueSeverity = 'error' | 'warning';
 
 export type IssueItem = {
@@ -10,14 +12,10 @@ export type IssueItem = {
 export type Issue = {
   type: string;
   severity: IssueSeverity;
+  theme: AdminDashboardThemeId;
   title: string;
   description: string;
   totalCount: number;
   truncated: boolean;
   items: IssueItem[];
-};
-
-export type DataDiagnosticResult = {
-  generatedAt: string;
-  issues: Issue[];
 };

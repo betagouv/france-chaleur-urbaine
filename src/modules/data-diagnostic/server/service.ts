@@ -1,17 +1,23 @@
-import { type ExpressionBuilder, sql } from 'kysely';
+import { type Expression, type ExpressionBuilder, sql } from 'kysely';
 
 import type { TerritoryRef } from '@/modules/custom-territories/constants';
 import { findCustomTerritoriesWithOrphanRefs, findStaleCustomTerritories } from '@/modules/custom-territories/server/service';
-import { findAttachedNetworksNotMatchingPatterns, findUnattachedNetworksMatchingPatterns } from '@/modules/organizations/server/service';
 import { permissionTypeLabels } from '@/modules/permissions/constants';
 import { linkedGestionnairesSQL, linkedMaitresOuvrageSQL } from '@/modules/reseaux/server/linked-fields-sync';
 import { type DB, kdb } from '@/server/db/kysely';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
 
-import { MAX_ITEMS_PER_ISSUE } from '../constants';
-import type { DataDiagnosticResult, Issue, IssueItem } from '../types';
+import {
+  type DiagnosticCheckType,
+  diagnosticChecks,
+  MAX_ITEMS_PER_ISSUE,
+  NATIONAL_CANDIDATE_MIN_NETWORKS,
+  type RunDataDiagnosticInput,
+} from '../constants';
+import type { Issue, IssueItem, IssueSeverity } from '../types';
 
-type IssueBuilder = () => Promise<Issue | null>;
+/** The items of a check; its title, description, severity and theme live in `diagnosticChecks`. `null` when nothing is wrong. */
+type IssueBuilder = () => Promise<Pick<Issue, 'items' | 'totalCount' | 'truncated'> | null>;
 
 const userHref = (userId: string, email: string) => `/admin/users?userId=${userId}&users_search=${encodeURIComponent(email)}`;
 
@@ -28,7 +34,8 @@ const demandHref = (address: string | null) => {
 // Page des événements filtrée sur la demande, période custom démarrant avant toute donnée = tout l'historique.
 const demandEventsHref = (demandId: string) => `/admin/events?contextType=demand&contextId=${demandId}&preset=custom&dateFrom=2025-01-01`;
 
-const pdpHref = '/admin/reseaux?reseauxTab=perimetres-de-developpement-prioritaire';
+// `reseauId` selects the row and scrolls to it (AdminReseauxPage).
+const pdpHref = (idFcu: number) => `/admin/reseaux?reseauxTab=perimetres-de-developpement-prioritaire&reseauId=${idFcu}`;
 const pdpLabel = (idFcu: number, sncu: string | null) => `PDP #${idFcu}${sncu ? ` (${sncu})` : ''}`;
 const networkLabel = (idFcu: number, nom: string | null, suffix: string | null) =>
   `${idFcu} ${nom ?? '(sans nom)'}${suffix ? ` (${suffix})` : ''}`;
@@ -61,22 +68,11 @@ const checkUserNoPermission: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: [row.role, fullName(row.first_name, row.last_name)].filter(Boolean).join(' — '),
     href: userHref(row.id, row.email),
     label: row.email,
   }));
-
-  return {
-    description:
-      'Ces utilisateurs ont un rôle qui suppose une portée (gestionnaire, collectivité, ALEC, CCRT) mais aucune permission attribuée. Ils ne voient aucune demande.',
-    items,
-    severity: 'error',
-    title: 'Compte actif sans aucune permission',
-    totalCount,
-    truncated,
-    type: 'user.no_permission',
-  };
 };
 
 /**
@@ -97,22 +93,11 @@ const checkGestionnaireWithTerritory: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: fullName(row.first_name, row.last_name) ?? undefined,
     href: userHref(row.id, row.email),
     label: row.email,
   }));
-
-  return {
-    description:
-      'Un gestionnaire ne doit porter que des permissions sur des réseaux. Les permissions territoriales (commune, EPCI, EPT, département, région) sont réservées aux collectivités, ALEC et CCRT.',
-    items,
-    severity: 'error',
-    title: 'Gestionnaire avec une permission territoriale',
-    totalCount,
-    truncated,
-    type: 'user.gestionnaire_with_territory',
-  };
 };
 
 /**
@@ -133,59 +118,11 @@ const checkPermissionOnRoleWithoutPermissions: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: row.role,
     href: userHref(row.id, row.email),
     label: row.email,
   }));
-
-  return {
-    description:
-      'Les rôles admin, particulier et professionnel ne doivent jamais avoir de permissions attribuées. Ces lignes sont probablement des résidus à supprimer.',
-    items,
-    severity: 'error',
-    title: 'Permission sur un rôle qui n’en porte pas',
-    totalCount,
-    truncated,
-    type: 'user.role_without_permissions_has_permission',
-  };
-};
-
-/**
- * Comptes ayant la même adresse mail (insensible à la casse).
- */
-const checkDuplicateEmail: IssueBuilder = async () => {
-  const rows = await kdb
-    .selectFrom('users')
-    .select([
-      sql<string>`lower(email)`.as('lower_email'),
-      sql<string[]>`array_agg(id)`.as('ids'),
-      sql<string[]>`array_agg(email)`.as('emails'),
-    ])
-    .groupBy(sql`lower(email)`)
-    .having((eb) => eb.fn.count('id'), '>', 1)
-    .execute();
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
-    context: `${row.ids.length} comptes : ${row.emails.join(', ')}`,
-    href: userHref(row.ids[0], row.lower_email),
-    label: row.lower_email,
-  }));
-
-  return {
-    description:
-      'Plusieurs comptes utilisent la même adresse mail (ignorant la casse). Cela génère des collisions à la connexion et lors des notifications.',
-    items,
-    severity: 'error',
-    title: 'Adresses email en doublon',
-    totalCount,
-    truncated,
-    type: 'user.duplicate_email',
-  };
 };
 
 /**
@@ -238,22 +175,11 @@ const checkOrphanPermissions: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: row.email,
     href: userHref(row.user_id, row.email),
     label: `${row.type} #${row.resource_id ?? '∅'}`,
   }));
-
-  return {
-    description:
-      'Le réseau, la commune, l’EPCI, l’EPT, le département ou la région ciblé(e) n’existe plus en base. La permission ne donne plus accès à rien et doit être supprimée ou réaffectée.',
-    items,
-    severity: 'error',
-    title: 'Permission pointant vers une ressource supprimée',
-    totalCount,
-    truncated,
-    type: 'permission.orphan_resource',
-  };
 };
 
 /**
@@ -267,22 +193,11 @@ const checkCustomTerritoryStaleCommunes: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: `${row.added_count} commune(s) à ajouter, ${row.removed_count} à retirer`,
     href: '/admin/territoires',
     label: row.name,
   }));
-
-  return {
-    description:
-      'Les communes enregistrées pour ces territoires ne correspondent plus à leur recette : le référentiel (communes IGN, EPT) a changé depuis leur dernier enregistrement. Les demandes des communes concernées ne sont pas rattachées au bon territoire. Lancer `pnpm cli custom-territories:refresh`.',
-    items,
-    severity: 'error',
-    title: 'Territoire personnalisé désynchronisé du référentiel',
-    totalCount,
-    truncated,
-    type: 'custom_territory.stale_communes',
-  };
 };
 
 /**
@@ -298,57 +213,11 @@ const checkCustomTerritoryOrphanRecipeRef: IssueBuilder = async () => {
 
   const describeRefs = (prefix: string, refs: TerritoryRef[]) =>
     refs.length > 0 ? `${prefix} : ${refs.map((ref) => `${permissionTypeLabels[ref.type]} ${ref.code}`).join(', ')}` : null;
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: [describeRefs('inclus', row.include), describeRefs('exclu', row.exclude)].filter(Boolean).join(' ; '),
     href: '/admin/territoires',
     label: row.name,
   }));
-
-  return {
-    description:
-      'La recette de ces territoires référence un territoire qui ne correspond plus à aucune commune du référentiel (commune absorbée lors d’une fusion, EPCI ou EPT dissous). Une inclusion disparue retire des communes du territoire, une exclusion disparue en rajoute, sans aucun signal. Le recalcul ne corrige pas ce cas : modifier la recette pour remplacer ou retirer la référence.',
-    items,
-    severity: 'error',
-    title: 'Territoire personnalisé dont la recette référence un territoire disparu',
-    totalCount,
-    truncated,
-    type: 'custom_territory.orphan_recipe_ref',
-  };
-};
-
-/**
- * Comptes actifs sans connexion depuis plus d'un an (hors admin).
- */
-const checkDormantAccounts: IssueBuilder = async () => {
-  const rows = await kdb
-    .selectFrom('users')
-    .select(['id', 'email', 'role', 'last_connection'])
-    .where('active', '=', true)
-    .where('role', '<>', 'admin')
-    .where('last_connection', '<', sql<Date>`now() - interval '1 year'`)
-    .orderBy('last_connection')
-    .execute();
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
-    context: `${row.role} — dernière connexion ${row.last_connection ? formatDate(row.last_connection) : 'jamais'}`,
-    href: userHref(row.id, row.email),
-    label: row.email,
-  }));
-
-  return {
-    description:
-      'Ces utilisateurs ne se sont pas connectés depuis plus d’un an mais leur compte est toujours actif. À auditer pour suppression ou désactivation.',
-    items,
-    severity: 'warning',
-    title: 'Compte actif sans connexion depuis plus d’un an',
-    totalCount,
-    truncated,
-    type: 'user.dormant',
-  };
 };
 
 /**
@@ -378,61 +247,11 @@ const checkDemandMissingCoordinates: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: `créée le ${formatDate(row.created_at)}`,
     href: demandHref(row.adresse),
     label: row.adresse ?? '(adresse absente)',
   }));
-
-  return {
-    description:
-      'La latitude ou la longitude est absente des données de la demande. La demande ne peut pas être affichée sur la carte et ne sera pas géoréférencée correctement.',
-    items,
-    severity: 'warning',
-    title: 'Demande sans coordonnées GPS',
-    totalCount,
-    truncated,
-    type: 'demand.missing_coordinates',
-  };
-};
-
-/**
- * Demandes avec network_id sans network_type, ou network_type sans network_id.
- */
-const checkDemandNetworkMismatch: IssueBuilder = async () => {
-  const rows = await kdb
-    .selectFrom('demands')
-    .select(['id', 'network_id', 'network_type', sql<string | null>`legacy_values->>'Adresse'`.as('adresse')])
-    .where('deleted_at', 'is', null)
-    .where((eb) =>
-      eb.or([
-        eb.and([eb('network_id', 'is not', null), eb('network_type', 'is', null)]),
-        eb.and([eb('network_id', 'is', null), eb('network_type', 'is not', null)]),
-      ])
-    )
-    .orderBy('id')
-    .execute();
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
-    context: `network_id=${row.network_id ?? '∅'} / network_type=${row.network_type ?? '∅'}`,
-    href: demandHref(row.adresse),
-    label: row.adresse ?? '(adresse absente)',
-  }));
-
-  return {
-    description:
-      '`network_id` et `network_type` doivent être renseignés ensemble ou tous les deux vides. L’un sans l’autre indique une affectation cassée.',
-    items,
-    severity: 'error',
-    title: 'Demande avec affectation réseau incohérente',
-    totalCount,
-    truncated,
-    type: 'demand.network_id_type_mismatch',
-  };
 };
 
 /**
@@ -464,22 +283,11 @@ const checkDemandOrphanNetwork: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: `${row.network_type} #${row.network_id}`,
     href: demandHref(row.adresse),
     label: row.adresse ?? '(adresse absente)',
   }));
-
-  return {
-    description:
-      'Le réseau référencé n’existe plus en base. La demande n’a plus de gestionnaire effectif. Lancer `pnpm cli reseaux:reassign-orphan-demands` recalcule son éligibilité et la réaffecte (`--dry-run` pour seulement compter).',
-    items,
-    severity: 'error',
-    title: 'Demande affectée à un réseau supprimé',
-    totalCount,
-    truncated,
-    type: 'demand.orphan_network',
-  };
 };
 
 /**
@@ -534,7 +342,7 @@ const checkPdpOrphanNetwork: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: [
       row.broken_rdc ? `réseaux de chaleur ${row.reseau_de_chaleur_ids.join(', ')}` : null,
       row.broken_zrc ? `réseaux en construction ${row.reseau_en_construction_ids.join(', ')}` : null,
@@ -542,19 +350,9 @@ const checkPdpOrphanNetwork: IssueBuilder = async () => {
     ]
       .filter(Boolean)
       .join(' / '),
+    href: pdpHref(row.id_fcu),
     label: pdpLabel(row.id_fcu, row.sncu),
   }));
-
-  return {
-    description:
-      'Ces PDP référencent un réseau (de chaleur, en construction, ou via l’identifiant SNCU) absent de la base. La résolution PDP → réseau échoue, donc les demandes situées dans ces PDP ne sont pas affectées au bon réseau.',
-    items,
-    severity: 'error',
-    title: 'PDP lié à un réseau inexistant',
-    totalCount,
-    truncated,
-    type: 'pdp.orphan_network',
-  };
 };
 
 /**
@@ -586,28 +384,26 @@ const checkPdpAmbiguousOperator: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(ambiguousRows, (row) => ({
+  return truncate(ambiguousRows, (row) => ({
     context: [
       !row.Gestionnaire && row.linked_gestionnaires.length > 1 ? `gestionnaires liés : ${row.linked_gestionnaires.join(' / ')}` : null,
       !row.MO && row.linked_maitres_ouvrage.length > 1 ? `MO liés : ${row.linked_maitres_ouvrage.join(' / ')}` : null,
     ]
       .filter(Boolean)
       .join(' — '),
-    href: pdpHref,
+    href: pdpHref(row.id_fcu),
     label: pdpLabel(row.id_fcu, row.sncu),
   }));
-
-  return {
-    description:
-      'Les réseaux liés à ces PDP portent des gestionnaires ou maîtres d’ouvrage différents : le remplissage automatique ne peut pas choisir. Saisir la valeur retenue dans Gestion des réseaux (onglet PDP).',
-    items,
-    severity: 'warning',
-    title: 'PDP avec gestionnaire/MO à trancher',
-    totalCount,
-    truncated,
-    type: 'pdp.ambiguous_operator',
-  };
 };
+
+/**
+ * `ST_Intersects(network, pdp)` evaluated trace part by trace part, stopping at the first part that touches the perimeter.
+ * On whole geometries (a network is up to 18 000 parts, a perimeter up to 135 000 points) the GEOS of production (3.11)
+ * needs up to several seconds per pair: 19 s for the linked pairs, about 1 s this way. A local database (GEOS 3.13) does
+ * not show it, whole geometries are even faster there (0.3 s): measure on an old GEOS before going back.
+ */
+const networkCrossesPdp = (network: Expression<unknown>, pdp: Expression<unknown>) =>
+  sql<boolean>`EXISTS (SELECT 1 FROM ST_Dump(${network}) AS part WHERE part.geom && ${pdp} AND ST_Intersects(part.geom, ${pdp}))`;
 
 /** Regroupe des paires (PDP, réseau) par PDP pour produire un item par PDP. */
 const groupNetworksByPdp = (
@@ -639,7 +435,7 @@ const groupNetworksByPdp = (
       ]
         .filter(Boolean)
         .join(' / '),
-      href: pdpHref,
+      href: pdpHref(id_fcu),
       label: pdpLabel(id_fcu, sncu),
     }));
 };
@@ -654,11 +450,7 @@ const checkPdpMissingNetworkLink: IssueBuilder = async () => {
   const [rdcRows, zrcRows] = await Promise.all([
     kdb
       .selectFrom('zone_de_developpement_prioritaire as p')
-      .innerJoin('reseaux_de_chaleur as r', (join) =>
-        join.on(
-          (eb) => sql<boolean>`${eb.ref('r.geom')} && ${eb.ref('p.geom')} AND ST_Intersects(${eb.ref('r.geom')}, ${eb.ref('p.geom')})`
-        )
-      )
+      .innerJoin('reseaux_de_chaleur as r', (join) => join.on((eb) => sql<boolean>`${eb.ref('r.geom')} && ${eb.ref('p.geom')}`))
       .select((eb) => [
         'p.id_fcu',
         eb.ref('p.Identifiant reseau').as('sncu'),
@@ -676,11 +468,13 @@ const checkPdpMissingNetworkLink: IssueBuilder = async () => {
           eb('r.Identifiant reseau', 'is distinct from', eb.ref('p.Identifiant reseau')),
         ])
       )
+      .where((eb) => networkCrossesPdp(eb.ref('r.geom'), eb.ref('p.geom')))
       .orderBy('p.id_fcu')
       .orderBy('r.id_fcu')
       .execute(),
     kdb
       .selectFrom('zone_de_developpement_prioritaire as p')
+      // whole geometries here: zones are polygons, the part by part test is slower on them (0.85 s against 0.54 s)
       .innerJoin('zones_et_reseaux_en_construction as c', (join) =>
         join.on(
           (eb) => sql<boolean>`${eb.ref('c.geom')} && ${eb.ref('p.geom')} AND ST_Intersects(${eb.ref('c.geom')}, ${eb.ref('p.geom')})`
@@ -702,18 +496,7 @@ const checkPdpMissingNetworkLink: IssueBuilder = async () => {
     rdcRows.map((row) => ({ ...row, network: networkLabel(row.network_id, row.nom_reseau, row.network_sncu) })),
     zrcRows.map((row) => ({ ...row, network: networkLabel(row.network_id, row.nom_reseau, row.is_zone ? 'zone' : null) }))
   );
-  const { items, totalCount, truncated } = truncate(grouped, (item) => item);
-
-  return {
-    description:
-      'Ces réseaux traversent le périmètre du PDP sans lui être liés : réseaux de chaleur classés et ouverts aux raccordements, réseaux ou zones en construction ouverts aux raccordements. Tant que le lien manque, la résolution PDP → réseau ignore ce réseau. Vérifier et ajouter le lien dans Gestion des réseaux (onglet PDP), ou corriger le périmètre.',
-    items,
-    severity: 'warning',
-    title: 'PDP traversé par un réseau non lié',
-    totalCount,
-    truncated,
-    type: 'pdp.missing_network_link',
-  };
+  return truncate(grouped, (item) => item);
 };
 
 /**
@@ -735,7 +518,7 @@ const checkPdpLinkWithoutIntersection: IssueBuilder = async () => {
     ])
     .where('p.geom', 'is not', null)
     .where('r.geom', 'is not', null)
-    .where((eb) => eb.not(sql<boolean>`ST_Intersects(${eb.ref('r.geom')}, ${eb.ref('p.geom')})`));
+    .where((eb) => eb.not(networkCrossesPdp(eb.ref('r.geom'), eb.ref('p.geom'))));
 
   const rdcLinkedBySncu = kdb
     .selectFrom('zone_de_developpement_prioritaire as p')
@@ -750,7 +533,7 @@ const checkPdpLinkWithoutIntersection: IssueBuilder = async () => {
     .where('p.Identifiant reseau', '!=', '')
     .where('p.geom', 'is not', null)
     .where('r.geom', 'is not', null)
-    .where((eb) => eb.not(sql<boolean>`ST_Intersects(${eb.ref('r.geom')}, ${eb.ref('p.geom')})`));
+    .where((eb) => eb.not(networkCrossesPdp(eb.ref('r.geom'), eb.ref('p.geom'))));
 
   const [rdcRows, zrcRows] = await Promise.all([
     rdcLinkedByIds.union(rdcLinkedBySncu).orderBy('id_fcu').orderBy('network_id').execute(),
@@ -762,7 +545,7 @@ const checkPdpLinkWithoutIntersection: IssueBuilder = async () => {
       .select((eb) => ['p.id_fcu', eb.ref('p.Identifiant reseau').as('sncu'), 'c.id_fcu as network_id', 'c.nom_reseau', 'c.is_zone'])
       .where('p.geom', 'is not', null)
       .where('c.geom', 'is not', null)
-      .where((eb) => eb.not(sql<boolean>`ST_Intersects(${eb.ref('c.geom')}, ${eb.ref('p.geom')})`))
+      .where((eb) => eb.not(networkCrossesPdp(eb.ref('c.geom'), eb.ref('p.geom'))))
       .orderBy('p.id_fcu')
       .orderBy('c.id_fcu')
       .execute(),
@@ -776,90 +559,7 @@ const checkPdpLinkWithoutIntersection: IssueBuilder = async () => {
     rdcRows.map((row) => ({ ...row, network: networkLabel(row.network_id, row.nom_reseau, row.network_sncu) })),
     zrcRows.map((row) => ({ ...row, network: networkLabel(row.network_id, row.nom_reseau, row.is_zone ? 'zone' : null) }))
   );
-  const { items, totalCount, truncated } = truncate(grouped, (item) => item);
-
-  return {
-    description:
-      'Ces PDP sont liés à un réseau dont le tracé ne touche pas leur périmètre : lien erroné (par exemple deux PDP inversés), périmètre mal placé ou tracé incomplet. Vérifier le lien et les géométries dans Gestion des réseaux (onglet PDP).',
-    items,
-    severity: 'warning',
-    title: 'PDP lié à un réseau qui ne le traverse pas',
-    totalCount,
-    truncated,
-    type: 'pdp.link_without_intersection',
-  };
-};
-
-/**
- * Demandes non validées depuis plus de 30 jours.
- */
-const checkDemandUnvalidatedOld: IssueBuilder = async () => {
-  const rows = await kdb
-    .selectFrom('demands')
-    .select(['id', 'created_at', sql<string | null>`legacy_values->>'Adresse'`.as('adresse')])
-    .where('deleted_at', 'is', null)
-    .where('validated', '=', false)
-    .where('created_at', '<', sql<Date>`now() - interval '30 days'`)
-    .orderBy('created_at')
-    .execute();
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
-    context: `créée le ${formatDate(row.created_at)}`,
-    href: demandHref(row.adresse),
-    label: row.adresse ?? '(adresse absente)',
-  }));
-
-  return {
-    description: 'Ces demandes sont en attente de validation depuis plus de 30 jours. À traiter ou à clôturer.',
-    items,
-    severity: 'warning',
-    title: 'Demande non validée depuis plus de 30 jours',
-    totalCount,
-    truncated,
-    type: 'demand.unvalidated_old',
-  };
-};
-
-/**
- * Demandes avec une demande de réaffectation en attente depuis plus de 14 jours.
- */
-const checkDemandPendingAssignmentStale: IssueBuilder = async () => {
-  const rows = await kdb
-    .selectFrom('demands')
-    .select([
-      'id',
-      sql<string | null>`legacy_values->>'Adresse'`.as('adresse'),
-      sql<Date>`(pending_assignment_change->>'requested_at')::timestamptz`.as('requested_at'),
-    ])
-    .where('deleted_at', 'is', null)
-    .where('pending_assignment_change', 'is not', null)
-    .where(sql<Date>`(pending_assignment_change->>'requested_at')::timestamptz`, '<', sql<Date>`now() - interval '14 days'`)
-    .orderBy(sql<Date>`(pending_assignment_change->>'requested_at')::timestamptz`)
-    .execute();
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
-    context: `demande de réaffectation depuis le ${formatDate(row.requested_at)}`,
-    href: demandHref(row.adresse),
-    label: row.adresse ?? '(adresse absente)',
-  }));
-
-  return {
-    description: 'Un changement d’affectation a été demandé il y a plus de 14 jours et n’a toujours pas été traité par un admin.',
-    items,
-    severity: 'warning',
-    title: 'Demande de réaffectation en attente depuis plus de 14 jours',
-    totalCount,
-    truncated,
-    type: 'demand.pending_assignment_stale',
-  };
+  return truncate(grouped, (item) => item);
 };
 
 /**
@@ -934,23 +634,12 @@ const checkDemandRecontactMismatch: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: `statut « ${row.status} » — « Non » répondu le ${formatDate(row.satisfaction_at)}`,
     href: demandHref(row.adresse),
     label: row.adresse ?? '(adresse absente)',
     links: [{ href: demandEventsHref(row.id), label: 'Voir les événements' }],
   }));
-
-  return {
-    description:
-      'Le gestionnaire a posé un statut impliquant un contact avec le demandeur (« Recontacté pour étude » ou au-delà), mais le demandeur a répondu ensuite à l’enquête de satisfaction qu’il n’avait pas été recontacté. À vérifier auprès du gestionnaire.',
-    items,
-    severity: 'warning',
-    title: 'Demande prise en charge mais demandeur non recontacté',
-    totalCount,
-    truncated,
-    type: 'demand.recontact_mismatch',
-  };
 };
 
 /**
@@ -980,23 +669,12 @@ const checkDemandRecontactMismatchLegacy: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: `statut « ${row.status} » — créée le ${formatDate(row.created_at)}`,
     href: demandHref(row.adresse),
     label: row.adresse ?? '(adresse absente)',
     links: [{ href: demandEventsHref(row.id), label: 'Voir les événements' }],
   }));
-
-  return {
-    description:
-      'Le demandeur a répondu qu’il n’avait pas été recontacté, mais cette réponse date d’avant la mise en place du suivi par événements et aucun vrai changement de statut n’est tracé : impossible de savoir si la prise en charge a eu lieu avant ou après. Données historiques à vérifier manuellement — cette liste ne peut que décroître.',
-    items,
-    severity: 'warning',
-    title: 'Demande prise en charge mais demandeur non recontacté (chronologie inconnue, données historiques)',
-    totalCount,
-    truncated,
-    type: 'demand.recontact_mismatch_legacy',
-  };
 };
 
 /**
@@ -1035,25 +713,12 @@ const checkOrganizationWithoutNetworks: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: row.has_active_credential ? 'token API actif — portée vide' : undefined,
     href: '/admin/organizations',
     label: row.name,
   }));
-
-  return {
-    description:
-      'Ces organisations n’ont aucun réseau rattaché. Une éventuelle clé d’API donnerait accès à zéro demande. Rattacher des réseaux depuis l’écran d’administration de l’organisation, ou supprimer l’organisation.',
-    items,
-    severity: 'warning',
-    title: 'Organisation sans réseau rattaché',
-    totalCount,
-    truncated,
-    type: 'organization.without_networks',
-  };
 };
-
-const NATIONAL_CANDIDATE_MIN_NETWORKS = 50;
 
 /**
  * Comptes actifs portant beaucoup de permissions réseau énumérées et sans organisation : candidats à un
@@ -1082,21 +747,11 @@ const checkNationalCandidateUnmigrated: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: `${row.network_perms} permissions réseau — ${fullName(row.first_name, row.last_name) ?? 'sans nom'}`,
     href: userHref(row.id, row.email),
     label: row.email,
   }));
-
-  return {
-    description: `Ces comptes actifs portent au moins ${NATIONAL_CANDIDATE_MIN_NETWORKS} permissions réseau énumérées et ne sont rattachés à aucune organisation. Ce sont des candidats à un accès national : créer/rattacher une organisation et remplacer ces permissions par une portée d’organisation.`,
-    items,
-    severity: 'warning',
-    title: 'Candidat à un accès national non rattaché à une organisation',
-    totalCount,
-    truncated,
-    type: 'user.national_candidate_unmigrated',
-  };
 };
 
 /**
@@ -1122,78 +777,11 @@ const checkGestionnaireSplitAcrossOrganizations: IssueBuilder = async () => {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
+  return truncate(rows, (row) => ({
     context: `${row.org_count} organisations : ${row.org_names.join(', ')}`,
     href: '/admin/organizations',
     label: row.gestionnaire ?? '(gestionnaire vide)',
   }));
-
-  return {
-    description:
-      'Une même valeur de « Gestionnaire » est rattachée à plusieurs organisations différentes. L’affectation réseau → organisation est incohérente : un opérateur ne devrait correspondre qu’à une seule organisation.',
-    items,
-    severity: 'warning',
-    title: 'Gestionnaire rattaché à plusieurs organisations',
-    totalCount,
-    truncated,
-    type: 'network.gestionnaire_split_across_organizations',
-  };
-};
-
-/**
- * Réseaux (chaleur + construction) matchant un motif gestionnaire déclaré par une org mais non rattachés (à rattacher).
- */
-const checkNetworkMatchingPatternUnattached: IssueBuilder = async () => {
-  const rows = await findUnattachedNetworksMatchingPatterns();
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
-    context: `devrait être rattaché à ${row.organization_name}${row.gestionnaire ? ` — ${row.gestionnaire}` : ''}`,
-    href: '/admin/organizations',
-    label: row.nom_reseau ?? `Réseau #${row.id_fcu}`,
-  }));
-
-  return {
-    description:
-      'Ces réseaux correspondent au motif gestionnaire déclaré par une organisation mais ne lui sont pas rattachés. Les rattacher via le bouton Rattacher du dialog Réseaux de cette organisation.',
-    items,
-    severity: 'warning',
-    title: 'Réseau matchant un motif mais non rattaché',
-    totalCount,
-    truncated,
-    type: 'organization.network_matching_pattern_unattached',
-  };
-};
-
-/**
- * Réseaux rattachés à une org dont le `Gestionnaire` ne matche aucun de ses motifs déclarés (anomalie).
- */
-const checkNetworkAttachedNotMatchingPattern: IssueBuilder = async () => {
-  const rows = await findAttachedNetworksNotMatchingPatterns();
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  const { items, totalCount, truncated } = truncate(rows, (row) => ({
-    context: `rattaché à ${row.organization_name} — gestionnaire : ${row.gestionnaire ?? '(vide)'}`,
-    href: '/admin/organizations',
-    label: row.nom_reseau ?? `Réseau #${row.id_fcu}`,
-  }));
-
-  return {
-    description:
-      'Ces réseaux sont rattachés à une organisation alors que leur gestionnaire ne correspond à aucun motif déclaré. Rattachement manuel à vérifier, ou motif à ajuster.',
-    items,
-    severity: 'warning',
-    title: 'Réseau rattaché hors motif gestionnaire',
-    totalCount,
-    truncated,
-    type: 'organization.network_attached_not_matching_pattern',
-  };
 };
 
 const formatDate = (value: Date | string | null): string => {
@@ -1204,96 +792,72 @@ const formatDate = (value: Date | string | null): string => {
   return date.toLocaleDateString('fr-FR');
 };
 
-/**
- * Extensions liées à un réseau de chaleur qui portent encore des demandes ou des permissions : elles reviennent au réseau parent,
- * la synchronisation des champs liés ne les a pas encore déplacées (affectation ou permission créée hors des parcours prévus).
- */
-const checkExtensionNotConsolidated: IssueBuilder = async () => {
+/** Corrections made by FCU on a network that still differ from the FEDENE survey: only present after the yearly import. */
+const checkSurveyDiscrepancies: IssueBuilder = async () => {
   const rows = await kdb
-    .selectFrom('zones_et_reseaux_en_construction as extension')
-    .select((eb) => [
-      'extension.id_fcu',
-      'extension.nom_reseau',
-      'extension.Identifiant reseau as sncu',
-      eb
-        .selectFrom('demands as d')
-        .select((demandBuilder) => demandBuilder.fn.countAll<number>().as('count'))
-        .where('d.network_type', '=', 'reseau_en_construction')
-        .whereRef('d.network_id', '=', 'extension.id_fcu')
-        .as('demands_count'),
-      eb
-        .selectFrom('user_permissions as up')
-        .select((permissionBuilder) => permissionBuilder.fn.countAll<number>().as('count'))
-        .where('up.type', '=', 'reseau_en_construction')
-        .where((permissionBuilder) => permissionBuilder('up.resource_id', '=', permissionBuilder.cast<string>('extension.id_fcu', 'text')))
-        .as('permissions_count'),
-    ])
-    .where('extension.reseau_de_chaleur_id', 'is not', null)
-    .orderBy('extension.id_fcu')
+    .selectFrom('network_change_requests')
+    .select(['id', 'network_label'])
+    .where('kind', '=', 'enquete')
+    .where('status', '=', 'pending')
+    .orderBy('network_label')
     .execute();
 
-  const staleRows = rows.filter((row) => Number(row.demands_count) > 0 || Number(row.permissions_count) > 0);
-
-  if (staleRows.length === 0) {
+  if (rows.length === 0) {
     return null;
   }
 
-  const { items, totalCount, truncated } = truncate(staleRows, (row) => ({
-    context: `${Number(row.demands_count)} demande(s), ${Number(row.permissions_count)} permission(s)`,
-    href: '/admin/reseaux?reseauxTab=reseaux-en-construction',
-    label: networkLabel(row.id_fcu, row.nom_reseau, row.sncu),
+  return truncate(rows, (row) => ({
+    href: '/admin/enquete-fedene',
+    label: row.network_label,
   }));
-
-  return {
-    description:
-      'Les demandes et les permissions d’une extension liée à un réseau de chaleur sont portées par ce réseau parent. Celles-ci sont restées sur l’extension : les comptes du réseau ne les voient pas. Lancer `pnpm cli reseaux:sync-linked-fields`, ou enregistrer une modification du réseau dans Gestion des réseaux, les déplace.',
-    items,
-    severity: 'error',
-    title: 'Extension portant encore des demandes ou des permissions',
-    totalCount,
-    truncated,
-    type: 'extension.not_consolidated',
-  };
 };
 
-const checks: IssueBuilder[] = [
-  checkUserNoPermission,
-  checkGestionnaireWithTerritory,
-  checkPermissionOnRoleWithoutPermissions,
-  checkDuplicateEmail,
-  checkOrphanPermissions,
-  checkCustomTerritoryStaleCommunes,
-  checkCustomTerritoryOrphanRecipeRef,
-  checkDormantAccounts,
-  checkDemandMissingCoordinates,
-  checkDemandNetworkMismatch,
-  checkDemandOrphanNetwork,
-  checkExtensionNotConsolidated,
-  checkPdpOrphanNetwork,
-  checkPdpAmbiguousOperator,
-  checkPdpMissingNetworkLink,
-  checkPdpLinkWithoutIntersection,
-  checkDemandUnvalidatedOld,
-  checkDemandPendingAssignmentStale,
-  checkDemandRecontactMismatch,
-  checkDemandRecontactMismatchLegacy,
-  checkOrganizationWithoutNetworks,
-  checkNationalCandidateUnmigrated,
-  checkGestionnaireSplitAcrossOrganizations,
-  checkNetworkMatchingPatternUnattached,
-  checkNetworkAttachedNotMatchingPattern,
-];
+const builders: Record<DiagnosticCheckType, IssueBuilder> = {
+  'custom_territory.orphan_recipe_ref': checkCustomTerritoryOrphanRecipeRef,
+  'custom_territory.stale_communes': checkCustomTerritoryStaleCommunes,
+  'demand.missing_coordinates': checkDemandMissingCoordinates,
+  'demand.orphan_network': checkDemandOrphanNetwork,
+  'demand.recontact_mismatch': checkDemandRecontactMismatch,
+  'demand.recontact_mismatch_legacy': checkDemandRecontactMismatchLegacy,
+  'network.gestionnaire_split_across_organizations': checkGestionnaireSplitAcrossOrganizations,
+  'network.survey_discrepancy': checkSurveyDiscrepancies,
+  'organization.without_networks': checkOrganizationWithoutNetworks,
+  'pdp.ambiguous_operator': checkPdpAmbiguousOperator,
+  'pdp.link_without_intersection': checkPdpLinkWithoutIntersection,
+  'pdp.missing_network_link': checkPdpMissingNetworkLink,
+  'pdp.orphan_network': checkPdpOrphanNetwork,
+  'permission.orphan_resource': checkOrphanPermissions,
+  'user.gestionnaire_with_territory': checkGestionnaireWithTerritory,
+  'user.national_candidate_unmigrated': checkNationalCandidateUnmigrated,
+  'user.no_permission': checkUserNoPermission,
+  'user.role_without_permissions_has_permission': checkPermissionOnRoleWithoutPermissions,
+};
 
-const severityWeight = { error: 0, warning: 1 } as const;
+const severityWeight = { error: 0, warning: 1 } as const satisfies Record<IssueSeverity, number>;
 
-export const runDataDiagnostic = async (): Promise<DataDiagnosticResult> => {
-  const results = await Promise.all(checks.map((check) => check()));
-  const issues = results
-    .filter((issue): issue is Issue => issue !== null)
-    .sort((a, b) => severityWeight[a.severity] - severityWeight[b.severity] || b.totalCount - a.totalCount);
-
-  return {
-    generatedAt: new Date().toISOString(),
-    issues,
-  };
+/**
+ * Data anomalies, errors first then by number of items: the checks run at every display of the dashboard,
+ * or the on-demand ones (too slow or too rarely useful for that).
+ */
+export const runDataDiagnostic = async ({ onDemand }: RunDataDiagnosticInput): Promise<Issue[]> => {
+  const issues = await Promise.all(
+    diagnosticChecks
+      .filter((check) => check.onDemand === onDemand)
+      .map(async (check) => {
+        const rows = await builders[check.type]();
+        return (
+          rows && {
+            description: check.description,
+            severity: check.severity,
+            theme: check.theme,
+            title: check.title,
+            type: check.type,
+            ...rows,
+          }
+        );
+      })
+  );
+  return issues
+    .filter((issue) => issue !== null)
+    .sort((first, second) => severityWeight[first.severity] - severityWeight[second.severity] || second.totalCount - first.totalCount);
 };

@@ -18,7 +18,7 @@ L'équipe France Chaleur Urbaine. Un admin voit tout et pilote l'ensemble — ut
 | Organisations | [Gestion des organisations](/admin/organizations) | Rattacher les réseaux à un exploitant, gérer les accès API |
 | Pilotage | [Activité du site](/admin/events), [Conversion](/admin/conversion) (et son [contrôle des abus](/admin/conversion/abus)), [Tests d'adresses](/admin/tests-adresses) | Suivre l'activité, l'entonnoir de conversion et les tests |
 | Emails | [Emails automatiques](/admin/emails), [Délivrabilité des emails](/admin/email-delivery) | Prévisualiser les modèles, repérer les adresses bloquées côté Brevo et les débloquer (voir [Relances et notifications](/admin/doc/relances-notifications)) |
-| Système | [Suivi des tâches](/admin/jobs), [Diagnostic système](/admin/diagnostic), [Diagnostic des données](/admin/data-diagnostic) | Surveiller les tâches et crons, repérer les incohérences |
+| Système | [Suivi des tâches](/admin/jobs), [Diagnostic système](/admin/diagnostic) | Surveiller les tâches et crons |
 
 ## Ses actions sur une demande
 
@@ -46,8 +46,28 @@ Points à retenir :
 - **Impostures** : endosser n'importe quel rôle avec des permissions simulées pour voir l'application comme l'utilisateur ciblé, avec une option d'anonymisation des données personnelles pour les démonstrations. Voir [Rôles et permissions](/admin/doc/roles-permissions).
 - **Étiquettes utilisateurs** : marquage libre des comptes (nom + couleur), posé depuis la fiche d'un utilisateur ou en masse (collage d'une liste d'emails), filtrable et exportable dans [Gestion des utilisateurs](/admin/users). Purement informatif : aucun effet sur les permissions, et invisible des utilisateurs eux-mêmes. Opérations tracées ([création](/admin/events?types=user_tag_created), [modification](/admin/events?types=user_tag_updated), [suppression](/admin/events?types=user_tag_deleted) d'étiquette).
 - **Double authentification** : un compte admin exige un code d'application d'authentification en plus du mot de passe (voir [Inscription et comptes](/admin/doc/inscription-comptes)). En cas de téléphone perdu, un autre admin réinitialise le second facteur depuis [Gestion des utilisateurs](/admin/users) ; l'opération est tracée ([réinitialisation](/admin/events?types=user_mfa_reset)).
-- **Diagnostic des données** : repère les incohérences entre utilisateurs, permissions et demandes.
 - **Suivi des tâches** : état des tâches asynchrones et des crons (voir [Références](/admin/doc/references)).
+
+## Tableau de bord
+
+Le [tableau de bord](/pro/tableau-de-bord) est la file de travail de l'équipe, et non une page de navigation (le menu liste les pages). Il tient sur un écran : les compteurs sur une rangée en haut, puis les anomalies relevées dans les données sur deux colonnes, «&nbsp;À corriger&nbsp;» (les erreurs) et «&nbsp;À vérifier&nbsp;» (les avertissements).
+
+| Affichage | Apparence | Quand il apparaît | Au clic |
+| --- | --- | --- | --- |
+| Compteur permanent | Carte avec un chiffre, marquée d'un triangle orange dès qu'il dépasse zéro | Toujours, même à zéro, et actualisé automatiquement | Ouvre la page où traiter les éléments, déjà filtrée |
+| Erreur | Ligne dépliable de la colonne «&nbsp;À corriger&nbsp;», pastille rouge indiquant le nombre d'éléments | Seulement s'il existe au moins un élément | Déplie l'explication et la liste des éléments, chacun menant à l'écran où le corriger |
+| Avertissement | Ligne dépliable de la colonne «&nbsp;À vérifier&nbsp;», pastille orange indiquant le nombre d'éléments | Seulement s'il existe au moins un élément | Comme une erreur |
+
+Points à retenir :
+
+- **Un compteur est une file que l'équipe vide elle-même** et qui retombe à zéro une fois traitée. Ce qui ne dépend pas de l'équipe, ou ne se produit qu'occasionnellement, est une erreur (donnée à corriger) ou un avertissement (point à vérifier).
+- Chaque ligne d'anomalie porte une **étiquette de thème** (réseaux et PDP, gestionnaires, comptes, technique), qui indique le domaine concerné.
+- **Les contrôles à la demande** comparent le tracé des réseaux au périmètre des PDP. Plus longs et rarement prioritaires, ils ne sont pas lancés à l'affichage : le bouton «&nbsp;Contrôler la géométrie des PDP&nbsp;», sous la colonne «&nbsp;À vérifier&nbsp;», les déclenche et leurs résultats s'ajoutent à cette colonne.
+- Une colonne sans anomalie l'indique par «&nbsp;Aucune anomalie détectée&nbsp;».
+
+Ce que le tableau de bord peut afficher (liste générée depuis le code, toujours à jour) :
+
+<DashboardAlertsInventory />
 
 ## Traçabilité
 
