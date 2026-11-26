@@ -164,15 +164,16 @@ export const autoAssignNetworkFromEligibility = async (demandId: string) => {
     return;
   }
 
+  // an assignment needs both the network and its type (`demands_network_id_with_type`)
   const networkType = getNetworkTypeFromEligibilityType(lastEligibility.type);
-  const assignment = networkType
-    ? await resolveDemandAssignment(lastEligibility.id_fcu, networkType)
-    : { extension_id: null, network_id: lastEligibility.id_fcu, network_type: null };
+  if (!networkType) {
+    return;
+  }
 
   await kdb
     .updateTable('demands')
     .set({
-      ...assignment,
+      ...(await resolveDemandAssignment(lastEligibility.id_fcu, networkType)),
       legacy_values: mergeLegacyValues({
         'Distance au réseau': lastEligibility.distance,
         'Identifiant réseau': lastEligibility.id_sncu,
