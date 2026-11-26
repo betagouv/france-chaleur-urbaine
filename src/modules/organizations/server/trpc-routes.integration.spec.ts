@@ -41,7 +41,6 @@ const driftRow = (id_fcu: number, gestionnaire: string | null, organization: { i
 describe('organizations.admin.networks', () => {
   beforeEach(async () => {
     await cleanDatabase();
-    await kdb.deleteFrom('organizations').execute();
     await seedTableUser([{ ...testUsers.admin }, { ...testUsers.gestionnaire }]);
     await seedOrganization(engieId, 'ENGIE', ['%engie%']);
     await seedOrganization(dalkiaId, 'Dalkia', ['%dalkia%']);

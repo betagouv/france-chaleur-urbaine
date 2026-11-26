@@ -9,152 +9,122 @@ export const adminPageGroups = [
 export type AdminPageGroup = (typeof adminPageGroups)[number]['id'];
 
 /**
- * Single source of truth for the admin pages. Feeds both the admin dashboard
- * (`DashboardAdmin`) and the navigation menu (`SimplePage`). Add a page here to
- * expose it in both places. Keep entries grouped and ordered by `group`.
+ * Single source of truth for the admin pages, feeding the navigation menu
+ * (`SimplePage`). Keep entries grouped and ordered by `group`.
  */
 export const adminPages = [
   {
-    desc: 'Gérez les demandes de raccordement à affecter',
     group: 'management',
     href: '/admin/demandes',
     label: 'Gestion des demandes',
   },
   {
-    desc: 'Gérez les demandes chaleur renouvelable',
     group: 'management',
     href: '/admin/demandes-chaleur-renouvelable',
     label: 'Gestion des demandes chaleur renouvelable',
   },
   {
-    desc: 'Traitez les demandes de modification de fiche, de tracé ou de périmètre déposées par les collectivités et exploitants',
     group: 'management',
     href: '/admin/modifications-reseau',
     label: 'Demandes de modification de réseau',
   },
   {
-    desc: "Gérez les utilisateurs de l'application",
     group: 'management',
     href: '/admin/users',
     label: 'Gestion des utilisateurs',
   },
   {
-    desc: 'Gérez les réseaux de chaleur et de froid',
     group: 'management',
     href: '/admin/reseaux',
     label: 'Gestion des réseaux',
   },
   {
-    desc: 'Gérez les organisations gestionnaires, leurs réseaux et accès API',
     group: 'management',
     href: '/admin/organizations',
     label: 'Gestion des organisations',
   },
   {
-    desc: 'Définissez des périmètres sur mesure (département hors métropole…) attribuables comme permission',
     group: 'management',
     href: '/admin/territoires',
     label: 'Territoires personnalisés',
   },
   {
-    desc: "Consultez l'activité des utilisateurs sur le site",
     group: 'analytics',
     href: '/admin/events',
     label: 'Activité du site',
   },
   {
-    desc: 'Entonnoir affichages → tests → demandes, toutes sources',
     group: 'analytics',
     href: '/admin/conversion',
     label: 'Conversion par source',
   },
   {
-    desc: 'Flux des simulations : page d’arrivée → contact proposé → issue',
     group: 'analytics',
     href: '/admin/conversion/chaleur-renouvelable',
     label: 'Conversion — simulateur chaleur renouvelable',
   },
   {
-    desc: 'Détecter et bannir les IP polluant les stats de conversion',
     group: 'analytics',
     href: '/admin/conversion/abus',
     label: 'Conversion — contrôle des abus',
   },
   {
-    desc: 'Repérez les réseaux dont les gestionnaires ne répondent plus aux demandes',
     group: 'analytics',
     href: '/admin/reseaux/suivi',
     label: 'Suivi des réseaux',
   },
   {
-    desc: "Consultez les tests d'éligibilité d'adresses réalisés par les utilisateurs",
     group: 'analytics',
     href: '/admin/tests-adresses',
     label: "Tests d'adresses",
   },
   {
-    desc: "Générez l'URL et le code d'intégration d'une carte à embarquer",
     group: 'tools',
     href: '/admin/iframes',
     label: "Générateur d'iframes",
   },
   {
-    desc: "Endossez un rôle et des permissions spécifiques pour tester l'application",
     group: 'tools',
     href: '/admin/impostures',
     label: 'Impostures',
   },
   {
-    desc: "Prévisualisez les emails automatiques envoyés par l'application",
     group: 'tools',
     href: '/admin/emails',
     label: 'Emails automatiques',
   },
   {
-    desc: 'Contacts bloqués côté Brevo (rejets, désinscriptions), historique des envois et déblocage',
     group: 'tools',
     href: '/admin/email-delivery',
     label: 'Délivrabilité des emails',
   },
   {
-    desc: "Comprenez les parcours métier de l'application et leurs règles de gestion",
     group: 'tools',
     href: '/admin/doc',
     label: 'Documentation des workflows',
   },
   {
-    desc: "Suivez l'état des tâches asynchrones et des crons",
     group: 'system',
     href: '/admin/jobs',
     label: 'Suivi des tâches',
   },
   {
-    desc: 'Appliquez les durées de conservation : comptes non activés ou inactifs, demandes closes',
     group: 'system',
     href: '/admin/retention',
     label: 'Conservation des données',
   },
   {
-    desc: "Vérifiez l'état des outils et configurations du système",
     group: 'system',
     href: '/admin/diagnostic',
     label: 'Diagnostic système',
   },
   {
     // temporary page, to remove with the particulier role once the accounts are deleted
-    desc: "Envoyez l'annonce de suppression aux titulaires d'un compte particulier",
     group: 'system',
     href: '/admin/suppression-comptes-particuliers',
     label: 'Suppression des comptes particuliers',
   },
-  {
-    desc: 'Identifiez les incohérences (utilisateurs, permissions, demandes)',
-    group: 'system',
-    href: '/admin/data-diagnostic',
-    label: 'Diagnostic des données',
-  },
 ] as const satisfies readonly {
-  desc: string;
   group: AdminPageGroup;
   href: string;
   label: string;

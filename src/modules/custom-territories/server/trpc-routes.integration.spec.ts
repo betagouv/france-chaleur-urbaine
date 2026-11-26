@@ -32,7 +32,6 @@ const departement64HorsPaysBasque: CustomTerritoryRecipe = {
 
 beforeEach(async () => {
   await cleanDatabase();
-  await kdb.deleteFrom('ept').execute();
   await seedTableUser([testUsers.admin, testUsers.gestionnaire, testUsers.particulier, testUsers.ccrt]);
   await seedPyreneesAtlantiques();
 });
@@ -247,7 +246,7 @@ describe('customTerritories.admin', () => {
     await kdb.updateTable('ign_communes').set({ insee_dep: '65' }).where('insee_com', '=', '64024').execute();
     await seedCommune({ insee_com: '64999', insee_dep: '64', insee_reg: '75', siren_epci: '200067262' });
     const staleTerritoryIssues = async () =>
-      (await caller.dataDiagnostic.run()).issues.filter((issue) => issue.type === 'custom_territory.stale_communes');
+      (await caller.dataDiagnostic.run({ onDemand: false })).filter((issue) => issue.type === 'custom_territory.stale_communes');
 
     expect(await staleTerritoryIssues()).toMatchObject([
       {
@@ -288,7 +287,8 @@ describe('customTerritories.admin', () => {
         ],
       },
     });
-    const issuesOfType = async (type: string) => (await caller.dataDiagnostic.run()).issues.filter((issue) => issue.type === type);
+    const issuesOfType = async (type: string) =>
+      (await caller.dataDiagnostic.run({ onDemand: false })).filter((issue) => issue.type === type);
     expect(await issuesOfType('custom_territory.orphan_recipe_ref')).toStrictEqual([]);
 
     // referential update: Mont-de-Marsan is absorbed by another commune, the CA Pays Basque is replaced by a new EPCI

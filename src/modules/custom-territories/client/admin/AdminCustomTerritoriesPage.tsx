@@ -117,8 +117,8 @@ function AdminCustomTerritoriesPage() {
           Périmètres sur mesure (par exemple un département hors sa métropole) : des communes incluses moins des communes exclues. Un
           territoire s'attribue à un compte via la permission «&nbsp;Territoire personnalisé&nbsp;» dans{' '}
           <a href="/admin/users">Gestion des utilisateurs</a>. Les demandes sont rattachées automatiquement à chaque enregistrement. Après
-          une mise à jour du référentiel des communes, le <a href="/admin/data-diagnostic">diagnostic des données</a> signale les
-          territoires à recalculer.
+          une mise à jour du référentiel des communes, le <a href="/pro/tableau-de-bord">tableau de bord</a> signale les territoires à
+          recalculer.
         </Text>
         <TableSimple
           columns={columns}

@@ -70,11 +70,10 @@ describe('admin.getDashboardIndicators', () => {
     await seedRequest('pending');
     await seedRequest('pending');
     await seedRequest('processed');
-    await seedRequest('pending', 'enquete'); // survey discrepancy: counted apart
+    await seedRequest('pending', 'enquete'); // survey discrepancy: reported by the data diagnostic
     await seedJob('error', daysAgo(1));
     await seedJob('error', daysAgo(10)); // older than the window: ignored
     await seedJob('finished', daysAgo(1));
-    await kdb.deleteFrom('organizations').execute();
     await kdb
       .insertInto('organizations')
       .values({ gestionnaire_patterns: ['%engie%'], id: uuid(30), name: 'ENGIE' })
@@ -91,7 +90,6 @@ describe('admin.getDashboardIndicators', () => {
       organizationNetworksDrift: 2,
       pendingReassignments: 1,
       renewableHeatDemandsToValidate: 1,
-      surveyDiscrepanciesPending: 1,
     });
   });
 });

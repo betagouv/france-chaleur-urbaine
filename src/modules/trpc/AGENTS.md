@@ -175,6 +175,8 @@ false | {
 
 **Batching**: a batched HTTP call (`/api/trpc/a.list,a.get`) runs the middleware once per procedure, so each procedure consumes its own counter.
 
+**Opting out of batching (client)**: queries fired in the same tick share one HTTP request, answered when the slowest procedure is done. A slow query that must not hold back the others (the data diagnostic of the admin dashboard, fired with its counters) passes `trpc: { context: { skipBatch: true } }` in its query options and travels alone (`splitLink` in `client/next.ts`).
+
 ### Implementation Details
 
 Rate limiting uses `express-rate-limit` from the security module:

@@ -8,7 +8,6 @@ import { getCcrtTerritory } from './ccrt-access';
 
 beforeEach(async () => {
   await cleanDatabase();
-  await kdb.deleteFrom('ept').execute();
 });
 
 it.each([

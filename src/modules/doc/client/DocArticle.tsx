@@ -2,6 +2,7 @@ import type { MDXComponents } from 'mdx/types';
 
 import type { DocPage } from '../doc.config';
 import { CronsInventory } from './inventories/CronsInventory';
+import { DashboardAlertsInventory } from './inventories/DashboardAlertsInventory';
 import { DemandStatuses } from './inventories/DemandStatuses';
 import { EmailsInventory } from './inventories/EmailsInventory';
 import { EventsInventory } from './inventories/EventsInventory';
@@ -26,6 +27,7 @@ export function DocArticle({ doc }: DocArticleProps) {
 
 const mdxComponents: MDXComponents = {
   CronsInventory,
+  DashboardAlertsInventory,
   DemandStatuses,
   EmailsInventory,
   EventsInventory,
