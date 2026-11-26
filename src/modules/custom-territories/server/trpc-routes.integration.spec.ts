@@ -32,7 +32,6 @@ const departement64HorsPaysBasque: CustomTerritoryRecipe = {
 
 beforeEach(async () => {
   await cleanDatabase();
-  await kdb.deleteFrom('ept').execute();
   await seedTableUser([testUsers.admin, testUsers.gestionnaire, testUsers.particulier, testUsers.ccrt]);
   await seedPyreneesAtlantiques();
 });

@@ -83,41 +83,69 @@ export function createPolygonGeometry(lon: number, lat: number, radiusMeters: nu
   ])), 2154)`;
 }
 
+/** Tables filled by the migrations or by PostGIS: the application relies on their content, they are never emptied. */
+const TABLES_KEPT_BY_CLEAN_DATABASE = ['kysely_migrations', 'kysely_migration_lock', 'spatial_ref_sys', 'tiles_metadata'];
+
+let cleanDatabaseStatement: Promise<RawBuilder<unknown>> | undefined;
+
+/**
+ * Empties every table of the test database in one round trip. The tables and their deletion order are read from the Postgres
+ * catalog (once per test file), so a new table is covered without touching this function; only a table that a migration
+ * fills has to be added to `TABLES_KEPT_BY_CLEAN_DATABASE`.
+ */
 export async function cleanDatabase() {
-  // Extensions reference their parent heat network (ON DELETE SET NULL): deleting both tables at once deadlocks on the extension rows
-  await kdb.deleteFrom('zones_et_reseaux_en_construction').execute();
-  // Parallelize all table cleanups (ordered by FK constraints between groups)
-  await Promise.all([
-    // Network tables
-    kdb.deleteFrom('zone_de_developpement_prioritaire').execute(),
-    kdb.deleteFrom('reseaux_de_chaleur').execute(),
-    kdb.deleteFrom('reseaux_de_froid').execute(),
+  cleanDatabaseStatement ??= buildCleanDatabaseStatement();
+  await (await cleanDatabaseStatement).execute(kdb);
+}
 
-    // Geographic tables
-    kdb.deleteFrom('ign_communes').execute(),
-    kdb.deleteFrom('ign_departements').execute(),
-    kdb.deleteFrom('ign_regions').execute(),
+/** One `DELETE` per table, sent as a single query: Postgres runs them in order, in one implicit transaction. */
+async function buildCleanDatabaseStatement() {
+  const [tables, foreignKeys] = await Promise.all([
+    sql<{ name: string }>`
+      SELECT tablename AS name FROM pg_tables
+      WHERE schemaname = 'public' AND tablename <> ALL(${TABLES_KEPT_BY_CLEAN_DATABASE})
+      ORDER BY tablename`.execute(kdb),
+    sql<ForeignKey>`
+      SELECT child.relname AS child, parent.relname AS parent
+      FROM pg_constraint
+      INNER JOIN pg_class AS child ON child.oid = pg_constraint.conrelid
+      INNER JOIN pg_class AS parent ON parent.oid = pg_constraint.confrelid
+      WHERE pg_constraint.contype = 'f' AND pg_constraint.connamespace = 'public'::regnamespace`.execute(kdb),
+  ]);
+  const orderedTables = orderForDeletion(
+    tables.rows.map((table) => table.name),
+    foreignKeys.rows
+  );
+  return sql.join(
+    orderedTables.map((table) => sql`DELETE FROM ${sql.id(table)}`),
+    sql`; `
+  );
+}
 
-    // User-related tables
-    kdb.deleteFrom('demand_emails').execute(),
-    kdb.deleteFrom('demands_chaleur_renouvelable').execute(),
-    kdb.deleteFrom('simulations_chaleur_renouvelable').execute(),
-    kdb.deleteFrom('events').execute(),
-    kdb.deleteFrom('custom_territories').execute(),
-    kdb.deleteFrom('email_blocked_contacts').execute(),
-    kdb.deleteFrom('pro_eligibility_tests_addresses').execute(),
-    kdb.deleteFrom('jobs').execute(),
-    kdb.deleteFrom('network_change_requests').execute(), // cascades to network_change_request_files
-    kdb.deleteFrom('network_reminders').execute(), // references its author without cascade
-  ]);
-  await Promise.all([
-    kdb.deleteFrom('demands').execute(),
-    kdb.deleteFrom('pro_eligibility_tests').execute(),
-    kdb.deleteFrom('files').execute(),
-  ]);
-  await kdb.deleteFrom('users').execute();
-  // Last: networks and users reference their organization (ON DELETE SET NULL); cascades to the API credentials
-  await kdb.deleteFrom('organizations').execute();
+type ForeignKey = { child: string; parent: string };
+
+/**
+ * Orders the tables so that each one comes after every table that references it: its rows are then deleted without
+ * breaking a foreign key, nor triggering a cascade. A table referencing itself needs no order (one statement empties it).
+ */
+function orderForDeletion(tables: string[], foreignKeys: ForeignKey[]): string[] {
+  if (tables.length === 0) {
+    return [];
+  }
+  const deletableTables = tables.filter(
+    (table) =>
+      !foreignKeys.some((foreignKey) => foreignKey.parent === table && foreignKey.child !== table && tables.includes(foreignKey.child))
+  );
+  if (deletableTables.length === 0) {
+    throw new Error(`cleanDatabase: these tables reference each other in a cycle, order them by hand: ${tables.join(', ')}`);
+  }
+  return [
+    ...deletableTables,
+    ...orderForDeletion(
+      tables.filter((table) => !deletableTables.includes(table)),
+      foreignKeys
+    ),
+  ];
 }
 
 export async function seedTableUser(users: readonly Partial<InsertObject<DB, 'users'>>[]) {
